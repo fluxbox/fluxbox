@@ -1,7 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/14:
+  * More menu transparency improvements (Henrik)
+    Menu.cc
 *04/06/13:
-  * More menu transparency improvements
+  * More menu transparency improvements (Henrik)
     Menu.hh/cc, MenuTheme.hh
 *04/06/12:
   * Updated japanese locales from Yasuhiro Takabayashi
