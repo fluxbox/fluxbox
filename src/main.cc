@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.31 2004/08/31 15:26:39 rathnor Exp $
+// $Id: main.cc,v 1.32 2004/10/11 22:48:35 rathnor Exp $
 
 #include "fluxbox.hh"
 #include "version.h"
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
             session_display = argv[i];
             std::string display_env = "DISPLAY=" + session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
-                cerr<<_FBTEXT(main, WarnDisplaySet,
+                cerr<<_FBTEXT(main, WarnDisplayEnv,
                                 "warning: couldn't set environment variable 'DISPLAY'",
                               "")<<endl;
                 perror("putenv()");

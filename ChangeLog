@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/11:
+  * Fix a bad nls string name - it ended with Set, but was a string (Simon)
+    main.cc
 *04/10/10:
   * Fix for a minor fbrun - problem (Mathias)
     FbRun.cc
