@@ -364,7 +364,7 @@ BaseDisplay::BaseDisplay(char *app_name, char *dpy_name) {
 #endif // NEWWMSPEC
 
 #ifdef GNOME
-	/*
+	
 	gnome_wm_win_layer = XInternAtom(display, "_WIN_LAYER", False);
 	gnome_wm_win_state = XInternAtom(display, "_WIN_STATE", False);
 	gnome_wm_win_hints = XInternAtom(display, "_WIN_HINTS", False);
@@ -377,7 +377,7 @@ BaseDisplay::BaseDisplay(char *app_name, char *dpy_name) {
 	gnome_wm_win_client_list = XInternAtom(display, "_WIN_CLIENT_LIST", False);
 	gnome_wm_prot = XInternAtom(display, "_WIN_PROTOCOLS", False);
 	gnome_wm_supporting_wm_check = XInternAtom(display, "_WIN_SUPPORTING_WM_CHECK", False);
-	*/
+	
 #endif // GNOME
 
 	cursor.session = XCreateFontCursor(display, XC_left_ptr);

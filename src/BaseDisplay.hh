@@ -35,32 +35,6 @@ class ScreenInfo;
 #include "LinkedList.hh"
 #include "Timer.hh"
 
-#define AttribShaded      (1l << 0)
-#define AttribMaxHoriz    (1l << 1)
-#define AttribMaxVert     (1l << 2)
-#define AttribOmnipresent (1l << 3)
-#define AttribWorkspace   (1l << 4)
-#define AttribStack       (1l << 5)
-#define AttribDecoration  (1l << 6)
-
-#define StackTop          (0)
-#define StackNormal       (1)
-#define StackBottom       (2)
-
-#define DecorNone         (0)
-#define DecorNormal       (1)
-#define DecorTiny         (2)
-#define DecorTool         (3)
-
-typedef struct _blackbox_hints {
-  unsigned long flags, attrib, workspace, stack, decoration;
-} BlackboxHints;
-
-typedef struct _blackbox_attributes {
-  unsigned long flags, attrib, workspace, stack;
-  int premax_x, premax_y;
-  unsigned int premax_w, premax_h;
-} BlackboxAttributes;
 
 #define PropBlackboxHintsElements      (5)
 #define PropBlackboxAttributesElements (8)
@@ -77,6 +51,29 @@ class BaseDisplay {
 public:
   BaseDisplay(char *, char * = 0);
   virtual ~BaseDisplay(void);
+	
+	enum Attrib {
+		ATTRIB_SHADED = 0x01,
+		ATTRIB_MAXHORIZ = 0x02,
+		ATTRIB_MAXVERT = 0x04,
+		ATTRIB_OMNIPRESENT = 0x08,
+		ATTRIB_WORKSPACE = 0x10,
+		ATTRIB_STACK = 0x20,		
+		ATTRIB_DECORATION = 0x40
+		};
+	enum Decor {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
+	enum Stack {STACK_TOP=0, STACK_NORMAL, STACK_BOTTOM};
+	
+	typedef struct _blackbox_hints {
+  	unsigned long flags, attrib, workspace, stack;
+		Decor decoration;
+	} BlackboxHints;
+
+	typedef struct _blackbox_attributes {
+  	unsigned long flags, attrib, workspace, stack;
+	  int premax_x, premax_y;
+  	unsigned int premax_w, premax_h;
+	} BlackboxAttributes;
 
 #ifdef GNOME
 	inline Atom *getGnomeListAtoms() { return gnome_atom_list; }
