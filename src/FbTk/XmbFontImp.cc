@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.10 2004/08/31 15:26:39 rathnor Exp $
+// $Id: XmbFontImp.cc,v 1.11 2004/09/03 17:05:35 rathnor Exp $
 
 #include "XmbFontImp.hh"
 
@@ -173,9 +173,9 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
     }
 
     getFontElement(fontname, weight, FONT_ELEMENT_SIZE,
-                   "-medium-", "-bold-", "-demibold-", "-regular-", 0);
+                   "-medium-", "-bold-", "-demibold-", "-regular-", NULL);
     getFontElement(fontname, slant, FONT_ELEMENT_SIZE,
-                   "-r-", "-i-", "-o-", "-ri-", "-ro-", 0);
+                   "-r-", "-i-", "-o-", "-ri-", "-ro-", NULL);
     getFontSize(fontname, &pixel_size);
 
     if (! strcmp(weight, "*")) 
