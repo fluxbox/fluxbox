@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/03/03:
+  * Fix update of keys on keymap change (Simon)
+    fluxbox.cc
   * Fix outline moving dropping on source workspace made window 
     disappear [we now explicitly don't unfocus a moving window] (Simon) 
     Window.cc fluxbox.cc

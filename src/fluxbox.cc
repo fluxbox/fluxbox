@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.233 2004/03/03 12:29:31 rathnor Exp $
+// $Id: fluxbox.cc,v 1.234 2004/03/03 12:53:06 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -875,6 +875,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // DEBUG        
 
         FbTk::KeyUtil::instance().init(); // reinitialise the key utils
+        // reconfigure keys (if the mapping changes, they don't otherwise update
+        m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
         break;
     case CreateNotify:
