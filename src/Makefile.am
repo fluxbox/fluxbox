@@ -40,10 +40,19 @@ bin_PROGRAMS= fluxbox
 if XFT
 xft_SOURCE= XftFontImp.hh XftFontImp.cc
 endif
+if NEWWMSPEC
+newwmspec_SOURCE= Ewmh.hh Ewmh.cc
+endif
+if GNOME
+gnome_SOURCE= Gnome.hh Gnome.cc
+endif
+if MULTIBYTE
+xmb_SOURCE= XmbFontImp.hh XmbFontImp.cc
+endif
 
 fluxbox_SOURCES = BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	Clientmenu.cc Clientmenu.hh Configmenu.cc Configmenu.hh \
-	Icon.cc Icon.hh Image.cc Image.hh  \
+	Iconmenu.cc Iconmenu.hh Image.cc Image.hh  \
 	Netizen.cc Netizen.hh Rootmenu.cc Rootmenu.hh Screen.cc Screen.hh\
 	Slit.cc Slit.hh Timer.cc Timer.hh Toolbar.cc Toolbar.hh \
 	Window.cc Window.hh Windowmenu.cc Windowmenu.hh \
@@ -53,8 +62,9 @@ fluxbox_SOURCES = BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	IconBar.cc IconBar.hh Theme.hh Theme.cc \
 	StringUtil.cc StringUtil.hh DrawUtil.cc DrawUtil.hh nl_types_cygnus.h \
 	XrmDatabaseHelper.hh NotCopyable.hh Resource.hh Resource.cc \
-	Font.hh Font.cc FontImp.hh XFontImp.hh XFontImp.cc XmbFontImp.hh XmbFontImp.cc \
+	Font.hh Font.cc FontImp.hh XFontImp.hh XFontImp.cc \
 	FbAtoms.hh FbAtoms.cc Color.hh Color.cc Texture.hh Texture.cc \
 	SignalHandler.hh SignalHandler.cc \
-	EventHandler.hh AtomHandler.hh Gnome.hh Gnome.cc Ewmh.hh Ewmh.cc \
-	Observer.hh Observer.cc Subject.hh Subject.cc ${xft_SOURCE}
+	EventHandler.hh AtomHandler.hh \
+	Observer.hh Observer.cc Subject.hh Subject.cc \
+	${xft_SOURCE} ${gnome_SOURCE} ${newwmspec_SOURCE} ${xmb_SOURCE}
