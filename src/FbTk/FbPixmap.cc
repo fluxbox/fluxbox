@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.7 2003/08/12 00:25:23 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.8 2003/09/10 21:37:05 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
+#include "GContext.hh"
 
 #include <X11/Xutil.h>
 #include <iostream>
@@ -115,20 +116,14 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
         
         if (drawable()) {
             Display *dpy = FbTk::App::instance()->display();
-            GC temp_gc = XCreateGC(dpy,
-                                   drawable(),
-                                   0, 0);
-            
+            GContext gc(drawable());
+                        
             copyArea(the_copy.drawable(),
-                     temp_gc,
+                     gc.gc(),
                      0, 0,
                      0, 0,
                      width(), height());
-            
-            XFreeGC(dpy, temp_gc);
-                               
         }
-         
     }
 }
 
@@ -178,17 +173,16 @@ void FbPixmap::rotate() {
     // reverse height/width for new pixmap
     FbPixmap new_pm(drawable(), height(), width(), depth());
 
-    GC gc = XCreateGC(dpy, drawable(), 0, 0);
+    GContext gc(drawable());
 
     // copy new area
     for (int y = 0; y < height(); ++y) {
         for (int x = 0; x < width(); ++x) {
-            XSetForeground(dpy, gc, XGetPixel(src_image, x, y));
+            gc.setForeground(XGetPixel(src_image, x, y));
             // revers coordinates
-            XDrawPoint(dpy, new_pm.drawable(), gc, y, x);
+            XDrawPoint(dpy, new_pm.drawable(), gc.gc(), y, x);
         }
     }
-    XFreeGC(dpy, gc);
 
     XDestroyImage(src_image);
     // free old pixmap and set new from new_pm
@@ -218,8 +212,7 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
     // create new pixmap with dest size
     FbPixmap new_pm(drawable(), dest_width, dest_height, depth());
 
-    GC gc = XCreateGC(dpy, drawable(), 0, 0);
-
+    GContext gc(drawable());
     // calc zoom
     float zoom_x = static_cast<float>(width())/static_cast<float>(dest_width);
     float zoom_y = static_cast<float>(height())/static_cast<float>(dest_height);
@@ -229,15 +222,12 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
     for (int tx=0; tx<dest_width; ++tx, src_x += zoom_x) {
         src_y = 0;
         for (int ty=0; ty<dest_height; ++ty, src_y += zoom_y) {	
-            XSetForeground(dpy, gc, XGetPixel(src_image,
-                                              static_cast<int>(src_x),
-                                              static_cast<int>(src_y)));
-            XDrawPoint(dpy, new_pm.drawable(), gc, tx, ty);
- 
+            gc.setForeground(XGetPixel(src_image,
+                                       static_cast<int>(src_x),
+                                       static_cast<int>(src_y)));
+            XDrawPoint(dpy, new_pm.drawable(), gc.gc(), tx, ty);
         }
     }
-
-    XFreeGC(dpy, gc);
 
     XDestroyImage(src_image);
 
@@ -248,6 +238,11 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
     m_height = new_pm.height();
     m_depth = new_pm.depth();
     m_pm = new_pm.release();
+}
+
+void FbPixmap::resize(unsigned int width, unsigned int height) {
+    FbPixmap pm(drawable(), width, height, depth());
+    *this = pm.release();
 }
 
 Pixmap FbPixmap::release() {
