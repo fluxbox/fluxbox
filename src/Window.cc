@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.24 2002/02/04 06:53:14 fluxgen Exp $
+// $Id: Window.cc,v 1.25 2002/02/07 14:41:52 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -196,7 +196,8 @@ tab(0)
 	getWMHints();
 	getWMNormalHints();
 
-	#ifdef		SLIT
+	#ifdef SLIT
+
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
 		throw NOERROR;
@@ -391,17 +392,15 @@ tab(0)
 	}
 
 	setFocusFlag(false);
-	/*
+
+	#ifdef GNOME
+	updateGnomeAtoms();
+	#endif
+
 	#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
 	#endif
-	*/
-	//TODO move this
-	#ifdef GNOME		
-	int val = workspace_number; 
-	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), 
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
-	#endif
+
 
 }
 
@@ -573,9 +572,10 @@ void FluxboxWindow::showError(FluxboxWindow::Error error) {
 #endif // DEBUG	
 }
 
-Window FluxboxWindow::createToplevelWindow(int x, int y, unsigned int width,
-							unsigned int height,
-							unsigned int borderwidth)
+Window FluxboxWindow::createToplevelWindow(
+	int x, int y, unsigned int width,
+	unsigned int height,
+	unsigned int borderwidth)
 {
 	XSetWindowAttributes attrib_create;
 	unsigned long create_mask = CWBackPixmap | CWBorderPixel | CWColormap |
@@ -861,6 +861,39 @@ void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventP
 	b.released = released;
 	buttonlist.push_back(b);
 }
+#ifdef GNOME
+void FluxboxWindow::updateGnomeAtoms() {
+	int val = workspace_number; 
+	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
+	long state = getGnomeWindowState();
+	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeStateAtom(),
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): 0x"<<hex<<screen->getBaseDisplay()->getGnomeStateAtom()<<dec<<endl;
+	#endif
+}
+
+long FluxboxWindow::getGnomeWindowState() {
+	long state=0;
+	if (isStuck())
+		state |= BaseDisplay::WIN_STATE_STICKY;
+	if (isIconic())
+		state |= BaseDisplay::WIN_STATE_MINIMIZED;
+	if (isShaded())
+		state |= BaseDisplay::WIN_STATE_SHADED;
+	/*TODO: states:
+		WIN_STATE_MAXIMIZED_VERT  = (1<<2), // window in maximized V state
+		WIN_STATE_MAXIMIZED_HORIZ = (1<<3), // window in maximized H state
+		WIN_STATE_HIDDEN          = (1<<4), // not on taskbar but window visible		
+		WIN_STATE_HID_WORKSPACE   = (1<<6), // not on current desktop
+		WIN_STATE_HID_TRANSIENT   = (1<<7), // owner of transient is hidden
+		WIN_STATE_FIXED_POSITION  = (1<<8), // window is fixed in position even
+		WIN_STATE_ARRANGE_IGNORE  = (1<<9) // ignore for auto arranging
+	*/
+	return state;
+}
+#endif //!GNOME
 
 Window FluxboxWindow::findTitleButton(int type) {
 	for (unsigned int i=0; i<buttonlist.size(); i++) {
@@ -1720,6 +1753,7 @@ void FluxboxWindow::setTab(bool flag) {
 //--------------------------------------
 void FluxboxWindow::iconify(void) {
 
+
 	if (iconic)
 		return;
 
@@ -1748,9 +1782,10 @@ void FluxboxWindow::iconify(void) {
 	if (tab) //if this window got a tab then iconify it too
 		tab->iconify();
 		
-	if (client.transient)
+	if (client.transient) {
 		if (! client.transient->iconic)
 			client.transient->iconify();
+	}
 }
 
 
