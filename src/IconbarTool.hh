@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.11 2003/12/12 14:36:22 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.12 2003/12/19 14:57:44 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -76,6 +76,8 @@ public:
     Mode mode() const { return *m_rc_mode; }
     Container::Alignment alignment() const { return m_icon_container.alignment(); }
 private:
+    /// @return button associated with window
+    IconButton *findButton(FluxboxWindow &win);
 
     /// render single button that holds win
     void renderWindow(FluxboxWindow &win);
@@ -97,6 +99,8 @@ private:
     void updateAllWindows();
     /// add a list of windows 
     void addList(std::list<FluxboxWindow *> &winlist);
+    /// so we can update current window without flicker
+    void timedRender();
 
     BScreen &m_screen;
     Container m_icon_container;
@@ -111,7 +115,7 @@ private:
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
-
+    FbTk::Timer m_focus_timer; ///< so we can update current window without flicker while changing attached clients
     FbMenu m_menu;
 };
 

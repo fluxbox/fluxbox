@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.23 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.24 2003/12/19 14:58:48 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -33,6 +33,7 @@
 #include "FbMenu.hh"
 #include "BoolMenuItem.hh"
 #include "CommandParser.hh"
+#include "WinClient.hh"
 
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
@@ -272,6 +273,14 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     screen.clientListSig().attach(this);
     screen.iconListSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
+    // setup focus timer
+    FbTk::RefCount<FbTk::Command> timer_cmd(new FbTk::SimpleCommand<IconbarTool>(*this, &IconbarTool::timedRender));
+    timeval to;
+    to.tv_sec = 0;
+    to.tv_usec = 1; // so it updates next event round
+    m_focus_timer.setCommand(timer_cmd);
+    m_focus_timer.setTimeout(to);
+    m_focus_timer.fireOnce(true);
 
     update(0);
 }
@@ -392,7 +401,10 @@ void IconbarTool::update(FbTk::Subject *subj) {
         // we handle everything except die signal here
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
         if (subj == &(winsubj->win().focusSig())) {
-            renderWindow(winsubj->win());
+            // start focus timer, so we can update without flicker
+            m_focus_timer.start();
+
+            //renderWindow(winsubj->win());
             return;
         } else if (subj == &(winsubj->win().workspaceSig())) {
             // we can ignore this signal if we're in ALLWINDOWS mode
@@ -441,9 +453,9 @@ void IconbarTool::update(FbTk::Subject *subj) {
             mode() != ALLWINDOWS && mode() != ICONS) {
             remove_all = true; // remove and readd all windows
         }/* else if (&m_screen.iconListSig() == screen_subj &&
-                   (mode() == ALLWINDOWS || mode() == ICONS || mode() == WORKSPACE)) {
+            (mode() == ALLWINDOWS || mode() == ICONS || mode() == WORKSPACE)) {
             remove_all = true;
-        }*/
+            }*/
     }
 
     // lock graphic update
@@ -477,19 +489,23 @@ void IconbarTool::update(FbTk::Subject *subj) {
     
 }
 
-void IconbarTool::renderWindow(FluxboxWindow &win) {
-    
+IconButton *IconbarTool::findButton(FluxboxWindow &win) {
+
     IconList::iterator icon_it = m_icon_list.begin();
     IconList::iterator icon_it_end = m_icon_list.end();
     for (; icon_it != icon_it_end; ++icon_it) {
         if (&(*icon_it)->win() == &win)
-            break;
+            return *icon_it;
     }
 
-    if (icon_it == m_icon_list.end())
-        return;
+    return 0;
+}
 
-    renderButton(*(*icon_it));
+void IconbarTool::renderWindow(FluxboxWindow &win) {
+    IconButton *button = findButton(win);
+    if (button == 0)
+        return;
+    renderButton(*button);
 }
 
 void IconbarTool::renderTheme() {
@@ -546,6 +562,7 @@ void IconbarTool::renderButton(IconButton &button) {
     button.setPixmap(*m_rc_use_pixmap);
 
     if (button.win().isFocused()) { // focused texture
+        m_icon_container.setSelected(m_icon_container.find(&button));
         button.setGC(m_theme.focusedText().textGC());     
         button.setFont(m_theme.focusedText().font());
         button.setJustify(m_theme.focusedText().justify());
@@ -559,6 +576,9 @@ void IconbarTool::renderButton(IconButton &button) {
         button.setBorderColor(m_theme.focusedBorder().color());
 
     } else { // unfocused
+        if (m_icon_container.selected() == &button)
+            m_icon_container.setSelected(-1);
+
         button.setGC(m_theme.unfocusedText().textGC());
         button.setFont(m_theme.unfocusedText().font());
         button.setJustify(m_theme.unfocusedText().justify());
@@ -696,4 +716,21 @@ void IconbarTool::addList(std::list<FluxboxWindow *> &winlist) {
         addWindow(**it);
 }
 
+void IconbarTool::timedRender() {
+    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    if (client == 0 || client->fbwindow() == 0)
+        return;
+
+    IconButton *button = findButton(*client->fbwindow());
+    IconButton *current_button = static_cast<IconButton *>(m_icon_container.selected());
+    // if old window is the same as the new focused window then ignore this render
+    // else render old client and new client
+    if (button == current_button)
+        return;
+    if (button != 0)
+        renderButton(*button);
+    if (current_button != 0)
+        renderButton(*current_button);
+
+}
 
