@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.302 2004/10/17 21:40:15 akir Exp $
+// $Id: Window.cc,v 1.303 2004/10/18 01:24:24 akir Exp $
 
 #include "Window.hh"
 
@@ -2585,7 +2585,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
               m_resize_corner = RIGHTBOTTOM;
           else if (me.window == frame().gripLeft())
               m_resize_corner = LEFTBOTTOM;
-          else if (screen().getResizeMode() != "quadrant")
+          else if (screen().getResizeModel() != BScreen::QUADRANTRESIZE)
               m_resize_corner = RIGHTBOTTOM;
           else if (me.x < cx)
               m_resize_corner = (me.y < cy) ? LEFTTOP : LEFTBOTTOM;

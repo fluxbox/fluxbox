@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.148 2004/10/16 22:18:56 akir Exp $
+// $Id: Screen.hh,v 1.149 2004/10/18 01:24:23 akir Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -77,7 +77,8 @@ class Subject;
  */
 class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
-    enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+    enum ResizeModel { BOTTOMRESIZE = 0, QUADRANTRESIZE, DEFAULTRESIZE = BOTTOMRESIZE };
+    enum FocusModel { SLOPPYFOCUS = 0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
     enum FollowModel { ///< a window becomes active / focussed on a different workspace
         IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
         FOLLOW_ACTIVE_WINDOW, ///< go to that workspace
@@ -128,7 +129,7 @@ public:
     FbTk::Menu &configMenu() { return *m_configmenu.get(); }
 
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
-    inline const std::string &getResizeMode()  const { return *resource.resizemode; }
+    inline ResizeModel getResizeModel() const { return *resource.resize_model; }
     inline FocusModel getFocusModel() const { return *resource.focus_model; }
     inline FollowModel getFollowModel() const { return *resource.follow_model; }
 
@@ -437,7 +438,7 @@ private:
             focus_last, focus_new,
             antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
-        FbTk::Resource<std::string> resizemode;
+        FbTk::Resource<ResizeModel> resize_model;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<FocusModel> focus_model;
         FbTk::Resource<FollowModel> follow_model;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.295 2004/10/16 22:18:56 akir Exp $
+// $Id: Screen.cc,v 1.296 2004/10/18 01:24:23 akir Exp $
 
 
 #include "Screen.hh"
@@ -172,7 +172,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     decorate_transient(rm, false, scrname+".decorateTransient", altscrname+".DecorateTransient"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
-    resizemode(rm, "", scrname+".resizeMode", altscrname+".ResizeMode"),
+    resize_model(rm, BOTTOMRESIZE, scrname+".resizeMode", altscrname+".ResizeMode"),
     windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
     focus_model(rm, CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     follow_model(rm, IGNORE_OTHER_WORKSPACES, scrname+".followModel", altscrname+".followModel"),
