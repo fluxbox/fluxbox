@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.221 2003/08/24 15:14:41 fluxgen Exp $
+// $Id: Window.cc,v 1.222 2003/08/25 17:07:32 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2695,12 +2695,12 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
 
-    unsigned int borderW = 0;
+    unsigned int border_width = 0;
     if (decorations.border) 
-        borderW = screen().rootTheme().borderWidth();
+        border_width = frame().theme().border().width();
 
-    if (initial || frame().window().borderWidth() != borderW)
-        frame().setBorderWidth(borderW);
+    if (initial || frame().window().borderWidth() != border_width)
+        frame().setBorderWidth(border_width);
 
     // we rely on frame not doing anything if it is already shown/hidden
     if (decorations.titlebar) 
