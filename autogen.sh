@@ -18,5 +18,5 @@ dothis autoheader
 dothis automake -a
 dothis autoconf
 
-echo 'Succes, now continue with ./configure'
+echo 'Success, now continue with ./configure'
 echo 'Use configure --help for detailed help.'
