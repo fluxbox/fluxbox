@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.4 2003/08/18 09:55:11 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.5 2003/08/18 11:37:14 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -60,10 +60,15 @@ namespace FbTk {
 
 // lookup table for texture
 unsigned long *ImageControl::sqrt_table = 0;
+#ifdef TIMEDCACHE
+bool ImageControl::s_timed_cache = true;
+#else
+bool ImageControl::s_timed_cache = false;
+#endif // TIMEDCACHE
 
 namespace { // anonymous
 
-unsigned long bsqrt(unsigned long x) {
+inline unsigned long bsqrt(unsigned long x) {
     if (x <= 0) return 0;
     if (x == 1) return 1;
 
@@ -78,7 +83,6 @@ unsigned long bsqrt(unsigned long x) {
 }
 
 }; // end anonymous namespace
-
 
 ImageControl::ImageControl(int screen_num, bool dither,
                              int cpc, unsigned long cache_timeout, unsigned long cmax):
@@ -96,14 +100,13 @@ ImageControl::ImageControl(int screen_num, bool dither,
     m_colormap = DefaultColormap(disp, screen_num);
 
     cache_max = cmax;
-#ifdef TIMEDCACHE
-    if (cache_timeout) {
+
+    if (cache_timeout && s_timed_cache) {
         m_timer.setTimeout(cache_timeout);
         RefCount<Command> clean_cache(new SimpleCommand<ImageControl>(*this, &ImageControl::cleanCache));
         m_timer.setCommand(clean_cache);
         m_timer.start();
     }
-#endif // TIMEDCACHE
 	
     createColorTable();
 }
@@ -134,9 +137,6 @@ ImageControl::~ImageControl() {
     }
 
     if (cache.size() > 0) {
-#ifdef DEBUG
-        cerr<<"FbTk::ImageContol: pixmap cache - releasing "<<cache.size()<<" pixmaps."<<endl;
-#endif // DEBUG
         CacheList::iterator it = cache.begin();
         CacheList::iterator it_end = cache.end();
         Display *disp = FbTk::App::instance()->display();
@@ -210,12 +210,8 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
 
         cache.push_back(tmp); 
 
-        if ((unsigned) cache.size() > cache_max) {
-#ifdef DEBUG
-            cerr<<"FbTk::ImageControl::renderImage(): cache is large, forcing cleanout"<<endl;
-#endif // DEBUG
+        if ((unsigned) cache.size() > cache_max)
             cleanCache();
-        }
 
         return pixmap;
     }
@@ -235,12 +231,11 @@ void ImageControl::removeImage(Pixmap pixmap) {
             if ((*it)->count) {
                 (*it)->count--;
 
-#ifdef TIMEDCACHE
-                cleanCache();
-#else // !TIMEDCACHE
-                if (! (*it)->count) 
+                if (s_timed_cache)
                     cleanCache();
-#endif // TIMEDCACHE
+                else if (! (*it)->count) 
+                    cleanCache();
+
             }
 
             return;
@@ -342,14 +337,14 @@ unsigned long ImageControl::getSqrt(unsigned int x) const {
     if (! sqrt_table) {
         // build sqrt table for use with elliptic gradient
 
-        sqrt_table = new unsigned long[(256 * 256 * 2) + 1];
+        sqrt_table = new unsigned long[256 * 256 * 2 + 1];
         int i = 0;
 
         for (; i < (256 * 256 * 2); i++)
-            *(sqrt_table + i) = bsqrt(i);
+            sqrt_table[i] = bsqrt(i);
     }
 
-    return (*(sqrt_table + x));
+    return sqrt_table[x];
 }
 
 void ImageControl::cleanCache() {
@@ -534,7 +529,7 @@ void ImageControl::createColorTable() {
 
         if (m_colors_per_channel < 2 || m_num_colors > static_cast<unsigned int>(1 << m_screen_depth)) {
             fprintf(stderr,"FbTk::ImageControl: invalid colormap size %d "
-                        "(%d/%d/%d) - reducing",
+                    "(%d/%d/%d) - reducing",
                     m_num_colors, m_colors_per_channel, m_colors_per_channel,
                     m_colors_per_channel);
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.3 2003/08/11 15:59:49 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.4 2003/08/18 11:37:15 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -119,6 +119,7 @@ private:
     typedef std::list<Cache *> CacheList;
 
     mutable CacheList cache;
+    static bool s_timed_cache;
 };
 
 }; // end namespace FbTk
