@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.1 2003/03/03 21:51:09 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.2 2003/03/10 21:38:47 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -250,9 +250,9 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
     switch (m_mode) {
     case OFF:
     case NONE:
+    case WORKSPACE:
     case ALLWINDOWS:
         break;
-    case WORKSPACE:
     case WORKSPACEICONS:
         if (win.getWorkspaceNumber() != m_current_workspace) break;
         // else fall through and do the same as icons (knowing it is the right ws)
