@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/03/16:
+  * added --with-init, --with-keys, --with-style, --with-menu
+    configure options (Thanks php-coder at ngs dot ru)
+    configure.in, src/Makefile.am
 *05/03/11:
   * Remove trailing whitespaces from any command (Mathias)
     CommandParser.cc
