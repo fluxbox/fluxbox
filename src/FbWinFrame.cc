@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.80 2004/10/10 16:12:48 akir Exp $
+// $Id: FbWinFrame.cc,v 1.81 2004/10/22 09:43:53 akir Exp $
 
 #include "FbWinFrame.hh"
 
@@ -941,6 +941,12 @@ void FbWinFrame::renderTitlebar() {
     m_titlebar.setAlpha(alpha);
     m_label.setAlpha(alpha);
 
+    LabelList::iterator btn_it = m_labelbuttons.begin();
+    LabelList::iterator btn_it_end = m_labelbuttons.end();        
+    for (; btn_it != btn_it_end; ++btn_it) {
+        (*btn_it)->setAlpha(alpha);
+    }
+
     renderLabelButtons();
     redrawTitlebar();
 }
@@ -1235,7 +1241,6 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
-    button.setAlpha(theme().focusedAlpha());
 
     if (m_label_focused_pm != 0) {
         // already set
@@ -1251,7 +1256,6 @@ void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
-    button.setAlpha(theme().focusedAlpha());
 
     if (m_label_active_pm != 0) {
         // already set
@@ -1267,7 +1271,6 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
     button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
-    button.setAlpha(theme().unfocusedAlpha());
 
     if (m_label_unfocused_pm != 0) {
         // already set
