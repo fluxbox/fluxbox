@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.35 2003/08/13 09:34:40 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.36 2003/08/13 16:36:37 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -271,7 +271,7 @@ void FbWinFrame::removeAllButtons() {
     }
 }
 
-void FbWinFrame::addLabelButton(FbTk::Button &btn) {
+void FbWinFrame::addLabelButton(TextButton &btn) {
     LabelList::iterator found_it = find(m_labelbuttons.begin(),
                                         m_labelbuttons.end(),
                                         &btn);
@@ -282,7 +282,7 @@ void FbWinFrame::addLabelButton(FbTk::Button &btn) {
     m_labelbuttons.push_back(&btn);
 }
 
-void FbWinFrame::removeLabelButton(FbTk::Button &btn) {
+void FbWinFrame::removeLabelButton(TextButton &btn) {
     LabelList::iterator erase_it = remove(m_labelbuttons.begin(),
                                           m_labelbuttons.end(),
                                           &btn);
@@ -293,7 +293,7 @@ void FbWinFrame::removeLabelButton(FbTk::Button &btn) {
 }
 
 
-void FbWinFrame::moveLabelButtonLeft(const FbTk::Button &btn) {
+void FbWinFrame::moveLabelButtonLeft(const TextButton &btn) {
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                    m_labelbuttons.end(),
                                    &btn);
@@ -303,7 +303,7 @@ void FbWinFrame::moveLabelButtonLeft(const FbTk::Button &btn) {
 
     LabelList::iterator new_pos = it;
     new_pos--;
-    FbTk::Button *item = *it;
+    TextButton *item = *it;
     // remove from list
     m_labelbuttons.erase(it); 
     // insert on the new place
@@ -312,7 +312,7 @@ void FbWinFrame::moveLabelButtonLeft(const FbTk::Button &btn) {
     redrawTitle();
 }
 
-void FbWinFrame::moveLabelButtonRight(const FbTk::Button &btn) {
+void FbWinFrame::moveLabelButtonRight(const TextButton &btn) {
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                   m_labelbuttons.end(),
                                   &btn);
@@ -320,7 +320,7 @@ void FbWinFrame::moveLabelButtonRight(const FbTk::Button &btn) {
     if (it == m_labelbuttons.end() || *it == m_labelbuttons.back())
         return;
 
-    FbTk::Button *item = *it;
+    TextButton *item = *it;
     // remove from list
     LabelList::iterator new_pos = m_labelbuttons.erase(it); 
     new_pos++;
@@ -330,15 +330,23 @@ void FbWinFrame::moveLabelButtonRight(const FbTk::Button &btn) {
     redrawTitle();
 }
 
-void FbWinFrame::setLabelButtonFocus(FbTk::Button &btn) {
+void FbWinFrame::setLabelButtonFocus(TextButton &btn) {
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                   m_labelbuttons.end(),
                                   &btn);
     if (it == m_labelbuttons.end())
         return;
 
+
+    // render label buttons
+    
+
+    if (m_current_label != 0)
+        renderButtonUnfocus(*m_current_label);
+
     m_current_label = *it; // current focused button
-    renderLabelButtons();
+
+    renderButtonFocus(*m_current_label);
 }
 
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
@@ -986,16 +994,11 @@ void FbWinFrame::renderLabelButtons() {
     LabelList::iterator btn_it = m_labelbuttons.begin();
     LabelList::iterator btn_it_end = m_labelbuttons.end();        
     for (; btn_it != btn_it_end; ++btn_it) {
-
-        (*btn_it)->setGC(theme().labelTextFocusGC());
-        (*btn_it)->setBorderWidth(1);
-        (*btn_it)->setAlpha(theme().alpha());
-
-        if (m_label_unfocused_pm != 0)
-            (*btn_it)->setBackgroundPixmap(m_label_unfocused_pm);
+        if (*btn_it == m_current_label)
+            renderButtonFocus(**btn_it);
         else
-            (*btn_it)->setBackgroundColor(m_label_unfocused_color);
-            
+            renderButtonUnfocus(**btn_it);
+
     }
 
     if (m_current_label != 0) {
@@ -1028,3 +1031,31 @@ void FbWinFrame::setBorderWidth(unsigned int borderW) {
         resize(width(), height() + bw_changes);
 }
 
+void FbWinFrame::renderButtonFocus(TextButton &button) {
+
+    button.setGC(theme().labelTextFocusGC());
+    button.setJustify(theme().justify());
+    button.setBorderWidth(1);
+    button.setAlpha(theme().alpha());
+
+    if (m_label_focused_pm != 0)
+        button.setBackgroundPixmap(m_label_focused_pm);
+    else
+        button.setBackgroundColor(m_label_focused_color);
+
+    button.clear();
+}
+
+void FbWinFrame::renderButtonUnfocus(TextButton &button) {
+   button.setGC(theme().labelTextUnfocusGC());
+    button.setJustify(theme().justify());
+    button.setBorderWidth(1);
+    button.setAlpha(theme().alpha());
+
+    if (m_label_unfocused_pm != 0)
+        button.setBackgroundPixmap(m_label_unfocused_pm);
+    else
+        button.setBackgroundColor(m_label_unfocused_color);
+
+    button.clear(); 
+}

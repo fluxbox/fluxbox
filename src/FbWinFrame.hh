@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.11 2003/07/28 12:11:57 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.12 2003/08/13 16:36:37 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -38,6 +38,8 @@
 
 class Shape;
 class FbWinFrameTheme;
+class TextButton;
+
 namespace FbTk {
 class ImageControl;
 class Command;
@@ -91,15 +93,15 @@ public:
     /// remove all buttons from titlebar
     void removeAllButtons();
     /// adds a button to label window
-    void addLabelButton(FbTk::Button &btn);
+    void addLabelButton(TextButton &btn);
     /// removes a specific button from label window
-    void removeLabelButton(FbTk::Button &btn);
+    void removeLabelButton(TextButton &btn);
     /// move label button to the left
-    void moveLabelButtonLeft(const FbTk::Button &btn);
+    void moveLabelButtonLeft(const TextButton &btn);
     /// move label button to the right
-    void moveLabelButtonRight(const FbTk::Button &btn);
+    void moveLabelButtonRight(const TextButton &btn);
     /// which button is to be rendered focused
-    void setLabelButtonFocus(FbTk::Button &btn);
+    void setLabelButtonFocus(TextButton &btn);
     /// attach a client window for client area
     void setClientWindow(Window win);
     /// same as above but with FbWindow
@@ -180,6 +182,8 @@ private:
     void renderTitlebar();
     void renderHandles();
     void renderButtons();
+    void renderButtonFocus(TextButton &button);
+    void renderButtonUnfocus(TextButton &button);
     void renderLabel();
     /// renders to pixmap or sets color
     void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
@@ -213,9 +217,9 @@ private:
     typedef std::vector<FbTk::Button *> ButtonList;
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right
-    typedef std::list<FbTk::Button *> LabelList;
+    typedef std::list<TextButton *> LabelList;
     LabelList m_labelbuttons; ///< holds label buttons inside label window
-    FbTk::Button *m_current_label; ///< which client button is focused at the moment
+    TextButton *m_current_label; ///< which client button is focused at the moment
     std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
