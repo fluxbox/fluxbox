@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.264 2004/01/21 14:14:18 fluxgen Exp $
+// $Id: Screen.cc,v 1.265 2004/02/03 12:55:35 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -163,7 +163,7 @@ template <>
 void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
     if (strcasecmp("RowSmartPlacement", str) == 0)
         *(*this) = BScreen::ROWSMARTPLACEMENT;
-    else if (strcasecmp("", str) == 0)
+    else if (strcasecmp("ColSmartPlacement", str) == 0)
         *(*this) = BScreen::COLSMARTPLACEMENT;
     else if (strcasecmp("UnderMousePlacement", str) == 0)
         *(*this) = BScreen::UNDERMOUSEPLACEMENT;
