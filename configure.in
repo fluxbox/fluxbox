@@ -1,7 +1,7 @@
 dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
-AM_INIT_AUTOMAKE(fluxbox,0.1.8,no-define)
+AM_INIT_AUTOMAKE(fluxbox,cvs,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -84,7 +84,7 @@ else
   AC_MSG_RESULT([no])
 fi
 AC_SUBST(SHAPE)
-
+CXXFLAGS="$CXXFLAGS $SHAPE"
 LIBS="$LIBS $Xext_lib"
 
 dnl Check for the Slit
@@ -102,6 +102,7 @@ AC_ARG_ENABLE(
   SLIT="-DSLIT"
 )
 AC_SUBST(SLIT)
+CXXFLAGS="$CXXFLAGS $SLIT"
 
 dnl Check for the new WM Spec
 NEWWMSPEC=""
@@ -119,7 +120,7 @@ AC_ARG_ENABLE(
   AC_MSG_RESULT([no])
 )
 AC_SUBST(NEWWMSPEC)
-
+CXXFLAGS="$CXXFLAGS $NEWWMSPEC"
 
 dnl Check for Interlacing
 INTERLACE=""
@@ -136,6 +137,7 @@ AC_ARG_ENABLE(
   INTERLACE="-DINTERLACE"
 )
 AC_SUBST(INTERLACE)
+CXXFLAGS="$CXXFLAGS $INTERLACE"
 
 dnl Check for ordered 8bpp dithering
 ORDEREDPSEUDO=""
@@ -152,6 +154,7 @@ AC_ARG_ENABLE(ordered-pseudo,
   AC_MSG_RESULT([no])
 )
 AC_SUBST(ORDEREDPSEUDO)
+CXXFLAGS="$CXXFLAGS $ORDEREDPSEUDO"
 
 dnl Check whether to include debugging code
 DEBUG=""
@@ -167,6 +170,7 @@ AC_ARG_ENABLE(debug,
   AC_MSG_RESULT([no])
 )
 AC_SUBST(DEBUG)
+CXXFLAGS="$CXXFLAGS $DEBUG"
 
 dnl Check whether to include natural language support (i18n)
 NLS=""
@@ -208,6 +212,7 @@ AC_ARG_ENABLE(
   TIMEDCACHE="-DTIMEDCACHE"
 )
 AC_SUBST(TIMEDCACHE)
+CXXFLAGS="$CXXFLAGS $TIMEDCACHE"
 
 dnl Check KDE
 KDE=""
@@ -224,6 +229,7 @@ AC_ARG_ENABLE(
   AC_MSG_RESULT([no])
 )
 AC_SUBST(KDE)
+CXXFLAGS="$CXXFLAGS $KDE"
 
 dnl Check GNOME
 GNOME=""
@@ -240,6 +246,7 @@ AC_ARG_ENABLE(
   AC_MSG_RESULT([no])
 )
 AC_SUBST(GNOME)
+CXXFLAGS="$CXXFLAGS $GNOME"
 
 dnl Check for Xinerama support
 XINERAMA=""
@@ -255,6 +262,7 @@ else
 	AC_MSG_RESULT([no])
 fi
 AC_SUBST(XINERAMA)
+CXXFLAGS="$CXXFLAGS $XINERAMA"
 
 LIBS="$LIBS $Xinerama_libs"
 
