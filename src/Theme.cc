@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.25 2002/08/04 15:41:26 fluxgen Exp $
+// $Id: Theme.cc,v 1.26 2002/08/24 19:06:06 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -382,27 +382,46 @@ void Theme::loadMenuStyle() {
 
 void Theme::loadWindowStyle() {
 	
+	//read textures
+	
 	readDatabaseTexture("window.title.focus", "Window.Title.Focus",
 		&m_windowstyle.t_focus,
 		WhitePixel(m_display, m_screennum));
+	if ( (m_windowstyle.t_focus.type() & FbTk::Texture::PARENTRELATIVE) ) {
+		cerr<<"Warning: window.title.focus type is ParentRelative. Using flat solid!"<<endl;
+		m_windowstyle.t_focus.setType(FbTk::Texture::FLAT|FbTk::Texture::SOLID);
+	}
 	readDatabaseTexture("window.title.unfocus", "Window.Title.Unfocus",
 		&m_windowstyle.t_unfocus,
 		BlackPixel(m_display, m_screennum));
+	if ( (m_windowstyle.t_unfocus.type() & FbTk::Texture::PARENTRELATIVE) ) {
+		cerr<<"Warning: window.title.unfocus type is ParentRelative. Using flat solid!"<<endl;
+		m_windowstyle.t_unfocus.setType(FbTk::Texture::FLAT|FbTk::Texture::SOLID);
+	}
+	
 	readDatabaseTexture("window.label.focus", "Window.Label.Focus",
 		&m_windowstyle.l_focus,
 		WhitePixel(m_display, m_screennum));
-		
 	readDatabaseTexture("window.label.unfocus", "Window.Label.Unfocus",
 		&m_windowstyle.l_unfocus,
-		BlackPixel(m_display, m_screennum));
-
+		BlackPixel(m_display, m_screennum));	
+	
 	
 	readDatabaseTexture("window.handle.focus", "Window.Handle.Focus",
 		&m_windowstyle.h_focus,
 		WhitePixel(m_display, m_screennum));
+	if ( (m_windowstyle.h_focus.type() & FbTk::Texture::PARENTRELATIVE) ) {
+		cerr<<"Warning: window.handle.focus is ParentReleative. Using flat solid instead."<<endl;
+		m_windowstyle.h_focus.setType(FbTk::Texture::FLAT|FbTk::Texture::SOLID);
+	}
 	readDatabaseTexture("window.handle.unfocus", "Window.Handle.Unfocus",
 		&m_windowstyle.h_unfocus,
 		BlackPixel(m_display, m_screennum));
+	if ( (m_windowstyle.h_unfocus.type() & FbTk::Texture::PARENTRELATIVE) ) {
+		cerr<<"Warning: window.handle.unfocus is ParentReleative. Using flat solid instead."<<endl;
+		m_windowstyle.h_unfocus.setType(FbTk::Texture::FLAT|FbTk::Texture::SOLID);
+	}
+
 	readDatabaseTexture("window.grip.focus", "Window.Grip.Focus",
 		&m_windowstyle.g_focus,
 		WhitePixel(m_display, m_screennum));
@@ -418,6 +437,9 @@ void Theme::loadWindowStyle() {
 	readDatabaseTexture("window.button.pressed", "Window.Button.Pressed",
 		&m_windowstyle.b_pressed,
 		BlackPixel(m_display, m_screennum));
+	
+	// read colors
+	
 	readDatabaseColor("window.frame.focusColor",
 		"Window.Frame.FocusColor",
 		&m_windowstyle.f_focus,
