@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.16 2002/12/02 21:52:30 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.17 2002/12/03 16:54:13 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -32,6 +32,7 @@
 #include "IconBar.hh"
 #include "ToolbarTheme.hh"
 #include "EventHandler.hh"
+#include "FbWindow.hh"
 
 #include <memory>
 
@@ -97,8 +98,14 @@ public:
     /**
        Toolbar placement on the screen
     */
-    enum Placement{ TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
-                    BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT };
+    enum Placement{ 
+        // top bottom placement
+        TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
+        BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT,
+        // left right placement
+        LEFTCENTER, LEFTBOTTOM, LEFTTOP,
+        RIGHTCENTER, RIGHTBOTTOM, RIGHTTOP        
+    };
 
     explicit Toolbar(BScreen *screen, size_t width = 200);
     virtual ~Toolbar();
@@ -118,7 +125,7 @@ public:
     /// do we auto hide the toolbar?
     inline bool doAutoHide() const { return do_auto_hide; }
     ///	@return X window of the toolbar
-    inline Window getWindowID() const { return frame.window; }
+    inline Window getWindowID() const { return frame.window.window(); }
     inline BScreen *screen() { return m_screen; }
     inline const BScreen *screen() const { return m_screen; }
     inline unsigned int width() const { return frame.width; }
@@ -130,6 +137,7 @@ public:
     inline const IconBar *iconBar()  const { return m_iconbar.get(); }
     inline const ToolbarTheme &theme() const { return m_theme; }
     inline ToolbarTheme &theme() { return m_theme; }
+    inline bool isVertical() const;
     /**
        @name eventhandlers
     */
@@ -158,16 +166,19 @@ public:
 
 		
 private:
+    void drawButtonBase(FbTk::FbWindow &win, bool pressed);
+
     bool on_top;       ///< always on top
     bool editing;      ///< edit workspace label mode
     bool hidden;       ///< hidden state
     bool do_auto_hide; ///< do we auto hide	
     Display *display;  ///< display connection
 
-    struct frame {
-        unsigned long button_pixel, pbutton_pixel;
+    struct Frame {
+        Frame(FbTk::EventHandler &evh, int screen_num);
+        ~Frame();
         Pixmap base, label, wlabel, clk, button, pbutton;
-        Window window, workspace_label, window_label, clock, psbutton, nsbutton,
+        FbTk::FbWindow window, workspace_label, window_label, clock, psbutton, nsbutton,
             pwbutton, nwbutton;
 
         int x, y, x_hidden, y_hidden, hour, minute, grab_x, grab_y;
