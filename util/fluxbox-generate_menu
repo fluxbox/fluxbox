@@ -42,6 +42,7 @@ Options:
     -a	Display the authors of this script
 
   only for packagers:
+
     -p	Package-datadir; default is /usr/local/share
 
 EOF
@@ -131,6 +132,12 @@ if [ -z ${FILENAME} ]; then
     FILENAME=${HOME}/.fluxbox/menu
 fi
 
+# Can we actually create ${FILENAME}
+if ! touch ${FILENAME}; then
+    echo "Fatal error: can't create $FILENAME" >/dev/stderr
+    exit 1
+fi
+
 if [ ! -z ${FILENAME} ]; then
     if [ -w ${FILENAME} ]; then
 	cp -f ${FILENAME} ${FILENAME}.bak
@@ -166,7 +173,7 @@ fi
 
 # a unix system without any terms. that's odd
 if [ -z "$DEFAULT_TERM" ];then
-    cat <<EOF
+    cat <<EOF>/dev/stderr
 Error: I can't find any terminal-emulators in your path.
 Please specify your favourite terminal with the -t option.
 EOF
