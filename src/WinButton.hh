@@ -19,25 +19,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.hh,v 1.2 2003/03/22 11:38:24 fluxgen Exp $
+/// $Id: WinButton.hh,v 1.3 2003/04/25 17:29:58 fluxgen Exp $
 
 #include "Button.hh"
+#include "Observer.hh"
+
+class FluxboxWindow;
 
 /// draws and handles basic window button graphic
-/**
-   window button 
- */
-class WinButton:public FbTk::Button {
+class WinButton:public FbTk::Button, public FbTk::Observer {
 public:
     /// draw type for the button
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE};
-    WinButton(Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
+    WinButton(const FluxboxWindow &listen_to, 
+              Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
               unsigned int width, unsigned int height);
     /// override for drawing
     void exposeEvent(XExposeEvent &event);
+    void buttonReleaseEvent(XButtonEvent &event);
     /// override for redrawing
     void clear();
+    void update(FbTk::Subject *subj);
 private:
     void drawType();
     Type m_type; ///< the button type
+    const FluxboxWindow &m_listen_to;
 };
