@@ -82,9 +82,8 @@ const char * strcasestr(const char *str, const char *ptn) {
 
 #endif
 
-Theme::Theme(Display *display, Colormap colormap, int screennum, BImageControl *ic, const char *filename) {
+Theme::Theme(Display *display, Window rootwindow, Colormap colormap, int screennum, BImageControl *ic, const char *filename) {
 
-	Window rootwindow = DefaultRootWindow(display);
 	m_screennum = screennum;
 	m_display = display;
 	m_imagecontrol = ic;

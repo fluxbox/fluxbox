@@ -62,7 +62,7 @@ class Theme
 {
 public:	
 		
-	Theme(Display *display, Colormap colormap, int screennum, BImageControl *ic, const char *filename);
+	Theme(Display *display, Window rootwindow, Colormap colormap, int screennum, BImageControl *ic, const char *filename);
 	~Theme();	
 	
 	
