@@ -223,6 +223,16 @@ find_app()
     esac
 }
 
+search_xsri()
+{
+	### xsri
+	full="xsri --scale-width=100 --scale-width=100"
+	tile="xsri --tile"
+	center="xsri --center-x --center-y"
+	default=$center
+	find_app xsri
+}
+
 search_display()
 {
     ### display
@@ -604,7 +614,7 @@ debug()
     echo
 }
 
-IMAGE_APPS="display Esetroot wmsetbg xv xli qiv"
+IMAGE_APPS="display Esetroot wmsetbg xv xli qiv xsri"
 CONFIG="$HOME/.fluxbox/bsetbg"
 NAME=bsetbg
 VERSION=1.12
