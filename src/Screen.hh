@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.42 2002/08/11 22:11:42 fluxgen Exp $
+// $Id: Screen.hh,v 1.43 2002/08/30 14:03:31 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -126,11 +126,14 @@ public:
 	inline unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
 
     typedef std::vector<FluxboxWindow *> Icons;
+
+	/// @return number of workspaces
 	inline unsigned int getCount() const { return workspacesList.size(); }
+	/// @return number of icons
 	inline unsigned int getIconCount() const { return iconList.size(); }
 	inline const Icons &getIconList() const { return iconList; }
 	inline Icons &getIconList() { return iconList; }
-
+	/// @return the resource value of number of workspace
 	inline int getNumberOfWorkspaces() const { return *resource.workspaces; }
 	inline Toolbar::Placement getToolbarPlacement() const { return *resource.toolbar_placement; }
 #ifdef XINERAMA
@@ -219,6 +222,7 @@ public:
 	void changeWorkspaceID(unsigned int);
 	void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
 	void raiseWindows(Window *workspace_stack, int num);
+	void reassociateGroup(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void prevFocus(int = 0);
 	void nextFocus(int = 0);

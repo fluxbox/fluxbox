@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.64 2002/08/24 18:12:54 fluxgen Exp $
+// $Id: Screen.cc,v 1.65 2002/08/30 14:03:31 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -794,16 +794,20 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 	
 	if (id != current_workspace->workspaceID()) {
 		XSync(fluxbox->getXDisplay(), true);
-		
+		FluxboxWindow *focused = fluxbox->getFocusedWindow();
+
+		if (focused && focused->isMoving()) {
+			reassociateGroup(focused, id, true);
+			focused->pauseMoving();
+		}
+
 		current_workspace->hideAll();
 
 		workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
 
-		if (fluxbox->getFocusedWindow() &&
-				fluxbox->getFocusedWindow()->getScreen() == this &&
-				(! fluxbox->getFocusedWindow()->isStuck())) {
-				
-			current_workspace->setLastFocusedWindow(fluxbox->getFocusedWindow());
+		if (focused && focused->getScreen() == this &&
+				(! focused->isStuck()) && (!focused->isMoving())) {
+			current_workspace->setLastFocusedWindow(focused);
 			fluxbox->setFocusedWindow((FluxboxWindow *) 0);
 			
 		}
@@ -815,9 +819,14 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
 		current_workspace->showAll();
 
-		if (*resource.focus_last && current_workspace->getLastFocusedWindow())
+		if (*resource.focus_last && current_workspace->getLastFocusedWindow() &&
+				!(focused && focused->isMoving())) {
 			current_workspace->getLastFocusedWindow()->setInputFocus();		
-			
+		}
+
+		if (focused && focused->isMoving()) {
+			focused->resumeMoving();
+		}
 	}
 
 	updateNetizenCurrentWorkspace();
@@ -1089,6 +1098,18 @@ string BScreen::getNameOfWorkspace(unsigned int workspace) const {
 		return "";
 	}
 
+}
+
+void BScreen::reassociateGroup(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
+	if (w->hasTab() && (w->getTab()->next() || w->getTab()->prev())) {
+		Tab *tab_it = w->getTab()->first();
+		for (; tab_it; tab_it = tab_it->next()) {
+			reassociateWindow(tab_it->getWindow(), wkspc_id, ignore_sticky);
+		}
+	} else {
+		// no tab, juts move this one
+		reassociateWindow(w, wkspc_id, ignore_sticky);
+	}
 }
 
 
