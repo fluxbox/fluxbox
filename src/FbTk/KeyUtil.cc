@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.5 2003/12/30 18:11:44 fluxgen Exp $
+// $Id: KeyUtil.cc,v 1.6 2003/12/31 11:57:47 fluxgen Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
@@ -102,9 +102,9 @@ void KeyUtil::loadModmap() {
 */
 void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
     Display *display = App::instance()->display();
-    const unsigned int capsmod = instance().m_capslock;
-    const unsigned int nummod = instance().m_numlock;
-    const unsigned int scrollmod = instance().m_scrolllock;
+    const unsigned int capsmod = instance().capslock();
+    const unsigned int nummod = instance().numlock();
+    const unsigned int scrollmod = instance().scrolllock();
     
     for (int screen=0; screen<ScreenCount(display); screen++) {
 		

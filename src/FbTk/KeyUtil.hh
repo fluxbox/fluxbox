@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.6 2003/12/31 00:39:26 fluxgen Exp $
+// $Id: KeyUtil.hh,v 1.7 2003/12/31 11:57:47 fluxgen Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
@@ -67,7 +67,7 @@ public:
     */
     unsigned int cleanMods(unsigned int mods) {
         //remove numlock, capslock and scrolllock
-         return mods & ~(m_capslock | m_numlock | m_scrolllock);
+         return mods & ~(capslock() | numlock() | scrolllock());
     }
 
     /**
@@ -75,9 +75,9 @@ public:
        @return corresponding modifier mask
     */
     static unsigned int keycodeToModmask(unsigned int keycode);
-    int numlock() const { return m_numlock; }
-    int capslock() const { return m_capslock; }
-    int scrolllock() const { return m_scrolllock; }
+    int numlock() const { return Mod2Mask; } //m_numlock; }
+    int capslock() const { return LockMask; } //m_capslock; }
+    int scrolllock() const { return Mod5Mask; } //m_scrolllock; }
 private:
     void loadModmap();
 
