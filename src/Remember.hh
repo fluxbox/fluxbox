@@ -1,6 +1,7 @@
 // Remember.hh for Fluxbox Window Manager
 // Copyright (c) 2002 Xavier Brouckaert
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.4 2003/04/26 13:47:53 rathnor Exp $
+// $Id: Remember.hh,v 1.5 2003/05/10 22:47:15 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -171,7 +172,7 @@ public:
 private:
 
     // returns number of lines read
-    int parseApp(std::ifstream &file, Application *a);
+    int parseApp(std::ifstream &file, Application &app);
     Apps apps;
 
 };

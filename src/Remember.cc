@@ -1,6 +1,7 @@
 // Remember.cc for Fluxbox Window Manager
 // Copyright (c) 2002 Xavier Brouckaert
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.11 2003/05/08 10:55:33 fluxgen Exp $
+// $Id: Remember.cc,v 1.12 2003/05/10 22:47:55 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -192,13 +193,13 @@ Application* Remember::find(const char* app_name) {
     if (!app_name)
         return 0;
     Apps::iterator i = apps.find(app_name);
-    if (i!=apps.end())
+    if (i != apps.end())
         return i->second;
     else
         return 0;
 }
 
-int Remember::parseApp(ifstream &file, Application *a) {
+int Remember::parseApp(ifstream &file, Application &app) {
     string line;
     int row = 0;
     while (! file.eof()) {
@@ -220,45 +221,46 @@ int Remember::parseApp(ifstream &file, Application *a) {
                     }
                 } else
                     continue; //read next line
+
                 if (!str_key.size())
                     continue; //read next line
                 if (str_key == "Workspace") {
                     unsigned int w;
                     istringstream iss(str_label.c_str());
                     iss >> w;
-                    a->rememberWorkspace(w);
+                    app.rememberWorkspace(w);
                 } else if (str_key == "Layer") {
                     unsigned int l;
                     istringstream iss(str_label.c_str());
                     iss >> l;
-                    a->rememberLayer(l);
+                    app.rememberLayer(l);
                 } else if (str_key == "Dimensions") {
                     unsigned int h,w;
                     istringstream iss(str_label.c_str());
                     iss >> w >> h;
-                    a->rememberDimensions(w,h);
+                    app.rememberDimensions(w,h);
                 } else if (str_key == "Position") {
                     unsigned int x,y;
                     istringstream iss(str_label);
                     iss >> x >> y;
-                    a->rememberPosition(x,y);
+                    app.rememberPosition(x,y);
                 } else if (str_key == "Shaded") {
-                    a->rememberShadedstate((str_label=="yes"));
+                    app.rememberShadedstate((str_label=="yes"));
                 } else if (str_key == "Tab") {
-                    a->rememberTabstate((str_label=="yes"));
+                    app.rememberTabstate((str_label=="yes"));
                 } else if (str_key == "Deco") {
                     if (str_label == "NONE") {
-                        a->rememberDecostate((unsigned int) 0);
+                        app.rememberDecostate((unsigned int) 0);
                     } else if (str_label == "NORMAL") {
-                        a->rememberDecostate((unsigned int) 0xfffffff);
+                        app.rememberDecostate((unsigned int) 0xfffffff);
                     } else if (str_label == "TINY") {
-                        a->rememberDecostate((unsigned int)
+                        app.rememberDecostate((unsigned int)
                                              FluxboxWindow::DECORM_TITLEBAR 
                                              | FluxboxWindow::DECORM_ICONIFY
                                              | FluxboxWindow::DECORM_MENU
                                              );
                     } else if (str_label == "TOOL") {
-                        a->rememberDecostate((unsigned int)
+                        app.rememberDecostate((unsigned int)
                                              FluxboxWindow::DECORM_TITLEBAR
                                              | FluxboxWindow::DECORM_MENU
                                              );
@@ -273,14 +275,14 @@ int Remember::parseApp(ifstream &file, Application *a) {
                             iss >> hex;
                         }
                         iss >> mask ;
-                        a->rememberDecostate(mask);
+                        app.rememberDecostate(mask);
                     }
                 } else if (str_key == "Sticky") {
-                    a->rememberStuckstate((str_label=="yes"));
+                    app.rememberStuckstate((str_label=="yes"));
                 } else if (str_key == "Jump") {
-                    a->rememberJumpworkspace((str_label=="yes"));
+                    app.rememberJumpworkspace((str_label=="yes"));
                 } else if (str_key == "Close") {
-                    a->rememberSaveOnClose((str_label=="yes"));
+                    app.rememberSaveOnClose((str_label=="yes"));
                 } else if (str_key == "end") {
                     return row;
                 } else {
@@ -314,21 +316,21 @@ void Remember::load() {
                                                              line.c_str(), 
                                                              '[', ']');
 
-                if (err >0 && key == "app") {
+                if (err > 0 && key == "app") {
                     pos += err;
                     string label;
                     err = FbTk::StringUtil::getStringBetween(label, 
                                                              line.c_str()+pos,
                                                              '(', ')');
                     if (err>0) {
-                        Application *a;
+                        Application *app = 0;
                         Apps::iterator i = apps.find(label);
-                        if (i==apps.end()) {
-                            a = new Application();
-                            apps[label] = a;
+                        if (i == apps.end()) {
+                            app = new Application();
+                            apps[label] = app;
                         } else
-                            a = i->second;
-                        row += parseApp(apps_file, a);
+                            app = i->second;
+                        row += parseApp(apps_file, *app);
                     } else
                         cerr<<"Error1 in apps file. Line("<<row<<")"<<endl;
                 } else
@@ -546,7 +548,9 @@ void Remember::setupWindow(FluxboxWindow &win) {
     // we don't touch the window if it is a transient
     // of something else
     int menupos = win.getWindowmenu().numberOfItems()-2;
-    if (menupos < -1) menupos = -1;
+    if (menupos < -1)
+        menupos = -1;
+
     if (winclient.transientFor()) {
         // still put something in the menu so people don't get confused
         // so, we add a disabled item...
@@ -563,10 +567,11 @@ void Remember::setupWindow(FluxboxWindow &win) {
     win.getWindowmenu().insert("Remember...", 
                                createRememberMenu(*this, win), 
                                menupos);
-    win.getWindowmenu().update();
+    win.getWindowmenu().reconfigure();
 
     Application *app = find(winclient);
-    if (!app) return; // nothing to do
+    if (app == 0) 
+        return; // nothing to do
 
     BScreen &screen = win.getScreen();
 
