@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.13 2003/06/25 12:01:23 fluxgen Exp $
+// $Id: FbRun.cc,v 1.14 2003/07/10 10:18:08 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -86,12 +86,35 @@ void FbRun::run(const std::string &command) {
     
     // save command history to file
     if (m_runtext.size() != 0) { // no need to save empty command
-        // open file in append mode
-        ofstream outfile(m_history_file.c_str(), ios::app);
-        if (outfile)
-            outfile<<m_runtext<<endl;
-        else 
-            cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+
+	// don't allow duplicates into the history file, first
+        // look for a duplicate
+	if (m_current_history_item < m_history.size()
+	    && m_runtext == m_history[m_current_history_item]) {
+	    // m_current_history_item is the duplicate
+	} else {
+	    int i;
+	    for (i = 0; i < m_history.size(); i++)
+		if (m_runtext == m_history[i]) break;
+	    m_current_history_item = i;
+	}
+
+	// now m_current_history_item points at the duplicate, or
+	// at m_history.size() if no duplicate
+	fstream inoutfile(m_history_file.c_str(), ios::in|ios::out);
+	if (inoutfile) {
+	    int i = 0;
+	    // read past history items before current
+	    for (string line; !inoutfile.eof() && i < m_current_history_item; i++)
+		getline(inoutfile, line);
+	    // write the history items that come after current
+	    for (i++; i < m_history.size(); i++)
+		inoutfile<<m_history[i]<<endl;
+	    // and append the current one back to the end
+	    inoutfile<<m_runtext<<endl;
+	    inoutfile.close();
+	} else
+	    cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
     }
     FbTk::App::instance()->end(); // end application
     m_end = true; // mark end of processing
