@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.7 2004/09/01 07:53:45 akir Exp $
+// $Id: MenuItem.cc,v 1.8 2004/09/01 08:00:24 akir Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -243,12 +243,11 @@ unsigned int MenuItem::height(const MenuTheme &theme) const {
 
 unsigned int MenuItem::width(const MenuTheme &theme) const {
     // textwidth + bevel width on each side of the text
-    int normal = theme.frameFont().textWidth(label().c_str(), label().size()) + 2*(theme.bevelWidth() + height(theme));
-    if (m_icon.get() == 0) 
-        return normal;
-    else
-        return normal + height(theme);
+    const unsigned int icon_width = height(theme);
+    const unsigned int normal = theme.frameFont().textWidth(label().c_str(), label().size()) +
+                                2 * (theme.bevelWidth() + icon_width); 
     
+    return m_icon.get() == 0 ? normal : normal + icon_width;
 }
 
 void MenuItem::updateTheme(const MenuTheme &theme) {
