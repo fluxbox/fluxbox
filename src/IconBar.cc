@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.17 2002/10/25 20:59:56 fluxgen Exp $
+// $Id: IconBar.cc,v 1.18 2002/10/29 15:53:45 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -198,7 +198,7 @@ void IconBar::exposeEvent(XExposeEvent *ee) {
 //------------ repositionIcons ------------
 // Calculates and moves/resizes the icons
 //-----------------------------------------
-void IconBar::repositionIcons(void) {
+void IconBar::repositionIcons() {
 	if (m_iconlist.size() == 0)
 		return;
 		
@@ -255,26 +255,14 @@ Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
 //------------ draw ------------------
 // Draws theme and string to Window w
 //------------------------------------
-void IconBar::draw(IconBarObj *obj, int width) {
+void IconBar::draw(const IconBarObj * const obj, int width) const {
 	if (!obj)
 		return;
 	
-	FluxboxWindow *fluxboxwin = obj->getFluxboxWin();
+	const FluxboxWindow * const fluxboxwin = obj->getFluxboxWin();
 	Window iconwin = obj->getIconWin();
 	unsigned int title_text_w;
-	/*
-	const int multibyte = I18n::instance()->multibyte();
-	
-	if (multibyte) {
-		XRectangle ink, logical;
-		XmbTextExtents(m_screen->getWindowStyle()->font.set,
-			fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size(), &ink, &logical);
-		title_text_w = logical.width;
-	} else {
-		title_text_w = XTextWidth(m_screen->getWindowStyle()->font.fontstruct,
-			fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
-	}
-	*/
+
 	title_text_w = m_screen->getWindowStyle()->font.textWidth(
 		fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
 	int l = title_text_w;
@@ -283,16 +271,6 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	int dx=bevel_w*2;
 		
 	for (; dlen >= 0; dlen--) {
-		/*if (multibyte) {
-		XRectangle ink, logical;
-			XmbTextExtents(m_screen->getWindowStyle()->tab.font.set, 
-				fluxboxwin->getIconTitle().c_str(), dlen,
-				&ink, &logical);
-			l = logical.width;
-		} else
-			l = XTextWidth(m_screen->getWindowStyle()->tab.font.fontstruct, 
-				fluxboxwin->getIconTitle().c_str(), dlen);
-		*/
 		l = m_screen->getWindowStyle()->tab.font.textWidth(
 			fluxboxwin->getIconTitle().c_str(), dlen);
 		l += (bevel_w * 4);
@@ -315,26 +293,13 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	//Draw title to m_iconwin
 
 	XClearWindow(m_display, iconwin);		
-	/*	
-	if (multibyte) {
-		XmbDrawString(m_display, iconwin,
-			m_screen->getWindowStyle()->tab.font.set,
-			m_screen->getWindowStyle()->tab.l_text_focus_gc, dx, 
-			1 - m_screen->getWindowStyle()->tab.font.set_extents->max_ink_extent.y,
-			fluxboxwin->getIconTitle().c_str(), dlen);
-	} else {
-		XDrawString(m_display, iconwin,
-			m_screen->getWindowStyle()->tab.l_text_focus_gc, dx,
-			m_screen->getWindowStyle()->tab.font.fontstruct->ascent + 1, 
-			fluxboxwin->getIconTitle().c_str(), dlen);
-	}	
-	*/
+	
 	m_screen->getWindowStyle()->tab.font.drawText(
 		iconwin,
 		m_screen->getScreenNumber(),
 		m_screen->getWindowStyle()->tab.l_text_focus_gc,
 		fluxboxwin->getIconTitle().c_str(), dlen,
-		dx, m_screen->getWindowStyle()->tab.font.height());
+		dx, 1+ m_screen->getWindowStyle()->tab.font.ascent());
 
 }
 
@@ -378,3 +343,16 @@ IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 	return 0;
 }
 
+const IconBarObj *IconBar::findIcon(const FluxboxWindow * const fluxboxwin) const {
+
+	IconList::const_iterator it = m_iconlist.begin();
+	IconList::const_iterator it_end = m_iconlist.end();
+	for (; it != it_end; ++it) {
+		IconBarObj *tmp = (*it);
+		if (tmp)
+			if (tmp->getFluxboxWin() == fluxboxwin)
+				return tmp;			
+	}
+	
+	return 0;
+}
