@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.77 2004/03/21 09:00:24 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.78 2004/08/11 13:17:56 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -533,7 +533,6 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
         event.window == m_clientarea.window() ||
-        event.window == m_handle.window() ||
         event.window == m_window.window())
         return;
     // we handle only buttons 0 to 5
@@ -1374,6 +1373,6 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
     y += y_offset;
 
     if (move_frame && (x_offset != 0 || y_offset != 0)) {
-        move(x,y);
+        move(x, y);
     }
 }
