@@ -22,10 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.34 2002/03/08 12:18:22 fluxgen Exp $
+// $Id: Screen.cc,v 1.35 2002/03/18 20:20:09 fluxgen Exp $
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -1102,7 +1101,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, int wkspc_id, Bool ignore_stic
 }
 
 
-void BScreen::nextFocus(void) {
+void BScreen::nextFocus(int opts) {
 	Bool have_focused = False;
 	int focused_window_number = -1;
 	FluxboxWindow *next;
@@ -1123,9 +1122,16 @@ void BScreen::nextFocus(void) {
 		do {
 			if ((++next_window_number) >= num_windows)
 				next_window_number = 0;	
+
 			next = getCurrentWorkspace()->getWindow(next_window_number);
-		} while ((!next->setInputFocus()) && next_window_number !=
-				 focused_window_number);
+
+			if (! ( (opts & CYCLESKIPSTUCK) != 0 && next->isStuck() || // skip if stuck
+					(opts & CYCLESKIPLOWERTABS) != 0 && next->isLowerTab() || // skip if lower tab
+				    (opts & CYCLESKIPSHADED) != 0 && next->isShaded() || // skip if shaded
+					!next->setInputFocus())) // skip unless set input focus
+				break;
+			
+		} while (next_window_number != focused_window_number);
 
 		if (next_window_number != focused_window_number) {
 			next->setInputFocus();
@@ -1142,7 +1148,7 @@ void BScreen::nextFocus(void) {
 }
 
 
-void BScreen::prevFocus(void) {
+void BScreen::prevFocus(int opts) {
 	Bool have_focused = False;
 	int focused_window_number = -1;
 	FluxboxWindow *prev;
@@ -1161,8 +1167,13 @@ void BScreen::prevFocus(void) {
 				prev_window_number = getCurrentWorkspace()->getCount() - 1;
 
 			prev = getCurrentWorkspace()->getWindow(prev_window_number);
-		} while ((! prev->setInputFocus()) && (prev_window_number !=
-						 focused_window_number));
+
+			if (! ( (opts & CYCLESKIPSTUCK) != 0 && prev->isStuck() || // skip if stuck
+					(opts & CYCLESKIPLOWERTABS) != 0 && prev->isLowerTab() ||// skip if lower tab
+					(opts & CYCLESKIPSHADED) != 0 && prev->isShaded() ||// skip if shaded
+					!prev->setInputFocus()) ) // skip unless set input focus
+				break;
+		} while (prev_window_number != focused_window_number);
 
 		if (prev_window_number != focused_window_number)
 			getCurrentWorkspace()->raiseWindow(prev);

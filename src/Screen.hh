@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.22 2002/03/08 12:19:07 fluxgen Exp $
+// $Id: Screen.hh,v 1.23 2002/03/18 20:20:09 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -203,8 +203,8 @@ public:
 	void sendToWorkspace(int, bool);
 	void raiseWindows(Window *, int);
 	void reassociateWindow(FluxboxWindow *, int, Bool);
-	void prevFocus(void);
-	void nextFocus(void);
+	void prevFocus(int = 0);
+	void nextFocus(int = 0);
 	void raiseFocus(void);
 	void reconfigure(void);	
 	void rereadMenu(void);
@@ -229,6 +229,9 @@ public:
 	enum { RESTART = 1, RESTARTOTHER, EXIT, SHUTDOWN, EXECUTE, RECONFIGURE,
 				 WINDOWSHADE, WINDOWICONIFY, WINDOWMAXIMIZE, WINDOWCLOSE, WINDOWRAISE,
 				 WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
+	// prevFocus/nextFocus option bits
+	enum { CYCLESKIPLOWERTABS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
+				CYCLEDEFAULT = 0x00 };
 
 private:
 	#ifdef GNOME
