@@ -1529,6 +1529,10 @@ void Fluxbox::save_rc(void) {
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		char *placement = (char *) 0;
+		
+		sprintf(rc_string, "session.screen%d.maxOverSlit: %s", screen_number,
+					((screen->doMaxOverSlit()) ? "True" : "False"));
+		XrmPutLineResource(&new_blackboxrc, rc_string);
 		switch (screen->getPlacementPolicy()) {
 		case BScreen::CascadePlacement:
 			placement = "CascadePlacement";
@@ -1976,6 +1980,17 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (! strncasecmp(value.addr, "righttoleft", value.size))
       screen->saveRowPlacementDirection(BScreen::RightLeft);
     else
+  
+  sprintf(name_lookup,  "session.screen%d.maxOverSlit", screen_number);
+  sprintf(class_lookup, "Session.Screen%d.MaxOverSlit", screen_number);
+  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+                     &value)) {
+    if (! strncasecmp(value.addr, "true", value.size))
+      screen->saveMaxOverSlit(True);
+    else
+      screen->saveMaxOverSlit(False);
+  } else
+    screen->saveMaxOverSlit(False);
       screen->saveRowPlacementDirection(BScreen::LeftRight);
   } else
     screen->saveRowPlacementDirection(BScreen::LeftRight);
