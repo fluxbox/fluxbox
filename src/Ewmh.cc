@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.30 2003/07/28 15:06:33 rathnor Exp $
+// $Id: Ewmh.cc,v 1.31 2003/08/11 14:51:15 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -54,6 +54,7 @@ void Ewmh::initForScreen(BScreen &screen) {
                                           0, 0, 5, 5, 0, 0, 0);
 
     if (wincheck != None) {
+        // store the window so we can delete it later
         m_windows.push_back(wincheck);
 		
         screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
@@ -375,7 +376,9 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
 }
 
 void Ewmh::createAtoms() {
+
     Display *disp = FbTk::App::instance()->display();
+
     m_net_supported = XInternAtom(disp, "_NET_SUPPORTED", False);
     m_net_client_list = XInternAtom(disp, "_NET_CLIENT_LIST", False);
     m_net_client_list_stacking = XInternAtom(disp, "_NET_CLIENT_LIST_STACKING", False);
