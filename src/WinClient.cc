@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.32 2003/12/15 11:55:58 rathnor Exp $
+// $Id: WinClient.cc,v 1.33 2003/12/15 20:20:20 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -403,8 +403,8 @@ void WinClient::updateWMHints() {
             // and requires globally active
             if (send_focus_message)
                 m_focus_mode = F_GLOBALLYACTIVE;
-            else
-                m_focus_mode = F_NOINPUT;
+            else // lots of apps have no hint, but need focus
+                m_focus_mode = F_PASSIVE; 
 
         if (wmhint->flags & StateHint)
             initial_state = wmhint->initial_state;
