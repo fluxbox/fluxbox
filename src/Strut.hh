@@ -1,6 +1,6 @@
 // Strut.hh for Fluxbox Window Manager
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-//                and Simon Bowden    (rathnor at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//                     and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Strut.hh,v 1.2 2003/06/20 01:30:41 fluxgen Exp $
+// $Id: Strut.hh,v 1.3 2004/01/19 18:30:59 fluxgen Exp $
 
 #ifndef STRUT_HH
 #define STRUT_HH
@@ -30,10 +30,16 @@ public:
     Strut(int left, int right, 
           int top, int bottom):m_left(left), m_right(right), 
                                m_top(top), m_bottom(bottom) { }
-    int left() const { return m_left; }
-    int right() const { return m_right; }
-    int bottom() const { return m_bottom; }
-    int top() const { return m_top; }
+    inline int left() const { return m_left; }
+    inline int right() const { return m_right; }
+    inline int bottom() const { return m_bottom; }
+    inline int top() const { return m_top; }
+    bool operator == (const Strut &test) const {
+        return (left() == test.left() &&
+                right() == test.right() &&
+                top() == test.top() &&
+                bottom() == test.bottom());
+    }
 private:
     int m_left, m_right, m_top, m_bottom;
 };
