@@ -19,6 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Toolbar.cc,v 1.11 2002/02/07 15:12:23 fluxgen Exp $
+
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 #ifndef	 _GNU_SOURCE
@@ -68,7 +70,8 @@ using namespace std;
 
 Toolbar::Toolbar(BScreen *scrn):
 screen(scrn),
-image_ctrl(screen->getImageControl())
+image_ctrl(screen->getImageControl()),
+iconbar(0)
 {
 
 	fluxbox = Fluxbox::instance();
@@ -154,15 +157,17 @@ image_ctrl(screen->getImageControl())
 	frame.base = frame.label = frame.wlabel = frame.clk = frame.button =
 		frame.pbutton = None;
 
+		
 	if (Fluxbox::instance()->useIconBar())
 		iconbar = new IconBar(screen, frame.window_label);
 	else
-		iconbar = 0;
-		
-	reconfigure();
+		iconbar = 0;	
 
 	XMapSubwindows(display, frame.window);
-	XMapWindow(display, frame.window);
+	XMapWindow(display, frame.window);	
+	
+	reconfigure();
+	
 }
 
 
