@@ -19,6 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: XrmDatabaseHelper.hh,v 1.3 2002/02/04 07:03:46 fluxgen Exp $
+
 // This is a helper for XrmDatabase
 // when database goes out of scope
 // the XrmDatabase variable will be destroyed.
