@@ -5,7 +5,7 @@ Compilation and Installation:
    The `configure' shell script attempts to guess correct values for
 various system-dependent variables used during compilation.  It uses
 those values to create a `Makefile' in each directory in the
-Blackbox source tree.
+Fluxbox source tree.
 
 Finally, it creates a shell script `config.status' that you can run
 in the future to recreate the current configuration, a file
@@ -13,11 +13,12 @@ in the future to recreate the current configuration, a file
 reconfiguring, and a file `config.log' containing compiler output
 (useful mainly for debugging `configure').
 
-   If you need to do unusual things to compile Blackbox, please try
+   If you need to do unusual things to compile Fluxbox, please try
 to figure out how `configure' could check whether to do them, and mail
-diffs or instructions to bhughes@tcac.net so they can be considered
-for the next release.  If at some point `config.cache' contains
-results you don't want to keep, you may remove or edit it.
+diffs or instructions to fluxbox-developers list (see www.fluxbox.org) 
+so they can be considered for the next release.  If at some point 
+`config.cache' contains results you don't want to keep, you may remove 
+or edit it.
 
    The file `configure.in' is used to create `configure' by a program
 called `autoconf'.  You only need `configure.in' if you want to change
@@ -66,7 +67,7 @@ script's command line.
 
 Fluxbox supports Window Maker dockapps (warning: restarts from wmaker to
 fluxbox don't always handle dockapps correctly) with a gadget called the Slit.
-The Slit is compiled into Blackbox by default, but may be overridden by
+The Slit is compiled into Fluxbox by default, but may be overridden by
 specifying `--disable-slit' on the configure script's command line.
 
 Fluxbox supports a rendering effect called "faked interlacing" which darkens
@@ -91,4 +92,5 @@ their locations.
 
 
 Please read the README file also.
+
 
