@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.227 2003/08/25 16:07:09 fluxgen Exp $
+// $Id: Screen.cc,v 1.228 2003/08/27 14:26:37 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -177,6 +177,7 @@ public:
             setstyle_cmd(new FbCommands::
                          SetStyleCmd(m_filename));
         setCommand(setstyle_cmd);
+        setToggleItem(true);
     }
     bool isSelected() const {
         return Fluxbox::instance()->getStyleFilename() == m_filename;
