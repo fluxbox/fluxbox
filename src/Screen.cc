@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.53 2002/05/19 17:56:55 fluxgen Exp $
+// $Id: Screen.cc,v 1.54 2002/06/02 22:48:38 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -37,7 +37,6 @@
 
 #include "i18n.hh"
 #include "fluxbox.hh"
-#include "Clientmenu.hh"
 #include "Icon.hh"
 #include "Image.hh"
 #include "StringUtil.hh"
@@ -84,10 +83,6 @@
 #ifndef  MAXPATHLEN
 #define	 MAXPATHLEN 255
 #endif // MAXPATHLEN
-
-#ifndef	 FONT_ELEMENT_SIZE
-#define	 FONT_ELEMENT_SIZE 50
-#endif // FONT_ELEMENT_SIZE
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
