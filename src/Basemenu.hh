@@ -22,12 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.5 2002/02/04 22:33:09 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.6 2002/02/08 13:20:23 fluxgen Exp $
 
 #ifndef   _BASEMENU_HH_
 #define   _BASEMENU_HH_
 
 #include <X11/Xlib.h>
+#include <vector>
+#include <string>
 
 // forward declarations
 class Basemenu;
@@ -36,8 +38,6 @@ class BasemenuItem;
 class Fluxbox;
 class BImageControl;
 class BScreen;
-
-#include <vector>
 
 class Basemenu {
 private:
@@ -139,55 +139,46 @@ public:
 
 };
 
-
 class BasemenuItem {
-private:
-  Basemenu *s;
-  const char **u, *l, *e;
-  int f, enabled, selected;
-
-  friend class Basemenu;
-
 public:
-  BasemenuItem(const char *lp, int fp, const char *ep = (const char *) 0) {
-    l = lp;
-    e = ep;
-    s = 0;
-    f = fp;
-    u = 0;
-    enabled = 1;
-    selected = 0;
-  }
+	BasemenuItem(
+			const char *label,
+			int function,
+			const char *exec = (const char *) 0)
+		: m_label(label ? label : "")
+		, m_exec(exec ? exec : "")
+		, m_submenu(0)
+		, m_function(function)
+		, m_enabled(true)
+		, m_selected(false)
+	{ }
 
-  BasemenuItem(const char *lp, Basemenu *mp) {
-    l = lp;
-    s = mp;
-    e = 0;
-    f = 0;
-    u = 0;
-    enabled = 1;
-    selected = 0;
-  }
+	BasemenuItem(const char *label, Basemenu *submenu)
+		: m_label(label ? label : "")
+		, m_exec("")
+		, m_submenu(submenu)
+		, m_function(0)
+		, m_enabled(true)
+		, m_selected(false)
+	{ }
 
-  BasemenuItem(const char **up, int fp) {
-    u = up;
-    l = e = 0;
-    f = fp;
-    s = 0;
-    enabled = 1;
-    selected = 0;
-  }
+	inline const char *exec(void) const { return m_exec.c_str(); }
+	inline const char *label(void) const { return m_label.c_str(); }
+	inline int function(void) const { return m_function; }
+	inline Basemenu *submenu(void) { return m_submenu; }
 
-  inline const char *exec(void) const { return e; }
-  inline const char *label(void) const { return l; }
-  inline const char **ulabel(void) const { return u; }
-  inline const int &function(void) const { return f; }
-  inline Basemenu *submenu(void) { return s; }
+	inline bool isEnabled(void) const { return m_enabled; }
+	inline void setEnabled(bool enabled) { m_enabled = enabled; }
+	inline bool isSelected(void) const { return m_selected; }
+	inline void setSelected(bool selected) { m_selected = selected; }
 
-  inline const int &isEnabled(void) const { return enabled; }
-  inline void setEnabled(int e) { enabled = e; }
-  inline const int &isSelected(void) const { return selected; }
-  inline void setSelected(int s) { selected = s; }
+private:
+	std::string m_label, m_exec;
+	Basemenu *m_submenu;
+	int m_function;
+	bool m_enabled, m_selected;
+
+	friend class Basemenu;
 };
 
 

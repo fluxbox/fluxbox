@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.8 2002/02/04 22:33:09 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.9 2002/02/08 13:20:23 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -196,12 +196,7 @@ Basemenu::~Basemenu(void) {
 }
 
 
-int Basemenu::insert(const char *l, int function, const char *e, int pos) {
-	char *label = 0, *exec = 0;
-
-	if (l) label = StringUtil::strdup(l);
-	if (e) exec = StringUtil::strdup(e);
-
+int Basemenu::insert(const char *label, int function, const char *exec, int pos) {
 	BasemenuItem *item = new BasemenuItem(label, function, exec);
 	if (pos == -1) {
 		menuitems.push_back(item);
@@ -213,11 +208,7 @@ int Basemenu::insert(const char *l, int function, const char *e, int pos) {
 }
 
 
-int Basemenu::insert(const char *l, Basemenu *submenu, int pos) {
-	char *label = 0;
-
-	if (l) label = StringUtil::strdup(l);
-
+int Basemenu::insert(const char *label, Basemenu *submenu, int pos) {
 	BasemenuItem *item = new BasemenuItem(label, submenu);
 	if (pos == -1) {
 		menuitems.push_back(item);
@@ -232,7 +223,8 @@ int Basemenu::insert(const char *l, Basemenu *submenu, int pos) {
 
 
 int Basemenu::insert(const char **ulabel, int pos, int function) {
-	BasemenuItem *item = new BasemenuItem(ulabel, function);
+	assert(ulabel);
+	BasemenuItem *item = new BasemenuItem(*ulabel, function);
 	if (pos == -1) {
 		menuitems.push_back(item);
 	} else {
@@ -259,13 +251,8 @@ int Basemenu::remove(int index) {
 				tmp->internal_hide();
 		}
 
-		if (item->label())
-			delete [] item->label();
-		
-		if (item->exec())
-			delete [] item->exec();
-
 		delete item;
+		menuitems.erase(it);
 	}
 
 	if (which_sub == index)
@@ -323,8 +310,7 @@ void Basemenu::update(void) {
 	for (; it != it_end; ++it) {
 		BasemenuItem *itmp = (*it);
 
-		const char *s = ((itmp->u && *itmp->u) ? *itmp->u :
-			((itmp->l) ? itmp->l : (const char *) 0));
+		const char *s = itmp->label();
 		int l = strlen(s);
 
 		if (i18n->multibyte()) {
@@ -635,7 +621,7 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 	if (! item) return;
 	
 	Bool dotext = True, dohilite = True, dosel = True;
-	const char *text = (item->ulabel()) ? *item->ulabel() : item->label();
+	const char *text = item->label();
 	int sbl = index / menu.persub, i = index - (sbl * menu.persub);
 	int item_x = (sbl * menu.item_w), item_y = (i * menu.item_h);
 	int hilite_x = item_x, hilite_y = item_y, hoff_x = 0, hoff_y = 0;
