@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.7 2002/05/17 10:59:30 fluxgen Exp $
+// $Id: Image.hh,v 1.8 2002/07/19 20:33:15 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -40,51 +40,51 @@ class BImageControl;
 
 
 class BColor {
-private:
-	int allocated;
-	unsigned char red, green, blue;
-	unsigned long pixel;
-
 public:
-	BColor(char r = 0, char g = 0, char b = 0)
-		{ red = r; green = g; blue = b; pixel = 0; allocated = 0; }
+	BColor(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0):
+	m_red(red),	m_green(green), m_blue(blue), m_pixel(0), m_allocated(false) { }
 
-	inline int isAllocated(void) const { return allocated; }
+	inline int isAllocated() const { return m_allocated; }
 
-	inline unsigned char getRed(void) const { return red; }
-	inline unsigned char getGreen(void) const { return green; }
-	inline unsigned char getBlue(void) const { return blue; }
+	inline unsigned char red() const { return m_red; }
+	inline unsigned char green() const { return m_green; }
+	inline unsigned char blue() const { return m_blue; }
 
-	inline unsigned long getPixel(void) const { return pixel; }
+	inline unsigned long pixel() const { return m_pixel; }
 
-	inline void setAllocated(int a) { allocated = a; }
-	inline void setRGB(char r, char g, char b) { red = r; green = g; blue = b; }
-	inline void setPixel(unsigned long p) { pixel = p; }
+	inline void setAllocated(bool a) { m_allocated = a; }
+	inline void setRGB(char red, char green, char blue) { m_red = red; m_green = green; m_blue = blue; }
+	inline void setPixel(unsigned long pixel) { m_pixel = pixel; }
+
+private:
+	unsigned char m_red, m_green, m_blue;
+	unsigned long m_pixel;
+	bool m_allocated;
 };
 
 
 class BTexture {
-private:
-	BColor color, colorTo, hiColor, loColor;
-	unsigned long texture;
-
 public:
-	BTexture(void):texture(0) { }
+	BTexture():m_texture(0) { }
 
-	inline const BColor *getColor(void) const { return &color; }
-	inline const BColor *getColorTo(void) const { return &colorTo; }
-	inline const BColor *getHiColor(void) const { return &hiColor; }
-	inline const BColor *getLoColor(void) const { return &loColor; }
+	inline const BColor &color() const { return m_color; }
+	inline const BColor &colorTo() const { return m_color_to; }
+	inline const BColor &hiColor() const { return m_hicolor; }
+	inline const BColor &loColor() const { return m_locolor; }
 
-	inline BColor *getColor(void) { return &color; }
-	inline BColor *getColorTo(void) { return &colorTo; }
-	inline BColor *getHiColor(void) { return &hiColor; }
-	inline BColor *getLoColor(void) { return &loColor; }
+	inline BColor &color() { return m_color; }
+	inline BColor &colorTo() { return m_color_to; }
+	inline BColor &hiColor() { return m_hicolor; }
+	inline BColor &loColor() { return m_locolor; }
 
-	inline unsigned long getTexture(void) const { return texture; }
+	inline unsigned long getTexture() const { return m_texture; }
 
-	inline void setTexture(unsigned long t) { texture = t; }
-	inline void addTexture(unsigned long t) { texture |= t; }
+	inline void setTexture(unsigned long t) { m_texture = t; }
+	inline void addTexture(unsigned long t) { m_texture |= t; }
+
+private:
+	BColor m_color, m_color_to, m_hicolor, m_locolor;
+	unsigned long m_texture;
 };
 
 
@@ -156,35 +156,34 @@ public:
 
 class BImageControl : public TimeoutHandler {
 public:
-	BImageControl(BaseDisplay *, ScreenInfo *, Bool = False, int = 4,
-								unsigned long = 300000l, unsigned long = 200l);
+	BImageControl(BaseDisplay *disp, ScreenInfo *screen, bool = False, int = 4,
+		unsigned long = 300000l, unsigned long = 200l);
 	virtual ~BImageControl();
 
-	inline BaseDisplay *getBaseDisplay(void) { return basedisplay; }
+	inline BaseDisplay *baseDisplay() { return basedisplay; }
 
-	inline bool doDither(void) { return dither; }
-	inline const Colormap &getColormap(void) const { return colormap; }
-	inline ScreenInfo *getScreenInfo(void) { return screeninfo; }
+	inline bool doDither() { return dither; }
+	inline const Colormap &colormap() const { return m_colormap; }
+	inline ScreenInfo *getScreenInfo() { return screeninfo; }
 
-	inline const Window &getDrawable(void) const { return window; }
+	inline const Window &drawable() const { return window; }
 
-	inline Visual *getVisual(void) { return screeninfo->getVisual(); }
+	inline Visual *visual() { return screeninfo->getVisual(); }
 
-	inline int getBitsPerPixel(void) const { return bits_per_pixel; }
-	inline int getDepth(void) const { return screen_depth; }
-	inline int getColorsPerChannel(void) const
-		{ return colors_per_channel; }
+	inline int bitsPerPixel() const { return bits_per_pixel; }
+	inline int depth() const { return screen_depth; }
+	inline int colorsPerChannel(void) const	{ return colors_per_channel; }
 
-	unsigned long getColor(const char *);
-	unsigned long getColor(const char *, unsigned char *, unsigned char *,
+	unsigned long color(const char *colorname);
+	unsigned long color(const char *, unsigned char *, unsigned char *,
 												 unsigned char *);
 	unsigned long getSqrt(unsigned int);
 
 	Pixmap renderImage(unsigned int, unsigned int, BTexture *);
 
-	void installRootColormap(void);
-	void removeImage(Pixmap);
-	void getColorTables(unsigned char **, unsigned char **, unsigned char **,
+	void installRootColormap();
+	void removeImage(Pixmap thepix);
+	void colorTables(unsigned char **, unsigned char **, unsigned char **,
 											int *, int *, int *, int *, int *, int *);
 	void getXColorTable(XColor **, int *);
 	void getGradientBuffers(unsigned int, unsigned int,
@@ -204,7 +203,7 @@ private:
 	BTimer timer;
 #endif // TIMEDCACHE
 
-	Colormap colormap;
+	Colormap m_colormap;
 
 	Window window;
 	XColor *colors;
