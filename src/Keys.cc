@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.12 2002/02/26 22:19:43 fluxgen Exp $
+//$Id: Keys.cc,v 1.13 2002/03/18 20:25:42 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -281,6 +281,13 @@ bool Keys::load(char *filename) {
 						break;
 						case WORKSPACE:
                         case SENDTOWORKSPACE:
+							if (argc + 1 < val.size())
+								last_key->param = atoi( val[argc+1].c_str());
+							else
+								last_key->param = 0;
+						break;
+						case NEXTWINDOW:
+                        case PREVWINDOW:
 							if (argc + 1 < val.size())
 								last_key->param = atoi( val[argc+1].c_str());
 							else
