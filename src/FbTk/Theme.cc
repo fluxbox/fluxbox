@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.9 2003/07/04 10:25:11 fluxgen Exp $
+// $Id: Theme.cc,v 1.10 2003/08/11 14:54:18 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -211,9 +211,9 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
     return true;
 }
 
-bool ThemeManager::load(const char *filename) {
+bool ThemeManager::load(const std::string &filename) {
 	
-    if (!m_database.load(filename))
+    if (!m_database.load(filename.c_str()))
         return false;
 
     //get list and go throu all the resources and load them
@@ -222,7 +222,13 @@ bool ThemeManager::load(const char *filename) {
     for (; theme_it != theme_it_end; ++theme_it) {
         loadTheme(**theme_it);
     }
-
+    // notify all themes that we reconfigured
+    theme_it = m_themelist.begin();
+    for (; theme_it != theme_it_end; ++theme_it) {
+        // send reconfiguration signal to theme and listeners
+        (*theme_it)->reconfigTheme();
+        (*theme_it)->reconfigSig().notify();
+    }
     return true;
 }
 
@@ -245,9 +251,7 @@ void ThemeManager::loadTheme(Theme &tm) {
             resource->setDefaultValue();
         }
     }
-    // send reconfiguration signal to theme
-    tm.reconfigTheme();
-
+    // send reconfiguration signal to theme and listeners
 }
 
 std::string ThemeManager::resourceValue(const std::string &name, const std::string &altname) {
