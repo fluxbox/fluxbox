@@ -2,12 +2,17 @@
 Changes for 0.9.11
 *04/09/10:
   * Cosmetic and cleanup changes to FbTk/* (Mathias)
-      - mostly tabs -> spaces, wrong indention etc
+      - tabs -> spaces, wrong indention etc in all mentioned
+        files and
+        FbTk/EventHandler.cc FbTk/StringUtil.(cc|hh) Ewmh.cc
       - using FbDrawable::s_display now instead of
         FbTk::App::instance()->display()
+        FbTk/FbPixmap.(cc|hh) FbTk/FbWindow.(cc|hh)
+        FbTk/FbPixmap.cc FbTk/XftFontImp.cc
       - added warning about "wrong" wallpapersetter
-    FbTk/FbPixmap.(cc|hh) FbTk/FbWindow.(cc|hh) 
-    FbTk/FbPixmap.cc FbTk/EventHandler.cc Ewmh.cc
+        FbTk/FbPixmap.cc
+      - removed old codefragment from XmbFontImp
+        FbTk/XmbFontImp.cc
   * Clean up some unused variables (thanks Ryan O'Hara)
     FbTk/XLayer.cc
 *04/09/09:
@@ -20,8 +25,8 @@ Changes for 0.9.11
     Screen.(cc|hh) FbTk/Menu.cc FbTk/FbWindow.cc FbTk/FbPixmap.cc
 *04/09/04:
   * Fix duplicate icons in icon list with amsn (Henrik)
-    - Check Fluxbox::update(FluxboxWindow::stateSig), 
-      the win.screen().addIcon 
+    - Check Fluxbox::update(FluxboxWindow::stateSig),
+      the win.screen().addIcon
     Screen.cc
   * Fix crash on shutdown (Henrik)
     - workspacemenu must be destroyed before
@@ -216,7 +221,7 @@ Changes for 0.9.10:
   * Fixed fallback for toolbar.button.pressed (Henrik)
     ButtonTheme.cc
 *04/07/15:
-  * Click on handle bar raises window even if 
+  * Click on handle bar raises window even if
     "click raises" = false,
     Consistent with the title bar.
     (Henrik)
