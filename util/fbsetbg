@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.28 2004/01/17 01:29:40 fluxgen Exp $
+# $Id: fbsetbg,v 1.29 2004/01/22 05:48:41 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -312,7 +312,9 @@ done
 
 # Find the default wallpapersetter
 if [ "$setterfromcommandline" != true ]; then
-    wpsetters="`awk '/wpsetters/ {print $2}' $lastwallpaper` $wpsetters"
+    if [ -r "$lastwallpaper" ]; then
+        wpsetters="`awk '/wpsetters/ {print $2}' $lastwallpaper` $wpsetters"
+    fi
     for wpsetter in $wpsetters; do
         if find_it $wpsetter; then
             WPSETTER=$wpsetter
