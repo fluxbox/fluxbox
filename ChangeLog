@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/02/20:
+  * Added SendToNextWorkspace and SendToPrevWorkspace actions (Thanks Mathias Gumz)
+    CurrentWindowCmd.hh/cc, FbCommandFactory.cc
   * Minor filename expansion fix (Thanks Mathias Gumz)
     and added '!' as a comment character in keys file
     fluxbox.cc, Workspace.cc, Slit.cc, Keys.cc
