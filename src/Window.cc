@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.56 2002/06/02 22:43:20 fluxgen Exp $
+// $Id: Window.cc,v 1.57 2002/06/02 23:35:30 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1265,10 +1265,10 @@ void FluxboxWindow::reconfigure() {
 			else if (current_state == WithdrawnState)
 				tab->withdraw();
 		}
-	}	else {		
-		if (tab) { //got a tab? then destroy it
+	} else {		
+		if (tab != 0) { //got a tab? then destroy it
 			delete tab;
-			tab=0;
+			tab = 0;
 		}
 	}
 	
@@ -1276,7 +1276,7 @@ void FluxboxWindow::reconfigure() {
 	client.y = frame.y + frame.y_border + frame.mwm_border_w +
 			 screen->getBorderWidth();
 
-	if (getTitle().size()>0) {
+	if (getTitle().size() > 0) {
 		if (I18n::instance()->multibyte()) {
 			XRectangle ink, logical;
 			XmbTextExtents(screen->getWindowStyle()->font.set,
@@ -2889,7 +2889,8 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
 	case XA_WM_ICON_NAME:
 		getWMIconName();
-		if (iconic) screen->iconUpdate();
+		if (iconic)
+			screen->iconUpdate();
 		updateIcon();
 		break;
 
@@ -2916,10 +2917,10 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		if ((client.normal_hint_flags & PMinSize) &&
 				(client.normal_hint_flags & PMaxSize)) {
 			if (client.max_width <= client.min_width &&
-					client.max_height <= client.min_height)
+					client.max_height <= client.min_height) {
 				decorations.maximize = decorations.handle =
 					functions.resize = functions.maximize = false;
-			else {
+			} else {
 				decorations.handle = false;
 				decorations.maximize = functions.resize = functions.maximize = true;
 			}
