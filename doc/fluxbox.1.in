@@ -585,6 +585,7 @@ ArrangeWindows
 ShowDesktop - Iconifies all windows.
 RootMenu
 WorkspaceMenu
+WindowMenu
 WorkspaceNameDialog - edit workspaces name dialog (old SetWorkspaceName)
 SetWorkspaceName \fIname\fR
 .EE
