@@ -1,58 +1,212 @@
-The coding style is almost the same as i blackbox.
-Instead of 2 spaces there is tab.
-Use a tab size of 2 or 4 and you will be fine.
+Use hard tab for indentation. (size 4)
+Spaces between ","
+ex:  1, 2, 3, 4
 
-if-statements:
+if/else-statements:
+An else clause is joined to any preceding close curly brace
+that is part of its if.
 
-	if ( stuff ) 
-		function(stuff, more stuff, 
-			more, even more);
-	else
-		morefunction( stuff, more stuff
-			stuff, 
-			stuff,
-			stuff);
-			
-if the functionline needs to be split up, like above, right after an if-statement
+if (....) {
+	....
+} else {
+	....
+}
+if the line needs to be splited up, right after an if-statement
 use { and }, so its clear when the if-statement ends.
-It should look like this
+ex: 
+if (...) {
+	function(.....,
+		......, .... );
+}
 
-	if ( stuff ) {
-		function(stuff, more stuff, 
-			more, even more);
-	} else {
-		morefunction( stuff, more stuff
-			stuff, 
-			stuff,
-			stuff);
-	}
-	
-If a line need to be splited in an if-statement then it should use two 
-tab for indent next row in if-statement like this:
+This is ok:
+if (...)
+	shortline(...);
 
-	if ( longline && longline && longling &&
-			longline && longline && longline)
-		funktion();
 
-The include guards:
-FILENAME_HH
+while-statement:
 
+while (...) {
+	....
+}
+
+for-statement:
+
+for (init; condition; update) {
+	....
+}
+
+for (longinit;
+	longcondition;
+	longupdate ) {
+	....
+}
+alt form:
+
+init;
+for (; condition; update) {
+	....
+}
+
+do-statement:
+
+do {
+	....
+} while (...);
+
+switch-statement:
+should always have a default value.
+Enum values is an exception, they should not have a default: , when you add 
+new values to an enum you might forget to add them to switch statement.
+
+switch (...) {
+	case ...:
+		...;
+	break;
+	case ...: {
+		...;
+	} break;
+	case ...:
+		...;
+	default:
+		....;
+	break;
+}
+
+goto-statement:
+DONT USE IT!
+
+
+Include guards:
+For files with namespace:
+#ifndef NAMESPACE_FILENAME_HH
+#define NAMESPACE_FILENAME_HH
+....
+
+#endif //NAMESPACE_FILENAME_HH 
+<eof>
+
+Without namespace:
+#ifndef FILENAME_HH
+#define FILENAME_HH
+....
+
+#endif //FILENAME_HH
+
+<eof>
+
+preprocessors:
+The # of all preprocessor commands must always be in column 1, and never use 
+indentation for preprocessor directives
+
+They should always have a // PREPROCESSOR to mark where they end
+#ifdef DEBUG
+...
+...
+#endif //DEBUG
+
+Don't use preprocessors for constants or macro-functions, they can be 
+cryptic and sometime make it hard to debug.
+
+
+functions:
+The name starts with a lowercase and then a uppercase for name separation:
+void functionWithAName(...) {
+	...;
+}
 
 Function comments:
-//------------ function name --------
 // This do that and that
 // Returns this on success else
 // this on failure.
 // TODO: if there is something to do.
-//-----------------------------------
-type classname::function(...) {
+void functionDoes(...) {
 
 }
+Comments:
+Use // on few line comments.
+Use 
+/* 
+...  
+...
+*/
+when there are a lot to comment
 
+Class:
+Order: public, protected and then private
+Class names always starts with a big letter.
+Class data members are prefixed by m_ , static data members are prefixed with s_ .
+Class member function will be organized according to creator, 
+manipulator and accessors categories.
+
+class Classname:public AnotherClass {
+public:
+	//1. public enums, structs
+	
+	//2. constructors and destructor
+	
+	//3. manipulators
+	
+	//4. accessors
+	
+protected:
+	//1. enums, structs
+	
+	//2. functions
+	
+	//3. variables
+
+private:
+	//1. enums, structs
+	
+	//2. functions
+	
+	//3. variables
+};
+
+
+struct follows the class style.
+
+namespace:
+namespace TheName {
+...;
+...;
+}; //end namespace TheName
+
+Don't use "using namespace thenamespace;" in header-file
+We don't want to force the other files, that include the file, a namespace.
+
+
+try/catch-statement:
+
+try {
+	....;
+} catch (...) {
+	....;
+}
+
+Variables:
+Avoid variables that contain mixtures of the numbers 0 & l and the letters O 
+and 1, because they are hard to tell apart.
+Having a type name and a variable differing in only in case (such as:
+ String string;) is permitted, but discouraged.
+
+Use lowercase for variables and use _ to separate names, ex:
+int number_of_screens;
+int num_colors;
+
+
+All constants must be in Upper case letters.
 
 enums must be in uppercase letters and not in file scope:
 enum {WHITE, RED, BLUE};
 
-Class data members are prefixed by m_ 
-Class member function will be organized accordning to creator, 
-manipulator and accessor categories.
+Other:
+
+if (strcmp(...) == 0) //good
+if (!strcmp()) //bad
+
+Don't create free-functions, encapsulate them in a namespace or a class
+and name filenames so it's clear what they hold so it's easier to find
+functions, classes and other stuff.
+
