@@ -81,6 +81,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
 	Xinerama.hh \
+	Xutil.hh Xutil.cc \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE}
 
 
