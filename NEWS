@@ -5,7 +5,7 @@ News in 0.9.11:
       * Save slit list menu item
     * (Re)added dragNdrop ordering of tabs
     * Better visualisation of the RememberState in RememberMenu
-    * iconbar:
+    * Iconbar:
       * new resources:
         session.*.iconbar.wheelMode: <mode>
            On     - enable mousewheeling on the iconbuttons
@@ -21,16 +21,18 @@ News in 0.9.11:
         * 
       * Added option to specify what to do with windows, 
         that got activated on a different workspaces than the
-         urrent one (thru NET_ACTIVE_WINDOW for example,
-         guinotification-plugin from gaim)
+        current one (thru NET_ACTIVE_WINDOW for example,
+        guinotification-plugin from gaim):
+        
         * session.screen0.followModel: <value>
            Ignore  - ignore the activated window
            Follow  - go to the workspace of the window
           Current | CurrentWorkspace | Fetch - get the window onto the 
                                                current workspace
-    * session.focusTabMinWidth:
-      defines the guaranteed minimize size of the focused tab
-      in percent of the whole window
+    * New resource:
+      * session.focusTabMinWidth: <integer>
+        defines the guaranteed minimize size of the focused tab
+        in percent of the whole window
     * New command: export | setenv  
       sets the enviroment of fluxbox to a given value
       export NAME=VALUE
@@ -59,11 +61,9 @@ Bug fixes:
     * Fix a couple of bugs with transparency in toolbar/buttons
     * Fix crash when in windowmenu->submenu and closing the app 
     * other bug fixes:
-      #1057499
-      #1046472
-      #1052095 
-      #1034522 
-      #1039658
+      #1057499 font with :shadow isn't loaded
+      #1052095 the windowmenu didnt close, when the current tab changed 
+      #1039658 transparency issues on unfocused windows
 
 
 See ChangeLog for more details
