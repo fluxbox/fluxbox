@@ -20,14 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.4 2003/08/13 10:03:45 fluxgen Exp $
+// $Id: IconButton.cc,v 1.5 2003/08/16 12:04:12 fluxgen Exp $
 
 #include "IconButton.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/EventManager.hh"
 
-#include "IconButtonTheme.hh"
 #include "Window.hh"
 #include "WinClient.hh"
 #include "SimpleCommand.hh"
