@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.143 2003/05/13 00:20:49 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.144 2003/05/13 11:43:44 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -422,25 +422,30 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_RC_INIT_FILE("init") {
       
 
-    if (s_singleton != 0) {
-        cerr<<"Fatal! There can only one instance of fluxbox class."<<endl;
-        abort();
+    if (s_singleton != 0)
+        throw string("Fatal! There can only one instance of fluxbox class.");
+
+    if (display() == 0) {
+        //!! TODO: NLS
+        throw string("Can not connect to X server.\n"
+                     "Make sure you started X before you start Fluxbox.");
     }
 
     // setup X error handler
     XSetErrorHandler((XErrorHandler) handleXErrors);
 
     //catch system signals
-    SignalHandler *sigh = SignalHandler::instance();
+    SignalHandler &sigh = SignalHandler::instance();
 	
-    sigh->registerHandler(SIGSEGV, this);
-    sigh->registerHandler(SIGFPE, this);
-    sigh->registerHandler(SIGTERM, this);
-    sigh->registerHandler(SIGINT, this);
-    sigh->registerHandler(SIGCHLD, this);
-    sigh->registerHandler(SIGHUP, this);
-    sigh->registerHandler(SIGUSR1, this);	
-    sigh->registerHandler(SIGUSR2, this);
+    sigh.registerHandler(SIGSEGV, this);
+    sigh.registerHandler(SIGFPE, this);
+    sigh.registerHandler(SIGTERM, this);
+    sigh.registerHandler(SIGINT, this);
+    sigh.registerHandler(SIGCHLD, this);
+    sigh.registerHandler(SIGHUP, this);
+    sigh.registerHandler(SIGUSR1, this);	
+    sigh.registerHandler(SIGUSR2, this);
+
     Display *disp = FbTk::App::instance()->display();
     //setup cursor bitmaps
     cursor.session = XCreateFontCursor(disp, XC_left_ptr);
@@ -530,11 +535,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     I18n *i18n = I18n::instance();
     if (m_screen_list.size() == 0) {
-        throw string(
-                i18n->
-                getMessage(
-                    FBNLS::blackboxSet, FBNLS::blackboxNoManagableScreens,
-                    "Fluxbox::Fluxbox: no managable screens found, aborting."));
+        //!! TODO: NLS
+        throw string("Couldn't find screens to manage.\n"
+                     "Make sure you don't have another window manager running.");
     }
 
     XSynchronize(disp, False);
@@ -545,7 +548,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_timer.setTimeout(0);
     m_timer.fireOnce(true);
 
-    //create keybindings handler and load keys file	
+    // Create keybindings handler and load keys file	
     m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
     ungrab();
@@ -571,12 +574,7 @@ void Fluxbox::eventLoop() {
 
             if (last_bad_window != None && e.xany.window == last_bad_window) {
 #ifdef DEBUG
-                fprintf(stderr,
-                        I18n::instance()->
-                        getMessage(
-                                   FBNLS::BaseDisplaySet, FBNLS::BaseDisplayBadWindowRemove,
-                                   "Fluxbox::eventLoop(): removing bad window "
-                                   "from event queue\n"));
+                cerr<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
 #endif // DEBUG
             } else {
                 last_bad_window = None;
