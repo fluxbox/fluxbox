@@ -11,7 +11,6 @@ BUGS:
   * Some builds/distros seem to require all supported locales to be 
     installed to build properly (e.g. mdk, gentoo reported), this ok?
 
-  * Icons menu isn't in Workspaces menu
 
   * Window handle is invisible sometimes.
 
@@ -58,6 +57,9 @@ Fixed bugs (or not-our-fault bugs):
   * KDE dockapp support (e.g klipper)
     => fixed
 
+  * Icons menu isn't in Workspaces menu
+    => fixed
+	
   * Some people get weird transparency behaviour:
     - this appears to be a problem with nvidia drivers, make sure
       RenderAccel is off (Option "RenderAccel" "false"). (thanks RJNFC

@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/29:
+   * Fixed kde dockapp bug (Henrik)
+     Screen.cc, fluxbox.cc
    * Added icon menu to workspace menu (Henrik)
      Screen.cc/hh, IconMenuItem.hh, 
    * Change:    (Simon)
