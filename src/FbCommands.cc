@@ -131,11 +131,11 @@ void ExecuteCmd::execute() {
         displaystring += intbuff;
         setsid();
         putenv(const_cast<char *>(displaystring.c_str()));
-        execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), 0);
+        execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), static_cast<void*>(NULL));
         exit(0);
     }
 #else //   __EMX__
-    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_cmd.c_str(), 0);
+    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_cmd.c_str(), static_cast<void*>(NULL));
 #endif // !__EMX__
 
 }

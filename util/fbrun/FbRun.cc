@@ -117,7 +117,7 @@ void FbRun::run(const std::string &command) {
     // fork and execute program
     if (!fork()) {
         setsid();
-        execl("/bin/sh", "/bin/sh", "-c", command.c_str(), 0);
+        execl("/bin/sh", "/bin/sh", "-c", command.c_str(), static_cast<void*>(NULL));
         exit(0); //exit child
     }
 
