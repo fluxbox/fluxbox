@@ -19,62 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.cc,v 1.5 2003/08/22 15:19:39 fluxgen Exp $
+// $Id: WinButtonTheme.cc,v 1.6 2003/08/22 21:35:40 fluxgen Exp $
 
 #include "WinButtonTheme.hh"
 
 #include "FbTk/App.hh"
+#include "FbTk/Image.hh"
+#include "FbTk/PixmapWithMask.hh"
+
 #include "FbWinFrameTheme.hh"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef HAVE_XPM
-#include <X11/xpm.h>
-#endif // HAVE_XPM
-
-// not used
-template <>
-void FbTk::ThemeItem<WinButtonTheme::PixmapWithMask>::
-load() { }
-
-template <>
-void FbTk::ThemeItem<WinButtonTheme::PixmapWithMask>::
-setDefaultValue() {
-    // create empty pixmap
-    (*this)->pixmap = FbTk::FbPixmap(); // pixmap
-    (*this)->mask = FbTk::FbPixmap(); // mask
-}
-
-template <>
-void FbTk::ThemeItem<WinButtonTheme::PixmapWithMask>::
-setFromString(const char *str) {
-    if (str == 0)
-        setDefaultValue();
-    else {
-#ifdef HAVE_XPM
-        XpmAttributes xpm_attr;
-        xpm_attr.valuemask = 0;
-        Display *dpy = FbTk::App::instance()->display();
-        Pixmap pm = 0, mask = 0;
-        int retvalue = XpmReadFileToPixmap(dpy,
-                                           RootWindow(dpy, m_tm.screenNum()), 
-                                           const_cast<char *>(str),
-                                           &pm,
-                                           &mask, &xpm_attr);
-        if (retvalue == 0) { // success
-            (*this)->pixmap = pm;
-            (*this)->mask = mask;            
-        } else {  // failure        
-            setDefaultValue();
-        }
-#else
-        setDefaultValue();
-#endif // HAVE_XPM
-
-    } 
-}
 
 WinButtonTheme::WinButtonTheme(int screen_num, const FbWinFrameTheme &frame_theme):
     FbTk::Theme(screen_num),
