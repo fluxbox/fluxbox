@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XrmDatabaseHelper.hh,v 1.6 2002/12/01 13:42:06 rathnor Exp $
+// $Id: XrmDatabaseHelper.hh,v 1.7 2002/12/02 22:12:09 fluxgen Exp $
 
 // This is a helper for XrmDatabase
 // when database goes out of scope
@@ -38,12 +38,11 @@ class XrmDatabaseHelper
 {
 public:
     XrmDatabaseHelper(char const * filename=0)
-	: m_database(filename == 0 ? 0 : XrmGetFileDatabase(filename))
-	{ }
+	: m_database(0)
+    { if (filename != 0) load(filename); }
 	
     ~XrmDatabaseHelper() {
-        if (m_database!=0)
-            XrmDestroyDatabase(m_database);
+        close();
     }
 
     /// assignment operator
@@ -52,6 +51,22 @@ public:
             XrmDestroyDatabase(m_database);
         m_database = database; 
         return *this;
+    }
+    bool load(const char *filename) {
+        if (filename == 0)
+            return false;
+        XrmDatabase db = XrmGetFileDatabase(filename);
+        if (db == 0)
+            return false;
+        close(); // close old database 
+        m_database = db; // set new and return true
+        return true;
+    }
+    void close() {
+        if (m_database != 0) {
+            XrmDestroyDatabase(m_database);
+            m_database = 0;
+        }
     }
     bool operator == (const XrmDatabase& database) { return m_database == database; }
     XrmDatabase & operator*(void) {	return m_database; }
