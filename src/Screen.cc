@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.224 2003/08/24 11:13:36 fluxgen Exp $
+// $Id: Screen.cc,v 1.225 2003/08/24 13:07:01 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -268,6 +268,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_workspacenames_sig(*this), // workspace names signal 
     m_currentworkspace_sig(*this), // current workspace signal
     m_reconfigure_sig(*this), // reconfigure signal
+    m_resize_sig(*this),
     m_layermanager(num_layers),
     cycling_focus(false),
     cycling_last(0),
@@ -2248,8 +2249,7 @@ void BScreen::updateSize() {
         slit()->reconfigure();
 #endif // SLIT
 
-    //!! TODO: should we re-maximize the maximized windows?
-    
+    m_resize_sig.notify();
 }
 
 

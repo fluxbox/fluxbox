@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.121 2003/08/12 12:20:48 fluxgen Exp $
+// $Id: Screen.hh,v 1.122 2003/08/24 13:06:38 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -151,6 +151,7 @@ public:
     FbTk::Subject &currentWorkspaceSig() { return m_currentworkspace_sig; }
     /// reconfigure signal
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
+    FbTk::Subject &resizeSig() { return m_resize_sig; }
     //@}
 		
     /// @return the resource value of number of workspace
@@ -353,7 +354,8 @@ private:
         m_workspacecount_sig, ///< workspace count signal
         m_workspacenames_sig, ///< workspace names signal 
         m_currentworkspace_sig, ///< current workspace signal
-        m_reconfigure_sig; ///< reconfigure signal
+        m_reconfigure_sig, ///< reconfigure signal
+        m_resize_sig; ///< resize signal
 		
     FbTk::MultLayers m_layermanager;
 	
