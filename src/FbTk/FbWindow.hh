@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.14 2003/05/10 23:11:08 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.15 2003/05/12 04:20:25 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -108,12 +108,12 @@ public:
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
-
-private:
-    // sets new window and destroys old
-    void setNew(Window win);
-
+    /// updates x,y, width, height and screen num from X window
     void updateGeometry();
+private:
+    /// sets new X window and destroys old
+    void setNew(Window win);
+    /// creates a new X window
     void create(Window parent, int x, int y, unsigned int width, unsigned int height,
                 long eventmask, 
                 bool override_redirect, 
