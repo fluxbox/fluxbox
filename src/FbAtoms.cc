@@ -1,5 +1,5 @@
 // FbAtom.cc
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen(at)linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,30 +13,30 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.5 2002/12/01 13:41:56 rathnor Exp $
+// $Id: FbAtoms.cc,v 1.6 2003/04/15 11:59:02 fluxgen Exp $
 
 #include "FbAtoms.hh"
+#include "App.hh"
 
 #include <string>
+#include <cassert>
+
 using namespace std;
 
 FbAtoms *FbAtoms::s_singleton = 0;
 
-FbAtoms::FbAtoms(Display *display):m_init(false) {
+FbAtoms::FbAtoms():m_init(false) {
     if (s_singleton != 0)
         throw string("You can only create one instance of FbAtoms");
 
-    if (display == 0)
-        throw string("Must supply FbAtoms with an valid display connection");
-
     s_singleton = this;
-    initAtoms(display);
+    initAtoms();
 }
 
 FbAtoms::~FbAtoms() {
@@ -44,11 +44,14 @@ FbAtoms::~FbAtoms() {
 }
 
 FbAtoms *FbAtoms::instance() {
-    assert(s_singleton);
+    if (s_singleton == 0)
+        throw string("Create one instance of FbAtoms first!");
+
     return s_singleton;
 }
 
-void FbAtoms::initAtoms(Display *display) {
+void FbAtoms::initAtoms() {
+    Display *display = FbTk::App::instance()->display();
 
     xa_wm_colormap_windows =
         XInternAtom(display, "WM_COLORMAP_WINDOWS", False);
@@ -57,7 +60,6 @@ void FbAtoms::initAtoms(Display *display) {
     xa_wm_change_state = XInternAtom(display, "WM_CHANGE_STATE", False);
     xa_wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
     xa_wm_take_focus = XInternAtom(display, "WM_TAKE_FOCUS", False);
-    motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
 
     blackbox_hints = XInternAtom(display, "_BLACKBOX_HINTS", False);
     blackbox_attributes = XInternAtom(display, "_BLACKBOX_ATTRIBUTES", False);

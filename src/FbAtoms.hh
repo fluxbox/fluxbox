@@ -1,5 +1,5 @@
 // FbAtom.hh
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen(at)fluxbox.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.8 2002/12/01 13:41:56 rathnor Exp $
+// $Id: FbAtoms.hh,v 1.9 2003/04/15 11:57:34 fluxgen Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
@@ -31,8 +31,9 @@
 */
 class FbAtoms {
 public:
-    explicit FbAtoms(Display *display);
-    virtual ~FbAtoms();
+    FbAtoms();
+    ~FbAtoms();
+
     static FbAtoms *instance();
 
 
@@ -42,7 +43,6 @@ public:
     inline Atom getWMProtocolsAtom() const { return xa_wm_protocols; }
     inline Atom getWMTakeFocusAtom() const { return xa_wm_take_focus; }
     inline Atom getWMColormapAtom() const { return xa_wm_colormap_windows; }
-    inline Atom getMotifWMHintsAtom() const { return motif_wm_hints; }
 
     // this atom is for normal app->WM hints about decorations, stacking,
     // starting workspace etc...
@@ -77,7 +77,7 @@ public:
     inline Atom getFluxboxCycleWindowFocusAtom() const { return blackbox_cycle_window_focus; }
 
 private:
-    void initAtoms(Display *disp);
+    void initAtoms();
 // NETAttributes
     Atom blackbox_attributes, blackbox_change_attributes, blackbox_hints;
 
@@ -93,8 +93,8 @@ private:
         blackbox_cycle_window_focus;
 
     Atom xa_wm_colormap_windows, xa_wm_protocols, xa_wm_state,
-        xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state,
-        motif_wm_hints;
+        xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state;
+       
     bool m_init;
     static FbAtoms *s_singleton;
 };
