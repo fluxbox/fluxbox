@@ -20,14 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.5 2003/07/10 11:51:59 fluxgen Exp $
+// $Id: LayerMenu.hh,v 1.6 2003/12/03 22:12:26 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
 
 #include "MenuItem.hh"
 #include "FbMenu.hh"
-#include "FbCommands.hh"
 #include "RefCount.hh"
 #include "SimpleCommand.hh"
 

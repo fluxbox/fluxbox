@@ -20,14 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xinerama.hh,v 1.5 2003/07/25 10:03:55 rathnor Exp $
+// $Id: Xinerama.hh,v 1.6 2003/12/03 22:12:26 fluxgen Exp $
 
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
 
 #include "MenuItem.hh"
 #include "FbMenu.hh"
-#include "FbCommands.hh"
 #include "RefCount.hh"
 #include "SimpleCommand.hh"
 
