@@ -19,6 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+//$Id: Keys.cc,v 1.4 2002/01/07 23:44:09 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -26,9 +27,7 @@
 
 #include "Keys.hh"
 
-#ifndef _FLUXBOX_HH_
-#  include "fluxbox.hh"
-#endif
+#include "StringUtil.hh"
 
 #ifdef		HAVE_STDIO_H
 #	 include <stdio.h>
@@ -70,6 +69,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <cassert>
 
 using namespace std;
 
@@ -122,13 +123,18 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 		{0, LASTKEYGRAB}
 		};	
 
-Keys::Keys(char *filename) {
-	m_abortkey=0;	
-	load(filename);
+Keys::Keys(Display *display, char *filename):
+m_abortkey(0),
+m_display(display)
+{
+	assert(display);
+	if (filename)
+		load(filename);
 }
 
 Keys::~Keys() {
 	deleteTree();
+	ungrabKeys();
 }
 
 //--------- deleteTree -----------
@@ -146,27 +152,29 @@ void Keys::deleteTree() {
 	}	
 }
 
+//-------- ungrabKeys ---------
+// Ungrabs the keys
+//-----------------------------
+void Keys::ungrabKeys() {
+	for (int screen=0; screen<ScreenCount(m_display); screen++) {
+		XUngrabKey(m_display, AnyKey, AnyModifier,
+			RootWindow(m_display, screen));		
+	}
+}
+
 //-------------- load ----------------
 // Load and grab keys
 // Returns true on success else false
-// TODO: error checking and     (nls on them? )
-// possible replacement of strtok
+// TODO: error checking
 //------------------------------------
 bool Keys::load(char *filename) {
 	if (!filename)
 		return false;
 	
-	Fluxbox *fluxbox = Fluxbox::instance();
-	Display *display = fluxbox->getXDisplay();
-	ScreenInfo *screeninfo=0;
 	//ungrab all keys
-	int screen=0;
-	while ((screeninfo = fluxbox->getScreenInfo(screen++)) ) {
-		XUngrabKey(display, AnyKey, AnyModifier,
-		screeninfo->getRootWindow());		
-	}
-	
-	XSync(display, False);
+	ungrabKeys();
+		
+	XSync(m_display, False);
 						
 	//open the file
 	ifstream infile(filename);
@@ -174,35 +182,41 @@ bool Keys::load(char *filename) {
 		return false;
 	
 	
-	char *linebuffer = new char[1024];
-	int line=0;
-	int linepos=0; //position in the line
+	auto_ptr<char> linebuffer(new char[1024]);
+	
+	int line=0;//current line, so we can tell the user where the fault is
 
 	while (!infile.eof()) {
-		infile.getline(linebuffer, 1024);		
+		
+		infile.getline(linebuffer.get(), 1024);		
 
 		line++;
-		char *val = strtok(linebuffer, " ");
-		linepos = (val==0 ? 0 : strlen(val) + 1);	
-
-		int numarg = 1;
+		vector<string> val;
+		//Parse arguments
+		StringUtil::stringtok(val, linebuffer.get());
+		//must have at least 1 argument
+		if (val.size()<=0)
+			continue;
+		
+		
 		unsigned int key=0, mod=0;		
 		char keyarg=0;
 		t_key *current_key=0, *last_key=0;
 		
-		while (val) {			
+		for (unsigned int argc=0; argc<val.size(); argc++) {
 
-			if (val[0]!=':') {
+			if (val[argc][0]!=':') {
 				keyarg++;
 				if (keyarg==1) //first arg is modifier
-					mod = getModifier(val);					
+					mod = getModifier(val[argc].c_str());
 				else if (keyarg>1) {
 
 					//keyarg=0;
-					int tmpmod=getModifier(val);
-					if(tmpmod) mod|=tmpmod; //If it's a modifier
+					int tmpmod=getModifier(val[argc].c_str());
+					if(tmpmod)
+						mod|=tmpmod; //If it's a modifier
 					else{ 
-						key = getKey(val); // else get the key
+						key = getKey(val[argc].c_str()); // else get the key
 						if (!current_key) {
 							current_key = new t_key(key, mod);
 							last_key = current_key;
@@ -216,19 +230,18 @@ bool Keys::load(char *filename) {
 
 			} else {
 				
-				val++; //ignore the ':'
-
 				unsigned int i=0;
 
 				for (i=0; i< LASTKEYGRAB; i++) {
-					if (strcasecmp(m_actionlist[i].string, val) == 0)
+					// +1 on the val[argc] because we dont want to compare the ':'
+					if (strcasecmp(m_actionlist[i].string, val[argc].c_str()+1) == 0)
 						break;	
 				}
 
 				if (i < LASTKEYGRAB ) {
 					if (!current_key) {
 						cerr<<"Error on line: "<<line<<endl;
-						cerr<<linebuffer<<endl;
+						cerr<<linebuffer.get()<<endl;
 						delete current_key;
 						current_key = 0;
 						last_key = 0;
@@ -252,7 +265,9 @@ bool Keys::load(char *filename) {
 					
 					last_key->action = m_actionlist[i].action;
 					if (last_key->action == Keys::EXECUTE)
-						last_key->execcommand = &linebuffer[linepos];
+						last_key->execcommand = 
+							static_cast<char *>(strcasestr(linebuffer.get(), getActionStr(Keys::EXECUTE))+
+							strlen(getActionStr(Keys::EXECUTE)));
 
 					//add the keychain to list										
 					if (!mergeTree(current_key))
@@ -261,8 +276,9 @@ bool Keys::load(char *filename) {
 					#ifdef DEBUG
 				  if (m_actionlist[i].action == Keys::EXECUTE) {
 						
-						cerr<<"linepos:"<<linepos<<endl;
-						cerr<<"buffer:"<<&linebuffer[linepos]<<endl;
+						cerr<<"line:"<<line<<endl;
+						cerr<<"buffer:"<<static_cast<char *>(strcasestr(linebuffer.get(), getActionStr(Keys::EXECUTE))+
+							strlen(getActionStr(Keys::EXECUTE)))<<endl;
 						cerr<<"command:"<<last_key->execcommand<<endl;
 		
 					}
@@ -275,7 +291,7 @@ bool Keys::load(char *filename) {
 					
 				}	else { //destroy list if no action is found
 					#ifdef DEBUG
-					cerr<<"Didnt find action="<<val<<endl;									
+					cerr<<"Didnt find action="<<val[argc]<<endl;
 					#endif					
 					//destroy current_key ... this will also destroy the last_key										
 					delete current_key;
@@ -284,14 +300,10 @@ bool Keys::load(char *filename) {
 				}
 				
 				break; //dont process this linebuffer more
-			}			
-			numarg++;
-			val = strtok(0, " ");			
-			linepos += (val == 0 ? 0 : strlen(val) + 1);
+			}	
 		}
 	}
 	
-	delete linebuffer;
 	#ifdef DEBUG
 	showTree();
 	#endif
@@ -304,53 +316,50 @@ bool Keys::load(char *filename) {
 //----------------------------------------
 void Keys::grabKey(unsigned int key, unsigned int mod) {
 	
-	Fluxbox *fluxbox = Fluxbox::instance();	
-	Display *display = fluxbox->getXDisplay();
-	
 	#ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): keycode "<<key<<" mod "<<hex<<mod<<dec<<endl;
 	#endif	
-	int i=0;
-	ScreenInfo *screeninfo=0;
 	
-	while ((screeninfo = fluxbox->getScreenInfo(i++)) ) {
-		Window root = screeninfo->getRootWindow();
-		XGrabKey(display, key, mod,
+	for (int screen=0; screen<ScreenCount(m_display); screen++) {
+		
+		Window root = RootWindow(m_display, screen);
+		
+		XGrabKey(m_display, key, mod,
 							root, True,
 							GrabModeAsync, GrabModeAsync);
 						
 		// Grab with numlock, capslock and scrlock	
 
 		//numlock	
-		XGrabKey(display, key, mod|Mod2Mask,
+		XGrabKey(m_display, key, mod|Mod2Mask,
 							root, True,
 							GrabModeAsync, GrabModeAsync);		
 		//scrolllock
-		XGrabKey(display, key, mod|Mod5Mask,
+		XGrabKey(m_display, key, mod|Mod5Mask,
 						root, True,
 						GrabModeAsync, GrabModeAsync);	
 		//capslock
-		XGrabKey(display, key, mod|LockMask,
+		XGrabKey(m_display, key, mod|LockMask,
 							root, True,
 							GrabModeAsync, GrabModeAsync);
 	
 		//capslock+numlock
-		XGrabKey(display, key, mod|LockMask|Mod2Mask,
+		XGrabKey(m_display, key, mod|LockMask|Mod2Mask,
 							root, True,
 							GrabModeAsync, GrabModeAsync);
 
 		//capslock+scrolllock
-		XGrabKey(display, key, mod|LockMask|Mod5Mask,
+		XGrabKey(m_display, key, mod|LockMask|Mod5Mask,
 							root, True,
 							GrabModeAsync, GrabModeAsync);						
 	
 		//capslock+numlock+scrolllock
-		XGrabKey(display, key, mod|Mod2Mask|Mod5Mask|LockMask,
+		XGrabKey(m_display, key, mod|Mod2Mask|Mod5Mask|LockMask,
 							root, True,
 							GrabModeAsync, GrabModeAsync);						
 
 		//numlock+scrollLock
-		XGrabKey(display, key, mod|Mod2Mask|Mod5Mask,
+		XGrabKey(m_display, key, mod|Mod2Mask|Mod5Mask,
 							root, True,
 							GrabModeAsync, GrabModeAsync);
 	
@@ -363,13 +372,13 @@ void Keys::grabKey(unsigned int key, unsigned int mod) {
 // else zero on failure.
 // TODO fix more masks
 //----------------------------------------
-unsigned int Keys::getModifier(char *modstr) {
+unsigned int Keys::getModifier(const char *modstr) {
 	if (!modstr)
 		return 0;
 	struct t_modlist{
 		char *string;
 		unsigned int mask;
-		bool operator == (char *modstr) {
+		bool operator == (const char *modstr) {
 			return  (strcasecmp(string, modstr) == 0 && mask !=0);
 		}
 	} modlist[] = {
@@ -395,12 +404,11 @@ unsigned int Keys::getModifier(char *modstr) {
 // Returns keycode of keystr on success
 // else it returns zero
 //-----------------------------------
-unsigned int Keys::getKey(char *keystr) {
+unsigned int Keys::getKey(const char *keystr) {
 	if (!keystr)
 		return 0;
-	return XKeysymToKeycode(Fluxbox::instance()->getXDisplay(),
-							 XStringToKeysym
-							 (keystr));
+	return XKeysymToKeycode(m_display,
+							 XStringToKeysym(keystr));
 }
 
 //--------- getAction -----------------
