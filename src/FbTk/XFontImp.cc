@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.7 2004/06/07 11:46:05 rathnor Exp $
+// $Id: XFontImp.cc,v 1.8 2004/08/10 11:58:22 fluxgen Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
@@ -90,10 +90,9 @@ void XFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_t 
 }
 
 unsigned int XFontImp::textWidth(const char * const text, unsigned int size) const {
-    if (text == 0)
+    if (text == 0 || m_fontstruct == 0)
         return 0;
-    if (m_fontstruct == 0)
-        return 0;
+
     // check rotated font?
     if (m_rotfont != 0)
         return rotTextWidth(text, size);
