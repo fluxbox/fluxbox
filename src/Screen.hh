@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.10 2002/01/20 02:17:23 fluxgen Exp $
+// $Id: Screen.hh,v 1.11 2002/01/20 02:25:35 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -88,7 +88,7 @@ class BScreen;
 class BScreen : public ScreenInfo {
 public:
 	BScreen(ResourceManager &rm, Fluxbox *b, 
-		const string &screenname, const string &altscreenname,
+		const std::string &screenname, const std::string &altscreenname,
 		int scrn);
 	~BScreen();
 
