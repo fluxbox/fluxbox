@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.34 2002/02/17 18:43:30 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.35 2002/02/20 23:12:07 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1059,6 +1059,11 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 				break;
 
 			switch (action) {					
+			case Keys::WORKSPACE:
+                            // Workspace1 has id 0, hence -1
+			    screen->changeWorkspaceID(key->getParam()-1);
+			break;
+            // NOTE!!! The WORKSPACEn commands are not needed anymore
 			case Keys::WORKSPACE1:
 				screen->changeWorkspaceID(0);
 			break;
@@ -1096,16 +1101,16 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 				screen->changeWorkspaceID(11);
 			break;
 			case Keys::NEXTWORKSPACE:
-				screen->nextWorkspace();
+				screen->nextWorkspace(key->getParam());
 			break;
 			case Keys::PREVWORKSPACE:
-				screen->prevWorkspace();
+				screen->prevWorkspace(key->getParam());
 			break;
 			case Keys::LEFTWORKSPACE:
-				screen->leftWorkspace();
+				screen->leftWorkspace(key->getParam());
 			break;
 			case Keys::RIGHTWORKSPACE:
-				screen->rightWorkspace();
+				screen->rightWorkspace(key->getParam());
 			break;
 			case Keys::KILLWINDOW: //kill the current window
 				XKillClient(screen->getBaseDisplay()->getXDisplay(),
@@ -1166,7 +1171,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			}
 			break;
 			default: //try to see if its a window action
-				doWindowAction(action);
+				doWindowAction(action, key->getParam());
 			}
 		}
 	break;
@@ -1178,7 +1183,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 	
 	
 }
-void Fluxbox::doWindowAction(Keys::KeyAction action) {
+void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 	if (!focused_window)
 		return;
 
@@ -1224,24 +1229,25 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 		break;
 		case Keys::NUDGERIGHT:	
 			focused_window->configure(
-				focused_window->getXFrame()+1, focused_window->getYFrame(),
+				focused_window->getXFrame()+param, focused_window->getYFrame(),
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
 		case Keys::NUDGELEFT:			
 			focused_window->configure(
-				focused_window->getXFrame()-1, focused_window->getYFrame(),
+				focused_window->getXFrame()-param, focused_window->getYFrame(),
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
 		case Keys::NUDGEUP:
 			focused_window->configure(
-				focused_window->getXFrame(), focused_window->getYFrame()-1,
+				focused_window->getXFrame(), focused_window->getYFrame()-param,
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
 		case Keys::NUDGEDOWN:
 			focused_window->configure(
-				focused_window->getXFrame(), focused_window->getYFrame()+1,
+				focused_window->getXFrame(), focused_window->getYFrame()+param,
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
+        // NOTE !!! BIGNUDGExxxx is not needed, just use 10 as a parameter
 		case Keys::BIGNUDGERIGHT:		
 			focused_window->configure(
 				focused_window->getXFrame()+10, focused_window->getYFrame(),
