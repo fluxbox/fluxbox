@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.10 2002/02/17 18:42:15 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.11 2002/02/20 23:12:46 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -209,7 +209,7 @@ private:
 	void handleUnmapNotify(XUnmapEvent &ue);
 	void handleClientMessage(XClientMessageEvent &ce);
 	void handleKeyEvent(XKeyEvent &ke);	
-	void doWindowAction(Keys::KeyAction action);
+	void doWindowAction(Keys::KeyAction action, const int param);
 	#ifdef GNOME
 	bool checkGnomeAtoms(XClientMessageEvent &ce);
 	#endif
