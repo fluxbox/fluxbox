@@ -1,4 +1,4 @@
-.\" $Id: fbsetbg.1,v 1.2 2004/05/07 16:25:46 fluxgen Exp $
+.\" $Id: fbsetbg.1,v 1.3 2004/08/19 04:53:54 rathnor Exp $
 .\"
 .\" Copyright (c) 2004, Han Boetes <han@fluxbox.org>
 .\"
@@ -75,10 +75,10 @@ Display a help message.
 .Sh FILES
 .Bl -tag -width "~/.fluxbox/lastwallpaper" -compact
 .It Pa ~/.fluxbox/lastwallpaper
+.El
 In this file the wallpaper you set will be stored, for the
 .Fl l
 option.
-.El
 .Sh ENVIRONMENT VARIABLES
 .Pp fbsetbg supports the following environmental variables:
 .Ar wpsetters
@@ -86,7 +86,6 @@ Wallpapersetters to use.
 .Pp
 .Ar DISPLAY
 The display you want to set the wallpaper on.
-.El
 .Sh EXAMPLES
 .Pp
 To use
@@ -104,20 +103,16 @@ with the stored options.
 .Bd -literal -offset indent
 $ DISPLAY=:0.0 fbsetbg -l
 .Ed
-.El
 .Sh SEE ALSO
 .Xr bsetroot 1 ,
 .Xr fluxbox 1
-.El
 .Sh ONLINE DOCUMENTATION:
 Much more extensive documentation for
 .Nm
 is provided on:
 http://www.xs4all.nl/~hanb/software/fluxbox/fbsetbg.html
-.El
 .Sh BUGS
 .Nm
 is not foolproof.
-.El
 .Sh AUTHOR
 The author of fbsetbg is Han Boetes <han@fluxbox.org>
