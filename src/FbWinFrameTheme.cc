@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.7 2003/08/04 12:49:20 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.8 2003/08/16 11:05:19 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -60,6 +60,9 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
 
     m_alpha(*this, "window.alpha", "Window.Alpha") {
+    // set defaults
+    m_font->load("fixed");
+    *m_alpha = 255;
 
     // create GCs
     Display *disp = FbTk::App::instance()->display();
