@@ -137,6 +137,8 @@ public:
                         unsigned char *data,
                         int nelements);
 
+    void deleteProperty(Atom property);
+
     void setBufferPixmap(Pixmap pm);
 
     std::string textProperty(Atom property) const;

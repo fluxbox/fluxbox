@@ -44,26 +44,26 @@
 
 namespace FbTk {
 
-FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
+FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0),
                      m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true),
                      m_buffer_pm(0){
 
 }
 
-FbWindow::FbWindow(const FbWindow& the_copy):m_parent(the_copy.parent()), 
-                                             m_screen_num(the_copy.screenNumber()), m_window(the_copy.window()), 
-                                             m_x(the_copy.x()), m_y(the_copy.y()), 
+FbWindow::FbWindow(const FbWindow& the_copy):m_parent(the_copy.parent()),
+                                             m_screen_num(the_copy.screenNumber()), m_window(the_copy.window()),
+                                             m_x(the_copy.x()), m_y(the_copy.y()),
                                              m_width(the_copy.width()), m_height(the_copy.height()),
-                                             m_border_width(the_copy.borderWidth()), 
+                                             m_border_width(the_copy.borderWidth()),
                                              m_depth(the_copy.depth()), m_destroy(true),
                                              m_buffer_pm(0) {
     the_copy.m_window = 0;
 }
 
 FbWindow::FbWindow(int screen_num,
-                   int x, int y, 
-                   unsigned int width, unsigned int height, 
-                   long eventmask, 
+                   int x, int y,
+                   unsigned int width, unsigned int height,
+                   long eventmask,
                    bool override_redirect,
                    bool save_unders,
                    int depth,
@@ -73,30 +73,30 @@ FbWindow::FbWindow(int screen_num,
     m_screen_num(screen_num),
     m_destroy(true),
     m_buffer_pm(0) {
-	
-    create(RootWindow(display(), screen_num), 
+
+    create(RootWindow(display(), screen_num),
            x, y, width, height, eventmask,
            override_redirect, save_unders, depth, class_type);
 };
 
 FbWindow::FbWindow(const FbWindow &parent,
-                   int x, int y, unsigned int width, unsigned int height, 
+                   int x, int y, unsigned int width, unsigned int height,
                    long eventmask,
                    bool override_redirect,
                    bool save_unders,
                    int depth, int class_type):
     m_parent(&parent),
-    m_screen_num(parent.screenNumber()), 
+    m_screen_num(parent.screenNumber()),
     m_destroy(true),
-    m_buffer_pm(0) { 
+    m_buffer_pm(0) {
 
-    create(parent.window(), x, y, width, height, eventmask, 
+    create(parent.window(), x, y, width, height, eventmask,
            override_redirect, save_unders, depth, class_type);
-	
-	
+
+
 };
 
-FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0), 
+FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0),
                                   m_screen_num(0),
                                   m_window(0),
                                   m_x(0), m_y(0),
@@ -117,9 +117,9 @@ FbWindow::~FbWindow() {
 
     if (m_window != 0) {
         // so we don't get any dangling eventhandler for this window
-        FbTk::EventManager::instance()->remove(m_window); 
+        FbTk::EventManager::instance()->remove(m_window);
         if (m_destroy)
-            XDestroyWindow(display(), m_window);     
+            XDestroyWindow(display(), m_window);
     }
 }
 
@@ -136,7 +136,7 @@ void FbWindow::setBorderColor(const FbTk::Color &border_color) {
     XSetWindowBorder(display(), m_window, border_color.pixel());
 }
 
-void FbWindow::setBorderWidth(unsigned int size) {	
+void FbWindow::setBorderWidth(unsigned int size) {
     XSetWindowBorderWidth(display(), m_window, size);
     m_border_width = size;
 }
@@ -153,8 +153,8 @@ void FbWindow::clear() {
     XClearWindow(display(), m_window);
 }
 
-void FbWindow::clearArea(int x, int y, 
-                         unsigned int width, unsigned int height, 
+void FbWindow::clearArea(int x, int y,
+                         unsigned int width, unsigned int height,
                          bool exposures) {
     XClearArea(display(), window(), x, y, width, height, exposures);
 }
@@ -254,7 +254,7 @@ FbWindow &FbWindow::operator = (const FbWindow &win) {
 }
 
 FbWindow &FbWindow::operator = (Window win) {
-    setNew(win);	
+    setNew(win);
     return *this;
 }
 
@@ -289,7 +289,7 @@ void FbWindow::setNew(Window win) {
             m_depth = attr.depth;
             m_border_width = attr.border_width;
         }
-        
+
     }
 }
 
@@ -318,7 +318,7 @@ void FbWindow::setInputFocus(int revert_to, int time) {
 }
 
 void FbWindow::setCursor(Cursor cur) {
-    XDefineCursor(display(), window(), cur); 
+    XDefineCursor(display(), window(), cur);
 }
 
 void FbWindow::unsetCursor() {
@@ -368,8 +368,8 @@ bool FbWindow::property(Atom property,
                         unsigned long *nitems_return,
                         unsigned long *bytes_after_return,
                         unsigned char **prop_return) const {
-    if (XGetWindowProperty(display(), window(), 
-                           property, long_offset, long_length, do_delete, 
+    if (XGetWindowProperty(display(), window(),
+                           property, long_offset, long_length, do_delete,
                            req_type, actual_type_return,
                            actual_format_return, nitems_return,
                            bytes_after_return, prop_return) == Success)
@@ -383,10 +383,14 @@ void FbWindow::changeProperty(Atom property, Atom type,
                               int mode,
                               unsigned char *data,
                               int nelements) {
-    
+
     XChangeProperty(display(), m_window, property, type,
-                    format, mode, 
+                    format, mode,
                     data, nelements);
+}
+
+void FbWindow::deleteProperty(Atom property) {
+    XDeleteProperty(display(), m_window, property);
 }
 
 int FbWindow::screenNumber() const {
@@ -395,7 +399,7 @@ int FbWindow::screenNumber() const {
 
 long FbWindow::eventMask() const {
     XWindowAttributes attrib;
-    XGetWindowAttributes(display(), window(), 
+    XGetWindowAttributes(display(), window(),
                          &attrib);
     return attrib.your_event_mask;
 
@@ -420,16 +424,16 @@ void FbWindow::updateGeometry() {
     Window root;
     unsigned int border_width, depth;
     XGetGeometry(display(), m_window, &root, &m_x, &m_y,
-                 (unsigned int *)&m_width, (unsigned int *)&m_height, 
+                 (unsigned int *)&m_width, (unsigned int *)&m_height,
                  &border_width, &depth);
     m_depth = depth;
 }
 
 void FbWindow::create(Window parent, int x, int y,
-                      unsigned int width, unsigned int height, 
+                      unsigned int width, unsigned int height,
                       long eventmask, bool override_redirect,
                       bool save_unders, int depth, int class_type) {
-                     
+
 
     m_border_width = 0;
 
@@ -437,7 +441,7 @@ void FbWindow::create(Window parent, int x, int y,
     XSetWindowAttributes values;
     values.event_mask = eventmask;
 
-    if (override_redirect) {        
+    if (override_redirect) {
         valmask |= CWOverrideRedirect;
         values.override_redirect = True;
     }
@@ -448,13 +452,13 @@ void FbWindow::create(Window parent, int x, int y,
     }
 
     m_window = XCreateWindow(display(), parent, x, y, width, height,
-                             0, // border width  
+                             0, // border width
                              depth, // depth
                              class_type, // class
                              CopyFromParent, // visual
                              valmask, // create mask
                              &values); // create atrribs
-    
+
     assert(m_window);
 
     updateGeometry();
