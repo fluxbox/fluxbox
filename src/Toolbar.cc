@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.48 2002/12/04 17:58:01 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.49 2002/12/04 22:36:47 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -1349,7 +1349,7 @@ void Toolbarmenu::Placementmenu::itemSelected(int button, unsigned int index) {
         // toolbar
         m_toolbarmenu.m_toolbar.screen()->getSlit()->reposition();
 #endif // SLIT
-
+        Fluxbox::instance()->save_rc();
     }
 }
 
@@ -1383,17 +1383,19 @@ void Toolbarmenu::Headmenu::itemSelected(int button, unsigned int index) {
         if (! item)
             return;
 
-        m_toolbarmenu.m_toolbar.screen()->saveToolbarOnHead(
+        screen()->saveToolbarOnHead(
             static_cast<int>(item->function()));
+        
         hide();
         m_toolbarmenu.m_toolbar.reconfigure();
+
 
 #ifdef SLIT
         // reposition the slit as well to make sure it doesn't intersect the
         // toolbar
         m_toolbarmenu.m_toolbar.screen()->getSlit()->reposition();
 #endif // SLIT
-
+        Fluxbox::instance()->save_rc();
     }
 }
 
