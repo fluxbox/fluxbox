@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.285 2004/05/02 21:08:28 fluxgen Exp $
+// $Id: Window.cc,v 1.286 2004/05/03 13:45:23 rathnor Exp $
 
 #include "Window.hh"
 
@@ -3145,9 +3145,8 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
         // reparent to root window
         client->reparent(screen().rootWindow().window(), frame().x(), frame().y());
 
-        if (xev.xreparent.send_event && !remap) {
+        if (!remap)
             client->hide();
-        }
     }
 
     if (remap)
