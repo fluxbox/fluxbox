@@ -149,7 +149,6 @@ int main(int argc, char **argv) {
 
         fbrun.setTitle(title);
         fbrun.setText(text);
-        fbrun.show();
 	
         if (near_mouse) {
             
@@ -208,6 +207,8 @@ int main(int argc, char **argv) {
         if (set_pos)
             fbrun.move(x, y);
 		
+        fbrun.show();
+
         application.eventLoop();
 
     } catch (string errstr) {
