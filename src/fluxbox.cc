@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.228 2004/01/21 13:33:50 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.229 2004/01/21 15:30:27 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1131,6 +1131,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
  */
 void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 
+#ifdef DEBUG
     char * atom = 0;
     if (ce.message_type)
         atom = XGetAtomName(FbTk::App::instance()->display(), ce.message_type);
@@ -1139,7 +1140,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 	"  message_type=0x"<<ce.message_type<<dec<<" = \""<<atom<<"\""<<endl;
 
     if (ce.message_type && atom) XFree((char *) atom);
-
+#endif // DEBUG
 
 
     if (ce.format != 32)
