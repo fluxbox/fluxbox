@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.13 2004/09/11 22:58:20 fluxgen Exp $
+// $Id: TextBox.cc,v 1.14 2004/10/06 19:05:12 akir Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -90,10 +90,13 @@ void TextBox::setInputFocus() {
 
 void TextBox::cursorHome() {
     m_start_pos = m_cursor_pos = 0;
+    adjustEndPos();
 }
 
 void TextBox::cursorEnd() {
-    m_cursor_pos = m_end_pos = text().size();
+    m_end_pos = text().size();
+    adjustStartPos();
+    m_cursor_pos = m_end_pos - m_start_pos;
 }
 
 void TextBox::cursorForward() {
@@ -137,6 +140,7 @@ void TextBox::insertText(const std::string &val) {
     m_text.insert(m_start_pos + cursorPosition(), val);
     m_cursor_pos += val.size();
     m_end_pos += val.size();
+   
     if (m_start_pos + cursorPosition() < m_end_pos)
         adjustEndPos();
     else
@@ -185,6 +189,22 @@ void TextBox::exposeEvent(XExposeEvent &event) {
 
 void TextBox::buttonPressEvent(XButtonEvent &event) {
     setInputFocus();
+    if (event.window == window()) {
+        std::string::size_type i;
+        std::string::size_type click_pos = m_end_pos;
+        int delta = width();
+        int tmp = 0;
+        for(i = m_start_pos; i <= m_end_pos; i++) {
+            tmp = abs(event.x - font().textWidth(m_text.c_str() + m_start_pos, i - m_start_pos));
+
+            if (tmp < delta) {
+                delta = tmp;
+                click_pos = i;
+            }
+        }
+        m_cursor_pos = click_pos - m_start_pos;
+        clear();
+    }
 }
 
 void TextBox::keyPressEvent(XKeyEvent &event) {
@@ -222,8 +242,9 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
             case XK_c:
                 cursorHome();
                 m_text = "";
-                adjustStartPos();
-                adjustEndPos();
+                m_start_pos = 0;
+                m_cursor_pos = 0;
+                m_end_pos = 0;
                 break;
             }
         } else if (event.state == ShiftMask || event.state == 0x2000) {
@@ -282,19 +303,17 @@ void TextBox::adjustEndPos() {
 }
 
 void TextBox::adjustStartPos() {
-    // reset global start po
-    m_start_pos = 0;
-
+    
     int text_width = font().textWidth(text().c_str(), m_end_pos);
     if (text_width < static_cast<signed>(width()))
         return;
 
     int start_pos = 0;
-    text_width = font().textWidth(text().c_str() + start_pos, m_end_pos - start_pos);
     while (text_width > static_cast<signed>(width())) {
         start_pos++;
         text_width = font().textWidth(text().c_str() + start_pos, m_end_pos - start_pos);
     }
+
     // adjust cursorPosition() according relative to change to m_start_pos
     m_cursor_pos -= start_pos - m_start_pos;
     m_start_pos = start_pos;
