@@ -1,5 +1,5 @@
 // SignalHandler.hh for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.hh,v 1.4 2003/01/05 23:34:38 fluxgen Exp $
+// $Id: SignalHandler.hh,v 1.5 2003/05/13 11:41:29 fluxgen Exp $
 
 #ifndef FBTK_SIGNALHANDLER_HH
 #define FBTK_SIGNALHANDLER_HH
@@ -28,14 +28,15 @@
 
 namespace FbTk {
 
-
+/// Base class that SignalHandler calls when it gets a signal
+/// Use this to catch system signals
 class SignalEventHandler {
 public:
     virtual void handleSignal(int signum) = 0;
 };
 
+///   Handles system signals, singleton.
 /**
-   Handles system signals, singleton.
    Usage: inherit the class SignalEventHandler and then register 
    it to SignalHandler by calling registerHandler with
    a signal number
@@ -43,7 +44,7 @@ public:
 class SignalHandler {
 public:
     /// get singleton object
-    static SignalHandler *instance();
+    static SignalHandler &instance();
     /** 
         Register an event handler
         @return true on success else false
