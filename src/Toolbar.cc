@@ -314,22 +314,22 @@ void Toolbar::updateStrut() {
     case TOPLEFT:
     case TOPCENTER:
     case TOPRIGHT:
-        top = height();
+        top = height() + 2 * theme().border().width();
         break;
     case BOTTOMLEFT:
     case BOTTOMCENTER:
     case BOTTOMRIGHT:
-        bottom = height();
+        bottom = height() + 2 * theme().border().width();
         break;
     case RIGHTTOP:
     case RIGHTCENTER:
     case RIGHTBOTTOM:
-        right = width();
+        right = width() + 2 * theme().border().width();
         break;
     case LEFTTOP:
     case LEFTCENTER:
     case LEFTBOTTOM:
-        left = width();
+        left = width() + 2 * theme().border().width();
         break;
     };
     m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);

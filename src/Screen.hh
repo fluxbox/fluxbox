@@ -464,11 +464,9 @@ private:
     const std::string m_name, m_altname;
     FbTk::ResourceManager &m_resource_manager;
 
+    // Xinerama related private data
     bool m_xinerama_avail;
     int m_xinerama_num_heads;
-
-    // Xinerama related private data
-   
     int m_xinerama_center_x, m_xinerama_center_y;
 
     HeadArea *m_head_areas;

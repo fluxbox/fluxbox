@@ -3273,15 +3273,23 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     /////////////////////////////////////
     // begin by checking the screen (or Xinerama head) edges
 
+    int h;
     if (screen().numHeads() > 0) {
         // head "0" == whole screen width + height, which we skip since the
         // sum of all the heads covers those edges
-        for (int h = 1; h <= screen().numHeads(); h++) {
+        for (h = 1; h <= screen().numHeads(); h++) {
             snapToWindow(dx, dy, left, right, top, bottom,
                          screen().maxLeft(h),
                          screen().maxRight(h),
                          screen().maxTop(h),
                          screen().maxBottom(h));
+        }
+        for (h = 1; h <= screen().numHeads(); h++) {
+            snapToWindow(dx, dy, left, right, top, bottom,
+                         screen().getHeadX(h),
+                         screen().getHeadX(h) + screen().getHeadWidth(h),
+                         screen().getHeadY(h),
+                         screen().getHeadY(h) + screen().getHeadHeight(h));
         }
     } else {
         snapToWindow(dx, dy, left, right, top, bottom,
@@ -3289,7 +3297,15 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
                      screen().maxRight(0),
                      screen().maxTop(0),
                      screen().maxBottom(0));
+
+        snapToWindow(dx, dy, left, right, top, bottom,
+                     screen().getHeadX(0),
+                     screen().getHeadX(0) + screen().getHeadWidth(0),
+                     screen().getHeadY(0),
+                     screen().getHeadY(0) + screen().getHeadHeight(0));
     }
+
+
     /////////////////////////////////////
     // now check window edges
 
@@ -3301,7 +3317,9 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
     unsigned int bw;
     for (; it != it_end; it++) {
-        if ((*it) == this) continue; // skip myself
+        if ((*it) == this) 
+            continue; // skip myself
+       
         bw = (*it)->decorationMask() & DECORM_ENABLED ? (*it)->frame().window().borderWidth() : 0;
 
         snapToWindow(dx, dy, left, right, top, bottom,
