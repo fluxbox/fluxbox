@@ -34,7 +34,7 @@
 
 Netizen::Netizen(BScreen *scr, Window win):
 screen(scr), 
-basedisplay(screen->getBaseDisplay()),
+basedisplay(scr->getBaseDisplay()),
 window(win) {
 	screen = scr;
 	basedisplay = screen->getBaseDisplay();

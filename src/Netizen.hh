@@ -32,12 +32,6 @@ class Netizen;
 
 
 class Netizen {
-private:
-	BScreen *screen;
-	BaseDisplay *basedisplay;
-	Window window;
-	XEvent event;
-
 public:
 	Netizen(BScreen *, Window);
 
@@ -53,6 +47,12 @@ public:
 	void sendWindowLower(Window);
 
 	void sendConfigNotify(XEvent *);
+private:
+	BScreen *screen;
+	BaseDisplay *basedisplay;
+	Window window;
+	XEvent event;
+
 };
 
 
