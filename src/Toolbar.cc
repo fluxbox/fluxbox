@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.59 2003/02/18 15:11:09 rathnor Exp $
+// $Id: Toolbar.cc,v 1.60 2003/02/22 23:07:23 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -64,9 +64,6 @@
 #endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif // SHAPE
 
 #include <iostream>
 
@@ -110,7 +107,7 @@ void setupMenus(Toolbar &tbar) {
 Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
     window(screen_num, // screen (parent)
            0, 0, // pos
-           1, 1, // size
+           10, 10, // size
            // event mask
            ButtonPressMask | ButtonReleaseMask | 
            EnterWindowMask | LeaveWindowMask,
@@ -120,19 +117,22 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
                     1, 1, // size
                     // event mask
                     ButtonPressMask | ButtonReleaseMask | 
-                    ExposureMask | KeyPressMask),
+                    ExposureMask | KeyPressMask |
+                    EnterWindowMask | LeaveWindowMask),
     window_label(window, // parent
                   0, 0, // pos
                   1, 1, // size
                  // event mask
                   ButtonPressMask | ButtonReleaseMask | 
-                  ExposureMask),
-    clock (window, //parent
+                  ExposureMask |
+                 EnterWindowMask | LeaveWindowMask),
+    clock(window, //parent
             0, 0, // pos
             1, 1, // size
            // event mask
             ButtonPressMask | ButtonReleaseMask | 
-            ExposureMask),
+            ExposureMask |
+           EnterWindowMask | LeaveWindowMask),
     psbutton(ArrowButton::LEFT, // arrow type
              window, // parent
              0, 0, // pos
@@ -177,13 +177,13 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     image_ctrl(*scrn.getImageControl()),
     clock_timer(this), 	// get the clock updating every minute
     hide_timer(&hide_handler),
-    m_toolbarmenu(*scrn.menuTheme(), scrn.getScreenNumber(), *scrn.getImageControl()),
+    m_toolbarmenu(*scrn.menuTheme(), 
+                  scrn.getScreenNumber(), *scrn.getImageControl()),
     m_layermenu(0),
     m_theme(scrn.getScreenNumber()),
     m_place(BOTTOMCENTER),
     m_themelistener(*this),
-    m_layeritem(0)
-{
+    m_layeritem(0) {
 
    m_layermenu = new LayerMenu<Toolbar>(
        *scrn.menuTheme(), 
@@ -524,6 +524,7 @@ void Toolbar::reconfigure() {
     frame.window.setBorderWidth(screen().getBorderWidth());
 
     frame.window.clear();
+
     frame.workspace_label.clear();
     frame.window_label.clear();
     frame.clock.clear();
@@ -1082,6 +1083,7 @@ void Toolbar::HideHandler::timeout() {
         toolbar->hide_timer.start(); // restart timer and try next timeout
         return;
     }
+
     toolbar->hide_timer.fireOnce(true);
 
     toolbar->hidden = ! toolbar->hidden;
