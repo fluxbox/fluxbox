@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.10 2003/09/08 17:52:34 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.11 2003/09/10 11:17:53 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -246,17 +246,17 @@ void IconbarTool::setMode(Mode mode) {
     deleteIcons();
 
     // update mode
-    switch (*m_rc_mode) {
-    case NONE:
+    switch (mode) {
+    case NONE: // nothing
         break;
-    case ICONS:
-    case WORKSPACEICONS:
+    case ICONS: // all icons from all workspaces
+    case WORKSPACEICONS: // all icons on current workspace
         updateIcons();
         break;
-    case WORKSPACE:
+    case WORKSPACE: // all windows and all icons on current workspace
         updateWorkspace();
         break;
-    case ALLWINDOWS:
+    case ALLWINDOWS: // all windows and all icons from all workspaces
         updateAllWindows();
         break;
     };
@@ -321,7 +321,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
                     removeWindow(winsubj->win());
                     renderTheme();
                 }
-            } else {
+            } else if (mode() != WORKSPACE) {
                 if (winsubj->win().isIconic()) {
                     removeWindow(winsubj->win());
                     renderTheme();
@@ -342,10 +342,10 @@ void IconbarTool::update(FbTk::Subject *subj) {
         if (&m_screen.currentWorkspaceSig() == screen_subj &&
             mode() != ALLWINDOWS && mode() != ICONS) {
             remove_all = true; // remove and readd all windows
-        } else if (&m_screen.iconListSig() == screen_subj &&
-                   (mode() == ALLWINDOWS || mode() == ICONS)) {
+        }/* else if (&m_screen.iconListSig() == screen_subj &&
+                   (mode() == ALLWINDOWS || mode() == ICONS || mode() == WORKSPACE)) {
             remove_all = true;
-        }
+        }*/
     }
 
     // lock graphic update
@@ -544,13 +544,22 @@ void IconbarTool::updateIcons() {
 
 void IconbarTool::updateWorkspace() {
     std::list<FluxboxWindow *> itemlist;
+    // add current workspace windows
     Workspace &space = *m_screen.currentWorkspace();
-    Workspace::Windows::iterator it = space.windowList().begin();
-    Workspace::Windows::iterator it_end = space.windowList().end();
-    for (; it != it_end; ++it) {
-        if (checkAddWindow(mode(), **it))
-            itemlist.push_back(*it);
+    Workspace::Windows::iterator win_it = space.windowList().begin();
+    Workspace::Windows::iterator win_it_end = space.windowList().end();
+    for (; win_it != win_it_end; ++win_it) {
+        if (checkAddWindow(mode(), **win_it))
+            itemlist.push_back(*win_it);
     }    
+    // add icons from current workspace
+    BScreen::Icons::iterator icon_it =  m_screen.getIconList().begin();
+    BScreen::Icons::iterator icon_it_end =  m_screen.getIconList().end();
+    for (; icon_it != icon_it_end; ++icon_it) {
+        if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
+            itemlist.push_back(*icon_it);
+    }
+
     removeDuplicate(m_icon_list, itemlist);
     addList(itemlist);
 }
