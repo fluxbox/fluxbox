@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.6 2002/03/19 00:04:36 fluxgen Exp $
+// $Id: Image.hh,v 1.7 2002/05/17 10:59:30 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -49,13 +49,13 @@ public:
 	BColor(char r = 0, char g = 0, char b = 0)
 		{ red = r; green = g; blue = b; pixel = 0; allocated = 0; }
 
-	inline const int &isAllocated(void) const { return allocated; }
+	inline int isAllocated(void) const { return allocated; }
 
-	inline const unsigned char getRed(void) const { return red; }
-	inline const unsigned char getGreen(void) const { return green; }
-	inline const unsigned char getBlue(void) const { return blue; }
+	inline unsigned char getRed(void) const { return red; }
+	inline unsigned char getGreen(void) const { return green; }
+	inline unsigned char getBlue(void) const { return blue; }
 
-	inline const unsigned long getPixel(void) const { return pixel; }
+	inline unsigned long getPixel(void) const { return pixel; }
 
 	inline void setAllocated(int a) { allocated = a; }
 	inline void setRGB(char r, char g, char b) { red = r; green = g; blue = b; }
@@ -69,14 +69,19 @@ private:
 	unsigned long texture;
 
 public:
-	BTexture(void) { texture = 0; }
+	BTexture(void):texture(0) { }
+
+	inline const BColor *getColor(void) const { return &color; }
+	inline const BColor *getColorTo(void) const { return &colorTo; }
+	inline const BColor *getHiColor(void) const { return &hiColor; }
+	inline const BColor *getLoColor(void) const { return &loColor; }
 
 	inline BColor *getColor(void) { return &color; }
 	inline BColor *getColorTo(void) { return &colorTo; }
 	inline BColor *getHiColor(void) { return &hiColor; }
 	inline BColor *getLoColor(void) { return &loColor; }
 
-	inline const unsigned long getTexture(void) const { return texture; }
+	inline unsigned long getTexture(void) const { return texture; }
 
 	inline void setTexture(unsigned long t) { texture = t; }
 	inline void addTexture(unsigned long t) { texture |= t; }
@@ -157,7 +162,7 @@ public:
 
 	inline BaseDisplay *getBaseDisplay(void) { return basedisplay; }
 
-	inline const bool doDither(void) { return dither; }
+	inline bool doDither(void) { return dither; }
 	inline const Colormap &getColormap(void) const { return colormap; }
 	inline ScreenInfo *getScreenInfo(void) { return screeninfo; }
 
@@ -165,9 +170,9 @@ public:
 
 	inline Visual *getVisual(void) { return screeninfo->getVisual(); }
 
-	inline const int getBitsPerPixel(void) const { return bits_per_pixel; }
-	inline const int getDepth(void) const { return screen_depth; }
-	inline const int getColorsPerChannel(void) const
+	inline int getBitsPerPixel(void) const { return bits_per_pixel; }
+	inline int getDepth(void) const { return screen_depth; }
+	inline int getColorsPerChannel(void) const
 		{ return colors_per_channel; }
 
 	unsigned long getColor(const char *);
