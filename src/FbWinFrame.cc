@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.65 2003/12/11 12:48:39 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.66 2003/12/16 12:46:14 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -1170,9 +1170,6 @@ void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
     button.setAlpha(theme().alpha());
-
-    if (m_label_active_pm == 0)
-        m_label_active_pm = m_label_unfocused_pm;
 
     if (m_label_active_pm != 0) {
         // already set
