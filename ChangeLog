@@ -1,5 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/07/01:
+   * Added keyboard navigation for menus (Henrik)
+     (click on title to get input focus, unless you're using RootMenu in keys)
+     Use keys:
+	   Up/Down:  select menu item
+	   Left/Right: go in/out from submenus
+	   Escape: close menu and return focus to windows
+	   Enter: run/execute/toggle menu item
+     Menu.hh/cc, fluxbox.cc
+   * Fixed reconfigure toolbar on screen reconfig signal (Henrik)
+     Screen.hh/cc, Toolbar.cc
+   * Fixed workspace label redraw bug (Thanks Jochem Kossen j.kossen<a(T)>home.nl)
+     ToolbarHandler.cc
 *03/06/30:
    * Fixed so we can use the same action strings in menu as in key actions (Henrik)
      Screen.cc
