@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.2 2002/11/12 16:46:17 fluxgen Exp $
+// $Id: main.cc,v 1.3 2002/11/12 19:16:26 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "BaseDisplay.hh"
+#include "StringUtil.hh"
 
 #include <string>
 #include <iostream>
@@ -57,6 +58,7 @@ void showUsage(const char *progname) {
 		"   -fg [color name]            Foreground text color"<<endl<<
 		"   -bg [color name]            Background color"<<endl<<
 		"   -a                          Antialias"<<endl<<
+		"   -hf [history file]          History file to load (default ~/.fluxbox/history)"<<endl<<
 		"   -help                       Show this help"<<endl<<endl<<
 		"Example: fbrun -fg black -bg white -text xterm -title \"run xterm\""<<endl;
 }
@@ -73,7 +75,7 @@ int main(int argc, char **argv) {
 	string foreground("black");   // text color
 	string background("white");   // text background color
 	string display_name; // name of the display connection
-
+	string history_file("~/.fluxbox/fbrun_history"); // command history file
 	// parse arguments
 	for (int i=1; i<argc; i++) {
 		if (strcmp(argv[i], "-font") == 0 && i+1 < argc) {
@@ -109,6 +111,8 @@ int main(int argc, char **argv) {
 			background = argv[i];
 		} else if (strcmp(argv[i], "-a") == 0) {
 			antialias = true;
+		} else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
+			history_file = argv[++i];
 		} else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
 			showUsage(argv[0]);
 			exit(0);
@@ -159,6 +163,11 @@ int main(int argc, char **argv) {
 			fbrun.resize(width, height);
 		if (antialias)
 			fbrun.setAntialias(antialias);
+		// expand and load command history
+		string expanded_filename = StringUtil::expandFilename(history_file);
+		if (!fbrun.loadHistory(expanded_filename.c_str()))
+			cerr<<"FbRun Warning: Failed to load history file: "<<expanded_filename<<endl;
+
 		fbrun.setTitle(title);
 		fbrun.setText(text);
 		fbrun.show();

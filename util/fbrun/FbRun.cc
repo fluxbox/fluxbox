@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.3 2002/11/12 17:10:13 fluxgen Exp $
+// $Id: FbRun.cc,v 1.4 2002/11/12 19:20:31 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -32,6 +32,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
@@ -40,7 +41,8 @@ m_win(None),
 m_display(BaseDisplay::getXDisplay()),
 m_bevel(4),
 m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
-m_end(false) {
+m_end(false),
+m_current_history_item(0) {
 	createWindow(x, y, width + m_bevel, m_font.height());
 }
 
@@ -57,9 +59,44 @@ void FbRun::run(const std::string &command) {
 		exit(0); //exit fork
 	}
 
-	hide();
+	hide(); // hide gui
+	
+	// save command history to file
+	if (m_runtext.size() != 0) { // no need to save empty command
+		// open file in append mode
+		ofstream outfile(m_history_file.c_str(), ios::app);
+		if (outfile)
+			outfile<<m_runtext<<endl;
+		else 
+			cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+	}
 
 	m_end = true; // mark end of processing
+}
+
+bool FbRun::loadHistory(const char *filename) {
+	if (filename == 0)
+		return false;
+	ifstream infile(filename);
+	if (!infile) {
+		//even though we fail to load file, we should try save to it
+		m_history_file = filename;
+		return false;
+	}
+	// clear old history and load new one from file
+	m_history.clear();
+	// each line is a command
+	string line;
+	while (!infile.eof()) {
+		getline(infile, line);
+		if (line.size()) // don't add empty lines
+			m_history.push_back(line);
+	}
+	// set no current histor to display
+	m_current_history_item = m_history.size();
+	// set history file
+	m_history_file = filename;
+	return true;
 }
 
 bool FbRun::loadFont(const string &fontname) {
@@ -171,6 +208,16 @@ void FbRun::handleEvent(XEvent * const xev) {
 			} else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
 				m_runtext+=keychar[0]; // append character
 				redrawLabel(); 
+			} else if (IsCursorKey(ks)) {
+				switch (ks) {
+				case XK_Up:
+					prevHistoryItem();
+					break;
+				case XK_Down:
+					nextHistoryItem();
+					break;
+				}
+				redrawLabel();
 			}
 		} break;
 		case Expose:
@@ -202,4 +249,23 @@ void FbRun::setNoMaximize() {
 	sh.min_width = width;
 	sh.min_height = height;
 	XSetWMNormalHints(m_display, m_win, &sh);
+}
+
+void FbRun::prevHistoryItem() {
+
+	if (m_current_history_item > 0 && m_history.size() > 0)
+		m_current_history_item--;
+	if (m_current_history_item < m_history.size())
+		m_runtext = m_history[m_current_history_item];
+}
+
+void FbRun::nextHistoryItem() {
+	m_current_history_item++;
+	if (m_current_history_item >= m_history.size()) {
+		m_current_history_item = m_history.size();
+		m_runtext = "";
+		return;
+	} else 
+		m_runtext = m_history[m_current_history_item];
+
 }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.2 2002/11/12 16:47:37 fluxgen Exp $
+// $Id: FbRun.hh,v 1.3 2002/11/12 19:20:31 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -28,10 +28,10 @@
 #include "Font.hh"
 
 #include <string>
+#include <vector>
 
 /**
 	Creates and managed a run window
-	TODO: a command history
 */
 class FbRun: public FbTk::EventHandler<XEvent> {
 public:
@@ -54,9 +54,16 @@ public:
 	const FbTk::Font &font() const { return m_font; }
 	/// execute command and exit
 	void run(const std::string &execstring);
-	/// is this object done?
+	/// is this application done?
 	bool end() const { return m_end; }
+	/**
+	  loads history file.
+	  @return true on success, else false
+	*/
+	bool loadHistory(const char *filename);
 private:
+	void nextHistoryItem();
+	void prevHistoryItem();
 	void drawString(int x, int y, const char *text, size_t len);
 	void getSize(size_t &width, size_t &height);
 	void createWindow(int x, int y, size_t width, size_t height);	
@@ -72,6 +79,9 @@ private:
 	int m_bevel; ///< distance to window edge from font in pixels
 	GC m_gc;
 	bool m_end;
+	std::vector<std::string> m_history; ///< history list of commands
+	size_t m_current_history_item;
+	std::string m_history_file;
 };
 
 #endif // FBRUN_HH
