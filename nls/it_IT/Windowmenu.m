@@ -1,24 +1,24 @@
 $set 10 #Windowmenu
 
 $ #SendTo
-# Manda A ...
+# Manda a ...
 $ #SendGroupTo
-# Manda Gruppo A ...
+# Manda il gruppo a ...
 $ #Shade
-# Riduci A Barra
+# Riduci a barra
 $ #Iconify
-# Iconifica
+# Riduci a icona
 $ #Maximize
-# Massimizza
+# Ingrandisci
 $ #Raise
-# In Primo Piano
+# In primo piano
 $ #Lower
-# In Secondo Piano
+# In secondo piano
 $ #Stick
-# Stick
+# Su tutte le aree di lavoro
 $ #KillClient
-# Killa Il Client
+# Forza la chiusura
 $ #Close
 # Chiudi
 $ #Tab
-# Tab
+# Linguetta

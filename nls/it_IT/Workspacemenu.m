@@ -3,6 +3,6 @@ $set 12 #Workspacemenu
 $ #WorkspacesTitle
 # Workspaces
 $ #NewWorkspace
-# New Workspace
+# Nuova area di lavoro
 $ #RemoveLast
-# Rimuovi L'ultimo
+# Elimina l'ultima

@@ -3,54 +3,54 @@ $set 3 #Configmenu
 $ #ConfigOptions
 # Configurazione
 $ #FocusModel
-# Tipo Di Focus
+# Tipo di focalizzazione
 $ #WindowPlacement
 # Posizionamento delle finestre
 $ #ImageDithering
-# Dithering Delle Immagini
+# Simulazione di colore nelle immagini
 $ #OpaqueMove
-# Movimento Delle Finestre Opaco
+# Movimento delle finestre opaco
 $ #FullMax
-# Massimizzazione Completa
+# Massimo ingrandimento
 $ #FocusNew
-# Dai Il Focus Alle Nuove Finestre
+# Focalizza le nuove finestre
 $ #FocusLast
-# Dai Il Focus Alla Finestra Al Cambio di Workspace
+# Focalizza l'ultima finestra nell'area di lavoro
 $ #ClickToFocus
-# Clicca Per Il Focus
+# Clicca per focalizzare
 $ #SloppyFocus
-# Sloppy Focus
+# Focalizzazione automatica
 $ #AutoRaise
-# Auto Raise
+# In primo piano automaticamente
 $ #SmartRows
-# Posizionamento Intelligente (Righe)
+# Posizionamento intelligente (Righe)
 $ #SmartCols
-# Posizionamento Intelligente (Colonne)
+# Posizionamento intelligente (Colonne)
 $ #Cascade
-# Posizionamento A Cascata
+# Posizionamento a cascata
 $ #LeftRight
-# Da Sinistra A Destra
+# Da sinistra a destra
 $ #RightLeft
-# Da Destra A Sinistra
+# Da destra a sinistra
 $ #TopBottom
-# Da Sopra A Sotto
+# Da sopra verso sotto
 $ #BottomTop
-# Da Sotto A Sopra
+# Da sotto verso sopra
 $ #Tabs
-# Usa I Tabs
+# Usa le linguette
 $ #Icons
-# Usa Le Icone
+# Usa le icone
 $ #TabPlacement
-# Posizionamento Del Tab
+# Posizionamento della linguetta
 $ #TabRotateVertical
-# Routa Verticalmente I Tab
+# Ruota le linguette in verticale
 $ #SemiSloppyFocus
-# Semi Sloppy Focus
+# Focalizzazione semiautomatica
 $ #MaxOverSlit
-# Maximize Over Slit
+# Ingrandisci al di sopra dello  Slit
 $ #SloppyWindowGrouping
-# Sloppy Window Grouping
+# Raggruppamento facilitato
 $ #WorkspaceWarping
-# Workspace Warping
+# Cambia area di lavoro trascinando le finestre
 $ #DesktopWheeling
-# Desktop Wheeling
+# Cambia area di lavoro con la rotella del mouse

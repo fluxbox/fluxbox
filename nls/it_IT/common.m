@@ -13,7 +13,7 @@ $ #DirectionVert
 # Verticale
 
 $ #AlwaysOnTop
-# Sempre In Primo Piano
+# Sempre in primo piano
 
 $ #PlacementTitle
 # Posizionamento

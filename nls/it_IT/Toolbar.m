@@ -17,6 +17,6 @@ $ #NoStrftimeTimeFormatA
 $ #ToolbarTitle
 # Toolbar
 $ #EditWkspcName
-# Cambia il nome del workspace corrente
+# Cambia nome a questa area di lavoro
 $ #ToolbarPlacement
 # Posizionamento della Toolbar

@@ -8,7 +8,7 @@ $ #WarnDisplaySet
 # warning: non posso settare la variabile di ambiente 'DISPLAY'\n
 $ #Usage
 # Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
-  -display <string>\t\tusa la connesione al display.\n\
+  -display <string>\t\tusa la connessione al display.\n\
   -rc <string>\t\t\tusa file di risorse alternativo.\n\
   -version\t\t\tmostra la versione ed esci.\n\
   -help\t\t\t\tmostra questo messaggio di aiuto ed esci.\n\n
