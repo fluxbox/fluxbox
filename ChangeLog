@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/08:
+  * Added "visible" menu item to Toolbar (Henrik)
+    When this item is off the toolbar vill be completely
+    hidden. (You can still access the toolbar menu via main
+    configure menu)
+    New resource item:
+    session.<screename>.toolbar.visible: <boolean>
+    Toolbar.hh/cc
+  * Removed data/startup.in (Henrik)
+    data/Makefile.am, data/startup.in
 *03/12/07:
   * Fixed bug window title change bug for iconbar (Henrik)
     IconbarTool.cc, Workspace.cc, Window.hh/cc
