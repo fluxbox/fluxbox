@@ -1172,17 +1172,17 @@ void FluxboxWindow::getWMName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 							&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.title = bstrdup(*list);
+					client.title = Misc::strdup(*list);
 					XFreeStringList(list);
 				} else
-					client.title = bstrdup((char *) text_prop.value);
+					client.title = Misc::strdup((char *) text_prop.value);
 					
 			} else
-				client.title = bstrdup((char *) text_prop.value);
+				client.title = Misc::strdup((char *) text_prop.value);
 
 			XFree((char *) text_prop.value);
 		} else
-			client.title = bstrdup(i18n->getMessage(
+			client.title = Misc::strdup(i18n->getMessage(
 #ifdef		NLS
 									WindowSet, WindowUnnamed,
 #else // !NLS
@@ -1190,7 +1190,7 @@ void FluxboxWindow::getWMName(void) {
 #endif //
 									"Unnamed"));
 	} else {
-		client.title = bstrdup(i18n->getMessage(
+		client.title = Misc::strdup(i18n->getMessage(
 #ifdef		NLS
 							WindowSet, WindowUnnamed,
 #else // !NLS
@@ -1234,18 +1234,18 @@ void FluxboxWindow::getWMIconName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 						&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.icon_title = bstrdup(*list);
+					client.icon_title = Misc::strdup(*list);
 					XFreeStringList(list);
 				} else
-					client.icon_title = bstrdup((char *) text_prop.value);
+					client.icon_title = Misc::strdup((char *) text_prop.value);
 			} else
-				client.icon_title = bstrdup((char *) text_prop.value);
+				client.icon_title = Misc::strdup((char *) text_prop.value);
 
 			XFree((char *) text_prop.value);
 		} else
-				client.icon_title = bstrdup(client.title);
+				client.icon_title = Misc::strdup(client.title);
 	} else
-		client.icon_title = bstrdup(client.title);
+		client.icon_title = Misc::strdup(client.title);
 }
 
 
@@ -2334,7 +2334,7 @@ void FluxboxWindow::redrawLabel(void) {
 	GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
 			 screen->getWindowStyle()->l_text_unfocus_gc);
 	
-	DrawString(display, frame.label, gc,
+	Misc::DrawString(display, frame.label, gc,
 			&screen->getWindowStyle()->font, 
 			client.title_text_w, frame.label_w,
 			frame.bevel_w, client.title);
