@@ -261,14 +261,12 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, int index) {
 		if (index == windowmenu->screen->getCurrentWorkspaceID()) return;
 		if (windowmenu->window->isStuck()) windowmenu->window->stick();
 
-		if (button == 1) windowmenu->window->withdraw();
-		windowmenu->screen->reassociateWindow(windowmenu->window, index, True);
-		if (windowmenu->window->getTab()) {
-			windowmenu->window->getTab()->disconnect();
-			windowmenu->window->getTab()->setPosition();
-		}
-		if (button == 2) windowmenu->screen->changeWorkspaceID(index);
+		if (button == 1)
+			windowmenu->screen->sendToWorkspace(index, False);
+		else if (button == 2)
+			windowmenu->screen->sendToWorkspace(index);
 	}
+
 	hide();
 }
 
