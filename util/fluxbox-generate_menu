@@ -16,13 +16,13 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	 IN NO EVENT SHALL
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
 # THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.12 2002/11/17 17:36:50 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.13 2002/11/19 06:21:45 rathnor Exp $
 
 [ `id -u` -eq 0 ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
@@ -30,26 +30,28 @@
 display_usage() {
     cat <<EOF
 
-fluxbox-genrate_menu
-Usage: fluxbox-generate_menu [-kg] [-o /path]
-	 [-p /path] [-m menu-title]
+Usage: fluxbox-generate_menu [-kgr] [-t terminal] [-w browser]
+         [-m menu-title] [-p /path] [-n /path] [-q /path] [-o /path] 
 Options:
 
-    -t	Favourite terminal
-    -b  Favourite browser
-    -k	Insert a kde menu
-    -g	Add a gnome menu
-    -o	Outputfile; default is ~/.fluxbox/menu
-    -m	Menu-title; default is "Fluxbox"
+    -k  Insert a kde menu
+    -g  Add a gnome menu
+    -m  Menu-title; default is "Fluxbox"
     -r  Don't remove empty menu-entries; Better for templates.
-    -h	Display this help
-    -a	Display the authors of this script
+    -o  Outputfile; default is ~/.fluxbox/menu
+    -t  Favourite terminal
+    -b  Favourite browser
+    -w  Homepage for console-browsers. Default is fluxbox.org.
+
+    -h  Display this help
+    -a  Display the authors of this script
+
 
   Only for packagers:
 
-    -p	Package-datadir; default is /usr/share
-    -n	Gnome-datadir; default is Package-datadir
-    -q	KDE-datadir; default is Package-datadir
+    -p  Package-datadir; default is /usr/share
+    -n  Gnome-datadir; default is Package-datadir
+    -q  KDE-datadir; default is Package-datadir
 
 EOF
 }
@@ -58,8 +60,7 @@ display_help() {
     cat <<EOF
 
 This program generates a menu-file for fluxbox.
-Use fluxbox-generate_menu -h for brief usage instructions
-
+Use fluxbox-generate_menu -h for brief usage instructions.
 EOF
 }
 
@@ -69,18 +70,28 @@ WHOAMI=`whoami`
 
 fluxbox-generate_menu was brought to you by:
 
-    Henrik Kinnunnen:	Project leader.
-    Han Boetes:		Packaging, debugging and scripts.
-    Jeramy B. Smith:	Packaging assistance, gnome and kde menu system.
-    Xyrnix:		Mysterious guest developer who made find_it module.
-    Filippo Pappalardo:	Italian locales and -t option.
-    $WHOAMI:		Innocent bystander.
+    Henrik Kinnunnen:   Project leader.
+    Han Boetes:         Packaging, debugging and scripts.
+    Jeramy B. Smith:    Packaging assistance, gnome and kde menu system.
+    Xyrnix:             Mysterious guest developer who made find_it module.
+    Filippo Pappalardo: Italian locales and -t option.
+    $WHOAMI:            Innocent bystander.
 
 EOF
 }
 
 find_it() {
-    which $1 > /dev/null 2> /dev/null && shift && $*
+    if [ -z "$1" ]; then
+        # echo "Nothing found"
+        return 1
+    fi
+    which $1 > /dev/null 2> /dev/null
+    found=$?
+    if [ $found -eq 0 -a $# -gt 1 ]; then
+        shift
+        $*
+    fi
+    return $found
 }
 
 append() {
@@ -93,37 +104,37 @@ append_menu() {
 
 append_submenu() {
     # only an empty line in templates
-    [ ${REMOVE} ] && echo >> ${FILENAME}
+    [ "${REMOVE}" ] && echo >> ${FILENAME}
     append_menu "[submenu] ($1)"
 }
 
 append_menu_end() {
     append_menu "[end]"
     # only an empty line in templates
-    [ ${REMOVE} ] && echo >> ${FILENAME}
+    [ "${REMOVE}" ] && echo >> ${FILENAME}
 }
 
 menu_entry() {
     append "[exec] ("`grep -v GenericName $* | grep Name= | cut -d = -f 2`") \
-	{"`grep -v TryExec $* | grep Exec= | cut -d = -f 2`"}"
+        {"`grep -v TryExec $* | grep Exec= | cut -d = -f 2`"}"
 }
 
 menu_entry_dircheck() {
     if [ -d "$*" ]; then
-	menu_entry_dir "$*"
+        menu_entry_dir "$*"
     fi
 }
 
 menu_entry_dir() {
     for b in `ls "$*"/*.desktop 2>/dev/null `; do
-	menu_entry "${b}"
+        menu_entry "${b}"
     done
 }
 
 normal_find() {
-    while [ $1 ]; do
-	find_it $1        append "[exec]   ($1) {$1}"
-	shift
+    while [ "$1" ]; do
+        find_it $1     append "[exec]   ($1) {$1}"
+        shift
     done
 }
 
@@ -137,52 +148,58 @@ mv -f ${FILENAME}.tmp ${FILENAME}
 }
 
 # Get options.
-while getopts ":khragb:t:p:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
-    case "${COMMAND_LINE_ARGUMENT}" in
-	k) KDEMENU=yes ;;
-	g) GNOMEMENU=yes ;;
-	t) MY_TERM=${OPTARG};;
-	b) MY_BROWSER=${OPTARG};;
-	o) FILENAME=${OPTARG} ;;
-	p) PKGDATADIR=${OPTARG} ;;
-	n) GPKGDATADIR=${OPTARG} ;;
-	q) KPKGDATADIR=${OPTARG} ;;
-	m) MENUTITLE=${OPTARG} ;;
-	r) REMOVE=no ;;
-	h) display_usage ; exit 0 ;;
-	a) display_authors ; exit 0 ;;
-	*) display_help ; exit 1 ;;
-    esac
+while getopts ":khragb:t:p:w:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
+   case "${COMMAND_LINE_ARGUMENT}" in
+      k) KDEMENU=yes ;;
+      g) GNOMEMENU=yes ;;
+      t) MY_TERM=${OPTARG};;
+      b) MY_BROWSER=${OPTARG};;
+      o) FILENAME=${OPTARG} ;;
+      p) PKGDATADIR=${OPTARG} ;;
+      n) GPKGDATADIR=${OPTARG} ;;
+      q) KPKGDATADIR=${OPTARG} ;;
+      m) MENUTITLE=${OPTARG} ;;
+      w) HOMEPAGE=${OPTARG} ;;
+      r) REMOVE=no ;;
+      h) display_usage ; exit 0 ;;
+      a) display_authors ; exit 0 ;;
+      *) display_help ; exit 1 ;;
+   esac
 done
 
 
 # Set Defaults
 
 # menufile name
-if [ -z ${FILENAME} ]; then
+if [ -z "${FILENAME}" ]; then
     FILENAME=${HOME}/.fluxbox/menu
 fi
 
 # Can we actually create ${FILENAME}
-if ! touch ${FILENAME}; then
-    echo "Fatal error: can't create $FILENAME" >/dev/stderr
+touch ${FILENAME} 2> /dev/null
+if [ $? -ne 0 ] ; then
+    echo "Fatal error: can't create $FILENAME" >&2
     exit 1
 fi
 
 # backup menu
-if [ -w ${FILENAME} ]; then
+if [ -w "${FILENAME}" ]; then
     if [ -f ${FILENAME}.firstbak ];then
-	cp ${FILENAME} ${FILENAME}.firstbak
+        cp ${FILENAME} ${FILENAME}.firstbak
     fi
     mv ${FILENAME} ${FILENAME}.bak
 fi
 
+# default homepage for console-browsers
+HOMEPAGE=${HOMEPAGE:=fluxbox.org}
+
 #packagedatadir
+
 if [ ! -d "${PKGDATADIR}" -o "${PKGDATADIR}" = "" ]; then
-   if [ `uname` = "Linux" ];then
-	PKGDATADIR=/usr/share
+   if [ "`uname`" = "Linux" ];then
+        PKGDATADIR=/usr/share
     else
-	PKGDATADIR=/usr/local/share
+        PKGDATADIR=/usr/local/share
     fi
 fi
 
@@ -204,13 +221,13 @@ fi
 # find the default terminal
 find_it $MY_TERM
 if [ $? -ne 0 ];then
-    [ -n "$MY_TERM" ] && echo "Warning: you choose an invalid term." > /dev/stderr
+    [ -n "$MY_TERM" ] && echo "Warning: you choose an invalid term." >&2
     #The precise order is up for debate.
     for term in Eterm aterm rxvt wterm xterm konsole gnome-terminal; do
-	if find_it $term; then
-	    DEFAULT_TERM=$term
-	    break
-	fi
+        if find_it $term; then
+            DEFAULT_TERM=$term
+            break
+        fi
     done
 else
     DEFAULT_TERM=$MY_TERM
@@ -220,13 +237,13 @@ fi
 # find the default browser
 find_it $MY_BROWSER
 if [ $? -ne 0 ];then
-    [ -n "$MY_BROWSER" ] && echo "Warning: you choose an invalid browser." > /dev/stderr
+    [ -n "$MY_BROWSER" ] && echo "Warning: you choose an invalid browser." >&2
     #The precise order is up for debate.
     for browser in opera phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
-	if find_it $browser; then
-	    DEFAULT_BROWSER=$browser
-	    break
-	fi
+        if find_it $browser; then
+            DEFAULT_BROWSER=$browser
+            break
+        fi
     done
 else
     DEFAULT_BROWSER=$MY_BROWSER
@@ -235,7 +252,7 @@ fi
 
 # a unix system without any terms. that's odd
 if [ -z "$DEFAULT_TERM" ];then
-    cat <<EOF>/dev/stderr
+    cat <<EOF>&2
 Error: I can't find any terminal-emulators in your path.
 Please specify your favourite terminal with the -t option.
 EOF
@@ -268,156 +285,156 @@ XUTILSMENU="X-utils"
 
 # Check translation
 case ${LC_ALL} in
-	ru_RU) #Russian locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="âÒÁÕÚÅÒÙ"
-		CONFIGUREMENU="îÁÓÔÒÏÊËÁ"
-		EDITORMENU="òÅÄÁËÔÏÒÙ"
-		EXITITEM="÷ÙÊÔÉ"
-		FBSETTINGSMENU="FB-ÎÁÓÔÒÏÊËÉ"
-		GNOMEMENUTEXT="Gnome-ÍÅÎÀ"
-		GRAPHICMENU="çÒÁÆÉËÁ"
-		KDEMENUTEXT="KDE-ÍÅÎÀ"
-		MISCMENU="ðÒÏÞÅÅ"
-		MUSICMENU="ú×ÕË"
-		NETMENU="óÅÔØ"
-		RELOADITEM="ðÅÒÅÎÁÓÔÒÏÉÔØ"
-		RESTARTITEM="ðÅÒÅÚÁÐÕÓÔÉÔØ"
-		STYLEMENU="óÔÉÌÉ"
-		STYLEMENUTITLE="÷ÙÂÅÒÉÔÅ ÓÔÉÌØ"
-		TERMINALMENU="ôÅÒÍÉÎÁÌÙ"
-		WORKSPACEMENU="òÁÂÏÞÉÅ ÐÒÏÓÔÒÁÎÓÔ×Á"
-		XUTILSMENU="X-ÕÔÉÌÉÔÙ"
-	;;
-	sv_SE) #Swedish locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="Browsers"
-		CONFIGUREMENU="Konfiguration"
-		EDITORMENU="Editorer"
-		EXITITEM="Exit"
-		FBSETTINGSMENU="FB-inställningar"
-		GNOMEMENUTEXT="Gnome-menyer"
-		GRAPHICMENU="Grafik"
-		KDEMENUTEXT="KDE-menyer"
-		MISCMENU="Blandat"
-		MUSICMENU="Musik"
-		NETMENU="Net"
-		RELOADITEM="Ladda om konfig"
-		RESTARTITEM="Starta om"
-		STYLEMENU="Stiler"
-		STYLEMENUTITLE="Välj en stil"
-		TERMINALMENU="Terminaler"
-		WORKSPACEMENU="Arbetsytor"
-		XUTILSMENU="X-program"
-	;;
-	nl_NL) #Nederlandse locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="Browsers"
-		CONFIGUREMENU="Instellingen"
-		EDITORMENU="Editors"
-		EXITITEM="Afsluiten"
-		FBSETTINGSMENU="FB-Instellingen"
-		GNOMEMENUTEXT="Gnome-menu"
-		GRAPHICMENU="Grafisch"
-		KDEMENUTEXT="KDE-menu"
-		MISCMENU="Onregelmatig"
-		MUSICMENU="Muziek"
-		NETMENU="Net"
-		RELOADITEM="Vernieuwen"
-		RESTARTITEM="Restart"
-		STYLEMENU="Stylen"
-		STYLEMENUTITLE="Kies een styl..."
-		TERMINALMENU="Terminals"
-		WORKSPACEMENU="Werkveld Lijst"
-		XUTILSMENU="X-utils"
-	;;
-	fi_FI) #Finnish locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="Selaimet"
-		CONFIGUREMENU="Konfigurointi"
-		EDITORMENU="Editorit"
-		EXITITEM="Lopeta"
-		FBSETTINGSMENU="FB:n Asetukset"
-		GNOMEMENUTEXT="Gnomen valikot"
-		GRAPHICMENU="Grafiikka"
-		KDEMENUTEXT="KDE:n valikot"
-		MISCMENU="Sekalaista"
-		MUSICMENU="Musikki"
-		NETMENU="Verkko"
-		RELOADITEM="Päivitä"
-		RESTARTITEM="Käynnistä uudelleen"
-		STYLEMENU="Tyylit"
-		STYLEMENUTITLE="Valitse tyyli"
-		TERMINALMENU="Terminaalit"
-		WORKSPACEMENU="Työaluet"
-		XUTILSMENU="X-Ohjelmat"
-	;;
-	ja_JP) #Japanese locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="¥Ö¥é¥¦¥¶"
-		CONFIGUREMENU="ÀßÄê"
-		EDITORMENU="¥¨¥Ç¥£¥¿"
-		EXITITEM="½ªÎ»"
-		FBSETTINGSMENU="FluxboxÀßÄê"
-		GNOMEMENUTEXT="Gnome¥á¥Ë¥å¡¼"
-		GRAPHICMENU="²èÁü"
-		KDEMENUTEXT="KDE¥á¥Ë¥å¡¼"
-		MISCMENU="¤¤¤í¤¤¤í"
-		MUSICMENU="²»³Ú"
-		NETMENU="¥Í¥Ã¥È¥ï¡¼¥¯"
-		RELOADITEM="ºÆÆÉ¤ß¹þ¤ß"
-		RESTARTITEM="ºÆµ¯Æ°"
-		STYLEMENU="¥¹¥¿¥¤¥ë"
-		STYLEMENUTITLE="¥¹¥¿¥¤¥ëÁªÂò..."
-		TERMINALMENU="¥¿¡¼¥ß¥Ê¥ë"
-		WORKSPACEMENU="¥ï¡¼¥¯¥¹¥Ú¡¼¥¹"
-		XUTILSMENU="X¥æ¡¼¥Æ¥£¥ê¥Æ¥£"
-	;;
-	fr_FR) # french	locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="Navigateurs"
-		CONFIGUREMENU="Configurer"
-		EDITORMENU="Editeurs"
-		EXITITEM="Sortir"
-		FBSETTINGSMENU="FB-Settings"
-		GNOMEMENUTEXT="menus-Gnome"
-		GRAPHICMENU="Graphisme"
-		KDEMENUTEXT="menus-KDE"
-		MISCMENU="Misc"
-		MUSICMENU="Musique"
-		NETMENU="Net"
-		RELOADITEM="Recharger config"
-		RESTARTITEM="Redémarrer"
-		STYLEMENU="Styles"
-		STYLEMENUTITLE="Choisir un style..."
-		TERMINALMENU="Terminaux"
-		WORKSPACEMENU="Liste des bureaux"
-		XUTILSMENU="X-utils"
-	;;
-	it_IT|it_IT@euro) # italian locales
-		#OFFICEMENU="Office"
-		BROWSERMENU="Browsers"
-		CONFIGUREMENU="Configurazione"
-		EDITORMENU="Editori"
-		EXITITEM="Esci"
-		FBSETTINGSMENU="Preferenze"
-		GAMESMENU="Giochi"
-		GNOMEMENUTEXT="Gnome"
-		GRAPHICMENU="Grafica"
-		KDEMENUTEXT="KDE"
-		MISCMENU="Varie"
-		MUSICMENU="Musica"
-		NETMENU="Internet"
-		RELOADITEM="Rileggi la configurazione"
-		RESTARTITEM="Riavvia"
-		STYLEMENU="Scegli uno stile..."
-		STYLEMENUTITLE="Scegli uno stile..."
-		TERMINALMENU="Terminali"
-		WORKSPACEMENU="Aree di lavoro"
-		XUTILSMENU="X-utils"
-	;;
-	*)
-	;;
+        ru_RU) #Russian locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="âÒÁÕÚÅÒÙ"
+                CONFIGUREMENU="îÁÓÔÒÏÊËÁ"
+                EDITORMENU="òÅÄÁËÔÏÒÙ"
+                EXITITEM="÷ÙÊÔÉ"
+                FBSETTINGSMENU="FB-ÎÁÓÔÒÏÊËÉ"
+                GNOMEMENUTEXT="Gnome-ÍÅÎÀ"
+                GRAPHICMENU="çÒÁÆÉËÁ"
+                KDEMENUTEXT="KDE-ÍÅÎÀ"
+                MISCMENU="ðÒÏÞÅÅ"
+                MUSICMENU="ú×ÕË"
+                NETMENU="óÅÔØ"
+                RELOADITEM="ðÅÒÅÎÁÓÔÒÏÉÔØ"
+                RESTARTITEM="ðÅÒÅÚÁÐÕÓÔÉÔØ"
+                STYLEMENU="óÔÉÌÉ"
+                STYLEMENUTITLE="÷ÙÂÅÒÉÔÅ ÓÔÉÌØ"
+                TERMINALMENU="ôÅÒÍÉÎÁÌÙ"
+                WORKSPACEMENU="òÁÂÏÞÉÅ ÐÒÏÓÔÒÁÎÓÔ×Á"
+                XUTILSMENU="X-ÕÔÉÌÉÔÙ"
+        ;;
+        sv_SE) #Swedish locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="Browsers"
+                CONFIGUREMENU="Konfiguration"
+                EDITORMENU="Editorer"
+                EXITITEM="Exit"
+                FBSETTINGSMENU="FB-inställningar"
+                GNOMEMENUTEXT="Gnome-menyer"
+                GRAPHICMENU="Grafik"
+                KDEMENUTEXT="KDE-menyer"
+                MISCMENU="Blandat"
+                MUSICMENU="Musik"
+                NETMENU="Net"
+                RELOADITEM="Ladda om konfig"
+                RESTARTITEM="Starta om"
+                STYLEMENU="Stiler"
+                STYLEMENUTITLE="Välj en stil"
+                TERMINALMENU="Terminaler"
+                WORKSPACEMENU="Arbetsytor"
+                XUTILSMENU="X-program"
+        ;;
+        nl_NL) #Nederlandse locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="Browsers"
+                CONFIGUREMENU="Instellingen"
+                EDITORMENU="Editors"
+                EXITITEM="Afsluiten"
+                FBSETTINGSMENU="FB-Instellingen"
+                GNOMEMENUTEXT="Gnome-menu"
+                GRAPHICMENU="Grafisch"
+                KDEMENUTEXT="KDE-menu"
+                MISCMENU="Onregelmatig"
+                MUSICMENU="Muziek"
+                NETMENU="Net"
+                RELOADITEM="Vernieuwen"
+                RESTARTITEM="Restart"
+                STYLEMENU="Stylen"
+                STYLEMENUTITLE="Kies een styl..."
+                TERMINALMENU="Terminals"
+                WORKSPACEMENU="Werkveld Lijst"
+                XUTILSMENU="X-utils"
+        ;;
+        fi_FI) #Finnish locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="Selaimet"
+                CONFIGUREMENU="Konfigurointi"
+                EDITORMENU="Editorit"
+                EXITITEM="Lopeta"
+                FBSETTINGSMENU="FB:n Asetukset"
+                GNOMEMENUTEXT="Gnomen valikot"
+                GRAPHICMENU="Grafiikka"
+                KDEMENUTEXT="KDE:n valikot"
+                MISCMENU="Sekalaista"
+                MUSICMENU="Musikki"
+                NETMENU="Verkko"
+                RELOADITEM="Päivitä"
+                RESTARTITEM="Käynnistä uudelleen"
+                STYLEMENU="Tyylit"
+                STYLEMENUTITLE="Valitse tyyli"
+                TERMINALMENU="Terminaalit"
+                WORKSPACEMENU="Työaluet"
+                XUTILSMENU="X-Ohjelmat"
+        ;;
+        ja_JP) #Japanese locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="¥Ö¥é¥¦¥¶"
+                CONFIGUREMENU="ÀßÄê"
+                EDITORMENU="¥¨¥Ç¥£¥¿"
+                EXITITEM="½ªÎ»"
+                FBSETTINGSMENU="FluxboxÀßÄê"
+                GNOMEMENUTEXT="Gnome¥á¥Ë¥å¡¼"
+                GRAPHICMENU="²èÁü"
+                KDEMENUTEXT="KDE¥á¥Ë¥å¡¼"
+                MISCMENU="¤¤¤í¤¤¤í"
+                MUSICMENU="²»³Ú"
+                NETMENU="¥Í¥Ã¥È¥ï¡¼¥¯"
+                RELOADITEM="ºÆÆÉ¤ß¹þ¤ß"
+                RESTARTITEM="ºÆµ¯Æ°"
+                STYLEMENU="¥¹¥¿¥¤¥ë"
+                STYLEMENUTITLE="¥¹¥¿¥¤¥ëÁªÂò..."
+                TERMINALMENU="¥¿¡¼¥ß¥Ê¥ë"
+                WORKSPACEMENU="¥ï¡¼¥¯¥¹¥Ú¡¼¥¹"
+                XUTILSMENU="X¥æ¡¼¥Æ¥£¥ê¥Æ¥£"
+        ;;
+        fr_FR) # french locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="Navigateurs"
+                CONFIGUREMENU="Configurer"
+                EDITORMENU="Editeurs"
+                EXITITEM="Sortir"
+                FBSETTINGSMENU="FB-Settings"
+                GNOMEMENUTEXT="menus-Gnome"
+                GRAPHICMENU="Graphisme"
+                KDEMENUTEXT="menus-KDE"
+                MISCMENU="Misc"
+                MUSICMENU="Musique"
+                NETMENU="Net"
+                RELOADITEM="Recharger config"
+                RESTARTITEM="Redémarrer"
+                STYLEMENU="Styles"
+                STYLEMENUTITLE="Choisir un style..."
+                TERMINALMENU="Terminaux"
+                WORKSPACEMENU="Liste des bureaux"
+                XUTILSMENU="X-utils"
+        ;;
+        it_IT|it_IT@euro) # italian locales
+                #OFFICEMENU="Office"
+                BROWSERMENU="Browsers"
+                CONFIGUREMENU="Configurazione"
+                EDITORMENU="Editori"
+                EXITITEM="Esci"
+                FBSETTINGSMENU="Preferenze"
+                GAMESMENU="Giochi"
+                GNOMEMENUTEXT="Gnome"
+                GRAPHICMENU="Grafica"
+                KDEMENUTEXT="KDE"
+                MISCMENU="Varie"
+                MUSICMENU="Musica"
+                NETMENU="Internet"
+                RELOADITEM="Rileggi la configurazione"
+                RESTARTITEM="Riavvia"
+                STYLEMENU="Scegli uno stile..."
+                STYLEMENUTITLE="Scegli uno stile..."
+                TERMINALMENU="Terminali"
+                WORKSPACEMENU="Aree di lavoro"
+                XUTILSMENU="X-utils"
+        ;;
+        *)
+        ;;
 esac
 
 # Start of menu
@@ -425,16 +442,16 @@ esac
 echo "[begin] (${MENUTITLE})" > ${FILENAME}
 
 
-append "[exec]	  (${DEFAULT_TERM}) {${DEFAULT_TERM}}"
+append "[exec]    (${DEFAULT_TERM}) {${DEFAULT_TERM}}"
 
 case "$DEFAULT_BROWSER" in
-    links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} fluxbox.org}" ;;
+    links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
     mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_BROWSER}}" ;;
     konqueror) append "[exec] (konqueror) {kfmclient openProfile webbrowsing}" ;;
     opera) append "[exec] (opera) {env QT_XFT=true opera}" ;;
 esac
 
-find_it fbrun		append "[exec]	 (Run) {fbrun}"
+find_it fbrun           append "[exec]   (Run) {fbrun}"
 
 
 append_submenu ${TERMINALMENU}
@@ -445,30 +462,30 @@ append_menu_end
 append_submenu ${NETMENU}
     append_submenu ${BROWSERMENU}
         normal_find netscape galeon mozilla dillo
-	find_it opera	    append "[exec]   (opera) {env QT_XFT=true opera}"
-	find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
-	find_it links	    append "[exec]   (links) {${DEFAULT_TERM} -e links fluxbox.org}"
-	find_it w3m	    append "[exec]   (w3m) {${DEFAULT_TERM} -e w3m fluxbox.org}"
-	find_it lynx	    append "[exec]   (lynx) {${DEFAULT_TERM} -e lynx fluxbox.org}"
+        find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
+        find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
+        find_it links       append "[exec]   (links) {${DEFAULT_TERM} -e links ${HOMEPAGE}}"
+        find_it w3m         append "[exec]   (w3m) {${DEFAULT_TERM} -e w3m ${HOMEPAGE}}"
+        find_it lynx        append "[exec]   (lynx) {${DEFAULT_TERM} -e lynx ${HOMEPAGE}}"
     append_menu_end
 
     append_submenu IM
         normal_find gaim kopete gnomemeeting
-        find_it licq	    append "[exec]   (licq) {env QT_XFT=true licq}"
+        find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
     append_menu_end
 
     append_submenu Mail
         normal_find sylpheed kmail evolution
-        find_it mutt	    append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
+        find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
     append_menu_end
 
     append_submenu IRC
         normal_find xchat
-        find_it irssi	    append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
-        find_it BitchX	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}"
+        find_it irssi       append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
+        find_it BitchX      append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}"
         [ $? -ne 0 ] && \
-          find_it bitchx	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
-        find_it ircii	    append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
+          find_it bitchx            append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
+        find_it ircii       append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
     append_menu_end
 
     normal_find gftp pan
@@ -483,21 +500,21 @@ append_menu_end
 append_submenu ${MULTIMEDIAMENU}
        append_submenu ${GRAPHICMENU}
                normal_find gimp xv gqview xpaint kpaint kiconedit xscreensaver-demo
-	       find_it gears	        append "[exec] (Mesa gears) {gears}"
-	       find_it morph3d 	        append "[exec] (Mesa morph) {morph3d}"
-	       find_it reflect 	        append "[exec] (Mesa reflect) {reflect}"
+               find_it gears            append "[exec] (Mesa gears) {gears}"
+               find_it morph3d          append "[exec] (Mesa morph) {morph3d}"
+               find_it reflect          append "[exec] (Mesa reflect) {reflect}"
        append_menu_end
 
        append_submenu ${MUSICMENU}
                normal_find xmms gqmpeg xmixer gmix kmix grecord \
-		   kmidi xplaycd soundtracker grip easytag
+                   kmidi xplaycd soundtracker grip easytag
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
        append_menu_end
 
 
        append_submenu ${MISCMENU}
            normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay
-	   find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
+           find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
        append_submenu ${XUTILSMENU}
@@ -508,9 +525,9 @@ append_menu_end
 
 append_submenu ${OFFICEMENU}
     normal_find xclock xcalc kcalc
-    find_it gcalc	    append "[exec] (gcalc) {gcalc}"
+    find_it gcalc           append "[exec] (gcalc) {gcalc}"
     [ $? -ne 0 ] && \
-	find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
+        find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
     find_it ooffice append "[exec] (Open Office) {ooffice}"
     find_it soffice append "[exec] (Star Office) {soffice}"
     normal_find abiword kword wordperfect katoob acroread xpdf
@@ -519,21 +536,21 @@ append_menu_end
 append_submenu ${GAMESMENU}
     normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
-	gnotski iagno knights same-gnome xboard freecell pysol \
-	gtali tuxracer xpenguins xsnow xeyes xpenguins \
-	quake2 quake3
+        gnotski iagno knights same-gnome xboard freecell pysol \
+        gtali tuxracer xpenguins xsnow xeyes xpenguins \
+        quake2 quake3
 append_menu_end
 
 # gnome menu
 if [ -d ${GPKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
     append_submenu ${GNOMEMENUTEXT}
     for a in `ls ${GPKGDATADIR}/gnome/apps/` ; do
-	if [ -d ${GPKGDATADIR}/gnome/apps/"${a}" ] ; then
-	    append_submenu "${a}"
-	    menu_entry_dir "${GPKGDATADIR}/gnome/apps/${a}"
-	    menu_entry_dircheck "/etc/X11/applnk/${a}"
-	    append_menu_end
-	fi
+        if [ -d ${GPKGDATADIR}/gnome/apps/"${a}" ] ; then
+            append_submenu "${a}"
+            menu_entry_dir "${GPKGDATADIR}/gnome/apps/${a}"
+            menu_entry_dircheck "/etc/X11/applnk/${a}"
+            append_menu_end
+        fi
     done
     append_menu_end
 fi
@@ -542,18 +559,18 @@ fi
 if [ -d ${KPKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
     append_submenu ${KDEMENUTEXT}
     for a in `ls ${KPKGDATADIR}/applnk/` ; do
-	if [ -d ${KPKGDATADIR}/applnk/"${a}" ]; then
-	    append_submenu "${a}"
-	    for x in ${KPKGDATADIR}/applnk/"${a}"/*; do
-		if [ -d ${KPKGDATADIR}/applnk/"${a}"/"${x}" ]; then
-		    append_submenu "${x}"
-		    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"/"${x}"
-		    append_menu_end
-		fi
-	    done
-	    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"
-	    append_menu_end
-	fi
+        if [ -d ${KPKGDATADIR}/applnk/"${a}" ]; then
+            append_submenu "${a}"
+            for x in ${KPKGDATADIR}/applnk/"${a}"/*; do
+                if [ -d ${KPKGDATADIR}/applnk/"${a}"/"${x}" ]; then
+                    append_submenu "${x}"
+                    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"/"${x}"
+                    append_menu_end
+                fi
+            done
+            menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"
+            append_menu_end
+        fi
     done
     menu_entry_dir ${KPKGDATADIR}/applnk/
     append_menu_end
@@ -561,39 +578,39 @@ fi
 
 #        append_submenu ${FBSETTINGSMENU}
          append_submenu Fluxbox-menu
-	    append "[config] (${CONFIGUREMENU})"
+            append "[config] (${CONFIGUREMENU})"
 
 
-	    append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
-		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
-	        append "[stylesdir] (~/.fluxbox/styles)"
+            append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
+                append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
+                append "[stylesdir] (~/.fluxbox/styles)"
 
-	    append_menu_end
+            append_menu_end
 
-	    append "[workspaces]   (${WORKSPACEMENU})"
+            append "[workspaces]   (${WORKSPACEMENU})"
 
-	append_submenu Tools
-	    find_it fluxconf append "[exec] (FluxConf) {fluxconf}"
-	    find_it fluxkeys append "[exec] (FluxKeys) {fluxkeys}"
-	    find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
-	    # if gxmessage exitst use it; else use xmessage
-	    find_it gxmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
-	    [ $? -ne 0 ] && \
-		find_it xmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+        append_submenu Tools
+            find_it fluxconf append "[exec] (FluxConf) {fluxconf}"
+            find_it fluxkeys append "[exec] (FluxKeys) {fluxkeys}"
+            find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
+            # if gxmessage exitst use it; else use xmessage
+            find_it gxmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
+            [ $? -ne 0 ] && \
+                find_it xmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
             find_it fbrun append "[exec] (Run) {fbrun}"
-	append_menu_end
+        append_menu_end
 
-	    append "[reconfig] (${RELOADITEM})"
+            append "[reconfig] (${RELOADITEM})"
             append "[restart] (${RESTARTITEM})"
             append "[exit] (${EXITITEM})"
 
-	append_menu_end
+        append_menu_end
 
 append_menu_end
 
 # this function removes empty menu items. It can not yet  remove  nested
 # empty submenus :\
 
-if [ ! ${REMOVE} ];then
+if [ ! "${REMOVE}" ];then
     clean_up
 fi
