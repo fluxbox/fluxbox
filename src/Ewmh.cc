@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.33 2003/09/23 13:52:05 rathnor Exp $
+// $Id: Ewmh.cc,v 1.34 2003/12/12 15:19:22 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -212,15 +212,17 @@ void Ewmh::updateClientList(BScreen &screen) {
 
 void Ewmh::updateWorkspaceNames(BScreen &screen) {
     XTextProperty text;
-    const size_t number_of_desks = screen.getWorkspaceNames().size();
+    const BScreen::WorkspaceNames &workspacenames = screen.getWorkspaceNames();
+    const size_t number_of_desks = workspacenames.size();
 	
     char *names[number_of_desks];		
 	
     for (size_t i = 0; i < number_of_desks; i++) {		
-        names[i] = new char[screen.getWorkspaceNames()[i].size()];
-        strcpy(names[i], screen.getWorkspaceNames()[i].c_str());
+        names[i] = new char[workspacenames[i].size() + 1]; // +1 for \0
+        memset(names[i], 0, workspacenames[i].size());
+        strcpy(names[i], workspacenames[i].c_str());
     }
-	
+
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
 			 &text, m_net_desktop_names);
