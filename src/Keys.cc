@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.42 2004/02/20 09:29:07 fluxgen Exp $
+//$Id: Keys.cc,v 1.43 2004/06/07 11:46:04 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -30,6 +30,7 @@
 #include "FbTk/KeyUtil.hh"
 
 #include "CommandParser.hh"
+#include "FbTk/I18n.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -165,6 +166,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
     char keyarg = 0;
     t_key *current_key=0, *last_key=0;
 
+    _FB_USES_NLS;
     // for each argument 
     for (unsigned int argc=0; argc<val.size(); argc++) {
 
@@ -180,7 +182,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
                 else { 
                     key = FbTk::KeyUtil::getKey(val[argc].c_str()); // else get the key
                     if (key == 0) {
-                        cerr<<"Keys: Invalid key/modifier on line("<<
+                        cerr<<_FBTEXT(Keys, InvalidKeyMod, "Keys: Invalid key/modifier on line", "A bad key/modifier string was found on line (number following)")<<" "<<
                             m_current_line<<"): "<<linebuffer<<endl;
                         return false;
                     }
@@ -197,7 +199,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
 
         } else { // parse command line
             if (last_key == 0) {
-                cerr<<"Keys: Error on line: "<<m_current_line<<endl;
+                cerr<<_FBTEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
                 cerr<<"> "<<linebuffer<<endl;
                 return false;
             }
@@ -206,7 +208,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
                 FbTk::StringUtil::strcasestr(linebuffer.c_str(),
                                              val[argc].c_str() + 1); // +1 to skip ':'
             if (str == 0) {
-                cerr<<"Keys: Error on line: "<<m_current_line<<endl;
+                cerr<<_FBTEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
                 cerr<<"> "<<linebuffer<<endl;
                 ret_val = false;
             } else {
@@ -214,12 +216,12 @@ bool Keys::addBinding(const std::string &linebuffer) {
                 last_key->m_command = CommandParser::instance().parseLine(str);
 
                 if (*last_key->m_command == 0) {
-                    cerr<<"Keys: Error on line: "<<m_current_line<<endl;
+                    cerr<<_FBTEXT(Keys, BadLine, "Keys: Error on line", "Error on line (number following)")<<": "<<m_current_line<<endl;
                     cerr<<"> "<<linebuffer<<endl;
                 } else {
                     // Add the keychain to list
                     if (!mergeTree(current_key)) {
-                        cerr<<"Keys: Failed to merge keytree!"<<endl;
+                        cerr<<_FBTEXT(Keys, BadMerge, "Keys: Failed to merge keytree!", "relatively technical error message. Key bindings are stored in a tree structure")<<endl;
                         ret_val = false;
                     }
                 }

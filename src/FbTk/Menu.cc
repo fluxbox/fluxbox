@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.60 2004/05/17 15:01:32 rathnor Exp $
+// $Id: Menu.cc,v 1.61 2004/06/07 11:46:05 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -38,6 +38,7 @@
 #include "EventManager.hh"
 #include "Transparent.hh"
 #include "SimpleCommand.hh"
+#include "I18n.hh"
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -495,7 +496,8 @@ void Menu::update(int active_index) {
                                     menu.frame.depth());
 
         if (m_frame_pm.drawable() == 0) {
-            cerr<<"FbTk::Menu: Warning: Failed to create pixmap ("<<
+            _FB_USES_NLS;
+            cerr<<"FbTk::Menu: "<<_FBTKTEXT(Error, CreatePixmap, "Error creating pixmap", "Couldn't create a pixmap - image - for some reason")<<" ("<<
                 menu.frame.window()<<", "<<menu.frame.width()<<", "<<
                 menu.frame.height()<<
                 ", "<<menu.frame.depth()<<") !"<<endl;

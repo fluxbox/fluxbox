@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.12 2004/05/04 14:33:38 rathnor Exp $
+// $Id: EventManager.cc,v 1.13 2004/06/07 11:46:05 rathnor Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
 #include "App.hh"
+#include "I18n.hh"
 
 #include <iostream>
 using namespace std;
@@ -36,8 +37,10 @@ EventManager *EventManager::instance() {
 }
 
 EventManager::~EventManager() {
+#ifdef DEBUG
     if (m_eventhandlers.size() != 0)
         cerr<<"FbTk::EventManager: Warning: unregistered eventhandlers!"<<endl;
+#endif // DEBUG
 }
 
 void EventManager::handleEvent(XEvent &ev) {

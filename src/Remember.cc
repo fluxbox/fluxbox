@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.36 2004/04/18 17:53:15 fluxgen Exp $
+// $Id: Remember.cc,v 1.37 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -32,6 +32,7 @@
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/App.hh"
@@ -123,25 +124,25 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
         return menu;
     }
     
-    // TODO: nls
-    menu->insert(new RememberMenuItem("Workspace", remember, win,
-                                      Remember::REM_WORKSPACE));
-    menu->insert(new RememberMenuItem("Jump to workspace", remember, win,
-                                      Remember::REM_JUMPWORKSPACE));
-    menu->insert(new RememberMenuItem("Dimensions", remember, win,
-                                      Remember::REM_DIMENSIONS));
-    menu->insert(new RememberMenuItem("Position", remember, win,
-                                      Remember::REM_POSITION));
-    menu->insert(new RememberMenuItem("Sticky", remember, win,
-                                      Remember::REM_STUCKSTATE));
-    menu->insert(new RememberMenuItem("Decorations", remember, win,
-                                      Remember::REM_DECOSTATE));
-    menu->insert(new RememberMenuItem("Shaded", remember, win,
-                                      Remember::REM_SHADEDSTATE));
-    menu->insert(new RememberMenuItem("Layer", remember, win,
-                                      Remember::REM_LAYER));
-    menu->insert(new RememberMenuItem("Save on close", remember, win,
-                                      Remember::REM_SAVEONCLOSE));
+    _FB_USES_NLS;
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Workspace, "Workspace", "Remember Workspace"), 
+                                      remember, win, Remember::REM_WORKSPACE));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
+                                      remember, win, Remember::REM_JUMPWORKSPACE));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - windth width and height"),
+                                      remember, win, Remember::REM_DIMENSIONS));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"), 
+                                      remember, win, Remember::REM_POSITION));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Sticky, "Sticky", "Remember Sticky"), 
+                                      remember, win, Remember::REM_STUCKSTATE));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
+                                      remember, win, Remember::REM_DECOSTATE));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Shaded, "Shaded", "Remember shaded"),
+                                      remember, win, Remember::REM_SHADEDSTATE));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Layer, "Layer", "Remember Layer"),
+                                      remember, win, Remember::REM_LAYER));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
+                                      remember, win, Remember::REM_SAVEONCLOSE));
 
     menu->update();
     return menu;
@@ -284,6 +285,7 @@ Application * Remember::add(WinClient &winclient) {
 
 int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
     string line;
+    _FB_USES_NLS;
     int row = 0;
     while (! file.eof()) {
         if (first_line || getline(file, line)) {
@@ -415,7 +417,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             } else if (str_key == "end") {
                 return row;
             } else {
-                cerr << "Unsupported apps key = " << str_key << endl;
+                cerr << _FBTEXT(Remember, Unknown, "Unknown apps key", "apps entry type not known")<<" = " << str_key << endl;
             }
         }
     }
@@ -758,13 +760,13 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
 
 void Remember::setupFrame(FluxboxWindow &win) {
     WinClient &winclient = win.winClient();
-
+    _FB_USES_NLS;
     // we don't touch the window if it is a transient
     // of something else
 
     // All windows get the remember menu.
-    // TODO: nls
-    win.addExtraMenu("Remember...", createRememberMenu(*this, win, (winclient.transientFor() == 0)));
+    win.addExtraMenu(_FBTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
+                     createRememberMenu(*this, win, (winclient.transientFor() == 0)));
 
     if (winclient.transientFor()) 
         return;

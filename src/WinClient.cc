@@ -19,17 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.39 2004/04/28 14:59:12 rathnor Exp $
+// $Id: WinClient.cc,v 1.40 2004/06/07 11:46:04 rathnor Exp $
 
 #include "WinClient.hh"
 
 #include "Window.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
-#include "I18n.hh"
 #include "FbAtoms.hh"
 #include "EventManager.hh"
 #include "Xutil.hh"
+
+#include "FbTk/I18n.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -630,8 +631,10 @@ void WinClient::updateWMProtocols() {
         XFree(proto);
         if (m_win)
             m_win->updateFunctions();
+#ifdef DEBUG
     } else {
         cerr<<"Warning: Failed to read WM Protocols. "<<endl;
+#endif // DEBUG
     }
 
 }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.31 2004/05/02 21:13:08 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.32 2004/06/07 11:46:04 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -180,7 +180,6 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         // i.e so users can set space before workspace name and so on
         string value = name.substr(pos + 1);
         name = name.substr(0, pos);
-        cerr<<"Creating SetResourceValue "<<name<<" "<<value<<endl;
         return new SetResourceValueCmd(name, value);
     } else if (command == "setresourcevaluedialog")
         return new SetResourceValueDialogCmd();

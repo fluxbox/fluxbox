@@ -20,14 +20,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.29 2004/02/28 10:32:06 fluxgen Exp $
+// $Id: main.cc,v 1.30 2004/06/07 11:46:04 rathnor Exp $
 
 #include "fluxbox.hh"
-#include "I18n.hh"
 #include "version.h"
 #include "defaults.hh"
 
 #include "FbTk/Theme.hh"
+#include "FbTk/I18n.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -48,26 +48,31 @@
 
 using namespace std;
 void showInfo(ostream &ostr) {
-    ostr<<"Fluxbox version: "<<__fluxbox_version<<endl;
+    _FB_USES_NLS;
+    ostr<<_FBTEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
 #if defined(__DATE__) && defined(__TIME__)
-    ostr<<"Compiled: "<<__DATE__<<" "<<__TIME__<<endl;
+    ostr<<_FBTEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
 #endif
 #ifdef __fluxbox_compiler
-    ostr<<"Compiler: "<<__fluxbox_compiler<<endl;
+    ostr<<_FBTEXT(Common, Compiler, "Compiler", "Compiler used to build fluxbox")<<": "<<__fluxbox_compiler<<endl;
 #endif // __fluxbox_compiler
 #ifdef __fluxbox_compiler_version
-    ostr<<"Compiler version: "<<__fluxbox_compiler_version<<endl;    
+    ostr<<_FBTEXT(Common, CompilerVersion, "Compiler version", "Compiler version used to build fluxbox")<<": "<<__fluxbox_compiler_version<<endl;    
 #endif // __fluxbox_compiler_version
 
-    ostr<<endl<<"Defaults:"<<endl;
-    ostr<<"    menu: "<<DEFAULTMENU<<endl;
-    ostr<<"   style: "<<DEFAULTSTYLE<<endl;
+    ostr<<endl<<_FBTEXT(Common, Defaults, "Defaults", "Default values compiled in")<<":"<<endl;
+    
+    ostr<<_FBTEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTMENU<<endl;
+    ostr<<_FBTEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")<<": "<<DEFAULTSTYLE<<endl;
  
-    ostr<<"    keys: "<<DEFAULTKEYSFILE<<endl;
-    ostr<<"    init: "<<DEFAULT_INITFILE<<endl;
+    ostr<<_FBTEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
+    ostr<<_FBTEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
 
     const char NOT[] = "-";
-    ostr<<endl<<"Compiled options ("<<NOT<<" => disabled): "<<endl<<
+    ostr<<endl<<
+        _FBTEXT(Common, CompiledOptions, "Compiled options", "Options used when compiled")
+        <<" ("<<NOT<<" => "<<
+        _FBTEXT(Common, Disabled, "disabled", "option is turned off")<<"): "<<endl<<
 #ifndef DEBUG
         NOT<<
 #endif // DEBUG                
@@ -141,8 +146,8 @@ int main(int argc, char **argv) {
     std::string rc_file;
     std::string log_filename;
 
-    NLSInit("fluxbox.cat");
-    I18n &i18n = *I18n::instance();
+    FbTk::NLSInit("fluxbox.cat");
+    _FB_USES_NLS;
 	
     int i;
     for (i = 1; i < argc; ++i) {
@@ -150,9 +155,8 @@ int main(int argc, char **argv) {
             // look for alternative rc file to use
 
             if ((++i) >= argc) {
-                fprintf(stderr,
-                        i18n.getMessage(FBNLS::mainSet, FBNLS::mainRCRequiresArg,
-                                         "error: '-rc' requires and argument\n"));	
+                cerr<<_FBTEXT(main, RCRequiresArg,
+                              "error: '-rc' requires an argument", "the -rc option requires a file argument")<<endl;;	
                 exit(1);
             }
 
@@ -162,19 +166,18 @@ int main(int argc, char **argv) {
             // set by the environment variable DISPLAY
 
             if ((++i) >= argc) {
-                fprintf(stderr,
-                        i18n.getMessage(FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,
-                                         "error: '-display' requires an argument\n"));
+                cerr<<_FBTEXT(main, DISPLAYRequiresArg,
+                              "error: '-display' requires an argument",
+                              "")<<endl;
                 exit(1);
             }
 
             session_display = argv[i];
             std::string display_env = "DISPLAY=" + session_display;
             if (putenv(const_cast<char *>(display_env.c_str()))) {
-                fprintf(stderr,
-                        i18n.
-                        getMessage(FBNLS::mainSet, FBNLS::mainWarnDisplaySet,
-                                   "warning: couldn't set environment variable 'DISPLAY'\n"));
+                cerr<<_FBTEXT(main, WarnDisplaySet,
+                                "warning: couldn't set environment variable 'DISPLAY'",
+                              "")<<endl;
                 perror("putenv()");
             }
         } else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
@@ -183,22 +186,23 @@ int main(int argc, char **argv) {
             exit(0);
         } else if (strcmp(argv[i], "-log") == 0 ) {
             if (i + 1 >= argc) {
-                cerr<<"error: '-log' needs an argument"<<endl;
+                cerr<<_FBTEXT(main, LOGRequiresArg, "error: '-log' needs an argument", "")<<endl;
                 exit(1);
             }
             log_filename = argv[++i];
         } else if (strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
             // print program usage and command line options
-            printf(i18n.
-                   getMessage(FBNLS::mainSet, FBNLS::mainUsage,
-                              "Fluxbox %s : (c) %s Henrik Kinnunen\n"
-                              "Website: http://www.fluxbox.org/ \n\n"
-                              "	-display <string>\t\tuse display connection.\n"
-                              "	-rc <string>\t\t\tuse alternate resource file.\n"
-                              "	-version\t\t\tdisplay version and exit.\n"
-                              "	-info\t\t\t\tdisplay some useful information.\n"
-                              "\t-log <filename>\t\t\tlog output to file.\n"
-                              "	-help\t\t\t\tdisplay this help text and exit.\n\n"),
+            printf(_FBTEXT(main, Usage,
+                           "Fluxbox %s : (c) %s Henrik Kinnunen\n"
+                           "Website: http://www.fluxbox.org/ \n\n"
+                           "\t-display <string>\t\tuse display connection.\n"
+                           "\t-rc <string>\t\t\tuse alternate resource file.\n"
+                           "\t-version\t\t\tdisplay version and exit.\n"
+                           "\t-info\t\t\t\tdisplay some useful information.\n"
+                           "\t-log <filename>\t\t\tlog output to file.\n"
+                           "\t-help\t\t\t\tdisplay this help text and exit.\n\n",
+
+                           "Main usage string. Please lay it out nicely. There is one %s that is given the version"),
                    __fluxbox_version, "2001-2004");
             exit(0);
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
@@ -222,9 +226,9 @@ int main(int argc, char **argv) {
 
     // setup log file
     if (log_file) {
-        cerr<<"Loggin to: "<<log_filename<<endl;
+        cerr<<_FBTEXT(main, LoggingTo, "Logging to", "Logging to a file")<<": "<<log_filename<<endl;
         log_file<<"------------------------------------------"<<endl;
-        log_file<<"Logfile: "<<log_filename<<endl;
+        log_file<<_FBTEXT(main, LogFile, "Log File", "")<<": "<<log_filename<<endl;
         showInfo(log_file);
         log_file<<"------------------------------------------"<<endl;
         // setup log to use cout and cerr stream
@@ -240,19 +244,19 @@ int main(int argc, char **argv) {
 	exitcode = EXIT_SUCCESS;
 
     } catch (std::out_of_range &oor) {
-        cerr<<"Fluxbox: Out of range: "<<oor.what()<<endl;
+        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorOutOfRange, "Out of range", "Error message")<<": "<<oor.what()<<endl;
     } catch (std::runtime_error &re) {
-        cerr<<"Fluxbox: Runtime error: "<<re.what()<<endl;
+        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorRuntime, "Runtime error", "Error message")<<": "<<re.what()<<endl;
     } catch (std::bad_cast &bc) {
-        cerr<<"Fluxbox: Bad cast: "<<bc.what()<<endl; 
+        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorBadCast, "Bad cast", "Error message")<<": "<<bc.what()<<endl; 
     } catch (std::bad_alloc &ba) {
-        cerr<<"Fluxbox: Bad Alloc: "<<ba.what()<<endl;
+        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorBadAlloc, "Bad Alloc", "Error message")<<": "<<ba.what()<<endl;
     } catch (std::exception &e) {
-        cerr<<"Fluxbox: Standard exception: "<<e.what()<<endl;
+        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorStandardException, "Standard Exception", "Error message")<<": "<<e.what()<<endl;
     } catch (std::string error_str) {
-        cerr<<"Error: "<<error_str<<endl;
+        cerr<<_FBTEXT(Common, Error, "Error", "Error message header")<<": "<<error_str<<endl;
     } catch (...) {
-        cerr<<"Fluxbox: Unknown error."<<endl;
+        cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorUnknown, "Unknown error", "Error message")<<"."<<endl;
         abort();
     }
     // destroy fluxbox

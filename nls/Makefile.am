@@ -6,7 +6,7 @@ SUBDIRS = C da_DK es_ES et_EE fr_FR pt_BR ru_RU sv_SE \
 	sl_SI pl_PL
 
 MAINTAINERCLEANFILES = Makefile.in fluxbox-nls.hh
-EXTRA_DIST=fluxbox-nls.hh convert.awk
+EXTRA_DIST=fluxbox-nls.hh convert.awk nlsinfo
 
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
@@ -14,3 +14,6 @@ uninstall-local:
 	fi
 distclean-local:
 	rm -f *\~
+
+fluxbox-nls.hh:
+	./nlsinfo -H -N FBNLS $(top_srcdir)/src > fluxbox-nls.hh

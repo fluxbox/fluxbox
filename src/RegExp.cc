@@ -20,9 +20,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RegExp.cc,v 1.2 2003/06/13 11:43:46 fluxgen Exp $
+// $Id: RegExp.cc,v 1.3 2004/06/07 11:46:04 rathnor Exp $
 
 #include "RegExp.hh"
+#include "FbTk/I18n.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -37,7 +38,7 @@ using namespace std;
 
 /********************************************************
  * RegExp *
- ***********/
+ **********/
 
 // full_match is to say if we match on this regexp using the full string
 // or just a substring. Substrings aren't supported if not HAVE_REGEXP
@@ -57,12 +58,13 @@ m_regex(0) {
     int ret = regcomp(m_regex, match.c_str(), REG_NOSUB | REG_EXTENDED);
     if (ret != 0) {
         char *errstr = 0;
+        _FB_USES_NLS;
         // gives us the length of the string
         unsigned int size = regerror(ret, m_regex, errstr, 0);
         errstr = new char[size];
 
         regerror(ret, m_regex, errstr, size);
-        cerr<<"Error parsing regular expression: "<<errstr<<endl;
+        cerr<<_FBTEXT(Fluxbox, ErrorRegexp, "Error parsing regular expression", "Error parsing regular expression (following)")<<": "<<errstr<<endl;
         delete [] errstr;
         delete m_regex; // I don't think I regfree a failed compile?
         m_regex = 0;

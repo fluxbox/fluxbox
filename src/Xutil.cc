@@ -20,12 +20,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xutil.cc,v 1.4 2004/01/30 11:06:25 rathnor Exp $
+// $Id: Xutil.cc,v 1.5 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Xutil.hh"
 
-#include "I18n.hh"
-#include "App.hh"
+#include "FbTk/I18n.hh"
+#include "FbTk/App.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -46,7 +46,7 @@ std::string getWMName(Window window) {
     text_prop.value = 0;
     char **list;
     int num;
-    I18n *i18n = I18n::instance();
+    _FB_USES_NLS;
     std::string name;
 
     if (XGetWMName(display, window, &text_prop)) {
@@ -69,13 +69,11 @@ std::string getWMName(Window window) {
             XFree(text_prop.value);
 
         } else { // default name
-            name = i18n->getMessage(FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                    "Unnamed");
+            name = _FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
         }
     } else {
         // default name
-        name = i18n->getMessage(FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                "Unnamed");
+        name = _FBTEXT(Window, Unnamed, "Unnamed", "Default name for a window without a WM_NAME");
     }
 
     return name;

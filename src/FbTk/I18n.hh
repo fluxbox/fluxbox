@@ -22,12 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.hh,v 1.4 2004/05/02 20:46:43 fluxgen Exp $
+// $Id: I18n.hh,v 1.1 2004/06/07 11:46:05 rathnor Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
 
-#include "../nls/fluxbox-nls.hh"
+// TODO: FIXME
+#include "../../nls/fluxbox-nls.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -59,6 +60,32 @@ void catclose(nl_catd cat);
 
 #include <string>
 
+// Some defines to help out
+#ifdef NLS
+#define _FB_USES_NLS \
+    FbTk::I18n &i18n = *FbTk::I18n::instance()
+
+// ignore the description, it's for helping translators
+#define _FBTEXT(msgset, msgid, default_text, description) \
+    i18n.getMessage(FBNLS::msgset ## Set, FBNLS::msgset ## msgid, default_text)
+
+// This ensure that FbTk nls stuff is in a kind of namespace of its own
+#define _FBTKTEXT( msgset, msgid, default_text, description) \
+    i18n.getMessage(FBNLS::FbTk ## msgset ## Set, FBNLS::FbTk ## msgset ## msgid, default_text)
+
+#else // no NLS
+
+#define _FB_USES_NLS
+#define _FBTEXT(msgset, msgid, default_text, description) \
+    default_text
+
+#define _FBTKTEXT(msgset, msgid, default_text, description) \
+    default_text
+
+#endif // defined NLS
+
+namespace FbTk {
+
 class I18n {
 public:
     static I18n *instance();
@@ -79,5 +106,7 @@ private:
 };
 
 void NLSInit(const char *);
+
+}; // end namespace FbTk
 
 #endif // I18N_HH

@@ -19,14 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconMenu.cc,v 1.1 2004/05/02 20:51:36 fluxgen Exp $
+// $Id: IconMenu.cc,v 1.2 2004/06/07 11:46:04 rathnor Exp $
 
 #include "IconMenu.hh"
 
 #include "Screen.hh"
 #include "IconMenuItem.hh"
 #include "fluxbox.hh"
-#include "I18n.hh"
+#include "FbTk/I18n.hh"
 
 static void updateItems(FbTk::Menu &menu, BScreen &screen) {
     menu.removeAll();
@@ -47,8 +47,8 @@ IconMenu::IconMenu(BScreen &screen):
            *screen.layerManager().
            getLayer(Fluxbox::instance()->getMenuLayer())) {
 
-    setLabel(I18n::instance()->getMessage(FBNLS::IconSet, 
-                                          FBNLS::IconIcons, "Icons"));
+    _FB_USES_NLS;
+    setLabel(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"));
     screen.iconListSig().attach(this);
     updateItems(*this, screen);
 }

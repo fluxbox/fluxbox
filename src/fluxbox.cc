@@ -22,11 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.242 2004/05/02 20:48:16 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.243 2004/06/07 11:46:04 rathnor Exp $
 
 #include "fluxbox.hh"
 
-#include "I18n.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "Workspace.hh"
@@ -37,6 +36,7 @@
 #include "FbAtoms.hh"
 #include "defaults.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/Image.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/ImageControl.hh"
@@ -432,14 +432,14 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_RC_PATH("fluxbox"),
       m_RC_INIT_FILE("init") {
       
-    
+    _FB_USES_NLS;
     if (s_singleton != 0)
-        throw string("Fatal! There can only one instance of fluxbox class.");
+        throw string(_FBTEXT(Fluxbox, FatalSingleton, "Fatal! There can only one instance of fluxbox class.", "Error displayed on weird error where an instance of the Fluxbox class already exists!"));
 
     if (display() == 0) {
-        //!! TODO: NLS
-        throw string("Can not connect to X server.\n"
-                     "Make sure you started X before you start Fluxbox.");
+        throw string(_FBTEXT(Fluxbox, NoDisplay, 
+                             "Can not connect to X server.\nMake sure you started X before you start Fluxbox.",
+                             "Error message when no X display appears to exist"));
     }
     // For KDE dock applets
     // KDE v1.x
@@ -513,10 +513,10 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     setupConfigFiles();
 	
     if (! XSupportsLocale())
-        cerr<<"Warning: X server does not support locale"<<endl;
+        cerr<<_FBTEXT(Fluxbox, WarningLocale, "Warning: X server does not support locale", "XSupportsLocale returned false")<<endl;
 
     if (XSetLocaleModifiers("") == 0)
-        cerr<<"Warning: cannot set locale modifiers"<<endl;
+        cerr<<_FBTEXT(Fluxbox, WarningLocaleModifiers, "Warning: cannot set locale modifiers", "XSetLocaleModifiers returned false")<<endl;
 
 
 #ifdef HAVE_GETPID
@@ -599,9 +599,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
     if (m_screen_list.empty()) {
-        //!! TODO: NLS
-        throw string("Couldn't find screens to manage.\n"
-                     "Make sure you don't have another window manager running.");
+        throw string(_FBTEXT(Fluxbox, ErrorNoScreens, 
+                             "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", "Error message when no unmanaged screens found - usually means another window manager is running"));
     }
 
     // setup theme manager to have our style file ready to be scanned
@@ -728,10 +727,12 @@ void Fluxbox::setupConfigFiles() {
 #ifdef DEBUG
         cerr <<__FILE__<<"("<<__LINE__<<"): Creating dir: " << dirname.c_str() << endl;
 #endif // DEBUG
-
+        _FB_USES_NLS;
         // create directory with perm 700
         if (mkdir(dirname.c_str(), 0700)) {
-            cerr << "Can't create " << dirname << " directory!" << endl;
+            fprintf(stderr, _FBTEXT(Fluxbox, ErrorCreatingDirectory, 
+                                    "Can't create %s directory", "Can't create a directory, one %s for directory name"), dirname.c_str());
+            cerr<<endl;
             return;	
         }
 		
@@ -755,6 +756,7 @@ void Fluxbox::setupConfigFiles() {
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
+    _FB_USES_NLS;
     m_last_event = *e;
 
     // it is possible (e.g. during moving) for a window
@@ -885,7 +887,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
                screen = searchScreen(e->xmaprequest.parent);
            
             if (screen == 0) {
-                cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
+                cerr<<"Fluxbox "<<_FBTEXT(Fluxbox, CantMapWindow, "Warning! Could not find screen to map window on!", "")<<endl;
             } else
                 win = screen->createWindow(e->xmaprequest.window);
 
@@ -1288,7 +1290,8 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 
 /// handle system signals
 void Fluxbox::handleSignal(int signum) {
-    I18n *i18n = I18n::instance();
+    _FB_USES_NLS;
+
     static int re_enter = 0;
 
     switch (signum) {
@@ -1314,25 +1317,19 @@ void Fluxbox::handleSignal(int signum) {
         break;
     default:
         fprintf(stderr,
-                i18n->getMessage(
-                    FBNLS::BaseDisplaySet, FBNLS::BaseDisplaySignalCaught,
-                    "%s:	signal %d caught\n"),
+                _FBTEXT(BaseDisplay, SignalCaught, "%s:      signal %d caught\n", "signal catch debug message. Include %s for command and %d for signal number"),
                 m_argv[0], signum);
 
         if (! m_starting && ! re_enter) {
             re_enter = 1;
             fprintf(stderr,
-                    i18n->getMessage(
-                        FBNLS::BaseDisplaySet, FBNLS::BaseDisplayShuttingDown,
-                        "shutting down\n"));
+                    _FBTEXT(BaseDisplay, ShuttingDown, "Shutting Down\n", "Quitting because of signal, end with newline"));
             shutdown();
         }
 
 			
         fprintf(stderr,
-                i18n->getMessage(
-                    FBNLS::BaseDisplaySet, FBNLS::BaseDisplayAborting,
-                    "aborting... dumping core\n"));
+                _FBTEXT(BaseDisplay, Aborting, "Aborting... dumping core\n", "Aboring and dumping core, end with newline"));
         abort();
         break;
     }
@@ -1607,7 +1604,7 @@ void Fluxbox::shutdown() {
 
 /// saves resources
 void Fluxbox::save_rc() {
-
+    _FB_USES_NLS;
     XrmDatabase new_blackboxrc = 0;
 	
     char rc_string[1024];
@@ -1618,7 +1615,7 @@ void Fluxbox::save_rc() {
         m_resourcemanager.save(dbfile.c_str(), dbfile.c_str());
         m_screen_rm.save(dbfile.c_str(), dbfile.c_str());
     } else
-        cerr<<"database filename is invalid!"<<endl;
+        cerr<<_FBTEXT(Fluxbox, BadRCFile, "rc filename is invalid!", "Bad settings file")<<endl;
 	
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
@@ -1678,20 +1675,20 @@ void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
 
 /// loads resources
 void Fluxbox::load_rc() {
-	
+    _FB_USES_NLS;
     //get resource filename
     string dbfile(getRcFilename());
 
     if (!dbfile.empty()) {
         if (!m_resourcemanager.load(dbfile.c_str())) {
-            cerr<<"Failed to load database:"<<dbfile<<endl;
-            cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
+            cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "Failed trying to read rc file")<<":"<<dbfile<<endl;
+            cerr<<_FBTEXT(Fluxbox, CantLoadRCFileTrying, "Retrying with", "Retrying rc file loading with (the following file)")<<": "<<DEFAULT_INITFILE<<endl;
             if (!m_resourcemanager.load(DEFAULT_INITFILE))
-                cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
+                cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")<<": "<<DEFAULT_INITFILE<<endl;
         }
     } else {
         if (!m_resourcemanager.load(DEFAULT_INITFILE))
-            cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
+            cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")<<": "<<DEFAULT_INITFILE<<endl;
     }
 	
     if (m_rc_menufile->empty()) 
@@ -1714,12 +1711,13 @@ void Fluxbox::load_rc() {
         *m_rc_stylefile = DEFAULTSTYLE;
 
     if (!Workspace::loadGroups(*m_rc_groupfile)) {
-        cerr<<"Failed to load groupfile: "<<*m_rc_groupfile<<endl;
+        cerr<<_FBTEXT(Fluxbox, CantLoadGroupFile, "Failed to load groupfile", "Couldn't load the groupfile")<<": "<<*m_rc_groupfile<<endl;
     }
 }
 
 void Fluxbox::load_rc(BScreen &screen) {
     //get resource filename
+    _FB_USES_NLS;
     string dbfile(getRcFilename());
 	
     XrmDatabaseHelper database;
@@ -1774,16 +1772,15 @@ void Fluxbox::load_rc(BScreen &screen) {
     
     if (!dbfile.empty()) {
         if (!m_screen_rm.load(dbfile.c_str())) {
-            cerr<<"Failed to load database:"<<dbfile<<endl;
-            cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
+            cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "Failed trying to read rc file")<<":"<<dbfile<<endl;
+            cerr<<_FBTEXT(Fluxbox, CantLoadRCFileTrying, "Retrying with", "Retrying rc file loading with (the following file)")<<": "<<DEFAULT_INITFILE<<endl;
             if (!m_screen_rm.load(DEFAULT_INITFILE))
-                cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
+                cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")<<": "<<DEFAULT_INITFILE<<endl;
         }
     } else {
         if (!m_screen_rm.load(DEFAULT_INITFILE))
-            cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
+            cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")<<": "<<DEFAULT_INITFILE<<endl;
     }
-
 }
 
 void Fluxbox::loadRootCommand(BScreen &screen)	{

@@ -22,17 +22,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.96 2004/05/13 01:48:18 rathnor Exp $
+// $Id: Workspace.cc,v 1.97 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Workspace.hh"
 
-#include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/StringUtil.hh"
 
@@ -352,11 +352,12 @@ void Workspace::setName(const std::string &name) {
     if (!name.empty()) {
         m_name = name;
     } else { //if name == 0 then set default name from nls
+        _FB_USES_NLS;
         char tname[128];
-        sprintf(tname, I18n::instance()->
-                getMessage(FBNLS::WorkspaceSet, 
-                           FBNLS::WorkspaceDefaultNameFormat,
-                           "Workspace %d"), m_id + 1); //m_id starts at 0
+        sprintf(tname, 
+                _FBTEXT(Workspace, DefaultNameFormat, 
+                        "Workspace %d", "Default workspace names, with a %d for the workspace number"),
+                m_id + 1); //m_id starts at 0
         m_name = tname;
     }
 	

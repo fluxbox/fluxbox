@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.5 2004/01/19 18:26:04 fluxgen Exp $
+// $Id: Resource.cc,v 1.6 2004/06/07 11:46:05 rathnor Exp $
 
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"
+#include "I18n.hh"
 
 #include <iostream>
 #include <cassert>
@@ -81,8 +82,9 @@ bool ResourceManager::load(const char *filename) {
                            resource->altName().c_str(), &value_type, &value))			
             resource->setFromString(value.addr);
         else {
-            cerr<<"Failed to read: "<<resource->name()<<endl;
-            cerr<<"Setting default value"<<endl;
+            _FB_USES_NLS;
+            cerr<<_FBTKTEXT(Error, FailedRead, "Failed to read", "Couldn't load a resource (following)")<<": "<<resource->name()<<endl;
+            cerr<<_FBTKTEXT(Error, UsingDefault, "Setting default value", "Falling back to default value for resource")<<endl;
             resource->setDefaultValue();
         }
     }

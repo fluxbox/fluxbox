@@ -22,7 +22,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.6 2004/01/21 14:12:51 fluxgen Exp $
+// $Id: I18n.cc,v 1.1 2004/06/07 11:46:05 rathnor Exp $
+
+/* Note:
+ * A good reference for the older non-gettext style I18n
+ * functions is the "Locale tutorial"
+ *     Written by Patrick D'Cruze (pdcruze@orac.iinet.com.au)
+ * A copy of which is available (at the time of writing) here:
+ * http://www.kulichki.com/moshkow/CYRILLIC/locale-tutorial-0_8.txt
+ */
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -39,11 +47,14 @@
 
 #include <iostream>
 
-#include "defaults.hh"
+// TODO: FIXME: the LOCALEPATH from this file should be ./configure-ed into config.h
+#include "../defaults.hh"
 
 using std::cerr;
 using std::endl;
 using std::string;
+
+namespace FbTk {
 
 void NLSInit(const char *catalog) {
     I18n *i18n = I18n::instance();
@@ -138,3 +149,5 @@ const char *I18n::getMessage(int set_number, int message_number,
 #endif // NLS && HAVE_CATGETS
         return default_message;
 }
+
+}; // end namespace FbTk

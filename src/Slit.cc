@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.94 2004/05/17 15:20:32 rathnor Exp $
+// $Id: Slit.cc,v 1.95 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -35,7 +35,6 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#include "I18n.hh"
 #include "Screen.hh"
 #include "ImageControl.hh"
 #include "RefCount.hh"
@@ -58,6 +57,7 @@
 #include "Xutil.hh"
 #include "FbAtoms.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/I18n.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -79,8 +79,9 @@ template<>
 void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
     if (strcasecmp(strval, "TopLeft")==0)
         m_value = Slit::TOPLEFT;
-    else if (strcasecmp(strval, "CenterLeft")==0)
-        m_value = Slit::CENTERLEFT;
+    else if (strcasecmp(strval, "LeftCenter")==0
+             || strcasecmp(strval, "CenterLeft")==0)
+        m_value = Slit::LEFTCENTER;
     else if (strcasecmp(strval, "BottomLeft")==0)
         m_value = Slit::BOTTOMLEFT;
     else if (strcasecmp(strval, "TopCenter")==0)
@@ -89,8 +90,9 @@ void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
         m_value = Slit::BOTTOMCENTER;
     else if (strcasecmp(strval, "TopRight")==0)
         m_value = Slit::TOPRIGHT;
-    else if (strcasecmp(strval, "CenterRight")==0)
-        m_value = Slit::CENTERRIGHT;
+    else if (strcasecmp(strval, "RightCenter")==0
+             || strcasecmp(strval, "CenterRight")==0)
+        m_value = Slit::RIGHTCENTER;
     else if (strcasecmp(strval, "BottomRight")==0)
         m_value = Slit::BOTTOMRIGHT;
     else
@@ -113,8 +115,8 @@ string FbTk::Resource<Slit::Placement>::getString() {
     case Slit::TOPLEFT:
         return string("TopLeft");
         break;
-    case Slit::CENTERLEFT:
-        return string("CenterLeft");
+    case Slit::LEFTCENTER:
+        return string("LeftCenter");
         break;
     case Slit::BOTTOMLEFT:
         return string("BottomLeft");
@@ -128,8 +130,8 @@ string FbTk::Resource<Slit::Placement>::getString() {
     case Slit::TOPRIGHT:
         return string("TopRight");
         break;
-    case Slit::CENTERRIGHT:
-        return string("CenterRight");
+    case Slit::RIGHTCENTER:
+        return string("RightCenter");
         break;
     case Slit::BOTTOMRIGHT:
         return string("BottomRight");
@@ -198,14 +200,13 @@ public:
     }
 
     void setLabel(const char *label) {
-        I18n *i18n = I18n::instance();
+        _FB_USES_NLS;
         m_label = (label ? label : "");
         std::string reallabel = m_label + " " + 
             ( m_slit.direction() == Slit::HORIZONTAL ? 
-              i18n->getMessage(FBNLS::CommonSet, FBNLS::CommonDirectionHoriz,
-                               "Horizontal") :
-              i18n->getMessage(FBNLS::CommonSet, FBNLS::CommonDirectionVert,
-                               "Vertical") );
+              
+              _FBTEXT(Align, Horizontal, "Horizontal", "Horizontal"):
+              _FBTEXT(Align, Vertical,   "Vertical",   "Vertical"));
         FbTk::MenuItem::setLabel(reallabel.c_str());
     }
 private:
@@ -278,6 +279,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_rc_layernum(scr.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
                     scr.name() + ".slit.layer", scr.altName() + ".Slit.Layer") {
 
+    _FB_USES_NLS;
+
     // attach to theme and root window change signal
     m_slit_theme->reconfigSig().attach(this);
     scr.resizeSig().attach(this);
@@ -315,9 +318,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
     moveToLayer((*m_rc_layernum).getNum());
 
-    // TODO: nls
     if (m_layermenu.get())
-        m_layermenu->setLabel("Slit Layer");
+        m_layermenu->setLabel(_FBTEXT(Slit, Layer, "Slit Layer", "Title of Slit Layer Menu"));
 
     // Get client list for sorting purposes
     loadClientList(filename);
@@ -391,11 +393,11 @@ void Slit::updateStrut() {
         else
             right = width();
         break;
-    case CENTERLEFT:
+    case LEFTCENTER:
         if (direction() == VERTICAL)
             left = width();        
         break;
-    case CENTERRIGHT:
+    case RIGHTCENTER:
         if (direction() == VERTICAL)
             right = width();
         break;
@@ -804,7 +806,7 @@ void Slit::reposition() {
         }
         break;
 
-    case CENTERLEFT:
+    case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height) / 2;
         frame.x_hidden = head_x + bevel_width -
@@ -856,7 +858,7 @@ void Slit::reposition() {
         }
         break;
 
-    case CENTERRIGHT:
+    case RIGHTCENTER:
     default:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + ((head_h - frame.height) / 2);
@@ -1096,15 +1098,16 @@ void Slit::loadClientList(const char *filename) {
 void Slit::updateClientmenu() {
     if (screen().isShuttingdown()) 
         return;
+    _FB_USES_NLS;
 
     // clear old items
     m_clientlist_menu.removeAll();
-    m_clientlist_menu.setLabel("Clients");
+    m_clientlist_menu.setLabel(_FBTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"));
 
     FbTk::RefCount<FbTk::Command> cycle_up(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsUp));
     FbTk::RefCount<FbTk::Command> cycle_down(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsDown));
-    m_clientlist_menu.insert("Cycle Up", cycle_up);
-    m_clientlist_menu.insert("Cycle Down", cycle_down);
+    m_clientlist_menu.insert(_FBTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
+    m_clientlist_menu.insert(_FBTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
 
     FbTk::MenuItem *separator = new FbTk::MenuItem("---");
     separator->setEnabled(false);
@@ -1148,8 +1151,7 @@ void Slit::setAutoHide(bool val) {
 }
 
 void Slit::setupMenu() {
-    I18n *i18n = I18n::instance();
-    using namespace FBNLS;
+    _FB_USES_NLS;
     using namespace FbTk;
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
@@ -1168,40 +1170,39 @@ void Slit::setupMenu() {
     FbTk::RefCount<FbTk::Command> save_and_reconfigure_slit(s_a_reconf_slit_macro);
 
     // setup base menu
-    m_slitmenu.setLabel("Slit");
-    m_slitmenu.insert(i18n->getMessage(CommonSet, CommonPlacementTitle,
-                                       "Placement"),
+    m_slitmenu.setLabel(_FBTEXT(Slit, Slit, "Slit", "The Slit"));
+    m_slitmenu.insert(_FBTEXT(Menu, Placement, "Placement", "Title of Placement menu"),
                       &m_placement_menu);
 
-    m_slitmenu.insert("Layer...", m_layermenu.get());
+    m_slitmenu.insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), m_layermenu.get());
 
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
-        // TODO: nls (main label, plus menu heading)
-        m_slitmenu.insert("On Head...", new XineramaHeadMenu<Slit>(
-                                                                   screen().menuTheme(),
-                                                                   screen(),
-                                                                   screen().imageControl(),
-                                                                   *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                                   *this,
-                                                                   "Slit on Head"
-                                                                   ));
+        m_slitmenu.insert(_FBTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
+                          new XineramaHeadMenu<Slit>(
+                              screen().menuTheme(),
+                              screen(),
+                              screen().imageControl(),
+                              *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                              *this,
+                              _FBTEXT(Slit, OnHead, "Slit on Head", "Title of Slits On Head menu")
+                              ));
     }
                     
 #endif //XINERAMA
-    m_slitmenu.insert(new BoolMenuItem(i18n->getMessage(CommonSet, CommonAutoHide,
-                                                        "Auto hide"),
+    m_slitmenu.insert(new BoolMenuItem(_FBTEXT(Common, AutoHide, "Auto hide", "This thing automatically hides when not close by"),
                                        *m_rc_auto_hide,
                                        save_and_reconfigure_slit));
 
-    m_slitmenu.insert(new BoolMenuItem("Maximize Over", 
+    m_slitmenu.insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"), 
                                        *m_rc_maximize_over, 
                                        save_and_reconfigure_slit));
 
     // this saves resources and clears the slit window to update alpha value
-    FbTk::MenuItem *alpha_menuitem = new IntResMenuItem("Alpha", 
-                                                        m_rc_alpha,
-                                                        0, 255);
+    FbTk::MenuItem *alpha_menuitem = 
+        new IntResMenuItem(_FBTEXT(Common, Alpha, "Alpha", "Transparency level"),
+                           m_rc_alpha,
+                           0, 255);
     // setup command for alpha value
     MacroCommand *alpha_macrocmd = new MacroCommand(); 
     RefCount<Command> clear_cmd(new SimpleCommand<Slit>(*this, &Slit::clearWindow));
@@ -1212,51 +1213,50 @@ void Slit::setupMenu() {
 
     m_slitmenu.insert(alpha_menuitem);
 
-    m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(SlitSet, SlitSlitDirection,
-                                                           "Slit Direction"), 
+    m_slitmenu.insert(new SlitDirMenuItem(_FBTEXT(Slit, Direction, "Slit Direction", "Orientation of slit"), 
                                           *this,
                                           save_and_reconfigure));
-    m_slitmenu.insert("Clients", &m_clientlist_menu);
+    m_slitmenu.insert(_FBTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
     m_slitmenu.update();
 
     // setup sub menu
-    m_placement_menu.setLabel(i18n->getMessage(SlitSet, SlitSlitPlacement,
-                                               "Slit Placement"));
+    m_placement_menu.setLabel(_FBTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
     m_placement_menu.setMinimumSublevels(3);
     m_layermenu->setInternalMenu();
     m_clientlist_menu.setInternalMenu();
    
+    typedef list<pair<const char *, Slit::Placement> > Placements;
+    Placements place_menu;
 
-    // setup items in sub menu
-    struct {
-        int set;
-        int base;
-        const char *default_str;
-        Placement slit_placement;
-    } place_menu[]  = {
-        {CommonSet, CommonPlacementTopLeft, "Top Left", Slit::TOPLEFT},
-        {CommonSet, CommonPlacementCenterLeft, "Center Left", Slit::CENTERLEFT},
-        {CommonSet, CommonPlacementBottomLeft, "Bottom Left", Slit::BOTTOMLEFT},
-        {CommonSet, CommonPlacementTopCenter, "Top Center", Slit::TOPCENTER},
-        {0, 0, 0, Slit::TOPLEFT}, // middle item, empty
-        {CommonSet, CommonPlacementBottomCenter, "Bottom Center", Slit::BOTTOMCENTER},
-        {CommonSet, CommonPlacementTopRight, "Top Right", Slit::TOPRIGHT},
-        {CommonSet, CommonPlacementCenterRight, "Center Right", Slit::CENTERRIGHT},
-        {CommonSet, CommonPlacementBottomRight, "Bottom Right", Slit::BOTTOMRIGHT}
-    };
+    // menu is 3 wide, 5 down
+    place_menu.push_back(make_pair(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Slit::TOPLEFT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
+    place_menu.push_back(make_pair(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
+    place_menu.push_back(make_pair((const char *)0, Slit::TOPLEFT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
+    place_menu.push_back(make_pair(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
+    place_menu.push_back(make_pair(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Slit::BOTTOMRIGHT));
+    
+
     // create items in sub menu
     for (size_t i=0; i<9; ++i) {
-        if (place_menu[i].default_str == 0) {
+        const char *str = place_menu.front().first;
+        Slit::Placement placement = place_menu.front().second;
+
+        if (str == 0) {
             m_placement_menu.insert("");
+            m_placement_menu.setItemEnabled(i, false);
         } else {
-            const char *i18n_str = i18n->getMessage(place_menu[i].set, 
-                                                    place_menu[i].base,
-                                                    place_menu[i].default_str);
-            m_placement_menu.insert(new PlaceSlitMenuItem(i18n_str, *this,
-                                                          place_menu[i].slit_placement,
+            m_placement_menu.insert(new PlaceSlitMenuItem(str, *this,
+                                                          placement, 
                                                           save_and_reconfigure));
+                                                              
         }
+        place_menu.pop_front();
     }
+
     // finaly update sub menu
     m_placement_menu.update();
 }

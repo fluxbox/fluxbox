@@ -16,6 +16,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Directory.hh Directory.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
+	I18n.cc I18n.hh \
 	ImageControl.hh ImageControl.cc \
 	MacroCommand.hh MacroCommand.cc \
 	Menu.hh Menu.cc MenuItem.hh MenuItem.cc \

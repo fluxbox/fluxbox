@@ -22,12 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.278 2004/05/13 01:48:17 rathnor Exp $
+// $Id: Screen.cc,v 1.279 2004/06/07 11:46:04 rathnor Exp $
 
 
 #include "Screen.hh"
 
-#include "I18n.hh"
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "Workspace.hh"
@@ -58,6 +57,7 @@
 #include "AtomHandler.hh"
 
 
+#include "FbTk/I18n.hh"
 #include "FbTk/Subject.hh"
 #include "FbTk/FbWindow.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -135,10 +135,12 @@ static bool running = true;
 namespace {
 
 int anotherWMRunning(Display *display, XErrorEvent *) {
-    cerr<<I18n::instance()->
-        getMessage(FBNLS::ScreenSet, FBNLS::ScreenAnotherWMRunning,
-                   "BScreen::BScreen: an error occured while querying the X server.\n"
-                   "	another window manager already running on display ")<<DisplayString(display)<<endl;
+    _FB_USES_NLS;
+    cerr<<_FBTEXT(Screen, AnotherWMRunning, 
+                  "BScreen::BScreen: an error occured while querying the X server.\n"
+                  "	another window manager already running on display ",
+                  "Message when another WM is found already active on all screens")
+        <<DisplayString(display)<<endl;
 
     running = false;
 
@@ -248,11 +250,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     if (! managed)
         return;
 	
-    I18n *i18n = I18n::instance();
+    _FB_USES_NLS;
 	
-    fprintf(stderr, i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
-                                     "BScreen::BScreen: managing screen %d "
-                                     "using visual 0x%lx, depth %d\n"),
+    fprintf(stderr, _FBTEXT(Screen, ManagingScreen,
+                            "BScreen::BScreen: managing screen %d "
+                            "using visual 0x%lx, depth %d\n", 
+                            "informational message saying screen number (%d), visual (%lx), and colour depth (%d)"),
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
 
@@ -362,8 +365,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // own resources we must do this.
     fluxbox->load_rc(*this);
 
-    // TODO: nls
-    m_configmenu.reset(createMenu("Configuration"));
+    m_configmenu.reset(createMenu(_FBTEXT(Menu, Configuration, "Configuration", "Title of configuration menu")));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
 
@@ -1646,7 +1648,6 @@ void BScreen::initMenus() {
 }
 
 void BScreen::initMenu() {
-    I18n *i18n = I18n::instance();
 	
     if (m_rootmenu.get()) {
         // since all menus in root is submenus in m_rootmenu
@@ -1668,19 +1669,17 @@ void BScreen::initMenu() {
 
     
     if (m_rootmenu.get() == 0) {
-        m_rootmenu.reset(createMenu("Fluxbox default menu"));
+        _FB_USES_NLS;
+        m_rootmenu.reset(createMenu(_FBTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
         FbTk::RefCount<FbTk::Command> restart_fb(CommandParser::instance().parseLine("restart"));
         FbTk::RefCount<FbTk::Command> exit_fb(CommandParser::instance().parseLine("exit"));
         FbTk::RefCount<FbTk::Command> execute_xterm(CommandParser::instance().parseLine("exec xterm"));
         m_rootmenu->setInternalMenu();
-        m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::Screenxterm,
-                                            "xterm"),
+        m_rootmenu->insert(_FBTEXT(Menu, xterm, "xterm", "xterm - in fallback menu"),
                            execute_xterm);
-        m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenRestart,
-                                            "Restart"),
+        m_rootmenu->insert(_FBTEXT(Menu, Restart, "Restart", "Restart command"),
                            restart_fb);
-        m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenExit,
-                                            "Exit"),
+        m_rootmenu->insert(_FBTEXT(Menu, Exit, "Exit", "Exit command"),
                            exit_fb);
     }
 
@@ -1705,8 +1704,7 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
 }    
 
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
-    I18n *i18n = I18n::instance();
-    using namespace FBNLS;
+    _FB_USES_NLS;
 
     menu.removeAll();
 
@@ -1720,26 +1718,27 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // create focus menu
     // we don't set this to internal menu so will 
     // be deleted toghether with the parent
-    const char *focusmenu_label = i18n->getMessage(ConfigmenuSet, ConfigmenuFocusModel,
-                                                   "Focus Model");
+    const char *focusmenu_label = _FBTEXT(Configmenu, FocusModel,
+                                          "Focus Model", "Method used to give focus to windows");
     FbTk::Menu *focus_menu = createMenu(focusmenu_label ? focusmenu_label : "");
 
-#define _FOCUSITEM(a, b, c, d) focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(a, b, c), *this, d, save_and_reconfigure))
+#define _FOCUSITEM(a, b, c, d, e) focus_menu->insert(new FocusModelMenuItem(_FBTEXT(a, b, c, d), *this, e, save_and_reconfigure))
 
-    _FOCUSITEM(ConfigmenuSet, ConfigmenuClickToFocus,
-               "Click To Focus",
+    _FOCUSITEM(Configmenu, ClickToFocus,
+               "Click To Focus", "Click to focus",
                CLICKTOFOCUS);
-    _FOCUSITEM(ConfigmenuSet, ConfigmenuSloppyFocus,
-               "Sloppy Focus", 
+    _FOCUSITEM(Configmenu, SloppyFocus,
+               "Sloppy Focus", "Sloppy Focus",
                SLOPPYFOCUS);
-    _FOCUSITEM(ConfigmenuSet, ConfigmenuSemiSloppyFocus,
-               "Semi Sloppy Focus",
+    _FOCUSITEM(Configmenu, SemiSloppyFocus,
+               "Semi Sloppy Focus", "Semi Sloppy Focus",
                SEMISLOPPYFOCUS);
 #undef _FOCUSITEM
 
-    focus_menu->insert(new BoolMenuItem(i18n->getMessage(ConfigmenuSet, 
-                                                         ConfigmenuAutoRaise,
-                                                         "Auto Raise"),
+    focus_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, 
+                                                AutoRaise,
+                                                "Auto Raise",
+                                                "Auto Raise windows on sloppy"),
                                         *resource.auto_raise,
                                         save_and_reconfigure));
 
@@ -1758,38 +1757,38 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     for (; it != it_end; ++it)
         menu.insert(it->first, it->second);
 
-#define _BOOLITEM(a, b, c, d, e) menu.insert(new BoolMenuItem(i18n->getMessage(a, b, c), d, e))
+#define _BOOLITEM(a, b, c, d, e, f) menu.insert(new BoolMenuItem(_FBTEXT(a, b, c, d), e, f))
                              
-    _BOOLITEM(ConfigmenuSet, ConfigmenuImageDithering,
-              "Image Dithering",
+    _BOOLITEM(Configmenu, ImageDithering,
+              "Image Dithering", "Image Dithering",
               *resource.image_dither, save_and_reconfigure);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuOpaqueMove,
-              "Opaque Window Moving",
+    _BOOLITEM(Configmenu, OpaqueMove,
+              "Opaque Window Moving", "Window Moving with whole window visible (as opposed to outline moving)",
               *resource.opaque_move, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuFullMax,
-              "Full Maximization",
+    _BOOLITEM(Configmenu, FullMax,
+              "Full Maximization", "Maximise over slit, toolbar, etc",
               *resource.full_max, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuFocusNew,
-              "Focus New Windows",
+    _BOOLITEM(Configmenu, FocusNew,
+              "Focus New Windows", "Focus newly created windows",
               *resource.focus_new, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuFocusLast,
-              "Focus Last Window on Workspace",
+    _BOOLITEM(Configmenu, FocusLast,
+              "Focus Last Window on Workspace", "Focus Last Window on Workspace",
               *resource.focus_last, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuWorkspaceWarping,
-              "Workspace Warping",
+    _BOOLITEM(Configmenu, WorkspaceWarping,
+              "Workspace Warping", "Workspace Warping - dragging windows to the edge and onto the next workspace",
               *resource.workspace_warping, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuDesktopWheeling,
-              "Desktop MouseWheel Switching",
+    _BOOLITEM(Configmenu, DesktopWheeling,
+              "Desktop MouseWheel Switching", "Workspace switching using mouse wheel",
               *resource.desktop_wheeling, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuDecorateTransient,
-              "Decorate Transient Windows",
+    _BOOLITEM(Configmenu, DecorateTransient,
+              "Decorate Transient Windows", "Decorate Transient Windows",
               *resource.decorate_transient, saverc_cmd);
-    _BOOLITEM(ConfigmenuSet, ConfigmenuClickRaises,
-              "Click Raises",
+    _BOOLITEM(Configmenu, ClickRaises,
+              "Click Raises", "Click Raises", 
               *resource.click_raises, saverc_cmd);
     // setup antialias cmd to reload style and save resource on toggle
-    _BOOLITEM(ConfigmenuSet, ConfigmenuAntiAlias,
-              "AntiAlias", 
+    _BOOLITEM(Configmenu, AntiAlias,
+              "AntiAlias", "Use Anti-aliased fonts",
               *resource.antialias, save_and_reconfigure);
 
 #undef _BOOLITEM
@@ -1819,7 +1818,7 @@ void BScreen::shutdown() {
 
 
 void BScreen::showPosition(int x, int y) {
-    if (!doShowWindowPos())
+        if (!doShowWindowPos())
         return;
 
     if (! pos_visible) {
@@ -1839,10 +1838,13 @@ void BScreen::showPosition(int x, int y) {
         pos_visible = true;
     }
     char label[256];
-	
+
+    _FB_USES_NLS;
+
     sprintf(label,
-            I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
-                                         "X: %4d x Y: %4d"), x, y);
+            _FBTEXT(Screen, PositionFormat,
+                    "X: %4d x Y: %4d",
+                    "Format for screen coordinates - %4d for X, and %4d for Y"), x, y);
 
     m_pos_window.clear();
 
@@ -1886,10 +1888,13 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     }
 	
     char label[256];
+    _FB_USES_NLS;
 
     sprintf(label,
-            I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
-                                         "W: %4d x H: %4d"), gx, gy);
+            _FBTEXT(Screen, GeometryFormat,
+                    "W: %4d x H: %4d",
+                    "Format for width and height window, %4d for widht, and %4d for height"),
+            gx, gy);
 
     m_geom_window.clear();
 
@@ -1961,10 +1966,12 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
 }
 
 void BScreen::renderGeomWindow() {
+    _FB_USES_NLS;
 
-    const char *s = I18n::instance()->getMessage(FBNLS::ScreenSet, 
-                                     FBNLS::ScreenGeometryLength,
-                                     "W: 0000 x H: 0000");
+    const char *s = _FBTEXT(Screen, 
+                            GeometryLength,
+                            "W: 0000 x H: 0000",
+                            "Representative maximum sized text for width and height dialog");
     int l = strlen(s);
 
     int geom_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
@@ -2004,10 +2011,12 @@ void BScreen::renderGeomWindow() {
 
 
 void BScreen::renderPosWindow() {
+    _FB_USES_NLS;
 
-    const char *s = I18n::instance()->getMessage(FBNLS::ScreenSet, 
-                                     FBNLS::ScreenPositionLength,
-                                     "0: 0000 x 0: 0000");
+    const char *s = _FBTEXT(Screen, 
+                            PositionLength,
+                            "0: 0000 x 0: 0000",
+                            "Representative maximum sized text for X and Y dialog");
     int l = strlen(s);
 
     int pos_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;

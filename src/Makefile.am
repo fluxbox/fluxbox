@@ -41,9 +41,8 @@ defaults.hh: Makefile
 	echo '#define DEFAULT_INITFILE "$(pkgdatadir)/init"' >> defaults.hh
 	echo '#define LOCALEPATH "$(pkgdatadir)/nls"' >> defaults.hh
 
-# some extra deps for I18n and fluxbox
+# an extra dep for fluxbox
 
-I18n.$(OBJEXT): defaults.hh
 fluxbox.$(OBJEXT): defaults.hh
 
 if NEWWMSPEC
@@ -78,7 +77,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh \
-	I18n.cc I18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh \
 	RootTheme.hh RootTheme.cc \

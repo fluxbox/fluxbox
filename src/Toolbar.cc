@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.139 2004/04/26 15:04:37 rathnor Exp $
+// $Id: Toolbar.cc,v 1.140 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -32,7 +32,7 @@
 // themes
 #include "ToolbarTheme.hh"
 
-#include "I18n.hh"
+#include "FbTk/I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "IntResMenuItem.hh"
@@ -225,7 +225,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
                scrn.name() + ".toolbar.tools", scrn.altName() + ".Toolbar.Tools"),
     m_shape(new Shape(frame.window, 0)),
     m_resize_lock(false) {
-
+    _FB_USES_NLS;
     // we need to get notified when the theme is reloaded
     m_theme.reconfigSig().attach(this);
     // listen to screen size changes
@@ -234,15 +234,14 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 
     moveToLayer((*m_rc_layernum).getNum());
 
-    // TODO: nls
-    m_layermenu.setLabel("Toolbar Layer");
-    m_placementmenu.setLabel("Toolbar Placement");
+    m_layermenu.setLabel(_FBTEXT(Toolbar, Layer, "Toolbar Layer", "Title of toolbar layer menu"));
+    m_placementmenu.setLabel(_FBTEXT(Toolbar, Placement, "Toolbar Placement", "Title of toolbar placement menu"));
 
     m_layermenu.setInternalMenu();
     m_placementmenu.setInternalMenu();
     setupMenus();
     // add menu to screen
-    screen().addConfigMenu("Toolbar", menu());
+    screen().addConfigMenu(_FBTEXT(Toolbar, Toolbar, "Toolbar", "title of toolbar menu item"), menu());
     
     // geometry settings
     frame.width = width;
@@ -751,8 +750,7 @@ void Toolbar::moveToLayer(int layernum) {
 }
 
 void Toolbar::setupMenus() {
-    const I18n &i18n = *I18n::instance();
-    using namespace FBNLS;
+    _FB_USES_NLS;
     using namespace FbTk;
 
     typedef RefCount<Command> RefCommand;
@@ -762,14 +760,14 @@ void Toolbar::setupMenus() {
         
 
     RefCommand start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
-    menu().insert(i18n.getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
-                                   "Edit current workspace name"),
+    menu().insert(_FBTEXT(Toolbar, EditWkspcName,
+                          "Edit current workspace name", "Edit current workspace name"),
                   start_edit);
     
-    menu().setLabel(i18n.getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarToolbarTitle,
-                                     "Toolbar")); 
+    menu().setLabel(_FBTEXT(Toolbar, ToolbarTitle,
+                            "Toolbar", "Title of Toolbar menu")); 
 
-    MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
+    MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
                                                     m_rc_width_percent,
                                                     0, 100); // min/max value
 
@@ -785,8 +783,8 @@ void Toolbar::setupMenus() {
 
     menu().insert(toolbar_menuitem);
 
-    menu().insert(new BoolMenuItem(i18n.getMessage(FBNLS::CommonSet, FBNLS::CommonAutoHide,
-                                                    "Auto hide"),
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, AutoHide,
+                                           "Auto hide", "Toggle auto hide of toolbar"),
                                    *m_rc_auto_hide,
                                    reconfig_toolbar_and_save_resource));
 
@@ -795,66 +793,64 @@ void Toolbar::setupMenus() {
     visible_macro->add(toggle_visible);
     visible_macro->add(save_resources);
     RefCommand toggle_visible_cmd(visible_macro);
-    menu().insert(new BoolMenuItem("Visible", *m_rc_visible, toggle_visible_cmd));
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, "Visible", "Whether this item is visible"), 
+                                   *m_rc_visible, toggle_visible_cmd));
 
-    menu().insert(new BoolMenuItem("Maximize Over", *m_rc_maximize_over,
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
+                                   *m_rc_maximize_over,
                                    reconfig_toolbar_and_save_resource));
-    menu().insert("Layer...", &layermenu());
+    menu().insert(_FBTEXT(Menu, Layer, "Layer...", "Title of Layer menu"), &layermenu());
 
 
 
     if (screen().hasXinerama()) {
-        // TODO: nls (main label plus menu heading
-        menu().insert("On Head...", new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
-                                                                  screen(),
-                                                                  screen().imageControl(),
-                                                                  *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                                  *this,
-                                                                  "Toolbar on Head"));
+        menu().insert(_FBTEXT(Menu, OnHead, "On Head...", "Title of On Head menu"),
+                      new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
+                                                    screen(),
+                                                    screen().imageControl(),
+                                                    *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                                                    *this,
+                                                    _FBTEXT(Toolbar, OnHead, "Toolbar on Head", "Title of toolbar on head menu")));
     }
 
-    // setup items in placement menu
-    struct {
-        int set;
-        int base;
-        const char *default_str;
-        Toolbar::Placement placement;
-    } place_menu[]  = {
-        {0, 0, "Top Left", Toolbar::TOPLEFT},
-        
-        {0, 0, "Left Top", Toolbar::LEFTTOP},
-        {0, 0, "Left Center", Toolbar::LEFTCENTER},
-        {0, 0, "Left Bottom", Toolbar::LEFTBOTTOM}, 
-        
-        {0, 0, "Bottom Left", Toolbar::BOTTOMLEFT},
-        {0, 0, "Top Center", Toolbar::TOPCENTER},
-        {0, 0, 0, Toolbar::TOPCENTER},
-        {0, 0, 0, Toolbar::BOTTOMCENTER},
-        {0, 0, 0, Toolbar::BOTTOMCENTER},
-        {0, 0, "Bottom Center", Toolbar::BOTTOMCENTER},
-        {0, 0, "Top Right", Toolbar::TOPRIGHT},
-        
-        {0, 0, "Right Top", Toolbar::RIGHTTOP},
-        {0, 0, "Right Center", Toolbar::RIGHTCENTER},
-        {0, 0, "Right Bottom", Toolbar::RIGHTBOTTOM},
-        
-        {0, 0, "Bottom Right", Toolbar::BOTTOMRIGHT}
-    };
+    typedef list<pair<const char *, Toolbar::Placement> > Placements;
+    Placements place_menu;
+
+    // menu is 3 wide, 5 down
+    place_menu.push_back(make_pair(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Toolbar::TOPLEFT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, LeftTop, "Left Top", "Left Top"), Toolbar::LEFTTOP));
+    place_menu.push_back(make_pair(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Toolbar::LEFTCENTER));
+    place_menu.push_back(make_pair(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Toolbar::LEFTBOTTOM));
+    place_menu.push_back(make_pair(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Toolbar::BOTTOMLEFT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Toolbar::TOPCENTER));
+    place_menu.push_back(make_pair((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(make_pair((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(make_pair((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Toolbar::BOTTOMCENTER));
+    place_menu.push_back(make_pair(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Toolbar::TOPRIGHT));
+    place_menu.push_back(make_pair(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), Toolbar::RIGHTTOP));
+    place_menu.push_back(make_pair(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Toolbar::RIGHTCENTER));
+    place_menu.push_back(make_pair(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Toolbar::RIGHTBOTTOM));
+    place_menu.push_back(make_pair(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT));
+    
+
     placementMenu().setMinimumSublevels(3);
     // create items in sub menu
     for (size_t i=0; i<15; ++i) {
-        if (place_menu[i].default_str == 0) {
+        const char *str = place_menu.front().first;
+        Toolbar::Placement placement = place_menu.front().second;
+
+        if (str == 0) {
             placementMenu().insert("");
+            placementMenu().setItemEnabled(i, false);
         } else {
-            const char *i18n_str = i18n.getMessage(place_menu[i].set, 
-                                                    place_menu[i].base,
-                                                    place_menu[i].default_str);
-            RefCommand setplace(new SetToolbarPlacementCmd(*this, place_menu[i].placement));
-            placementMenu().insert(i18n_str, setplace);
+            RefCommand setplace(new SetToolbarPlacementCmd(*this, placement));
+            placementMenu().insert(str, setplace);
                                                               
         }
+        place_menu.pop_front();
     }
-    menu().insert("Placement", &placementMenu());
+    menu().insert(_FBTEXT(Menu, Placement, "Placement", "Title of Placement menu"), &placementMenu());
     placementMenu().update();
     menu().update();
 }

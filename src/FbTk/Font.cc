@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.6 2003/12/01 19:57:01 fluxgen Exp $
+//$Id: Font.cc,v 1.7 2004/06/07 11:46:05 rathnor Exp $
 
 
 #include "Font.hh"
 #include "FontImp.hh"
+#include "I18n.hh"
 
 #ifdef    HAVE_CONFIG_H
 #include "config.h"
@@ -130,8 +131,10 @@ void Font::setAntialias(bool flag) {
 	}
 
     if (m_fontimp->loaded() != loaded) { // if the new font failed to load, fall back to 'fixed'
-        if (!m_fontimp->load("fixed")) // if that failes too, output warning
-            cerr<<"Warning: can't load fallback font 'fixed'."<<endl;
+        if (!m_fontimp->load("fixed")) {// if that failes too, output warning
+            _FB_USES_NLS;
+            cerr<<_FBTKTEXT(Error, CantFallbackFont, "Warning: can't load fallback font", "Attempt to load the last-resort default font failed")<<" 'fixed'."<<endl;
+        }
     }
 
     m_antialias = flag;

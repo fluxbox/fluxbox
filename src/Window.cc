@@ -22,12 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.287 2004/05/13 01:48:18 rathnor Exp $
+// $Id: Window.cc,v 1.288 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Window.hh"
 
 #include "WinClient.hh"
-#include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "FbWinFrameTheme.hh"
@@ -40,6 +39,7 @@
 #include "Remember.hh"
 #include "MenuCreator.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"

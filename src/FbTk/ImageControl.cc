@@ -22,13 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.12 2004/01/21 14:15:29 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.13 2004/06/07 11:46:05 rathnor Exp $
 
 #include "ImageControl.hh"
 
 #include "TextureRender.hh"
 #include "App.hh"
 #include "SimpleCommand.hh"
+#include "I18n.hh"
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -638,7 +639,8 @@ void ImageControl::createColorTable() {
         }
 
     default:
-        cerr<<"FbTk::ImageControl: Unsupported visual"<<endl;
+        _FB_USES_NLS;
+        cerr<<"FbTk::ImageControl: "<<_FBTKTEXT(Error, UnsupportedVisual, "Unsupported visual", "A visual is a technical term in X")<<endl;
         break;
     }
 }

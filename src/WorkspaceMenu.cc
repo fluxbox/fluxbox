@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceMenu.cc,v 1.1 2004/05/02 20:51:36 fluxgen Exp $
+// $Id: WorkspaceMenu.cc,v 1.2 2004/06/07 11:46:04 rathnor Exp $
 
 #include "WorkspaceMenu.hh"
 
@@ -27,8 +27,8 @@
 #include "fluxbox.hh"
 #include "Workspace.hh"
 #include "MenuCreator.hh"
-#include "I18n.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/MenuItem.hh"
@@ -84,21 +84,17 @@ void WorkspaceMenu::init(BScreen &screen) {
     screen.currentWorkspaceSig().attach(this);
     screen.workspaceCountSig().attach(this);
     screen.workspaceNamesSig().attach(this);
-    I18n &i18n = *I18n::instance();
     using namespace FbTk;
-    using namespace FBNLS;
+    _FB_USES_NLS;
 
     removeAll();
 
-    setLabel(i18n.getMessage(WorkspacemenuSet, WorkspacemenuWorkspacesTitle,
-                             "Workspace"));
+    setLabel(_FBTEXT(Workspace, MenuTitle, "Workspace", "Title of main workspace menu"));
     RefCount<Command> new_workspace(new SimpleCommand<BScreen, int>(screen, &BScreen::addWorkspace));
     RefCount<Command> remove_last(new SimpleCommand<BScreen, int>(screen, &BScreen::removeLastWorkspace));
-    insert(i18n.getMessage(WorkspacemenuSet, WorkspacemenuNewWorkspace,
-                            "New Workspace"), 
+    insert(_FBTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 
            new_workspace);
-    insert(i18n.getMessage(WorkspacemenuSet, WorkspacemenuRemoveLast,
-                           "Remove Last"), 
+    insert(_FBTEXT(Workspace, RemoveLast, "Remove Last", "Remove the last workspace"), 
            remove_last);
     // for each workspace add workspace name and it's menu to our workspace menu
     for (size_t workspace = 0; workspace < screen.getCount(); ++workspace) {
@@ -108,8 +104,7 @@ void WorkspaceMenu::init(BScreen &screen) {
     }
     setItemSelected(screen.currentWorkspace()->workspaceID() + 2, true);
 
-    insert(i18n.getMessage(IconSet, IconIcons,
-                           "Icons"),
+    insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
            MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
     FbMenu::update();
 }

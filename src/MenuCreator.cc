@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.5 2004/05/03 21:37:01 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.6 2004/06/07 11:46:04 rathnor Exp $
 
 #include "MenuCreator.hh"
 
@@ -29,7 +29,6 @@
 #include "fluxbox.hh"
 #include "CommandParser.hh"
 #include "Window.hh"
-#include "I18n.hh"
 
 #include "FbMenu.hh"
 #include "IconMenu.hh"
@@ -40,6 +39,7 @@
 #include "FbMenuParser.hh"
 #include "StyleMenuItem.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/MacroCommand.hh"
@@ -119,10 +119,7 @@ static void translateMenuItem(Parser &parse,
                               FbTk::Menu &menu) {
     
     const int screen_number = menu.screenNumber();
-    static I18n &i18n = *I18n::instance();
-    using namespace FBNLS;
-
-#define SCREENNLS(a, b) i18n.getMessage(ScreenSet, a, b)
+    _FB_USES_NLS;
 
     if (str_key == "end") {
         return;
@@ -133,13 +130,13 @@ static void translateMenuItem(Parser &parse,
         if (submenu == 0)
             return;
         if (str_label.empty())
-            menu.insert(i18n.getMessage(IconSet, IconIcons, "Icons"));
+            menu.insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"));
         else
             menu.insert(str_label.c_str(), submenu);
     } else if (str_key == "exit") { // exit
         FbTk::RefCount<FbTk::Command> exit_cmd(CommandParser::instance().parseLine("exit"));
         if (str_label.empty())
-            menu.insert(SCREENNLS(ScreenExit, "Exit"), exit_cmd);
+            menu.insert(_FBTEXT(Menu, Exit, "Exit", "Exit Command"), exit_cmd);
         else
             menu.insert(str_label.c_str(), exit_cmd);
     } else if (str_key == "exec") {
@@ -191,18 +188,18 @@ static void translateMenuItem(Parser &parse,
         FbTk::RefCount<FbTk::Command> restart_fb(CommandParser::instance().
                                                  parseLine("restart"));
         if (str_label.empty())
-            menu.insert(SCREENNLS(ScreenRestart, "Restart"), restart_fb);
+            menu.insert(_FBTEXT(Menu, Restart, "Restart", "Restart Command"), restart_fb);
         else
             menu.insert(str_label.c_str(), restart_fb);
     } // end of restart
     else if (str_key == "reconfig") { // reconf
-        //
-        //!! TODO: NLS
-        //
         FbTk::RefCount<FbTk::Command> 
             reconfig_fb_cmd(CommandParser::instance().
                             parseLine("reconfigure"));
-        menu.insert(str_label.c_str(), reconfig_fb_cmd);
+        if (str_label.empty())
+            menu.insert(_FBTEXT(Menu, Reconfigure, "Reload Config", "Reload all the configs"), reconfig_fb_cmd);
+        else 
+            menu.insert(str_label.c_str(), reconfig_fb_cmd);
 
     } else if (str_key == "stylesdir" || str_key == "stylesmenu") {
         createStyleMenu(menu, str_label, 
@@ -223,8 +220,6 @@ static void translateMenuItem(Parser &parse,
         if (*command != 0)
             menu.insert(str_label.c_str(), command);
     }
-#undef SCREENNLS
-
 }
 
 
@@ -347,23 +342,18 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
                                        const std::string &label,
                                        FbTk::Menu &menu,
                                        FluxboxWindow &win) {
-    static I18n &i18n = *I18n::instance();
     typedef FbTk::RefCount<FbTk::Command> RefCmd;
     typedef FbTk::SimpleCommand<FluxboxWindow> WindowCmd;
-    using namespace FBNLS;
-
-#define WINDOWNLS(a, b) std::string real_label = label; if (label.empty()) real_label = i18n.getMessage(FBNLS::WindowmenuSet, a, b)
+    _FB_USES_NLS;
 
     if (type == "shade") {
-        WINDOWNLS(WindowmenuShade, "Shade");
         RefCmd shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
-        menu.insert(real_label.c_str(), shade_cmd);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label.c_str(), shade_cmd);
     } else if (type == "maximize") {
-        WINDOWNLS(WindowmenuMaximize, "Maximize");
         RefCmd maximize_cmd(new WindowCmd(win, &FluxboxWindow::maximizeFull));
         RefCmd maximize_vert_cmd(new WindowCmd(win, &FluxboxWindow::maximizeVertical));
         RefCmd maximize_horiz_cmd(new WindowCmd(win, &FluxboxWindow::maximizeHorizontal));
-        FbTk::MultiButtonMenuItem *maximize_item = new FbTk::MultiButtonMenuItem(3, real_label.c_str());
+        FbTk::MultiButtonMenuItem *maximize_item = new FbTk::MultiButtonMenuItem(3, label.empty()?_FBTEXT(Windowmenu, Maximize, "Maximize", "Maximize the window"):label.c_str());
         // create maximize item with:
         // button1: Maximize normal
         // button2: Maximize Vertical
@@ -373,25 +363,20 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         maximize_item->setCommand(3, maximize_horiz_cmd);
         menu.insert(maximize_item);
     } else if (type == "iconify") {
-        WINDOWNLS(WindowmenuIconify, "Iconify");
         RefCmd iconify_cmd(new WindowCmd(win, &FluxboxWindow::iconify));
-        menu.insert(real_label.c_str(), iconify_cmd);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Iconify, "Iconify", "Iconify the window"):label.c_str(), iconify_cmd);
     } else if (type == "close") {
-        WINDOWNLS(WindowmenuClose, "Close");
         RefCmd close_cmd(new WindowCmd(win, &FluxboxWindow::close));
-        menu.insert(real_label.c_str(), close_cmd);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Close, "Close", "Close the window"):label.c_str(), close_cmd);
     } else if (type == "lower") {
-        WINDOWNLS(WindowmenuLower, "Lower");
         RefCmd lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
-        menu.insert(real_label.c_str(), lower_cmd);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Lower, "Lower", "Lower the window"):label.c_str(), lower_cmd);
     } else if (type == "raise") {
-        WINDOWNLS(WindowmenuRaise, "Raise");
         RefCmd raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
-        menu.insert(real_label.c_str(), raise_cmd);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Raise, "Raise", "Raise the window"):label.c_str(), raise_cmd);
     } else if (type == "stick") {
-        WINDOWNLS(WindowmenuStick, "Stick");
         RefCmd stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
-        menu.insert(real_label.c_str(), stick_cmd);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Stick, "Stick", "Stick the window"):label.c_str(), stick_cmd);
     } else if (type == "extramenus") {
         FluxboxWindow::ExtraMenus::iterator it = win.extraMenus().begin();
         FluxboxWindow::ExtraMenus::iterator it_end = win.extraMenus().end();
@@ -401,10 +386,8 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         }
 
     } else if (type == "sendto") {
-        WINDOWNLS(WindowmenuSendTo, "Send To ...");
-        menu.insert(real_label.c_str(), new SendToMenu(win));
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label.c_str(), new SendToMenu(win));
     } else if (type == "layer") {
-        WINDOWNLS(WindowmenuLayer, "Layer ...");
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         if (screen == 0)
             return false;
@@ -415,14 +398,13 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
                                                            &win,
                                                            false);
         submenu->disableTitle();
-        menu.insert(real_label.c_str(), submenu);
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Layer, "Layer ...", "Layer menu"):label.c_str(), submenu);
 
 
     } else if (type == "separator") {
         menu.insert("---");
     } else
         return false;
-#undef WINDOWNLS
 
     return true;
 }

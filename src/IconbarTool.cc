@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.36 2004/04/26 15:04:37 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.37 2004/06/07 11:46:04 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -35,6 +35,7 @@
 #include "CommandParser.hh"
 #include "WinClient.hh"
 
+#include "FbTk/I18n.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/RefCount.hh"
@@ -87,7 +88,7 @@ void FbTk::Resource<Container::Alignment>::setFromString(const char *str) {
         m_value = Container::LEFT;
     else if (strcasecmp(str, "Right") == 0)
         m_value = Container::RIGHT;
-    else if (strcasecmp(str, "RELATIVE") == 0)
+    else if (strcasecmp(str, "Relative") == 0)
         m_value = Container::RELATIVE;
     else
         setDefaultValue();
@@ -157,32 +158,55 @@ private:
 
 void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
     using namespace FbTk;
+    _FB_USES_NLS;
 
-    // TODO: nls
-    menu.setLabel("Iconbar Mode");
+    menu.setLabel(_FBTEXT(Toolbar, IconbarMode, "Iconbar Mode", "Menu title - chooses which set of icons are shown in the iconbar"));
 
     RefCount<Command> saverc_cmd(new SimpleCommand<Fluxbox>(
                                                             *Fluxbox::instance(), 
                                                             &Fluxbox::save_rc));
     
-    //TODO: nls
-    menu.insert(new ToolbarModeMenuItem("None", handler, 
-                                        IconbarTool::NONE, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("Icons", handler, 
-                                        IconbarTool::ICONS, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("Workspace Icons", handler, 
-                                        IconbarTool::WORKSPACEICONS, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("Workspace", handler, 
-                                        IconbarTool::WORKSPACE, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("All Windows", handler, 
-                                        IconbarTool::ALLWINDOWS, saverc_cmd));
+    menu.insert(new ToolbarModeMenuItem(_FBTEXT(Toolbar, IconbarModeNone, "None", "No icons are shown in the iconbar"),
+                    handler, 
+                    IconbarTool::NONE, saverc_cmd));
+
+    menu.insert(new ToolbarModeMenuItem(
+                    _FBTEXT(Toolbar, IconbarModeIcons, "Icons", "Iconified windows from all workspaces are shown"),
+                    handler, 
+                    IconbarTool::ICONS, saverc_cmd));
+
+    menu.insert(new ToolbarModeMenuItem(
+                    _FBTEXT(Toolbar, IconbarModeWorkspaceIcons, "WorkspaceIcons", "Iconified windows from this workspace are shown"),
+                    handler,
+                    IconbarTool::WORKSPACEICONS, saverc_cmd));
+
+    menu.insert(new ToolbarModeMenuItem(
+                    _FBTEXT(Toolbar, IconbarModeWorkspace, "Workspace", "Normal and iconified windows from this workspace are shown"),
+                    handler, 
+                    IconbarTool::WORKSPACE, saverc_cmd));
+
+    menu.insert(new ToolbarModeMenuItem(
+                    _FBTEXT(Toolbar, IconbarModeAllWindows, "All Windows", "All windows are shown"),
+                    handler, 
+                    IconbarTool::ALLWINDOWS, saverc_cmd));
+
     menu.insert("---"); // separator line
-    menu.insert(new ToolbarAlignMenuItem("Left", handler,
-                                         Container::LEFT, saverc_cmd));
-    menu.insert(new ToolbarAlignMenuItem("Relative", handler,
-                                         Container::RELATIVE, saverc_cmd));
-    menu.insert(new ToolbarAlignMenuItem("Right", handler,
-                                         Container::RIGHT, saverc_cmd));
+
+    menu.insert(new ToolbarAlignMenuItem(
+                    _FBTEXT(Align, Left, "Left", "Align to the left"),
+                    handler,
+                    Container::LEFT, saverc_cmd));
+
+    menu.insert(new ToolbarAlignMenuItem(
+                    _FBTEXT(Align, Relative, "Relative", "Align relative to the width"),
+                    handler,
+                    Container::RELATIVE, saverc_cmd));
+
+    menu.insert(new ToolbarAlignMenuItem(
+                    _FBTEXT(Align, Right, "Right", "Align to the right"),
+                    handler,
+                    Container::RIGHT, saverc_cmd));
+
     menu.insert("---"); // separator line
     menu.update();
 }

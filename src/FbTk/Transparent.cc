@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.5 2003/05/13 20:50:56 fluxgen Exp $
+// $Id: Transparent.cc,v 1.6 2004/06/07 11:46:05 rathnor Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
+#include "I18n.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -33,12 +34,14 @@
 #endif // HAVE_XRENDER
 
 #include <iostream>
+#include <stdio.h>
 using namespace std;
 
 namespace {
 #ifdef HAVE_XRENDER
 Picture createAlphaPic(Window drawable, unsigned char alpha) {
     Display *disp = FbTk::App::instance()->display();
+    _FB_USES_NLS;
 
     // try to find a specific render format
     XRenderPictFormat pic_format;
@@ -49,7 +52,7 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
                                                   PictFormatDepth | PictFormatAlphaMask,
                                                   &pic_format, 0);
     if (format == 0) {
-        cerr<<"Warning! FbTk::Transparent:  Failed to find valid format for alpha."<<endl;
+        cerr<<"FbTk::Transparent: "<<_FBTKTEXT(Error, NoRenderFormat, "Warning: Failed to find valid format for alpha.", "transparency requires a pict format, can't get one...")<<endl;
         return 0;
     }
 
@@ -57,7 +60,7 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
     Pixmap alpha_pm = XCreatePixmap(disp, drawable,
                                     1, 1, 8);
     if (alpha_pm == 0) {
-        cerr<<"Warning! FbTk::Transparent: Failed to create alpha pixmap."<<endl;
+        cerr<<"FbTk::Transparent: "<<_FBTKTEXT(Error, NoRenderPixmap, "Warning: Failed to create alpha pixmap.", "XCreatePixmap files for our transparency pixmap")<<endl;
         return 0;
     }
 
@@ -68,7 +71,7 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
                                              format, CPRepeat, &attr);
     if (alpha_pic == 0) {
         XFreePixmap(disp, alpha_pm);
-        cerr<<"Warning! FbTk::Transparent: Failed to create alpha picture."<<endl;
+        cerr<<"FbTk::Transparent: "<<_FBTKTEXT(Error, NoRenderPicture, "Warning: Failed to create alpha picture.", "XRenderCreatePicture failed")<<endl;
         return 0;
     }
 
@@ -181,8 +184,12 @@ void Transparent::setDest(Drawable dest, int screen_num) {
         XRenderPictFormat *format = 
             XRenderFindVisualFormat(disp, 
                                     DefaultVisual(disp, screen_num));
-        if (format == 0)
-            cerr<<"Warning! FbTk::Transparent: Failed to find format for screen("<<screen_num<<")"<<endl;
+        if (format == 0) {
+            _FB_USES_NLS;
+            cerr<<"FbTk::Transparent: ";
+            fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number"), screen_num);
+            cerr<<endl;
+        }
         m_dest_pic = XRenderCreatePicture(disp, dest, format, 0, 0);
        
 
@@ -216,8 +223,12 @@ void Transparent::setSource(Drawable source, int screen_num) {
         XRenderPictFormat *format = 
             XRenderFindVisualFormat(disp, 
                                     DefaultVisual(disp, screen_num));
-        if (format == 0)
-            cerr<<"Warning! FbTk::Transparent: Failed to find format for screen("<<screen_num<<")"<<endl;
+        if (format == 0) {
+            _FB_USES_NLS;
+            cerr<<"FbTk::Transparent: ";
+            fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number"), screen_num);
+            cerr<<endl;
+        }
         m_src_pic = XRenderCreatePicture(disp, m_source, format, 
                                          0, 0);    
     }

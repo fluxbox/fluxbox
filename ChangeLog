@@ -1,5 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/07:
+  * Initial NLS update (Simon)
+    - use _FBTEXT, or _FBTKTEXT for all strings that go to the user
+    - regenerate fluxbox-nls.hh when adding new strings
+    - This patch doesn't convert old translations, so for the mo,
+      translations are broken, sorry. Thats next.
+    {nls,src,FbTk}/Makefile.am fluxbox-nls.hh nls/nlsinfo -src/I18n.hh/cc 
+    +FbTk/I18n.hh/cc Color.cc EventManager.cc Font.cc ImageControl.cc
+    Menu.cc Resource.cc TextureRender.cc Theme.cc Transparent.cc 
+    XFontImp.cc Gnome.cc Ewmh.cc FbCommandFactory.cc IconMenu.cc 
+    IconbarTool.cc Keys.cc MenuCreator.cc RegExp.cc Remember.cc Screen.cc
+    Slit.hh/cc Toolbar.cc WinClient.cc Window.cc Workspace.cc 
+    WorkspaceMenu.cc Xutil.cc fluxbox.cc main.cc
 *04/05/24:
   * Fix handling alpha value of zero (Simon)
     - also fix up defaulting of missing alpha theme items to 255

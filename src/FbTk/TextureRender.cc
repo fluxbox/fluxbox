@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.8 2004/01/21 20:19:50 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.9 2004/06/07 11:46:05 rathnor Exp $
 
 #include "TextureRender.hh"
 
@@ -30,6 +30,7 @@
 #include "App.hh"
 #include "FbPixmap.hh"
 #include "GContext.hh"
+#include "I18n.hh"
 
 #include <iostream>
 #include <string>
@@ -46,16 +47,17 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     ncolors(ncolors),
     xtable(0), ytable(0) {
 
+    _FB_USES_NLS;
     width = ((signed) w > 0) ? w : 1;
     height = ((signed) h > 0) ? h : 1;
     // clamp to "normal" size
     if (width > 3200) {
-        cerr<<"TextureRender: Warning! Width > 3200 setting Width = 3200"<<endl;
+        cerr<<"TextureRender: "<<_FBTKTEXT(Error, BigWidth, "Warning! Width > 3200 setting Width = 3200", "Image width seems too big, clamping")<<endl;
         width = 3200;
     }
 
     if (height > 3200) {
-        cerr<<"TextureRender: Warning! Height > 3200 setting Height = 3200"<<endl;
+        cerr<<"TextureRender: "<<_FBTKTEXT(Error, BigHeight, "Warning! Height > 3200 setting Height = 3200", "Image height seems too big, clamping")<<endl;
         height = 3200;
     }
 
@@ -63,7 +65,7 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     if (red == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
-        throw string("TextureRender::TextureRender(): Out of memory while allocating red buffer."+ string(sbuf));
+        throw string("TextureRender::TextureRender(): " + string(_FBTKTEXT(Error, OutOfMemoryRed, "Out of memory while allocating red buffer.", "")) + string(sbuf));
     }
 
 
@@ -71,14 +73,14 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     if (green == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
-        throw string("TextureRender::TextureRender(): Out of memory while allocating green buffer. size " + string(sbuf));
+        throw string("TextureRender::TextureRender(): " +string(_FBTKTEXT(Error, OutOfMemoryGreen, "Out of memory while allocating green buffer.", ""))+ string(sbuf));
     }
 
     blue = new(nothrow) unsigned char[width * height];
     if (blue == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
-        throw string("TextureRender::TextureRender(): Out of memory while allocating blue buffer. size " + string(sbuf));
+        throw string("TextureRender::TextureRender(): " +string(_FBTKTEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
     }
 
     cpc = imgctrl.colorsPerChannel();
@@ -120,7 +122,8 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
                     control.depth());
 
     if (pixmap.drawable() == None) {
-        cerr<<"FbTk::TextureRender::render_solid(): error creating pixmap"<<endl;
+        _FB_USES_NLS;
+        cerr<<"FbTk::TextureRender::render_solid(): "<<_FBTKTEXT(Error, CreatePixmap, "Error creating pixmap", "Couldn't create a pixmap - image - for some reason")<<endl;
         return None;
     }
 
@@ -274,7 +277,8 @@ XImage *TextureRender::renderXImage() {
                      width, height, 32, 0);
 
     if (! image) {
-        cerr<<"FbTk::TextureRender::renderXImage(): error creating XImage"<<endl;
+        _FB_USES_NLS;
+        cerr<<"FbTk::TextureRender::renderXImage(): "<<_FBTKTEXT(Error, CreateXImage, "Error creating XImage", "Couldn't create an XImage")<<endl;
         return 0;
     }
 
@@ -545,7 +549,9 @@ XImage *TextureRender::renderXImage() {
         */
 
     default:
-        cerr<<"TextureRender::renderXImage(): unsupported visual"<<endl;
+        _FB_USES_NLS;
+        cerr<<"TextureRender::renderXImage(): "<<
+            _FBTKTEXT(Error, UnsupportedVisual, "unsupported visual", "A visual is a technical term in X")<<endl;
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
@@ -644,7 +650,9 @@ XImage *TextureRender::renderXImage() {
 	break;
 
     default:
-        cerr<<"TextureRender::renderXImage(): unsupported visual"<<endl;
+        _FB_USES_NLS;
+        cerr<<"TextureRender::renderXImage(): "<<
+            _FBTKTEXT(Error, UnsupportedVisual, "unsupported visual", "A visual is a technical term in X")<<endl;
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
@@ -662,7 +670,8 @@ Pixmap TextureRender::renderPixmap() {
                     width, height, control.depth());
 
     if (pixmap.drawable() == None) {
-        cerr<<"TextureRender::renderPixmap(): error creating pixmap"<<endl;
+        _FB_USES_NLS;
+        cerr<<"FbTk::TextureRender::renderPixmap(): "<<_FBTKTEXT(Error, CreatePixmap, "Error creating pixmap", "Couldn't create a pixmap - image - for some reason")<<endl;
         return None;
     }
 

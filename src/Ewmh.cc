@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.45 2004/03/07 23:37:39 rathnor Exp $
+// $Id: Ewmh.cc,v 1.46 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -30,6 +30,7 @@
 #include "fluxbox.hh"
 
 #include "FbTk/FbWindow.hh"
+#include "FbTk/I18n.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -244,10 +245,11 @@ void Ewmh::updateClientList(BScreen &screen) {
     for (; icon_it != icon_it_end; ++icon_it) {
         num += (*icon_it)->numClients();
     }
-	
+
     Window *wl = new (nothrow) Window[num];
     if (wl == 0) {
-        cerr<<"Fatal: Out of memory, can't allocate for Ewmh client list"<<endl;
+        _FB_USES_NLS;
+        cerr<<_FBTEXT(Ewmh, OutOfMemoryClientList, "Fatal: Out of memory, can't allocate for EWMH client list", "")<<endl;
         return;
     }
 
@@ -594,7 +596,6 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
     } else if (ce.message_type == m_net_close_window) {
         if (winclient == 0)
             return true;
-        cerr<<"We got _NET_CLOSE_WINDOW!"<<endl;
         // ce.window = window to close (which in this case is the win argument)
         winclient->sendClose();
         return true;

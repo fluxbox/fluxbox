@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.40 2004/05/17 15:20:32 rathnor Exp $
+/// $Id: Slit.hh,v 1.41 2004/06/07 11:46:04 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -57,8 +57,8 @@ public:
     /**
        Placement on screen
     */
-    enum Placement { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
-           TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
+    enum Placement { TOPLEFT = 1, LEFTCENTER, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
+           TOPRIGHT, RIGHTCENTER, BOTTOMRIGHT };
 
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();

@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.10 2004/04/25 16:12:21 fluxgen Exp $
+// $Id: Color.cc,v 1.11 2004/06/07 11:46:05 rathnor Exp $
 
 #include "Color.hh"
 
 #include "App.hh"
 #include "StringUtil.hh"
+#include "I18n.hh"
 
 #include <iostream>
 using namespace std;
@@ -155,7 +156,8 @@ void Color::allocate(unsigned short red, unsigned short green, unsigned short bl
 	
 	
     if (!XAllocColor(disp, DefaultColormap(disp, screen), &color)) {
-        cerr<<"FbTk::Color: Allocation error."<<endl;
+        _FB_USES_NLS;
+        cerr<<"FbTk::Color: "<<_FBTKTEXT(Error, ColorAllocation, "Allocation error.", "XAllocColor failed...")<<endl;
     } else {
         setRGB(maxValue(color.red),
                maxValue(color.green),

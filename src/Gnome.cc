@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.34 2004/02/20 09:05:38 fluxgen Exp $
+// $Id: Gnome.cc,v 1.35 2004/06/07 11:46:04 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -28,6 +28,7 @@
 #include "Screen.hh"
 #include "WinClient.hh"
 #include "Workspace.hh"
+#include "FbTk/I18n.hh"
 
 #include <iostream>
 #include <new>
@@ -149,7 +150,8 @@ void Gnome::updateClientList(BScreen &screen) {
 	
     Window *wl = new Window[num];
     if (wl == 0) {
-        cerr<<"Fatal: Out of memory, can't allocate ("<<num*sizeof (Window)<<") for gnome client list"<<endl;
+        _FB_USES_NLS;
+        cerr<<_FBTEXT(Gnome, OutOfMemoryClientList, "Fatal: Out of memory, can't allocate for GNOME client list", "")<<endl;
         return;
     }
 

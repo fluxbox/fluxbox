@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.6 2003/09/11 20:00:09 fluxgen Exp $
+// $Id: XFontImp.cc,v 1.7 2004/06/07 11:46:05 rathnor Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
 #include "GContext.hh"
 #include "FbPixmap.hh"
+#include "I18n.hh"
 
 #include <X11/Xutil.h>
 
@@ -121,6 +122,8 @@ void XFontImp::rotate(float angle) {
         return;
     }
 
+    _FB_USES_NLS;
+
     //get positive angle
     while (angle < 0)
         angle += 360;
@@ -157,7 +160,7 @@ void XFontImp::rotate(float angle) {
     m_rotfont = new(nothrow) XRotFontStruct;
 
     if (m_rotfont == 0) {
-        cerr<<"RotFont: out of memory"<<endl;
+        cerr<<"RotFont: "<<_FBTKTEXT(Error, OutOfMemory, "Out of memory", "Something couldn't allocate memory")<<endl;
         return;
     }
    
@@ -224,7 +227,7 @@ void XFontImp::rotate(float angle) {
                                   vert_w, vert_h, 8, 0);
 
         if (I1 == None) {				
-            cerr<<"RotFont: Cant create ximage."<<endl;
+            cerr<<"RotFont: "<<_FBTKTEXT(Error, CreateXImage, "Cant create XImage", "XCreateImage failed for some reason")<<"."<<endl;
             delete m_rotfont;
             m_rotfont = 0;			
             return;
@@ -262,7 +265,7 @@ void XFontImp::rotate(float angle) {
                           (char *)bitdata, bit_w, bit_h, 8, 0); 
 
         if (I2 == None) {
-            cerr<<"XFontImp: Cant create ximage!"<<endl;
+            cerr<<"XFontImp: "<<_FBTKTEXT(Error, CreateXImage, "Cant create XImage", "XCreateImage failed for some reason")<<"."<<endl;
             delete m_rotfont;
             m_rotfont = 0;
             return;

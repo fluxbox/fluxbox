@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.26 2004/04/26 15:04:37 rathnor Exp $
+// $Id: Theme.cc,v 1.27 2004/06/07 11:46:05 rathnor Exp $
 
 #include "Theme.hh"
 
@@ -28,6 +28,7 @@
 #include "StringUtil.hh"
 #include "ThemeItems.hh"
 #include "Directory.hh"
+#include "I18n.hh"
 
 #include <cstdio>
 #include <memory>
@@ -140,9 +141,11 @@ void ThemeManager::loadTheme(Theme &tm) {
         if (!loadItem(*resource)) {
             // try fallback resource in theme
             if (!tm.fallback(*resource)) {
-                if (verbose())
-                    cerr<<"Failed to read theme item: "<<resource->name()<<endl;
-                resource->setDefaultValue();                
+                if (verbose()) {
+                    _FB_USES_NLS;
+                    cerr<<_FBTKTEXT(Error, ThemeItem, "Failed to read theme item", "When reading a style, couldn't read a specific item (following)")<<": "<<resource->name()<<endl;
+                }
+                resource->setDefaultValue();
             }
         }
     }
