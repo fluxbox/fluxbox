@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/06:
+   * Added Resize x y as command (Thanks Mathias Gumz)
+     FbCommands.cc/hh, FbCommandFactory.cc
+   * Added "!" as a comment line for keys file (Thanks Mathias Gumz)
+     Keys.cc
+   * Fixed so root menu and workspace menu shows up under the mouse (Thanks Mathias Gumz)
+     FbCommands.cc/hh
+   * Moved detection of lock modifiers from Keys to FbTk::KeyUtil  (Henrik)
+     Keys.cc/hh, KeyUtil.hh/cc, WorkspaceCmd.cc
 *03/08/30:
    * Added new action: workspacemenu  (Thanks Mathias Gumz)
      FbCommandFactory.hh/cc, FbCommands.hh/cc
