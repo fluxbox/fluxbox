@@ -37,6 +37,18 @@ class Slitmenu;
 #include <list>
 
 class Slitmenu : public Basemenu {
+public:
+	explicit Slitmenu(Slit *);
+	virtual ~Slitmenu(void);
+
+	inline Basemenu *getDirectionmenu(void) { return directionmenu; }
+	inline Basemenu *getPlacementmenu(void) { return placementmenu; }
+#ifdef XINERAMA
+	inline Basemenu *getHeadmenu(void) { return headmenu; }
+#endif // XINERAMA
+
+	void reconfigure(void);
+
 private: 
 	class Directionmenu : public Basemenu {
 	private:
@@ -91,19 +103,6 @@ private:
 protected:
 	virtual void itemSelected(int, int);
 	virtual void internal_hide(void);
-
-
-public:
-	explicit Slitmenu(Slit *);
-	virtual ~Slitmenu(void);
-
-	inline Basemenu *getDirectionmenu(void) { return directionmenu; }
-	inline Basemenu *getPlacementmenu(void) { return placementmenu; }
-#ifdef XINERAMA
-	inline Basemenu *getHeadmenu(void) { return headmenu; }
-#endif // XINERAMA
-
-	void reconfigure(void);
 };
 
 
@@ -120,10 +119,8 @@ public:
 
 	inline const Window &getWindowID() const { return frame.window; }
 
-	inline const int getX(void) const
-	{ return ((hidden) ? frame.x_hidden : frame.x); }
-	inline const int getY(void) const
-	{ return ((hidden) ? frame.y_hidden : frame.y); }
+	inline const int getX() const { return ((hidden) ? frame.x_hidden : frame.x); }
+	inline const int getY() const { return ((hidden) ? frame.y_hidden : frame.y); }
 
 	inline const unsigned int getWidth(void) const { return frame.width; }
 	inline const unsigned int getHeight(void) const { return frame.height; }
