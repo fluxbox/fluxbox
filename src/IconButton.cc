@@ -1,5 +1,5 @@
 // IconButton.cc
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,18 +20,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.13 2003/11/27 14:27:48 fluxgen Exp $
+// $Id: IconButton.cc,v 1.14 2004/01/11 16:08:07 fluxgen Exp $
 
 #include "IconButton.hh"
 
-#include "FbTk/App.hh"
-#include "FbTk/EventManager.hh"
 
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
-#include "SimpleCommand.hh"
+
+#include "FbTk/SimpleCommand.hh"
+#include "FbTk/App.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/MacroCommand.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/RefCount.hh"
+
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -48,6 +53,7 @@ class ShowMenu: public FbTk::Command {
 public:
     explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
     void execute() {
+        m_win.screen().hideMenus();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
         int x = event.xbutton.x_root - (m_win.menu().width() / 2);
@@ -70,9 +76,14 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     m_use_pixmap(true) {
 
     FbTk::RefCount<FbTk::Command> focus(new FbTk::SimpleCommand<FluxboxWindow>(m_win, &FluxboxWindow::raiseAndFocus));
-    FbTk::RefCount<FbTk::Command> menu(new ::ShowMenu(m_win));
-    setOnClick(focus, 1);
-    setOnClick(menu, 3);
+    FbTk::RefCount<FbTk::Command> hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
+    FbTk::MacroCommand *focus_macro = new FbTk::MacroCommand();
+    focus_macro->add(hidemenus);
+    focus_macro->add(focus);
+    FbTk::RefCount<FbTk::Command> focus_cmd(focus_macro);
+    FbTk::RefCount<FbTk::Command> menu_cmd(new ::ShowMenu(m_win));
+    setOnClick(focus_cmd, 1);
+    setOnClick(menu_cmd, 3);
     m_win.hintSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);

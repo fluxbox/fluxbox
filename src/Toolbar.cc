@@ -1,5 +1,5 @@
 // Toolbar.cc for Fluxbox
-// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Toolbar.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.134 2003/12/20 19:05:42 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.135 2004/01/11 16:08:57 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -470,6 +470,8 @@ void Toolbar::reconfigure() {
 void Toolbar::buttonPressEvent(XButtonEvent &be) {
     if (be.button != 3)
         return;
+
+    screen().hideMenus();
 
     if (! menu().isVisible()) {
         int x, y;
