@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.111 2003/04/15 19:04:18 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.112 2003/04/16 10:49:59 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -680,18 +680,25 @@ void Fluxbox::handleEvent(XEvent * const e) {
             BScreen *scr = searchScreen(e->xmaprequest.parent);
             cerr<<"screen = "<<scr<<endl;
             if (scr != 0)
-                scr->createWindow(e->xmaprequest.window);
+                win = scr->createWindow(e->xmaprequest.window);
             else
                 cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
         }
         // handled in FluxboxWindow::handleEvent
-
+        if (win) 
+            win->mapRequestEvent(e->xmaprequest);
+			
     }
         break;
-    case MapNotify:
+    case MapNotify: {
         // handled directly in FluxboxWindow::handleEvent
+
+        FluxboxWindow *win = searchWindow(e->xmap.window);
+
+        if (win) 
+            win->mapNotifyEvent(e->xmap);
+        }
         break;
-	
 
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
