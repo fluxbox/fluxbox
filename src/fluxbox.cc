@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.194 2003/10/05 02:31:23 rathnor Exp $
+// $Id: fluxbox.cc,v 1.195 2003/10/05 06:28:47 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -208,6 +208,13 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
 
+template<>
+void FbTk::Resource<long>::
+setFromString(const char *strval) {	
+    if (sscanf(strval, "%ld", &m_value) != 1)
+        setDefaultValue();
+}
+
 //-----------------------------------------------------------------
 //---- manipulators for int, bool, and some enums with Resource ---
 //-----------------------------------------------------------------
@@ -283,6 +290,14 @@ string FbTk::Resource<unsigned int>::
 getString() {
     char tmpstr[128];
     sprintf(tmpstr, "%ul", m_value);
+    return string(tmpstr);
+}
+
+template<>
+string FbTk::Resource<long>::
+getString() {
+    char tmpstr[128];
+    sprintf(tmpstr, "%ld", m_value);
     return string(tmpstr);
 }
 
@@ -403,6 +418,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                           "session.titlebar.right", "Session.Titlebar.Right"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
+      m_rc_auto_raise_delay(m_resourcemanager, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay"),
       m_focused_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
@@ -493,7 +509,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         cerr<<"Warning: cannot set locale modifiers"<<endl;
 
 
-    resource.auto_raise_delay.tv_sec = resource.auto_raise_delay.tv_usec = 0;
     resource.update_delay_time = 5;
 
 #ifdef HAVE_GETPID
@@ -1499,11 +1514,6 @@ void Fluxbox::save_rc() {
     sprintf(rc_string, "session.updateDelayTime: %lu", resource.update_delay_time);
     XrmPutLineResource(&new_blackboxrc, rc_string);
 
-    sprintf(rc_string, "session.autoRaiseDelay:	%lu",
-            ((resource.auto_raise_delay.tv_sec * 1000) +
-             (resource.auto_raise_delay.tv_usec / 1000)));
-    XrmPutLineResource(&new_blackboxrc, rc_string);
-
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
 
@@ -1661,18 +1671,6 @@ void Fluxbox::load_rc() {
             resource.update_delay_time = 5;
     } else
         resource.update_delay_time = 5;
-
-    if (XrmGetResource(*database, "session.autoRaiseDelay", "Session.AutoRaiseDelay", 
-                       &value_type, &value)) {
-        if (sscanf(value.addr, "%lu", &resource.auto_raise_delay.tv_usec) != 1)
-            resource.auto_raise_delay.tv_usec = 250;
-    } else
-        resource.auto_raise_delay.tv_usec = 250;
-
-    resource.auto_raise_delay.tv_sec = resource.auto_raise_delay.tv_usec / 1000;
-    resource.auto_raise_delay.tv_usec -=
-        (resource.auto_raise_delay.tv_sec * 1000);
-    resource.auto_raise_delay.tv_usec *= 1000;
 
     // expand tilde
     *m_rc_groupfile = StringUtil::expandFilename(*m_rc_groupfile);

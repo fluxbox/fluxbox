@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.73 2003/10/05 02:31:23 rathnor Exp $
+// $Id: fluxbox.hh,v 1.74 2003/10/05 06:28:47 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -143,7 +143,7 @@ public:
     inline int getDesktopLayer()   const { return 12; }
 
 
-    inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }
+    inline time_t getAutoRaiseDelay() const { return *m_rc_auto_raise_delay; }
 
     inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
     inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
@@ -226,7 +226,6 @@ private:
 
     struct resource {
         Time double_click_interval;		
-        timeval auto_raise_delay;
         long update_delay_time;
     } resource;
 		
@@ -261,6 +260,7 @@ private:
 	
     FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
+    FbTk::Resource<time_t> m_rc_auto_raise_delay;
 
 	
     std::map<Window, WinClient *> m_window_search;

@@ -60,7 +60,7 @@ Timer::~Timer() {
 }
 
 
-void Timer::setTimeout(long t) {
+void Timer::setTimeout(time_t t) {
     m_timeout.tv_sec = t / 1000;
     m_timeout.tv_usec = t;
     m_timeout.tv_usec -= (m_timeout.tv_sec * 1000);

@@ -59,7 +59,7 @@ public:
 
     inline void fireOnce(bool once) { m_once = once; }
     /// set timeout
-    void setTimeout(long val);
+    void setTimeout(time_t val);
     /// set timeout 
     void setTimeout(timeval val);
     void setCommand(RefCount<Command> &cmd);

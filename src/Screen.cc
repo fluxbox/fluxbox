@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.237 2003/10/05 02:31:22 rathnor Exp $
+// $Id: Screen.cc,v 1.238 2003/10/05 06:28:47 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -870,10 +870,10 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     // This is a little tricks to reduce flicker 
     // this way we can set focus pixmap on frame before we show it
     // and using ExposeEvent to redraw without flicker
-    WinClient *win = getLastFocusedWindow(currentWorkspaceID());
-    if (win && win->fbwindow()) {
-        win->fbwindow()->setFocusFlag(true);
-    }
+    //WinClient *win = getLastFocusedWindow(currentWorkspaceID());
+    //if (win && win->fbwindow()) {
+    //        win->fbwindow()->setFocusFlag(true);
+    //}
 
     currentWorkspace()->showAll();
 

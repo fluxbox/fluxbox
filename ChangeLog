@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/05:
+  * Fix reading of auto raise delay (Simon)
+    fluxbox.hh/cc Screen.cc Timer.hh/cc
   * Make focusLast work for sloppy focus when changing workspace or
     closing a window (Simon)
     - also generalises event redirects (e.g. for window moving)
