@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.7 2003/02/17 22:45:42 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.8 2003/02/17 22:57:52 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -32,7 +32,8 @@
 #include <iostream>
 using namespace std;
 
-FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int screen_num, int x, int y,
+FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+                       int screen_num, int x, int y,
                        unsigned int width, unsigned int height):
     m_theme(theme),
     m_imagectrl(imgctrl),
@@ -67,7 +68,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int 
     m_use_titlebar(true), 
     m_use_handle(true),
     m_button_pm(0),
-    m_themelistener(*this),
+    m_themelistener(*this) {
     //    m_shape(new Shape(m_window, 0)) { //Shape::TOPLEFT | Shape::TOPRIGHT)) {
     theme.addListener(m_themelistener);
     init();
