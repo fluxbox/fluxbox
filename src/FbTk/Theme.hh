@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.5 2003/08/11 14:55:14 fluxgen Exp $
+// $Id: Theme.hh,v 1.6 2003/08/13 09:24:33 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -121,6 +121,7 @@ public:
     bool load(const std::string &filename);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
+    void loadItem(ThemeItem_base &resource);
 private:
     ThemeManager();
     ~ThemeManager() { }
