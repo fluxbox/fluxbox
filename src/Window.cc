@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.101 2002/11/23 16:07:19 rathnor Exp $
+// $Id: Window.cc,v 1.102 2002/11/26 16:44:48 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2426,44 +2426,36 @@ void FluxboxWindow::redrawLabel() {
 	XClearWindow(display, frame.label);
 
 	//no need to draw the title if we don't have any
-	if (getTitle().size() != 0) {
-		GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
-				 screen->getWindowStyle()->l_text_unfocus_gc);
-		unsigned int l = client.title_text_w;
-		int dlen = getTitle().size();
-		int dx = frame.bevel_w;
-		FbTk::Font &font = screen->getWindowStyle()->font;
-		if (l > frame.label_w) {
-			for (; dlen >= 0; dlen--) {
-				l = font.textWidth(getTitle().c_str(), dlen) + frame.bevel_w*4; 
-				if (l < frame.label_w)
-					break;
-			}
-		}
-		switch (screen->getWindowStyle()->justify) {
-			case DrawUtil::Font::RIGHT:
-				dx += frame.label_w - l;
-			break;
-			case DrawUtil::Font::CENTER:
-				dx += (frame.label_w - l)/2;
-			break;
-		}
+	if (getTitle().size() == 0)
+		return;
 
-		font.drawText(
-			frame.label,
-			screen->getScreenNumber(),
-			gc,
-			getTitle().c_str(), getTitle().size(),
-			dx, screen->getWindowStyle()->font.ascent() + 1);
-	}
+	GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
+			 screen->getWindowStyle()->l_text_unfocus_gc);
+
+	size_t newlen = getTitle().size();
+	const char *labeltext = getTitle().c_str();
+	FbTk::Font &font = screen->getWindowStyle()->font;
+
+	int align_x = DrawUtil::doAlignment(
+		frame.label_w, frame.bevel_w*2,
+		screen->getWindowStyle()->justify,
+		font,
+		labeltext, newlen, newlen);
+	
+	font.drawText(
+		frame.label,
+		screen->getScreenNumber(),
+		gc,
+		labeltext, newlen,
+		align_x, font.ascent() + 1);
 }
 
 
 void FluxboxWindow::redrawAllButtons() {
-	for (unsigned int i=0; i<buttonlist.size(); i++)
+	for (unsigned int i=0; i<buttonlist.size(); i++) {
 		if (buttonlist[i].draw)
 			buttonlist[i].draw(this, buttonlist[i].win, false);
-
+	}
 }
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {

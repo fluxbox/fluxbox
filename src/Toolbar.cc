@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.40 2002/11/16 22:17:06 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.41 2002/11/26 16:46:05 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -598,39 +598,18 @@ void Toolbar::checkClock(bool redraw, bool date) {
 		}
 #endif // HAVE_STRFTIME
 
-		int dx = (frame.bevel_w * 2), dlen = strlen(t);
-		unsigned int l;
-		l = screen->getToolbarStyle()->font.textWidth(t, dlen);
-		
-		l += (frame.bevel_w * 4);
-		
-		if (l > frame.clock_w) {
-			for (; dlen >= 0; dlen--) {
-				l = screen->getToolbarStyle()->font.textWidth(t, dlen);
-				l += (frame.bevel_w * 4);
-	
-				if (l < frame.clock_w)
-					break;
-			}
-
-		}
-
-		switch (screen->getToolbarStyle()->justify) {
-			case DrawUtil::Font::RIGHT:
-				dx += frame.clock_w - l;
-			break;
-			case DrawUtil::Font::CENTER:
-				dx += (frame.clock_w - l) / 2;
-			break;
-			default: //LEFT, no justification
-			break;
-		}
-
+		size_t newlen = strlen(t);
+		int dx = DrawUtil::doAlignment(frame.clock_w,
+			frame.bevel_w*2,
+			screen->getToolbarStyle()->justify,
+			screen->getToolbarStyle()->font,
+			t, strlen(t), newlen);
+			
 		screen->getToolbarStyle()->font.drawText(
 			frame.clock,
 			screen->getScreenNumber(),
 			screen->getToolbarStyle()->c_text_gc,
-			t, dlen,
+			t, newlen,
 			dx, 1 + screen->getToolbarStyle()->font.ascent());
 	}
 }
@@ -645,39 +624,17 @@ void Toolbar::redrawWindowLabel(bool redraw) {
 		if (foc->getScreen() != screen || foc->getTitle().size() == 0)
 			return;
 		
-		int dx = (frame.bevel_w * 2), dlen = foc->getTitle().size();
-		unsigned int l;
-
-		l = screen->getToolbarStyle()->font.textWidth(foc->getTitle().c_str(), dlen);
-		
-		l += (frame.bevel_w * 4);
-
-		if (l > frame.window_label_w) {
-			for (; dlen >= 0; dlen--) {
-				l = screen->getToolbarStyle()->font.textWidth(foc->getTitle().c_str(), dlen);
-	
-				l += (frame.bevel_w * 4);
-	
-				if (l < frame.window_label_w)
-					break;
-			}
-		}
-		switch (screen->getToolbarStyle()->justify) {
-		case DrawUtil::Font::RIGHT:
-			dx += frame.window_label_w - l;
-			break;
-
-		case DrawUtil::Font::CENTER:
-			dx += (frame.window_label_w - l) / 2;
-			break;
-		default:
-			break;
-		}
+		size_t newlen = foc->getTitle().size();
+		int dx = DrawUtil::doAlignment(frame.window_label_w, frame.bevel_w*2,
+			screen->getToolbarStyle()->justify,
+			screen->getToolbarStyle()->font,
+			foc->getTitle().c_str(), foc->getTitle().size(), newlen);
+			
 		screen->getToolbarStyle()->font.drawText(
 			frame.window_label,
 			screen->getScreenNumber(),
 			screen->getToolbarStyle()->w_text_gc,
-			foc->getTitle().c_str(), dlen,
+			foc->getTitle().c_str(), newlen,
 			dx, 1 + screen->getToolbarStyle()->font.ascent());
 	} else
 		XClearWindow(display, frame.window_label);
@@ -685,50 +642,26 @@ void Toolbar::redrawWindowLabel(bool redraw) {
  
  
 void Toolbar::redrawWorkspaceLabel(bool redraw) {
-	if (screen->getCurrentWorkspace()->name().size()>0) {
+	if (screen->getCurrentWorkspace()->name().size()==0)
+		return;
 		
-		if (redraw)
-			XClearWindow(display, frame.workspace_label);
-
-		int dx = (frame.bevel_w * 2), dlen =
-						screen->getCurrentWorkspace()->name().size();
-		unsigned int l;
+	if (redraw)
+		XClearWindow(display, frame.workspace_label);
 		
-		l = screen->getToolbarStyle()->font.textWidth(screen->getCurrentWorkspace()->name().c_str(), dlen);
-		
-		l += (frame.bevel_w * 4);
-		
-		if (l > frame.workspace_label_w) {
-			for (; dlen >= 0; dlen--) {
-				l = screen->getToolbarStyle()->font.textWidth(
-					screen->getCurrentWorkspace()->name().c_str(), dlen);
-	
-				l += (frame.bevel_w * 4);
-	
-				if (l < frame.workspace_label_w)
-					break;
-			}
-		}
-		
-		switch (screen->getToolbarStyle()->justify) {
-		case DrawUtil::Font::RIGHT:
-			dx += frame.workspace_label_w - l;
-			break;
-
-		case DrawUtil::Font::CENTER:
-			dx += (frame.workspace_label_w - l) / 2;
-			break;
-		default:
-			break;
-		}
-		
-		screen->getToolbarStyle()->font.drawText(
-			frame.workspace_label,
-			screen->getScreenNumber(),
-			screen->getToolbarStyle()->l_text_gc,
-			screen->getCurrentWorkspace()->name().c_str(), dlen,
-			dx, 1 + screen->getToolbarStyle()->font.ascent());
-	}
+	const char *text = screen->getCurrentWorkspace()->name().c_str();
+	size_t textlen = screen->getCurrentWorkspace()->name().size();
+	size_t newlen = textlen;
+	int dx = DrawUtil::doAlignment(frame.workspace_label_w, frame.bevel_w,
+		screen->getToolbarStyle()->justify,
+		screen->getToolbarStyle()->font,
+		text, textlen, newlen);
+			
+	screen->getToolbarStyle()->font.drawText(
+		frame.workspace_label,
+		screen->getScreenNumber(),
+		screen->getToolbarStyle()->l_text_gc,
+		text, newlen,
+		dx, 1 + screen->getToolbarStyle()->font.ascent());
 }
 
 
@@ -1097,7 +1030,9 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			tw = screen->getToolbarStyle()->font.textWidth(new_workspace_name.c_str(), l);
 			x = (frame.workspace_label_w - tw) / 2;
 
-			if (x < (signed) frame.bevel_w) x = frame.bevel_w;
+			if (x < (signed) frame.bevel_w)
+				x = frame.bevel_w;
+
 			screen->getToolbarStyle()->font.drawText(
 				frame.workspace_label,
 				screen->getScreenNumber(),
