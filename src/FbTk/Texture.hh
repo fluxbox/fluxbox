@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.3 2003/04/28 22:23:41 fluxgen Exp $
+// $Id: Texture.hh,v 1.4 2003/08/12 11:44:19 fluxgen Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
@@ -64,9 +64,10 @@ public:
     enum {
         BEVEL1 =         0x04000, 
         BEVEL2 =         0x08000, // bevel types
-        INVERT =        0x010000, //inverted image
+        INVERT =         0x10000, ///< inverted image
         PARENTRELATIVE = 0x20000,
-        INTERLACED =     0x40000
+        INTERLACED =     0x40000,
+        TILED =          0x80000  ///< tiled pixmap
     };
 
     Texture():m_type(0) { }

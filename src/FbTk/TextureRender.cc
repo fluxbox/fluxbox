@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.3 2003/04/28 22:27:29 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.4 2003/08/12 11:44:41 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -264,7 +264,10 @@ Pixmap TextureRender::renderPixmap(const FbTk::Texture &src_texture) {
         // copy src_texture's pixmap and 
         // scale to fit our size
         FbPixmap new_pm(src_texture.pixmap());
-        new_pm.scale(width, height);
+        // if not tiled then scale it
+        if (! (src_texture.type() & Texture::TILED))
+            new_pm.scale(width, height);
+
         return new_pm.release();
     }
     // return copy of pixmap
