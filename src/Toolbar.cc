@@ -22,21 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.123 2003/10/06 06:22:42 rathnor Exp $
+// $Id: Toolbar.cc,v 1.124 2003/10/13 23:48:48 fluxgen Exp $
 
 #include "Toolbar.hh"
 
+// tool
+#include "ToolbarItem.hh"
+
 // themes
 #include "ToolbarTheme.hh"
-#include "WorkspaceNameTheme.hh"
 
-// tools
-#include "IconbarTool.hh"
-#include "WorkspaceNameTool.hh"
-#include "ClockTool.hh"
-#include "SystemTray.hh"
-
- 
 #include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
@@ -44,7 +39,7 @@
 #include "BoolMenuItem.hh"
 #include "Xinerama.hh"
 #include "Strut.hh"
-#include "FbCommands.hh"
+#include "CommandParser.hh"
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/MacroCommand.hh"
@@ -165,32 +160,6 @@ private:
     Toolbar::Placement m_place;
 };
 
-class ShowMenuAboveToolbar: public FbTk::Command {
-public:
-    explicit ShowMenuAboveToolbar(Toolbar &tbar):m_tbar(tbar) { }
-    void execute() {
-
-        // get last button pos
-        const XEvent &event = Fluxbox::instance()->lastEvent();
-        int x = event.xbutton.x_root - (m_tbar.menu().width() / 2);
-        int y = event.xbutton.y_root - (m_tbar.menu().height() / 2);
-
-        if (x < 0)
-            x = 0;
-        else if (x + m_tbar.menu().width() > m_tbar.screen().width())
-            x = m_tbar.screen().width() - m_tbar.menu().width();
-
-        if (y < 0)
-            y = 0;
-        else if (y + m_tbar.menu().height() > m_tbar.screen().height())
-            y = m_tbar.screen().height() - m_tbar.menu().height();
-
-        m_tbar.menu().move(x, y);
-        m_tbar.menu().show();        
-    }
-private:
-    Toolbar &m_tbar;
-};
 }; // end anonymous
 
 // toolbar frame
@@ -233,10 +202,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                 this,
                 true),
     m_theme(scrn.screenNumber()),
-    m_clock_theme(scrn.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
-    m_workspace_theme(new WorkspaceNameTheme(scrn.screenNumber(), "toolbar.workspace", "Toolbar.Workspace")),
-    m_iconbar_theme(scrn.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
     m_layeritem(frame.window, layer),
+    m_tool_factory(scrn),
     m_strut(0),
     // lock rcmanager here
     m_rc_auto_hide(scrn.resourceManager().lock(), false, 
@@ -280,9 +247,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.grab_x = frame.grab_y = 0;
     
     // set antialias on themes
-    m_clock_theme.setAntialias(screen().antialias());
-    m_iconbar_theme.setAntialias(screen().antialias());
-    m_workspace_theme->setAntialias(screen().antialias());
+    m_tool_factory.updateThemes();
 
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
@@ -379,11 +344,7 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
-    m_clock_theme.setAntialias(screen().antialias());
-    m_iconbar_theme.setAntialias(screen().antialias());
-    m_workspace_theme->setAntialias(screen().antialias());
-
-
+    m_tool_factory.updateThemes();
 
     // parse resource tools and determine if we need to rebuild toolbar
 
@@ -427,20 +388,11 @@ void Toolbar::reconfigure() {
             StringList::const_iterator item_it = m_tools.begin();
             StringList::const_iterator item_it_end = m_tools.end();
             for (; item_it != item_it_end; ++item_it) {
-                if (*item_it == "workspacename") {
-                    WorkspaceNameTool *item = new WorkspaceNameTool(frame.window, *m_workspace_theme, screen());
-                    using namespace FbTk;
-                    RefCount<Command> showmenu(new ShowMenuAboveToolbar(*this));
-                    item->button().setOnClick(showmenu);
-                    m_item_list.push_back(item);
-                } else if (*item_it == "iconbar") {
-                    m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, 
-                                                          screen(), menu()));
-                } else if (*item_it == "systemtray") {
-                    m_item_list.push_back(new SystemTray(frame.window));
-                } else if (*item_it == "clock") {
-                    m_item_list.push_back(new ClockTool(frame.window, m_clock_theme, screen()));
-                }
+                ToolbarItem *item = m_tool_factory.create(*item_it, frame.window, *this);
+                if (item == 0)
+                    continue;
+                m_item_list.push_back(item);
+
             }
             // show all items
             frame.window.showSubwindows();
@@ -469,6 +421,7 @@ void Toolbar::reconfigure() {
         frame.window.moveResize(frame.x, frame.y,
                                 frame.width, frame.height);
     }
+
     // render frame window
     Pixmap tmp = m_window_pm;
     if (theme().toolbar().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
@@ -621,18 +574,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     frame.width = head_w * (*m_rc_width_percent) / 100;
     //!! TODO: change this 
     // max height of each toolbar items font...
-    unsigned int max_height = 0;
-    if (max_height < m_clock_theme.font().height())
-        max_height = m_clock_theme.font().height();
-
-    if (max_height < m_workspace_theme->font().height())
-        max_height = m_workspace_theme->font().height();
-
-    if (max_height < m_iconbar_theme.focusedText().font().height())
-        max_height = m_iconbar_theme.focusedText().font().height();
-
-    if (max_height < m_iconbar_theme.unfocusedText().font().height())
-        max_height = m_iconbar_theme.unfocusedText().font().height();
+    unsigned int max_height = m_tool_factory.maxFontHeight();
 
     if (theme().height() > 0)
         max_height = theme().height();
@@ -791,7 +733,7 @@ void Toolbar::setupMenus() {
     //!! TODO: this should be inserted by the workspace tool
         
 
-    RefCount<Command> start_edit(new FbCommands::SetWorkspaceNameCmd());
+    RefCount<Command> start_edit(CommandParser::instance().parseLine("setworkspacename"));
     menu.insert(i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
                                  "Edit current workspace name"),
                 start_edit);
@@ -807,7 +749,7 @@ void Toolbar::setupMenus() {
     FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
                                                    SimpleCommand<Toolbar>
                                                    (tbar, &Toolbar::reconfigure));
-    FbTk::RefCount<FbTk::Command> save_resources(new FbCommands::SaveResources());
+    FbTk::RefCount<FbTk::Command> save_resources(CommandParser::instance().parseLine("saverc"));
     FbTk::MacroCommand *toolbar_menuitem_macro = new FbTk::MacroCommand();
     toolbar_menuitem_macro->add(reconfig_toolbar);
     toolbar_menuitem_macro->add(save_resources);
