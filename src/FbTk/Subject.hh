@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Subject.hh,v 1.3 2003/08/19 16:03:52 fluxgen Exp $
+// $Id: Subject.hh,v 1.4 2003/09/08 15:38:46 fluxgen Exp $
 
 #ifndef FBTK_SUBJECT_HH
 #define FBTK_SUBJECT_HH
@@ -44,8 +44,11 @@ public:
     void notify();
     static void removeObserver(Observer *obs);
 private:
+    bool m_notify_mode;
+    
     typedef std::list<Observer *> ObserverList;
     ObserverList m_observerlist;
+    ObserverList m_dead_observers;
 
     typedef std::list<Subject *> SubjectList;
     static SubjectList s_subjectlist;
