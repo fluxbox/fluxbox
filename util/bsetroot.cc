@@ -18,11 +18,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.20 2003/08/12 01:34:13 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.21 2004/06/08 13:15:30 rathnor Exp $
 
 #include "bsetroot.hh"
 
-#include "../src/I18n.hh"
+#include "../src/FbTk/I18n.hh"
 #include "../src/FbTk/ImageControl.hh"
 #include "../src/FbRootWindow.hh"
 
@@ -106,12 +106,11 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
     }
 
     if ((mod + sol + grd) != true) {
-        fprintf(stderr,
-                I18n::instance()->
-                getMessage(
-                           FBNLS::bsetrootSet, FBNLS::bsetrootMustSpecify,
-                           "%s: error: must specify on of: -solid, -mod, -gradient\n"),
-                m_app_name);
+        _FB_USES_NLS;
+        cerr<<m_app_name<<
+            _FBTEXT(bsetroot, MustSpecify, 
+                    "Error: must specify one of: -solid, -mod, -gradient\n",
+                    "user didn't give one of the required options")<<endl;
 
         usage(2);
     }
@@ -187,7 +186,8 @@ void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
     atom_eroot = XInternAtom(display(), "ESETROOT_PMAP_ID", false);
 
     if (atom_root == None || atom_eroot == None) {
-        cerr<<"couldn't create pixmap atoms, giving up!"<<endl;
+        _FB_USES_NLS;
+        cerr<<_FBTEXT(bsetroot, NoPixmapAtoms, "Couldn't create pixmap atoms, giving up!", "Couldn't create atoms to point at root pixmap")<<endl;
         exit(1);
     }
 
@@ -390,23 +390,21 @@ void bsetroot::gradient() {
  Shows information about usage
 */
 void bsetroot::usage(int exit_code) {
-    fprintf(stderr,
-            I18n::instance()->getMessage(
-                                         FBNLS::bsetrootSet, FBNLS::bsetrootUsage,
-                                         "%s 2.2 : (c) 2003 Fluxbox Development Team\n"
-                                         "%s 2.1 : (c) 2002 Claes Nasten\n"
-                                         "%s 2.0 : (c) 1997-2000 Brad Hughes\n\n"
-                                         "  -display <string>        display connection\n"
-                                         "  -mod <x> <y>             modula pattern\n"
-                                         "  -foreground, -fg <color> modula foreground color\n"
-                                         "  -background, -bg <color> modula background color\n\n"
-                                         "  -gradient <texture>      gradient texture\n"
-                                         "  -from <color>            gradient start color\n"
-                                         "  -to <color>              gradient end color\n\n"
-                                         "  -solid <color>           solid color\n\n"
-                                         "  -help                    print this help text and exit\n"),
-            m_app_name, m_app_name);
- 
+    _FB_USES_NLS;
+    cerr<<m_app_name<<" 2.2 : (c) 2003 Fluxbox Development Team"<<endl;
+    cerr<<m_app_name<<" 2.1 : (c) 2002 Claes Nasten"<<endl;
+    cerr<<m_app_name<<" 2.0 : (c) 1997-2000 Brad Hughes\n"<<endl;
+    cerr<<_FBTEXT(bsetroot, Usage,
+                  "  -display <string>        display connection\n"
+                  "  -mod <x> <y>             modula pattern\n"
+                  "  -foreground, -fg <color> modula foreground color\n"
+                  "  -background, -bg <color> modula background color\n\n"
+                  "  -gradient <texture>      gradient texture\n"
+                  "  -from <color>            gradient start color\n"
+                  "  -to <color>              gradient end color\n\n"
+                  "  -solid <color>           solid color\n\n"
+                  "  -help                    print this help text and exit\n",
+                  "bsetroot usage options")<<endl;
     exit(exit_code);
 }
 
@@ -415,18 +413,18 @@ int main(int argc, char **argv) {
     char *display_name = (char *) 0;
     int i = 1;
   
-    NLSInit("fluxbox.cat");
+    FbTk::NLSInit("fluxbox.cat");
   
     for (; i < argc; i++) {
         if (! strcmp(argv[i], "-display")) {
             // check for -display option
 
             if ((++i) >= argc) {
-                fprintf(stderr,
-                        I18n::instance()->getMessage(
-                                                     FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,
-                                                     "error: '-display' requires an argument\n"));
-	
+                _FB_USES_NLS;
+                cerr<<_FBTEXT(main, DISPLAYRequiresArg,
+                              "error: '-display' requires an argument",
+                              "option requires an argument")<<endl;
+
                 ::exit(1);
             }
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceMenu.cc,v 1.3 2004/06/07 22:01:11 fluxgen Exp $
+// $Id: WorkspaceMenu.cc,v 1.4 2004/06/08 13:15:30 rathnor Exp $
 
 #include "WorkspaceMenu.hh"
 
@@ -91,7 +91,7 @@ void WorkspaceMenu::init(BScreen &screen) {
 
     removeAll();
 
-    setLabel(_FBTEXT(Workspace, MenuTitle, "Workspace", "Title of main workspace menu"));
+    setLabel(_FBTEXT(Workspace, MenuTitle, "Workspaces", "Title of main workspace menu"));
     RefCount<Command> new_workspace(new SimpleCommand<BScreen, int>(screen, &BScreen::addWorkspace));
     RefCount<Command> remove_last(new SimpleCommand<BScreen, int>(screen, &BScreen::removeLastWorkspace));
     insert(_FBTEXT(Workspace, NewWorkspace, "New Workspace", "Add a new workspace"), 

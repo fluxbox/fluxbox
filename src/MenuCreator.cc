@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.7 2004/06/07 22:23:50 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.8 2004/06/08 13:15:30 rathnor Exp $
 
 #include "MenuCreator.hh"
 
@@ -396,7 +396,7 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         }
 
     } else if (type == "sendto") {
-        menu.insert(label.empty()?_FBTEXT(Windowmenu, Shade, "Shade", "Shade the window"):label.c_str(), new SendToMenu(win));
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, SendTo, "Send To...", "Send to menu item name"):label.c_str(), new SendToMenu(win));
     } else if (type == "layer") {
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         if (screen == 0)

@@ -18,4 +18,4 @@ distclean-local:
 
 fluxbox-nls.hh:
 	chmod +x nlsinfo
-	./nlsinfo -H -N FBNLS $(top_srcdir)/src > fluxbox-nls.hh
+	./nlsinfo -H -N FBNLS $(top_srcdir)/src $(top_srcdir)/util > fluxbox-nls.hh

@@ -4,8 +4,8 @@ INCLUDES= 		-I$(top_srcdir)/src -I$(top_srcdir)/src/FbTk
 bin_SCRIPTS= 		fbsetbg fluxbox-generate_menu startfluxbox
 bin_PROGRAMS=		bsetroot
 bsetroot_SOURCES=	bsetroot.cc bsetroot.hh
-bsetroot_LDADD=		../src/FbRootWindow.o ../src/I18n.o \
-			../src/FbAtoms.o ../src/FbTk/libFbTk.a
+bsetroot_LDADD=		../src/FbRootWindow.o ../src/FbAtoms.o \
+			../src/FbTk/libFbTk.a
 
 MAINTAINERCLEANFILES=	Makefile.in
 EXTRA_DIST=		fbsetbg fluxbox-generate_menu.in \
@@ -33,7 +33,5 @@ fluxbox-generate_menu: fluxbox-generate_menu.in
 
 ../src/FbRootWindow.o:
 	cd ../src && ${MAKE} FbRootWindow.o
-../src/I18n.o:
-	cd ../src && ${MAKE} I18n.o
 ../src/FbAtoms.o:
 	cd ../src && ${MAKE} FbAtoms.o

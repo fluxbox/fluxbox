@@ -120,27 +120,27 @@ if (defined($opts{"r"})) {
 
 
 if (scalar(@ARGV) == 0) {
-    print STDERR "Must give one more argument - the directory to scan\n";
-    exit(1);
-} elsif (scalar(@ARGV) > 1) {
-    print STDERR "Too many arguments, none expected after directory to scan\n";
+    print STDERR "Must give at least one more argument - the directory to scan\n";
     exit(1);
 }
 
 
-my $dir = $ARGV[0];
-my $file;
-if (!defined($opts{"f"}) && ! -d $dir ) {
-    print STDERR "$dir is not a directory, aborting\n";
-    exit(2);
+my @args = @ARGV;
+if (!defined($opts{"f"})) {
+    foreach my $dir (@args) {
+        if (! -d $dir) {
+            print STDERR "$dir is not a directory, aborting\n";
+            exit(2);
+        }
+    }
 } elsif (defined($opts{"f"})) {
-    $file = $dir;
-    undef $dir;
     $recurse = 0;
 
-    if (! -r $file) {
-        print STDERR "$file is not a readable file, aborting\n";
-        exit(2);
+    foreach my $file (@args) {
+        if (! -r $file) {
+            print STDERR "$file is not a readable file, aborting\n";
+            exit(2);
+        }
     }
 }
 
@@ -150,10 +150,14 @@ if (!defined($opts{"f"}) && ! -d $dir ) {
 
 my %sets;
 
-if (defined($dir)) {
-    process_dir($dir);
+if (defined($opts{"f"})) {
+    foreach my $file (@args) {
+        process_file($file);
+    }
 } else {
-    process_file($file);
+    foreach my $dir (@args) {
+        process_dir($dir);
+    }
 }
 
 # Now we have the data, we need to print it out
