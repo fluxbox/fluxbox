@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.4 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: LayerMenu.hh,v 1.5 2003/07/10 11:51:59 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
@@ -61,7 +61,7 @@ private:
 template <typename ItemType>
 class LayerMenu : public FbMenu {
 public:
-    LayerMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+    LayerMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
               FbTk::XLayer &layer, ItemType *item, bool save_rc);
 
 private:
@@ -70,7 +70,7 @@ private:
 
 
 template <typename ItemType>
-LayerMenu<ItemType>::LayerMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+LayerMenu<ItemType>::LayerMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
                                FbTk::XLayer &layer, ItemType *item, bool save_rc):
     FbMenu(tm, screen_num, imgctrl, layer), 
     m_object(item) 
