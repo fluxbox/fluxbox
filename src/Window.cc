@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.143 2003/04/16 22:17:46 fluxgen Exp $
+// $Id: Window.cc,v 1.144 2003/04/20 02:47:14 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2303,18 +2303,19 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     dx += me.x_root - button_grab_x;
                 }
             }
-
+            // dx = current left side, dy = current top
+            doSnapping(dx, dy);
             
             if (! screen.doOpaqueMove()) {
                 XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                                last_move_x, last_move_y, 
-                               m_frame.width() + 2*frame().window().borderWidth(),
-                               m_frame.height() + 2*frame().window().borderWidth());
+                               m_frame.width() + 2*frame().window().borderWidth()-1,
+                               m_frame.height() + 2*frame().window().borderWidth()-1);
 
                 XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                                dx, dy, 
-                               m_frame.width() + 2*frame().window().borderWidth(),
-                               m_frame.height() + 2*frame().window().borderWidth());
+                               m_frame.width() + 2*frame().window().borderWidth()-1,
+                               m_frame.height() + 2*frame().window().borderWidth()-1);
                 last_move_x = dx;
                 last_move_y = dy;
             } else {
@@ -2577,8 +2578,8 @@ void FluxboxWindow::startMoving(Window win) {
         fluxbox->grab();
         XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                        frame().x(), frame().y(),
-                       frame().width() + 2*frame().window().borderWidth(), 
-                       frame().height() + 2*frame().window().borderWidth());
+                       frame().width() + 2*frame().window().borderWidth()-1, 
+                       frame().height() + 2*frame().window().borderWidth()-1);
         screen.showPosition(frame().x(), frame().y());
     }
 }
@@ -2593,8 +2594,8 @@ void FluxboxWindow::stopMoving() {
     if (! screen.doOpaqueMove()) {
         XDrawRectangle(FbTk::App::instance()->display(), screen.getRootWindow(), screen.getOpGC(),
                        last_move_x, last_move_y, 
-                       frame().width() + 2*frame().window().borderWidth(),
-                       frame().height() + 2*frame().window().borderWidth());
+                       frame().width() + 2*frame().window().borderWidth()-1,
+                       frame().height() + 2*frame().window().borderWidth()-1);
         moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
         if (workspace_number != getScreen().getCurrentWorkspaceID()) {
             screen.reassociateWindow(this, getScreen().getCurrentWorkspaceID(), true);
@@ -2617,8 +2618,8 @@ void FluxboxWindow::pauseMoving() {
 
     XDrawRectangle(display, getScreen().getRootWindow(), getScreen().getOpGC(),
                    last_move_x, last_move_y, 
-                   m_frame.width() + 2*frame().window().borderWidth(),
-                   m_frame.height() + 2*frame().window().borderWidth());
+                   m_frame.width() + 2*frame().window().borderWidth()-1,
+                   m_frame.height() + 2*frame().window().borderWidth()-1);
     
 }
 
@@ -2634,8 +2635,122 @@ void FluxboxWindow::resumeMoving() {
     XSync(display,false);
     XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                    last_move_x, last_move_y, 
-                   m_frame.width() + 2*frame().window().borderWidth(),
-                   m_frame.height() + 2*frame().window().borderWidth());
+                   m_frame.width() + 2*frame().window().borderWidth()-1,
+                   m_frame.height() + 2*frame().window().borderWidth()-1);
+
+}
+
+/**
+ * Helper function that snaps a window to another window
+ * We snap if we're closer than the x/ylimits.
+ */
+inline void snapToWindow(int &xlimit, int &ylimit, 
+                         int left, int right, int top, int bottom,
+                         int oleft, int oright, int otop, int obottom) {
+    // Only snap if we're adjacent to the edge we're looking at
+
+    // for left + right, need to be in the right y range
+    if (top <= obottom && bottom >= otop) {
+        // left
+        if (abs(left-oleft)  < abs(xlimit)) xlimit = -(left-oleft);
+        if (abs(right-oleft) < abs(xlimit)) xlimit = -(right-oleft);
+        
+        // right
+        if (abs(left-oright)  < abs(xlimit)) xlimit = -(left-oright);
+        if (abs(right-oright) < abs(xlimit)) xlimit = -(right-oright);
+    }
+    
+    // for top + bottom, need to be in the right x range
+    if (left <= oright && right >= oleft) {
+        // top
+        if (abs(top-otop)    < abs(ylimit)) ylimit = -(top-otop);
+        if (abs(bottom-otop) < abs(ylimit)) ylimit = -(bottom-otop);
+        
+        // bottom
+        if (abs(top-obottom)    < abs(ylimit)) ylimit = -(top-obottom);
+        if (abs(bottom-obottom) < abs(ylimit)) ylimit = -(bottom-obottom);
+    }
+    
+}
+
+/*
+ * Do Whatever snapping magic is necessary, and return using the left and top variables
+ * to indicate the new x,y position
+ */
+void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
+    /*
+     * Snap to screen edge
+     * Snap to windows
+     * Snap to toolbar
+     * Snap to slit
+     * TODO:
+     * Xinerama screen edge?
+     */
+
+    if (screen.getEdgeSnapThreshold() == 0) return;
+
+    // Keep track of our best offsets so far
+    // We need to find things less than or equal to the threshold
+    int dx = screen.getEdgeSnapThreshold() + 1;
+    int dy = screen.getEdgeSnapThreshold() + 1;
+
+    // we only care about the left/top etc that includes borders
+    int borderW = m_frame.window().borderWidth();
+
+    int top = orig_top; // orig include the borders
+    int left = orig_left;
+    int right = orig_left + getWidth() + 2*borderW;
+    int bottom = orig_top + getHeight() + 2*borderW;
+
+    /////////////////////////////////////
+    // begin by checking the screen edges
+
+    snapToWindow(dx, dy, left, right, top, bottom, 0, screen.getWidth(), 0, screen.getHeight());
+    
+    /////////////////////////////////////
+    // now check window edges
+
+    Workspace::Windows &wins = 
+        screen.getCurrentWorkspace()->getWindowList();
+
+    Workspace::Windows::iterator it = wins.begin();
+    Workspace::Windows::iterator it_end = wins.end();
+
+    for (; it != it_end; it++) {
+        if ((*it) == this) continue; // skip myself
+
+        snapToWindow(dx, dy, left, right, top, bottom, 
+                     (*it)->getXFrame(),
+                     (*it)->getXFrame() + (*it)->getWidth()  + 2*borderW,
+                     (*it)->getYFrame(),
+                     (*it)->getYFrame() + (*it)->getHeight() + 2*borderW);
+    }
+
+    /////////////////////////////////////
+    // now the toolbar
+
+    Toolbar *tbar = screen.getToolbar();
+    if (tbar)
+        snapToWindow(dx, dy, left, right, top, bottom, 
+                     tbar->x(), tbar->x() + tbar->width() + 2*borderW,
+                     tbar->y(), tbar->y() + tbar->height() + 2*borderW);
+
+    /////////////////////////////////////
+    // and the slit
+
+#ifdef SLIT
+    Slit *slit = screen.getSlit();
+    if (slit) 
+        snapToWindow(dx, dy, left, right, top, bottom, 
+                     slit->x(), slit->x() + slit->width() + 2*borderW,
+                     slit->y(), slit->y() + slit->height() + 2*borderW);
+#endif // SLIT
+
+    // commit
+    if (dx <= screen.getEdgeSnapThreshold()) 
+        orig_left += dx;
+    if (dy <= screen.getEdgeSnapThreshold()) 
+        orig_top  += dy;
 
 }
 

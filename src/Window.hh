@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.58 2003/04/16 12:28:39 fluxgen Exp $
+// $Id: Window.hh,v 1.59 2003/04/20 02:47:15 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -348,6 +348,9 @@ private:
     void setState(unsigned long stateval);
     void upsize();
     void downsize();
+
+    // modifies left and top if snap is necessary
+    void doSnapping(int &left, int &top);
     void right_fixsize(int *x = 0, int *y = 0);
     void left_fixsize(int *x = 0, int *y = 0);
     void resizeClient(WinClient &client, unsigned int width, unsigned int height);

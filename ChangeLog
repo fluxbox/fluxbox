@@ -1,4 +1,8 @@
 (Format: Year/Month/Day)
+Changes for 0.9.2:
+*03/04/20:
+   * Snap to Windows (and toolbar, slit + screen edge) (Simon)
+     Window.hh/cc
 Changes for 0.9.1:
 *03/04/16:
    * Fixed resize bug (Henrik)
