@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/04/03:
+  * French nls for fluxbox-generate_menu (Thanks LaLu <mathieu dot buffenoir at ece dot fr>
+    fluxbox-generate_menu.in
 *04/04/01:
   * Support aspect ratio hints (Simon)
     WinClient.cc
