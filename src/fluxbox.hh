@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.86 2004/04/19 22:45:44 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.87 2004/04/22 21:07:57 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -107,6 +107,7 @@ public:
 
     /// obsolete
     enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
+    enum TabsAttachArea{ATTACH_AREA_WINDOW= 0, ATTACH_AREA_TITLEBAR};
 
 
 
@@ -114,6 +115,7 @@ public:
 
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
+    inline const Fluxbox::TabsAttachArea getTabsAttachArea() const { return *m_rc_tabs_attach_area; }
     inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
 
     inline const std::string &getMenuFilename() const { return *m_rc_menufile; }
@@ -252,6 +254,7 @@ private:
 
 	
     FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
+    FbTk::Resource<TabsAttachArea> m_rc_tabs_attach_area;
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
     FbTk::Resource<time_t> m_rc_auto_raise_delay;
     FbTk::Resource<bool> m_rc_use_mod1; /// temporary!, to disable mod1 for resize/move

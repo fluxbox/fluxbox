@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.239 2004/04/19 22:45:44 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.240 2004/04/22 21:07:57 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -193,6 +193,15 @@ setFromString(char const *strval) {
 }
 
 template<>
+void FbTk::Resource<Fluxbox::TabsAttachArea>::
+setFromString(char const *strval) {
+    if (strcasecmp(strval, "Titlebar")==0)
+        m_value= Fluxbox::ATTACH_AREA_TITLEBAR;
+    else
+        m_value= Fluxbox::ATTACH_AREA_WINDOW;
+}
+
+template<>
 void FbTk::Resource<unsigned int>::
 setFromString(const char *strval) {	
     if (sscanf(strval, "%ul", &m_value) != 1)
@@ -253,6 +262,15 @@ getString() {
     }
 
     return retval;
+}
+
+template<>
+std::string FbTk::Resource<Fluxbox::TabsAttachArea>::
+getString() {
+    if (m_value == Fluxbox::ATTACH_AREA_TITLEBAR)
+        return "Titlebar";
+    else
+        return "Window";
 }
 
 template<>
@@ -394,6 +412,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_titlebar_right(m_resourcemanager, 
                           TitlebarList(&s_titlebar_right[0], &s_titlebar_right[3]), 
                           "session.titlebar.right", "Session.Titlebar.Right"),
+      m_rc_tabs_attach_area(m_resourcemanager, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_rc_auto_raise_delay(m_resourcemanager, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay"),

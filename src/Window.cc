@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.281 2004/04/18 21:17:36 fluxgen Exp $
+// $Id: Window.cc,v 1.282 2004/04/22 21:07:57 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3095,9 +3095,16 @@ void FluxboxWindow::attachTo(int x, int y) {
         // search for a fluxboxwindow 
         WinClient *client = Fluxbox::instance()->searchWindow(child);
         FluxboxWindow *attach_to_win = 0;
-        if (client)
+        if (client) {
+            Fluxbox::TabsAttachArea area= Fluxbox::instance()->getTabsAttachArea();
+            if (area == Fluxbox::ATTACH_AREA_WINDOW)
             attach_to_win = client->fbwindow();
-
+            else if (area == Fluxbox::ATTACH_AREA_TITLEBAR) {
+                if(client->fbwindow()->hasTitlebar() && 
+                   client->fbwindow()->y() + client->fbwindow()->titlebarHeight() > dest_y)
+                    attach_to_win = client->fbwindow();
+            }
+        }
         if (attach_to_win != this &&
             attach_to_win != 0) {
 
