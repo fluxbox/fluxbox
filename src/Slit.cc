@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.62 2003/06/20 01:27:28 fluxgen Exp $
+// $Id: Slit.cc,v 1.63 2003/06/22 12:31:37 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -54,6 +54,7 @@
 #include "Xinerama.hh"
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
+#include "Xutil.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -69,53 +70,6 @@
 #include <iostream>
 #include <algorithm>
 using namespace std;
-namespace {
-
-void getWMName(BScreen *screen, Window window, std::string& name) {
-    name = "";
-
-    if (screen == 0 || window == None)
-        return;
-
-    Display *display = FbTk::App::instance()->display();
-
-    XTextProperty text_prop;
-    char **list;
-    int num;
-    I18n *i18n = I18n::instance();
-
-    if (XGetWMName(display, window, &text_prop)) {
-        if (text_prop.value && text_prop.nitems > 0) {
-            if (text_prop.encoding != XA_STRING) {
-				
-                text_prop.nitems = strlen((char *) text_prop.value);
-				
-                if ((XmbTextPropertyToTextList(display, &text_prop,
-                                               &list, &num) == Success) &&
-                    (num > 0) && *list) {
-                    name = static_cast<char *>(*list);
-                    XFreeStringList(list);
-                } else
-                    name = (char *)text_prop.value;
-					
-            } else				
-                name = (char *)text_prop.value;
-        } else { // default name
-            name = i18n->getMessage(
-                                    FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                    "Unnamed");
-        }
-    } else {
-        // default name
-        name = i18n->getMessage(
-                                FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                "Unnamed");
-    }
-
-}
-
-};
-
 
 namespace { 
 
@@ -148,6 +102,7 @@ public:
          m_label(label ? label : "") { 
         setLabel(m_label.c_str()); // update label
     }
+
     void click(int button, int time) {
         // toggle direction
         if (m_slit.direction() == Slit::HORIZONTAL)
@@ -163,11 +118,9 @@ public:
         m_label = (label ? label : "");
         std::string reallabel = m_label + " " + 
             ( m_slit.direction() == Slit::HORIZONTAL ? 
-              i18n->getMessage(
-                               FBNLS::CommonSet, FBNLS::CommonDirectionHoriz,
+              i18n->getMessage(FBNLS::CommonSet, FBNLS::CommonDirectionHoriz,
                                "Horizontal") :
-              i18n->getMessage(
-                               FBNLS::CommonSet, FBNLS::CommonDirectionVert,
+              i18n->getMessage(FBNLS::CommonSet, FBNLS::CommonDirectionVert,
                                "Vertical") );
         FbTk::MenuItem::setLabel(reallabel.c_str());
     }
@@ -198,7 +151,8 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;
 
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
-    : m_screen(scr), m_timer(this), 
+    : m_hidden(false),
+      m_screen(scr), m_timer(this), 
       m_slitmenu(*scr.menuTheme(), 
                  scr.screenNumber(), 
                  scr.imageControl(),
@@ -226,11 +180,14 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_layeritem(0),
       m_slit_theme(new SlitTheme(*this)),
       m_strut(0),
+
+      // resources
+
       m_rc_auto_hide(scr.resourceManager(), false, 
                      scr.name() + ".slit.autoHide", scr.altName() + ".Slit.AutoHide"),
       // TODO: this resource name must change
       m_rc_maximize_over(scr.resourceManager(), false,
-                         scr.name() + ".maxOverSlit", scr.altName() + ".MaxOverSlit"),
+                         scr.name() + ".slit.maxOver", scr.altName() + ".Slit.MaxOver"),
       m_rc_placement(scr.resourceManager(), BOTTOMRIGHT,
                      scr.name() + ".slit.placement", scr.altName() + ".Slit.Placement"),
       m_rc_direction(scr.resourceManager(), VERTICAL, 
@@ -247,6 +204,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     m_timer.setTimeout(200); // default timeout
     m_timer.fireOnce(true);
+
+    // create main window
 
     XSetWindowAttributes attrib;
     unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
@@ -287,6 +246,8 @@ Slit::~Slit() {
     clearStrut();
     if (frame.pixmap != 0)
         screen().imageControl().removeImage(frame.pixmap);
+
+    shutdown();
 }
 
 void Slit::clearStrut() {
@@ -355,7 +316,7 @@ void Slit::addClient(Window w) {
     // Look for slot in client list by name
     SlitClient *client = 0;
     std::string match_name;
-    ::getWMName(&screen(), w, match_name);
+    match_name = Xutil::getWMName(w);
     SlitClients::iterator it = m_client_list.begin();
     SlitClients::iterator it_end = m_client_list.end();
     bool found_match = false;
@@ -422,9 +383,10 @@ void Slit::addClient(Window w) {
                            m_kwm2_dockwindow, 0l, 1l, False,
                            m_kwm2_dockwindow,
                            &ajunk, &ijunk, &uljunk, &uljunk,
-                           (unsigned char **) &data) == Success) {
+                           (unsigned char **) &data) == Success && data) {
         iskdedockapp = (data && data[0] != 0);
         XFree((char *) data);
+        data = 0;
     }
 
     // Check if KDE v1.x dock applet
@@ -433,9 +395,10 @@ void Slit::addClient(Window w) {
                                m_kwm1_dockwindow, 0l, 1l, False,
                                m_kwm1_dockwindow,
                                &ajunk, &ijunk, &uljunk, &uljunk,
-                               (unsigned char **) &data) == Success) {
+                               (unsigned char **) &data) == Success && data) {
             iskdedockapp = (data && data[0] != 0);
             XFree((char *) data);
+            data = 0;
         }
     }
 
@@ -496,10 +459,14 @@ void Slit::setPlacement(Placement place) {
 }
 
 void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
+    if (client == 0)
+        return;
+
 #ifdef DEBUG
     cerr<<"Slit::removeClient( client->client_window = 0x"<<hex<<client->clientWindow()<<
         ", client->icon_window)"<<endl;
 #endif // DEBUG
+
     // remove from event manager
     if (client->clientWindow() != 0)
         FbTk::EventManager::instance()->remove(client->clientWindow());
@@ -677,6 +644,7 @@ void Slit::reconfigure() {
             (*client_it)->enableEvents();
             continue;
         }
+
         if (height_inc)
             x = (frame.width - (*client_it)->width()) / 2;
         else
@@ -717,6 +685,8 @@ void Slit::reconfigure() {
     m_slitmenu.reconfigure();
     updateClientmenu();
     updateStrut();
+
+
 }
 
 
@@ -839,6 +809,10 @@ void Slit::reposition() {
         frame.window.moveResize(frame.x,  frame.y,
                                 frame.width, frame.height);
     }
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): frame("<<dec<<frame.x<<", "<<frame.y<<", "<<frame.width<<", "<<frame.height<<")"<<endl;
+#endif // DEBUG
+
 }
 
 
@@ -896,7 +870,7 @@ void Slit::handleEvent(XEvent &event) {
             if (data)
                 iskdedockapp = True;
             XFree((char *) data);
-	
+            data = 0;
         }
 
         // Check if KDE v1.x dock applet
@@ -904,9 +878,10 @@ void Slit::handleEvent(XEvent &event) {
             if (XGetWindowProperty(disp, event.xmaprequest.window,
                                    m_kwm1_dockwindow, 0l, 1l, False,
                                    m_kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
-                                   &uljunk, (unsigned char **) &data) == Success) {
+                                   &uljunk, (unsigned char **) &data) == Success && data) {
                 iskdedockapp = (data && data[0] != 0);
                 XFree((char *) data);
+                data = 0;
             }
         }
 
@@ -1142,8 +1117,7 @@ void Slit::setupMenu() {
 
     // setup base menu
     m_slitmenu.setLabel("Slit");
-    m_slitmenu.insert(i18n->getMessage(
-                                       CommonSet, CommonPlacementTitle,
+    m_slitmenu.insert(i18n->getMessage(CommonSet, CommonPlacementTitle,
                                        "Placement"),
                       &m_placement_menu);
 
@@ -1152,19 +1126,22 @@ void Slit::setupMenu() {
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
         m_slitmenu.insert("On Head...", new XineramaHeadMenu<Slit>(
-                        *screen().menuTheme(),
-                        screen(),
-                        screen().imageControl(),
-                        *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                        this
-                        ));
+                                                                   *screen().menuTheme(),
+                                                                   screen(),
+                                                                   screen().imageControl(),
+                                                                   *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                                                                   this
+                                                                   ));
     }
                     
 #endif //XINERAMA
-    m_slitmenu.insert(new BoolMenuItem(i18n->getMessage(
-                                                        CommonSet, CommonAutoHide,
+    m_slitmenu.insert(new BoolMenuItem(i18n->getMessage(CommonSet, CommonAutoHide,
                                                         "Auto hide"),
                                        *m_rc_auto_hide,
+                                       save_and_reconfigure_slit));
+
+    m_slitmenu.insert(new BoolMenuItem("Maximize Over", 
+                                       *m_rc_maximize_over, 
                                        save_and_reconfigure_slit));
 
     FbTk::MenuItem *alpha_menuitem = new IntResMenuItem("Alpha", 
@@ -1173,8 +1150,7 @@ void Slit::setupMenu() {
     alpha_menuitem->setCommand(save_and_reconfigure_slit);
     m_slitmenu.insert(alpha_menuitem);
 
-    m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(
-                                                           SlitSet, SlitSlitDirection,
+    m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(SlitSet, SlitSlitDirection,
                                                            "Slit Direction"), 
                                           *this,
                                           save_and_reconfigure));
@@ -1182,9 +1158,8 @@ void Slit::setupMenu() {
     m_slitmenu.update();
 
     // setup sub menu
-    m_placement_menu.setLabel(i18n->getMessage(
-                                             SlitSet, SlitSlitPlacement,
-                                             "Slit Placement"));
+    m_placement_menu.setLabel(i18n->getMessage(SlitSet, SlitSlitPlacement,
+                                               "Slit Placement"));
     m_placement_menu.setMinimumSublevels(3);
     m_layermenu->setInternalMenu();
     m_clientlist_menu.setInternalMenu();
