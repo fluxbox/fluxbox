@@ -6,6 +6,9 @@ Changes for 0.1.10:
    * Fixed bug [ 562713 ] "incorrect listings in workspace menu".
      Normal insert of new clients in the list again, in 
 	 Workspace::addWindow
+   * Fixed bug [ 554646 ] "Dialog boxes have tabs briefly"
+     Windows that are not maximizable by default, such as
+     dialogs, wont get a tab by default.
 *02/06/01:
    * Updated nl_NL locales in fluxbox-generate_menu (THanks Han Boetes)
 *02/05/31:
