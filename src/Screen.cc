@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.263 2004/01/19 22:07:24 fluxgen Exp $
+// $Id: Screen.cc,v 1.264 2004/01/21 14:14:18 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1980,7 +1980,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                     // perform shell style ~ home directory expansion
                     string newfile(FbTk::StringUtil::expandFilename(str_label));
 
-                    if (newfile.size() != 0) {
+                    if (!newfile.empty()) {
                         if (!FbTk::Directory::isRegularFile(newfile)) {
                             fprintf(stderr,
                                     i18n->

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.89 2003/12/30 18:16:51 fluxgen Exp $
+// $Id: Workspace.cc,v 1.90 2004/01/21 14:14:40 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -365,7 +365,7 @@ void Workspace::update(FbTk::Subject *subj) {
 
 
 void Workspace::setName(const std::string &name) {
-    if (name.size() != 0) {
+    if (!name.empty()) {
         m_name = name;
     } else { //if name == 0 then set default name from nls
         char tname[128];

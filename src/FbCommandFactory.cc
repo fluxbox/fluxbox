@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.25 2004/01/16 11:41:38 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.26 2004/01/21 14:11:42 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -252,9 +252,9 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     // 
     // Workspace commands
     //
-    else if (command == "nextworkspace" && arguments.size() == 0)
+    else if (command == "nextworkspace" && arguments.empty())
         return new NextWorkspaceCmd();
-    else if (command == "prevworkspace" && arguments.size() == 0)
+    else if (command == "prevworkspace" && arguments.empty())
         return new PrevWorkspaceCmd();
     else if (command == "rightworkspace")
         return new RightWorkspaceCmd(atoi(arguments.c_str()));

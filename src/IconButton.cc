@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.16 2004/01/16 09:32:44 fluxgen Exp $
+// $Id: IconButton.cc,v 1.17 2004/01/21 14:13:32 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -161,7 +161,7 @@ void IconButton::update(FbTk::Subject *subj) {
     // so we refresh everything
 
     // we need to check our client first
-    if (m_win.clientList().size() == 0)
+    if (m_win.clientList().empty())
         return;
 
     XWMHints *hints = XGetWMHints(FbTk::App::instance()->display(), m_win.winClient().window());

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.70 2004/01/10 20:22:05 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.71 2004/01/21 14:12:31 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -619,7 +619,7 @@ void FbWinFrame::configureNotifyEvent(XConfigureEvent &event) {
 }
 
 void FbWinFrame::reconfigure() {
-    if (m_labelbuttons.size() == 0)
+    if (m_labelbuttons.empty())
         return;
 
     m_bevel = theme().bevelWidth();
@@ -717,15 +717,14 @@ unsigned int FbWinFrame::buttonHeight() const {
    aligns and redraws title
 */
 void FbWinFrame::redrawTitle() {
-    if (m_labelbuttons.size() == 0)
+    if (m_labelbuttons.empty())
         return;
 
     int button_width = label().width()/m_labelbuttons.size();
     int rounding_error = label().width() - m_labelbuttons.size()*button_width;
     //!! TODO: bevel
     //int border_width = m_labelbuttons.front()->window().borderWidth();
-    int border_width =  m_labelbuttons.size() != 0 ?
-        m_labelbuttons.front()->borderWidth() : 0;
+    int border_width =  m_labelbuttons.empty() ? 0 : m_labelbuttons.front()->borderWidth();
 
     LabelList::iterator btn_it = m_labelbuttons.begin();
     LabelList::iterator btn_it_end = m_labelbuttons.end();
@@ -799,7 +798,7 @@ void FbWinFrame::reconfigureTitlebar() {
 	
     // space left on titlebar between left and right buttons
     unsigned int space_left = m_titlebar.width() - next_x;
-    if (m_buttons_right.size() != 0)
+    if (!m_buttons_right.empty()) 
         space_left -= m_buttons_right.size() * (button_size + m_bevel);
 
     space_left -= m_bevel;

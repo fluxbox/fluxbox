@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.5 2004/01/06 13:42:47 grubert Exp $
+// $Id: I18n.cc,v 1.6 2004/01/21 14:12:51 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -56,7 +56,7 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
     //make sure we don't get 0 to m_locale string
     char *temp = setlocale(LC_ALL, "");
     m_locale = ( temp ?  temp : ""); 
-    if (m_locale.size() == 0) {
+    if (m_locale.empty()) {
         cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
 #endif // HAVE_SETLOCALE
 
