@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.47 2003/02/16 16:40:19 fluxgen Exp $
+// $Id: Workspace.cc,v 1.48 2003/02/17 02:40:00 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -31,7 +31,6 @@
 #include "Screen.hh"
 #include "Window.hh"
 #include "StringUtil.hh"
-#include "Slit.hh"
 #include "SimpleCommand.hh"
 
 // use GNU extensions
@@ -460,12 +459,6 @@ void Workspace::shutdown() {
 void Workspace::placeWindow(FluxboxWindow *win) {
     Bool placed = False;
     int borderWidth4x = screen.getBorderWidth2x() * 2,
-#ifdef SLIT
-        slit_x = screen.getSlit()->x() - screen.getBorderWidth(),
-        slit_y = screen.getSlit()->y() - screen.getBorderWidth(),
-        slit_w = screen.getSlit()->width() + borderWidth4x,
-        slit_h = screen.getSlit()->height() + borderWidth4x,
-#endif // SLIT
 
         place_x = 0, place_y = 0, change_x = 1, change_y = 1;
 
@@ -601,16 +594,6 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                     }
                 }
 
-                if (1
-#ifdef SLIT
-                    &&
-                    (slit_x < test_x + win_w &&
-                     slit_x + slit_w > test_x &&
-                     slit_y < test_y + win_h &&
-                     slit_y + slit_h > test_y)
-#endif // SLIT
-                    )
-                    placed = False;
 
                 if (placed) {
                     place_x = test_x;
@@ -720,16 +703,6 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                     }
                 }
 
-                if (1
-#ifdef SLIT
-                    &&
-                    (slit_x < test_x + win_w &&
-                     slit_x + slit_w > test_x &&
-                     slit_y < test_y + win_h &&
-                     slit_y + slit_h > test_y)
-#endif // SLIT
-                    )
-                    placed = False;
 
                 if (placed) {
                     place_x = test_x;
