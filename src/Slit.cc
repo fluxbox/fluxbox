@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.77 2003/08/11 16:05:18 fluxgen Exp $
+// $Id: Slit.cc,v 1.78 2003/08/15 13:50:42 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -966,7 +966,7 @@ void Slit::handleEvent(XEvent &event) {
     } else if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window, false);
     } else if (event.type == UnmapNotify) {        
-       removeClient(event.xunmap.window);
+        removeClient(event.xunmap.window);
     }
 }
 
