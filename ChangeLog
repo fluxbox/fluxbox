@@ -1,3 +1,13 @@
+changes for 0.1.8:
+*02/03/11:
+   * Fixed some KDE stuff in Slit.cc (Thanks Tommi Komulainen)
+*02/03/08:
+   * Fixed bug in BScreen::removeNetizen 
+     if there was only one netizen object in the list
+     delete *netizenList.erase(it) would segfault
+   * Some clean up in main.cc
+
+-------------------------------------------------------
 Changes for 0.1.7:
 *02/03/01:
    * Fixed default values for title bar
