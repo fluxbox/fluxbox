@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.hh,v 1.1 2003/05/18 22:06:59 fluxgen Exp $
+// $Id: Directory.hh,v 1.2 2003/08/17 13:19:54 fluxgen Exp $
 
 #ifndef FBTK_DIRECTORY_HH
 #define FBTK_DIRECTORY_HH
@@ -51,7 +51,10 @@ public:
     bool open(const char *dir);
     /// @return number of entries in the directory
     size_t entries() const { return m_num_entries; }
-
+    /// @return true if file is a directory
+    static bool isDirectory(const std::string &filename);
+    /// @return true if a file is a regular file
+    static bool isRegularFile(const std::string &filename);
 private:
     DIR *m_dir;
     size_t m_num_entries; ///< number of file entries in directory

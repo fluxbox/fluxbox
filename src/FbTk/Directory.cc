@@ -19,9 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.cc,v 1.1 2003/05/18 22:06:59 fluxgen Exp $
+// $Id: Directory.cc,v 1.2 2003/08/17 13:19:54 fluxgen Exp $
 
 #include "Directory.hh"
+
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace FbTk {
 
@@ -81,6 +84,22 @@ bool Directory::open(const char *dir) {
     rewind(); // go back to start
 
     return true;
+}
+
+bool Directory::isDirectory(const std::string &filename) {
+    struct stat statbuf;
+    if (stat(filename.c_str(), &statbuf) != 0)
+        return false;
+
+    return S_ISDIR(statbuf.st_mode);
+}
+
+bool Directory::isRegularFile(const std::string &filename) {
+    struct stat statbuf;
+    if (stat(filename.c_str(), &statbuf) != 0)
+        return false;
+
+    return S_ISREG(statbuf.st_mode);
 }
 
 }; // end namespace FbTk
