@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.57 2002/06/02 23:35:30 fluxgen Exp $
+// $Id: Window.cc,v 1.58 2002/06/02 23:42:10 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -293,8 +293,9 @@ tab(0)
 				
 	positionWindows();
 
-	//use tab? delayed this so that tabs wont "flicker" when creating windows
-	if (decorations.tab && fluxbox->useTabs())
+	// use tab? and don't create a tab on windows that's not
+	// maximizable as default (such as dialogs)
+	if (decorations.tab && fluxbox->useTabs() && decorations.maximize)
 		tab = new Tab(this, 0, 0);
 	decorate();
 	
