@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.121 2003/04/27 04:28:04 rathnor Exp $
+// $Id: fluxbox.cc,v 1.122 2003/04/27 04:56:18 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1097,21 +1097,35 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             }
             break;
         case Keys::NEXTWINDOW:	//activate next window
+        {
+            unsigned int mods = Keys::cleanMods(ke.state);
+            if (mods == 0) { // can't stacked cycle unless there is a mod to grab
+                screen->nextFocus(m_key->getParam() | BScreen::CYCLELINEAR);
+                break;
+            }
             if (!m_watching_screen && !(m_key->getParam() & BScreen::CYCLELINEAR)) {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
-                watchKeyRelease(screen, Keys::cleanMods(ke.state));
+                watchKeyRelease(screen, mods);
             }
             screen->nextFocus(m_key->getParam());
             break;
+        }
         case Keys::PREVWINDOW:	//activate prev window
+        {
+            unsigned int mods = Keys::cleanMods(ke.state);
+            if (mods == 0) { // can't stacked cycle unless there is a mod to grab
+                screen->prevFocus(m_key->getParam() | BScreen::CYCLELINEAR);
+                break;
+            }
             if (!m_watching_screen && !(m_key->getParam() & BScreen::CYCLELINEAR)) {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
-                watchKeyRelease(screen, Keys::cleanMods(ke.state));
+                watchKeyRelease(screen, mods);
             }
             screen->prevFocus(m_key->getParam());
             break;
+        }
         case Keys::FOCUSUP:
             if (m_focused_window) 
                 screen->dirFocus(*m_focused_window, BScreen::FOCUSUP);
@@ -2255,6 +2269,10 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 }
 
 void Fluxbox::watchKeyRelease(BScreen *screen, unsigned int mods) {
+    if (mods == 0) {
+        cerr<<"WARNING: attempt to grab without modifiers!"<<endl;
+        return;
+    }
     m_watching_screen = screen;
     m_watch_keyrelease = mods;
     XGrabKeyboard(FbTk::App::instance()->display(),
