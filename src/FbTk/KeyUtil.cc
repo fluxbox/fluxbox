@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.3 2003/10/05 07:20:16 rathnor Exp $
+// $Id: KeyUtil.cc,v 1.4 2003/10/13 19:31:56 fluxgen Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
@@ -28,12 +28,12 @@
 
 namespace FbTk {
 
-KeyUtil *KeyUtil::s_keyutil = 0;
+std::auto_ptr<KeyUtil> KeyUtil::s_keyutil;
 
-KeyUtil *KeyUtil::instance() {
-    if (s_keyutil == 0)
-        s_keyutil = new KeyUtil();
-    return s_keyutil;
+KeyUtil &KeyUtil::instance() {
+    if (s_keyutil.get() == 0)
+        s_keyutil.reset(new KeyUtil());
+    return *s_keyutil.get();
 }
 
 
@@ -170,7 +170,7 @@ void KeyUtil::ungrabKeys() {
 }
 
 unsigned int KeyUtil::keycodeToModmask(unsigned int keycode) {
-    XModifierKeymap *modmap = instance()->m_modmap;
+    XModifierKeymap *modmap = instance().m_modmap;
 
     if (!modmap) return 0;
 

@@ -19,13 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.2 2003/10/05 07:20:35 rathnor Exp $
+// $Id: KeyUtil.hh,v 1.3 2003/10/13 19:31:56 fluxgen Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
+
+#include <memory>
 
 namespace FbTk {
 
@@ -36,7 +38,7 @@ public:
     ~KeyUtil();
 
     void init();
-    static KeyUtil *instance();
+    static KeyUtil &instance();
 
     /**
        Grab the specified key
@@ -78,7 +80,7 @@ private:
     void loadModmap();
 
     XModifierKeymap *m_modmap;
-    static KeyUtil *s_keyutil;
+    static std::auto_ptr<KeyUtil> s_keyutil;
 };
 
 } // end namespace FbTk
