@@ -24,8 +24,9 @@
 FILENAME=menu.in
 
 find_it() {
-	if [ ! -z "$(which $1 2>/dev/null | grep "^/.*$1")" ]; then
-		if [ -x "$(which $1)" ]; then
+	_it="`which \"$1\" 2>/dev/null | grep \"^/.*$1\"`"
+	if [ ! -z "$_it" ]; then
+		if [ -x "$_it" ]; then
 			shift
 			$*
 		else
@@ -46,8 +47,7 @@ append_menu() {
 
 echo "[begin] (Fluxbox @VERSION@)" > $FILENAME
 
-find_it xterm           append "[exec]   (xterm) {xterm -fg white -bg black
-}"
+find_it xterm           append "[exec]   (xterm) {xterm -fg white -bg black}"
 find_it nedit           append "[exec]   (nedit) {nedit}"
 
 
@@ -67,7 +67,7 @@ append_menu "[submenu] (Editors)"
 	find_it gedit       append "[exec]   (gedit) {gedit}"
 	find_it xedit       append "[exec]   (xedit) {xedit}"
 	find_it kword       append "[exec]   (kword) {kword}"
-	find_it kwrite      append "[exec]   (kword) {kwrite}"	
+	find_it kwrite      append "[exec]   (kwrite) {kwrite}"	
 append_menu "[end]"
 
 
