@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/01:
+  * Fixed shadow bug with other options (Henrik)
+    Font.cc
   * Fixed antialias bug in fbrun   (Henrik)
     Antialias is enabled by default for FbRun 
 	Changed switch -a to -na (disable antialias)
