@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.24 2002/08/16 11:02:41 fluxgen Exp $
+// $Id: Workspace.cc,v 1.25 2002/08/18 23:35:31 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -139,8 +139,11 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 			Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
 		} else if (w->isTransient() && w->getTransientFor() &&
 				w->getTransientFor()->isVisible()) {
-			if (w->getTransientFor() == w) // FATAL ERROR, this should not happend
+			/* TODO: check transient
+			if (w->getTransientFor() == w) { // FATAL ERROR, this should not happend
+				cerr<<"w->getTransientFor() == w: aborting!"<<endl;
 				abort();
+			}*/
 			w->getTransientFor()->setInputFocus();
 		} else {
 			FluxboxWindow *top = 0;
