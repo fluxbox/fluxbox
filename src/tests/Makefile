@@ -4,13 +4,12 @@ LIBS=
 XFLAGS= -I/usr/X11R6/include
 XLIBS= -L/usr/X11R6/lib -lX11 -lXft
 COMPILEFILE=$(CXX) -c $(CXXFLAGS)
-FONT_OBJ = ../BaseDisplay.o ../FbTk/Font.o ../FbTk/XFontImp.o ../FbTk/XftFontImp.o ../FbTk/XmbFontImp.o \
-	../FbTk/Timer.o ../StringUtil.o ../i18n.o
+FONT_OBJ = ../FbTk/libFbTk.a
 
-all: testLayers testStringUtil testKeys testResource testSignal
+all: testLayers testStringUtil testKeys testResource testSignal glxtest
 
 .cc.o:
-	$(CXX) -c $(CXXFLAGS) $< -o $@
+	$(CXX) -c $(CXXFLAGS) $<
 
 ../FbTk/XftFontImp.o: ../FbTk/XftFontImp.hh ../FbTk/XftFontImp.cc
 
@@ -20,8 +19,11 @@ all: testLayers testStringUtil testKeys testResource testSignal
 
 ../FbTk/Font.o: ../FbTk/XFontImp.hh ../FbTk/XftFontImp.hh ../FbTk/XmbFontImp.hh ../FbTk/Font.hh ../FbTk/Font.cc
 
+glxtest: ../FbTk/App.hh glxtest.cc
+	${CXX} glxtest.cc ${CXXFLAGS} ${XLIBS} -lGL -lGLU -lXpm -o glxtest
+
 StringUtil.o: ../StringUtil.cc ../StringUtil.hh
-	$(CXX) -c $(CXXFLAGS) ../StringUtil.cc -o StringUtil.o
+	$(CXX) -c $(CXXFLAGS) ../StringUtil.cc
 
 Keys.o: ../Keys.cc ../Keys.hh
 	$(CXX) -c $(CXXFLAGS) $(XFLAGS) ../Keys.cc -o Keys.o
@@ -32,8 +34,8 @@ Resource.o: ../Resource.cc ../Resource.hh
 ../FbTk/SignalHandler.o:
 	${COMPILEFILE} ../FbTk/SignalHandler.cc -o ../FbTk/SignalHandler.o
 
-testStringUtil: StringUtiltest.o StringUtil.o
-	$(CXX) $(LIBS) StringUtiltest.o StringUtil.o -o testStringUtil
+testStringUtil: StringUtiltest.o ../FbTk/StringUtil.o
+	$(CXX) $(LIBS) StringUtiltest.o ../FbTk/StringUtil.o -o testStringUtil
 
 testKeys: Keys.o testKeys.o StringUtil.o
 	$(CXX) $(LIBS) $(XLIBS) StringUtil.o Keys.o testKeys.o -o testKeys
