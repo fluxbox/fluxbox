@@ -28,7 +28,6 @@ class Iconmenu;
 class BScreen;
 
 #include "Basemenu.hh"
-#include "LinkedList.hh"
 
 
 class Iconmenu : public Basemenu {
