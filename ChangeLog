@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/15:
+   * Fix group cycling, also adding new "NextGroup/PrevGroup" keys (Simon)
+     Screen.hh/cc Keys.hh/cc fluxbox.cc
 *03/06/13:
    * Fixed autogrouping (Henrik)
      Window.cc, Workspace.cc
