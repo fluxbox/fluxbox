@@ -36,7 +36,7 @@ App *App::instance() {
     return s_app;
 }
 
-App::App(const char *displayname):m_done(false) {
+App::App(const char *displayname):m_done(false), m_display(0) {
     if (s_app != 0)
         throw std::string("Can't create more than one instance of FbTk::App");
     s_app = this;
