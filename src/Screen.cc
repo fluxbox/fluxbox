@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.115 2003/02/23 00:56:09 fluxgen Exp $
+// $Id: Screen.cc,v 1.116 2003/02/23 12:02:30 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -528,8 +528,8 @@ BScreen::BScreen(ResourceManager &rm,
     m_toolbar->setPlacement(*resource.toolbar_placement);
     // setup toolbar width menu item
     FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
-                                                    resource.toolbar_width_percent,
-                                                    0, 100); // min/max value
+                                                          resource.toolbar_width_percent,
+                                                          0, 100); // min/max value
     FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
                                                    SimpleCommand<Toolbar>
                                                    (*(m_toolbar.get()), &Toolbar::reconfigure));
@@ -545,6 +545,9 @@ BScreen::BScreen(ResourceManager &rm,
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);    
 
     m_toolbar->menu().insert(toolbar_menuitem, 0);
+
+    m_toolbar->menu().insert(new BoolMenuItem("Auto hide", *resource.toolbar_auto_hide, reconfig_toolbar), 0);
+
     
     setupWorkspacemenu(*this, *workspacemenu);
 
