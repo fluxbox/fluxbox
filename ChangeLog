@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/04/12:
+  * Possibly fixed the "strange" hang on restart and at creation of
+    new windows. Needs more testing though.
+    Making sure there's not more than one GrabPointer at once in FluxboxWindow.
+    (Henrik)
+    Window.hh/cc  
+*04/04/10:
+  * Some cleaning in Makefile.am's (Thanks  Frédéric L. W. Meunier (1 at pervalidus dot net))
 *04/04/03:
   * French nls for fluxbox-generate_menu (Thanks LaLu <mathieu dot buffenoir at ece dot fr>
     fluxbox-generate_menu.in
