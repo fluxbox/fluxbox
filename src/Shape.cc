@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.4 2003/08/24 15:37:12 fluxgen Exp $
+// $Id: Shape.cc,v 1.5 2003/09/05 20:42:47 fluxgen Exp $
 
 #include "Shape.hh"
-#include "FbWindow.hh"
-#include "App.hh"
+#include "FbTk/FbWindow.hh"
+#include "FbTk/App.hh"
+#include "FbTk/GContext.hh"
 
 #include <cstring>
 
@@ -110,18 +111,14 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
         XPutPixel(ximage, 0, y, 1);
     }
 
-    XGCValues values;
-    values.foreground = 1;
-    values.background = 0;
-    Pixmap pm = XCreatePixmap(disp, win.window(), win_width, win_height, 1);
-    GC gc = XCreateGC(disp, pm,
-                      GCForeground | GCBackground, &values);
 
+    Pixmap pm = XCreatePixmap(disp, win.window(), win_width, win_height, 1);
+
+    FbTk::GContext gc(pm);
         
-    XPutImage(disp, pm, gc, ximage, 0, 0, 0, 0,
+    XPutImage(disp, pm, gc.gc(), ximage, 0, 0, 0, 0,
               win_width, win_height);
 
-    XFreeGC(disp, gc);
     XDestroyImage(ximage);
 
     return pm;
