@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.21 2003/09/16 14:49:49 rathnor Exp $
+// $Id: FbRun.cc,v 1.22 2003/09/16 16:10:32 rathnor Exp $
 
 #include "FbRun.hh"
 
@@ -205,9 +205,8 @@ void FbRun::redrawLabel() {
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
-    // strip numlock and scrolllock mask
-    ke.state &= ~FbTk::KeyUtil::numlockMod();
-    ke.state &= ~FbTk::KeyUtil::scrolllockMod();
+    // strip numlock, capslock and scrolllock mask
+    ke.state = FbTk::KeyUtil::cleanMods(ke.state);
 
     FbTk::TextBox::keyPressEvent(ke);
     KeySym ks;
