@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.52 2003/09/22 18:45:31 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.53 2003/09/29 11:59:35 fluxgen Exp $
 
 #
 # Portability notes:
@@ -910,7 +910,7 @@ append_submenu "${FBSETTINGSMENU}"
     # Backgroundmenu
     addbackground() {
                 picturename=`basename "$1"`
-                append "[exec] (${picturename%.???}) {fbsetbg -f \"$1\" }"
+                append "[exec] (${picturename%.???}) {fbsetbg -a \"$1\" }"
     }
 
     if [ "$BACKGROUNDMENUITEM" = yes ]; then

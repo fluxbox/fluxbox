@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.19 2003/09/20 16:03:30 fluxgen Exp $
+# $Id: fbsetbg,v 1.20 2003/09/29 11:59:35 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -45,7 +45,7 @@
 
 
 # The wallpapersetter is selected in this order
-wpsetters='feh Esetroot wmsetbg chbg display qiv xv xsri xli xsetbg' # broken icewmbg'
+wpsetters='Esetroot wmsetbg feh chbg display qiv xv xsri xli xsetbg' # broken icewmbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 
 
@@ -346,6 +346,6 @@ Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
 fi
 
 #remember previous wallpaper
-[ ! "$remember" = false ] && remembercommand
-# Off course this returns 1 most of the time.
-exit 0
+if [ ! "$remember" = false ]; then
+    remembercommand
+fi

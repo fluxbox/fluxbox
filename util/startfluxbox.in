@@ -1,11 +1,14 @@
 #!/bin/sh
-if [ -e ~/.fluxbox/startup ];then
+# $Id: startfluxbox.in,v 1.2 2003/09/29 11:59:35 fluxgen Exp $
+if [ -x ~/.fluxbox/startup ];then
+    exec ~/.fluxbox/startup
+elif [ -r ~/.fluxbox/startup ]; then
     exec sh ~/.fluxbox/startup
 else
     if [ ! -d ~/.fluxbox ];then
-	mkdir -p ~/.fluxbox/{backgrounds,styles}
+	mkdir -p ~/.fluxbox/{backgrounds,styles,pixmaps}
     fi
     cp @pkgdatadir@/startup ~/.fluxbox
-    @pkgbindir@/bsetroot -solid Black
-    exec @pkgbindir@/fluxbox
+    chmod 755 ~/.fluxbox/startup
+    exec ~/.fluxbox/startup
 fi
