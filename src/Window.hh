@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.104 2003/12/18 18:03:22 fluxgen Exp $
+// $Id: Window.hh,v 1.105 2003/12/30 20:56:40 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -168,14 +168,14 @@ public:
     /// remove client from client list
     bool removeClient(WinClient &client);
     /// set new current client and raise it
-    bool setCurrentClient(WinClient &client, bool setinput = true, long ignore_event = 0);
+    bool setCurrentClient(WinClient &client, bool setinput = true);
     WinClient *findClient(Window win);
     void nextClient();
     void prevClient();
     void moveClientLeft();
     void moveClientRight();
 
-    bool setInputFocus(long ignore_event = 0);
+    bool setInputFocus();
     void raiseAndFocus() { raise(); setInputFocus(); }
     void setFocusFlag(bool flag);
     // map this window

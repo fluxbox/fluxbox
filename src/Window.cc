@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.257 2003/12/21 23:23:03 fluxgen Exp $
+// $Id: Window.cc,v 1.258 2003/12/30 20:56:40 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -516,6 +516,8 @@ void FluxboxWindow::init() {
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
+
+
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
 
     if (shaded) { // start shaded
@@ -895,14 +897,14 @@ void FluxboxWindow::updateClientLeftWindow() {
     }
 }
 
-bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput, long ignore_event) {
+bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     // make sure it's in our list
     if (client.m_win != this)
         return false;
 
     m_client = &client;
     m_client->raise();
-    if (setinput && setInputFocus(ignore_event)) {
+    if (setinput && setInputFocus()) {
         frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
         return true;
     }
@@ -1154,7 +1156,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 // tried. A FocusqIn event should eventually arrive for that
 // window if it actually got the focus, then setFocusedFlag is called,
 // which updates all the graphics etc
-bool FluxboxWindow::setInputFocus(long ignore_event) {
+bool FluxboxWindow::setInputFocus() {
 
     if (((signed) (frame().x() + frame().width())) < 0) {
         if (((signed) (frame().y() + frame().height())) < 0) {
@@ -1215,13 +1217,6 @@ bool FluxboxWindow::setInputFocus(long ignore_event) {
         ret = m_client->sendFocus(); 
     }
 
-
-    // People can ignore an event until the focus comes through
-    // this is most likely to be an EnterNotify for sloppy focus
-    if (ret && m_client->getFocusMode() != WinClient::F_NOINPUT && ignore_event != None)
-        Fluxbox::instance()->addRedirectEvent(
-            &screen(), ignore_event, None,
-            FocusIn, m_client->window(), None);
                                                   
     return ret;
 }
@@ -2656,7 +2651,7 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 // commit current decoration values to actual displayed things
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
-    bool client_move = false;
+
 
     int grav_x=0, grav_y=0;
     // negate gravity
@@ -2665,6 +2660,8 @@ void FluxboxWindow::applyDecorations(bool initial) {
     unsigned int border_width = 0;
     if (decorations.border)
         border_width = frame().theme().border().width();
+
+    bool client_move = false;
 
     if (initial || frame().window().borderWidth() != border_width) {
         client_move = true;
@@ -2768,16 +2765,7 @@ void FluxboxWindow::startMoving(Window win) {
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
 
-    // The "stop" window and event aren't going to happen (since it's
-    // grabbed, so they are just so we can remove it in stopMoving)
-    fluxbox->addRedirectEvent(&screen(), 
-                              MotionNotify, screen().rootWindow().window(), 
-                              MotionNotify, fbWindow().window(),
-                              fbWindow().window());
-    fluxbox->addRedirectEvent(&screen(), 
-                              ButtonRelease, screen().rootWindow().window(), 
-                              ButtonRelease, fbWindow().window(),
-                              fbWindow().window());
+    fluxbox->maskWindowEvents(screen().rootWindow().window(), this);
 
     m_last_move_x = frame().x();
     m_last_move_y = frame().y();
@@ -2795,8 +2783,8 @@ void FluxboxWindow::stopMoving() {
     moving = false;
     Fluxbox *fluxbox = Fluxbox::instance();
 
-    fluxbox->removeRedirectEvent(MotionNotify, fbWindow().window());
-    fluxbox->removeRedirectEvent(ButtonRelease, fbWindow().window());
+    fluxbox->maskWindowEvents(0, 0);
+
    
     if (! screen().doOpaqueMove()) {
         parent().drawRectangle(screen().rootTheme().opGC(),
@@ -3025,6 +3013,10 @@ void FluxboxWindow::attachTo(int x, int y) {
         FluxboxWindow *attach_to_win = 0;
         if (client)
             attach_to_win = client->fbwindow();
+
+        cerr<<"client = "<<client<<", child = "<<hex<<child<<dec<<", fbwin = "<<attach_to_win<<endl;
+
+        cerr<<"client = "<<client<<", child = "<<hex<<child<<dec<<", fbwin = "<<attach_to_win<<endl;
 
         if (attach_to_win != this &&
             attach_to_win != 0) {
