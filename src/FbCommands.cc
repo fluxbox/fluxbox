@@ -58,6 +58,19 @@ using namespace std;
 namespace {
 
 void showMenu(const BScreen &screen, FbTk::Menu &menu) {
+
+    // special case for root menu
+    if (&menu == &screen.getRootmenu()) {
+        Fluxbox* fb = Fluxbox::instance();
+        if(fb->menuTimestampsChanged()) {
+            // we dont show the menu here because fluxbox
+            // will bring up the rootmenu after the timed
+            // reread of the menu
+            fb->rereadMenu(true);
+            return;
+        }
+    }
+    
     Window root_ret; // not used
     Window window_ret; // not used
 
@@ -84,10 +97,7 @@ void showMenu(const BScreen &screen, FbTk::Menu &menu) {
                    screen.getHeadY(head),
                    screen.getHeadWidth(head),
                    screen.getHeadHeight(head));
-    // special case for root menu
-    if (&menu == &screen.getRootmenu())
-        Fluxbox::instance()->checkMenu();
-
+    
     menu.show();
     menu.grabInputFocus();
 }

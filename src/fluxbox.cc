@@ -1624,7 +1624,6 @@ void Fluxbox::real_reconfigure() {
     //reconfigure keys
     m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
-
 }
 
 BScreen *Fluxbox::findScreen(int id) {
@@ -1676,8 +1675,9 @@ void Fluxbox::hideExtraMenus(BScreen &screen) {
 
 }
 
-void Fluxbox::rereadMenu() {
+void Fluxbox::rereadMenu(bool show_after_reread) {
     m_reread_menu_wait = true;
+    m_show_menu_after_reread = show_after_reread;
     m_reconfig_timer.start();
 }
 
@@ -1690,6 +1690,14 @@ void Fluxbox::real_rereadMenu() {
 
     m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
     for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::rereadMenu));
+
+    if(m_show_menu_after_reread) {
+
+        FbCommands::ShowRootMenuCmd showcmd;
+        showcmd.execute();
+
+        m_show_menu_after_reread = false;
+    }
 }
 
 void Fluxbox::saveMenuFilename(const char *filename) {

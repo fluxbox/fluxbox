@@ -189,7 +189,7 @@ public:
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
-    void rereadMenu();
+    void rereadMenu(bool show_after_reread = false);
     /// reloads the menus if the timestamps changed
     void checkMenu();
 
@@ -325,6 +325,7 @@ private:
     bool m_starting;
     bool m_restarting;
     bool m_shutdown;
+    bool m_show_menu_after_reread;
     int m_server_grabs;
     int m_randr_event_type; ///< the type number of randr event
     int m_shape_eventbase; ///< event base for shape events
