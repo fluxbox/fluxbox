@@ -174,12 +174,15 @@ AC_ARG_ENABLE(nls,
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
     AC_DEFINE(NLS, 1, "Natural language support")
+    NLS="-DNLS"
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([yes])
   AC_DEFINE(NLS, 1, "Natural language support")
+  NLS="-DNLS"
 )
+AC_SUBST(NLS)
 
 AC_CHECK_LIB(xpg4, setlocale, LIBS="$LIBS -lxpg4")
 
