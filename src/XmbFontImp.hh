@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.hh,v 1.2 2002/10/15 16:44:25 fluxgen Exp $
+// $Id: XmbFontImp.hh,v 1.3 2002/10/16 23:30:17 fluxgen Exp $
 
 #ifndef XMBFONTIMP_HH
 #define XMBFONTIMP_HH
@@ -32,7 +32,7 @@ public:
 	~XmbFontImp();
 	bool load(const std::string &name);
 	virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	unsigned int textWidth(const char *text, unsigned int len) const;
+	unsigned int textWidth(const char * const text, unsigned int len) const;
 	unsigned int height() const;
 	bool loaded() const { return m_fontset != 0; }
 private:
