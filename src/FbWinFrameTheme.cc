@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.17 2004/01/11 16:13:09 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.18 2004/05/24 15:30:52 rathnor Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -105,8 +105,10 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
     } else if (item.name() == "window.label.active.textColor") {
         return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor", 
                                                        "Window.Label.Unfocus.TextColor");
+    } else if (item.name() == "window.alpha") {
+        *m_alpha = 255;
+        return true;
     }
-    
 
     return false;
 }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.cc,v 1.5 2004/01/13 14:41:32 rathnor Exp $
+// $Id: ToolTheme.cc,v 1.6 2004/05/24 15:30:52 rathnor Exp $
 
 #include "ToolTheme.hh"
 
@@ -48,9 +48,11 @@ bool ToolTheme::fallback(FbTk::ThemeItem_base &item) {
                                                        "toolbar.justify",
                                                        "Toolbar.Justify");
     } else if (item.name().find(".alpha") != std::string::npos) {
-        return FbTk::ThemeManager::instance().loadItem(item, 
-                                                       "toolbar.alpha",
-                                                       "Toolbar.Alpha");
+        if (!FbTk::ThemeManager::instance().loadItem(item, 
+                                                     "toolbar.alpha",
+                                                     "Toolbar.Alpha"))
+            *m_alpha = 255;
+        return true;
     }
 
     return false;

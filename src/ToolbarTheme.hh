@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.10 2003/10/13 23:47:38 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.11 2004/05/24 15:30:52 rathnor Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -41,6 +41,8 @@ public:
 
     inline const BorderTheme &border() const { return m_border; }
     inline const FbTk::Texture &toolbar() const { return *m_toolbar; }
+
+    bool fallback(FbTk::ThemeItem_base &item);
 
     inline int bevelWidth() const { return *m_bevel_width; }    
     inline bool shape() const { return *m_shape; }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.9 2004/04/26 15:04:36 rathnor Exp $
+// $Id: IconbarTheme.cc,v 1.10 2004/05/24 15:30:52 rathnor Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -99,7 +99,10 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     } else if (item.name() == m_name + ".unfocused.textColor") {
         return tm.loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
     } else if (item.name() == m_name + ".alpha") {
-        return tm.loadItem(item, "toolbar.alpha", "Toolbar.Alpha");
+        if (!tm.loadItem(item, "toolbar.alpha", "Toolbar.Alpha")) {
+            *m_alpha = 255;
+        }
+        return true;
     }
  
     return false;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.14 2004/04/26 15:04:37 rathnor Exp $
+// $Id: ToolbarTheme.cc,v 1.15 2004/05/24 15:30:52 rathnor Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -55,7 +55,6 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_button_size(*this, "toolbar.button.size", "Toolbar.Button.Size") {
     // set default value
     *m_bevel_width = 0;
-    *m_alpha = 255;
     *m_shape = false;
     *m_height = 0;
     *m_button_size = -1;
@@ -63,6 +62,14 @@ ToolbarTheme::ToolbarTheme(int screen_num):
 
 ToolbarTheme::~ToolbarTheme() {
 
+}
+
+bool ToolbarTheme::fallback(FbTk::ThemeItem_base &item) {
+    if (item.name() == "toolbar.alpha") {
+        *m_alpha = 255;
+        return true;
+    }
+    return false;
 }
 
 void ToolbarTheme::reconfigTheme() {
