@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.5 2003/08/13 09:25:16 fluxgen Exp $
+// $Id: Button.hh,v 1.6 2003/09/10 21:23:36 fluxgen Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -53,9 +53,9 @@ public:
     /// sets graphic context for drawing
     void setGC(GC gc) { m_gc = gc; }
     /// sets background pixmap, this will override background color
-    void setBackgroundPixmap(Pixmap pm);
+    virtual void setBackgroundPixmap(Pixmap pm);
     /// sets background color
-    void setBackgroundColor(const Color &color);
+    virtual void setBackgroundColor(const Color &color);
 
     /**
        @name eventhandlers
@@ -70,7 +70,9 @@ public:
     bool pressed() const { return m_pressed; }
 
     GC gc() const { return m_gc; }
-
+    Pixmap backgroundPixmap() const { return m_background_pm; }
+    const Color &backgroundColor() const { return m_background_color; }
+    Pixmap foregroundPixmap() const { return m_foreground_pm; }
 private:
     Pixmap m_foreground_pm; ///< foreground pixmap
     Pixmap m_background_pm; ///< background pixmap
