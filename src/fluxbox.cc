@@ -22,7 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.69 2002/08/16 11:09:25 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.70 2002/08/17 22:14:00 fluxgen Exp $
+
 
 #include "fluxbox.hh"
 
@@ -38,7 +39,6 @@
 #include "StringUtil.hh"
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
-
 #ifdef SLIT
 #include "Slit.hh"
 #endif // SLIT
@@ -52,12 +52,13 @@
 #include "../config.h"
 #endif // HAVE_CONFIG_H
 
+// X headers
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
-
+#include <X11/cursorfont.h>
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
@@ -389,6 +390,11 @@ key(0)
 
 		throw static_cast<int>(3);
 	}
+	//setup cursor bitmaps
+	cursor.session = XCreateFontCursor(getXDisplay(), XC_left_ptr);
+	cursor.move = XCreateFontCursor(getXDisplay(), XC_fleur);
+	cursor.ll_angle = XCreateFontCursor(getXDisplay(), XC_ll_angle);
+	cursor.lr_angle = XCreateFontCursor(getXDisplay(), XC_lr_angle);
 
 	XSynchronize(getXDisplay(), False);
 	XSync(getXDisplay(), False);
@@ -525,7 +531,7 @@ void Fluxbox::setupConfigFiles() {
 	}
 }
 
-void Fluxbox::process_event(XEvent *e) {
+void Fluxbox::handleEvent(XEvent * const e) {
 
 	if ((masked == e->xany.window) && masked_window &&
 			(e->type == MotionNotify)) {
@@ -1570,11 +1576,11 @@ bool Fluxbox::checkNETWMAtoms(XClientMessageEvent &ce) {
 }
 #endif //!NEWWMSPEC
 
-void Fluxbox::handleSignal(int sig) {
+void Fluxbox::handleEvent(SignalEvent * const sig) {
 	I18n *i18n = I18n::instance();
 	static int re_enter = 0;
 
-	switch (sig) {
+	switch (sig->signum) {
 		case SIGCHLD: // we don't want the child process to kill us
 			waitpid(-1, 0, WNOHANG | WUNTRACED);
 		break;
