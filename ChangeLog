@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/30:
+  * Fix to show title of current tabbed-window as the label of the 
+    iconbar-button-group (Mathias)
+    Window.cc
 *04/09/29:
   * Fix to make menuseparators not selectable (Mathias)
     FbTk/Menu.cc
