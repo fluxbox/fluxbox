@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.289 2004/09/09 14:29:03 akir Exp $
+// $Id: Screen.cc,v 1.290 2004/09/11 13:30:37 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -55,6 +55,7 @@
 #include "Strut.hh"
 #include "CommandParser.hh"
 #include "AtomHandler.hh"
+#include "HeadArea.hh"
 
 
 #include "FbTk/I18n.hh"
@@ -226,7 +227,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_name(screenname),
     m_altname(altscreenname),
     m_resource_manager(rm),
-    m_available_workspace_area(new Strut(0, 0, 0, 0)),
     m_xinerama_headinfo(0),
     m_shutdown(false) {
 
@@ -250,6 +250,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     managed = running;
     if (! managed)
         return;
+
+    // TODO fluxgen: check if this is the right place
+    m_head_areas = new HeadArea[numHeads() ? numHeads() : 1];
 	
     _FB_USES_NLS;
 	
@@ -434,6 +437,9 @@ BScreen::~BScreen() {
     if (hasXinerama() && m_xinerama_headinfo) {
         delete [] m_xinerama_headinfo;
     }
+
+    // TODO fluxgen: check if this is the right place
+    delete [] m_head_areas;
 }
 
 void BScreen::initWindows() {
@@ -548,32 +554,36 @@ unsigned int BScreen::currentWorkspaceID() const {
     return m_current_workspace->workspaceID(); 
 }
 
+const Strut* BScreen::availableWorkspaceArea(int head) const {
+    return m_head_areas[head ? head-1 : 0].availableWorkspaceArea();
+}
+
 unsigned int BScreen::maxLeft(int head) const {
+	
     // we ignore strut if we're doing full maximization
     if (hasXinerama())
         return doFullMax() ? getHeadX(head) : 
-            getHeadX(head) + m_available_workspace_area->left();
+            getHeadX(head) + availableWorkspaceArea(head)->left();
     else
-        return doFullMax() ? 0 : m_available_workspace_area->left();
+        return doFullMax() ? 0 : availableWorkspaceArea(head)->left();
 }
 
 unsigned int BScreen::maxRight(int head) const {
     // we ignore strut if we're doing full maximization
     if (hasXinerama())
         return doFullMax() ? getHeadX(head) + getHeadWidth(head) : 
-            getHeadX(head) + getHeadWidth(head) - m_available_workspace_area->right();
+            getHeadX(head) + getHeadWidth(head) - availableWorkspaceArea(head)->right();
     else
-        return doFullMax() ? width() : width() - m_available_workspace_area->right();
+        return doFullMax() ? width() : width() - availableWorkspaceArea(head)->right();
 }
 
 unsigned int BScreen::maxTop(int head) const {
-
     // we ignore strut if we're doing full maximization
-
+		
     if (hasXinerama())
-        return doFullMax() ? getHeadY(head) : getHeadY(head) + m_available_workspace_area->top();
+        return doFullMax() ? getHeadY(head) : getHeadY(head) + availableWorkspaceArea(head)->top();
     else
-        return doFullMax() ? 0 : m_available_workspace_area->top();
+        return doFullMax() ? 0 : availableWorkspaceArea(head)->top();
 }
 
 unsigned int BScreen::maxBottom(int head) const {
@@ -581,9 +591,9 @@ unsigned int BScreen::maxBottom(int head) const {
 
     if (hasXinerama())
         return doFullMax() ? getHeadY(head) + getHeadHeight(head) :
-            getHeadY(head) + getHeadHeight(head) - m_available_workspace_area->bottom();
+            getHeadY(head) + getHeadHeight(head) - availableWorkspaceArea(head)->bottom();
     else
-        return doFullMax() ? height() : height() - m_available_workspace_area->bottom();
+        return doFullMax() ? height() : height() - availableWorkspaceArea(head)->bottom();
 }
 
 void BScreen::update(FbTk::Subject *subj) {
@@ -1260,58 +1270,46 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     return win;
 }
 
-Strut *BScreen::requestStrut(int left, int right, int top, int bottom) {
-    Strut *str = new Strut(left, right, top, bottom);
-    m_strutlist.push_back(str);
-    return str;
+Strut *BScreen::requestStrut(int head, int left, int right, int top, int bottom) {
+    if (head > numHeads() && head != 1) {
+        // head does not exist (if head == 1, then numHeads() == 0, 
+        // which means no xinerama, but there's a head after all
+        head = numHeads();
+    }
+
+    int begin = head-1;
+    int end   = head;
+
+    if (head == 0) { // all heads (or no xinerama)
+        begin = 0;
+        end = (numHeads() ? numHeads() : 1);
+    }
+
+    Strut* next = 0;
+    for (int i = begin; i != end; i++) {
+        next = m_head_areas[i].requestStrut(i+1, left, right, top, bottom, next);
+    }
+
+    return next;
 }
 
 void BScreen::clearStrut(Strut *str) {
-    if (str == 0)
-        return;
-    // find strut and erase it
-    std::list<Strut *>::iterator pos = find(m_strutlist.begin(),
-                                            m_strutlist.end(),
-                                            str);
-    if (pos == m_strutlist.end())
-        return;
-    m_strutlist.erase(pos);
-    delete str;
+    if (str->next()) 
+        clearStrut(str->next());
+    int head = str->head() ? str->head() - 1 : 0;
+    m_head_areas[head].clearStrut(str);
+    // str is invalid now
 }
 
-/// helper class for for_each in BScreen::updateAvailableWorkspaceArea()
-namespace {
-class MaxArea {
-public:
-    MaxArea(Strut &max_area):m_max_area(max_area) { }
-    void operator ()(const Strut *str) {
-        static int left, right, bottom, top;
-        left = std::max(m_max_area.left(), str->left());
-        right = std::max(m_max_area.right(), str->right());
-        bottom = std::max(m_max_area.bottom(), str->bottom());
-        top = std::max(m_max_area.top(), str->top());
-        m_max_area = Strut(left, right, top, bottom);
-    }
-private:
-    Strut &m_max_area;
-};
-
-} // end anonymous namespace
-
 void BScreen::updateAvailableWorkspaceArea() {
-    // find max of left, right, top and bottom and set avaible workspace area
+    size_t n = (numHeads() ? numHeads() : 1);
+    bool updated = false;
 
-    // clear old area
-    Strut oldarea = *(m_available_workspace_area.get());
-    m_available_workspace_area.reset(new Strut(0, 0, 0, 0));
-    
-    // calculate max area
-    for_each(m_strutlist.begin(),
-             m_strutlist.end(),
-             MaxArea(*m_available_workspace_area.get()));
+    for (size_t i = 0; i < n; i++) {
+        updated = m_head_areas[i].updateAvailableWorkspaceArea() || updated;
+    }
 
-    // only notify if the area changed
-    if (oldarea == *(m_available_workspace_area.get()))
+    if (updated)
         m_workspace_area_sig.notify();
 }
 
@@ -2204,11 +2202,17 @@ void BScreen::initXinerama() {
     Display *display = FbTk::App::instance()->display();
 
     if (!XineramaIsActive(display)) {
+#ifdef DEBUG
+        cerr<<"BScreen::initXinerama(): dont have Xinerama"<<endl;
+#endif // DEBUG    
         m_xinerama_avail = false;
         m_xinerama_headinfo = 0;
         m_xinerama_num_heads = 0;
         return;
     }
+#ifdef DEBUG
+    cerr<<"BScreen::initXinerama(): have Xinerama"<<endl;
+#endif // DEBUG    
     m_xinerama_avail = true;
 
     XineramaScreenInfo *screen_info;
@@ -2222,6 +2226,10 @@ void BScreen::initXinerama() {
         m_xinerama_headinfo[i].width = screen_info[i].width;
         m_xinerama_headinfo[i].height = screen_info[i].height;
     }
+#ifdef DEBUG
+    cerr<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
+#endif // DEBUG
+
 #else // XINERAMA
     // no xinerama
     m_xinerama_avail = false;
@@ -2306,6 +2314,31 @@ int BScreen::getHeadHeight(int head) const {
 #else
     return height();
 #endif // XINERAMA
+}
+
+pair<int,int> BScreen::clampToHead(int head, int x, int y, int w, int h) const {
+
+    // if there are multiple heads, head=0 is not valid
+    // a better way would be to search the closest head
+    if (head == 0 && numHeads() != 0)
+	head = 1;
+    
+    int hx = getHeadX(head);
+    int hy = getHeadY(head);
+    int hw = getHeadWidth(head);
+    int hh = getHeadHeight(head);
+ 
+    if (x + w > hx + hw)
+        x = hx + hw - w;
+    if (y + h > hy + hh)
+        y = hy + hh - h;
+ 
+    if (x < hx)
+        x = hx;
+    if (y < hy)
+       y = hy;
+
+    return make_pair(x,y);
 }
 
 // TODO: when toolbar gets its resources moved into Toolbar.hh/cc, then

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.144 2004/09/09 14:29:04 akir Exp $
+// $Id: Screen.hh,v 1.145 2004/09/11 13:29:35 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -61,6 +61,7 @@ class WinClient;
 class Workspace;
 class Strut;
 class Slit;
+class HeadArea;
 
 namespace FbTk {
 class Menu;
@@ -304,6 +305,9 @@ public:
     int getHeadWidth(int head) const;
     int getHeadHeight(int head) const;
 
+    // returns the new (x,y) for a rectangle fitted on a head
+    std::pair<int,int> clampToHead(int head, int x, int y, int w, int h) const;
+
     // magic to allow us to have "on head" placement (menu) without
     // the object really knowing about it.
     template <typename OnHeadObject>
@@ -333,7 +337,7 @@ public:
     FluxboxWindow *createWindow(WinClient &client);
     void setupWindowActions(FluxboxWindow &win);
     /// request workspace space, i.e "don't maximize over this area"
-    Strut *requestStrut(int left, int right, int top, int bottom);
+    Strut *requestStrut(int head, int left, int right, int top, int bottom);
     /// remove requested space and destroy strut
     void clearStrut(Strut *strut); 
     /// updates max avaible area for the workspace
@@ -362,6 +366,8 @@ private:
     bool doSkipWindow(const WinClient &winclient, int options);
     void renderGeomWindow();
     void renderPosWindow();
+
+    const Strut* availableWorkspaceArea(int head) const;
 
     ScreenSubject 
     m_clientlist_sig,  ///< client signal
@@ -455,13 +461,12 @@ private:
    
     int m_xinerama_center_x, m_xinerama_center_y;
 
-    std::auto_ptr<Strut> m_available_workspace_area;
+    HeadArea *m_head_areas;
 
     struct XineramaHeadInfo {
         int x, y, width, height;        
     } *m_xinerama_headinfo;
 
-    std::list<Strut *> m_strutlist;
     bool m_shutdown;
 };
 

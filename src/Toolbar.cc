@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.152 2004/08/31 19:38:42 akir Exp $
+// $Id: Toolbar.cc,v 1.153 2004/09/11 13:33:07 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -328,7 +328,7 @@ void Toolbar::updateStrut() {
         left = width();
         break;
     };
-    m_strut = screen().requestStrut(left, right, top, bottom);
+    m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
     screen().updateAvailableWorkspaceArea();
 }
 
@@ -485,22 +485,21 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
     screen().hideMenus();
 
     if (! menu().isVisible()) {
-        int x, y;
 
-        x = be.x_root - (menu().width() / 2);
-        y = be.y_root - (menu().height() / 2);
+        int head = screen().getHead(be.x_root, be.y_root);
+        int borderw = menu().fbwindow().borderWidth();
+        pair<int, int> m = screen().clampToHead( head,
+                be.x_root - (menu().width() / 2), 
+                be.y_root - (menu().titleWindow().height() / 2),
+                menu().width() + 2*borderw,
+                menu().height() + 2*borderw);
 
-        if (x < 0)
-            x = 0;
-        else if (x + menu().width() > screen().width())
-            x = screen().width() - menu().width();
-
-        if (y < 0)
-            y = 0;
-        else if (y + menu().height() > screen().height())
-            y = screen().height() - menu().height();
-
-        menu().move(x, y);
+        menu().setScreen(
+                screen().getHeadX(head),
+                screen().getHeadY(head),
+                screen().getHeadWidth(head),
+                screen().getHeadHeight(head));
+        menu().move(m.first, m.second);
         menu().show();
         menu().grabInputFocus();
     } else

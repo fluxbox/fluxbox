@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.99 2004/08/31 19:27:21 akir Exp $
+// $Id: Slit.cc,v 1.100 2004/09/11 13:31:36 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -407,7 +407,7 @@ void Slit::updateStrut() {
             right = width();
         break;
     }
-    m_strut = screen().requestStrut(left, right, top, bottom);
+    m_strut = screen().requestStrut(getOnHead(), left, right, top, bottom);
     screen().updateAvailableWorkspaceArea();
 }
 
