@@ -48,7 +48,7 @@ fluxbox \- a window manager for X11
 .SH SYNOPSIS
 .BR fluxbox " \-help | \-version"
 .br
-.B fluxbox 
+.B fluxbox
 .RI "[ \-rc" " rcfile " "] [ \-display" " display " ]
 .SH DESCRIPTION
 .\"
@@ -146,7 +146,7 @@ The toolbar consists of three fields: a workspace name, the iconbar and a clock.
 .\" middle click will hide it behind other windows (if AlwaysOnTop is not set), and
 .\" the right button brings up a little menu.
 Clicking the workspace name brings up the toolbar menu.
-Using the wheel on workspace name or the clock switches the worksapce, this
+Using the wheel on workspace name or the clock switches the workspace, this
 could also be enabled for the whole desktop in the fluxbox menu.
 .PP
 Using the toolbar menu you can enter a name for the current workspace (when finished,
@@ -176,7 +176,7 @@ When you select the workspace with the middle button, Fluxbox will
 send you along with the application to the selected workspace
 .TP
 .B Send Group To... (not in 0.9.6)
-Sends a window, along with all windows currently grouped with it, to 
+Sends a window, along with all windows currently grouped with it, to
 another workspace. Follows the same rules as Send To...
 .TP
 .B Shade
@@ -208,15 +208,15 @@ Lower window
 A stuck window will always be displayed in the current workspace
 .TP
 .B Next Client
-Activate next cleint in this window's group.
+Activate next client in this window's group.
 .TP
 .B Prev Client
-Activate prev cleint in this window's group.
+Activate prev client in this window's group.
 .TP
 .B Layer ...
 Change the layer of this window.
 .TP
-.B Remeber ...
+.B Remember ...
 Specify which window settings should be stored in the apps file.
 .TP
 .B Close
@@ -229,15 +229,15 @@ Another double click will redisplay the window contents.
 In fluxbox, the window button's configuration is controlled by \ init
 file entries. The default is:
 .EX 0
-session.titlebar.left:  Stick 
-session.titlebar.right: Minimize Maximize Close 
+session.titlebar.left:  Stick
+session.titlebar.right: Minimize Maximize Close
 .EE
 Clicking the minimize button with any button causes the window to be iconified.
 Clicking the close button with any button closes the application.
 The maximize button (if present) maximizes the window in three ways:
 Button 1 causes full screen maximization, button 2 maximizes the window only
 vertically, and button 3 only horizontally.
-The Sticky button sets has the same meaning as the 
+The Sticky button sets has the same meaning as the
 .I (Un)Stick window
 menu option.
 .SS Any menu:
@@ -322,7 +322,7 @@ if so desired.
 .B [nop]
 does accept a label, but it is not required, and a blank item will be used
 if none is supplied.
-.TP 
+.TP
 .B [style] (label) {filename}
 This tells Fluxbox to insert an item that, when selected, reads style file
 named
@@ -339,7 +339,7 @@ The labels that are created in the menu are the filenames of the style files.
 .TP
 .B [stylesmenu] (label) {directory name}
 Creates a submenu entry with
-.I label 
+.I label
 (that is also the title of the new submenu), and inserts in that submenu all
 filenames in the specified directory, assuming that they are all valid style
 files (directories are ignored) in the same way as the
@@ -473,7 +473,7 @@ Fluxbox allows you to configure it's three main components: the toolbar, the
 menus and the window decorations.
 .PP
 The little window that shows the x-y position while dragging windows, borrows
-ite style from the window's titlebar.
+it's style from the window's titlebar.
 .PP
 Here are some quick examples:
 .EX
@@ -515,7 +515,7 @@ A texture description consists of up to five fields, which are as follows:
 gives the component either a flat, raised or sunken appearance.
 .TP
 .B Gradient / Solid
-tells Fluxbox to draw either a solid color or a gradiented texture.
+tells Fluxbox to draw either a solid color or a gradient texture.
 .TP
 .B Horizontal / Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic / Rectangle / Pyramid
 Select one of these texture types. They only work when also
@@ -537,9 +537,9 @@ The shading is placed one pixel in from the edge of the image.
 Instead of a texture description, also the option
 .B ParentRelative
 is available, which makes the component appear as a part of its parent, e.g.
-totally transparant.
+totally transparent.
 .PP
-Or for even more possibilities 
+Or for even more possibilities
 .B Pixmap .
 If pixmap texture is specified (it might not be necessary on every occasion)
 the pixmap file is specified in a separate pixmap resource.
@@ -553,7 +553,7 @@ the resources color and colorTo must be set and then they may not be set.
 All gradiented textures are composed of two color values: the
 .IR color " and " colorTo " resources."
 When
-.B Interlaced 
+.B Interlaced
 is used in
 .B Solid
 mode, the
@@ -565,7 +565,7 @@ which kind of value they can contain.
 Comments are preceded with an exclamation sign (!), which is also used for
 comments in Fluxbox style c.q. X resource files.
 .PP
-.ta \w'window.button.unfocus.picColor:\ 'u 
+.ta \w'window.button.unfocus.picColor:\ 'u
 .nf
 .\"
 .\" The comments also to be translated!
@@ -758,25 +758,25 @@ one of the three extra keys on a pc104 branded with a sickening corporate logo.
 .EX
 # Fluxbox keys file.
 # Any line starting with a # is a comment.
-Mod1 Tab :NextWindow 
-Mod1 F1 :Workspace1 
-Mod1 F2 :Workspace2 
-Mod1 F3 :Workspace3 
-Mod1 F4 :Workspace4 
-Mod1 F5 :Workspace5 
-Mod1 F6 :Workspace6 
-Mod1 F7 :Workspace7 
-Mod1 F8 :Workspace8 
-Mod1 F9 :Workspace9 
-Mod1 F10 :Workspace10 
-Mod1 F11 :Workspace11 
-Mod1 F12 :Workspace12 
-Mod4 b :PrevWorkspace 
-Mod4 c :Minimize 
-Mod4 r :ExecCommand rxvt 
-Mod4 v :NextWorkspace 
-Mod4 x :Close 
-Mod4 m :RootMenu 
+Mod1 Tab :NextWindow
+Mod1 F1 :Workspace1
+Mod1 F2 :Workspace2
+Mod1 F3 :Workspace3
+Mod1 F4 :Workspace4
+Mod1 F5 :Workspace5
+Mod1 F6 :Workspace6
+Mod1 F7 :Workspace7
+Mod1 F8 :Workspace8
+Mod1 F9 :Workspace9
+Mod1 F10 :Workspace10
+Mod1 F11 :Workspace11
+Mod1 F12 :Workspace12
+Mod4 b :PrevWorkspace
+Mod4 c :Minimize
+Mod4 r :ExecCommand rxvt
+Mod4 v :NextWorkspace
+Mod4 x :Close
+Mod4 m :RootMenu
 Control n Mod1 n :NextTab
 .EE
 As you can see from the last line, keybinds can be chained in a fashion similar
@@ -895,7 +895,7 @@ Of course to use the slit you must have slit support compiled in.
 .\" --- slitlist ---
 .SH SLITLIST FILE
 Since version 0.1.10, Fluxbox has the capacity to launch dockapps in the order told
-by the 
+by the
 .IR ~/.fluxbox/slitlist
 file.
 .PP
@@ -914,7 +914,7 @@ one per dockapp. Similar to the init file it should be edited while not running 
 Otherwise changes may get overwritten.
 .PP
 The user also has the option of choosing a different path for the slit list file.
-The following example 
+The following example
 .B init
 file entry changes the path:
 .EX
@@ -928,7 +928,7 @@ Most are self-explanatory, but here are a few notes:
 This option allows you to drop a window-title anywhere on the target window to group it,
 instead of only on the target window's window-title.
 .TP
-.B Maximize Over Slit 
+.B Maximize Over Slit
 This option makes maximized windows cover the Slit when they get maximized.
 Turn this option off if you want your slit to stay visible at all times.
 .SH RESOURCE FILE
@@ -972,8 +972,8 @@ session.slitlistFile: /home/myself/.fluxbox/slitlist
 .EE
 .TP
 .B session.screen0.toolbar.tools:
-This specifies the tools plugged ino the toolbar.
-Possible tools: 
+This specifies the tools plugged into the toolbar.
+Possible tools:
 workspacename, prevworkspace, nextworkspace, iconbar, systemtray, prevwindow, nextwindow,
 clock
 e.g. :
@@ -991,7 +991,7 @@ The default value is:
 .TP
 .B session.screen0.rootCommand:
 This overrides the style's rootCommand. When this value is set, it will keep
-your background the same, regardless of what any style would like your 
+your background the same, regardless of what any style would like your
 background to be.
 .TP
 .B session.autoRaiseDelay:
@@ -1009,7 +1009,7 @@ Default value is:
 When moving a window across your screen, Fluxbox is able to have it `snap' to
 the edges of the screen for easy placement.
 This variable tells Fluxbox the distance (in pixels) at which the window will
-jump to the egde.
+jump to the edge.
 Default value is:
 .IR 0 .
 .TP
@@ -1029,7 +1029,7 @@ Default value is
 .B session.opaqueMove:
 When moving a window, setting this to
 .IR True
-will draw the window contents as it moves (nasty on slow systems), if 
+will draw the window contents as it moves (nasty on slow systems), if
 .IR False
 it will only draw an outline of the window border.
 .TP
@@ -1067,7 +1067,7 @@ Default value is
 .IR True .
 .TP
 .B session.screen0.tab.placement:
-Tells Fluxbox where to put the tab on the window.  This can be customised 
+Tells Fluxbox where to put the tab on the window.  This can be customised
 through Fluxbox's Configuration/Tab Placement menu.  Values are
 .IR Top
 .IR Bottom
@@ -1101,7 +1101,7 @@ key can also be
 etc. for any appropriate desktop, and you can customise the behaviour of
 Fluxbox on each desktop accordingly.  A favourite of the man page author
 with a dual-head Matrox G450 was to autohide the slit and toolbar on
-screen0 and set it alwaysontop and not autohidden on screen1, with a 
+screen0 and set it alwaysontop and not autohidden on screen1, with a
 larger date format on screen1
 .EX
 session.screen0.toolbar.onTop: False
@@ -1124,7 +1124,7 @@ session.screen1.slit.direction: Vertical
 session.screen1.strftimeFormat: %a %d %R [%s]
 .EE
 This way the main workspace (screen0) has the maximum amount of space available
-and the secondary workspace could show the time and run some withrawn apps like
+and the secondary workspace could show the time and run some withdrawn apps like
 gkrellm in the slit, always visible yet out of the way of real work.
 .SH APPLICATIONS SETTINGS
 Sometimes, you want to force an application to have always the same dimensions,
@@ -1230,13 +1230,13 @@ This manpage was put together by Matthew Hawkins
 .hy
 from the original Blackbox man page by Wilbert Berendsen
 .nh
-<wbsoft@xs4all.nl> 
+<wbsoft@xs4all.nl>
 .hy
 and subsequently hacked upon by Tobias Klausmann
 .nh
 <klausman@users.sourceforge.net>
 .nh
-and 
+and
 .hy
 <grubert@users.sourceforge.net>.
 .nh
