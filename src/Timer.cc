@@ -128,22 +128,24 @@ void BTimer::updateTimers(int fd) {
 	//must check end ...the timer might remove
 	//it self from the list (should be fixed in the future)
 	for(; it != m_timerlist.end(); ++it) {
-		tm.tv_sec = (*it)->getStartTime().tv_sec +
-		(*it)->getTimeout().tv_sec;
-		tm.tv_usec = (*it)->getStartTime().tv_usec +
-		(*it)->getTimeout().tv_usec;
+		//This is to make sure we don't get an invalid iterator
+		//when we do fireTimeout
+		BTimer &t = *(*it);
+		tm.tv_sec = t.getStartTime().tv_sec +
+		t.getTimeout().tv_sec;
+		tm.tv_usec = t.getStartTime().tv_usec +
+		t.getTimeout().tv_usec;
 
 		if ((now.tv_sec < tm.tv_sec) ||
 			(now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec))
 			break;
 
-		(*it)->fireTimeout();
-
+		t.fireTimeout();
 		// restart the current timer so that the start time is updated
-		if (! (*it)->doOnce())
-			(*it)->start();
-		else { 
-			(*it)->stop();			
+		if (! t.doOnce())
+			t.start();
+		else {
+			t.stop();			
 			it--;
 		}					
 	}
