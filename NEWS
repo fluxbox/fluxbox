@@ -1,16 +1,58 @@
-News in 0.9.3:
-    * Transparent slit
-    * RANDR support
-    * Xinerama support
-    * Restart and Reconfigure key actions
-    * Improved algorithm for window placement
-    * New argument for logging: -log <filename>
-      ex: fluxbox -log .fluxbox/log
-      This will log debugmsg and any output to .fluxbox/log
+News in 0.9.4:
+    * Keyboard navigation in menus
+       * Keys:
+         Up/Down: select menu item
+         Left/Right: go in/out from submenus
+         Escape: close menu and return focus to windows
+         Enter: run/execute/toggle menu item
+      To set input focus on the menu you either click on the titlebar
+      or bring it up with keybindings
+    * New action strings
+      * ArrangeWindows 
+   	    This will arrange the windows on the current desktop
+      * ShowDesktop
+	    This will iconify all windows on the current desktop
+    * The same action strings that are in keys file can 
+      now be used in the menu
+      example:
+      [ArrangeWindows] (arrange windows)
+    * New theme items
+       * toolbar.button.borderWidth: <integer>
+       * toolbar.borderWidth: <integer>
+       * toolbar.bevelWidth: <integer>
+       * toolbar.borderColor: <color>
+       * slit.borderWidth: <integer>
+       * slit.bevelWidth: <integer>
+       * slit.borderColor: <color>
+    * [startup] option in remember file
+      Can now add entries to apps file like:
+         [startup] {xterm}
+      Then "xterm" will be launched on fluxbox startup. 
+      Can also give a screen option:
+         [startup] (screen=1) {xterm}
+      will start it on screen 1 rather than the default 0.
+    * Rounded corners on menu, windows and toolbar
+      Theme items:
+       * menu.roundCorners: <shape item>
+       * toolbar.shaped: <boolean>
+       * window.roundCorners: <shape item>
+      Shape item can be: TopLeft TopRight BottomLeft and/or BottomRight
+      example: menu.roundCorners: TopRight BottomLeft
+    * The current style is now marked in the style menu
+    * Compile time option for toolbar
+      --disable-toolbar
+      --enable-toolbar (default)
+    * Emacs style keybindings in fbrun
+    * Group persistence over a restart
+    * Maximization stop on slit and toolbar
+    * Support for _NET_WM_STRUT
+    * Regular expression support for remember
+
 Bug fixes: 
-    * Slit redraw bug
-    * "gkrellm redraw" bug
-    * Focus bug (caused frequent crashes in 0.9.2)
-    * and some other minor bugs
+    * Toggle maximize vertical/horizontal
+    * Slit/Toolbar autohide bug
+    * Button alignment bug in titlebar
+    * Trailing whitespace in groupfile resource
+    * Group cycling
 
 See ChangeLog for more details
