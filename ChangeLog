@@ -1,10 +1,22 @@
 (Format: Year/Month/Day)
 Changes for 0.1.12:
+*02/09/08:
+   * Fixed new transient handling
+*02/09/07:
+   * Fixed save workspace names when add/remove workspace (Thanks Simon Bowden)
+     Workspacemenu.cc
+   * Fixed outlined size when resizing (Thanks Simon Bowden)
+     Window.cc
+   * Moved data/fluxbox-generate_menu to util/ .
+   * Moved Gnome stuff to Gnome.cc/hh.
+     Screen.cc/hh, Window.cc/hh, fluxbox.cc/hh
+   * Added Subject.cc/hh, Observer.cc/hh,  Gnome.cc/hh and AtomHandler.hh
 *02/09/06:
    * Fixed workspace name update from toolbar (Thanks Bradley C Bailey)
      Toolbar.cc
    * Deiconify before send to workspace (Thanks Bradley C Bailey)
      Windowmenu.cc
+
 --------------------------------------------------------------------------
 Changes for 0.1.11:
 *02/09/02:
