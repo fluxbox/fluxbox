@@ -19,8 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   WORKSPACE_HH
-#define   WORKSPACE_HH
+#ifndef	 WORKSPACE_HH
+#define	 WORKSPACE_HH
+
+#include "Window.hh"
 
 #include <X11/Xlib.h>
 #include <string>
@@ -30,66 +32,58 @@
 class BScreen;
 class Clientmenu;
 class Workspace;
-class FluxboxWindow;
+
 
 
 class Workspace {
 public:
-  typedef std::vector<FluxboxWindow *> Windows;
-  
-  Workspace(BScreen *, int = 0);
-  ~Workspace(void);
+	typedef std::vector<FluxboxWindow *> Windows;
+	
+	Workspace(BScreen *, int = 0);
+	~Workspace(void);
 
-  inline BScreen *getScreen(void) { return screen; }
-
-  inline FluxboxWindow *getLastFocusedWindow(void) { return lastfocus; }
-  
-  inline Clientmenu *getMenu(void) { return clientmenu; }
-
-  inline const char *getName(void) const { return name.c_str(); }
-
-  inline const int &getWorkspaceID(void) const { return id; }
-  
-  inline void setLastFocusedWindow(FluxboxWindow *w) { lastfocus = w; }
-
-  FluxboxWindow *getWindow(int);
-  inline Windows &getWindowList() { return windowList; }
-
-  bool isCurrent(void);
-  bool isLastWindow(FluxboxWindow *);
-  
-  const int addWindow(FluxboxWindow *, Bool = False);
-  const int removeWindow(FluxboxWindow *);
-  const int getCount(void);
+	inline BScreen *getScreen(void) { return screen; }
+	inline FluxboxWindow *getLastFocusedWindow(void) { return lastfocus; }	
+	inline Clientmenu *getMenu(void) { return clientmenu; }
+	inline const char *getName(void) const { return name.c_str(); }
+	inline const int &getWorkspaceID(void) const { return id; }	
+	inline void setLastFocusedWindow(FluxboxWindow *w) { lastfocus = w; }
+	FluxboxWindow *getWindow(int);
+	inline Windows &getWindowList() { return windowList; }
+	bool isCurrent(void);
+	bool isLastWindow(FluxboxWindow *);	
+	const int addWindow(FluxboxWindow *, Bool = False);
+	const int removeWindow(FluxboxWindow *);
+	const int getCount(void);
  
-  void showAll(void);
-  void hideAll(void);
-  void removeAll(void);
-  void raiseWindow(FluxboxWindow *);
-  void lowerWindow(FluxboxWindow *);
-  void reconfigure();
-  void update();
-  void setCurrent(void);
-  void setName(char *);
-  void shutdown(void);
+	void showAll(void);
+	void hideAll(void);
+	void removeAll(void);
+	void raiseWindow(FluxboxWindow *);
+	void lowerWindow(FluxboxWindow *);
+	void reconfigure();
+	void update();
+	void setCurrent(void);
+	void setName(char *);
+	void shutdown(void);
 
 private:
-  BScreen *screen;
-  FluxboxWindow *lastfocus;
-  Clientmenu *clientmenu;
+	BScreen *screen;
+	FluxboxWindow *lastfocus;
+	Clientmenu *clientmenu;
 
-  typedef std::list<FluxboxWindow *> WindowStack;
+	typedef std::list<FluxboxWindow *> WindowStack;
  
 
-  WindowStack stackingList;
-  Windows windowList;
+	WindowStack stackingList;
+	Windows windowList;
 
-  std::string name;
-  int id, cascade_x, cascade_y;
+	std::string name;
+	int id, cascade_x, cascade_y;
 
 
 protected:
-  void placeWindow(FluxboxWindow *);
+	void placeWindow(FluxboxWindow *);
 
 
 
