@@ -22,15 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.52 2003/01/07 02:07:43 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.53 2003/01/09 18:42:32 fluxgen Exp $
 
 #include "Toolbar.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
 #include "Clientmenu.hh"
-#include "Iconmenu.hh"
-#include "Rootmenu.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "Workspace.hh"
@@ -67,6 +65,10 @@
 #include <time.h>
 #endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
+
+#ifdef SHAPE
+#include <X11/extensions/shape.h>
+#endif // SHAPE
 
 #include <iostream>
 
@@ -197,7 +199,7 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
 
 
 Toolbar::~Toolbar() {
-	 
+
     if (frame.base) image_ctrl.removeImage(frame.base);
     if (frame.label) image_ctrl.removeImage(frame.label);
     if (frame.wlabel) image_ctrl.removeImage(frame.wlabel);
@@ -502,7 +504,6 @@ void Toolbar::reconfigure() {
 
         m_iconbar.reset(0); // destroy iconbar
     }
-
 }
 
 
@@ -756,7 +757,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
     if (re.button == 1) {
         if (re.window == frame.workspace_label) {
-            Basemenu *menu = screen()->getWorkspacemenu();
+            FbTk::Menu *menu = screen()->getWorkspacemenu();
             //move the workspace label and make it visible
             menu->move(re.x_root, re.y_root);
             // make sure the entire menu is visible (TODO: this is repeated by other menus, make a function!)
@@ -983,8 +984,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x + head_w - frame.width - screen()->getBorderWidth2x();
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y +
-            screen()->getBevelWidth() - screen()->getBorderWidth() - frame.height;
         break;
 
     case BOTTOMRIGHT:
