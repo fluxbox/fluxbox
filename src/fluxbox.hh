@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.33 2002/11/27 21:59:25 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.34 2002/11/30 20:16:14 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -30,10 +30,7 @@
 #include "Resource.hh"
 #include "Keys.hh"
 #include "BaseDisplay.hh"
-#include "Image.hh"
 #include "Timer.hh"
-#include "Window.hh"
-#include "Tab.hh"
 #include "Toolbar.hh"
 #include "Observer.hh"
 
@@ -71,6 +68,8 @@
 #include <vector>
 
 class AtomHandler;
+class FluxboxWindow;
+class Tab;
 
 /**
 	main class for the window manager.
