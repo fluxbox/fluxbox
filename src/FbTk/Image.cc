@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.3 2003/12/16 17:06:51 fluxgen Exp $
+// $Id: Image.cc,v 1.4 2004/01/02 22:01:08 fluxgen Exp $
 
 #include "Image.hh"
 #include "StringUtil.hh"
@@ -65,14 +65,16 @@ PixmapWithMask *Image::load(const std::string &filename, int screen_num) {
     if (pm == 0 && s_search_paths.size()) {
         // first we need to get basename of current filename
         std::string base_filename = StringUtil::basename(filename);
+        std::string path = "";
         // append each search path and try to load
         StringList::iterator it = s_search_paths.begin();
         StringList::iterator it_end = s_search_paths.end();
         for (; it != it_end && pm == 0; ++it) {
             // append search path and try load it
-            std::string path = StringUtil::expandFilename(*it);
+            path = StringUtil::expandFilename(*it);
             pm = s_image_map[extension]->load(path + "/" + base_filename, screen_num);
         }
+
     }
 
     return pm;
