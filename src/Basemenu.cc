@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.10 2002/02/08 13:47:11 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.11 2002/03/18 15:42:34 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -49,6 +49,7 @@
 #	include <string.h>
 #endif // STDC_HEADERS
 
+#include <iostream>
 
 static Basemenu *shown = (Basemenu *) 0;
 
@@ -236,23 +237,31 @@ int Basemenu::insert(const char **ulabel, int pos, int function) {
 
 
 int Basemenu::remove(int index) {
-	if (index < 0 || index > menuitems.size()) return -1;
+	if (index < 0 || index >= menuitems.size()) {
+		#ifdef DEBUG
+		std::cout << "Bad index (" << index << ") given to Basemenu::remove()"
+		          << " -- should be between 0 and " << menuitems.size()-1
+		          << " inclusive."
+			          << std::endl;
+		#endif
+		return -1;
+	}
 
 	Menuitems::iterator it = menuitems.begin() + index;
 	BasemenuItem *item = (*it);
 
 	if (item) {
+		menuitems.erase(it);
 		if ((! internal_menu) && (item->submenu())) {
 			Basemenu *tmp = (Basemenu *) item->submenu();
 
 			if (! tmp->internal_menu) {
-				delete tmp;
+				delete tmp;				
 			} else
 				tmp->internal_hide();
 		}
-
+		
 		delete item;
-		menuitems.erase(it);
 	}
 
 	if (which_sub == index)
@@ -458,7 +467,7 @@ void Basemenu::hide(void) {
 
 
 void Basemenu::internal_hide(void) {
-	if (which_sub != -1) {
+	if (which_sub >= 0) {
 		BasemenuItem *tmp = menuitems[which_sub];
 		tmp->submenu()->internal_hide();
 	}
@@ -533,7 +542,7 @@ void Basemenu::redrawTitle(void) {
 
 
 void Basemenu::drawSubmenu(int index) {
-	if (which_sub != -1 && which_sub != index) {
+	if (which_sub >= 0 && which_sub != index) {
 		BasemenuItem *itmp = menuitems[which_sub];
 
 		if (! itmp->submenu()->isTorn())
@@ -682,27 +691,27 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 			False);
 	} else if (! (x == y && y == -1 && w == h && h == 0)) {
 		// calculate the which part of the hilite to redraw
-		if (! (max(item_x, x) <= (signed) min(item_x + menu.item_w, x + w) &&
-				max(item_y, y) <= (signed) min(item_y + menu.item_h, y + h))) {
+		if (! (std::max(item_x, x) <= (signed) std::min(item_x + menu.item_w, x + w) &&
+				std::max(item_y, y) <= (signed) std::min(item_y + menu.item_h, y + h))) {
 			dohilite = False;
 		} else {
-			hilite_x = max(item_x, x);
-			hilite_y = max(item_y, y);
-			hilite_w = min(item_x + menu.item_w, x + w) - hilite_x;
-			hilite_h = min(item_y + menu.item_h, y + h) - hilite_y;
+			hilite_x = std::max(item_x, x);
+			hilite_y = std::max(item_y, y);
+			hilite_w = std::min(item_x + menu.item_w, x + w) - hilite_x;
+			hilite_h = std::min(item_y + menu.item_h, y + h) - hilite_y;
 			hoff_x = hilite_x % menu.item_w;
 			hoff_y = hilite_y % menu.item_h;
 		}
 		
 		// check if we need to redraw the text		
 		int text_ry = item_y + (menu.bevel_w / 2);
-		if (! (max(text_x, x) <= (signed) min(text_x + text_w, x + w) &&
-				max(text_ry, y) <= (signed) min(text_ry + text_h, y + h)))
+		if (! (std::max(text_x, x) <= (signed) std::min(text_x + text_w, x + w) &&
+				std::max(text_ry, y) <= (signed) std::min(text_ry + text_h, y + h)))
 			dotext = False;
 		
 		// check if we need to redraw the select pixmap/menu bullet
-		if (! (max(sel_x, x) <= (signed) min(sel_x + half_w, x + w) &&
-				max(sel_y, y) <= (signed) min(sel_y + half_w, y + h)))
+		if (! (std::max(sel_x, x) <= (signed) std::min(sel_x + half_w, x + w) &&
+				std::max(sel_y, y) <= (signed) std::min(sel_y + half_w, y + h)))
 			dosel = False;
 	
 	}
@@ -866,7 +875,7 @@ void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 		if (moving) {
 			moving = False;
 			
-			if (which_sub != -1)
+			if (which_sub >= 0)
 				drawSubmenu(which_sub);
 		}
 		
@@ -913,7 +922,7 @@ void Basemenu::motionNotifyEvent(XMotionEvent *me) {
 
 				moving = torn = True;
 
-				if (which_sub != -1)
+				if (which_sub >= 0)
 					drawSubmenu(which_sub);
 			} else {
 				menu.x = me->x_root - menu.x_move,
@@ -921,7 +930,7 @@ void Basemenu::motionNotifyEvent(XMotionEvent *me) {
 	
 				XMoveWindow(display, menu.window, menu.x, menu.y);
 
-				if (which_sub != -1)
+				if (which_sub >= 0)
 					drawSubmenu(which_sub);
 			}
 		}
@@ -1021,7 +1030,7 @@ void Basemenu::enterNotifyEvent(XCrossingEvent *ce) {
 		if (shifted)
 			XMoveWindow(display, menu.window, menu.x_shift, menu.y_shift);
 
-		if (which_sub != -1) {
+		if (which_sub >= 0) {
 			BasemenuItem *tmp = menuitems[which_sub];
 			if (tmp->submenu()->isVisible()) {
 				int sbl = (ce->x / menu.item_w), i = (ce->y / menu.item_h),
@@ -1053,7 +1062,7 @@ void Basemenu::leaveNotifyEvent(XCrossingEvent *ce) {
 			XMoveWindow(display, menu.window, menu.x, menu.y);
 			shifted = False;
 
-			if (which_sub != -1) drawSubmenu(which_sub);
+			if (which_sub >= 0) drawSubmenu(which_sub);
 		}
 	}
 }
