@@ -33,24 +33,11 @@ uninstall-local:
 		rmdir $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 	fi
 
-# note... when adding new catalogs... you do not need the
-# header=../fluxbox-nls.hh which is passed to awk... we
-# only need to generate it once.
-
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		rm -f Translation.m; \
-		echo "//This file is generated from nls/C" > ../fluxbox-nls.hh; \
-		echo "#ifndef BLACKBOX_NLS_HH" >> ../fluxbox-nls.hh; \
-		echo "#define BLACKBOX_NLS_HH" >> ../fluxbox-nls.hh; \
-		echo "namespace FBNLS {" >> ../fluxbox-nls.hh;	\
-		echo "enum {" >> ../fluxbox-nls.hh;	\
-		awk -f ../convert.awk header=../fluxbox-nls.hh \
+		awk -f ../convert.awk \
 			output=Translation.m $(MFILES); \
-		echo "	dummy_not_used = 0 //just for the ending" >> ../fluxbox-nls.hh; \
-		echo "}; //end enum" >> ../fluxbox-nls.hh; \
-		echo "}; //end namespace" >> ../fluxbox-nls.hh; \
-		echo "#endif //BLACKBOX_NLS_HH" >> ../fluxbox-nls.hh; \
 	fi
 
 fluxbox.cat: Translation.m
