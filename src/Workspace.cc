@@ -1,8 +1,8 @@
 // Workspace.cc for Fluxbox
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Workspace.cc for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -16,23 +16,23 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.40 2003/01/09 18:33:58 fluxgen Exp $
+// $Id: Workspace.cc,v 1.41 2003/01/12 18:08:05 fluxgen Exp $
 
 #include "Workspace.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
-#include "Toolbar.hh"
 #include "Window.hh"
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
+#include "Slit.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -180,9 +180,6 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
             if (top == 0|| !top->setInputFocus()) {
                 Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
-                XSetInputFocus(Fluxbox::instance()->getXDisplay(),
-                               screen->getToolbar()->getWindowID(),
-                               RevertToParent, CurrentTime);						
             }
         }
     }
@@ -421,7 +418,6 @@ bool Workspace::loadGroups(const std::string &filename) {
 
 void Workspace::update() {
     m_clientmenu.update();
-    screen->getToolbar()->redrawWindowLabel(True);
 }
 
 
@@ -480,10 +476,7 @@ void Workspace::placeWindow(FluxboxWindow *win) {
         slit_w = screen->getSlit()->width() + borderWidth4x,
         slit_h = screen->getSlit()->height() + borderWidth4x,
 #endif // SLIT
-        toolbar_x = screen->getToolbar()->x() - screen->getBorderWidth(),
-        toolbar_y = screen->getToolbar()->y() - screen->getBorderWidth(),
-        toolbar_w = screen->getToolbar()->width() + borderWidth4x,
-        toolbar_h = screen->getToolbar()->height() + borderWidth4x,
+
         place_x = 0, place_y = 0, change_x = 1, change_y = 1;
 
     if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
@@ -618,12 +611,9 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                     }
                 }
 
-                if ((toolbar_x < test_x + win_w &&
-                     toolbar_x + toolbar_w > test_x &&
-                     toolbar_y < test_y + win_h &&
-                     toolbar_y + toolbar_h > test_y)
+                if (1
 #ifdef SLIT
-                    ||
+                    &&
                     (slit_x < test_x + win_w &&
                      slit_x + slit_w > test_x &&
                      slit_y < test_y + win_h &&
@@ -740,12 +730,9 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                     }
                 }
 
-                if ((toolbar_x < test_x + win_w &&
-                     toolbar_x + toolbar_w > test_x &&
-                     toolbar_y < test_y + win_h &&
-                     toolbar_y + toolbar_h > test_y)
+                if (1
 #ifdef SLIT
-                    ||
+                    &&
                     (slit_x < test_x + win_w &&
                      slit_x + slit_w > test_x &&
                      slit_y < test_y + win_h &&
