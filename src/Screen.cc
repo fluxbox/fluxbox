@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.169 2003/05/16 00:35:50 fluxgen Exp $
+// $Id: Screen.cc,v 1.170 2003/05/17 11:05:33 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -125,17 +125,15 @@ static bool running = true;
 namespace {
 
 int anotherWMRunning(Display *display, XErrorEvent *) {
-    fprintf(stderr,
-            I18n::instance()->
+    cerr<<I18n::instance()->
             getMessage(
                 FBNLS::ScreenSet, FBNLS::ScreenAnotherWMRunning,
                 "BScreen::BScreen: an error occured while querying the X server.\n"
-                "	another window manager already running on display %s.\n"),
-            DisplayString(display));
+                "	another window manager already running on display ")<<DisplayString(display)<<endl;
 
     running = false;
 
-    return(-1);
+    return -1;
 }
 
 FbTk::Menu *createMenuFromScreen(BScreen &screen) {
@@ -1301,8 +1299,12 @@ FluxboxWindow *BScreen::createWindow(Window client) {
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
  
 #ifdef SLIT
-    if (win->initialState() == WithdrawnState)
-        slit()->addClient(win->clientWindow());
+    if (win->initialState() == WithdrawnState) {
+        delete win;
+        win = 0;
+        slit()->addClient(client);
+        return 0;
+    }
 #endif // SLIT
 
     if (!win->isManaged()) {
