@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.58 2003/05/13 00:18:28 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.59 2003/05/14 14:35:39 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -189,7 +189,8 @@ public:
     typedef std::vector<Fluxbox::Titlebar> TitlebarList;
     /// @return whether the timestamps on the menu changed
     bool menuTimestampsChanged() const;
-
+    bool haveShape() const { return m_have_shape; }
+    int shapeEventbase() const { return m_shape_eventbase; }
 private:
     struct cursor {
         Cursor session, move, ll_angle, lr_angle;
@@ -273,6 +274,8 @@ private:
     bool m_shutdown;
     int m_server_grabs;
     int m_randr_event_type; ///< the type number of randr event
+    int m_shape_eventbase; ///< event base for shape events
+    bool m_have_shape; ///< if shape is supported by server
     const char *m_RC_PATH;
     const char *m_RC_INIT_FILE;
 };

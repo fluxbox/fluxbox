@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.146 2003/05/14 12:10:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.147 2003/05/14 14:37:06 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -454,6 +454,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     cursor.lr_angle = XCreateFontCursor(disp, XC_lr_angle);
 
     s_singleton = this;
+    m_have_shape = false;
+    m_shape_eventbase = 0;
+#ifdef SHAPE
+    int shape_err; 
+    m_have_shape = XShapeQueryExtension(disp, &m_shape_eventbase, &shape_err);
+#endif // SHAPE
 
 #ifdef HAVE_RANDR
     // get randr event type
@@ -877,7 +883,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             BScreen *scr = searchScreen(e->xany.window);
             if (scr != 0)
                 scr->updateSize(); 
-        }            
+        }
 #endif // HAVE_RANDR
 
     }
