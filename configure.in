@@ -1,7 +1,7 @@
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,0.9.11, no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.9.12, no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -116,12 +116,18 @@ CXXFLAGS="$CXXFLAGS $X_CFLAGS"
 LIBS="$LIBS $X_LIBS"
 LDFLAGS="$LDFLAGS $LIBS $X_PRE_LIBS"
 
+dnl Check for required functions in -lXau
+AC_CHECK_LIB(Xau, XauFileName,
+  LIBS="$LIBS -lXau",
+  AC_MSG_ERROR([Could not find XauFileName in -lXau.])
+)
+LIBS="$LIBS $X_EXTRA_LIBS"
+
 dnl Check for required functions in -lX11
 AC_CHECK_LIB(X11, XOpenDisplay,
   LIBS="$LIBS -lX11",
   AC_MSG_ERROR([Could not find XOpenDisplay in -lX11.])
 )
-
 LIBS="$LIBS $X_EXTRA_LIBS"
 
 AC_CHECK_LIB(xpg4, setlocale, LIBS="$LIBS -lxpg4")
