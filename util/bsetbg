@@ -625,10 +625,7 @@ TMPFILE2=/tmp/bsetbg.2
 ARGUMENT=$1
 
 
-case `which grep 2>&1` in */*grep) : ;;
-    *)
-	error_msg nogrep
-esac
+which grep  > /dev/null 2> /dev/null || error_msg nogrep
 
 case $1 in 
     *-full|-f|f)
