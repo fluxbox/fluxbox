@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.22 2003/07/20 18:05:39 rathnor Exp $
+// $Id: Menu.hh,v 1.23 2003/08/30 01:03:12 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -213,7 +213,6 @@ private:
     };
 
     ThemeObserver m_themeobserver;
-    std::auto_ptr<Transparent> m_trans;
     Drawable m_root_pm;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     FbPixmap m_frame_pm;
