@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.20 2003/11/17 00:33:16 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.21 2003/12/03 22:13:21 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -96,6 +96,7 @@ FbCommandFactory::FbCommandFactory() {
         "quit",
         "raise",
         "reconfigure",
+        "reloadstyle",
         "resizeto",
         "resize",
         "resizehorizontal",
@@ -138,6 +139,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ReconfigureFluxboxCmd();
     else if (command == "setstyle")
         return new SetStyleCmd(arguments);
+    else if (command == "reloadstyle")
+        return new ReloadStyleCmd();
     else if (command == "saverc")
         return new SaveResources();
     else if (command == "execcommand" || command == "execute" || command == "exec")
