@@ -801,7 +801,7 @@ if [ ! "${INSTALL}" = Yes ]; then
 # Your favourite terminal. Put the command in quotes if you want to use
 # options. Put a backslash in before odd chars
 # MY_TERM='Eterm --tint \#123456'
-# MY_TERM='aterm -tint $(random_color)'
+# MY_TERM='aterm -tint \$(random_color)'
 
 # Your favourite browser. You can also specify options.
 # MY_BROWSER=mozilla
@@ -831,13 +831,13 @@ if [ ! "${INSTALL}" = Yes ]; then
 # fluxbox-generate already looks in /usr/X11R6, /usr, /usr/local and /opt so
 # there should be no need to specify them.
 #
-# PREFIX=/usr
+# PREFIX=@PREFIX@
 # GNOME_PREFIX=/opt/gnome
 # KDE_PREFIX=/opt/kde
 
 
 # Sepparate the list of background-dirs with semicolumns ':'
-# BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:/usr/local/share/fluxbox/backgrounds/:/usr/share/wallpapers"
+# BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:@PREFIX@/share/fluxbox/backgrounds/:/usr/share/wallpapers"
 
 
 # --- Boolean variables.
@@ -1241,7 +1241,6 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_menu "[submenu] (${SYSTEMSTYLES}) {${STYLEMENUTITLE}}"
         append "[stylesdir] (${PREFIX}/share/fluxbox/styles)"
-        append "[stylesdir] (/usr/share/commonbox/styles/)"
     append_menu_end
 
     append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"
@@ -1286,7 +1285,7 @@ append_submenu "${FBSETTINGSMENU}"
         fi
     fi
 
-    append "[workspaces]   (${WORKSPACEMENU})"
+    append "[workspaces] (${WORKSPACEMENU})"
 
     append_submenu ${TOOLS}
         normal_find fluxconf fluxkeys fluxmenu
