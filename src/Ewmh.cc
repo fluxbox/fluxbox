@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.2 2002/10/11 10:20:33 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.3 2002/10/16 19:03:57 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
 #include "Screen.hh"
 #include "Window.hh"
+#include "fluxbox.hh"
 
 #include <iostream>
 using namespace std;
@@ -62,14 +63,21 @@ void Ewmh::initForScreen(const BScreen &screen) {
 	
 	//set supported atoms
 	Atom atomsupported[] = {
+		// window properties
 		m_net_wm_state,
 		// states that we support:
 		m_net_wm_state_sticky,
 		m_net_wm_state_shaded,
 		
+		m_net_wm_desktop,
+				
+		// root properties
 		m_net_client_list,
 		m_net_number_of_desktops,
 		m_net_current_desktop,
+		m_net_active_window,
+		m_net_close_window,
+		m_net_moveresize_window,
 		m_net_desktop_names,
 		m_net_supporting_wm_check		
 	};
@@ -80,23 +88,36 @@ void Ewmh::initForScreen(const BScreen &screen) {
 
 	
 }
+
 void Ewmh::setupWindow(FluxboxWindow &win) {
-/*
+
 	Display *disp = BaseDisplay::getXDisplay();
 	Atom ret_type;
 	int fmt;
 	unsigned long nitems, bytes_after;
-	long flags, *data = 0;
-
+	long *data = 0;
+/*	
 	if (XGetWindowProperty(disp, win.getClientWindow(), 
 			m_net_wm_state, 0, 1, False, XA_CARDINAL, 
 			&ret_type, &fmt, &nitems, &bytes_after, 
 			(unsigned char **) &data) ==  Success && data) {
 		flags = *data;
 		setState(win, flags);
-		XFree (data);
+		XFree(data);
 	}
 */
+	if (XGetWindowProperty(disp, win.getClientWindow(), 
+			m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
+			&ret_type, &fmt, &nitems, &bytes_after, 
+			(unsigned char **) &data) ==  Success && data) {
+		unsigned int desktop = static_cast<unsigned int>(*data);
+		if (desktop == 0xFFFFFFFF && !win.isStuck())
+			win.stick();
+		else if (win.getScreen())
+			win.getScreen()->sendToWorkspace(desktop, &win, false);
+
+		XFree(data);
+	}
 }
 
 void Ewmh::updateClientList(const BScreen &screen) {
@@ -134,7 +155,7 @@ void Ewmh::updateClientList(const BScreen &screen) {
 		XA_CARDINAL, 32,
 		PropModeReplace, (unsigned char *)wl, num);
 	
-	delete wl;
+	delete [] wl;
 }
 
 void Ewmh::updateWorkspaceNames(const BScreen &screen) {
@@ -183,24 +204,113 @@ void Ewmh::updateHints(FluxboxWindow &win) {
 }
 
 void Ewmh::updateWorkspace(FluxboxWindow &win) {
+	int workspace = win.getWorkspaceNumber();
+	if (win.isStuck())
+		workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
 
+	XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(),
+		m_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
+			(unsigned char *)&workspace, 1);
 }
 
-bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen *screen, FluxboxWindow *win) {
-	if (win != 0) {
-		if (ce.message_type == m_net_wm_state) {
-			if (ce.data.l[0] == STATE_REMOVE) {
-				setState(*win, ce.data.l[1], false);
-				setState(*win, ce.data.l[2], false);
-			} else if (ce.data.l[0] == STATE_ADD) {
-				setState(*win, ce.data.l[1], true);
-				setState(*win, ce.data.l[2], true);
-			} else if (ce.data.l[0] == STATE_TOGGLE) {
-				toggleState(*win, ce.data.l[1]);
-				toggleState(*win, ce.data.l[2]);
+// return true if we did handle the atom here
+bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * const screen, FluxboxWindow * const win) {
+
+	if (ce.message_type == m_net_wm_desktop) {
+		if (screen == 0)
+			return true;
+		// ce.data.l[0] = workspace number
+		// valid window and workspace number?
+		if (win == 0 || static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
+			return true;
+		
+		screen->sendToWorkspace(ce.data.l[0], win, false);		
+		return true;
+	} else if (ce.message_type == m_net_wm_state) {
+		if (win == 0)
+			return true;
+		// ce.data.l[0] = the action (remove, add or toggle)
+		// ce.data.l[1] = the first property to alter
+		// ce.data.l[2] = second property to alter (can be zero)
+		if (ce.data.l[0] == STATE_REMOVE) {
+			setState(*win, ce.data.l[1], false);
+			setState(*win, ce.data.l[2], false);
+		} else if (ce.data.l[0] == STATE_ADD) {
+			setState(*win, ce.data.l[1], true);
+			setState(*win, ce.data.l[2], true);
+		} else if (ce.data.l[0] == STATE_TOGGLE) {
+			toggleState(*win, ce.data.l[1]);
+			toggleState(*win, ce.data.l[2]);
+		}
+		return true;
+	} else if (ce.message_type == m_net_number_of_desktops) {
+		if (screen == 0)
+			return true;
+		// ce.data.l[0] = number of workspaces
+		
+		// no need to alter number of desktops if they are the same
+		// or if requested number of workspace is less than zero
+		if (screen->getCount() == static_cast<unsigned int>(ce.data.l[0]) || 
+			ce.data.l[0] < 0)
+			return true;
+
+		if (screen->getCount() > static_cast<unsigned int>(ce.data.l[0])) {
+			// remove last workspace until we have
+			// the same number of workspaces
+			while (screen->getCount() != static_cast<unsigned int>(ce.data.l[0])) {
+				screen->removeLastWorkspace();
+				if (screen->getCount() == 1) // must have at least one workspace
+					break;
+			}
+		} else { // add workspaces to screen until workspace count match the requested size
+			while (screen->getCount() != static_cast<unsigned int>(ce.data.l[0])) {
+				screen->addWorkspace();					
 			}
 		}
+			
+		return true;
+	} else if (ce.message_type == m_net_current_desktop) {
+		if (screen == 0)
+			return true;
+		// ce.data.l[0] = workspace number
+		
+		// prevent out of range value
+		if (static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
+			return true;
+		screen->changeWorkspaceID(ce.data.l[0]);
+		return true;
+	} else if (ce.message_type == m_net_active_window) {
+		
+		// make sure we have a valid window
+		if (win == 0)
+			return true;
+		// ce.window = window to focus
+		
+		// should move set focus somewhere else
+		// so we don't need fluxbox depedencies here	
+		Fluxbox::instance()->setFocusedWindow(win);
+		return true;
+	} else if (ce.message_type == m_net_close_window) {
+		if (win == 0)
+			return true;
+		// ce.window = window to close (which in this case is the win argument)
+		win->close();
+		return true;
+	} else if (ce.message_type == m_net_moveresize_window) {
+		if (win == 0)
+			return true;
+		// ce.data.l[0] = gravity and flags
+		// ce.data.l[1] = x
+		// ce.data.l[2] = y
+		// ce.data.l[3] = width
+		// ce.data.l[4] = height
+		// TODO: gravity and flags
+		win->configure(ce.data.l[1], ce.data.l[2],
+			ce.data.l[3], ce.data.l[4]);
+		return true;
 	}
+
+	// we didn't handle the ce.message_type here
 	return false;
 }
 
