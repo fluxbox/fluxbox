@@ -19,14 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.9 2003/05/14 12:07:06 fluxgen Exp $
+// $Id: WinClient.cc,v 1.10 2003/06/12 14:51:59 fluxgen Exp $
 
 #include "WinClient.hh"
 
 #include "Window.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
-#include "i18n.hh"
+#include "I18n.hh"
 #include "FbAtoms.hh"
 #include "EventManager.hh"
 
