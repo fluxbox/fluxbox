@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.232 2003/09/12 23:35:31 fluxgen Exp $
+// $Id: Screen.cc,v 1.233 2003/09/14 10:13:54 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -823,6 +823,7 @@ int BScreen::removeLastWorkspace() {
 
 
 void BScreen::changeWorkspaceID(unsigned int id) {
+
     if (! m_current_workspace || id >= m_workspaces_list.size() ||
         id == m_current_workspace->workspaceID())
         return;
@@ -858,19 +859,26 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     m_current_workspace = getWorkspace(id);
 
     workspacemenu->setItemSelected(currentWorkspace()->workspaceID() + 2, true);
+    // This is a little tricks to reduce flicker 
+    // this way we can set focus pixmap on frame before we show it
+    // and using ExposeEvent to redraw without flicker
+    WinClient *win = getLastFocusedWindow(currentWorkspaceID());
+    if (win && win->fbwindow()) {
+        win->fbwindow()->setFocusFlag(true);
+    }
 
     currentWorkspace()->showAll();
 
-    if (focused && (focused->isStuck() || focused->isMoving())) {
+    if (focused && (focused->isStuck() || focused->isMoving()))
         focused->setInputFocus();
-    } else
+    else
         Fluxbox::instance()->revertFocus(*this);
 
-    if (focused && focused->isMoving()) {
+    if (focused && focused->isMoving())
         focused->resumeMoving();
-    }
 
     updateNetizenCurrentWorkspace();
+
 }
 
 
