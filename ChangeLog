@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/03/23:
+  * added "Fullscreen" as a command (Mathias)
+    CurrentWindow.cc/hh FbCommandFactory.cc
 *05/03/17:
   * some additions to fbgm, mostly cosmetic (Mathias)
 *05/03/16:
