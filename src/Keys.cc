@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.13 2002/03/18 20:25:42 fluxgen Exp $
+//$Id: Keys.cc,v 1.14 2002/04/09 09:40:18 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -123,6 +123,7 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 	{"HorizontalDecrement", HORIZDEC},
 	{"VerticalDecrement", VERTDEC},
 	{"ToggleDecor", TOGGLEDECOR},	
+	{"RootMenu", ROOTMENU},
 	{0, LASTKEYGRAB}
 	};	
 
