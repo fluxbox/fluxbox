@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.9 2003/08/28 23:05:29 fluxgen Exp $
+// $Id: Theme.hh,v 1.10 2003/09/14 11:17:21 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -132,6 +132,7 @@ public:
 
     bool verbose() const { return m_verbose; }
     void setVerbose(bool value) { m_verbose = value; }
+    //    void listItems();
 private:
     ThemeManager();
     ~ThemeManager() { }

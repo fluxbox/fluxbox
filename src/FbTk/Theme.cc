@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.18 2003/09/10 21:22:25 fluxgen Exp $
+// $Id: Theme.cc,v 1.19 2003/09/14 11:17:21 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -294,22 +294,37 @@ std::string ThemeManager::resourceValue(const std::string &name, const std::stri
 }
 
 /*
-  void ThemeManager::listItems() {
-  ThemeList::iterator it = m_themelist.begin();
-  ThemeList::iterator it_end = m_themelist.end();
-  for (; it != it_end; ++it) {
-  std::list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
-  std::list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
-  for (; item != item_end; ++item) {
-  cerr<<(*item)->name()<<":"<<endl;
-  if (typeid(**item) == typeid(ThemeItem<Texture>)) {
-  cerr<<(*item)->name()<<".pixmap:"<<endl;
-  cerr<<(*item)->name()<<".color:"<<endl;
-  cerr<<(*item)->name()<<".colorTo:"<<endl;
-  }
-  }
-  }
+void ThemeManager::listItems() {
+    ThemeList::iterator it = m_themelist.begin();
+    ThemeList::iterator it_end = m_themelist.end();
+    for (; it != it_end; ++it) {
+        std::list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
+        std::list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
+        for (; item != item_end; ++item) {
+            
+            if (typeid(**item) == typeid(ThemeItem<Texture>)) {
+                cerr<<(*item)->name()<<": <texture type>"<<endl;
+                cerr<<(*item)->name()<<".pixmap:  <filename>"<<endl;
+                cerr<<(*item)->name()<<".color:  <color>"<<endl;
+                cerr<<(*item)->name()<<".colorTo: <color>"<<endl;
+            } else if (typeid(**item) == typeid(ThemeItem<Color>)) {
+                cerr<<(*item)->name()<<": <color>"<<endl;
+            } else if (typeid(**item) == typeid(ThemeItem<int>)) {
+                cerr<<(*item)->name()<<": <integer>"<<endl;
+            } else if (typeid(**item) == typeid(ThemeItem<bool>)) {
+                cerr<<(*item)->name()<<": <boolean>"<<endl;
+            } else if (typeid(**item) == typeid(ThemeItem<PixmapWithMask>)) {
+                cerr<<(*item)->name()<<": <filename>"<<endl;
+            }  else if (typeid(**item) == typeid(ThemeItem<std::string>)) {
+                cerr<<(*item)->name()<<": <string>"<<endl;
+            } else if (typeid(**item) == typeid(ThemeItem<Font>)) {
+                cerr<<(*item)->name()<<": <font>"<<endl;
+            } else {
+                cerr<<(*item)->name()<<":"<<endl;
+            }
+        }
+    }
              
-  }
+}
 */
 }; // end namespace FbTk
