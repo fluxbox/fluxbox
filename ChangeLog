@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/01/21:
+  * Added more international keywords and     (Thanks Antonio Gomez)
+    Portuguese locales for fluxbox-generate_menu.in 
+  * Added automatic reload of the new menu in   (Han)
+    fluxbox-generate_menu
   * Fixed window size bug (Henrik)
     FbWinFrame::hideHandle and hideTitlebar could've
     caused window to have negative size
