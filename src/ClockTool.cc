@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.3 2003/08/13 10:08:18 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.4 2003/08/15 14:00:20 fluxgen Exp $
 
 #include "ClockTool.hh"
 
@@ -95,9 +95,9 @@ void ClockTool::hide() {
 void ClockTool::update(FbTk::Subject *subj) {
     updateTime();
 
-    // + 4 to make the entire text fit inside
+    // + 2 to make the entire text fit inside
     std::string text;
-    for (size_t i=0; i<m_button.text().size() + 4; ++i)
+    for (size_t i=0; i<m_button.text().size() + 2; ++i)
         text += '0';
 
     resize(m_theme.font().textWidth(text.c_str(), text.size()), m_button.height());
