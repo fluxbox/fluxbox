@@ -1,7 +1,23 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
-*+02/09/21:
-   * new menu item (Thanks Han)
+*02/10/14:
+   * Added XftFontImp.hh/cc for Xft font support.
+     Compile with --enable-xft
+*02/10/13:
+   * Minor cleaning in configure.in
+   * Fixed grab reconfigure bug
+   * Fixed UTF-8 support in XmbFontImp.cc
+   * Moved font system specific stuff from Font.hh/cc to 
+     font implementation classes.
+   * Added FontImp.hh, XFontImp.hh/cc, XmbFontImp.hh/cc
+     For the new font implementation bridge pattern.
+*02/10/11:
+   * Fixed support for _NET_WM_STATE with _NET_WM_STATE_STICKY and 
+     _NET_WM_STATE_SHADED
+*02/10/02:
+   * Added Ewmh.hh/cc for Extended Window Manager Hints
+*02/09/21:
+   * New menu item (Thanks Han)
      fluxbox-generate_menu
    * Latvian  language support (Thanks Artis Trops)
 *02/09/14:
