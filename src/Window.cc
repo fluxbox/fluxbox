@@ -22,10 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.25 2002/02/07 14:41:52 fluxgen Exp $
+// $Id: Window.cc,v 1.26 2002/02/11 11:07:33 fluxgen Exp $
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -162,7 +161,7 @@ tab(0)
 	XWindowAttributes wattrib;
 	if ((! XGetWindowAttributes(display, client.window, &wattrib)) ||
 			(! wattrib.screen) || wattrib.override_redirect) {
-		throw FluxboxWindow::XGETWINDOWATTRIB;
+		return;
 	}
 
 	if (s)
@@ -171,7 +170,7 @@ tab(0)
 		screen = fluxbox->searchScreen(RootWindowOfScreen(wattrib.screen));
 
 	if (!screen)
-		throw FluxboxWindow::CANTFINDSCREEN;
+		return;
 
 
 	image_ctrl = screen->getImageControl();
@@ -200,11 +199,12 @@ tab(0)
 
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
-		throw NOERROR;
+		return;
 	}
 	#endif // SLIT
 
-	managed = true;
+	managed = true; //mark for usage
+
 	fluxbox->saveWindowSearch(client.window, this);
 
 	// determine if this is a transient window
@@ -307,9 +307,9 @@ tab(0)
 
 	frame.plate = createChildWindow(frame.window); //Create plate window
 	fluxbox->saveWindowSearch(frame.plate, this);	//save plate window
-
-	if (decorations.titlebar) {	//have titlebar decorations?
-		frame.title = createChildWindow(frame.window); //create titlebar win
+	
+	frame.title = createChildWindow(frame.window); //create titlebar win
+	if (decorations.titlebar) {	//have titlebar decorations?		
 		fluxbox->saveWindowSearch(frame.title, this);	//save titlebar win
 		frame.label = createChildWindow(frame.title); //create label win in titlebar
 		fluxbox->saveWindowSearch(frame.label, this);	//save label win
@@ -327,7 +327,8 @@ tab(0)
 			createChildWindow(frame.handle, fluxbox->getLowerRightAngleCursor());
 		fluxbox->saveWindowSearch(frame.right_grip, this); //save right handle
 	}
-
+	
+	
 	associateClientWindow();
 
 
@@ -359,7 +360,8 @@ tab(0)
 	//use tab? delayed this so that tabs wont "flicker" when creating windows
 	if (decorations.tab && fluxbox->useTabs())
 		tab = new Tab(this, 0, 0);
-
+	decorate();
+	
 	XRaiseWindow(display, frame.plate);
 	XMapSubwindows(display, frame.plate);
 	if (decorations.titlebar)
@@ -369,8 +371,6 @@ tab(0)
 
 	if (decorations.menu)
 		windowmenu = new Windowmenu(this);
-
-	decorate();
 
 	if (workspace_number < 0 || workspace_number >= screen->getCount())
 		screen->getCurrentWorkspace()->addWindow(this, place_window);
@@ -2331,7 +2331,8 @@ void FluxboxWindow::setGravityOffsets(void) {
 
 
 void FluxboxWindow::restoreAttributes(void) {
-	if (! getState()) current_state = NormalState;
+	if (!getState())
+		current_state = NormalState;
 
 	Atom atom_return;
 	int foo;
