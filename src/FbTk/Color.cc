@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.9 2004/02/28 16:55:22 fluxgen Exp $
+// $Id: Color.cc,v 1.10 2004/04/25 16:12:21 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -106,7 +106,7 @@ bool Color::setFromString(const char *color_string, int screen) {
 }
 
 
-Color &Color::Color::operator  = (const Color &col_copy) {
+Color &Color::operator  = (const Color &col_copy) {
     // check for aliasing
     if (this == &col_copy)
         return *this;
