@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.220 2003/08/24 10:46:56 fluxgen Exp $
+// $Id: Window.cc,v 1.221 2003/08/24 15:14:41 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -339,23 +339,13 @@ void FluxboxWindow::init() {
 
     // check for shape extension and whether the window is shaped
     m_shaped = false;
-#ifdef SHAPE
+
     if (Fluxbox::instance()->haveShape()) {
-        Display *disp = FbTk::App::instance()->display();
-        int not_used;
-        unsigned int not_used2;
-        int shaped;
-        XShapeSelectInput(disp, m_client->window(), ShapeNotifyMask);
-        XShapeQueryExtents(disp, m_client->window(), 
-                           &shaped,  /// bShaped
-                           &not_used, &not_used,  // xbs, ybs
-                           &not_used2, &not_used2, // wbs, hbs
-                           &not_used, // cShaped
-                           &not_used, &not_used, // xcs, ycs
-                           &not_used2, &not_used2); // wcs, hcs
-        m_shaped = (shaped != 0 ? true : false);
+        Shape::setShapeNotify(winClient());
+        m_shaped = Shape::isShaped(winClient());
     }
-#endif // SHAPE
+
+    frame().setUseShape(!m_shaped);
 
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient

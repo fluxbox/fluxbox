@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.13 2003/08/19 16:13:25 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.14 2003/08/24 15:18:09 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -134,7 +134,7 @@ public:
     //@}
  
     void reconfigure();
-
+    void setUseShape(bool value);
     /**
        @name accessors
     */
@@ -281,6 +281,7 @@ private:
     };
     ThemeListener m_themelistener;
     std::auto_ptr<Shape> m_shape;
+    bool m_disable_shape;
 };
 
 #endif // FBWINFRAME_HH
