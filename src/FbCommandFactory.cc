@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.10 2003/07/26 13:44:00 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.11 2003/07/28 12:05:27 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -70,6 +70,8 @@ FbCommandFactory::FbCommandFactory() {
         "killwindow",
         "nexttab",
         "prevtab",
+        "movetableft",
+        "movetabright",
         "detachclient",
         "nextworkspace",
         "rightworkspace",
@@ -151,6 +153,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::nextClient);
     else if (command == "prevtab")
         return new CurrentWindowCmd(&FluxboxWindow::prevClient);
+    else if (command == "movetableft")
+        return new CurrentWindowCmd(&FluxboxWindow::moveClientLeft);
+    else if (command == "movetabright")
+        return new CurrentWindowCmd(&FluxboxWindow::moveClientRight);
     else if (command == "detachclient")
         return new CurrentWindowCmd(&FluxboxWindow::detachCurrentClient);
     // 
