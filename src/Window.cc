@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.268 2004/02/20 09:07:27 fluxgen Exp $
+// $Id: Window.cc,v 1.269 2004/03/03 12:29:31 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2867,6 +2867,7 @@ void FluxboxWindow::resumeMoving() {
     
     if (m_workspace_number == screen().currentWorkspaceID()) {
         frame().show();
+        setInputFocus();
     }
 
     FbTk::App::instance()->sync(false);

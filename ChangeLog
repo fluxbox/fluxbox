@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/03/03:
+  * Fix outline moving dropping on source workspace made window 
+    disappear [we now explicitly don't unfocus a moving window] (Simon) 
+    Window.cc fluxbox.cc
   * Updated finnish locales for fluxbox-generate_menu (Thanks Lauri Hakkarainen)
 *04/03/02:
   * fluxbox-generate_menu changes: (Han)

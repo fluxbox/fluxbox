@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.232 2004/02/27 12:30:17 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.233 2004/03/03 12:29:31 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -966,7 +966,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-        } else if (winclient && winclient == m_focused_window)
+        } else if (winclient && winclient == m_focused_window && 
+                   (winclient->fbwindow() == 0 
+                    || !winclient->fbwindow()->isMoving()))
+            // we don't unfocus a moving window
             setFocusedWindow(0);
     }
 	break;
