@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.150 2003/05/08 10:57:20 fluxgen Exp $
+// $Id: Screen.cc,v 1.151 2003/05/10 18:15:23 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1162,7 +1162,7 @@ void BScreen::removeNetizen(Window w) {
     Netizens::iterator it = netizenList.begin();
     Netizens::iterator it_end = netizenList.end();
     for (; it != it_end; ++it) {
-        if ((*it)->getWindowID() == w) {
+        if ((*it)->window() == w) {
             Netizen *n = *it;
             delete n;
             netizenList.erase(it);			
