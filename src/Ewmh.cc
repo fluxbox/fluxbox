@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.7 2002/12/01 13:41:55 rathnor Exp $
+// $Id: Ewmh.cc,v 1.8 2002/12/27 02:15:08 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -146,6 +146,14 @@ void Ewmh::updateClientList(const BScreen &screen) {
             wl[win++] = (*it)->getClientWindow();
         }
     }
+
+    // plus iconified windows
+    BScreen::Icons::const_iterator it = screen.getIconList().begin();
+    BScreen::Icons::const_iterator it_end = screen.getIconList().end();		
+    for (; it != it_end; ++it) {
+        wl[win++] = (*it)->getClientWindow();
+    }
+    
     //number of windows to show in client list
     num = win;
     XChangeProperty(BaseDisplay::getXDisplay(), 
