@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.6 2002/07/10 14:38:43 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.7 2002/11/12 22:44:17 fluxgen Exp $
 
 #ifndef DRAWUTIL_HH
 #define DRAWUTIL_HH
@@ -38,10 +38,6 @@ namespace DrawUtil
 		FontJustify justify;
 	};
 	
-void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
-					unsigned int text_w, unsigned int size_w,
-					unsigned int bevel_w, const char *text);
-
 // ----------------------------------------------------------------------
 // xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
 // ----------------------------------------------------------------------

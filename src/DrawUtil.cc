@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.cc,v 1.7 2002/05/07 08:15:18 fluxgen Exp $
+// $Id: DrawUtil.cc,v 1.8 2002/11/12 22:44:17 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
-#	include "config.h"
+#include "config.h"
 #endif //HAVE_CONFIG_H
 
 #include "DrawUtil.hh"
@@ -363,69 +363,6 @@ void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
 		}
 	}
 }
-
-
-//Draw title string	
-void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font, 
-					unsigned int text_w, unsigned int size_w, 
-					unsigned int bevel_w, const char *text) {
-
-	assert(display);
-	assert(font);
-	
-	if (!text || text_w<1 || size_w < 1)
-		return;
-		
-	unsigned int l = text_w;
-	int dlen=strlen(text);
-	int dx=bevel_w*2;
-	
-		
-	if (text_w > size_w) {
-		for (; dlen >= 0; dlen--) {
-			if (I18n::instance()->multibyte()) {
-				XRectangle ink, logical;
-				XmbTextExtents(font->set, text, dlen,
-											&ink, &logical);
-				l = logical.width;
-			} else
-				l = XTextWidth(font->fontstruct, text, dlen);
-			
-			l += (dx * 4);
-
-			if (l < size_w)
-				break;
-		}
-	}
-	
-	switch (font->justify) {
-	case DrawUtil::Font::RIGHT:
-		dx += size_w - l;
-		break;
-
-	case DrawUtil::Font::CENTER:
-		dx += (size_w - l) / 2;
-		break;
-	default:
-		break;
-	}
-
-	//Draw title to m_tabwin
-
-	XClearWindow(display, w);		
-	
-	if (I18n::instance()->multibyte()) {
-		XmbDrawString(display, w,
-			font->set, gc, dx, 1 - font->set_extents->max_ink_extent.y,
-			text, dlen);
-	} else {
-		XDrawString(display, w,
-			gc, dx,	font->fontstruct->ascent + 1, 
-			text, dlen);
-	}
-	
-}
-
 
 void DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
 					unsigned int align, unsigned int text_w, 
