@@ -23,29 +23,30 @@
 
 #include <string>
 #include <vector>
-	
+#include <X11/Xlib.h>
+
 class Keys 
 {
 public:
 enum KeyAction{
-			grabIconify=0,
-			grabRaise,
-			grabLower,
-			grabClose,
-			grabAbortKeychain,
-			grabWorkspace1, grabWorkspace2, grabWorkspace3,	grabWorkspace4,	grabWorkspace5,
-			grabWorkspace6,	grabWorkspace7,	grabWorkspace8,	grabWorkspace9,	grabWorkspace10,
-			grabWorkspace11, grabWorkspace12,	grabNextWorkspace, grabPrevWorkspace,
-			grabLeftWorkspace, grabRightWorkspace,
-			grabKillWindow, grabNextWindow,	grabPrevWindow,
-			grabNextTab, grabPrevTab,
-			grabShade, grabMaximize, grabStick, grabExecute,	grabVertMax,
-			grabHorizMax,	grabNudgeRight,	grabNudgeLeft,grabNudgeUp,
-			grabNudgeDown,	grabBigNudgeRight, grabBigNudgeLeft,
-			grabBigNudgeUp,	grabBigNudgeDown,
-			grabHorizInc,	grabVertInc, grabHorizDec, grabVertDec,
-			grabToggleDecor,
-			lastKeygrab
+			ICONIFY=0,
+			RAISE,
+			LOWER,
+			CLOSE,
+			ABORTKEYCHAIN,
+			WORKSPACE1, WORKSPACE2, WORKSPACE3,	WORKSPACE4,	WORKSPACE5,
+			WORKSPACE6,	WORKSPACE7,	WORKSPACE8,	WORKSPACE9,	WORKSPACE10,
+			WORKSPACE11, WORKSPACE12,	NEXTWORKSPACE, PREVWORKSPACE,
+			LEFTWORKSPACE, RIGHTWORKSPACE,
+			KILLWINDOW, NEXTWINDOW,	PREVWINDOW,
+			NEXTTAB, PREVTAB,
+			SHADE, MAXIMIZE, STICK, EXECUTE,	VERTMAX,
+			HORIZMAX,	NUDGERIGHT,	NUDGELEFT,NUDGEUP,
+			NUDGEDOWN,	BIGNUDGERIGHT, BIGNUDGELEFT,
+			BIGNUDGEUP,	BIGNUDGEDOWN,
+			HORIZINC,	VERTINC, HORIZDEC, VERTDEC,
+			TOGGLEDECOR,
+			LASTKEYGRAB
 	};
 	
 	Keys(char *filename);
@@ -66,7 +67,7 @@ private:
 	
 	class t_key {	
 		public:
-		t_key(unsigned int key, unsigned int mod, KeyAction action_ = lastKeygrab);
+		t_key(unsigned int key, unsigned int mod, KeyAction action_ = Keys::LASTKEYGRAB);
 		t_key(t_key *k);
 		~t_key();
 		

@@ -24,6 +24,12 @@
 #	 include "config.h"
 #endif
 
+#include "Keys.hh"
+
+#ifndef _FLUXBOX_HH_
+#  include "fluxbox.hh"
+#endif
+
 #ifdef		HAVE_STDIO_H
 #	 include <stdio.h>
 #endif									// HAVE_STDIO_H
@@ -62,61 +68,58 @@
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
 
-#include "Keys.hh"
-#include "fluxbox.hh"
-
 #include <iostream>
 #include <fstream>
 
 using namespace std;
 
 Keys::t_actionstr Keys::m_actionlist[] = {
-		{"Minimize", grabIconify},
-		{"Raise", grabRaise},
-		{"Lower", grabLower},
-		{"Close", grabClose},
-		{"AbortKeychain", grabAbortKeychain},
-		{"Workspace1", grabWorkspace1},
-		{"Workspace2", grabWorkspace2},
-		{"Workspace3", grabWorkspace3},
-		{"Workspace4", grabWorkspace4},
-		{"Workspace5", grabWorkspace5},
-		{"Workspace6", grabWorkspace6},
-		{"Workspace7", grabWorkspace7},
-		{"Workspace8", grabWorkspace8},
-		{"Workspace9", grabWorkspace9},
-		{"Workspace10", grabWorkspace10},
-		{"Workspace11", grabWorkspace11},
-		{"Workspace12",  grabWorkspace12},
-		{"NextWorkspace", grabNextWorkspace},
-		{"PrevWorkspace", grabPrevWorkspace},
-		{"LeftWorkspace", grabLeftWorkspace},
-		{"RightWorkspace", grabRightWorkspace},
-		{"KillWindow", grabKillWindow},
-		{"NextWindow", grabNextWindow},
-		{"PrevWindow", grabPrevWindow},
-		{"NextTab", grabNextTab},
-		{"PrevTab", grabPrevTab},
-		{"ShadeWindow", grabShade},
-		{"MaximizeWindow", grabMaximize},
-		{"StickWindow", grabStick},
-		{"ExecCommand", grabExecute},
-		{"MaximizeVertical", grabVertMax},
-		{"MaximizeHorizontal", grabHorizMax},
-		{"NudgeRight", grabNudgeRight},
-		{"NudgeLeft", grabNudgeLeft},
-		{"NudgeUp", grabNudgeUp},
-		{"NudgeDown", grabNudgeDown},
-		{"BigNudgeRight", grabBigNudgeRight},
-		{"BigNudgeLeft", grabBigNudgeLeft},
-		{"BigNudgeUp", grabBigNudgeUp},
-		{"BigNudgeDown", grabBigNudgeDown},
-		{"HorizontalIncrement", grabHorizInc},
-		{"VerticalIncrement", grabVertInc},
-		{"HorizontalDecrement", grabHorizDec},
-		{"VerticalDecrement", grabVertDec},
-		{"ToggleDecor", grabToggleDecor},	
-		{0, lastKeygrab}
+		{"Minimize", ICONIFY},
+		{"Raise", RAISE},
+		{"Lower", LOWER},
+		{"Close", CLOSE},
+		{"AbortKeychain", ABORTKEYCHAIN},
+		{"Workspace1", WORKSPACE1},
+		{"Workspace2", WORKSPACE2},
+		{"Workspace3", WORKSPACE3},
+		{"Workspace4", WORKSPACE4},
+		{"Workspace5", WORKSPACE5},
+		{"Workspace6", WORKSPACE6},
+		{"Workspace7", WORKSPACE7},
+		{"Workspace8", WORKSPACE8},
+		{"Workspace9", WORKSPACE9},
+		{"Workspace10", WORKSPACE10},
+		{"Workspace11", WORKSPACE11},
+		{"Workspace12",  WORKSPACE12},
+		{"NextWorkspace", NEXTWORKSPACE},
+		{"PrevWorkspace", PREVWORKSPACE},
+		{"LeftWorkspace", LEFTWORKSPACE},
+		{"RightWorkspace", RIGHTWORKSPACE},
+		{"KillWindow", KILLWINDOW},
+		{"NextWindow", NEXTWINDOW},
+		{"PrevWindow", PREVWINDOW},
+		{"NextTab", NEXTTAB},
+		{"PrevTab", PREVTAB},
+		{"ShadeWindow", SHADE},
+		{"MaximizeWindow", MAXIMIZE},
+		{"StickWindow", STICK},
+		{"ExecCommand", EXECUTE},
+		{"MaximizeVertical", VERTMAX},
+		{"MaximizeHorizontal", HORIZMAX},
+		{"NudgeRight", NUDGERIGHT},
+		{"NudgeLeft", NUDGELEFT},
+		{"NudgeUp", NUDGEUP},
+		{"NudgeDown", NUDGEDOWN},
+		{"BigNudgeRight", BIGNUDGERIGHT},
+		{"BigNudgeLeft", BIGNUDGELEFT},
+		{"BigNudgeUp", BIGNUDGEUP},
+		{"BigNudgeDown", BIGNUDGEDOWN},
+		{"HorizontalIncrement", HORIZINC},
+		{"VerticalIncrement", VERTINC},
+		{"HorizontalDecrement", HORIZDEC},
+		{"VerticalDecrement", VERTDEC},
+		{"ToggleDecor", TOGGLEDECOR},	
+		{0, LASTKEYGRAB}
 		};	
 
 Keys::Keys(char *filename) {
@@ -127,6 +130,7 @@ Keys::Keys(char *filename) {
 Keys::~Keys() {
 	deleteTree();
 }
+
 //--------- deleteTree -----------
 // Destroys the keytree and m_abortkey
 //--------------------------------
@@ -141,11 +145,12 @@ void Keys::deleteTree() {
 		m_abortkey=0;
 	}	
 }
+
 //-------------- load ----------------
 // Load and grab keys
 // Returns true on success else false
-// TODO: error checking and nls on them?
-// and possible replacement of strtok
+// TODO: error checking and     (nls on them? )
+// possible replacement of strtok
 //------------------------------------
 bool Keys::load(char *filename) {
 	if (!filename)
@@ -220,12 +225,12 @@ bool Keys::load(char *filename) {
 
 				unsigned int i=0;
 
-				for (i=0; i< lastKeygrab; i++) {
+				for (i=0; i< LASTKEYGRAB; i++) {
 					if (strcasecmp(m_actionlist[i].string, val) == 0)
 						break;	
 				}
 
-				if (i < lastKeygrab ) {
+				if (i < LASTKEYGRAB ) {
 					if (!current_key) {
 						cerr<<"Error on line: "<<line<<endl;
 						cerr<<linebuffer<<endl;
@@ -236,13 +241,13 @@ bool Keys::load(char *filename) {
 					}
 
 					//special case for grabAbortKeychain
-					if (m_actionlist[i].action == grabAbortKeychain) {
+					if (m_actionlist[i].action == ABORTKEYCHAIN) {
 						if (last_key!=current_key)
 							cerr<<"Keys: "<<m_actionlist[i].string<<" cant be in chained mode"<<endl;
 						else if (m_abortkey)
 							cerr<<"Keys: "<<m_actionlist[i].string<<" is already bound."<<endl;
 						else
-							m_abortkey = new t_key(current_key->key, current_key->mod, grabAbortKeychain);
+							m_abortkey = new t_key(current_key->key, current_key->mod, ABORTKEYCHAIN);
 
 						delete current_key;
 						current_key = 0;
@@ -251,7 +256,7 @@ bool Keys::load(char *filename) {
 					}
 					
 					last_key->action = m_actionlist[i].action;
-					if (last_key->action == grabExecute)
+					if (last_key->action == Keys::EXECUTE)
 						last_key->execcommand = &linebuffer[linepos];
 
 					//add the keychain to list										
@@ -259,7 +264,7 @@ bool Keys::load(char *filename) {
 						cerr<<"Keys: Faild to merge keytree!"<<endl;
 		
 					#ifdef DEBUG
-				  if (m_actionlist[i].action == Keys::grabExecute) {					
+				  if (m_actionlist[i].action == Keys::EXECUTE) {
 						
 						cerr<<"linepos:"<<linepos<<endl;
 						cerr<<"buffer:"<<&linebuffer[linepos]<<endl;
@@ -424,7 +429,7 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
 					next_key = m_keylist[i];
 					break; //end for-loop 
 				} else {
-					if (m_keylist[i]->action == grabExecute)
+					if (m_keylist[i]->action == Keys::EXECUTE)
 						m_execcmdstring = m_keylist[i]->execcommand; //update execcmdstring if action is grabExecute
 					return m_keylist[i]->action;
 				}
@@ -438,21 +443,21 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
 				next_key = temp_key;								
 			} else {
 				next_key = 0;
-				if (temp_key->action == grabExecute)
+				if (temp_key->action == Keys::EXECUTE)
 					m_execcmdstring = temp_key->execcommand; //update execcmdstring if action is grabExecute
 				return temp_key->action;
 			}
 		}  else  {
 			temp_key = next_key;		
 			next_key = 0;
-			if (temp_key->action == grabExecute)
+			if (temp_key->action == Keys::EXECUTE)
 				m_execcmdstring = temp_key->execcommand; //update execcmdstring if action is grabExecute
 			return temp_key->action;				
 		}
 		
 	}
 	
-	return lastKeygrab;
+	return Keys::LASTKEYGRAB;
 }
 
 //--------- reconfigure -------------
@@ -520,7 +525,7 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
 		for (; baselist_i<m_keylist.size(); baselist_i++) {
 			if (m_keylist[baselist_i]->mod == newtree->mod && 
 					m_keylist[baselist_i]->key == newtree->key) {
-				if (newtree->keylist.size() && m_keylist[baselist_i]->action == lastKeygrab) {
+				if (newtree->keylist.size() && m_keylist[baselist_i]->action == LASTKEYGRAB) {
 					//assumes the newtree only have one branch
 					return mergeTree(newtree->keylist[0], m_keylist[baselist_i]);
 				} else
