@@ -19,7 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.1 2002/03/18 15:23:08 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.2 2002/03/18 20:28:24 fluxgen Exp $
+#ifndef FBATOMS_HH
+#define FBATOMS_HH
+
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 class FbAtoms
@@ -171,3 +174,5 @@ private:
 		motif_wm_hints;
 	bool m_init;
 };
+
+#endif //FBATOMS_HH
