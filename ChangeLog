@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *04/01/02:
+  * fbsetbg trivial: (Thanks Han) 
+    Add support for random_number, provided by:  
+    http://www.xs4all.nl/~hanb/software/arc4random.tar.bz2
+    for the fans :)
+    fbsetbg
   * Added menu item [separator] (Henrik)
     Screen.cc
   * Fixed bug in ThemeItem<int>::setFromString   (Henrik)
