@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.37 2003/01/10 00:41:15 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.38 2003/01/12 18:09:22 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -37,10 +37,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
-
-#ifdef	SLIT
-#include "Slit.hh"
-#endif // SLIT
 
 #include "SignalHandler.hh"
 #include "FbAtoms.hh"
@@ -165,14 +161,6 @@ public:
     inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
     inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
-	
-
-#ifdef	SLIT
-    Slit *searchSlit(Window);
-
-    void saveSlitSearch(Window, Slit *);
-    void removeSlitSearch(Window);
-#endif // SLIT
 
 #ifndef	 HAVE_STRFTIME
 
@@ -233,15 +221,6 @@ private:
     typedef std::map<Window, Tab *> TabList;
     TabList tabSearch;
 	
-#ifdef SLIT
-    std::map<Window, Slit *> slitSearch;
-#ifdef KDE
-    //For KDE dock applets
-    Atom kwm1_dockwindow; //KDE v1.x
-    Atom kwm2_dockwindow; //KDE v2.x
-#endif//KDE
-#endif // SLIT
-
     std::list<MenuTimestamp *> menuTimestamps;
     typedef std::list<BScreen *> ScreenList;
     ScreenList screenList;
@@ -250,7 +229,7 @@ private:
     FbTk::Timer timer;
 
 
-#ifdef		HAVE_GETPID
+#ifdef HAVE_GETPID
     Atom fluxbox_pid;
 #endif // HAVE_GETPID
 
