@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.2 2003/08/12 00:16:16 fluxgen Exp $
+// $Id: IconButton.cc,v 1.3 2003/08/12 01:19:22 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -40,9 +40,6 @@
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
-
-#include <iostream>
-using namespace std;
 
 IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                        FluxboxWindow &win):
@@ -98,14 +95,20 @@ void IconButton::update(FbTk::Subject *subj) {
     // icon pixmap was updated, 
     // so we refresh everything
 
+    // we need to check our client first
+    if (m_win.clientList().size() == 0)
+        return;
+
     XWMHints *hints = XGetWMHints(FbTk::App::instance()->display(), m_win.winClient().window());
     if (hints == 0)
         return;
 
-    if (hints->flags & IconPixmapHint) {
+    if (hints->flags & IconPixmapHint && hints->icon_pixmap != 0) {
         // setup icon window
         m_icon_window.show();
-        m_icon_window.resize(height(), height() - m_icon_window.y());
+        int new_height = height() - m_icon_window.y();
+        int new_width = height();
+        m_icon_window.resize(new_width ? new_width : 1, new_height ? new_height : 1);
 
         m_icon_pixmap.copy(hints->icon_pixmap);
         m_icon_pixmap.scale(m_icon_window.height(), m_icon_window.height());
@@ -113,6 +116,7 @@ void IconButton::update(FbTk::Subject *subj) {
         m_icon_window.setBackgroundPixmap(m_icon_pixmap.drawable());
     } else {
         // no icon pixmap
+        m_icon_window.move(0, 0);
         m_icon_window.hide();
         m_icon_pixmap = 0;
     }
@@ -145,6 +149,10 @@ void IconButton::update(FbTk::Subject *subj) {
 void IconButton::setupWindow() {
     
     m_icon_window.clear();
+
+    if (m_win.clientList().size() == 0)
+        return;
+
     setText(m_win.winClient().title());
     // draw with x offset and y offset
     drawText(m_icon_window.x() + m_icon_window.width() + 1);
