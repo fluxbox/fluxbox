@@ -20,6 +20,8 @@ session.screen0.workspaces:	4
 session.screen0.focusLastWindow:	True
 session.screen0.colPlacementDirection:	TopToBottom
 session.screen0.windowPlacement:	RowSmartPlacement
+session.screen0.tab.width:	64
+session.screen0.tab.height:	16
 session.opaqueMove:	False
 session.autoRaiseDelay:	250
 session.menuFile:	@pkgdatadir@/menu
@@ -32,5 +34,6 @@ session.doubleClickInterval:	250
 session.cacheMax:	200
 session.imageDither:	True
 session.iconbar: true
-session.tab.width:	64
-session.tab.height:	16
+session.titlebar.left: Stick
+session.titlebar.right: Minimize Maximize Close
+
