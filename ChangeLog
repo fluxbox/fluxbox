@@ -3,6 +3,8 @@ Changes for 0.9.8:
 *04/01/11:
   * Fixed ImageControl cache problem (Henrik)
     ImageControl.hh/cc	
+  * Hide menus when click on iconbar (Henrik)
+    Screen.hh/cc, fluxbox.hh/cc, IconButton.cc, Toolbar.cc
 *04/01/10:
   * Fixed a memory leak  (Henrik)
     We forgot to destroy screens on shutdown
