@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.13 2004/06/07 11:46:05 rathnor Exp $
+// $Id: EventManager.cc,v 1.14 2004/09/10 07:15:23 akir Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -152,31 +152,31 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
     switch (ev.type) {
     case KeyPress:
         evhand->keyPressEvent(ev.xkey);
-	break;
+    break;
     case KeyRelease:
         evhand->keyReleaseEvent(ev.xkey);
-	break;
+    break;
     case ButtonPress:
         evhand->buttonPressEvent(ev.xbutton);
-	break;
+    break;
     case ButtonRelease:
         evhand->buttonReleaseEvent(ev.xbutton);
-	break;
+    break;
     case MotionNotify:
         evhand->motionNotifyEvent(ev.xmotion);
-	break;
+    break;
     case Expose:
         evhand->exposeEvent(ev.xexpose);
-	break;
+    break;
     case EnterNotify:
         evhand->enterNotifyEvent(ev.xcrossing);
-	break;
+    break;
     case LeaveNotify:
         evhand->leaveNotifyEvent(ev.xcrossing);
-	break;
+    break;
     default:
         evhand->handleEvent(ev);
-	break;
+    break;
     };
 
     // find out which window is the parent and 
