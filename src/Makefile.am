@@ -51,7 +51,6 @@ REMEMBER_SOURCE= Remember.hh Remember.cc
 endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
-	BaseDisplay.cc BaseDisplay.hh \
 	BoolMenuItem.hh \
 	DirHelper.hh DirHelper.cc ${newwmspec_SOURCE} \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
@@ -64,6 +63,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Resource.hh Resource.cc \
 	RootTheme.hh RootTheme.cc \
 	Screen.cc Screen.hh \
+	ScreenInfo.hh ScreenInfo.cc \
 	Slit.cc Slit.hh \
 	TextButton.hh TextButton.cc \
 	Toolbar.cc Toolbar.hh \
