@@ -267,6 +267,7 @@ MISCMENU='Misc'
 MULTIMEDIAMENU='Multimedia'
 MUSICMENU='Audio'
 NETMENU='Net'
+NEWS='News'
 OFFICEMENU='Office'
 RANDOMBACKGROUND='Random Background'
 REGENERATEMENU='Regen Menu'
@@ -799,6 +800,10 @@ if [ ! "${INSTALL}" = Yes ]; then
 # location with your own menu-entries
 # USERMENU=~/.fluxbox/usermenu
 
+# Put the launcher you would like to use here
+# LAUNCHER=fbrun
+# LAUNCHER=fbgm
+
 # Options for fbrun
 # FBRUNOPTIONS='-font 10x20 -fg grey -bg black -title run'
 
@@ -1039,7 +1044,7 @@ case "$DEFAULT_BROWSERNAME" in
     *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
 esac
 
-find_it fbrun           append "[exec]   (${RUNCOMMAND}) {fbrun $FBRUNOPTIONS}"
+find_it ${LAUNCHER}         append "[exec]   (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
 
 
 append_submenu "${TERMINALMENU}"
@@ -1059,8 +1064,10 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IM
-        normal_find gaim kopete gnomemeeting sim kadu
+        normal_find gaim kopete gnomemeeting sim kadu psi
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
+        find_it centericq   append "[exec]   (centericq) {${DEFAULT_TERM} -e centericq}"
+        find_it micq        append "[exec]   (micq) {${DEFAULT_TERM} -e micq}"
     append_menu_end
 
     append_submenu Mail
@@ -1068,11 +1075,16 @@ append_submenu "${NETMENU}"
         find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
     append_menu_end
 
+    append_submenu News
+        normal_find liferea pears
+        find_it slrn       append "[exec]   (slrn) {${DEFAULT_TERM} -e slrn}"
+    append_menu_end
+
     append_submenu IRC
         normal_find xchat ksirc vyqchat lostirc logui konversation kvirc
         find_it irssi         append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
         find_it BitchX        append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
-          find_it bitchx        append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
+        find_it bitchx        append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
         find_it ircii         append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
         find_it epic4         append "[exec]   (epic4) {${DEFAULT_TERM} -e epic4}"
         find_it weechat       append "[exec]   (weechat) {${DEFAULT_TERM} -e weechat}"
@@ -1094,7 +1106,7 @@ append_submenu "${NETMENU}"
         find_it yafc      append "[exec]   (yafc) {${DEFAULT_TERM} -e yafc}"
     append_menu_end
 
-    normal_find pan xnmap skype
+    normal_find pan xnmap skype x3270
 
 append_menu_end
 
@@ -1111,7 +1123,7 @@ append_submenu "${EDITORMENU}"
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
-    normal_find konqueror gentoo krusader linuxcmd rox tuxcmd krename
+    normal_find konqueror gentoo krusader linuxcmd rox tuxcmd krename xfe
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
     find_it     mc       append "[exec] (mc) {${DEFAULT_TERM} -e mc}"
 append_menu_end
@@ -1177,7 +1189,7 @@ append_submenu "${GAMESMENU}"
         openmortal quake2 quake3 skoosh same-gnome enigma xbill \
         icebreaker scorched3d sol dosbox black-box enigma freeciv \
         freeciv-server frozen-bubble liquidwar qt-nethack gnugo \
-        nethack-gnome pathological scummvm
+        nethack-gnome pathological scummvm xqf
 
     find_it et append "[exec] (Enemy Territory) {et}"
     find_it ut append "[exec] (Unreal Tournament) {ut}"
@@ -1268,7 +1280,7 @@ append_submenu "${FBSETTINGSMENU}"
             "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (${SCREENSHOT} - JPG) {import screenshot.jpg && display -resize 50% screenshot.jpg}"
         find_it import append "[exec] (${SCREENSHOT} - PNG) {import screenshot.png && display -resize 50% screenshot.png}"
-        find_it fbrun append "[exec] (${RUNCOMMAND}) {fbrun $FBRUNOPTIONS}"
+        find_it ${LAUNCHER} append "[exec] (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
         find_it fluxbox-generate_menu append "[exec] (${REGENERATEMENU}) {fluxbox-generate_menu}"

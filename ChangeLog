@@ -1,7 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
-<<<<<<< .mine
 *05/01/04:
+  * Added apps to fluxbox-generate_menu (thanx to Uwe Weissenbacher <UweWeissenbacher@gmx.net>)
   * Added ko_KR (thanx Jo Hyunseok <ttrand at gmail dot com>)
   * Updated ru_RU (thanx php-coder)
     ru_RU/Translation.m
