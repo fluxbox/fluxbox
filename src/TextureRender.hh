@@ -1,6 +1,9 @@
 // TextureRender.hh for fluxbox
 // Copyright (c) 2002 Henrik Kinnunen (fluxgen at fluxbox.org)
 //
+// Image.hh for Blackbox - an X11 Window manager
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.hh,v 1.1 2002/11/30 20:07:49 fluxgen Exp $
+// $Id: TextureRender.hh,v 1.2 2002/11/30 20:36:22 fluxgen Exp $
 
 #ifndef TEXTURRENDER_HH
 #define TEXTURRENDER_HH
