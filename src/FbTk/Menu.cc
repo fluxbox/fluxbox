@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.58 2004/04/18 17:46:32 fluxgen Exp $
+// $Id: Menu.cc,v 1.59 2004/04/19 22:47:36 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -485,23 +485,19 @@ void Menu::update(int active_index) {
                               menu.title.borderWidth()*2 : 0), 
                           menu.window.width(), menu.frame_h);
 
-    // render pixmaps
-    Display *disp = FbTk::App::instance()->display();
-
-    XWindowAttributes attr;
 
     if (m_need_update && (m_frame_pm.width() != menu.frame.width() ||
                           m_frame_pm.height() != menu.frame.height() )){
-        XGetWindowAttributes(disp, menu.frame.window(), &attr);
+
         m_frame_pm = FbTk::FbPixmap(menu.frame.window(),
                                     menu.frame.width(), menu.frame.height(),
-                                    attr.depth);
+                                    menu.frame.depth());
 
         if (m_frame_pm.drawable() == 0) {
             cerr<<"FbTk::Menu: Warning: Failed to create pixmap ("<<
                 menu.frame.window()<<", "<<menu.frame.width()<<", "<<
                 menu.frame.height()<<
-                ", "<<attr.depth<<") !"<<endl;
+                ", "<<menu.frame.depth()<<") !"<<endl;
         } else if (menu.sublevels > 0 && menu.persub * menu.sublevels != menuitems.size()) {
 
             // TODO: fill only that part of the menuframe with the
