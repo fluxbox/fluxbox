@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.31 2002/08/11 21:12:10 fluxgen Exp $
+// $Id: Tab.cc,v 1.32 2002/09/08 19:41:59 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -155,8 +155,11 @@ void Tab::raise() {
 	//get first tab
 	Tab *tab = 0;
 	//raise tabs
-	for (tab = getFirst(this); tab!=0; tab = tab->m_next)
-		m_win->getScreen()->raiseWindows(&tab->m_tabwin, 1);
+	Workspace::Stack st;
+	for (tab = getFirst(this); tab!=0; tab = tab->m_next) {
+		st.push_back(tab->m_tabwin);
+	}
+	m_win->getScreen()->raiseWindows(st);
 }
 
 //-------------- lower --------------------

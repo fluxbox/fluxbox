@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.30 2002/09/06 16:50:51 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.31 2002/09/08 19:43:15 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -1022,8 +1022,9 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 		}
 #endif // HAVE_STRFTIME
 		else if (! on_top) {
-			Window w[1] = { frame.window };
-			screen->raiseWindows(w, 1);
+			Workspace::Stack st;
+			st.push_back(frame.window);
+			screen->raiseWindows(st);
 		}
 	} else if (be->button == 2 && (! on_top)) {
 		XLowerWindow(display, frame.window);
@@ -1315,7 +1316,7 @@ void Toolbarmenu::itemSelected(int button, unsigned int index) {
 			setItemSelected(1, change);
 			
 			if (toolbar->isOnTop())
-				toolbar->screen->raiseWindows((Window *) 0, 0);
+				toolbar->screen->raiseWindows(Workspace::Stack());
 			
 			Fluxbox::instance()->save_rc();
 			break;
