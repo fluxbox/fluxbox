@@ -62,4 +62,4 @@ fluxbox_SOURCES = AtomHandler.hh BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basem
 	Workspace.cc Workspace.hh Workspacemenu.cc Workspacemenu.hh \
 	XrmDatabaseHelper.hh	
 
-LDADD=FbTk/.libs/libFbTk.a
+LDADD=FbTk/libFbTk.a
