@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.7 2002/02/08 14:04:51 fluxgen Exp $
+// $Id: Workspace.cc,v 1.8 2002/02/09 11:48:18 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -120,7 +120,7 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 			
 			FluxboxWindow *top = stackingList.front();
 			
-			if (! top || ! top->setInputFocus()) {				
+			if (! top && ! top->setInputFocus()) {				
 				Fluxbox::instance()->setFocusedWindow((FluxboxWindow *) 0);
 				XSetInputFocus(Fluxbox::instance()->getXDisplay(),
 					screen->getToolbar()->getWindowID(),
