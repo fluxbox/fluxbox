@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.6 2003/04/26 13:47:53 rathnor Exp $
+// $Id: Remember.cc,v 1.7 2003/04/26 14:36:21 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -537,6 +537,14 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
 void Remember::setupWindow(FluxboxWindow &win) {
     WinClient &winclient = win.winClient();
 
+    // add the menu, this -2 is somewhat dodgy... :-/
+    // All windows get the remember menu.
+    // TODO: nls
+    win.getWindowmenu().insert("Remember...", 
+                               createRememberMenu(*this, win), 
+                               win.getWindowmenu().numberOfItems()-2);
+    win.getWindowmenu().update();
+
     // we don't touch the window if it is a transient
     // of something else
     if (winclient.transientFor()) 
@@ -581,12 +589,6 @@ void Remember::setupWindow(FluxboxWindow &win) {
     if (app->layer_remember)
         win.moveToLayer(app->layer);
 
-    // add the menu, this -2 is somewhat dodgy... :-/
-    // TODO: nls
-    win.getWindowmenu().insert("Remember...", 
-                               createRememberMenu(*this, win), 
-                               win.getWindowmenu().numberOfItems()-2);
-    win.getWindowmenu().update();
 }
 
 void Remember::updateWindowClose(FluxboxWindow &win) {
