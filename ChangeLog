@@ -1,8 +1,14 @@
 (Format: Year/Month/Day)
+Changes for 0.9.9:
+*04/01/18:
+  * Support for _NET_WM_STATE_HIDDEN and _NET_WM_STATE_SKIP_TASKBAR (Henrik)
+    Window.cc/hh, Ewmh.hh/cc
+  * Fixed mplayer xvid vo bug (Henrik)
+    It now finds correct screen to create window on
+    fluxbox.cc
 *04/01/17:
   * Enter nls/pl_PL into configure.in and add a Makefile.am to pl_PL.
   * Add nls/sl_SI (thanks Ale¨ Jagodnik)
-Changes for 0.9.9:
 *04/01/16:
   * Updated nl_NL locales (Han)
   * Different window for window position  (Thanks Junichiro Kita (kita<at>kitaj.no-ip.com)
