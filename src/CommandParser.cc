@@ -56,6 +56,7 @@ FbTk::Command *CommandParser::parseLine(const string &line) {
     string command = line;
     string arguments;
     string::size_type first_pos = removeFirstWhitespace(command);
+    FbTk::StringUtil::removeTrailingWhitespace(command);
     string::size_type second_pos = command.find_first_of(" \t", first_pos);
     if (second_pos != string::npos) {
         // ok we have arguments, parsing them here
@@ -65,7 +66,6 @@ FbTk::Command *CommandParser::parseLine(const string &line) {
     }
 
     // now we have parsed command and arguments
-
     command = toLower(command);
 
     // we didn't find any matching command in default commands,
