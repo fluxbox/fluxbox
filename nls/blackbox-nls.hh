@@ -1,8 +1,7 @@
+//This file is generated from nls/C
 #ifndef BLACKBOX_NLS_HH
 #define BLACKBOX_NLS_HH
-
-namespace FBNLS
-{
+namespace FBNLS {
 enum {
 	BaseDisplaySet = 0x1,
 	BaseDisplayXError = 0x1,
@@ -132,7 +131,6 @@ enum {
 	WorkspacemenuNewWorkspace = 0x2,
 	WorkspacemenuRemoveLast = 0x3,
 
-
 	blackboxSet = 0xd,
 	blackboxNoManagableScreens = 0x1,
 	blackboxMapRequest = 0x2,
@@ -175,7 +173,10 @@ enum {
 	bsetrootSet = 0x10,
 	bsetrootMustSpecify = 0x1,
 	bsetrootUsage = 0x2,
+	dummy_not_used = 0 //just for the ending
 }; //end enum
 
-}; //end namespace NLS
+}; //end namespace
+
 #endif //BLACKBOX_NLS_HH
+
