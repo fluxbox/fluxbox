@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.259 2003/12/31 00:36:16 fluxgen Exp $
+// $Id: Window.cc,v 1.260 2004/01/16 11:41:38 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1925,6 +1925,7 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     m_windowmenu.move(menu_x, menu_y);
     m_windowmenu.show();		
     m_windowmenu.raise();
+    m_windowmenu.grabInputFocus();
 }
 
 /**

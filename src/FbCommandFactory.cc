@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.24 2003/12/20 17:42:04 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.25 2004/01/16 11:41:38 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -119,6 +119,7 @@ FbCommandFactory::FbCommandFactory() {
         "stick",
         "stickwindow",
         "toggledecor",
+        "windowmenu",
         "workspace",
         "workspacemenu",
         ""
@@ -246,6 +247,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::moveClientRight);
     else if (command == "detachclient")
         return new CurrentWindowCmd(&FluxboxWindow::detachCurrentClient);
+    else if (command == "windowmenu")
+        return new CurrentWindowCmd(&FluxboxWindow::popupMenu);
     // 
     // Workspace commands
     //

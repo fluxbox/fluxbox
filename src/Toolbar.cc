@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.136 2004/01/13 14:41:32 rathnor Exp $
+// $Id: Toolbar.cc,v 1.137 2004/01/16 11:41:38 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -493,6 +493,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
         menu().move(x, y);
         menu().show();
+        menu().grabInputFocus();
     } else
         menu().hide();
 	
