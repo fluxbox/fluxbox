@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.6 2004/01/11 12:52:37 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.7 2004/01/21 14:16:41 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -114,11 +114,10 @@ Pixmap TextureRender::render(const FbTk::Texture &texture) {
 
 Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
 
-    Display *disp = FbTk::App::instance()->display();
-
-    FbPixmap pixmap(RootWindow(disp, control.screenNum()), 
-                  width, height,
-                  control.depth());
+    FbPixmap pixmap(RootWindow(FbTk::App::instance()->display(),
+                               control.screenNumber()), 
+                    width, height,
+                    control.depth());
 
     if (pixmap.drawable() == None) {
         cerr<<"FbTk::TextureRender::render_solid(): error creating pixmap"<<endl;
@@ -271,7 +270,7 @@ XImage *TextureRender::renderXImage() {
     Display *disp = FbTk::App::instance()->display();
     XImage *image =
         XCreateImage(disp,
-                     DefaultVisual(disp, control.screenNum()), control.depth(), ZPixmap, 0, 0,
+                     DefaultVisual(disp, control.screenNumber()), control.depth(), ZPixmap, 0, 0,
                      width, height, 32, 0);
 
     if (! image) {
@@ -659,7 +658,7 @@ return image;
 
 Pixmap TextureRender::renderPixmap() {
     Display *disp = FbTk::App::instance()->display();
-    FbPixmap pixmap(RootWindow(disp, control.screenNum()), 
+    FbPixmap pixmap(RootWindow(disp, control.screenNumber()), 
                     width, height, control.depth());
 
     if (pixmap.drawable() == None) {
@@ -677,7 +676,7 @@ Pixmap TextureRender::renderPixmap() {
     }
 
     XPutImage(disp, pixmap.drawable(),
-              DefaultGC(disp, control.screenNum()),
+              DefaultGC(disp, control.screenNumber()),
               image, 0, 0, 0, 0, width, height);
 
     if (image->data != 0) {
