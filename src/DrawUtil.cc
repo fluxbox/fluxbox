@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// $Id: DrawUtil.cc,v 1.2 2002/01/06 13:46:43 fluxgen Exp $
+// $Id: DrawUtil.cc,v 1.3 2002/01/07 23:42:25 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"
@@ -28,9 +28,9 @@
 #include "StringUtil.hh"
 #include "i18n.hh"
 
-#include <stdlib.h>
-#include <assert.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cassert>
+#include <cstdio>
 #include <iostream>
 #include <X11/Xutil.h>
 
