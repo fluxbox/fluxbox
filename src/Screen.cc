@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.279 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Screen.cc,v 1.280 2004/06/07 21:22:42 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -356,10 +356,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_current_workspace = m_workspaces_list.front();
 
-#ifdef SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
-                 Fluxbox::instance()->getSlitlistFilename().c_str()));
-#endif // SLIT
 
     //!! TODO: we shouldn't do this more than once, but since slit handles their
     // own resources we must do this.
@@ -388,6 +384,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                                     *resource.gc_line_style,
                                     *resource.gc_cap_style,
                                     *resource.gc_join_style);
+
+#ifdef SLIT
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
+                 Fluxbox::instance()->getSlitlistFilename().c_str()));
+#endif // SLIT
 
     rm.unlock();
 
@@ -750,7 +751,6 @@ void BScreen::removeClient(WinClient &client) {
     if (cycling_window != focused_list.end())
         cyc = *cycling_window;
 
-    WinClient *focused = Fluxbox::instance()->getFocusedWindow();
     focused_list.remove(&client);
     if (cyc == &client) {
         cycling_window = focused_list.end();
@@ -1793,7 +1793,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
 #undef _BOOLITEM
 
-    //!! TODO: antialias
     FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
                                               0, 255);
     menu_alpha_item->setCommand(saverc_cmd);
