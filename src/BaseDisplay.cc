@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.27 2003/04/28 00:39:34 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.28 2003/05/07 11:43:03 fluxgen Exp $
 
 
 
@@ -134,12 +134,15 @@ BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):FbTk::App(d
     I18n *i18n = I18n::instance();
 
     if (display() == 0) {
-        throw string(
-                     i18n->
-                     getMessage(
-                                FBNLS::BaseDisplaySet, FBNLS::BaseDisplayXConnectFail,
-                                "BaseDisplay::BaseDisplay: connection to X server failed."));
-	
+        throw string("Can not connect to X server."
+                     "Make sure you started X before you start Fluxbox and"
+                     "that you do not have any other window manager running at the same time.");
+        /*
+          i18n->
+          getMessage(
+          FBNLS::BaseDisplaySet, FBNLS::BaseDisplayXConnectFail,
+          "BaseDisplay::BaseDisplay: connection to X server failed."));
+        */
     } else if (fcntl(ConnectionNumber(display()), F_SETFD, 1) == -1) {
         throw string(
                      i18n->
@@ -366,9 +369,9 @@ unsigned int ScreenInfo::getCurrHead(void) const {
     return 0;
 }
 
-//----------- getHeadWidth ------------
-// Returns the width of head
-//-------------------------------------
+/**
+ @return the width of head
+*/
 unsigned int ScreenInfo::getHeadWidth(unsigned int head) const {
 
     if (hasXinerama()) {
@@ -386,9 +389,9 @@ unsigned int ScreenInfo::getHeadWidth(unsigned int head) const {
 
 }
 
-//----------- getHeadHeight ------------
-// Returns the heigt of head
-//--------------------------------------
+/**
+ @return the heigt of head
+*/
 unsigned int ScreenInfo::getHeadHeight(unsigned int head) const {
 
     if (hasXinerama()) {
@@ -406,9 +409,9 @@ unsigned int ScreenInfo::getHeadHeight(unsigned int head) const {
 }
 
 
-//----------- getHeadX -----------------
-// Returns the X start of head nr head
-//--------------------------------------
+/**
+ @return the X start of head nr head
+*/
 int ScreenInfo::getHeadX(unsigned int head) const {
     if (hasXinerama()) {
         if ((signed) head >= xineramaNumHeads) {
@@ -424,9 +427,9 @@ int ScreenInfo::getHeadX(unsigned int head) const {
     return 0;
 }
 
-//----------- getHeadY -----------------
-// Returns the Y start of head
-//--------------------------------------
+/**
+ @return the Y start of head
+*/
 int ScreenInfo::getHeadY(unsigned int head) const {
     if (hasXinerama()) {
         if ((signed) head >= xineramaNumHeads) {
