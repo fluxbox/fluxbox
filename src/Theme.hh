@@ -1,6 +1,9 @@
 // Theme.hh for fluxbox 
 // Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
+// A lot of the base code is taken from Screen.hh in Blackbox 0.61.1
+// Screen.cc - Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -13,34 +16,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-//
-//  A lot of the base code is taken from Screen.hh in Blackbox 0.61.1
-//  Screen.cc - Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
-// 
-//  Permission is hereby granted, free of charge, to any person obtaining a
-//  copy of this software and associated documentation files (the "Software"),
-//  to deal in the Software without restriction, including without limitation
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
-//  and/or sell copies of the Software, and to permit persons to whom the
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in
-//  all copies or substantial portions of the Software.
-//
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
-//  THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-//  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.13 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Theme.hh,v 1.14 2002/10/13 22:34:03 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -57,8 +39,7 @@
 	Main theme class, holds themes for 
 	Window, toolbar, slit, menu and the rootCommand, for a specific screen.
 */
-class Theme
-{
+class Theme {
 public:	
 		
 	Theme(Display *display, Window rootwindow, Colormap colormap, 
@@ -67,8 +48,8 @@ public:
 	
 	
 	typedef struct MenuStyle {
-		MenuStyle(Display *display):titlefont(display, "fixed"),
-			framefont(display, "fixed") { }
+		MenuStyle():titlefont("fixed"),
+			framefont("fixed") { }
 		FbTk::Color t_text, f_text, h_text, d_text;
 		FbTk::Texture title, frame, hilite;
 		GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
@@ -142,7 +123,7 @@ private:
 	void freeWindowStyle();
 	void freeTabStyle();
 	void freeToolbarStyle();
-	
+	void loadFontFromDatabase(FbTk::Font &dest, const char *name, const char *altname);
 	bool readDatabaseTexture(char *, char *, FbTk::Texture *, unsigned long);
 	bool readDatabaseColor(char *, char *, FbTk::Color *, unsigned long);
 
