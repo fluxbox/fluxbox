@@ -77,10 +77,10 @@ public:
     int remove(unsigned int item);
     /// remove all items
     void removeAll();
-    inline void setInternalMenu(bool val = true) { internal_menu = val; }
+    inline void setInternalMenu(bool val = true) { m_internal_menu = val; }
     inline void setAlignment(Alignment a) { m_alignment = a; }
-    inline void setTorn() { torn = true; }
-    inline void removeParent() { if (internal_menu) m_parent = 0; }
+    inline void setTorn() { m_torn = true; }
+    inline void removeParent() { if (m_internal_menu) m_parent = 0; }
     /// raise this window
     virtual void raise();
     /// lower this window
@@ -135,8 +135,8 @@ public:
     */
     //@{
     inline int activeIndex() const { return m_active_index; }
-    inline bool isTorn() const { return torn; }
-    inline bool isVisible() const { return visible; }
+    inline bool isTorn() const { return m_torn; }
+    inline bool isVisible() const { return m_visible; }
     inline int screenNumber() const { return menu.window.screenNumber(); }
     inline Window window() const { return menu.window.window(); }
     inline FbWindow &fbwindow() { return menu.window; }
@@ -149,7 +149,7 @@ public:
     inline unsigned int width() const { return menu.window.width(); }
     inline unsigned int height() const { return menu.window.height(); }
     inline unsigned int numberOfItems() const { return menuitems.size(); }
-    inline int currentSubmenu() const { return which_sub; } 
+    inline int currentSubmenu() const { return m_which_sub; } 
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
@@ -170,7 +170,7 @@ public:
 protected:
 
     inline void setTitleVisibility(bool b) { 
-        title_vis = b; m_need_update = true; 
+        m_title_vis = b; m_need_update = true; 
         if (!b)
             titleWindow().lower();
         else
@@ -204,14 +204,14 @@ private:
 
     int m_screen_x, m_screen_y;
     int m_screen_width, m_screen_height;
-    bool moving; ///< if we're moving/draging or not
-    bool visible; ///< menu visibility
-    bool torn; ///< torn from parent
-    bool internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
-    bool title_vis; ///< title visibility
-    bool shifted; ///< if the menu is shifted to the other side of the parent
+    bool m_moving; ///< if we're moving/draging or not
+    bool m_visible; ///< menu visibility
+    bool m_torn; ///< torn from parent
+    bool m_internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
+    bool m_title_vis; ///< title visibility
+    bool m_shifted; ///< if the menu is shifted to the other side of the parent
 	
-    int which_sub, which_press, which_sbl;
+    int m_which_sub, m_which_press, m_which_sbl;
     Alignment m_alignment;
 
     struct _menu {

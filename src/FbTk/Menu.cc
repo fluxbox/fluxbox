@@ -1,5 +1,5 @@
 // Menu.cc for FbTk - Fluxbox Toolkit 
-// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Basemenu.cc for blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -101,13 +101,13 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     // make sure we get updated when the theme is reloaded
     tm.reconfigSig().attach(this);
 
-    title_vis = true;
+    m_title_vis = true;
 
-    shifted =
-        internal_menu =
-        moving =
-        torn =
-        visible = false;
+    m_shifted =
+        m_internal_menu =
+        m_moving =
+        m_torn =
+        m_visible = false;
 
 
 
@@ -116,9 +116,9 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
         menu.x_move =
         menu.y_move = 0;
 
-    which_sub =
-        which_press =
-        which_sbl = -1;
+    m_which_sub =
+        m_which_press =
+        m_which_sbl = -1;
 
     menu.frame_pixmap =
         menu.title_pixmap =
@@ -237,11 +237,11 @@ int Menu::remove(unsigned int index) {
     if (item) {
         menuitems.erase(it);
 
-        if (!internal_menu && item->submenu() != 0) {
+        if (!m_internal_menu && item->submenu() != 0) {
             Menu *tmp = item->submenu();
             // if menu is interal we should just hide it instead
             // if destroying it
-            if (! tmp->internal_menu) {
+            if (! tmp->m_internal_menu) {
                 delete tmp;
             } else
                 tmp->internal_hide();
@@ -251,10 +251,10 @@ int Menu::remove(unsigned int index) {
         delete item;
     }
 
-    if (static_cast<unsigned int>(which_sub) == index)
-        which_sub = -1;
-    else if (static_cast<unsigned int>(which_sub) > index)
-        which_sub--;
+    if (static_cast<unsigned int>(m_which_sub) == index)
+        m_which_sub = -1;
+    else if (static_cast<unsigned int>(m_which_sub) > index)
+        m_which_sub--;
 
     m_need_update = true; // we need to redraw the menu
 
@@ -277,7 +277,7 @@ void Menu::lower() {
 }
 
 void Menu::nextItem() {
-    int old_which_press = which_press;
+    int old_which_press = m_which_press;
     m_active_index = -1;
     if (validIndex(old_which_press) && 
         menuitems[old_which_press] != 0) {
@@ -291,25 +291,25 @@ void Menu::nextItem() {
                  true); // transp
     }
 
-    // restore old in case we changed which_press
-    which_press = old_which_press + 1;
-    if (!validIndex(which_press))
-        which_press = 0;
+    // restore old in case we changed m_which_press
+    m_which_press = old_which_press + 1;
+    if (!validIndex(m_which_press))
+        m_which_press = 0;
 
 
-    if (menuitems[which_press] == 0) {
+    if (menuitems[m_which_press] == 0) {
         m_active_index = -1;
         return;
     }
 
-    if (!isItemSelectable(which_press)) {
+    if (!isItemSelectable(m_which_press)) {
         nextItem();
         return;
     }
 
-    m_active_index = which_press;    
+    m_active_index = m_which_press;    
 
-    drawItem(which_press, 
+    drawItem(m_which_press, 
              true,  // clear
              true); // transp
     
@@ -317,7 +317,7 @@ void Menu::nextItem() {
 
 void Menu::prevItem() {
 
-    int old_which_press = which_press;
+    int old_which_press = m_which_press;
     m_active_index = -1;
     if (validIndex(old_which_press)) {
         if (menuitems[old_which_press]->submenu()) {
@@ -329,62 +329,62 @@ void Menu::prevItem() {
                  true,  // clear
                  true); // transp
     }
-    // restore old in case we changed which_press
-    which_press = old_which_press - 1;
+    // restore old in case we changed m_which_press
+    m_which_press = old_which_press - 1;
 
-    if (!validIndex(which_press))
-        which_press = menuitems.size() - 1;
+    if (!validIndex(m_which_press))
+        m_which_press = menuitems.size() - 1;
 
-    if (menuitems[which_press] == 0) {
+    if (menuitems[m_which_press] == 0) {
         m_active_index = -1;
         return;
     }
 
-    if (!isItemSelectable(which_press)) {
+    if (!isItemSelectable(m_which_press)) {
         prevItem();
         return;
     }
 
-    m_active_index = which_press;
+    m_active_index = m_which_press;
 
-    drawItem(which_press, 
+    drawItem(m_which_press, 
              true,  // clear
              true); // transp
 
 }
 
 void Menu::enterSubmenu() {
-    if (!validIndex(which_press))
+    if (!validIndex(m_which_press))
         return;
 
-    Menu *submenu = menuitems[which_press]->submenu();
+    Menu *submenu = menuitems[m_which_press]->submenu();
     if (submenu == 0)
         return;
 
     if (submenu->menuitems.size() == 0)
         return;
 
-    drawSubmenu(which_press);
+    drawSubmenu(m_which_press);
     submenu->grabInputFocus();
-    submenu->which_press = -1; // so we land on 0 after nextItem()
+    submenu->m_which_press = -1; // so we land on 0 after nextItem()
     submenu->nextItem();
 }
 
 void Menu::enterParent() {
-    if (!validIndex(which_press) || parent() == 0)
+    if (!validIndex(m_which_press) || parent() == 0)
         return;
 
-    Menu *submenu = menuitems[which_press]->submenu();
+    Menu *submenu = menuitems[m_which_press]->submenu();
     if (submenu)
         submenu->internal_hide();
 
     m_active_index = -1;
-    drawItem(which_press, 
+    drawItem(m_which_press, 
              true,  // clear
              true); // transp
-    which_press = -1; // dont select any in this 
+    m_which_press = -1; // dont select any in this 
     // hide self
-    visible = false;
+    m_visible = false;
     menu.window.hide();
     // return focus to parent
     parent()->grabInputFocus();
@@ -399,7 +399,7 @@ void Menu::enableTitle() {
 }
 
 void Menu::updateMenu(int active_index) {
-    if (title_vis) {
+    if (m_title_vis) {
         menu.item_w = theme().titleFont().textWidth(menu.label.c_str(),
                                                     menu.label.size());
 		
@@ -439,7 +439,7 @@ void Menu::updateMenu(int active_index) {
     int new_width = (menu.sublevels * menu.item_w);
     int new_height = menu.frame_h;
 
-    if (title_vis)
+    if (m_title_vis)
         new_height += theme().titleHeight() + ((menu.frame_h > 0)?menu.title.borderWidth():0);
 
 
@@ -456,7 +456,7 @@ void Menu::updateMenu(int active_index) {
     menu.window.resize(new_width, new_height);
 
     Pixmap tmp = 0;
-    if (title_vis && m_need_update) {
+    if (m_title_vis && m_need_update) {
         tmp = menu.title_pixmap;
         const FbTk::Texture &tex = theme().titleTexture();
         if (!tex.usePixmap()) {
@@ -547,12 +547,12 @@ void Menu::updateMenu(int active_index) {
 
 
 
-    if (title_vis) {
+    if (m_title_vis) {
         menu.title.moveResize(-menu.title.borderWidth(), -menu.title.borderWidth(), 
                               width() + menu.title.borderWidth(), theme().titleHeight());
     }
 
-    menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + 
+    menu.frame.moveResize(0, ((m_title_vis) ? menu.title.y() + menu.title.height() + 
                               menu.title.borderWidth()*2 : 1), 
                           width(), menu.frame_h);
 
@@ -603,8 +603,8 @@ void Menu::updateMenu(int active_index) {
             
     }
 
-    // if menu visible and title visible
-    if (title_vis && visible) 
+    // if menu m_visible and title m_visible
+    if (m_title_vis && m_visible) 
         redrawTitle();
 
     if (active_index >= 0 || m_need_update) {
@@ -631,10 +631,10 @@ void Menu::show() {
     menu.window.showSubwindows();
     menu.window.show();
     raise();
-    visible = true;
+    m_visible = true;
 
     if (! m_parent && shown != this) {
-        if (shown && (! shown->torn))
+        if (shown && (! shown->m_torn))
             shown->hide();
 
         shown = this;
@@ -649,12 +649,12 @@ void Menu::hide() {
         return;
 
 
-    // if not torn and parent is visible, go to first parent
+    // if not m_torn and parent is m_visible, go to first parent
     // and hide it
-    if (!torn && m_parent && m_parent->isVisible()) {
+    if (!m_torn && m_parent && m_parent->isVisible()) {
         Menu *p = m_parent;
 
-        while ((! p->torn) && p->m_parent && p->m_parent->isVisible())
+        while ((! p->m_torn) && p->m_parent && p->m_parent->isVisible())
             p = p->m_parent;
         
         p->internal_hide();
@@ -686,8 +686,8 @@ void Menu::clearWindow() {
 
 void Menu::internal_hide() {
 
-    if (validIndex(which_sub)) {
-        MenuItem *tmp = menuitems[which_sub];
+    if (validIndex(m_which_sub)) {
+        MenuItem *tmp = menuitems[m_which_sub];
         tmp->submenu()->internal_hide();
     }
 
@@ -700,8 +700,8 @@ void Menu::internal_hide() {
     if (shown && shown->menu.window == menu.window)
         shown = (Menu *) 0;
 
-    torn = visible = false;
-    which_sub = which_press = which_sub = -1;
+    m_torn = m_visible = false;
+    m_which_sub = m_which_press = m_which_sub = -1;
     
     menu.window.hide();
 }
@@ -711,7 +711,7 @@ void Menu::move(int x, int y) {
     if (x == this->x() && y == this->y())
         return;
 
-    // if we're not visible and we do transparency
+    // if we're not m_visible and we do transparency
     // we need to update transparency when we call
     // show() next time
     if (alpha() < 255)
@@ -722,8 +722,8 @@ void Menu::move(int x, int y) {
     if (!isVisible())
         return;
 
-    if (which_sub != -1)
-        drawSubmenu(which_sub);
+    if (m_which_sub != -1)
+        drawSubmenu(m_which_sub);
 
     if (alpha() < 255) {
         redrawTitle();
@@ -783,8 +783,8 @@ void Menu::redrawTitle() {
 
 
 void Menu::drawSubmenu(unsigned int index) {
-    if (validIndex(which_sub) && static_cast<unsigned int>(which_sub) != index) {
-        MenuItem *itmp = menuitems[which_sub];
+    if (validIndex(m_which_sub) && static_cast<unsigned int>(m_which_sub) != index) {
+        MenuItem *itmp = menuitems[m_which_sub];
 
         if (! itmp->submenu()->isTorn())
             itmp->submenu()->internal_hide();
@@ -794,7 +794,7 @@ void Menu::drawSubmenu(unsigned int index) {
         return;
 
     MenuItem *item = menuitems[index];
-    if (item->submenu() && visible && (! item->submenu()->isTorn()) &&
+    if (item->submenu() && m_visible && (! item->submenu()->isTorn()) &&
         item->isEnabled()) {
 			
         if (item->submenu()->m_parent != this)
@@ -807,29 +807,29 @@ void Menu::drawSubmenu(unsigned int index) {
         int new_y;
 		
         if (m_alignment == ALIGNTOP) {
-            new_y = (((shifted) ? menu.y_shift : y()) +
-                     ((title_vis) ? theme().titleHeight() + menu.title.borderWidth() : 0) -
-                     ((item->submenu()->title_vis) ?
+            new_y = (((m_shifted) ? menu.y_shift : y()) +
+                     ((m_title_vis) ? theme().titleHeight() + menu.title.borderWidth() : 0) -
+                     ((item->submenu()->m_title_vis) ?
                       item->submenu()->theme().titleHeight() + menu.window.borderWidth() : 0));
         } else {
-            new_y = (((shifted) ? menu.y_shift : y()) +
+            new_y = (((m_shifted) ? menu.y_shift : y()) +
                      (theme().itemHeight() * i) +
-                     ((title_vis) ? theme().titleHeight() + menu.window.borderWidth() : 0) -
-                     ((item->submenu()->title_vis) ?
+                     ((m_title_vis) ? theme().titleHeight() + menu.window.borderWidth() : 0) -
+                     ((item->submenu()->m_title_vis) ?
                       item->submenu()->theme().titleHeight() + menu.window.borderWidth() : 0));
         }
 			
         if (m_alignment == ALIGNBOTTOM &&
-            (new_y + item->submenu()->height()) > ((shifted) ? menu.y_shift :
+            (new_y + item->submenu()->height()) > ((m_shifted) ? menu.y_shift :
                                                    y()) + height()) {
-            new_y = (((shifted) ? menu.y_shift : y()) +
+            new_y = (((m_shifted) ? menu.y_shift : y()) +
                      height() - item->submenu()->height());
         }
 
         int borderw = item->submenu()->fbwindow().borderWidth();
 
         if ((new_x + item->submenu()->width()) + 2*borderw > m_screen_x + m_screen_width) {
-            new_x = ((shifted) ? menu.x_shift : x()) -
+            new_x = ((m_shifted) ? menu.x_shift : x()) -
                 item->submenu()->width() - menu.window.borderWidth();
         }
 			
@@ -841,14 +841,14 @@ void Menu::drawSubmenu(unsigned int index) {
                 menu.window.borderWidth() * 2;
         }
 			
-        item->submenu()->moving = moving;
-        which_sub = index;
+        item->submenu()->m_moving = m_moving;
+        m_which_sub = index;
 
         if (new_y < m_screen_y)
             new_y = m_screen_y;
 
         item->submenu()->move(new_x, new_y);
-        if (! moving)
+        if (! m_moving)
             drawItem(index);
 		
         if (! item->submenu()->isVisible()) {
@@ -858,7 +858,7 @@ void Menu::drawSubmenu(unsigned int index) {
 			
 
     } else
-        which_sub = -1;
+        m_which_sub = -1;
 
 }
 
@@ -1084,8 +1084,8 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
         int w = (sbl * menu.persub) + i;
 
         if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
-            which_press = i;
-            which_sbl = sbl;
+            m_which_press = i;
+            m_which_sbl = sbl;
 
             MenuItem *item = menuitems[w];
 
@@ -1108,11 +1108,11 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
 
 void Menu::buttonReleaseEvent(XButtonEvent &re) {
     if (re.window == menu.title) {
-        if (moving) {
-            moving = false;
+        if (m_moving) {
+            m_moving = false;
 
-            if (which_sub != -1)
-                drawSubmenu(which_sub);
+            if (m_which_sub != -1)
+                drawSubmenu(m_which_sub);
 
             if (alpha() < 255) {
                 redrawTitle();
@@ -1136,7 +1136,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
         int sbl = (re.x / menu.item_w), i = (re.y / theme().itemHeight()),
             ix = sbl * menu.item_w, iy = i * theme().itemHeight(),
             w = (sbl * menu.persub) + i,
-            p = (which_sbl * menu.persub) + which_press;
+            p = (m_which_sbl * menu.persub) + m_which_press;
 
         if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
             if (p == w && isItemEnabled(w)) {
@@ -1160,19 +1160,19 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
     if (me.window == menu.title && (me.state & Button1Mask)) {
         stopHide();
 
-        if (! moving) {
-            // if not moving: start moving operation
-            if (m_parent && (! torn)) {
-                m_parent->drawItem(m_parent->which_sub, 
+        if (! m_moving) {
+            // if not m_moving: start m_moving operation
+            if (m_parent && (! m_torn)) {
+                m_parent->drawItem(m_parent->m_which_sub, 
                                    true,  // clear
                                    true); // render transparency
-                m_parent->which_sub = -1;
+                m_parent->m_which_sub = -1;
             }
 
-            moving = torn = true;
+            m_moving = m_torn = true;
 
-            if (which_sub >= 0)
-                drawSubmenu(which_sub);
+            if (m_which_sub >= 0)
+                drawSubmenu(m_which_sub);
         } else {
             // we dont call ::move here 'cause we dont want to update transparency
             // while draging the menu (which is slow)
@@ -1206,7 +1206,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                         !item->submenu()->isTorn()) {
                         // setup hide timer for submenu
                         item->submenu()->startHide();
-                        which_sub = -1;
+                        m_which_sub = -1;
                     }
                 }                
 
@@ -1215,8 +1215,8 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         }
 
 
-        which_press = i;
-        which_sbl = sbl;
+        m_which_press = i;
+        m_which_sbl = sbl;
 
         m_active_index = -1;
 
@@ -1281,37 +1281,37 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
     menu.x_shift = x(), menu.y_shift = y();
     if (x() + width() > m_screen_x + m_screen_width) {
         menu.x_shift = m_screen_x + m_screen_width - width() - 2*theme().borderWidth();
-        shifted = true;
+        m_shifted = true;
     } else if (x() < 0) {
         menu.x_shift = 0; //-theme().borderWidth();
-        shifted = true;
+        m_shifted = true;
     }
 
     if (y() + height() + 2*theme().borderWidth() > m_screen_height) {
         menu.y_shift = m_screen_height - height() - 2*theme().borderWidth();
-        shifted = true;
+        m_shifted = true;
     } else if (y() + (signed) theme().titleHeight() < 0) {
         menu.y_shift = 0; // -theme().borderWidth();;
-        shifted = true;
+        m_shifted = true;
     }
 
 
-    if (shifted)
+    if (m_shifted)
         menu.window.move(menu.x_shift, menu.y_shift);
     
-    if (validIndex(which_sub)) {
-        MenuItem *tmp = menuitems[which_sub];
+    if (validIndex(m_which_sub)) {
+        MenuItem *tmp = menuitems[m_which_sub];
         if (tmp->submenu()->isVisible()) {
             int sbl = (ce.x / menu.item_w), i = (ce.y / theme().itemHeight()),
                 w = (sbl * menu.persub) + i;
 
-            if (w != which_sub && (! tmp->submenu()->isTorn())) {
+            if (w != m_which_sub && (! tmp->submenu()->isTorn())) {
                 tmp->submenu()->internal_hide();
 
-                drawItem(which_sub, 
+                drawItem(m_which_sub, 
                          true,  // clear
                          true); // transp
-                which_sub = -1;
+                m_which_sub = -1;
             }
         }
     }
@@ -1321,19 +1321,19 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     if (menu.frame != ce.window)
         return;
 
-    if (which_press != -1 && which_sbl != -1 && menuitems.size() > 0) {
-        int p = (which_sbl * menu.persub) + which_press;
+    if (m_which_press != -1 && m_which_sbl != -1 && menuitems.size() > 0) {
+        int p = (m_which_sbl * menu.persub) + m_which_press;
 
         drawItem(p, 
                  true,  // clear
                  true); // transp
 
-        which_sbl = which_press = -1;
+        m_which_sbl = m_which_press = -1;
     }
 
-    if (shifted) {
+    if (m_shifted) {
         //        menu.window.move(menu.x, menu.y);
-        shifted = false;
+        m_shifted = false;
     }
 }
 
@@ -1363,10 +1363,10 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Return:
         // send fake button 1 click
-        if (validIndex(which_press) && 
-            isItemEnabled(which_press)) {
-            menuitems[which_press]->click(1, event.time);
-            itemSelected(1, which_press);
+        if (validIndex(m_which_press) && 
+            isItemEnabled(m_which_press)) {
+            menuitems[m_which_press]->click(1, event.time);
+            itemSelected(1, m_which_press);
             m_need_update = true;
             updateMenu();
         }
@@ -1419,11 +1419,11 @@ void Menu::reconfigure() {
     
 
 void Menu::openSubmenu() {
-    if (!isVisible() || ! validIndex(which_press) ||
-        ! validIndex(which_sbl))
+    if (!isVisible() || ! validIndex(m_which_press) ||
+        ! validIndex(m_which_sbl))
         return;
 
-    int item = which_sbl * menu.persub + which_press;
+    int item = m_which_sbl * menu.persub + m_which_press;
     if (!validIndex(item))
         return;
 
