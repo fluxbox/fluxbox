@@ -104,12 +104,12 @@ $set 8 #Toolbar
 1 00:00000
 2 %02d/%02d/%02d
 3 %02d.%02d.%02d
-4  %02d:%02d
+4 %02d:%02d
 5 %02d:%02d %sm
 6 p
 7 a
 8 Werkbalklijst
-9 Wekveldnaam veranderen
+9 Werkveldnaam veranderen
 10 Werkbalkplaatsing
 
 $set 9 #Window

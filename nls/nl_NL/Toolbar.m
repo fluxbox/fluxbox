@@ -7,7 +7,7 @@ $ #NoStrftimeDateFormat
 $ #NoStrftimeDateFormatEu
 # %02d.%02d.%02d
 $ #NoStrftimeTimeFormat24
-#  %02d:%02d
+# %02d:%02d
 $ #NoStrftimeTimeFormat12
 # %02d:%02d %sm
 $ #NoStrftimeTimeFormatP
@@ -17,6 +17,6 @@ $ #NoStrftimeTimeFormatA
 $ #ToolbarTitle
 # Werkbalklijst
 $ #EditWkspcName
-# Wekveldnaam veranderen
+# Werkveldnaam veranderen
 $ #ToolbarPlacement
 # Werkbalkplaatsing
