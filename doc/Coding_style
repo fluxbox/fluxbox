@@ -1,57 +1,57 @@
-Use hard tab for indentation. (size 4)
+Use 4 space indent
 Spaces between ","
-ex:  1, 2, 3, 4
+ex:  1, 2, a, 4
 
 if/else-statements:
 An else clause is joined to any preceding close curly brace
 that is part of its if.
 
 if (....) {
-	....
+    ....
 } else {
-	....
+    ....
 }
 if the line needs to be splited up, right after an if-statement
 use { and }, so its clear when the if-statement ends.
 ex: 
 if (...) {
-	function(.....,
-		......, .... );
+    function(.....,
+             ......, .... );
 }
 
 This is ok:
 if (...)
-	shortline(...);
+    shortline(...);
 
 
 while-statement:
 
 while (...) {
-	....
+    ....
 }
 
 for-statement:
 
 for (init; condition; update) {
-	....
+    ....
 }
 
 for (longinit;
-	longcondition;
-	longupdate ) {
-	....
+     longcondition;
+     longupdate ) {
+    ....
 }
 alt form:
 
 init;
 for (; condition; update) {
-	....
+    ....
 }
 
 do-statement:
 
 do {
-	....
+    ....
 } while (...);
 
 switch-statement:
@@ -60,22 +60,18 @@ Enum values is an exception, they should not have a default: , when you add
 new values to an enum you might forget to add them to switch statement.
 
 switch (...) {
-	case ...:
-		...;
-	break;
-	case ...: {
-		...;
-	} break;
-	case ...:
-		...;
-	default:
-		....;
-	break;
+    case ...:
+        ...;
+        break;
+    case ...: {
+        ...;
+    } break;
+    case ...:
+        ...;
+    default:
+        ....;
+       break;
 }
-
-goto-statement:
-DONT USE IT!
-
 
 Include guards:
 For files with namespace:
@@ -112,25 +108,19 @@ cryptic and sometime make it hard to debug.
 functions:
 The name starts with a lowercase and then a uppercase for name separation:
 void functionWithAName(...) {
-	...;
+    ...;
 }
 
+Use Javadoc style for function description (see www.doxygen.org)
 Function comments:
-// This do that and that
-// Returns this on success else
-// this on failure.
-// TODO: if there is something to do.
+/**
+ This do that and that
+ @return this on success else this on failure.
+ TODO: if there is something to do.
+*/
 void functionDoes(...) {
 
 }
-Comments:
-Use // on few line comments.
-Use 
-/* 
-...  
-...
-*/
-when there are a lot to comment
 
 Class:
 Order: public, protected and then private
@@ -141,27 +131,27 @@ manipulator and accessors categories.
 
 class Classname:public AnotherClass {
 public:
-	//1. public enums, structs
-	
-	//2. constructors and destructor
-	
-	//3. manipulators
-	
-	//4. accessors
-	
+    //1. public enums, structs
+    
+    //2. constructors and destructor
+    
+    //3. manipulators
+    
+    //4. accessors
+    
 protected:
-	//1. enums, structs
-	
-	//2. functions
-	
-	//3. variables
+    //1. enums, structs
+    
+    //2. functions
+    
+    //3. variables
 
 private:
-	//1. enums, structs
-	
-	//2. functions
-	
-	//3. variables
+    //1. enums, structs
+    
+    //2. functions
+    
+    //3. variables
 };
 
 
@@ -180,9 +170,9 @@ We don't want to force the other files, that include the file, a namespace.
 try/catch-statement:
 
 try {
-	....;
+    ....;
 } catch (...) {
-	....;
+    ....;
 }
 
 Variables:
