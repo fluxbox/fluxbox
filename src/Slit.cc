@@ -295,6 +295,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
 
     frame.pixmap = None;
+    // move the frame out of sight for a moment
+    frame.window.move(-frame.window.width(), -frame.window.height());
     // setup timer
     m_timer.setTimeout(200); // default timeout
     m_timer.fireOnce(true);
