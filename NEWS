@@ -1,5 +1,5 @@
 News in 0.9.12: 
-    * Added Imlib2 support (./configure --enable-imlib2) [default=disabled]
+   * Added Imlib2 support (./configure --enable-imlib2) [default=disabled]
       Fluxbox can now load *.png, *.jpg and other image-formats.
    *  Added Tab command, which goes to a specific tab number 
       action:
