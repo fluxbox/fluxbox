@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.1 2003/08/11 15:28:33 fluxgen Exp $
+// $Id: Container.cc,v 1.2 2003/08/13 09:39:16 fluxgen Exp $
 
 #include "FbTk/Button.hh"
 #include "Container.hh"
@@ -59,7 +59,7 @@ void Container::insertItems(ItemList &item_list, int pos) {
     ItemList::iterator it = m_item_list.begin();
     ItemList::iterator it_end = m_item_list.end();
     for (; it != it_end; ++it) {
-        if ((*it)->window().parent() != this)
+        if ((*it)->parent() != this)
             return;
     }
 
@@ -87,7 +87,7 @@ void Container::insertItem(Item item, int pos) {
         return;
 
     // it must be a child of this window
-    if (item->window().parent() != this)
+    if (item->parent() != this)
         return;
 
     if (pos >= size() || pos < 0) {
@@ -177,10 +177,15 @@ void Container::repositionItems() {
     int next_x = 0;
     for (; it != it_end; ++it, next_x += max_width_per_client) {
         // resize each clients including border in size
-        (*it)->moveResize(next_x - (*it)->window().borderWidth(),
-                          (*it)->window().borderWidth(), 
-                          max_width_per_client - (*it)->window().borderWidth(),
-                          height() + (*it)->window().borderWidth());
+        (*it)->moveResize(next_x - (*it)->borderWidth(),
+                          -(*it)->borderWidth(), 
+                          max_width_per_client - (*it)->borderWidth(),
+                          height() + (*it)->borderWidth());
         (*it)->clear();
     }
+}
+
+
+unsigned int Container::maxWidthPerClient() const {
+    return (size() == 0 ? width() : (width() + size()*m_item_list.front()->borderWidth())/size()); 
 }

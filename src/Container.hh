@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.hh,v 1.1 2003/08/11 15:28:33 fluxgen Exp $
+// $Id: Container.hh,v 1.2 2003/08/13 09:39:16 fluxgen Exp $
 
 #ifndef CONTAINER_HH
 #define CONTAINER_HH
@@ -31,15 +31,9 @@
 
 #include <list>
 
-class ContainerTheme;
-
-namespace FbTk {
-class Button;
-};
-
 class Container:public FbTk::FbWindow, public FbTk::EventHandler, private FbTk::NotCopyable {
 public:
-    typedef FbTk::Button * Item;
+    typedef FbTk::FbWindow * Item;
     typedef std::list<Item> ItemList;
 
     explicit Container(const FbTk::FbWindow &parent);
@@ -65,7 +59,7 @@ public:
     int size() const { return m_item_list.size(); }
     const Item selected() const { return m_selected; }
     Item selected() { return m_selected; }
-    unsigned int maxWidthPerClient() const { return (size() == 0 ? width() : width()/size()); }
+    unsigned int maxWidthPerClient() const;
     unsigned int maxHeightPerClient() const { return (size() == 0 ? height() : height()/size()); }
 private:
     void repositionItems();
