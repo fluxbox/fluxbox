@@ -21,3 +21,6 @@ menu: 			../util/fluxbox-generate_menu
 startup: 		startup.in
 	@regex_cmd@ -e "s,@pkgbindir@,$(bindir),g" \
 		startup.in > startup
+
+../util/fluxbox-generate_menu:
+	cd ../util && make fluxbox-generate_menu
