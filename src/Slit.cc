@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.69 2003/06/27 15:05:19 rathnor Exp $
+// $Id: Slit.cc,v 1.70 2003/07/03 13:01:58 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -825,7 +825,9 @@ void Slit::reposition() {
 
     int border_width = theme().borderWidth();
     int bevel_width = theme().bevelWidth();
-
+    // make sure at leaste one pixel is visible
+    if (border_width >= bevel_width)
+        bevel_width = border_width + 1;
     // place the slit in the appropriate place
     switch (placement()) {
     case TOPLEFT:
