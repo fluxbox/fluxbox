@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/19:
+  * Fix a tiny bug that leads to high cpuload under some circumstances (Mathias)
+    FbTk/Timer.cc
 *04/09/16:
   * Fix restart command not reading its args (Simon)
     MenuCreator.cc
