@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.20 2003/05/31 01:07:36 rathnor Exp $
+// $Id: Remember.cc,v 1.21 2003/06/05 13:20:05 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -125,19 +125,19 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
     return menu;
 };
 
-const char * getWMClass(Window w) {
+std::string getWMClass(Window w) {
     XClassHint ch;
     
     if (XGetClassHint(FbTk::App::instance()->display(), w, &ch) == 0) {
         cerr<<"Failed to read class hint!"<<endl;
         return 0;
     } else {
-        string m_instance_name;
+        string instance_name;
         if (ch.res_name != 0) {
-            m_instance_name = const_cast<char *>(ch.res_name);
+            instance_name = const_cast<char *>(ch.res_name);
             XFree(ch.res_name);
         } else 
-            m_instance_name = "";
+            instance_name = "";
         
         if (ch.res_class != 0) {
             //m_class_name = const_cast<char *>(ch.res_class);
@@ -145,7 +145,7 @@ const char * getWMClass(Window w) {
         } else {
             //m_class_name = "";
         }
-        return m_instance_name.c_str();
+        return instance_name.c_str();
     }
 }
 
@@ -177,11 +177,11 @@ Application* Remember::add(const char* app_name) {
 }
 
 Application* Remember::find(WinClient &winclient) {
-    return find(getWMClass(winclient.window()));
+    return find(getWMClass(winclient.window()).c_str());
 }
 
 Application* Remember::add(WinClient &winclient) {
-    return add(getWMClass(winclient.window()));
+    return add(getWMClass(winclient.window()).c_str());
 }
 
 
