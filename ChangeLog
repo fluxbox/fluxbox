@@ -1,6 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/13:
+  * Some updates to the man page (Gruber)
   * Fixed a minor issue with icc (intel compiler) (Mathias)
     Slit.cc Xinerama.hh Screen.cc Container.hh LayerMenu.hh
     FbMenu.cc/hh IconMenu.cc WorkspaceMenu.cc MenuCreator.cc
