@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/19:
+   * Redo ResourceManager so that it loads resources on registration, and
+     only opens the database in blocks of requests    (Simon)
+     - fixes initial loading of init resources (e.g. toolbar.layer)
+     Resource.hh/cc XrmDatabaseHelper.hh Screen.cc fluxbox.hh/cc Slit.cc
+     Toolbar.cc ToolbarHandler.cc
 *03/07/18:
    * Fix java bug. Wasn't sending ConfigureNotify's to client (Simon)
      - also fix missing border on transient windows

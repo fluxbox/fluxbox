@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.22 2003/07/10 11:53:44 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.23 2003/07/18 15:40:55 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -142,6 +142,7 @@ void setupModeMenu(FbTk::Menu &menu, ToolbarHandler &handler) {
 
 ToolbarHandler::ToolbarHandler(BScreen &screen) 
     : m_screen(screen), 
+      // no need to lock since only one resource
       m_rc_mode(screen.resourceManager(), ToolbarHandler::ICONS,
                 screen.name() + ".toolbar.mode", screen.altName() + ".Toolbar.Mode"), 
       m_toolbar(0),

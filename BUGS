@@ -2,9 +2,6 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
-  * Slit (check toolbar too) layernum isn't initialised to resource 
-    value on init. Also check why Fluxbox::Layer is used rather than int.
-
   * Remember menu sometimes isn't present in window menu. Probably need
     to add a signal for menu reconfigures (Screen::setupWindowActions)
 
@@ -18,9 +15,11 @@ BUGS:
   * Some menus don't close when you click on items.
 
   * Transparancy for the slit does not always work right.
+    => is this fixed now?? (as of ResourceManager changes)
 
   * After startup the font of the toolbar is to big; reload config works
     around this.
+    => is this fixed now?? (as of ResourceManager changes)
 
   * Saving of number of workspaces on restart
 
@@ -69,4 +68,9 @@ Fixed bugs (or not-our-fault bugs):
 
   * Transient windows seem to not have a X border - is this right?
     => no, they ought to have a border
+
+  * Slit (check toolbar too) layernum isn't initialised to resource 
+    value on init. Also check why Fluxbox::Layer is used rather than int.
+    => Fixed by reorganising the way ResourceManager works.
+       Fluxbox::Layer is used so that we can give some layers names
 

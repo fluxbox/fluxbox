@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XrmDatabaseHelper.hh,v 1.1 2003/05/18 22:06:59 fluxgen Exp $
+// $Id: XrmDatabaseHelper.hh,v 1.2 2003/07/18 15:40:55 rathnor Exp $
 
 // This is a helper for XrmDatabase
 // when database goes out of scope
@@ -34,6 +34,8 @@
 /**
 	Helper class for XrmDatabase.
 */
+namespace FbTk {
+
 class XrmDatabaseHelper
 {
 public:
@@ -75,4 +77,5 @@ private:
     XrmDatabase m_database;	
 };
 
+}; // namespace FbTk
 #endif //_XRMDATABASEHELPER_HH_

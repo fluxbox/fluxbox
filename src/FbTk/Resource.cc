@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.1 2003/05/18 22:06:59 fluxgen Exp $
+// $Id: Resource.cc,v 1.2 2003/07/18 15:40:55 rathnor Exp $
 
-#include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
+#include "Resource.hh"
 
 #include <iostream>
 #include <cassert>
@@ -31,22 +31,43 @@ using namespace std;
 
 namespace FbTk {
 
+ResourceManager::ResourceManager(const char *filename, bool lock_db) :
+ m_db_lock(0),
+ m_database(0),
+ m_filename(filename)
+{
+    ensureXrmIsInitialize();
+
+    if (lock_db)
+        lock();
+}
+
+ResourceManager::~ResourceManager() {
+    if (m_database)
+        delete m_database;
+}
+
 bool ResourceManager::m_init = false;
 
 /**
-  loads a resourcefile 
+  reloads all resources from resourcefile 
   @return true on success else false
 */
 bool ResourceManager::load(const char *filename) {
-    assert(filename);
+    m_filename = filename;
 
-    ensureXrmIsInitialize();
-	
-    XrmDatabaseHelper database;
-    database = XrmGetFileDatabase(filename);
-    if (database==0)
+    // force reload (lock will ensure it exists)
+    if (m_database) {
+        delete m_database;
+        m_database = 0;
+    }
+
+    lock();
+    if (!m_database) {
+        unlock();
         return false;
-	
+    }
+        
     XrmValue value;
     char *value_type;
 	
@@ -56,7 +77,7 @@ bool ResourceManager::load(const char *filename) {
     for (; i != i_end; ++i) {
 	
         Resource_base *resource = *i;
-        if (XrmGetResource(*database, resource->name().c_str(),
+        if (XrmGetResource(**m_database, resource->name().c_str(),
                            resource->altName().c_str(), &value_type, &value))			
             resource->setFromString(value.addr);
         else {
@@ -65,6 +86,8 @@ bool ResourceManager::load(const char *filename) {
             resource->setDefaultValue();
         }
     }
+
+    unlock();
 
     return true;
 }
@@ -75,9 +98,8 @@ bool ResourceManager::load(const char *filename) {
 */
 bool ResourceManager::save(const char *filename, const char *mergefilename) {
     assert(filename);
-	
-    ensureXrmIsInitialize();
-
+    
+    // empty database
     XrmDatabaseHelper database;
 
     string rc_string;	
@@ -92,20 +114,32 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
 
     if (database==0)
         return false;
-	
+
     //check if we want to merge a database
     if (mergefilename) {
-        XrmDatabaseHelper olddatabase(mergefilename);
-        if (olddatabase == 0) // did we load the file?
+        // force reload of file
+        m_filename = mergefilename;
+        if (m_database) 
+            delete m_database;
+        m_database = 0;
+
+        lock();
+
+        if (!m_database) {
+            unlock();
             return false;
-		
-        XrmMergeDatabases(*database, &*olddatabase); // merge databases
-        XrmPutFileDatabase(*olddatabase, filename); // save database to file
-		
-        *database = 0; // don't try to destroy the database
+        }
+
+        XrmMergeDatabases(*database, &**m_database); // merge databases
+        XrmPutFileDatabase(**m_database, filename); // save database to file
+
+        // don't try to destroy the database (XrmMergeDatabases destroys it)
+        *database = 0;
+        unlock();
     } else // save database to file
         XrmPutFileDatabase(*database, filename);
 
+    m_filename = filename;
     return true;
 }
 
@@ -115,5 +149,30 @@ void ResourceManager::ensureXrmIsInitialize() {
         m_init = true;
     }
 }
-	
+
+ResourceManager &ResourceManager::lock() {
+    ++m_db_lock;
+    // if the lock was zero, then load the database
+    if ((m_db_lock == 1 || !m_database) &&
+        m_filename != "") {
+        m_database = new XrmDatabaseHelper(m_filename.c_str());
+
+        // check that the database loaded ok
+        if (m_database && *m_database == 0) {
+            // didn't work
+            delete m_database;
+            m_database = 0;
+        }
+    }
+
+    return *this;
+}
+
+void ResourceManager::unlock() {
+    if (--m_db_lock == 0 && m_database) {
+        delete m_database;
+        m_database = 0;
+    }
+}
+
 }; // end namespace FbTk

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.202 2003/07/10 11:29:45 fluxgen Exp $
+// $Id: Screen.cc,v 1.203 2003/07/18 15:40:55 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -481,8 +481,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         }
     }
 
-
-    // set the toolbarhandler after the windows are setup, so it catches their state properly
+    rm.unlock();
 
     XFree(children);
     XFlush(disp);

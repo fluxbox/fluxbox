@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.64 2003/07/04 01:03:41 rathnor Exp $
+// $Id: fluxbox.hh,v 1.65 2003/07/18 15:40:55 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -224,7 +224,7 @@ private:
     
     std::auto_ptr<FbAtoms> m_fbatoms;
 
-    FbTk::ResourceManager m_resourcemanager, m_screen_rm;
+    FbTk::ResourceManager m_resourcemanager, &m_screen_rm;
 	
     //--- Resources
     FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;

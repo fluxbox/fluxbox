@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.170 2003/07/10 12:00:49 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.171 2003/07/18 15:40:55 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -388,7 +388,9 @@ Fluxbox::Titlebar Fluxbox::s_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfilename)
     : FbTk::App(dpy_name),
       m_fbatoms(new FbAtoms()),
-      m_resourcemanager(), m_screen_rm(),
+      m_resourcemanager(rcfilename, true), 
+      // TODO: shouldn't need a separate one for screen
+      m_screen_rm(m_resourcemanager),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_colors_per_channel(m_resourcemanager, 4, 
@@ -463,6 +465,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     XRRQueryExtension(disp, &m_randr_event_type, &error_base);
 #endif // HAVE_RANDR
 
+    load_rc();
+
     // setup atom handlers before we create any windows
 #ifdef USE_GNOME
     addAtomHandler(new Gnome()); // for gnome 1 atom support
@@ -493,13 +497,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_fluxbox_pid = XInternAtom(disp, "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
 
-    load_rc();
     // Allocate screens
     for (int i = 0; i < ScreenCount(display()); i++) {
         char scrname[128], altscrname[128];
         sprintf(scrname, "session.screen%d", i);
         sprintf(altscrname, "session.Screen%d", i);
-        BScreen *screen = new BScreen(m_screen_rm, 
+        BScreen *screen = new BScreen(m_screen_rm.lock(), 
                                       scrname, altscrname,
                                       i, getNumberOfLayers());
         if (! screen->isScreenManaged()) {
@@ -563,7 +566,13 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // Create keybindings handler and load keys file	
     m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
+    m_resourcemanager.unlock();
     ungrab();
+
+#ifdef DEBUG
+    if (m_resourcemanager.lockDepth() != 0) 
+        cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
+#endif //DEBUG
     m_starting = false;
 }
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.100 2003/07/10 15:52:58 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.101 2003/07/18 15:40:55 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -262,7 +262,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_themelistener(*this),
     m_layeritem(frame.window, layer),
     m_strut(0),
-    m_rc_auto_hide(scrn.resourceManager(), false, 
+    // lock rcmanager here
+    m_rc_auto_hide(scrn.resourceManager().lock(), false, 
                    scrn.name() + ".toolbar.autoHide", scrn.altName() + ".Toolbar.AutoHide"),
     m_rc_maximize_over(scrn.resourceManager(), false,
                        scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
@@ -280,6 +281,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_theme.addListener(m_themelistener);
     // listen to screen reconfigure
     screen().reconfigureSig().attach(&m_themelistener);
+
+    moveToLayer((*m_rc_layernum).getNum());
 
     m_layermenu.setInternalMenu();
     m_placementmenu.setInternalMenu();
@@ -330,6 +333,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     reconfigure(); // get everything together
     frame.window.showSubwindows();
     frame.window.show();
+
+    scrn.resourceManager().unlock();
 }
 
 

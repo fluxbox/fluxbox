@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.71 2003/07/06 07:09:53 rathnor Exp $
+// $Id: Slit.cc,v 1.72 2003/07/18 15:40:55 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -264,8 +264,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_strut(0),
 
       // resources
-
-      m_rc_auto_hide(scr.resourceManager(), false, 
+      // lock in first resource
+      m_rc_auto_hide(scr.resourceManager().lock(), false, 
                      scr.name() + ".slit.autoHide", scr.altName() + ".Slit.AutoHide"),
       // TODO: this resource name must change
       m_rc_maximize_over(scr.resourceManager(), false,
@@ -313,12 +313,14 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                          screen().screenNumber()));
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
+    moveToLayer((*m_rc_layernum).getNum());
 
     // Get client list for sorting purposes
     loadClientList(filename);
 
     setupMenu();
 
+    scr.resourceManager().unlock();
 }
 
 

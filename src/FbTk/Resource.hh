@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.1 2003/05/18 22:06:59 fluxgen Exp $
+// $Id: Resource.hh,v 1.2 2003/07/18 15:40:55 rathnor Exp $
 
 #ifndef FBTK_RESOURCE_HH
 #define FBTK_RESOURCE_HH
@@ -28,8 +28,11 @@
 
 #include <string>
 #include <list>
+#include <X11/Xresource.h>
 
 namespace FbTk {
+
+class XrmDatabaseHelper;
 
 /// Base class for resources, this is only used in ResourceManager
 class Resource_base:private FbTk::NotCopyable
@@ -66,8 +69,10 @@ class ResourceManager
 public:
     typedef std::list<Resource_base *> ResourceList;
 
-    ResourceManager() { }
-    virtual ~ResourceManager() {}
+    // lock specifies if the database should be opened with one level locked
+    // (useful for constructing inside initial set of constructors)
+    ResourceManager(const char *filename, bool lock_db);
+    virtual ~ResourceManager();
 
     /// Load all resources registered to this class
     /// @return true on success
@@ -77,12 +82,11 @@ public:
     /// @return true on success
     virtual bool save(const char *filename, const char *mergefilename=0);
 
+    
+
     /// Add resource to list, only used in Resource<T>
     template <class T>
-    void addResource(Resource<T> &r) {
-        m_resourcelist.push_back(&r);
-        m_resourcelist.unique();
-    }
+    void addResource(Resource<T> &r);
 
     /// Remove a specific resource, only used in Resource<T>
     template <class T>
@@ -90,12 +94,27 @@ public:
         m_resourcelist.remove(&r);
     }
 
+    // this marks the database as "in use" and will avoid reloading 
+    // resources unless it is zero.
+    // It returns this resource manager. Useful for passing to 
+    // constructors like Object(m_rm.lock())
+    ResourceManager &lock();
+    void unlock();
+    // for debugging
+    inline int lockDepth() const { return m_db_lock; }
+
 protected:
     static void ensureXrmIsInitialize();
+
+    int m_db_lock;
 
 private:
     static bool m_init;
     ResourceList m_resourcelist;
+
+    XrmDatabaseHelper *m_database;
+
+    std::string m_filename;
 };
 
 
@@ -141,6 +160,38 @@ private:
     T m_value, m_defaultval;
     ResourceManager &m_rm;
 };
+
+
+// add the resource and load its value
+template <class T>
+void ResourceManager::addResource(Resource<T> &r) {
+    m_resourcelist.push_back(&r);
+    m_resourcelist.unique();
+
+    // lock ensures that the database is loaded.
+    lock();
+
+    if (m_database == 0) {
+        unlock();
+        return;
+    }
+
+    XrmValue value;
+    char *value_type;
+
+    // now, load the value for this resource
+    if (XrmGetResource(**m_database, r.name().c_str(),
+                       r.altName().c_str(), &value_type, &value)) {
+        r.setFromString(value.addr);
+    } else {
+        cerr<<"Failed to read: "<<r.name()<<endl;
+        cerr<<"Setting default value"<<endl;
+            r.setDefaultValue();
+    }
+
+    unlock();
+}
+	
 
 }; // end namespace FbTk
 
