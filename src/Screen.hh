@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.61 2003/01/12 17:57:46 fluxgen Exp $
+// $Id: Screen.hh,v 1.62 2003/01/12 18:46:01 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -49,8 +49,6 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-class Workspacemenu;
-class Iconmenu;
 class Netizen;
 class Slit;
 class Toolbar;
@@ -227,7 +225,6 @@ public:
     inline void saveClock24Hour(bool c) { resource.clock24hour = c; }
 
     inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
-    inline Theme::MenuStyle *getMenuStyle() { return &theme->getMenuStyle(); } 
     inline FbWinFrameTheme &winFrameTheme() { return m_windowtheme; }
     inline const FbWinFrameTheme &winFrameTheme() const { return m_windowtheme; }
     inline FbTk::MenuTheme *menuTheme() { return m_menutheme.get(); }
