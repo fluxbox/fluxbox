@@ -8,42 +8,43 @@ News in 0.9.6:
       consistent frontend for both *dm and startx and your fluxbox-session
     * Added "!" as a comment line for keys file
     * Added new actions
-	  * workspacemenu	  
-	  * Move x y
-	  * Resize x y
-	  Next two commands are absolute coordinates
-	  * MoveTo x y
-	  * ResizeTo x y
+          * workspacemenu	  
+          * Move x y
+          * Resize x y
+          Next two commands are absolute coordinates
+          * MoveTo x y
+          * ResizeTo x y
     * Improved menu speed
     * Added -verbose argument to fluxbox
-	  This will enable theme warnings
+        This will enable theme warnings
     * Configurable tools in toolbar
-	   * New resource item:
-          * session.screen<num>.toolbar.tools: <toolname>, <toolname2>
-           example: session.screen0.toolbar.tools: clock, iconbar, workspacename
-           Valid toolnames are:
-          * workspacename
-          * clock
-          * iconbar
-          * systemtray
-		  And the old arrows are back:
-		  * nextworkspace/prevworkspace
-		  * nextwindow/prevwindow   
+        * New resource item:
+        * session.screen<num>.toolbar.tools: <toolname>, <toolname2>
+          example: session.screen0.toolbar.tools: clock, iconbar, workspacename
+          Valid toolnames are:
+             * workspacename
+             * clock
+             * iconbar
+             * systemtray
+             And the old arrows are back:
+             * nextworkspace/prevworkspace
+             * nextwindow/prevwindow   
     * New theme items for toolbar
-	   * toolbar.button.size: <interger>   for fixed buttons in the toolbar
-       * toolbar.button.borderWidth: <integer>
-       * toolbar.button.borderColor: <color>
-       * toolbar.button: <texture>
-       * toolbar.button.color: <color>
-       * toolbar.button.colorTo: <color>
-       * toolbar.button.pixmap:  <filename>
-       * toolbar.button.picColor: <color>	
-       * toolbar.button.pressed.color: <color>
-       * toolbar.button.pressed.colorTo: <color>
-       * toolbar.button.pressed: <texture>	   
-	* Support for _NET_WM_STATE_FULLSCREEN
-	* Nearest-quadrant resizing
-	* Improvements/Updates to fbsetbg and fluxbox-generate_menu
+        * toolbar.button.size: <interger>   for fixed buttons in the toolbar
+        * toolbar.button.borderWidth: <integer>
+        * toolbar.button.borderColor: <color>
+        * toolbar.button: <texture>
+        * toolbar.button.color: <color>
+        * toolbar.button.colorTo: <color>
+        * toolbar.button.pixmap:  <filename>
+        * toolbar.button.picColor: <color>	
+        * toolbar.button.pressed.color: <color>
+        * toolbar.button.pressed.colorTo: <color>
+        * toolbar.button.pressed: <texture>	   
+    * Support for _NET_WM_STATE_FULLSCREEN
+    * Nearest-quadrant resizing
+    * Improvements/Updates to fbsetbg and fluxbox-generate_menu
+
 Bug fixes: 
     * Fixed some issues with mplayer in fullscreen
     * Fixed java bug with missing drawing bits of window
