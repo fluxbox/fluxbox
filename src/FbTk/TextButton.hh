@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: TextButton.hh,v 1.5 2004/01/08 22:03:13 fluxgen Exp $
 
 #ifndef FBTK_TEXTBUTTON_HH
 #define FBTK_TEXTBUTTON_HH
@@ -68,11 +68,11 @@ protected:
     virtual void drawText(int x_offset = 0, int y_offset = 0);
 
 private:
-    FbTk::FbPixmap m_buffer; ///< for background buffer
     const FbTk::Font *m_font;
     std::string m_text;
     FbTk::Justify m_justify;
     int m_bevel;
+    FbTk::FbPixmap m_buffer; ///< for background buffer
 };
 
 } // end namespace FbTk

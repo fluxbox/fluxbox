@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.29 2003/12/30 17:17:05 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.30 2004/01/08 22:04:39 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -93,8 +93,9 @@ FbWindow::FbWindow(int screen_num,
                    bool override_redirect,
                    int depth,
                    int class_type):
+    m_parent(0),
     m_screen_num(screen_num),
-    m_parent(0), m_destroy(true),
+    m_destroy(true),
     m_buffer_pm(0) {
 	
     create(RootWindow(FbTk::App::instance()->display(), screen_num), 
@@ -108,7 +109,8 @@ FbWindow::FbWindow(const FbWindow &parent,
                    bool override_redirect, 
                    int depth, int class_type):
     m_parent(&parent),
-    m_screen_num(parent.screenNumber()), m_destroy(true),
+    m_screen_num(parent.screenNumber()), 
+    m_destroy(true),
     m_buffer_pm(0) { 
 
     create(parent.window(), x, y, width, height, eventmask, 
@@ -117,8 +119,9 @@ FbWindow::FbWindow(const FbWindow &parent,
 	
 };
 
-FbWindow::FbWindow(Window client):m_parent(0), m_window(0),
+FbWindow::FbWindow(Window client):m_parent(0), 
                                   m_screen_num(0),
+                                  m_window(0),
                                   m_x(0), m_y(0),
                                   m_width(1), m_height(1),
                                   m_border_width(0),

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.16 2003/10/13 23:43:11 fluxgen Exp $
+// $Id: Button.cc,v 1.17 2004/01/08 22:05:12 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -126,8 +126,8 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
 
     // finaly, execute command (this must be done last since this object might be deleted by the command)
     if (event.button > 0 && event.button <= 5 &&
-        event.x > 0 && event.x < width() &&
-        event.y > 0 && event.y < height() &&
+        event.x > 0 && event.x < static_cast<signed>(width()) &&
+        event.y > 0 && event.y < static_cast<signed>(height()) &&
         m_onclick[event.button -1].get() != 0)
         m_onclick[event.button - 1]->execute();
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.5 2003/12/30 18:26:18 fluxgen Exp $
+// $Id: TextBox.cc,v 1.6 2004/01/08 22:02:52 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -140,7 +140,7 @@ void TextBox::insertText(const std::string &val) {
 }
 
 void TextBox::killToEnd() {
-    if (cursorPosition() < text().size()) {
+    if (cursorPosition() >= 0 && cursorPosition() < static_cast<signed>(text().size())) {
         m_text.erase(cursorPosition());
         setText(m_text);
     }
@@ -262,7 +262,7 @@ void TextBox::setCursorPosition(int pos) {
 void TextBox::adjustEndPos() {
     m_end_pos = text().size();
     int text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
-    while (text_width > width()) {
+    while (text_width > static_cast<signed>(width())) {
         m_end_pos--;
         text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
     }
@@ -270,12 +270,12 @@ void TextBox::adjustEndPos() {
 
 void TextBox::adjustStartPos() {
     int text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
-    if (text_width < width())
+    if (text_width < static_cast<signed>(width()))
         return;
 
     int start_pos = 0;
     text_width = font().textWidth(text().c_str() + start_pos, m_end_pos - start_pos);
-    while (text_width > width()) {
+    while (text_width > static_cast<signed>(width())) {
         start_pos++;
         text_width = font().textWidth(text().c_str() + start_pos, m_end_pos - start_pos);
     }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.cc,v 1.7 2003/07/20 18:05:39 rathnor Exp $
+// $Id: MultLayers.cc,v 1.8 2004/01/08 22:04:04 fluxgen Exp $
 
 #include "MultLayers.hh"
 #include "XLayer.hh"
@@ -48,7 +48,7 @@ MultLayers::~MultLayers() {
 
 
 XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
-    if (layernum >= m_layers.size() || layernum <= 0) 
+    if (layernum >= static_cast<signed>(m_layers.size()) || layernum <= 0) 
         return 0;
 
     layernum--; // next one up
@@ -92,7 +92,7 @@ XLayerItem *MultLayers::getItemAbove(XLayerItem &item) {
 void MultLayers::addToTop(XLayerItem &item, int layernum) {
     if (layernum < 0) 
         layernum = 0; 
-    else if (layernum >= m_layers.size())
+    else if (layernum >= static_cast<signed>(m_layers.size()))
         layernum = m_layers.size()-1;
 
     m_layers[layernum]->insert(item);
@@ -103,7 +103,7 @@ void MultLayers::addToTop(XLayerItem &item, int layernum) {
 // raise the whole layer
 void MultLayers::raise(XLayer &layer) {
     int layernum = layer.getLayerNum();
-    if (layernum >= (m_layers.size() - 1))
+    if (layernum >= static_cast<signed>(m_layers.size() - 1))
         // already on top
         return;
     
@@ -145,7 +145,7 @@ void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
     // clamp layer number
     if (layernum < 0) 
         layernum = 0; 
-    else if (layernum >= m_layers.size()) 
+    else if (layernum >= static_cast<signed>(m_layers.size())) 
         layernum = m_layers.size()-1;
     // remove item from old layer and insert it into the 
     item.setLayer(*m_layers[layernum]);
@@ -158,7 +158,7 @@ void MultLayers::restack() {
     int layernum=0, winnum=0, size = this->size();
 
     Window *winlist = new Window[size];
-    for (layernum=0; layernum < m_layers.size(); layernum++) {
+    for (layernum=0; layernum < static_cast<signed>(m_layers.size()); layernum++) {
 
         XLayer::ItemList::iterator it = m_layers[layernum]->getItemList().begin();
         XLayer::ItemList::iterator it_end = m_layers[layernum]->getItemList().end();
@@ -181,7 +181,7 @@ void MultLayers::restack() {
 
 int MultLayers::size() {
     int i = 0, num = 0;
-    for (; i < m_layers.size(); i++) {
+    for (; i < static_cast<signed>(m_layers.size()); i++) {
         num += m_layers[i]->countWindows();
     }
     return num;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.13 2003/12/17 00:43:22 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.14 2004/01/08 22:07:58 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -60,17 +60,16 @@ MenuTheme::MenuTheme(int screen_num):
     h_text_gc(RootWindow(m_display, screen_num)),
     d_text_gc(RootWindow(m_display, screen_num)),
     hilite_gc(RootWindow(m_display, screen_num)),
+    m_alpha(255),
     m_menumode(DELAY_OPEN),
     m_delayopen(0), // no delay as default
-    m_delayclose(0), // no delay as default
-    m_alpha(255) { 
+    m_delayclose(0) // no delay as default
+{ 
 
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
     *m_border_width = 0;
-
-    Window rootwindow = RootWindow(m_display, screen_num);
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);

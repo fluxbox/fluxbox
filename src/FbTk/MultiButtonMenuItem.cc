@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultiButtonMenuItem.cc,v 1.1 2003/11/27 13:20:57 fluxgen Exp $
+// $Id: MultiButtonMenuItem.cc,v 1.2 2004/01/08 22:07:28 fluxgen Exp $
 
 #include "MultiButtonMenuItem.hh"
 
@@ -28,15 +28,15 @@ namespace FbTk {
 
 MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const char *label):
     MenuItem(label),
-    m_buttons(buttons),
-    m_button_exe(0) {
+    m_button_exe(0),
+    m_buttons(buttons) {
     init(buttons);
 }
 
 MultiButtonMenuItem::MultiButtonMenuItem(int buttons, const char *label, Menu *submenu):
     MenuItem(label, submenu),
-    m_buttons(buttons),
-    m_button_exe(0) {
+    m_button_exe(0),
+    m_buttons(buttons) {
     init(buttons);
 }
 
@@ -46,13 +46,13 @@ MultiButtonMenuItem::~MultiButtonMenuItem() {
 }
 
 void MultiButtonMenuItem::setCommand(int button, FbTk::RefCount<FbTk::Command> &cmd) {
-    if (button <= 0 || button > buttons() || buttons() == 0)
+    if (button <= 0 || button > static_cast<signed>(buttons()) || buttons() == 0)
         return;
     m_button_exe[button - 1] = cmd;
 }
 
 void MultiButtonMenuItem::click(int button, int time) {
-    if (button <= 0 || button > buttons() || buttons() == 0)
+    if (button <= 0 || button > static_cast<signed>(buttons()) || buttons() == 0)
         return;
 
     if (*m_button_exe[button - 1] != 0)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.51 2003/12/18 18:03:23 fluxgen Exp $
+// $Id: Menu.cc,v 1.52 2004/01/08 22:07:00 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -57,8 +57,8 @@ Menu *Menu::s_focused = 0;
 
 Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_theme(tm),
-    m_image_ctrl(imgctrl),
     m_parent(0),
+    m_image_ctrl(imgctrl),
     m_screen_width(DisplayWidth(FbTk::App::instance()->display(), tm.screenNum())),
     m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm.screenNum())),
     m_alignment(ALIGNDONTCARE),
@@ -253,13 +253,13 @@ void Menu::lower() {
 }
 
 void Menu::nextItem() {
-    if (which_press == menuitems.size() - 1)
+    if (which_press >= 0 && which_press == static_cast<signed>(menuitems.size() - 1))
         return;
 
     int old_which_press = which_press;
 
     if (old_which_press >= 0 && 
-        old_which_press < menuitems.size() && 
+        old_which_press < static_cast<signed>(menuitems.size()) && 
         menuitems[old_which_press] != 0) {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
@@ -271,9 +271,9 @@ void Menu::nextItem() {
 
     // restore old in case we changed which_press
     which_press = old_which_press;
-    if (which_press < 0 || which_press >= menuitems.size())
+    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()))
         which_press = 0;
-    else if (which_press < menuitems.size() - 1)
+    else if (which_press > 0 && which_press < static_cast<signed>(menuitems.size() - 1))
         which_press++;
 
 
@@ -291,7 +291,7 @@ void Menu::prevItem() {
 
     int old_which_press = which_press;
 
-    if (old_which_press >= 0 && old_which_press < menuitems.size()) {
+    if (old_which_press >= 0 && old_which_press < static_cast<signed>(menuitems.size())) {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
@@ -302,7 +302,7 @@ void Menu::prevItem() {
     // restore old in case we changed which_press
     which_press = old_which_press;
 
-    if (which_press < 0 || which_press >= menuitems.size())
+    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()))
         which_press = 0;
     else if (which_press - 1 >= 0)
         which_press--;
@@ -317,7 +317,7 @@ void Menu::prevItem() {
 }
 
 void Menu::enterSubmenu() {
-    if (which_press < 0 || which_press >= menuitems.size())
+    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()))
         return;
 
     Menu *submenu = menuitems[which_press]->submenu();
@@ -330,7 +330,7 @@ void Menu::enterSubmenu() {
 }
 
 void Menu::enterParent() {
-    if (which_press < 0 || which_press >= menuitems.size() || parent() == 0)
+    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()) || parent() == 0)
         return;
 
     Menu *submenu = menuitems[which_press]->submenu();
@@ -517,7 +517,7 @@ void Menu::update(int active_index) {
             if (i == (unsigned int)which_sub) {
                 drawItem(i, true, true, false);
             } else
-                drawItem(i, (i == active_index && isItemEnabled(i)), true, false);
+                drawItem(i, (static_cast<signed>(i) == active_index && isItemEnabled(i)), true, false);
         }
 
         if (m_parent && visible)
@@ -1214,19 +1214,20 @@ void Menu::exposeEvent(XExposeEvent &ee) {
             sbl_d = ((ee.x + ee.width) / menu.item_w),
             // then we see how many items down to redraw
             id_d = ((ee.y + ee.height) / menu.item_h);
-        if (id_d > menu.persub) id_d = menu.persub;
+        if (static_cast<signed>(id_d) > menu.persub) 
+            id_d = menu.persub;
 
         // draw the sublevels and the number of items the exposure spans
         unsigned int i, ii;
         for (i = sbl; i <= sbl_d; i++) {
             // set the iterator to the first item in the sublevel needing redrawing
             unsigned int index = id + i * menu.persub;
-            if (index < static_cast<int>(menuitems.size())) {
+            if (index < menuitems.size()) {
                 Menuitems::iterator it = menuitems.begin() + index;
                 Menuitems::iterator it_end = menuitems.end();
                 for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
                     unsigned int index = ii + (i * menu.persub);
-                    drawItem(index, (which_sub == index), true, true,
+                    drawItem(index, (which_sub == static_cast<signed>(index)), true, true,
                              ee.x, ee.y, ee.width, ee.height);
                 }
             }
@@ -1323,7 +1324,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Return:
         // send fake button 1 click
-        if (which_press >= 0 && which_press < menuitems.size()) {
+        if (which_press >= 0 && which_press < static_cast<signed>(menuitems.size())) {
             menuitems[which_press]->click(1, event.time);
             itemSelected(1, which_press);
             m_need_update = true;
@@ -1372,12 +1373,12 @@ void Menu::renderTransFrame() {
 }
 
 void Menu::openSubmenu() {
-    if (!isVisible() || which_press < 0 || which_press >= menuitems.size() ||
-        which_sbl < 0 || which_sbl >= menuitems.size())
+    if (!isVisible() || which_press < 0 || which_press >= static_cast<signed>(menuitems.size()) ||
+        which_sbl < 0 || which_sbl >= static_cast<signed>(menuitems.size()))
         return;
 
     int item = which_sbl * menu.persub + which_press;
-    if (item < 0 || item >= menuitems.size())
+    if (item < 0 || item >= static_cast<signed>(menuitems.size()))
         return;
 
     drawItem(item, true);

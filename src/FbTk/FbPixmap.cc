@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.8 2003/09/10 21:37:05 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.9 2004/01/08 22:05:34 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -115,7 +115,6 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
         }
         
         if (drawable()) {
-            Display *dpy = FbTk::App::instance()->display();
             GContext gc(drawable());
                         
             copyArea(the_copy.drawable(),
@@ -176,8 +175,8 @@ void FbPixmap::rotate() {
     GContext gc(drawable());
 
     // copy new area
-    for (int y = 0; y < height(); ++y) {
-        for (int x = 0; x < width(); ++x) {
+    for (int y = 0; y < static_cast<signed>(height()); ++y) {
+        for (int x = 0; x < static_cast<signed>(width()); ++x) {
             gc.setForeground(XGetPixel(src_image, x, y));
             // revers coordinates
             XDrawPoint(dpy, new_pm.drawable(), gc.gc(), y, x);
@@ -219,9 +218,9 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
 
     // start scaling
     float src_x = 0, src_y = 0;
-    for (int tx=0; tx<dest_width; ++tx, src_x += zoom_x) {
+    for (int tx=0; tx < static_cast<signed>(dest_width); ++tx, src_x += zoom_x) {
         src_y = 0;
-        for (int ty=0; ty<dest_height; ++ty, src_y += zoom_y) {	
+        for (int ty=0; ty < static_cast<signed>(dest_height); ++ty, src_y += zoom_y) {	
             gc.setForeground(XGetPixel(src_image,
                                        static_cast<int>(src_x),
                                        static_cast<int>(src_y)));
