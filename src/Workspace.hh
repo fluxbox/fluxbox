@@ -87,8 +87,8 @@ public:
 	*/
 	FluxboxWindow *getWindow(unsigned int id);
 	const FluxboxWindow *getWindow(unsigned int id) const;
-	const Windows &getWindowList() const { return windowList; }
-	Windows &getWindowList() { return windowList; }
+	const Windows &getWindowList() const { return m_windowlist; }
+	Windows &getWindowList() { return m_windowlist; }
 
 	bool isCurrent() const;
 	bool isLastWindow(FluxboxWindow *window) const;
@@ -114,7 +114,7 @@ private:
 	static GroupList m_groups; ///< handle auto groupings
 
 	WindowStack stackingList;
-	Windows windowList;
+	Windows m_windowlist;
 
 	std::string m_name;  ///< name of this workspace
 	unsigned int m_id;	///< id, obsolete, this should be in BScreen

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.34 2002/10/29 16:00:20 fluxgen Exp $
+// $Id: Workspace.cc,v 1.35 2002/11/03 15:02:21 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -93,7 +93,7 @@ Workspace::~Workspace() {
 
 void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
 	// make sure we have this window in the list
-	if (std::find(windowList.begin(), windowList.end(), win) != windowList.end())
+	if (std::find(m_windowlist.begin(), m_windowlist.end(), win) != m_windowlist.end())
 		lastfocus = win;
 	else
 		lastfocus = 0;
@@ -107,7 +107,7 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 		placeWindow(w);
 
 	w->setWorkspace(m_id);
-	w->setWindowNumber(windowList.size());
+	w->setWindowNumber(m_windowlist.size());
 
 	stackingList.push_front(w);
 
@@ -117,20 +117,20 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	//if there isn't any window that's focused, just add it to the end of the list
 	/*
 	if (focused == 0) {
-		windowList.push_back(w);
+		m_windowlist.push_back(w);
 		//Add client to clientmenu
 		m_clientmenu.insert(w->getTitle().c_str());
 	} else {
-		Windows::iterator it = windowList.begin();
+		Windows::iterator it = m_windowlist.begin();
 		size_t client_insertpoint=0;
-		for (; it != windowList.end(); ++it, ++client_insertpoint) {
+		for (; it != m_windowlist.end(); ++it, ++client_insertpoint) {
 			if (*it == focused) {
 				++it;				
 				break;
 			}
 		}
 
-		windowList.insert(it, w);
+		m_windowlist.insert(it, w);
 		//Add client to clientmenu
 		m_clientmenu.insert(w->getTitle().c_str(), client_insertpoint);
 		
@@ -139,7 +139,7 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	*/
 	//add to list
 	m_clientmenu.insert(w->getTitle().c_str());
-	windowList.push_back(w);
+	m_windowlist.push_back(w);
 	
 	//update menugraphics
 	m_clientmenu.update();
@@ -190,11 +190,11 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 	
 	
 
-	Windows::iterator it = windowList.begin();
-	Windows::iterator it_end = windowList.end();
+	Windows::iterator it = m_windowlist.begin();
+	Windows::iterator it_end = m_windowlist.end();
 	for (; it != it_end; ++it) {
 		if (*it == w) {
-			windowList.erase(it);
+			m_windowlist.erase(it);
 			break;
 		}
 	}
@@ -206,17 +206,17 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 		screen->updateNetizenWindowDel(w->getClientWindow());
 
 	{
-		Windows::iterator it = windowList.begin();
-		Windows::const_iterator it_end = windowList.end();
+		Windows::iterator it = m_windowlist.begin();
+		Windows::const_iterator it_end = m_windowlist.end();
 		for (int i = 0; it != it_end; ++it, ++i) {
 			(*it)->setWindowNumber(i);
 		}
 	}
 	
-	if (lastfocus == w || windowList.empty())
+	if (lastfocus == w || m_windowlist.empty())
 		lastfocus = 0;
 	
-	return windowList.size();
+	return m_windowlist.size();
 }
 
 
@@ -240,8 +240,8 @@ void Workspace::hideAll(void) {
 
 
 void Workspace::removeAll(void) {
-	Windows::iterator it = windowList.begin();
-	Windows::const_iterator it_end = windowList.end();
+	Windows::iterator it = m_windowlist.begin();
+	Windows::const_iterator it_end = m_windowlist.end();
 	for (; it != it_end; ++it) {
 		(*it)->iconify();
 	}
@@ -305,11 +305,11 @@ void Workspace::lowerWindow(FluxboxWindow *w) {
 }
 
 
-void Workspace::reconfigure(void) {
+void Workspace::reconfigure() {
 	m_clientmenu.reconfigure();
 
-	Windows::iterator it = windowList.begin();
-	Windows::iterator it_end = windowList.end();
+	Windows::iterator it = m_windowlist.begin();
+	Windows::iterator it_end = m_windowlist.end();
 	for (; it != it_end; ++it) {
 		if ((*it)->validateClient())
 			(*it)->reconfigure();
@@ -318,20 +318,20 @@ void Workspace::reconfigure(void) {
 
 
 const FluxboxWindow *Workspace::getWindow(unsigned int index) const {
-	if (index < windowList.size())
-		return windowList[index];
+	if (index < m_windowlist.size())
+		return m_windowlist[index];
 	return 0;
 }
 
 FluxboxWindow *Workspace::getWindow(unsigned int index) {
-	if (index < windowList.size())
-		return windowList[index];
+	if (index < m_windowlist.size())
+		return m_windowlist[index];
 	return 0;
 }
 
 
 int Workspace::getCount() const {
-	return windowList.size();
+	return m_windowlist.size();
 }
 
 namespace {
@@ -360,6 +360,7 @@ void Workspace::checkGrouping(FluxboxWindow &win) {
 #endif // DEBUG
 		return;
 	}
+
 	// go throu every group and search for matching win instancename
 	GroupList::iterator g(m_groups.begin());
 	GroupList::iterator g_end(m_groups.end());
@@ -372,8 +373,8 @@ void Workspace::checkGrouping(FluxboxWindow &win) {
 				continue;
 
 			// find a window with the specific name
-			Windows::iterator wit(getWindowList().begin());
-			Windows::iterator wit_end(getWindowList().end());
+			Windows::iterator wit(m_windowlist.begin());
+			Windows::iterator wit_end(m_windowlist.end());
 			for (; wit != wit_end; ++wit) {
 #ifdef DEBUG
 				cerr<<__FILE__<<" check group with : "<<(*wit)->instanceName()<<endl;
@@ -431,7 +432,7 @@ bool Workspace::isCurrent() const{
 
 
 bool Workspace::isLastWindow(FluxboxWindow *w) const{
-	return (w == windowList.back());
+	return (w == m_windowlist.back());
 }
 
 void Workspace::setCurrent() {
@@ -460,13 +461,13 @@ void Workspace::setName(const std::string &name) {
 //------------ shutdown ---------
 // Calls restore on all windows
 // on the workspace and then
-// clears the windowList
+// clears the m_windowlist
 //-------------------------------
 void Workspace::shutdown() {
 	// note: when the window dies it'll remove it self from the list
-	while (!windowList.empty()) {
-		windowList.back()->restore(true); // restore with remap
-		delete windowList.back(); //delete window (the window removes it self from windowList)
+	while (!m_windowlist.empty()) {
+		m_windowlist.back()->restore(true); // restore with remap
+		delete m_windowlist.back(); //delete window (the window removes it self from m_windowlist)
 	}
 }
 
@@ -570,8 +571,8 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 
 				placed = True;
 
-				Windows::iterator it = windowList.begin();
-				Windows::iterator it_end = windowList.end();
+				Windows::iterator it = m_windowlist.begin();
+				Windows::iterator it_end = m_windowlist.end();
 
 				for (; it != it_end && placed; ++it) {
 					curr_x = (*it)->getXFrame();
@@ -689,8 +690,8 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 					! placed) {
 				placed = True;
 
-				Windows::iterator it = windowList.begin();
-				Windows::iterator it_end = windowList.end();
+				Windows::iterator it = m_windowlist.begin();
+				Windows::iterator it_end = m_windowlist.end();
 				for (; it != it_end && placed; ++it) {
 					curr_x = (*it)->getXFrame();
 					curr_y = (*it)->getYFrame();
