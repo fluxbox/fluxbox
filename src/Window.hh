@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.111 2004/04/12 18:19:10 fluxgen Exp $
+// $Id: Window.hh,v 1.112 2004/04/18 21:17:36 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -397,6 +397,7 @@ private:
     void updateIconNameFromClient(WinClient &client);
     void updateMWMHintsFromClient(WinClient &client);
     void updateBlackboxHintsFromClient(const WinClient &client);
+    void updateRememberStateFromClient(WinClient &client);
     void saveBlackboxAttribs();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1);
 
@@ -476,6 +477,8 @@ private:
         bool titlebar, handle, border, iconify,
             maximize, close, menu, sticky, shade, tab, enabled;
     } decorations;
+
+    bool m_toggled_decos; 
 
     struct _functions {
         bool resize, move, iconify, maximize, close;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.280 2004/04/14 16:38:33 rathnor Exp $
+// $Id: Window.cc,v 1.281 2004/04/18 21:17:36 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -40,6 +40,7 @@
 #include "WinButton.hh"
 #include "WinButtonTheme.hh"
 #include "SendToMenu.hh"
+#include "Remember.hh"
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/TextButton.hh"
@@ -283,6 +284,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_current_state(0),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client), 
+    m_toggled_decos(false),
     m_shaped(false),
     m_icon_hidden(false),
     m_old_pos_x(0), m_old_pos_y(0),
@@ -1044,7 +1046,7 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
 
     if (!hint) return;
 
-    if (hint->flags & MwmHintsDecorations) {
+    if (!m_toggled_decos && hint->flags & MwmHintsDecorations) {
         if (hint->decorations & MwmDecorAll) {
             decorations.titlebar = decorations.handle = decorations.border =
                 decorations.iconify = decorations.maximize =
@@ -1091,6 +1093,17 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
                 functions.close = true;
         }
     }
+}
+
+void FluxboxWindow::updateRememberStateFromClient(WinClient &client) {
+#ifdef REMEMBER
+    Remember* rem= const_cast<Remember*>(static_cast<const Remember*>(Fluxbox::instance()->getAtomHandler("remember"))); 
+    Application* app= 0;
+    if ( rem && (app= (const_cast<Remember*>(rem))->find(client)) ) {
+        if ( !m_toggled_decos && rem->isRemembered(client, Remember::REM_DECOSTATE) )
+            setDecorationMask(app->decostate);
+    }
+#endif // REMEMBER
 }
 
 void FluxboxWindow::updateFunctions() {
@@ -2253,14 +2266,16 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         } else if (atom == fbatoms->getMWMHintsAtom()) {
             client.updateMWMHints();
             updateMWMHintsFromClient(client);
+            updateRememberStateFromClient(client);
             applyDecorations(); // update decorations (if they changed)
         } else if (atom == fbatoms->getFluxboxHintsAtom()) {
             client.updateBlackboxHints();
             updateBlackboxHintsFromClient(client);
             if (client.getBlackboxHint() != 0 &&
-                (client.getBlackboxHint()->flags & ATTRIB_DECORATION)) 
+                (client.getBlackboxHint()->flags & ATTRIB_DECORATION)) {
+                updateRememberStateFromClient(client);
                 applyDecorations(); // update decoration
-                
+            }
         }
         break;
     }
@@ -2753,6 +2768,8 @@ void FluxboxWindow::toggleDecoration() {
     //don't toggle decor if the window is shaded
     if (isShaded())
         return;
+	
+    m_toggled_decos= true;
 	
     if (decorations.enabled) { //remove decorations
         decorations.enabled = false;
