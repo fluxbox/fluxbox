@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.224 2003/09/11 19:55:27 rathnor Exp $
+// $Id: Window.cc,v 1.225 2003/09/11 21:30:20 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2963,7 +2963,10 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     int wx = frame().x(), wy = frame().y(); // not actually used here
     frame().gravityTranslate(wx, wy, -client->gravity(), true); // negative to invert
 
-    client->hide();
+    // Why was this hide done? It broke vncviewer (and mplayer?), 
+    // since it would reparent when going fullscreen.
+    // is it needed for anything? Reparent should imply unmap
+    //client->hide();
 
     // restore old border width
     client->setBorderWidth(client->old_bw);

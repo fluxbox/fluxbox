@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.188 2003/09/10 09:51:58 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.189 2003/09/11 21:30:20 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -873,7 +873,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // DEBUG
 
         } else {
-            
+            if (winclient == m_focused_window)
+                setFocusedWindow(0);
         }
     }
 	break;

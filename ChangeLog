@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/12:
+   * Fix a couple of issues related to windows reparenting themselves
+     to escape the WM. Hopefully fixes mplayer/vncviewer fullscreen
+     problems.  (Simon)
+     fluxbox.cc Window.cc
    * Fix window gravity handling (Simon)
      - should fix some offset fullscreen issues
      FbWinFrame.hh/cc WinClient.hh/cc Window.cc
