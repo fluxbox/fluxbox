@@ -19,22 +19,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.hh,v 1.6 2004/06/10 11:40:43 fluxgen Exp $
+// $Id: MenuItem.hh,v 1.7 2004/06/10 17:31:39 fluxgen Exp $
 
 #ifndef FBTK_MENUITEM_HH
 #define FBTK_MENUITEM_HH
 
 #include "RefCount.hh"
 #include "Command.hh"
+#include "PixmapWithMask.hh"
 
 #include <string>
 #include <memory>
+
 namespace FbTk {
 
 class Menu;
 class MenuTheme;
 class FbDrawable;
-class PixmapWithMask;
 
 ///   An interface for a menu item in Menu
 class MenuItem {
