@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.4 2003/01/10 00:46:54 fluxgen Exp $
+// $Id: Menu.hh,v 1.5 2003/01/12 17:02:33 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -41,7 +41,6 @@ namespace FbTk {
 class MenuItem;
 class MenuTheme;
 class ImageControl;
-
 
 ///   Base class for menus
 class Menu: public FbTk::EventHandler {
@@ -67,6 +66,8 @@ public:
     int insert(const char *label, int pos=-1);
     /// add submenu
     int insert(const char *label, Menu *submenu, int pos= -1);
+    /// add menu item
+    int insert(MenuItem *item, int pos=-1);
     /// remove an item
     int remove(unsigned int item);
     /// remove all items
@@ -101,6 +102,7 @@ public:
     void update();
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
+    inline void setMinimumSublevels(int m) { menu.minsub = m; }
     virtual void drawSubmenu(unsigned int index);
     /// show menu
     virtual void show();
@@ -135,7 +137,7 @@ protected:
     inline void setTitleVisibility(bool b) { title_vis = b; }
     inline void setMovable(bool b) { movable = b; }
     inline void setHideTree(bool h) { hide_tree = h; }
-    inline void setMinimumSublevels(int m) { menu.minsub = m; }
+
 
     virtual void itemSelected(int button, unsigned int index) { }
     virtual void drawItem(unsigned int index, bool highlight = false, 
@@ -176,58 +178,6 @@ private:
 
 };
 
-/**
-   A menu item in Menu
-*/
-class MenuItem {
-public:
-    MenuItem(
-             const char *label)
-        : m_label(label ? label : ""),
-        m_submenu(0),
-        m_enabled(true),
-        m_selected(false)
-    { }
-    /// create a menu item with a specific command to be executed on click
-    MenuItem(const char *label, RefCount<Command> &cmd):
-        m_label(label ? label : ""),
-        m_submenu(0),
-        m_command(cmd),
-        m_enabled(true),
-        m_selected(false) {
-		
-    }
-
-    MenuItem(const char *label, Menu *submenu)
-        : m_label(label ? label : "")
-        , m_submenu(submenu)
-        , m_enabled(true)
-        , m_selected(false)
-    { }
-
-    void setSelected(bool selected) { m_selected = selected; }
-    void setEnabled(bool enabled) { m_enabled = enabled; }
-    Menu *submenu() { return m_submenu; }
-    /** 
-        @name accessors
-    */
-    //@{
-    const std::string &label() const { return m_label; }
-    const Menu *submenu() const { return m_submenu; } 
-    bool isEnabled() const { return m_enabled; }
-    bool isSelected() const { return m_selected; }
-    RefCount<Command> &command() { return m_command; }
-    const RefCount<Command> &command() const { return m_command; }
-    //@}
-	
-private:
-    std::string m_label; ///< label of this item
-    Menu *m_submenu; ///< a submenu, 0 if we don't have one
-    RefCount<Command> m_command; ///< command to be executed
-    bool m_enabled, m_selected;
-
-    friend class Menu;
-};
-
 }; // end namespace FbTk
+
 #endif // FBTK_MENU_HH
