@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.18 2004/03/16 18:44:40 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.19 2004/04/22 21:12:33 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -133,6 +133,30 @@ public:
     void execute();
 private:
     const std::string m_keybind;
+};
+
+/// deiconifies iconified windows
+class DeiconifyCmd: public FbTk::Command {
+public:
+    enum Mode { 
+        LAST,
+        LASTWORKSPACE,
+        ALL,
+        ALLWORKSPACE
+    };
+
+    enum Destination {
+        CURRENT, /// deiconification on current workspace
+        ORIGIN,  /// deiconification on origin workspace, change to that ws
+        ORIGINQUIET /// deiconification on origin workspace, dont change ws
+    };
+    
+    DeiconifyCmd(const Mode mode= LASTWORKSPACE,
+                 const Destination dest= CURRENT);
+    void execute();
+private:
+    Mode m_mode;
+    Destination m_dest;
 };
 
 #endif // FBCOMMANDS_HH

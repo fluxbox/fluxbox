@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.23 2004/01/21 14:11:15 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.24 2004/04/22 21:12:32 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "CommandDialog.hh"
 #include "Workspace.hh"
+#include "Window.hh"
 #include "Keys.hh"
 
 #include "FbTk/Theme.hh"
@@ -249,4 +250,52 @@ void BindKeyCmd::execute() {
     }
 }
 
+DeiconifyCmd::DeiconifyCmd(const Mode mode, 
+    const Destination dest) : m_mode(mode), m_dest(dest) { }
+
+void DeiconifyCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    BScreen::Icons::reverse_iterator it= screen->getIconList().rbegin();
+    BScreen::Icons::reverse_iterator itend= screen->getIconList().rend();
+    unsigned int workspace_num= screen->currentWorkspaceID();
+    unsigned int old_workspace_num;
+
+    const bool change_ws= m_dest == ORIGIN;
+
+    switch(m_mode) {
+        
+        case ALL:
+        case ALLWORKSPACE:
+            for(; it != itend; it++) {
+                old_workspace_num= (*it)->workspaceNumber();
+                if (m_mode == ALL || old_workspace_num == workspace_num) {
+                    if (m_dest == ORIGIN || m_dest == ORIGINQUIET)
+                        screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
+                    else
+                        (*it)->deiconify(false);
+                }
+            }
+            break;
+
+        case LAST:
+        case LASTWORKSPACE:
+        default:
+            for (; it != itend; it++) {
+                old_workspace_num= (*it)->workspaceNumber();
+                if(m_mode == LAST || old_workspace_num == workspace_num) {
+                    if ((m_dest == ORIGIN || m_dest == ORIGINQUIET) && 
+                        m_mode != LASTWORKSPACE)
+                        screen->sendToWorkspace(old_workspace_num, (*it), change_ws);
+                    else
+                        (*it)->deiconify(false);
+                    break;
+                }
+            }
+            break;
+   };
+}
+    
 }; // end namespace FbCommands

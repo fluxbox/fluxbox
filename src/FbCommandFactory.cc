@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.28 2004/03/08 12:23:16 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.29 2004/04/22 21:12:34 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -64,6 +64,7 @@ FbCommandFactory::FbCommandFactory() {
         "bindkey",
         "close",
         "commanddialog",
+        "deiconify",
         "detachclient",
         "exec",
         "execcommand",
@@ -298,7 +299,39 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     //
     // special commands
     //
-    else if (command == "macrocmd") {
+    else if (command == "deiconify") {
+
+        FB_istringstream iss(arguments);
+        string mode;
+        string d;
+        DeiconifyCmd::Destination dest;
+
+        iss >> mode;
+        if (iss.fail())
+            mode="lastworkspace";
+        mode= FbTk::StringUtil::toLower(mode);
+        
+        iss >> d;
+        if (iss.fail())
+            d="current";
+        d= FbTk::StringUtil::toLower(d);
+        if (d == "origin" )
+          dest= DeiconifyCmd::ORIGIN;
+        else if (d == "originquiet")
+          dest= DeiconifyCmd::ORIGINQUIET;
+        else
+          dest= DeiconifyCmd::CURRENT;
+          
+        if ( mode == "all" )
+            return new DeiconifyCmd(DeiconifyCmd::ALL, dest); 
+        else if ( mode == "allworkspace" )
+            return new DeiconifyCmd(DeiconifyCmd::ALLWORKSPACE, dest);
+        else if ( mode == "last" )
+            return new DeiconifyCmd(DeiconifyCmd::LAST, dest);
+        else // lastworkspace, default
+            return new DeiconifyCmd(DeiconifyCmd::LASTWORKSPACE, dest);
+
+    } else if (command == "macrocmd") {
       std::string cmd;
       int   err= 0;
       int   parse_pos= 0;
