@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.87 2002/12/09 22:21:00 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.88 2003/01/05 22:41:21 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -561,7 +561,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     if ((masked == e->xany.window) && masked_window &&
         (e->type == MotionNotify)) {
         last_time = e->xmotion.time;
-        masked_window->motionNotifyEvent(&e->xmotion);
+        masked_window->motionNotifyEvent(e->xmotion);
 
         return;
     }
@@ -582,7 +582,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // SLIT
 		
             if ((win = searchWindow(e->xconfigurerequest.window))) {
-                win->configureRequestEvent(&e->xconfigurerequest);
+                win->configureRequestEvent(e->xconfigurerequest);
 
 #ifdef SLIT
             } else if ((slit = searchSlit(e->xconfigurerequest.window))) {
@@ -612,83 +612,76 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
         }
         break;
-    case MapRequest:
-        {
+    case MapRequest: {
 #ifdef DEBUG
-            fprintf(stderr,
-                    I18n::instance()->
-                    getMessage(
-                               FBNLS::blackboxSet, FBNLS::blackboxMapRequest,
-                               "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
-                    e->xmaprequest.window);
+        cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
 #endif // DEBUG
 		
 #ifdef SLIT
 #ifdef KDE
-            //Check and see if client is KDE dock applet.
-            //If so add to Slit
-            bool iskdedockapp = false;
-            Atom ajunk;
-            int ijunk;
-            unsigned long *data = (unsigned long *) 0, uljunk;
+        //Check and see if client is KDE dock applet.
+        //If so add to Slit
+        bool iskdedockapp = false;
+        Atom ajunk;
+        int ijunk;
+        unsigned long *data = (unsigned long *) 0, uljunk;
 
-            // Check if KDE v2.x dock applet
-            if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
-                                   getKWM2DockwindowAtom(), 0l, 1l, False,
-                                   XA_WINDOW, &ajunk, &ijunk, &uljunk,
-                                   &uljunk, (unsigned char **) &data) == Success) {
+        // Check if KDE v2.x dock applet
+        if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
+                               getKWM2DockwindowAtom(), 0l, 1l, False,
+                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
+                               &uljunk, (unsigned char **) &data) == Success) {
 					
-                if (data)
-                    iskdedockapp = True;
-                XFree((char *) data);
+            if (data)
+                iskdedockapp = True;
+            XFree((char *) data);
 	
-            }
+        }
 
-            // Check if KDE v1.x dock applet
-            if (!iskdedockapp) {
-                if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
-                                       getKWM1DockwindowAtom(), 0l, 1l, False,
-                                       getKWM1DockwindowAtom(), &ajunk, &ijunk, &uljunk,
-                                       &uljunk, (unsigned char **) &data) == Success) {
-                    iskdedockapp = (data && data[0] != 0);
-                    XFree((char *) data);
-                }
+        // Check if KDE v1.x dock applet
+        if (!iskdedockapp) {
+            if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
+                                   getKWM1DockwindowAtom(), 0l, 1l, False,
+                                   getKWM1DockwindowAtom(), &ajunk, &ijunk, &uljunk,
+                                   &uljunk, (unsigned char **) &data) == Success) {
+                iskdedockapp = (data && data[0] != 0);
+                XFree((char *) data);
             }
+        }
 
-            if (iskdedockapp) {
-                XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
-                ScreenList::iterator it = screenList.begin();			
-                for (; (*it) == screenList.back(); ++it) {
-                    (*it)->getSlit()->addClient(e->xmaprequest.window);
-                }
-                return;
+        if (iskdedockapp) {
+            XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
+            ScreenList::iterator it = screenList.begin();			
+            for (; (*it) == screenList.back(); ++it) {
+                (*it)->getSlit()->addClient(e->xmaprequest.window);
             }
+            return;
+        }
 #endif //KDE
 #endif // SLIT
 			
-            FluxboxWindow *win = searchWindow(e->xmaprequest.window);
+        FluxboxWindow *win = searchWindow(e->xmaprequest.window);
 
-            if (! win) {
-                win = new FluxboxWindow(e->xmaprequest.window);
-                if (!win->isManaged()) {
-                    delete win;
-                    win = 0;				
-                } else {
-                    // attach signals
-                    attachSignals(*win);
-                }
-            }
-
-            if ((win = searchWindow(e->xmaprequest.window)))
-                win->mapRequestEvent(&e->xmaprequest);
-
+        if (! win) {
+            //!!! TODO
+            BScreen *scr = searchScreen(e->xmaprequest.parent);
+            cerr<<"screen = "<<scr<<endl;
+            if (scr != 0)
+                scr->createWindow(e->xmaprequest.window);
+            else
+                cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
         }
+
+        if ((win = searchWindow(e->xmaprequest.window)))
+            win->mapRequestEvent(e->xmaprequest);
+
+    }
         break;
     case MapNotify:
         {
             FluxboxWindow *win = searchWindow(e->xmap.window);
             if (win != 0)
-                win->mapNotifyEvent(&e->xmap);
+                win->mapNotifyEvent(e->xmap);
 
         }
         break;
@@ -706,12 +699,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
         Slit *slit = 0;
 #endif // SLIT
 
-        if ((win = searchWindow(e->xdestroywindow.window))) {
-            if (win->destroyNotifyEvent(&e->xdestroywindow)) {
-                delete win;
-                win = 0;
-            }
-
+        if ((win = searchWindow(e->xdestroywindow.window)) && win->getClientWindow() == e->xdestroywindow.window) {
+            win->destroyNotifyEvent(e->xdestroywindow);
+            removeWindowSearch(win->getClientWindow());
+            delete win;
         } 
 #ifdef SLIT
         else if ((slit = searchSlit(e->xdestroywindow.window))) {
@@ -729,7 +720,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         Tab *tab = 0;
 			
         if ((win = searchWindow(e->xmotion.window)) !=0)
-            win->motionNotifyEvent(&e->xmotion);
+            win->motionNotifyEvent(e->xmotion);
         else if ((tab = searchTab(e->xmotion.window)) !=0)
             tab->motionNotifyEvent(&e->xmotion);
 
@@ -829,7 +820,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             Tab *tab = 0;
 			
             if ((win = searchWindow(e->xexpose.window)))
-                win->exposeEvent(&e->xexpose);
+                win->exposeEvent(e->xexpose);
             else if ((tab = searchTab(e->xexpose.window)))
                 tab->exposeEvent(&e->xexpose);
         }
@@ -891,7 +882,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
         if ((win = searchWindow(be.window))) {
 
-            win->buttonPressEvent(&be);
+            win->buttonPressEvent(be);
 				
             if (be.button == 1)
                 win->installColormap(True);
@@ -997,7 +988,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         Tab *tab = 0;
 		
         if ((win = searchWindow(be.window)))
-            win->buttonReleaseEvent(&be);
+            win->buttonReleaseEvent(be);
         else if ((tab = searchTab(be.window)))
             tab->buttonReleaseEvent(&be);
     }
@@ -1022,10 +1013,12 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 	
     if ((win = searchWindow(ue.window)) != 0) {
 
-        if (win->unmapNotifyEvent(&ue)) {
-            delete win;
-            if (focused_window == win) // some extra checking
+        win->unmapNotifyEvent(ue); 
+        if (win->getClientWindow() == ue.window) {
+            if (win == focused_window)
                 focused_window = 0;
+            removeWindowSearch(win->getClientWindow());
+            delete win;
             win = 0;
         }
   
@@ -1091,7 +1084,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             net.workspace = ce.data.l[2];
             net.stack = ce.data.l[3];
             net.decoration = static_cast<int>(ce.data.l[4]);
-            win->changeBlackboxHints(&net);
+            win->changeBlackboxHints(net);
         }
     } else {
         FluxboxWindow *win = searchWindow(ce.window);
@@ -1391,65 +1384,65 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
             focused_window->getTab()->shade();
         break;
     case Keys::MAXIMIZE:
-        focused_window->maximize(0);
+        focused_window->maximize();
         break;
     case Keys::STICK:
         focused_window->stick();
         break;								
     case Keys::VERTMAX:
         if (focused_window->isResizable())
-            focused_window->maximize(2); // maximize vertically, done with mouse2
+            focused_window->maximizeVertical();
         break;
     case Keys::HORIZMAX:
         if (focused_window->isResizable())
-            focused_window->maximize(3); // maximize horisontally, done with mouse3
+            focused_window->maximizeHorizontal();
         break;
     case Keys::NUDGERIGHT:	
-        focused_window->configure(
+        focused_window->moveResize(
             focused_window->getXFrame()+param, focused_window->getYFrame(),
             focused_window->getWidth(), focused_window->getHeight());
         break;
     case Keys::NUDGELEFT:			
-        focused_window->configure(
+        focused_window->moveResize(
             focused_window->getXFrame()-param, focused_window->getYFrame(),
             focused_window->getWidth(), focused_window->getHeight());
         break;
     case Keys::NUDGEUP:
-        focused_window->configure(
+        focused_window->moveResize(
             focused_window->getXFrame(), focused_window->getYFrame()-param,
             focused_window->getWidth(), focused_window->getHeight());
         break;
     case Keys::NUDGEDOWN:
-        focused_window->configure(
+        focused_window->moveResize(
             focused_window->getXFrame(), focused_window->getYFrame()+param,
             focused_window->getWidth(), focused_window->getHeight());
         break;
         // NOTE !!! BIGNUDGExxxx is not needed, just use 10 as a parameter
     case Keys::BIGNUDGERIGHT:		
-        focused_window->configure(
+        focused_window->moveResize(
             focused_window->getXFrame()+10, focused_window->getYFrame(),
             focused_window->getWidth(), focused_window->getHeight());
         break;
-    case Keys::BIGNUDGELEFT:						
-        focused_window->configure(
+    case Keys::BIGNUDGELEFT:				
+        focused_window->moveResize(
             focused_window->getXFrame()-10, focused_window->getYFrame(),
             focused_window->getWidth(), focused_window->getHeight());
         break;
     case Keys::BIGNUDGEUP:								
-        focused_window->configure(
+        focused_window->moveResize(
             focused_window->getXFrame(), focused_window->getYFrame()-10,
             focused_window->getWidth(), focused_window->getHeight());
         break;								
-    case Keys::BIGNUDGEDOWN:					
-        focused_window->configure(
+    case Keys::BIGNUDGEDOWN:			
+        focused_window->moveResize(
             focused_window->getXFrame(), focused_window->getYFrame()+10,
             focused_window->getWidth(), focused_window->getHeight());								
         break;												
     case Keys::HORIZINC:
-        if (focused_window->isResizable())
-            focused_window->configure(
+           focused_window->moveResize(
                 focused_window->getXFrame(), focused_window->getYFrame(),
                 focused_window->getWidth()+10, focused_window->getHeight());
+
 
         if (focused_window->hasTab() &&
             (t_placement == Tab::PTOP || t_placement == Tab::PBOTTOM)) {
@@ -1460,8 +1453,7 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
         }
         break;								
     case Keys::VERTINC:
-        if (focused_window->isResizable())
-            focused_window->configure(
+            focused_window->moveResize(
                 focused_window->getXFrame(), focused_window->getYFrame(),
                 focused_window->getWidth(), focused_window->getHeight()+10);
 
@@ -1474,8 +1466,7 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
         }
         break;
     case Keys::HORIZDEC:				
-        if (focused_window->isResizable())
-            focused_window->configure(
+        focused_window->moveResize(
                 focused_window->getXFrame(), focused_window->getYFrame(),
                 focused_window->getWidth()-10, focused_window->getHeight());
 
@@ -1488,8 +1479,7 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
         }
         break;								
     case Keys::VERTDEC:
-        if (focused_window->isResizable())
-            focused_window->configure(
+        focused_window->moveResize(
                 focused_window->getXFrame(), focused_window->getYFrame(),
                 focused_window->getWidth(), focused_window->getHeight()-10);
 
