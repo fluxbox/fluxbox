@@ -1,5 +1,5 @@
 // Screen.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Screen.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.131 2003/12/30 17:57:12 fluxgen Exp $
+// $Id: Screen.hh,v 1.132 2004/01/11 16:05:55 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -172,6 +172,7 @@ public:
     void update(FbTk::Subject *subj);
 
     FbTk::Menu *createMenu(const std::string &label);
+    void hideMenus();
 
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	

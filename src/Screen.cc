@@ -1,5 +1,5 @@
 // Screen.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Screen.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.259 2004/01/10 02:58:01 fluxgen Exp $
+// $Id: Screen.cc,v 1.260 2004/01/11 16:06:22 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -741,6 +741,39 @@ FbTk::Menu *BScreen::createMenu(const std::string &label) {
         menu->setLabel(label.c_str());
 
     return menu;
+}
+
+void BScreen::hideMenus() {
+    // hide extra menus
+    Fluxbox::instance()->hideExtraMenus(*this);
+
+#ifdef SLIT
+    // hide slit menu
+    if (slit())
+        slit()->menu().hide();
+#endif // SLIT
+
+    // hide icon menus
+    if (getIconList().size()) {
+        Icons::iterator it = getIconList().begin();
+        const Icons::iterator it_end = getIconList().end();
+        for (; it != it_end; ++it)
+            (*it)->menu().hide();
+    }
+    // hide all client menus
+    Workspaces::iterator w_it = getWorkspacesList().begin();
+    const Workspaces::iterator w_it_end = getWorkspacesList().end();
+    for (; w_it != w_it_end; ++w_it) {
+        if ((*w_it)->windowList().size()) {
+            Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
+            const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
+            for (; win_it != win_it_end; ++win_it) {
+                (*win_it)->menu().hide();
+            }
+        }
+    }
+
+
 }
 
 void BScreen::reconfigure() {
