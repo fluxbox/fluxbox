@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.22 2003/12/19 03:55:10 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.23 2003/12/19 18:17:08 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -110,6 +110,8 @@ FbCommandFactory::FbCommandFactory() {
         "setstyle",
         "setworkspacename",
         "setworkspacenamedialog",
+        "setresourcevalue",
+        "setresourcevaluedialog",
         "shade",
         "shadewindow",
         "showdesktop",
@@ -151,6 +153,23 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
     else if (command == "commanddialog") // run specified fluxbox command
         return new CommandDialogCmd();
+    else if (command == "setresourcevalue") {
+        // we need to parse arguments as:
+        // <remove whitespace here><resname><one whitespace><value>
+        string name = arguments;
+        FbTk::StringUtil::removeFirstWhitespace(name);
+        size_t pos = name.find_first_of(" \t");
+        // we need an argument to resource name
+        if (pos == std::string::npos || pos == name.size())
+            return 0;
+        // +1 so we only remove the first whitespace
+        // i.e so users can set space before workspace name and so on
+        string value = name.substr(pos + 1);
+        name = name.substr(0, pos);
+        cerr<<"Creating SetResourceValue "<<name<<" "<<value<<endl;
+        return new SetResourceValueCmd(name, value);
+    } else if (command == "setresourcevaluedialog")
+        return new SetResourceValueDialogCmd();
     //
     // Current focused window commands
     //
