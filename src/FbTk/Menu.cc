@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.53 2004/01/16 11:02:54 fluxgen Exp $
+// $Id: Menu.cc,v 1.54 2004/01/21 09:03:13 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1303,8 +1303,6 @@ void Menu::keyPressEvent(XKeyEvent &event) {
     XLookupString(&event, keychar, 1, &ks, 0);
     // a modifier key by itself doesn't do anything
     if (IsModifierKey(ks)) 
-        return;
-    if (event.state) // dont handle modifier with normal key
         return;
 
     switch (ks) {
