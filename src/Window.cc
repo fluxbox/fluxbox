@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.67 2002/08/12 03:28:17 fluxgen Exp $
+// $Id: Window.cc,v 1.68 2002/08/12 17:32:52 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1876,6 +1876,11 @@ void FluxboxWindow::iconify() {
 		if (! client.transient->iconic)
 			client.transient->iconify();
 	}
+
+#ifdef GNOME
+	updateGnomeStateAtom();
+#endif // GNOME
+
 }
 
 
