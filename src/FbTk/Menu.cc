@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.85 2004/09/12 14:56:19 rathnor Exp $
+// $Id: Menu.cc,v 1.86 2004/09/29 09:58:11 akir Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1083,7 +1083,7 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
         int sbl = (be.x / menu.item_w), i = (be.y / theme().itemHeight());
         int w = (sbl * menu.persub) + i;
 
-        if (validIndex(w)) {
+        if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
             which_press = i;
             which_sbl = sbl;
 
@@ -1138,7 +1138,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             w = (sbl * menu.persub) + i,
             p = (which_sbl * menu.persub) + which_press;
 
-        if (validIndex(w)) {
+        if (validIndex(w) && isItemSelectable(static_cast<unsigned int>(w))) {
             if (p == w && isItemEnabled(w)) {
                 if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
                     re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
@@ -1146,11 +1146,11 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                     itemSelected(re.button, w);
                 }
             }
-        }
 
-        drawItem(p,
-                 true,  // clear
-                 true); // transparent
+            drawItem(p,
+                     true,  // clear
+                     true); // transparent
+        }
     }
 }
 
