@@ -94,7 +94,7 @@ private:
 
             next_x += step_size;
             if (next_x + m_box_size > width()) {
-                m_font.drawText(m_background.drawable(),
+                m_font.drawText(m_background,
                                 screenNumber(),
                                 m_gc.gc(),
                                 value, strlen(value),
