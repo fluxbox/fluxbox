@@ -1,4 +1,5 @@
 News in 0.9.10: 
+    * Old styles should look like they used to
     * New actions:
       * directional focus movement:
         FocusUp, FocusDown, FocusLeft, FocusRight
@@ -80,7 +81,7 @@ Bug fixes:
       It didn't force client position on configure request
     * Tiled texture
     * Transient window bug at startup
-    * Ugly toolbar at startu
+    * Ugly toolbar at startup
     * When time_t is long long 
     * Delete key is working for fbrun
     * Mouse scroll on icons in toolbar changes workspace
