@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.6 2002/12/09 23:43:50 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.7 2003/01/05 22:36:28 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -45,6 +45,16 @@ TextureRender::TextureRender(BImageControl &imgctrl,
 
     width = ((signed) w > 0) ? w : 1;
     height = ((signed) h > 0) ? h : 1;
+    // clamp to "normal" size
+    if (width > 3200) {
+        cerr<<"TextureRender: Warning! Width > 3200 setting Width = 3200"<<endl;
+        width = 3200;
+    }
+
+    if (height > 3200) {
+        cerr<<"TextureRender: Warning! Height > 3200 setting Height = 3200"<<endl;
+        height = 3200;
+    }
 
     red = new (nothrow) unsigned char[width * height];
     if (red == 0) {
