@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.37 2003/07/10 11:45:22 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.38 2003/07/10 15:52:58 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -36,6 +36,7 @@
 #include "XLayer.hh"
 #include "XLayerItem.hh"
 #include "LayerMenu.hh"
+#include "Resource.hh"
 
 #include <memory>
 
@@ -201,7 +202,7 @@ private:
 
     Strut *m_strut; ///< created and destroyed by BScreen
     // resources
-    FbTk::Resource<bool> m_rc_auto_hide;
+    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over;
     FbTk::Resource<int> m_rc_width_percent;
     FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
     FbTk::Resource<int> m_rc_on_head;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.99 2003/07/10 13:46:47 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.100 2003/07/10 15:52:58 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -264,6 +264,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_strut(0),
     m_rc_auto_hide(scrn.resourceManager(), false, 
                    scrn.name() + ".toolbar.autoHide", scrn.altName() + ".Toolbar.AutoHide"),
+    m_rc_maximize_over(scrn.resourceManager(), false,
+                       scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
     m_rc_width_percent(scrn.resourceManager(), 65, 
                        scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),  
     m_rc_layernum(scrn.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
@@ -355,7 +357,7 @@ void Toolbar::updateStrut() {
     clearStrut();
     // we should request space if we're in autohide mode or
     // if the user dont want to request space for toolbar.
-    if (doAutoHide()) {
+    if (doAutoHide() || *m_rc_maximize_over) {
         if (had_strut)
             screen().updateAvailableWorkspaceArea();            
         return;
@@ -1380,7 +1382,8 @@ void Toolbar::setupMenus() {
                                                   "Auto hide"),
                                  *m_rc_auto_hide,
                                  reconfig_toolbar_and_save_resource));
-
+    menu.insert(new BoolMenuItem("Maximize Over", *m_rc_maximize_over,
+                                 reconfig_toolbar_and_save_resource));
     menu.insert("Layer...", &tbar.layermenu());
 
     if (tbar.screen().hasXinerama()) {
