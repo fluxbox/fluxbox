@@ -76,3 +76,28 @@ Fixed bugs (or not-our-fault bugs):
     => Fixed, moved alpha setting into MenuTheme rather than static value
 
 
+------------------------------
+Core dumps and notes
+
+Simon, 19/7/03. 
+Dump on workspace change. Toolbarmode = workspace
+Interesting points:
+(gdb) p fluxboxwin->m_client
+$2 = (class WinClient *) 0x42424141
+==> the fluxboxwin is probably dead
+
+#5  0x401ab518 in sigaction () from /lib/libc.so.6
+#6  0x0806199d in basic_string<char, string_char_traits<char>, __default_alloc_template<true, 0> >::size (this=0x424241d5)
+    at /usr/lib/gcc-lib/i386-linux/2.95.4/../../../../include/g++-3/std/bastring.h:156
+#7  0x080aab44 in IconBar::draw (this=0x819e888, obj=0x81998e0, width=56)
+    at IconBar.cc:363
+#8  0x080aa842 in IconBar::exposeEvent (this=0x819e888, ee=0xbffff44c)
+    at IconBar.cc:265
+#9  0x080a4f23 in Toolbar::exposeEvent (this=0x8198cc8, ee=@0xbffff44c)
+    at Toolbar.cc:1095
+#10 0x080ac1ac in FbTk::EventManager::handleEvent (this=0x81406ec,
+    ev=@0xbffff44c) at EventManager.cc:71
+#11 0x0805a63c in Fluxbox::handleEvent (this=0x8142220, e=0xbffff44c)
+    at fluxbox.cc:740
+#12 0x08059a14 in Fluxbox::eventLoop (this=0x8142220) at fluxbox.cc:597
+
