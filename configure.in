@@ -1,7 +1,7 @@
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,0.9.5, no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.9.5pre1, no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -354,6 +354,7 @@ AC_ARG_ENABLE(
 	LIBS="$LIBS -lXrender")
 )
 
+XPM=false
 AC_MSG_CHECKING([whether to have Xpm (pixmap themes) support])
 AC_ARG_ENABLE(
   xpm,
@@ -362,6 +363,7 @@ AC_ARG_ENABLE(
 	AC_MSG_RESULT([yes])
 	AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
 		AC_DEFINE(HAVE_XPM, 1, "Xpm support")
+		XPM=true
 		LIBS="$LIBS -lXpm")
   else
     AC_MSG_RESULT([no])	
@@ -369,9 +371,11 @@ AC_ARG_ENABLE(
   AC_MSG_RESULT([yes])
   AC_CHECK_LIB(Xpm, XpmReadFileToPixmap,
 	AC_DEFINE(HAVE_XPM, 1, "Xpm support")
+	XPM=true
 	LIBS="$LIBS -lXpm")
 )
 
+AM_CONDITIONAL(XPM, test x$XPM = xtrue)
 
 AC_MSG_CHECKING([whether to have Xmb (multibyte font, utf-8) support])
 AC_ARG_ENABLE(

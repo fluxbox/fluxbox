@@ -1,5 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/22:
+   * Added search path resource for images (Henrik)
+     * session.screen<num>.imageSearchPath
+     This is a list separated by , or space
+     example: session.screen0.imageSearchPath: ~/.fluxbox/pixmaps, /usr/share/fluxbox/pixmaps
+   * Added new files for image loading (Henrik)
+     The new way to load pixmap is to call FbTk::Image::load(thefile, screen_num);
+     and to add more image file support you just have to extend FbTk::ImageBase 
+     and register it to FbTk::Image     
+     Image.hh/cc, ImageXPM.hh/cc, PixmapWithMask.hh, Theme.cc, WinButtonTheme.hh/cc,
+     WinButton.cc/hh, fluxbox.cc
+   * Fixed scaling in WinButtonTheme (Henrik)
+     WinButton.cc, Screen.cc WinButtonTheme.hh/cc
+   * Added new theme item window.title.height, Window.Title.Height (Henrik)
+     FbWinFrameTheme.hh/cc
 *03/08/19:
    * Added ResizeVertical and ResizeHorizontal  (Thanks Mathias Gumz)
      CurrentWindowCmd.hh/cc, FbCommandFactory.cc
