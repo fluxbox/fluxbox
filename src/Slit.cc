@@ -56,6 +56,7 @@
 #include "SlitClient.hh"
 #include "Xutil.hh"
 #include "FbAtoms.hh"
+#include "FbTk/MenuSeparator.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/I18n.hh"
 
@@ -161,14 +162,13 @@ string FbTk::Resource<Slit::Direction>::getString() {
 
 namespace { 
 
-class SlitClientMenuItem: public FbTk::MenuItem {
+class SlitClientMenuItem: public FbTk::MenuItem{
 public:
-    explicit SlitClientMenuItem(SlitClient &client, FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(client.matchName().c_str(), cmd), m_client(client) {
+    explicit SlitClientMenuItem(Slit& slit, SlitClient &client, FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(client.matchName().c_str(), cmd), m_slit(slit), m_client(client) {
+        setCommand(cmd);
         FbTk::MenuItem::setSelected(client.visible());
-        // save resources as default click action
-        FbTk::RefCount<FbTk::Command> save_rc(new FbCommands::SaveResources());
-        setCommand(save_rc);
+        setToggleItem(true);
     }
     const std::string &label() const {
         return m_client.matchName();
@@ -176,11 +176,19 @@ public:
     bool isSelected() const {
         return m_client.visible();
     }
-    void click(int button, int time) { 
-        m_client.setVisible(!m_client.visible());
-        FbTk::MenuItem::click(button, time);
+    void click(int button, int time) {
+        if (button == 4) { // wheel up
+            m_slit.clientUp(&m_client);
+        } else if (button == 5) { // wheel down
+            m_slit.clientDown(&m_client);
+        } else {
+            m_client.setVisible(!m_client.visible());
+            FbTk::MenuItem::setSelected(m_client.visible());
+            FbTk::MenuItem::click(button, time);
+        }
     }
 private:
+    Slit& m_slit;
     SlitClient &m_client;
 };
 
@@ -898,6 +906,35 @@ void Slit::shutdown() {
         removeClient(m_client_list.front(), true, true);
 }
 
+void Slit::clientUp(SlitClient* client) {
+    if (!client || m_client_list.size() < 2)
+        return;
+    
+    SlitClients::iterator it = m_client_list.begin();
+
+    for(it++; it != m_client_list.end(); it++) {
+        if ((*it) == client) {
+            swap(*it, *(it--));
+            reconfigure();
+            break;
+        }
+    }
+}
+
+void Slit::clientDown(SlitClient* client) {
+    if (!client || m_client_list.size() < 2)
+        return;
+
+    SlitClients::reverse_iterator it = m_client_list.rbegin();
+    for(it++; it != m_client_list.rend(); it++) {
+        if ((*it) == client) {
+            swap(*it, *(it--));
+            reconfigure();
+            break;
+        }
+    }
+}
+
 void Slit::cycleClientsUp() {
     if (m_client_list.size() < 2)
         return;
@@ -1108,16 +1145,21 @@ void Slit::updateClientmenu() {
     m_clientlist_menu.insert(_FBTEXT(Slit, CycleUp, "Cycle Up", "Cycle clients upwards"), cycle_up);
     m_clientlist_menu.insert(_FBTEXT(Slit, CycleDown, "Cycle Down", "Cycle clients downwards"), cycle_down);
 
-    FbTk::MenuItem *separator = new FbTk::MenuItem("---");
-    separator->setEnabled(false);
-    m_clientlist_menu.insert(separator);
+    m_clientlist_menu.insert(new FbTk::MenuSeparator());
 
     FbTk::RefCount<FbTk::Command> reconfig(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
     SlitClients::iterator it = m_client_list.begin();
     for (; it != m_client_list.end(); ++it) {
         if ((*it) != 0 && (*it)->window() != 0)
-            m_clientlist_menu.insert(new SlitClientMenuItem(*(*it), reconfig));
+            m_clientlist_menu.insert(new SlitClientMenuItem(*this, *(*it), reconfig));
     }
+
+    m_clientlist_menu.insert(new FbTk::MenuSeparator());
+    FbTk::RefCount<FbTk::Command> savecmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::saveClientList));
+    m_clientlist_menu.insert(_FBTEXT(Slit, 
+                                     SaveSlitList,
+                                     "Save SlitList", "Saves the current order in the slit"), 
+                             savecmd);
 
     m_clientlist_menu.update();
 }

@@ -75,6 +75,10 @@ public:
     void shutdown();
     /// save clients name in a file
     void saveClientList();
+    /// move client one position up
+    void clientUp(SlitClient*);
+    /// move client one position down
+    void clientDown(SlitClient*);
     /// cycle slit clients up one step
     void cycleClientsUp();
     /// cycle slit clients down one step
