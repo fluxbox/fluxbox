@@ -54,7 +54,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "August 16th, 2004" "0.9.9"
+.TH fluxbox 1 "December 9th, 2004" "0.9.11"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
