@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.2 2003/08/11 20:29:30 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.3 2003/08/13 10:08:18 fluxgen Exp $
 
 #include "ClockTool.hh"
 
@@ -94,8 +94,17 @@ void ClockTool::hide() {
 
 void ClockTool::update(FbTk::Subject *subj) {
     updateTime();
-    // + 3 to make the entire text fit inside
-    resize(m_button.textWidth() + 3, m_button.height());
+
+    // + 4 to make the entire text fit inside
+    std::string text;
+    for (size_t i=0; i<m_button.text().size() + 4; ++i)
+        text += '0';
+
+    resize(m_theme.font().textWidth(text.c_str(), text.size()), m_button.height());
+}
+
+unsigned int ClockTool::borderWidth() const { 
+    return m_button.borderWidth();
 }
 
 unsigned int ClockTool::width() const {
@@ -136,12 +145,14 @@ void ClockTool::renderTheme() {
         m_button.setBackgroundColor(m_theme.texture().color());
     } else {
         m_pixmap = m_screen.imageControl().renderImage(m_button.width(), m_button.height(), m_theme.texture());
-        m_button.setBackgroundPixmap(m_pixmap);
+        m_button.FbTk::FbWindow::setBackgroundPixmap(m_pixmap);
     }
 
     if (old_pm)
         m_screen.imageControl().removeImage(old_pm);
 
     m_button.setJustify(m_theme.justify());
+    m_button.setBorderWidth(m_theme.border().width());
+    m_button.setBorderColor(m_theme.border().color());
     m_button.clear();
 }
