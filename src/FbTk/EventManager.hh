@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
+// $Id: EventManager.hh,v 1.3 2002/12/02 19:36:58 fluxgen Exp $
 
 #include "EventHandler.hh"
 #include <map>
@@ -34,7 +34,8 @@ public:
     static EventManager *instance();
 	
     void handleEvent(XEvent &ev);
-
+    void add(EventHandler &ev, Window win) { registerEventHandler(ev, win); }
+    void remove(Window win) { unregisterEventHandler(win); }
     void registerEventHandler(EventHandler &ev, Window win);
     void unregisterEventHandler(Window win);
 private:
