@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.18 2004/04/03 09:10:36 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.19 2004/04/04 12:18:48 fluxgen Exp $
 
 #
 # Portability notes:
@@ -1052,7 +1052,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu Mail
-        normal_find sylpheed kmail evolution
+        normal_find sylpheed kmail evolution thunderbird
         find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
     append_menu_end
 
