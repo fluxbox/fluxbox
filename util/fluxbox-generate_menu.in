@@ -2,6 +2,7 @@
 #
 # generate_menu for Fluxbox
 #
+# Copyright (c) 2005 Dung N. Lam <dnlam@users.sourceforge.net>
 # Copyright (c) 2002-2004 Han Boetes <han@mijncomputer.nl>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -1444,7 +1445,7 @@ append_menu_end
 
 append_submenu "${NETMENU}"
     append_submenu "${BROWSERMENU}"
-        normal_find firefox mozilla-firefox MozillaFirefox galeon mozilla dillo netscape
+        normal_find firefox mozilla-firefox MozillaFirefox galeon mozilla dillo netscape vncviewer
         find_it links       append "[exec]   (links-graphic) {links -driver x ${HOMEPAGE}}"
         find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
         find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
@@ -1521,7 +1522,7 @@ append_menu_end
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
                normal_find gimp gimp2 inkscape sodipodi xv gqview showimg xpaint kpaint kiconedit \
-                   ee xzgv xscreensaver-demo xlock
+                   ee xzgv xscreensaver-demo xlock gphoto
                find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
                find_it blender          append "[exec] (blender) {blender -w}"
                find_it gears            append "[exec] (Mesa gears) {gears}"
@@ -1540,19 +1541,20 @@ append_submenu "${MULTIMEDIAMENU}"
 
 
        append_submenu "${VIDEOMENU}"
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv fxtv ogle goggles
            find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
        append_submenu "${XUTILSMENU}"
            normal_find xfontsel xman xload xfigxbiff editres viewres xclock \
                xmag wmagnify gkrellm gkrellm2 vmware portagemaster celestia
+           find_it xrdb append "[exec] (Reload .Xdefaults) {xrdb -load $HOME/.Xdefaults}"
        append_menu_end
 append_menu_end
 
 
 append_submenu "${OFFICEMENU}"
-    normal_find xclock xcalc kcalc
+    normal_find xclock xcalc kcalc gv
     find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
 
