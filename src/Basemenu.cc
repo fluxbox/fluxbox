@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.20 2002/04/08 22:37:49 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.21 2002/04/09 12:22:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -589,7 +589,7 @@ void Basemenu::drawSubmenu(unsigned int index) {
 				y = head_y;
 			#else // !XINERAMA
 
-			if ((x + item->submenu()->width()) > m_screen->width()) {
+			if ((x + item->submenu()->width()) > m_screen->getWidth()) {
 				x = ((shifted) ? menu.x_shift : menu.x) -
 					item->submenu()->width() - m_screen->getBorderWidth();
 			}
@@ -597,8 +597,8 @@ void Basemenu::drawSubmenu(unsigned int index) {
 			if (x < 0)
 				x = 0;
 
-			if ((y + item->submenu()->getHeight()) > m_screen->getHeight()) {
-				y = m_screen->getHeight() - item->submenu()->getHeight() -
+			if ((y + item->submenu()->height()) > m_screen->getHeight()) {
+				y = m_screen->getHeight() - item->submenu()->height() -
 					m_screen->getBorderWidth2x();
 			}
 			
