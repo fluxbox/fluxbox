@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/19:
+  * Removed flicker in iconbar while changing active client  (Henrik)
+    in Window.
+    IconbarTool.hh/cc
   * Fixed bug in key/mouse screen updates in fluxbox.cc (Henrik)
   * Old/New action: 
     SetWorkspaceName doesn't pop up dialog to edit workspace name  (Henrik)
