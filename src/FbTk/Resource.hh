@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.3 2003/08/08 10:54:36 fluxgen Exp $
+// $Id: Resource.hh,v 1.4 2003/09/13 09:29:26 fluxgen Exp $
 
 #ifndef FBTK_RESOURCE_HH
 #define FBTK_RESOURCE_HH
@@ -30,6 +30,7 @@
 #include <list>
 #include <iostream>
 
+#include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 namespace FbTk {
