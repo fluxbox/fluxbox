@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.cc,v 1.1 2003/08/27 13:45:11 fluxgen Exp $
+// $Id: GContext.cc,v 1.2 2003/09/10 21:27:02 fluxgen Exp $
 
 #include "GContext.hh"
 
@@ -35,12 +35,14 @@ GContext::GContext(const FbTk::FbDrawable &drawable):
     m_gc(XCreateGC(FbTk::App::instance()->display(),
                      drawable.drawable(),
                      0, 0)) {
+    setGraphicsExposure(false);
 }
 
 GContext::GContext(Drawable drawable):
     m_gc(XCreateGC(FbTk::App::instance()->display(),
                    drawable,
                    0, 0)) {
+    setGraphicsExposure(false);
 }
 
 GContext::~GContext() {
@@ -49,13 +51,21 @@ GContext::~GContext() {
 }
 
 void GContext::setForeground(const FbTk::Color &color) {
+    setForeground(color.pixel());
+}
+
+void GContext::setForeground(long pixel_value) {
     XSetForeground(FbTk::App::instance()->display(), m_gc,
-                   color.pixel());
+                   pixel_value);
 }
 
 void GContext::setBackground(const FbTk::Color &color) {
+    setBackground(color.pixel());
+}
+
+void GContext::setBackground(long pixel_value) {
     XSetBackground(FbTk::App::instance()->display(), m_gc,
-                   color.pixel());
+                   pixel_value);
 }
 
 /// not implemented!
@@ -71,6 +81,11 @@ void GContext::setClipMask(const FbTk::FbPixmap &mask) {
 void GContext::setClipOrigin(int x, int y) {
     XSetClipOrigin(FbTk::App::instance()->display(), m_gc,
                    x, y);
+}
+
+void GContext::setGraphicsExposure(bool flag) {
+    XSetGraphicsExposures(FbTk::App::instance()->display(), m_gc, 
+                          flag);
 }
 
 } // end namespace FbTk
