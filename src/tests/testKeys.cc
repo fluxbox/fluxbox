@@ -1,5 +1,5 @@
 // testKeys.cc
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,44 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#include "../Keys.hh"
 #include <iostream>
-#include <X11/Xlib.h>
-
-
-#ifdef UDS
-#include <uds/init.hh>
-#include <uds/uds.hh>
-// configure UDS
-uds::uds_flags_t uds::flags = uds::leak_check|uds::log_allocs;
-#endif
+#include "../FbTk/App.hh"
+#include "../FbTk/KeyUtil.hh"
 
 using namespace std;
 
 void testKeys(int argc, char **argv) {
-    Display *display = XOpenDisplay(0);
-	
-    if (display==0) {
+    FbTk::App app(0);
+    if (app.display() == 0) {
         cerr<<"Cant open display."<<endl;
         return;
     }
-	
-    Keys *keys = new Keys(display);
-    const char default_keyfile[] = "keys";
-	
-    if (argc>1) {
-        cerr<<"Loading file: "<<argv[1]<<endl;
-        keys->load(const_cast<char *>(argv[1]));
-    } else {
-        cerr<<"Using default file: "<<default_keyfile<<endl;
-        keys->load(const_cast<char *>(default_keyfile));
-    }
-	
-    keys->load(const_cast<char *>(default_keyfile));
-	
-    delete keys;
-		
-    XCloseDisplay(display);
+    std::string theline;
+    cout<<"Type key: ";
+    getline(cin, theline);
+    unsigned int key = FbTk::KeyUtil::getKey(theline.c_str());
+    cerr<<"key = "<<key<<endl;
+    if (key == NoSymbol)
+        cerr<<"NoSymbol"<<endl;
 }
 
 int main(int argc, char **argv) {
