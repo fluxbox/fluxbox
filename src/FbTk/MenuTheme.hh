@@ -1,5 +1,5 @@
 // MenuTheme.hh for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.5 2003/02/22 21:24:19 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.6 2003/05/04 21:01:43 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -87,6 +87,7 @@ public:
     unsigned int borderWidth() const { return *m_border_width; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
     const FbTk::Color &borderColor() const { return *m_border_color; }
+    FbTk::Subject &themeChangeSig() { return m_theme_change_sig; }
     /// attach observer
     void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
     /// detach observer
