@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.21 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.22 2003/12/12 14:36:22 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -63,6 +63,35 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
         setDefaultValue();
 }
 
+template<>
+void FbTk::Resource<Container::Alignment>::setDefaultValue() {
+    m_value = Container::RELATIVE;
+}
+
+template<>
+string FbTk::Resource<Container::Alignment>::getString() {
+    switch (m_value) {
+    case Container::LEFT:
+        return string("Left");
+    case Container::RIGHT:
+        return string("Right");
+    case Container::RELATIVE:
+        return string("Relative");
+    }
+    return string("Left");
+}
+
+template<>
+void FbTk::Resource<Container::Alignment>::setFromString(const char *str) {
+    if (strcasecmp(str, "Left") == 0)
+        m_value = Container::LEFT;
+    else if (strcasecmp(str, "Right") == 0)
+        m_value = Container::RIGHT;
+    else if (strcasecmp(str, "RELATIVE") == 0)
+        m_value = Container::RELATIVE;
+    else
+        setDefaultValue();
+}
 
 template<>
 string FbTk::Resource<IconbarTool::Mode>::getString() {
@@ -108,6 +137,24 @@ private:
     IconbarTool::Mode m_mode;
 };
 
+class ToolbarAlignMenuItem: public FbTk::MenuItem {
+public:
+    ToolbarAlignMenuItem(const char *label, IconbarTool &handler, 
+                        Container::Alignment mode, 
+                        FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
+    }
+    bool isEnabled() const { return m_handler.alignment() != m_mode; }
+    void click(int button, int time) {
+        m_handler.setAlignment(m_mode);
+        FbTk::MenuItem::click(button, time);
+    }
+
+private:
+    IconbarTool &m_handler;
+    Container::Alignment m_mode;
+};
+
 void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
     using namespace FbTk;
 
@@ -129,6 +176,14 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
                                         IconbarTool::WORKSPACE, saverc_cmd));
     menu.insert(new ToolbarModeMenuItem("All Windows", handler, 
                                         IconbarTool::ALLWINDOWS, saverc_cmd));
+    menu.insert("---"); // separator line
+    menu.insert(new ToolbarAlignMenuItem("Left", handler,
+                                         Container::LEFT, saverc_cmd));
+    menu.insert(new ToolbarAlignMenuItem("Relative", handler,
+                                         Container::RELATIVE, saverc_cmd));
+    menu.insert(new ToolbarAlignMenuItem("Right", handler,
+                                         Container::RIGHT, saverc_cmd));
+    menu.insert("---"); // separator line
     menu.update();
 }
                 
@@ -184,6 +239,10 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_empty_pm(0),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
+    m_rc_alignment(screen.resourceManager(), Container::LEFT,
+                   screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
+    m_rc_client_width(screen.resourceManager(), 70,
+                   screen.name() + ".iconbar.clientWidth", screen.altName() + ".Iconbar.ClientWidth"),
     m_rc_use_pixmap(screen.resourceManager(), true,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(*screen.menuTheme(), screen.imageControl(),
@@ -254,6 +313,11 @@ void IconbarTool::hide() {
     m_icon_container.hide();
 }
 
+void IconbarTool::setAlignment(Container::Alignment align) {
+    *m_rc_alignment = align;
+    update(0);
+}
+
 void IconbarTool::setMode(Mode mode) {
     if (mode == *m_rc_mode)
         return;
@@ -305,6 +369,16 @@ void IconbarTool::update(FbTk::Subject *subj) {
     // ignore updates if we're shutting down
     if (m_screen.isShuttingdown())
         return;
+
+    m_icon_container.setAlignment(*m_rc_alignment);
+    // clamp to normal values
+    if (*m_rc_client_width < 1)
+        *m_rc_client_width = 10;
+    else if (*m_rc_client_width > 400)
+        *m_rc_client_width = 400;
+
+    m_icon_container.setMaxSizePerClient(*m_rc_client_width);
+
 
     if (mode() == NONE) {
         if (subj != 0 && typeid(*subj) == typeid(IconbarTheme))

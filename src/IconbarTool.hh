@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.10 2003/11/27 14:30:11 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.11 2003/12/12 14:36:22 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -66,7 +66,7 @@ public:
     void update(FbTk::Subject *subj);
     void show();
     void hide();
-
+    void setAlignment(Container::Alignment a);
     void setMode(Mode mode);
 
     unsigned int width() const;
@@ -74,7 +74,7 @@ public:
     unsigned int borderWidth() const;
 
     Mode mode() const { return *m_rc_mode; }
-
+    Container::Alignment alignment() const { return m_icon_container.alignment(); }
 private:
 
     /// render single button that holds win
@@ -108,6 +108,8 @@ private:
 
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
+    FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
+    FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
 
     FbMenu m_menu;
