@@ -138,13 +138,13 @@ public:
 
 	inline Workspacemenu *getWorkspacemenu(void) { return workspacemenu; }
 
-	inline const unsigned int &getHandleWidth(void) const
+	inline const unsigned int getHandleWidth(void) const
 	{ return theme->getHandleWidth(); }
-	inline const unsigned int &getBevelWidth(void) const
+	inline const unsigned int getBevelWidth(void) const
 	{ return theme->getBevelWidth(); }
-	inline const unsigned int &getFrameWidth(void) const
+	inline const unsigned int getFrameWidth(void) const
 	{ return theme->getFrameWidth(); }
-	inline const unsigned int &getBorderWidth(void) const
+	inline const unsigned int getBorderWidth(void) const
 	{ return theme->getBorderWidth(); }
 	inline const unsigned int getBorderWidth2x(void) const
 	{ return theme->getBorderWidth()*2; }
@@ -211,9 +211,9 @@ public:
 	inline void saveClock24Hour(Bool c) { resource.clock24hour = c; }
 #endif // HAVE_STRFTIME
 
-	inline WindowStyle *getWindowStyle(void) { return theme->getWindowStyle(); } 
-	inline MenuStyle *getMenuStyle(void) { return theme->getMenuStyle(); } 
-	inline ToolbarStyle *getToolbarStyle(void) { return theme->getToolbarStyle(); } 
+	inline Theme::WindowStyle *getWindowStyle(void) { return &theme->getWindowStyle(); } 
+	inline Theme::MenuStyle *getMenuStyle(void) { return &theme->getMenuStyle(); } 
+	inline Theme::ToolbarStyle *getToolbarStyle(void) { return &theme->getToolbarStyle(); } 
 
 	FluxboxWindow *getIcon(int);
 
