@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.56 2003/01/05 22:24:55 fluxgen Exp $
+// $Id: Screen.hh,v 1.57 2003/01/07 02:03:57 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -50,6 +50,10 @@ class Iconmenu;
 class Rootmenu;
 class Netizen;
 class Slit;
+
+namespace FbTk {
+class MenuTheme;
+};
 
 /// Handles screen connection
 /**
@@ -222,6 +226,9 @@ public:
     inline Theme::MenuStyle *getMenuStyle() { return &theme->getMenuStyle(); } 
     inline FbWinFrameTheme &winFrameTheme() { return m_windowtheme; }
     inline const FbWinFrameTheme &winFrameTheme() const { return m_windowtheme; }
+    inline FbTk::MenuTheme *menuTheme() { return m_menutheme.get(); }
+    inline const FbTk::MenuTheme *menuTheme() const { return m_menutheme.get(); }
+
     const Theme *getTheme() const { return theme; }
     FluxboxWindow *getIcon(unsigned int index);
 
@@ -349,7 +356,8 @@ private:
     Window auto_group_window;
 	
     FbWinFrameTheme m_windowtheme;
-		
+    std::auto_ptr<FbTk::MenuTheme> m_menutheme;
+
     struct ScreenResource {
         ScreenResource(ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
