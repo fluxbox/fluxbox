@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.24 2002/05/19 12:22:55 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.25 2002/05/29 21:15:07 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -742,10 +742,12 @@ void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 				m_screen->getMenuStyle()->hilite_gc,
 				hilite_x, hilite_y, hilite_w, hilite_h);
 		}
-	} else if (dosel && item->isSelected() &&
-					(menu.sel_pixmap != ParentRelative)) {
+	} 
+	
+	if (dosel && item->isSelected() &&
+			(menu.sel_pixmap != ParentRelative)) {
 		if (menu.sel_pixmap) {
-			XCopyArea(m_display, menu.sel_pixmap, menu.frame,		
+			XCopyArea(m_display, highlight ? menu.frame_pixmap : menu.sel_pixmap, menu.frame,		
 				m_screen->getMenuStyle()->hilite_gc, 0, 0,
 				half_w, half_w, sel_x, sel_y);
 		} else {
