@@ -345,6 +345,7 @@ append_submenu ${EDITORMENU}
 	find_it xedit       append "[exec]   (xedit) {xedit}"
 	find_it kword       append "[exec]   (kword) {kword}"
 	find_it kwrite      append "[exec]   (kwrite) {kwrite}"
+	find_it kate        append "[exec]   (kate) {kate}"
 append_menu_end
 
 append_submenu ${NETMENU}
@@ -352,6 +353,8 @@ append_submenu ${NETMENU}
 	find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
 	find_it gaim        append "[exec]   (gaim) {gaim}"
 	find_it sylpheed    append "[exec]   (sylpheed) {sylpheed}"
+	find_it kmail    	append "[exec]   (kmail) {kmail}"
+	find_it gnomemeeting    append "[exec]   (gnomemeeting) {gnomemeeting}"
 	find_it evolution   append "[exec]   (evolution) {evolution}"
 	find_it mutt        append "[exec]   (mutt) {xterm -title mutt -fg white -bg black -e mutt}"
 	
@@ -398,6 +401,12 @@ append_menu_end
 
 append_submenu ${MISCMENU}
 	find_it acroread    append "[exec] (acroread) {acroread}"
+	find_it xpdf        append "[exec] (xpdf) {xpdf}"
+	find_it xine        append "[exec] (xine) {xine}"
+	find_it aviplay     append "[exec] (aviplay) {aviplay}"
+	find_it gtv         append "[exec] (gtv) {gtv}"
+	find_it xmovie      append "[exec] (xmovie) {xmovie}"
+	find_it xcdroast    append "[exec] (xcdroast) {xcdroast}"
 	find_it gcalc       append "[exec] (gcalc) {gcalc}"
 	find_it kcalc       append "[exec] (kcalc) {kcalc}"
 	find_it kpackage    append "[exec] (kpackage) {kpackage}"
