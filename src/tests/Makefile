@@ -5,8 +5,9 @@ XFLAGS= -I/usr/X11R6/include
 XLIBS= -L/usr/X11R6/lib -lX11 -lXft
 COMPILEFILE=$(CXX) -c $(CXXFLAGS)
 FONT_OBJ = ../FbTk/libFbTk.a
+COMPILE = ${CXX} ${CXXFLAGS} ${XLIBS}
 
-all: testStringUtil testFont
+all: testFont testTexture
 
 .cc.o:
 	$(CXX) -c $(CXXFLAGS) $<
@@ -15,7 +16,7 @@ glxtest: ../FbTk/App.hh glxtest.cc
 	${CXX} glxtest.cc ${CXXFLAGS} ${XLIBS} -lGL -lGLU -lXpm -o glxtest
 
 testStringUtil: StringUtiltest.o
-	$(CXX) $(LIBS) StringUtiltest.o -o testStringUtil
+	$(CXX) $(LIBS) StringUtiltest.o ../FbTk/libFbTk.a -o testStringUtil
 
 testKeys:  testKeys.o
 	$(CXX) $(LIBS) $(XLIBS) testKeys.o -o testKeys
@@ -37,6 +38,10 @@ testTransp: transpTest.cc
 
 testScale: scaleTest.cc
 	${CXX} ${CXXFLAGS} ${XLIBS} scaleTest.cc ../FbTk/libFbTk.a -lXpm -o testScale
+
+testTexture: texturetest.cc
+	${COMPILE} texturetest.cc ../FbTk/libFbTk.a -lXpm -o testTexture
+
 
 run: testLayers testResource testKeys testStringUtil testFont
 	./testLayers

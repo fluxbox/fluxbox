@@ -1,0 +1,260 @@
+texture0: Flat Solid
+texture0.color: blue
+
+texture1: Gradient Vertical
+texture1.color: blue
+texture1.colorTo: green
+
+texture2: Gradient Horizontal
+texture2.color: blue
+texture2.colorTo: green
+
+texture3: Gradient Diagonal
+texture3.color: blue
+texture3.colorTo: green
+
+texture4: Gradient CrossDiagonal
+texture4.color: blue
+texture4.colorTo: green
+
+texture5: Gradient Rectangle
+texture5.color: blue
+texture5.colorTo: green
+
+texture6: Gradient Pyramid
+texture6.color: blue
+texture6.colorTo: green
+
+texture7: Gradient PipeCross
+texture7.color: blue
+texture7.colorTo: green
+
+texture8: Gradient Elliptic
+texture8.color: blue
+texture8.colorTo: green
+
+--- new line
+
+texture9: Flat Solid sunken
+texture9.color: blue
+texture9.colorTo: green
+
+texture10: Gradient Vertical sunken
+texture10.color: blue
+texture10.colorTo: green
+
+texture11: Gradient Horizontal sunken
+texture11.color: blue
+texture11.colorTo: green
+
+texture12: Gradient Diagonal sunken
+texture12.color: blue
+texture12.colorTo: green
+
+texture13: Gradient CrossDiagonal sunken
+texture13.color: blue
+texture13.colorTo: green
+
+texture14: Gradient Rectangle sunken
+texture14.color: blue
+texture14.colorTo: green
+
+texture15: Gradient Pyramid sunken
+texture15.color: blue
+texture15.colorTo: green
+
+texture16: Gradient PipeCross sunken
+texture16.color: blue
+texture16.colorTo: green
+
+texture17: Gradient Elliptic sunken
+texture17.color: blue
+texture17.colorTo: green
+
+--- new line
+texture18: Flat Solid raised
+texture18.color: blue
+texture18.colorTo: green
+
+texture19: Gradient Vertical raised
+texture19.color: blue
+texture19.colorTo: green
+
+texture20: Gradient Horizontal raised
+texture20.color: blue
+texture20.colorTo: green
+
+texture21: Gradient Diagonal raised
+texture21.color: blue
+texture21.colorTo: green
+
+texture22: Gradient CrossDiagonal raised
+texture22.color: blue
+texture22.colorTo: green
+
+texture23: Gradient Rectangle raised
+texture23.color: blue
+texture23.colorTo: green
+
+texture24: Gradient Pyramid raised
+texture24.color: blue
+texture24.colorTo: green
+
+texture25: Gradient PipeCross raised
+texture25.color: blue
+texture25.colorTo: green
+
+texture26: Gradient Elliptic raised
+texture26.color: blue
+texture26.colorTo: green
+
+--- new line
+
+texture27: Flat Solid invert
+texture27.color: blue
+texture27.colorTo: green
+
+texture28: Gradient Vertical invert
+texture28.color: blue
+texture28.colorTo: green
+
+texture29: Gradient Horizontal invert
+texture29.color: blue
+texture29.colorTo: green
+
+texture30: Gradient Diagonal invert
+texture30.color: blue
+texture30.colorTo: green
+
+texture31: Gradient CrossDiagonal invert
+texture31.color: blue
+texture31.colorTo: green
+
+texture32: Gradient Rectangle invert
+texture32.color: blue
+texture32.colorTo: green
+
+texture33: Gradient Pyramid invert
+texture33.color: blue
+texture33.colorTo: green
+
+texture34: Gradient PipeCross invert
+texture34.color: blue
+texture34.colorTo: green
+
+texture35: Gradient Elliptic invert
+texture35.color: blue
+texture35.colorTo: green
+
+--- new line
+texture36: Flat Solid interlaced
+texture36.color: blue
+texture36.colorTo: green
+
+texture37: Gradient Vertical interlaced
+texture37.color: blue
+texture37.colorTo: green
+
+texture38: Gradient Horizontal interlaced
+texture38.color: blue
+texture38.colorTo: green
+
+texture39: Gradient Diagonal interlaced
+texture39.color: blue
+texture39.colorTo: green
+
+texture40: Gradient CrossDiagonal interlaced
+texture40.color: blue
+texture40.colorTo: green
+
+texture41: Gradient Rectangle interlaced
+texture41.color: blue
+texture41.colorTo: green
+
+texture42: Gradient Pyramid interlaced
+texture42.color: blue
+texture42.colorTo: green
+
+texture43: Gradient PipeCross interlaced
+texture43.color: blue
+texture43.colorTo: green
+
+texture44: Gradient Elliptic interlaced
+texture44.color: blue
+texture44.colorTo: green
+
+
+--- new line
+texture45: Flat Solid bevel1
+texture45.color: blue
+texture45.colorTo: green
+
+texture46: Gradient Vertical bevel1
+texture46.color: blue
+texture46.colorTo: green
+
+texture47: Gradient Horizontal bevel1
+texture47.color: blue
+texture47.colorTo: green
+
+texture48: Gradient Diagonal bevel1
+texture48.color: blue
+texture48.colorTo: green
+
+texture49: Gradient CrossDiagonal bevel1
+texture49.color: blue
+texture49.colorTo: green
+
+texture50: Gradient Rectangle bevel1
+texture50.color: blue
+texture50.colorTo: green
+
+texture51: Gradient Pyramid bevel1
+texture51.color: blue
+texture51.colorTo: green
+
+texture52: Gradient PipeCross bevel1
+texture52.color: blue
+texture52.colorTo: green
+
+texture53: Gradient Elliptic bevel1
+texture53.color: blue
+texture53.colorTo: green
+
+
+--- new line
+texture54: Flat Solid bevel2
+texture54.color: blue
+texture54.colorTo: green
+
+texture55: Gradient Vertical bevel2
+texture55.color: blue
+texture55.colorTo: green
+
+texture56: Gradient Horizontal bevel2
+texture56.color: blue
+texture56.colorTo: green
+
+texture57: Gradient Diagonal bevel2
+texture57.color: blue
+texture57.colorTo: green
+
+texture58: Gradient CrossDiagonal bevel2
+texture58.color: blue
+texture58.colorTo: green
+
+texture59: Gradient Rectangle bevel2
+texture59.color: blue
+texture59.colorTo: green
+
+texture60: Gradient Pyramid bevel2
+texture60.color: blue
+texture60.colorTo: green
+
+texture61: Gradient PipeCross bevel2
+texture61.color: blue
+texture61.colorTo: green
+
+texture62: Gradient Elliptic bevel2
+texture62.color: blue
+texture62.colorTo: green
