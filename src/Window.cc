@@ -2703,6 +2703,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			XAllowEvents(display, ReplayPointer, be->time);
 			
 		} else {
+		
 			if (frame.title == be->window || frame.label == be->window) {
 				if (((be->time - lastButtonPressTime) <=
 			 		fluxbox->getDoubleClickInterval()) ||
@@ -2712,23 +2713,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 					if (tab) //shade windows in the tablist too
 						tab->shade();
 				} else
-					lastButtonPressTime = be->time;
+					lastButtonPressTime = be->time;			
 			}
 			
-			/*
-			if (be->window == frame.title)
-				fprintf(stderr, "title\n");
-			else if (be->window == frame.label)
-				fprintf(stderr, "label\n");
-			else if (be->window == frame.plate)
-				fprintf(stderr, "plate\n");
-			else if (be->window == frame.handle)
-				fprintf(stderr, "handle\n");
-			else if (be->window == frame.window)
-				fprintf(stderr, "window\n");
-			else
-					fprintf(stderr, "unknown window\n");					
-			*/
 			
 			frame.grab_x = be->x_root - frame.x - screen->getBorderWidth();
 			frame.grab_y = be->y_root - frame.y - screen->getBorderWidth();
@@ -2738,6 +2725,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			//raise tab first if there is any
 			if (tab)
 				tab->raise();
+		
 			screen->getWorkspace(workspace_number)->raiseWindow(this);
 		}
 	/*} else if (be->button == 2 && (be->window != frame.iconify_button) &&
@@ -2877,7 +2865,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 	Fluxbox *fluxbox = Fluxbox::instance();
 	if ((me->state & Button1Mask) && functions.move &&
 			(frame.title == me->window || frame.label == me->window ||
-			 frame.handle == me->window || frame.window == me->window)) {
+			 frame.handle == me->window || frame.window == me->window) && !resizing) {
 			 
 		if (! moving) {
 			XGrabPointer(display, me->window, False, Button1MotionMask |
