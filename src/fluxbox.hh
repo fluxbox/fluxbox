@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.62 2003/06/12 14:33:14 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.63 2003/06/30 15:04:06 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -187,7 +187,10 @@ public:
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
     void getDefaultDataFilename(char *, std::string &);
-
+    BScreen *mouseScreen() { return m_mousescreen; }
+    BScreen *keyScreen() { return m_keyscreen; }
+    BScreen *watchingScreen() { return m_watching_screen; }
+    const XEvent &lastEvent() const { return m_last_event; }
 private:
 
     typedef struct MenuTimestamp {
@@ -215,7 +218,6 @@ private:
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
     void handleKeyEvent(XKeyEvent &ke);	
-    void doWindowAction(int action, const int param);
     void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
     
     std::auto_ptr<FbAtoms> m_fbatoms;
@@ -244,6 +246,7 @@ private:
     FluxboxWindow *m_focused_window, *m_masked_window;
     FbTk::Timer m_timer;
 
+    BScreen *m_mousescreen, *m_keyscreen;
     BScreen *m_watching_screen;
     unsigned int m_watch_keyrelease;
 
@@ -255,12 +258,12 @@ private:
     std::string m_rc_file; ///< resource filename
     char **m_argv;
     int m_argc;
+    XEvent m_last_event;
 
     std::auto_ptr<Keys> m_key;
 
     //default arguments for titlebar left and right
     static Fluxbox::Titlebar s_titlebar_left[], s_titlebar_right[];
-	
     static Fluxbox *s_singleton;
     std::vector<AtomHandler *> m_atomhandler;
     bool m_starting;
