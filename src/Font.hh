@@ -19,12 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.1 2002/03/21 10:51:48 fluxgen Exp $
+//$Id: Font.hh,v 1.2 2002/03/27 15:37:19 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
 
+#include <X11/Xlib.h>
 #include <X11/Xresource.h>
+
 namespace FbTk
 {
 

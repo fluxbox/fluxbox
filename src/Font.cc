@@ -19,20 +19,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.2 2002/03/21 11:05:41 fluxgen Exp $
-#include "Font.hh"
-#include <cstdarg>
-#include <iostream> //for debug msg
-using namespace std;
+//$Id: Font.cc,v 1.3 2002/03/27 15:37:19 fluxgen Exp $
 
+
+#include "Font.hh"
+
+#include "StringUtil.hh"
 //use gnu extensions
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
 #endif //_GNU_SOURCE
 
+#include <cstdarg>
+#include <iostream> 
+#include <cassert>
+#include <string>
+#include <cstdio>
+
 #ifdef    HAVE_CONFIG_H
 #  include "../config.h"
 #endif // HAVE_CONFIG_H
+#ifdef HAVE_SETLOCALE
+#include <locale.h>
+#endif //HAVE_SETLOCALE
 
 namespace FbTk
 {
@@ -133,7 +142,7 @@ XFontSet Font::createFontSet(Display *display, const char *fontname) {
 					fontname, &missing, &nmissing, &def);
 	if (fs && (! nmissing)) return fs;
 
-#ifdef		HAVE_SETLOCALE
+#ifdef HAVE_SETLOCALE
 	if (! fs) {
 		if (nmissing) XFreeStringList(missing);
 
@@ -158,9 +167,9 @@ XFontSet Font::createFontSet(Display *display, const char *fontname) {
 	getFontSize(fontname, &pixel_size);
 
 	if (! strcmp(weight, "*")) 
-		strncpy(weight, "medium", FONT_ELEMENT_SIZE);
+		std::strncpy(weight, "medium", FONT_ELEMENT_SIZE);
 	if (! strcmp(slant, "*")) 
-		strncpy(slant, "r", FONT_ELEMENT_SIZE);
+		std::strncpy(slant, "r", FONT_ELEMENT_SIZE);
 	if (pixel_size < 3) 
 		pixel_size = 3;
 	else if (pixel_size > 97) 
@@ -196,9 +205,9 @@ const char *Font::getFontElement(const char *pattern, char *buf, int bufsiz, ...
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
 	while((v = va_arg(va, char *)) != NULL) {
-		p = strcasestr(pattern, v);
+		p = StringUtil::strcasestr(pattern, v);
 		if (p) {
-			strncpy(buf, p+1, bufsiz-2);
+			std::strncpy(buf, p+1, bufsiz-2);
 			p2 = strchr(buf, '-');
 			if (p2) *p2=0;
 			va_end(va);
@@ -206,7 +215,7 @@ const char *Font::getFontElement(const char *pattern, char *buf, int bufsiz, ...
 		}
 	}
 	va_end(va);
-	strncpy(buf, "*", bufsiz);
+	std::strncpy(buf, "*", bufsiz);
 	return NULL;
 }
 
