@@ -79,6 +79,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbCommands.hh FbCommands.cc LayerMenu.hh \
 	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh \
 	WinClient.hh WinClient.cc \
+	Strut.hh \
 	Xinerama.hh \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE}
 
