@@ -1,5 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.1.8:
+*02/04/19:
+   * Added ToggleTab to key actions (Thanks Matt Hope)
+*02/04/17:
+   * Added workspace change when scrolling on the root window function
+   * Fixed workspace warping bug when moving a tab-group
+*02/04/14:
+   * Fixed decoration.handle bug
+   * Fixed tabs default off (Thanks Dave Watson)
+*02/04/12:
+   * Added Workspace warping, this does only work with opaque moving (Thanks Steve Cooper)
+   * Fixed menu bug
 *02/04/09:
    * Added RootMenu action to Keys.cc/hh and fluxbox.cc , this will pop up the 
      Root menu. (Thanks Stanislav Karchebny)

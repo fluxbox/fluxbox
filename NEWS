@@ -16,23 +16,24 @@ News in Fluxbox 0.1.8:
 * Xinerama support ( configure option --enable-xinerama )
 * Workspace warping, drag window between workspaces, 
   does only work with opaque moving
-* You can enable tabs in "Tabs off"-mode,
-  and the second tab will appere when the first
-  one is draged into the window.
-* Keybinding for Root menu (action RootMenu)
-  This will popup the root menu
-* Keybinding for Toggle decor (action ToggleDecor)
-  This will toggle the decor of a window
+* You can enable tabs in "Tabs off"-mode
+* New key bindings:
+  ToggleDecor
+      Toggle the decor of a window
+  ToggleTab
+      Toggle the tab
+  RootMenu
+      Pop up the root menu 
 * Smarter Next/Prev focus,
   Makes new windows get inserted after the focused window in 
   the cycling order instead of always at the end.
+* Scrolling on root window changes workspace
 
-Bugfixes in Fluxbox 0.1.8:
+Bug fixes in Fluxbox 0.1.8:
 
-*  Window dragging + workspace changing ( bug [ 528101 ] )
-*  Minor taskbar issue, it will update iconbar-text now 
-   ( bug [ 533436 ] )
-* "decoration.handle" bug, which caused the window to 
-   have wrong height with no decorations
+* Window dragging + workspace changing ( bug [ 528101 ] )
+* Minor task bar issue, it will update icon bar-text now ( bug [ 533436 ] )
+* "decoration.handle" bug, which caused the window to have wrong height 
+  with no decorations
 * Slit-client window bug.
    
