@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/03/30:
+  * Fixed java-menu bug (Thanks Scott Moser <ssmoser at us dot ibm dot com>)
+    Window.cc
   * Fixed optional decoration on transient windows (Thanks Scott Moser <ssmoser at us dot ibm dot com>)
 
   Screen.hh/cc, Window.cc, nls/C/Configmenu.m
