@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.105 2003/02/16 01:14:54 fluxgen Exp $
+// $Id: Screen.cc,v 1.106 2003/02/16 13:55:49 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1113,43 +1113,64 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 
     // clear old buttons from frame
     frame.removeAllButtons();
+    //!! TODO: fix this ugly hack
+    // get titlebar configuration
+    const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
+    for (char c=0; c<2; c++) {
+        for (int i=0; i< dir->size(); ++i) {
+            //create new buttons
+            FbTk::Button *newbutton = 0;
+            if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
+                newbutton = new WinButton(WinButton::MINIMIZE, 
+                                          frame.titlebar(), 
+                                          0, 0, 10, 10);
+                newbutton->setOnClick(iconify_cmd);
 
-    //create new buttons
-    if (win.isIconifiable()) {
-        FbTk::Button *iconifybtn = new WinButton(WinButton::MINIMIZE, frame.titlebar(), 
-                                                 0, 0, 10, 10);
-        iconifybtn->setOnClick(iconify_cmd);
-        iconifybtn->show();
-        frame.addRightButton(iconifybtn);
 #ifdef DEBUG
-        cerr<<"Creating iconify button"<<endl;
+                cerr<<__FILE__<<": Creating iconify button"<<endl;
 #endif //DEBUG
-    }
+            } else if (win.isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
+                newbutton = new WinButton(WinButton::MAXIMIZE, 
+                                          frame.titlebar(), 
+                                          0, 0, 10, 10);
 
-    if (win.isMaximizable()) {
-        FbTk::Button *maximizebtn = new WinButton(WinButton::MAXIMIZE, frame.titlebar(), 
-                                                  0, 0, 10, 10);
+                newbutton->setOnClick(maximize_cmd, 1);
+                newbutton->setOnClick(maximize_horiz_cmd, 3);
+                newbutton->setOnClick(maximize_vert_cmd, 2);
 
-        maximizebtn->setOnClick(maximize_cmd, 1);
-        maximizebtn->setOnClick(maximize_horiz_cmd, 3);
-        maximizebtn->setOnClick(maximize_vert_cmd, 2);
-        maximizebtn->show();
-        frame.addRightButton(maximizebtn);
 #ifdef DEBUG
-        cerr<<"Creating maximize button"<<endl;
+                cerr<<__FILE__<<":Creating maximize button"<<endl;
 #endif // DEBUG
-    }
+            } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
+                newbutton = new WinButton(WinButton::CLOSE, 
+                                          frame.titlebar(), 
+                                          0, 0, 10, 10);
 
-    if (win.isClosable()) {
-        Button *closebtn = new WinButton(WinButton::CLOSE, frame.titlebar(), 0, 0, 10, 10);
-
-        closebtn->setOnClick(close_cmd);
-        closebtn->show();
-        frame.addRightButton(closebtn);
+                newbutton->setOnClick(close_cmd);
 #ifdef DEBUG
-        cerr<<"Creating close button"<<endl;
+                cerr<<__FILE__<<": Creating close button"<<endl;
 #endif // DEBUG
-    }
+            } else if ((*dir)[i] == Fluxbox::STICK) {
+                newbutton = new WinButton(WinButton::STICK,
+                                          frame.titlebar(),
+                                          0, 0, 10, 10);
+                newbutton->setOnClick(stick_cmd);
+#ifdef DEBUG
+                cerr<<__FILE__<<": Creating stick button"<<endl;
+#endif // DEBUG
+            }
+        
+            if (newbutton != 0) {
+                newbutton->show();
+                if (c == 0)
+                    frame.addLeftButton(newbutton);
+                else
+                    frame.addRightButton(newbutton);
+            }
+        } //end for i
+        dir = &Fluxbox::instance()->getTitlebarRight();
+    } // end for c
+
     // setup titlebar
     frame.setOnClickTitlebar(raise_cmd, 1, false, true); // on press with button 1
     frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
