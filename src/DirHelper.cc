@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DirHelper.cc,v 1.1 2002/12/02 19:44:25 fluxgen Exp $
+// $Id: DirHelper.cc,v 1.2 2003/02/15 01:42:17 fluxgen Exp $
 
 #include "DirHelper.hh"
 
-DirHelper::DirHelper(const char *dir):m_dir(0) {
+DirHelper::DirHelper(const char *dir):m_dir(0),
+m_num_entries(0) {
     if (dir != 0)
         open(dir);
 }
@@ -45,23 +46,39 @@ struct dirent *DirHelper::read() {
     return readdir(m_dir);
 }
 
+std::string DirHelper::readFilename() {
+    dirent *ent = read();
+    if (ent == 0)
+        return "";
+    return (ent->d_name ? ent->d_name : "");
+}
+
 void DirHelper::close() {
     if (m_dir != 0) { 
         closedir(m_dir);
         m_dir = 0;
+        m_num_entries = 0;
     }
 }
 
+
 bool DirHelper::open(const char *dir) {
-    if (m_dir != 0)
-        close();
     if (dir == 0)
         return false;
-   
-    m_dir = opendir(dir);
-    if (m_dir != 0) // successfull loading?
-        return true;
 
-    return false;
+    if (m_dir != 0)
+        close();
+
+    m_dir = opendir(dir);
+    if (m_dir == 0) // successfull loading?
+        return false;
+
+    // get number of entries
+    while (read())
+        m_num_entries++;
+
+    rewind(); // go back to start
+
+    return true;
 }
 

@@ -1,5 +1,5 @@
 // DirHelper.hh
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,29 +19,35 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DirHelper.hh,v 1.1 2002/12/02 19:44:24 fluxgen Exp $
+// $Id: DirHelper.hh,v 1.2 2003/02/15 01:41:50 fluxgen Exp $
 
 #ifndef DIRHELPER_HH
 #define DIRHELPER_HH
 
-#include <sys/types.h>
-#include <dirent.h>
-
 #include "NotCopyable.hh"
 
-/**
-  Wrapper class for DIR * routines
-*/
+#include <sys/types.h>
+#include <dirent.h>
+#include <string>
+
+///  Wrapper class for DIR * routines
 class DirHelper: private FbTk::NotCopyable {
 public:
     explicit DirHelper(const char *dir = 0);
     ~DirHelper();
+
     void rewind();
+    /// gets next dirent info struct in directory
     struct dirent * read();
-    void close();
+    /// reads next filename in directory
+    std::string readFilename();
+    void close();    
     bool open(const char *dir);
+    /// @return number of entries in the directory
+    size_t entries() const { return m_num_entries; }
 private:
     DIR *m_dir;
+    size_t m_num_entries; ///< number of file entries in directory
 };
 
 #endif // DIRHELPER_HH
