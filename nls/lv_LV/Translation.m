@@ -1,112 +1,112 @@
 $ codeset=ISO-8859-13
 
-$set 0x1 #Align
+$set 1 #Align
 
-0x1 Apakðâ Centrâ
-0x2 Apakðâ pa Kreisi
-0x3 Apakðâ pa Labi
-0x4 Horizontâls
-0x6 Pa Kreisi Apakðâ
-0x7 Pa Kreisi Centrâ
-0x8 Pa Kreisi Augðâ
-0xb Pa Labi Apakðâ
-0xc Pa Labi Centrâ
-0xd Pa Labi Augðâ
-0xe Augðâ Centrâ
-0xf Augðâ pa Kreisi
-0x10 Augðâ pa Labi
-0x11 Vertikâls
+1 Apakðâ Centrâ
+2 Apakðâ pa Kreisi
+3 Apakðâ pa Labi
+4 Horizontâls
+6 Pa Kreisi Apakðâ
+7 Pa Kreisi Centrâ
+8 Pa Kreisi Augðâ
+11 Pa Labi Apakðâ
+12 Pa Labi Centrâ
+13 Pa Labi Augðâ
+14 Augðâ Centrâ
+15 Augðâ pa Kreisi
+16 Augðâ pa Labi
+17 Vertikâls
 
-$set 0x2 #BaseDisplay
-
-
-$set 0x3 #Common
-
-0x2 Auto paslçpt
-
-$set 0x4 #Configmenu
-
-0x2 Auto Pacelðana
-0x4 Klikðíis, lai Fokusçtu
-0x7 Fokusçt Logu pie Darba vietas maiòas
-0x8 Fokusçðanâs Modelis
-0x9 Fokusçt Jaunos Logus
-0xa Pilna Maksimizâcija
-0xb Attçla Tonçðana
-0xc Necaurredzama Loga Pârvietoðana
-0xd Pusnevîþîga Fokusçðana
-0xe Nevîþîga Fokusçðana
-0xf Pârvilkðana uz Darba vietu
-
-$set 0x5 #Ewmh
+$set 2 #BaseDisplay
 
 
-$set 0x6 #FbTkError
+$set 3 #Common
+
+2 Auto paslçpt
+
+$set 4 #Configmenu
+
+2 Auto Pacelðana
+4 Klikðíis, lai Fokusçtu
+7 Fokusçt Logu pie Darba vietas maiòas
+8 Fokusçðanâs Modelis
+9 Fokusçt Jaunos Logus
+10 Pilna Maksimizâcija
+11 Attçla Tonçðana
+12 Necaurredzama Loga Pârvietoðana
+13 Pusnevîþîga Fokusçðana
+14 Nevîþîga Fokusçðana
+15 Pârvilkðana uz Darba vietu
+
+$set 5 #Ewmh
 
 
-$set 0x7 #Fluxbox
+$set 6 #FbTkError
 
 
-$set 0x8 #Gnome
+$set 7 #Fluxbox
 
 
-$set 0x9 #Keys
+$set 8 #Gnome
 
 
-$set 0xa #Menu
-
-0x3 Iziet
-0x4 Ikonas
-0x7 Novietoðana
-0x9 Restartçt
-0xa xterm
-
-$set 0xb #Remember
+$set 9 #Keys
 
 
-$set 0xc #Screen
+$set 10 #Menu
 
-0x2 P: %4d x A: %4d
-0x5 X: %4d x Y: %4d
-0x6 0: 0000 x 0: 0000
+3 Iziet
+4 Ikonas
+7 Novietoðana
+9 Restartçt
+10 xterm
 
-$set 0xd #Slit
+$set 11 #Remember
 
-0x4 Ðíçluma Virziens
-0x7 Ðíçluma Novietojums
-0x8 Ðíçlums
 
-$set 0xe #Toolbar
+$set 12 #Screen
 
-0x1 Rediìçt paðreizçjâs darba vietas nosaukumu
-0xb Rîkjosla
+2 P: %4d x A: %4d
+5 X: %4d x Y: %4d
+6 0: 0000 x 0: 0000
 
-$set 0xf #Window
+$set 13 #Slit
 
-0x1 Nenosaukts
+4 Ðíçluma Virziens
+7 Ðíçluma Novietojums
+8 Ðíçlums
 
-$set 0x10 #Windowmenu
+$set 14 #Toolbar
 
-0x1 Aizvçrt
-0x2 Ikonificçt
-0x4 Pazeminât
-0x5 Maksimizçt
-0x6 Pacelt
-0x7 Sûtît Uz ...
-0x8 Çnot
-0x9 Stiíçt
+1 Rediìçt paðreizçjâs darba vietas nosaukumu
+11 Rîkjosla
 
-$set 0x11 #Workspace
+$set 15 #Window
 
-0x1 Darba vieta %d
-0x2 Darba vietas
-0x3 Jauna Darba vieta
-0x4 Noòemt Pçdçjo
+1 Nenosaukts
 
-$set 0x12 #bsetroot
+$set 16 #Windowmenu
 
-0x1 %s: kïûda: jânosaka viens no: -solid, -mod, -gradient\n
-0x3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
+1 Aizvçrt
+2 Ikonificçt
+4 Pazeminât
+5 Maksimizçt
+6 Pacelt
+7 Sûtît Uz ...
+8 Çnot
+9 Stiíçt
+
+$set 17 #Workspace
+
+1 Darba vieta %d
+2 Darba vietas
+3 Jauna Darba vieta
+4 Noòemt Pçdçjo
+
+$set 18 #bsetroot
+
+1 %s: kïûda: jânosaka viens no: -solid, -mod, -gradient\n
+3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
 -display <virkne>        displeja savienojums\n\
 -mod <x> <y>             moduïa raksts\n\
 -foreground, -fg <krâsa> moduïa priekðplâna krâsa\n\
@@ -117,11 +117,11 @@ $set 0x12 #bsetroot
 -solid <krâsa>           viendabîga krâsa\n\n\
 -help                    parâdît ðo palîdzîbu un iziet\n
 
-$set 0x13 #main
+$set 19 #main
 
-0x1 kïûda: '-display' nepiecieðams arguments\n
-0xb kïûda: '-rc' nepiecieðams arguments\n
-0xc Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+1 kïûda: '-display' nepiecieðams arguments\n
+11 kïûda: '-rc' nepiecieðams arguments\n
+12 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <virkne>\t\tlietot displeja savienojumu.\n\
 -rc <virkne>\t\t\tlietot citu resersu failu.\n\
 -version\t\t\tparâdît versiju un iziet.\n\
@@ -129,5 +129,5 @@ $set 0x13 #main
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tparâdît ðo palîdzîbas tekstu un iziet.\n\n
 
-$set 0xd #mainWarnDisplay
+$set 13 #mainWarnDisplay
 

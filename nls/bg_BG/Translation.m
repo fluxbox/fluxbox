@@ -1,113 +1,113 @@
 $ codeset=ISO-8859-1
 
-$set 0x1 #Align
+$set 1 #Align
 
-0x1 Долу в Средата
-0x2 Долу в Ляво
-0x3 Долу в Дясно
-0x4 Хоризонтално
-0x6 Долу в Ляво
-0x7 Ляво в Средата
-0x8 Горе в Ляво
-0xb Долу в Дясно
-0xc Дясно в Средата
-0xd Горе в Дясно
-0xe Горе в Средата
-0xf Горе в Ляво
-0x10 Горе в Дясно
-0x11 Верткално
+1 Долу в Средата
+2 Долу в Ляво
+3 Долу в Дясно
+4 Хоризонтално
+6 Долу в Ляво
+7 Ляво в Средата
+8 Горе в Ляво
+11 Долу в Дясно
+12 Дясно в Средата
+13 Горе в Дясно
+14 Горе в Средата
+15 Горе в Ляво
+16 Горе в Дясно
+17 Верткално
 
-$set 0x2 #BaseDisplay
-
-
-$set 0x3 #Common
-
-0x2 Автоматично скриване
-
-$set 0x4 #Configmenu
-
-0x2 Автоматично Повдигане
-0x4 Кликни за Фокус
-0x7 Фокусирай Прозорец при смяна на Работните Места
-0x8 Тип фокус
-0x9 Фокусирай Новите Прозорци
-0xa Пълно Увеличаване
-0xb Image Dithering
-0xc Непрозрачно местене на прозорците
-0xd Полу Sloppy Фокус
-0xe Sloppy Фокус
-0xf Workspace Warping
-
-$set 0x5 #Ewmh
+$set 2 #BaseDisplay
 
 
-$set 0x6 #FbTkError
+$set 3 #Common
+
+2 Автоматично скриване
+
+$set 4 #Configmenu
+
+2 Автоматично Повдигане
+4 Кликни за Фокус
+7 Фокусирай Прозорец при смяна на Работните Места
+8 Тип фокус
+9 Фокусирай Новите Прозорци
+10 Пълно Увеличаване
+11 Image Dithering
+12 Непрозрачно местене на прозорците
+13 Полу Sloppy Фокус
+14 Sloppy Фокус
+15 Workspace Warping
+
+$set 5 #Ewmh
 
 
-$set 0x7 #Fluxbox
+$set 6 #FbTkError
 
 
-$set 0x8 #Gnome
+$set 7 #Fluxbox
 
 
-$set 0x9 #Keys
+$set 8 #Gnome
 
 
-$set 0xa #Menu
-
-0x3 Изход
-0x4 Икони
-0x7 Разположение
-0x9 Рестартиране
-0xa xterm
-
-$set 0xb #Remember
+$set 9 #Keys
 
 
-$set 0xc #Screen
+$set 10 #Menu
 
-0x2 W: %4d x H: %4d
-0x5 X: %4d x Y: %4d
-0x6 0: 0000 x 0: 0000
+3 Изход
+4 Икони
+7 Разположение
+9 Рестартиране
+10 xterm
 
-$set 0xd #Slit
+$set 11 #Remember
 
-0x4 Posoka na Slit -a
-0x7 Разположение на Slit -а
-0x8 Slit
 
-$set 0xe #Toolbar
+$set 12 #Screen
 
-0x1 Редактирай името на текущото Работно Място
-0xa Разположение на Toolbar -а
-0xb Toolbar
+2 W: %4d x H: %4d
+5 X: %4d x Y: %4d
+6 0: 0000 x 0: 0000
 
-$set 0xf #Window
+$set 13 #Slit
 
-0x1 Безиме
+4 Posoka na Slit -a
+7 Разположение на Slit -а
+8 Slit
 
-$set 0x10 #Windowmenu
+$set 14 #Toolbar
 
-0x1 Затвори
-0x2 Иконизирай
-0x4 Сниши
-0x5 Увеличи
-0x6 Повдигни
-0x7 Прати на ...
-0x8 Засенчи
-0x9 Забоди
+1 Редактирай името на текущото Работно Място
+10 Разположение на Toolbar -а
+11 Toolbar
 
-$set 0x11 #Workspace
+$set 15 #Window
 
-0x1 Работно Място %d
-0x2 Работни Места
-0x3 Ново Работно Място
-0x4 Махни Последното
+1 Безиме
 
-$set 0x12 #bsetroot
+$set 16 #Windowmenu
 
-0x1 %s: error: must specify one of: -solid, -mod, -gradient\n
-0x3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
+1 Затвори
+2 Иконизирай
+4 Сниши
+5 Увеличи
+6 Повдигни
+7 Прати на ...
+8 Засенчи
+9 Забоди
+
+$set 17 #Workspace
+
+1 Работно Място %d
+2 Работни Места
+3 Ново Работно Място
+4 Махни Последното
+
+$set 18 #bsetroot
+
+1 %s: error: must specify one of: -solid, -mod, -gradient\n
+3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
 -display <string>        display connection\n\
 -mod <x> <y>             modula pattern\n\
 -foreground, -fg <color> modula foreground color\n\
@@ -118,11 +118,11 @@ $set 0x12 #bsetroot
 -solid <color>           solid color\n\n\
 -help                    print this help text and exit\n
 
-$set 0x13 #main
+$set 19 #main
 
-0x1 грешка: '-display' изисква аргумент\n
-0xb грешка: '-rc' изисква аргумент\n
-0xc Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
+1 грешка: '-display' изисква аргумент\n
+11 грешка: '-rc' изисква аргумент\n
+12 Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
 -display <string>\t\tuse display connection.\n\
 -rc <string>\t\t\tползвай заместващ ресурсен файл.\n\
 -version\t\t\tпокажи версията и излез.\n\
@@ -130,5 +130,5 @@ $set 0x13 #main
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tпокажи този помощен текст и излез.\n\n
 
-$set 0xd #mainWarnDisplay
+$set 13 #mainWarnDisplay
 
