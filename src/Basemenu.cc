@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.35 2002/11/15 14:24:59 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.36 2002/11/26 16:07:29 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -52,7 +52,6 @@ using namespace std;
 static Basemenu *shown = 0;
 
 Basemenu::Basemenu(BScreen *screen):
-m_fluxbox(Fluxbox::instance()),
 m_screen(screen),
 m_display(Fluxbox::instance()->getXDisplay()),
 m_parent(0),
@@ -116,7 +115,8 @@ m_alignment(ALIGNDONTCARE) {
 			menu.height, m_screen->getBorderWidth(), m_screen->getDepth(),
 			InputOutput, m_screen->getVisual(), attrib_mask, &attrib);
 	
-	m_fluxbox->saveMenuSearch(menu.window, this);
+	Fluxbox * const fluxbox = Fluxbox::instance();
+	fluxbox->saveMenuSearch(menu.window, this);
 	
 	//attibutes for title to menuwindow
 	attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel | CWEventMask;
@@ -127,7 +127,7 @@ m_alignment(ALIGNDONTCARE) {
 		XCreateWindow(m_display, menu.window, 0, 0, menu.width, menu.height, 0,
 			m_screen->getDepth(), InputOutput, m_screen->getVisual(),
 			attrib_mask, &attrib);
-	m_fluxbox->saveMenuSearch(menu.title, this);
+	fluxbox->saveMenuSearch(menu.title, this);
 
 	attrib.event_mask |= PointerMotionMask;
 	menu.frame = XCreateWindow(m_display, menu.window, 0,
@@ -135,7 +135,7 @@ m_alignment(ALIGNDONTCARE) {
 				menu.width, menu.frame_h, 0,
 				m_screen->getDepth(), InputOutput,
 				m_screen->getVisual(), attrib_mask, &attrib);
-	m_fluxbox->saveMenuSearch(menu.frame, this);
+	fluxbox->saveMenuSearch(menu.frame, this);
 	
 }
 
@@ -163,13 +163,15 @@ Basemenu::~Basemenu() {
 	if (menu.sel_pixmap)
 		m_image_ctrl->removeImage(menu.sel_pixmap);
 
-	m_fluxbox->removeMenuSearch(menu.title);
+	Fluxbox * fluxbox = Fluxbox::instance();
+	
+	fluxbox->removeMenuSearch(menu.title);
 	XDestroyWindow(m_display, menu.title);
 
-	m_fluxbox->removeMenuSearch(menu.frame);
+	fluxbox->removeMenuSearch(menu.frame);
 	XDestroyWindow(m_display, menu.frame);
 
-	m_fluxbox->removeMenuSearch(menu.window);
+	fluxbox->removeMenuSearch(menu.window);
 	XDestroyWindow(m_display, menu.window);
 }
 
@@ -782,8 +784,9 @@ void Basemenu::setItemSelected(unsigned int index, bool sel) {
 bool Basemenu::isItemSelected(unsigned int index) const{
 	if (index >= menuitems.size()) return false;
 
-	BasemenuItem *item = find(index);
-	if (! item) return false;
+	const BasemenuItem *item = find(index);
+	if (!item)
+		return false;
 
 	return item->isSelected();
 }
@@ -804,7 +807,8 @@ bool Basemenu::isItemEnabled(unsigned int index) const {
 	if (index >= menuitems.size()) return false;
 
 	BasemenuItem *item = find(index);
-	if (! item) return false;
+	if (!item)
+		return false;
 
 	return item->isEnabled();
 }
@@ -824,7 +828,7 @@ void Basemenu::buttonPressEvent(XButtonEvent *be) {
 			if (item->submenu())
 				drawSubmenu(w);
 			else
-				drawItem(w, (item->isEnabled()), True);
+				drawItem(w, (item->isEnabled()), true);
 		}
 	} else {
 		menu.x_move = be->x_root - menu.x;
@@ -843,8 +847,8 @@ void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 		}
 
 		if (re->x >= 0 && re->x <= (signed) menu.width &&
-			re->y >= 0 && re->y <= (signed) menu.title_h)
-		if (re->button == 3)
+			re->y >= 0 && re->y <= (signed) menu.title_h &&
+			re->button == 3)
 			hide();
 			
 	} else if (re->window == menu.frame &&

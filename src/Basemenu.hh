@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.18 2002/10/15 10:57:58 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.19 2002/11/26 16:06:36 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -126,12 +126,11 @@ protected:
 	virtual void redrawTitle();
 	virtual void internal_hide();
 	inline Basemenu *parent() { return m_parent; }
-	inline const Basemenu *GetParent() const { return m_parent; }
+	inline const Basemenu *parent() const { return m_parent; }
 
 private:
 
 	typedef std::vector<BasemenuItem *> Menuitems;
-	Fluxbox *m_fluxbox;	//< fluxbox object, obsolete
 	BScreen *m_screen;
 	Display *m_display;
 	Basemenu *m_parent;
