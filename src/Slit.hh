@@ -1,3 +1,6 @@
+// Slit.hh for Fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Slit.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -18,9 +21,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
-  
-#ifndef   SLIT_HH
-#define   SLIT_HH
+	
+#ifndef	 SLIT_HH
+#define	 SLIT_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -35,126 +38,126 @@ class Slitmenu;
 
 class Slitmenu : public Basemenu {
 private: 
-  class Directionmenu : public Basemenu {
-  private:
-    Slitmenu *slitmenu;
+	class Directionmenu : public Basemenu {
+	private:
+		Slitmenu *slitmenu;
 
-  protected:
-    virtual void itemSelected(int, int);
+	protected:
+		virtual void itemSelected(int, int);
 
-  public:
-    Directionmenu(Slitmenu *);
-  };
+	public:
+		Directionmenu(Slitmenu *);
+	};
 
-  class Placementmenu : public Basemenu {
-  private:
-    Slitmenu *slitmenu;
+	class Placementmenu : public Basemenu {
+	private:
+		Slitmenu *slitmenu;
 
-  protected: 
-    virtual void itemSelected(int, int);
+	protected: 
+		virtual void itemSelected(int, int);
 
-  public:
-    Placementmenu(Slitmenu *);
-  };
+	public:
+		Placementmenu(Slitmenu *);
+	};
 
-  Directionmenu *directionmenu;
-  Placementmenu *placementmenu;
+	Directionmenu *directionmenu;
+	Placementmenu *placementmenu;
 
-  Slit *slit;
+	Slit *slit;
 
-  friend class Directionmenu;
-  friend class Placementmenu;
-  friend class Slit;
+	friend class Directionmenu;
+	friend class Placementmenu;
+	friend class Slit;
 
 
 protected:
-  virtual void itemSelected(int, int);
-  virtual void internal_hide(void);
+	virtual void itemSelected(int, int);
+	virtual void internal_hide(void);
 
 
 public:
-  Slitmenu(Slit *);
-  virtual ~Slitmenu(void);
+	explicit Slitmenu(Slit *);
+	virtual ~Slitmenu(void);
 
-  inline Basemenu *getDirectionmenu(void) { return directionmenu; }
-  inline Basemenu *getPlacementmenu(void) { return placementmenu; }
+	inline Basemenu *getDirectionmenu(void) { return directionmenu; }
+	inline Basemenu *getPlacementmenu(void) { return placementmenu; }
 
-  void reconfigure(void);
+	void reconfigure(void);
 };
 
 
 class Slit : public TimeoutHandler {
-private:
-  class SlitClient {
-  public:
-    Window window, client_window, icon_window;
-
-    int x, y;
-    unsigned int width, height;
-  };
-
-  Bool on_top, hidden, do_auto_hide;
-  Display *display;
-
-  Fluxbox *fluxbox;
-  BScreen *screen;
-  BTimer *timer;
-
-  typedef std::list<SlitClient *> SlitClients;
-
-  SlitClients clientList;
-  Slitmenu *slitmenu;
-
-  struct frame {
-    Pixmap pixmap;
-    Window window;
-
-    int x, y, x_hidden, y_hidden;
-    unsigned int width, height;
-  } frame;
-
-  friend class Slitmenu;
-  friend class Slitmenu::Directionmenu;
-  friend class Slitmenu::Placementmenu;
-
-
 public:
-  Slit(BScreen *);
-  virtual ~Slit();
+	explicit Slit(BScreen *);
+	virtual ~Slit();
 
-  inline const Bool &isOnTop(void) const { return on_top; }
-  inline const Bool &isHidden(void) const { return hidden; }
-  inline const Bool &doAutoHide(void) const { return do_auto_hide; }
+	inline const bool isOnTop(void) const { return on_top; }
+	inline const bool isHidden(void) const { return hidden; }
+	inline const bool doAutoHide(void) const { return do_auto_hide; }
 
-  inline Slitmenu *getMenu() { return slitmenu; }
+	Slitmenu &getMenu() { return slitmenu; }
 
-  inline const Window &getWindowID() const { return frame.window; }
+	inline const Window &getWindowID() const { return frame.window; }
 
-  inline const int &getX(void) const
-  { return ((hidden) ? frame.x_hidden : frame.x); }
-  inline const int &getY(void) const
-  { return ((hidden) ? frame.y_hidden : frame.y); }
+	inline const int getX(void) const
+	{ return ((hidden) ? frame.x_hidden : frame.x); }
+	inline const int getY(void) const
+	{ return ((hidden) ? frame.y_hidden : frame.y); }
 
-  inline const unsigned int &getWidth(void) const { return frame.width; }
-  inline const unsigned int &getHeight(void) const { return frame.height; }
+	inline const unsigned int getWidth(void) const { return frame.width; }
+	inline const unsigned int getHeight(void) const { return frame.height; }
 
-  void addClient(Window);
-  void removeClient(SlitClient *, bool = true);
-  void removeClient(Window, bool = true);
-  void reconfigure(void);
-  void reposition(void);
-  void shutdown(void);
+	void addClient(Window);
+	void removeClient(Window, bool = true);
+	void reconfigure(void);
+	void reposition(void);
+	void shutdown(void);
 
-  void buttonPressEvent(XButtonEvent *);
-  void enterNotifyEvent(XCrossingEvent *);
-  void leaveNotifyEvent(XCrossingEvent *);
-  void configureRequestEvent(XConfigureRequestEvent *);
+	void buttonPressEvent(XButtonEvent *);
+	void enterNotifyEvent(XCrossingEvent *);
+	void leaveNotifyEvent(XCrossingEvent *);
+	void configureRequestEvent(XConfigureRequestEvent *);
 
-  virtual void timeout(void);
+	virtual void timeout(void);
 
-  enum { VERTICAL = 1, HORIZONTAL };
-  enum { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
-         TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
+	enum { VERTICAL = 1, HORIZONTAL };
+	enum { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
+				 TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
+
+private:
+	class SlitClient {
+	public:
+		Window window, client_window, icon_window;
+
+		int x, y;
+		unsigned int width, height;
+	};
+	
+	void removeClient(SlitClient *, bool = true);
+	
+	Bool on_top, hidden, do_auto_hide;
+	Display *display;
+
+	Fluxbox *fluxbox;
+	BScreen *screen;
+	BTimer timer;
+
+	typedef std::list<SlitClient *> SlitClients;
+
+	SlitClients clientList;
+	Slitmenu slitmenu;
+
+	struct frame {
+		Pixmap pixmap;
+		Window window;
+
+		int x, y, x_hidden, y_hidden;
+		unsigned int width, height;
+	} frame;
+
+	friend class Slitmenu;
+	friend class Slitmenu::Directionmenu;
+	friend class Slitmenu::Placementmenu;
 };
 
 

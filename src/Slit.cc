@@ -42,8 +42,7 @@
 #include <algorithm>
 
 
-Slit::Slit(BScreen *scr) {
-	screen = scr;
+Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(this) {
 	fluxbox = Fluxbox::instance();
 
 	on_top = screen->isSlitOnTop();
@@ -52,11 +51,9 @@ Slit::Slit(BScreen *scr) {
 	display = screen->getBaseDisplay()->getXDisplay();
 	frame.window = frame.pixmap = None;
 
-	timer = new BTimer(fluxbox, this);
-	timer->setTimeout(fluxbox->getAutoRaiseDelay());
-	timer->fireOnce(True);
-
-	slitmenu = new Slitmenu(this);
+	
+	timer.setTimeout(fluxbox->getAutoRaiseDelay());
+	timer.fireOnce(True);
 
 	XSetWindowAttributes attrib;
 	unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
@@ -85,10 +82,6 @@ Slit::Slit(BScreen *scr) {
 
 Slit::~Slit() {
 	fluxbox->grab();
-
-	delete timer;
-
-	delete slitmenu;
 
 	screen->getImageControl()->removeImage(frame.pixmap);
 
@@ -406,7 +399,7 @@ void Slit::reconfigure(void) {
 		break;
 	}
 
-	slitmenu->reconfigure();
+	slitmenu.reconfigure();
 }
 
 
@@ -550,26 +543,26 @@ void Slit::buttonPressEvent(XButtonEvent *e) {
 	} else if (e->button == Button2 && (! on_top)) {
 		XLowerWindow(display, frame.window);
 	} else if (e->button == Button3) {
-		if (! slitmenu->isVisible()) {
+		if (! slitmenu.isVisible()) {
 			int x, y;
 
-			x = e->x_root - (slitmenu->getWidth() / 2);
-			y = e->y_root - (slitmenu->getHeight() / 2);
+			x = e->x_root - (slitmenu.getWidth() / 2);
+			y = e->y_root - (slitmenu.getHeight() / 2);
 
 			if (x < 0)
 				x = 0;
-			else if (x + slitmenu->getWidth() > screen->getWidth())
-				x = screen->getWidth() - slitmenu->getWidth();
+			else if (x + slitmenu.getWidth() > screen->getWidth())
+				x = screen->getWidth() - slitmenu.getWidth();
 
 			if (y < 0)
 				y = 0;
-			else if (y + slitmenu->getHeight() > screen->getHeight())
-				y = screen->getHeight() - slitmenu->getHeight();
+			else if (y + slitmenu.getHeight() > screen->getHeight())
+				y = screen->getHeight() - slitmenu.getHeight();
 
-			slitmenu->move(x, y);
-			slitmenu->show();
+			slitmenu.move(x, y);
+			slitmenu.show();
 		} else
-			slitmenu->hide();
+			slitmenu.hide();
 	}
 }
 
@@ -579,9 +572,9 @@ void Slit::enterNotifyEvent(XCrossingEvent *) {
 		return;
 
 	if (hidden) {
-		if (! timer->isTiming()) timer->start();
+		if (! timer.isTiming()) timer.start();
 	} else {
-		if (timer->isTiming()) timer->stop();
+		if (timer.isTiming()) timer.stop();
 	}
 }
 
@@ -591,9 +584,9 @@ void Slit::leaveNotifyEvent(XCrossingEvent *) {
 		return;
 
 	if (hidden) {
-		if (timer->isTiming()) timer->stop();
-	} else if (! slitmenu->isVisible()) {
-		if (! timer->isTiming()) timer->start();
+		if (timer.isTiming()) timer.stop();
+	} else if (! slitmenu.isVisible()) {
+		if (! timer.isTiming()) timer.start();
 	}
 }
 
