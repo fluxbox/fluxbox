@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.46 2002/04/08 22:36:30 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.47 2002/04/09 09:42:16 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -282,7 +282,7 @@ getString() {
 Fluxbox *Fluxbox::singleton=0;
 
 //------------ instance ---------------------
-//returns singleton object of blackbox class
+//returns singleton object of Fluxbox class
 //since we only need to create one instance of Fluxbox
 //-------------------------------------------
 Fluxbox *Fluxbox::instance(int m_argc, char **m_argv, char *dpy_name, char *rc) {
@@ -1267,6 +1267,47 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 				#endif // !__EMX__
 						
 			
+			}
+			break;
+			case Keys::ROOTMENU: //show root menu
+			{
+				LinkedListIterator<BScreen> it(screenList);
+
+				for (; it.current(); it++) {
+
+					BScreen *screen = it.current();
+					if (ke.window != screen->getRootWindow())
+						continue;
+						
+					//calculate placement of workspace menu
+					//and show/hide it				
+					int mx = ke.x_root -
+						(screen->getRootmenu()->width() / 2);
+					int my = ke.y_root -
+						(screen->getRootmenu()->titleHeight() / 2);
+
+					if (mx < 0) mx = 0;
+					if (my < 0) my = 0;
+
+					if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
+						mx = screen->getWidth() -
+							screen->getRootmenu()->width() -
+							screen->getBorderWidth();
+					}
+
+					if (my + screen->getRootmenu()->height() >
+							screen->getHeight()) {
+						my = screen->getHeight() -
+							screen->getRootmenu()->height() -
+							screen->getBorderWidth();
+					}
+					screen->getRootmenu()->move(mx, my);
+
+					if (! screen->getRootmenu()->isVisible()) {
+						checkMenu();
+						screen->getRootmenu()->show();
+					}
+				}
 			}
 			break;
 			default: //try to see if its a window action
