@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.235 2004/03/21 09:00:25 rathnor Exp $
+// $Id: fluxbox.cc,v 1.236 2004/03/23 09:19:57 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1770,6 +1770,11 @@ void Fluxbox::real_reconfigure() {
 	
     if (old_blackboxrc)
         XrmDestroyDatabase(old_blackboxrc);
+
+    ScreenList::iterator screen_it = m_screen_list.begin();
+    const ScreenList::const_iterator screen_it_end = m_screen_list.end();
+    for (; screen_it != screen_it_end; ++screen_it)
+        load_rc(*(*screen_it));
 
     // reconfigure all screens
     for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::reconfigure));
