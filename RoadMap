@@ -80,8 +80,8 @@ Release:      0.9.1
 Approx Date:  7 April, 2003
 Major Features:
  * Toolbar modes                        (Simon)
- = Tabs embedded in titlebar            (Henrik)
- = Tabgroup rewrite                     (Henrik)
+ * Tabs embedded in titlebar            (Henrik)
+ * Tabgroup rewrite                     (Henrik)
  * Most recently used window cycling    (Simon)
 Minor Features:
  - per workspace backgrounds            (Simon)

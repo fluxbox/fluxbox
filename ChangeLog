@@ -1,6 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
+*03/04/16:
+   * Applied click raises patch (Thanks Dale P. Smith)
+     Screen.hh/cc, Window.cc
 *03/04/15:
+   * Fixed y offset bug on ConfigureRequestEvent
+     Window.cc
+   * Fixed ConfigureNotify bug
+     Window.cc/hh
    * Added drag and drop support for tabs (Henrik)
      Window.hh/cc
    * Fixed client and icon count in Ewmh (Henrik)
