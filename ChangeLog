@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/19:
+  * Some changes to avoid invisible fonts (Mathias)
+    FbTk/Font.cc FbTk/FontImp.hh FbTk/XftFontImp.cc/hh
+    FbTk/XmbFontImp.cc/hh
 *04/11/17:
+  * Fix memleaks (thanx to Thomas Weidner)
+    FbTk/Font.cc
   * Fix for possible segfault at exit/restart (Mathias)
     Screen.cc
 *04/11/15:
