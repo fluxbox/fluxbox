@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.25 2002/02/02 19:51:15 pekdon Exp $
+// $Id: fluxbox.cc,v 1.26 2002/02/04 06:57:26 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -237,7 +237,7 @@ std::string Resource<std::string>::
 getString() { return **this; }
 
 template<>
-string Resource<Fluxbox::TitlebarList>::
+std::string Resource<Fluxbox::TitlebarList>::
 getString() {
 	string retval;
 	int size=m_value.size();
@@ -701,6 +701,9 @@ void Fluxbox::process_event(XEvent *e) {
 
 	case MapNotify:
 	{
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): MapNotify:"<<hex<<e->xmap.window<<endl;
+		#endif
 		FluxboxWindow *win = searchWindow(e->xmap.window);
 
 		if (win)
@@ -711,6 +714,9 @@ void Fluxbox::process_event(XEvent *e) {
 
 	case UnmapNotify:
 	{
+			#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): UnmapNotify:"<<hex<<e->xunmap.window<<endl;
+			#endif
 			FluxboxWindow *win = (FluxboxWindow *) 0;
 
 			#ifdef SLIT
@@ -718,8 +724,11 @@ void Fluxbox::process_event(XEvent *e) {
 			#endif // SLIT
 
 			if ((win = searchWindow(e->xunmap.window))) {
-			win->unmapNotifyEvent(&e->xunmap);
-
+				// only process windows with StructureNotify selected 
+		     	// (ignore SubstructureNotify)
+			//    if (win->windowFor(e->xunmap.window))
+					if (win->getClientWindow()!=e->xunmap.window)
+						win->unmapNotifyEvent(&e->xunmap);
 			#ifdef SLIT
 			} else if ((slit = searchSlit(e->xunmap.window))) {
 				slit->removeClient(e->xunmap.window);
@@ -729,7 +738,8 @@ void Fluxbox::process_event(XEvent *e) {
 
 			break;
 		}
-
+	case CreateNotify:
+		break;
 	case DestroyNotify:
 		{
 			FluxboxWindow *win = (FluxboxWindow *) 0;
@@ -964,6 +974,7 @@ void Fluxbox::process_event(XEvent *e) {
 					case Keys::RIGHTWORKSPACE:
 						screen->rightWorkspace();
 						break;
+
 					case Keys::KILLWINDOW: //kill the current window
 						XKillClient(screen->getBaseDisplay()->getXDisplay(),
 							focused_window->getClientWindow());
@@ -1057,6 +1068,10 @@ void Fluxbox::process_event(XEvent *e) {
 
 	case ClientMessage:
 		{
+			#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]="<<e->xclient.data.l[0]<<endl;
+			#endif
+
 			if (e->xclient.format == 32) {
 				if (e->xclient.message_type == getWMChangeStateAtom()) {
 					FluxboxWindow *win = searchWindow(e->xclient.window);
@@ -1101,20 +1116,42 @@ void Fluxbox::process_event(XEvent *e) {
 
 						win->changeBlackboxHints(&net);
 					}
-				} 
+				}
 				#ifdef GNOME
 				else if (e->xclient.message_type == getGnomeWorkspaceAtom()) {
 					#ifdef DEBUG
-					cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom"<<endl;
+					cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<e->xclient.data.l[0]<<endl;
 					#endif//!DEBUG
-					BScreen *screen = searchScreen(e->xclient.window);
-					if (screen)
+					BScreen *screen = 0;					
+					FluxboxWindow *win = 0;
+					
+					if ( (win = searchWindow(e->xclient.window))!=0 &&
+							win->getScreen() && e->xclient.data.l[0] >= 0 &&
+							e->xclient.data.l[0] < win->getScreen()->getCount()) {
+
+						win->getScreen()->changeWorkspaceID(e->xclient.data.l[0]);
+						
+					} else if ((screen = searchScreen(e->xclient.window))!=0 &&
+							e->xclient.data.l[0] >= 0 &&
+							e->xclient.data.l[0] < screen->getCount()) {
+
 						screen->changeWorkspaceID(e->xclient.data.l[0]);
+					}
 
 				}
 				#endif //!GNOME
-			}
+				#ifdef NEWWMSPEC
+				else if (e->xclient.message_type == getNETWMDesktopAtom()) {
+					BScreen *screen = searchScreen(e->xclient.window);
 
+					if (screen && e->xclient.data.l[0] >= 0 &&
+							e->xclient.data.l[0] < screen->getCount())
+						screen->changeWorkspaceID(e->xclient.data.l[0]);
+				}
+				#endif //!NEWWMSPEC
+				
+			}
+				
 			break;
 		}
 
@@ -1122,7 +1159,7 @@ void Fluxbox::process_event(XEvent *e) {
 	default:
 		{
 
-#ifdef		SHAPE
+		#ifdef SHAPE
 		if (e->type == getShapeEventBase()) {
 			XShapeEvent *shape_event = (XShapeEvent *) e;
 			FluxboxWindow *win = (FluxboxWindow *) 0;
@@ -1131,7 +1168,7 @@ void Fluxbox::process_event(XEvent *e) {
 					(shape_event->kind != ShapeBounding))
 				win->shapeEvent(shape_event);
 			}
-#endif // SHAPE
+		#endif // SHAPE
 
 		}
 	}
@@ -2117,6 +2154,7 @@ void Fluxbox::reconfigure(void) {
 
 
 void Fluxbox::real_reconfigure(void) {
+	BaseDisplay::GrabGuard gg(*this);
 	grab();
 
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
