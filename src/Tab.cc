@@ -252,16 +252,16 @@ void Tab::stick() {
 	for (; first!=0; first = first->m_next) {
 		FluxboxWindow *win = first->m_win; //just for convenient
 		if (win->isStuck()) {
-			win->blackbox_attrib.flags ^= AttribOmnipresent;
-			win->blackbox_attrib.attrib ^= AttribOmnipresent;
+			win->blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
+			win->blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->stuck = false;
 			if (!win->iconic)
       	win->getScreen()->reassociateWindow(win, -1, true);
 				    
 		} else {
 			win->stuck = true;
-			win->blackbox_attrib.flags |= AttribOmnipresent;
-			win->blackbox_attrib.attrib |= AttribOmnipresent;
+			win->blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
+			win->blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 		}
 		
 		win->setState(win->current_state);
