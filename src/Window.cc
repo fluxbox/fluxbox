@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.84 2002/09/10 16:46:15 fluxgen Exp $
+// $Id: Window.cc,v 1.85 2002/09/11 15:12:40 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -376,10 +376,12 @@ FluxboxWindow::~FluxboxWindow() {
 		if (client.transient_for == this) {
 			client.transient_for = 0;
 		}
-		
+
 		fluxbox->setFocusedWindow(client.transient_for);
+
 		if (client.transient_for) {
-			client.transient_for->client.transients.remove(this);
+			client.transient_for->client.transients.remove(this);			
+			client.transient_for->setInputFocus();
 			client.transient_for = 0;
 		}
 	}
@@ -1491,7 +1493,7 @@ void FluxboxWindow::configure(int dx, int dy,
 
 bool FluxboxWindow::setInputFocus() {
 	//TODO hint skip focus
-	
+
 	if (((signed) (frame.x + frame.width)) < 0) {
 		if (((signed) (frame.y + frame.y_border)) < 0)
 			configure(screen->getBorderWidth(), screen->getBorderWidth(),
@@ -1527,37 +1529,35 @@ bool FluxboxWindow::setInputFocus() {
 				return (*it)->setInputFocus();
 		}
 	} else {
-		if (! focused) {
-			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
-				XSetInputFocus(display, client.window,
-					RevertToPointerRoot, CurrentTime);
-			} else {
-				return false;
-			}
-			Fluxbox *fb = Fluxbox::instance();
-			fb->setFocusedWindow(this);
-			
-			if (send_focus_message) {
-				XEvent ce;
-				ce.xclient.type = ClientMessage;
-				ce.xclient.message_type = fb->getWMProtocolsAtom();
-				ce.xclient.display = display;
-				ce.xclient.window = client.window;
-				ce.xclient.format = 32;
-				ce.xclient.data.l[0] = fb->getWMTakeFocusAtom();
-				ce.xclient.data.l[1] = fb->getLastTime();
-				ce.xclient.data.l[2] = 0l;
-				ce.xclient.data.l[3] = 0l;
-				ce.xclient.data.l[4] = 0l;
-				XSendEvent(display, client.window, false, NoEventMask, &ce);
-			}
-
-			if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus())
-					&& screen->doAutoRaise())
-				timer.start();
-
-			ret = true;
+		if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
+			XSetInputFocus(display, client.window,
+				RevertToPointerRoot, CurrentTime);
+		} else {
+			return false;
 		}
+		Fluxbox *fb = Fluxbox::instance();
+		fb->setFocusedWindow(this);
+			
+		if (send_focus_message) {
+			XEvent ce;
+			ce.xclient.type = ClientMessage;
+			ce.xclient.message_type = fb->getWMProtocolsAtom();
+			ce.xclient.display = display;
+			ce.xclient.window = client.window;
+			ce.xclient.format = 32;
+			ce.xclient.data.l[0] = fb->getWMTakeFocusAtom();
+			ce.xclient.data.l[1] = fb->getLastTime();
+			ce.xclient.data.l[2] = 0l;
+			ce.xclient.data.l[3] = 0l;
+			ce.xclient.data.l[4] = 0l;
+			XSendEvent(display, client.window, false, NoEventMask, &ce);
+		}
+
+		if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus())
+				&& screen->doAutoRaise())
+			timer.start();
+
+		ret = true;
 	}
 
 	return ret;
