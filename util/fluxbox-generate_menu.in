@@ -123,59 +123,48 @@ fluxbox-generate_menu was brought to you by:
 EOF
 }
 
-# ugly code for solaris compat.
-UNAME=`uname`
-# echo "UNAME=$UNAME"
-case "$UNAME" in
-    Linux|*BSD)
-        find_it() {
-            which $1 > /dev/null 2>&1 && shift && $*
-        }
-
-        find_it_options() {
-            which $1 > /dev/null 2>&1
-        }
-		;;
-    *)
-        find_it() {
-            file=`which $1 2> /dev/null`
-            if [ -x "$file" ]; then
-                if [ $# -gt 1 ]; then
-                    shift
-                    $*
-                fi
-                return 0
-            else
-                return 1
+# some which's have a reliable return code, some don't
+# Lets figure out which which we have.
+if which this_program_does_not_exist-no_really-aA1zZ9 >/dev/null 2>/dev/null; then
+    # can't rely on return value
+    find_it() {
+        file=`which $1 2> /dev/null`
+        if [ -x "$file" ]; then
+            if [ $# -gt 1 ]; then
+                shift
+                $*
             fi
-        }
+            return 0
+        else
+            return 1
+        fi
+    }
 
-        find_it_options() {
-            file=`which $1 2> /dev/null`
-            if [ -x "$file" ]; then
-                return 0
-            else
-                return 1
-            fi
-        }
+    find_it_options() {
+        file=`which $1 2> /dev/null`
+        if [ -x "$file" ]; then
+            return 0
+        else
+            return 1
+        fi
+    }
 
-        ;;
-esac
+else
+    # can rely on return value
+    find_it() {
+        which $1 > /dev/null 2>&1 && shift && $*
+    }
 
-case "$UNAME" in
-	Linux)
-		replaceWithinString(){
-			#echo "replaceWithinString: $1, $2, $3" >&2
-			#echo ${1//$2/$3} # causes error in BSD even though not used
-			echo $1 | awk "{ gsub(/$2/, \"$3\"); print }"
-		}
-	;;
-	*BSD)
-		replaceWithinString(){
-			echo $1 | awk "{ gsub(/$2/, \"$3\"); print }"
-		}
-	;;
-esac
+    find_it_options() {
+        which $1 > /dev/null 2>&1
+    }
+fi
+
+#echo "replaceWithinString: $1, $2, $3" >&2
+#echo ${1//$2/$3} # causes error in BSD even though not used
+replaceWithinString(){
+    echo $1 | awk "{ gsub(/$2/, \"$3\"); print }"
+}
 
 convertIcon(){
 	if [ ! -f "$1" ] ; then 

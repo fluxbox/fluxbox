@@ -130,28 +130,28 @@ Common tips to use with $command:
 EOF
 }
 
-# ugly code for solaris compat.
-case `uname` in
-    Linux|*BSD)
-        find_it() {
-            which $1 > /dev/null 2>&1 && shift && $*
-        }
-        ;;
-    *)
-        find_it() {
-            file=`which $1 2> /dev/null`
-            if [ -x "$file" ]; then
-                if [ $# -gt 1 ]; then
-                    shift
-                    $*
-                fi
-                return 0
-            else
-                return 1
+# some which's have a reliable return code, some don't
+# Lets figure out which which we have.
+if which this_program_does_not_exist-no_really-aA1zZ9 >/dev/null 2>/dev/null; then
+    # can't rely on return value
+    find_it() {
+        file=`which $1 2> /dev/null`
+        if [ -x "$file" ]; then
+            if [ $# -gt 1 ]; then
+                shift
+                $*
             fi
-        }
-        ;;
-esac
+            return 0
+        else
+            return 1
+        fi
+    }
+else
+    # can rely on return value
+    find_it() {
+        which $1 > /dev/null 2>&1 && shift && $*
+    }
+fi
 
 message() {
 
