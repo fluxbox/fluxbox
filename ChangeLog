@@ -1,4 +1,12 @@
 (Format: Year/Month/Day)
+Changes for 0.1.11:
+*02/07/19:
+   * Fixed slitlist bug
+     Slit wasn't reading the entire line from slitlist.
+   * Added ja_JP to fluxbox-generate_menu script (Thanks Junichiro Kita)
+   * Updated nls/ja_JP/ (Thanks Junichiro Kita)
+--------------------------------------------------------------------
+
 Changes for 0.1.10:
 *02/07/13:
    * Added xsri target in bsetbg (Thanks Jeramy)
