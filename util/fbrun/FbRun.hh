@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.1 2002/08/20 02:04:34 fluxgen Exp $
+// $Id: FbRun.hh,v 1.2 2002/11/12 16:47:37 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -35,7 +35,7 @@
 */
 class FbRun: public FbTk::EventHandler<XEvent> {
 public:
-	FbRun(Display *disp, int x = 0, int y = 0, size_t width = 200);
+	FbRun(int x = 0, int y = 0, size_t width = 200);
 	~FbRun();
 	void handleEvent(XEvent * const ev);
 	void setText(const std::string &text);
@@ -50,6 +50,7 @@ public:
 	bool loadFont(const std::string &fontname);
 	void setForeground(const XColor &color);
 	void setBackground(const XColor &color);
+	void setAntialias(bool val) { m_font.setAntialias(val); }
 	const FbTk::Font &font() const { return m_font; }
 	/// execute command and exit
 	void run(const std::string &execstring);
