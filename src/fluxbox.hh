@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.61 2003/05/27 11:55:23 rathnor Exp $
+// $Id: fluxbox.hh,v 1.62 2003/06/12 14:33:14 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -177,11 +177,6 @@ public:
     void attachSignals(FluxboxWindow &win);
 	
     virtual void timeout();
-	
-    inline const Cursor &getSessionCursor() const { return cursor.session; }
-    inline const Cursor &getMoveCursor() const { return cursor.move; }
-    inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
-    inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
     bool isStartup() const { return m_starting; }
     enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
@@ -194,9 +189,6 @@ public:
     void getDefaultDataFilename(char *, std::string &);
 
 private:
-    struct cursor {
-        Cursor session, move, ll_angle, lr_angle;
-    } cursor;
 
     typedef struct MenuTimestamp {
         std::string filename;
