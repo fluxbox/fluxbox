@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/03:
+  * Fixed so toolbar menu hides when you click on root window/desktop (Henrik)
+    fluxbox.cc
+  * Removed ToolbarHandler (Henrik)
+    ToolbarHandler.cc/hh, Toolbar.hh/cc, IconbarTool.cc, fluxbox.cc/hh
 *03/12/02:
   * Missing include of math.h for sqrt (Simon)
     WorkspaceCmd.cc
