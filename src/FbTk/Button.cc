@@ -1,5 +1,5 @@
 // Button.cc for FbTk - fluxbox toolkit
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.11 2003/08/13 09:25:16 fluxgen Exp $
+// $Id: Button.cc,v 1.12 2003/08/15 13:58:56 fluxgen Exp $
 
 #include "Button.hh"
 
