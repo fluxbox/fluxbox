@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.44 2003/09/10 09:53:21 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.45 2003/09/10 21:43:54 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -688,7 +688,9 @@ void FbWinFrame::redrawTitle() {
         (*btn_it)->updateTransparent();
     }
     m_titlebar.clear();
+    m_titlebar.updateTransparent();
     m_label.clear();
+    m_label.updateTransparent();
 }
 
 void FbWinFrame::redrawTitlebar() {
@@ -1065,6 +1067,7 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_focused_color);
 
     button.clear();
+    button.updateTransparent();
 }
 
 void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
@@ -1079,25 +1082,26 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_unfocused_color);
 
     button.clear(); 
+    button.updateTransparent();
 }
 
 void FbWinFrame::updateTransparent() {
     redrawTitlebar();
+    /*
+      ButtonList::iterator button_it = m_buttons_left.begin();
+      ButtonList::iterator button_it_end = m_buttons_left.begin();
+      for (; button_it != button_it_end; ++button_it) {
+      (*button_it)->clear();
+      (*button_it)->updateTransparent();
+      }
 
-    ButtonList::iterator button_it = m_buttons_left.begin();
-    ButtonList::iterator button_it_end = m_buttons_left.begin();
-    for (; button_it != button_it_end; ++button_it) {
-        (*button_it)->clear();
-        (*button_it)->updateTransparent();
-    }
-
-    button_it = m_buttons_right.begin();
-    button_it_end = m_buttons_right.end();
-    for (; button_it != button_it_end; ++button_it) {
-        (*button_it)->clear();
-        (*button_it)->updateTransparent();
-    }
-
+      button_it = m_buttons_right.begin();
+      button_it_end = m_buttons_right.end();
+      for (; button_it != button_it_end; ++button_it) {
+      (*button_it)->clear();
+      (*button_it)->updateTransparent();
+      }
+    */
     m_grip_left.updateTransparent();
     m_grip_right.updateTransparent();
     m_handle.updateTransparent();
