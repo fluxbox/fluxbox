@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.268 2004/02/27 12:32:54 fluxgen Exp $
+// $Id: Screen.cc,v 1.269 2004/03/18 14:45:56 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1827,6 +1827,9 @@ void BScreen::initMenu() {
                             if (err>0) {
                                 m_rootmenu->setLabel(label.c_str());
                                 defaultMenu = parseMenuFile(menu_file, *m_rootmenu.get(), row);
+                                // save filename so we can check timestamp on the root menu
+                                if (!defaultMenu)
+                                    fb->saveMenuFilename(menufilestr.c_str());
                             } else
                                 cerr<<"Error in menufile. Line("<<row<<")"<<endl;
                             break;
