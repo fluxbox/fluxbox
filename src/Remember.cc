@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.42 2004/09/04 04:54:38 akir Exp $
+// $Id: Remember.cc,v 1.43 2004/10/19 09:01:49 akir Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -445,8 +445,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
 
 void Remember::load() {
 
-    string apps_string;
-    Fluxbox::instance()->getDefaultDataFilename("apps", apps_string);
+    string apps_string = FbTk::StringUtil::expandFilename(Fluxbox::instance()->getAppsFilename());
 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;

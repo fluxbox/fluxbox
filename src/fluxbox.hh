@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.93 2004/10/18 01:26:54 akir Exp $
+// $Id: fluxbox.hh,v 1.94 2004/10/19 09:01:49 akir Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -124,6 +124,7 @@ public:
 
     inline const std::string &getMenuFilename() const { return *m_rc_menufile; }
     inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
+    inline const std::string &getAppsFilename() const { return *m_rc_appsfile; }
     inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     inline int getNumberOfLayers() const { return *m_rc_numlayers; }
     inline int getTabsPadding() const { return *m_rc_tabs_padding; }
@@ -264,7 +265,7 @@ private:
         m_rc_focused_tab_min_width;
     FbTk::Resource<std::string> m_rc_stylefile,
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
-        m_rc_groupfile;
+        m_rc_groupfile, m_rc_appsfile;
 
 
     FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;

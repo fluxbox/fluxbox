@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.259 2004/10/18 01:26:54 akir Exp $
+// $Id: fluxbox.cc,v 1.260 2004/10/19 09:01:49 akir Exp $
 
 #include "fluxbox.hh"
 
@@ -218,6 +218,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
       m_rc_slitlistfile(m_resourcemanager, "", "session.slitlistFile", "Session.SlitlistFile"),
       m_rc_groupfile(m_resourcemanager, "", "session.groupFile", "Session.GroupFile"),
+      m_rc_appsfile(m_resourcemanager, "", "session.appsFile", "Session.AppsFile"),
       m_rc_titlebar_left(m_resourcemanager, 
                          TitlebarList(&s_titlebar_left[0], &s_titlebar_left[1]), 
                          "session.titlebar.left", "Session.Titlebar.Left"),
