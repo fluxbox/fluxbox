@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.25 2003/02/22 18:03:15 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.26 2003/02/25 07:44:16 fluxgen Exp $
 
 #
 # Portability notes:
@@ -218,27 +218,27 @@ case ${LC_ALL} in
         XUTILSMENU='X-утилиты'
         ;;
     de_DE*) # german locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Bueroprogramme'
-        #SYSTEMSTYLES='Stile'
-        #USERSTYLES='Stile'
+        BACKGROUNDMENU='Hintergrundbilder'
+        BACKGROUNDMENUTITLE='Hintergrundbild setzen'
         BROWSERMENU='Internet-Browser'
         CONFIGUREMENU='Einstellungen'
         EDITORMENU='Editoren'
         EXITITEM='Beenden'
         FBSETTINGSMENU='Fluxbox-Einstellungen'
+        FILEUTILSMENU='Datei-Utilities'
         GNOMEMENUTEXT='Gnome-Menues'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='Kde-Menues'
         MISCMENU='Sonstiges'
         MUSICMENU='Musik'
         NETMENU='Netzwerk'
+        OFFICEMENU='Bueroprogramme'
         RELOADITEM='Konfiguration neu laden'
         RESTARTITEM='Neustarten'
         STYLEMENUTITLE='Einen Stil auswaehlen...'
+        SYSTEMSTYLES='Systemweite Stile'
         TERMINALMENU='Terminals'
+        USERSTYLES='Eigene Stile'
         WORKSPACEMENU='Arbeitsflaechenliste'
         XUTILSMENU='X-Anwendungen'
         ;;
@@ -833,14 +833,14 @@ append_submenu "${FBSETTINGSMENU}"
                     append_menu_end
                     append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
                 fi
-                picturename=`basename $i`
-                append "[exec] (${picturename//.???}) {bsetbg -f $i }"
+                picturename=`basename "$i"`
+                append "[exec] (${picturename%.???}) {bsetbg -f \"$i\" }"
             done
             append_menu_end
         else
             for i in ${HOME}/.fluxbox/backgrounds/* ${PKGDATADIR}/fluxbox/backgrounds/* ; do
-                picturename=`basename $i`
-                append "[exec] (${picturename//.???}) {bsetbg -f $i }"
+                picturename=`basename "$i"`
+                append "[exec] (${picturename%.???}) {bsetbg -f \"$i\" }"
             done
         fi
         append_menu_end
