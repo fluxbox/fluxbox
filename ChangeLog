@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/23:
+   * Add group persistence over a restart,
+     Move most winclient initialisation from FluxboxWindow to WinClient,
+     And fix a few bugs (Simon)
+     Screen.hh/cc WinClient.hh/cc Window.hh/cc Gnome.cc Slit.hh
 *03/06/20:
    * Moved SlitTheme and SlitClient out from Slit.cc into new files (Henrik)
      SlitClient.hh/cc, SlitTheme.hh

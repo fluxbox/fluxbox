@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.26 2003/06/12 14:28:00 fluxgen Exp $
+// $Id: Gnome.cc,v 1.27 2003/06/23 14:16:04 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -223,9 +223,13 @@ void Gnome::updateWorkspace(FluxboxWindow &win) {
     cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
         ") for window("<<&win<<")"<<endl;
 #endif // DEBUG
-    win.winClient().changeProperty(m_gnome_wm_win_workspace, 
-                                   XA_CARDINAL, 32, PropModeReplace,
-                                   (unsigned char *)&val, 1);
+
+    FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
+    for (; client_it != client_it_end; ++client_it)
+        (*client_it)->changeProperty(m_gnome_wm_win_workspace, 
+                                       XA_CARDINAL, 32, PropModeReplace,
+                                       (unsigned char *)&val, 1);
 }
 
 void Gnome::updateState(FluxboxWindow &win) {
@@ -238,18 +242,25 @@ void Gnome::updateState(FluxboxWindow &win) {
     if (win.isShaded())
         state |= WIN_STATE_SHADED;
 	
-    win.winClient().changeProperty(m_gnome_wm_win_state,
-                                   XA_CARDINAL, 32, 
-                                   PropModeReplace, (unsigned char *)&state, 1);
+    FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
+    for (; client_it != client_it_end; ++client_it)
+        (*client_it)->changeProperty(m_gnome_wm_win_state,
+                                     XA_CARDINAL, 32, 
+                                     PropModeReplace, (unsigned char *)&state, 1);
 }
 
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     // our layers are in the opposite direction to GNOME
     int layernum = Fluxbox::instance()->getDesktopLayer() - win.layerNum();
-    win.winClient().changeProperty(m_gnome_wm_win_layer,
-                                   XA_CARDINAL, 32, PropModeReplace, 
-                                   (unsigned char *)&layernum, 1);
+
+    FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
+    for (; client_it != client_it_end; ++client_it)
+        (*client_it)->changeProperty(m_gnome_wm_win_layer,
+                                     XA_CARDINAL, 32, PropModeReplace, 
+                                     (unsigned char *)&layernum, 1);
     
 }
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.7 2003/06/15 18:36:40 fluxgen Exp $
+// $Id: WinClient.hh,v 1.8 2003/06/23 14:16:05 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -38,7 +38,7 @@ class WinClient:public FbTk::FbWindow {
 public:
     typedef std::list<WinClient *> TransientList;
 
-    WinClient(Window win, FluxboxWindow &fbwin);
+    WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin = 0);
 
     ~WinClient();
     void updateRect(int x, int y, unsigned int width, unsigned int height);
@@ -80,6 +80,20 @@ public:
     const std::string &iconTitle() const { return m_icon_title; }
     const FluxboxWindow *fbwindow() const { return m_win; }
     FluxboxWindow *fbwindow() { return m_win; }
+
+    static const int PropBlackboxHintsElements = 5;
+    static const int PropMwmHintsElements = 3;
+
+    void updateBlackboxHints();
+    void updateMWMHints();
+    void updateWMHints();
+    void updateWMNormalHints();
+
+    // grouping is tracked by remembering the window to the left in the group
+    Window getGroupLeftWindow() const;
+    void setGroupLeftWindow(Window win);
+    bool hasGroupLeftWindow() const;
+
     /**
        !! TODO !!
        remove or move these to private
@@ -96,6 +110,7 @@ public:
         min_aspect_x, min_aspect_y, max_aspect_x, max_aspect_y,
         base_width, base_height, win_gravity;
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
+    bool send_focus_message;
 
     // this structure only contains 3 elements... the Motif 2.0 structure contains
     // 5... we only need the first 3... so that is all we will define
@@ -105,8 +120,6 @@ public:
         unsigned long decorations; // Motif wm decorations
     } MwmHints;
 
-    MwmHints *mwm_hint;
-    FluxboxWindow::BlackboxHints *blackbox_hint;
     FluxboxWindow *m_win;
     class WinClientSubj: public FbTk::Subject {
     public:
@@ -116,12 +129,28 @@ public:
         WinClient &m_winclient;
     };
 
+    inline int getFocusMode() const { return m_focus_mode; }
+    inline const FluxboxWindow::BlackboxHints *getBlackboxHint() const {
+        return m_blackbox_hint; }
+    void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs);
+    inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
+
+    enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
+
 private:
     bool modal;
+
     std::string m_title, m_icon_title;
+    std::string m_class_name, m_instance_name;
+
+    FluxboxWindow::BlackboxHints *m_blackbox_hint;
+    MwmHints *m_mwm_hint;
+
+    int m_focus_mode;
+
     WinClientSubj m_diesig;
     BScreen &m_screen;
-    std::string m_class_name, m_instance_name;
+
 };
 
 #endif // WINCLIENT_HH

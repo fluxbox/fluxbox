@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.108 2003/06/23 12:57:36 fluxgen Exp $
+// $Id: Screen.hh,v 1.109 2003/06/23 14:16:04 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -295,6 +295,12 @@ public:
     template <typename OnHeadObject>
     void setOnHead(OnHeadObject &obj, int head);
 
+    // grouping - we want ordering, so we can either search for a 
+    // group to the left, or to the right (they'll be different if
+    // they exist).
+    FluxboxWindow *findGroupLeft(WinClient &winclient);
+    FluxboxWindow *findGroupRight(WinClient &winclient);
+
     // notify netizens
     void updateNetizenCurrentWorkspace();
     void updateNetizenWorkspaceCount();
@@ -418,6 +424,11 @@ private:
 
 
     } resource;
+
+    // This is a map of windows to clients for clients that had a left
+    // window set, but that window wasn't present at the time
+    typedef std::map<Window, WinClient *> Groupables;
+    Groupables m_expecting_groups;
 
     const std::string m_name, m_altname;
     FbTk::ResourceManager &m_resource_manager;

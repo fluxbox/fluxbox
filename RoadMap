@@ -132,17 +132,17 @@ Approx Date:  23 June, 2003
 Key Features:
  * Regular expression support in remember 
    on several attributes                      (Simon)
- - Save grouping so it persists over restart  (Simon)
+ * Save grouping so it persists over restart  (Simon)
  - Autogrouping functionality into remember   (Simon)
    (this will thus get regexp matching etc)
  + Shaped menu/slit/toolbar                   (Henrik)
- - Improved screen object placement           (?)
+ * Improved screen object placement           (Henrik)
    (will fix Maximize over slit/toolbar)
 Other Minor Features:
  - Add some sort of program launch function   (Simon)
  - nls code - layers, remember, new stuff...  (Both)
 Bugfixes/lower priority:
- - Titlebar sometimes doesn't redraw properly
+ * Titlebar sometimes doesn't redraw properly
  - Fixes for 0.9.3 and previous               (Both)
 
 ----------------------------------------------------------

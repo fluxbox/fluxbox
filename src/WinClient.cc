@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.13 2003/06/22 12:35:03 fluxgen Exp $
+// $Id: WinClient.cc,v 1.14 2003/06/23 14:16:05 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -38,7 +38,7 @@
 
 using namespace std;
 
-WinClient::WinClient(Window win, FluxboxWindow &fbwin):FbTk::FbWindow(win),
+WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::FbWindow(win),
                      transient_for(0),
                      window_group(0),
                      x(0), y(0), old_bw(0),
@@ -52,12 +52,20 @@ WinClient::WinClient(Window win, FluxboxWindow &fbwin):FbTk::FbWindow(win),
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
-                     mwm_hint(0),
-                     blackbox_hint(0),
-                     m_win(&fbwin),
+                     send_focus_message(false),
+                     m_win(fbwin),
                      modal(false),
                      m_title(""), m_icon_title(""),
-                     m_diesig(*this), m_screen(fbwin.screen()) { }
+                     m_class_name(""), m_instance_name(""),
+                     m_blackbox_hint(0),
+                     m_mwm_hint(0),
+                     m_focus_mode(F_PASSIVE),
+                     m_diesig(*this), m_screen(screen) {
+    updateBlackboxHints();
+    updateMWMHints();
+    updateWMHints();
+    updateWMNormalHints();
+}
 
 WinClient::~WinClient() {
 #ifdef DEBUG
@@ -90,11 +98,11 @@ WinClient::~WinClient() {
         window_group = 0;
     }
 
-    if (mwm_hint != 0)
-        XFree(mwm_hint);
+    if (m_mwm_hint != 0)
+        XFree(m_mwm_hint);
 
-    if (blackbox_hint != 0)
-        XFree(blackbox_hint);
+    if (m_blackbox_hint != 0)
+        XFree(m_blackbox_hint);
 
     if (window())
         fluxbox->removeWindowSearch(window());
@@ -126,6 +134,9 @@ void WinClient::updateRect(int x, int y,
 }
 
 void WinClient::sendFocus() {
+    if (!send_focus_message)
+        return;
+
     Display *disp = FbTk::App::instance()->display();
     // setup focus msg
     XEvent ce;
@@ -264,7 +275,7 @@ void WinClient::updateIconTitle() {
     XTextProperty text_prop;
     char **list = 0;
     int num = 0;
- 
+
     if (getWMIconName(text_prop)) {
         if (text_prop.value && text_prop.nitems > 0) {
             if (text_prop.encoding != XA_STRING) {
@@ -287,4 +298,213 @@ void WinClient::updateIconTitle() {
     } else
         m_icon_title = title();
 
+}
+
+void WinClient::saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs) {
+    changeProperty(FbAtoms::instance()->getFluxboxAttributesAtom(),
+                   PropModeReplace, XA_CARDINAL, 32,
+                   (unsigned char *)&blackbox_attribs,
+                   FluxboxWindow::PropBlackboxAttributesElements
+        );
+}
+
+void WinClient::updateBlackboxHints() {
+    int format;
+    Atom atom_return;
+    unsigned long num, len;
+    FbAtoms *atoms = FbAtoms::instance();
+
+    if (m_blackbox_hint) {
+        XFree(m_blackbox_hint);
+        m_blackbox_hint = 0;
+    }
+
+    if (property(atoms->getFluxboxHintsAtom(), 0,
+                           PropBlackboxHintsElements, False,
+                           atoms->getFluxboxHintsAtom(), &atom_return,
+                           &format, &num, &len,
+                           (unsigned char **) &m_blackbox_hint) &&
+        m_blackbox_hint) {
+        if (num != (unsigned)PropBlackboxHintsElements) {
+            XFree(m_blackbox_hint);
+            m_blackbox_hint = 0;
+        }
+    }
+}
+
+void WinClient::updateMWMHints() {
+    int format;
+    Atom atom_return;
+    unsigned long num = 0, len = 0;
+    Atom  motif_wm_hints = XInternAtom(FbTk::App::instance()->display(), "_MOTIF_WM_HINTS", False);
+
+    if (m_mwm_hint) {
+        XFree(m_mwm_hint);
+        m_mwm_hint = 0;
+    }
+
+    if (!(property(motif_wm_hints, 0,
+                   PropMwmHintsElements, false,
+                   motif_wm_hints, &atom_return,
+                   &format, &num, &len,
+                   (unsigned char **) &m_mwm_hint) &&
+          m_mwm_hint)) {
+        if (num != static_cast<unsigned int>(PropMwmHintsElements)) {
+            XFree(m_mwm_hint);
+            m_mwm_hint = 0;
+            return;
+        }
+    }
+}
+
+void WinClient::updateWMHints() {
+    XWMHints *wmhint = XGetWMHints(FbTk::App::instance()->display(), window());
+    if (! wmhint) {
+        m_focus_mode = F_PASSIVE;
+        window_group = None;
+        initial_state = NormalState;
+    } else {
+        wm_hint_flags = wmhint->flags;
+        if (wmhint->flags & InputHint) {
+            if (wmhint->input) {
+                if (send_focus_message)
+                    m_focus_mode = F_LOCALLYACTIVE;
+                else
+                    m_focus_mode = F_PASSIVE;
+            } else {
+                if (send_focus_message)
+                    m_focus_mode = F_GLOBALLYACTIVE;
+                else
+                    m_focus_mode = F_NOINPUT;
+            }
+        } else
+            m_focus_mode = F_PASSIVE;
+
+        if (wmhint->flags & StateHint)
+            initial_state = wmhint->initial_state;
+        else
+            initial_state = NormalState;
+
+        if (wmhint->flags & WindowGroupHint) {
+            if (! window_group)
+                window_group = wmhint->window_group;
+        } else
+            window_group = None;
+
+        XFree(wmhint);
+    }
+}
+
+
+void WinClient::updateWMNormalHints() {
+    long icccm_mask;
+    XSizeHints sizehint;
+    if (! XGetWMNormalHints(FbTk::App::instance()->display(), window(), &sizehint, &icccm_mask)) {
+        min_width = min_height =
+            base_width = base_height =
+            width_inc = height_inc = 1;
+        max_width = 0; // unbounded
+        max_height = 0;
+        min_aspect_x = min_aspect_y =
+            max_aspect_x = max_aspect_y = 1;
+        win_gravity = NorthWestGravity;
+    } else {
+        normal_hint_flags = sizehint.flags;
+
+        if (sizehint.flags & PMinSize) {
+            min_width = sizehint.min_width;
+            min_height = sizehint.min_height;
+        } else
+            min_width = min_height = 1;
+
+        if (sizehint.flags & PMaxSize) {
+            max_width = sizehint.max_width;
+            max_height = sizehint.max_height;
+        } else {
+            max_width = 0; // unbounded
+            max_height = 0;
+        }
+
+        if (sizehint.flags & PResizeInc) {
+            width_inc = sizehint.width_inc;
+            height_inc = sizehint.height_inc;
+        } else
+            width_inc = height_inc = 1;
+
+        if (sizehint.flags & PAspect) {
+            min_aspect_x = sizehint.min_aspect.x;
+            min_aspect_y = sizehint.min_aspect.y;
+            max_aspect_x = sizehint.max_aspect.x;
+            max_aspect_y = sizehint.max_aspect.y;
+        } else
+            min_aspect_x = min_aspect_y =
+                max_aspect_x = max_aspect_y = 1;
+
+        if (sizehint.flags & PBaseSize) {
+            base_width = sizehint.base_width;
+            base_height = sizehint.base_height;
+        } else
+            base_width = base_height = 0;
+
+        if (sizehint.flags & PWinGravity)
+            win_gravity = sizehint.win_gravity;
+        else
+            win_gravity = NorthWestGravity;
+    }
+}
+
+Window WinClient::getGroupLeftWindow() const {
+    int format;
+    Atom atom_return;
+    unsigned long num = 0, len = 0;
+    Atom group_left_hint = XInternAtom(FbTk::App::instance()->display(), "_FLUXBOX_GROUP_LEFT", False);
+
+    Window *data = 0;
+    if (property(group_left_hint, 0,
+                   1, false,
+                   XA_WINDOW, &atom_return,
+                   &format, &num, &len,
+                   (unsigned char **) &data) &&
+        data) {
+        if (num != 1) {
+            XFree(data);
+            return None;
+        } else {
+            Window ret = *data;
+            XFree(data);
+            return ret;
+        }
+    }
+    return None;
+}
+
+
+void WinClient::setGroupLeftWindow(Window win) {
+    Atom group_left_hint = XInternAtom(FbTk::App::instance()->display(), "_FLUXBOX_GROUP_LEFT", False);
+    changeProperty(group_left_hint, XA_WINDOW, 32, 
+                   PropModeReplace, (unsigned char *) &win, 1);
+}
+
+bool WinClient::hasGroupLeftWindow() const {
+    int format;
+    Atom atom_return;
+    unsigned long num = 0, len = 0;
+    Atom group_left_hint = XInternAtom(FbTk::App::instance()->display(), "_FLUXBOX_GROUP_LEFT", False);
+
+    Window *data = 0;
+    if (property(group_left_hint, 0,
+                   1, false,
+                   XA_WINDOW, &atom_return,
+                   &format, &num, &len,
+                   (unsigned char **) &data) &&
+        data) {
+        if (num != 1) {
+            XFree(data);
+            return false;
+        } else {
+            XFree(data);
+            return true;
+        }
+    }
+    return false;
 }

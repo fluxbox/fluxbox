@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.194 2003/06/22 21:29:32 fluxgen Exp $
+// $Id: Window.cc,v 1.195 2003/06/23 14:16:05 rathnor Exp $
 
 #include "Window.hh"
 
@@ -61,6 +61,8 @@
 #include <cstdio>
 #include <iostream>
 #include <cassert>
+#include <functional>
+#include <algorithm>
 
 using namespace std;
 
@@ -232,7 +234,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_diesig(*this),
     moving(false), resizing(false), shaded(false), maximized(false),
     iconic(false), focused(false),
-    stuck(false), send_focus_message(false), m_managed(false),
+    stuck(false), m_managed(false),
     m_screen(scr),
     m_timer(this),
     display(0),
@@ -253,42 +255,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
 
     init();
 }
-
-
-FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
-                             FbTk::MenuTheme &menutheme, 
-                             FbTk::XLayer &layer):
-    oplock(false),
-    m_hintsig(*this),
-    m_statesig(*this),
-    m_layersig(*this),
-    m_workspacesig(*this),
-    m_diesig(*this),
-    moving(false), resizing(false), shaded(false), maximized(false),
-    iconic(false), focused(false),
-    stuck(false), send_focus_message(false), m_managed(false),
-    m_screen(scr),
-    m_timer(this),
-    display(0),
-    m_layermenu(new LayerMenu<FluxboxWindow>(menutheme, 
-                                             scr.screenNumber(), 
-                                             scr.imageControl(),
-                                             *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                             this,
-                                             false)),
-    m_windowmenu(menutheme, scr.screenNumber(), scr.imageControl()),
-    m_old_decoration(DECOR_NORMAL),
-    m_client(new WinClient(w, *this)),
-    m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
-    m_strut(0),
-    m_layeritem(m_frame->window(), layer),
-    m_layernum(layer.getLayerNum()),
-    m_parent(scr.rootWindow()) {
-    assert(w != 0);
-    init();
-
-}
-
 
 
 FluxboxWindow::~FluxboxWindow() {
@@ -344,7 +310,10 @@ void FluxboxWindow::init() {
     m_layermenu->setInternalMenu();
 
     m_attaching_tab = 0;
+
     assert(m_client);
+    m_client->m_win = this;
+    m_client->setGroupLeftWindow(None); // nothing to the left.
 
     // check for shape extension and whether the window is shaped
     m_shaped = false;
@@ -433,16 +402,17 @@ void FluxboxWindow::init() {
     functions.resize = functions.move = functions.iconify = functions.maximize = true;
     functions.close = decorations.close = false;
 
-    getBlackboxHints();
-    if (! m_client->blackbox_hint)
+    if (m_client->getBlackboxHint() != 0)
+        getBlackboxHints();
+    else
         getMWMHints();
     
     // get size, aspect, minimum/maximum size and other hints set
     // by the client
 
     getWMProtocols();
-    getWMHints(); 
-    getWMNormalHints();
+    if (m_client->window_group != None) 
+        Fluxbox::instance()->saveGroupSearch(m_client->window_group, this);
 
     //!!
     // fetch client size and placement
@@ -589,13 +559,23 @@ void FluxboxWindow::attachClient(WinClient &client) {
     frame().setClientWindow(client);
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
 
+    // get the current window on the end of our client list
+    Window leftwin = None;
+    ClientList::iterator client_it = clientList().end();
+    ClientList::iterator client_it_end = clientList().end();
+    --client_it;
+    if (client_it != client_it_end)
+        leftwin = (*client_it)->window();
+
+    client.setGroupLeftWindow(leftwin);
+
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
         Fluxbox *fb = Fluxbox::instance();
         // make sure we set new window search for each client
-        ClientList::iterator client_it = old_win->clientList().begin();
-        ClientList::iterator client_it_end = old_win->clientList().end();
+        client_it = old_win->clientList().begin();
+        client_it_end = old_win->clientList().end();
         for (; client_it != client_it_end; ++client_it) {
             // setup eventhandlers for client
             fb->saveWindowSearch((*client_it)->window(), this);
@@ -628,10 +608,12 @@ void FluxboxWindow::attachClient(WinClient &client) {
             btn->setOnClick(set_client_cmd);
             evm.add(*this, btn->window()); // we take care of button events for this
 
+            (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
         }
 
         // add client and move over all attached clients 
         // from the old window to this list
+        // all the "left window"s will remain the same, except for the first.
         m_clientlist.splice(m_clientlist.end(), old_win->m_clientlist);           
         old_win->m_client = 0;
 
@@ -659,7 +641,15 @@ void FluxboxWindow::attachClient(WinClient &client) {
         client.m_win = this;    
 
         Fluxbox::instance()->saveWindowSearch(client.window(), this);
+        client.saveBlackboxAttribs(m_blackbox_attrib);
     }
+
+    // make sure that the state etc etc is updated for the new client
+    // TODO: one day these should probably be neatened to only act on the
+    // affected clients if possible
+    m_statesig.notify();
+    m_workspacesig.notify();
+    m_layersig.notify();
 
     frame().reconfigure();
 
@@ -889,7 +879,7 @@ void FluxboxWindow::getWMProtocols() {
             if (proto[i] == fbatoms->getWMDeleteAtom())
                 functions.close = true;
             else if (proto[i] == fbatoms->getWMTakeFocusAtom())
-                send_focus_message = true;
+                m_client->send_focus_message = true;
             else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
                 screen().addNetizen(m_client->window());
         }
@@ -902,125 +892,13 @@ void FluxboxWindow::getWMProtocols() {
 }
 
 
-void FluxboxWindow::getWMHints() {
-    //!!
-    XWMHints *wmhint = XGetWMHints(display, m_client->window());
-    if (! wmhint) {
-        iconic = false;
-        m_focus_mode = F_PASSIVE;
-        m_client->window_group = None;
-        m_client->initial_state = NormalState;
-    } else {
-        m_client->wm_hint_flags = wmhint->flags;
-        if (wmhint->flags & InputHint) {
-            if (wmhint->input) {
-                if (send_focus_message)
-                    m_focus_mode = F_LOCALLYACTIVE;
-                else
-                    m_focus_mode = F_PASSIVE;
-            } else {
-                if (send_focus_message)
-                    m_focus_mode = F_GLOBALLYACTIVE;
-                else
-                    m_focus_mode = F_NOINPUT;
-            }
-        } else
-            m_focus_mode = F_PASSIVE;
-
-        if (wmhint->flags & StateHint)
-            m_client->initial_state = wmhint->initial_state;
-        else
-            m_client->initial_state = NormalState;
-
-        if (wmhint->flags & WindowGroupHint) {
-            if (! m_client->window_group) {
-                m_client->window_group = wmhint->window_group;
-                Fluxbox::instance()->saveGroupSearch(m_client->window_group, this);
-            }
-        } else
-            m_client->window_group = None;
-
-        XFree(wmhint);
-    }
-}
-
-
-void FluxboxWindow::getWMNormalHints() {
-    long icccm_mask;
-    XSizeHints sizehint;
-    if (! XGetWMNormalHints(display, m_client->window(), &sizehint, &icccm_mask)) {
-        m_client->min_width = m_client->min_height =
-            m_client->base_width = m_client->base_height =
-            m_client->width_inc = m_client->height_inc = 1;
-        m_client->max_width = 0; // unbounded
-        m_client->max_height = 0;
-        m_client->min_aspect_x = m_client->min_aspect_y =
-            m_client->max_aspect_x = m_client->max_aspect_y = 1;
-        m_client->win_gravity = NorthWestGravity;
-    } else {
-        m_client->normal_hint_flags = sizehint.flags;
-
-        if (sizehint.flags & PMinSize) {
-            m_client->min_width = sizehint.min_width;
-            m_client->min_height = sizehint.min_height;
-        } else
-            m_client->min_width = m_client->min_height = 1;
-
-        if (sizehint.flags & PMaxSize) {
-            m_client->max_width = sizehint.max_width;
-            m_client->max_height = sizehint.max_height;
-        } else {
-            m_client->max_width = 0; // unbounded
-            m_client->max_height = 0;
-        }
-
-        if (sizehint.flags & PResizeInc) {
-            m_client->width_inc = sizehint.width_inc;
-            m_client->height_inc = sizehint.height_inc;
-        } else
-            m_client->width_inc = m_client->height_inc = 1;
-
-        if (sizehint.flags & PAspect) {
-            m_client->min_aspect_x = sizehint.min_aspect.x;
-            m_client->min_aspect_y = sizehint.min_aspect.y;
-            m_client->max_aspect_x = sizehint.max_aspect.x;
-            m_client->max_aspect_y = sizehint.max_aspect.y;
-        } else
-            m_client->min_aspect_x = m_client->min_aspect_y =
-                m_client->max_aspect_x = m_client->max_aspect_y = 1;
-
-        if (sizehint.flags & PBaseSize) {
-            m_client->base_width = sizehint.base_width;
-            m_client->base_height = sizehint.base_height;
-        } else
-            m_client->base_width = m_client->base_height = 0;
-
-        if (sizehint.flags & PWinGravity)
-            m_client->win_gravity = sizehint.win_gravity;
-        else
-            m_client->win_gravity = NorthWestGravity;
-    }
-}
-
-
 void FluxboxWindow::getMWMHints() {
-    int format;
-    Atom atom_return;
-    unsigned long num, len;
-    Atom  motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-    if (!(m_client->property(motif_wm_hints, 0,
-                            PropMwmHintsElements, false,
-                            motif_wm_hints, &atom_return,
-                            &format, &num, &len,
-                            (unsigned char **) &m_client->mwm_hint) &&
-          m_client->mwm_hint)) {
-        return;
-    }
-    if (num != static_cast<unsigned int>(PropMwmHintsElements))
-        return;
-	
-    if (m_client->mwm_hint->flags & MwmHintsDecorations) {
-        if (m_client->mwm_hint->decorations & MwmDecorAll) {
+    const WinClient::MwmHints *hint = m_client->getMwmHint();
+
+    if (!hint) return;
+
+    if (hint->flags & MwmHintsDecorations) {
+        if (hint->decorations & MwmDecorAll) {
             decorations.titlebar = decorations.handle = decorations.border =
                 decorations.iconify = decorations.maximize =
                 decorations.close = decorations.menu = true;
@@ -1029,41 +907,41 @@ void FluxboxWindow::getMWMHints() {
                 decorations.iconify = decorations.maximize =
                 decorations.close = decorations.tab = false;
             decorations.menu = true;
-            if (m_client->mwm_hint->decorations & MwmDecorBorder)
+            if (hint->decorations & MwmDecorBorder)
                 decorations.border = true;
-            if (m_client->mwm_hint->decorations & MwmDecorHandle)
+            if (hint->decorations & MwmDecorHandle)
                 decorations.handle = true;
-            if (m_client->mwm_hint->decorations & MwmDecorTitle) {                
+            if (hint->decorations & MwmDecorTitle) {                
                 //only tab on windows with titlebar
                 decorations.titlebar = decorations.tab = true;
             }
             
-            if (m_client->mwm_hint->decorations & MwmDecorMenu)
+            if (hint->decorations & MwmDecorMenu)
                 decorations.menu = true;
-            if (m_client->mwm_hint->decorations & MwmDecorIconify)
+            if (hint->decorations & MwmDecorIconify)
                 decorations.iconify = true;
-            if (m_client->mwm_hint->decorations & MwmDecorMaximize)
+            if (hint->decorations & MwmDecorMaximize)
                 decorations.maximize = true;
         }
     }
 	
-    if (m_client->mwm_hint->flags & MwmHintsFunctions) {
-        if (m_client->mwm_hint->functions & MwmFuncAll) {
+    if (hint->flags & MwmHintsFunctions) {
+        if (hint->functions & MwmFuncAll) {
             functions.resize = functions.move = functions.iconify =
                 functions.maximize = functions.close = true;
         } else {
             functions.resize = functions.move = functions.iconify =
                 functions.maximize = functions.close = false;
 
-            if (m_client->mwm_hint->functions & MwmFuncResize)
+            if (hint->functions & MwmFuncResize)
                 functions.resize = true;
-            if (m_client->mwm_hint->functions & MwmFuncMove)
+            if (hint->functions & MwmFuncMove)
                 functions.move = true;
-            if (m_client->mwm_hint->functions & MwmFuncIconify)
+            if (hint->functions & MwmFuncIconify)
                 functions.iconify = true;
-            if (m_client->mwm_hint->functions & MwmFuncMaximize)
+            if (hint->functions & MwmFuncMaximize)
                 functions.maximize = true;
-            if (m_client->mwm_hint->functions & MwmFuncClose)
+            if (hint->functions & MwmFuncClose)
                 functions.close = true;
         }
     }
@@ -1073,50 +951,37 @@ void FluxboxWindow::getMWMHints() {
 
 
 void FluxboxWindow::getBlackboxHints() {
-    int format;
-    Atom atom_return;
-    unsigned long num, len;
-    FbAtoms *atoms = FbAtoms::instance();
-	
-    if (XGetWindowProperty(display, m_client->window(),
-                           atoms->getFluxboxHintsAtom(), 0,
-                           PropBlackboxHintsElements, False,
-                           atoms->getFluxboxHintsAtom(), &atom_return,
-                           &format, &num, &len,
-                           (unsigned char **) &m_client->blackbox_hint) == Success &&
-        m_client->blackbox_hint) {
+    const FluxboxWindow::BlackboxHints *hint = m_client->getBlackboxHint();
+    if (!hint) return;
 
-        if (num == (unsigned)PropBlackboxHintsElements) {
-            if (m_client->blackbox_hint->flags & ATTRIB_SHADED)
-                shaded = (m_client->blackbox_hint->attrib & ATTRIB_SHADED);
+    if (hint->flags & ATTRIB_SHADED)
+        shaded = (hint->attrib & ATTRIB_SHADED);
 
-            if ((m_client->blackbox_hint->flags & ATTRIB_MAXHORIZ) &&
-                (m_client->blackbox_hint->flags & ATTRIB_MAXVERT))
-                maximized = ((m_client->blackbox_hint->attrib &
-                              (ATTRIB_MAXHORIZ | 
-                               ATTRIB_MAXVERT)) ? 1 : 0);
-            else if (m_client->blackbox_hint->flags & ATTRIB_MAXVERT)
-                maximized = ((m_client->blackbox_hint->attrib & 
-                              ATTRIB_MAXVERT) ? 2 : 0);
-            else if (m_client->blackbox_hint->flags & ATTRIB_MAXHORIZ)
-                maximized = ((m_client->blackbox_hint->attrib & 
-                              ATTRIB_MAXHORIZ) ? 3 : 0);
+    if ((hint->flags & ATTRIB_MAXHORIZ) &&
+        (hint->flags & ATTRIB_MAXVERT))
+        maximized = ((hint->attrib &
+                      (ATTRIB_MAXHORIZ | 
+                       ATTRIB_MAXVERT)) ? 1 : 0);
+    else if (hint->flags & ATTRIB_MAXVERT)
+        maximized = ((hint->attrib & 
+                      ATTRIB_MAXVERT) ? 2 : 0);
+    else if (hint->flags & ATTRIB_MAXHORIZ)
+        maximized = ((hint->attrib & 
+                      ATTRIB_MAXHORIZ) ? 3 : 0);
 
-            if (m_client->blackbox_hint->flags & ATTRIB_OMNIPRESENT)
-                stuck = (m_client->blackbox_hint->attrib & 
-                         ATTRIB_OMNIPRESENT);
+    if (hint->flags & ATTRIB_OMNIPRESENT)
+        stuck = (hint->attrib & 
+                 ATTRIB_OMNIPRESENT);
 
-            if (m_client->blackbox_hint->flags & ATTRIB_WORKSPACE)
-                m_workspace_number = m_client->blackbox_hint->workspace;
+    if (hint->flags & ATTRIB_WORKSPACE)
+        m_workspace_number = hint->workspace;
 
-            if (m_client->blackbox_hint->flags & ATTRIB_STACK)
-                m_workspace_number = m_client->blackbox_hint->stack;
+    if (hint->flags & ATTRIB_STACK)
+        m_workspace_number = hint->stack;
 
-            if (m_client->blackbox_hint->flags & ATTRIB_DECORATION) {
-                m_old_decoration = static_cast<Decoration>(m_client->blackbox_hint->decoration);
-                setDecoration(m_old_decoration);
-            }
-        }
+    if (hint->flags & ATTRIB_DECORATION) {
+        m_old_decoration = static_cast<Decoration>(hint->decoration);
+        setDecoration(m_old_decoration);
     }
 }
 
@@ -1201,7 +1066,7 @@ bool FluxboxWindow::setInputFocus() {
                 return (*it)->fbwindow()->setCurrentClient(**it, true);
         }
     } else {
-        if (m_focus_mode == F_LOCALLYACTIVE || m_focus_mode == F_PASSIVE) {
+        if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE || m_client->getFocusMode() == WinClient::F_PASSIVE) {
             XSetInputFocus(display, m_client->window(),
                            RevertToPointerRoot, CurrentTime);
         } else {
@@ -1214,8 +1079,7 @@ bool FluxboxWindow::setInputFocus() {
 
         frame().setFocus(true);
 
-        if (send_focus_message)
-            m_client->sendFocus();
+        m_client->sendFocus();
 
         if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
             && screen().doAutoRaise())
@@ -1428,7 +1292,7 @@ void FluxboxWindow::setLayerNum(int layernum) {
 
     m_blackbox_attrib.flags |= ATTRIB_STACK;
     m_blackbox_attrib.stack = layernum;
-    saveBlackboxHints();
+    saveBlackboxAttribs();
 
 #ifdef DEBUG
     cerr<<this<<" notify layer signal"<<endl;
@@ -1688,14 +1552,18 @@ void FluxboxWindow::installColormap(bool install) {
 }
 
 /**
- Saves blackbox hints for every client in our list
+ Saves blackbox attributes for every client in our list
  */
-void FluxboxWindow::saveBlackboxHints() {
+void FluxboxWindow::saveBlackboxAttribs() {
     for_each(m_clientlist.begin(), m_clientlist.end(), 
-             FbTk::ChangeProperty(display, FbAtoms::instance()->getFluxboxAttributesAtom(),
-                            PropModeReplace, 
-                            (unsigned char *)&m_blackbox_attrib,
-                            PropBlackboxAttributesElements));
+             FbTk::ChangeProperty(
+                 display, 
+                 FbAtoms::instance()->getFluxboxAttributesAtom(),
+                 PropModeReplace,
+                 (unsigned char *)&m_blackbox_attrib,
+                 PropBlackboxAttributesElements
+                 )
+        );
 }
 
 /**
@@ -1715,7 +1583,7 @@ void FluxboxWindow::setState(unsigned long new_state) {
                             PropModeReplace,
                             (unsigned char *)state, 2));
 
-    saveBlackboxHints();
+    saveBlackboxAttribs();
     //notify state changed
     m_statesig.notify();
 }
@@ -1833,7 +1701,11 @@ void FluxboxWindow::restoreAttributes() {
                            PropBlackboxAttributesElements, false,
                            fbatoms->getFluxboxAttributesAtom(), &atom_return, &foo,
                            &nitems, &ulfoo, (unsigned char **) &net) &&
-        net && nitems == (unsigned)PropBlackboxAttributesElements) {
+        net) {
+        if (nitems != (unsigned)PropBlackboxAttributesElements) {
+            XFree(net);
+            return;
+        }
         m_blackbox_attrib.flags = net->flags;
         m_blackbox_attrib.attrib = net->attrib;
         m_blackbox_attrib.workspace = net->workspace;
@@ -2179,7 +2051,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
     } break;
 
     case XA_WM_HINTS:
-        getWMHints();
+        m_client->updateWMHints();
         break;
 
     case XA_WM_ICON_NAME:
@@ -2199,7 +2071,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
         break;
 
     case XA_WM_NORMAL_HINTS: {
-        getWMNormalHints();
+        m_client->updateWMNormalHints();
 
         if ((m_client->normal_hint_flags & PMinSize) &&
             (m_client->normal_hint_flags & PMaxSize)) {

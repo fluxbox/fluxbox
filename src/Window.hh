@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.79 2003/06/18 13:55:16 fluxgen Exp $
+// $Id: Window.hh,v 1.80 2003/06/23 14:16:05 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -103,10 +103,6 @@ public:
         ATTRIB_DECORATION = 0x40
     };	
 
-    static const int PropBlackboxHintsElements = 5;
-    static const int PropBlackboxAttributesElements = 8;
-    static const int PropMwmHintsElements = 3;
-
     typedef struct _blackbox_hints {
         unsigned long flags, attrib, workspace, stack;
         int decoration;
@@ -126,11 +122,6 @@ public:
                   FbTk::MenuTheme &menutheme,
                   FbTk::XLayer &layer);
 
-    /// create fluxbox window with parent win and screen connection
-    FluxboxWindow(Window win, BScreen &scr, 
-                  FbWinFrameTheme &tm,
-                  FbTk::MenuTheme &menutheme,
-                  FbTk::XLayer &layer);
     virtual ~FluxboxWindow();
 
     /// attach client to our client list and remove it from old window
@@ -148,7 +139,7 @@ public:
     void prevClient();
 
     void setWindowNumber(int n) { m_window_number = n; }
-      
+
     bool validateClient();
     bool setInputFocus();
     void raiseAndFocus() { raise(); setInputFocus(); }
@@ -222,7 +213,7 @@ public:
     void setDecoration(Decoration decoration);
     void applyDecorations();
     void toggleDecoration();
-	
+
     /** 
        This enumeration represents individual decoration 
        attributes, they can be OR-d together to get a mask.
@@ -334,7 +325,7 @@ public:
     const timeval &lastFocusTime() const { return m_last_focus_time;}
 
     //@}
-	
+
     class WinSubject: public FbTk::Subject {
     public:
         WinSubject(FluxboxWindow &w):m_win(w) { }
@@ -348,6 +339,8 @@ public:
                  // during certain operations
 
 private:
+    static const int PropBlackboxAttributesElements = 8;
+
     void init();
     /// applies a shape mask to the window if it has one
     void shape();
@@ -367,15 +360,13 @@ private:
     void updateTitleFromClient();
     /// gets icon name from client window
     void updateIconNameFromClient();
-    void getWMNormalHints();
     void getWMProtocols();
-    void getWMHints();
     void getMWMHints();
     void getBlackboxHints();
-    void saveBlackboxHints();
+    void saveBlackboxAttribs();
     void setNetWMAttributes();
     void associateClientWindow();
-	
+
     void restoreGravity();
     void setGravityOffsets();
     void setState(unsigned long stateval);
@@ -394,7 +385,7 @@ private:
 
     // Window states
     bool moving, resizing, shaded, maximized, iconic,
-        focused, stuck, send_focus_message, m_managed;
+        focused, stuck, m_managed;
 
     WinClient *m_attaching_tab;
 
@@ -406,15 +397,15 @@ private:
     std::auto_ptr<FbTk::Menu> m_layermenu;
     FbTk::Menu m_windowmenu;
 
-    
+
     timeval m_last_focus_time;
-	
+
     int m_button_grab_x, m_button_grab_y; // handles last button press event for move
     int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
 
-    int m_focus_mode, m_window_number;
+    int m_window_number;
     unsigned int m_workspace_number;
     unsigned long m_current_state;
 
@@ -451,8 +442,6 @@ private:
     int m_layernum;
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
-
-    enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 };
 

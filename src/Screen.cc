@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.189 2003/06/23 13:31:47 fluxgen Exp $
+// $Id: Screen.cc,v 1.190 2003/06/23 14:16:04 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -835,6 +835,16 @@ void BScreen::removeClient(WinClient &client) {
     for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
              mem_fun(&Workspace::updateClientmenu));
 
+    // remove any grouping this is expecting
+    Groupables::iterator it = m_expecting_groups.begin();
+    Groupables::iterator it_end = m_expecting_groups.end();
+    for (; it != it_end; ++it) {
+        if (it->second == &client) {
+            m_expecting_groups.erase(it);
+            // it should only be in there a maximum of once
+            break;
+        }
+    }
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {
@@ -1106,23 +1116,31 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
-    FluxboxWindow *win = new FluxboxWindow(client, *this, 
-                                           winFrameTheme(), *menuTheme(),
-                                           *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
- 
+    WinClient *winclient = new WinClient(client, *this);
+
 #ifdef SLIT
-    if (win->initialState() == WithdrawnState) {
-        delete win;
-        win = 0;
+    if (winclient->initial_state == WithdrawnState) {
+        delete winclient;
         slit()->addClient(client);
         return 0;
     }
 #endif // SLIT
 
+    // check if it should be grouped with something else
+    FluxboxWindow *win;
+    if ((win = findGroupLeft(*winclient)) != 0) {
+        win->attachClient(*winclient);
+    } else {
+        win = new FluxboxWindow(*winclient, *this, 
+                                winFrameTheme(), *menuTheme(),
+                                *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+    }
+
     if (!win->isManaged()) {
         delete win;
         return 0;
     } else {
+
         // always put on end of focused list, if it gets focused it'll get pushed up
         // there is only the one win client at this stage
         if (doFocusNew())
@@ -1135,9 +1153,18 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         setupWindowActions(*win);
         Fluxbox::instance()->attachSignals(*win);
     }
-    if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
+
+    // we also need to check if another window expects this window to the left
+    // and if so, then join it.
+    FluxboxWindow *otherwin = 0;
+    // TODO: does this do the right stuff focus-wise?
+    if ((otherwin = findGroupRight(*winclient)) && otherwin != win)
+        win->attachClient(otherwin->winClient());
+
+    if (!win->isIconic() && (win->workspaceNumber() == currentWorkspaceID() || win->isStuck())) {
         win->show();
     }
+
     XSync(FbTk::App::instance()->display(), False);
     return win;
 }
@@ -2349,10 +2376,16 @@ void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
         cycling_focus = false;
         cycling_last = 0;
         // put currently focused window to top
-        WinClient *client = *cycling_window;
-        focused_list.erase(cycling_window);
-        focused_list.push_front(client);
-        client->fbwindow()->raise();
+        // the iterator may be invalid if the window died
+        // in which case we'll do a proper revert focus
+        if (cycling_window != focused_list.end()) {
+            WinClient *client = *cycling_window;
+            focused_list.erase(cycling_window);
+            focused_list.push_front(client);
+            client->fbwindow()->raise();
+        } else {
+            Fluxbox::instance()->revertFocus(*this);
+        }
     }
 }
 
@@ -2407,6 +2440,45 @@ void BScreen::updateSize() {
 }
 
 
+/**
+ * Find the group of windows to this window's left
+ * So, we check the leftgroup hint, and see if we know any windows
+ */
+FluxboxWindow *BScreen::findGroupLeft(WinClient &winclient) {
+    Window w = winclient.getGroupLeftWindow();
+    if (w == None)
+        return 0;
+
+    FluxboxWindow *fbwin = Fluxbox::instance()->searchWindow(w);
+
+    if (!fbwin) {
+        // not found, add it to expecting
+        m_expecting_groups[w] = &winclient;
+    } else if (&fbwin->screen() != &winclient.screen())
+        // something is not consistent
+        return 0;
+
+    return fbwin;
+}
+
+FluxboxWindow *BScreen::findGroupRight(WinClient &winclient) {
+    Groupables::iterator it = m_expecting_groups.find(winclient.window());
+    if (it == m_expecting_groups.end())
+        return 0;
+
+    // yay, this'll do.
+    WinClient *other = it->second;
+    m_expecting_groups.erase(it); // don't expect it anymore
+
+    // forget about it if it isn't the left-most client in the group, plus
+    // it must have the atom set on it (i.e. previously encountered by fluxbox)
+    // for us to check our expecting
+    if (!winclient.hasGroupLeftWindow() ||
+        other->getGroupLeftWindow() != None)
+        return 0;
+
+    return other->m_win;
+}
 void BScreen::initXinerama() {
 #ifdef XINERAMA
     Display *display = FbTk::App::instance()->display();
@@ -2542,5 +2614,19 @@ template <>
 void BScreen::setOnHead<Toolbar>(Toolbar &tbar, int head) {
     //    saveToolbarOnHead(head);
     tbar.reconfigure();
+}
+
+// TODO: when toolbar gets its resources moved into Toolbar.hh/cc, then
+// this can be gone and a consistent interface for the two used
+// on the actual objects
+template <>
+int BScreen::getOnHead<Slit>(Slit &slit) {
+    return slit.getOnHead();
+}
+
+template <>
+void BScreen::setOnHead<Slit>(Slit &slit, int head) {
+    slit.saveOnHead(head);
+    slit.reconfigure();
 }
 

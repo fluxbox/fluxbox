@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.33 2003/06/22 12:32:08 fluxgen Exp $
+/// $Id: Slit.hh,v 1.34 2003/06/23 14:16:04 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -67,6 +67,8 @@ public:
     inline bool doAutoHide() const { return *m_rc_auto_hide; }
     inline Direction direction() const { return *m_rc_direction; }
     inline Placement placement() const { return *m_rc_placement; }
+    inline int getOnHead() const { return *m_rc_on_head; }
+    inline void saveOnHead(int head) { m_rc_on_head = head; }
     FbTk::Menu &menu() { return m_slitmenu; }
 
     inline const FbTk::FbWindow &window() const { return frame.window; }
