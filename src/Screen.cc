@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.121 2003/04/15 12:14:53 fluxgen Exp $
+// $Id: Screen.cc,v 1.122 2003/04/15 14:42:03 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1273,7 +1273,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     frame.setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
     frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
     frame.setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
-    frame.setOnClickTitlebar(lower_cmd, 2, false, true);  // on press with button 2
+    frame.setOnClickTitlebar(lower_cmd, 2); // on release with button 2
     frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
     // setup menu
     FbTk::Menu &menu = win.getWindowmenu();
@@ -2152,7 +2152,8 @@ void BScreen::leftWorkspace(const int delta) {
 */
 bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
     return ((opts & CYCLESKIPSTUCK) != 0 && w->isStuck() || // skip if stuck
-            (opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
+            /* (opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
+             */
             (opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
 }
 
