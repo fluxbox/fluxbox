@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.23 2002/05/30 15:49:10 fluxgen Exp $
+// $Id: Window.hh,v 1.24 2002/07/10 14:46:42 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -410,4 +410,4 @@ private:
 };
 
 
-#endif // __Window_hh
+#endif // WINDOW_HH
