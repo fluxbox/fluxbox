@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.9 2004/08/10 18:08:37 fluxgen Exp $
+//$Id: Font.cc,v 1.10 2004/08/14 09:33:09 fluxgen Exp $
 
 
 #include "StringUtil.hh"
@@ -226,6 +226,10 @@ Font::Font(const char *name, bool antialias):
         else
             m_locale = "UTF-8";
     }
+
+    if (m_locale.empty())
+        m_locale = "C";
+
     // if locale isn't UTF-8 we try to
     // create a iconv pointer so we can
     // convert non utf-8 strings to utf-8
