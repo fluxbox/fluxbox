@@ -65,7 +65,7 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc \
 	ClockTool.hh ClockTool.cc WorkspaceNameTool.hh WorkspaceNameTool.cc \
 	IconbarTool.hh IconbarTool.cc IconbarTheme.hh IconbarTheme.cc \
 	ToolTheme.hh ToolTheme.cc \
-	IconButton.hh IconButton.cc IconButtonTheme.hh IconButtonTheme.cc \
+	IconButton.hh IconButton.cc \
 	SystemTray.hh SystemTray.cc
 endif
 
