@@ -12,6 +12,10 @@ Changes for 0.9.3:
    * Fixes and improvements from Han (Simon, thanks Han)
      fluxbox-generate_menu fbsetbg
 *03/06/05:
+   * Fixed slit bug (Henrik)
+     Slit.cc
+   * Fixed window/button redraw bug (Henrik)
+     FbTk/Button.cc
    * Optimise window placement (much better now) (Simon)
      Workspace.cc
 *03/05/26:
@@ -19,6 +23,8 @@ Changes for 0.9.3:
        (Simon)
      Window.hh/cc Remember.cc
 *03/05/24:
+   * Fixed menu bug in FluxboxWindow (Henrik)
+     Window.cc
    * Fix crash when toolbar turned off, and toolbar initialisation (Simon)
      Menu.cc Screen.cc Toolbar.cc
 *03/05/21:
