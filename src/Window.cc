@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.240 2003/10/05 09:03:43 rathnor Exp $
+// $Id: Window.cc,v 1.241 2003/10/06 06:22:43 rathnor Exp $
 
 #include "Window.hh"
 
@@ -260,7 +260,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     maximized(MAX_NONE),
     m_screen(scr),
     display(0),
-    m_windowmenu(*scr.menuTheme(), scr.screenNumber(), scr.imageControl()),
+    m_windowmenu(*scr.menuTheme(), scr.screenNumber(), scr.imageControl(),
+                 *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
     m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),

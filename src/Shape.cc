@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.6 2003/09/17 14:16:53 fluxgen Exp $
+// $Id: Shape.cc,v 1.7 2003/10/06 06:22:42 rathnor Exp $
 
 #include "Shape.hh"
 #include "FbTk/FbWindow.hh"
@@ -49,8 +49,9 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
     static char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
     static char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
 
-    const int win_width = win.width() + 2*win.borderWidth() + 1;
-    const int win_height = win.height() + 2*win.borderWidth();
+    const int borderw = win.borderWidth();
+    const int win_width = win.width() + 2*borderw;
+    const int win_height = win.height() + 2*borderw;
     const int pixmap_width = min(8, win_width);
     const int pixmap_height = min(8, win_height);
 
@@ -60,7 +61,7 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
     memset(data, 0xFF, data_size);
     
     XImage *ximage = XCreateImage(disp,
-                                  DefaultVisual(disp, DefaultScreen(disp)),
+                                  DefaultVisual(disp, win.screenNumber()),
                                   1,
                                   XYPixmap, 0,
                                   data,
@@ -76,7 +77,7 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
     if (place & Shape::TOPLEFT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x + 1, y, (left_bits[y] & (0x01 << x)) ? 1 : 0);
+                XPutPixel(ximage, x, y, (left_bits[y] & (0x01 << x)) ? 1 : 0);
             }
         }
     }
@@ -93,7 +94,7 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
     if (place & Shape::BOTTOMLEFT) {
         for (int y=0; y<pixmap_height; y++) {
             for (int x=0; x<pixmap_width; x++) {
-                XPutPixel(ximage, x + 1, y + win_height - pixmap_height, 
+                XPutPixel(ximage, x, y + win_height - pixmap_height, 
                           (bottom_left_bits[y] & (0x01 << x)) ? 1 : 0);
             }
         }
@@ -107,11 +108,6 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
             }
         }
     }
-
-    for (int y = 0; y<pixmap_height; ++y) {
-        XPutPixel(ximage, 0, y, 1);
-    }
-
 
     Pixmap pm = XCreatePixmap(disp, win.window(), win_width, win_height, 1);
 
@@ -179,7 +175,7 @@ void Shape::update() {
     XShapeCombineMask(FbTk::App::instance()->display(),
                       m_win->window(),
                       ShapeBounding,
-                      -2, 0,
+                      -m_win->borderWidth(), -m_win->borderWidth(),
                       m_shape,
                       ShapeSet);
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.46 2003/08/29 00:44:41 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.47 2003/10/06 06:22:43 rathnor Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -45,6 +45,7 @@
 
 class BScreen;
 class Strut;
+class FbMenu;
 class Container;
 class IconButton;
 class Shape;
@@ -163,7 +164,7 @@ private:
 
     FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
     FbTk::Menu &m_toolbarmenu;
-    FbTk::Menu m_placementmenu;
+    FbMenu m_placementmenu;
     LayerMenu<Toolbar> m_layermenu;
 
     // themes

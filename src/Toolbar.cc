@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.122 2003/09/08 18:17:19 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.123 2003/10/06 06:22:42 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -224,7 +224,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_screen(scrn),
     m_toolbarmenu(menu),
     m_placementmenu(*scrn.menuTheme(),
-                    scrn.screenNumber(), scrn.imageControl()),
+                    scrn.screenNumber(), scrn.imageControl(),
+                    *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_layermenu(*scrn.menuTheme(), 
                 scrn.screenNumber(), 
                 scrn.imageControl(),

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.29 2003/10/02 16:14:41 rathnor Exp $
+// $Id: WinClient.cc,v 1.30 2003/10/06 06:22:43 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -633,17 +633,17 @@ void WinClient::applySizeHints(int &width, int &height,
     int i = width, j = height;
 
     // Check minimum size
-    if (width < 0 || width < min_width) 
+    if (width < 0 || width < static_cast<signed>(min_width)) 
         width = min_width;
 
-    if (height < 0 || height < min_height)
+    if (height < 0 || height < static_cast<signed>(min_height))
         height = min_height;
 
     // Check maximum size
-    if (max_width > 0 && width > max_width)
+    if (max_width > 0 && width > static_cast<signed>(max_width))
         width = max_width;
 
-    if (max_height > 0 && height > max_height)
+    if (max_height > 0 && height > static_cast<signed>(max_height))
         height = max_height;
 
     // enforce incremental size limits, wrt base size

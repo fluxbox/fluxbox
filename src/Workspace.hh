@@ -27,7 +27,7 @@
 
 #include "NotCopyable.hh"
 
-#include "Menu.hh"
+#include "FbMenu.hh"
 #include "MultLayers.hh"
 
 #include <X11/Xlib.h>
@@ -94,7 +94,7 @@ private:
 
     BScreen &m_screen;
     FluxboxWindow *m_lastfocus;
-    FbTk::Menu m_clientmenu;
+    FbMenu m_clientmenu;
 
     typedef std::vector<std::string> Group;
     typedef std::vector<Group> GroupList;

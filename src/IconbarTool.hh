@@ -20,13 +20,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.8 2003/09/10 11:08:14 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.9 2003/10/06 06:22:42 rathnor Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
 
 #include "ToolbarItem.hh"
 #include "Container.hh"
+#include "FbMenu.hh"
 
 #include "FbTk/Observer.hh"
 #include "FbTk/Resource.hh"
@@ -108,7 +109,7 @@ private:
     IconList m_icon_list;
     FbTk::Resource<Mode> m_rc_mode;
 
-    FbTk::Menu m_menu;
+    FbMenu m_menu;
 };
 
 #endif // ICONBARTOOL_HH

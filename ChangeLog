@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/06:
+  * Fix shaped windows+menus (Simon)
+    - make sure all existing menus use shape
+    - fix Shape itself, particularly to work properly with borders
+    Shape.cc IconBarTool.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc 
+    Window.hh/cc Workspace.hh/cc WinClient.cc
 *03/10/05:
   * Fix frame size when changing titlebar size (Simon)
     - also send configure notify when toggling decorations

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.81 2003/08/24 11:16:42 fluxgen Exp $
+// $Id: Workspace.cc,v 1.82 2003/10/06 06:22:43 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -118,7 +118,8 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
                      const std::string &name, unsigned int i):
     m_screen(scrn),
     m_lastfocus(0),
-    m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), scrn.imageControl()),
+    m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), scrn.imageControl(),
+                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_layermanager(layermanager),
     m_name(name),
     m_id(i) {

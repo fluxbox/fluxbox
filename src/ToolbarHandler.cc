@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.28 2003/09/08 18:18:25 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.29 2003/10/06 06:22:43 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -33,7 +33,7 @@
 #include "Screen.hh"
 #include "Workspace.hh"
 #include "MenuItem.hh"
-#include "Menu.hh"
+#include "FbMenu.hh"
 #include "FbCommands.hh"
 #include "RefCount.hh"
 #include "SimpleCommand.hh"
@@ -51,9 +51,11 @@ ToolbarHandler::ToolbarHandler(BScreen &screen)
       m_toolbar(0),
       m_current_workspace(0),
       m_modemenu(*screen.menuTheme(),
-                 screen.screenNumber(), screen.imageControl()),
+                 screen.screenNumber(), screen.imageControl(),
+                 *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_toolbarmenu(*screen.menuTheme(),
-                    screen.screenNumber(), screen.imageControl()) {
+                    screen.screenNumber(), screen.imageControl(),
+                 *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())) {
     m_modemenu.setInternalMenu();
     m_toolbarmenu.setInternalMenu();
 

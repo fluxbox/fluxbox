@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.8 2003/09/08 18:18:25 fluxgen Exp $
+// $Id: ToolbarHandler.hh,v 1.9 2003/10/06 06:22:43 rathnor Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -90,8 +90,8 @@ private:
     std::auto_ptr<Toolbar> m_toolbar;
     unsigned int m_current_workspace;
     ToolbarMode m_mode;
-    FbTk::Menu m_modemenu;
-    FbTk::Menu m_toolbarmenu;
+    FbMenu m_modemenu;
+    FbMenu m_toolbarmenu;
 };
 
 #endif // TOOLBARHANDLER_HH

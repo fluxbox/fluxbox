@@ -22,13 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.98 2003/10/05 02:31:23 rathnor Exp $
+// $Id: Window.hh,v 1.99 2003/10/06 06:22:43 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
 
+#include "FbMenu.hh"
 #include "Timer.hh"
-#include "Menu.hh"
 #include "Subject.hh"
 #include "EventHandler.hh"
 #include "XLayerItem.hh"
@@ -419,7 +419,7 @@ private:
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
 
-    FbTk::Menu m_windowmenu;
+    FbMenu m_windowmenu;
 
     timeval m_last_focus_time;
 
