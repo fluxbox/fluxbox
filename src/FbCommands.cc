@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.4 2003/04/28 00:34:59 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.5 2003/04/28 01:17:39 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -48,6 +48,7 @@ void ExecuteCmd::execute() {
         displaystring.erase(displaystring.size()-1);
         displaystring += intbuff;
         setsid();
+        putenv(const_cast<char *>(displaystring.c_str()));
         execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), 0);
         exit(0);
     }
