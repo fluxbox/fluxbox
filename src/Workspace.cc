@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.79 2003/08/04 16:28:10 fluxgen Exp $
+// $Id: Workspace.cc,v 1.80 2003/08/19 16:16:28 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -216,6 +216,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     if (m_lastfocus == w || m_windowlist.empty())
         m_lastfocus = 0;
 
+
     if (!w->isStuck()) {
         FluxboxWindow::ClientList::iterator client_it = 
             w->clientList().begin();
@@ -386,20 +387,6 @@ bool Workspace::loadGroups(const std::string &filename) {
 
 void Workspace::update() {
     m_clientmenu.update();
-}
-
-
-bool Workspace::isCurrent() const{
-    return (m_id == screen().currentWorkspaceID());
-}
-
-
-bool Workspace::isLastWindow(FluxboxWindow *w) const{
-    return (w == m_windowlist.back());
-}
-
-void Workspace::setCurrent() {
-    screen().changeWorkspaceID(m_id);
 }
 
 

@@ -60,7 +60,6 @@ public:
     void removeAll();
     void reconfigure();
     void update();
-    void setCurrent();
     void shutdown();
     void addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
@@ -85,16 +84,13 @@ public:
     const Windows &windowList() const { return m_windowlist; }
     Windows &windowList() { return m_windowlist; }
 
-    bool isCurrent() const;
-    bool isLastWindow(FluxboxWindow *window) const;
     int numberOfWindows() const;
     bool checkGrouping(FluxboxWindow &win);
+
     static bool loadGroups(const std::string &filename);
-protected:
-    void placeWindow(FluxboxWindow &win);
 
 private:
-
+    void placeWindow(FluxboxWindow &win);
 
     BScreen &m_screen;
     FluxboxWindow *m_lastfocus;
