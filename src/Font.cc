@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.19 2002/10/25 21:07:07 fluxgen Exp $
+//$Id: Font.cc,v 1.20 2002/11/21 15:26:34 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -140,7 +140,7 @@ bool Font::load(const char *name) {
 	if (name == 0)
 		return false;
 	bool ret_val = m_fontimp->load(name);
-	if (ret_val && name == 0) { //prevent from having a bad fontimp
+	if (ret_val && name != 0) { //prevent from having a bad fontimp
 		m_fontstr = name; // if the load really succeded then set font string
 	} else {
 		m_fontstr = "";
