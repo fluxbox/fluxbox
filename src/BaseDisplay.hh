@@ -22,17 +22,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.10 2002/02/07 14:44:09 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.11 2002/02/11 10:58:48 fluxgen Exp $
 
 #ifndef	 _BASEDISPLAY_HH_
 #define	 _BASEDISPLAY_HH_
 
-#include "LinkedList.hh"
 #include "Timer.hh"
 #include "NotCopyable.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+
+#include <list>
+#include <vector>
 
 // forward declaration
 class ScreenInfo;
@@ -229,7 +231,7 @@ public:
 #endif // NEWWMSPEC
 
 	inline ScreenInfo *getScreenInfo(int s)
-		{ return (ScreenInfo *) screenInfoList->find(s); }
+		{ return (ScreenInfo *) screenInfoList[s]; }
 
 	inline const Bool &hasShapeExtensions(void) const
 		{ return shape.extensions; }
@@ -351,8 +353,12 @@ private:
 
 	bool m_startup, m_shutdown;
 	Display *m_display;
-	LinkedList<ScreenInfo> *screenInfoList;
-	LinkedList<BTimer> *timerList;
+
+    typedef std::vector<ScreenInfo *> ScreenInfoList;
+    ScreenInfoList screenInfoList;
+
+    typedef std::list<BTimer *> TimerList;
+    TimerList timerList;
 
 	char *m_display_name, *m_app_name;
 	int number_of_screens, m_server_grabs, colors_per_channel;
