@@ -22,9 +22,10 @@
 #include "../Keys.hh"
 #include <iostream>
 #include <X11/Xlib.h>
-#include <uds/init.hh>
+
 
 #ifdef UDS
+#include <uds/init.hh>
 #include <uds/uds.hh>
 // configure UDS
 uds::uds_flags_t uds::flags = uds::leak_check|uds::log_allocs;
