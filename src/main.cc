@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.7 2002/08/13 23:56:02 fluxgen Exp $
+// $Id: main.cc,v 1.8 2002/10/13 21:48:28 fluxgen Exp $
 
 
 
@@ -32,7 +32,7 @@
 #include "../version.h"
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 //use GNU extensions
@@ -52,11 +52,9 @@
 #include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
 
-#ifndef	 MAXPATHLEN
-#define	 MAXPATHLEN 255
-#endif // MAXPATHLEN
-
 #include <iostream>
+#include <stdexcept>
+
 using namespace std;
 
 #ifdef DEBUG_UDS
@@ -119,7 +117,7 @@ int main(int argc, char **argv) {
 			}
 
 			session_display = argv[i];
-			char dtmp[MAXPATHLEN];
+			char dtmp[255];
 			sprintf(dtmp, "DISPLAY=%s", session_display);
 
 			if (putenv(dtmp)) {
@@ -204,8 +202,12 @@ int main(int argc, char **argv) {
 		fluxbox = new Fluxbox(argc, argv, session_display, rc_file);
 		fluxbox->eventLoop();
 		
-	} catch (int _exitcode) {
-		exitcode=_exitcode;
+	} catch (std::out_of_range oor) {
+		cerr<<"Fluxbox: Out of range: "<<oor.what()<<endl;
+	} catch (std::logic_error le) {
+		cerr<<"Fluxbox: Logic error: "<<le.what()<<endl;
+	} catch (std::runtime_error re) {
+		cerr<<"Fluxbox: Runtime error: "<<re.what()<<endl;
 	} catch (...) {
 		cerr<<"Fluxbox: Unknown error."<<endl;
 	}
