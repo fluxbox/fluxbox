@@ -57,15 +57,7 @@ display_authors () {
 }
 
 find_it() {
-	_it="`which \"$1\" 2>/dev/null | grep \"^/.*$1\"`"
-	if [ ! -z "$_it" ]; then
-		if [ -x "$_it" ]; then
-			shift
-			$*
-		else
-			echo "$1 exists but it is not executable!  Check permissions."
-		fi
-	fi
+	which $1 > /dev/null 2> /dev/null && shift && $*
 }
 
 append() {
@@ -105,45 +97,16 @@ menu_entry_dir() {
 
 # Get options.
 while getopts ":khagp:o:m:" COMMAND_LINE_ARGUMENT ; do
-
-	case "${COMMAND_LINE_ARGUMENT}" in
-
-	k)
-		KDEMENU=yes
-	;;
-
-	g)
-		GNOMEMENU=yes
-	;;
-
-	o)
-		FILENAME=${OPTARG}
-	;;
-
-	p)
-		PKGDATADIR=${OPTARG}
-	;;
-
-	m)
-		MENUTITLE=${OPTARG}
-	;;
-
-	h)
-		display_usage
-		exit 0
-	;;
-
-	a)
-		display_authors
-		exit 0
-	;;
-
-	*)
-		display_help
-		exit 1
-	;;
-
-	esac
+    case "${COMMAND_LINE_ARGUMENT}" in
+	k) KDEMENU=yes ;;
+	g) GNOMEMENU=yes ;;
+	o) FILENAME=${OPTARG} ;;
+	p) PKGDATADIR=${OPTARG} ;;
+	m) MENUTITLE=${OPTARG} ;;
+	h) display_usage ; exit 0 ;;
+	a) display_authors ; exit 0 ;;
+	*) display_help ; exit 1 ;;
+    esac
 done
 
 
@@ -359,6 +322,7 @@ append_submenu ${NETMENU}
 	find_it mutt        append "[exec]   (mutt) {xterm -title mutt -fg white -bg black -e mutt}"
 	
 	find_it gftp        append "[exec]   (gftp) {gftp}"
+	find_it pan         append "[exec]   (pan)  {pan}"
 	find_it xchat       append "[exec]   (xchat) {xchat}"
 	find_it irssi       append "[exec]   (irssi) {xterm -title irssi -e irssi}"
 	find_it BitchX      append "[exec]   (BitchX) {xterm -title BitchX -fg white -bg black -e BitchX -N}"
@@ -471,7 +435,7 @@ append_submenu ${FBSETTINGSMENU}
 
 	append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
 		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
-		append "[stylesdir] (${HOME}/.fluxbox/styles)"
+		append "[stylesdir] (~/.fluxbox/styles)"
 	append_menu_end
 
 	append "[config] (${CONFIGUREMENU})"
