@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.14 2003/07/10 10:18:08 fluxgen Exp $
+// $Id: FbRun.cc,v 1.15 2003/07/25 11:17:41 rathnor Exp $
 
 #include "FbRun.hh"
 
@@ -41,10 +41,10 @@
 using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
     m_font("fixed"),
-    m_win((int)0, x, y,  //screen num and position
+    m_display(FbTk::App::instance()->display()),
+    m_win((int)DefaultScreen(m_display), x, y,  //screen num and position
           width + m_bevel, m_font.height() + 2,  // size
           KeyPressMask|ExposureMask), // eventmask
-    m_display(FbTk::App::instance()->display()),
     m_bevel(4),
     m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
     m_end(false),

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.10 2003/06/24 10:22:42 fluxgen Exp $
+// $Id: FbRun.hh,v 1.11 2003/07/25 11:17:41 rathnor Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -97,8 +97,8 @@ private:
     void tabCompleteHistory();
 
     FbTk::Font m_font; ///< font used to draw command text
-    FbTk::FbWindow m_win;  ///< toplevel window 
     Display *m_display;  ///< display connection
+    FbTk::FbWindow m_win;  ///< toplevel window 
     std::string m_runtext; ///< command to execute
     int m_bevel; ///< distance to window edge from font in pixels
     GC m_gc; ///< graphic context
