@@ -1,7 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/11:
+   * New menu items (Thanks Cosmic Flo)
 *02/08/10:
-   * French translation in fluxbox-generate_menu (Thanks Cosmicflo)
+   * French translation in fluxbox-generate_menu (Thanks Cosmic Flo)
 *02/08/04:
    * Fixed doxygen comments and minor clean up.
 *02/08/02:
