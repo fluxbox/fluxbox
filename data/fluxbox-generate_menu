@@ -69,21 +69,21 @@ find_it() {
 }
 
 append() {
-	echo "	$*" >> $FILENAME
+	echo "	$*" >> ${FILENAME}
 }
 
 append_menu() {
-	echo "$*" >> $FILENAME
+	echo "$*" >> ${FILENAME}
 }
 
 append_submenu() {
-	echo >> $FILENAME
+	echo >> ${FILENAME}
 	append_menu "[submenu] ($1)"
 }
 
 append_menu_end() {
 	append_menu "[end]"
-	echo >> $FILENAME
+	echo >> ${FILENAME}
 }
 
 menu_entry() {
@@ -150,19 +150,30 @@ done
 # Set Defaults
 
 # menufile name and make a backup
-[ ! $FILENAME ] && FILENAME=~/.fluxbox/menu
-[ -e $FILENAME ] && cp -f $FILENAME ${FILENAME}.bak
+if [ -z ${FILENAME} ]; then
+	FILENAME=~/.fluxbox/menu
+fi
+
+if [ ! -z ${FILENAME} ]; then 
+	if [ -w ${FILENAME} ]; then
+		cp -f ${FILENAME} ${FILENAME}.bak
+	fi
+fi
 
 #packagedatadir
-[ ! $PKGDATADIR ] && PKGDATADIR=/usr/share
+if [ -z "${PKGDATADIR}" ]; then
+	PKGDATADIR=/usr/share
+fi
 
 # menutitle
-[ ! $MENUTITLE ] && MENUTITLE="Fluxbox"
+if [ -z "${MENUTITLE}" ]; then
+	MENUTITLE="Fluxbox"
+fi
 
 
 # Start of menu
 
-echo "[begin] ($MENUTITLE)" > $FILENAME
+echo "[begin] ($MENUTITLE)" > ${FILENAME}
 
 find_it xterm           append "[exec]   (xterm) {xterm -fg white -bg black}"
 find_it nedit           append "[exec]   (nedit) {nedit}"
@@ -298,7 +309,7 @@ if [ -d $PKGDATADIR/applnk/ ] && [ $KDEMENU ]; then
 fi
 
 
-append_submenu Settings
+append_submenu FB-Settings
 	append "[workspaces]   (Workspace List)"
 
 	append_menu "[submenu] (Styles) {Choose a style...}"
