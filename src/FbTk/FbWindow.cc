@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.8 2003/04/14 12:06:25 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.9 2003/04/16 16:02:14 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -40,7 +40,9 @@ FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0),
 }
 
 FbWindow::FbWindow(int screen_num,
-                   int x, int y, size_t width, size_t height, long eventmask, 
+                   int x, int y, 
+                   unsigned int width, unsigned int height, 
+                   long eventmask, 
                    bool override_redirect,
                    int depth,
                    int class_type):

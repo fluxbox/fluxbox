@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.9 2003/04/14 12:04:32 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.10 2003/04/16 16:01:38 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -43,7 +43,9 @@ public:
              int depth = CopyFromParent, 
              int class_type = InputOutput);
     FbWindow(const FbWindow &parent,
-             int x, int y, size_t width, size_t height, long eventmask, 
+             int x, int y, 
+             unsigned int width, unsigned int height, 
+             long eventmask, 
              bool overrride_redirect = false,
              int depth = CopyFromParent, 
              int class_type = InputOutput);
@@ -52,7 +54,7 @@ public:
     void setBackgroundColor(const FbTk::Color &bg_color);
     void setBackgroundPixmap(Pixmap bg_pixmap);
     void setBorderColor(const FbTk::Color &border_color);
-    void setBorderWidth(size_t size);
+    void setBorderWidth(unsigned int size);
     /// set window name (for title)
     void setName(const char *name);
     void setEventMask(long mask);
