@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.hh,v 1.2 2003/12/08 17:29:24 fluxgen Exp $
+// $Id: I18n.hh,v 1.3 2004/03/13 11:14:21 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
@@ -33,6 +33,7 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
+
 #ifdef HAVE_LOCALE_H
 #include <locale.h>
 #endif // HAVE_LOCALE_H
@@ -42,6 +43,18 @@
 extern "C" {
 #include <nl_types.h>
 }
+#elif defined(__CYGWIN__)
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+typedef int nl_catd;
+char *catgets(nl_catd cat, int set_number, int message_number, char *message);
+nl_catd catopen(char *name, int flag);
+void catclose(nl_catd cat);
+#ifdef __cplusplus
+}
+#endif // __cplusplus
+
 #endif // HAVE_NL_TYPES_H
 
 #include <string>
