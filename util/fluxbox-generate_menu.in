@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.14 2004/03/01 13:15:30 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.15 2004/03/03 07:43:38 fluxgen Exp $
 
 #
 # Portability notes:
@@ -430,43 +430,37 @@ case ${LC_ALL} in
         XUTILSMENU='X-Gereedschap'
         ;;
     fi_FI*) #Finnish locales
-# Ah my finish hero. Please help me update the translation
-# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
-# $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
-# email fbgm.diff to han@mijncomputer.nl
-
-        BACKGROUNDMENU='Taustat'
-        BACKGROUNDMENUTITLE='Määritä tausta'
+        BACKGROUNDMENU='Taustakuvat'
+        BACKGROUNDMENUTITLE='Määritä taustakuva'
         BROWSERMENU='Selaimet'
-        CONFIGUREMENU='Konfigurointi'
+        CONFIGUREMENU='Asetukset'
         EDITORMENU='Editorit'
         EXITITEM='Lopeta'
-        FBSETTINGSMENU='FB:n Asetukset'
-        FILEUTILSMENU='Tiedostoapuohjelmat'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
-        GAMESMENU='Games (CHANGE ME!)'
+        FBSETTINGSMENU='Fluxboxin säädöt'
+        FILEUTILSMENU='Tiedostotyökalut'
+        FLUXBOXCOMMAND='Komentorivi'
+        GAMESMENU='Pelit'
         GNOMEMENUTEXT='Gnomen valikot'
         GRAPHICMENU='Grafiikka'
         KDEMENUTEXT='KDE:n valikot'
-        LOCKSCREEN='Lock screen'
+        LOCKSCREEN='Lukitse työpöytä'
         MISCMENU='Sekalaista'
         MUSICMENU='Musiikki'
         NETMENU='Verkko'
         OFFICEMENU='Toimistotyökalut'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        RANDOMBACKGROUND='Satunnainen taustakuva'
+        REGENERATEMENU='Päivitä valikko'
         RELOADITEM='Päivitä'
         RESTARTITEM='Käynnistä uudelleen'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='Suorita'
+        SCREENSHOT='Kuvakaappaus'
         STYLEMENUTITLE='Valitse tyyli'
         SYSTEMSTYLES='Järjestelmän tyylit'
         TERMINALMENU='Terminaalit'
-        TOOLS='Tools (CHANGE ME!)'
+        TOOLS='Työkalut'
         USERSTYLES='Käyttäjän tyylit'
         WINDOWMANAGERS='Ikkunanhallintaohjelmat'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWNAME='Ikkunan nimi'
         WORKSPACEMENU='Työalueet'
         XUTILSMENU='X-Ohjelmat'
         ;;
