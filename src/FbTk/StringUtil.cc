@@ -1,6 +1,6 @@
-// StringUtil.cc for fluxbox 
+// StringUtil.cc for fluxbox
 // Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen<at>fluxbox<dot>org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.12 2004/08/31 15:26:39 rathnor Exp $
+// $Id: StringUtil.cc,v 1.13 2004/09/10 16:04:16 akir Exp $
 
 #include "StringUtil.hh"
 
@@ -73,13 +73,13 @@ char *strdup(const char *s) {
 const char *strcasestr(const char *str, const char *ptn) {
     const char *s2, *p2;
     for( ; *str; str++) {
-        for(s2=str, p2=ptn; ; s2++,p2++) {	
+        for(s2=str, p2=ptn; ; s2++,p2++) {
             // check if we reached the end of ptn, if so, return str
-            if (!*p2) 
+            if (!*p2)
                 return str;
             // check if the chars match(ignoring case)
             if (toupper(*s2) != toupper(*p2))
-                break; 
+                break;
         }
     }
     return 0;
@@ -87,12 +87,12 @@ const char *strcasestr(const char *str, const char *ptn) {
 
 /**
    if ~ then expand it to home of user
-   returns expanded filename 
+   returns expanded filename
 */
 string expandFilename(const std::string &filename) {
     string retval;
     size_t pos = filename.find_first_not_of(" \t");
-    if (pos != std::string::npos && filename[pos] == '~') {  	
+    if (pos != std::string::npos && filename[pos] == '~') {
     	retval = getenv("HOME");
         if (pos != filename.size()) {
             // copy from the character after '~'
@@ -120,7 +120,7 @@ string findExtension(const std::string &filename) {
    Parses a string between "first" and "last" characters
    and ignoring ok_chars as whitespaces. The value is
    returned in "out".
-   Returns negative value on error and this value is the position 
+   Returns negative value on error and this value is the position
    in the in-string where the error occured.
    Returns positive value on success and this value is
    for the position + 1 in the in-string where the "last"-char value
@@ -131,18 +131,18 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
     assert(first);
     assert(last);
     assert(instr);
-	
-    std::string::size_type i = 0, 
+
+    std::string::size_type i = 0,
         total_add=0; //used to add extra if there is a \last to skip
     std::string in(instr);
-	
+
     // eat leading whitespace
     i = in.find_first_not_of(ok_chars);
     if (i == std::string::npos)
         return -in.size();   // nothing left but whitespace
 
-    if (in[i]!=first)		
-        return -i; //return position to error	
+    if (in[i]!=first)
+        return -i; //return position to error
 
     // find the end of the token
     std::string::size_type j = i, k;
@@ -170,7 +170,7 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
         }
     }
 
-    out = in.substr(i+1, j-i-1); //copy the string between first and last		
+    out = in.substr(i+1, j-i-1); //copy the string between first and last
     //return value to last character
     return (j+1+total_add);
 }
@@ -205,7 +205,7 @@ string::size_type removeFirstWhitespace(std::string &str) {
 string::size_type removeTrailingWhitespace(std::string &str) {
     // strip trailing whitespace
     string::size_type first_pos = str.find_last_not_of(" \t");
-    if (first_pos != string::npos) {	
+    if (first_pos != string::npos) {
         string::size_type last_pos = str.find_first_of(" \t", first_pos);
         while (last_pos != string::npos) {
             str.erase(last_pos);

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.9 2004/05/02 20:42:56 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.10 2004/09/10 16:04:16 akir Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -31,7 +31,7 @@ namespace FbTk {
 namespace StringUtil {
 
 char *strdup(const char *);
-	
+
 /// Similar to `strstr' but this function ignores the case of both strings
 const char *strcasestr(const char *str, const char *ptn);
 
@@ -42,7 +42,7 @@ std::string expandFilename(const std::string &filename);
 std::string findExtension(const std::string &filename);
 
 ///  returns string between character first and last
-int getStringBetween(std::string& out, const char *instr, 
+int getStringBetween(std::string& out, const char *instr,
                      char first, char last,
                      const char *ok_chars=" \t\n", bool allow_nesting = false);
 
