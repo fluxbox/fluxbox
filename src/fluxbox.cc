@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.183 2003/08/12 01:04:16 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.184 2003/08/12 21:00:54 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -357,7 +357,21 @@ getString() {
 }
 
 static Window last_bad_window = None;
+namespace {
+void copyFile(const std::string &from, const std::string &to) {
+        ifstream from_file(from.c_str());
+        ofstream to_file(to.c_str());
 
+        if (! to_file.good()) {
+            cerr<<"Can't write file: "<<to<<endl;			
+        } else if (from_file.good()) {
+            to_file<<from_file.rdbuf(); //copy file
+        } else {
+            cerr<<"Can't copy from "<<from<<" to "<<to<<endl;
+        }		
+}
+
+};
 
 static int handleXErrors(Display *d, XErrorEvent *e) {
 #ifdef DEBUG
@@ -651,7 +665,7 @@ void Fluxbox::setupConfigFiles() {
 
     bool create_init = false, create_keys = false, create_menu = false;
 
-    string dirname = getenv("HOME")+string("/.")+string(m_RC_PATH) + "/";
+    string dirname = getenv("HOME") + string("/.") + string(m_RC_PATH) + "/";
     string init_file, keys_file, menu_file, slitlist_file;
     init_file = dirname + m_RC_INIT_FILE;
     keys_file = dirname + "keys";
@@ -686,58 +700,18 @@ void Fluxbox::setupConfigFiles() {
     }
 
 
-    // should we copy key configuraion?
-    if (create_keys) {
-        ifstream from(DEFAULTKEYSFILE);
-        ofstream to(keys_file.c_str());
+    // copy key configuration
+    if (create_keys)
+        copyFile(DEFAULTKEYSFILE, keys_file);
 
-        if (! to.good()) {
-            cerr << "Can't write file" << endl;			
-        } else if (from.good()) {
-#ifdef DEBUG
-            cerr << "Copying file: " << DEFAULTKEYSFILE << endl;
-#endif // DEBUG
-            to<<from.rdbuf(); //copy file
-			
-        } else {
-            cerr<<"Can't copy default keys file."<<endl;
-        }		
-    }
+    // copy menu configuration
+    if (create_menu)
+        copyFile(DEFAULTMENU, menu_file);
 
-    // should we copy menu configuraion?
-    if (create_menu) {
-        ifstream from(DEFAULTMENU);
-        ofstream to(menu_file.c_str());
+    // copy init file
+    if (create_init)
+        copyFile(DEFAULT_INITFILE, init_file);
 
-        if (! to.good()) {
-            cerr << "Can't open " << menu_file.c_str() << "for writing" << endl;
-        } else if (from.good()) {
-#ifdef DEBUG
-            cerr << "Copying file: " << DEFAULTMENU << endl;
-#endif // DEBUG
-            to<<from.rdbuf(); //copy file
-
-        } else {
-            cerr<<"Can't copy default menu file."<<endl;
-        }		
-    }	
-
-    // should we copy default init file?
-    if (create_init) {
-        ifstream from(DEFAULT_INITFILE);
-        ofstream to(init_file.c_str());
-
-        if (! to.good()) {
-            cerr << "Can't open " << init_file.c_str() << "for writing" << endl;
-        } else if (from.good()) {
-#ifdef DEBUG
-            cerr << "Copying file: " << DEFAULT_INITFILE << endl;
-#endif // DEBUG
-            to<<from.rdbuf(); //copy file
-        } else {
-            cerr<<"Can't copy default init file."<<endl;	
-        }
-    }
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
