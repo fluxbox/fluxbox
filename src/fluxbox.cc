@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.246 2004/07/14 23:38:53 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.247 2004/07/15 13:42:50 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -208,6 +208,14 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
 
+template<>
+void FbTk::Resource<long long>::
+setFromString(const char *strval) {	
+    if (sscanf(strval, "%ul", &m_value) != 1)
+        setDefaultValue();
+}
+
+
 //-----------------------------------------------------------------
 //---- manipulators for int, bool, and some enums with Resource ---
 //-----------------------------------------------------------------
@@ -275,6 +283,14 @@ getString() {
 
 template<>
 string FbTk::Resource<unsigned int>::
+getString() {
+    char tmpstr[128];
+    sprintf(tmpstr, "%ul", m_value);
+    return string(tmpstr);
+}
+
+template<>
+string FbTk::Resource<long long>::
 getString() {
     char tmpstr[128];
     sprintf(tmpstr, "%ul", m_value);
