@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.265 2004/02/03 12:55:35 rathnor Exp $
+// $Id: Screen.cc,v 1.266 2004/02/10 18:53:37 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -174,6 +174,7 @@ void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
     
 }
 
+template <>
 string FbTk::Resource<BScreen::PlacementPolicy>::getString() {
     switch (*(*this)) {
     case BScreen::ROWSMARTPLACEMENT:
@@ -205,6 +206,7 @@ void FbTk::Resource<BScreen::RowDirection>::setFromString(const char *str) {
     
 }
 
+template <>
 string FbTk::Resource<BScreen::RowDirection>::getString() {
     switch (*(*this)) {
     case BScreen::LEFTRIGHT:
@@ -233,6 +235,7 @@ void FbTk::Resource<BScreen::ColumnDirection>::setFromString(const char *str) {
     
 }
 
+template <>
 string FbTk::Resource<BScreen::ColumnDirection>::getString() {
     switch (*(*this)) {
     case BScreen::TOPBOTTOM:
