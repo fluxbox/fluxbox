@@ -6,7 +6,7 @@ Changes for 0.9.6:
   * Fix resize calculations, particularly wrt base_width/height (Simon)
     - fixes abiword resize issues
     Window.hh/cc WinClient.hh/cc
-  * Nearest-quadrant resizing (Thanks Mathias Gumz)
+  * Nearest-quadrant resizing (Thanks Uwe Maurer and Mathias Gumz)
     Window.hh/cc Screen.hh/cc FbWinFrameTheme.hh/cc
   * Update from Han 
    - make startup executable to save one process
