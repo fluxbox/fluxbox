@@ -91,7 +91,7 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 
 			case BScreen::EXIT:
 				fluxbox->shutdown();
-				break;
+			break;
 
 			case BScreen::SETSTYLE:
 				if (item->exec().size()) {
@@ -99,7 +99,8 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 					fluxbox->reconfigureTabs();
 				}
 				fluxbox->reconfigure();
-				break;
+				fluxbox->save_rc();
+			break;
 			case BScreen::RECONFIGURE:
 				fluxbox->reconfigure();
 				return;
