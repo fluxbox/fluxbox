@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.167 2003/05/10 16:53:09 fluxgen Exp $
+// $Id: Window.cc,v 1.168 2003/05/10 23:04:37 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -242,7 +242,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_client(&client),   
     m_frame(tm, *scr.getImageControl(), scr.getScreenNumber(), 0, 0, 100, 100),
     m_layeritem(m_frame.window(), layer),
-    m_layernum(layer.getLayerNum())  {
+    m_layernum(layer.getLayerNum()),
+    m_parent(scr.rootWindow()) {
 
     init();
 }
@@ -274,7 +275,8 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
     m_client(new WinClient(w, *this)),
     m_frame(tm, *scr.getImageControl(), scr.getScreenNumber(), 0, 0, 100, 100),
     m_layeritem(m_frame.window(), layer),
-    m_layernum(layer.getLayerNum()) {
+    m_layernum(layer.getLayerNum()),
+    m_parent(scr.rootWindow()) {
     assert(w != 0);
     init();
 
@@ -2292,7 +2294,7 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
 
 void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
-    if (isMoving() && me.window == screen().getRootWindow()) {
+    if (isMoving() && me.window == parent()) {
         me.window = m_frame.window().window();
     }
     bool inside_titlebar = (m_frame.titlebar() == me.window || m_frame.label() == me.window ||
@@ -2375,15 +2377,15 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             doSnapping(dx, dy);
             
             if (! screen().doOpaqueMove()) {
-                XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                               m_last_move_x, m_last_move_y, 
-                               m_frame.width() + 2*frame().window().borderWidth()-1,
-                               m_frame.height() + 2*frame().window().borderWidth()-1);
+                parent().drawRectangle(screen().rootTheme().opGC(),
+                                       m_last_move_x, m_last_move_y, 
+                                       m_frame.width() + 2*frame().window().borderWidth()-1,
+                                       m_frame.height() + 2*frame().window().borderWidth()-1);
 
-                XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                               dx, dy, 
-                               m_frame.width() + 2*frame().window().borderWidth()-1,
-                               m_frame.height() + 2*frame().window().borderWidth()-1);
+                parent().drawRectangle(screen().rootTheme().opGC(),
+                                       dx, dy, 
+                                       m_frame.width() + 2*frame().window().borderWidth()-1,
+                                       m_frame.height() + 2*frame().window().borderWidth()-1);
                 m_last_move_x = dx;
                 m_last_move_y = dy;
             } else {
@@ -2404,10 +2406,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             startResizing(me.window, me.x, me.y, left); 
         } else if (resizing) {
             // draw over old rect
-            XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                           m_last_resize_x, m_last_resize_y,
-                           m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
-                           m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
+            parent().drawRectangle(screen().rootTheme().opGC(),
+                                   m_last_resize_x, m_last_resize_y,
+                                   m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
+                                   m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
 
             // move rectangle
@@ -2431,11 +2433,11 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 right_fixsize(&gx, &gy);
             }
 
-            // draw resize rectangle
-            XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                           m_last_resize_x, m_last_resize_y,
-                           m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
-                           m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
+           // draw resize rectangle
+           parent().drawRectangle(screen().rootTheme().opGC(),
+                                  m_last_resize_x, m_last_resize_y,
+                                  m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
+                                  m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
             if (screen().doShowWindowPos())
                 screen().showGeometry(gx, gy);
@@ -2455,11 +2457,10 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             m_last_move_x = me.x_root - 1;
             m_last_move_y = me.y_root - 1;
         
-            XDrawRectangle(display, screen().getRootWindow(), 
-                           screen().rootTheme().opGC(),
-                           m_last_move_x, m_last_move_y,
-                           m_labelbuttons[client]->width(), 
-                           m_labelbuttons[client]->height());
+            parent().drawRectangle(screen().rootTheme().opGC(),
+                                   m_last_move_x, m_last_move_y,
+                                   m_labelbuttons[client]->width(), 
+                                   m_labelbuttons[client]->height());
         } else { 
             // we already grabed and started to drag'n'drop tab
             // so we update drag'n'drop-rectangle
@@ -2489,21 +2490,19 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             }
 		
             //erase rectangle
-            XDrawRectangle(display, screen().getRootWindow(),
-                           screen().rootTheme().opGC(),
-                           m_last_move_x, m_last_move_y, 
-                           m_labelbuttons[client]->width(), 
-                           m_labelbuttons[client]->height());
+            parent().drawRectangle(screen().rootTheme().opGC(),
+                                   m_last_move_x, m_last_move_y, 
+                                   m_labelbuttons[client]->width(), 
+                                   m_labelbuttons[client]->height());
 
 
             // redraw rectangle at new pos
             m_last_move_x = dx;
             m_last_move_y = dy;			
-            XDrawRectangle(display, screen().getRootWindow(), 
-                           screen().rootTheme().opGC(),
-                           m_last_move_x, m_last_move_y,
-                           m_labelbuttons[client]->width(), 
-                           m_labelbuttons[client]->height());
+            parent().drawRectangle(screen().rootTheme().opGC(),
+                                   m_last_move_x, m_last_move_y,
+                                   m_labelbuttons[client]->width(), 
+                                   m_labelbuttons[client]->height());
 
 			
         }
@@ -2700,23 +2699,23 @@ void FluxboxWindow::startMoving(Window win) {
     Fluxbox *fluxbox = Fluxbox::instance();
     // grabbing (and masking) on the root window allows us to 
     // freely map and unmap the window we're moving.
-    XGrabPointer(display, screen().getRootWindow(), False, Button1MotionMask |
+    XGrabPointer(display, screen().rootWindow().window(), False, Button1MotionMask |
                  ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                 screen().getRootWindow(), fluxbox->getMoveCursor(), CurrentTime);
+                 screen().rootWindow().window(), fluxbox->getMoveCursor(), CurrentTime);
 
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
 
-    fluxbox->maskWindowEvents(screen().getRootWindow(), this);
+    fluxbox->maskWindowEvents(screen().rootWindow().window(), this);
 
     m_last_move_x = frame().x();
     m_last_move_y = frame().y();
     if (! screen().doOpaqueMove()) {
         fluxbox->grab();
-        XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                       frame().x(), frame().y(),
-                       frame().width() + 2*frame().window().borderWidth()-1, 
-                       frame().height() + 2*frame().window().borderWidth()-1);
+        parent().drawRectangle(screen().rootTheme().opGC(),
+                               frame().x(), frame().y(),
+                               frame().width() + 2*frame().window().borderWidth()-1, 
+                               frame().height() + 2*frame().window().borderWidth()-1);
         screen().showPosition(frame().x(), frame().y());
     }
 }
@@ -2729,10 +2728,10 @@ void FluxboxWindow::stopMoving() {
 
    
     if (! screen().doOpaqueMove()) {
-        XDrawRectangle(FbTk::App::instance()->display(), screen().getRootWindow(), screen().rootTheme().opGC(),
-                       m_last_move_x, m_last_move_y, 
-                       frame().width() + 2*frame().window().borderWidth()-1,
-                       frame().height() + 2*frame().window().borderWidth()-1);
+        parent().drawRectangle(screen().rootTheme().opGC(),
+                               m_last_move_x, m_last_move_y, 
+                               frame().width() + 2*frame().window().borderWidth()-1,
+                               frame().height() + 2*frame().window().borderWidth()-1);
         moveResize(m_last_move_x, m_last_move_y, m_frame.width(), m_frame.height());
         if (m_workspace_number != screen().getCurrentWorkspaceID()) {
             screen().reassociateWindow(this, screen().getCurrentWorkspaceID(), true);
@@ -2753,11 +2752,10 @@ void FluxboxWindow::pauseMoving() {
         return;
     }
 
-    XDrawRectangle(display, screen().getRootWindow(), 
-                   screen().rootTheme().opGC(),
-                   m_last_move_x, m_last_move_y, 
-                   m_frame.width() + 2*frame().window().borderWidth()-1,
-                   m_frame.height() + 2*frame().window().borderWidth()-1);
+    parent().drawRectangle(screen().rootTheme().opGC(),
+                           m_last_move_x, m_last_move_y, 
+                           m_frame.width() + 2*frame().window().borderWidth()-1,
+                           m_frame.height() + 2*frame().window().borderWidth()-1);
     
 }
 
@@ -2771,10 +2769,11 @@ void FluxboxWindow::resumeMoving() {
         m_frame.show();
     }
     XSync(display,false);
-    XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                   m_last_move_x, m_last_move_y, 
-                   m_frame.width() + 2*frame().window().borderWidth()-1,
-                   m_frame.height() + 2*frame().window().borderWidth()-1);
+
+    parent().drawRectangle(screen().rootTheme().opGC(),
+                           m_last_move_x, m_last_move_y, 
+                           m_frame.width() + 2*frame().window().borderWidth()-1,
+                           m_frame.height() + 2*frame().window().borderWidth()-1);
 
 }
 
@@ -2917,19 +2916,19 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
     if (screen().doShowWindowPos())
         screen().showGeometry(gx, gy);
 
-    XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                   m_last_resize_x, m_last_resize_y,
-                   m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
-                   m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
+    parent().drawRectangle(screen().rootTheme().opGC(),
+                           m_last_resize_x, m_last_resize_y,
+                           m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
+                           m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 }
 
 void FluxboxWindow::stopResizing(Window win) {
     resizing = false;
 	
-    XDrawRectangle(display, screen().getRootWindow(), screen().rootTheme().opGC(),
-                   m_last_resize_x, m_last_resize_y,
-                   m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
-                   m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
+    parent().drawRectangle(screen().rootTheme().opGC(),
+                           m_last_resize_x, m_last_resize_y,
+                           m_last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
+                           m_last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
     screen().hideGeometry();
 
@@ -2952,17 +2951,16 @@ void FluxboxWindow::attachTo(int x, int y) {
     XUngrabPointer(display, CurrentTime);
 
 
-    XDrawRectangle(display, screen().getRootWindow(),
-                   screen().rootTheme().opGC(),
-                   m_last_move_x, m_last_move_y, 
-                   m_labelbuttons[m_attaching_tab]->width(), 
-                   m_labelbuttons[m_attaching_tab]->height());
+    parent().drawRectangle(screen().rootTheme().opGC(),
+                           m_last_move_x, m_last_move_y, 
+                           m_labelbuttons[m_attaching_tab]->width(), 
+                           m_labelbuttons[m_attaching_tab]->height());
             
     int dest_x = 0, dest_y = 0;
     Window child = 0;
 
-    if (XTranslateCoordinates(display, screen().getRootWindow(), 
-                              screen().getRootWindow(),
+    if (XTranslateCoordinates(display, parent().window(), 
+                              parent().window(),
                               x, y, &dest_x, &dest_y, &child)) {        
         // search for a fluxboxwindow 
         FluxboxWindow *attach_to_win = Fluxbox::instance()->searchWindow(child);
@@ -3013,7 +3011,7 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 #endif // DEBUG
 
         // reparent to root window
-        client->reparent(screen().getRootWindow(), m_frame.x(), m_frame.y());        
+        client->reparent(screen().rootWindow().window(), m_frame.x(), m_frame.y());        
     }
 
     if (remap)

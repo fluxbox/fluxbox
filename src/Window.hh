@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.69 2003/05/10 16:51:39 fluxgen Exp $
+// $Id: Window.hh,v 1.70 2003/05/10 23:03:49 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -302,7 +302,10 @@ public:
 
     FbTk::Menu &getLayermenu() { return m_layermenu; }
     const FbTk::Menu &getLayermenu() const { return m_layermenu; }
-	
+
+    const FbTk::FbWindow &parent() const { return m_parent; }
+    FbTk::FbWindow &parent() { return m_parent; }
+
     const std::string &getTitle() const;
     const std::string &getIconTitle() const;
     int getXFrame() const { return m_frame.x(); }
@@ -459,8 +462,10 @@ private:
     FbTk::XLayerItem m_layeritem;
     int m_layernum;
 
+    FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
+
     enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
-  
+
 };
 
 
