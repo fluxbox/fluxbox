@@ -69,7 +69,7 @@ private:
     Window m_window, m_client_window, m_icon_window;
     int m_x, m_y;
     unsigned int m_width, m_height;
-    bool m_visible; ///< wheter the client should be visible or not
+    bool m_visible; ///< whether the client should be visible or not
 };
 
 #endif // SLITCLIENT_HH
