@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.10 2003/04/16 16:01:38 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.11 2003/04/25 17:31:38 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -72,6 +72,18 @@ public:
     virtual void lower();
     virtual void raise();
 
+    void copyArea(Drawable src, GC gc,
+                  int src_x, int src_y,
+                  int dest_x, int dest_y,
+                  unsigned int width, unsigned int height);
+    void fillRectangle(GC gc, int x, int y,
+                       unsigned int width, unsigned int height);
+    void drawRectangle(GC gc, int x, int y, 
+                  unsigned int width, unsigned int height);
+    void fillPolygon(GC gc, XPoint *points, int npoints,
+                     int shape, int mode);
+    void drawLine(GC gc, int start_x, int start_y, 
+                  int end_x, int end_y);
 
     const FbWindow *parent() const { return m_parent; }
     Window window() const { return m_window; }
