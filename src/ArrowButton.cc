@@ -19,10 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.10 2004/10/21 11:05:06 akir Exp $
+// $Id: ArrowButton.cc,v 1.11 2004/10/21 16:49:19 akir Exp $
 
 #include "ArrowButton.hh"
-#include "FbTk/ThemeItems.hh"
 #include "ButtonTheme.hh"
 
 ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
