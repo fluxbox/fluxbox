@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
 *03/04/16:
+   * Fixed saving of toolbar and slit layer (Simon)
+     LayerMenu.hh Screen.hh Slit.hh/cc Toolbar.hh/cc ToolbarHandler.hh 
+     Window.cc
    * Fixed toolbar width percent menu item
      Toolbar.cc
    * Fixed current focused client button rendered (Henrik)

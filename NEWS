@@ -10,5 +10,6 @@ News in 0.9.1:
 	 * All Windows (both icons and windows on all workspaces)
 Bug fixes: 
    * [ 721107 ] Window resizing problem in a mozilla/phoenix window
+   * Toolbar and Slit now properly save layer when changed
 
 See ChangeLog for more details
