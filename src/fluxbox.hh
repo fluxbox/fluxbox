@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.8 2002/01/20 02:18:18 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.9 2002/02/06 17:12:39 fluxgen Exp $
 
 #ifndef	 _FLUXBOX_HH_
 #define	 _FLUXBOX_HH_
@@ -205,6 +205,16 @@ public:
 	typedef std::vector<Fluxbox::Titlebar> TitlebarList;
 		
 private:
+	void handleButtonEvent(XButtonEvent &be);
+	void handleClientMessage(XClientMessageEvent &ce);
+	void handleKeyEvent(XKeyEvent &ke);	
+	void doWindowAction(Keys::KeyAction action);
+	#ifdef GNOME
+	bool checkGnomeAtoms(XClientMessageEvent &ce);
+	#endif
+	#ifdef NEWWMSPEC
+	bool checkNETWMAtoms(XClientMessageEvent &ce);
+	#endif
 	typedef struct MenuTimestamp {
 		char *filename;
 		time_t timestamp;
@@ -258,14 +268,14 @@ private:
 	Atom fluxbox_pid;
 #endif // HAVE_GETPID
 
-	Bool no_focus, reconfigure_wait, reread_menu_wait;
+	bool no_focus, reconfigure_wait, reread_menu_wait;
 	Time last_time;
 	Window masked;
 	char *rc_file, **argv;
 	int argc;
 	Keys *key;
 
-	void doWindowAction(Keys::KeyAction action);
+	
 protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
 	char *getRcFilename();
