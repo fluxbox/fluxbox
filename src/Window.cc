@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.276 2004/04/12 18:19:10 fluxgen Exp $
+// $Id: Window.cc,v 1.277 2004/04/12 23:03:34 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -393,8 +393,8 @@ void FluxboxWindow::init() {
 
 
     FbTk::TextButton *btn =  new FbTk::TextButton(frame().label(), 
-                                      frame().theme().font(),
-                                      m_client->title());
+                                                  frame().theme().font(),
+                                                  m_client->title());
     btn->setJustify(frame().theme().justify());
     m_labelbuttons[m_client] = btn;
     frame().addLabelButton(*btn);
@@ -2354,8 +2354,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
         }
         
-        if (m_windowmenu.isVisible())
-            m_windowmenu.hide();
+        Fluxbox::instance()->hideExtraMenus(screen());
+        screen().hideWindowMenus(this);
     }
 }
 
@@ -3523,7 +3523,8 @@ void FluxboxWindow::setupWindow() {
  */
 void FluxboxWindow::reconfigTheme() {
 
-    m_frame.setBorderWidth(decorations.border?frame().theme().border().width():0);
+    m_frame.setBorderWidth(decorations.border ? 
+                           frame().theme().border().width() : 0);
     if (decorations.handle && frame().theme().handleWidth() != 0)
         frame().showHandle();
     else
@@ -3545,7 +3546,7 @@ void FluxboxWindow::reconfigTheme() {
     sendConfigureNotify();
 }
 
-// grab pointer an increase counter.
+// grab pointer and increase counter.
 // we need this to count grab pointers,
 // especially at startup, where we can drag/resize while starting
 // and causing it to send events to windows later on and make

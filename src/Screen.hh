@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.137 2004/03/30 13:45:20 fluxgen Exp $
+// $Id: Screen.hh,v 1.138 2004/04/12 23:05:10 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -177,6 +177,9 @@ public:
 
     FbTk::Menu *createMenu(const std::string &label);
     void hideMenus();
+
+    /// hide all windowmenus except the given one (if given)
+    void hideWindowMenus(const FluxboxWindow* except= 0);
 
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	

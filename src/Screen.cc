@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.273 2004/03/30 13:46:34 fluxgen Exp $
+// $Id: Screen.cc,v 1.274 2004/04/12 23:05:10 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -901,6 +901,11 @@ void BScreen::hideMenus() {
             (*it)->menu().hide();
     }
     // hide all client menus
+    hideWindowMenus(); 
+
+}
+
+void BScreen::hideWindowMenus(const FluxboxWindow* except) {
     Workspaces::iterator w_it = getWorkspacesList().begin();
     const Workspaces::iterator w_it_end = getWorkspacesList().end();
     for (; w_it != w_it_end; ++w_it) {
@@ -908,13 +913,14 @@ void BScreen::hideMenus() {
             Workspace::Windows::iterator win_it = (*w_it)->windowList().begin();
             const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
             for (; win_it != win_it_end; ++win_it) {
+                if (*win_it != except)
                 (*win_it)->menu().hide();
             }
         }
     }
-
-
 }
+
+
 
 void BScreen::reconfigure() {
     m_menutheme->setAlpha(*resource.menu_alpha);
