@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.2 2003/06/30 20:37:57 fluxgen Exp $
+// $Id: I18n.cc,v 1.3 2003/08/26 23:53:49 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -36,10 +36,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
-
-#ifdef	HAVE_LOCALE_H
-#include <locale.h>
-#endif // HAVE_LOCALE_H
 
 #include <iostream>
 
