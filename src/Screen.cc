@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.98 2003/01/12 18:21:27 fluxgen Exp $
+// $Id: Screen.cc,v 1.99 2003/01/12 18:47:02 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -33,7 +33,6 @@
 #include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "Workspacemenu.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
 #include "DirHelper.hh"
