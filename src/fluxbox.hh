@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.24 2002/08/13 21:18:17 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.25 2002/08/14 00:00:16 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -40,12 +40,12 @@
 #include "Slit.hh"
 #endif // SLIT
 
+#include "SignalHandler.hh"
+
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-#ifdef		HAVE_STDIO_H
-# include <stdio.h>
-#endif // HAVE_STDIO_H
+#include <cstdio>
 
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
@@ -67,7 +67,7 @@
 	main class for the window manager.
 	singleton type
 */
-class Fluxbox : public BaseDisplay, public TimeoutHandler {	
+class Fluxbox : public BaseDisplay, public TimeoutHandler, public FbTk::SignalHandler::EventHandler {	
 public:
 	Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
 	virtual ~Fluxbox();
@@ -147,8 +147,9 @@ public:
 	void reconfigureTabs();
 	void rereadMenu();
 	void checkMenu();
-
-	virtual Bool handleSignal(int);
+	
+	/// handle any signal sent to the application
+	void handleSignal(int signum);
 
 	virtual void timeout();
 

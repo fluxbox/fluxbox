@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.66 2002/08/13 21:19:00 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.67 2002/08/14 00:01:10 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -111,12 +111,15 @@
 #	include <libgen.h>
 #endif // HAVE_LIBGEN_H
 
+#include <sys/wait.h>
+
 #include <iostream>
 #include <string>
 #include <memory>
 #include <algorithm>
 
 using namespace std;
+using namespace FbTk;
 
 #ifndef	 HAVE_BASENAME
 namespace {
@@ -313,6 +316,18 @@ key(0)
 		cerr<<"Fatal! There can only one instance of fluxbox class."<<endl;
 		abort();
 	}
+	
+	//setup signals
+	SignalHandler *sigh = SignalHandler::instance();
+	
+	sigh->registerHandler(SIGSEGV, this);
+	sigh->registerHandler(SIGFPE, this);
+	sigh->registerHandler(SIGTERM, this);
+	sigh->registerHandler(SIGINT, this);
+	sigh->registerHandler(SIGCHLD, this);
+	sigh->registerHandler(SIGHUP, this);
+	sigh->registerHandler(SIGUSR1, this);	
+	sigh->registerHandler(SIGUSR2, this);
 
 	//singleton pointer
 	singleton = this;
@@ -324,7 +339,7 @@ key(0)
 	if (! XSupportsLocale())
 		fprintf(stderr, "X server does not support locale\n");
 
-	if (XSetLocaleModifiers("") == NULL)
+	if (XSetLocaleModifiers("") == 0)
 		fprintf(stderr, "cannot set locale modifiers\n");
 
 // Set default values to member variables
@@ -1562,30 +1577,56 @@ bool Fluxbox::checkNETWMAtoms(XClientMessageEvent &ce) {
 }
 #endif //!NEWWMSPEC
 
-Bool Fluxbox::handleSignal(int sig) {
+void Fluxbox::handleSignal(int sig) {
+	I18n *i18n = I18n::instance();
+	static int re_enter = 0;
+
 	switch (sig) {
-	case SIGHUP:
-		load_rc();
+		case SIGCHLD: // we don't want the child process to kill us
+			waitpid(-1, 0, WNOHANG | WUNTRACED);
 		break;
-
-	case SIGUSR1:
-		reload_rc();
+		case SIGHUP:
+			load_rc();
 		break;
-
-	case SIGUSR2:
-		rereadMenu();
+		case SIGUSR1:
+			reload_rc();
 		break;
+		case SIGUSR2:
+			rereadMenu();
+		break;
+		case SIGSEGV:
+		case SIGFPE:
+		case SIGINT:
+		case SIGTERM:
+			shutdown();
+		break;
+		default:
+			fprintf(stderr,
+			i18n->getMessage(
+				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplaySignalCaught,
+				 "%s:	signal %d caught\n"),
+				getApplicationName(), sig);
 
-	case SIGSEGV:
-	case SIGFPE:
-	case SIGINT:
-	case SIGTERM:
-		shutdown();
-	default:
-		return False;
+			if (! isStartup() && ! re_enter) {
+				re_enter = 1;
+				fprintf(stderr,
+					i18n->getMessage(
+						FBNLS::BaseDisplaySet, FBNLS::BaseDisplayShuttingDown,
+						"shutting down\n"));
+				shutdown();
+			}
+
+			
+			fprintf(stderr,
+			i18n->getMessage(
+				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplayAborting,
+				 "aborting... dumping core\n"));
+			abort();
+		break;
 	}
 
-	return True;
+	
+
 }
 
 
