@@ -66,7 +66,17 @@ typedef struct _blackbox_attributes {
 void bexec(const char *, char *);
 #endif // !__EMX__
 
-char *bstrdup(const char *);
+
+// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// 
+// Screen.hh for Blackbox - an X11 Window manager
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Softwar
 template <typename Z> inline Z min(Z a, Z b) { return ((a < b) ? a : b); }
 template <typename Z> inline Z max(Z a, Z b) { return ((a > b) ? a : b); }
 
