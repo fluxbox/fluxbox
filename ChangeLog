@@ -1,5 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/13:
+  * Fixed slow resize of windows like xmms playlist.
+    We called setupWindow() in XA_WM_NORMAL_HINTS even if
+    nothing was changed -> slow!.
+    (Henrik)
+    Window.cc
+*04/08/12:
+  * Moved fluxstyle.1 to fluxstyle.1.in and using regexp to 
+    replace pkgdatadir
+    (Thanks php-coder at ngs dot ru)
+    doc/fluxstyle.1.in, doc/Makefile.am
 *04/08/11:
   * Updated Cthulhain style for toolbar.workspace.*  
     and fixed a minor error in fluxbox.1.in
