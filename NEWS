@@ -1,72 +1,53 @@
-News in 0.9.5:
-    * New theme items:
-        Menu theme changes:
-        * menu.selected.pixmap
-        * menu.unselected.pixmap
-        * menu.submenu.pixmap
-        Window theme changes:
-        * window.title.height 
-        Toolbar theme changes:
-        * toolbar.height: <pixel size>
-        * toolbar.clock: <texture>
-        * toolbar.clock.pixmap: <filename>
-        * toolbar.clock.color: <color>
-        * toolbar.clock.colorTo: <color>
-        * toolbar.clock.textColor: <color>
-        * toolbar.clock.font: <font>
-
-        * toolbar.workspace: <texture>
-        * toolbar.workspace.pixmap: <filename>
-        * toolbar.workspace.color: <color>
-        * toolbar.workspace.colorTo: <color>
-        * toolbar.workspace.textColor: <color>
-        * toolbar.workspace.font: <font>
-        This is for an empty iconbar: 
-        * toolbar.iconbar.empty: <texture>
-        * toolbar.iconbar.empty.pixmap: <filename>
-        * toolbar.iconbar.empty.color: <color>
-        * toolbar.iconbar.empty.colorTo: <color>
-
-        Focused window in iconbar:
-        * toolbar.iconbar.focused: <texture>
-        * toolbar.iconbar.focused.pixmap: <filename>
-        * toolbar.iconbar.focused.color: <color>
-        * toolbar.iconbar.focused.colorTo: <color>
-        * toolbar.iconbar.focused.textColor: <color>
-        * toolbar.iconbar.focused.font: <font>
-        And the same for .unfocused:
-        * toolbar.iconbar.unfocused: <texture>
-          etc.    
-    * New actions:
-        * resizevertical
-        * resizehorizontal
-        * setworkspacename
-        * movetableft
-        * movetabright
-    * Set workspace name tool
-    * Search path resource for images
-        * session.screen<num>.imageSearchPath
-        This is a list separated by , or space
-        example: session.screen0.imageSearchPath: ~/.fluxbox/pixmaps, /usr/share/fluxbox/pixmaps 
-    * New height resource for toolbar
-        * session.screen<num>.toolbar.height
-        This will override the style's font height
-    * Support for system tray _NET_SYSTEM_TRAY
-        Applications that support this will show their icon
-        in the toolbar next to the clock.
-    * New texture type: Tiled
-        This will just affect pixmap loaded from file, and it will not scale them.
-    * Added MoveTabLeft and MoveTabRight commands 
-    
+News in 0.9.6:
+    * Added startup script to be used with startfluxbox, to get a 
+      consistent frontend for both *dm and startx and your fluxbox-session
+    * Added "!" as a comment line for keys file
+    * Added new actions
+	  * workspacemenu	  
+	  * Move x y
+	  * Resize x y
+	  Next two commands are absolute coordinates
+	  * MoveTo x y
+	  * ResizeTo x y
+    * Improved menu speed
+    * Added -verbose argument to fluxbox
+	  This will enable theme warnings
+    * Configurable tools in toolbar
+	   * New resource item:
+          * session.screen<num>.toolbar.tools: <toolname>, <toolname2>
+           example: session.screen0.toolbar.tools: clock, iconbar, workspacename
+           Valid toolnames are:
+          * workspacename
+          * clock
+          * iconbar
+          * systemtray
+		  And the old arrows are back:
+		  * nextworkspace/prevworkspace
+		  * nextwindow/prevwindow   
+    * New theme items for toolbar
+	   * toolbar.button.size: <interger>   for fixed buttons in the toolbar
+       * toolbar.button.borderWidth: <integer>
+       * toolbar.button.borderColor: <color>
+       * toolbar.button: <texture>
+       * toolbar.button.color: <color>
+       * toolbar.button.colorTo: <color>
+       * toolbar.button.pixmap:  <filename>
+       * toolbar.button.picColor: <color>	
+       * toolbar.button.pressed.color: <color>
+       * toolbar.button.pressed.colorTo: <color>
+       * toolbar.button.pressed: <texture>	   
+	* Support for _NET_WM_STATE_FULLSCREEN
+	* Nearest-quadrant resizing
+	* Improvements/Updates to fbsetbg and fluxbox-generate_menu
 Bug fixes: 
-    * Fixed Transparency bug in menus
-    * Fixed so shaped windows like xmms wont get round corners
-    * Fixed shape bug when switching between shaped themes and non shaped
-    * Fixed kde dockapp bug
-    * FbRun works properly on multiple screens
-    * Fixed pesky crash and phantom icons
-    * Fixed aspects of focus and raising, including transients
-    * Fixed java bug, slow windows
-    * Fixed 8 bpp crash
+    * Fixed some issues with mplayer in fullscreen
+    * Fixed java bug with missing drawing bits of window
+    * Fixed building with --disable-slit
+    * Fixed NLS bad message errors by adding explicit codeset entries
+    * Fixed disappearing close button
+    * Fixed numlock and scrlock bug in FbTk TextBox
+    * Fixed pixmap bug when changing between non-pixmap themes and pixmap themes
+    * Fixed empty window bug in SystemTray
+    * Fixed toolbar height bug crash
 
 See ChangeLog for more details
