@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.113 2003/07/01 12:39:09 fluxgen Exp $
+// $Id: Screen.hh,v 1.114 2003/07/10 11:28:24 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -33,6 +33,7 @@
 #include "FbRootWindow.hh"
 #include "NotCopyable.hh"
 #include "fluxbox.hh"
+#include "MenuTheme.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -54,7 +55,6 @@ class Strut;
 class Slit;
 
 namespace FbTk {
-class MenuTheme;
 class Menu;
 class ImageControl;
 class XLayerItem;
@@ -190,8 +190,8 @@ public:
 
     inline FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
     inline const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
-    inline FbTk::MenuTheme *menuTheme() { return m_menutheme.get(); }
-    inline const FbTk::MenuTheme *menuTheme() const { return m_menutheme.get(); }
+    inline MenuTheme *menuTheme() { return m_menutheme.get(); }
+    inline const MenuTheme *menuTheme() const { return m_menutheme.get(); }
     inline const RootTheme &rootTheme() const { return *m_root_theme.get(); }
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }
@@ -383,7 +383,7 @@ private:
 
     std::auto_ptr<FbWinFrameTheme> m_windowtheme;
     std::auto_ptr<WinButtonTheme> m_winbutton_theme;
-    std::auto_ptr<FbTk::MenuTheme> m_menutheme;
+    std::auto_ptr<MenuTheme> m_menutheme;
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;

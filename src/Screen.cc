@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.201 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Screen.cc,v 1.202 2003/07/10 11:29:45 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -56,6 +56,7 @@
 #include "Strut.hh"
 #include "SlitTheme.hh"
 #include "CommandParser.hh"
+#include "MenuTheme.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -287,7 +288,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // because winbutton need to rescale the pixmaps in winbutton theme
     // after fbwinframe have resized them
     m_winbutton_theme(new WinButtonTheme(scrn)),
-    m_menutheme(new FbTk::MenuTheme(scrn)),
+    m_menutheme(new MenuTheme(scrn)),
     m_root_theme(new 
                  RootTheme(scrn, 
                            *resource.rootcommand)),
@@ -1049,7 +1050,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
             win = winclient->fbwindow();
         else {
             win = new FluxboxWindow(*winclient, *this, 
-                                    winFrameTheme(), *menuTheme(),
+                                    winFrameTheme(),
                                     *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
             
             new_win = true;
@@ -1093,7 +1094,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
 FluxboxWindow *BScreen::createWindow(WinClient &client) {
     FluxboxWindow *win = new FluxboxWindow(client, *this, 
-                                           winFrameTheme(), *menuTheme(),
+                                           winFrameTheme(),
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
