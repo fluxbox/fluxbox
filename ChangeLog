@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/06:
+  * New command: export | setenv (Mathias)
+    sets the environment of fluxbox to a given value:
+      export NAME=VALUE
+      setenv NAME VALUE
+    FbCommands.(hh|cc) FbCommandFactory.cc
 *04/10/04:
   * Don't require [begin] tag for included menu files (Simon)
     MenuCreator.hh/cc Screen.cc Window.cc
