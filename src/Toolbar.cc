@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.143 2004/06/10 17:07:58 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.144 2004/06/16 15:38:19 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -267,7 +267,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     // setup to listen to child events
     FbTk::EventManager::instance()->addParent(*this, window());
     // get everything together
-    reconfigure(); 
+    //reconfigure(); 
+    // this gets done by the screen later as it loads
 
 }
 
@@ -423,7 +424,7 @@ void Toolbar::reconfigure() {
         m_shape.reset(new Shape(frame.window, 0));
     }
 
-    // recallibrate size
+    // recalibrate size
     setPlacement(placement());
 
     if (isHidden()) {
@@ -552,9 +553,13 @@ void Toolbar::exposeEvent(XExposeEvent &ee) {
 
 
 void Toolbar::handleEvent(XEvent &event) {
+    /* Commented out by Simon 16jun04, since it causes LOTS of rearrangeItems
+       particularly on startup. Can't figure out why this is needed.
     if (event.type == ConfigureNotify &&
-        event.xconfigure.window != window().window())
-            rearrangeItems();
+        event.xconfigure.window != window().window()) {
+        rearrangeItems();
+    }
+    */
 }
 
 void Toolbar::update(FbTk::Subject *subj) {
@@ -911,7 +916,7 @@ void Toolbar::rearrangeItems() {
     }
     // now move and resize the items
     // borderWidth added back on straight away
-    int next_x = -2*m_item_list.front()->borderWidth(); // list isn't empty
+    int next_x = -m_item_list.front()->borderWidth(); // list isn't empty
     last_bw = 0;
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
         if (!(*item_it)->active()) {
@@ -934,9 +939,9 @@ void Toolbar::rearrangeItems() {
                 --rounding_error;
             }
 
-            (*item_it)->moveResize(next_x, -borderW, extra + relative_width, height());
+            (*item_it)->moveResize(next_x - borderW, -borderW, extra + relative_width, height());
         } else { // fixed size
-            (*item_it)->moveResize(next_x, -borderW,
+            (*item_it)->moveResize(next_x - borderW, -borderW,
                                    (*item_it)->width(), height()); 
         }
         next_x += (*item_it)->width();

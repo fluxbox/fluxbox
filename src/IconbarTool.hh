@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.13 2003/12/23 01:55:07 rathnor Exp $
+// $Id: IconbarTool.hh,v 1.14 2004/06/16 15:38:19 rathnor Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -81,8 +81,8 @@ private:
 
     /// render single button that holds win
     void renderWindow(FluxboxWindow &win);
-    /// render single button
-    void renderButton(IconButton &button);
+    /// render single button, and probably apply changes (clear)
+    void renderButton(IconButton &button, bool clear = true);
     /// render all buttons
     void renderTheme();
     /// destroy all icons

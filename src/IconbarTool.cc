@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.38 2004/06/07 21:43:02 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.39 2004/06/16 15:38:19 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -436,7 +436,6 @@ void IconbarTool::update(FbTk::Subject *subj) {
     if (mode() == NONE) {
         if (subj != 0 && typeid(*subj) == typeid(IconbarTheme))
             renderTheme();
-                
         return;
     }
 
@@ -448,7 +447,6 @@ void IconbarTool::update(FbTk::Subject *subj) {
             // start focus timer, so we can update without flicker
             m_focus_timer.start();
 
-            //renderWindow(winsubj->win());
             return;
         } else if (subj == &(winsubj->win().workspaceSig())) {
             // we can ignore this signal if we're in ALLWINDOWS mode
@@ -524,7 +522,9 @@ void IconbarTool::update(FbTk::Subject *subj) {
     m_icon_container.update();
     m_icon_container.showSubwindows();
     
-    renderTheme();
+    // another renderTheme we hopefully shouldn't need? These renders
+    // should be done individually above
+    // renderTheme();
 }
 
 IconButton *IconbarTool::findButton(FluxboxWindow &win) {
@@ -613,17 +613,18 @@ void IconbarTool::renderTheme() {
     if (tmp)
         m_screen.imageControl().removeImage(tmp);
 
-    m_icon_container.setBorderWidth(m_theme.border().width());
-    m_icon_container.setBorderColor(m_theme.border().color());
+    // set to zero so its consistent and not ugly
+    m_icon_container.setBorderWidth(0);
     m_icon_container.setAlpha(m_theme.alpha());
 
     // update buttons
     icon_it = m_icon_list.begin();
-    for (; icon_it != icon_it_end; ++icon_it)
+    for (; icon_it != icon_it_end; ++icon_it) {
         renderButton(*(*icon_it));
+    }
 }
 
-void IconbarTool::renderButton(IconButton &button) {
+void IconbarTool::renderButton(IconButton &button, bool clear) {
 
     button.setPixmap(*m_rc_use_pixmap);
     button.setAlpha(m_theme.alpha());
@@ -635,6 +636,7 @@ void IconbarTool::renderButton(IconButton &button) {
 
     if (button.win().isFocused()) { // focused texture
         m_icon_container.setSelected(m_icon_container.find(&button));
+
         button.setGC(m_theme.focusedText().textGC());     
         button.setFont(m_theme.focusedText().font());
         button.setJustify(m_theme.focusedText().justify());
@@ -646,9 +648,7 @@ void IconbarTool::renderButton(IconButton &button) {
         else if (wider_button && m_focused_err_pm != 0)
             button.setBackgroundPixmap(m_focused_err_pm);
         else
-            button.setBackgroundColor(m_theme.focusedTexture().color());            
-
-
+            button.setBackgroundColor(m_theme.focusedTexture().color());        
 
     } else { // unfocused
         if (m_icon_container.selected() == &button)
@@ -666,11 +666,10 @@ void IconbarTool::renderButton(IconButton &button) {
             button.setBackgroundPixmap(m_unfocused_err_pm);
         else
             button.setBackgroundColor(m_theme.unfocusedTexture().color());
-
     }
 
-    button.clear();
-    button.updateTransparent();
+    if (clear)
+        button.clear(); // the clear also updates transparent
 }
 
 void IconbarTool::deleteIcons() {
@@ -717,7 +716,8 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
         return;
 
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
-    renderButton(*button);
+
+    renderButton(*button, false);
     m_icon_container.insertItem(button);    
     m_icon_list.push_back(button);
 
@@ -809,6 +809,5 @@ void IconbarTool::timedRender() {
         renderButton(*button);
     if (current_button != 0)
         renderButton(*current_button);
-
 }
 

@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/17:
+  * Improve rendering speed of toolbar (Simon)
+    - remove many redundant renders (esp. startup)
+    - only update clock if the text has changed
+    - fix transparency and border on most items
+    IconbarTool.hh/cc IconButton.cc Toolbar.cc Container.cc
+    ClockTool.cc WorkspaceNameTool.cc
 *04/06/14:
   * More menu transparency improvements (Henrik)
     Menu.cc

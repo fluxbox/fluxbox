@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.20 2004/05/04 14:33:37 rathnor Exp $
+// $Id: IconButton.cc,v 1.21 2004/06/16 15:38:19 rathnor Exp $
 
 #include "IconButton.hh"
 
@@ -107,7 +107,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     m_win.hintSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
-    
+
     update(0);
 }
 
@@ -122,21 +122,24 @@ void IconButton::exposeEvent(XExposeEvent &event) {
     else
         FbTk::TextButton::exposeEvent(event);
 }
+
 void IconButton::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
 
     FbTk::TextButton::moveResize(x, y, width, height);
 
     if (m_icon_window.width() != FbTk::Button::width() ||
-        m_icon_window.height() != FbTk::Button::height())
+        m_icon_window.height() != FbTk::Button::height()) {
         update(0); // update icon window
+    }
 }
 
 void IconButton::resize(unsigned int width, unsigned int height) {
     FbTk::TextButton::resize(width, height);
     if (m_icon_window.width() != FbTk::Button::width() ||
-        m_icon_window.height() != FbTk::Button::height())
+        m_icon_window.height() != FbTk::Button::height()) {
         update(0); // update icon window
+    }
 }
 
 void IconButton::clear() {
@@ -210,7 +213,11 @@ void IconButton::update(FbTk::Subject *subj) {
 
 #endif // SHAPE
 
-    setupWindow();
+    if (subj != 0) {
+        setupWindow();
+    } else {
+        m_icon_window.clear();
+    }
 }
 
 void IconButton::setupWindow() {

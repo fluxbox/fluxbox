@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.14 2004/05/04 14:33:37 rathnor Exp $
+// $Id: Container.cc,v 1.15 2004/06/16 15:38:19 rathnor Exp $
 
 #include "Container.hh"
 
@@ -160,10 +160,7 @@ void Container::setSelected(int pos) {
         for (; pos != 0; --pos, ++it)
             continue;
         m_selected = *it;
-        if (m_selected) {
-            m_selected->clear();
-            m_selected->updateTransparent();
-        }
+        // caller does any graphics stuff if appropriate
     }
         
 }
@@ -218,8 +215,7 @@ void Container::repositionItems() {
                           -borderW,
                           max_width_per_client + extra,
                           height());
-        (*it)->clear();
-        (*it)->updateTransparent();
+        // moveresize does a clear
     }
 
 }

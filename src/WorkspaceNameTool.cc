@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.7 2004/01/13 14:41:32 rathnor Exp $
+// $Id: WorkspaceNameTool.cc,v 1.8 2004/06/16 15:38:19 rathnor Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -125,5 +125,4 @@ void WorkspaceNameTool::renderTheme() {
     m_button.setBorderColor(m_theme.border().color());
     m_button.setAlpha(m_theme.alpha());
     m_button.clear();
-    m_button.updateTransparent();
 }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.10 2004/01/13 14:41:32 rathnor Exp $
+// $Id: ClockTool.cc,v 1.11 2004/06/16 15:38:19 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -231,7 +231,7 @@ void ClockTool::updateTime() {
             return;
 
 #ifdef HAVE_STRFTIME
-        if (!strftime(time_string, 255, m_timeformat->c_str(), time_type))
+        if (!strftime(time_string, 255, m_timeformat->c_str(), time_type) || m_button.text() == time_string)
             return;
         m_button.setText(time_string);
 #else // dont have strftime so we have to set it to hour:minut
@@ -240,7 +240,6 @@ void ClockTool::updateTime() {
     }
 
     m_button.clear();
-    m_button.updateTransparent();
 }
 
 void ClockTool::renderTheme() {
@@ -261,5 +260,4 @@ void ClockTool::renderTheme() {
     m_button.setBorderColor(m_theme.border().color());
     m_button.setAlpha(m_theme.alpha());
     m_button.clear();
-    m_button.updateTransparent();
 }
