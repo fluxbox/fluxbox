@@ -1,8 +1,5 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* "Gnome 1 support" */
-#undef GNOME
-
 /* Define to 1 if you have the `basename' function. */
 #undef HAVE_BASENAME
 
@@ -120,9 +117,6 @@
 /* "KDE slit support" */
 #undef KDE
 
-/* "Extended Window Manager Hints" */
-#undef NEWWMSPEC
-
 /* "Natural language support" */
 #undef NLS
 
@@ -159,8 +153,17 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
+/* "Gnome 1 support" */
+#undef USE_GNOME
+
+/* " use extened window manager hints" */
+#undef USE_NEWWMSPEC
+
 /* "antialias support" */
 #undef USE_XFT
+
+/* "multibyte support" */
+#undef USE_XMB
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
