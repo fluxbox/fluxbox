@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.3 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.4 2002/01/11 09:24:46 fluxgen Exp $
 
 #ifndef   _BASEMENU_HH_
 #define   _BASEMENU_HH_
@@ -133,9 +133,10 @@ public:
   virtual void show(void);
   virtual void hide(void);
 
-  enum { AlignDontCare = 1, AlignTop, AlignBottom };
-  enum { Right = 1, Left };
-  enum { Empty = 0, Square, Triangle, Diamond };
+  enum { ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
+  enum { RIGHT = 1, LEFT };
+  enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
+
 };
 
 

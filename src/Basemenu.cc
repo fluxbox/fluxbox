@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.5 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.6 2002/01/11 09:26:33 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -58,7 +58,7 @@ Basemenu::Basemenu(BScreen *scrn) {
 	image_ctrl = screen->getImageControl();
 	display = fluxbox->getXDisplay();
 	parent = (Basemenu *) 0;
-	alignment = AlignDontCare;
+	alignment = ALIGNDONTCARE;
 
 	title_vis =
 		movable =
@@ -556,7 +556,7 @@ void Basemenu::drawSubmenu(int index) {
 			x = menu.x +
 				((menu.item_w * (sbl + 1)) + screen->getBorderWidth()), y;
 		
-			if (alignment == AlignTop) {
+			if (alignment == ALIGNTOP) {
 				y = (((shifted) ? menu.y_shift : menu.y) +
 				 ((title_vis) ? menu.title_h + screen->getBorderWidth() : 0) -
 				 ((item->submenu()->title_vis) ?
@@ -569,7 +569,7 @@ void Basemenu::drawSubmenu(int index) {
 					item->submenu()->menu.title_h + screen->getBorderWidth() : 0));
 			}
 			
-			if (alignment == AlignBottom &&
+			if (alignment == ALIGNBOTTOM &&
 					(y + item->submenu()->menu.height) > ((shifted) ? menu.y_shift :
 					menu.y) + menu.height) {
 				y = (((shifted) ? menu.y_shift : menu.y) +
@@ -675,7 +675,7 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 	
 	sel_x = item_x;
 	
-	if (screen->getMenuStyle()->bullet_pos == Right)
+	if (screen->getMenuStyle()->bullet_pos == RIGHT)
 		sel_x += (menu.item_w - menu.item_h - menu.bevel_w);
 	
 	sel_x += quarter_w;
@@ -744,14 +744,14 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 
 	if (dosel && item->submenu()) {
 		switch (screen->getMenuStyle()->bullet) {
-		case Square:
+		case SQUARE:
 			XDrawRectangle(display, menu.frame, gc, sel_x, sel_y, half_w, half_w);
 			break;
 
-		case Triangle:
+		case TRIANGLE:
 			XPoint tri[3];
 
-			if (screen->getMenuStyle()->bullet_pos == Right) {
+			if (screen->getMenuStyle()->bullet_pos == RIGHT) {
 				tri[0].x = sel_x + quarter_w - 2;
 				tri[0].y = sel_y + quarter_w - 2;
 				tri[1].x = 4;
@@ -771,7 +771,7 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 						CoordModePrevious);
 			break;
 			
-		case Diamond:
+		case DIAMOND:
 			XPoint dia[4];
 
 			dia[0].x = sel_x + quarter_w - 3;

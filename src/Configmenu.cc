@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.8 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.9 2002/01/11 09:20:42 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -382,70 +382,70 @@ Configmenu::Placementmenu::Placementmenu(Configmenu *cm) : Basemenu(cm->screen) 
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Smart Placement (Rows)"), BScreen::RowSmartPlacement);
+				"Smart Placement (Rows)"), BScreen::ROWSMARTPLACEMENT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuSmartCols,
 #else // !NLS
 				0, 0,
 #endif // NLS
-			"Smart Placement (Columns)"), BScreen::ColSmartPlacement);
+			"Smart Placement (Columns)"), BScreen::COLSMARTPLACEMENT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuCascade,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Cascade Placement"), BScreen::CascadePlacement);
+				"Cascade Placement"), BScreen::CASCADEPLACEMENT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuLeftRight,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Left to Right"), BScreen::LeftRight);
+				"Left to Right"), BScreen::LEFTRIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuRightLeft,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Right to Left"), BScreen::RightLeft);
+				"Right to Left"), BScreen::RIGHTLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuTopBottom,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Top to Bottom"), BScreen::TopBottom);
+				"Top to Bottom"), BScreen::TOPBOTTOM);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuBottomTop,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Bottom to Top"), BScreen::BottomTop);
+				"Bottom to Top"), BScreen::BOTTOMTOP);
 
 	update();
 
 	switch (configmenu->screen->getPlacementPolicy()) {
-	case BScreen::RowSmartPlacement:
+	case BScreen::ROWSMARTPLACEMENT:
 		setItemSelected(0, True);
 		break;
 
-	case BScreen::ColSmartPlacement:
+	case BScreen::COLSMARTPLACEMENT:
 		setItemSelected(1, True);
 		break;
 
-	case BScreen::CascadePlacement:
+	case BScreen::CASCADEPLACEMENT:
 		setItemSelected(2, True);
 		break;
 	}
 
 	Bool rl = (configmenu->screen->getRowPlacementDirection() ==
-				BScreen::LeftRight),
+				BScreen::LEFTRIGHT),
 				tb = (configmenu->screen->getColPlacementDirection() ==
-				BScreen::TopBottom);
+				BScreen::TOPBOTTOM);
 
 	setItemSelected(3, rl);
 	setItemSelected(4, ! rl);
@@ -461,7 +461,7 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 
 		if (item->function()) {
 			switch (item->function()) {
-			case BScreen::RowSmartPlacement:
+			case BScreen::ROWSMARTPLACEMENT:
 				configmenu->screen->savePlacementPolicy(item->function());
 
 				setItemSelected(0, True);
@@ -470,7 +470,7 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 				
 				break;
 
-			case BScreen::ColSmartPlacement:
+			case BScreen::COLSMARTPLACEMENT:
 				configmenu->screen->savePlacementPolicy(item->function());
 
 				setItemSelected(0, False);
@@ -479,7 +479,7 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 
 				break;
 
-			case BScreen::CascadePlacement:
+			case BScreen::CASCADEPLACEMENT:
 				configmenu->screen->savePlacementPolicy(item->function());
 
 				setItemSelected(0, False);
@@ -488,32 +488,32 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 
 				break;
 
-			case BScreen::LeftRight:
-				configmenu->screen->saveRowPlacementDirection(BScreen::LeftRight);
+			case BScreen::LEFTRIGHT:
+				configmenu->screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
 
 				setItemSelected(3, True);
 				setItemSelected(4, False);
 
 				break;
 
-			case BScreen::RightLeft:
-				configmenu->screen->saveRowPlacementDirection(BScreen::RightLeft);
+			case BScreen::RIGHTLEFT:
+				configmenu->screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
 
 				setItemSelected(3, False);
 				setItemSelected(4, True);
 
 	break;
 
-			case BScreen::TopBottom:
-	configmenu->screen->saveColPlacementDirection(BScreen::TopBottom);
+			case BScreen::TOPBOTTOM:
+	configmenu->screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
 
 	setItemSelected(5, True);
 	setItemSelected(6, False);
 
 	break;
 
-			case BScreen::BottomTop:
-	configmenu->screen->saveColPlacementDirection(BScreen::BottomTop);
+			case BScreen::BOTTOMTOP:
+	configmenu->screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
 
 	setItemSelected(5, False);
 	setItemSelected(6, True);

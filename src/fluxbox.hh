@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.5 2002/01/10 12:51:21 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.6 2002/01/11 09:18:58 fluxgen Exp $
 
 #ifndef	 _FLUXBOX_HH_
 #define	 _FLUXBOX_HH_
@@ -122,7 +122,7 @@ public:
 	Toolbar *searchToolbar(Window);
 	Tab *searchTab(Window);
 	
-	enum Titlebar{Shade=0, Minimize, Maximize, Close, Stick, Menu, Empty};		
+	enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 	
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return titlebar.right; }
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return titlebar.left; }
@@ -184,7 +184,7 @@ public:
 
 #ifndef	 HAVE_STRFTIME
 
-	enum { B_AmericanDate = 1, B_EuropeanDate };
+	enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 #endif // HAVE_STRFTIME
 	
 	template <class Z>

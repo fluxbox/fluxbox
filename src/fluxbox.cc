@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.18 2002/01/10 12:51:21 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.19 2002/01/11 09:17:37 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -192,7 +192,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 	
   no_focus = False;
   resource.titlebar_file = resource.menu_file = resource.style_file = resource.keys_file = 0;
-	
+
 	resource.auto_raise_delay.tv_sec = resource.auto_raise_delay.tv_usec = 0;
 		
   focused_window = masked_window = (FluxboxWindow *) 0;
@@ -988,6 +988,7 @@ void Fluxbox::process_event(XEvent *e) {
 					BScreen *screen = searchScreen(e->xclient.window);
 					if (screen)
 						screen->changeWorkspaceID(e->xclient.data.l[0]);
+
 				}
 				#endif //!GNOME
 			}
@@ -1017,7 +1018,10 @@ void Fluxbox::process_event(XEvent *e) {
 void Fluxbox::doWindowAction(Keys::KeyAction action) {
 	if (!focused_window)
 		return;
-		
+
+	unsigned int t_placement = focused_window->getScreen()->getTabPlacement();
+	unsigned int t_alignment = focused_window->getScreen()->getTabAlignment();
+	
 	switch (action) {
 		case Keys::ICONIFY:
 			focused_window->iconify();
@@ -1093,24 +1097,56 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth()+10, focused_window->getHeight());
+
+				if (focused_window->hasTab() &&
+						(t_placement == Tab::PTOP || t_placement == Tab::PBOTTOM)) {
+					if (t_alignment == Tab::ARELATIVE)
+						focused_window->getTab()->calcIncrease();
+					if (t_alignment != Tab::PLEFT)
+						focused_window->getTab()->setPosition();
+				}
 		break;								
 		case Keys::VERTINC:
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth(), focused_window->getHeight()+10);
+
+				if (focused_window->hasTab() &&
+						(t_placement == Tab::PLEFT || t_placement == Tab::PRIGHT)) {
+					if (t_alignment == Tab::ARELATIVE)
+						focused_window->getTab()->calcIncrease();
+					if (t_alignment != Tab::PRIGHT)
+						focused_window->getTab()->setPosition();
+				}
 		break;
 		case Keys::HORIZDEC:				
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth()-10, focused_window->getHeight());
+
+				if (focused_window->hasTab() &&
+						(t_placement == Tab::PTOP || t_placement == Tab::PBOTTOM)) {
+					if (t_alignment == Tab::ARELATIVE)
+						focused_window->getTab()->calcIncrease();
+					if (t_alignment != Tab::PLEFT)
+						focused_window->getTab()->setPosition();
+				}
 		break;								
 		case Keys::VERTDEC:
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth(), focused_window->getHeight()-10);
+
+				if (focused_window->hasTab() &&
+						(t_placement == Tab::PLEFT || t_placement == Tab::PRIGHT)) {
+					if (t_alignment == Tab::ARELATIVE)
+						focused_window->getTab()->calcIncrease();
+					if (t_alignment != Tab::PRIGHT)
+						focused_window->getTab()->setPosition();
+				}
 		break;		
 		default:	
 		break;							
@@ -1417,7 +1453,7 @@ void Fluxbox::save_rc(void) {
 
 	auto_ptr<char> dbfile(getRcFilename());
 
-//	load_rc();
+// load_rc();
 // This overwrites configs made while running, for example
 // usage of iconbar and tabs
   
@@ -1464,14 +1500,14 @@ void Fluxbox::save_rc(void) {
 		char *slit_placement = (char *) 0;
 
 		switch (screen->getSlitPlacement()) {
-		case Slit::TopLeft: slit_placement = "TopLeft"; break;
-		case Slit::CenterLeft: slit_placement = "CenterLeft"; break;
-		case Slit::BottomLeft: slit_placement = "BottomLeft"; break;
-		case Slit::TopCenter: slit_placement = "TopCenter"; break;
-		case Slit::BottomCenter: slit_placement = "BottomCenter"; break;
-		case Slit::TopRight: slit_placement = "TopRight"; break;
-		case Slit::BottomRight: slit_placement = "BottomRight"; break;
-		case Slit::CenterRight: default: slit_placement = "CenterRight"; break;
+		case Slit::TOPLEFT: slit_placement = "TopLeft"; break;
+		case Slit::CENTERLEFT: slit_placement = "CenterLeft"; break;
+		case Slit::BOTTOMLEFT: slit_placement = "BottomLeft"; break;
+		case Slit::TOPCENTER: slit_placement = "TopCenter"; break;
+		case Slit::BOTTOMCENTER: slit_placement = "BottomCenter"; break;
+		case Slit::TOPRIGHT: slit_placement = "TopRight"; break;
+		case Slit::BOTTOMRIGHT: slit_placement = "BottomRight"; break;
+		case Slit::CENTERRIGHT: default: slit_placement = "CenterRight"; break;
 		}
 
 		sprintf(rc_string, "session.screen%d.slit.placement: %s", screen_number,
@@ -1479,7 +1515,7 @@ void Fluxbox::save_rc(void) {
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.slit.direction: %s", screen_number,
-						((screen->getSlitDirection() == Slit::Horizontal) ? "Horizontal" :
+						((screen->getSlitDirection() == Slit::HORIZONTAL) ? "Horizontal" :
 																	"Vertical"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
@@ -1506,6 +1542,7 @@ void Fluxbox::save_rc(void) {
 		
 		sprintf(rc_string, "session.screen%d.rootCommand: %s", screen_number,
 			screen->getRootCommand().c_str());
+
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.focusNewWindows: %s", screen_number,
@@ -1517,13 +1554,13 @@ void Fluxbox::save_rc(void) {
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
-			((screen->getRowPlacementDirection() == BScreen::LeftRight) ?
-			"LeftToRight" : "RightToLeft"));
+			((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
+				"LeftToRight" : "RightToLeft"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.colPlacementDirection: %s", screen_number,
-			((screen->getColPlacementDirection() == BScreen::TopBottom) ?
-			"TopToBottom" : "BottomToTop"));
+			((screen->getColPlacementDirection() == BScreen::TOPBOTTOM) ?
+				"TopToBottom" : "BottomToTop"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		char *placement = (char *) 0;
@@ -1532,16 +1569,16 @@ void Fluxbox::save_rc(void) {
 			((screen->doMaxOverSlit()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 		switch (screen->getPlacementPolicy()) {
-		case BScreen::CascadePlacement:
+		case BScreen::CASCADEPLACEMENT:
 			placement = "CascadePlacement";
 			break;
 
-		case BScreen::ColSmartPlacement:
+		case BScreen::COLSMARTPLACEMENT:
 			placement = "ColSmartPlacement";
 			break;
 
 		default:
-		case BScreen::RowSmartPlacement:
+		case BScreen::ROWSMARTPLACEMENT:
 			placement = "RowSmartPlacement";
 			break;
 		}
@@ -1679,7 +1716,7 @@ void Fluxbox::save_rc(void) {
   XrmPutFileDatabase(old_blackboxrc, dbfile.get());
   XrmDestroyDatabase(old_blackboxrc);
 //	XrmDestroyDatabase(new_blackboxrc);
-
+	
 }
 
 //-------- getRcFilename -------------
@@ -1690,8 +1727,9 @@ char *Fluxbox::getRcFilename() {
 	char *dbfile=0;
  
 	if (!rc_file) {		
-		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);				
+		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);
 		return StringUtil::strdup(str.c_str());
+
 	} else
 		dbfile = StringUtil::strdup(rc_file);
  
@@ -1853,17 +1891,17 @@ void Fluxbox::setTitlebar(vector<Fluxbox::Titlebar>& dir, const char *arg) {
 	vector<string> argv = parseTitleArgs(arg);
 	for (unsigned int i=0; i<argv.size(); i++) {
 		if (argv[i]==NAME_STICKY)
-			dir.push_back(Stick);
+			dir.push_back(STICK);
 		else if (argv[i]==NAME_MAXIMIZE)
-			dir.push_back(Maximize);
+			dir.push_back(MAXIMIZE);
 		else if (argv[i]==NAME_MINIMIZE)
-			dir.push_back(Minimize);
+			dir.push_back(MINIMIZE);
 		else if (argv[i]== NAME_CLOSE)
-			dir.push_back(Close);
+			dir.push_back(CLOSE);
 		else if (argv[i]==NAME_SHADE)
-			dir.push_back(Shade);
+			dir.push_back(SHADE);
 		else if (argv[i]==NAME_MENU)
-			dir.push_back(Menu);
+			dir.push_back(MENU);
 		else if(argv[i]==NAME_NONE);//do nothing			
 		else
 			cerr<<"Fluxbox::Titlebar Unknown type: \""<<argv[i]<<"\""<<endl;	
@@ -1890,7 +1928,7 @@ void Fluxbox::loadTitlebar() {
 		cerr<<"Fluxbox: \'Left\' not found in "<<resource.titlebar_file<<endl;
 		cerr<<"Using default."<<endl;
 		//default settings		
-		titlebar.left.push_back(Shade);
+		titlebar.left.push_back(SHADE);
 	}
 	
 	if (XrmGetResource(database, "right", "Right", &value_type, &value)) {				
@@ -1899,10 +1937,10 @@ void Fluxbox::loadTitlebar() {
 		cerr<<"Fluxbox: \'Right\' not found in "<<resource.titlebar_file<<endl;
 		cerr<<"Using default."<<endl;
 		//default settings
-		titlebar.right.push_back(Stick);
-		titlebar.right.push_back(Minimize);
-		titlebar.right.push_back(Maximize);
-		titlebar.right.push_back(Close);
+		titlebar.right.push_back(STICK);
+		titlebar.right.push_back(MINIMIZE);
+		titlebar.right.push_back(MAXIMIZE);
+		titlebar.right.push_back(CLOSE);
 	}	
 	
 //	XrmDestroyDatabase(database);
@@ -1916,12 +1954,11 @@ void Fluxbox::load_rc(BScreen *screen) {
   database = XrmGetFileDatabase(dbfile.get());
 	if (!database) 
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
-
+		
   XrmValue value;
   char *value_type, name_lookup[1024], class_lookup[1024];
   int screen_number = screen->getScreenNumber();
 
-  
 	sprintf(name_lookup,  "session.screen%d.fullMaximization", screen_number);
   sprintf(class_lookup, "Session.Screen%d.FullMaximization", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
@@ -1968,7 +2005,7 @@ void Fluxbox::load_rc(BScreen *screen) {
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 		     &value)) {
     if (! strncasecmp(value.addr, "righttoleft", value.size))
-      screen->saveRowPlacementDirection(BScreen::RightLeft);
+      screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
     else
   
   sprintf(name_lookup,  "session.screen%d.maxOverSlit", screen_number);
@@ -1981,20 +2018,20 @@ void Fluxbox::load_rc(BScreen *screen) {
       screen->saveMaxOverSlit(False);
   } else
     screen->saveMaxOverSlit(False);
-      screen->saveRowPlacementDirection(BScreen::LeftRight);
+      screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
   } else
-    screen->saveRowPlacementDirection(BScreen::LeftRight);
+    screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
 
   sprintf(name_lookup,  "session.screen%d.colPlacementDirection", screen_number);
   sprintf(class_lookup, "Session.Screen%d.ColPlacementDirection", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 		     &value)) {
     if (! strncasecmp(value.addr, "bottomtotop", value.size))
-      screen->saveColPlacementDirection(BScreen::BottomTop);
+      screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
     else
-      screen->saveColPlacementDirection(BScreen::TopBottom);
+      screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
   } else
-    screen->saveColPlacementDirection(BScreen::TopBottom);
+    screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
 
   sprintf(name_lookup,  "session.screen%d.workspaces", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Workspaces", screen_number);
@@ -2128,13 +2165,13 @@ void Fluxbox::load_rc(BScreen *screen) {
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 		     &value))
     if (! strncasecmp(value.addr, "RowSmartPlacement", value.size))
-      screen->savePlacementPolicy(BScreen::RowSmartPlacement);
+      screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
     else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
-      screen->savePlacementPolicy(BScreen::ColSmartPlacement);
+      screen->savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
     else
-      screen->savePlacementPolicy(BScreen::CascadePlacement);
+      screen->savePlacementPolicy(BScreen::CASCADEPLACEMENT);
   else
-    screen->savePlacementPolicy(BScreen::RowSmartPlacement);
+    screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
 
 #ifdef    SLIT
   sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
@@ -2142,34 +2179,34 @@ void Fluxbox::load_rc(BScreen *screen) {
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 		     &value))
     if (! strncasecmp(value.addr, "TopLeft", value.size))
-      screen->saveSlitPlacement(Slit::TopLeft);
+      screen->saveSlitPlacement(Slit::TOPLEFT);
     else if (! strncasecmp(value.addr, "CenterLeft", value.size))
-      screen->saveSlitPlacement(Slit::CenterLeft);
+      screen->saveSlitPlacement(Slit::CENTERLEFT);
     else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-      screen->saveSlitPlacement(Slit::BottomLeft);
+      screen->saveSlitPlacement(Slit::BOTTOMLEFT);
     else if (! strncasecmp(value.addr, "TopCenter", value.size))
-      screen->saveSlitPlacement(Slit::TopCenter);
+      screen->saveSlitPlacement(Slit::TOPCENTER);
     else if (! strncasecmp(value.addr, "BottomCenter", value.size))
-      screen->saveSlitPlacement(Slit::BottomCenter);
+      screen->saveSlitPlacement(Slit::BOTTOMCENTER);
     else if (! strncasecmp(value.addr, "TopRight", value.size))
-      screen->saveSlitPlacement(Slit::TopRight);
+      screen->saveSlitPlacement(Slit::TOPRIGHT);
     else if (! strncasecmp(value.addr, "BottomRight", value.size))
-      screen->saveSlitPlacement(Slit::BottomRight);
+      screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
     else
-      screen->saveSlitPlacement(Slit::CenterRight);
+      screen->saveSlitPlacement(Slit::CENTERRIGHT);
   else
-    screen->saveSlitPlacement(Slit::CenterRight);
+    screen->saveSlitPlacement(Slit::CENTERRIGHT);
 
   sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
                      &value))
     if (! strncasecmp(value.addr, "Horizontal", value.size))
-      screen->saveSlitDirection(Slit::Horizontal);
+      screen->saveSlitDirection(Slit::HORIZONTAL);
     else
-      screen->saveSlitDirection(Slit::Vertical);
+      screen->saveSlitDirection(Slit::VERTICAL);
   else
-    screen->saveSlitDirection(Slit::Vertical);
+    screen->saveSlitDirection(Slit::VERTICAL);
 
   sprintf(name_lookup, "session.screen%d.slit.onTop", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Slit.OnTop", screen_number);
@@ -2341,7 +2378,7 @@ void Fluxbox::load_rc(BScreen *screen) {
 
 void Fluxbox::loadRootCommand(BScreen *screen)  {
 	XrmDatabase database = (XrmDatabase) 0;
-
+ 
   auto_ptr<char> dbfile(getRcFilename());
 
   database = XrmGetFileDatabase(dbfile.get());
@@ -2359,6 +2396,7 @@ void Fluxbox::loadRootCommand(BScreen *screen)  {
 		screen->saveRootCommand("");    
 	
 }
+
 void Fluxbox::reload_rc(void) {
   load_rc();
   reconfigure();
