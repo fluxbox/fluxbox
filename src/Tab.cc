@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.49 2003/01/05 22:38:53 fluxgen Exp $
+// $Id: Tab.cc,v 1.50 2003/01/09 18:32:09 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -27,7 +27,6 @@
 #include "DrawUtil.hh"
 #include "Screen.hh"
 #include "fluxbox.hh"
-#include "Rootmenu.hh"
 #include "ImageControl.hh"
 
 #include <iostream>
@@ -656,7 +655,7 @@ void Tab::buttonPressEvent(XButtonEvent *be) {
     draw(true);
 	
     //invoke root menu with auto-tab?
-    if (be->button == 3) {
+    /*    if (be->button == 3) {
         BScreen *screen = m_win->getScreen();
         Rootmenu *rootmenu = screen->getRootmenu();
         if (! rootmenu->isVisible()) {
@@ -666,6 +665,7 @@ void Tab::buttonPressEvent(XButtonEvent *be) {
             rootmenu->show();
         }
     }
+
     //otherwise let the window handle the event
     else {
         //set window to titlewindow so we can take advantage of drag function
@@ -674,6 +674,7 @@ void Tab::buttonPressEvent(XButtonEvent *be) {
         //call windows buttonpress eventhandler
         m_win->buttonPressEvent(*be);
     }
+    */
 }
 
 /**
