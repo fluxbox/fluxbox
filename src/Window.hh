@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.34 2002/10/19 10:53:10 fluxgen Exp $
+// $Id: Window.hh,v 1.35 2002/10/22 14:41:13 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -112,6 +112,7 @@ public:
 	bool hasTab() const { return (tab!=0 ? true : false); }
 	bool isMoving() const { return moving; }
 	bool isResizing() const { return resizing; }
+	bool isGroupable() const;
 	const BScreen *getScreen() const { return screen; }
 	BScreen *getScreen() { return screen; }
 	const Tab *getTab() const { return tab; }
@@ -340,7 +341,7 @@ private:
 	void checkTransient();
 
 	Window findTitleButton(int type);	
-private:
+
 	//event callbacks
 	static void stickyButton_cb(FluxboxWindow *, XButtonEvent *);
 	static void stickyPressed_cb(FluxboxWindow *, XButtonEvent *);
@@ -386,7 +387,7 @@ private:
  
 	void restoreGravity();
 	void setGravityOffsets();
-	void setState(unsigned long);
+	void setState(unsigned long stateval);
 	void upsize();
 	void downsize();
 	void right_fixsize(int * = 0, int * = 0);
