@@ -232,7 +232,7 @@ case ${LC_ALL} in
 		STYLEMENUTITLE="Välj en stil"
 		WORKSPACEMENU="Arbetsytor"
 	;;
-	nl_NL) #Nederlande locales		
+	nl_NL) #Nederlandse locales
 		BROWSERMENU="Browsers"
 		EDITORMENU="Editors"
 		NETMENU="Net"
@@ -244,6 +244,13 @@ case ${LC_ALL} in
 		FBSETTINGSMENU="FB-Instellingen"
 		KDEMENUTEXT="KDE-menu"
 		GNOMEMENUTEXT="Gnome-menu"
+		RESTARTITEM="Restart"
+		EXITITEM="Einde"
+		CONFIGUREMENU="Instellingen"
+		RELOADITEM="Vernieuwen"
+		STYLEMENU="Stylen"
+		STYLEMENUTITLE="Kies een styl..."
+		WORKSPACEMENU="Werkveld Lijst"
 	;;
 	fi_FI) #Finnish locales
 		BROWSERMENU="Selaimet"
