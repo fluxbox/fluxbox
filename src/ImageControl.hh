@@ -1,7 +1,7 @@
 // ImageControl.hh for Fluxbox Window Manager
 // Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxbox at linuxmail.org)
 //
-// Image.hh for Blackbox - an X11 Window manager
+// from Image.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.1 2002/11/30 20:07:06 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.2 2002/11/30 20:59:54 fluxgen Exp $
 
 #ifndef	 IMAGECONTROL_HH
 #define	 IMAGECONTROL_HH
