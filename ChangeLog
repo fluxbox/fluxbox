@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/24:
+  * Close #1107227, #1107222
+    data/Makefile.am util/fluxbox-generate_menu.in
 *05/01/21:
   * Fix tab detaching - the window wasn't shown (Simon)
     Window.cc
@@ -10,6 +13,8 @@ Changes for 0.9.12
     execl needs NULL termination, on 64-bit-systems '0' would expand
     expand to a 32bit integer, not a 64bit pointer.
     src/FbCommands.cc util/fbrun/FbRun.cc
+-------------------------------------------------------------    
+Changes for 0.9.12
 *05/01/15:
   * Added menutest.cc to src/tests (Henrik)
     testing menu parser and theme
