@@ -25,42 +25,29 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <iostream>
+#include <X11/Xutil.h>
+using namespace std;
 
-// ----- start code stealing ----
+//------- strdup ------------------------
+//TODO: comment this
+//----------------------------------------
+char *Misc::strdup(const char *s) {
+  int l = strlen(s) + 1;
+  char *n = new char[l];
+  strncpy(n, s, l);
+  return n;
+}
+
 
 // ----------------------------------------------------------------------
 // xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
 // ----------------------------------------------------------------------
 
-int xv_errno; //TODO: ?
-
-static char *my_strdup(char *str);
-
-//------- getTabAlignmentString ----------
-//Routine to mimic `strdup()' (some machines don't have it)
-//----------------------------------------
-static char *my_strdup(char *str)
-{
-	char *s;
-
-	if (str == NULL) return NULL;
-
-	s = (char *)malloc((unsigned)(strlen(str)+1));
-	/* this error is highly unlikely ... */
-	if (s == NULL) {
-		fprintf(stderr, "Fatal error: my_strdup(): Couldn't do malloc!\n");
-		exit(1); 
-	}
-
-	strcpy(s, str);
-	return s;
-}
-
 //------- XRotLoadFont -------------------
 // Load the rotated version of a given font
 //----------------------------------------
-XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
-{
+Misc::XRotFontStruct *Misc::XRotLoadFont(Display *dpy, char *fontname, float angle) {
 	char val;
 	XImage *I1, *I2;
 	Pixmap canvas;
@@ -97,17 +84,17 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
 	/* load the font ... */
 	fontstruct = XLoadQueryFont(dpy, fontname);
 	if (fontstruct == NULL) {
-		xv_errno = XV_NOFONT;
-		return NULL;
+		cerr<<"Fluxbox::Misc: No font"<<endl;
+		return 0;
 	}
  
 	XSetFont(dpy, font_gc, fontstruct->fid);
 
 	/* allocate space for rotated font ... */
-	rotfont = (XRotFontStruct *)malloc((unsigned)sizeof(XRotFontStruct));
-	if (rotfont == NULL) {
-		xv_errno = XV_NOMEM;
-		return NULL;
+	rotfont = new XRotFontStruct;
+	if (rotfont == 0) {
+		cerr<<"Fluxbox::Misc: out of memory"<<endl;
+		return 0;
 	}
    
 	/* determine which characters are defined in font ... */
@@ -119,7 +106,7 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
 	if (max_char>126) max_char = 126;
      
 	/* some overall font data ... */
-	rotfont->name = my_strdup(fontname);
+	rotfont->name = Misc::strdup(fontname);
 	rotfont->dir = dir;
 	rotfont->min_char = min_char;
 	rotfont->max_char = max_char;
@@ -171,18 +158,14 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
 							boxlen/2 - descent, text, 1);
 
 			/* reserve memory for first XImage ... */
-			vertdata = (unsigned char *) malloc((unsigned)(vert_len*vert_h));
-			if (vertdata == NULL) {
-				xv_errno = XV_NOMEM;
-				return NULL;
-			}
-  
+			vertdata = new unsigned char[vert_len*vert_h]; //(unsigned char *) malloc((unsigned)(vert_len*vert_h));
+		  
 			/* create the XImage ... */
 			I1 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap,
 								0, (char *)vertdata, vert_w, vert_h, 8, 0);
 
-			if (I1 == NULL) {
-				xv_errno = XV_NOXIMAGE;
+			if (I1 == NULL) {				
+				cerr<<"Fluxbox::Misc: Cant create ximage."<<endl;
 				return NULL;
 			}
  
@@ -209,19 +192,15 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
 			rotfont->per_char[ichar-32].glyph.bit_h = bit_h;
 
 			/* reserve memory for the rotated image ... */
-			bitdata = (unsigned char *)calloc((unsigned)(bit_h*bit_len), 1);
-			if (bitdata == NULL) {
-				xv_errno = XV_NOMEM;
-				return NULL;
-			}
+			bitdata = new unsigned char[bit_h*bit_len]; //(unsigned char *)calloc((unsigned)(bit_h*bit_len), 1);
 
 			/* create the image ... */
 			I2 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap, 0,
 								(char *)bitdata, bit_w, bit_h, 8, 0); 
  
 			if (I2 == NULL) {
-				xv_errno = XV_NOXIMAGE;
-				return NULL;
+				cerr<<"Font::Misc: Cant create ximage!"<<endl;
+				return 0;
 			}
 
 			I2->byte_order = I2->bitmap_bit_order = MSBFirst;
@@ -275,27 +254,27 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle)
 // Free the resources associated with a
 // rotated font
 //----------------------------------------
-void XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
+void Misc::XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
 {
 	int ichar;
 
 	if (rotfont->dir == 0)
 		XFreeFont(dpy, rotfont->xfontstruct);
 	else {
-	    /* loop through each character, freeing its pixmap ... */
+		/* loop through each character, freeing its pixmap ... */
 		for (ichar = rotfont->min_char-32; ichar <= rotfont->max_char-32;
 				ichar++)
-			XFreePixmap(dpy, rotfont->per_char[ichar].glyph.bm);
+		XFreePixmap(dpy, rotfont->per_char[ichar].glyph.bm);
 	}
-	/* rotfont should never be referenced again ... */
-	free((char *)rotfont->name);
-	free((char *)rotfont);
+	
+	delete rotfont->name;
+	delete rotfont;
 }
 
 //------- XRotTextWidth ------------------
 // Returns the width of a rotated string
 //----------------------------------------
-unsigned int XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
+unsigned int Misc::XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
 {
 	int i, width = 0, ichar;
 
@@ -320,7 +299,7 @@ unsigned int XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
 //------- XRotDrawString -----------------
 // A front end to XRotDrawString : mimics XDrawString
 //----------------------------------------
-void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
+void Misc::XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
 		    GC gc, int x, int y, char *str, int len)
 {            
 	static GC my_gc = 0;
@@ -385,9 +364,8 @@ void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
 	}
 }
 
-// ---- stop code stealing ----
 
-void DrawString(Display *display, Window w, GC gc, FFont *font, 
+void Misc::DrawString(Display *display, Window w, GC gc, Misc::Font *font, 
 					unsigned int text_w, unsigned int size_w, 
 					unsigned int bevel_w, char *text) {
 //Draw title string	
@@ -414,11 +392,11 @@ void DrawString(Display *display, Window w, GC gc, FFont *font,
 	}
 	
 	switch (font->justify) {
-	case FFont::Right:
+	case Misc::Font::RIGHT:
 		dx += size_w - l;
 		break;
 
-	case FFont::Center:
+	case Misc::Font::CENTER:
 		dx += (size_w - l) / 2;
 		break;
 	default:
@@ -442,7 +420,7 @@ void DrawString(Display *display, Window w, GC gc, FFont *font,
 }
 
 
-void DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
+void Misc::DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
 					unsigned int align, unsigned int text_w, 
 					unsigned int size_w, unsigned int size_h,
 					unsigned int bevel_w, char *text) {
@@ -462,11 +440,11 @@ void DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
 		}
 	}
 
-	if (align == FFont::Right)
+	if (align == Misc::Font::RIGHT)
 		size_h = l;
-	else if (align == FFont::Center)
+	else if (align == Misc::Font::CENTER)
 		size_h = (size_h + l) / 2;
-	else
+	else //LEFT
 		size_h -= (dx * 4);
 
 	// To get it in the "center" of the tab
