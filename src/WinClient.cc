@@ -314,7 +314,17 @@ void WinClient::updateTransientInfo() {
 
 
 void WinClient::updateTitle() {
-    m_title = Xutil::getWMName(window());
+    // why 512? very very long wmnames seem to either 
+    // crash fluxbox or to make it have high cpuload
+    // see also: 
+    //    http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
+    // 
+    // TODO: - find out why this mostly happens when using xft-fonts
+    //       - why other windowmanagers (pekwm/pwm3/openbox etc) are
+    //         also influenced
+    //
+    // the limitation to 512 chars only avoids running in that trap
+    m_title = string(Xutil::getWMName(window()) ,0 , 512);
 }
 
 void WinClient::updateIconTitle() {
