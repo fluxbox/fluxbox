@@ -213,9 +213,7 @@ void ClockTool::update(FbTk::Subject *subj) {
     updateTime();
 
     // + 2 to make the entire text fit inside
-    std::string text;
-    for (size_t i=0; i<m_button.text().size() + 2; ++i)
-        text += '0';
+    std::string text(m_button.text().size() + 2, '0');
 
     int new_width = m_theme.font().textWidth(text.c_str(), text.size());
     if (new_width != m_button.width()) {
