@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.5 2003/07/10 13:48:35 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.6 2003/08/11 16:54:46 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -55,8 +55,10 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_button_color(*this, 
                    "toolbar.button.picColor", "Toolbar.Button.PicColor"),
     m_border_color(*this,
-                   "toolbar.borderColor", "toolbar.borderColor"),
+                   "toolbar.borderColor", "Toolbar.BorderColor"),
     m_toolbar(*this, "toolbar", "Toolbar"),
+    m_iconbar_focused(*this, "toolbar.iconbar.focused", "Toolbar.Iconbar.Focused"),
+    m_iconbar_unfocused(*this, "toolbar.iconbar.unfocused", "Toolbar.Iconbar.Unfocused"),
     m_label(*this, "toolbar.label", "Toolbar.Label"),
     m_window(*this, "toolbar.windowLabel", "Toolbar.WindowLabel"),
     m_button(*this, "toolbar.button", "Toolbar.Button"),
@@ -64,11 +66,13 @@ ToolbarTheme::ToolbarTheme(int screen_num):
                      "toolbar.button.pressed", "Toolbar.Button.Pressed"),
     m_clock(*this, "toolbar.clock", "Toolbar.Clock"),
     m_font(*this, "toolbar.font", "Toolbar.Font"),
+    m_icon_font(*this, "toolbar.iconFont", "Toolbar.IconFont"),
     m_justify(*this, "toolbar.justify", "Toolbar.Justify"),
     m_border_width(*this, "toolbar.borderWidth", "Toolbar.BorderWidth"),
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
     m_button_border_width(*this, "toolbar.button.borderWidth", "Toolbar.Button.BorderWidth"),
     m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),    
+    m_alpha(*this, "toolbar.alpha", "Toolbar.Alpha"),
     m_display(FbTk::App::instance()->display()) {
 
     Window rootwindow = RootWindow(m_display, screen_num);
@@ -96,6 +100,16 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_button_pic_gc =
         XCreateGC(m_display, rootwindow,
                   gc_value_mask, &gcv);
+
+    gcv.foreground = m_iconbar_focused->color().pixel();
+    m_icon_text_focused_gc = 
+        XCreateGC(m_display, rootwindow,
+                  gc_value_mask, &gcv);
+
+    m_icon_text_unfocused_gc = 
+        XCreateGC(m_display, rootwindow,
+                  gc_value_mask, &gcv);
+
     // load from current database
     FbTk::ThemeManager::instance().loadTheme(*this);
 }
@@ -108,6 +122,10 @@ ToolbarTheme::~ToolbarTheme() {
 }
 
 void ToolbarTheme::reconfigTheme() {
+    if (*m_alpha > 255)
+        *m_alpha = 255;
+    else if (*m_alpha < 0)
+        *m_alpha = 0;
 
     XGCValues gcv;
     unsigned long gc_value_mask = GCForeground;
@@ -129,6 +147,4 @@ void ToolbarTheme::reconfigTheme() {
     XChangeGC(m_display, m_button_pic_gc,
               gc_value_mask, &gcv);
 
-    // notify listeners
-    m_theme_change_sig.notify();
 }
