@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.6 2003/04/26 18:57:51 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.7 2004/02/10 19:03:42 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
@@ -104,7 +104,7 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
     while((v = va_arg(va, char *)) != 0) {
         p = FbTk::StringUtil::strcasestr(pattern, v);
         if (p) {
-            std::strncpy(buf, p+1, bufsiz-2);
+            strncpy(buf, p+1, bufsiz-2);
             p2 = strchr(buf, '-');
             if (p2) *p2=0;
             va_end(va);
@@ -112,7 +112,7 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
         }
     }
     va_end(va);
-    std::strncpy(buf, "*", bufsiz);
+    strncpy(buf, "*", bufsiz);
     return 0;
 }
 
@@ -153,9 +153,9 @@ XFontSet createFontSet(const char *fontname) {
     getFontSize(fontname, &pixel_size);
 
     if (! strcmp(weight, "*")) 
-        std::strncpy(weight, "medium", FONT_ELEMENT_SIZE);
+        strncpy(weight, "medium", FONT_ELEMENT_SIZE);
     if (! strcmp(slant, "*")) 
-        std::strncpy(slant, "r", FONT_ELEMENT_SIZE);
+        strncpy(slant, "r", FONT_ELEMENT_SIZE);
     if (pixel_size < 3) 
         pixel_size = 3;
     else if (pixel_size > 97) 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.4 2004/01/02 21:59:52 fluxgen Exp $
+// $Id: ThemeItems.hh,v 1.5 2004/02/10 19:03:04 fluxgen Exp $
 
 /// @file implements common theme items
 
@@ -132,8 +132,9 @@ void ThemeItem<FbTk::Texture>::load() {
         m_value.pixmap() = 0;
         return;
     }
-    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name,
-                                                 m_tm.screenNum()));
+
+    std::auto_ptr<FbTk::PixmapWithMask> pm(FbTk::Image::load(pixmap_name,
+                                                             m_tm.screenNum()));
     if (pm.get() == 0) {
         if (FbTk::ThemeManager::instance().verbose()) {
             cerr<<"Resource("<<name()+".pixmap"
@@ -212,6 +213,6 @@ void ThemeItem<FbTk::Color>::setFromString(const char *str) {
 template <>
 void ThemeItem<FbTk::Color>::load() { }
 
-};
+} // end namespace FbTk
 
 #endif // THEMEITEMS_HH
