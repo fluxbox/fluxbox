@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.56 2003/02/15 02:00:29 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.57 2003/02/16 00:09:34 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -169,18 +169,18 @@ Toolbar::Frame::~Frame() {
     evm.remove(clock);
 }
 
-Toolbar::Toolbar(BScreen *scrn, size_t width):
-    on_top(scrn->isToolbarOnTop()),
+Toolbar::Toolbar(BScreen &scrn, size_t width):
+    on_top(scrn.isToolbarOnTop()),
     editing(false),
-    hidden(scrn->doToolbarAutoHide()), 
-    do_auto_hide(scrn->doToolbarAutoHide()),
-    frame(*this, scrn->getScreenNumber()),
+    hidden(scrn.doToolbarAutoHide()), 
+    do_auto_hide(scrn.doToolbarAutoHide()),
+    frame(*this, scrn.getScreenNumber()),
     m_screen(scrn),
-    image_ctrl(*scrn->getImageControl()),
+    image_ctrl(*scrn.getImageControl()),
     clock_timer(this), 	// get the clock updating every minute
     hide_timer(&hide_handler),
-    m_toolbarmenu(*scrn->menuTheme(), scrn->getScreenNumber(), *scrn->getImageControl()),
-    m_theme(scrn->getScreenNumber()),
+    m_toolbarmenu(*scrn.menuTheme(), scrn.getScreenNumber(), *scrn.getImageControl()),
+    m_theme(scrn.getScreenNumber()),
     m_place(BOTTOMCENTER),
     m_themelistener(*this) {
 
@@ -216,17 +216,22 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
 
 		
     if (Fluxbox::instance()->useIconBar())
-        m_iconbar.reset(new IconBar(screen(), frame.window_label.window()));
+        m_iconbar.reset(new IconBar(&screen(), frame.window_label.window()));
 
 
     XMapSubwindows(display, frame.window.window());
     frame.window.show();
 
     // finaly: setup Commands for the buttons in the frame
-    FbTk::RefCount<FbTk::Command> nextworkspace(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::nextWorkspace));
-    FbTk::RefCount<FbTk::Command> prevworkspace(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::prevWorkspace));
-    FbTk::RefCount<FbTk::Command> nextwindow(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::nextFocus));
-    FbTk::RefCount<FbTk::Command> prevwindow(new FbTk::SimpleCommand<BScreen>(*screen(), &BScreen::prevFocus));
+    typedef FbTk::SimpleCommand<BScreen> ScreenCmd;
+    FbTk::RefCount<FbTk::Command> nextworkspace(new ScreenCmd(screen(), 
+                                                              &BScreen::nextWorkspace));
+    FbTk::RefCount<FbTk::Command> prevworkspace(new ScreenCmd(screen(), 
+                                                              &BScreen::prevWorkspace));
+    FbTk::RefCount<FbTk::Command> nextwindow(new ScreenCmd(screen(), 
+                                                           &BScreen::nextFocus));
+    FbTk::RefCount<FbTk::Command> prevwindow(new ScreenCmd(screen(), 
+                                                           &BScreen::prevFocus));
     frame.psbutton.setOnClick(prevworkspace);
     frame.nsbutton.setOnClick(nextworkspace);
     frame.pwbutton.setOnClick(prevwindow);
@@ -269,7 +274,7 @@ void Toolbar::delIcon(FluxboxWindow *w) {
 		
 void Toolbar::reconfigure() {
 
-    frame.bevel_w = screen()->getBevelWidth();
+    frame.bevel_w = screen().getBevelWidth();
 
     // recallibrate size
     setPlacement(m_place);
@@ -282,7 +287,7 @@ void Toolbar::reconfigure() {
         tt = localtime(&ttmp);
         if (tt) {
             char t[1024], *time_string = (char *) 0;
-            int len = strftime(t, 1024, screen()->getStrftimeFormat(), tt);
+            int len = strftime(t, 1024, screen().getStrftimeFormat(), tt);
 
             time_string = new char[len + 1];
 
@@ -313,10 +318,9 @@ void Toolbar::reconfigure() {
     unsigned int w = 0;
     frame.workspace_label_w = 0;
 
-    for (i = 0; i < screen()->getCount(); i++) {
-        w = m_theme.font().textWidth(
-                                     screen()->getWorkspace(i)->name().c_str(),
-                                     screen()->getWorkspace(i)->name().size());
+    for (i = 0; i < screen().getCount(); i++) {
+        w = m_theme.font().textWidth(screen().getWorkspace(i)->name().c_str(),
+                                     screen().getWorkspace(i)->name().size());
 
         w += (frame.bevel_w * 4);
 
@@ -504,8 +508,8 @@ void Toolbar::reconfigure() {
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
-    frame.window.setBorderColor(*screen()->getBorderColor());
-    frame.window.setBorderWidth(screen()->getBorderWidth());
+    frame.window.setBorderColor(*screen().getBorderColor());
+    frame.window.setBorderWidth(screen().getBorderWidth());
 
     frame.window.clear();
     frame.workspace_label.clear();
@@ -524,9 +528,9 @@ void Toolbar::reconfigure() {
 
     if (Fluxbox::instance()->useIconBar()) {
         if (m_iconbar.get() == 0) { // create new iconbar if we don't have one
-            m_iconbar.reset(new IconBar(screen(), frame.window_label.window()));
-            if (screen()->getIconCount()) {
-                BScreen::Icons & l = screen()->getIconList();
+            m_iconbar.reset(new IconBar(&screen(), frame.window_label.window()));
+            if (screen().getIconCount()) {
+                BScreen::Icons & l = screen().getIconList();
                 BScreen::Icons::iterator it = l.begin();
                 BScreen::Icons::iterator it_end = l.end();
                 for(; it != it_end; ++it) {
@@ -537,7 +541,7 @@ void Toolbar::reconfigure() {
         } else 
             m_iconbar->reconfigure();
     } else if (m_iconbar.get() != 0) {
-        BScreen::Icons & l = screen()->getIconList();
+        BScreen::Icons & l = screen().getIconList();
         BScreen::Icons::iterator it = l.begin();
         BScreen::Icons::iterator it_end = l.end();
         for(; it != it_end; ++it)
@@ -574,13 +578,13 @@ void Toolbar::checkClock(bool redraw, bool date) {
     frame.clock.clear();
 #ifdef HAVE_STRFTIME
     char t[1024];
-    if (! strftime(t, 1024, screen()->getStrftimeFormat(), tt))
+    if (! strftime(t, 1024, screen().getStrftimeFormat(), tt))
         return;
 #else // !HAVE_STRFTIME
     char t[9];
     if (date) {
         // format the date... with special consideration for y2k ;)
-        if (screen()->getDateFormat() == Blackbox::B_EuropeanDate) {
+        if (screen().getDateFormat() == Blackbox::B_EuropeanDate) {
             sprintf(t,
                     i18n->getMessage(
                                      ToolbarSet, ToolbarNoStrftimeDateFormatEu,
@@ -596,7 +600,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
                     (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
         }
     } else {
-        if (screen()->isClock24Hour()) {
+        if (screen().isClock24Hour()) {
             sprintf(t,
                     i18n->getMessage(
                                      ToolbarSet, ToolbarNoStrftimeTimeFormat24,
@@ -634,7 +638,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
     }		
     m_theme.font().drawText(
                             frame.clock.window(),
-                            screen()->getScreenNumber(),
+                            screen().getScreenNumber(),
                             m_theme.clockTextGC(),
                             t, newlen,
                             dx, dy);
@@ -648,14 +652,16 @@ void Toolbar::redrawWindowLabel(bool redraw) {
             frame.window_label.clear();
 
         FluxboxWindow *foc = Fluxbox::instance()->getFocusedWindow();
-        if (foc->getScreen() != screen() || foc->getTitle().size() == 0)
+        // don't draw focused window if it's not on the same screen
+        if (foc->getScreen() != &screen() || foc->getTitle().size() == 0)
             return;
 		
         size_t newlen = foc->getTitle().size();
         int dx = FbTk::doAlignment(frame.window_label_w, frame.bevel_w*2,
-                                       m_theme.justify(),
-                                       m_theme.font(),
-                                       foc->getTitle().c_str(), foc->getTitle().size(), newlen);
+                                   m_theme.justify(),
+                                   m_theme.font(),
+                                   foc->getTitle().c_str(), 
+                                   foc->getTitle().size(), newlen);
 	int dy = 1 + m_theme.font().ascent();
 
         if (m_theme.font().isRotated()) {
@@ -665,25 +671,25 @@ void Toolbar::redrawWindowLabel(bool redraw) {
         }
     
         m_theme.font().drawText(
-            frame.window_label.window(),
-            screen()->getScreenNumber(),
-            m_theme.windowTextGC(),
-            foc->getTitle().c_str(), newlen,
-            dx, dy);
+                                frame.window_label.window(),
+                                screen().getScreenNumber(),
+                                m_theme.windowTextGC(),
+                                foc->getTitle().c_str(), newlen,
+                                dx, dy);
     } else
         frame.window_label.clear();
 }
  
  
 void Toolbar::redrawWorkspaceLabel(bool redraw) {
-    if (screen()->getCurrentWorkspace()->name().size()==0)
+    if (screen().getCurrentWorkspace()->name().size()==0)
         return;
 		
     if (redraw)
         frame.workspace_label.clear();
 		
-    const char *text = screen()->getCurrentWorkspace()->name().c_str();
-    size_t textlen = screen()->getCurrentWorkspace()->name().size();
+    const char *text = screen().getCurrentWorkspace()->name().c_str();
+    size_t textlen = screen().getCurrentWorkspace()->name().size();
     size_t newlen = textlen;
     int dx = FbTk::doAlignment(frame.workspace_label_w, frame.bevel_w,
                                    m_theme.justify(),
@@ -697,7 +703,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
     }
     m_theme.font().drawText(
         frame.workspace_label.window(),
-        screen()->getScreenNumber(),
+        screen().getScreenNumber(),
         m_theme.labelTextGC(),
         text, newlen,
         dx, dy);
@@ -716,7 +722,7 @@ void Toolbar::edit() {
 
     //set input focus to workspace label
     XSetInputFocus(display, frame.workspace_label.window(),
-                   ((screen()->isSloppyFocus() || screen()->isSemiSloppyFocus()) ?
+                   ((screen().isSloppyFocus() || screen().isSemiSloppyFocus()) ?
                     RevertToPointerRoot : RevertToParent), CurrentTime);
 
     frame.workspace_label.clear();
@@ -726,7 +732,7 @@ void Toolbar::edit() {
         fluxbox->getFocusedWindow()->setFocusFlag(false);
 
     XDrawRectangle(display, frame.workspace_label.window(),
-                   screen()->getWindowStyle()->l_text_focus_gc,
+                   screen().getWindowStyle()->l_text_focus_gc,
                    frame.workspace_label_w / 2, 0, 1,
                    frame.label_h - 1);
 }
@@ -748,7 +754,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         else if (! on_top) {
             Workspace::Stack st;
             st.push_back(frame.window.window());
-            screen()->raiseWindows(st);
+            screen().raiseWindows(st);
         }
     } else if (be.button == 2 && (! on_top)) {
         frame.window.lower();
@@ -766,8 +772,8 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
             }
             if (menu_x < 0) {
                 menu_x = 0;
-            } else if (menu_x + wm.width() > screen()->getWidth()) {
-                menu_x = screen()->getWidth() - wm.width();
+            } else if (menu_x + wm.width() > screen().getWidth()) {
+                menu_x = screen().getWidth() - wm.width();
             }
             fluxboxwin->showMenu(menu_x, menu_y);
 
@@ -779,13 +785,13 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
             if (x < 0)
                 x = 0;
-            else if (x + m_toolbarmenu.width() > screen()->getWidth())
-                x = screen()->getWidth() - m_toolbarmenu.width();
+            else if (x + m_toolbarmenu.width() > screen().getWidth())
+                x = screen().getWidth() - m_toolbarmenu.width();
 
             if (y < 0)
                 y = 0;
-            else if (y + m_toolbarmenu.height() > screen()->getHeight())
-                y = screen()->getHeight() - m_toolbarmenu.height();
+            else if (y + m_toolbarmenu.height() > screen().getHeight())
+                y = screen().getHeight() - m_toolbarmenu.height();
 
             m_toolbarmenu.move(x, y);
             m_toolbarmenu.show();
@@ -800,7 +806,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
     if (re.button == 1) {
         if (re.window == frame.workspace_label) {
-            FbTk::Menu *menu = screen()->getWorkspacemenu();
+            FbTk::Menu *menu = screen().getWorkspacemenu();
             //move the workspace label and make it visible
             menu->move(re.x_root, re.y_root);
             // make sure the entire menu is visible (TODO: this is repeated by other menus, make a function!)
@@ -808,18 +814,18 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
             int newy = menu->y(); // new y position of menu
             if (menu->x() < 0)
                 newx = 0;
-            else if (menu->x() + menu->width() > screen()->getWidth())
-                newx = screen()->getWidth() - menu->width();
+            else if (menu->x() + menu->width() > screen().getWidth())
+                newx = screen().getWidth() - menu->width();
 			
             if (menu->y() < 0)
                 newy = 0;
-            else if (menu->y() + menu->height() > screen()->getHeight())
-                newy = screen()->getHeight() - menu->height();
+            else if (menu->y() + menu->height() > screen().getHeight())
+                newy = screen().getHeight() - menu->height();
             // move and show menu
             menu->move(newx, newy);
             menu->show();
         } else if (re.window == frame.window_label)
-            screen()->raiseFocus();
+            screen().raiseFocus();
 #ifndef	 HAVE_STRFTIME
         else if (re.window == frame.clock) {
             XClearWindow(display, frame.clock);
@@ -827,9 +833,9 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
         }
 #endif // HAVE_STRFTIME
     } else if (re.button == 4) //mousewheel scroll up
-        screen()->nextWorkspace(1);
+        screen().nextWorkspace(1);
     else if (re.button == 5)	//mousewheel scroll down
-        screen()->prevWorkspace(1);
+        screen().prevWorkspace(1);
 }
 
 
@@ -889,7 +895,7 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
                 XSetInputFocus(display, PointerRoot, None, CurrentTime);
 			
             if (ks == XK_Return)	//change workspace name if keypress = Return
-                screen()->getCurrentWorkspace()->setName(new_workspace_name.c_str());
+                screen().getCurrentWorkspace()->setName(new_workspace_name.c_str());
 
             new_workspace_name.erase(); //erase temporary workspace name
             reconfigure();
@@ -915,13 +921,13 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
 
             m_theme.font().drawText(
                 frame.workspace_label.window(),
-                screen()->getScreenNumber(),
-                screen()->getWindowStyle()->l_text_focus_gc,
+                screen().getScreenNumber(),
+                screen().getWindowStyle()->l_text_focus_gc,
                 new_workspace_name.c_str(), l,
                 x, 1 + m_theme.font().ascent()); 
 
             XDrawRectangle(display, frame.workspace_label.window(),
-                           screen()->getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
+                           screen().getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
                            frame.label_h - 1);
         }		
 		
@@ -947,10 +953,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     m_place = where;
 
-    head_w = screen()->getWidth();
-    head_h = screen()->getHeight();
+    head_w = screen().getWidth();
+    head_h = screen().getHeight();
 
-    frame.width = head_w * screen()->getToolbarWidthPercent() / 100;
+    frame.width = head_w * screen().getToolbarWidthPercent() / 100;
     frame.height = m_theme.font().height();
 
     frame.height += 2;
@@ -960,7 +966,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     // should we flipp sizes?
     if (isVertical()) {
         frame.width = frame.height;
-        frame.height = head_h * screen()->getToolbarWidthPercent() / 100;
+        frame.height = head_h * screen().getToolbarWidthPercent() / 100;
         if (!m_theme.font().isRotated())
             m_theme.font().rotate(90); // rotate to vertical text
 
@@ -979,15 +985,15 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y;
         frame.x_hidden = head_x;
         frame.y_hidden = head_y +
-            screen()->getBevelWidth() - screen()->getBorderWidth() - frame.height;
+            screen().getBevelWidth() - screen().getBorderWidth() - frame.height;
         break;
 
     case BOTTOMLEFT:
         frame.x = head_x;
-        frame.y = head_y + head_h - frame.height - screen()->getBorderWidth2x();
+        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y + head_h - screen()->getBevelWidth() - 
-            screen()->getBorderWidth();
+        frame.y_hidden = head_y + head_h - screen().getBevelWidth() - 
+            screen().getBorderWidth();
         break;
 
     case TOPCENTER:
@@ -995,64 +1001,70 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y +
-            screen()->getBevelWidth() - screen()->getBorderWidth() - frame.height;
+            screen().getBevelWidth() - screen().getBorderWidth() - frame.height;
         break;
     case TOPRIGHT:
-        frame.x = head_x + head_w - frame.width - screen()->getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
         frame.y = head_y;
         frame.x_hidden = frame.x;
         break;
 
     case BOTTOMRIGHT:
-        frame.x = head_x + head_w - frame.width - screen()->getBorderWidth2x();
-        frame.y = head_y + head_h - frame.height - screen()->getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
+        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - screen()->getBevelWidth() - 
-            screen()->getBorderWidth();
+        frame.y_hidden = head_y + head_h - screen().getBevelWidth() - 
+            screen().getBorderWidth();
         break;
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
     default:
         frame.x = head_x + (head_w - frame.width) / 2;
-        frame.y = head_y + head_h - frame.height - screen()->getBorderWidth2x();
+        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - screen()->getBevelWidth() - 
-            screen()->getBorderWidth();
+        frame.y_hidden = head_y + head_h - screen().getBevelWidth() - 
+            screen().getBorderWidth();
         break;
     case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2;
-        frame.x_hidden = frame.x - frame.width + screen()->getBevelWidth() + screen()->getBorderWidth();
+        frame.x_hidden = frame.x - frame.width + 
+            screen().getBevelWidth() + screen().getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     case LEFTTOP:
         frame.x = head_x;
         frame.y = head_y;
-        frame.x_hidden = frame.x - frame.width + screen()->getBevelWidth() + screen()->getBorderWidth();
+        frame.x_hidden = frame.x - frame.width + 
+            screen().getBevelWidth() + screen().getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     case LEFTBOTTOM:
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height;
-        frame.x_hidden = frame.x - frame.width + screen()->getBevelWidth() + screen()->getBorderWidth();
+        frame.x_hidden = frame.x - frame.width + 
+            screen().getBevelWidth() + screen().getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTCENTER:
         frame.x = head_x + head_w - frame.width;
         frame.y = head_y + (head_h - frame.height)/2;
-        frame.x_hidden = frame.x + frame.width - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.x_hidden = frame.x + frame.width - 
+            screen().getBevelWidth() - screen().getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTTOP:
         frame.x = head_x + head_w - frame.width;
         frame.y = head_y;
-        frame.x_hidden = frame.x + frame.width - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.x_hidden = frame.x + frame.width - 
+            screen().getBevelWidth() - screen().getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTBOTTOM:
         frame.x = head_x + head_w - frame.width;
         frame.y = head_y + head_h - frame.height;
-        frame.x_hidden = frame.x + frame.width - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.x_hidden = frame.x + frame.width - 
+            screen().getBevelWidth() - screen().getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     }
