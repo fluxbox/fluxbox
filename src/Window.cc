@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.139 2003/04/16 00:38:06 fluxgen Exp $
+// $Id: Window.cc,v 1.140 2003/04/16 12:27:49 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -307,7 +307,8 @@ void FluxboxWindow::init() {
     btn->setJustify(m_frame.theme().justify());
     m_labelbuttons[m_client] = btn;
     m_frame.addLabelButton(*btn);
-    btn->show();
+    m_frame.setLabelButtonFocus(*btn);
+    btn->show();    
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     // we need motion notify so we mask it
     btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
@@ -594,6 +595,13 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     return true;
 }
 
+void FluxboxWindow::detachCurrentClient() {
+    // should only operate if we had more than one client
+    if (numClients() <= 1)
+        return;
+    detachClient(*m_client);
+}
+
 /// removes client from client list, does not create new fluxboxwindow for it
 bool FluxboxWindow::removeClient(WinClient &client) {
     if (client.m_win != this || numClients() == 0)
@@ -662,6 +670,7 @@ void FluxboxWindow::nextClient() {
     else
         m_client = *it;
     m_client->raise();
+    m_frame.setLabelButtonFocus(*m_labelbuttons[m_client]);
     setInputFocus();
 }
 
@@ -680,6 +689,7 @@ void FluxboxWindow::prevClient() {
         m_client = *(--it);
 
     m_client->raise();
+    m_frame.setLabelButtonFocus(*m_labelbuttons[m_client]);
     setInputFocus();
 }
 
@@ -691,6 +701,7 @@ void FluxboxWindow::setCurrentClient(WinClient &client) {
     m_client = &client;
     m_client->raise();
     Fluxbox::instance()->setFocusedWindow(this);
+    m_frame.setLabelButtonFocus(*m_labelbuttons[m_client]);
     setInputFocus();
 }
 
@@ -2365,7 +2376,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         // drag'n'drop code for tabs
         //
         if (m_attaching_tab == 0) {
-            cerr<<"starting m_attching_tab for  this="<<this<<endl;
             // start drag'n'drop for tab
             m_attaching_tab = client;
 

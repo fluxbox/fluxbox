@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.5 2003/04/14 14:38:21 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.6 2003/04/16 12:24:28 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -42,7 +42,8 @@ namespace FbTk {
 class ImageControl;
 };
 
-/// holds a window frame with a client window (see: <a href="fluxbox_fbwinframe.png">image</a>)
+/// holds a window frame with a client window
+/// (see: <a href="fluxbox_fbwinframe.png">image</a>)
 class FbWinFrame:public FbTk::EventHandler {
 public:
 
@@ -89,7 +90,8 @@ public:
     void addLabelButton(FbTk::Button &btn);
     /// removes a specific button from label window
     void removeLabelButton(FbTk::Button &btn);
-
+    /// which button is to be rendered focused
+    void setLabelButtonFocus(FbTk::Button &btn);
     /// attach a client window for client area
     void setClientWindow(Window win);
     /// same as above but with FbWindow
@@ -172,6 +174,11 @@ private:
     /// renders to pixmap or sets color
     void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
                 unsigned int width, unsigned int height);
+    void getUnFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
+                          FbTk::Color &label_color, FbTk::Color &title_color);
+    void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
+                               FbTk::Color &label_color, FbTk::Color &title_color);
+    void renderLabelButtons();
     //@}
 
     /// initiate some commont variables
@@ -197,6 +204,7 @@ private:
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right
     ButtonList m_labelbuttons; ///< holds buttons inside label window
+    FbTk::Button *m_current_label; ///< which button is focused at the moment
     std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
