@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.82 2002/09/08 23:47:03 fluxgen Exp $
+// $Id: Window.cc,v 1.83 2002/09/10 10:55:34 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -301,7 +301,7 @@ tab(0) {
 	XMapSubwindows(display, frame.window);
 
 	if (decorations.menu)
-		windowmenu = new Windowmenu(this);
+		windowmenu = new Windowmenu(*this);
 
 	if (workspace_number < 0 || workspace_number >= screen->getCount())
 		screen->getCurrentWorkspace()->addWindow(this, place_window);
@@ -373,9 +373,15 @@ FluxboxWindow::~FluxboxWindow() {
 
 
 	if (client.transient_for != 0) {
+		if (client.transient_for == this) {
+			client.transient_for = 0;
+		}
+		
 		fluxbox->setFocusedWindow(client.transient_for);
-		client.transient_for->client.transients.remove(this);
-		client.transient_for = 0;			
+		if (client.transient_for) {
+			client.transient_for->client.transients.remove(this);
+			client.transient_for = 0;
+		}
 	}
 	
 	while (!client.transients.empty()) {
@@ -1598,7 +1604,7 @@ void FluxboxWindow::iconify() {
 	
 	screen->getWorkspace(workspace_number)->removeWindow(this);
 
-	if (transient && client.transient_for) {
+	if (client.transient_for) {
 		if (! client.transient_for->iconic)
 			client.transient_for->iconify();
 	}
@@ -2373,9 +2379,9 @@ void FluxboxWindow::restoreAttributes() {
 void FluxboxWindow::showMenu(int mx, int my) {
 	windowmenu->move(mx, my);
 	windowmenu->show();		
-	XRaiseWindow(display, windowmenu->windowID());
-	XRaiseWindow(display, windowmenu->getSendToMenu()->windowID());
-	XRaiseWindow(display, windowmenu->getSendGroupToMenu()->windowID());
+	windowmenu->raise();
+	windowmenu->getSendToMenu().raise();
+	windowmenu->getSendGroupToMenu().raise();
 }
 				
 void FluxboxWindow::restoreGravity() {
@@ -3489,32 +3495,31 @@ void FluxboxWindow::checkTransient() {
 	
 	// determine if this is a transient window
 	Window win;
-	if (!XGetTransientForHint(display, client.window, &win)) {
-		client.transient_for = 0;
+	if (!XGetTransientForHint(display, client.window, &win))
 		return;
-	}
-	
 	
 	if (win == client.window)
 		return;
 	
-	if (win == screen->getRootWindow())
+	if (win == screen->getRootWindow() && win != 0) {
 		modal = true;
+		return;
+	}
 	
 	client.transient_for = Fluxbox::instance()->searchWindow(win);
-	if (client.transient_for != 0 && 
-		client.window_group != None && win == client.window_group) {
-		
-		FluxboxWindow *leader = Fluxbox::instance()->searchGroup(win, this);
-		if (leader != 0) 
-			client.transient_for = leader;
-		return;
+	if (client.transient_for != 0 &&
+		client.window_group != None && win == client.window_group) {		
+		client.transient_for = Fluxbox::instance()->searchGroup(win, this);
 	}
 	
 	// make sure we don't have deadlock loop in transient chain
 	for (FluxboxWindow *w = this; w != 0; w = w->client.transient_for) {
 		if (w == w->client.transient_for) {
 			w->client.transient_for = 0;
+#ifdef DEBUG	
+			cerr<<"w = client.transient_for";
+#endif // DEBUG
+			break;
 		}
 	}
 	
@@ -3524,6 +3529,7 @@ void FluxboxWindow::checkTransient() {
 		client.transient_for->client.transients.unique(); 
 		stuck = client.transient_for->stuck;
 	}
+	
 }
 
 void FluxboxWindow::restore(bool remap) {
