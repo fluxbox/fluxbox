@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.192 2003/09/14 11:56:11 rathnor Exp $
+// $Id: fluxbox.cc,v 1.193 2003/09/14 12:03:40 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -582,6 +582,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
 #endif //DEBUG
     m_starting = false;
+    //    FbTk::ThemeManager::instance().listItems();
 }
 
 
@@ -837,7 +838,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
         m_last_time = e->xcrossing.time;
         break;
     case Expose:
-        // handled directly in FluxboxWindow::exposeEvent
         break;
     case KeyRelease:
     case KeyPress:
