@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/22:
+  * Fixed no-text-in-iconbar-bug on restart (Thanks Mathias Gumz)
+    IconbarTool.cc
 *04/03/21:
   * A number of small fixes (Simon)
     - Fix up focus+highlights on tab close
