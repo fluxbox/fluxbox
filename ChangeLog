@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/10/28:
+  * Fix for #1034522 (Mathias)
+    doc/fluxbox.1.in
   * Fix for #1036982 aka defaults.hh wasnt distcleaned (Mathias)
     src/Makefile.am
 *04/10/22:
