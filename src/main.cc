@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.11 2002/12/03 01:46:28 fluxgen Exp $
+// $Id: main.cc,v 1.12 2002/12/09 22:51:23 fluxgen Exp $
 
 
 
@@ -87,7 +87,7 @@ int main(int argc, char **argv) {
     char *session_display = (char *) 0;
     char *rc_file = (char *) 0;
 
-    NLSInit("blackbox.cat");
+    NLSInit("fluxbox.cat");
     I18n *i18n = I18n::instance();
 	
     int i;
