@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.5 2003/06/11 14:52:25 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.6 2003/07/10 11:38:12 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -30,6 +30,7 @@
 #include "Color.hh"
 #include "FbTk/Theme.hh"
 #include "Subject.hh"
+#include "Shape.hh"
 
 class FbWinFrameTheme: public FbTk::Theme {
 public:
@@ -86,6 +87,7 @@ public:
     inline Cursor lowerLeftAngleCursor() const { return m_cursor_lower_left_angle; }
     inline Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
 
+    inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_label_focus, m_label_unfocus;
     FbTk::ThemeItem<FbTk::Texture> m_title_focus, m_title_unfocus;
@@ -99,6 +101,7 @@ private:
     
     FbTk::ThemeItem<FbTk::Font> m_font;
     FbTk::ThemeItem<FbTk::Justify> m_textjustify;
+    FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
     GC m_label_text_focus_gc, m_label_text_unfocus_gc;
     GC m_button_pic_focus_gc, m_button_pic_unfocus_gc;
