@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.106 2004/01/18 19:14:08 fluxgen Exp $
+// $Id: Window.hh,v 1.107 2004/01/23 10:38:25 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -352,6 +352,8 @@ public:
     FbTk::Subject &titleSig() { return m_titlesig; }
     /** @} */ // end group signals
 
+    void reconfigTheme();
+
     const timeval &lastFocusTime() const { return m_last_focus_time;}
 
     //@}
@@ -409,6 +411,17 @@ private:
     void sendConfigureNotify(bool send_to_netizens = true);
     // state and hint signals
     WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig, m_titlesig;
+
+    class ThemeListener: public FbTk::Observer {
+    public:
+        ThemeListener(FluxboxWindow &win):m_win(win) { }
+        void update(FbTk::Subject *) {
+            m_win.reconfigTheme();
+        }
+    private:
+        FluxboxWindow &m_win;
+    };
+    ThemeListener m_themelistener;
 
     // Window states
     bool moving, resizing, shaded, iconic,

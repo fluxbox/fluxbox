@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.265 2004/01/21 15:42:59 fluxgen Exp $
+// $Id: Window.cc,v 1.266 2004/01/23 10:37:08 rathnor Exp $
 
 #include "Window.hh"
 
@@ -264,6 +264,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_diesig(*this),
     m_focussig(*this),
     m_titlesig(*this),
+    m_themelistener(*this),
     moving(false), resizing(false), shaded(false), 
     iconic(false), focused(false),
     stuck(false), m_managed(false),
@@ -279,6 +280,8 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_layernum(layer.getLayerNum()),
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
+
+    tm.reconfigSig().attach(&m_themelistener);
 
     init();
 }
@@ -3456,4 +3459,34 @@ void FluxboxWindow::setupWindow() {
     menu().insert("Close", close_cmd);
 
     menu().reconfigure(); // update graphics
+}
+
+
+/**
+ * reconfigTheme: must be called after frame is reconfigured
+ * Client windows need to be made the same size and location as
+ * the frame's client area.
+ */
+void FluxboxWindow::reconfigTheme() {
+
+    m_frame.setBorderWidth(decorations.border?frame().theme().border().width():0);
+    if (decorations.handle && frame().theme().handleWidth() != 0)
+        frame().showHandle();
+    else
+        frame().hideHandle();
+
+    ClientList::iterator it = clientList().begin();
+    ClientList::iterator it_end = clientList().end();
+
+    int x = m_frame.clientArea().x(),
+        y = m_frame.clientArea().y();
+
+    unsigned int width = m_frame.clientArea().width(),
+        height = m_frame.clientArea().height();
+
+    for (; it != it_end; ++it) {
+        (*it)->moveResize(x, y, width, height);
+    }
+
+    sendConfigureNotify();
 }

@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/01/23:
+  * Fix a few window frame issues when changing styles (Simon)
+    - particularly a "void" area of the window
+    Window.hh/cc FbWinFrame.cc
 *04/01/22:
   * Fix missing sanitycheck in fbsetbg (Thanks Tom Ryan)
     fbsetbg

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.72 2004/01/21 19:47:30 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.73 2004/01/23 10:37:01 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -455,10 +455,12 @@ bool FbWinFrame::showHandle() {
     if (m_use_handle || theme().handleWidth() == 0)
         return false;
 
+    m_use_handle = true;
+
+    renderHandles();
     m_handle.show();
     m_handle.showSubwindows(); // shows grips
 
-    m_use_handle = true;
     m_window.resize(m_window.width(), m_window.height() + m_handle.height() +
                     m_handle.borderWidth());
     return true;
@@ -636,6 +638,13 @@ void FbWinFrame::reconfigure() {
         return;
 
     m_bevel = theme().bevelWidth();
+    // reconfigure can't set borderwidth, as it doesn't know
+    // if it's meant to be borderless or not
+
+    unsigned int orig_handle_h = handle().height();
+    if (m_use_handle && orig_handle_h != theme().handleWidth())
+        m_window.resize(m_window.width(), m_window.height() -
+                        orig_handle_h + theme().handleWidth());
 
     handle().resize(handle().width(), 
                     theme().handleWidth());
@@ -663,32 +672,37 @@ void FbWinFrame::reconfigure() {
             client_height -= titlebar_height;
         }
         
+        // align handle and grips
+        const int grip_height = m_handle.height();
+        const int grip_width = 20; //TODO
+        const int handle_bw = static_cast<signed>(m_handle.borderWidth());
+
+        int ypos = m_window.height();
+
+        // if the handle isn't on, it's actually below the window
+        if (m_use_handle)
+            ypos -= grip_height + handle_bw;
+
+        // we do handle settings whether on or not so that if they get toggled
+        // then things are ok...
+        m_handle.moveResize(-handle_bw, ypos,
+                            m_window.width(), grip_height);
+
+        m_grip_left.moveResize(-handle_bw, -handle_bw,
+                               grip_width, grip_height);
+
+        m_grip_right.moveResize(m_handle.width() - grip_width - handle_bw, -handle_bw,
+                                grip_width, grip_height);
+
         if (m_use_handle) {
-            // align handle and grips
-            const int grip_height = m_handle.height();
-            const int grip_width = 20; //TODO
-            const int handle_bw = static_cast<signed>(m_handle.borderWidth());
-
-            const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
-            m_handle.moveResize(-handle_bw, ypos,
-                                m_window.width(), grip_height);
-        
-            m_grip_left.moveResize(-handle_bw, -handle_bw,
-                                   grip_width, grip_height);
-
-            m_grip_right.moveResize(m_handle.width() - grip_width - handle_bw, -handle_bw,
-                                    grip_width, grip_height);
             m_handle.raise();
-
             client_height -= m_handle.height() + m_handle.borderWidth();
-
         } else {
             m_handle.lower();
         }
 
         m_clientarea.moveResize(0, client_top,
                                 m_window.width(), client_height);
-        
     }
 
 
