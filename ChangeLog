@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/01/21:
+  * Fixed so one can navigate in menu with      (Henrik)
+    even if numlock, capslock or scrollock is on
+    Menu.cc
 *04/01/19:
   * Fixed minor bug in ResourceManager (Henrik)
     Resource.cc
