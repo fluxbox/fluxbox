@@ -1,5 +1,5 @@
 // Gnome.cc for fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@fluxbox.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.12 2003/03/03 21:51:01 rathnor Exp $
+// $Id: Gnome.cc,v 1.13 2003/03/04 11:13:42 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -38,13 +38,14 @@ Gnome::Gnome() {
 Gnome::~Gnome() {
     // destroy gnome windows
     while (!m_gnomewindows.empty()) {
-        XDestroyWindow(BaseDisplay::getXDisplay(), m_gnomewindows.back());
+        XDestroyWindow(FbTk::App::instance()->display(), m_gnomewindows.back());
         m_gnomewindows.pop_back();		
     }
 }
 
+
 void Gnome::initForScreen(BScreen &screen) {
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
     // create the GNOME window
     Window gnome_win = XCreateSimpleWindow(disp,
                                            screen.getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
@@ -82,7 +83,7 @@ void Gnome::initForScreen(BScreen &screen) {
 
 void Gnome::setupWindow(FluxboxWindow &win) {
     // load gnome state atom
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
@@ -153,7 +154,7 @@ void Gnome::updateClientList(BScreen &screen) {
     }
     //number of windows to show in client list
     num = win;
-    XChangeProperty(BaseDisplay::getXDisplay(), 
+    XChangeProperty(FbTk::App::instance()->display(), 
                     screen.getRootWindow(), 
                     m_gnome_wm_win_client_list, 
                     XA_CARDINAL, 32,
@@ -176,7 +177,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
     }
 	
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
-        XSetTextProperty(BaseDisplay::getXDisplay(), screen.getRootWindow(),
+        XSetTextProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
 			 &text, m_gnome_wm_win_workspace_names);
         XFree(text.value);
     }
@@ -187,7 +188,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
 
 void Gnome::updateCurrentWorkspace(BScreen &screen) {
     int workspace = screen.getCurrentWorkspaceID();
-    XChangeProperty(BaseDisplay::getXDisplay(), 
+    XChangeProperty(FbTk::App::instance()->display(), 
                     screen.getRootWindow(),
                     m_gnome_wm_win_workspace, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&workspace, 1);
@@ -197,7 +198,7 @@ void Gnome::updateCurrentWorkspace(BScreen &screen) {
 
 void Gnome::updateWorkspaceCount(BScreen &screen) {
     int numworkspaces = screen.getCount();
-    XChangeProperty(BaseDisplay::getXDisplay(), screen.getRootWindow(),
+    XChangeProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
                     m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&numworkspaces, 1);
 }
@@ -208,7 +209,7 @@ void Gnome::updateWorkspace(FluxboxWindow &win) {
     cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
         ") for window("<<&win<<")"<<endl;
 #endif // DEBUG
-    XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
+    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
                     m_gnome_wm_win_workspace, 
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
 }
@@ -223,7 +224,7 @@ void Gnome::updateState(FluxboxWindow &win) {
     if (win.isShaded())
         state |= WIN_STATE_SHADED;
 	
-    XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
+    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
                     m_gnome_wm_win_state,
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
 }
@@ -231,7 +232,7 @@ void Gnome::updateState(FluxboxWindow &win) {
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     int layernum = win.getLayerNum();
-    XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
+    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
                     m_gnome_wm_win_layer,
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&layernum, 1);
     
@@ -384,7 +385,7 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
 }
 
 void Gnome::createAtoms() {
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
     m_gnome_wm_win_layer = XInternAtom(disp, "_WIN_LAYER", False);
     m_gnome_wm_win_state = XInternAtom(disp, "_WIN_STATE", False);
     m_gnome_wm_win_hints = XInternAtom(disp, "_WIN_HINTS", False);
