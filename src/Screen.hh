@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.49 2002/11/16 22:13:19 fluxgen Exp $
+// $Id: Screen.hh,v 1.50 2002/11/24 20:57:32 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -109,8 +109,8 @@ public:
 #ifdef	 SLIT
 	inline bool isSlitOnTop() const { return resource.slit_on_top; }
 	inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
-	inline Slit *getSlit() { return slit; }
-	inline const Slit *getSlit() const { return slit; }
+	inline Slit *getSlit() { return m_slit.get(); }
+	inline const Slit *getSlit() const { return m_slit.get(); }
 	inline int getSlitPlacement() const { return resource.slit_placement; }
 	inline int getSlitDirection() const { return resource.slit_direction; }
 	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
@@ -332,7 +332,7 @@ private:
     Icons iconList;
 
 #ifdef		SLIT
-	Slit *slit;
+	std::auto_ptr<Slit> m_slit;
 #endif // SLIT
 
 	std::auto_ptr<Toolbar> m_toolbar;
