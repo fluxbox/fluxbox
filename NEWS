@@ -1,6 +1,6 @@
 News in 0.9.12: 
     * Added Imlib2 support (./configure --enable-imlib2) [default=disabled]
-      Fluxbox can now load .png files an other formats.
+      Fluxbox can now load .png files and other formats.
    *  Added Tab command, which goes to a specific tab number 
       action:
       Tab <number>
@@ -8,8 +8,6 @@ News in 0.9.12:
       Mod1 1 :Tab 1
       Mod2 3 :Tab 3
     * Added support for hsetroot to fbsetbg
-    * 
-      * 
 Bug fixes:
     * Fix for #1091710 (SystemTray is not covered by StyleStuff) (Mathias)
       SystemTray is not configurable via styles thru the 
