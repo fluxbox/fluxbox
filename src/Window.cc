@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.120 2003/02/18 15:11:10 rathnor Exp $
+// $Id: Window.cc,v 1.121 2003/02/19 14:53:38 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -55,7 +55,7 @@ using namespace std;
 namespace {
 
 void grabButton(Display *display, unsigned int button, 
-                               Window window, Cursor cursor) {
+                Window window, Cursor cursor) {
 
     //numlock
     XGrabButton(display, button, Mod1Mask|Mod2Mask, window, True,
@@ -93,6 +93,40 @@ void grabButton(Display *display, unsigned int button,
 	
 }
 
+/// raise window and do the same for each transient it holds
+void raiseFluxboxWindow(FluxboxWindow &win) {
+
+    if (!win.isIconic()) {
+        win.getScreen()->updateNetizenWindowRaise(win.getClientWindow());
+        win.getLayerItem().raise();
+    }
+
+    // for each transient do raise
+    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic())
+            raiseFluxboxWindow(*(*it));
+    }
+}
+
+/// lower window and do the same for each transient it holds
+void lowerFluxboxWindow(FluxboxWindow &win) {
+
+    if (!win.isIconic()) {
+        win.getScreen()->updateNetizenWindowLower(win.getClientWindow());
+        win.getLayerItem().lower();
+    }
+
+    // for each transient do lower
+    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic())
+            lowerFluxboxWindow(*(*it));
+    }
+}
+
 };
 
 FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, 
@@ -121,11 +155,11 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 {
 
     m_layermenu = new LayerMenu<FluxboxWindow>(
-        menutheme, 
-        screen_num, 
-        imgctrl, 
-        *s->layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-        this);
+                                               menutheme, 
+                                               screen_num, 
+                                               imgctrl, 
+                                               *s->layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                               this);
 
 
     // redirect events from frame to us
@@ -153,8 +187,8 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     decorations.menu = true;	//override menu option
     // all decorations on by default
     decorations.titlebar = decorations.border = decorations.handle = true;
-    decorations.maximize = decorations.close = decorations.sticky = decorations.shade =
-	decorations.tab = true;
+    decorations.maximize = decorations.close = 
+        decorations.sticky = decorations.shade = decorations.tab = true;
 
 
     functions.resize = functions.move = functions.iconify = functions.maximize = true;
@@ -269,7 +303,12 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 
     restoreAttributes();
 
-    moveToLayer(m_layernum);
+    // if we're a transient then we should be on the same layer as our parent
+    if (isTransient()) {
+        getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());       
+    } else // if no parent then set default layer
+        moveToLayer(m_layernum);
+    
     screen->getWorkspace(workspace_number)->addWindow(this, place_window);
 
     moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
@@ -1194,61 +1233,40 @@ void FluxboxWindow::stick() {
     setState(current_state);
 }
 
+
 void FluxboxWindow::raise() {
     if (isIconic())
         deiconify();
 
+    // get root window
     FluxboxWindow *win = this;
-
     while (win->getTransientFor()) {
         win = win->getTransientFor();
         assert(win != win->getTransientFor());
     }
-  
+    // if we don't have any root window use this as root
     if (win == 0) 
         win = this;
 
-    if (!win->isIconic()) {
-        screen->updateNetizenWindowRaise(win->getClientWindow());
-        win->getLayerItem().raise();
-    }
-
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            screen->updateNetizenWindowRaise((*it)->getClientWindow());
-            (*it)->getLayerItem().raise();
-        }
-    }
+    // raise this window and every transient in it
+    raiseFluxboxWindow(*win);
 }
 
 void FluxboxWindow::lower() {
     if (isIconic())
         deiconify();
 
-    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = this;
-
+    // get root window (i.e the bottom window)
+    FluxboxWindow *bottom = this;
     while (bottom->getTransientFor()) {
         bottom = bottom->getTransientFor();
         assert(bottom != bottom->getTransientFor());
     }
+    
+    if (bottom == 0)
+        bottom = this;
 
-    win = bottom;
-
-    if (!win->isIconic()) {
-        screen->updateNetizenWindowLower(win->getClientWindow());
-        win->getLayerItem().lower();
-    }
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            screen->updateNetizenWindowLower((*it)->getClientWindow());
-            (*it)->getLayerItem().lower();
-        }
-    }
-   
+    lowerFluxboxWindow(*bottom);
 }
 
 void FluxboxWindow::raiseLayer() {
@@ -1619,7 +1637,9 @@ void FluxboxWindow::popupMenu() {
         return;
     }
 
-    m_windowmenu.move(m_last_button_x, m_frame.y() + m_frame.titlebar().height() + m_frame.titlebar().borderWidth()*2);
+    m_windowmenu.move(m_last_button_x, 
+                      m_frame.y() + m_frame.titlebar().height() + 
+                      m_frame.titlebar().borderWidth()*2);
     m_windowmenu.show();
     m_windowmenu.raise();
 }
@@ -1850,8 +1870,6 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
     case XA_WM_ICON_NAME:
         updateIconNameFromClient();
-        if (iconic)
-            screen->iconUpdate();
         updateIcon();
         break;
 
@@ -1938,13 +1956,13 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         client.old_bw = cr.border_width;
 
     if (cr.value_mask & CWX)
-        cx = cr.x;// - frame_mwm_border_w - screen->getBorderWidth();
+        cx = cr.x;
 
     if (cr.value_mask & CWY)
-        cy = cr.y - m_frame.titlebar().height(); // - frame_mwm_border_w - screen->getBorderWidth();
+        cy = cr.y - m_frame.titlebar().height();
 
     if (cr.value_mask & CWWidth)
-        cw = cr.width;// + (frame_mwm_border_w * 2);
+        cw = cr.width;
 
     if (cr.value_mask & CWHeight)
         ch = cr.height;
@@ -2014,7 +2032,6 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         if (re.button == 2 && re.state == Mod1Mask)
             XUngrabPointer(display, CurrentTime);
     }
-
 
 }
 
