@@ -1,5 +1,13 @@
 changes for 0.1.8:
 *02/03/18:
+   * Fixed indentation to tabs in Image.cc/hh Slit.cc/hh and
+     Timer.hh/cc
+   * Changed timer pointer in some classes to 
+     a non pointer variable
+   * Clean up in class BTimer (Timer.cc/hh)
+     BTimer now register it self to a static list in the class BTimer
+	 and update timers with the static function updateTimers(int fd)
+	 The cyclic dep between BaseDisplay and BTimer is now gone.
    * Added FbAtoms.hh/cc where all the atoms is.
      Makes the interface in BaseDisplay cleaner
    * Fixed std::max/min
