@@ -31,9 +31,9 @@ class BScreen;
 
 class Iconmenu : public Basemenu {
 public:
-	explicit Iconmenu(BScreen *scr);
+    explicit Iconmenu(BScreen *scr);
 protected:
-  virtual void itemSelected(int button, unsigned int index);
+    virtual void itemSelected(int button, unsigned int index);
 
 };
 

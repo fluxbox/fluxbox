@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.9 2002/08/15 10:52:16 fluxgen Exp $
+// $Id: i18n.hh,v 1.10 2002/12/01 13:42:07 rathnor Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
@@ -54,19 +54,19 @@ extern "C" {
 
 class I18n {
 public:
-	static I18n *instance();
-	inline const char *getLocale(void) const { return m_locale.c_str(); }
-	inline bool multibyte(void) const { return m_multibyte; }
-	inline const nl_catd &getCatalogFd(void) const { return m_catalog_fd; }
+    static I18n *instance();
+    inline const char *getLocale(void) const { return m_locale.c_str(); }
+    inline bool multibyte(void) const { return m_multibyte; }
+    inline const nl_catd &getCatalogFd(void) const { return m_catalog_fd; }
 
-	const char *getMessage(int set_number, int message_number, const char *default_messsage = 0);
-	void openCatalog(const char *);
+    const char *getMessage(int set_number, int message_number, const char *default_messsage = 0);
+    void openCatalog(const char *);
 private:
-	I18n();
-	~I18n();
-	std::string m_locale;
-	bool m_multibyte;
-	nl_catd m_catalog_fd;
+    I18n();
+    ~I18n();
+    std::string m_locale;
+    bool m_multibyte;
+    nl_catd m_catalog_fd;
 
 };
 

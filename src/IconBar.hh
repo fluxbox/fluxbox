@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.8 2002/10/29 15:52:44 fluxgen Exp $
+// $Id: IconBar.hh,v 1.9 2002/12/01 13:41:57 rathnor Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
@@ -34,16 +34,16 @@
 class IconBarObj
 {
 public:	
-	IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin);
-	~IconBarObj();
-	Window getIconWin() const { return m_iconwin; }
-	FluxboxWindow *getFluxboxWin() { return m_fluxboxwin; }
-	const FluxboxWindow *getFluxboxWin() const { return m_fluxboxwin; }
-	unsigned int width() const;
+    IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin);
+    ~IconBarObj();
+    Window getIconWin() const { return m_iconwin; }
+    FluxboxWindow *getFluxboxWin() { return m_fluxboxwin; }
+    const FluxboxWindow *getFluxboxWin() const { return m_fluxboxwin; }
+    unsigned int width() const;
 
 private:
-	FluxboxWindow *m_fluxboxwin;
-	Window m_iconwin;
+    FluxboxWindow *m_fluxboxwin;
+    Window m_iconwin;
 };
 
 /**
@@ -52,34 +52,34 @@ private:
 class IconBar
 {
 public:
-	IconBar(BScreen *scrn, Window parent);
-	~IconBar();
-	void draw(); //TODO
-	void reconfigure();
-	Window addIcon(FluxboxWindow *fluxboxwin);
-	Window delIcon(FluxboxWindow *fluxboxwin);
-	void buttonPressEvent(XButtonEvent *be);	
-	FluxboxWindow *findWindow(Window w);
-	IconBarObj *findIcon(FluxboxWindow * const fluxboxwin);
-	const IconBarObj *findIcon(const FluxboxWindow * const fluxboxwin) const;
-	void exposeEvent(XExposeEvent *ee);
+    IconBar(BScreen *scrn, Window parent);
+    ~IconBar();
+    void draw(); //TODO
+    void reconfigure();
+    Window addIcon(FluxboxWindow *fluxboxwin);
+    Window delIcon(FluxboxWindow *fluxboxwin);
+    void buttonPressEvent(XButtonEvent *be);	
+    FluxboxWindow *findWindow(Window w);
+    IconBarObj *findIcon(FluxboxWindow * const fluxboxwin);
+    const IconBarObj *findIcon(const FluxboxWindow * const fluxboxwin) const;
+    void exposeEvent(XExposeEvent *ee);
 
-	void draw(const IconBarObj * const obj, int width) const;
+    void draw(const IconBarObj * const obj, int width) const;
 private:
-	typedef std::list<IconBarObj *> IconList;
+    typedef std::list<IconBarObj *> IconList;
 
 //	void draw(IconBarObj *obj, int width);
-	void loadTheme(unsigned int width, unsigned int height);
-	void decorate(Window win);
+    void loadTheme(unsigned int width, unsigned int height);
+    void decorate(Window win);
 //	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
-	void repositionIcons();
-	Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
-	BScreen *m_screen;
-	Display *m_display;
-	Window m_parent;
-	IconList m_iconlist;	
-	Pixmap m_focus_pm;
-	unsigned long m_focus_pixel;
+    void repositionIcons();
+    Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
+    BScreen *m_screen;
+    Display *m_display;
+    Window m_parent;
+    IconList m_iconlist;	
+    Pixmap m_focus_pm;
+    unsigned long m_focus_pixel;
 };
 
 #endif // ICONBAR_HH

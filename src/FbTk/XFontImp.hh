@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: XFontImp.hh,v 1.2 2002/12/01 13:42:15 rathnor Exp $
 
 #ifndef FBTK_XFONTIMP_HH
 #define FBTK_XFONTIMP_HH
@@ -29,51 +29,51 @@ namespace FbTk {
 
 class XFontImp:public FbTk::FontImp {
 public:
-	explicit XFontImp(const char *filename = 0);
-	~XFontImp();
-	bool load(const std::string &filename);
-	unsigned int textWidth(const char * const text, unsigned int size) const;
-	unsigned int height() const;
-	float angle() const { return m_angle; }
-	int ascent() const;
-	int descent() const { return m_fontstruct ? m_fontstruct->descent : 0; }
-	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	bool loaded() const { return m_fontstruct != 0; }
-	void rotate(float angle);
+    explicit XFontImp(const char *filename = 0);
+    ~XFontImp();
+    bool load(const std::string &filename);
+    unsigned int textWidth(const char * const text, unsigned int size) const;
+    unsigned int height() const;
+    float angle() const { return m_angle; }
+    int ascent() const;
+    int descent() const { return m_fontstruct ? m_fontstruct->descent : 0; }
+    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    bool loaded() const { return m_fontstruct != 0; }
+    void rotate(float angle);
 private:
-	void freeRotFont();
-	void drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	unsigned int rotTextWidth(const char * const text, unsigned int size) const;
-	struct BitmapStruct {
-		int	bit_w;
-		int bit_h;
+    void freeRotFont();
+    void drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    unsigned int rotTextWidth(const char * const text, unsigned int size) const;
+    struct BitmapStruct {
+        int	bit_w;
+        int bit_h;
 
-		Pixmap bm;
-	};
+        Pixmap bm;
+    };
 
-	struct XRotCharStruct {
-		int	ascent;
-		int	descent;
-		int	lbearing;
-		int	rbearing;
-		int width;
+    struct XRotCharStruct {
+        int	ascent;
+        int	descent;
+        int	lbearing;
+        int	rbearing;
+        int width;
 
-		BitmapStruct glyph;
-	};
+        BitmapStruct glyph;
+    };
 
-	struct XRotFontStruct {
-		int	dir;
-		int	height;
-		int	max_ascent;
-		int	max_descent;
-		int	max_char;
-		int min_char;
+    struct XRotFontStruct {
+        int	dir;
+        int	height;
+        int	max_ascent;
+        int	max_descent;
+        int	max_char;
+        int min_char;
 
-		XRotCharStruct per_char[95];
-	};
-	XRotFontStruct *m_rotfont;
-	XFontStruct *m_fontstruct;
-	float m_angle;
+        XRotCharStruct per_char[95];
+    };
+    XRotFontStruct *m_rotfont;
+    XFontStruct *m_fontstruct;
+    float m_angle;
 };
 
 }; // end namespace FbTk

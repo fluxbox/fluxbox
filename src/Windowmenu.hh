@@ -29,51 +29,51 @@ class FluxboxWindow;
 
 class Windowmenu : public Basemenu {
 public:
-	explicit Windowmenu(FluxboxWindow &fbwin);
-	virtual ~Windowmenu();
+    explicit Windowmenu(FluxboxWindow &fbwin);
+    virtual ~Windowmenu();
 
-	const Basemenu &getSendToMenu() const { return sendToMenu; }
-	Basemenu &getSendToMenu() { return sendToMenu; }
-	const Basemenu &getSendGroupToMenu() const { return sendGroupToMenu; }	
-	Basemenu &getSendGroupToMenu() { return sendGroupToMenu; }
+    const Basemenu &getSendToMenu() const { return sendToMenu; }
+    Basemenu &getSendToMenu() { return sendToMenu; }
+    const Basemenu &getSendGroupToMenu() const { return sendGroupToMenu; }	
+    Basemenu &getSendGroupToMenu() { return sendGroupToMenu; }
 
-	void reconfigure();
-	void setClosable();
+    void reconfigure();
+    void setClosable();
 
-	virtual void show();
+    virtual void show();
 
 protected:
-	virtual void itemSelected(int button, unsigned int index);
+    virtual void itemSelected(int button, unsigned int index);
 
 private:
-	FluxboxWindow &window;
-	BScreen *screen;
+    FluxboxWindow &window;
+    BScreen *screen;
 
  
-	class SendtoWorkspacemenu : public Basemenu {
-	public:
-		SendtoWorkspacemenu(FluxboxWindow &win);
-		void update();
+    class SendtoWorkspacemenu : public Basemenu {
+    public:
+        SendtoWorkspacemenu(FluxboxWindow &win);
+        void update();
 
-		virtual void show();
-		FluxboxWindow &fbwin() { return m_fbwindow; }
-	protected:
-		virtual void itemSelected(int button, unsigned int index);
-	private:
-		FluxboxWindow &m_fbwindow;
-	};
+        virtual void show();
+        FluxboxWindow &fbwin() { return m_fbwindow; }
+    protected:
+        virtual void itemSelected(int button, unsigned int index);
+    private:
+        FluxboxWindow &m_fbwindow;
+    };
 
-	class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
-	public:
-		SendGroupToWorkspacemenu(FluxboxWindow &win);
+    class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
+    public:
+        SendGroupToWorkspacemenu(FluxboxWindow &win);
 
-	protected:	
-		virtual void itemSelected(int button, unsigned int index);
+    protected:	
+        virtual void itemSelected(int button, unsigned int index);
 		
-	};
+    };
 	
-	SendtoWorkspacemenu sendToMenu;
-	SendGroupToWorkspacemenu sendGroupToMenu;
+    SendtoWorkspacemenu sendToMenu;
+    SendGroupToWorkspacemenu sendGroupToMenu;
 
 };
 

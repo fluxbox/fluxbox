@@ -53,8 +53,8 @@
 
 
 Rootmenu::Rootmenu(BScreen *scrn)
-: Basemenu(scrn),
-  auto_group_window(0)
+    : Basemenu(scrn),
+      auto_group_window(0)
 {
 
 }
@@ -62,97 +62,97 @@ Rootmenu::Rootmenu(BScreen *scrn)
 
 void Rootmenu::itemSelected(int button, unsigned int index) {
 	
-	Fluxbox *fluxbox = Fluxbox::instance();
+    Fluxbox *fluxbox = Fluxbox::instance();
 	
-	if (button == 1) {
-		BasemenuItem *item = find(index);
+    if (button == 1) {
+        BasemenuItem *item = find(index);
 
-		if (item->function()) {
-			switch (item->function()) {
-			case BScreen::EXECUTE:
-				if (item->exec().size()) {
+        if (item->function()) {
+            switch (item->function()) {
+            case BScreen::EXECUTE:
+                if (item->exec().size()) {
 #ifndef    __EMX__
-					char displaystring[MAXPATHLEN];
-					sprintf(displaystring, "DISPLAY=%s",
-							DisplayString(screen()->getBaseDisplay()->getXDisplay()));
-					sprintf(displaystring + strlen(displaystring) - 1, "%d",
-						screen()->getScreenNumber());
+                    char displaystring[MAXPATHLEN];
+                    sprintf(displaystring, "DISPLAY=%s",
+                            DisplayString(screen()->getBaseDisplay()->getXDisplay()));
+                    sprintf(displaystring + strlen(displaystring) - 1, "%d",
+                            screen()->getScreenNumber());
 
-					screen()->setAutoGroupWindow(useAutoGroupWindow());
+                    screen()->setAutoGroupWindow(useAutoGroupWindow());
 
-					bexec(item->exec().c_str(), displaystring);
+                    bexec(item->exec().c_str(), displaystring);
 #else //   __EMX__
-					spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), NULL);
+                    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), NULL);
 #endif // !__EMX__
-				}
-				break;
+                }
+                break;
 
-			case BScreen::RESTART:
-				fluxbox->restart();
-				break;
+            case BScreen::RESTART:
+                fluxbox->restart();
+                break;
 
-			case BScreen::RESTARTOTHER:
-				if (item->exec().size())
-					fluxbox->restart(item->exec().c_str());
-				break;
+            case BScreen::RESTARTOTHER:
+                if (item->exec().size())
+                    fluxbox->restart(item->exec().c_str());
+                break;
 
-			case BScreen::EXIT:
-				fluxbox->shutdown();
-			break;
+            case BScreen::EXIT:
+                fluxbox->shutdown();
+                break;
 
-			case BScreen::SETSTYLE:
-				if (item->exec().size()) {
-					fluxbox->saveStyleFilename(item->exec().c_str());
-					fluxbox->reconfigureTabs();
-				}
-				fluxbox->reconfigure();
-				fluxbox->save_rc();
-			break;
-			case BScreen::RECONFIGURE:
-				fluxbox->reconfigure();
-				return;
-			}
-			if (! (screen()->getRootmenu()->isTorn() || isTorn()) &&
-					item->function() != BScreen::RECONFIGURE &&
-					item->function() != BScreen::SETSTYLE)
-				hide();
-		}
-	}
+            case BScreen::SETSTYLE:
+                if (item->exec().size()) {
+                    fluxbox->saveStyleFilename(item->exec().c_str());
+                    fluxbox->reconfigureTabs();
+                }
+                fluxbox->reconfigure();
+                fluxbox->save_rc();
+                break;
+            case BScreen::RECONFIGURE:
+                fluxbox->reconfigure();
+                return;
+            }
+            if (! (screen()->getRootmenu()->isTorn() || isTorn()) &&
+                item->function() != BScreen::RECONFIGURE &&
+                item->function() != BScreen::SETSTYLE)
+                hide();
+        }
+    }
 }
 
 void Rootmenu::setAutoGroupWindow(Window window) {
-	auto_group_window = window;
+    auto_group_window = window;
 }
 
 void Rootmenu::show() {
-	Basemenu::show();
-	// make sure it's full visible
+    Basemenu::show();
+    // make sure it's full visible
 	
-	int newx = x(), newy = y();
-	if (x() < 0)
-		newx = 0;
-	else if (x() + width() > screen()->getWidth())
-		newx = screen()->getWidth() - width();
-	if (y() < 0)
-		newy = 0;
-	else if (y() + height() > screen()->getHeight())
-		newy = screen()->getHeight() - height();
+    int newx = x(), newy = y();
+    if (x() < 0)
+        newx = 0;
+    else if (x() + width() > screen()->getWidth())
+        newx = screen()->getWidth() - width();
+    if (y() < 0)
+        newy = 0;
+    else if (y() + height() > screen()->getHeight())
+        newy = screen()->getHeight() - height();
 
-	move(newx, newy);
+    move(newx, newy);
 }
 
 Window Rootmenu::useAutoGroupWindow() {
-	// Return and clear the auto-grouping state.
-	Window w = auto_group_window;
-	if (w)
-		auto_group_window = 0;	// clear it immediately
-	// If not set check the parent and the parent's parent, ...
-	else if (parent()) {
-		// TODO: dynamic_cast throws std::bad_cast!
-		Rootmenu *p = dynamic_cast<Rootmenu*>(parent());
-		w = p->useAutoGroupWindow();
-	}
-	return w;
+    // Return and clear the auto-grouping state.
+    Window w = auto_group_window;
+    if (w)
+        auto_group_window = 0;	// clear it immediately
+    // If not set check the parent and the parent's parent, ...
+    else if (parent()) {
+        // TODO: dynamic_cast throws std::bad_cast!
+        Rootmenu *p = dynamic_cast<Rootmenu*>(parent());
+        w = p->useAutoGroupWindow();
+    }
+    return w;
 }
 
 

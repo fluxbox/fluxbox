@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.4 2002/09/07 20:12:47 fluxgen Exp $
+// $Id: FbAtoms.cc,v 1.5 2002/12/01 13:41:56 rathnor Exp $
 
 #include "FbAtoms.hh"
 
@@ -29,14 +29,14 @@ using namespace std;
 FbAtoms *FbAtoms::s_singleton = 0;
 
 FbAtoms::FbAtoms(Display *display):m_init(false) {
-	if (s_singleton != 0)
-		throw string("You can only create one instance of FbAtoms");
+    if (s_singleton != 0)
+        throw string("You can only create one instance of FbAtoms");
 
-	if (display == 0)
-		throw string("Must supply FbAtoms with an valid display connection");
+    if (display == 0)
+        throw string("Must supply FbAtoms with an valid display connection");
 
-	s_singleton = this;
-	initAtoms(display);
+    s_singleton = this;
+    initAtoms(display);
 }
 
 FbAtoms::~FbAtoms() {
@@ -44,50 +44,50 @@ FbAtoms::~FbAtoms() {
 }
 
 FbAtoms *FbAtoms::instance() {
-	assert(s_singleton);
-	return s_singleton;
+    assert(s_singleton);
+    return s_singleton;
 }
 
 void FbAtoms::initAtoms(Display *display) {
 
-	xa_wm_colormap_windows =
-		XInternAtom(display, "WM_COLORMAP_WINDOWS", False);
-	xa_wm_protocols = XInternAtom(display, "WM_PROTOCOLS", False);
-	xa_wm_state = XInternAtom(display, "WM_STATE", False);
-	xa_wm_change_state = XInternAtom(display, "WM_CHANGE_STATE", False);
-	xa_wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
-	xa_wm_take_focus = XInternAtom(display, "WM_TAKE_FOCUS", False);
-	motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
+    xa_wm_colormap_windows =
+        XInternAtom(display, "WM_COLORMAP_WINDOWS", False);
+    xa_wm_protocols = XInternAtom(display, "WM_PROTOCOLS", False);
+    xa_wm_state = XInternAtom(display, "WM_STATE", False);
+    xa_wm_change_state = XInternAtom(display, "WM_CHANGE_STATE", False);
+    xa_wm_delete_window = XInternAtom(display, "WM_DELETE_WINDOW", False);
+    xa_wm_take_focus = XInternAtom(display, "WM_TAKE_FOCUS", False);
+    motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
 
-	blackbox_hints = XInternAtom(display, "_BLACKBOX_HINTS", False);
-	blackbox_attributes = XInternAtom(display, "_BLACKBOX_ATTRIBUTES", False);
-	blackbox_change_attributes =
-		XInternAtom(display, "_BLACKBOX_CHANGE_ATTRIBUTES", False);
+    blackbox_hints = XInternAtom(display, "_BLACKBOX_HINTS", False);
+    blackbox_attributes = XInternAtom(display, "_BLACKBOX_ATTRIBUTES", False);
+    blackbox_change_attributes =
+        XInternAtom(display, "_BLACKBOX_CHANGE_ATTRIBUTES", False);
 
-	blackbox_structure_messages =
-		XInternAtom(display, "_BLACKBOX_STRUCTURE_MESSAGES", False);
-	blackbox_notify_startup =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_STARTUP", False);
-	blackbox_notify_window_add =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_ADD", False);
-	blackbox_notify_window_del =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_DEL", False);
-	blackbox_notify_current_workspace =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_CURRENT_WORKSPACE", False);
-	blackbox_notify_workspace_count =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_WORKSPACE_COUNT", False);
-	blackbox_notify_window_focus =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_FOCUS", False);
-	blackbox_notify_window_raise =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_RAISE", False);
-	blackbox_notify_window_lower =
-		XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_LOWER", False);
+    blackbox_structure_messages =
+        XInternAtom(display, "_BLACKBOX_STRUCTURE_MESSAGES", False);
+    blackbox_notify_startup =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_STARTUP", False);
+    blackbox_notify_window_add =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_ADD", False);
+    blackbox_notify_window_del =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_DEL", False);
+    blackbox_notify_current_workspace =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_CURRENT_WORKSPACE", False);
+    blackbox_notify_workspace_count =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_WORKSPACE_COUNT", False);
+    blackbox_notify_window_focus =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_FOCUS", False);
+    blackbox_notify_window_raise =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_RAISE", False);
+    blackbox_notify_window_lower =
+        XInternAtom(display, "_BLACKBOX_NOTIFY_WINDOW_LOWER", False);
 
-	blackbox_change_workspace =
-		XInternAtom(display, "_BLACKBOX_CHANGE_WORKSPACE", False);
-	blackbox_change_window_focus =
-		XInternAtom(display, "_BLACKBOX_CHANGE_WINDOW_FOCUS", False);
-	blackbox_cycle_window_focus =
-		XInternAtom(display, "_BLACKBOX_CYCLE_WINDOW_FOCUS", False);
+    blackbox_change_workspace =
+        XInternAtom(display, "_BLACKBOX_CHANGE_WORKSPACE", False);
+    blackbox_change_window_focus =
+        XInternAtom(display, "_BLACKBOX_CHANGE_WINDOW_FOCUS", False);
+    blackbox_cycle_window_focus =
+        XInternAtom(display, "_BLACKBOX_CYCLE_WINDOW_FOCUS", False);
 
 }

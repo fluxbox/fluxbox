@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: Texture.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
@@ -32,64 +32,64 @@
 namespace FbTk  {
 
 /**
-	Holds texture type and info
+   Holds texture type and info
 */
 class Texture {
 public:
 
-	enum Bevel {
-		FLAT =     0x00002,
-		SUNKEN =   0x00004, 
-		RAISED =   0x00008
-	};
+    enum Bevel {
+        FLAT =     0x00002,
+        SUNKEN =   0x00004, 
+        RAISED =   0x00008
+    };
 
-	enum Textures {
-		NONE =     0x00000,
-		SOLID =    0x00010,
-		GRADIENT = 0x00020
-	};
+    enum Textures {
+        NONE =     0x00000,
+        SOLID =    0x00010,
+        GRADIENT = 0x00020
+    };
 
-	enum Gradients {
-		HORIZONTAL =     0x00040,
-		VERTICAL =       0x00080,
-		DIAGONAL =       0x00100,
-		CROSSDIAGONAL =  0x00200,
-		RECTANGLE =      0x00400,
-		PYRAMID =        0x00800,
-		PIPECROSS =      0x01000,
-		ELLIPTIC =       0x02000		
-	};
+    enum Gradients {
+        HORIZONTAL =     0x00040,
+        VERTICAL =       0x00080,
+        DIAGONAL =       0x00100,
+        CROSSDIAGONAL =  0x00200,
+        RECTANGLE =      0x00400,
+        PYRAMID =        0x00800,
+        PIPECROSS =      0x01000,
+        ELLIPTIC =       0x02000		
+    };
 	
-	enum {
-		BEVEL1 =         0x04000, 
-		BEVEL2 =         0x08000, // bevel types
-		INVERT =        0x010000, //inverted image
-		PARENTRELATIVE = 0x20000,
-		INTERLACED =     0x40000
-	};
+    enum {
+        BEVEL1 =         0x04000, 
+        BEVEL2 =         0x08000, // bevel types
+        INVERT =        0x010000, //inverted image
+        PARENTRELATIVE = 0x20000,
+        INTERLACED =     0x40000
+    };
 
-	Texture():m_type(0) { }
+    Texture():m_type(0) { }
 
-	void setType(unsigned long t) { m_type = t; }
-	void addType(unsigned long t) { m_type |= t; }
-	void setFromString(const char * const str);
+    void setType(unsigned long t) { m_type = t; }
+    void addType(unsigned long t) { m_type |= t; }
+    void setFromString(const char * const str);
 	
-	Color &color() { return m_color; }
-	Color &colorTo() { return m_color_to; }
-	Color &hiColor() { return m_hicolor; }
-	Color &loColor() { return m_locolor; }
+    Color &color() { return m_color; }
+    Color &colorTo() { return m_color_to; }
+    Color &hiColor() { return m_hicolor; }
+    Color &loColor() { return m_locolor; }
 
-	const Color &color() const { return m_color; }
-	const Color &colorTo() const { return m_color_to; }
-	const Color &hiColor() const { return m_hicolor; }
-	const Color &loColor() const { return m_locolor; }
+    const Color &color() const { return m_color; }
+    const Color &colorTo() const { return m_color_to; }
+    const Color &hiColor() const { return m_hicolor; }
+    const Color &loColor() const { return m_locolor; }
 	
-	inline unsigned long type() const { return m_type; }
+    inline unsigned long type() const { return m_type; }
 
 
 private:
-	FbTk::Color m_color, m_color_to, m_hicolor, m_locolor;
-	unsigned long m_type;
+    FbTk::Color m_color, m_color_to, m_hicolor, m_locolor;
+    unsigned long m_type;
 };
 
 }; // end namespace FbTk

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.hh,v 1.2 2002/11/30 20:36:22 fluxgen Exp $
+// $Id: TextureRender.hh,v 1.3 2002/12/01 13:42:00 rathnor Exp $
 
 #ifndef TEXTURRENDER_HH
 #define TEXTURRENDER_HH
@@ -38,57 +38,57 @@ class BImageControl;
 */
 class TextureRender {
 public:
-	TextureRender(BImageControl &ic, unsigned int width, unsigned int height, 
-		XColor *_colors=0, size_t num_colors=0);
-	~TextureRender();
-	/// render to pixmap
-	Pixmap render(const FbTk::Texture &src_texture);
-	/// render solid texture to pixmap
-	Pixmap renderSolid(const FbTk::Texture &src_texture);
-	/// render gradient texture to pixmap
-	Pixmap renderGradient(const FbTk::Texture &src_texture);
+    TextureRender(BImageControl &ic, unsigned int width, unsigned int height, 
+                  XColor *_colors=0, size_t num_colors=0);
+    ~TextureRender();
+    /// render to pixmap
+    Pixmap render(const FbTk::Texture &src_texture);
+    /// render solid texture to pixmap
+    Pixmap renderSolid(const FbTk::Texture &src_texture);
+    /// render gradient texture to pixmap
+    Pixmap renderGradient(const FbTk::Texture &src_texture);
 
 private:
-	/**
-		Render to pixmap
-		@return rendered pixmap
-	*/
-	Pixmap renderPixmap();
-	/**
-		Render to XImage
-		@returns allocated and rendered XImage, user is responsible to deallocate
-	*/
-	XImage *renderXImage();
-	/**
-		@name render functions
-	*/
-	//@{
-	void invert();
-	void bevel1();
-	void bevel2();
-	void dgradient();
-	void egradient();
-	void hgradient();
-	void pgradient();
-	void rgradient();
-	void vgradient();
-	void cdgradient();
-	void pcgradient();
-	//@}
-	void makeGradientBuffers();
+    /**
+       Render to pixmap
+       @return rendered pixmap
+    */
+    Pixmap renderPixmap();
+    /**
+       Render to XImage
+       @returns allocated and rendered XImage, user is responsible to deallocate
+    */
+    XImage *renderXImage();
+    /**
+       @name render functions
+    */
+    //@{
+    void invert();
+    void bevel1();
+    void bevel2();
+    void dgradient();
+    void egradient();
+    void hgradient();
+    void pgradient();
+    void rgradient();
+    void vgradient();
+    void cdgradient();
+    void pcgradient();
+    //@}
+    void makeGradientBuffers();
 
-	BImageControl &control;
-	bool interlaced;
+    BImageControl &control;
+    bool interlaced;
 
-	XColor *colors; // color table
+    XColor *colors; // color table
 
-	const FbTk::Color *from, *to;
-	int red_offset, green_offset, blue_offset, red_bits, green_bits, blue_bits,
-		ncolors, cpc, cpccpc;
-	unsigned char *red, *green, *blue;
-	const unsigned char *red_table, *green_table, *blue_table;
-	unsigned int width, height;
-	unsigned int *xtable, *ytable;
+    const FbTk::Color *from, *to;
+    int red_offset, green_offset, blue_offset, red_bits, green_bits, blue_bits,
+        ncolors, cpc, cpccpc;
+    unsigned char *red, *green, *blue;
+    const unsigned char *red_table, *green_table, *blue_table;
+    unsigned int width, height;
+    unsigned int *xtable, *ytable;
 };
 
 #endif // TEXTURERENDER_HH

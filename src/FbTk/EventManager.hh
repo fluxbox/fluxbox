@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.1 2002/11/27 21:41:13 fluxgen Exp $
+// $Id: EventManager.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
 
 #include "EventHandler.hh"
 #include <map>
@@ -27,21 +27,21 @@
 namespace FbTk {
 
 /**
-  singleton mediator for EventHandlers
+   singleton mediator for EventHandlers
 */
 class EventManager {
 public:	
-	static EventManager *instance();
+    static EventManager *instance();
 	
-	void handleEvent(XEvent &ev);
+    void handleEvent(XEvent &ev);
 
-	void registerEventHandler(EventHandler &ev, Window win);
-	void unregisterEventHandler(Window win);
+    void registerEventHandler(EventHandler &ev, Window win);
+    void unregisterEventHandler(Window win);
 private:
-	EventManager() { }
-	~EventManager();
+    EventManager() { }
+    ~EventManager();
 
-	std::map<Window, EventHandler *> m_eventhandlers;
+    std::map<Window, EventHandler *> m_eventhandlers;
 };
 
 }; //end namespace FbTk

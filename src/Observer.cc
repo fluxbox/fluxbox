@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Observer.cc,v 1.1 2002/09/07 20:30:45 fluxgen Exp $
+// $Id: Observer.cc,v 1.2 2002/12/01 13:41:58 rathnor Exp $
 
 #include "Observer.hh"
 #include "Subject.hh"
@@ -27,7 +27,7 @@
 namespace FbTk {
 
 Observer::~Observer() {
-	Subject::removeObserver(this); // make sure no subject has this observer attached
+    Subject::removeObserver(this); // make sure no subject has this observer attached
 }
 
 };

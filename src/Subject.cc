@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Subject.cc,v 1.1 2002/09/07 20:30:45 fluxgen Exp $
+// $Id: Subject.cc,v 1.2 2002/12/01 13:41:59 rathnor Exp $
 
 #include "Subject.hh"
 #include "Observer.hh"
@@ -32,49 +32,49 @@ namespace FbTk {
 Subject::SubjectList Subject::s_subjectlist;
 
 Subject::Subject() {
-	s_subjectlist.push_back(this);
+    s_subjectlist.push_back(this);
 }
 
 Subject::~Subject() {
-	SubjectList::iterator it = s_subjectlist.begin();
-	SubjectList::iterator it_end = s_subjectlist.end();
-	for (; it != it_end; ++it) {
-		if (this == (*it)) {
-			s_subjectlist.erase(it);
-			break;
-		}
-	}
+    SubjectList::iterator it = s_subjectlist.begin();
+    SubjectList::iterator it_end = s_subjectlist.end();
+    for (; it != it_end; ++it) {
+        if (this == (*it)) {
+            s_subjectlist.erase(it);
+            break;
+        }
+    }
 }
 
 void Subject::attach(Observer *obj) {
-	m_observerlist.push_back(obj);
-	// no need to have more than one instance of an observer
-	std::unique(m_observerlist.begin(), m_observerlist.end());
+    m_observerlist.push_back(obj);
+    // no need to have more than one instance of an observer
+    std::unique(m_observerlist.begin(), m_observerlist.end());
 }
 
 void Subject::detach(Observer *obj) {
-	ObserverList::iterator it = m_observerlist.begin();
-	ObserverList::iterator it_end = m_observerlist.end();
-	for (; it != it_end; ++it) {
-		if (obj == (*it)) {
-			m_observerlist.erase(it);
-			break;
-		}
-	}
+    ObserverList::iterator it = m_observerlist.begin();
+    ObserverList::iterator it_end = m_observerlist.end();
+    for (; it != it_end; ++it) {
+        if (obj == (*it)) {
+            m_observerlist.erase(it);
+            break;
+        }
+    }
 }
 
 void Subject::notify() {
-	ObserverList::iterator it = m_observerlist.begin();
-	for (; it != m_observerlist.end(); ++it) {
-		(*it)->update(this);
-	}
+    ObserverList::iterator it = m_observerlist.begin();
+    for (; it != m_observerlist.end(); ++it) {
+        (*it)->update(this);
+    }
 }
 
 void Subject::removeObserver(Observer *obj) {
-	SubjectList::iterator it = s_subjectlist.begin();
-	for(; it != s_subjectlist.end(); ++it) {
-		(*it)->detach(obj);
-	}
+    SubjectList::iterator it = s_subjectlist.begin();
+    for(; it != s_subjectlist.end(); ++it) {
+        (*it)->detach(obj);
+    }
 }
 
 }; // end namespace FbTk

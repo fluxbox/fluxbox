@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.20 2002/11/30 20:10:42 fluxgen Exp $
+// $Id: IconBar.cc,v 1.21 2002/12/01 13:41:57 rathnor Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -31,8 +31,8 @@
 
 IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin)
 {
-	m_fluxboxwin = fluxboxwin;
-	m_iconwin = iconwin;
+    m_fluxboxwin = fluxboxwin;
+    m_iconwin = iconwin;
 }
 
 IconBarObj::~IconBarObj() {
@@ -44,26 +44,26 @@ IconBarObj::~IconBarObj() {
 // window
 //------------------------------------
 unsigned int IconBarObj::width() const {
-	Window root;
+    Window root;
 
-	unsigned int width, height;
-	unsigned int border_width, depth;	//not used
-	int x, y; //not used
+    unsigned int width, height;
+    unsigned int border_width, depth;	//not used
+    int x, y; //not used
 
-	Display *m_display = Fluxbox::instance()->getXDisplay();
+    Display *m_display = Fluxbox::instance()->getXDisplay();
 
-	XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
-					&width, &height, &border_width, &depth);
+    XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
+                 &width, &height, &border_width, &depth);
 
-	return width;
+    return width;
 }
 
 
 IconBar::IconBar(BScreen *scrn, Window parent):
-m_screen(scrn),
-m_parent(parent)
+    m_screen(scrn),
+    m_parent(parent)
 {
-	m_display = scrn->getBaseDisplay()->getXDisplay();
+    m_display = scrn->getBaseDisplay()->getXDisplay();
 }
 
 IconBar::~IconBar() {
@@ -76,17 +76,17 @@ IconBar::~IconBar() {
 //--------------------------------------------
 Window IconBar::addIcon(FluxboxWindow *fluxboxwin) {
 	
-	Window iconwin = createIconWindow(fluxboxwin, m_parent);
-	decorate(iconwin);	
-	//add window object to list	
-	m_iconlist.push_back(new IconBarObj(fluxboxwin, iconwin));
-	//reposition all icons to fit windowbar
-	repositionIcons();
+    Window iconwin = createIconWindow(fluxboxwin, m_parent);
+    decorate(iconwin);	
+    //add window object to list	
+    m_iconlist.push_back(new IconBarObj(fluxboxwin, iconwin));
+    //reposition all icons to fit windowbar
+    repositionIcons();
 	
-	XMapSubwindows(m_display, iconwin);
-	XMapWindow(m_display, iconwin);	
+    XMapSubwindows(m_display, iconwin);
+    XMapWindow(m_display, iconwin);	
 	
-	return iconwin;
+    return iconwin;
 }
 
 //----------- delIcon -------------------
@@ -96,20 +96,20 @@ Window IconBar::addIcon(FluxboxWindow *fluxboxwin) {
 // returns None if no window was found
 //---------------------------------------
 Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
-	Window retwin = None;
-	IconBarObj *obj = findIcon(fluxboxwin);
-	if (obj) {
-		IconList::iterator it =
-			std::find(m_iconlist.begin(), m_iconlist.end(), obj);
-		if (it != m_iconlist.end()) {
-			m_iconlist.erase(it);								
-			retwin = obj->getIconWin();		
-			delete obj;				
-			XDestroyWindow(m_display, retwin);
-			repositionIcons();		
-		}
-	}		
-	return retwin;
+    Window retwin = None;
+    IconBarObj *obj = findIcon(fluxboxwin);
+    if (obj) {
+        IconList::iterator it =
+            std::find(m_iconlist.begin(), m_iconlist.end(), obj);
+        if (it != m_iconlist.end()) {
+            m_iconlist.erase(it);								
+            retwin = obj->getIconWin();		
+            delete obj;				
+            XDestroyWindow(m_display, retwin);
+            repositionIcons();		
+        }
+    }		
+    return retwin;
 }
 
 //------------ loadTheme ---------------
@@ -117,25 +117,25 @@ Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
 // with the size width * height
 //--------------------------------------
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
-	BImageControl *image_ctrl = m_screen->getImageControl();
-	Pixmap tmp = m_focus_pm;
-	const FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
+    BImageControl *image_ctrl = m_screen->getImageControl();
+    Pixmap tmp = m_focus_pm;
+    const FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
 	
-	//If we are working on a PARENTRELATIVE, change to right focus value
-	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
-		texture = &(m_screen->getWindowStyle()->tab.t_focus);
-	}
+    //If we are working on a PARENTRELATIVE, change to right focus value
+    if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
+        texture = &(m_screen->getWindowStyle()->tab.t_focus);
+    }
 		
-	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
-		m_focus_pm = None;
-			m_focus_pixel = texture->color().pixel();
-	} else {
-		m_focus_pm =
-			image_ctrl->renderImage(width, height, *texture);
-	}
+    if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+        m_focus_pm = None;
+        m_focus_pixel = texture->color().pixel();
+    } else {
+        m_focus_pm =
+            image_ctrl->renderImage(width, height, *texture);
+    }
 
-	if (tmp)
-		image_ctrl->removeImage(tmp);
+    if (tmp)
+        image_ctrl->removeImage(tmp);
 }
 
 //------------ decorate ------------------
@@ -144,12 +144,12 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 //----------------------------------------
 void IconBar::decorate(Window win) {
 
-	XSetWindowBorderWidth(m_display, win, m_screen->getWindowStyle()->tab.border_width);
-	XSetWindowBorder(m_display, win, m_screen->getWindowStyle()->tab.border_color.pixel());
-	if (m_focus_pm)
-		XSetWindowBackgroundPixmap(m_display, win, m_focus_pm);
-	else
-		XSetWindowBackground(m_display, win, m_focus_pixel);
+    XSetWindowBorderWidth(m_display, win, m_screen->getWindowStyle()->tab.border_width);
+    XSetWindowBorder(m_display, win, m_screen->getWindowStyle()->tab.border_color.pixel());
+    if (m_focus_pm)
+        XSetWindowBackgroundPixmap(m_display, win, m_focus_pm);
+    else
+        XSetWindowBackground(m_display, win, m_focus_pixel);
 }
 
 
@@ -158,7 +158,7 @@ void IconBar::decorate(Window win) {
 // theme, pos and width
 //----------------------------------------
 void IconBar::reconfigure() {	
-	repositionIcons();
+    repositionIcons();
 	
 }
 //---------- exposeEvent -----------------
@@ -166,66 +166,66 @@ void IconBar::reconfigure() {
 // just redraws all the icons
 //----------------------------------------
 void IconBar::exposeEvent(XExposeEvent *ee) {
-	IconBarObj *obj=0;	
-	IconList::iterator it = m_iconlist.begin();
-	IconList::iterator it_end = m_iconlist.end();
-	for (; it != it_end; ++it) {
-		if ((*it)->getIconWin() == ee->window) {
-			obj = (*it);
-			break;
-		}
-	}	
+    IconBarObj *obj=0;	
+    IconList::iterator it = m_iconlist.begin();
+    IconList::iterator it_end = m_iconlist.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->getIconWin() == ee->window) {
+            obj = (*it);
+            break;
+        }
+    }	
 
-	if (obj) {
+    if (obj) {
 
-		Window root;
-		unsigned int width, height;
-		unsigned int border_width, depth;	//not used
-		int x, y;
-		XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
-					&border_width, &depth);
+        Window root;
+        unsigned int width, height;
+        unsigned int border_width, depth;	//not used
+        int x, y;
+        XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
+                     &border_width, &depth);
 
-		//max width on every icon
-		unsigned int icon_width = width / m_iconlist.size();
+        //max width on every icon
+        unsigned int icon_width = width / m_iconlist.size();
 	
-		//load right size of theme
-		loadTheme(icon_width, height);
+        //load right size of theme
+        loadTheme(icon_width, height);
 				
-		draw(obj, icon_width);
+        draw(obj, icon_width);
 		
-	}	
+    }	
 }
 
 //------------ repositionIcons ------------
 // Calculates and moves/resizes the icons
 //-----------------------------------------
 void IconBar::repositionIcons() {
-	if (m_iconlist.size() == 0)
-		return;
+    if (m_iconlist.size() == 0)
+        return;
 		
-	Window root;
-	unsigned int width, height;
-	unsigned int border_width, depth;	//not used
-	int x, y;
-	XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
-		&border_width, &depth);
+    Window root;
+    unsigned int width, height;
+    unsigned int border_width, depth;	//not used
+    int x, y;
+    XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
+                 &border_width, &depth);
 	
-	//max width on every icon
-	unsigned int icon_width = width / m_iconlist.size();
+    //max width on every icon
+    unsigned int icon_width = width / m_iconlist.size();
 	
-	//load right size of theme
-	loadTheme(icon_width, height);
+    //load right size of theme
+    loadTheme(icon_width, height);
 
-	IconList::iterator it = m_iconlist.begin();
-	IconList::iterator it_end = m_iconlist.end();
-	for (x = 0; it != it_end; ++it, x += icon_width) {
-		Window iconwin = (*it)->getIconWin();
-		XMoveResizeWindow(m_display, iconwin,
-			 x, 0,
-			 icon_width, height);	
-		draw((*it), icon_width);
-		decorate(iconwin);
-	}
+    IconList::iterator it = m_iconlist.begin();
+    IconList::iterator it_end = m_iconlist.end();
+    for (x = 0; it != it_end; ++it, x += icon_width) {
+        Window iconwin = (*it)->getIconWin();
+        XMoveResizeWindow(m_display, iconwin,
+                          x, 0,
+                          icon_width, height);	
+        draw((*it), icon_width);
+        decorate(iconwin);
+    }
 		
 }
 
@@ -234,73 +234,73 @@ void IconBar::repositionIcons() {
 // returns the created X Window
 //----------------------------------------------
 Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
-	unsigned long attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
-			CWColormap | CWOverrideRedirect | CWEventMask;
-	XSetWindowAttributes attrib;
-	attrib.background_pixmap = None;
-	attrib.background_pixel = attrib.border_pixel =
-		fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.pixel();
-	attrib.colormap = fluxboxwin->getScreen()->colormap();
-	attrib.override_redirect = True;
-	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
-		ButtonMotionMask | ExposureMask | EnterWindowMask;
+    unsigned long attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
+        CWColormap | CWOverrideRedirect | CWEventMask;
+    XSetWindowAttributes attrib;
+    attrib.background_pixmap = None;
+    attrib.background_pixel = attrib.border_pixel =
+        fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.pixel();
+    attrib.colormap = fluxboxwin->getScreen()->colormap();
+    attrib.override_redirect = True;
+    attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
+        ButtonMotionMask | ExposureMask | EnterWindowMask;
 											
-	//create iconwindow
-	Window iconwin = XCreateWindow(m_display, parent, 0, 0, 1, 1, 0,
-		fluxboxwin->getScreen()->getDepth(), InputOutput, fluxboxwin->getScreen()->getVisual(),
-		attrib_mask, &attrib);
+    //create iconwindow
+    Window iconwin = XCreateWindow(m_display, parent, 0, 0, 1, 1, 0,
+                                   fluxboxwin->getScreen()->getDepth(), InputOutput, fluxboxwin->getScreen()->getVisual(),
+                                   attrib_mask, &attrib);
 		
-	return iconwin;
+    return iconwin;
 }
 
 //------------ draw ------------------
 // Draws theme and string to Window w
 //------------------------------------
 void IconBar::draw(const IconBarObj * const obj, int width) const {
-	if (!obj)
-		return;
+    if (!obj)
+        return;
 	
-	const FluxboxWindow * const fluxboxwin = obj->getFluxboxWin();
-	Window iconwin = obj->getIconWin();
-	unsigned int title_text_w;
+    const FluxboxWindow * const fluxboxwin = obj->getFluxboxWin();
+    Window iconwin = obj->getIconWin();
+    unsigned int title_text_w;
 
-	title_text_w = m_screen->getWindowStyle()->font.textWidth(
-		fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
-	int l = title_text_w;
-	unsigned int dlen=fluxboxwin->getIconTitle().size();
-	unsigned int bevel_w = m_screen->getBevelWidth();
-	int dx=bevel_w*2;
+    title_text_w = m_screen->getWindowStyle()->font.textWidth(
+        fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
+    int l = title_text_w;
+    unsigned int dlen=fluxboxwin->getIconTitle().size();
+    unsigned int bevel_w = m_screen->getBevelWidth();
+    int dx=bevel_w*2;
 		
-	for (; dlen >= 0; dlen--) {
-		l = m_screen->getWindowStyle()->tab.font.textWidth(
-			fluxboxwin->getIconTitle().c_str(), dlen);
-		l += (bevel_w * 4);
+    for (; dlen >= 0; dlen--) {
+        l = m_screen->getWindowStyle()->tab.font.textWidth(
+            fluxboxwin->getIconTitle().c_str(), dlen);
+        l += (bevel_w * 4);
 		
-		if (l < width)
-			break;
-	}
+        if (l < width)
+            break;
+    }
 
-	switch (m_screen->getWindowStyle()->tab.justify) {
-	case DrawUtil::Font::RIGHT:
-		dx += width - l;
-		break;
-	case DrawUtil::Font::CENTER:
-		dx += (width - l) / 2;
-		break;
-	default:
-		break;
-	}
+    switch (m_screen->getWindowStyle()->tab.justify) {
+    case DrawUtil::Font::RIGHT:
+        dx += width - l;
+        break;
+    case DrawUtil::Font::CENTER:
+        dx += (width - l) / 2;
+        break;
+    default:
+        break;
+    }
 
-	//Draw title to m_iconwin
+    //Draw title to m_iconwin
 
-	XClearWindow(m_display, iconwin);		
+    XClearWindow(m_display, iconwin);		
 	
-	m_screen->getWindowStyle()->tab.font.drawText(
-		iconwin,
-		m_screen->getScreenNumber(),
-		m_screen->getWindowStyle()->tab.l_text_focus_gc,
-		fluxboxwin->getIconTitle().c_str(), dlen,
-		dx, 1+ m_screen->getWindowStyle()->tab.font.ascent());
+    m_screen->getWindowStyle()->tab.font.drawText(
+        iconwin,
+        m_screen->getScreenNumber(),
+        m_screen->getWindowStyle()->tab.l_text_focus_gc,
+        fluxboxwin->getIconTitle().c_str(), dlen,
+        dx, 1+ m_screen->getWindowStyle()->tab.font.ascent());
 
 }
 
@@ -312,16 +312,16 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
 //----------------------------------
 FluxboxWindow *IconBar::findWindow(Window w) {
 
-	IconList::iterator it = m_iconlist.begin();
-	IconList::iterator it_end = m_iconlist.end();
-	for (; it != it_end; ++it) {
-		IconBarObj *tmp = (*it);
-		if (tmp)
-			if (tmp->getIconWin() == w)
-				return tmp->getFluxboxWin();			
-	}
+    IconList::iterator it = m_iconlist.begin();
+    IconList::iterator it_end = m_iconlist.end();
+    for (; it != it_end; ++it) {
+        IconBarObj *tmp = (*it);
+        if (tmp)
+            if (tmp->getIconWin() == w)
+                return tmp->getFluxboxWin();			
+    }
 	
-	return 0;
+    return 0;
 }
 
 //----------- findIcon ---------------
@@ -332,28 +332,28 @@ FluxboxWindow *IconBar::findWindow(Window w) {
 
 IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 
-	IconList::iterator it = m_iconlist.begin();
-	IconList::iterator it_end = m_iconlist.end();
-	for (; it != it_end; ++it) {
-		IconBarObj *tmp = (*it);
-		if (tmp)
-			if (tmp->getFluxboxWin() == fluxboxwin)
-				return tmp;			
-	}
+    IconList::iterator it = m_iconlist.begin();
+    IconList::iterator it_end = m_iconlist.end();
+    for (; it != it_end; ++it) {
+        IconBarObj *tmp = (*it);
+        if (tmp)
+            if (tmp->getFluxboxWin() == fluxboxwin)
+                return tmp;			
+    }
 	
-	return 0;
+    return 0;
 }
 
 const IconBarObj *IconBar::findIcon(const FluxboxWindow * const fluxboxwin) const {
 
-	IconList::const_iterator it = m_iconlist.begin();
-	IconList::const_iterator it_end = m_iconlist.end();
-	for (; it != it_end; ++it) {
-		IconBarObj *tmp = (*it);
-		if (tmp)
-			if (tmp->getFluxboxWin() == fluxboxwin)
-				return tmp;			
-	}
+    IconList::const_iterator it = m_iconlist.begin();
+    IconList::const_iterator it_end = m_iconlist.end();
+    for (; it != it_end; ++it) {
+        IconBarObj *tmp = (*it);
+        if (tmp)
+            if (tmp->getFluxboxWin() == fluxboxwin)
+                return tmp;			
+    }
 	
-	return 0;
+    return 0;
 }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.hh,v 1.1 2002/11/26 16:01:28 fluxgen Exp $
+// $Id: XmbFontImp.hh,v 1.2 2002/12/01 13:42:15 rathnor Exp $
 
 #ifndef FBTK_XMBFONTIMP_HH
 #define FBTK_XMBFONTIMP_HH
@@ -29,19 +29,19 @@ namespace FbTk {
 
 class XmbFontImp:public FbTk::FontImp {
 public:
-	XmbFontImp(const char *fontname, bool utf8);
-	~XmbFontImp();
-	bool load(const std::string &name);
-	virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	unsigned int textWidth(const char * const text, unsigned int len) const;
-	unsigned int height() const;
-	int ascent() const { return m_setextents ? -m_setextents->max_ink_extent.y : 0; }
-	int descent() const { return m_setextents ? m_setextents->max_ink_extent.height + m_setextents->max_ink_extent.y : 0; }
-	bool loaded() const { return m_fontset != 0; }
+    XmbFontImp(const char *fontname, bool utf8);
+    ~XmbFontImp();
+    bool load(const std::string &name);
+    virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    unsigned int textWidth(const char * const text, unsigned int len) const;
+    unsigned int height() const;
+    int ascent() const { return m_setextents ? -m_setextents->max_ink_extent.y : 0; }
+    int descent() const { return m_setextents ? m_setextents->max_ink_extent.height + m_setextents->max_ink_extent.y : 0; }
+    bool loaded() const { return m_fontset != 0; }
 private:
-	XFontSet m_fontset;
-	XFontSetExtents *m_setextents;
-	const bool m_utf8mode;
+    XFontSet m_fontset;
+    XFontSetExtents *m_setextents;
+    const bool m_utf8mode;
 };
 
 }; // end namespace FbTk

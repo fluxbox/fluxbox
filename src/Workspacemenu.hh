@@ -28,10 +28,10 @@
 
 class Workspacemenu : public Basemenu {
 public:
-	Workspacemenu(BScreen *screen);
+    Workspacemenu(BScreen *screen);
 
 protected:
-	virtual void itemSelected(int button, unsigned int index);
+    virtual void itemSelected(int button, unsigned int index);
 
 };
 

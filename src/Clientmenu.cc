@@ -39,28 +39,28 @@
 
 
 Clientmenu::Clientmenu(Workspace &ws) : Basemenu(ws.getScreen()),
-m_wkspc(ws) {
-	setInternalMenu();
+                                        m_wkspc(ws) {
+    setInternalMenu();
 }
 
 
 void Clientmenu::itemSelected(int button, unsigned int index) {
-	if (button > 2)
-		return;
-	//get the window with index of the item we selected
-	FluxboxWindow *win = m_wkspc.getWindow(index);
-	if (win) {
-		if (button == 1) {
-			if (! m_wkspc.isCurrent())
-				m_wkspc.setCurrent();
-		} else if (button == 2) {
-			if (! m_wkspc.isCurrent())
-				win->deiconify(true, false);
-		}
-		m_wkspc.raiseWindow(win);
-		win->setInputFocus();
-	}
+    if (button > 2)
+        return;
+    //get the window with index of the item we selected
+    FluxboxWindow *win = m_wkspc.getWindow(index);
+    if (win) {
+        if (button == 1) {
+            if (! m_wkspc.isCurrent())
+                m_wkspc.setCurrent();
+        } else if (button == 2) {
+            if (! m_wkspc.isCurrent())
+                win->deiconify(true, false);
+        }
+        m_wkspc.raiseWindow(win);
+        win->setInputFocus();
+    }
 
-	if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
-		hide();
+    if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
+        hide();
 }

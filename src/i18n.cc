@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.6 2002/08/13 23:54:41 fluxgen Exp $
+// $Id: i18n.cc,v 1.7 2002/12/01 13:42:07 rathnor Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -53,36 +53,36 @@ using std::endl;
 using std::string;
 
 void NLSInit(const char *catalog) {
-	I18n *i18n = I18n::instance();
-	i18n->openCatalog(catalog);
+    I18n *i18n = I18n::instance();
+    i18n->openCatalog(catalog);
 }
 
 
 I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 #ifdef		HAVE_SETLOCALE
-	//make sure we don't get 0 to m_locale string
-	char *temp = setlocale(LC_ALL, "");
-	m_locale = ( temp ?  temp : ""); 
-	if (m_locale.size() == 0) {
-		cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
+    //make sure we don't get 0 to m_locale string
+    char *temp = setlocale(LC_ALL, "");
+    m_locale = ( temp ?  temp : ""); 
+    if (m_locale.size() == 0) {
+        cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
 #endif // HAVE_SETLOCALE
-		m_locale = "C";
+        m_locale = "C";
 #ifdef		HAVE_SETLOCALE
-	} else {		
-		// MB_CUR_MAX returns the size of a char in the current locale
-		if (MB_CUR_MAX > 1)
-			m_multibyte = true;
+    } else {		
+        // MB_CUR_MAX returns the size of a char in the current locale
+        if (MB_CUR_MAX > 1)
+            m_multibyte = true;
 		
-		// truncate any encoding off the end of the locale
+        // truncate any encoding off the end of the locale
 				
-		string::size_type index = m_locale.find('@');
-		if (index != string::npos)
-			m_locale.erase(index); //erase all characters starting at index 				
+        string::size_type index = m_locale.find('@');
+        if (index != string::npos)
+            m_locale.erase(index); //erase all characters starting at index 				
 		
-		index = m_locale.find('.');
-		if (index != string::npos) 
-			m_locale.erase(index); //erase all characters starting at index 
-	}
+        index = m_locale.find('.');
+        if (index != string::npos) 
+            m_locale.erase(index); //erase all characters starting at index 
+    }
 #endif // HAVE_SETLOCALE
 }
 
@@ -90,37 +90,37 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 I18n::~I18n() {
 
 #if defined(NLS) && defined(HAVE_CATCLOSE)
-	if (m_catalog_fd != (nl_catd)-1)
-		catclose(m_catalog_fd);
+    if (m_catalog_fd != (nl_catd)-1)
+        catclose(m_catalog_fd);
 #endif // HAVE_CATCLOSE
 }
 
 I18n *I18n::instance() {
-	static I18n singleton; //singleton object
-	return &singleton;
+    static I18n singleton; //singleton object
+    return &singleton;
 }
 
 void I18n::openCatalog(const char *catalog) {
 #if defined(NLS) && defined(HAVE_CATOPEN)
 	
-	string catalog_filename = LOCALEPATH;
-	catalog_filename += '/';
-	catalog_filename += m_locale;
-	catalog_filename += '/';
-	catalog_filename += catalog;
+    string catalog_filename = LOCALEPATH;
+    catalog_filename += '/';
+    catalog_filename += m_locale;
+    catalog_filename += '/';
+    catalog_filename += catalog;
 
 #ifdef		MCLoadBySet
-	m_catalog_fd = catopen(catalog_filename.c_str(), MCLoadBySet);
+    m_catalog_fd = catopen(catalog_filename.c_str(), MCLoadBySet);
 #else // !MCLoadBySet
-	m_catalog_fd = catopen(catalog_filename.c_str(), NL_CAT_LOCALE);
+    m_catalog_fd = catopen(catalog_filename.c_str(), NL_CAT_LOCALE);
 #endif // MCLoadBySet
 
-	if (m_catalog_fd == (nl_catd)-1)
-		cerr<<"Warning: Failed to open catalog, using default messages."<<endl;
+    if (m_catalog_fd == (nl_catd)-1)
+        cerr<<"Warning: Failed to open catalog, using default messages."<<endl;
 	
 #else // !HAVE_CATOPEN
 	
-	m_catalog_fd = (nl_catd)-1;
+    m_catalog_fd = (nl_catd)-1;
 #endif // HAVE_CATOPEN
 }
 
@@ -128,9 +128,9 @@ void I18n::openCatalog(const char *catalog) {
 const char *I18n::getMessage(int set_number, int message_number, const char *default_message) {
 
 #if defined(NLS) && defined(HAVE_CATGETS)
-	if (m_catalog_fd != (nl_catd)-1)
-		return (const char *) catgets(m_catalog_fd, set_number, message_number, default_message);
-	else
+    if (m_catalog_fd != (nl_catd)-1)
+        return (const char *) catgets(m_catalog_fd, set_number, message_number, default_message);
+    else
 #endif // NLS && HAVE_CATGETS
-		return default_message;
+        return default_message;
 }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.hh,v 1.2 2002/11/27 21:47:33 fluxgen Exp $
+// $Id: SignalHandler.hh,v 1.3 2002/12/01 13:42:14 rathnor Exp $
 
 #ifndef FBTK_SIGNALHANDLER_HH
 #define FBTK_SIGNALHANDLER_HH
@@ -31,38 +31,38 @@ namespace FbTk {
 
 class SignalEventHandler {
 public:
-	virtual void handleSignal(int signum) = 0;
+    virtual void handleSignal(int signum) = 0;
 };
 
 /**
-	Handles system signals, singleton.
-	Usage: inherit the class EventHandler and then register 
-	it to SignalHandler by calling registerHandler with
-	a signal number
+   Handles system signals, singleton.
+   Usage: inherit the class EventHandler and then register 
+   it to SignalHandler by calling registerHandler with
+   a signal number
 */
 class SignalHandler {
 public:
-	/// get singleton object
-	static SignalHandler *instance();
-	/** 
-		Register an event handler
-		@return true on success else false
-		@param signum signal number
-		@param eh event handler
-		@param oldhandler_ret return handler to old sighandler
-	*/
-	bool registerHandler(int signum, SignalEventHandler *eh, SignalEventHandler **oldhandler_ret = 0);
-	/**
-		removes the signum handler
-		@param signum signal number
-	*/
-	void removeHandler(int signum);
+    /// get singleton object
+    static SignalHandler *instance();
+    /** 
+        Register an event handler
+        @return true on success else false
+        @param signum signal number
+        @param eh event handler
+        @param oldhandler_ret return handler to old sighandler
+    */
+    bool registerHandler(int signum, SignalEventHandler *eh, SignalEventHandler **oldhandler_ret = 0);
+    /**
+       removes the signum handler
+       @param signum signal number
+    */
+    void removeHandler(int signum);
 private:
-	SignalHandler();
+    SignalHandler();
 
-	static void handleSignal(int signum);
+    static void handleSignal(int signum);
 
-	static SignalEventHandler *s_signal_handler[NSIG]; ///< NSIG defined in signal.h
+    static SignalEventHandler *s_signal_handler[NSIG]; ///< NSIG defined in signal.h
 }; 
 
 }; // end namespace FbTk

@@ -31,37 +31,37 @@ namespace FbTk {
 App *App::s_app = 0;
 
 App *App::instance() {
-	if (s_app == 0)
-		throw std::string("You must create an instance of FbTk::App first!");
-	return s_app;
+    if (s_app == 0)
+        throw std::string("You must create an instance of FbTk::App first!");
+    return s_app;
 }
 
 App::App(const char *displayname):m_done(false) {
-	if (s_app != 0)
-		throw std::string("Can't create more than one instance of FbTk::App");
-	s_app = this;
-	m_display = XOpenDisplay(displayname);
+    if (s_app != 0)
+        throw std::string("Can't create more than one instance of FbTk::App");
+    s_app = this;
+    m_display = XOpenDisplay(displayname);
 }
 
 App::~App() {
-	if (m_display != 0) {
-		XCloseDisplay(m_display);
-		m_display = 0;
-	}
-	s_app = 0;
+    if (m_display != 0) {
+        XCloseDisplay(m_display);
+        m_display = 0;
+    }
+    s_app = 0;
 }
 
 void App::eventLoop() {
-	XEvent ev;
-	while (!m_done) {
-		XNextEvent(display(), &ev);
-		EventManager::instance()->handleEvent(ev);
-	}
+    XEvent ev;
+    while (!m_done) {
+        XNextEvent(display(), &ev);
+        EventManager::instance()->handleEvent(ev);
+    }
 }
 
 
 void App::end() {
-	m_done = true; //end loop in App::eventLoop
+    m_done = true; //end loop in App::eventLoop
 }
 
 }; // end namespace FbTk

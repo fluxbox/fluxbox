@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.34 2002/11/30 20:16:14 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.35 2002/12/01 13:42:07 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -76,206 +76,206 @@ class Tab;
 	singleton type
 */
 class Fluxbox : public BaseDisplay, public TimeoutHandler, 
-	public FbTk::SignalEventHandler,
-	public FbAtoms,
-	public FbTk::Observer {
+                public FbTk::SignalEventHandler,
+                public FbAtoms,
+                public FbTk::Observer {
 public:
-	Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
-	virtual ~Fluxbox();
+    Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
+    virtual ~Fluxbox();
 	
-	static Fluxbox *instance() { return singleton; }
+    static Fluxbox *instance() { return singleton; }
 	
-	inline bool useTabs() { return *m_rc_tabs; }
-	inline bool useIconBar() { return *m_rc_iconbar; }
-	inline void saveTabs(bool value) { *m_rc_tabs = value; }
-	inline void saveIconBar(bool value) { m_rc_iconbar = value; }
+    inline bool useTabs() { return *m_rc_tabs; }
+    inline bool useIconBar() { return *m_rc_iconbar; }
+    inline void saveTabs(bool value) { *m_rc_tabs = value; }
+    inline void saveIconBar(bool value) { m_rc_iconbar = value; }
 #ifdef HAVE_GETPID
-	inline Atom getFluxboxPidAtom() const { return fluxbox_pid; }
-	#ifdef KDE
-	//For KDE dock applets
-	inline Atom getKWM1DockwindowAtom() const { return kwm1_dockwindow; } //KDE v1.x
-	inline Atom getKWM2DockwindowAtom() const { return kwm2_dockwindow; } //KDE v2.x
-	#endif
+    inline Atom getFluxboxPidAtom() const { return fluxbox_pid; }
+#ifdef KDE
+    //For KDE dock applets
+    inline Atom getKWM1DockwindowAtom() const { return kwm1_dockwindow; } //KDE v1.x
+    inline Atom getKWM2DockwindowAtom() const { return kwm2_dockwindow; } //KDE v2.x
+#endif
 #endif // HAVE_GETPID
 
-	Basemenu *searchMenu(Window);
+    Basemenu *searchMenu(Window);
 
-	FluxboxWindow *searchGroup(Window, FluxboxWindow *);
-	FluxboxWindow *searchWindow(Window);
-	inline FluxboxWindow *getFocusedWindow() { return focused_window; }
+    FluxboxWindow *searchGroup(Window, FluxboxWindow *);
+    FluxboxWindow *searchWindow(Window);
+    inline FluxboxWindow *getFocusedWindow() { return focused_window; }
 
 		
-	BScreen *searchScreen(Window w);
+    BScreen *searchScreen(Window w);
 
-	inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
-	inline const Time &getLastTime() const { return last_time; }
+    inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
+    inline const Time &getLastTime() const { return last_time; }
 
-	Toolbar *searchToolbar(Window w);
-	Tab *searchTab(Window);
+    Toolbar *searchToolbar(Window w);
+    Tab *searchTab(Window);
 	
-	/// obsolete
-	enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
+    /// obsolete
+    enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 	
-	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
-	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
-	inline const char *getStyleFilename() const { return m_rc_stylefile->c_str(); }
+    inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
+    inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
+    inline const char *getStyleFilename() const { return m_rc_stylefile->c_str(); }
 
-	inline const char *getMenuFilename() const { return m_rc_menufile->c_str(); }
-	inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
-	inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
+    inline const char *getMenuFilename() const { return m_rc_menufile->c_str(); }
+    inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
+    inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
 
-	inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }
+    inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }
 
-	inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
-	inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
+    inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
+    inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
 
-	inline void maskWindowEvents(Window w, FluxboxWindow *bw)
-		{ masked = w; masked_window = bw; }
-	inline void setNoFocus(Bool f) { no_focus = f; }
+    inline void maskWindowEvents(Window w, FluxboxWindow *bw)
+        { masked = w; masked_window = bw; }
+    inline void setNoFocus(Bool f) { no_focus = f; }
 
-	void setFocusedWindow(FluxboxWindow *w);
-	void shutdown();
-	void load_rc(BScreen *);
-	void loadRootCommand(BScreen *);
-	void loadTitlebar();
-	void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
-	void saveMenuFilename(const char *);
-	void saveTitlebarFilename(const char *);
-	void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
-	void saveMenuSearch(Window, Basemenu *);
-	void saveWindowSearch(Window, FluxboxWindow *);
-	void saveToolbarSearch(Window, Toolbar *);
-	void saveTabSearch(Window, Tab *);
-	void saveGroupSearch(Window, FluxboxWindow *);	
-	void save_rc();
-	void removeMenuSearch(Window);
-	void removeWindowSearch(Window);
-	void removeToolbarSearch(Window);
-	void removeTabSearch(Window);
-	void removeGroupSearch(Window);
-	void restart(const char * = 0);
-	void reconfigure();
-	void reconfigureTabs();
-	void rereadMenu();
-	void checkMenu();
+    void setFocusedWindow(FluxboxWindow *w);
+    void shutdown();
+    void load_rc(BScreen *);
+    void loadRootCommand(BScreen *);
+    void loadTitlebar();
+    void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
+    void saveMenuFilename(const char *);
+    void saveTitlebarFilename(const char *);
+    void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
+    void saveMenuSearch(Window, Basemenu *);
+    void saveWindowSearch(Window, FluxboxWindow *);
+    void saveToolbarSearch(Window, Toolbar *);
+    void saveTabSearch(Window, Tab *);
+    void saveGroupSearch(Window, FluxboxWindow *);	
+    void save_rc();
+    void removeMenuSearch(Window);
+    void removeWindowSearch(Window);
+    void removeToolbarSearch(Window);
+    void removeTabSearch(Window);
+    void removeGroupSearch(Window);
+    void restart(const char * = 0);
+    void reconfigure();
+    void reconfigureTabs();
+    void rereadMenu();
+    void checkMenu();
 	
-	/// handle any system signal sent to the application
-	void handleSignal(int signum);
-	void update(FbTk::Subject *changed);
+    /// handle any system signal sent to the application
+    void handleSignal(int signum);
+    void update(FbTk::Subject *changed);
 
-	void attachSignals(FluxboxWindow &win);
+    void attachSignals(FluxboxWindow &win);
 	
-	virtual void timeout();
+    virtual void timeout();
 	
-	inline const Cursor &getSessionCursor() const { return cursor.session; }
-	inline const Cursor &getMoveCursor() const { return cursor.move; }
-	inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
-	inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
+    inline const Cursor &getSessionCursor() const { return cursor.session; }
+    inline const Cursor &getMoveCursor() const { return cursor.move; }
+    inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
+    inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
 	
 
 #ifdef	SLIT
-	Slit *searchSlit(Window);
+    Slit *searchSlit(Window);
 
-	void saveSlitSearch(Window, Slit *);
-	void removeSlitSearch(Window);
+    void saveSlitSearch(Window, Slit *);
+    void removeSlitSearch(Window);
 #endif // SLIT
 
 #ifndef	 HAVE_STRFTIME
 
-	enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
+    enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 #endif // HAVE_STRFTIME
 	
-	typedef std::vector<Fluxbox::Titlebar> TitlebarList;
+    typedef std::vector<Fluxbox::Titlebar> TitlebarList;
 		
 private:
-	struct cursor {
-		Cursor session, move, ll_angle, lr_angle;
-	} cursor;
+    struct cursor {
+        Cursor session, move, ll_angle, lr_angle;
+    } cursor;
 
-	typedef struct MenuTimestamp {
-		char *filename;
-		time_t timestamp;
-	} MenuTimestamp;
+    typedef struct MenuTimestamp {
+        char *filename;
+        time_t timestamp;
+    } MenuTimestamp;
 
-	struct resource {
-		Time double_click_interval;		
-		timeval auto_raise_delay;
-	} resource;
+    struct resource {
+        Time double_click_interval;		
+        timeval auto_raise_delay;
+    } resource;
 		
 
-	std::string getRcFilename();
-	void getDefaultDataFilename(char *, std::string &);
-	void load_rc();
+    std::string getRcFilename();
+    void getDefaultDataFilename(char *, std::string &);
+    void load_rc();
 	
-	void reload_rc();
-	void real_rereadMenu();
-	void real_reconfigure();
+    void reload_rc();
+    void real_rereadMenu();
+    void real_reconfigure();
 
-	void handleEvent(XEvent *xe);
+    void handleEvent(XEvent *xe);
 	
-	void setupConfigFiles();
-	void handleButtonEvent(XButtonEvent &be);
-	void handleUnmapNotify(XUnmapEvent &ue);
-	void handleClientMessage(XClientMessageEvent &ce);
-	void handleKeyEvent(XKeyEvent &ke);	
-	void doWindowAction(Keys::KeyAction action, const int param);
+    void setupConfigFiles();
+    void handleButtonEvent(XButtonEvent &be);
+    void handleUnmapNotify(XUnmapEvent &ue);
+    void handleClientMessage(XClientMessageEvent &ce);
+    void handleKeyEvent(XKeyEvent &ke);	
+    void doWindowAction(Keys::KeyAction action, const int param);
 
-	ResourceManager m_resourcemanager, m_screen_rm;
+    ResourceManager m_resourcemanager, m_screen_rm;
 	
-	//--- Resources
-	Resource<bool> m_rc_tabs, m_rc_iconbar;
-	Resource<int> m_rc_colors_per_channel;
-	Resource<std::string> m_rc_stylefile, 
-		m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
-		m_rc_groupfile;
+    //--- Resources
+    Resource<bool> m_rc_tabs, m_rc_iconbar;
+    Resource<int> m_rc_colors_per_channel;
+    Resource<std::string> m_rc_stylefile, 
+        m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
+        m_rc_groupfile;
 	
-	Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
-	Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
+    Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
+    Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
 
-	void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
+    void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 	
-	std::map<Window, FluxboxWindow *> windowSearch;
-	std::map<Window, FluxboxWindow *> groupSearch;
-	std::map<Window, Basemenu *> menuSearch;
-	std::map<Window, Toolbar *> toolbarSearch;
-	typedef std::map<Window, Tab *> TabList;
-	TabList tabSearch;
+    std::map<Window, FluxboxWindow *> windowSearch;
+    std::map<Window, FluxboxWindow *> groupSearch;
+    std::map<Window, Basemenu *> menuSearch;
+    std::map<Window, Toolbar *> toolbarSearch;
+    typedef std::map<Window, Tab *> TabList;
+    TabList tabSearch;
 	
 #ifdef SLIT
-	std::map<Window, Slit *> slitSearch;
+    std::map<Window, Slit *> slitSearch;
 #ifdef KDE
-	//For KDE dock applets
-	Atom kwm1_dockwindow; //KDE v1.x
-	Atom kwm2_dockwindow; //KDE v2.x
+    //For KDE dock applets
+    Atom kwm1_dockwindow; //KDE v1.x
+    Atom kwm2_dockwindow; //KDE v2.x
 #endif//KDE
 #endif // SLIT
 
-	std::list<MenuTimestamp *> menuTimestamps;
-	typedef std::list<BScreen *> ScreenList;
-	ScreenList screenList;
+    std::list<MenuTimestamp *> menuTimestamps;
+    typedef std::list<BScreen *> ScreenList;
+    ScreenList screenList;
 
-	FluxboxWindow *focused_window, *masked_window;
-	BTimer timer;
+    FluxboxWindow *focused_window, *masked_window;
+    BTimer timer;
 
 
 #ifdef		HAVE_GETPID
-	Atom fluxbox_pid;
+    Atom fluxbox_pid;
 #endif // HAVE_GETPID
 
-	bool no_focus, reconfigure_wait, reread_menu_wait;
-	Time last_time;
-	Window masked;
-	std::string rc_file; ///< resource filename
-	char **argv;
-	int argc;
-	std::auto_ptr<Keys> key;
-	std::string slitlist_path;
-	//default arguments for titlebar left and right
-	static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
+    bool no_focus, reconfigure_wait, reread_menu_wait;
+    Time last_time;
+    Window masked;
+    std::string rc_file; ///< resource filename
+    char **argv;
+    int argc;
+    std::auto_ptr<Keys> key;
+    std::string slitlist_path;
+    //default arguments for titlebar left and right
+    static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
 	
-	static Fluxbox *singleton;
-	std::vector<AtomHandler *> m_atomhandler;
+    static Fluxbox *singleton;
+    std::vector<AtomHandler *> m_atomhandler;
 };
 
 

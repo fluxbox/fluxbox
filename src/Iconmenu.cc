@@ -29,26 +29,26 @@
 #include "i18n.hh"
 
 Iconmenu::Iconmenu(BScreen *scrn) : Basemenu(scrn) {
-	setInternalMenu();
+    setInternalMenu();
 
-	setLabel(I18n::instance()->getMessage(
-		FBNLS::IconSet, FBNLS::IconIcons,
-		"Icons"));
-	update();
+    setLabel(I18n::instance()->getMessage(
+        FBNLS::IconSet, FBNLS::IconIcons,
+        "Icons"));
+    update();
 }
 
 
 void Iconmenu::itemSelected(int button, unsigned int index) {
-	if (button == 1) {
-		if (index < screen()->getIconCount()) {
-			FluxboxWindow *win = screen()->getIcon(index);
+    if (button == 1) {
+        if (index < screen()->getIconCount()) {
+            FluxboxWindow *win = screen()->getIcon(index);
 
-			if (win)
-				win->deiconify();
+            if (win)
+                win->deiconify();
 
-		}
+        }
 
-		if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
-			hide();
-	}
+        if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
+            hide();
+    }
 }

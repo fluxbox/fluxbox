@@ -29,16 +29,16 @@
 
 class Rootmenu: public Basemenu {
 public:
-	explicit Rootmenu(BScreen *scr);
-	void setAutoGroupWindow(Window window);
-	void show();
+    explicit Rootmenu(BScreen *scr);
+    void setAutoGroupWindow(Window window);
+    void show();
 
 protected:
-  virtual void itemSelected(int button, unsigned int index);
+    virtual void itemSelected(int button, unsigned int index);
 
 private:
-  Window useAutoGroupWindow();
-  Window auto_group_window;
+    Window useAutoGroupWindow();
+    Window auto_group_window;
 
 };
 

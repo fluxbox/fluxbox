@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FontImp.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: FontImp.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
 
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
@@ -33,23 +33,23 @@
 namespace FbTk {
 
 /**
-	FontImp, second part of the bridge pattern for fonts
-	pure interface class.
-	@see Font
+   FontImp, second part of the bridge pattern for fonts
+   pure interface class.
+   @see Font
 */
 class FontImp {
 public:
-	virtual ~FontImp() { }
-	virtual bool load(const std::string &name) = 0;
-	virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const = 0;
-	virtual unsigned int textWidth(const char * const text, unsigned int size) const = 0;
-	virtual int ascent() const = 0;
-	virtual int descent() const = 0;
-	virtual unsigned int height() const = 0;
-	virtual bool loaded() const = 0;
-	virtual void rotate(float angle) { } // by default, no rotate support
+    virtual ~FontImp() { }
+    virtual bool load(const std::string &name) = 0;
+    virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const = 0;
+    virtual unsigned int textWidth(const char * const text, unsigned int size) const = 0;
+    virtual int ascent() const = 0;
+    virtual int descent() const = 0;
+    virtual unsigned int height() const = 0;
+    virtual bool loaded() const = 0;
+    virtual void rotate(float angle) { } // by default, no rotate support
 protected:
-	FontImp() { }
+    FontImp() { }
 };
 
 }; // end namespace FbTk

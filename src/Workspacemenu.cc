@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspacemenu.cc,v 1.10 2002/10/25 21:15:49 fluxgen Exp $
+// $Id: Workspacemenu.cc,v 1.11 2002/12/01 13:42:06 rathnor Exp $
 
 #include "Workspacemenu.hh"
 
@@ -44,36 +44,36 @@
 
 Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
 	
-	setInternalMenu();
-	I18n *i18n = I18n::instance();
-	using namespace FBNLS;
-	setLabel(i18n->getMessage(
-		WorkspacemenuSet, WorkspacemenuWorkspacesTitle,
-		"Workspaces"));
-	insert(i18n->getMessage(
-		WorkspacemenuSet, WorkspacemenuNewWorkspace,
-		"New Workspace"));
-	insert(i18n->getMessage(
-		WorkspacemenuSet, WorkspacemenuRemoveLast,
-		"Remove Last"));
+    setInternalMenu();
+    I18n *i18n = I18n::instance();
+    using namespace FBNLS;
+    setLabel(i18n->getMessage(
+        WorkspacemenuSet, WorkspacemenuWorkspacesTitle,
+        "Workspaces"));
+    insert(i18n->getMessage(
+        WorkspacemenuSet, WorkspacemenuNewWorkspace,
+        "New Workspace"));
+    insert(i18n->getMessage(
+        WorkspacemenuSet, WorkspacemenuRemoveLast,
+        "Remove Last"));
 }
 
 
 void Workspacemenu::itemSelected(int button, unsigned int index) {
-	if (button == 1) {
-		if (index == 0) {
-			screen()->addWorkspace();
-			Fluxbox::instance()->save_rc();
-		} else if (index == 1) {
-			screen()->removeLastWorkspace();
-			Fluxbox::instance()->save_rc();
-		} else if ((screen()->getCurrentWorkspace()->workspaceID() !=
-			(index - 2)) && ((index - 2) < screen()->getCount())) {
-			screen()->changeWorkspaceID(index - 2);
-		}
+    if (button == 1) {
+        if (index == 0) {
+            screen()->addWorkspace();
+            Fluxbox::instance()->save_rc();
+        } else if (index == 1) {
+            screen()->removeLastWorkspace();
+            Fluxbox::instance()->save_rc();
+        } else if ((screen()->getCurrentWorkspace()->workspaceID() !=
+                    (index - 2)) && ((index - 2) < screen()->getCount())) {
+            screen()->changeWorkspaceID(index - 2);
+        }
 	
-		if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
-			hide();
-	}
+        if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
+            hide();
+    }
 }
 

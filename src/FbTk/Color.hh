@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: Color.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
 
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
@@ -31,41 +31,41 @@
 
 namespace FbTk {
 /**
-	Holds rgb color and pixel value
+   Holds rgb color and pixel value
 */
 class Color {
 public:
-	Color();
-	explicit Color(unsigned long pixel);
-	Color(const Color &col_copy);
-	Color(unsigned char red, unsigned char green, unsigned char blue, int screen);
-	Color(const char *color_string, int screen);
-	~Color();
+    Color();
+    explicit Color(unsigned long pixel);
+    Color(const Color &col_copy);
+    Color(unsigned char red, unsigned char green, unsigned char blue, int screen);
+    Color(const char *color_string, int screen);
+    ~Color();
 
-	bool setFromString(const char *color_string, int screen);
-	/// TODO don't like this
-	void setPixel(unsigned long pixel) { m_pixel = pixel; }
-	// TODO
-	//Color &operator = (const Color &col_copy);
+    bool setFromString(const char *color_string, int screen);
+    /// TODO don't like this
+    void setPixel(unsigned long pixel) { m_pixel = pixel; }
+    // TODO
+    //Color &operator = (const Color &col_copy);
 	
-	bool isAllocated() const { return m_allocated; }
-	unsigned char red() const { return m_red; }
-	unsigned char green() const { return m_green; }
-	unsigned char blue() const { return m_blue; }
-	unsigned long pixel() const { return m_pixel; }
+    bool isAllocated() const { return m_allocated; }
+    unsigned char red() const { return m_red; }
+    unsigned char green() const { return m_green; }
+    unsigned char blue() const { return m_blue; }
+    unsigned long pixel() const { return m_pixel; }
 	
 private:
-	void free();
-	void copy(const Color &col);
-	void allocate(unsigned char red, unsigned char green, unsigned char blue, int screen);
-	inline void setAllocated(bool a) { m_allocated = a; }
-	void setRGB(unsigned char red, unsigned char green, unsigned char blue);
+    void free();
+    void copy(const Color &col);
+    void allocate(unsigned char red, unsigned char green, unsigned char blue, int screen);
+    inline void setAllocated(bool a) { m_allocated = a; }
+    void setRGB(unsigned char red, unsigned char green, unsigned char blue);
 
 
-	unsigned char m_red, m_green, m_blue;
-	unsigned long m_pixel;
-	bool m_allocated;
-	int m_screen;
+    unsigned char m_red, m_green, m_blue;
+    unsigned long m_pixel;
+    bool m_allocated;
+    int m_screen;
 };
 
 }; // end namespace FbTk

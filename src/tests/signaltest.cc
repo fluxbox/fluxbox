@@ -28,48 +28,48 @@ using namespace FbTk;
 
 class IntSig:public SignalHandler::EventHandler {
 public:
-	void handleSignal(int signum) {
-		assert(signum == SIGINT);
-		cerr<<"Signal SIGINT!"<<endl;
-		exit(0);
-	}
+    void handleSignal(int signum) {
+        assert(signum == SIGINT);
+        cerr<<"Signal SIGINT!"<<endl;
+        exit(0);
+    }
 };
 
 class AllSig:public SignalHandler::EventHandler {
 public:
-	void handleSignal(int signum) {
-		switch (signum) {
-			case SIGTERM:
-				cerr<<"SIGTERM";
-			break;
-			case SIGUSR1:
-				cerr<<"SIGUSR1";
-			break;
-			case SIGUSR2:
-				cerr<<"SIGUSR2";
-			break;
-			default:
-				cerr<<"signum = "<<signum;
-		}
-		cerr<<endl;
-		if (signum == SIGTERM)
-			exit(1); // end program
-	}
+    void handleSignal(int signum) {
+        switch (signum) {
+        case SIGTERM:
+            cerr<<"SIGTERM";
+            break;
+        case SIGUSR1:
+            cerr<<"SIGUSR1";
+            break;
+        case SIGUSR2:
+            cerr<<"SIGUSR2";
+            break;
+        default:
+            cerr<<"signum = "<<signum;
+        }
+        cerr<<endl;
+        if (signum == SIGTERM)
+            exit(1); // end program
+    }
 };
 
 int main(int argc, char **argv) {
-	SignalHandler *sigh = SignalHandler::instance();
-	IntSig handler;
-	AllSig allhand;
+    SignalHandler *sigh = SignalHandler::instance();
+    IntSig handler;
+    AllSig allhand;
 	
-	sigh->registerHandler(SIGINT, &handler);
-	sigh->registerHandler(SIGTERM, &allhand);
-	sigh->registerHandler(SIGUSR1, &allhand);
-	sigh->registerHandler(SIGUSR2, &allhand);
-	cerr<<"Send signals to me :)"<<endl;
-	while (1) {
+    sigh->registerHandler(SIGINT, &handler);
+    sigh->registerHandler(SIGTERM, &allhand);
+    sigh->registerHandler(SIGUSR1, &allhand);
+    sigh->registerHandler(SIGUSR2, &allhand);
+    cerr<<"Send signals to me :)"<<endl;
+    while (1) {
 	
-	}
+    }
 }
 
 

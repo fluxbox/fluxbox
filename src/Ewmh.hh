@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.3 2002/10/16 19:02:25 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.4 2002/12/01 13:41:56 rathnor Exp $
 
 #include "AtomHandler.hh"
 
@@ -29,48 +29,48 @@
 class Ewmh:public AtomHandler {
 public:
 
-	Ewmh();
-	~Ewmh();
-	void initForScreen(const BScreen &screen);
-	void setupWindow(FluxboxWindow &win);
+    Ewmh();
+    ~Ewmh();
+    void initForScreen(const BScreen &screen);
+    void setupWindow(FluxboxWindow &win);
 	
-	void updateClientList(const BScreen &screen);
-	void updateWorkspaceNames(const BScreen &screen);
-	void updateCurrentWorkspace(const BScreen &screen);
-	void updateWorkspaceCount(const BScreen &screen);
+    void updateClientList(const BScreen &screen);
+    void updateWorkspaceNames(const BScreen &screen);
+    void updateCurrentWorkspace(const BScreen &screen);
+    void updateWorkspaceCount(const BScreen &screen);
 
-	void updateState(FluxboxWindow &win);
-	void updateHints(FluxboxWindow &win);
-	void updateWorkspace(FluxboxWindow &win);
+    void updateState(FluxboxWindow &win);
+    void updateHints(FluxboxWindow &win);
+    void updateWorkspace(FluxboxWindow &win);
 
 
-	bool checkClientMessage(const XClientMessageEvent &ce, 
-		BScreen * const screen, FluxboxWindow * const win);
+    bool checkClientMessage(const XClientMessageEvent &ce, 
+                            BScreen * const screen, FluxboxWindow * const win);
 private:
 	
-	enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
+    enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
 	
-	void setState(FluxboxWindow &win, Atom state, bool value) const;
-	void toggleState(FluxboxWindow &win, Atom state) const;
-	void createAtoms();
+    void setState(FluxboxWindow &win, Atom state, bool value) const;
+    void toggleState(FluxboxWindow &win, Atom state) const;
+    void createAtoms();
 
-	// root window properties
-	Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,
-		m_net_number_of_desktops, m_net_desktop_geometry, m_net_desktop_viewport,
-		m_net_current_desktop, m_net_desktop_names, m_net_active_window, m_net_workarea,
-		m_net_supporting_wm_check, m_net_virtual_roots, m_net_moveresize_window;
+    // root window properties
+    Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,
+        m_net_number_of_desktops, m_net_desktop_geometry, m_net_desktop_viewport,
+        m_net_current_desktop, m_net_desktop_names, m_net_active_window, m_net_workarea,
+        m_net_supporting_wm_check, m_net_virtual_roots, m_net_moveresize_window;
 
-	// root window messages
-	Atom m_net_close_window, m_net_wm_moveresize;
+    // root window messages
+    Atom m_net_close_window, m_net_wm_moveresize;
 
-	// application window properties
-	Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, m_net_wm_window_type,
-		m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
-		m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
-		m_net_wm_handled_icons;
+    // application window properties
+    Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, m_net_wm_window_type,
+        m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
+        m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
+        m_net_wm_handled_icons;
 			
-	// application protocols
-	Atom m_net_wm_ping;
+    // application protocols
+    Atom m_net_wm_ping;
 
-	std::vector<Window> m_windows;
+    std::vector<Window> m_windows;
 };

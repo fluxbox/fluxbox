@@ -28,13 +28,13 @@ class Workspace;
 
 class Clientmenu: public Basemenu {
 public:
-	explicit Clientmenu(Workspace &wrksp);
+    explicit Clientmenu(Workspace &wrksp);
 	
 protected:
-	virtual void itemSelected(int button, unsigned int index);
+    virtual void itemSelected(int button, unsigned int index);
 	
 private:
-	Workspace &m_wkspc;
+    Workspace &m_wkspc;
 };
 
 

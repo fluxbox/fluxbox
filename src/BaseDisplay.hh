@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.33 2002/11/27 21:44:45 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.34 2002/12/01 13:41:54 rathnor Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -56,119 +56,119 @@ void bexec(const char *command, char *displaystring);
 class BaseDisplay:public FbTk::App, private FbTk::NotCopyable
 {
 public:
-	BaseDisplay(const char *app_name, const char *display_name = 0);
-	virtual ~BaseDisplay();
-	static BaseDisplay *instance();
+    BaseDisplay(const char *app_name, const char *display_name = 0);
+    virtual ~BaseDisplay();
+    static BaseDisplay *instance();
 
-	/**
-		obsolete by FluxboxWindow
-		@see FluxboxWindow
-	*/
-	enum Attrib {
-		ATTRIB_SHADED = 0x01,
-		ATTRIB_MAXHORIZ = 0x02,
-		ATTRIB_MAXVERT = 0x04,
-		ATTRIB_OMNIPRESENT = 0x08,
-		ATTRIB_WORKSPACE = 0x10,
-		ATTRIB_STACK = 0x20,		
-		ATTRIB_DECORATION = 0x40
-	};	
+    /**
+       obsolete by FluxboxWindow
+       @see FluxboxWindow
+    */
+    enum Attrib {
+        ATTRIB_SHADED = 0x01,
+        ATTRIB_MAXHORIZ = 0x02,
+        ATTRIB_MAXVERT = 0x04,
+        ATTRIB_OMNIPRESENT = 0x08,
+        ATTRIB_WORKSPACE = 0x10,
+        ATTRIB_STACK = 0x20,		
+        ATTRIB_DECORATION = 0x40
+    };	
 	
-	typedef struct _blackbox_hints {
-		unsigned long flags, attrib, workspace, stack;
-		int decoration;
-	} BlackboxHints;
+    typedef struct _blackbox_hints {
+        unsigned long flags, attrib, workspace, stack;
+        int decoration;
+    } BlackboxHints;
 
-	typedef struct _blackbox_attributes {
-		unsigned long flags, attrib, workspace, stack;
-		int premax_x, premax_y;
-		unsigned int premax_w, premax_h;
-	} BlackboxAttributes;
+    typedef struct _blackbox_attributes {
+        unsigned long flags, attrib, workspace, stack;
+        int premax_x, premax_y;
+        unsigned int premax_w, premax_h;
+    } BlackboxAttributes;
 
 
-	inline ScreenInfo *getScreenInfo(int s)	{ return screenInfoList[s]; }
+    inline ScreenInfo *getScreenInfo(int s)	{ return screenInfoList[s]; }
 
-	inline bool hasShapeExtensions() const { return shape.extensions; }
-	inline bool doShutdown() const { return m_shutdown; }
-	inline bool isStartup() const { return m_startup; }
+    inline bool hasShapeExtensions() const { return shape.extensions; }
+    inline bool doShutdown() const { return m_shutdown; }
+    inline bool isStartup() const { return m_startup; }
 
 	
-	static Display *getXDisplay() { return App::instance()->display(); }
+    static Display *getXDisplay() { return App::instance()->display(); }
 
-	inline const char *getXDisplayName() const	{ return m_display_name; }
-	inline const char *getApplicationName() const { return m_app_name; }
+    inline const char *getXDisplayName() const	{ return m_display_name; }
+    inline const char *getApplicationName() const { return m_app_name; }
 
-	inline int getNumberOfScreens() const { return number_of_screens; }
-	inline int getShapeEventBase() const { return shape.event_basep; }
+    inline int getNumberOfScreens() const { return number_of_screens; }
+    inline int getShapeEventBase() const { return shape.event_basep; }
 
-	inline void shutdown() { m_shutdown = true; }
-	inline void run() { m_startup = m_shutdown = false; }
+    inline void shutdown() { m_shutdown = true; }
+    inline void run() { m_startup = m_shutdown = false; }
 
-	bool validateWindow(Window);
+    bool validateWindow(Window);
 
-	void grab();
-	void ungrab();
-	void eventLoop();
-	virtual void handleEvent(XEvent * const ev) { }
+    void grab();
+    void ungrab();
+    void eventLoop();
+    virtual void handleEvent(XEvent * const ev) { }
 private:
 
-	struct shape {
-		Bool extensions;
-		int event_basep, error_basep;
-	} shape;	
+    struct shape {
+        Bool extensions;
+        int event_basep, error_basep;
+    } shape;	
 
-	bool m_startup, m_shutdown;
+    bool m_startup, m_shutdown;
 
     typedef std::vector<ScreenInfo *> ScreenInfoList;
     ScreenInfoList screenInfoList;    
 
-	const char *m_display_name, *m_app_name;
-	int number_of_screens, m_server_grabs;
+    const char *m_display_name, *m_app_name;
+    int number_of_screens, m_server_grabs;
 
-	static BaseDisplay *s_singleton;
+    static BaseDisplay *s_singleton;
 };
 
 
 class ScreenInfo {
 public:
-	explicit ScreenInfo(int screen_num);
-	~ScreenInfo();
+    explicit ScreenInfo(int screen_num);
+    ~ScreenInfo();
 
-	inline BaseDisplay *getBaseDisplay() { return basedisplay; }
+    inline BaseDisplay *getBaseDisplay() { return basedisplay; }
 
-	inline Visual *getVisual() const { return visual; }
-	inline Window getRootWindow() const { return root_window; }
-	inline Colormap colormap() const { return m_colormap; }
+    inline Visual *getVisual() const { return visual; }
+    inline Window getRootWindow() const { return root_window; }
+    inline Colormap colormap() const { return m_colormap; }
 
-	inline int getDepth() const { return depth; }
-	inline int getScreenNumber() const { return screen_number; }
+    inline int getDepth() const { return depth; }
+    inline int getScreenNumber() const { return screen_number; }
 
-	inline unsigned int getWidth() const { return width; }
-	inline unsigned int getHeight() const { return height; }
+    inline unsigned int getWidth() const { return width; }
+    inline unsigned int getHeight() const { return height; }
 
 #ifdef XINERAMA
-	inline bool hasXinerama() const { return m_hasXinerama; }
-	inline int getNumHeads() const { return xineramaNumHeads; }
-	unsigned int getHead(int x, int y) const;
-	unsigned int getCurrHead() const;
-	unsigned int getHeadWidth(unsigned int head) const;
-	unsigned int getHeadHeight(unsigned int head) const;
-	int getHeadX(unsigned int head) const;
-	int getHeadY(unsigned int head) const;
+    inline bool hasXinerama() const { return m_hasXinerama; }
+    inline int getNumHeads() const { return xineramaNumHeads; }
+    unsigned int getHead(int x, int y) const;
+    unsigned int getCurrHead() const;
+    unsigned int getHeadWidth(unsigned int head) const;
+    unsigned int getHeadHeight(unsigned int head) const;
+    int getHeadX(unsigned int head) const;
+    int getHeadY(unsigned int head) const;
 #endif // XINERAMA
 
 private:
-	BaseDisplay *basedisplay;
-	Visual *visual;
-	Window root_window;
-	Colormap m_colormap;
+    BaseDisplay *basedisplay;
+    Visual *visual;
+    Window root_window;
+    Colormap m_colormap;
 
-	int depth, screen_number;
-	unsigned int width, height;
+    int depth, screen_number;
+    unsigned int width, height;
 #ifdef XINERAMA
-	bool m_hasXinerama;
-	int xineramaMajor, xineramaMinor, xineramaNumHeads, xineramaLastHead;
-	XineramaScreenInfo *xineramaInfos;
+    bool m_hasXinerama;
+    int xineramaMajor, xineramaMinor, xineramaNumHeads, xineramaLastHead;
+    XineramaScreenInfo *xineramaInfos;
 #endif // XINERAMA
 
 };

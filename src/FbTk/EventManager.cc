@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.1 2002/11/27 21:41:13 fluxgen Exp $
+// $Id: EventManager.cc,v 1.2 2002/12/01 13:42:14 rathnor Exp $
 
 #include "EventManager.hh"
 
@@ -29,64 +29,64 @@ using namespace std;
 namespace FbTk {
 
 EventManager *EventManager::instance() {
-	static EventManager ev;
-	return &ev;
+    static EventManager ev;
+    return &ev;
 }
 
 EventManager::~EventManager() {
-	if (m_eventhandlers.size() != 0)
-		cerr<<"FbTk::EventManager: Warning: unregistered eventhandlers!"<<endl;
+    if (m_eventhandlers.size() != 0)
+        cerr<<"FbTk::EventManager: Warning: unregistered eventhandlers!"<<endl;
 }
 
 void EventManager::handleEvent(XEvent &ev) {
-	// find eventhandler for event window
-	if (m_eventhandlers.find(ev.xany.window) == m_eventhandlers.end()) {
-		cerr<<"Can't find window="<<ev.xany.window<<endl;
-		return;
-	}
-	EventHandler *evhand = m_eventhandlers[ev.xany.window];
-	if (evhand == 0) {
-		cerr<<"FbTk::EventManager: Warning: evhand == 0!"<<endl;
-		return;
-	}
+    // find eventhandler for event window
+    if (m_eventhandlers.find(ev.xany.window) == m_eventhandlers.end()) {
+        cerr<<"Can't find window="<<ev.xany.window<<endl;
+        return;
+    }
+    EventHandler *evhand = m_eventhandlers[ev.xany.window];
+    if (evhand == 0) {
+        cerr<<"FbTk::EventManager: Warning: evhand == 0!"<<endl;
+        return;
+    }
 		
-	switch (ev.xany.type) {
-	case KeyPress:
-		evhand->keyPressEvent(ev.xkey);
+    switch (ev.xany.type) {
+    case KeyPress:
+        evhand->keyPressEvent(ev.xkey);
 	break;
-	case KeyRelease:
-		evhand->keyReleaseEvent(ev.xkey);
+    case KeyRelease:
+        evhand->keyReleaseEvent(ev.xkey);
 	break;
-	case ButtonPress:
-		evhand->buttonPressEvent(ev.xbutton);
+    case ButtonPress:
+        evhand->buttonPressEvent(ev.xbutton);
 	break;
-	case ButtonRelease:
-		evhand->buttonReleaseEvent(ev.xbutton);
+    case ButtonRelease:
+        evhand->buttonReleaseEvent(ev.xbutton);
 	break;
-	case MotionNotify:
-		evhand->motionNotifyEvent(ev.xmotion);
+    case MotionNotify:
+        evhand->motionNotifyEvent(ev.xmotion);
 	break;
-	case Expose:
-		evhand->exposeEvent(ev.xexpose);
+    case Expose:
+        evhand->exposeEvent(ev.xexpose);
 	break;
-	case EnterNotify:
-		evhand->enterNotifyEvent(ev.xcrossing);
+    case EnterNotify:
+        evhand->enterNotifyEvent(ev.xcrossing);
 	break;
-	case LeaveNotify:
-		evhand->leaveNotifyEvent(ev.xcrossing);
+    case LeaveNotify:
+        evhand->leaveNotifyEvent(ev.xcrossing);
 	break;
-	default:
-		evhand->handleEvent(ev);
+    default:
+        evhand->handleEvent(ev);
 	break;
-	};
+    };
 }
 
 void EventManager::registerEventHandler(EventHandler &ev, Window win) {
-	m_eventhandlers[win] = &ev;
+    m_eventhandlers[win] = &ev;
 }
 
 void EventManager::unregisterEventHandler(Window win) {
-	m_eventhandlers.erase(win);
+    m_eventhandlers.erase(win);
 }
 
 };

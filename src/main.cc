@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.8 2002/10/13 21:48:28 fluxgen Exp $
+// $Id: main.cc,v 1.9 2002/12/01 13:42:07 rathnor Exp $
 
 
 
@@ -68,151 +68,151 @@ uds::uds_flags_t uds::flags = uds::leak_check;
 #endif //!DEBUG_UDS
 
 const char *getNLSYesNoMsg(bool val) {
-	if (val) {
-		return I18n::instance()->getMessage(
-			FBNLS::CommonSet, FBNLS::CommonYes,
-			"yes");
-	}
+    if (val) {
+        return I18n::instance()->getMessage(
+            FBNLS::CommonSet, FBNLS::CommonYes,
+            "yes");
+    }
 	
-	return I18n::instance()->getMessage(
-		FBNLS::CommonSet, FBNLS::CommonNo,
-		"no");
+    return I18n::instance()->getMessage(
+        FBNLS::CommonSet, FBNLS::CommonNo,
+        "no");
 }
 
 int main(int argc, char **argv) {
-	#ifdef DEBUG_UDS
-	uds::Init uds_init;
-	#endif //!DEBUG_UDS
+#ifdef DEBUG_UDS
+    uds::Init uds_init;
+#endif //!DEBUG_UDS
 	
-	char *session_display = (char *) 0;
-	char *rc_file = (char *) 0;
+    char *session_display = (char *) 0;
+    char *rc_file = (char *) 0;
 
-	NLSInit("blackbox.cat");
-	I18n *i18n = I18n::instance();
+    NLSInit("blackbox.cat");
+    I18n *i18n = I18n::instance();
 	
-	int i;
-	for (i = 1; i < argc; ++i) {
-		if (! strcmp(argv[i], "-rc")) {
-		 // look for alternative rc file to use
+    int i;
+    for (i = 1; i < argc; ++i) {
+        if (! strcmp(argv[i], "-rc")) {
+            // look for alternative rc file to use
 
-			if ((++i) >= argc) {
-				fprintf(stderr,
-					i18n->getMessage(
-					FBNLS::mainSet, FBNLS::mainRCRequiresArg,
-					"error: '-rc' requires and argument\n"));	
-				exit(1);
-			}
+            if ((++i) >= argc) {
+                fprintf(stderr,
+                        i18n->getMessage(
+                            FBNLS::mainSet, FBNLS::mainRCRequiresArg,
+                            "error: '-rc' requires and argument\n"));	
+                exit(1);
+            }
 
-			rc_file = argv[i];
-		} else if (! strcmp(argv[i], "-display")) {
-			// check for -display option... to run on a display other than the one
-			// set by the environment variable DISPLAY
+            rc_file = argv[i];
+        } else if (! strcmp(argv[i], "-display")) {
+            // check for -display option... to run on a display other than the one
+            // set by the environment variable DISPLAY
 
-			if ((++i) >= argc) {
-				fprintf(stderr,
-					i18n->getMessage(				
-					FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,				
-					"error: '-display' requires an argument\n"));
-				exit(1);
-			}
+            if ((++i) >= argc) {
+                fprintf(stderr,
+                        i18n->getMessage(				
+                            FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,				
+                            "error: '-display' requires an argument\n"));
+                exit(1);
+            }
 
-			session_display = argv[i];
-			char dtmp[255];
-			sprintf(dtmp, "DISPLAY=%s", session_display);
+            session_display = argv[i];
+            char dtmp[255];
+            sprintf(dtmp, "DISPLAY=%s", session_display);
 
-			if (putenv(dtmp)) {
-				fprintf(stderr,
-					i18n->
-					getMessage(
-					 FBNLS::mainSet, FBNLS::mainWarnDisplaySet,
-					 "warning: couldn't set environment variable 'DISPLAY'\n"));
-				perror("putenv()");
-			}
-		} else if (strcmp(argv[i], "-version") == 0) {
-			// print current version string
-			printf("Fluxbox %s : (c) 2001-2002 Henrik Kinnunen \n\n",
-						__fluxbox_version);
-			exit(0);
-		} else if (strcmp(argv[i], "-help") == 0) {
-			// print program usage and command line options
-			printf(i18n->
-			getMessage(
-			FBNLS::mainSet, FBNLS::mainUsage,
-			"Fluxbox %s : (c) 2001-2002 Henrik Kinnunen\n\n"
-			"	-display <string>\t\tuse display connection.\n"
-			"	-rc <string>\t\t\tuse alternate resource file.\n"
-			"	-version\t\t\tdisplay version and exit.\n"
-			"	-help\t\t\t\tdisplay this help text and exit.\n\n"),
-			 __fluxbox_version);
+            if (putenv(dtmp)) {
+                fprintf(stderr,
+                        i18n->
+                        getMessage(
+                            FBNLS::mainSet, FBNLS::mainWarnDisplaySet,
+                            "warning: couldn't set environment variable 'DISPLAY'\n"));
+                perror("putenv()");
+            }
+        } else if (strcmp(argv[i], "-version") == 0) {
+            // print current version string
+            printf("Fluxbox %s : (c) 2001-2002 Henrik Kinnunen \n\n",
+                   __fluxbox_version);
+            exit(0);
+        } else if (strcmp(argv[i], "-help") == 0) {
+            // print program usage and command line options
+            printf(i18n->
+                   getMessage(
+                       FBNLS::mainSet, FBNLS::mainUsage,
+                       "Fluxbox %s : (c) 2001-2002 Henrik Kinnunen\n\n"
+                       "	-display <string>\t\tuse display connection.\n"
+                       "	-rc <string>\t\t\tuse alternate resource file.\n"
+                       "	-version\t\t\tdisplay version and exit.\n"
+                       "	-help\t\t\t\tdisplay this help text and exit.\n\n"),
+                   __fluxbox_version);
 
-			// some people have requested that we print out command line options
-			// as well
-			printf(i18n->
-			 getMessage(
-			FBNLS::mainSet, FBNLS::mainCompileOptions,			
-			"Compile time options:\n"
-			"	Debugging:\t\t\t%s\n"
-			"	Interlacing:\t\t\t%s\n"
-			"	Shape:\t\t\t%s\n"
-			"	Slit:\t\t\t\t%s\n"
-			"	8bpp Ordered Dithering:\t%s\n\n"),
-			#ifdef DEBUG
-			getNLSYesNoMsg(true),
-			#else // !DEBUG
-			getNLSYesNoMsg(false),
-			#endif // DEBUG
+            // some people have requested that we print out command line options
+            // as well
+            printf(i18n->
+                   getMessage(
+                       FBNLS::mainSet, FBNLS::mainCompileOptions,			
+                       "Compile time options:\n"
+                       "	Debugging:\t\t\t%s\n"
+                       "	Interlacing:\t\t\t%s\n"
+                       "	Shape:\t\t\t%s\n"
+                       "	Slit:\t\t\t\t%s\n"
+                       "	8bpp Ordered Dithering:\t%s\n\n"),
+#ifdef DEBUG
+                   getNLSYesNoMsg(true),
+#else // !DEBUG
+                   getNLSYesNoMsg(false),
+#endif // DEBUG
 
-			#ifdef INTERLACE
-			getNLSYesNoMsg(true),
-			#else // !INTERLACE
-			getNLSYesNoMsg(false),
-			#endif // INTERLACE
+#ifdef INTERLACE
+                   getNLSYesNoMsg(true),
+#else // !INTERLACE
+                   getNLSYesNoMsg(false),
+#endif // INTERLACE
 
-			#ifdef SHAPE
-			getNLSYesNoMsg(true),
-			#else // !SHAPE
-			getNLSYesNoMsg(false),
-			#endif // SHAPE
+#ifdef SHAPE
+                   getNLSYesNoMsg(true),
+#else // !SHAPE
+                   getNLSYesNoMsg(false),
+#endif // SHAPE
 
-			#ifdef SLIT
-			getNLSYesNoMsg(true),
-			#else // !SLIT
-			getNLSYesNoMsg(false),
-			#endif // SLIT
+#ifdef SLIT
+                   getNLSYesNoMsg(true),
+#else // !SLIT
+                   getNLSYesNoMsg(false),
+#endif // SLIT
 
-			#ifdef		ORDEREDPSEUDO
-			getNLSYesNoMsg(true)
-			#else // !ORDEREDPSEUDO
-			getNLSYesNoMsg(false)
-			#endif // ORDEREDPSEUDO
+#ifdef		ORDEREDPSEUDO
+                   getNLSYesNoMsg(true)
+#else // !ORDEREDPSEUDO
+                   getNLSYesNoMsg(false)
+#endif // ORDEREDPSEUDO
 
-			);
+                );
 
-			::exit(0);
-		}
-	}
+            ::exit(0);
+        }
+    }
 
 #ifdef		__EMX__
-	_chdir2(getenv("X11ROOT"));
+    _chdir2(getenv("X11ROOT"));
 #endif // __EMX__
-	Fluxbox *fluxbox=0;
-	int exitcode=EXIT_SUCCESS;
-	try {
+    Fluxbox *fluxbox=0;
+    int exitcode=EXIT_SUCCESS;
+    try {
 		
-		fluxbox = new Fluxbox(argc, argv, session_display, rc_file);
-		fluxbox->eventLoop();
+        fluxbox = new Fluxbox(argc, argv, session_display, rc_file);
+        fluxbox->eventLoop();
 		
-	} catch (std::out_of_range oor) {
-		cerr<<"Fluxbox: Out of range: "<<oor.what()<<endl;
-	} catch (std::logic_error le) {
-		cerr<<"Fluxbox: Logic error: "<<le.what()<<endl;
-	} catch (std::runtime_error re) {
-		cerr<<"Fluxbox: Runtime error: "<<re.what()<<endl;
-	} catch (...) {
-		cerr<<"Fluxbox: Unknown error."<<endl;
-	}
+    } catch (std::out_of_range oor) {
+        cerr<<"Fluxbox: Out of range: "<<oor.what()<<endl;
+    } catch (std::logic_error le) {
+        cerr<<"Fluxbox: Logic error: "<<le.what()<<endl;
+    } catch (std::runtime_error re) {
+        cerr<<"Fluxbox: Runtime error: "<<re.what()<<endl;
+    } catch (...) {
+        cerr<<"Fluxbox: Unknown error."<<endl;
+    }
 	
-	if (fluxbox)
-		delete fluxbox;
-	exit(exitcode);
+    if (fluxbox)
+        delete fluxbox;
+    exit(exitcode);
 }

@@ -33,110 +33,110 @@ bool loadMenu2(string filename);
 
 void showError(int line, int pos, string& instr) {
 	
-	cerr<<"Error on line: "<<line<<endl;
-	cerr<<instr<<endl;
-	for (int c=0; c<pos; c++) {
-		if (instr[c]=='\t')
-			cerr<<'\t';
-		else
-			cerr<<" ";
-	}
-	cerr<<"^ here"<<endl;	
+    cerr<<"Error on line: "<<line<<endl;
+    cerr<<instr<<endl;
+    for (int c=0; c<pos; c++) {
+        if (instr[c]=='\t')
+            cerr<<'\t';
+        else
+            cerr<<" ";
+    }
+    cerr<<"^ here"<<endl;	
 	
 }
 
 int main(int argc, char **argv) {
-	string filename = "menu";
-	if (argc>1)
-		filename = argv[1];
-	if (loadMenu2(filename))
-		cout<<"Load successfull"<<endl;
-	else 
-		cout<<"Load failed"<<endl;
+    string filename = "menu";
+    if (argc>1)
+        filename = argv[1];
+    if (loadMenu2(filename))
+        cout<<"Load successfull"<<endl;
+    else 
+        cout<<"Load failed"<<endl;
 
 /*
-	string out;
-	vector<string> stringlist;
-	stringlist.push_back(" \t\t\t   \t[(in \\)\t haha )]  \t\t ");
-	stringlist.push_back("(in\\)) {_  _  my_ _}");
-	stringlist.push_back("(in) {_  _  my_ _}");
-	stringlist.push_back("(in){_  _  my_ _}");	
-	stringlist.push_back("\t      \t \t (    in     )    {haha}");
-	stringlist.push_back("\t      \t \t (( 	in  \\) )  {haha}");
-	stringlist.push_back("\t      \t \t (( 	in  \\) ){hihi}");
-	stringlist.push_back("\t      \t \t (( 	in  \\) )|{hihi}");
-	for (unsigned int i=0; i<stringlist.size(); i++) {
-		int pos = StringUtil::getStringBetween(out, stringlist[i].c_str(), '(', ')');
-		int total_pos = 0;
-		if (pos<0) {
-			showError(i+1, -pos, stringlist[i]);
-			continue;
-		}
-		cerr<<"string="<<stringlist[i]<<endl;
-		cerr<<"pos="<<pos<<" ::"<<out;
-		total_pos += pos;
-		pos = StringUtil::getStringBetween(out, stringlist[i].c_str()+total_pos, '{', '}');				
-		if (pos<=0) {
-			pos=-pos;
-			showError(i+1, total_pos+pos, stringlist[i]);
-			continue;
-		} 
-		cerr<<"::"<<out<<"::"<<endl;
-		total_pos += pos;
-	}
+  string out;
+  vector<string> stringlist;
+  stringlist.push_back(" \t\t\t   \t[(in \\)\t haha )]  \t\t ");
+  stringlist.push_back("(in\\)) {_  _  my_ _}");
+  stringlist.push_back("(in) {_  _  my_ _}");
+  stringlist.push_back("(in){_  _  my_ _}");	
+  stringlist.push_back("\t      \t \t (    in     )    {haha}");
+  stringlist.push_back("\t      \t \t (( 	in  \\) )  {haha}");
+  stringlist.push_back("\t      \t \t (( 	in  \\) ){hihi}");
+  stringlist.push_back("\t      \t \t (( 	in  \\) )|{hihi}");
+  for (unsigned int i=0; i<stringlist.size(); i++) {
+  int pos = StringUtil::getStringBetween(out, stringlist[i].c_str(), '(', ')');
+  int total_pos = 0;
+  if (pos<0) {
+  showError(i+1, -pos, stringlist[i]);
+  continue;
+  }
+  cerr<<"string="<<stringlist[i]<<endl;
+  cerr<<"pos="<<pos<<" ::"<<out;
+  total_pos += pos;
+  pos = StringUtil::getStringBetween(out, stringlist[i].c_str()+total_pos, '{', '}');				
+  if (pos<=0) {
+  pos=-pos;
+  showError(i+1, total_pos+pos, stringlist[i]);
+  continue;
+  } 
+  cerr<<"::"<<out<<"::"<<endl;
+  total_pos += pos;
+  }
 */
-	return 0;	
+    return 0;	
 }
 
 			
 
 bool loadMenu2(string filename) {
 	
-	if (!filename.size())
-		return false;
+    if (!filename.size())
+        return false;
 	
-	ifstream menufile(filename.c_str());
+    ifstream menufile(filename.c_str());
 	
 	
-	if (menufile) {
-		string instr;
-		vector<string> args;		
-		int line=0;
-		while (!menufile.eof()) {
-			//read a line
-			getline(menufile, instr);			
-			line++;
-			string arg;			
-			int pos = StringUtil::getStringBetween(arg, instr.c_str(), '[', ']');
-			if (pos<=0) {
-				showError(line, -pos, instr);
-				continue;
-			}
+    if (menufile) {
+        string instr;
+        vector<string> args;		
+        int line=0;
+        while (!menufile.eof()) {
+            //read a line
+            getline(menufile, instr);			
+            line++;
+            string arg;			
+            int pos = StringUtil::getStringBetween(arg, instr.c_str(), '[', ']');
+            if (pos<=0) {
+                showError(line, -pos, instr);
+                continue;
+            }
 							
-			cerr<<"("<<line<<"):"<<arg<<"::";
-			int total_pos = pos;
-			pos = StringUtil::getStringBetween(arg, instr.c_str()+pos, '(', ')');			
-			if (pos<=0) {
-				showError(line, total_pos+(-pos), instr);
-				continue;
-			}
-			cerr<<arg<<"::";
+            cerr<<"("<<line<<"):"<<arg<<"::";
+            int total_pos = pos;
+            pos = StringUtil::getStringBetween(arg, instr.c_str()+pos, '(', ')');			
+            if (pos<=0) {
+                showError(line, total_pos+(-pos), instr);
+                continue;
+            }
+            cerr<<arg<<"::";
 			
-			total_pos +=pos;
-			pos = StringUtil::getStringBetween(arg, instr.c_str()+total_pos, '{', '}');
-			if (pos<=0) {
-				total_pos = total_pos+(-pos);
-				showError(line, total_pos, instr);
-				continue;
-			}	
-			cerr<<arg<<":"<<endl;
+            total_pos +=pos;
+            pos = StringUtil::getStringBetween(arg, instr.c_str()+total_pos, '{', '}');
+            if (pos<=0) {
+                total_pos = total_pos+(-pos);
+                showError(line, total_pos, instr);
+                continue;
+            }	
+            cerr<<arg<<":"<<endl;
 			
-		}
+        }
 		
 		
-	} else	
-		return false;
+    } else	
+        return false;
 
-	return true;
+    return true;
 }
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.hh,v 1.6 2002/10/15 09:50:38 fluxgen Exp $
+// $Id: Configmenu.hh,v 1.7 2002/12/01 13:41:55 rathnor Exp $
 
 #ifndef	 CONFIGMENU_HH
 #define	 CONFIGMENU_HH
@@ -33,50 +33,50 @@ class BScreen;
 
 class Configmenu : public Basemenu {
 public:
-	explicit Configmenu(BScreen *scr);
-	virtual ~Configmenu();
+    explicit Configmenu(BScreen *scr);
+    virtual ~Configmenu();
 
-	Basemenu &focusmenu() { return m_focusmenu; }
-	Basemenu &getPlacementmenu() { return m_placementmenu; }
-	Basemenu &getTabmenu() { return m_tabmenu; }
+    Basemenu &focusmenu() { return m_focusmenu; }
+    Basemenu &getPlacementmenu() { return m_placementmenu; }
+    Basemenu &getTabmenu() { return m_tabmenu; }
 	
-	const Basemenu &focusmenu() const { return m_focusmenu; }
-	const Basemenu &placementmenu() const { return m_placementmenu; }
-	const Basemenu &tabmenu() const { return m_tabmenu; }
+    const Basemenu &focusmenu() const { return m_focusmenu; }
+    const Basemenu &placementmenu() const { return m_placementmenu; }
+    const Basemenu &tabmenu() const { return m_tabmenu; }
 
-	void reconfigure();
+    void reconfigure();
 
 protected:
-	virtual void itemSelected(int button, unsigned int index);
+    virtual void itemSelected(int button, unsigned int index);
 
 private:
-	class Focusmenu : public Basemenu {
-	public:
-		explicit Focusmenu(BScreen *scr);
-	protected:
-		virtual void itemSelected(int button, unsigned int index);
-	};
+    class Focusmenu : public Basemenu {
+    public:
+        explicit Focusmenu(BScreen *scr);
+    protected:
+        virtual void itemSelected(int button, unsigned int index);
+    };
 
-	class Placementmenu : public Basemenu {
-	public:
-		explicit Placementmenu(BScreen *scr);
+    class Placementmenu : public Basemenu {
+    public:
+        explicit Placementmenu(BScreen *scr);
 	
-	protected:
-		virtual void itemSelected(int button, unsigned int index);
-	};
+    protected:
+        virtual void itemSelected(int button, unsigned int index);
+    };
 
-	class Tabmenu : public Basemenu {
-	public:
-		explicit Tabmenu(BScreen *scr);
-	protected:
-		virtual void itemSelected(int button, unsigned int index);
-	private:
-		void setSelected();	
-	};
+    class Tabmenu : public Basemenu {
+    public:
+        explicit Tabmenu(BScreen *scr);
+    protected:
+        virtual void itemSelected(int button, unsigned int index);
+    private:
+        void setSelected();	
+    };
 
-	Focusmenu m_focusmenu;
-	Placementmenu m_placementmenu;
-	Tabmenu m_tabmenu;
+    Focusmenu m_focusmenu;
+    Placementmenu m_placementmenu;
+    Tabmenu m_tabmenu;
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.4 2002/11/30 20:35:06 fluxgen Exp $
+// $Id: Texture.cc,v 1.5 2002/12/01 13:42:14 rathnor Exp $
 
 #include "Texture.hh"
 
@@ -32,66 +32,66 @@
 namespace FbTk {
 
 void Texture::setFromString(const char * const texture_str) {
-	if (texture_str == 0)
-		return;
-	int t_len = strlen(texture_str) + 1;
-	char *ts = new char[t_len];
-	strcpy(ts, texture_str);
+    if (texture_str == 0)
+        return;
+    int t_len = strlen(texture_str) + 1;
+    char *ts = new char[t_len];
+    strcpy(ts, texture_str);
 
-	// to lower
-	for (size_t byte_pos = 0; byte_pos < strlen(ts); ++byte_pos)
-		ts[byte_pos] = tolower(ts[byte_pos]);
+    // to lower
+    for (size_t byte_pos = 0; byte_pos < strlen(ts); ++byte_pos)
+        ts[byte_pos] = tolower(ts[byte_pos]);
 
-	if (strstr(ts, "parentrelative")) {
-		setType(Texture::PARENTRELATIVE);
-	} else {
-		setType(Texture::NONE);
+    if (strstr(ts, "parentrelative")) {
+        setType(Texture::PARENTRELATIVE);
+    } else {
+        setType(Texture::NONE);
 
-		if (strstr(ts, "solid"))
-			addType(Texture::SOLID);
-		else if (strstr(ts, "gradient")) {
-			addType(Texture::GRADIENT);
-			if (strstr(ts, "crossdiagonal"))
-				addType(Texture::CROSSDIAGONAL);
-			else if (strstr(ts, "rectangle"))
-				addType(Texture::RECTANGLE);
-			else if (strstr(ts, "pyramid"))
-				addType(Texture::PYRAMID);
-			else if (strstr(ts, "pipecross"))
-				addType(Texture::PIPECROSS);
-			else if (strstr(ts, "elliptic"))
-				addType(Texture::ELLIPTIC);
-			else if (strstr(ts, "diagonal"))
-				addType(Texture::DIAGONAL);
-			else if (strstr(ts, "horizontal"))
-				addType(Texture::HORIZONTAL);
-			else if (strstr(ts, "vertical"))
-				addType(Texture::VERTICAL);
-			else
-				addType(Texture::DIAGONAL);
-		} else
-			addType(Texture::SOLID);
+        if (strstr(ts, "solid"))
+            addType(Texture::SOLID);
+        else if (strstr(ts, "gradient")) {
+            addType(Texture::GRADIENT);
+            if (strstr(ts, "crossdiagonal"))
+                addType(Texture::CROSSDIAGONAL);
+            else if (strstr(ts, "rectangle"))
+                addType(Texture::RECTANGLE);
+            else if (strstr(ts, "pyramid"))
+                addType(Texture::PYRAMID);
+            else if (strstr(ts, "pipecross"))
+                addType(Texture::PIPECROSS);
+            else if (strstr(ts, "elliptic"))
+                addType(Texture::ELLIPTIC);
+            else if (strstr(ts, "diagonal"))
+                addType(Texture::DIAGONAL);
+            else if (strstr(ts, "horizontal"))
+                addType(Texture::HORIZONTAL);
+            else if (strstr(ts, "vertical"))
+                addType(Texture::VERTICAL);
+            else
+                addType(Texture::DIAGONAL);
+        } else
+            addType(Texture::SOLID);
 
-		if (strstr(ts, "raised"))
-			addType(Texture::RAISED);
-		else if (strstr(ts, "sunken"))
-			addType(Texture::SUNKEN);
-		else if (strstr(ts, "flat"))
-			addType(Texture::FLAT);
-		else
-			addType(Texture::RAISED);
+        if (strstr(ts, "raised"))
+            addType(Texture::RAISED);
+        else if (strstr(ts, "sunken"))
+            addType(Texture::SUNKEN);
+        else if (strstr(ts, "flat"))
+            addType(Texture::FLAT);
+        else
+            addType(Texture::RAISED);
 
-		if (! (type() & Texture::FLAT))
-			if (strstr(ts, "bevel2"))
-				addType(Texture::BEVEL2);
-			else
-				addType(Texture::BEVEL1);
+        if (! (type() & Texture::FLAT))
+            if (strstr(ts, "bevel2"))
+                addType(Texture::BEVEL2);
+            else
+                addType(Texture::BEVEL1);
 
-		if (strstr(ts, "interlaced"))
-			addType(Texture::INTERLACED);
-	}
+        if (strstr(ts, "interlaced"))
+            addType(Texture::INTERLACED);
+    }
 
-	delete [] ts;
+    delete [] ts;
 }
 
 }; // end namespace FbTk

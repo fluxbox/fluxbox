@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+//$Id: Font.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -35,48 +35,48 @@ namespace FbTk {
 class FontImp;
 
 /**
-	Handles the client to fontimp bridge.
+   Handles the client to fontimp bridge.
 */
 class Font {
 public:
-	Font(const char *name=0, bool antialias = false);
-	virtual ~Font();
-	/** 
-		Load a font
-		@return true on success, else false and it'll fall back on the last
-		loaded font
-	*/
-	bool load(const char *name);
+    Font(const char *name=0, bool antialias = false);
+    virtual ~Font();
+    /** 
+        Load a font
+        @return true on success, else false and it'll fall back on the last
+        loaded font
+    */
+    bool load(const char *name);
 
-	/// @return true if multibyte is enabled, else false
-	static bool multibyte() { return m_multibyte; }
-	/// @return true if utf-8 mode is enabled, else false
-	static bool utf8() { return m_utf8mode; }
-	void setAntialias(bool flag);
-	/**
-		@param text text to check size
-		@param size length of text in bytes
-		@return size of text in pixels
-	*/
-	unsigned int textWidth(const char * const text, unsigned int size) const;
-	unsigned int height() const;	
-	int ascent() const;
-	int descent() const;
-	/**
-	  Rotate font in any angle (currently only 90 degrees supported and just XFont implementation)
-	*/
-	void rotate(float angle);
-	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	bool isAntialias() const { return m_antialias; }	
-	bool isRotated() const { return m_rotated; }
+    /// @return true if multibyte is enabled, else false
+    static bool multibyte() { return m_multibyte; }
+    /// @return true if utf-8 mode is enabled, else false
+    static bool utf8() { return m_utf8mode; }
+    void setAntialias(bool flag);
+    /**
+       @param text text to check size
+       @param size length of text in bytes
+       @return size of text in pixels
+    */
+    unsigned int textWidth(const char * const text, unsigned int size) const;
+    unsigned int height() const;	
+    int ascent() const;
+    int descent() const;
+    /**
+       Rotate font in any angle (currently only 90 degrees supported and just XFont implementation)
+    */
+    void rotate(float angle);
+    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    bool isAntialias() const { return m_antialias; }	
+    bool isRotated() const { return m_rotated; }
 private:
 	
-	std::auto_ptr<FontImp> m_fontimp;
-	std::string m_fontstr;
-	static bool m_multibyte;
-	static bool m_utf8mode;
-	bool m_antialias;
-	bool m_rotated; ///< wheter we're rotated or not
+    std::auto_ptr<FontImp> m_fontimp;
+    std::string m_fontstr;
+    static bool m_multibyte;
+    static bool m_utf8mode;
+    bool m_antialias;
+    bool m_rotated; ///< wheter we're rotated or not
 };
 
 }; //end namespace FbTk

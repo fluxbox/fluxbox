@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Subject.hh,v 1.1 2002/09/07 20:30:45 fluxgen Exp $
+// $Id: Subject.hh,v 1.2 2002/12/01 13:42:00 rathnor Exp $
 
 #ifndef FBTK_SUBJECT_HH
 #define FBTK_SUBJECT_HH
@@ -32,21 +32,21 @@ class Observer;
 
 class Subject {
 public:
-	Subject();
-	virtual ~Subject();
-	/// attach an observer
-	void attach(Observer *obs);
-	/// detach an observer
-	void detach(Observer *obs);
-	/// notify all attached observers
-	void notify();
-	static void removeObserver(Observer *obs);
+    Subject();
+    virtual ~Subject();
+    /// attach an observer
+    void attach(Observer *obs);
+    /// detach an observer
+    void detach(Observer *obs);
+    /// notify all attached observers
+    void notify();
+    static void removeObserver(Observer *obs);
 private:
-	typedef std::vector<Observer *> ObserverList;
-	ObserverList m_observerlist;
+    typedef std::vector<Observer *> ObserverList;
+    ObserverList m_observerlist;
 
-	typedef std::vector<Subject *> SubjectList;
-	static SubjectList s_subjectlist;
+    typedef std::vector<Subject *> SubjectList;
+    static SubjectList s_subjectlist;
 };
 
 }; // end namespace FbTk

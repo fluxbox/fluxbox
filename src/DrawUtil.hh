@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.9 2002/11/26 15:45:48 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.10 2002/12/01 13:41:55 rathnor Exp $
 
 #ifndef DRAWUTIL_HH
 #define DRAWUTIL_HH
@@ -28,17 +28,17 @@
 #include "Font.hh"
 
 namespace DrawUtil {
-	// note: obsolete!
-	struct Font {
-		enum FontJustify {LEFT=0, RIGHT, CENTER};
+// note: obsolete!
+struct Font {
+    enum FontJustify {LEFT=0, RIGHT, CENTER};
 	
-		XFontSet set;
-		XFontSetExtents *set_extents;
-		XFontStruct *fontstruct;
-		FontJustify justify;
-	};
+    XFontSet set;
+    XFontSetExtents *set_extents;
+    XFontStruct *fontstruct;
+    FontJustify justify;
+};
 
-	int doAlignment(int max_width, int bevel, Font::FontJustify justify, 
+int doAlignment(int max_width, int bevel, Font::FontJustify justify, 
 		const FbTk::Font &font, const char * const text, size_t textlen, size_t &newlen);
 }; //end namespace DrawUtil
 

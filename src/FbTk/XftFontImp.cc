@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+//$Id: XftFontImp.cc,v 1.2 2002/12/01 13:42:15 rathnor Exp $
 
 #include "XftFontImp.hh"
 #include "App.hh"
@@ -30,114 +30,114 @@
 namespace FbTk {
 
 XftFontImp::XftFontImp(const char *name, bool utf8):m_xftfont(0),
-m_utf8mode(utf8) {
-	if (name != 0)
-		load(name);
+                                                    m_utf8mode(utf8) {
+    if (name != 0)
+        load(name);
 }
 
 XftFontImp::~XftFontImp() {
-	if (m_xftfont != 0)
-		XftFontClose(App::instance()->display(), m_xftfont);
+    if (m_xftfont != 0)
+        XftFontClose(App::instance()->display(), m_xftfont);
 }
 
 bool XftFontImp::load(const std::string &name) {
-	//Note: assumes screen 0 for now, changes on draw if needed
+    //Note: assumes screen 0 for now, changes on draw if needed
 	
-	Display *disp = App::instance()->display();
-	XftFont *newxftfont = XftFontOpenName(disp, 0, name.c_str());
+    Display *disp = App::instance()->display();
+    XftFont *newxftfont = XftFontOpenName(disp, 0, name.c_str());
 		
-	if (newxftfont == 0) { // failed to open font, lets test with XLFD
-		newxftfont = XftFontOpenXlfd(disp, 0, name.c_str());
-		if (newxftfont == 0)
-			return false;
-	}
-	// destroy old font and set new
-	if (m_xftfont != 0)
-		XftFontClose(disp, m_xftfont);
+    if (newxftfont == 0) { // failed to open font, lets test with XLFD
+        newxftfont = XftFontOpenXlfd(disp, 0, name.c_str());
+        if (newxftfont == 0)
+            return false;
+    }
+    // destroy old font and set new
+    if (m_xftfont != 0)
+        XftFontClose(disp, m_xftfont);
 
-	m_xftfont = newxftfont;
+    m_xftfont = newxftfont;
 
-	return true;
+    return true;
 }
 
 void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
-	if (m_xftfont == 0)
-		return;
-	Display *disp = App::instance()->display();
-	XftDraw *draw = XftDrawCreate(disp,
-		w,
-		DefaultVisual(disp, screen),
-		DefaultColormap(disp, screen));
+    if (m_xftfont == 0)
+        return;
+    Display *disp = App::instance()->display();
+    XftDraw *draw = XftDrawCreate(disp,
+                                  w,
+                                  DefaultVisual(disp, screen),
+                                  DefaultColormap(disp, screen));
 
-	XGCValues gc_val;
+    XGCValues gc_val;
 
-	// get foreground pixel value and convert it to XRenderColor value
-	// TODO: we should probably check return status
-	XGetGCValues(disp, gc, GCForeground, &gc_val);
+    // get foreground pixel value and convert it to XRenderColor value
+    // TODO: we should probably check return status
+    XGetGCValues(disp, gc, GCForeground, &gc_val);
 
-	// get red, green, blue values
-	XColor xcol;
-	xcol.pixel = gc_val.foreground;
-	XQueryColor(disp, DefaultColormap(disp, screen), &xcol);
+    // get red, green, blue values
+    XColor xcol;
+    xcol.pixel = gc_val.foreground;
+    XQueryColor(disp, DefaultColormap(disp, screen), &xcol);
 
-	// convert xcolor to XftColor
-	XRenderColor rendcol;
-	rendcol.red = xcol.red;
-	rendcol.green = xcol.green;
-	rendcol.blue = xcol.blue;
-	rendcol.alpha = 0xFFFF;
-	XftColor xftcolor;	
-	XftColorAllocValue(disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen),
-		&rendcol, &xftcolor);
+    // convert xcolor to XftColor
+    XRenderColor rendcol;
+    rendcol.red = xcol.red;
+    rendcol.green = xcol.green;
+    rendcol.blue = xcol.blue;
+    rendcol.alpha = 0xFFFF;
+    XftColor xftcolor;	
+    XftColorAllocValue(disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen),
+                       &rendcol, &xftcolor);
 
-	// draw string
+    // draw string
 #ifdef HAVE_XFT_UTF8_STRING
-	if (m_utf8mode) {
-		XftDrawStringUtf8(draw,
-			&xftcolor,
-			m_xftfont,
-			x, y,
-			(XftChar8 *)(text), len);
-	} else 
+    if (m_utf8mode) {
+        XftDrawStringUtf8(draw,
+                          &xftcolor,
+                          m_xftfont,
+                          x, y,
+                          (XftChar8 *)(text), len);
+    } else 
 #endif // HAVE_XFT_UTF8_STRING
 	{
-		XftDrawString8(draw,
-			&xftcolor,
-			m_xftfont,
-			x, y,
-			(XftChar8 *)(text), len);
+            XftDrawString8(draw,
+                           &xftcolor,
+                           m_xftfont,
+                           x, y,
+                           (XftChar8 *)(text), len);
 	}
 
-	XftColorFree(disp, DefaultVisual(disp, screen), 
-		DefaultColormap(disp, screen), &xftcolor);
-	XftDrawDestroy(draw);
+    XftColorFree(disp, DefaultVisual(disp, screen), 
+                 DefaultColormap(disp, screen), &xftcolor);
+    XftDrawDestroy(draw);
 }
 
 unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) const {
-	if (m_xftfont == 0)
-		return 0;
-	XGlyphInfo ginfo;
+    if (m_xftfont == 0)
+        return 0;
+    XGlyphInfo ginfo;
 #ifdef HAVE_XFT_UTF8_STRING
-	if (m_utf8mode) {
-		XftTextExtentsUtf8(App::instance()->display(),
-			m_xftfont,
-			(XftChar8 *)text, len,
-			&ginfo);
-	} else 
+    if (m_utf8mode) {
+        XftTextExtentsUtf8(App::instance()->display(),
+                           m_xftfont,
+                           (XftChar8 *)text, len,
+                           &ginfo);
+    } else 
 #endif  //HAVE_XFT_UTF8_STRING
 	{
-		XftTextExtents8(App::instance()->display(),
-			m_xftfont,
-			(XftChar8 *)text, len,
-			&ginfo);
+            XftTextExtents8(App::instance()->display(),
+                            m_xftfont,
+                            (XftChar8 *)text, len,
+                            &ginfo);
 	}
-	return ginfo.xOff;
+    return ginfo.xOff;
 }
 
 unsigned int XftFontImp::height() const {
-	if (m_xftfont == 0)
-		return 0;
-	return m_xftfont->height;
+    if (m_xftfont == 0)
+        return 0;
+    return m_xftfont->height;
 }
 
 }; // end namespace FbTk

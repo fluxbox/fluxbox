@@ -34,34 +34,34 @@ uds::uds_flags_t uds::flags = uds::leak_check|uds::log_allocs;
 using namespace std;
 
 void testKeys(int argc, char **argv) {
-	Display *display = XOpenDisplay(0);
+    Display *display = XOpenDisplay(0);
 	
-	if (display==0) {
-		cerr<<"Cant open display."<<endl;
-		return;
-	}
+    if (display==0) {
+        cerr<<"Cant open display."<<endl;
+        return;
+    }
 	
-	Keys *keys = new Keys(display);
-	const char default_keyfile[] = "keys";
+    Keys *keys = new Keys(display);
+    const char default_keyfile[] = "keys";
 	
-	if (argc>1) {
-		cerr<<"Loading file: "<<argv[1]<<endl;
-		keys->load(const_cast<char *>(argv[1]));
-	} else {
-		cerr<<"Using default file: "<<default_keyfile<<endl;
-		keys->load(const_cast<char *>(default_keyfile));
-	}
+    if (argc>1) {
+        cerr<<"Loading file: "<<argv[1]<<endl;
+        keys->load(const_cast<char *>(argv[1]));
+    } else {
+        cerr<<"Using default file: "<<default_keyfile<<endl;
+        keys->load(const_cast<char *>(default_keyfile));
+    }
 	
-	keys->load(const_cast<char *>(default_keyfile));
+    keys->load(const_cast<char *>(default_keyfile));
 	
-	delete keys;
+    delete keys;
 		
-	XCloseDisplay(display);
+    XCloseDisplay(display);
 }
 
 int main(int argc, char **argv) {
-	#ifdef UDS
-	uds::Init uds_init;
-	#endif
-	testKeys(argc, argv);	
+#ifdef UDS
+    uds::Init uds_init;
+#endif
+    testKeys(argc, argv);	
 }

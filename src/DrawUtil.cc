@@ -19,43 +19,43 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.cc,v 1.10 2002/11/26 15:50:46 fluxgen Exp $
+// $Id: DrawUtil.cc,v 1.11 2002/12/01 13:41:55 rathnor Exp $
 
 #include "DrawUtil.hh"
 
 namespace DrawUtil {
 
 int doAlignment(int max_width, int bevel, Font::FontJustify justify, 
-	const FbTk::Font &font, const char * const text, size_t textlen, size_t &newlen) {
+                const FbTk::Font &font, const char * const text, size_t textlen, size_t &newlen) {
 
-	if (text == 0 || textlen == 0)
-		return 0;
+    if (text == 0 || textlen == 0)
+        return 0;
 
-	int l = font.textWidth(text, textlen) + bevel;
-	size_t dlen = textlen;
-	int dx = bevel;
-	if (l > max_width) {
-		for (; dlen > 0; dlen--) {
-			l = font.textWidth(text, dlen) + bevel;
-			if (l<=max_width)
-				break;
-		}
-	}
+    int l = font.textWidth(text, textlen) + bevel;
+    size_t dlen = textlen;
+    int dx = bevel;
+    if (l > max_width) {
+        for (; dlen > 0; dlen--) {
+            l = font.textWidth(text, dlen) + bevel;
+            if (l<=max_width)
+                break;
+        }
+    }
 
-	newlen = dlen;
+    newlen = dlen;
 
-	switch (justify) {
-	case DrawUtil::Font::RIGHT:
-		dx = max_width - l - bevel;
+    switch (justify) {
+    case DrawUtil::Font::RIGHT:
+        dx = max_width - l - bevel;
 	break;
-	case DrawUtil::Font::CENTER:
-		dx = (max_width - l)/2;
+    case DrawUtil::Font::CENTER:
+        dx = (max_width - l)/2;
 	break;
-	case DrawUtil::Font::LEFT:
+    case DrawUtil::Font::LEFT:
 	break;
-	}
+    }
 	
-	return dx;
+    return dx;
 }
 
 }; //end namespace DrawUtil

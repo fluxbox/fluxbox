@@ -34,8 +34,8 @@
 */
 class TimeoutHandler {
 public:
-	/// called when the time is out
-	virtual void timeout() = 0;
+    /// called when the time is out
+    virtual void timeout() = 0;
 };
 
 /**
@@ -43,47 +43,47 @@ public:
 */
 class BTimer {
 public:
-	explicit BTimer(TimeoutHandler *handler);
-	virtual ~BTimer();
+    explicit BTimer(TimeoutHandler *handler);
+    virtual ~BTimer();
 
-	inline int isTiming() const { return m_timing; } 
-	inline int doOnce() const { return m_once; }
+    inline int isTiming() const { return m_timing; } 
+    inline int doOnce() const { return m_once; }
 
-	inline const timeval &getTimeout() const { return m_timeout; }
-	inline const timeval &getStartTime() const { return m_start; }
+    inline const timeval &getTimeout() const { return m_timeout; }
+    inline const timeval &getStartTime() const { return m_start; }
 
-	inline void fireOnce(bool once) { m_once = once; }
-	/// set timeout
-	void setTimeout(long val);
-	/// set timeout 
-	void setTimeout(timeval val);
-	/// start timing
-	void start();
-	/// stop timing
-	void stop();
-	/// update all timers
-	static void updateTimers(int file_descriptor);
+    inline void fireOnce(bool once) { m_once = once; }
+    /// set timeout
+    void setTimeout(long val);
+    /// set timeout 
+    void setTimeout(timeval val);
+    /// start timing
+    void start();
+    /// stop timing
+    void stop();
+    /// update all timers
+    static void updateTimers(int file_descriptor);
 
 protected:
-	/// force a timeout
-	void fireTimeout();
+    /// force a timeout
+    void fireTimeout();
 
 private:
-	/// add a timer to the static list
-	static void addTimer(BTimer *timer);
-	/// remove a timer from the static list
-	static void removeTimer(BTimer *timer);
+    /// add a timer to the static list
+    static void addTimer(BTimer *timer);
+    /// remove a timer from the static list
+    static void removeTimer(BTimer *timer);
 	
-	typedef std::list<BTimer *> TimerList;
+    typedef std::list<BTimer *> TimerList;
     static TimerList m_timerlist; ///< list of all timers
 	
-	TimeoutHandler *m_handler; ///< handler
+    TimeoutHandler *m_handler; ///< handler
 	
-	bool m_timing; ///< clock running?
-	bool m_once;  ///< do timeout only once?
+    bool m_timing; ///< clock running?
+    bool m_once;  ///< do timeout only once?
 
-	timeval m_start;    ///< start time
-	timeval m_timeout; ///< time length
+    timeval m_start;    ///< start time
+    timeval m_timeout; ///< time length
 
 };
 

@@ -26,24 +26,24 @@
 
 namespace FbTk {
 /**
- Main class for applications, every application must create an instance of this class
+   Main class for applications, every application must create an instance of this class
 */
 class App {
 public:
-	/// @return singleton instance of App
-	static App *instance();
-	explicit App(const char *displayname=0);
-	virtual ~App();
-	/// display connection
-	Display *display() const { return m_display; }
-	/// starts event loop
-	virtual void eventLoop();
-	/// ends event loop
-	void end();
+    /// @return singleton instance of App
+    static App *instance();
+    explicit App(const char *displayname=0);
+    virtual ~App();
+    /// display connection
+    Display *display() const { return m_display; }
+    /// starts event loop
+    virtual void eventLoop();
+    /// ends event loop
+    void end();
 private:
-	static App *s_app;
-	bool m_done;
-	Display *m_display;
+    static App *s_app;
+    bool m_done;
+    Display *m_display;
 };
 
 }; // end namespace FbTk

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.cc,v 1.2 2002/11/27 21:47:46 fluxgen Exp $
+// $Id: SignalHandler.cc,v 1.3 2002/12/01 13:42:14 rathnor Exp $
 
 #include "SignalHandler.hh"
 
@@ -28,52 +28,52 @@ namespace FbTk {
 SignalEventHandler *SignalHandler::s_signal_handler[NSIG];
 
 SignalHandler::SignalHandler() {
-	// clear signal list
-	for (int i=0; i < NSIG; ++i)
-		s_signal_handler[i] = 0;
+    // clear signal list
+    for (int i=0; i < NSIG; ++i)
+        s_signal_handler[i] = 0;
 }
 
 SignalHandler *SignalHandler::instance() {
-	static SignalHandler singleton;
-	return &singleton;
+    static SignalHandler singleton;
+    return &singleton;
 }
 
 bool SignalHandler::registerHandler(int signum, SignalEventHandler *eh, 
-	SignalEventHandler **oldhandler_ret) {
-	// must be less than NSIG
-	if (signum >= NSIG)
-		return false;
+                                    SignalEventHandler **oldhandler_ret) {
+    // must be less than NSIG
+    if (signum >= NSIG)
+        return false;
 
-	// get old signal handler for this signum
-	if (oldhandler_ret != 0)
-		*oldhandler_ret = s_signal_handler[signum];
+    // get old signal handler for this signum
+    if (oldhandler_ret != 0)
+        *oldhandler_ret = s_signal_handler[signum];
 	
-	struct sigaction sa;
-	// set callback
-	sa.sa_handler = SignalHandler::handleSignal;
-	sigemptyset (&sa.sa_mask);
-	sa.sa_flags = 0;
+    struct sigaction sa;
+    // set callback
+    sa.sa_handler = SignalHandler::handleSignal;
+    sigemptyset (&sa.sa_mask);
+    sa.sa_flags = 0;
 	
-	if (sigaction(signum, &sa, 0) == -1)
-		return false;
+    if (sigaction(signum, &sa, 0) == -1)
+        return false;
 	
-	s_signal_handler[signum] = eh;
+    s_signal_handler[signum] = eh;
 	
-	return true;
+    return true;
 }
 
 void SignalHandler::removeHandler(int signum) {
-	if (signum < NSIG)
-		s_signal_handler[signum] = 0; // clear handler pointer
+    if (signum < NSIG)
+        s_signal_handler[signum] = 0; // clear handler pointer
 }
 
 void SignalHandler::handleSignal(int signum) {
-	if (signum >= NSIG)
-		return;
-	// make sure we got a handler for this signal
-	if (s_signal_handler[signum] != 0) {
-		s_signal_handler[signum]->handleSignal(signum);
-	}
+    if (signum >= NSIG)
+        return;
+    // make sure we got a handler for this signal
+    if (s_signal_handler[signum] != 0) {
+        s_signal_handler[signum]->handleSignal(signum);
+    }
 }
 
 }; 

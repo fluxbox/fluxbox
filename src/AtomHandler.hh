@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.4 2002/11/30 20:59:54 fluxgen Exp $
+// $Id: AtomHandler.hh,v 1.5 2002/12/01 13:41:54 rathnor Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -31,30 +31,30 @@ class BScreen;
 
 class AtomHandler {
 public:
-	virtual ~AtomHandler() { }
+    virtual ~AtomHandler() { }
 	
-	virtual void initForScreen(const BScreen &screen) = 0;
-	virtual void setupWindow(FluxboxWindow &win) = 0;
+    virtual void initForScreen(const BScreen &screen) = 0;
+    virtual void setupWindow(FluxboxWindow &win) = 0;
 	
-	virtual void updateClientList(const BScreen &screen) = 0;
-	virtual void updateWorkspaceNames(const BScreen &screen) = 0;
-	virtual void updateCurrentWorkspace(const BScreen &screen) = 0;
-	virtual void updateWorkspaceCount(const BScreen &screen) = 0;
+    virtual void updateClientList(const BScreen &screen) = 0;
+    virtual void updateWorkspaceNames(const BScreen &screen) = 0;
+    virtual void updateCurrentWorkspace(const BScreen &screen) = 0;
+    virtual void updateWorkspaceCount(const BScreen &screen) = 0;
 	
-	virtual void updateWorkspace(FluxboxWindow &win) = 0;
-	virtual void updateState(FluxboxWindow &win) = 0;
-	virtual void updateHints(FluxboxWindow &win) = 0;
+    virtual void updateWorkspace(FluxboxWindow &win) = 0;
+    virtual void updateState(FluxboxWindow &win) = 0;
+    virtual void updateHints(FluxboxWindow &win) = 0;
 	
-	virtual bool checkClientMessage(const XClientMessageEvent &ce, 
-		BScreen * const screen, FluxboxWindow * const win) = 0;
+    virtual bool checkClientMessage(const XClientMessageEvent &ce, 
+                                    BScreen * const screen, FluxboxWindow * const win) = 0;
 	
-	/// should this object be updated or not?
-	bool update() const { return m_update; }
+    /// should this object be updated or not?
+    bool update() const { return m_update; }
 protected:
-	void disableUpdate() { m_update = false; }
-	void enableUpdate() { m_update = true; }	
+    void disableUpdate() { m_update = false; }
+    void enableUpdate() { m_update = true; }	
 private:
-	bool m_update; ///< do we get update or not
+    bool m_update; ///< do we get update or not
 };
 
 #endif // ATOMHANDLER_HH

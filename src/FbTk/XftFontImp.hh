@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+//$Id: XftFontImp.hh,v 1.2 2002/12/01 13:42:15 rathnor Exp $
 
 #ifndef XFTFONTIMP_HH
 #define XFTFONTIMP_HH
@@ -30,18 +30,18 @@ namespace FbTk {
 
 class XftFontImp:public FbTk::FontImp {
 public:
-	XftFontImp(const char *fontname, bool utf8);
-	~XftFontImp();
-	bool load(const std::string &name);
-	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	unsigned int textWidth(const char * const text, unsigned int len) const;
-	unsigned int height() const;
-	int ascent() const { return m_xftfont ? m_xftfont->ascent : 0; }
-	int descent() const { return m_xftfont ? m_xftfont->descent : 0; }
-	bool loaded() const { return m_xftfont != 0; }
+    XftFontImp(const char *fontname, bool utf8);
+    ~XftFontImp();
+    bool load(const std::string &name);
+    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    unsigned int textWidth(const char * const text, unsigned int len) const;
+    unsigned int height() const;
+    int ascent() const { return m_xftfont ? m_xftfont->ascent : 0; }
+    int descent() const { return m_xftfont ? m_xftfont->descent : 0; }
+    bool loaded() const { return m_xftfont != 0; }
 private:
-	XftFont *m_xftfont;
-	bool m_utf8mode;
+    XftFont *m_xftfont;
+    bool m_utf8mode;
 };
 
 }; // end namespace FbTk

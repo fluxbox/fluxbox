@@ -30,25 +30,25 @@ class BScreen;
 
 class Netizen {
 public:
-	Netizen(const BScreen * const scr, Window w);
+    Netizen(const BScreen * const scr, Window w);
 
-	inline Window getWindowID() const { return window; }
+    inline Window getWindowID() const { return window; }
 
-	void sendWorkspaceCount();
-	void sendCurrentWorkspace();
+    void sendWorkspaceCount();
+    void sendCurrentWorkspace();
 
-	void sendWindowFocus(Window w);
-	void sendWindowAdd(Window w, unsigned long p);
-	void sendWindowDel(Window w);
-	void sendWindowRaise(Window w);
-	void sendWindowLower(Window w);
+    void sendWindowFocus(Window w);
+    void sendWindowAdd(Window w, unsigned long p);
+    void sendWindowDel(Window w);
+    void sendWindowRaise(Window w);
+    void sendWindowLower(Window w);
 
-	void sendConfigNotify(XEvent *xe);
+    void sendConfigNotify(XEvent *xe);
 private:
-	const BScreen * const m_screen;
-	Display *m_display; ///< display connection
-	Window window;
-	XEvent event;
+    const BScreen * const m_screen;
+    Display *m_display; ///< display connection
+    Window window;
+    XEvent event;
 
 };
 
