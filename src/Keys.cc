@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.18 2002/08/11 21:21:06 fluxgen Exp $
+//$Id: Keys.cc,v 1.19 2002/08/28 20:25:15 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -221,8 +221,13 @@ bool Keys::load(const char *filename) {
 					int tmpmod=getModifier(val[argc].c_str());
 					if(tmpmod)
 						mod|=tmpmod; //If it's a modifier
-					else{ 
+					else { 
 						key = getKey(val[argc].c_str()); // else get the key
+						if (key == 0) {
+							cerr<<"["<<filename<<"]: Invalid key/modifier on line("<<
+								line<<"): "<<linebuffer<<endl;
+							break; // get next line
+						}
 						if (!current_key) {
 							current_key = new t_key(key, mod);
 							last_key = current_key;
