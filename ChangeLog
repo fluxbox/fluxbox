@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/04/19:
+  * Moved kde dockapps from slit into the systray in toolbar (Henrik
+    Screen.hh/cc, Systray.hh/cc, fluxbox.hh/cc, Slit.cc/hh
   * Minor fix for fbrun using FbTk::Directory (Thanks Mathias Gumz)
     Directory.hh/cc, FbRun.cc
 *04/04/18:
