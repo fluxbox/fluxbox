@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.23 2003/04/20 12:21:35 rathnor Exp $
+// $Id: Keys.hh,v 1.24 2003/06/08 14:32:28 rathnor Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -64,6 +64,8 @@ public:
         TOGGLEDECOR,// toggle visibility of decor (title, frame, handles)
         TOGGLETAB,  // toggle visibilty of tab
         ROOTMENU,   // pop up rootmenu
+        RECONFIGURE, // reload configuration
+        RESTART,   // restart fluxbox
         QUIT,  // Die, quit, logout, shutdown
         LASTKEYGRAB //mark end of keygrabbs
     };
@@ -108,7 +110,7 @@ public:
     */
     const char *getActionStr(KeyAction action);
     /**
-       Get command to execute (key action EXECUTE)
+       Get command to execute (key action EXECUTE/RESTART)
        @return string to command
     */
     const std::string &getExecCommand() { return m_execcmdstring; }

@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
 *03/06/08:
+   * Add Reconfigure and Restart Key actions, thanks Jann Fisher (Simon)
+     Also modify the patch to take argument on Restart action
+     Keys.hh/cc fluxbox.cc
    * Fix restart command to accept and use an argument again (Simon)
      Screen.cc FbCommands.hh/cc
    * Fix bug that sometimes left window frames after window closed (Simon)

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.27 2003/04/26 18:27:56 fluxgen Exp $
+//$Id: Keys.cc,v 1.28 2003/06/08 14:32:28 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -135,6 +135,8 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {"ToggleDecor", TOGGLEDECOR},	
     {"ToggleTab", TOGGLETAB}, 
     {"RootMenu", ROOTMENU},
+    {"Reconfigure", RECONFIGURE},
+    {"Restart", RESTART},
     {"Quit", QUIT},
     {0, LASTKEYGRAB}
 };	
@@ -294,12 +296,14 @@ bool Keys::load(const char *filename) {
 					
                     last_key->action = m_actionlist[i].action;
                     switch(last_key->action) {
+                    case Keys::RESTART:
                     case Keys::EXECUTE:
                         last_key->execcommand = 
                             const_cast<char *>
-                            (FbTk::StringUtil::strcasestr(linebuffer.c_str(),
-                                                    getActionStr(Keys::EXECUTE))+
-                             strlen(getActionStr(Keys::EXECUTE)));
+                            (FbTk::StringUtil::strcasestr(
+                                linebuffer.c_str(),
+                                getActionStr(last_key->action))
+                             + strlen(getActionStr(last_key->action)) + 1);
                         break;
                     case WORKSPACE:
                     case SENDTOWORKSPACE:
@@ -481,7 +485,8 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
                     next_key = m_keylist[i];
                     break; //end for-loop 
                 } else {
-                    if (m_keylist[i]->action == Keys::EXECUTE)
+                    if (m_keylist[i]->action == Keys::EXECUTE ||
+                        m_keylist[i]->action == Keys::RESTART)
                         m_execcmdstring = m_keylist[i]->execcommand; //update execcmdstring if action is grabExecute
                     m_param = m_keylist[i]->param;
                     return m_keylist[i]->action;
@@ -496,14 +501,16 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
                 next_key = temp_key;								
             } else {
                 next_key = 0;
-                if (temp_key->action == Keys::EXECUTE)
+                if (temp_key->action == Keys::EXECUTE ||
+                    temp_key->action == Keys::RESTART)
                     m_execcmdstring = temp_key->execcommand; //update execcmdstring if action is grabExecute
                 return temp_key->action;
             }
         }  else  {
             temp_key = next_key;		
             next_key = 0;
-            if (temp_key->action == Keys::EXECUTE)
+            if (temp_key->action == Keys::EXECUTE ||
+                temp_key->action == Keys::RESTART)
                 m_execcmdstring = temp_key->execcommand; //update execcmdstring if action is grabExecute
             return temp_key->action;				
         }

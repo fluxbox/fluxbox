@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.152 2003/06/08 00:13:41 rathnor Exp $
+// $Id: fluxbox.cc,v 1.153 2003/06/08 14:32:28 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1299,6 +1299,13 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             break;
         case Keys::EXECUTE: { //execute command on keypress
             FbCommands::ExecuteCmd cmd(m_key->getExecCommand(), mousescreen->screenNumber());
+            cmd.execute();			
+        } break;
+        case Keys::RECONFIGURE: 
+            reload_rc();
+            break;
+        case Keys::RESTART: {
+            FbCommands::RestartFluxboxCmd cmd(m_key->getExecCommand());
             cmd.execute();			
         } break;
         case Keys::QUIT:
