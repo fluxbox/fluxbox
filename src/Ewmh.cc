@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.50 2004/09/10 15:36:04 akir Exp $
+// $Id: Ewmh.cc,v 1.51 2004/09/11 13:34:36 fluxgen Exp $
 
 #include "Ewmh.hh"
 
@@ -829,9 +829,11 @@ void Ewmh::updateStrut(WinClient &winclient) {
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 
-            winclient.setStrut(winclient.screen().requestStrut(data[0], data[1],
-                                                               data[2], data[3]));
-            winclient.screen().updateAvailableWorkspaceArea();
+        int head = winclient.screen().getHead(winclient);
+        winclient.setStrut(winclient.screen().requestStrut(head, 
+                           data[0], data[1], 
+                           data[2], data[3]));
+        winclient.screen().updateAvailableWorkspaceArea();
     }
 }
 

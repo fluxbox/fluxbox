@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.7 2004/08/27 14:36:12 rathnor Exp $
+// $Id: ToolFactory.cc,v 1.8 2004/09/11 13:40:57 fluxgen Exp $
 
 #include "ToolFactory.hh"
 
@@ -43,6 +43,8 @@
 
 #include "FbTk/FbWindow.hh"
 
+#include <utility>
+
 namespace {
 class ShowMenuAboveToolbar: public FbTk::Command {
 public:
@@ -51,20 +53,18 @@ public:
         m_tbar.screen().hideMenus();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
-        int x = event.xbutton.x_root - (m_tbar.menu().width() / 2);
-        int y = event.xbutton.y_root - (m_tbar.menu().height() / 2);
-
-        if (x < 0)
-            x = 0;
-        else if (x + m_tbar.menu().width() > m_tbar.screen().width())
-            x = m_tbar.screen().width() - m_tbar.menu().width();
-
-        if (y < 0)
-            y = 0;
-        else if (y + m_tbar.menu().height() > m_tbar.screen().height())
-            y = m_tbar.screen().height() - m_tbar.menu().height();
-
-        m_tbar.menu().move(x, y);
+        int head = m_tbar.screen().getHead(event.xbutton.x_root, event.xbutton.y_root);
+        std::pair<int, int> m = 
+            m_tbar.screen().clampToHead( head,
+                                         event.xbutton.x_root - (m_tbar.menu().width() / 2),
+                                         event.xbutton.y_root - (m_tbar.menu().height() / 2),
+                                         m_tbar.menu().width(),
+                                         m_tbar.menu().height());
+        m_tbar.menu().setScreen(m_tbar.screen().getHeadX(head),
+                                m_tbar.screen().getHeadY(head),
+                                m_tbar.screen().getHeadWidth(head),
+                                m_tbar.screen().getHeadHeight(head));
+        m_tbar.menu().move(m.first, m.second);
         m_tbar.menu().show();        
     }
 private:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.39 2004/08/29 12:35:29 rathnor Exp $
+// $Id: Menu.hh,v 1.40 2004/09/11 13:45:16 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -94,6 +94,8 @@ public:
 
     void disableTitle();
     void enableTitle();
+
+    void setScreen(int x, int y, int w, int h);
 
     /**
        @name event handlers
@@ -200,7 +202,8 @@ private:
     ImageControl &m_image_ctrl;
     Menuitems menuitems;
 
-    const unsigned int m_screen_width, m_screen_height;
+    int m_screen_x, m_screen_y;
+    int m_screen_width, m_screen_height;
     bool moving; ///< if we're moving/draging or not
     bool visible; ///< menu visibility
     bool torn; ///< torn from parent

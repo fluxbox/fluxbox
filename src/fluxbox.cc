@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.253 2004/09/11 12:33:14 rathnor Exp $
+// $Id: fluxbox.cc,v 1.254 2004/09/11 13:38:58 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1104,28 +1104,20 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                 screen->getRootmenu().hide();
 
         } else if (be.button == 2) {
-            int mx = be.x_root -
-                (screen->getWorkspacemenu().width() / 2);
-            int my = be.y_root -
-                (screen->getWorkspacemenu().titleWindow().height() / 2);
-	
-            if (mx < 0) mx = 0;
-            if (my < 0) my = 0;
+            int borderw = screen->getWorkspacemenu().fbwindow().borderWidth();
+            int head = screen->getHead(be.x_root, be.y_root);
 
-            if (mx + screen->getWorkspacemenu().width() >
-                screen->width()) {
-                mx = screen->width()-1 -
-                    screen->getWorkspacemenu().width() -
-                    2*screen->getWorkspacemenu().fbwindow().borderWidth();
-            }
-
-            if (my + screen->getWorkspacemenu().height() >
-                screen->height()) {
-                my = screen->height()-1 -
-                    screen->getWorkspacemenu().height() -
-                    2*screen->getWorkspacemenu().fbwindow().borderWidth();
-            }
-            screen->getWorkspacemenu().move(mx, my);
+            pair<int, int> m = 
+                screen->clampToHead(head,
+                                    be.x_root - (screen->getWorkspacemenu().width() / 2), 
+                                    be.y_root - (screen->getWorkspacemenu().titleWindow().height() / 2),
+                                    screen->getWorkspacemenu().width() + 2*borderw,
+                                    screen->getWorkspacemenu().height() + 2*borderw);
+            screen->getWorkspacemenu().move(m.first, m.second);
+            screen->getWorkspacemenu().setScreen(screen->getHeadX(head),
+                                                 screen->getHeadY(head),
+                                                 screen->getHeadWidth(head),
+                                                 screen->getHeadHeight(head));
 
             if (! screen->getWorkspacemenu().isVisible()) {
                 screen->getWorkspacemenu().removeParent();
@@ -1135,29 +1127,23 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         } else if (be.button == 3) { 
             //calculate placement of root menu
             //and show/hide it				
-            int mx = be.x_root -
-                (screen->getRootmenu().width() / 2);
-            int my = be.y_root -
-                (screen->getRootmenu().titleWindow().height() / 2);
+
             int borderw = screen->getRootmenu().fbwindow().borderWidth();
+            int head = screen->getHead(be.x_root, be.y_root);
 
-            if (mx < 0) mx = 0;
-            if (my < 0) my = 0;
+            pair<int, int> m = 
+                screen->clampToHead(head,
+                                    be.x_root - (screen->getRootmenu().width() / 2), 
+                                    be.y_root - (screen->getRootmenu().titleWindow().height() / 2),
+                                    screen->getRootmenu().width() + 2*borderw,
+                                    screen->getRootmenu().height() + 2*borderw);
+
+            screen->getRootmenu().move(m.first, m.second);
+            screen->getRootmenu().setScreen(screen->getHeadX(head),
+                                            screen->getHeadY(head),
+                                            screen->getHeadWidth(head),
+                                            screen->getHeadHeight(head));
             
-            if (mx + screen->getRootmenu().width() + 2*borderw > screen->width()) {
-                mx = screen->width() -
-                    screen->getRootmenu().width() -
-                    2*borderw;
-            }
-
-            if (my + screen->getRootmenu().height() + 2*borderw >
-                screen->height()) {
-                my = screen->height() -
-                    screen->getRootmenu().height() -
-                    2*borderw;
-            }
-            screen->getRootmenu().move(mx, my);
-
             if (! screen->getRootmenu().isVisible()) {
                 checkMenu();
                 screen->getRootmenu().show();

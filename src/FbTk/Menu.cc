@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.81 2004/09/11 12:33:14 rathnor Exp $
+// $Id: Menu.cc,v 1.82 2004/09/11 13:45:16 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -79,6 +79,8 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_theme(tm),
     m_parent(0),
     m_image_ctrl(imgctrl),
+    m_screen_x(0),
+    m_screen_y(0),
     m_screen_width(DisplayWidth(FbTk::App::instance()->display(), tm.screenNum())),
     m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm.screenNum())),
     m_alignment(ALIGNDONTCARE),
@@ -192,8 +194,6 @@ Menu::~Menu() {
     if (menu.sel_pixmap)
         m_image_ctrl.removeImage(menu.sel_pixmap);
 
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
-
     if (s_focused == this)
         s_focused = 0;
 }
@@ -236,6 +236,7 @@ int Menu::remove(unsigned int index) {
 
     if (item) {
         menuitems.erase(it);
+
         if (!internal_menu && item->submenu() != 0) {
             Menu *tmp = item->submenu();
             // if menu is interal we should just hide it instead
@@ -796,6 +797,8 @@ void Menu::drawSubmenu(unsigned int index) {
 			
         if (item->submenu()->m_parent != this)
             item->submenu()->m_parent = this;
+
+        item->submenu()->setScreen(m_screen_x, m_screen_y, m_screen_width, m_screen_height);
 			
         int sbl = index / menu.persub, i = index - (sbl * menu.persub);
         int new_x = x() + ((menu.item_w * (sbl + 1)) + menu.window.borderWidth());
@@ -821,24 +824,26 @@ void Menu::drawSubmenu(unsigned int index) {
                      height() - item->submenu()->height());
         }
 
-        if ((new_x + item->submenu()->width()) > m_screen_width) {
+        int borderw = item->submenu()->fbwindow().borderWidth();
+
+        if ((new_x + item->submenu()->width()) + 2*borderw > m_screen_x + m_screen_width) {
             new_x = ((shifted) ? menu.x_shift : x()) -
                 item->submenu()->width() - menu.window.borderWidth();
         }
 			
-        if (new_x < 0)
-            new_x = 0;
+        if (new_x < m_screen_x)
+            new_x = m_screen_x;
 
-        if ((new_y + item->submenu()->height()) > m_screen_height) {
-            new_y = m_screen_height - item->submenu()->height() -
+        if ((new_y + item->submenu()->height()) > m_screen_y + m_screen_height) {
+            new_y = m_screen_y + m_screen_height - item->submenu()->height() -
                 menu.window.borderWidth() * 2;
         }
 			
         item->submenu()->moving = moving;
         which_sub = index;
 
-        if (new_y < 0)
-            new_y = 0;
+        if (new_y < m_screen_y)
+            new_y = m_screen_y;
 
         item->submenu()->move(new_x, new_y);
         if (! moving)
@@ -1085,10 +1090,11 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
             if (item->submenu()) {
                 if (!item->submenu()->isVisible())
                     drawSubmenu(w);
-            } else
+            } else {
                 drawItem(w, 
                          true,  // clear
                          true); // render transparency
+            }
 
         }
     } else {
@@ -1120,14 +1126,10 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             }
         }
 
-        if (re.x >= 0 && re.x <= (signed) width() &&
-            re.y >= 0 && re.y <= (signed) theme().titleHeight() &&
-            re.button == 3)
+        if (re.button == 3)
             hide();
 			
-    } else if (re.window == menu.frame &&
-               re.x >= 0 && re.x < (signed) width() &&
-               re.y >= 0 && re.y < (signed) menu.frame_h) {
+    } else if (re.window == menu.frame) {
 			
         int sbl = (re.x / menu.item_w), i = (re.y / theme().itemHeight()),
             ix = sbl * menu.item_w, iy = i * theme().itemHeight(),
@@ -1140,17 +1142,16 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                     re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
                     menuitems[w]->click(re.button, re.time);
                     itemSelected(re.button, w);
-                    // just redraw this item
-                    drawItem(w, 
+                    drawItem(w,
                              true,  // clear
                              true); // transparent
                 }
+
             } else {
-                drawItem(p, 
+                drawItem(p,
                          true,  // clear
                          true); // transparent
             }
-            
         } else {
             drawItem(p,
                      true,  // clear
@@ -1284,8 +1285,8 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
         return;
 
     menu.x_shift = x(), menu.y_shift = y();
-    if (x() + width() > m_screen_width) {
-        menu.x_shift = m_screen_width - width() - 2*theme().borderWidth();
+    if (x() + width() > m_screen_x + m_screen_width) {
+        menu.x_shift = m_screen_x + m_screen_width - width() - 2*theme().borderWidth();
         shifted = true;
     } else if (x() < 0) {
         menu.x_shift = 0; //-theme().borderWidth();
@@ -1380,6 +1381,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     }
 }
+
 
 void Menu::reconfigure() {
 
@@ -1513,6 +1515,13 @@ void Menu::renderTransp(int x, int y,
         
 #endif // HAVE_XRENDER
         
+}
+
+void Menu::setScreen(int x, int y, int w, int h) {
+    m_screen_x = x;
+    m_screen_y = y;
+    m_screen_width = w;
+    m_screen_height = h;
 }
 
 }; // end namespace FbTk

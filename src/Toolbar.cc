@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.153 2004/09/11 13:33:07 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.154 2004/09/11 13:34:01 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -488,17 +488,16 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
         int head = screen().getHead(be.x_root, be.y_root);
         int borderw = menu().fbwindow().borderWidth();
-        pair<int, int> m = screen().clampToHead( head,
-                be.x_root - (menu().width() / 2), 
-                be.y_root - (menu().titleWindow().height() / 2),
-                menu().width() + 2*borderw,
-                menu().height() + 2*borderw);
+        pair<int, int> m = screen().clampToHead(head,
+                                                be.x_root - (menu().width() / 2), 
+                                                be.y_root - (menu().titleWindow().height() / 2),
+                                                menu().width() + 2*borderw,
+                                                menu().height() + 2*borderw);
 
-        menu().setScreen(
-                screen().getHeadX(head),
-                screen().getHeadY(head),
-                screen().getHeadWidth(head),
-                screen().getHeadHeight(head));
+        menu().setScreen(screen().getHeadX(head),
+                         screen().getHeadY(head),
+                         screen().getHeadWidth(head),
+                         screen().getHeadHeight(head));
         menu().move(m.first, m.second);
         menu().show();
         menu().grabInputFocus();

@@ -20,28 +20,35 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Strut.hh,v 1.3 2004/01/19 18:30:59 fluxgen Exp $
+// $Id: Strut.hh,v 1.4 2004/09/11 13:36:03 fluxgen Exp $
 
 #ifndef STRUT_HH
 #define STRUT_HH
 
 class Strut {
 public:
-    Strut(int left, int right, 
-          int top, int bottom):m_left(left), m_right(right), 
-                               m_top(top), m_bottom(bottom) { }
+    Strut(int head, int left, int right, 
+          int top, int bottom, Strut* next = 0)
+        :m_head(head), m_left(left), m_right(right), 
+         m_top(top), m_bottom(bottom), m_next(next) { }
+    inline int head() const { return m_head; }
     inline int left() const { return m_left; }
     inline int right() const { return m_right; }
     inline int bottom() const { return m_bottom; }
     inline int top() const { return m_top; }
+    inline Strut* next() const { return m_next; }
     bool operator == (const Strut &test) const {
-        return (left() == test.left() &&
+        return (head() == test.head() &&
+                left() == test.left() &&
                 right() == test.right() &&
                 top() == test.top() &&
                 bottom() == test.bottom());
     }
 private:
+    Strut():m_head(0), m_left(0), m_right(0), m_top(0), m_bottom(0), m_next(0) {}
+    int m_head;
     int m_left, m_right, m_top, m_bottom;
+    Strut *m_next; ///< link to struts on all heads
 };
 
 #endif // STRUT_HH
