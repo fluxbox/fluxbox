@@ -11,8 +11,8 @@ dothis() {
     fi
 }
 
-dothis libtoolize --copy --force --automake
-dothis rm -f config.cache
+libtoolize --copy --force --automake
+rm -f config.cache
 dothis aclocal -I .
 dothis autoheader
 dothis automake -a
