@@ -15,29 +15,27 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   WORKSPACEMENU_HH
-#define   WORKSPACEMENU_HH
+#ifndef	 WORKSPACEMENU_HH
+#define	 WORKSPACEMENU_HH
 
 #include "Basemenu.hh"
 class Workspace;
 
 class Workspacemenu : public Basemenu {
 private:
-  BScreen *screen;
+	BScreen *screen;
 
 protected:
-  virtual void itemSelected(int, int);
+	virtual void itemSelected(int, int);
 
 public:
-  Workspacemenu(BScreen *);
-  void removeWorkspace(unsigned int id);
-  void addWorkspace(Workspace *wkspc);
+	Workspacemenu(BScreen *);
 };
 
 

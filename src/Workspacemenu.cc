@@ -86,18 +86,3 @@ void Workspacemenu::itemSelected(int button, int index) {
   }
 }
 
-void Workspacemenu::removeWorkspace(unsigned int id) {
-	if (id<getCount()) {
-		remove(id+2); // + 2 is where workspaces starts
-		#ifdef DEBUG
-		using namespace std;
-		cerr<<__FILE__<<"("<<__LINE__<<"): Removing "<<id<<endl;
-		#endif
-	}
-}
-
-void Workspacemenu::addWorkspace(Workspace *wkspc) {
-	assert(wkspc);
-	insert(wkspc->getName(), wkspc->getMenu(),
-		wkspc->getWorkspaceID() + 2);
-}
