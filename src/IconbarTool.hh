@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.3 2003/08/12 12:14:37 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.4 2003/08/13 10:11:14 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -54,6 +54,7 @@ public:
     void hide();
     unsigned int width() const;
     unsigned int height() const;
+    unsigned int borderWidth() const;
 
 private:
     /// render single button that holds win
