@@ -29,7 +29,7 @@ class FluxboxWindow;
 
 class Windowmenu : public Basemenu {
 public:
-	Windowmenu(FluxboxWindow &fbwin);
+	explicit Windowmenu(FluxboxWindow &fbwin);
 	virtual ~Windowmenu();
 
 	const Basemenu &getSendToMenu() const { return sendToMenu; }
