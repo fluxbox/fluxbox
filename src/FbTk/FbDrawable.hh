@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.hh,v 1.5 2004/09/10 15:46:08 akir Exp $
+// $Id: FbDrawable.hh,v 1.6 2004/09/11 20:30:28 fluxgen Exp $
 #ifndef FBTK_FBDRAWABLE_HH
 #define FBTK_FBDRAWABLE_HH
 
@@ -56,6 +56,7 @@ public:
     virtual Drawable drawable() const = 0;
     virtual unsigned int width() const = 0;
     virtual unsigned int height() const = 0;
+    inline Display *display() const { return s_display; }
 protected:
     static Display *s_display; // display connection // display connection
 };
