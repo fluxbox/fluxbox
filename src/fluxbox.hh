@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.82 2004/01/11 16:10:23 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.83 2004/02/10 18:45:57 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -109,7 +109,7 @@ public:
 
 
 
-    inline const Bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
+    inline bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
 
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
