@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.3 2003/12/19 17:08:25 fluxgen Exp $
+// $Id: Resource.cc,v 1.4 2003/12/19 18:25:39 fluxgen Exp $
 
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"
@@ -143,17 +143,31 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
     return true;
 }
 
-void ResourceManager::setResourceValue(const std::string &resname, const std::string &value) {
-    // find resource name
+Resource_base *ResourceManager::findResource(const std::string &resname) {
+   // find resource name
     ResourceList::iterator i = m_resourcelist.begin();
     ResourceList::iterator i_end = m_resourcelist.end();
     for (; i != i_end; ++i) {
         if ((*i)->name() == resname ||
-            (*i)->altName() == resname) {
-            (*i)->setFromString(value.c_str());
-            return;
-        }
+            (*i)->altName() == resname) 
+            return *i;
     }
+    return 0;
+}
+
+string ResourceManager::resourceValue(const std::string &resname) {
+    Resource_base *res = findResource(resname);
+    if (res != 0)
+        return res->getString();
+
+    return "";
+}
+
+void ResourceManager::setResourceValue(const std::string &resname, const std::string &value) {
+    Resource_base *res = findResource(resname);
+    if (res != 0)
+        res->setFromString(value.c_str());
+
 }
 
 void ResourceManager::ensureXrmIsInitialize() {

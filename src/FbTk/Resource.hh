@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.6 2003/12/19 17:08:25 fluxgen Exp $
+// $Id: Resource.hh,v 1.7 2003/12/19 18:25:39 fluxgen Exp $
 
 #ifndef FBTK_RESOURCE_HH
 #define FBTK_RESOURCE_HH
@@ -97,6 +97,8 @@ public:
         m_resourcelist.remove(&r);
     }
 
+    Resource_base *findResource(const std::string &resourcename);
+    std::string resourceValue(const std::string &resourcename);
     void setResourceValue(const std::string &resourcename, const std::string &value);
 
     // this marks the database as "in use" and will avoid reloading 
