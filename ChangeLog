@@ -1,9 +1,31 @@
-Changes for 0.1.5:
+Changes for 0.1.6:
+*01/12/17:
+   * Fixed errorchecking in Misc::DrawString and Misc::DrawRotString (me)
+   * Fixed tabcycling (Thanks Mike Walker)
+*01/12/14
+    * Moved Tab width and height functions to screen, new syntax is
+      session.screenX.tab.width (Claes Nästén) 
+*01/12/13:
+   * Moved all free functions in misc.cc/.hh into a class Misc  (me)
+	 * Moved struct FFont from Theme.hh to class Misc so the
+	   cyclic dep between class Theme and class Misc is removed. (me)
+	 * Updated Screen.hh to return reference instead of pointer in  
+	   get*Style  (me)
+	 * Updated Window.cc, Toolbar.cc, Tab.cc to the new DrawString 
+	   functions in class Misc (me)
+   * Moved and renamed bstrdup from BaseDisplay.hh/.cc to class Misc (me)
 *01/12/12:
    * Updated russian translation (Thanks Sergey Volozhanin)
    * Updated man-page (Thanks Matthew Hawkins)
 *01/12/11:
-   * Fixed alt+resize and pressing button1 bugg 	
+   * Fixed alt+resize and pressing button1 bugg (me)
+   * Cleaned Tab::insert up and fix a bug in it. (Claes Nästén) 
+ *01/12/10
+   * Added NLS for Windowmenu Tab toggle (Claes Nästén)
+   * Fixed Tab toggle texture / positioning "bug" (Claes Nästén)
+ 
+Changes for 0.1.5:
+
 *01/12/09
    * Added execCommand to keybindings
 	 * Added new theme qnx-photon
@@ -89,6 +111,7 @@ Changes for 0.1.5:
    * Fixed so it compiles with gcc 3.0.x (me)
 
 Changes for 0.1.4:
+
 *01/11/03: Added new theme: Carbondioxide by skypher
 *01/11/03: Fixed bsetbg in utils/Makefile.am 
 *01/11/02: Clean up
