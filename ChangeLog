@@ -8,6 +8,40 @@ Changes for 0.9.5:
    * Added new files for Toolbar (Henrik)
      WorkspaceNameTool.hh/cc, ClockTool.hh/cc, ToolbarItem.hh/cc, ToolTheme.hh/cc
      TextTheme.hh/cc
+     * toolbar theme items now:
+	   The clock:
+       toolbar.clock: <texture>
+	   toolbar.clock.pixmap: <filename>
+	   toolbar.clock.color: <color>
+	   toolbar.clock.colorTo: <color>
+	   toolbar.clock.textColor: <color>
+	   toolbar.clock.font: <font>
+
+	   Workspace name:
+	   toolbar.workspace: <texture>
+	   toolbar.workspace.pixmap: <filename>
+	   toolbar.workspace.color: <color>
+	   toolbar.workspace.colorTo: <color>
+	   toolbar.workspace.textColor: <color>
+	   toolbar.workspace.font: <font>
+
+	   This is for an empty iconbar: 
+	   toolbar.iconbar.empty: <texture>
+	   toolbar.iconbar.empty.pixmap: <filename>
+	   toolbar.iconbar.empty.color: <color>
+	   toolbar.iconbar.empty.colorTo: <color>
+
+	   Focused window in iconbar:
+	   toolbar.iconbar.focused: <texture>
+	   toolbar.iconbar.focused.pixmap: <filename>
+	   toolbar.iconbar.focused.color: <color>
+	   toolbar.iconbar.focused.colorTo: <color>
+	   toolbar.iconbar.focused.textColor: <color>
+	   toolbar.iconbar.focused.font: <font>
+       And the same for .unfocused:
+       toolbar.iconbar.unfocused: <texture>
+	   etc.	   
+
 *03/08/10:
    * Fix session.menuFile to work with ~ properly (Simon)
      fluxbox.hh/cc Screen.cc     
