@@ -1,3 +1,4 @@
+// $id$
 // Screen.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -775,53 +776,53 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 
 
 void BScreen::raiseWindows(Window *workspace_stack, int num) {
-	Window *session_stack = new
-		Window[(num + workspacesList->count() + rootmenuList->count() + 13)];
-	int i = 0, k = num;
+	Window session_stack[(num + workspacesList->count() + rootmenuList->count() + 13)];
+	int i = 0;
 
 	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->getWindowID());
-	*(session_stack + i++) = iconmenu->getWindowID();
+	session_stack[i++] = iconmenu->getWindowID();
 
 	LinkedListIterator<Workspace> wit(workspacesList);
 	for (; wit.current(); wit++)
-		*(session_stack + i++) = wit.current()->getMenu()->getWindowID();
+		session_stack[i++] = wit.current()->getMenu()->getWindowID();
 
-	*(session_stack + i++) = workspacemenu->getWindowID();
+	session_stack[i++] = workspacemenu->getWindowID();
 
-	*(session_stack + i++) = configmenu->getFocusmenu()->getWindowID();
-	*(session_stack + i++) = configmenu->getPlacementmenu()->getWindowID();
-	*(session_stack + i++) = configmenu->getTabmenu()->getWindowID();
-	*(session_stack + i++) = configmenu->getWindowID();
+	session_stack[i++] = configmenu->getFocusmenu()->getWindowID();
+	session_stack[i++] = configmenu->getPlacementmenu()->getWindowID();
+	session_stack[i++] = configmenu->getTabmenu()->getWindowID();
+	session_stack[i++] = configmenu->getWindowID();
 
 #ifdef		SLIT
-	*(session_stack + i++) = slit->getMenu()->getDirectionmenu()->getWindowID();
-	*(session_stack + i++) = slit->getMenu()->getPlacementmenu()->getWindowID();
-	*(session_stack + i++) = slit->getMenu()->getWindowID();
+	session_stack[i++] = slit->getMenu()->getDirectionmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu()->getPlacementmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu()->getWindowID();
 #endif // SLIT
 
-	*(session_stack + i++) =
+	session_stack[i++] =
 		toolbar->getMenu()->getPlacementmenu()->getWindowID();
-	*(session_stack + i++) = toolbar->getMenu()->getWindowID();
+	session_stack[i++] = toolbar->getMenu()->getWindowID();
 
 	LinkedListIterator<Rootmenu> rit(rootmenuList);
 	for (; rit.current(); rit++)
-		*(session_stack + i++) = rit.current()->getWindowID();
-	*(session_stack + i++) = rootmenu->getWindowID();
+		session_stack[i++] = rit.current()->getWindowID();
+	session_stack[i++] = rootmenu->getWindowID();
 
 	if (toolbar->isOnTop())
-		*(session_stack + i++) = toolbar->getWindowID();
+		session_stack[i++] = toolbar->getWindowID();
 
 #ifdef		SLIT
 	if (slit->isOnTop())
-		*(session_stack + i++) = slit->getWindowID();
+		session_stack[i++] = slit->getWindowID();
 #endif // SLIT
-
+	
+	int k=num;
 	while (k--)
-		*(session_stack + i++) = *(workspace_stack + k);
+		session_stack[i++] = *(workspace_stack + k);
 
 	XRestackWindows(getBaseDisplay()->getXDisplay(), session_stack, i);
 
-	delete [] session_stack;
+//	delete session_stack;
 }
 
 
