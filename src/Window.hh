@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.57 2003/04/15 23:09:15 rathnor Exp $
+// $Id: Window.hh,v 1.58 2003/04/16 12:28:39 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -119,6 +119,8 @@ public:
     void attachClient(WinClient &client);
     /// detach client (remove it from list) and create a new window for it 
     bool detachClient(WinClient &client);
+    /// detach current working client if we have more than one
+    void detachCurrentClient();
     /// remove client from client list
     bool removeClient(WinClient &client);
     /// set new current client and raise it
