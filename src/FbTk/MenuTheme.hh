@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.3 2003/02/15 01:49:18 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.4 2003/02/17 12:28:57 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -63,7 +63,9 @@ public:
     */
     ///@{
     const FbTk::Font &titleFont() const { return *titlefont; }
+    FbTk::Font &titleFont() { return *titlefont; }
     const FbTk::Font &frameFont() const { return *framefont; }
+    FbTk::Font &frameFont() { return *framefont; }
     ///@}
 
     FbTk::Justify frameFontJustify() const { return *framefont_justify; }
