@@ -877,11 +877,15 @@ int BScreen::removeLastWorkspace() {
 
     //remove last workspace
     m_workspaces_list.pop_back();		
-    delete wkspc;
+
 
 
     updateNetizenWorkspaceCount();
     saveWorkspaces(m_workspaces_list.size());
+    // must be deleted after we send notify!!
+    // so we dont get bad pointers somewhere
+    // while processing the notify signal
+    delete wkspc;
 
     return m_workspaces_list.size();
 }
