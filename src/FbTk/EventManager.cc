@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.6 2003/05/17 10:40:12 fluxgen Exp $
+// $Id: EventManager.cc,v 1.7 2003/08/23 15:44:06 fluxgen Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
+#include "App.hh"
 
 #include <iostream>
 using namespace std;
@@ -40,17 +41,45 @@ EventManager::~EventManager() {
 }
 
 void EventManager::handleEvent(XEvent &ev) {
-    // find eventhandler for event window
-    if (m_eventhandlers.find(ev.xany.window) == m_eventhandlers.end()) {
-        //cerr<<"Can't find window="<<ev.xany.window<<endl;
-        return;
+    dispatch(ev.xany.window, ev);
+}
+
+void EventManager::add(EventHandler &ev, const FbWindow &win) {
+    registerEventHandler(ev, win.window());
+}
+
+void EventManager::addParent(EventHandler &ev, const FbWindow &win) {
+    if (win.window() != 0)
+        m_parent[win.window()] = &ev;
+}
+
+void EventManager::remove(const FbWindow &win) {
+    unregisterEventHandler(win.window());
+}
+
+void EventManager::registerEventHandler(EventHandler &ev, Window win) {
+    if (win != None)
+        m_eventhandlers[win] = &ev;
+}
+
+void EventManager::unregisterEventHandler(Window win) {
+    if (win != None) {
+        m_eventhandlers.erase(win);
+        m_parent.erase(win);
     }
-    EventHandler *evhand = m_eventhandlers[ev.xany.window];
-    if (evhand == 0) {
-        cerr<<"FbTk::EventManager: Warning: evhand == 0!"<<endl;
+}
+
+void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
+    
+    EventHandler *evhand = 0;
+    if (parent)
+        evhand = m_parent[win];
+    else
+        evhand = m_eventhandlers[win];
+
+    if (evhand == 0)
         return;
-    }
-		
+
     switch (ev.xany.type) {
     case KeyPress:
         evhand->keyPressEvent(ev.xkey);
@@ -80,24 +109,27 @@ void EventManager::handleEvent(XEvent &ev) {
         evhand->handleEvent(ev);
 	break;
     };
+
+    // find out which window is the parent and 
+    // dispatch event
+    Window root, parent_win, *children = 0;
+    unsigned int num_children;
+    if (XQueryTree(FbTk::App::instance()->display(), win, 
+                   &root, &parent_win, &children, &num_children) != 0 && 
+        parent_win != 0 &&
+        parent_win != root) {
+
+        if (children != 0)
+            XFree(children);
+
+        if (m_parent[parent_win] == 0)
+            return;
+
+        // dispatch event to parent
+        dispatch(parent_win, ev, true);
+
+    }
+
 }
 
-void EventManager::add(EventHandler &ev, const FbWindow &win) {
-    registerEventHandler(ev, win.window());
-}
-
-void EventManager::remove(const FbWindow &win) {
-    unregisterEventHandler(win.window());
-}
-
-void EventManager::registerEventHandler(EventHandler &ev, Window win) {
-    if (win != None)
-        m_eventhandlers[win] = &ev;
-}
-
-void EventManager::unregisterEventHandler(Window win) {
-    if (win != None)
-        m_eventhandlers.erase(win);
-}
-
-};
+}; // end namespace FbTk

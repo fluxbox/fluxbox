@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.4 2002/12/03 17:05:45 fluxgen Exp $
+// $Id: EventManager.hh,v 1.5 2003/08/23 15:44:06 fluxgen Exp $
 
 #include "EventHandler.hh"
 #include <map>
@@ -36,6 +36,8 @@ public:
     static EventManager *instance();
 	
     void handleEvent(XEvent &ev);
+    // adds a parent to listen to the childrens events
+    void addParent(EventHandler &ev, const FbWindow &parent);
     void add(EventHandler &ev, const FbWindow &win);
     void remove(const FbWindow &win);
     void add(EventHandler &ev, Window win) { registerEventHandler(ev, win); }
@@ -45,8 +47,9 @@ public:
 private:
     EventManager() { }
     ~EventManager();
-
+    void dispatch(Window win, XEvent &event, bool parent = false);
     std::map<Window, EventHandler *> m_eventhandlers;
+    std::map<Window, EventHandler *> m_parent;
 };
 
 }; //end namespace FbTk
