@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.69 2004/01/10 00:37:35 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.70 2004/01/10 20:22:05 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -928,6 +928,13 @@ void FbWinFrame::renderHandles() {
     m_handle.setAlpha(theme().alpha());
     m_grip_left.setAlpha(theme().alpha());
     m_grip_right.setAlpha(theme().alpha());
+
+    m_grip_left.clear();
+    m_grip_left.updateTransparent();
+    m_grip_right.clear();
+    m_grip_right.updateTransparent();
+    m_handle.clear();
+    m_handle.updateTransparent();
 
 }
 
