@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.164 2003/06/25 13:06:04 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.165 2003/06/30 15:05:26 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -408,6 +408,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_focused_window(0), m_masked_window(0),
       m_timer(this),
+      m_mousescreen(0),
+      m_keyscreen(0),
       m_watching_screen(0), m_watch_keyrelease(0),
       m_last_time(0),
       m_masked(0),
@@ -541,6 +543,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             m_atomhandler[atomh]->initForScreen(*screen);
         }
     }
+    m_keyscreen = m_mousescreen = m_screen_list.front();
 
     if (m_screen_list.size() == 0) {
         //!! TODO: NLS
@@ -715,6 +718,7 @@ void Fluxbox::setupConfigFiles() {
 }
 
 void Fluxbox::handleEvent(XEvent * const e) {
+    m_last_event = *e;
 
     // it is possible (e.g. during moving) for a window
     // to mask all events to go to it 
@@ -902,7 +906,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 }
 
 void Fluxbox::handleButtonEvent(XButtonEvent &be) {
-		
+    m_mousescreen = searchScreen(be.root);
+
     switch (be.type) {
     case ButtonPress: {
         m_last_time = be.time;
@@ -1095,276 +1100,25 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
  Handles KeyRelease and KeyPress events
 */
 void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
+    m_keyscreen = searchScreen(ke.window);
+
+    m_mousescreen = keyScreen();
+    Window root, ignorew; 
+    int ignored;
+    if (!XQueryPointer(FbTk::App::instance()->display(),
+                       ke.window, &root, &ignorew, &ignored, &ignored, 
+                       &ignored, &ignored, (unsigned int *)&ignored))
+        // pointer on different screen to ke.window
+        m_mousescreen = searchScreen(root);
+    
+    if (keyScreen() == 0 || mouseScreen() == 0)
+        return;
+
+    
     switch (ke.type) {
-    case KeyPress: {
-        BScreen *keyscreen = searchScreen(ke.window);
-
-        BScreen *mousescreen = keyscreen;
-        Window root, ignorew; 
-        int ignored;
-        if (!XQueryPointer(FbTk::App::instance()->display(),
-                           ke.window, &root, &ignorew, &ignored, &ignored, 
-                           &ignored, &ignored, (unsigned int *)&ignored))
-            // pointer on different screen to ke.window
-            mousescreen = searchScreen(root);
-
-        if (keyscreen == 0 || mousescreen == 0)
-            break;
-
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): KeyEvent"<<endl;
-#endif
-        //find action
-        Keys::KeyAction action = m_key->getAction(&ke);
-#ifdef DEBUG
-        const char *actionstr = m_key->getActionStr(action);
-        if (actionstr)
-            cerr<<"KeyAction("<<actionstr<<")"<<endl;				
-#endif
-        if (action==Keys::LASTKEYGRAB) //if action not found end case
-            break;
-
-        // what to allow if moving
-        if (m_focused_window && m_focused_window->isMoving()) {
-            int allowed = false;
-            switch (action) {
-            case Keys::WORKSPACE:
-            case Keys::SENDTOWORKSPACE:
-            case Keys::WORKSPACE1:
-            case Keys::WORKSPACE2:
-            case Keys::WORKSPACE3:
-            case Keys::WORKSPACE4:
-            case Keys::WORKSPACE5:
-            case Keys::WORKSPACE6:
-            case Keys::WORKSPACE7:
-            case Keys::WORKSPACE8:
-            case Keys::WORKSPACE9:
-            case Keys::WORKSPACE10:
-            case Keys::WORKSPACE11:
-            case Keys::WORKSPACE12:
-            case Keys::NEXTWORKSPACE:
-            case Keys::PREVWORKSPACE:
-            case Keys::LEFTWORKSPACE:
-            case Keys::RIGHTWORKSPACE:
-                allowed = true;
-                break;
-            default:
-                allowed = false;
-            }
-            if (!allowed) break;
-        }
-
-        switch (action) {					
-        case Keys::WORKSPACE:
-            // Workspace1 has id 0, hence -1
-            mousescreen->changeWorkspaceID(m_key->getParam()-1);
-            break;
-        case Keys::SENDTOWORKSPACE:
-            // Workspace1 has id 0, hence -1
-            keyscreen->sendToWorkspace(m_key->getParam()-1);
-            break;
-            // NOTE!!! The WORKSPACEn commands are not needed anymore
-        case Keys::WORKSPACE1:
-            mousescreen->changeWorkspaceID(0);
-            break;
-        case Keys::WORKSPACE2:
-            mousescreen->changeWorkspaceID(1);
-            break;
-        case Keys::WORKSPACE3:
-            mousescreen->changeWorkspaceID(2);
-            break;
-        case Keys::WORKSPACE4:
-            mousescreen->changeWorkspaceID(3);
-            break;
-        case Keys::WORKSPACE5:
-            mousescreen->changeWorkspaceID(4);
-            break;
-        case Keys::WORKSPACE6:
-            mousescreen->changeWorkspaceID(5);
-            break;
-        case Keys::WORKSPACE7:            
-            mousescreen->changeWorkspaceID(6);
-            break;
-        case Keys::WORKSPACE8:
-            mousescreen->changeWorkspaceID(7);
-            break;
-        case Keys::WORKSPACE9:
-            mousescreen->changeWorkspaceID(8);
-            break;
-        case Keys::WORKSPACE10:
-            mousescreen->changeWorkspaceID(9);
-            break;
-        case Keys::WORKSPACE11:
-            mousescreen->changeWorkspaceID(10);
-            break;
-        case Keys::WORKSPACE12:
-            mousescreen->changeWorkspaceID(11);
-            break;
-        case Keys::NEXTWORKSPACE:
-            mousescreen->nextWorkspace(m_key->getParam());
-            break;
-        case Keys::PREVWORKSPACE:
-            mousescreen->prevWorkspace(m_key->getParam());
-            break;
-        case Keys::LEFTWORKSPACE:
-            mousescreen->leftWorkspace(m_key->getParam());
-            break;
-        case Keys::RIGHTWORKSPACE:
-            mousescreen->rightWorkspace(m_key->getParam());
-            break;
-        case Keys::KILLWINDOW: //kill the current window
-            if (m_focused_window) {
-                XKillClient(FbTk::App::instance()->display(),
-                            m_focused_window->clientWindow());
-            }
-            break;
-        case Keys::NEXTGROUP:    //activate next group (params set right in Keys)
-        case Keys::NEXTWINDOW: { //activate next window
-            unsigned int mods = Keys::cleanMods(ke.state);
-            if (mousescreen == 0)
-                break;
-            if (mods == 0) { // can't stacked cycle unless there is a mod to grab
-                mousescreen->nextFocus(m_key->getParam() | BScreen::CYCLELINEAR);
-                break;
-            }
-            if (!m_watching_screen && !(m_key->getParam() & BScreen::CYCLELINEAR)) {
-                // if stacked cycling, then set a watch for 
-                // the release of exactly these modifiers
-                watchKeyRelease(*mousescreen, mods);
-            }
-            mousescreen->nextFocus(m_key->getParam());
-            break;
-        }
-        case Keys::PREVGROUP:    //activate prev group (params set right in Keys)
-        case Keys::PREVWINDOW:	{//activate prev window
-            unsigned int mods = Keys::cleanMods(ke.state);
-            if (mousescreen == 0)
-                break;
-            if (mods == 0) { // can't stacked cycle unless there is a mod to grab
-                mousescreen->prevFocus(m_key->getParam() | BScreen::CYCLELINEAR);
-                break;
-            }
-            if (!m_watching_screen && !(m_key->getParam() & BScreen::CYCLELINEAR)) {
-                // if stacked cycling, then set a watch for 
-                // the release of exactly these modifiers
-                watchKeyRelease(*mousescreen, mods);
-            }
-            mousescreen->prevFocus(m_key->getParam());
-            break;
-        }
-        case Keys::FOCUSUP:
-            if (m_focused_window) 
-                keyscreen->dirFocus(*m_focused_window, BScreen::FOCUSUP);
-            break;
-        case Keys::FOCUSDOWN:
-            if (m_focused_window) 
-                keyscreen->dirFocus(*m_focused_window, BScreen::FOCUSDOWN);
-            break;
-        case Keys::FOCUSLEFT:
-            if (m_focused_window) 
-                keyscreen->dirFocus(*m_focused_window, BScreen::FOCUSLEFT);
-            break;
-        case Keys::FOCUSRIGHT:
-            if (m_focused_window) 
-                keyscreen->dirFocus(*m_focused_window, BScreen::FOCUSRIGHT);
-            break;
-        case Keys::NEXTTAB: 
-            if (m_focused_window && m_focused_window->numClients() > 1)
-                m_focused_window->nextClient();                        
-            break;						
-        case Keys::PREVTAB: 
-            if (m_focused_window && m_focused_window->numClients() > 1)
-                m_focused_window->prevClient();
-
-            break;
-        case Keys::FIRSTTAB:
-            cerr<<"FIRSTTAB TODO!"<<endl;
-            break;
-        case Keys::LASTTAB:
-            cerr<<"LASTTAB TODO!"<<endl;
-            break;
-        case Keys::MOVETABPREV:
-            cerr<<"MOVETABPREV TODO!"<<endl;
-            break;
-        case Keys::MOVETABNEXT:
-            cerr<<"MOVETABNEXT TODO!"<<endl;
-            break;
-        case Keys::ATTACHLAST:
-            //!! just attach last window to focused window
-            if (m_focused_window) {
-                Workspace *space = keyscreen->currentWorkspace();
-                Workspace::Windows &wins = space->windowList();
-                if (wins.size() == 1)
-                    break;
-                BScreen::FocusedWindows &fwins = keyscreen->getFocusedList();
-                BScreen::FocusedWindows::iterator it = fwins.begin();
-                for (; it != fwins.end(); ++it) {
-                    if ((*it)->fbwindow() != m_focused_window &&
-                        (*it)->fbwindow()->workspaceNumber() == 
-                        keyscreen->currentWorkspaceID()) {
-                        m_focused_window->attachClient(**it);
-                        break;
-                    }
-                }
-            }
-            break;
-        case Keys::DETACHCLIENT:
-            if (m_focused_window) {                        
-                m_focused_window->detachClient(m_focused_window->winClient());
-            }
-            break;
-        case Keys::EXECUTE: { //execute command on keypress
-            FbCommands::ExecuteCmd cmd(m_key->getExecCommand(), mousescreen->screenNumber());
-            cmd.execute();			
-        } break;
-        case Keys::RECONFIGURE: 
-            reload_rc();
-            break;
-        case Keys::RESTART: {
-            FbCommands::RestartFluxboxCmd cmd(m_key->getExecCommand());
-            cmd.execute();			
-        } break;
-        case Keys::QUIT:
-            shutdown();
-            break;
-        case Keys::ROOTMENU: { //show root menu
-						
-            //calculate placement of workspace menu
-            //and show/hide it				
-            int mx = ke.x_root -
-                (mousescreen->getRootmenu()->width() / 2);
-            int my = ke.y_root -
-                (mousescreen->getRootmenu()->titleHeight() / 2);
-
-            if (mx < 0) mx = 0;
-            if (my < 0) my = 0;
-
-            if (mx + mousescreen->getRootmenu()->width() > mousescreen->width()) {
-                mx = mousescreen->width() -
-                    mousescreen->getRootmenu()->width() -
-                    mousescreen->getRootmenu()->fbwindow().borderWidth();
-            }
-
-            if (my + mousescreen->getRootmenu()->height() >
-                mousescreen->height()) {
-                my = mousescreen->height() -
-                    mousescreen->getRootmenu()->height() -
-                    mousescreen->getRootmenu()->fbwindow().borderWidth();
-            }
-            mousescreen->getRootmenu()->move(mx, my);
-
-            if (! mousescreen->getRootmenu()->isVisible()) {
-                checkMenu();
-                mousescreen->getRootmenu()->show();
-            }
-
-        } break;
-        default: //try to see if its a window action
-            doWindowAction(action, m_key->getParam());
-        }
-            
-          
-    } break;
+    case KeyPress:
+        m_key->doAction(ke);
+    break;
     case KeyRelease: {
         // we ignore most key releases unless we need to use
         // a release to stop something (e.g. window cycling).
@@ -1393,126 +1147,6 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     }
 	
 	
-}
-void Fluxbox::doWindowAction(int action, const int param) {
-    if (!m_focused_window)
-        return;
-
-    switch (action) {
-    case Keys::ICONIFY:
-        m_focused_window->iconify();
-        break;
-    case Keys::RAISE:
-        m_focused_window->raise();
-        break;
-    case Keys::LOWER:
-        m_focused_window->lower();
-        break;
-    case Keys::RAISELAYER:
-        m_focused_window->raiseLayer();
-        break;
-    case Keys::LOWERLAYER:
-        m_focused_window->lowerLayer();
-        break;
-    case Keys::TOPLAYER:
-        m_focused_window->moveToLayer(getBottomLayer());
-        break;
-    case Keys::BOTTOMLAYER:
-        m_focused_window->moveToLayer(getTopLayer());
-        break;
-    case Keys::CLOSE:
-        m_focused_window->close();
-        break;
-    case Keys::SHADE:		
-        m_focused_window->shade(); // this has to be done in THIS order
-        break;
-    case Keys::MAXIMIZE:
-        m_focused_window->maximize();
-        break;
-    case Keys::STICK:
-        m_focused_window->stick();
-        break;								
-    case Keys::VERTMAX:
-        if (m_focused_window->isResizable())
-            m_focused_window->maximizeVertical();
-        break;
-    case Keys::HORIZMAX:
-        if (m_focused_window->isResizable())
-            m_focused_window->maximizeHorizontal();
-        break;
-    case Keys::NUDGERIGHT:	
-        m_focused_window->moveResize(
-            m_focused_window->x() + param, m_focused_window->y(),
-            m_focused_window->width(), m_focused_window->height());
-        break;
-    case Keys::NUDGELEFT:			
-        m_focused_window->moveResize(
-            m_focused_window->x() - param, m_focused_window->y(),
-            m_focused_window->width(), m_focused_window->height());
-        break;
-    case Keys::NUDGEUP:
-        m_focused_window->moveResize(
-            m_focused_window->x(), m_focused_window->y() - param,
-            m_focused_window->width(), m_focused_window->height());
-        break;
-    case Keys::NUDGEDOWN:
-        m_focused_window->moveResize(
-            m_focused_window->x(), m_focused_window->y() + param,
-            m_focused_window->width(), m_focused_window->height());
-        break;
-        // NOTE !!! BIGNUDGExxxx is not needed, just use 10 as a parameter
-    case Keys::BIGNUDGERIGHT:		
-        m_focused_window->moveResize(
-            m_focused_window->x() + 10, m_focused_window->y(),
-            m_focused_window->width(), m_focused_window->height());
-        break;
-    case Keys::BIGNUDGELEFT:				
-        m_focused_window->moveResize(
-            m_focused_window->x() - 10, m_focused_window->y(),
-            m_focused_window->width(), m_focused_window->height());
-        break;
-    case Keys::BIGNUDGEUP:								
-        m_focused_window->moveResize(
-            m_focused_window->x(), m_focused_window->y()-10,
-            m_focused_window->width(), m_focused_window->height());
-        break;								
-    case Keys::BIGNUDGEDOWN:			
-        m_focused_window->moveResize(
-            m_focused_window->x(), m_focused_window->y()+10,
-            m_focused_window->width(), m_focused_window->height());								
-        break;												
-    case Keys::HORIZINC:
-           m_focused_window->moveResize(
-                m_focused_window->x(), m_focused_window->y(),
-                m_focused_window->width() + 10, m_focused_window->height());
-
-        break;								
-    case Keys::VERTINC:
-            m_focused_window->moveResize(
-                m_focused_window->x(), m_focused_window->y(),
-                m_focused_window->width(), m_focused_window->height()+10);
-        break;
-    case Keys::HORIZDEC:				
-        m_focused_window->moveResize(
-                m_focused_window->x(), m_focused_window->y(),
-                m_focused_window->width() - 10, m_focused_window->height());
-        break;								
-    case Keys::VERTDEC:
-        m_focused_window->moveResize(
-                m_focused_window->x(), m_focused_window->y(),
-                m_focused_window->width(), m_focused_window->height()-10);
-
-        break;
-    case Keys::TOGGLEDECOR:
-        m_focused_window->toggleDecoration();
-        break;
-    case Keys::TOGGLETAB:
-        cerr<<"TOGGLETAB TODO!"<<endl;
-        break;
-    default: //do nothing
-        break;							
-    }
-
 }
 
 /// handle system signals
