@@ -66,6 +66,9 @@ enum {
 	ConfigmenuWorkspaceWarping = 15,
 	ConfigmenuForcePseudoTrans = 16,
 	ConfigmenuMenuAlpha = 17,
+	ConfigmenuTransparency = 18,
+	ConfigmenuFocusedAlpha = 19,
+	ConfigmenuUnfocusedAlpha = 20,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,
