@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.52 2003/09/15 20:14:49 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.53 2003/09/16 13:11:41 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -1165,9 +1165,7 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
     int x_offset = 0;
     int y_offset = 0;
 
-    // no X offset, since we don't have extra frame on the sides
-
-    // then y offset
+    // mostly no X offset, since we don't have extra frame on the sides
     switch (win_gravity) {
     case NorthWestGravity:
     case NorthGravity:
@@ -1180,18 +1178,28 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
         // window shifted down by height of titlebar, and the handle
         // since that's necessary to get the bottom of the frame
         // all the way up
-        y_offset = -(m_titlebar.height() + m_titlebar.borderWidth()
-            + m_handle.height() + m_handle.borderWidth());
+        if (m_use_titlebar)
+            y_offset -= m_titlebar.height() + m_titlebar.borderWidth();
+        if (m_use_handle)
+            y_offset -= m_handle.height() + m_handle.borderWidth();
         break;
     case WestGravity:
     case EastGravity:
     case CenterGravity:
         // these centered ones are a little more interesting
-        y_offset = -(m_titlebar.height() + m_titlebar.borderWidth()
-            + m_handle.height() + m_handle.borderWidth()) / 2;
+        if (m_use_titlebar)
+            y_offset -= m_titlebar.height() + m_titlebar.borderWidth();
+        if (m_use_handle)
+            y_offset -= m_handle.height() + m_handle.borderWidth();
+        y_offset /= 2;
         break;
     case StaticGravity:
-        y_offset = -(m_titlebar.height() + m_titlebar.borderWidth());
+        if (m_use_titlebar)
+            y_offset -= m_titlebar.height() + m_titlebar.borderWidth();
+        // static is the only one that also has the
+        // border taken into account
+        x_offset -= m_window.borderWidth();
+        y_offset -= m_window.borderWidth();
         break;
     }
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.230 2003/09/15 20:27:06 fluxgen Exp $
+// $Id: Window.cc,v 1.231 2003/09/16 13:11:42 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2599,6 +2599,10 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
 
+    int grav_x=0, grav_y=0;
+    // negate gravity
+    frame().gravityTranslate(grav_x, grav_y, -m_client->gravity(), false);
+
     unsigned int border_width = 0;
     if (decorations.border)
         border_width = frame().theme().border().width();
@@ -2616,6 +2620,13 @@ void FluxboxWindow::applyDecorations(bool initial) {
         frame().showHandle();
     } else
         frame().hideHandle();
+
+    // apply gravity once more
+    frame().gravityTranslate(grav_x, grav_y, m_client->gravity(), false);
+
+    // if the location changes, shift it
+    if (grav_x != 0 || grav_y != 0)
+        frame().move(grav_x + frame().x(), grav_y + frame().y());
 
     frame().reconfigure();
 }
