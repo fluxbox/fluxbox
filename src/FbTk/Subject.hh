@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Subject.hh,v 1.1 2003/02/15 01:21:40 fluxgen Exp $
+// $Id: Subject.hh,v 1.2 2003/08/11 15:01:50 fluxgen Exp $
 
 #ifndef FBTK_SUBJECT_HH
 #define FBTK_SUBJECT_HH
+
+#include "NotCopyable.hh"
 
 #include <list>
 
@@ -30,7 +32,7 @@ namespace FbTk {
 
 class Observer;
 
-class Subject {
+class Subject:private FbTk::NotCopyable {
 public:
     Subject();
     virtual ~Subject();
