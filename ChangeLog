@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+<<<<<<< .mine
 *05/01/04:
+  * Added ko_KR (thanx Jo Hyunseok <ttrand at gmail dot com>)
+  * Updated ru_RU (thanx php-coder)
+    ru_RU/Translation.m
   * Fix some initialisation states, especially window placement with no 
     decorations through apps (e.g. aterm)
     Window.hh/cc Screen.cc Ewmh.cc

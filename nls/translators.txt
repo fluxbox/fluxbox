@@ -21,6 +21,8 @@ Adding a new translation
 List of translators contrubutors
 --------------------------------
 
+ru_RU: php-coder <php-coder@ngs.ru>
+ko_KR: Jo Hyunseok <ttrand@gmail.com>
 pl_PL: Meltir and Cheester <meltir@wp.pl> <czester@gmail.com>, offtza@gazeta.pl
 nl_NL: Han Boetes <han@mijncomputer.nl>
 sl_SI: Ales Jagodnik <ales.jagodnik@siol.net>
