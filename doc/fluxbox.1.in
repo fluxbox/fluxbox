@@ -139,32 +139,41 @@ Left clicking (button 1) on an application in the Workspaces menu will bring
 you to that workspace and raise/focus that application;
 middle clicking (button 2) will warp the application to the current workspace.
 .SS Toolbar:
-The toolbar consists of three fields: a workspace name, window name of the
-window that has currently focus, and a clock.
-A left click on the toolbar will bring it to the foreground, a
-middle click will hide it behind other windows (if AlwaysOnTop is not set), and
-the right button brings up a little menu.
+The toolbar consists of three fields: a workspace name, the iconbar and a clock.
+.\" A left click on the toolbar will bring it to the foreground, a
+.\" middle click will hide it behind other windows (if AlwaysOnTop is not set), and
+.\" the right button brings up a little menu.
+Clicking the workspace name brings up the toolbar menu.
+Using the wheel on workspace name or the clock switches the worksapce, this
+could also be enabled for the whole desktop in the fluxbox menu.
 .PP
-Using this menu you can enter a name for the current workspace (when finished,
+Using the toolbar menu you can enter a name for the current workspace (when finished,
 press Enter).
-Also you can choose the toolbar's position, whether or not it
-should be always on top (i.e. it cannot be obscured by other windows),
-and whether it should hide itself when the mouse moves away.
+One can choose the toolbar's position, in which layer it should be see LAYERs below
+and if it should hide when the mouse leaves it.
+The iconbar mode is also set via this menu: None, Icons -- Icons from all
+workspaces, Workspace Icons, Workspace -- all windows from Workspace, All Windows --
+from all workspaces.
+.SS Layer
+Fluxbox manages following layers: Above Dock, Dock, Top, Normal, Bottom, Desktop.
+Presumably the list is from top to bottom. Slit and toolbar can be assigned to
+a layer with the menu, applications might be assigned to a layer in the apps file.
+.\" TODO the apps file has numbers for layers
 .SS Window Titlebar and Borders:
 A left click on any place of the window's border, will raise it.
 Dragging then moves the window.
 Dragging the resize grips at the left-bottom and right-bottom
 corners resizes the window.
-Middle clicking on any place will immediately lower the window.
+Middle clicking on border or titlebar will immediately lower the window.
 Right clicking on border or titlebar pops up the window menu,
 containing these commands:
 .TP
-.B Send To...
+.B Send To... (not in 0.9.6)
 Send window to another workspace.
 When you select the workspace with the middle button, Fluxbox will
 send you along with the application to the selected workspace
 .TP
-.B Send Group To...
+.B Send Group To... (not in 0.9.6)
 Sends a window, along with all windows currently grouped with it, to 
 another workspace. Follows the same rules as Send To...
 .TP
@@ -177,9 +186,14 @@ The `icon' can be found in the `Icons' submenu of the workspace menu
 as well as in the toolbar.
 .TP
 .B Maximize
-(Un)Maximize window.
-When you click the middle button on this item, the
-window will maximize only vertically
+(Un)Maximize window. Depending on toolbar and slit configuration maximize does
+cover slit and toolbar or not.
+.TP
+.B Maximize Vertical
+(Un)Maximize window only vertically.
+.TP
+.B Maximize Horizontal
+(Un)Maximize window only horizontal.
 .TP
 .B Raise
 Raise window
@@ -191,8 +205,17 @@ Lower window
 (Un)Stick window.
 A stuck window will always be displayed in the current workspace
 .TP
-.B Kill Client
-Kill (-SIGKILL) owner of window
+.B Next Client
+Activate next cleint in this window's group.
+.TP
+.B Prev Client
+Activate prev cleint in this window's group.
+.TP
+.B Layer ...
+Change the layer of this window.
+.TP
+.B Remeber ...
+Specify which window settings should be stored in the apps file.
 .TP
 .B Close
 Close the application cleanly
@@ -201,7 +224,9 @@ When you doubleclick on the titlebar of a window, it will `shade', so
 that only the titlebar stays visible.
 Another double click will redisplay the window contents.
 .SS Window Buttons:
-In fluxbox, the window button's configuration is controlled by your 
+In fluxbox, the window button's configuration 
+.B was
+controlled by your 
 .I ~/.fluxbox/titlebar
 file, which specifies which buttons to put on the right of left side of
 the title bar. The default is:
