@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.223 2003/08/22 15:03:28 fluxgen Exp $
+// $Id: Screen.cc,v 1.224 2003/08/24 11:13:36 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -689,7 +689,7 @@ void BScreen::rereadMenu() {
 
 
 void BScreen::removeWorkspaceNames() {
-    m_workspace_names.erase(m_workspace_names.begin(), m_workspace_names.end());
+    m_workspace_names.clear();
 }
 
 void BScreen::updateWorkspaceNamesAtom() {
@@ -935,7 +935,7 @@ void BScreen::addNetizen(Window win) {
         Workspace::Windows::iterator win_it_end = (*it)->windowList().end();
         for (; win_it != win_it_end; ++win_it) {
             net->sendWindowAdd((*win_it)->clientWindow(), 
-                             (*it)->workspaceID());
+                               (*it)->workspaceID());
         }
     }
 
@@ -976,15 +976,11 @@ void BScreen::updateNetizenWorkspaceCount() {
 
 
 void BScreen::updateNetizenWindowFocus() {
-
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
                 Fluxbox::instance()->getFocusedWindow()->window() : None);
-    for (; it != it_end; ++it) {
-        (*it)->sendWindowFocus(f);
-    }
-
+    for_each(m_netizen_list.begin(),
+             m_netizen_list.end(),
+             bind2nd(mem_fun(&Netizen::sendWindowFocus), f));
 }
 
 
@@ -1001,40 +997,32 @@ void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
 
 
 void BScreen::updateNetizenWindowDel(Window w) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendWindowDel(w);
-    }
+    for_each(m_netizen_list.begin(),
+             m_netizen_list.end(),
+             bind2nd(mem_fun(&Netizen::sendWindowDel), w));
 	
     m_clientlist_sig.notify();
 }
 
 
 void BScreen::updateNetizenWindowRaise(Window w) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendWindowRaise(w);
-    }
+    for_each(m_netizen_list.begin(),
+             m_netizen_list.end(),
+             bind2nd(mem_fun(&Netizen::sendWindowRaise), w));
 }
 
 
 void BScreen::updateNetizenWindowLower(Window w) {
-    Netizens::iterator it = m_netizen_list.begin();
-    Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendWindowLower(w);
-    }
+    for_each(m_netizen_list.begin(),
+             m_netizen_list.end(),
+             bind2nd(mem_fun(&Netizen::sendWindowLower), w));
 }
-
 
 void BScreen::updateNetizenConfigNotify(XEvent &e) {
     Netizens::iterator it = m_netizen_list.begin();
     Netizens::iterator it_end = m_netizen_list.end();
-    for (; it != it_end; ++it) {
+    for (; it != it_end; ++it)
         (*it)->sendConfigNotify(e);
-    }
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
@@ -1047,7 +1035,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         bool iskdedockapp = false;
         Atom ajunk;
         int ijunk;
-        unsigned long *data = (unsigned long *) 0, uljunk;
+        unsigned long *data = 0, uljunk;
         Display *disp = FbTk::App::instance()->display();
         // Check if KDE v2.x dock applet
         if (XGetWindowProperty(disp, client,
@@ -1185,8 +1173,8 @@ void BScreen::clearStrut(Strut *str) {
         return;
     // find strut and erase it
     std::list<Strut *>::iterator pos = find(m_strutlist.begin(),
-         m_strutlist.end(),
-         str);
+                                            m_strutlist.end(),
+                                            str);
     if (pos == m_strutlist.end())
         return;
     m_strutlist.erase(pos);

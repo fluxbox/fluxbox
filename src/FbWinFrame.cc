@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.39 2003/08/23 15:46:06 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.40 2003/08/24 11:11:07 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -27,11 +27,13 @@
 #include "FbTk/EventManager.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/App.hh"
+#include "FbTk/Compose.hh"
 
 #include "FbWinFrameTheme.hh"
 #ifdef SHAPE
 #include "Shape.hh"
 #endif // SHAPE
+
 
 #include <algorithm>
 #include <iostream>
@@ -505,14 +507,13 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
 void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
     // we can ignore which window the event was generated for
     
-    LabelList::iterator btn_it = m_labelbuttons.begin();
-    LabelList::iterator btn_it_end = m_labelbuttons.end();
-    for (; btn_it != btn_it_end; ++btn_it) {
-        if ((*btn_it)->window() == event.window) {
-            (*btn_it)->buttonReleaseEvent(event);
-            break;
-        }
-    }
+    LabelList::iterator button_it = find_if(m_labelbuttons.begin(),
+                                            m_labelbuttons.end(),
+                                            FbTk::Compose(bind2nd(equal_to<Window>(), event.window),
+                                                          mem_fun(&FbTk::Button::window)));
+    if (button_it != m_labelbuttons.end())
+        (*button_it)->buttonReleaseEvent(event);
+
 
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
@@ -549,35 +550,36 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
         m_grip_right.clearArea(event.x, event.y, event.width, event.height);
         m_grip_right.updateTransparent();
     } else {
-        LabelList::iterator btn_it = m_labelbuttons.begin();
-        LabelList::iterator btn_it_end = m_labelbuttons.end();
-        for (; btn_it != btn_it_end; ++btn_it) {
-            if ((*btn_it)->window() == event.window) {
-                (*btn_it)->exposeEvent(event);
-                return;
-            }
+        // create compare function
+        // that we should use with find_if
+        FbTk::Compose_base<std::binder2nd<std::equal_to<Window> >,
+            std::const_mem_fun_t<Window, FbTk::FbWindow> > 
+            compare = FbTk::Compose(bind2nd(equal_to<Window>(), event.window),
+                                    mem_fun(&FbTk::Button::window));
+
+        LabelList::iterator btn_it = find_if(m_labelbuttons.begin(),
+                                             m_labelbuttons.end(),
+                                             compare);
+        if (btn_it != m_labelbuttons.end()) {
+            (*btn_it)->exposeEvent(event);
+            return;
         }
 
-        ButtonList::iterator it = m_buttons_left.begin();
-        ButtonList::iterator it_end = m_buttons_left.end();
-        for (; it != it_end; ++it) {
-            if ((*it)->window() == event.window) {
-                (*it)->exposeEvent(event);
-                return;
-            }
+        ButtonList::iterator it = find_if(m_buttons_left.begin(),
+                                          m_buttons_left.end(),
+                                          compare);
+        if (it != m_buttons_left.end()) {
+            (*it)->exposeEvent(event);
+            return;
         }
 
-        it = m_buttons_right.begin();
-        it_end = m_buttons_right.end();
-        for (; it != it_end; ++it) {
-            if ((*it)->window() == event.window) {
-                (*it)->exposeEvent(event);
-                return;
-            }
-        }
+        it = find_if(m_buttons_right.begin(),
+                     m_buttons_right.end(),
+                     compare);
+
+        if (it != m_buttons_right.end())
+            (*it)->exposeEvent(event);
     }
-
-    
 }
 
 void FbWinFrame::handleEvent(XEvent &event) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.80 2003/08/19 16:16:28 fluxgen Exp $
+// $Id: Workspace.cc,v 1.81 2003/08/24 11:16:42 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -246,9 +246,8 @@ void Workspace::removeWindow(WinClient &client) {
 void Workspace::showAll() {
     Windows::iterator it = m_windowlist.begin();
     Windows::iterator it_end = m_windowlist.end();
-    for (; it != it_end; ++it) {
+    for (; it != it_end; ++it)
         (*it)->deiconify(false, false);
-    }
 }
 
 
@@ -265,9 +264,8 @@ void Workspace::hideAll() {
 void Workspace::removeAll() {
     Windows::iterator it = m_windowlist.begin();
     Windows::const_iterator it_end = m_windowlist.end();
-    for (; it != it_end; ++it) {
+    for (; it != it_end; ++it)
         (*it)->iconify();
-    }
 }
 
 
@@ -291,7 +289,7 @@ namespace {
 class FindInGroup {
 public:
     FindInGroup(const FluxboxWindow &w):m_w(w) { }
-    bool operator ()(const string &name) {
+    bool operator ()(const string &name) const {
         return (name == m_w.winClient().getWMClassName());
     }
 private:

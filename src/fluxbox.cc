@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.186 2003/08/22 21:38:58 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.187 2003/08/24 11:19:45 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1332,17 +1332,11 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 }
 
 BScreen *Fluxbox::searchScreen(Window window) {
-    BScreen *screen = 0;
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
-
     for (; it != it_end; ++it) {
-        if (*it) {
-            if ((*it)->rootWindow() == window) {
-                screen = (*it);
-                return screen;
-            }
-        }
+        if (*it && (*it)->rootWindow() == window)
+            return (*it);
     }
 
     return 0;
@@ -1431,12 +1425,8 @@ void Fluxbox::shutdown() {
     XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
 
     //send shutdown to all screens
-    ScreenList::iterator it = m_screen_list.begin();
-    ScreenList::iterator it_end = m_screen_list.end();
-    for (; it != it_end; ++it) {
-        if(*it)
-            (*it)->shutdown();
-    }
+    for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::shutdown));
+
     m_shutdown = true;
     XSync(FbTk::App::instance()->display(), False);
 
@@ -1791,10 +1781,8 @@ void Fluxbox::real_reconfigure() {
     if (old_blackboxrc)
         XrmDestroyDatabase(old_blackboxrc);
 
-    ScreenList::iterator sit = m_screen_list.begin();
-    ScreenList::iterator sit_end = m_screen_list.end();
-    for (; sit != sit_end; ++sit)
-        (*sit)->reconfigure();
+    // reconfigure all screens
+    for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::reconfigure));
 
     //reconfigure keys
     m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
@@ -1841,12 +1829,7 @@ void Fluxbox::real_rereadMenu() {
         delete *it;
 
     m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
-
-    ScreenList::iterator sit = m_screen_list.begin();
-    ScreenList::iterator sit_end = m_screen_list.end();
-    for (; sit != sit_end; ++sit) {
-        (*sit)->rereadMenu();
-    }
+    for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::rereadMenu));
 }
 
 void Fluxbox::saveMenuFilename(const char *filename) {
