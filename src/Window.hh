@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.17 2002/04/04 14:23:30 fluxgen Exp $
+// $Id: Window.hh,v 1.18 2002/04/04 22:39:52 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -317,7 +317,7 @@ private:
 	void stopMoving();
 	void startResizing(XMotionEvent *me, bool left); 
 	void stopResizing(Window win=0);
-	
+	void updateIcon();
 	
 	#ifdef GNOME
 	

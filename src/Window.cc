@@ -22,7 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.39 2002/04/04 14:23:30 fluxgen Exp $
+// $Id: Window.cc,v 1.40 2002/04/04 22:39:52 fluxgen Exp $
+
+#include "Window.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -38,7 +40,6 @@
 #include "Icon.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
-#include "Window.hh"
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
 
@@ -1430,7 +1431,7 @@ void FluxboxWindow::getWMName(void) {
 	char **list;
 	int num;
 	I18n *i18n = I18n::instance();
-	
+
 	if (XGetWMName(display, client.window, &text_prop)) {
 		if (text_prop.value && text_prop.nitems > 0) {
 			if (text_prop.encoding != XA_STRING) {
@@ -1469,6 +1470,7 @@ void FluxboxWindow::getWMName(void) {
 	}
 
 	client.title_text_w += (frame.bevel_w * 4);
+	
 }
 
 
@@ -1498,6 +1500,7 @@ void FluxboxWindow::getWMIconName(void) {
 			client.icon_title = getTitle();
 	} else
 		client.icon_title = getTitle();
+	
 }
 
 
@@ -2971,6 +2974,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 	case XA_WM_ICON_NAME:
 		getWMIconName();
 		if (iconic) screen->iconUpdate();
+		updateIcon();
 		break;
 
 	case XA_WM_NAME:
@@ -2984,22 +2988,9 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
 		if (! iconic)
 			screen->getWorkspace(workspace_number)->update();
-		else if (Fluxbox::instance()->useIconBar()) {
-			IconBar *iconbar = 0;
-			IconBarObj *icon = 0;
-			if ((iconbar = screen->getToolbar()->getIconBar()) != 0) {
-				if ((icon = iconbar->findIcon(this)) != 0)
-					iconbar->draw(icon, icon->getWidth());
-#ifdef DEBUG
-				else
-					cerr<<__FILE__<<"("<<__LINE__<<"): can't find icon!"<<endl;
-#endif //DEBUG	
-			}
-#ifdef DEBUG
-			else
-				cerr<<__FILE__<<"("<<__LINE__<<"): can't find iconbar!"<<endl;
-#endif //DEBUG
-		}
+		else
+			updateIcon();
+		 
 
 		break;
 
@@ -3607,6 +3598,17 @@ void FluxboxWindow::stopResizing(Window win) {
 	XUngrabPointer(display, CurrentTime);
 }
 
+//finds and redraw the icon label
+void FluxboxWindow::updateIcon() {
+	if (Fluxbox::instance()->useIconBar()) {
+		IconBar *iconbar = 0;
+		IconBarObj *icon = 0;
+		if ((iconbar = screen->getToolbar()->getIconBar()) != 0) {
+			if ((icon = iconbar->findIcon(this)) != 0)
+				iconbar->draw(icon, icon->getWidth());
+		}
+	}
+}
 
 void FluxboxWindow::restore(void) {
 	XChangeSaveSet(display, client.window, SetModeDelete);
