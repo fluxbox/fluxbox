@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.70 2003/02/22 15:10:43 rathnor Exp $
+// $Id: Screen.hh,v 1.71 2003/02/22 16:09:44 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -87,7 +87,7 @@ public:
     inline bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
     inline bool isWorkspaceWarping() const { return *resource.workspace_warping; }
     inline bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
-    inline bool doAutoRaise() const { return resource.auto_raise; }
+    inline bool doAutoRaise() const { return *resource.auto_raise; }
     inline bool doImageDither() const { return *resource.image_dither; }
     inline bool doMaxOverSlit() const { return *resource.max_over_slit; }
     inline bool doOpaqueMove() const { return *resource.opaque_move; }
@@ -382,10 +382,10 @@ private:
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
-            antialias;
+            antialias, auto_raise;
         Resource<std::string> rootcommand;		
         Resource<Fluxbox::FocusModel> focus_model;
-        bool auto_raise, ordered_dither;
+        bool ordered_dither;
         Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold,
             tab_width, tab_height;
         Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;

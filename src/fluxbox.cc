@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.98 2003/02/22 15:10:43 rathnor Exp $
+// $Id: fluxbox.cc,v 1.99 2003/02/22 16:09:44 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -172,9 +172,14 @@ setFromString(char const *strval) {
 template<>
 void Resource<Fluxbox::FocusModel>::
 setFromString(char const *strval) {
-    if (strcasecmp(strval, "SloppyFocus") == 0) 
+    // auto raise options here for backwards read compatibility
+    // they are not supported for saving purposes. Nor does the "AutoRaise" 
+    // part actually do anything
+    if (strcasecmp(strval, "SloppyFocus") == 0 
+        || strcasecmp(strval, "AutoRaiseSloppyFocus") == 0) 
         m_value = Fluxbox::SLOPPYFOCUS;
-    else if (strcasecmp(strval, "SemiSloppyFocus") == 0) 
+    else if (strcasecmp(strval, "SemiSloppyFocus") == 0
+        || strcasecmp(strval, "AutoRaiseSemiSloppyFocus") == 0) 
         m_value = Fluxbox::SEMISLOPPYFOCUS;
     else if (strcasecmp(strval, "ClickToFocus") == 0) 
         m_value = Fluxbox::CLICKTOFOCUS;
@@ -1744,24 +1749,6 @@ void Fluxbox::save_rc() {
                 placement.c_str());
         XrmPutLineResource(&new_blackboxrc, rc_string);
 
-        //TODO 
-/*
-        std::string focus_mode;
-        if (screen->isSloppyFocus() && screen->doAutoRaise())
-            focus_mode = "AutoRaiseSloppyFocus";
-        else if (screen->isSloppyFocus())
-            focus_mode = "SloppyFocus";
-        else if (screen->isSemiSloppyFocus() && screen->doAutoRaise())
-            focus_mode = "AutoRaiseSemiSloppyFocus";
-        else if (screen->isSemiSloppyFocus())
-            focus_mode = "SemiSloppyFocus";	
-        else
-            focus_mode = "ClickToFocus";
-
-        sprintf(rc_string, "session.screen%d.focusModel: %s", screen_number,
-                focus_mode.c_str());
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-*/
         //		load_rc(screen);
         // these are static, but may not be saved in the users resource file,
         // writing these resources will allow the user to edit them at a later
@@ -1988,43 +1975,6 @@ void Fluxbox::load_rc(BScreen *screen) {
         delete [] search;
     }
 
-//TODO (use Fluxbox::FocusModel enum)
-    /*
-    sprintf(name_lookup, "session.screen%d.focusModel", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.FocusModel", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "clicktofocus", value.size)) {
-            screen->saveAutoRaise(false);
-            screen->saveSloppyFocus(false);
-            screen->saveSemiSloppyFocus(false);
-
-        } else if (! strncasecmp(value.addr, "autoraisesloppyfocus", value.size)) {
-            screen->saveSemiSloppyFocus(false);
-            screen->saveSloppyFocus(true);
-            screen->saveAutoRaise(true);
-        } else if (! strncasecmp(value.addr, "autoraisesemisloppyfocus", value.size)) {
-            screen->saveSloppyFocus(false);
-            screen->saveSemiSloppyFocus(true);
-            screen->saveAutoRaise(true);
-
-        } else if (! strncasecmp(value.addr, "semisloppyfocus", value.size)) {
-            screen->saveSloppyFocus(false);
-            screen->saveSemiSloppyFocus(true);
-            screen->saveAutoRaise(false);
-
-        } else {
-
-            screen->saveSemiSloppyFocus(false);	
-            screen->saveSloppyFocus(true);
-            screen->saveAutoRaise(false);
-        }
-    } else {
-        screen->saveSemiSloppyFocus(false);
-        screen->saveSloppyFocus(true); 
-        screen->saveAutoRaise(false);
-    }
-    */
     sprintf(name_lookup, "session.screen%d.windowPlacement", screen_number);
     sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,

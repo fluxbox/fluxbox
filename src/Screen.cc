@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.113 2003/02/22 15:10:43 rathnor Exp $
+// $Id: Screen.cc,v 1.114 2003/02/22 16:09:44 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -361,6 +361,7 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
     focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
     antialias(rm, false, scrname+".antialias", altscrname+".Antialias"),
+    auto_raise(rm, false, scrname+".autoRaise", altscrname+".AutoRaise"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
@@ -1758,7 +1759,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                                          ConfigmenuSet, 
                                                          ConfigmenuAutoRaise,
                                                          "Auto Raise"),
-                                        resource.auto_raise,
+                                        *resource.auto_raise,
                                         save_and_reconfigure));
 
     focus_menu->update();
