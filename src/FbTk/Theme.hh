@@ -19,9 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.2 2002/12/16 11:01:43 fluxgen Exp $
+// $Id: Theme.hh,v 1.3 2003/04/25 18:13:29 fluxgen Exp $
 
-// holds ThemeItem, Theme and ThemeManager
+/**
+ @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
+*/
 
 #ifndef FBTK_THEME_HH
 #define FBTK_THEME_HH
@@ -55,7 +57,8 @@ private:
 };
 
 
-/// template ThemeItem class for things like Texture and Color
+/// template ThemeItem class for basic theme items
+/// to use this you need to specialize setDefaultValue, setFromString and load
 template <typename T>
 class ThemeItem:public ThemeItem_base {
 public:
