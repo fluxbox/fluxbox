@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.20 2002/05/17 16:34:27 fluxgen Exp $
+// $Id: Window.hh,v 1.21 2002/05/21 21:25:10 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -324,7 +324,8 @@ private:
 	void destroyTitlebar();
 	void createHandle();
 	void destroyHandle();
-	
+	void checkTransient();
+
 	#ifdef GNOME
 	
 	void updateGnomeAtoms() const;

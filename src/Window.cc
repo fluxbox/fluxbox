@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.53 2002/05/19 17:56:55 fluxgen Exp $
+// $Id: Window.cc,v 1.54 2002/05/21 21:22:05 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -207,37 +207,8 @@ tab(0)
 	fluxbox->saveWindowSearch(client.window, this);
 
 	// determine if this is a transient window
-	Window win;
-	if (XGetTransientForHint(display, client.window, &win)) {	
-		if (win && (win != client.window)) {
-			FluxboxWindow *tr;
-			if ((tr = fluxbox->searchWindow(win))) {
-				
-				while (tr->client.transient) 
-					tr = tr->client.transient;
-				
-				client.transient_for = tr;
-				tr->client.transient = this;
-				stuck = client.transient_for->stuck;
-				transient = true;
-			} else if (win == client.window_group) {
-				if ((tr = fluxbox->searchGroup(win, this))) {
-					
-					while (tr->client.transient) 
-						tr = tr->client.transient;
-					
-					client.transient_for = tr;
-					tr->client.transient = this;
-					stuck = client.transient_for->stuck;
-					transient = true;
-				}
-			}
-		}
-
-		if (win == screen->getRootWindow())
-			modal = true;
-	}
-
+	checkTransient();
+	
 	// adjust the window decorations based on transience and window sizes
 	if (transient) {
 		decorations.maximize =  functions.maximize = false;
@@ -407,8 +378,8 @@ FluxboxWindow::~FluxboxWindow(void) {
 		client.blackbox_hint = 0;
 	}
 
-	
-	if (client.transient_for!=0) {
+
+	if (isTransient()) {
 		//guard from having transient_for = this
 		if (client.transient_for == this) {
 			#ifdef DEBUG
@@ -419,7 +390,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 		
 		fluxbox->setFocusedWindow(client.transient_for);
 	}
-
+	
 	if (client.window_group) {
 		fluxbox->removeGroupSearch(client.window_group);
 		client.window_group = 0;
@@ -1705,7 +1676,7 @@ void FluxboxWindow::configure(int dx, int dy,
 		
 		downsize();
 
-#ifdef		SHAPE
+#ifdef	SHAPE
 		if (Fluxbox::instance()->hasShapeExtensions() && frame.shaped) {
 			XShapeCombineShape(display, frame.window, ShapeBounding,
  						 frame.mwm_border_w, frame.y_border +
@@ -1811,15 +1782,14 @@ bool FluxboxWindow::setInputFocus(void) {
 	bool ret = false;
 
 	if (client.transient && modal)
-		ret = client.transient->setInputFocus();
+		return client.transient->setInputFocus();
 	else {
 		if (! focused) {
 			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE)
 				XSetInputFocus(display, client.window,
 											RevertToPointerRoot, CurrentTime);
 			else
-				XSetInputFocus(display, screen->getRootWindow(),
-											RevertToNone, CurrentTime);
+				return false;
 
 			fluxbox->setFocusedWindow(this);
 			
@@ -2877,7 +2847,7 @@ bool FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 bool FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
 	if (de->window == client.window) {
 		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<":) DestroyNotifyEvent this="<<this<<endl;
+		cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<endl;
 		#endif
 		XUnmapWindow(display, frame.window);		
 		return true;
@@ -2899,31 +2869,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		break;
 
 	case XA_WM_TRANSIENT_FOR:
-		// determine if this is a transient window
-		Window win;
-		if (XGetTransientForHint(display, client.window, &win)) {
-			if (win && (win != client.window))
-				if ((client.transient_for = fluxbox->searchWindow(win))) {
-					client.transient_for->client.transient = this;
-					stuck = client.transient_for->stuck;
-					transient = true;
-				} else if (win == client.window_group) {
-		//jr This doesn't look quite right...
-					if ((client.transient_for = fluxbox->searchGroup(win, this))) {
-						client.transient_for->client.transient = this;
-						stuck = client.transient_for->stuck;
-						transient = true;
-					}
-				}
-
-			if (win == screen->getRootWindow()) modal = true;
-		}
-
-		// adjust the window decorations based on transience
-		if (transient)
-			decorations.maximize = decorations.handle =
-				decorations.border = functions.maximize = false;
-
+		checkTransient();
 		reconfigure();
 
 		break;
@@ -3482,6 +3428,7 @@ void FluxboxWindow::toggleDecoration() {
 		decor = false;
 	}
 }
+
 bool FluxboxWindow::validateClient(void) {
 	XSync(display, false);
 
@@ -3727,6 +3674,44 @@ void FluxboxWindow::destroyHandle() {
 		XDestroyWindow(display, frame.handle);
 		frame.handle = 0;
 	}
+
+}
+
+void FluxboxWindow::checkTransient() {
+	Fluxbox *fluxbox = Fluxbox::instance();
+	// determine if this is a transient window
+	Window win;
+	if (!XGetTransientForHint(display, client.window, &win)) {
+		client.transient_for = 0;
+		return;
+	}
+	if (win && (win != client.window)) {
+		FluxboxWindow *tr;
+		if ((tr = fluxbox->searchWindow(win))) {
+				
+			while (tr->client.transient) 
+				tr = tr->client.transient;
+				
+			client.transient_for = tr;
+			tr->client.transient = this;
+			stuck = client.transient_for->stuck;
+			transient = true;
+		} else if (win == client.window_group) {
+			if ((tr = fluxbox->searchGroup(win, this))) {
+					
+				while (tr->client.transient) 
+					tr = tr->client.transient;
+					
+				client.transient_for = tr;
+				tr->client.transient = this;
+				stuck = client.transient_for->stuck;
+				transient = true;
+			}
+		}
+	}
+
+	if (win == screen->getRootWindow())
+		modal = true;
 
 }
 
