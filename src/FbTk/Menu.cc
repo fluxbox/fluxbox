@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.42 2003/11/28 22:52:20 fluxgen Exp $
+// $Id: Menu.cc,v 1.43 2003/11/28 23:26:27 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -649,7 +649,7 @@ void Menu::redrawTitle() {
     menu.title.clear();
     font.drawText(menu.title.window(), // drawable
                   screenNumber(),
-                  m_theme.titleTextGC(), // graphic context
+                  m_theme.titleTextGC().gc(), // graphic context
                   text, len,  // text string with lenght
                   dx, font.ascent() + menu.bevel_w);  // position
 
@@ -909,7 +909,7 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     if (dotext && text) {
         m_theme.frameFont().drawText(m_frame_pm.drawable(), // drawable
                                      screenNumber(),
-                                     tgc,
+                                     tgc.gc(),
                                      text, len, // text string and lenght
                                      text_x, text_y); // position
     }
