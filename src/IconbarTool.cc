@@ -67,7 +67,7 @@ void FbTk::Resource<IconbarTool::Mode>::setFromString(const char *strval) {
 
 template<>
 void FbTk::Resource<IconbarTool::DeiconifyMode>::setDefaultValue() {
-    m_value = IconbarTool::CURRENT;
+    m_value = IconbarTool::FOLLOW;
 }
 
 template<>
@@ -337,7 +337,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_empty_pm(0),
     m_rc_mode(screen.resourceManager(), WORKSPACE,
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
-    m_deiconify_mode(screen.resourceManager(), CURRENT,
+    m_deiconify_mode(screen.resourceManager(), FOLLOW,
                      screen.name() + ".iconbar.deiconifyMode",
                      screen.name() + ".iconbar.DeiconifyMode"),
     m_wheel_mode(screen.resourceManager(), OFF,
