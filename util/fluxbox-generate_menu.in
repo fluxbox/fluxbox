@@ -1507,7 +1507,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IRC
-        normal_find xchat ksirc vyqchat lostirc logui konversation kvirc
+        normal_find xchat xchat-2 ksirc vyqchat lostirc logui konversation kvirc
         cli_find irssi epic4 weechat ninja
         find_it BitchX        append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
         find_it bitchx        append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
