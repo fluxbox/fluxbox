@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.cc,v 1.4 2003/08/25 16:02:24 fluxgen Exp $
+// $Id: RootTheme.cc,v 1.5 2003/09/12 21:34:22 fluxgen Exp $
 
 #include "RootTheme.hh"
 
@@ -31,24 +31,19 @@ RootTheme::RootTheme(int screen_num, std::string &screen_root_command):
     m_root_command(*this, "rootCommand", "RootCommand"), 
     m_bevel_width(*this,  "bevelWidth", "BevelWidth"),
     m_handle_width(*this, "handleWidth", "HandleWidth"),
-    m_screen_root_command(screen_root_command) {
+    m_screen_root_command(screen_root_command),
+    m_opgc(RootWindow(FbTk::App::instance()->display(), screen_num)) {
 
     *m_bevel_width = 0;
     *m_handle_width = 0;
-
-    XGCValues gcv;
     Display *disp = FbTk::App::instance()->display();
-    gcv.foreground = WhitePixel(disp, screen_num)^BlackPixel(disp, screen_num);
-    gcv.function = GXxor;
-    gcv.subwindow_mode = IncludeInferiors;
-    m_opgc = XCreateGC(disp,
-                       RootWindow(disp, screen_num),
-                       GCForeground | GCFunction | GCSubwindowMode, &gcv);
+    m_opgc.setForeground(WhitePixel(disp, screen_num)^BlackPixel(disp, screen_num));
+    m_opgc.setFunction(GXxor);
+    m_opgc.setSubwindowMode(IncludeInferiors);
 }
 
 RootTheme::~RootTheme() {
-    if (m_opgc != 0)
-        XFreeGC(FbTk::App::instance()->display(), m_opgc);
+
 }
 
 void RootTheme::reconfigTheme() {
