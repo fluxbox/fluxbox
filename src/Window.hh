@@ -1,8 +1,8 @@
 // Window.hh for Fluxbox Window Manager
-// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org) 
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Window.hh for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.38 2002/12/01 13:42:05 rathnor Exp $
+// $Id: Window.hh,v 1.39 2002/12/13 20:35:36 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -48,48 +48,50 @@
 class Tab;
 
 
-/**
-	Creates the window frame and handles any window event for it
-	TODO: this is to huge!
-*/
+/// Creates the window frame and handles any window event for it
 class FluxboxWindow : public TimeoutHandler {
 public:
-	
+    /// layer bits
     enum WinLayer {
-        LAYER_BOTTOM = 0x01, 
-        LAYER_BELOW  = 0x02,
-        LAYER_NORMAL = 0x04, 
-        LAYER_TOP    = 0x08
+        LAYER_BOTTOM = 0x01,  ///< bottom layer
+        LAYER_BELOW  = 0x02,  ///< below normal layer but above bottom
+        LAYER_NORMAL = 0x04,  ///< normal layer
+        LAYER_TOP    = 0x08   ///< top layer
+    };
+    /// decoration bit
+    enum Decoration {
+        DECOR_NONE=0, ///< no decor at all
+        DECOR_NORMAL, ///< normal normal
+        DECOR_TINY,   ///< tiny decoration
+        DECOR_TOOL    ///< decor tool
     };
 
-    enum Decoration {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
-
-    //Motif wm Hints
+    /// Motif wm Hints
     enum {
-        MwmHintsFunctions   = (1l << 0),
-        MwmHintsDecorations	= (1l << 1)
+        MwmHintsFunctions   = (1l << 0), ///< use motif wm functions
+        MwmHintsDecorations	= (1l << 1) ///< use motif wm decorations
     };
 	
-    //Motif wm functions
+    /// Motif wm functions
     enum MwmFunc{
-        MwmFuncAll          = (1l << 0),
-        MwmFuncResize       = (1l << 1),
-        MwmFuncMove         = (1l << 2),
-        MwmFuncIconify      = (1l << 3),
-        MwmFuncMaximize     = (1l << 4),
-        MwmFuncClose        = (1l << 5)
+        MwmFuncAll          = (1l << 0), ///< all motif wm functions
+        MwmFuncResize       = (1l << 1), ///< resize 
+        MwmFuncMove         = (1l << 2), ///< move 
+        MwmFuncIconify      = (1l << 3), ///< iconify
+        MwmFuncMaximize     = (1l << 4), ///< maximize
+        MwmFuncClose        = (1l << 5)  ///< close
     };
-    //Motif wm decorations
+    /// Motif wm decorations
     enum MwmDecor {
-        MwmDecorAll         = (1l << 0),
-        MwmDecorBorder      = (1l << 1),
-        MwmDecorHandle      = (1l << 2),
-        MwmDecorTitle       = (1l << 3),
-        MwmDecorMenu        = (1l << 4),
-        MwmDecorIconify     = (1l << 5),
-        MwmDecorMaximize    = (1l << 6)
+        MwmDecorAll         = (1l << 0), /// all decorations
+        MwmDecorBorder      = (1l << 1), /// border
+        MwmDecorHandle      = (1l << 2), /// handle
+        MwmDecorTitle       = (1l << 3), /// title
+        MwmDecorMenu        = (1l << 4), /// menu
+        MwmDecorIconify     = (1l << 5), /// iconify
+        MwmDecorMaximize    = (1l << 6)  /// maximize
     };
-
+    /// create fluxbox window with parent win and screen connection
     explicit FluxboxWindow(Window win, BScreen *scr = 0);
     virtual ~FluxboxWindow();
     /**
@@ -148,15 +150,15 @@ public:
     bool isLowerTab() const;
     /**
        @name signals
+    @{
     */
-    //@{
     FbTk::Subject &stateSig() { return m_statesig; }
     const FbTk::Subject &stateSig() const { return m_statesig; }
     FbTk::Subject &hintSig() { return m_hintsig; }
     const FbTk::Subject &hintSig() const { return m_hintsig; }
     FbTk::Subject &workspaceSig() { return m_workspacesig; }
     const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
-    //@}
+    /** @} */ // end group signals
 
     //@}
 
