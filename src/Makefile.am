@@ -67,7 +67,10 @@ TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc \
 	IconbarTool.hh IconbarTool.cc IconbarTheme.hh IconbarTheme.cc \
 	ToolTheme.hh ToolTheme.cc \
 	IconButton.hh IconButton.cc \
-	SystemTray.hh SystemTray.cc
+	SystemTray.hh SystemTray.cc \
+	GenericTool.hh GenericTool.cc \
+	ButtonTool.hh ButtonTool.cc ButtonTheme.hh ButtonTheme.cc \
+	ToolFactory.hh ToolFactory.cc
 endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
