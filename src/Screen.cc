@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.20 2002/02/07 14:46:23 fluxgen Exp $
+// $Id: Screen.cc,v 1.21 2002/02/08 13:35:03 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -95,6 +95,7 @@
 
 #include <iostream>
 #include <memory>
+#include <algorithm>
 
 using namespace std;
 
@@ -275,12 +276,6 @@ resource(rm, screenname, altscreenname)
 	XDefineCursor(getBaseDisplay()->getXDisplay(), getRootWindow(),
 		fluxbox->getSessionCursor());
 
-	workspaceNames = new LinkedList<char>;
-	workspacesList = new LinkedList<Workspace>;
-	rootmenuList = new LinkedList<Rootmenu>;
-	netizenList = new LinkedList<Netizen>;
-	iconList = new LinkedList<FluxboxWindow>;
-
 	image_control =
 		new BImageControl(fluxbox, this, True, fluxbox->getColorsPerChannel(),
 			fluxbox->getCacheLife(), fluxbox->getCacheMax());
@@ -381,13 +376,13 @@ resource(rm, screenname, altscreenname)
 	Workspace *wkspc = (Workspace *) 0;
 	if (*resource.workspaces != 0) {
 		for (int i = 0; i < *resource.workspaces; ++i) {
-			wkspc = new Workspace(this, workspacesList->count());
-			workspacesList->insert(wkspc);
+			wkspc = new Workspace(this, workspacesList.size());
+			workspacesList.push_back(wkspc);
 			workspacemenu->insert(wkspc->getName(), wkspc->getMenu());
 		}
 	} else {
-		wkspc = new Workspace(this, workspacesList->count());
-		workspacesList->insert(wkspc);
+		wkspc = new Workspace(this, workspacesList.size());
+		workspacesList.push_back(wkspc);
 		workspacemenu->insert(wkspc->getName(), wkspc->getMenu());
 	}
 
@@ -402,7 +397,7 @@ resource(rm, screenname, altscreenname)
 			iconmenu);
 	workspacemenu->update();
 
-	current_workspace = workspacesList->first();
+	current_workspace = workspacesList.front();
 	workspacemenu->setItemSelected(2, True);
 
 	toolbar = new Toolbar(this);
@@ -489,6 +484,12 @@ resource(rm, screenname, altscreenname)
 	
 }
 
+namespace {
+    template<typename T>
+    void delete_obj(T * obj) {
+        delete obj;
+    }
+}
 
 BScreen::~BScreen(void) {
 	if (! managed) return;
@@ -501,17 +502,22 @@ BScreen::~BScreen(void) {
 
 	removeWorkspaceNames();
 
-	while (workspacesList->count())
-		delete workspacesList->remove(0);
+    std::for_each(
+        workspacesList.begin(),
+        workspacesList.end(),
+        delete_obj<Workspace>);
 
-	while (rootmenuList->count())
-		rootmenuList->remove(0);
+    // don't delete items in the rootmenuList?
 
-	while (iconList->count())
-		delete iconList->remove(0);
+    std::for_each(
+        iconList.begin(),
+        iconList.end(),
+        delete_obj<FluxboxWindow>);
 
-	while (netizenList->count())
-		delete netizenList->remove(0);
+    std::for_each(
+        netizenList.begin(),
+        netizenList.end(),
+        delete_obj<Netizen>);
 
 #ifdef		HAVE_STRFTIME
 	if (resource.strftime_format)
@@ -530,11 +536,6 @@ BScreen::~BScreen(void) {
 	delete toolbar;
 	delete image_control;
 
-	delete workspacesList;
-	delete workspaceNames;
-	delete rootmenuList;
-	delete iconList;
-	delete netizenList;
 	delete theme;
 
 }
@@ -627,14 +628,18 @@ void BScreen::reconfigure(void) {
 	slit->reconfigure();
 #endif // SLIT
 
-	LinkedListIterator<Workspace> wit(workspacesList);
-	for (; wit.current(); wit++)
-		wit.current()->reconfigure();
+	Workspaces::iterator wit = workspacesList.begin();
+	Workspaces::iterator wit_end = workspacesList.end();
+	for (; wit != wit_end; ++wit) {
+		(*wit)->reconfigure();
+	}
 
-	LinkedListIterator<FluxboxWindow> iit(iconList);
-	for (; iit.current(); iit++)
-		if (iit.current()->validateClient())
-			iit.current()->reconfigure();
+	Icons::iterator iit = iconList.begin();
+	Icons::iterator iit_end = iconList.end();
+	for (; iit != iit_end; ++iit) {
+		if ((*iit)->validateClient())
+			(*iit)->reconfigure();
+	}
 
 	image_control->timeout();
 }
@@ -649,15 +654,14 @@ void BScreen::rereadMenu(void) {
 
 
 void BScreen::removeWorkspaceNames(void) {
-	while (workspaceNames->count())
-		delete [] workspaceNames->remove(0);
+	workspaceNames.erase(workspaceNames.begin(), workspaceNames.end());
 }
 
 void BScreen::updateWorkspaceNamesAtom(void) {
 
 #ifdef GNOME	
 	XTextProperty	text;
-	int number_of_desks = workspaceNames->count();
+	int number_of_desks = workspaceNames.size();
 	
 	char s[1024];
 	char *names[number_of_desks];		
@@ -685,9 +689,9 @@ void BScreen::addIcon(FluxboxWindow *w) {
 	if (! w) return;
 
 	w->setWorkspace(-1);
-	w->setWindowNumber(iconList->count());
+	w->setWindowNumber(iconList.size());
 
-	iconList->insert(w);
+	iconList.push_back(w);
 
 	iconmenu->insert((const char **) w->getIconTitle());	
 	iconmenu->update();
@@ -698,47 +702,49 @@ void BScreen::addIcon(FluxboxWindow *w) {
 void BScreen::removeIcon(FluxboxWindow *w) {
 	if (! w) return;
 
-	iconList->remove(w->getWindowNumber());
+    std::remove(iconList.begin(), iconList.end(), w);
 
 	iconmenu->remove(w->getWindowNumber());
 	iconmenu->update();
 	toolbar->delIcon(w);
 	
-	LinkedListIterator<FluxboxWindow> it(iconList);
-	for (int i = 0; it.current(); it++, i++)
-		it.current()->setWindowNumber(i);
+    Icons::iterator it = iconList.begin();
+	Icons::iterator it_end = iconList.end();
+	for (int i = 0; it != it_end; ++it, ++i) {
+		(*it)->setWindowNumber(i);
+	}
 }
 
 
 FluxboxWindow *BScreen::getIcon(int index) {
-	if (index >= 0 && index < iconList->count())
-		return iconList->find(index);
+	if (index >= 0 && index < iconList.size())
+		return iconList[index];
 
 	return (FluxboxWindow *) 0;
 }
 
 
 int BScreen::addWorkspace(void) {
-	Workspace *wkspc = new Workspace(this, workspacesList->count());
-	workspacesList->insert(wkspc);
+	Workspace *wkspc = new Workspace(this, workspacesList.size());
+	workspacesList.push_back(wkspc);
 
 	workspacemenu->insert(wkspc->getName(), wkspc->getMenu(),
 		wkspc->getWorkspaceID() + 1);
 	workspacemenu->update();
-	saveWorkspaces(workspacesList->count());
+	saveWorkspaces(workspacesList.size());
 	toolbar->reconfigure();
 
 	updateNetizenWorkspaceCount();	
 	
 	
-	return workspacesList->count();
+	return workspacesList.size();
 	
 }
 
 
 int BScreen::removeLastWorkspace(void) {
-	if (workspacesList->count() > 1) {
-		Workspace *wkspc = workspacesList->last();
+	if (workspacesList.size() > 1) {
+		Workspace *wkspc = workspacesList.back();
 
 		if (current_workspace->getWorkspaceID() == wkspc->getWorkspaceID())
 			changeWorkspaceID(current_workspace->getWorkspaceID() - 1);
@@ -748,14 +754,14 @@ int BScreen::removeLastWorkspace(void) {
 		workspacemenu->remove(wkspc->getWorkspaceID() + 2);
 		workspacemenu->update();
 
-		workspacesList->remove(wkspc);
+		workspacesList.erase(workspacesList.begin() + wkspc->getWorkspaceID());
 		delete wkspc;
 
 		toolbar->reconfigure();
 
 		updateNetizenWorkspaceCount();
-		saveWorkspaces(workspacesList->count());
-		return workspacesList->count();
+		saveWorkspaces(workspacesList.size());
+		return workspacesList.size();
 	}
 
 	return 0;
@@ -763,7 +769,7 @@ int BScreen::removeLastWorkspace(void) {
 
 
 void BScreen::changeWorkspaceID(int id) {
-	if (! current_workspace || id >= workspacesList->count() || id < 0)
+	if (! current_workspace || id >= workspacesList.size() || id < 0)
 		return;
 	
 	if (id != current_workspace->getWorkspaceID()) {
@@ -801,17 +807,18 @@ void BScreen::changeWorkspaceID(int id) {
 
 
 void BScreen::addNetizen(Netizen *n) {
-	netizenList->insert(n);
+	netizenList.push_back(n);
 
 	n->sendWorkspaceCount();
 	n->sendCurrentWorkspace();
 
-	LinkedListIterator<Workspace> it(workspacesList);
-	for (; it.current(); it++) {
-		int i;
-		for (i = 0; i < it.current()->getCount(); i++)
-			n->sendWindowAdd(it.current()->getWindow(i)->getClientWindow(),
-											 it.current()->getWorkspaceID());
+	Workspaces::iterator it = workspacesList.begin();
+	Workspaces::iterator it_end = workspacesList.end();
+	for (; it != it_end; ++it) {
+		for (int i = 0; i < (*it)->getCount(); ++i) {
+			n->sendWindowAdd((*it)->getWindow(i)->getClientWindow(),
+											 (*it)->getWorkspaceID());
+		}
 	}
 
 	Window f = ((fluxbox->getFocusedWindow()) ?
@@ -819,18 +826,16 @@ void BScreen::addNetizen(Netizen *n) {
 	n->sendWindowFocus(f);
 }
 
-
 void BScreen::removeNetizen(Window w) {
-	LinkedListIterator<Netizen> it(netizenList);
-	int i = 0;
-
-	for (; it.current(); it++, i++)
-		if (it.current()->getWindowID() == w) {
-			Netizen *n = netizenList->remove(i);
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		if ((*it)->getWindowID() == w) {
+			Netizen *n = *netizenList.erase(it);
 			delete n;
-
 			break;
 		}
+	}
 }
 
 
@@ -850,10 +855,11 @@ void BScreen::updateNetizenCurrentWorkspace(void) {
 			(unsigned char *)&gnome_workspace, 1);
 	#endif
 	
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendCurrentWorkspace();
-	
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendCurrentWorkspace();
+	}
 
 	#ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): Update Current Workspace"<<endl;
@@ -862,10 +868,12 @@ void BScreen::updateNetizenCurrentWorkspace(void) {
 
 
 void BScreen::updateNetizenWorkspaceCount(void) {
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendWorkspaceCount();
 
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendWorkspaceCount();
+	}
 	#ifdef NEWWMSPEC
 	//update _NET_WM_NUMBER_OF_DESKTOPS
 	int numworkspaces = getCount()-1;
@@ -890,59 +898,76 @@ void BScreen::updateNetizenWorkspaceCount(void) {
 
 
 void BScreen::updateNetizenWindowFocus(void) {
-	LinkedListIterator<Netizen> it(netizenList);
-	Window f = ((fluxbox->getFocusedWindow()) ?
-							fluxbox->getFocusedWindow()->getClientWindow() : None);
-	for (; it.current(); it++)
-		it.current()->sendWindowFocus(f);
+
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+  	Window f = ((fluxbox->getFocusedWindow()) ?
+			fluxbox->getFocusedWindow()->getClientWindow() : None);
+	for (; it != it_end; ++it) {
+		(*it)->sendWindowFocus(f);
+	}
 }
 
 
 void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendWindowAdd(w, p);
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendWindowAdd(w, p);
+	}
+
 }
 
 
 void BScreen::updateNetizenWindowDel(Window w) {
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendWindowDel(w);
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendWindowDel(w);
+	}
+
 }
 
 
 void BScreen::updateNetizenWindowRaise(Window w) {
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendWindowRaise(w);
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendWindowRaise(w);
+	}
 }
 
 
 void BScreen::updateNetizenWindowLower(Window w) {
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendWindowLower(w);
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendWindowLower(w);
+	}
 }
 
 
 void BScreen::updateNetizenConfigNotify(XEvent *e) {
-	LinkedListIterator<Netizen> it(netizenList);
-	for (; it.current(); it++)
-		it.current()->sendConfigNotify(e);
+	Netizens::iterator it = netizenList.begin();
+	Netizens::iterator it_end = netizenList.end();
+	for (; it != it_end; ++it) {
+		(*it)->sendConfigNotify(e);
+	}
 }
 
 
 void BScreen::raiseWindows(Window *workspace_stack, int num) {
-	Window session_stack[(num + workspacesList->count() + rootmenuList->count() + 13)];
+	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 13)];
 	int i = 0;
 
 	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->getWindowID());
 	session_stack[i++] = iconmenu->getWindowID();
 
-	LinkedListIterator<Workspace> wit(workspacesList);
-	for (; wit.current(); wit++)
-		session_stack[i++] = wit.current()->getMenu()->getWindowID();
+	Workspaces::iterator wit = workspacesList.begin();
+	Workspaces::iterator wit_end = workspacesList.end();
+	for (; wit != wit_end; ++wit) {
+		session_stack[i++] = (*wit)->getMenu()->getWindowID();
+	}
 
 	session_stack[i++] = workspacemenu->getWindowID();
 
@@ -961,9 +986,11 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 		toolbar->getMenu()->getPlacementmenu()->getWindowID();
 	session_stack[i++] = toolbar->getMenu()->getWindowID();
 
-	LinkedListIterator<Rootmenu> rit(rootmenuList);
-	for (; rit.current(); rit++)
-		session_stack[i++] = rit.current()->getWindowID();
+	Rootmenus::iterator rit = rootmenuList.begin();
+	Rootmenus::iterator rit_end = rootmenuList.end();
+	for (; rit != rit_end; ++rit) {
+		session_stack[i++] = (*rit)->getWindowID();
+	}
 	session_stack[i++] = rootmenu->getWindowID();
 
 	if (toolbar->isOnTop())
@@ -994,14 +1021,14 @@ void BScreen::saveStrftimeFormat(char *format) {
 
 
 void BScreen::addWorkspaceName(char *name) {
-	workspaceNames->insert(StringUtil::strdup(name));
+	workspaceNames.push_back(name);
 	
 }
 
 
 void BScreen::getNameOfWorkspace(int id, char **name) {
-	if (id >= 0 && id < workspaceNames->count()) {
-		char *wkspc_name = workspaceNames->find(id);
+	if (id >= 0 && id < workspaceNames.size()) {
+		const char *wkspc_name = workspaceNames[id].c_str();
 
 		if (wkspc_name)
 			*name = StringUtil::strdup(wkspc_name);
@@ -1113,13 +1140,13 @@ void BScreen::raiseFocus(void) {
 			raiseWindow(fluxbox->getFocusedWindow());
 }
 
+
 // XXX - no good parsing here
 void BScreen::InitMenu(void) {
 	I18n *i18n = I18n::instance();
 	
 	if (rootmenu) {
-		while (rootmenuList->count())
-			rootmenuList->remove(0);
+		rootmenuList.erase(rootmenuList.begin(), rootmenuList.end());
 
 		while (rootmenu->getCount())
 			rootmenu->remove(0);
@@ -1238,7 +1265,6 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 					continue;	//read next line
 
 				I18n *i18n = I18n::instance();
-
 				if (str_key == "end") {
 					return ((menu->getCount() == 0) ? True : False);
 				} else if (str_key == "nop") { 
@@ -1387,7 +1413,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						parseMenuFile(file, submenu, row);
 						submenu->update();
 						menu->insert(str_label.c_str(), submenu);
-						rootmenuList->insert(submenu);
+						rootmenuList.push_back(submenu);
 					}
 				} // end of sub
 				else if (str_key == "restart") {
@@ -1493,7 +1519,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 								if (newmenu) {
 									stylesmenu->setLabel(str_label.c_str());
 									menu->insert(str_label.c_str(), stylesmenu);
-									rootmenuList->insert(stylesmenu);
+									rootmenuList.push_back(stylesmenu);
 								}
 
 								fluxbox->saveMenuFilename(stylesdir);
@@ -1557,13 +1583,21 @@ void BScreen::shutdown(void) {
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), NoEventMask);
 	XSync(getBaseDisplay()->getXDisplay(), False);
 
-	LinkedListIterator<Workspace> it(workspacesList);
-	for (; it.current(); it ++)
-		it.current()->shutdown();
+	{
+		Workspaces::iterator it = workspacesList.begin();
+		Workspaces::iterator it_end = workspacesList.end();
+		for (; it != it_end; ++it) {
+			(*it)->shutdown();
+		}
+	}
 
-	while (iconList->count()) {
-		iconList->first()->restore();
-		delete iconList->first();
+	{
+		Icons::iterator it = iconList.begin();
+		Icons::iterator it_end = iconList.end();
+		for (; it != it_end; ++it) {
+			(*it)->restore();
+			delete (*it);
+		}
 	}
 
 #ifdef		SLIT

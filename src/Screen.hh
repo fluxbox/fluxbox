@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.15 2002/02/07 14:48:56 fluxgen Exp $
+// $Id: Screen.hh,v 1.16 2002/02/08 13:35:20 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -38,9 +38,6 @@
 #endif
 #ifndef _ICON_HH_
 #include "Icon.hh"
-#endif
-#ifndef _LINKEDLIST_HH_
-#include "LinkedList.hh"
 #endif
 #ifndef _NETIZEN_HH_
 #include "Netizen.hh"
@@ -82,8 +79,9 @@
 
 #include <stdio.h>
 #include <string>
+#include <list>
+#include <vector>
 #include <fstream>
-
 
 class BScreen : public ScreenInfo {
 public:
@@ -128,7 +126,7 @@ public:
 
 	inline Toolbar *getToolbar(void) { return toolbar; }
 
-	inline Workspace *getWorkspace(int w) { return workspacesList->find(w); }
+	inline Workspace *getWorkspace(int w) { return workspacesList[w]; }
 	inline Workspace *getCurrentWorkspace(void) { return current_workspace; }
 
 	inline Workspacemenu *getWorkspacemenu(void) { return workspacemenu; }
@@ -139,9 +137,12 @@ public:
 	inline const unsigned int getBorderWidth(void) const { return theme->getBorderWidth(); }
 	inline const unsigned int getBorderWidth2x(void) const { return theme->getBorderWidth()*2; }
 	inline const int getCurrentWorkspaceID() { return current_workspace->getWorkspaceID(); }
-	inline const int getCount(void) { return workspacesList->count(); }
-	inline const int getIconCount(void) { return iconList->count(); }
-	inline LinkedList<FluxboxWindow> *getIconList(void) { return iconList; }
+
+    typedef std::vector<FluxboxWindow *> Icons;
+	inline const int getCount(void) { return workspacesList.size(); }
+	inline const int getIconCount(void) { return iconList.size(); }
+	inline Icons &getIconList(void) { return iconList; }
+
 	inline const int getNumberOfWorkspaces(void) { return *resource.workspaces; }
 	inline const Toolbar::Placement getToolbarPlacement(void) { return *resource.toolbar_placement; }
 	inline const int getToolbarWidthPercent(void) { return *resource.toolbar_width_percent; }
@@ -265,9 +266,12 @@ private:
 
 	Rootmenu *rootmenu;
 
-	LinkedList<Rootmenu> *rootmenuList;
-	LinkedList<Netizen> *netizenList;
-	LinkedList<FluxboxWindow> *iconList;
+    typedef std::list<Rootmenu *> Rootmenus;
+    typedef std::list<Netizen *> Netizens;
+
+    Rootmenus rootmenuList;
+    Netizens netizenList;
+    Icons iconList;
 
 	#ifdef		SLIT
 	Slit *slit;
@@ -280,8 +284,11 @@ private:
 	unsigned int geom_w, geom_h;
 	unsigned long event_mask;
 
-	LinkedList<char> *workspaceNames;
-	LinkedList<Workspace> *workspacesList;
+    typedef std::vector<std::string> WorkspaceNames;
+    typedef std::vector<Workspace *> Workspaces;
+
+    WorkspaceNames workspaceNames;
+    Workspaces workspacesList;
 	
 	struct ScreenResource {
 		ScreenResource(ResourceManager &rm, const std::string &scrname,
