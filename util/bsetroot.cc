@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.19 2003/06/13 10:56:58 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.20 2003/08/12 01:34:13 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -379,7 +379,7 @@ void bsetroot::gradient() {
 
         if (! (root.visual()->c_class & 1)) {
             img_ctrl[screen]->removeImage(tmp);
-            img_ctrl[screen]->timeout();
+            img_ctrl[screen]->cleanCache();
         }
 
         XFreeGC(display(), gc);
