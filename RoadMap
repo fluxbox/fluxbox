@@ -128,7 +128,7 @@ Notes:
 
 ----------------------------------------------------------
 Release:      0.9.4
-Approx Date:  23 June, 2003
+Approx Date:  7 July, 2003
 Key Features:
  * Regular expression support in remember 
    on several attributes                      (Simon)
@@ -146,8 +146,8 @@ Bugfixes/lower priority:
  - Fixes for 0.9.3 and previous               (Both)
 
 ----------------------------------------------------------
-Release:      1.0.0 rc1
-Approx Date:  10 July, 2003
+Release:      0.9.5
+Approx Date:  31 July, 2003
 Major Features:
  - Update Translations
    - C
@@ -159,7 +159,7 @@ Major Features:
    - et_EE
    - fr_FR
    - it_IT
-   - ja_JP
+   - ja_JA
    - lv_LV
    - pt_BR
    - pt_PT
@@ -173,17 +173,28 @@ Major Features:
    - FAQ
 Minor Features:
  None
-Bugfixes/lower priority:
- - Fixes for 0.9.x
+Bugfixes:
+ - As many of those little niggly things as possible (some of which may be 
+   non-trivial to fix).
 
 Other:
  - app (fbev?) for per workspace backgrounds, among other things
  - should do some profiling and optimisation
 
 ----------------------------------------------------------
+Release:      1.0.0rc1
+Approx Date:  25 August, 2003
 
+ - Bug Fixes & tweaks. Nothing major.
+
+This release is aiming to be a very close approximation for 1.0.0.
+There is a fair amount of cooling time before the full release to allow 
+for an rc2 or mroe if necessary, but we'd really like to iron out all 
+those little bugs that are remaining around here.
+
+----------------------------------------------------------
 Release:      1.0.0
-Approx Date:  31 July, 2003
+Approx Date:  30 September, 2003
 
  - Obviously any remaining bug-fixes and small tweaks.
  - Translations.
