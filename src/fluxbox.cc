@@ -149,22 +149,6 @@ static Bool queueScanner(Display *, XEvent *e, char *args) {
   return False;
 }
 
-//------------- expandFilename ----------------------
-// if ~ then expand it to home of user
-// returns expanded filename 
-// (note: the function creates new memory for the string)
-//---------------------------------------------------
-char *Fluxbox::expandFilename(char *filename) {
-  char retval[strlen(filename)+strlen(getenv("HOME"))+2]; //2 extra byte just to be safe
-  retval[0]=0; //mark end
-  if (filename[0]=='~') {
-    strcat(retval, getenv("HOME"));
-    strcat(retval, &filename[1]);
-  } else
-    return Misc::strdup(filename);	//return unmodified value
-  
-  return Misc::strdup(retval);	//return modified value
-}
 
 //static singleton var
 Fluxbox *Fluxbox::singleton=0;
@@ -1750,7 +1734,7 @@ void Fluxbox::load_rc(void) {
 	if (XrmGetResource(database, "session.menuFile", "Session.MenuFile",
 				&value_type, &value)) {
     
-		resource.menu_file = expandFilename(value.addr); // expand ~ to $HOME
+		resource.menu_file = Misc::expandFilename(value.addr); // expand ~ to $HOME
 	} else
 		resource.menu_file = Misc::strdup(DEFAULTMENU);
 
@@ -1762,7 +1746,7 @@ void Fluxbox::load_rc(void) {
 	//get titlebar filename
 	if (XrmGetResource(database, "session.titlebarFile", "Session.TitlebarFile",
 				&value_type, &value)) {
-		resource.titlebar_file = expandFilename(value.addr); //expand ~ to home 
+		resource.titlebar_file = Misc::expandFilename(value.addr); //expand ~ to home 
 	} else 
 		resource.titlebar_file = Misc::strdup(DEFAULTTITLEBAR);
 	
@@ -1775,7 +1759,7 @@ void Fluxbox::load_rc(void) {
 	//get keys filename
 	if (XrmGetResource(database, "session.keyFile", "Session.keyFile",
 				&value_type, &value)) {
-		resource.keys_file = expandFilename(value.addr); //expand ~ to home		
+		resource.keys_file = Misc::expandFilename(value.addr); //expand ~ to home		
 	} else 
 		resource.keys_file = Misc::strdup(DEFAULTKEYSFILE);
 		
@@ -1816,7 +1800,7 @@ void Fluxbox::load_rc(void) {
 
 	if (XrmGetResource(database, "session.styleFile", "Session.StyleFile",
 				&value_type, &value))
-		resource.style_file = expandFilename(value.addr);
+		resource.style_file = Misc::expandFilename(value.addr);
 	else
 		resource.style_file = Misc::strdup(DEFAULTSTYLE);
 
@@ -1826,7 +1810,7 @@ void Fluxbox::load_rc(void) {
 	}
 
 	if (XrmGetResource(database, "session.rootCommand", "Session.RootCommand", &value_type, &value))
-		resource.root_cmd = expandFilename(value.addr);
+		resource.root_cmd = Misc::expandFilename(value.addr);
 	else
 		resource.root_cmd = 0;
 
