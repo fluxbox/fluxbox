@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.45 2002/04/09 23:15:21 fluxgen Exp $
+// $Id: Screen.cc,v 1.46 2002/04/12 14:56:15 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -201,6 +201,7 @@ full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
 max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
 tab_rotate_vertical(rm, true, scrname+".tab.rotatevertical", altscrname+".Tab.RotateVertical"),
 sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
+workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
 focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
 focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
 rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
@@ -1233,7 +1234,7 @@ void BScreen::initMenu(void) {
 						"%s: Empty menu file"),
 					fluxbox->getMenuFilename());
 			}
-			
+			menu_file.close();
 		} else
 			perror(fluxbox->getMenuFilename());
 	}
@@ -1260,7 +1261,7 @@ void BScreen::initMenu(void) {
 }
 
 // looks through a menufile and adds correct items to the root-menu.
-Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
+bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 	
 	string line;
 
@@ -1406,10 +1407,11 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						else
 							submenu->setLabel(str_label.c_str());
 
-						parseMenuFile(file, submenu, row);
+						parseMenuFile(file, submenu, row);						
 						submenu->update();
 						menu->insert(str_label.c_str(), submenu);
 						rootmenuList.push_back(submenu);
+						
 					}
 				} // end of sub
 				else if (str_key == "restart") {
