@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.24 2002/07/23 18:38:31 fluxgen Exp $
+// $Id: Theme.cc,v 1.25 2002/08/04 15:41:26 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -147,15 +147,15 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 				GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.t_text.pixel();
-	if (m_menustyle.titlefont.getFontStruct())
-		gcv.font = m_menustyle.titlefont.getFontStruct()->fid;
+	if (m_menustyle.titlefont.fontStruct())
+		gcv.font = m_menustyle.titlefont.fontStruct()->fid;
 	m_menustyle.t_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.pixel();
-	if (m_menustyle.framefont.getFontStruct())
-		gcv.font = m_menustyle.framefont.getFontStruct()->fid;
+	if (m_menustyle.framefont.fontStruct())
+		gcv.font = m_menustyle.framefont.fontStruct()->fid;
 
 	m_menustyle.f_text_gc =
 		XCreateGC(m_display, rootwindow,
@@ -637,7 +637,7 @@ void Theme::loadRootCommand() {
 		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
 
 		#else //         __EMX__
-		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), NULL);  
+		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), 0);  
 		#endif // !__EMX__     
 
 	} else if (XrmGetResource(m_database, "rootCommand", "RootCommand",
@@ -653,7 +653,7 @@ void Theme::loadRootCommand() {
 		bexec(value.addr, const_cast<char *>(displaystring.c_str()));
 		#else //	 __EMX__
 	
-		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, NULL);
+		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, 0);
 	
 		#endif // !__EMX__
 		
@@ -893,7 +893,7 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): Load font:"<<value.addr<<endl;
 		#endif
-		if ((*font = XLoadQueryFont(m_display, value.addr)) == NULL) {
+		if ((*font = XLoadQueryFont(m_display, value.addr)) == 0) {
 			fprintf(stderr,
 				I18n::instance()->
 				getMessage(
@@ -907,8 +907,7 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 		load_default = true;
 
 	if (load_default) {
-		if ((*font = XLoadQueryFont(m_display,
-				defaultFont)) == NULL) {
+		if ((*font = XLoadQueryFont(m_display, defaultFont)) == 0) {
 			fprintf(stderr,
 				I18n::instance()->
 				getMessage(
@@ -969,14 +968,14 @@ void Theme::reconfigure() {
 		GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.t_text.pixel();
-	if (m_menustyle.titlefont.getFontStruct())
-		gcv.font = m_menustyle.titlefont.getFontStruct()->fid;
+	if (m_menustyle.titlefont.fontStruct())
+		gcv.font = m_menustyle.titlefont.fontStruct()->fid;
 	XChangeGC(m_display, m_menustyle.t_text_gc,
 		gc_value_mask, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.pixel();	
-	if (m_menustyle.framefont.getFontStruct())
-		gcv.font = m_menustyle.framefont.getFontStruct()->fid;
+	if (m_menustyle.framefont.fontStruct())
+		gcv.font = m_menustyle.framefont.fontStruct()->fid;
 		
 	XChangeGC(m_display, m_menustyle.f_text_gc,
 		gc_value_mask, &gcv);
@@ -1044,9 +1043,9 @@ XFontSet Theme::createFontSet(char *fontname) {
 	}
 
 	getFontElement(fontname, weight, FONT_ELEMENT_SIZE,
-		 "-medium-", "-bold-", "-demibold-", "-regular-", NULL);
+		 "-medium-", "-bold-", "-demibold-", "-regular-", 0);
 	getFontElement(fontname, slant, FONT_ELEMENT_SIZE,
-		 "-r-", "-i-", "-o-", "-ri-", "-ro-", NULL);
+		 "-r-", "-i-", "-o-", "-ri-", "-ro-", 0);
 	getFontSize(fontname, &pixel_size);
 
 	if (! strcmp(weight, "*")) 
@@ -1086,22 +1085,22 @@ const char *Theme::getFontSize(const char *pattern, int *size) {
 
 	for (p=pattern; 1; p++) {
 		if (!*p) {
-			if (p2!=NULL && n>1 && n<72) {
+			if (p2!=0 && n>1 && n<72) {
 				*size = n; return p2+1;
 			} else {
-				*size = 16; return NULL;
+				*size = 16; return 0;
 			}
 		} else if (*p=='-') {
-			if (n>1 && n<72 && p2!=NULL) {
+			if (n>1 && n<72 && p2!=0) {
 				*size = n;
 				return p2+1;
 			}
 			p2=p; n=0;
-		} else if (*p>='0' && *p<='9' && p2!=NULL) {
+		} else if (*p>='0' && *p<='9' && p2!=0) {
 			n *= 10;
 			n += *p-'0';
 		} else {
-			p2=NULL; n=0;
+			p2=0; n=0;
 		}
 	}
 }
@@ -1114,7 +1113,7 @@ const char *Theme::getFontElement(const char *pattern, char *buf, int bufsiz, ..
 	va_start(va, bufsiz);
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
-	while((v = va_arg(va, char *)) != NULL) {
+	while((v = va_arg(va, char *)) != 0) {
 		p = StringUtil::strcasestr(pattern, v);
 		if (p) {
 			strncpy(buf, p+1, bufsiz-2);
@@ -1126,5 +1125,5 @@ const char *Theme::getFontElement(const char *pattern, char *buf, int bufsiz, ..
 	}
 	va_end(va);
 	strncpy(buf, "*", bufsiz);
-	return NULL;
+	return 0;
 }
