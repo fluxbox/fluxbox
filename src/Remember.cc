@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.38 2004/06/07 21:16:13 fluxgen Exp $
+// $Id: Remember.cc,v 1.39 2004/08/10 18:35:05 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -67,10 +67,6 @@
 #endif // HAVE_STRSTREAM
 
 using namespace std;
-
-#ifndef    MAXPATHLEN
-#define    MAXPATHLEN 255
-#endif // MAXPATHLEN
 
 namespace {
 
@@ -308,7 +304,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                                                         line.c_str() + err,
                                                         '(', ')');
                 if (tmp>0)
-                  err += tmp;
+                    err += tmp;
             }
             if (err > 0 ) {
                 parse_pos += err;
@@ -330,8 +326,24 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 app.rememberWorkspace(w);
             } else if (str_key == "Layer") {
                 unsigned int l;
-                FB_istringstream iss(str_label.c_str());
-                iss >> l;
+                if (str_label == "DESKTOP") {
+                    l = Fluxbox::instance()->getDesktopLayer();
+                } else if (str_label == "BOTTOM") {
+                    l = Fluxbox::instance()->getBottomLayer();
+                } else if (str_label == "NORMAL") {
+                    l = Fluxbox::instance()->getNormalLayer();
+                } else if (str_label == "TOP") {
+                    l = Fluxbox::instance()->getNormalLayer();
+                } else if (str_label == "DOCK") {
+                    l = Fluxbox::instance()->getDockLayer();
+                } else if (str_label == "ABOVEDOCK") {
+                    l = Fluxbox::instance()->getAboveDockLayer();
+                } else if (str_label == "MENU") {
+                    l = Fluxbox::instance()->getMenuLayer();
+                } else {
+                    FB_istringstream iss(str_label.c_str());
+                    iss >> l;
+                }
                 app.rememberLayer(l);
             } else if (str_key == "Dimensions") {
                 unsigned int h,w;
@@ -347,18 +359,18 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 // in ::rememberPosition
                 
                 if ( str_option.length() )
-                {
-                  if      ( str_option == "UPPERLEFT"  ) r= POS_UPPERLEFT;
-                  else if ( str_option == "UPPERRIGHT" ) r= POS_UPPERRIGHT;
-                  else if ( str_option == "LOWERLEFT"  ) r= POS_LOWERLEFT;
-                  else if ( str_option == "LOWERRIGHT" ) r= POS_LOWERRIGHT;
-                  else if ( str_option == "CENTER" )     r= POS_CENTER;
-                  else if ( str_option == "WINCENTER" )  r= POS_WINCENTER;
-                  else {
-                      iss.str(str_option);
-                      iss >> r;
-                  }
-                }
+                    {
+                        if      ( str_option == "UPPERLEFT"  ) r= POS_UPPERLEFT;
+                        else if ( str_option == "UPPERRIGHT" ) r= POS_UPPERRIGHT;
+                        else if ( str_option == "LOWERLEFT"  ) r= POS_LOWERLEFT;
+                        else if ( str_option == "LOWERRIGHT" ) r= POS_LOWERRIGHT;
+                        else if ( str_option == "CENTER" )     r= POS_CENTER;
+                        else if ( str_option == "WINCENTER" )  r= POS_WINCENTER;
+                        else {
+                            iss.str(str_option);
+                            iss >> r;
+                        }
+                    }
 
                 iss.str(str_label.c_str());
                 iss >> x >> y;
@@ -384,17 +396,17 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                                           FluxboxWindow::DECORM_TITLEBAR 
                                           | FluxboxWindow::DECORM_ICONIFY
                                           | FluxboxWindow::DECORM_MENU
-                        );
+                                          );
                 } else if (str_label == "TOOL") {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_TITLEBAR
                                           | FluxboxWindow::DECORM_MENU
-                        );
+                                          );
                 } else if (str_label == "BORDER") {
                     app.rememberDecostate((unsigned int)
                                           FluxboxWindow::DECORM_BORDER
                                           | FluxboxWindow::DECORM_MENU
-                        );
+                                          );
                 } else {
                     unsigned int mask;
                     const char * str = str_label.c_str();
