@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.26 2002/11/15 12:31:58 fluxgen Exp $
+// $Id: Slit.cc,v 1.27 2002/11/27 12:30:38 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -650,15 +650,15 @@ void Slit::reposition() {
 	if (tbar->x() < frame.x + sw && tbar->x() + tw > frame.x &&
 			tbar->y() < frame.y + sh && tbar->y() + th > frame.y) {
 		if (frame.y < th) {
-			frame.y += tbar->getExposedHeight();
+			frame.y += tbar->exposedHeight();
 			if (screen()->getSlitDirection() == VERTICAL)
-				frame.y_hidden += tbar->getExposedHeight();
+				frame.y_hidden += tbar->exposedHeight();
 			else
 				frame.y_hidden = frame.y;
 		} else {
-			frame.y -= tbar->getExposedHeight();
+			frame.y -= tbar->exposedHeight();
 			if (screen()->getSlitDirection() == VERTICAL)
-				frame.y_hidden -= tbar->getExposedHeight();
+				frame.y_hidden -= tbar->exposedHeight();
 			else
 				frame.y_hidden = frame.y;
 		}
