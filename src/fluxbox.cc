@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.31 2002/02/11 11:33:14 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.32 2002/02/15 22:16:09 pekdon Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1195,9 +1195,9 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 			focused_window->close();
 		break;
 		case Keys::SHADE:		
+			focused_window->shade(); // this has to be done in THIS order
 			if (focused_window->hasTab())
 				focused_window->getTab()->shade();
-			focused_window->shade();
 		break;
 		case Keys::MAXIMIZE:
 			focused_window->maximize(0);
