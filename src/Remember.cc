@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.22 2003/06/05 17:40:02 fluxgen Exp $
+// $Id: Remember.cc,v 1.23 2003/06/06 14:07:22 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -130,7 +130,7 @@ std::string getWMClass(Window w) {
     
     if (XGetClassHint(FbTk::App::instance()->display(), w, &ch) == 0) {
         cerr<<"Failed to read class hint!"<<endl;
-        return 0;
+        return "";
     } else {
         string instance_name;
         if (ch.res_name != 0) {
