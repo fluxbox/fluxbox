@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.12 2003/08/19 23:37:31 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.13 2003/08/26 23:53:01 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -87,6 +87,7 @@ FbCommandFactory::FbCommandFactory() {
         "showdesktop",
         "arrangewindows",
         "rootmenu",
+        "setworkspacename",
         ""
     };
 
@@ -195,5 +196,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ShowDesktopCmd();
     else if (command == "rootmenu")
         return new ShowRootMenuCmd();
+    else if (command == "setworkspacename")
+        return new SetWorkspaceNameCmd();
     return 0;
 }
