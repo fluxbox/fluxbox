@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.7 2003/05/01 13:19:36 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.8 2003/05/21 23:59:53 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -153,7 +153,7 @@ public:
     inline bool isShaded() const { return m_shaded; }
     inline const FbWinFrameTheme &theme() const { return m_theme; }
     /// @return titlebar height
-    unsigned int titleHeight() const;
+    unsigned int titlebarHeight() const { return m_titlebar.height(); }
     /// @return size of button
     unsigned int buttonHeight() const;
 

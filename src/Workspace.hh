@@ -111,7 +111,7 @@ private:
 
     std::string m_name;  ///< name of this workspace
     unsigned int m_id;	///< id, obsolete, this should be in BScreen
-    int m_cascade_x, m_cascade_y;
+    int *m_cascade_x, *m_cascade_y; // need a cascade for each head (Xinerama)
 };
 
 

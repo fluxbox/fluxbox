@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.24 2003/05/15 11:17:26 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.25 2003/05/21 23:59:53 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -543,10 +543,6 @@ void FbWinFrame::reconfigure() {
     if (!m_shaded)
         renderHandles();
     // titlebar stuff rendered already by reconftitlebar
-}
-
-unsigned int FbWinFrame::titleHeight() const {
-    return m_theme.font().height();
 }
 
 unsigned int FbWinFrame::buttonHeight() const {

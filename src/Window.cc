@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.183 2003/05/20 11:03:10 rathnor Exp $
+// $Id: Window.cc,v 1.184 2003/05/21 23:59:53 rathnor Exp $
 
 #include "Window.hh"
 
@@ -3151,8 +3151,8 @@ unsigned int FluxboxWindow::height() const {
     return frame().height();
 }
 
-unsigned int FluxboxWindow::titleHeight() const {
-    return frame().titleHeight();
+unsigned int FluxboxWindow::titlebarHeight() const {
+    return frame().titlebarHeight();
 }
 
 Window FluxboxWindow::clientWindow() const  { 

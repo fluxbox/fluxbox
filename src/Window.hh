@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.73 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Window.hh,v 1.74 2003/05/21 23:59:53 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -303,7 +303,7 @@ public:
  
     unsigned int width() const;
     unsigned int height() const;
-    unsigned int titleHeight() const;
+    unsigned int titlebarHeight() const;
     const std::string &className() const { return m_class_name; }
     const std::string &instanceName() const { return m_instance_name; }
     bool isLowerTab() const;

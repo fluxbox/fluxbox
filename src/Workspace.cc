@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.68 2003/05/20 11:03:11 rathnor Exp $
+// $Id: Workspace.cc,v 1.69 2003/05/21 23:59:54 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -119,9 +119,15 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int
     m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), scrn.imageControl()),
     m_layermanager(layermanager),
     m_name(""),
-    m_id(i),
-    m_cascade_x(32), m_cascade_y(32) {
+    m_id(i) {
 
+
+    m_cascade_x = new int[scrn.numHeads()+1];
+    m_cascade_y = new int[scrn.numHeads()+1];
+    for (int i=0; i < scrn.numHeads()+1; i++) {
+        m_cascade_x[i] = 32 + scrn.getHeadX(i);
+        m_cascade_y[i] = 32 + scrn.getHeadY(i);
+    }
     m_clientmenu.setInternalMenu();
     setName(screen().getNameOfWorkspace(m_id));
 
@@ -129,7 +135,8 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int
 
 
 Workspace::~Workspace() {
-
+    delete [] m_cascade_x;
+    delete [] m_cascade_y;
 }
 
 void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
@@ -569,8 +576,7 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                     curr_x = window.x();
                     curr_y = window.y();
                     curr_w = window.width() + window.fbWindow().borderWidth()*2;
-                    curr_h = window.isShaded() ? window.titleHeight() :
-                        window.height() + window.fbWindow().borderWidth()*2;
+                    curr_h = window.height() + window.fbWindow().borderWidth()*2;
 
                     if (curr_x < test_x + win_w &&
                         curr_x + curr_w > test_x &&
@@ -621,13 +627,8 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                 for (; it != it_end && placed; ++it) {
                     curr_x = (*it)->x();
                     curr_y = (*it)->y();
-                    curr_w = (*it)->width() + (*it)->fbWindow().borderWidth()*2;
-                    curr_h =
-                        (((*it)->isShaded())
-                         ? (*it)->titleHeight()
-                         : (*it)->height()) +
-                        (*it)->fbWindow().borderWidth()*2;
-
+                    curr_w = (*it)->width()  + (*it)->fbWindow().borderWidth()*2;
+                    curr_h = (*it)->height() + (*it)->fbWindow().borderWidth()*2;
 
                     if (curr_x < test_x + win_w &&
                         curr_x + curr_w > test_x &&
@@ -636,7 +637,6 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                         placed = False;
                     }
                 }
-
 
                 if (placed) {
                     place_x = test_x;
@@ -657,15 +657,21 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     // cascade placement or smart placement failed
     if (! placed) {
 
-        if ((m_cascade_x > ((head_left + head_right) / 2)) ||
-            (m_cascade_y > ((head_top + head_bot) / 2)))
-            m_cascade_x = m_cascade_y = 32;
+        if ((m_cascade_x[head] > ((head_left + head_right) / 2)) ||
+            (m_cascade_y[head] > ((head_top + head_bot) / 2))) {
+            m_cascade_x[head] = head_left + 32;
+            m_cascade_y[head] = head_top + 32;
+        }
 
-        place_x = m_cascade_x;
-        place_y = m_cascade_y;
+        place_x = m_cascade_x[head];
+        place_y = m_cascade_y[head];
 
-        m_cascade_x += win.titleHeight();
-        m_cascade_y += win.titleHeight();
+        // just one borderwidth, so they can share a borderwidth (looks better)
+        int titlebar_height = win.titlebarHeight() + win.fbWindow().borderWidth();
+        if (titlebar_height < 4) // make sure it is not insignificant
+            titlebar_height = 32;
+        m_cascade_x[head] += titlebar_height;
+        m_cascade_y[head] += titlebar_height;
     }
 
     if (place_x + win_w > head_right)
