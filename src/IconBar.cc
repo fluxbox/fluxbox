@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.9 2002/02/04 22:43:15 fluxgen Exp $
+// $Id: IconBar.cc,v 1.10 2002/02/07 14:45:02 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -185,7 +185,7 @@ void IconBar::repositionIcons(void) {
 	unsigned int border_width, depth;	//not used
 	int x, y;
 	XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
-				&border_width, &depth);
+		&border_width, &depth);
 	
 	//max width on every icon
 	unsigned int icon_width = width / m_iconlist.size();
@@ -198,8 +198,8 @@ void IconBar::repositionIcons(void) {
 	for (x = 0; it != it_end; ++it, x += icon_width) {
 		Window iconwin = (*it)->getIconWin();
 		XMoveResizeWindow(m_display, iconwin,
-						 x, 0,
-						 icon_width, height);	
+			 x, 0,
+			 icon_width, height);	
 		draw((*it), icon_width);
 		decorate(iconwin);
 	}
@@ -212,20 +212,20 @@ void IconBar::repositionIcons(void) {
 //----------------------------------------------
 Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
 	unsigned long attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
-			      CWColormap | CWOverrideRedirect | CWEventMask;
+			CWColormap | CWOverrideRedirect | CWEventMask;
 	XSetWindowAttributes attrib;
-  attrib.background_pixmap = None;
-  attrib.background_pixel = attrib.border_pixel =
-			   fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.getPixel();
-  attrib.colormap = fluxboxwin->getScreen()->getColormap();
-  attrib.override_redirect = True;
-  attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
-                      ButtonMotionMask | ExposureMask | EnterWindowMask;
+	attrib.background_pixmap = None;
+	attrib.background_pixel = attrib.border_pixel =
+		fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.getPixel();
+	attrib.colormap = fluxboxwin->getScreen()->getColormap();
+	attrib.override_redirect = True;
+	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
+		ButtonMotionMask | ExposureMask | EnterWindowMask;
 											
 	//create iconwindow
 	Window iconwin = XCreateWindow(m_display, parent, 0, 0, 1, 1, 0,
-		  fluxboxwin->getScreen()->getDepth(), InputOutput, fluxboxwin->getScreen()->getVisual(),
-		  attrib_mask, &attrib);
+		fluxboxwin->getScreen()->getDepth(), InputOutput, fluxboxwin->getScreen()->getVisual(),
+		attrib_mask, &attrib);
 		
 	return iconwin;
 }
