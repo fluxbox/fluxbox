@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.60 2003/02/22 23:07:23 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.61 2003/02/23 00:49:01 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -71,9 +71,13 @@ using namespace std;
 
 namespace {
 class SetToolbarPlacementCmd: public FbTk::Command {
+public:
     explicit SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
     void execute() {
         m_tbar.setPlacement(m_place);
+        m_tbar.reconfigure();
+        m_tbar.screen().saveToolbarPlacement(m_place);
+        Fluxbox::instance()->save_rc();
     }
 private:
     Toolbar &m_tbar;
@@ -83,21 +87,62 @@ private:
 void setupMenus(Toolbar &tbar) {
     I18n *i18n = I18n::instance();
     using namespace FBNLS;
-    FbTk::Menu &menu = tbar.menu();
-    menu.setLabel(i18n->getMessage(
-                                   ToolbarSet, ToolbarToolbarTitle,
-                                   "Toolbar"));
-    menu.setInternalMenu();
-
-    menu.insert("Layer...", tbar.layermenu());
-
     using namespace FbTk;
+
+    FbTk::Menu &menu = tbar.menu();
+    
     RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
     menu.insert(i18n->getMessage(
                                  ToolbarSet, ToolbarEditWkspcName,
                                  "Edit current workspace name"),
                 start_edit);
 
+    menu.setLabel(i18n->getMessage(
+                                   ToolbarSet, ToolbarToolbarTitle,
+                                   "Toolbar"));
+    menu.setInternalMenu();
+
+    menu.insert("Layer...", &tbar.layermenu());
+
+    // setup items in placement menu
+    struct {
+        int set;
+        int base;
+        const char *default_str;
+        Toolbar::Placement placement;
+    } place_menu[]  = {
+        {0, 0, "Top Left", Toolbar::TOPLEFT},
+        {0, 0, "Left Top", Toolbar::LEFTTOP},
+        {0, 0, "Left Center", Toolbar::LEFTCENTER},
+        {0, 0, "Left Bottom", Toolbar::LEFTBOTTOM}, 
+        {0, 0, "Bottom Left", Toolbar::BOTTOMLEFT},
+        {0, 0, "Top Center", Toolbar::TOPCENTER},
+        {0, 0, 0, Toolbar::TOPCENTER},
+        {0, 0, 0, Toolbar::BOTTOMCENTER},
+        {0, 0, 0, Toolbar::BOTTOMCENTER},
+        {0, 0, "Bottom Center", Toolbar::BOTTOMCENTER},
+        {0, 0, "Top Left", Toolbar::TOPLEFT},
+        {0, 0, "Right Top", Toolbar::RIGHTTOP},
+        {0, 0, "Right Center", Toolbar::RIGHTCENTER},
+        {0, 0, "Right Bottom", Toolbar::RIGHTBOTTOM},
+        {0, 0, "Bottom Right", Toolbar::BOTTOMRIGHT}
+    };
+    tbar.placementMenu().setMinimumSublevels(3);
+    // create items in sub menu
+    for (size_t i=0; i<15; ++i) {
+        if (place_menu[i].default_str == 0) {
+            tbar.placementMenu().insert("");
+        } else {
+            const char *i18n_str = i18n->getMessage(place_menu[i].set, 
+                                                    place_menu[i].base,
+                                                    place_menu[i].default_str);
+            RefCount<FbTk::Command> setplace(new SetToolbarPlacementCmd(tbar, place_menu[i].placement));
+            tbar.placementMenu().insert(i18n_str, setplace);
+                                                              
+        }
+    }
+    menu.insert("Placement", &tbar.placementMenu());
+    tbar.placementMenu().update();
     menu.update();
 }
 
@@ -179,18 +224,18 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     hide_timer(&hide_handler),
     m_toolbarmenu(*scrn.menuTheme(), 
                   scrn.getScreenNumber(), *scrn.getImageControl()),
-    m_layermenu(0),
+    m_placementmenu(*scrn.menuTheme(),
+                    scrn.getScreenNumber(), *scrn.getImageControl()),
+    m_layermenu(*scrn.menuTheme(), 
+                scrn.getScreenNumber(), 
+                *scrn.getImageControl(),
+                *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                this),
     m_theme(scrn.getScreenNumber()),
     m_place(BOTTOMCENTER),
     m_themelistener(*this),
-    m_layeritem(0) {
+    m_layeritem(frame.window, layer) {
 
-   m_layermenu = new LayerMenu<Toolbar>(
-       *scrn.menuTheme(), 
-       scrn.getScreenNumber(), 
-       *scrn.getImageControl(),
-       *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-       this);
        
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
@@ -204,8 +249,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
         frame.workspace_label_w = frame.clock_w = width/3; 
     frame.button_w = 20;
     frame.bevel_w = 1;
-
-    m_layeritem = new FbTk::XLayerItem(frame.window, layer);
 
     timeval delay;
     delay.tv_sec = 1;
@@ -226,7 +269,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 
 		
     if (Fluxbox::instance()->useIconBar())
-        m_iconbar.reset(new IconBar(&screen(), frame.window_label.window()));
+        m_iconbar.reset(new IconBar(&screen(), frame.window_label.window(), m_theme.font()));
 
 
     XMapSubwindows(display, frame.window.window());
@@ -247,6 +290,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     frame.pwbutton.setOnClick(prevwindow);
     frame.nwbutton.setOnClick(nextwindow);
 
+
     reconfigure();
 	
 }
@@ -260,8 +304,6 @@ Toolbar::~Toolbar() {
     if (frame.clk) image_ctrl.removeImage(frame.clk);
     if (frame.button) image_ctrl.removeImage(frame.button);
     if (frame.pbutton) image_ctrl.removeImage(frame.pbutton);
-    if (m_layeritem) delete m_layeritem;
-    if (m_layermenu) delete m_layermenu;
 
 }
 
@@ -285,6 +327,10 @@ void Toolbar::delIcon(FluxboxWindow *w) {
 }
 		
 void Toolbar::reconfigure() {
+    bool vertical = isVertical();
+
+    if (m_iconbar.get())
+        m_iconbar->setVertical(vertical);
 
     frame.bevel_w = screen().getBevelWidth();
 
@@ -357,7 +403,7 @@ void Toolbar::reconfigure() {
                                 frame.width, frame.height);
     }
 
-    bool vertical = isVertical();
+
     unsigned int next_x = frame.workspace_label_w;
     unsigned int next_y = frame.window.height();
     
@@ -370,21 +416,19 @@ void Toolbar::reconfigure() {
     next_x = 0;
     next_y = 0;
     if (vertical) {
-        next_y += frame.workspace_label.height() + 1;
+        next_y += frame.workspace_label.height() + 1 + frame.bevel_w * 2;
     } else {
-        next_x += frame.workspace_label.width() + 1;
+        next_x += frame.workspace_label.width() + 1 + frame.bevel_w * 2;
     }
 
-    frame.psbutton.moveResize(frame.bevel_w * 2 +
-                              next_x , next_y,
+    frame.psbutton.moveResize(next_x , next_y,
                               frame.button_w, frame.button_w);
     if (vertical)
-        next_y += frame.psbutton.height() + 1;
+        next_y += frame.psbutton.height() + 1 + frame.bevel_w * 3;
     else
-        next_x += frame.psbutton.width() + 1;
+        next_x += frame.psbutton.width() + 1 + frame.bevel_w * 3;
 
-    frame.nsbutton.moveResize(frame.bevel_w * 3 +
-                              next_x, next_y,
+    frame.nsbutton.moveResize(next_x, next_y,
                               frame.button_w, frame.button_w);
     size_t label_w = frame.window_label_w;
     size_t label_h = frame.height;
@@ -436,7 +480,8 @@ void Toolbar::reconfigure() {
                                             frame.window.height(), *texture);
         frame.window.setBackgroundPixmap(frame.base);
     }
-    if (tmp) image_ctrl.removeImage(tmp);
+    if (tmp) 
+        image_ctrl.removeImage(tmp);
     
     tmp = frame.label;
     texture = &(m_theme.window());
@@ -541,7 +586,7 @@ void Toolbar::reconfigure() {
 
     if (Fluxbox::instance()->useIconBar()) {
         if (m_iconbar.get() == 0) { // create new iconbar if we don't have one
-            m_iconbar.reset(new IconBar(&screen(), frame.window_label.window()));
+            m_iconbar.reset(new IconBar(&screen(), frame.window_label.window(), m_theme.font()));
             if (screen().getIconCount()) {
                 BScreen::Icons & l = screen().getIconList();
                 BScreen::Icons::iterator it = l.begin();
