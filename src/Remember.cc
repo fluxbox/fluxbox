@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.8 2003/04/26 18:56:39 fluxgen Exp $
+// $Id: Remember.cc,v 1.9 2003/04/27 15:53:53 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -135,20 +135,20 @@ const char * getWMClass(Window w) {
         cerr<<"Failed to read class hint!"<<endl;
         return 0;
     } else {
-        string m_class_name;
+        string m_instance_name;
         if (ch.res_name != 0) {
-            //m_instance_name = const_cast<char *>(ch.res_name);
+            m_instance_name = const_cast<char *>(ch.res_name);
             XFree(ch.res_name);
-        } else {}
-        //m_instance_name = "";
+        } else 
+            m_instance_name = "";
         
         if (ch.res_class != 0) {
-            m_class_name = const_cast<char *>(ch.res_class);
+            //m_class_name = const_cast<char *>(ch.res_class);
             XFree(ch.res_class);
         } else {
-            m_class_name = "";
+            //m_class_name = "";
         }
-        return m_class_name.c_str();
+        return m_instance_name.c_str();
     }
 }
 
@@ -543,6 +543,18 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
 void Remember::setupWindow(FluxboxWindow &win) {
     WinClient &winclient = win.winClient();
 
+    // we don't touch the window if it is a transient
+    // of something else
+    if (winclient.transientFor()) {
+        // still put something in the menu so people don't get confused
+        // so, we add a disabled item...
+        FbTk::MenuItem *item = new FbTk::MenuItem("Remember...");
+        item->setEnabled(false);
+        win.getWindowmenu().insert(item, win.getWindowmenu().numberOfItems()-2);
+        win.getWindowmenu().update();
+        return;
+    }
+
     // add the menu, this -2 is somewhat dodgy... :-/
     // All windows get the remember menu.
     // TODO: nls
@@ -550,11 +562,6 @@ void Remember::setupWindow(FluxboxWindow &win) {
                                createRememberMenu(*this, win), 
                                win.getWindowmenu().numberOfItems()-2);
     win.getWindowmenu().update();
-
-    // we don't touch the window if it is a transient
-    // of something else
-    if (winclient.transientFor()) 
-        return;
 
     Application *app = find(winclient);
     if (!app) return; // nothing to do
