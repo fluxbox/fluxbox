@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.14 2003/05/06 23:50:31 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.15 2003/05/10 13:26:37 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -34,7 +34,7 @@ namespace FbTk {
 Display *FbWindow::s_display = 0;
 
 FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
-                     m_width(0), m_height(0), m_border_width(0), m_destroy(true) {
+                     m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true) {
 
     if (s_display == 0)
         s_display = App::instance()->display();
@@ -184,6 +184,7 @@ void FbWindow::updateGeometry() {
     XGetGeometry(s_display, m_window, &root, &m_x, &m_y,
                  (unsigned int *)&m_width, (unsigned int *)&m_height, 
                  &border_width, &depth);
+    m_depth = depth;
 }
 
 void FbWindow::create(Window parent, int x, int y,
