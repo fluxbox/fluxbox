@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.69 2002/09/12 14:55:11 rathnor Exp $
+// $Id: Screen.cc,v 1.70 2002/10/11 10:22:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -778,6 +778,9 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 	if (id != current_workspace->workspaceID()) {
 		XSync(fluxbox->getXDisplay(), true);
 		FluxboxWindow *focused = fluxbox->getFocusedWindow();
+#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
+#endif // DEBUG
 
 		if (focused && focused->isMoving()) {
 			reassociateGroup(focused, id, true);
@@ -800,10 +803,10 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 		if (focused && focused->getScreen() == this &&
 				(! focused->isStuck()) && (!focused->isMoving())) {
 			current_workspace->setLastFocusedWindow(focused);
-			fluxbox->setFocusedWindow((FluxboxWindow *) 0);
-			
+			fluxbox->setFocusedWindow(0); // set focused window to none
 		}
 
+		// set new workspace
 		current_workspace = getWorkspace(id);
 
 		workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
@@ -814,6 +817,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 		if (*resource.focus_last && current_workspace->getLastFocusedWindow() &&
 				!(focused && focused->isMoving())) {
 			current_workspace->getLastFocusedWindow()->setInputFocus();		
+
 		} else if (focused && focused->isStuck()) {
 			focused->setInputFocus();
 		}
@@ -835,29 +839,37 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 		win = fluxbox->getFocusedWindow();
 
 	if (id != current_workspace->workspaceID()) {
-		XSync(fluxbox->getXDisplay(), True);
+		XSync(BaseDisplay::getXDisplay(), True);
 
 		if (win && win->getScreen() == this &&
-				(! win->isStuck())) {
+			(! win->isStuck())) {
 
-					if ( win->getTab() ) {
-						Tab *tab = win->getTab();
-						tab->disconnect();
-						tab->setPosition();
-					}
+			if ( win->getTab() ) {
+				Tab *tab = win->getTab();
+				tab->disconnect();
+				tab->setPosition();
+			}
 
-					if (win->isIconic())
-						win->deiconify();
+			if (win->isIconic()) {
+				win->deiconify();
+			}
 
-					win->withdraw();
-					BScreen::reassociateWindow(win, id, true);
-					if (changeWS) {
-						BScreen::changeWorkspaceID(id);
-						win->setInputFocus();
-					}
-				}
+			win->withdraw();
+			reassociateWindow(win, id, true);
+			
+			// change workspace ?
+			if (changeWS) {
+				changeWorkspaceID(id);
+				win->setInputFocus();
+			}
+#ifdef DEBUG
+			cerr<<"Sending to id = "<<id<<endl;
+			cerr<<"win->workspaceId="<<win->getWorkspaceNumber()<<endl;
+#endif //DEBUG
 
 		}
+
+	}
 }
 
 
@@ -1100,8 +1112,12 @@ void BScreen::reassociateGroup(FluxboxWindow *w, unsigned int wkspc_id, bool ign
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
 	if (! w) return;
 
-	if (wkspc_id >= getCount())
+	if (wkspc_id >= getCount()) {
 		wkspc_id = current_workspace->workspaceID();
+#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): wkspc_id >= getCount()"<<endl;
+#endif // DEBUG
+	}
 
 	if (w->getWorkspaceNumber() == wkspc_id)
 		return;
