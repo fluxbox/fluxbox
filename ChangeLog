@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/08/27:
+   * Added support for _NET_WM_STATE_MAXIMIZE_{HORZ/VERT} (Thanks stephan wezel <s.wezel<at>web <dot> de>)
+   	 Ewmh.hh/cc
    * Added new theme item for toolbar: (Henrik)
   	  * toolbar.height      
    * Added new theme items for menu:  (Henrik)
