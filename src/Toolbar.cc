@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.50 2002/12/13 20:37:55 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.51 2003/01/05 22:37:46 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -197,7 +197,6 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
 
 
 Toolbar::~Toolbar() {
-    frame.window.hide();
 	 
     if (frame.base) image_ctrl.removeImage(frame.base);
     if (frame.label) image_ctrl.removeImage(frame.label);
