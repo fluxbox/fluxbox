@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.16 2002/01/21 02:02:38 fluxgen Exp $
+// $Id: Theme.cc,v 1.17 2002/01/27 13:16:07 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -99,7 +99,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 	gcv.function = GXxor;
 	gcv.subwindow_mode = IncludeInferiors;
 	m_opgc = XCreateGC(m_display, rootwindow,
-									 GCForeground | GCFunction | GCSubwindowMode, &gcv);
+		GCForeground | GCFunction | GCSubwindowMode, &gcv);
 
 	gcv.foreground = m_windowstyle.l_text_focus.getPixel();
 	if (m_windowstyle.font.fontstruct)
@@ -107,7 +107,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 		
 	m_windowstyle.l_text_focus_gc =
 		XCreateGC(m_display, rootwindow,
-				gc_value_mask, &gcv);
+			gc_value_mask, &gcv);
 	
 	gcv.foreground = m_windowstyle.l_text_unfocus.getPixel();
 	if (m_windowstyle.font.fontstruct)
@@ -123,12 +123,12 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 	
 	m_windowstyle.tab.l_text_focus_gc =
 		XCreateGC(m_display, rootwindow,
-				gc_value_mask, &gcv);
+			gc_value_mask, &gcv);
 	
 	gcv.foreground = m_windowstyle.tab.l_text_unfocus.getPixel();
 	m_windowstyle.tab.l_text_unfocus_gc =
 		XCreateGC(m_display, rootwindow,
-				gc_value_mask, &gcv);
+			gc_value_mask, &gcv);
 	
 	//---end Tab			
 	
@@ -292,12 +292,12 @@ void Theme::load(const char *filename){
 	m_database = XrmGetFileDatabase(filename);
 	if (!m_database)
 		m_database = XrmGetFileDatabase(DEFAULTSTYLE);
-		
-	loadMenuStyle();	
+
+	loadMenuStyle();
 	loadToolbarStyle();
 	loadWindowStyle();
-	loadRootCommand();
 	loadTabStyle();
+	loadRootCommand();
 	loadMisc();
 	
 	XrmDestroyDatabase(m_database);
@@ -306,32 +306,32 @@ void Theme::load(const char *filename){
 void Theme::loadMenuStyle() {
 	
 	readDatabaseTexture("menu.title", "Menu.Title",
-					&m_menustyle.title,
-					WhitePixel(m_display, m_screennum));
+		&m_menustyle.title,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("menu.frame", "Menu.Frame",
-					&m_menustyle.frame,
-					BlackPixel(m_display, m_screennum));
+		&m_menustyle.frame,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("menu.hilite", "Menu.Hilite",
-					&m_menustyle.hilite,
-					WhitePixel(m_display, m_screennum));
+		&m_menustyle.hilite,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseColor("menu.title.textColor", "Menu.Title.TextColor",
-				&m_menustyle.t_text,
-				BlackPixel(m_display, m_screennum));
+		&m_menustyle.t_text,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("menu.frame.textColor", "Menu.Frame.TextColor",
-				&m_menustyle.f_text,
-				WhitePixel(m_display, m_screennum));
+		&m_menustyle.f_text,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseColor("menu.frame.disableColor", "Menu.Frame.DisableColor",
-				&m_menustyle.d_text,
-				BlackPixel(m_display, m_screennum));
+		&m_menustyle.d_text,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("menu.hilite.textColor", "Menu.Hilite.TextColor",
-				&m_menustyle.h_text,
-				BlackPixel(m_display, m_screennum));
+		&m_menustyle.h_text,
+		BlackPixel(m_display, m_screennum));
 
 	XrmValue value;
 	char *value_type=0;
 	
 	if (XrmGetResource(m_database, "menu.title.justify",
-				 "Menu.Title.Justify", &value_type, &value)) {
+			"Menu.Title.Justify", &value_type, &value)) {
 				 
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
 			m_menustyle.titlefont.justify = DrawUtil::Font::RIGHT;
@@ -410,65 +410,65 @@ void Theme::loadMenuStyle() {
 void Theme::loadWindowStyle() {
 	
 	readDatabaseTexture("window.title.focus", "Window.Title.Focus",
-					&m_windowstyle.t_focus,
-					WhitePixel(m_display, m_screennum));
+		&m_windowstyle.t_focus,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("window.title.unfocus", "Window.Title.Unfocus",
-					&m_windowstyle.t_unfocus,
-					BlackPixel(m_display, m_screennum));
+		&m_windowstyle.t_unfocus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("window.label.focus", "Window.Label.Focus",
-					&m_windowstyle.l_focus,
-					WhitePixel(m_display, m_screennum));
+		&m_windowstyle.l_focus,
+		WhitePixel(m_display, m_screennum));
 		
 	readDatabaseTexture("window.label.unfocus", "Window.Label.Unfocus",
-					&m_windowstyle.l_unfocus,
-					BlackPixel(m_display, m_screennum));
+		&m_windowstyle.l_unfocus,
+		BlackPixel(m_display, m_screennum));
 
 	
 	readDatabaseTexture("window.handle.focus", "Window.Handle.Focus",
-				&m_windowstyle.h_focus,
-				WhitePixel(m_display, m_screennum));
+		&m_windowstyle.h_focus,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("window.handle.unfocus", "Window.Handle.Unfocus",
-				&m_windowstyle.h_unfocus,
-				BlackPixel(m_display, m_screennum));
+		&m_windowstyle.h_unfocus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("window.grip.focus", "Window.Grip.Focus",
-				&m_windowstyle.g_focus,
-				WhitePixel(m_display, m_screennum));
+		&m_windowstyle.g_focus,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("window.grip.unfocus", "Window.Grip.Unfocus",
-				&m_windowstyle.g_unfocus,
-				BlackPixel(m_display, m_screennum));
+		&m_windowstyle.g_unfocus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("window.button.focus", "Window.Button.Focus",
-				&m_windowstyle.b_focus,
-				WhitePixel(m_display, m_screennum));
+		&m_windowstyle.b_focus,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("window.button.unfocus", "Window.Button.Unfocus",
-				&m_windowstyle.b_unfocus,
-				BlackPixel(m_display, m_screennum));
+		&m_windowstyle.b_unfocus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("window.button.pressed", "Window.Button.Pressed",
-				&m_windowstyle.b_pressed,
-				BlackPixel(m_display, m_screennum));
+		&m_windowstyle.b_pressed,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("window.frame.focusColor",
-				"Window.Frame.FocusColor",
-				&m_windowstyle.f_focus,
-				WhitePixel(m_display, m_screennum));
+		"Window.Frame.FocusColor",
+		&m_windowstyle.f_focus,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseColor("window.frame.unfocusColor",
-				"Window.Frame.UnfocusColor",
-				&m_windowstyle.f_unfocus,
-				BlackPixel(m_display, m_screennum));
+		"Window.Frame.UnfocusColor",
+		&m_windowstyle.f_unfocus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("window.label.focus.textColor",
-				"Window.Label.Focus.TextColor",
-				&m_windowstyle.l_text_focus,
-				BlackPixel(m_display, m_screennum));
+		"Window.Label.Focus.TextColor",
+		&m_windowstyle.l_text_focus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("window.label.unfocus.textColor",
-				"Window.Label.Unfocus.TextColor",
-				&m_windowstyle.l_text_unfocus,
-				WhitePixel(m_display, m_screennum));	
+		"Window.Label.Unfocus.TextColor",
+		&m_windowstyle.l_text_unfocus,
+		WhitePixel(m_display, m_screennum));	
 	readDatabaseColor("window.button.focus.picColor",
-				"Window.Button.Focus.PicColor",
-				&m_windowstyle.b_pic_focus,
-				BlackPixel(m_display, m_screennum));
+		"Window.Button.Focus.PicColor",
+		&m_windowstyle.b_pic_focus,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("window.button.unfocus.picColor",
-				"Window.Button.Unfocus.PicColor",
-				&m_windowstyle.b_pic_unfocus,
-				WhitePixel(m_display, m_screennum));
+		"Window.Button.Unfocus.PicColor",
+		&m_windowstyle.b_pic_unfocus,
+		WhitePixel(m_display, m_screennum));
 
 	//----- font
 	
@@ -480,14 +480,14 @@ void Theme::loadWindowStyle() {
 			XExtentsOfFontSet(m_windowstyle.font.set);
 	} else {
 		readDatabaseFont("window.font", "Window.Font",
-					&m_windowstyle.font.fontstruct);
+			&m_windowstyle.font.fontstruct);
 	}
 	
 	XrmValue value;
 	char *value_type;
 	
 	if (XrmGetResource(m_database, "window.justify", "Window.Justify",
-				 &value_type, &value)) {
+			&value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
 			m_windowstyle.font.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
@@ -502,50 +502,51 @@ void Theme::loadWindowStyle() {
 void Theme::loadTabStyle() {
 
 	if (!readDatabaseTexture("window.tab.title.focus", "Window.Tab.Title.Focus",
-					&m_windowstyle.tab.t_focus,
-					WhitePixel(m_display, m_screennum)))
+			&m_windowstyle.tab.t_focus,
+			WhitePixel(m_display, m_screennum)))
 		m_windowstyle.tab.t_focus = m_windowstyle.t_focus;
 		
 	if (!readDatabaseTexture("window.tab.title.unfocus", "Window.Tab.Title.Unfocus",
-					&m_windowstyle.tab.t_unfocus,
-					BlackPixel(m_display, m_screennum)))
+			&m_windowstyle.tab.t_unfocus,
+			BlackPixel(m_display, m_screennum)))
 		m_windowstyle.tab.t_unfocus = m_windowstyle.t_unfocus;
 	
 	if (!readDatabaseTexture("window.tab.label.focus", "Window.Tab.Label.Focus",
-					&m_windowstyle.tab.l_focus,
-					WhitePixel(m_display, m_screennum)))
-		m_windowstyle.tab.l_focus	= m_windowstyle.l_focus;
+			&m_windowstyle.tab.l_focus,
+			WhitePixel(m_display, m_screennum)))
+		m_windowstyle.tab.l_focus = m_windowstyle.l_focus;
 		
 	if (!readDatabaseTexture("window.tab.label.unfocus", "Window.Tab.Label.Unfocus",
-					&m_windowstyle.tab.l_unfocus,
-					BlackPixel(m_display, m_screennum)))
+			&m_windowstyle.tab.l_unfocus,
+			BlackPixel(m_display, m_screennum)))
 		m_windowstyle.tab.l_unfocus = m_windowstyle.l_unfocus;
 
 	if (!readDatabaseColor("window.tab.label.focus.textColor",
-				"Window.Tab.Label.Focus.TextColor",
-				&m_windowstyle.tab.l_text_focus,
-				BlackPixel(m_display, m_screennum)))
+			"Window.Tab.Label.Focus.TextColor",
+			&m_windowstyle.tab.l_text_focus,
+			BlackPixel(m_display, m_screennum)))
 		m_windowstyle.tab.l_text_focus = m_windowstyle.l_text_focus;
 		
 	if (!readDatabaseColor("window.tab.label.unfocus.textColor",
-				"Window.Tab.Label.Unfocus.TextColor",
-				&m_windowstyle.tab.l_text_unfocus,
-				WhitePixel(m_display, m_screennum)))
+			"Window.Tab.Label.Unfocus.TextColor",
+			&m_windowstyle.tab.l_text_unfocus,
+			WhitePixel(m_display, m_screennum)))
 		m_windowstyle.tab.l_text_unfocus = m_windowstyle.l_text_unfocus;
 	
 	readDatabaseColor("window.tab.borderColor", "Window.Tab.BorderColor", 
 			&m_windowstyle.tab.border_color,	
-				BlackPixel(m_display, m_screennum));
+			BlackPixel(m_display, m_screennum));
 
 	XrmValue value;
 	char *value_type;
 
 	if (XrmGetResource(m_database, "window.tab.borderWidth", "Window.Tab.BorderWidth",
-										 &value_type, &value)) {
+			&value_type, &value)) {
 		if (sscanf(value.addr, "%u", &m_windowstyle.tab.border_width) != 1)
 			m_windowstyle.tab.border_width = 1;
 	} else
 		m_windowstyle.tab.border_width = 1;
+
 	m_windowstyle.tab.border_width_2x = m_windowstyle.tab.border_width*2;
 	
 	//---------- font
@@ -557,10 +558,8 @@ void Theme::loadTabStyle() {
 		m_windowstyle.tab.font.set_extents =
 			XExtentsOfFontSet(m_windowstyle.tab.font.set);
 	} else {
-		XFontStruct *fontstruct = 0;
 		readDatabaseFont("window.tab.font", "Window.Tab.Font",
-				&fontstruct);
-		m_windowstyle.tab.font.fontstruct = fontstruct;
+			&m_windowstyle.tab.font.fontstruct);
 	}
 	
 	//--------- rotated font for left and right tabs
@@ -588,55 +587,55 @@ void Theme::loadTabStyle() {
 void Theme::loadToolbarStyle() {
 
 	readDatabaseTexture("toolbar", "Toolbar",
-					&m_toolbarstyle.toolbar,
-					BlackPixel(m_display, m_screennum));
+		&m_toolbarstyle.toolbar,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("toolbar.label", "Toolbar.Label",
-					&m_toolbarstyle.label,
-					BlackPixel(m_display, m_screennum));
+		&m_toolbarstyle.label,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("toolbar.windowLabel", "Toolbar.WindowLabel",
-					&m_toolbarstyle.window,
-					BlackPixel(m_display, m_screennum));
+		&m_toolbarstyle.window,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("toolbar.button", "Toolbar.Button",
-					&m_toolbarstyle.button,
-					WhitePixel(m_display, m_screennum));
+		&m_toolbarstyle.button,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("toolbar.button.pressed", "Toolbar.Button.Pressed",
-					&m_toolbarstyle.pressed,
-					BlackPixel(m_display, m_screennum));
+		&m_toolbarstyle.pressed,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseTexture("toolbar.clock", "Toolbar.Clock",
-					&m_toolbarstyle.clock,
-					BlackPixel(m_display, m_screennum));
+		&m_toolbarstyle.clock,
+		BlackPixel(m_display, m_screennum));
 	readDatabaseColor("toolbar.label.textColor", "Toolbar.Label.TextColor",
-				&m_toolbarstyle.l_text,
-				WhitePixel(m_display, m_screennum));
+		&m_toolbarstyle.l_text,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseColor("toolbar.windowLabel.textColor",
-				"Toolbar.WindowLabel.TextColor",
-				&m_toolbarstyle.w_text,
-				WhitePixel(m_display, m_screennum));
+		"Toolbar.WindowLabel.TextColor",
+		&m_toolbarstyle.w_text,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseColor("toolbar.clock.textColor", "Toolbar.Clock.TextColor",
-				&m_toolbarstyle.c_text,
-				WhitePixel(m_display, m_screennum));
+		&m_toolbarstyle.c_text,
+		WhitePixel(m_display, m_screennum));
 	readDatabaseColor("toolbar.button.picColor", "Toolbar.Button.PicColor",
-				&m_toolbarstyle.b_pic,
-				BlackPixel(m_display, m_screennum));
+		&m_toolbarstyle.b_pic,
+		BlackPixel(m_display, m_screennum));
 
 	
 	// ----------- load font
 	
 	if (I18n::instance()->multibyte()) {
 		readDatabaseFontSet("toolbar.font", "Toolbar.Font",
-				&m_toolbarstyle.font.set);
+			&m_toolbarstyle.font.set);
 				
 		m_toolbarstyle.font.set_extents =
 			XExtentsOfFontSet(m_toolbarstyle.font.set);
 	} else {
 		readDatabaseFont("toolbar.font", "Toolbar.Font",
-				&m_toolbarstyle.font.fontstruct);
+			&m_toolbarstyle.font.fontstruct);
 	}
 	XrmValue value;
 	char *value_type;
 
 	if (XrmGetResource(m_database, "toolbar.justify",
-				 "Toolbar.Justify", &value_type, &value)) {
+			"Toolbar.Justify", &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
 			m_toolbarstyle.font.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
@@ -715,7 +714,7 @@ void Theme::loadMisc(void) {
 		m_handle_width = 6;
 
 	if (XrmGetResource(m_database, "borderWidth", "BorderWidth",
-										 &value_type, &value)) {
+			&value_type, &value)) {
 		if (sscanf(value.addr, "%u", &m_border_width) != 1)
 			m_border_width = 1;
 	} else
@@ -723,7 +722,7 @@ void Theme::loadMisc(void) {
 	
 	
 	if (XrmGetResource(m_database, "frameWidth", "FrameWidth",
-										 &value_type, &value)) {
+			&value_type, &value)) {
 		if (sscanf(value.addr, "%u", &m_frame_width) != 1 ||
 				m_frame_width > screen_width_div2)
 			m_frame_width = m_bevel_width;
@@ -731,20 +730,20 @@ void Theme::loadMisc(void) {
 		m_frame_width = m_bevel_width;
 
 	readDatabaseColor("borderColor", "BorderColor", &m_border_color,
-				BlackPixel(m_display, m_screennum));		
+		BlackPixel(m_display, m_screennum));		
 }
 
 
 bool Theme::readDatabaseTexture(char *rname, char *rclass,
-					BTexture *texture,
-					unsigned long default_pixel)
+	BTexture *texture,
+	unsigned long default_pixel)
 {
 	XrmValue value;
 	char *value_type;
 	bool retval = true;//return true as default
 	
 	if (XrmGetResource(m_database, rname, rclass, &value_type,
-				 &value))
+			&value))
 		m_imagecontrol->parseTexture(texture, value.addr);
 	else
 		texture->setTexture(BImage::SOLID | BImage::FLAT);
@@ -758,15 +757,15 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		sprintf(colorname,	"%s.color", rname);
 		
 		if (!readDatabaseColor(colorname, colorclass, texture->getColor(),
-					default_pixel))
-				retval = false;
+				default_pixel))
+			retval = false;
 
 #ifdef		INTERLACE
 		sprintf(colorclass, "%s.ColorTo", rclass);
 		sprintf(colorname,	"%s.colorTo", rname);
 
 		readDatabaseColor(colorname, colorclass, texture->getColorTo(),
-											default_pixel);
+			default_pixel);
 #endif // INTERLACE
 
 		delete [] colorclass;
@@ -779,15 +778,15 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		XColor xcol;
 
 		xcol.red = (unsigned int) (texture->getColor()->getRed() +
-						 (texture->getColor()->getRed() >> 1));
+			(texture->getColor()->getRed() >> 1));
 		if (xcol.red >= 0xff) xcol.red = 0xffff;
 		else xcol.red *= 0xff;
 		xcol.green = (unsigned int) (texture->getColor()->getGreen() +
-				 (texture->getColor()->getGreen() >> 1));
+			(texture->getColor()->getGreen() >> 1));
 		if (xcol.green >= 0xff) xcol.green = 0xffff;
 		else xcol.green *= 0xff;
 		xcol.blue = (unsigned int) (texture->getColor()->getBlue() +
-				(texture->getColor()->getBlue() >> 1));
+			(texture->getColor()->getBlue() >> 1));
 		if (xcol.blue >= 0xff) xcol.blue = 0xffff;
 		else xcol.blue *= 0xff;
 
@@ -798,13 +797,13 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 
 		xcol.red =
 			(unsigned int) ((texture->getColor()->getRed() >> 2) +
-					(texture->getColor()->getRed() >> 1)) * 0xff;
+			(texture->getColor()->getRed() >> 1)) * 0xff;
 		xcol.green =
 			(unsigned int) ((texture->getColor()->getGreen() >> 2) +
-					(texture->getColor()->getGreen() >> 1)) * 0xff;
+			(texture->getColor()->getGreen() >> 1)) * 0xff;
 		xcol.blue =
 			(unsigned int) ((texture->getColor()->getBlue() >> 2) +
-					(texture->getColor()->getBlue() >> 1)) * 0xff;
+			(texture->getColor()->getBlue() >> 1)) * 0xff;
 
 		if (! XAllocColor(m_display, m_colormap, &xcol))
 			xcol.pixel = 0;
@@ -823,11 +822,11 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		sprintf(colortoname,	"%s.colorTo", rname);
 
 		if (!readDatabaseColor(colorname, colorclass, texture->getColor(),
-					default_pixel))
-				retval = false;	//report failure in loading
+				default_pixel))
+			retval = false;	//report failure in loading
 				
 		readDatabaseColor(colortoname, colortoclass, texture->getColorTo(),
-					default_pixel);
+				default_pixel);
 
 		delete [] colorclass;
 		delete [] colorname;
@@ -849,7 +848,7 @@ bool Theme::readDatabaseColor(char *rname, char *rclass, BColor *color,
 	char *value_type;
 
 	if (XrmGetResource(m_database, rname, rclass, &value_type,
-				 &value)) {
+			&value)) {
 		m_imagecontrol->parseColor(color, value.addr);
 	} else {
 		// parsing with no color string just deallocates the color, if it has
@@ -868,7 +867,7 @@ void Theme::readDatabaseFontSet(char *rname, char *rclass, XFontSet *fontset) {
 
 	static char *defaultFont = "fixed";
 
-	Bool load_default = False;
+	bool load_default = false;
 	XrmValue value;
 	char *value_type;
 
@@ -878,24 +877,24 @@ void Theme::readDatabaseFontSet(char *rname, char *rclass, XFontSet *fontset) {
 	if (XrmGetResource(m_database, rname, rclass, &value_type, &value)) {
 		char *fontname = value.addr;
 		if (! (*fontset = createFontSet(fontname)))
-			load_default = True;
+			load_default = true;
 	} else
-		load_default = True;
+		load_default = true;
 
 	if (load_default) {
 		*fontset = createFontSet(defaultFont);
 
 		if (! *fontset) {
 			fprintf(stderr,
-						I18n::instance()->
-						getMessage(
-#ifdef		NLS
-						 ScreenSet, ScreenDefaultFontLoadFail,
-#else // !NLS
-						 0, 0,
-#endif // NLS
-					 "BScreen::LoadStyle(): couldn't load default font.\n"));
-			throw static_cast<int>(2);
+				I18n::instance()->
+				getMessage(
+			#ifdef NLS
+				 ScreenSet, ScreenDefaultFontLoadFail,
+			#else // !NLS
+				 0, 0,
+			#endif // NLS
+				 "BScreen::LoadStyle(): couldn't load default font.\n"));
+			throw 2;
 		}
 	}
 }
@@ -907,7 +906,7 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 
 	static char *defaultFont = "fixed";
 
-	Bool load_default = False;
+	bool load_default = false;
 	XrmValue value;
 	char *value_type;
 
@@ -915,24 +914,25 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 		XFreeFont(m_display, *font);
 
 	if (XrmGetResource(m_database, rname, rclass, &value_type, &value)) {
-		
-		if ((*font = XLoadQueryFont(m_display,
-				value.addr)) == NULL) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): Load font:"<<value.addr<<endl;
+		#endif
+		if ((*font = XLoadQueryFont(m_display, value.addr)) == NULL) {
 			fprintf(stderr,
 				I18n::instance()->
 				getMessage(
-#ifdef		NLS
-			 ScreenSet, ScreenFontLoadFail,
-#else // !NLS
-			 0, 0,
-#endif // NLS
+			#ifdef NLS
+				ScreenSet, ScreenFontLoadFail,
+			#else // !NLS
+				0, 0,
+			#endif // NLS
 			 "BScreen::LoadStyle(): couldn't load font '%s'\n"),
 				value.addr);
 
-			load_default = True;
+			load_default = true;
 		}
 	} else
-		load_default = True;
+		load_default = true;
 
 	if (load_default) {
 		if ((*font = XLoadQueryFont(m_display,
@@ -946,7 +946,7 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 			 0, 0,
 #endif // NLS
 						 "BScreen::LoadStyle(): couldn't load default font.\n"));
-			throw static_cast<int>(2);
+			throw (int)(2);
 		}
 	}
 }
