@@ -22,13 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.24 2002/08/13 23:58:26 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.25 2002/08/14 21:21:30 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
 
 #include "NotCopyable.hh"
-#include "FbAtoms.hh"
+
 #include <X11/Xlib.h>
 
 #ifdef XINERAMA
@@ -49,7 +49,7 @@ class ScreenInfo;
 /// obsolete
 void bexec(const char *command, char *displaystring);
 
-class BaseDisplay:private NotCopyable, public FbAtoms
+class BaseDisplay:private NotCopyable
 {
 public:
 	BaseDisplay(const char *app_name, const char *display_name = 0);
