@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.236 2003/09/29 14:58:15 rathnor Exp $
+// $Id: Window.cc,v 1.237 2003/09/29 15:00:06 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2751,8 +2751,11 @@ void FluxboxWindow::stopMoving() {
             frame().show();
         }
         fluxbox->ungrab();
-    } else
+    } else {
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
+        sendConfigureNotify();
+    }
+
 
     screen().hideGeometry();
     XUngrabPointer(display, CurrentTime);
