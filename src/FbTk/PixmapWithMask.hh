@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: PixmapWithMask.hh,v 1.1 2003/08/22 21:25:14 fluxgen Exp $
+// $Id: PixmapWithMask.hh,v 1.2 2003/08/27 14:21:25 fluxgen Exp $
 
 #ifndef FBTK_PIXMAPWITHMASK_HH
 #define FBTK_PIXMAPWITHMASK_HH
@@ -36,7 +36,8 @@ public:
         pixmap().scale(width, height);
         mask().scale(width, height);
     }
-
+    unsigned int width() const { return m_pixmap.width(); }
+    unsigned int height() const { return m_pixmap.height(); }
     FbPixmap &pixmap() { return m_pixmap; }
     FbPixmap &mask() { return m_mask; }
 
