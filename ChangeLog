@@ -5,6 +5,8 @@ Changes for 0.9.2:
      - note: does not include "startup" menu
      - save on close disabled atm, due to other issues...
      - enabled in configure by default, disable with --disable-remember
+     - BIG thanks to Xavier Brouckaert (xbr at info.ucl.ac.be) for 
+         the original remember patch!
      Makefile.am Remember.hh/cc Screen.cc Window.hh/cc fluxbox.cc
 *03/04/25:
    * Fix small gcc 3.3 build issue (Simon)

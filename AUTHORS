@@ -39,6 +39,8 @@ Contributors:
       - Packaging assistance, gnome and kde menu system.
     Artis Trops <hornet at navigator.lv >
       - Latvian Localisation
+    Xavier Brouckaert <xbr(at)info.ucl.ac.be>
+      - infamous "remember patch", now integrated into main
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 
