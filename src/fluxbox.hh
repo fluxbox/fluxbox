@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.47 2003/04/14 15:25:14 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.48 2003/04/15 00:50:25 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -141,6 +141,8 @@ public:
         { masked = w; masked_window = bw; }
     inline void setNoFocus(Bool f) { no_focus = f; }
 
+    void watchKeyRelease(BScreen *screen, unsigned int mods);
+
     void setFocusedWindow(FluxboxWindow *w);
     void shutdown();
     void load_rc(BScreen *);
@@ -236,6 +238,8 @@ private:
     FluxboxWindow *focused_window, *masked_window;
     FbTk::Timer timer;
 
+    BScreen *watching_screen;
+    unsigned int watch_keyrelease;
 
 #ifdef HAVE_GETPID
     Atom fluxbox_pid;

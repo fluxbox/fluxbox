@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.21 2003/04/14 12:10:14 fluxgen Exp $
+// $Id: Keys.hh,v 1.22 2003/04/15 00:50:24 rathnor Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -74,6 +74,18 @@ public:
     explicit Keys(const char *filename=0);
     /// destructor
     ~Keys();
+
+    /** 
+        Strip out modifiers we want to ignore
+        @return the cleaned state number
+    */
+    static unsigned int cleanMods(unsigned int mods)
+        //remove numlock, capslock and scrolllock
+        { return mods & (~Mod2Mask & ~Mod5Mask & ~LockMask);}
+
+    unsigned int keycodeToModmask(unsigned int keycode);
+    void loadModmap();
+
     /**
        Load configuration from file
        @return true on success, else false
@@ -170,8 +182,6 @@ private:
     /// debug function
     void showKeyTree(t_key *key, unsigned int w=0);
 #endif //DEBUG
-    /// determine key modifier maps for caps-, num- and scrolllock
-    void determineModmap();
 
     struct t_actionstr{
         const char *string;
@@ -187,6 +197,7 @@ private:
     std::string m_execcmdstring; ///< copy of the execcommandstring
     int m_param;                 ///< copy of the param argument
     Display *m_display;			 ///< display connection
+    XModifierKeymap *m_modmap;    // Modifier->keycode mapping
 };
 
 #endif // _KEYS_HH_

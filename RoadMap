@@ -82,7 +82,7 @@ Major Features:
  * Toolbar modes                        (Simon)
  = Tabs embedded in titlebar            (Henrik)
  = Tabgroup rewrite                     (Henrik)
- = Most recently used window cycling    (Simon)
+ * Most recently used window cycling    (Simon)
 Minor Features:
  - per workspace backgrounds            (Simon)
  - more keybinding actions              (Both)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.131 2003/04/14 14:58:12 fluxgen Exp $
+// $Id: Window.cc,v 1.132 2003/04/15 00:50:25 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1143,7 +1143,8 @@ bool FluxboxWindow::setInputFocus() {
         }
 
 	m_frame.setFocus(true);
-	
+	screen.setFocusedWindow(*m_client);
+
         Fluxbox::instance()->setFocusedWindow(this);
 			
         if (send_focus_message)

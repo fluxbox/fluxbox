@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.119 2003/04/14 14:49:47 fluxgen Exp $
+// $Id: Screen.cc,v 1.120 2003/04/15 00:50:24 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -407,6 +407,7 @@ BScreen::BScreen(ResourceManager &rm,
                              m_workspacenames_sig(*this), // workspace names signal 
                              m_currentworkspace_sig(*this), // current workspace signal
                              m_layermanager(num_layers),
+                             cycling_focus(false),
                              theme(0), m_windowtheme(scrn), 
                              m_menutheme(new FbTk::MenuTheme(scrn)),
                              resource(rm, screenname, altscreenname),
@@ -449,6 +450,7 @@ BScreen::BScreen(ResourceManager &rm,
                     (unsigned char *) &bpid, 1);
 #endif // HAVE_GETPID
 
+    cycling_window = focused_list.end();
 
     XDefineCursor(disp, getRootWindow(), fluxbox->getSessionCursor());
 
@@ -841,6 +843,15 @@ void BScreen::removeWindow(FluxboxWindow *win) {
         (*it)->removeWindow(win);
 }
 
+
+void BScreen::removeClient(WinClient &client) {
+    WinClient *cyc = *cycling_window;
+    focused_list.remove(&client);
+    if (cyc == &client) {
+        cycling_window = focused_list.end();
+    }
+}
+
 FluxboxWindow *BScreen::getIcon(unsigned int index) {
     if (index < iconList.size())
         return iconList[index];
@@ -1130,12 +1141,17 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         delete win;
         return 0;
     } else {
+        // always put on end of focused list, if it gets focused it'll get pushed up
+        // there is only the one win client at this stage
+        focused_list.push_back(&win->winClient());
+
+        //TODO: is next line needed?
         Fluxbox::instance()->saveWindowSearch(client, win);
         Fluxbox::instance()->attachSignals(*win);
         setupWindowActions(*win);
     }
     if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
-        win->show();      
+        win->show();
     }
     XSync(FbTk::App::instance()->display(), False);
     return win;
@@ -1153,6 +1169,9 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
         delete win;
         return 0;
     }
+    // don't add to focused_list, as it should already be in there (since the
+    // WinClient already exists).
+    
     Fluxbox::instance()->saveWindowSearch(client.window(), win);
     Fluxbox::instance()->attachSignals(*win);
     setupWindowActions(*win);
@@ -1343,27 +1362,58 @@ void BScreen::nextFocus(int opts) {
     }
 
     if (num_windows >= 1) {
-        Workspace *wksp = getCurrentWorkspace();
-        Workspace::Windows &wins = wksp->getWindowList();
-        Workspace::Windows::iterator it = wins.begin();
+        if (!(opts & CYCLELINEAR)) {
+            if (!cycling_focus) {
+                cycling_focus = True;
+                cycling_window = focused_list.begin();
+            }
+            // if it is stacked, we want the highest window in the focused list
+            // that is on the same workspace
+            FocusedWindows::iterator it = cycling_window;
+            FocusedWindows::iterator it_end = focused_list.end();
 
-        if (!have_focused) {
-            focused = (*it);
-        } else {
-            for (; (*it) != focused; ++it) //get focused window iterator
-                continue;
+            while (true) {
+                ++it;
+                if (it == it_end) {
+                    it = focused_list.begin();
+                }
+                // give up [do nothing] if we reach the current focused again
+                if ((*it) == (*cycling_window)) {
+                    break;
+                }
+
+                FluxboxWindow *fbwin = (*it)->m_win;
+                if (fbwin && !fbwin->isIconic() &&
+                    (fbwin->isStuck() 
+                     || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
+                    // either on this workspace, or stuck
+                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) )
+                        break;
+                }
+            }
+            cycling_window = it;
+        } else { // not stacked cycling
+            Workspace *wksp = getCurrentWorkspace();
+            Workspace::Windows &wins = wksp->getWindowList();
+            Workspace::Windows::iterator it = wins.begin();
+            
+            if (!have_focused) {
+                focused = (*it);
+            } else {
+                for (; (*it) != focused; ++it) //get focused window iterator
+                    continue;
+            }
+            do {
+                ++it;
+                if (it == wins.end())
+                    it = wins.begin();
+                // see if the window should be skipped
+                if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
+                    break;
+            } while ((*it) != focused);
+            if ((*it) != focused && it != wins.end())
+                (*it)->raise();
         }
-        do {
-            ++it;
-            if (it == wins.end())
-                it = wins.begin();
-            // see if the window should be skipped
-            if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
-                break;
-        } while ((*it) != focused);
-
-        if ((*it) != focused && it != wins.end())
-            (*it)->raise();
 
     }
 
@@ -1385,29 +1435,62 @@ void BScreen::prevFocus(int opts) {
     }
 
     if (num_windows >= 1) {
-        Workspace *wksp = getCurrentWorkspace();
-        Workspace::Windows &wins = wksp->getWindowList();
-        Workspace::Windows::iterator it = wins.begin();
+        if (!(opts & CYCLELINEAR)) {
+            if (!cycling_focus) {
+                cycling_focus = True;
+                cycling_window = focused_list.end();
+            }
+            // if it is stacked, we want the highest window in the focused list
+            // that is on the same workspace
+            FocusedWindows::iterator it = cycling_window;
+            FocusedWindows::iterator it_end = focused_list.end();
 
-        if (!have_focused) {
-            focused = (*it);
-        } else {
-            for (; (*it) != focused; ++it) //get focused window iterator
-                continue;
+            while (true) {
+                --it;
+                if (it == it_end) {
+                    it = focused_list.end();
+                    --it;
+                }
+                // give up [do nothing] if we reach the current focused again
+                if ((*it) == (*cycling_window)) {
+                    break;
+                }
+
+                FluxboxWindow *fbwin = (*it)->m_win;
+                if (fbwin && !fbwin->isIconic() &&
+                    (fbwin->isStuck() 
+                     || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
+                    // either on this workspace, or stuck
+                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) )
+                        break;
+                }
+            }
+            cycling_window = it;
+        } else { // not stacked cycling
+            
+            Workspace *wksp = getCurrentWorkspace();
+            Workspace::Windows &wins = wksp->getWindowList();
+            Workspace::Windows::iterator it = wins.begin();
+            
+            if (!have_focused) {
+                focused = (*it);
+            } else {
+                for (; (*it) != focused; ++it) //get focused window iterator
+                    continue;
+            }
+            
+            do {
+                if (it == wins.begin())
+                    it = wins.end();
+                --it;
+                // see if the window should be skipped
+                if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
+                    break;
+            } while ((*it) != focused);
+            
+            if ((*it) != focused && it != wins.end())
+                (*it)->raise();
         }
-		
-        do {
-            if (it == wins.begin())
-                it = wins.end();
-            --it;
-            // see if the window should be skipped
-            if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
-                break;
-        } while ((*it) != focused);
-
-        if ((*it) != focused && it != wins.end())
-            (*it)->raise();
-
     }
 }
 
@@ -1426,6 +1509,15 @@ void BScreen::raiseFocus() {
 
     if ((getCurrentWorkspace()->getCount() > 1) && have_focused)
         fb->getFocusedWindow()->raise();
+}
+
+void BScreen::setFocusedWindow(WinClient &winclient) {
+    // raise newly focused window to the top of the focused list
+    if (!cycling_focus) { // don't change the order if we're cycling
+        focused_list.remove(&winclient);
+        focused_list.push_front(&winclient);
+        cycling_window = focused_list.begin();
+    }
 }
 
 void BScreen::initMenu() {
@@ -2057,6 +2149,19 @@ bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
     return ((opts & CYCLESKIPSTUCK) != 0 && w->isStuck() || // skip if stuck
             (opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
             (opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
+}
+
+/**
+   Called when a set of watched modifiers has been released
+*/
+void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
+    if (cycling_focus) {
+        cycling_focus = false;
+        // put currently focused window to top
+        WinClient *client = *cycling_window;
+        focused_list.erase(cycling_window);
+        focused_list.push_front(client);
+    }
 }
 
 /**

@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
+*03/04/15:
+   * Add most recently used/stacked window cycling, set as default (Simon)
+     Window.cc Screen.hh/cc fluxbox.hh/cc Keys.hh/cc     
 *03/04/14:
    * Don't create menuconfig during install and style cleanups (Han)
      fluxbox_generate_menu 

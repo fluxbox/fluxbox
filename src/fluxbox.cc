@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.106 2003/04/14 15:28:52 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.107 2003/04/15 00:50:25 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -373,6 +373,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       focused_window(0), masked_window(0),
       timer(this),
+      watching_screen(0), watch_keyrelease(0),
       no_focus(false),
       rc_file(rc ? rc : ""),
       argv(m_argv), argc(m_argc), 
@@ -699,6 +700,15 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
 	break;	
+    case MappingNotify:
+        // Update stored modifier mapping
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): MappingNotify"<<endl;
+#endif // DEBUG        
+        if (key.get()) {
+            key->loadModmap();
+        }
+        break;
     case CreateNotify:
 	break;
     case DestroyNotify: {
@@ -767,6 +777,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
         }
         break;
+    case KeyRelease:
     case KeyPress:
         handleKeyEvent(e->xkey);
 	break;
@@ -1136,9 +1147,19 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                 }
                 break;
             case Keys::NEXTWINDOW:	//activate next window
+                if (!watching_screen && !(key->getParam() & BScreen::CYCLELINEAR)) {
+                    // if stacked cycling, then set a watch for 
+                    // the release of exactly these modifiers
+                    watchKeyRelease(screen, Keys::cleanMods(ke.state));
+                }
                 screen->nextFocus(key->getParam());
                 break;
             case Keys::PREVWINDOW:	//activate prev window
+                if (!watching_screen && !(key->getParam() & BScreen::CYCLELINEAR)) {
+                    // if stacked cycling, then set a watch for 
+                    // the release of exactly these modifiers
+                    watchKeyRelease(screen, Keys::cleanMods(ke.state));
+                }
                 screen->prevFocus(key->getParam());
                 break;
             case Keys::NEXTTAB: 
@@ -1242,7 +1263,30 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             
             break;
         }
-	
+    case KeyRelease:
+    {
+        // we ignore most key releases unless we need to use
+        // a release to stop something (e.g. window cycling).
+
+        // we notify if _all_ of the watched modifiers are released
+        if (watching_screen && watch_keyrelease) {
+            // mask the mod of the released key out
+            // won't mask anything if it isn't a mod
+            ke.state &= ~key->keycodeToModmask(ke.keycode);
+            
+            if ((watch_keyrelease & ke.state) == 0) {
+                
+                watching_screen->notifyReleasedKeys(ke);
+                XUngrabKeyboard(getXDisplay(), CurrentTime);
+                
+                // once they are released, we drop the watch
+                watching_screen = 0;
+                watch_keyrelease = 0;
+            }
+        }
+
+        break;
+    }	
     default:
         break;
     }
@@ -1470,10 +1514,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             }
             // make sure each workspace get this 
             BScreen &scr = win.getScreen();
-            for (int workspace = 0; workspace < scr.getNumberOfWorkspaces();
-                 ++workspace) {                
-                scr.getWorkspace(workspace)->removeWindow(&win);
-            }
+            scr.removeWindow(&win);
             
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
@@ -1513,13 +1554,12 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
     } else if (typeid(*changedsub) == typeid(WinClient::WinClientSubj)) {
         WinClient::WinClientSubj *subj = dynamic_cast<WinClient::WinClientSubj *>(changedsub);
         WinClient &client = subj->winClient();
-        //!! TODO we shouldn't call update netizen on every screen
-        // just the screen it was located on
-        ScreenList::iterator screen_it = screenList.begin();
-        const ScreenList::iterator screen_it_end = screenList.end();
-        for (; screen_it != screen_it_end; ++screen_it)
-            (*screen_it)->updateNetizenWindowDel(client.window());
 
+        if (client.fbwindow()) {
+            BScreen &screen = client.fbwindow()->getScreen();
+            screen.updateNetizenWindowDel(client.window());
+            screen.removeClient(client);
+        }
 
         removeWindowSearch(client.window());        
         //!! TODO
@@ -2232,13 +2272,12 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
     if (focused_window != 0) {
         old_win = focused_window;
         old_screen = &old_win->getScreen();
-		
+
         old_tbar = old_screen->getToolbar();
         old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
 
         old_win->setFocusFlag(False);
         old_wkspc->menu().setItemSelected(old_win->getWindowNumber(), false);
-		
     }
 
     if (win && ! win->isIconic()) {
@@ -2271,4 +2310,11 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
     if (old_screen && old_screen != screen)
         old_screen->updateNetizenWindowFocus();
 
+}
+
+void Fluxbox::watchKeyRelease(BScreen *screen, unsigned int mods) {
+    watching_screen = screen;
+    watch_keyrelease = mods;
+    XGrabKeyboard(getXDisplay(),screen->getRootWindow(), True, 
+                  GrabModeAsync, GrabModeAsync, CurrentTime);
 }

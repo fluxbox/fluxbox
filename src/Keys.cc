@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.24 2003/04/14 12:10:16 fluxgen Exp $
+//$Id: Keys.cc,v 1.25 2003/04/15 00:50:24 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -140,14 +140,18 @@ Keys::Keys(const char *filename):
     m_numlock_mod(0),
     m_scrolllock_mod(0),
     m_abortkey(0),
-    m_display(FbTk::App::instance()->display())
+    m_display(FbTk::App::instance()->display()),
+    m_modmap(0)
 {
-    determineModmap();
+    loadModmap();
     if (filename != 0)
         load(filename);
 }
 
 Keys::~Keys() {	
+    if (m_modmap) {
+        XFreeModifiermap(m_modmap);
+    }
     ungrabKeys();
     deleteTree();
 }
@@ -458,7 +462,7 @@ unsigned int Keys::getKey(const char *keystr) {
 Keys::KeyAction Keys::getAction(XKeyEvent *ke) {	
     static t_key *next_key = 0;
     //remove numlock, capslock and scrolllock
-    ke->state &= ~Mod2Mask & ~Mod5Mask & ~LockMask;
+    ke->state = cleanMods(ke->state);
 	
     if (m_abortkey && *m_abortkey==ke) { //abort current keychain
         next_key = 0;		
@@ -636,9 +640,14 @@ Keys::t_key::~t_key() {
 }
 
 /**
- determines modifier mapping for caps, num and scroll lock
-*/
-void Keys::determineModmap() {
+ * load state relating to the modifier map
+ */
+void Keys::loadModmap() {
+    if (m_modmap) {
+        XFreeModifiermap(m_modmap);
+    }
+    m_modmap = XGetModifierMapping(m_display);
+
     // mask to use for modifier
     int mods[] = {
         ShiftMask,
@@ -652,15 +661,14 @@ void Keys::determineModmap() {
         0
     };
 	
-    XModifierKeymap *map = XGetModifierMapping(m_display);
     // find modifiers and set them
     for (int i=0, realkey=0; i<8; ++i) {
-        for (int key=0; key<map->max_keypermod; ++key, ++realkey) {
+        for (int key=0; key<m_modmap->max_keypermod; ++key, ++realkey) {
 
-            if (map->modifiermap[realkey] == 0)
+            if (m_modmap->modifiermap[realkey] == 0)
                 continue;
 
-            KeySym ks = XKeycodeToKeysym(m_display, map->modifiermap[realkey], 0);
+            KeySym ks = XKeycodeToKeysym(m_display, m_modmap->modifiermap[realkey], 0);
 
             switch (ks) {
             case XK_Caps_Lock:
@@ -675,5 +683,21 @@ void Keys::determineModmap() {
             }
         }
     }
-    XFreeModifiermap(map);
+}
+
+unsigned int Keys::keycodeToModmask(unsigned int keycode) {
+    if (!m_modmap) return 0;
+
+    // search through modmap for this keycode
+    for (int mod=0; mod < 8; mod++) {
+        for (int key=0; key < m_modmap->max_keypermod; ++key) {
+            // modifiermap is an array with 8 sets of keycodes
+            // each max_keypermod long, but in a linear array.
+            if (m_modmap->modifiermap[m_modmap->max_keypermod*mod + key] == keycode) {
+                return (1<<mod);
+            }
+        } 
+    }
+    // no luck
+    return 0;
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.74 2003/04/14 12:13:36 fluxgen Exp $
+// $Id: Screen.hh,v 1.75 2003/04/15 00:50:24 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -151,6 +151,7 @@ public:
     unsigned int getMaxBottom() const;
 
     typedef std::vector<FluxboxWindow *> Icons;
+    typedef std::list<WinClient *> FocusedWindows;
 
     /// @return number of workspaces
     inline unsigned int getCount() const { return workspacesList.size(); }
@@ -158,6 +159,8 @@ public:
     inline unsigned int getIconCount() const { return iconList.size(); }
     inline const Icons &getIconList() const { return iconList; }
     inline Icons &getIconList() { return iconList; }
+    inline const FocusedWindows &getFocusedList() const { return focused_list; }
+    inline FocusedWindows &getFocusedList() { return focused_list; }
     const Workspaces &getWorkspacesList() const { return workspacesList; }
     const WorkspaceNames &getWorkspaceNames() const { return workspaceNames; }
     /**
@@ -258,6 +261,7 @@ public:
     void removeIcon(FluxboxWindow *win);
     // remove window
     void removeWindow(FluxboxWindow *win);
+    void removeClient(WinClient &client);
 
     std::string getNameOfWorkspace(unsigned int workspace) const;
     void changeWorkspaceID(unsigned int);
@@ -269,12 +273,16 @@ public:
     void prevFocus(int options);
     void nextFocus(int options);
     void raiseFocus();
+    void setFocusedWindow(WinClient &winclient);
+
     void reconfigure();	
     void rereadMenu();
     void shutdown();
     void showPosition(int x, int y);
     void showGeometry(unsigned int, unsigned int);
     void hideGeometry();
+
+    void notifyReleasedKeys(XKeyEvent &ke);
 
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
@@ -306,7 +314,7 @@ public:
            WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
     // prevFocus/nextFocus option bits
     enum { CYCLESKIPLOWERTABS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
-           CYCLEDEFAULT = 0x00 };
+           CYCLELINEAR = 0x08, CYCLEDEFAULT = 0x00 };
 
     class ScreenSubject:public FbTk::Subject {
     public:
@@ -334,10 +342,8 @@ private:
         m_currentworkspace_sig; ///< current workspace signal
 		
     FbTk::MultLayers m_layermanager;
-    //!!	
-    Theme *theme; ///< obsolete
 	
-    Bool root_colormap_installed, managed, geom_visible;
+    Bool root_colormap_installed, managed, geom_visible, cycling_focus;
     GC opGC;
     Pixmap geom_pixmap;
     FbTk::FbWindow geom_window;
@@ -353,6 +359,12 @@ private:
     Rootmenus rootmenuList;
     Netizens netizenList;
     Icons iconList;
+
+    // This list keeps the order of window focusing for this screen
+    // Screen global so it works for sticky windows too.
+    FocusedWindows focused_list;
+    FocusedWindows::iterator cycling_window;
+
 #ifdef SLIT
     std::auto_ptr<Slit> m_slit;
 #endif // SLIT
@@ -368,6 +380,9 @@ private:
 
     Window auto_group_window;
 	
+    //!!	
+    Theme *theme; ///< obsolete
+
     FbWinFrameTheme m_windowtheme;
     std::auto_ptr<FbTk::MenuTheme> m_menutheme;
 
