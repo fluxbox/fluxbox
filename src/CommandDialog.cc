@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.cc,v 1.2 2003/12/19 18:16:01 fluxgen Exp $
+// $Id: CommandDialog.cc,v 1.3 2004/01/02 13:53:21 fluxgen Exp $
 
 #include "CommandDialog.hh"
 
@@ -32,6 +32,7 @@
 
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
+#include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
 
 #include <X11/keysym.h>
@@ -39,6 +40,7 @@
 
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 using namespace std;
 
 CommandDialog::CommandDialog(BScreen &screen, const std::string &title):
@@ -156,6 +158,45 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
         delete this; // end this
     } else if (ks == XK_Escape)
         delete this; // end this
+    else if (ks == XK_Tab) {
+        // try to expand a command
+        tabComplete();
+    }
+}
+
+void CommandDialog::tabComplete() {
+    try {
+        string::size_type first = m_textbox.text().find_last_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                                                    "abcdefghijklmnopqrstuvwxyz"
+                                                                    "0123456789", 
+                                                                    m_textbox.cursorPosition());
+        if (first == string::npos)
+            first = 0;
+        string prefix = FbTk::StringUtil::toLower(m_textbox.text().substr(first, m_textbox.cursorPosition()));
+        if (prefix.size() == 0) {
+            XBell(FbTk::App::instance()->display(), 0);
+            return;
+        }
+
+        CommandParser::CommandFactoryMap::const_iterator it = CommandParser::instance().factorys().begin();
+        const CommandParser::CommandFactoryMap::const_iterator it_end = CommandParser::instance().factorys().end();
+        std::vector<std::string> matches;
+        for (; it != it_end; ++it) {
+            if ((*it).first.find(prefix) == 0) {
+                matches.push_back((*it).first);
+            }
+        }
+
+        if (!matches.empty()) {
+            // sort and apply larges match
+            std::sort(matches.begin(), matches.end(), less<string>());        
+            m_textbox.setText(m_textbox.text() + matches[0].substr(prefix.size()));
+        } else
+            XBell(FbTk::App::instance()->display(), 0);
+
+    } catch (std::out_of_range &oor) {
+        XBell(FbTk::App::instance()->display(), 0);
+    }
 }
 
 void CommandDialog::render() {

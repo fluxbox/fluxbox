@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.hh,v 1.2 2003/12/19 18:15:19 fluxgen Exp $
+// $Id: CommandDialog.hh,v 1.3 2004/01/02 13:48:28 fluxgen Exp $
 
 #ifndef RUNCOMMANDDIALOG_HH
 #define RUNCOMMANDDIALOG_HH
@@ -51,6 +51,9 @@ public:
     void buttonPressEvent(XButtonEvent &event);
     void handleEvent(XEvent &event);
     void keyPressEvent(XKeyEvent &event);
+
+protected:
+    virtual void tabComplete();
 
 private:
     void init();
