@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.7 2003/01/24 12:19:15 fluxgen Exp $
+// $Id: Menu.cc,v 1.8 2003/02/03 13:41:19 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -140,7 +140,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
 Menu::~Menu() {
     menu.window.hide();
    
-    if (shown && shown->windowID() == windowID())
+    if (shown && shown->window() == window())
         shown = (Menu *) 0;
 
     while (!menuitems.empty()) {
