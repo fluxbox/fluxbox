@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.19 2003/07/02 05:17:30 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.20 2003/08/04 12:43:21 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -27,10 +27,13 @@
 #include "FbDrawable.hh"
 
 #include <X11/Xlib.h>
+#include <memory>
+
 
 namespace FbTk {
 
 class Color;
+class Transparent;
 
 ///   Wrapper for X window
 /**
@@ -77,8 +80,13 @@ public:
     virtual void clearArea(int x, int y, 
                            unsigned int width, unsigned int height, 
                            bool exposures = false);
+    void updateTransparent(int x = -1, int y = -1, unsigned int width = 0, unsigned int height = 0);
+
+    void setAlpha(unsigned char alpha);
+
+    FbWindow &operator = (const FbWindow &win);
     /// assign a new X window to this
-    virtual FbWindow &operator = (Window win);
+    virtual FbWindow &operator = (Window win);    
     virtual void hide();
     virtual void show();
     virtual void showSubwindows();
@@ -147,12 +155,13 @@ private:
     static Display *s_display; ///< display connection
     const FbWindow *m_parent; ///< parent FbWindow
     int m_screen_num;  ///< screen num on which this window exist
-    Window m_window; ///< the X window
+    mutable Window m_window; ///< the X window
     int m_x, m_y; ///< position of window
     unsigned int m_width, m_height;  ///< size of window
     unsigned int m_border_width; ///< border size
     int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
+    std::auto_ptr<FbTk::Transparent> m_transparent;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
@@ -175,6 +184,7 @@ private:
     unsigned char *m_state;
     int m_num;
     int m_mode;
+
 };
 
 }; // end namespace FbTk
