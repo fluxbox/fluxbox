@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.39 2003/07/10 11:09:19 fluxgen Exp $
+// $Id: IconBar.cc,v 1.40 2003/07/10 14:49:26 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -353,11 +353,14 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
         return;
 	
     const FluxboxWindow * const fluxboxwin = obj->getFluxboxWin();
+    if (fluxboxwin == 0)
+        return;
+
     Window iconwin = obj->getIconWin();
     unsigned int title_text_w;
 
-    title_text_w = m_font.textWidth(
-        fluxboxwin->iconTitle().c_str(), fluxboxwin->iconTitle().size());
+    title_text_w = m_font.textWidth(fluxboxwin->iconTitle().c_str(),
+                                    fluxboxwin->iconTitle().size());
 
     unsigned int bevel_w = screen().rootTheme().bevelWidth();
     int dx=bevel_w*2;
