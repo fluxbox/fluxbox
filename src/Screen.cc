@@ -188,7 +188,8 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 
 	image_control->setDither(resource.image_dither);
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
-			image_control, fluxbox->getStyleFilename());
+			image_control, fluxbox->getStyleFilename(), fluxbox->getRootCommand());
+
 #ifdef GNOME
 	/* create the GNOME window */
   Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
@@ -429,7 +430,10 @@ BScreen::~BScreen(void) {
 }
 
 void BScreen::reconfigure(void) {
-
+	if (Fluxbox::instance()->getRootCommand())
+		theme->setRootCommand(Fluxbox::instance()->getRootCommand());
+	else
+		theme->setRootCommand("");		
 	theme->load(fluxbox->getStyleFilename());
 	theme->reconfigure();
 	I18n *i18n = I18n::instance();
