@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.272 2004/03/28 17:48:20 fluxgen Exp $
+// $Id: Window.cc,v 1.273 2004/03/30 13:48:38 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -464,7 +464,7 @@ void FluxboxWindow::init() {
     m_client->updateTransientInfo();
 	
     // adjust the window decorations based on transience and window sizes
-    if (m_client->isTransient()) {
+    if (m_client->isTransient() && !screen().decorateTransient()) {
         decorations.maximize =  functions.maximize = false;
         decorations.handle = false;
     }	

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.136 2004/03/22 21:01:10 fluxgen Exp $
+// $Id: Screen.hh,v 1.137 2004/03/30 13:45:20 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -103,6 +103,7 @@ public:
     inline bool doFocusLast() const { return *resource.focus_last; }
     inline bool doShowWindowPos() const { return *resource.show_window_pos; }
     inline bool antialias() const { return *resource.antialias; }
+    inline bool decorateTransient() const { return *resource.decorate_transient; }
 
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     const FbTk::Menu &getRootmenu() const { return *m_rootmenu.get(); }
@@ -421,7 +422,7 @@ private:
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
-            antialias, auto_raise, click_raises;
+            antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<std::string> resizemode;
         FbTk::Resource<FocusModel> focus_model;

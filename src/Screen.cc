@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.272 2004/03/23 09:21:29 fluxgen Exp $
+// $Id: Screen.cc,v 1.273 2004/03/30 13:46:34 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -474,6 +474,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     antialias(rm, false, scrname+".antialias", altscrname+".Antialias"),
     auto_raise(rm, false, scrname+".autoRaise", altscrname+".AutoRaise"),
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
+    decorate_transient(rm, false, scrname+".decorateTransient", altscrname+".DecorateTransient"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     resizemode(rm, "", scrname+".resizeMode", altscrname+".ResizeMode"),
     focus_model(rm, CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
@@ -2321,6 +2322,10 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                               "Desktop MouseWheel Switching"),
                              *resource.desktop_wheeling, saverc_cmd));
 
+    menu.insert(new 
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuDecorateTransient,
+                                              "Decorate Transient Windows"),
+                             *resource.decorate_transient, saverc_cmd));
     menu.insert(new BoolMenuItem("Click Raises",
 				 *resource.click_raises,
 				 saverc_cmd));    
