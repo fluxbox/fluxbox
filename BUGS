@@ -5,5 +5,9 @@ bugs:
 * Window handle is invisible sometimes
 * It maximize over everything
 * Some menus doesn't close when you click on items
+* Transient windows seem to not have a X border - is this right?
+* saving of number of workspaces on restart
 
-fixed bugs:
+fixed bugs (or not-our-fault bugs):
+* Some people get weird transparency behaviour.
+  -> this appears to be a problem with nvidia drivers, try nv instead
