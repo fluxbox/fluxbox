@@ -773,16 +773,18 @@ to emacs keybindings.
 
 Commands are caseinsensitive, workspace numbering starts at "1", some commands
 have synonyms.
+Possible Operations:
 
-Here is a list of possible Operations:
-.EX
 .B window manager commands
+.EX
 Restart \fIargument\fR
 Quit
 Reconfigure
 SetStyle \fIargument\fR
 ExecCommand, Execute or Exec \fIcommand\fR
+.EE
 .B commands to currently focused window
+.EX
 Minimize, MinimizeWindow or Iconify
 Maximize, MaximizeWindow
 MaximizeVertical
@@ -810,7 +812,9 @@ PrevTab
 MoveTabLeft
 MoveTabRight
 DetachClient
+.EE
 .B workspace commands
+.EX
 NextWorkspace
 PrevWorkspace
 RightWorkspace \fIby-number\fR
@@ -825,7 +829,9 @@ ShowDesktop : Iconifies all windows.
 RootMenu
 WorkspaceMenu
 SetWorkspaceName
+.EE
 .B special commands
+.EX
 MacroCmd
 .EE
 .\" --- groups ---
