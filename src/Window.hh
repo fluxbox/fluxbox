@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.9 2002/02/16 11:26:22 fluxgen Exp $
+// $Id: Window.hh,v 1.10 2002/02/17 18:47:45 fluxgen Exp $
 
-#ifndef	 _WINDOW_HH_
-#define	 _WINDOW_HH_
+#ifndef	 WINDOW_HH
+#define	 WINDOW_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -34,23 +34,14 @@
 #	include <X11/extensions/shape.h>
 #endif // SHAPE
 
-// forward declaration
-class FluxboxWindow;
-class Tab;
-
-#include "fluxbox.hh"
+#include "BaseDisplay.hh"
+#include "Timer.hh"
+#include "Windowmenu.hh"
 
 #include <vector>
 #include <string>
-#ifndef _BASEDISPLAY_HH_
-#include "BaseDisplay.hh"
-#endif 
-#ifndef _TIMER_HH_
-#include "Timer.hh"
-#endif
-#ifndef _WINDOWMENU_HH_
-#include "Windowmenu.hh"
-#endif
+
+
 
 #define MwmHintsFunctions	(1l << 0)
 #define MwmHintsDecorations	(1l << 1)
@@ -81,11 +72,52 @@ class Tab;
 
 
 #define PropMwmHintsElements	3
+class Tab;
 
 class FluxboxWindow : public TimeoutHandler {
 public:
 	enum Error{NOERROR=0, XGETWINDOWATTRIB, CANTFINDSCREEN};
-	FluxboxWindow(Window, BScreen * = (BScreen *) 0);
+	#ifdef GNOME
+	enum GnomeLayer { 
+		WIN_LAYER_DESKTOP = 0,
+		WIN_LAYER_BELOW = 2,
+		WIN_LAYER_NORMAL = 4,
+		WIN_LAYER_ONTOP = 6,
+		WIN_LAYER_DOCK = 8,
+		WIN_LAYER_ABOVE_DOCK = 10,
+		WIN_LAYER_MENU = 12
+	};
+
+	enum GnomeState {
+		WIN_STATE_STICKY          = (1<<0), // everyone knows sticky
+		WIN_STATE_MINIMIZED       = (1<<1), // Reserved - definition is unclear
+		WIN_STATE_MAXIMIZED_VERT  = (1<<2), // window in maximized V state
+		WIN_STATE_MAXIMIZED_HORIZ = (1<<3), // window in maximized H state
+		WIN_STATE_HIDDEN          = (1<<4), // not on taskbar but window visible
+		WIN_STATE_SHADED          = (1<<5), // shaded (MacOS / Afterstep style)
+		WIN_STATE_HID_WORKSPACE   = (1<<6), // not on current desktop
+		WIN_STATE_HID_TRANSIENT   = (1<<7), // owner of transient is hidden
+		WIN_STATE_FIXED_POSITION  = (1<<8), // window is fixed in position even
+		WIN_STATE_ARRANGE_IGNORE  = (1<<9) // ignore for auto arranging
+	};
+
+	enum GnomeHints {
+		WIN_HINTS_SKIP_FOCUS      = (1<<0), // "alt-tab" skips this win
+		WIN_HINTS_SKIP_WINLIST    = (1<<1), // do not show in window list
+		WIN_HINTS_SKIP_TASKBAR    = (1<<2), // do not show on taskbar
+		WIN_HINTS_GROUP_TRANSIENT = (1<<3), //Reserved - definition is unclear
+		WIN_HINTS_FOCUS_ON_CLICK  = (1<<4) // app only accepts focus if clicked
+	};
+	#endif
+	
+	enum WinLayer {
+		LAYER_BOTTOM = 0x01, 
+		LAYER_BELOW  = 0x02,
+		LAYER_NORMAL = 0x04, 
+		LAYER_TOP    = 0x08
+	};
+
+	FluxboxWindow(Window, BScreen * = 0);
 	virtual ~FluxboxWindow(void);
 
 	inline const bool isTransient(void) const
@@ -178,7 +210,10 @@ public:
 	typedef struct MwmHints {
 		unsigned long flags, functions, decorations;
 	} MwmHints;
-
+	#ifdef GNOME
+	void setGnomeState(int state);
+	inline int getGnomeHints() const { return gnome_hints; }
+	#endif
 private:
 	BImageControl *image_ctrl;
 	
@@ -210,6 +245,7 @@ private:
 
 		MwmHints *mwm_hint;
 		BaseDisplay::BlackboxHints *blackbox_hint;
+		
 	} client;
 
 	struct _decorations {
@@ -264,10 +300,31 @@ private:
 	void grabButtons();
 	
 	void createButton(int type, ButtonEventProc, ButtonEventProc, ButtonDrawProc);
+	
 	#ifdef GNOME
+	
 	void updateGnomeAtoms();
-	long getGnomeWindowState();
-	#endif
+	void updateGnomeStateAtom();
+	void updateGnomeHintsAtom();
+	void updateGnomeLayerAtom();
+	void updateGnomeWorkspaceAtom();
+	
+	int getGnomeWindowState();	
+	bool handleGnomePropertyNotify(Atom atom);
+	int getGnomeLayer();
+	void loadGnomeAtoms();
+	void loadGnomeStateAtom();
+	void loadGnomeHintsAtom();
+	int gnome_hints;
+	#endif //GNOME
+	
+	#ifdef NEWWMSPEC
+	
+	void updateNETWMAtoms();
+	void handleNETWMProperyNotify(Atom atom);
+	int getNETWMWindowState();
+
+	#endif //NEWWMSPEC
 
 	Window findTitleButton(int type);	
 protected:
