@@ -50,6 +50,7 @@ public:
     virtual unsigned int height() const = 0;
     virtual bool loaded() const = 0;
     virtual void rotate(float angle) { } // by default, no rotate support
+    virtual bool utf8() const { return false; };
 protected:
     FontImp() { }
 };

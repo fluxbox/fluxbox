@@ -42,6 +42,7 @@ public:
     int ascent() const { return m_xftfont ? m_xftfont->ascent : 0; }
     int descent() const { return m_xftfont ? m_xftfont->descent : 0; }
     bool loaded() const { return m_xftfont != 0; }
+    bool utf8() const { return m_utf8mode; }
 private:
     XftFont *m_xftfont;
     bool m_utf8mode;

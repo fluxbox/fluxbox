@@ -133,7 +133,7 @@ char* recode(iconv_t cd,
         // 2) An incomplete multibyte sequence 
         // 3) The output buffer has no more room for the next converted character.
         // So we the delete new message and return original message
-        delete new_msg_ptr;
+        delete[] new_msg_ptr;
         free(orig_msg_ptr);
         return 0;
     }
@@ -142,7 +142,7 @@ char* recode(iconv_t cd,
     *new_msg = '\0';
  
     if(inbytesleft != 0) {
-        delete new_msg_ptr;
+        delete[] new_msg_ptr;
         return 0;
     }
 
@@ -231,7 +231,7 @@ bool Font::m_utf8mode = false;
 
 // some initialisation for using fonts
 void fontInit() {
-    setlocale(LC_CTYPE, "");
+   setlocale(LC_CTYPE, "");
 }
 
 Font::Font(const char *name, bool antialias):
@@ -239,13 +239,13 @@ Font::Font(const char *name, bool antialias):
     m_antialias(false), m_rotated(false), 
     m_shadow(false), m_shadow_color("#000000"), 
     m_shadow_offx(1), m_shadow_offy(1),
-    m_halo(false), m_halo_color("#ffffff") {
-
+    m_halo(false), m_halo_color("#ffffff"),
 #ifdef HAVE_ICONV
-    m_iconv = (iconv_t)(-1);
+    m_iconv((iconv_t)(-1))
 #else
-    m_iconv = -1;
+    m_iconv(-1)
 #endif // HAVE_ICONV
+{
 
     // MB_CUR_MAX returns the size of a char in the current locale
     if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
@@ -295,7 +295,6 @@ Font::Font(const char *name, bool antialias):
 #ifdef USE_XFT
     if (antialias) {
         m_fontimp.reset(new XftFontImp(0, m_utf8mode));
-        m_antialias = true;
     }
 #endif //USE_XFT
     // if we didn't create a Xft font then create basic font
@@ -341,9 +340,9 @@ void Font::setAntialias(bool flag) {
         if (!m_fontimp->load("fixed")) {// if that failes too, output warning
             _FB_USES_NLS;
             cerr<<_FBTKTEXT(Error, CantFallbackFont, "Warning: can't load fallback font", "Attempt to load the last-resort default font failed")<<" 'fixed'."<<endl;
-        }
+        } 
     }
-
+    
     m_antialias = flag;
 }
 
@@ -400,13 +399,13 @@ bool Font::load(const std::string &name) {
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
 #ifdef HAVE_ICONV
-    if (m_iconv != (iconv_t)(-1)) {
+    if (m_fontimp->utf8() && m_iconv != (iconv_t)(-1)) {
         char* rtext  = recode(m_iconv, text, size);
         if (rtext != 0)
             size = strlen(rtext);
         unsigned int r = m_fontimp->textWidth(rtext ? rtext : text, size);
         if (rtext != 0)
-            delete rtext;
+            delete[] rtext;
         return r;
     }
 #endif // HAVE_ICONV
@@ -437,7 +436,7 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
     static bool first_run = true; 
     
 #ifdef HAVE_ICONV
-    if (m_iconv != (iconv_t)(-1) && first_run) {
+    if (m_fontimp->utf8() && m_iconv != (iconv_t)(-1) && first_run) {
         rtext = recode(m_iconv, text, len);
         if (rtext != 0) {
             len = strlen(rtext);
@@ -490,7 +489,7 @@ void Font::drawText(const FbDrawable &w, int screen, GC gc,
         m_fontimp->drawText(w, screen, gc, real_text, len, x, y);		
 
     if (rtext != 0)
-        delete rtext;
+        delete[] rtext;
 
 }	
 

@@ -42,10 +42,11 @@ public:
     int ascent() const { return m_setextents ? -m_setextents->max_ink_extent.y : 0; }
     int descent() const { return m_setextents ? m_setextents->max_ink_extent.height + m_setextents->max_ink_extent.y : 0; }
     bool loaded() const { return m_fontset != 0; }
+    bool utf8() const { return m_utf8mode; }
 private:
     XFontSet m_fontset;
     XFontSetExtents *m_setextents;
-    const bool m_utf8mode;
+    bool m_utf8mode;
 };
 
 } // end namespace FbTk

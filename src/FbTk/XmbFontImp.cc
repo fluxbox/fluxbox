@@ -110,7 +110,7 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
     return 0;
 }
 
-XFontSet createFontSet(const char *fontname, bool utf8mode) {
+XFontSet createFontSet(const char *fontname, bool& utf8mode) {
     Display *display = FbTk::App::instance()->display();
     XFontSet fs;
     const int FONT_ELEMENT_SIZE=50;
@@ -192,13 +192,15 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
         setlocale(LC_CTYPE, orig_locale.c_str());
 #endif // HAVE_SETLOCALE
 
+    utf8mode = false;
+    
     return fs;
 }
 
 };
 namespace FbTk {
 
-XmbFontImp::XmbFontImp(const char *filename, bool utf8):m_fontset(0), m_setextents(0), m_utf8mode(utf8) {
+XmbFontImp::XmbFontImp(const char *filename, bool utf8) : m_fontset(0), m_setextents(0), m_utf8mode(utf8) {
     if (filename != 0)
         load(filename);
 }
@@ -209,7 +211,7 @@ XmbFontImp::~XmbFontImp() {
 }
 
 bool XmbFontImp::load(const std::string &fontname) {
-    if (fontname.size() == 0)
+    if (fontname.empty())
         return false;
 
     XFontSet set = createFontSet(fontname.c_str(), m_utf8mode);
