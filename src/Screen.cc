@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.229 2003/08/29 10:50:32 fluxgen Exp $
+// $Id: Screen.cc,v 1.230 2003/08/30 01:02:38 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -600,10 +600,6 @@ void BScreen::reconfigure() {
     winFrameTheme().font().setAntialias(*resource.antialias);
     m_menutheme->titleFont().setAntialias(*resource.antialias);
     m_menutheme->frameFont().setAntialias(*resource.antialias);
-
-    // load theme
-    //    std::string theme_filename(Fluxbox::instance()->getStyleFilename());
-    //    FbTk::ThemeManager::instance().load(theme_filename.c_str());
 
     renderGeomWindow();
 
