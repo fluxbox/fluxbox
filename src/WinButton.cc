@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.15 2003/09/22 12:07:00 rathnor Exp $
+/// $Id: WinButton.cc,v 1.16 2003/10/31 19:32:40 rathnor Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -49,6 +49,10 @@ void WinButton::buttonReleaseEvent(XButtonEvent &event) {
 
 void WinButton::drawType() {
     bool used = false;
+
+    // if it's odd and we're centring, we need to add one
+    int oddW = width()%2;
+    int oddH = height()%2;
 
     switch (m_type) {
     case MAXIMIZE:
@@ -177,14 +181,15 @@ void WinButton::drawType() {
         if (used)
             FbTk::FbWindow::clear();
         else if (gc() != 0) {
+            // width/4 != width/2, so we use /4*2 so that it's properly centred
             if (m_listen_to.isStuck()) {
                 fillRectangle(gc(),
                               width()/2 - width()/4, height()/2 - height()/4,
-                              width()/2, height()/2);
+                              width()/4*2 + oddW, height()/4*2 + oddH);
             } else {
                 fillRectangle(gc(),
                               width()/2 - width()/10, height()/2 - height()/10,
-                              width()/5, height()/5);
+                              width()/10*2 + oddW, height()/10*2 + oddH);
             }
         }
         break;
@@ -222,10 +227,15 @@ void WinButton::drawType() {
 
             drawLine(gc(), 
                      2, 2,
-                     width() - 3, height() - 3);
+                     width() - 2, height() - 2);
+            // I can't figure out why this second one needs a y offset of 1?????
+            // but it does - at least on my box:
+            //   XFree86 Version 4.2.1.1 (Debian 4.2.1-12.1 20031003005825)
+            //   (protocol Version 11, revision 0, vendor release 6600)
+
             drawLine(gc(), 
-                     2, width() - 3, 
-                     height() - 3, 2);
+                     2, height() - 3,
+                     width() - 2, 1);
         }
         break;
     case SHADE:

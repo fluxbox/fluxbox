@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/31:
+  * Tweak some positioning for winbutton drawn icons (Simon)
+    WinButton.cc
   * Fix iconbar button alignment and squash inactive tools (Simon)
     - also fix a bunch of rounding issues
     -> keep in mind that titlebar/iconbar width may not be exactly

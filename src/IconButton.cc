@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.9 2003/10/31 10:37:09 rathnor Exp $
+// $Id: IconButton.cc,v 1.10 2003/10/31 19:32:39 rathnor Exp $
 
 #include "IconButton.hh"
 
@@ -144,14 +144,14 @@ void IconButton::update(FbTk::Subject *subj) {
     if (hints->flags & IconPixmapHint && hints->icon_pixmap != 0) {
         // setup icon window
         m_icon_window.show();
-        int new_height = height() - m_icon_window.y();
-        int new_width = height();
-        m_icon_window.resize(new_width ? new_width : 1, new_height ? new_height : 1);
+        int new_height = height() - 2*m_icon_window.y(); // equally padded
+        int new_width = new_height;
+        m_icon_window.resize((new_width>0) ? new_width : 1, (new_height>0) ? new_height : 1);
 
         m_icon_pixmap.copy(hints->icon_pixmap);
-        m_icon_pixmap.scale(m_icon_window.height(), m_icon_window.height());
+        m_icon_pixmap.scale(m_icon_window.width(), m_icon_window.height());
 
-        setBackgroundPixmap(m_icon_pixmap.drawable());
+        m_icon_window.setBackgroundPixmap(m_icon_pixmap.drawable());
     } else {
         // no icon pixmap
         m_icon_window.move(0, 0);
@@ -185,6 +185,8 @@ void IconButton::update(FbTk::Subject *subj) {
 }
 
 void IconButton::setupWindow() {
+
+    m_icon_window.clear();
 
     if (!m_win.clientList().empty()) {
         setText(m_win.winClient().title());
