@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.282 2004/04/22 21:07:57 fluxgen Exp $
+// $Id: Window.cc,v 1.283 2004/04/30 13:11:40 rathnor Exp $
 
 #include "Window.hh"
 
@@ -3138,19 +3138,24 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     // Why was this hide done? It broke vncviewer (and mplayer?), 
     // since it would reparent when going fullscreen.
     // is it needed for anything? Reparent should imply unmap
+    // ok, it should hide sometimes, e.g. if the reparent was sent by a client
     //client->hide();
 
     // restore old border width
     client->setBorderWidth(client->old_bw);
 
-    XEvent not_used;
+    XEvent xev;
     if (! XCheckTypedWindowEvent(display, client->window(), ReparentNotify,
-                                 &not_used)) {
+                                 &xev)) {
 #ifdef DEBUG
         cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client->window()<<dec<<" to root"<<endl;
 #endif // DEBUG
         // reparent to root window
-        client->reparent(screen().rootWindow().window(), frame().x(), frame().y());        
+        client->reparent(screen().rootWindow().window(), frame().x(), frame().y());
+
+        if(xev.xreparent.send_event) {
+            client->hide();
+        }
     }
 
     if (remap)

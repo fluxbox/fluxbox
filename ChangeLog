@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/04/30:
+  * fix up reparent issue that affects java menus (thanks Scott Moser)
+    Window.cc
 *04/04/28:
   * Fix key bindings for directional focus movement (Simon)
     - reminder, key actions are: FocusUp, FocusDown, FocusLeft, FocusRight
