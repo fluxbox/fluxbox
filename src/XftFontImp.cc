@@ -19,10 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.3 2002/10/16 23:56:13 fluxgen Exp $
+//$Id: XftFontImp.cc,v 1.4 2002/11/17 17:20:49 fluxgen Exp $
 
 #include "XftFontImp.hh"
 #include "BaseDisplay.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif //HAVE_CONFIG_H
 
 XftFontImp::XftFontImp(const char *name, bool utf8):m_xftfont(0),
 m_utf8mode(utf8) {
@@ -86,7 +90,7 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
 		&rendcol, &xftcolor);
 
 	// draw string
-#ifdef X_HAVE_UTF8_STRING
+#ifdef HAVE_XFT_UTF8_STRING
 	if (m_utf8mode) {
 		XftDrawStringUtf8(draw,
 			&xftcolor,
@@ -94,7 +98,7 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
 			x, y,
 			(XftChar8 *)(text), len);
 	} else 
-#endif // X_HAVE_UTF8_STRING
+#endif // HAVE_XFT_UTF8_STRING
 	{
 		XftDrawString8(draw,
 			&xftcolor,
@@ -112,14 +116,14 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
 	if (m_xftfont == 0)
 		return 0;
 	XGlyphInfo ginfo;
-#ifdef X_HAVE_UTF8_STRING
+#ifdef HAVE_XFT_UTF8_STRING
 	if (m_utf8mode) {
 		XftTextExtentsUtf8(BaseDisplay::getXDisplay(),
 			m_xftfont,
 			(XftChar8 *)text, len,
 			&ginfo);
 	} else 
-#endif  //X_HAVE_UTF8_STRING
+#endif  //HAVE_XFT_UTF8_STRING
 	{
 		XftTextExtents8(BaseDisplay::getXDisplay(),
 			m_xftfont,
