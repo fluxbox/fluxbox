@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.261 2004/01/16 11:58:45 fluxgen Exp $
+// $Id: Window.cc,v 1.262 2004/01/17 00:49:20 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1942,7 +1942,8 @@ void FluxboxWindow::popupMenu() {
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
     if (!decorations.titlebar) // if we don't have any titlebar
         menu_y = 0;
-
+    if (m_last_button_x < x() || m_last_button_x > x() + width())
+        m_last_button_x = x();
     showMenu(m_last_button_x, menu_y + frame().y());
 }
 
@@ -3327,8 +3328,6 @@ void FluxboxWindow::setupWindow() {
     // we allow both to be done at once to share the commands
 
     WinButtonTheme &winbutton_theme = screen().winButtonTheme();
-
-    typedef FbTk::RefCount<FbTk::Command> CommandRef;
 
     using namespace FbTk;
     typedef RefCount<Command> CommandRef;
