@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.21 2002/12/01 13:41:57 rathnor Exp $
+// $Id: IconBar.cc,v 1.22 2002/12/09 19:03:13 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -300,7 +300,8 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
         m_screen->getScreenNumber(),
         m_screen->getWindowStyle()->tab.l_text_focus_gc,
         fluxboxwin->getIconTitle().c_str(), dlen,
-        dx, 1+ m_screen->getWindowStyle()->tab.font.ascent());
+        dx, 1+ m_screen->getWindowStyle()->tab.font.ascent(),
+		false);
 
 }
 
