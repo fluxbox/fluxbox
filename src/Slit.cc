@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.84 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: Slit.cc,v 1.85 2003/12/18 20:56:18 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -1224,7 +1224,7 @@ void Slit::setupMenu() {
     if (screen().hasXinerama()) {
         // TODO: nls (main label, plus menu heading)
         m_slitmenu.insert("On Head...", new XineramaHeadMenu<Slit>(
-                                                                   *screen().menuTheme(),
+                                                                   screen().menuTheme(),
                                                                    screen(),
                                                                    screen().imageControl(),
                                                                    *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
