@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.42 2003/01/12 18:51:46 fluxgen Exp $
+// $Id: Workspace.cc,v 1.43 2003/01/13 12:59:26 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -215,7 +215,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 }
 
 
-void Workspace::showAll(void) {
+void Workspace::showAll() {
     WindowStack::iterator it = stackingList.begin();
     WindowStack::iterator it_end = stackingList.end();
     for (; it != it_end; ++it) {
@@ -224,7 +224,7 @@ void Workspace::showAll(void) {
 }
 
 
-void Workspace::hideAll(void) {
+void Workspace::hideAll() {
     WindowStack::reverse_iterator it = stackingList.rbegin();
     WindowStack::reverse_iterator it_end = stackingList.rend();
     for (; it != it_end; ++it) {
@@ -234,7 +234,7 @@ void Workspace::hideAll(void) {
 }
 
 
-void Workspace::removeAll(void) {
+void Workspace::removeAll() {
     Windows::iterator it = m_windowlist.begin();
     Windows::const_iterator it_end = m_windowlist.end();
     for (; it != it_end; ++it) {
@@ -452,11 +452,11 @@ void Workspace::setName(const std::string &name) {
     m_clientmenu.update();
 }
 
-//------------ shutdown ---------
-// Calls restore on all windows
-// on the workspace and then
-// clears the m_windowlist
-//-------------------------------
+/**
+ Calls restore on all windows
+ on the workspace and then
+ clears the m_windowlist
+*/
 void Workspace::shutdown() {
     // note: when the window dies it'll remove it self from the list
     while (!m_windowlist.empty()) {
