@@ -1,5 +1,5 @@
 // Tab.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.47 2002/12/01 13:42:00 rathnor Exp $
+// $Id: Tab.cc,v 1.48 2002/12/07 13:36:03 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -238,9 +238,9 @@ void Tab::loadTheme() {
     if (tmp) image_ctrl->removeImage(tmp);
 }
 
-//-------------- decorate --------------------
-// decorates the tab with current theme
-//--------------------------------------------
+/**
+ decorates the tab with current theme
+*/
 void Tab::decorate() {
     loadTheme();
 
@@ -250,19 +250,19 @@ void Tab::decorate() {
                      m_win->getScreen()->getWindowStyle()->tab.border_color.pixel());
 }
 
-//-------------- deiconify -----------------
-// Deiconifies the tab
-// Used from FluxboxWindow to deiconify the tab when the window is deiconfied
-//------------------------------------------
+/**
+ Deiconifies the tab
+ Used from FluxboxWindow to deiconify the tab when the window is deiconfied
+*/
 void Tab::deiconify() {
     XMapWindow(m_display, m_tabwin);
 }
 
-//------------- iconify --------------------
-// Iconifies the tab.
-// Used from FluxboxWindow to hide tab win when window is iconified
-// disconnects itself from the list
-//------------------------------------------
+/**
+ Iconifies the tab.
+ Used from FluxboxWindow to hide tab win when window is iconified
+ disconnects itself from the list
+*/
 void Tab::iconify() {
     disconnect();
     withdraw();
@@ -270,16 +270,16 @@ void Tab::iconify() {
         m_win->setTab(false);//let's get rid of this loner tab
 }
 
-//------------ withdraw --------------
-// Unmaps the tab from display
-//------------------------------------
+/**
+ Unmaps the tab from display
+*/
 void Tab::withdraw() {
     XUnmapWindow(m_display, m_tabwin);	
 }
 
-//------------ stick --------------------
-// Set/reset the the sticky on all windows in the list
-//---------------------------------------
+/**
+ Set/reset the the sticky on all windows in the list
+*/
 void Tab::stick() {
     Tab *tab;
  
@@ -310,9 +310,9 @@ void Tab::stick() {
 
 }
 
-//------------- resize -------------
-// Resize the window's in the tablist
-//----------------------------------
+/**
+ Resize the window's in the tablist
+*/
 void Tab::resize() {
     Tab *tab;
 
@@ -331,9 +331,9 @@ void Tab::resize() {
     }
 }
 
-//----------- shade --------------
-// Shades the windows in the tablist
-//--------------------------------
+/**
+ Shades the windows in the tablist
+*/
 void Tab::shade() {
     Tab *tab;
 
@@ -353,12 +353,12 @@ void Tab::shade() {
         setPosition();
 }
 
-//------------ draw -----------------
-// Draws the tab 
-// if pressed = true then it draws the tab in pressed 
-// mode else it draws it in normal mode
-// TODO: the "draw in pressed mode" 
-//-----------------------------------
+/**
+ Draws the tab 
+ if pressed = true then it draws the tab in pressed 
+ mode else it draws it in normal mode
+ TODO: the "draw in pressed mode" 
+*/
 void Tab::draw(bool pressed) const {	
     XClearWindow(m_display, m_tabwin);
 	
@@ -372,7 +372,7 @@ void Tab::draw(bool pressed) const {
     size_t dlen = m_win->getTitle().size();
 	
     size_t max_width = m_size_w; // special cases in rotated mode
-    if (winstyle->tab.font.isRotated())
+    if (winstyle->tab.font.isRotated() && !m_win->isShaded())
         max_width = m_size_h;
 
     int dx = DrawUtil::doAlignment(max_width, m_win->frame.bevel_w,
@@ -381,28 +381,30 @@ void Tab::draw(bool pressed) const {
                                    m_win->getTitle().c_str(), m_win->getTitle().size(), dlen);
 	
     int dy = winstyle->tab.font.ascent() + m_win->frame.bevel_w;
+    bool rotate = false;
     // swap dx and dy if we're rotated
-    if (winstyle->tab.font.isRotated()) {
+    if (winstyle->tab.font.isRotated() && !m_win->isShaded()) {
         int tmp = dy;
         dy = m_size_h - dx; // upside down (reverse direction)
-        dx = tmp;
+        dx = tmp; 
+        rotate = true;
     }
-	
+    // draw normal without rotation
     winstyle->tab.font.drawText(
-        m_tabwin,
-        m_win->getScreen()->getScreenNumber(),
-        gc,
-        m_win->getTitle().c_str(), dlen,
-        dx, dy);
-
+                                m_tabwin,
+                                m_win->getScreen()->getScreenNumber(),
+                                gc,
+                                m_win->getTitle().c_str(), dlen,
+                                dx, dy,
+                                rotate); 
 }
 
-//-----------------------------------------------
-//Helper for the Tab::setPosition() call
-//returns the y position component correctly
-//according to shading in cases PBOTTOM and 
-//isShaded()
-//-----------------------------------------------
+/**
+Helper for the Tab::setPosition() call
+returns the y position component correctly
+according to shading in cases PBOTTOM and 
+isShaded()
+*/
 int Tab::setPositionShadingHelper(bool shaded) {
     if (shaded) {
         return m_win->getYFrame() + m_win->getTitleHeight() + 
@@ -413,13 +415,13 @@ int Tab::setPositionShadingHelper(bool shaded) {
     }
 }
 
-//-----------------------------------------------
-//Helpers for correct alignment of tabs used
-//by the setPosition() call
-//return x/y positions correctly according to
-//alignment, the 1st for cases PTOP and PBOTTOM
-//the 2nd for cases PLEFT and PRIGHT
-//-----------------------------------------------
+/**
+Helpers for correct alignment of tabs used
+by the setPosition() call
+return x/y positions correctly according to
+alignment, the 1st for cases PTOP and PBOTTOM
+the 2nd for cases PLEFT and PRIGHT
+*/
 int Tab::setPositionTBAlignHelper(Alignment align) {
     switch(align) {
 
@@ -466,11 +468,11 @@ int Tab::setPositionLRAlignHelper(Alignment align) {
     }
 }
 
-//------------- setPosition -----------------
-// Position tab ( follow the m_win pos ).
-// (and resize)
-// Set new position of the other tabs in the chain
-//-------------------------------------------
+/**
+ Position tab ( follow the m_win pos ).
+ (and resize)
+ Set new position of the other tabs in the chain
+*/
 void Tab::setPosition() {	
     //don't do anything if the tablist is freezed
     if (m_stoptabs)
@@ -555,10 +557,10 @@ void Tab::moveNext() {
 }
 
 
-//------------- calcIncrease ----------------
-// calculates m_inc_x and m_inc_y for tabs
-// used for positioning the tabs.
-//-------------------------------------------
+/**
+ calculates m_inc_x and m_inc_y for tabs
+ used for positioning the tabs.
+*/
 void Tab::calcIncrease() {
     Tab *tab;
     int inc_x = 0, inc_y = 0;
@@ -646,14 +648,14 @@ void Tab::calcIncrease() {
     }
 }
 
-//------------- buttonPressEvent -----------
-// Handle button press event here.
-//------------------------------------------
+/**
+ Handle button press event here.
+*/
 void Tab::buttonPressEvent(XButtonEvent *be) {	
     //draw in pressed mode
     draw(true);
 	
-    //invoke root menu with auto-glueing?
+    //invoke root menu with auto-tab?
     if (be->button == 3) {
         BScreen *screen = m_win->getScreen();
         Rootmenu *rootmenu = screen->getRootmenu();
@@ -674,11 +676,11 @@ void Tab::buttonPressEvent(XButtonEvent *be) {
     }
 }
 
-//----------- buttonReleaseEvent ----------
-// Handle button release event here.
-// If tab is dropped then it should try to find
-// the window where the tab where dropped.
-//-----------------------------------------
+/**
+ Handle button release event here.
+ If tab is dropped then it should try to find
+ the window where the tab where dropped.
+*/
 void Tab::buttonReleaseEvent(XButtonEvent *be) {		
 	
     if (m_moving) {
@@ -1079,9 +1081,7 @@ void Tab::setTabHeight(unsigned int h) {
 // PLeft || PRight && isTabRotateVertical
 // ---------------------------------------
 void Tab::resizeGroup() {
-#ifdef DEBUG
-    cerr <<__FILE__<<"("<<__LINE__<<"): Resizing group"<<endl;
-#endif //DEBUG
+
     Tab *first;
     for (first = getFirst(this); first != 0; first = first->m_next) {
         if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
@@ -1111,20 +1111,20 @@ unsigned int Tab::calcRelativeWidth() {
     return ((m_win->getWidth() + m_win->getScreen()->getBorderWidth2x())/num);
 }
 
-//--------------- numObjects -------------------
-// Returns the number of objects in
-// the TabGroup. 
-//-----------------------------------------------
+/**
+ Returns the number of objects in
+ the TabGroup. 
+*/
 unsigned int Tab::numObjects() {
     unsigned int num = 0;
     for (Tab *tab = getFirst(this); tab != 0; tab = tab->m_next, num++);
     return num;
 }
 
-//------------- calcRelativeHeight -------
-// Returns: Calculated height for relative 
-// alignment
-//----------------------------------------
+/**
+ Returns: Calculated height for relative 
+ alignment
+*/
 unsigned int Tab::calcRelativeHeight() {
     return ((m_win->getHeight() + 
              m_win->getScreen()->getBorderWidth2x())/numObjects());
