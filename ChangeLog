@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
-Changes for 0.1.14:
+Changes for 0.1.15:
+*03/01/06:
+   * Fixed action/menu setup in setupWindowActions
+     Screen.cc
+   * Added FbTk MenuTheme object in Screen
+     Screen.cc/hh
+   * Fixed Windowmenu in FluxboxWindow to FbTk Menu
+     Window.cc/hh, Toolbar.cc
+   * Added actions, double click interval and hide/show decoraions to titlebar
+     FbWinFrame.hh/cc, Window.cc
 *03/01/05: --- huge commit ---
    * Added FbWinFrame.hh/cc, FbWinFrameTheme.hh/cc
    * Updated Window.cc/hh to use FbWinFrame
