@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.210 2003/07/28 18:28:03 fluxgen Exp $
+// $Id: Screen.cc,v 1.211 2003/07/28 20:11:55 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1063,6 +1063,55 @@ void BScreen::updateNetizenConfigNotify(XEvent &e) {
 
 FluxboxWindow *BScreen::createWindow(Window client) {
     XSync(FbTk::App::instance()->display(), false);
+
+#ifdef SLIT
+#ifdef KDE
+        //Check and see if client is KDE dock applet.
+        //If so add to Slit
+        bool iskdedockapp = false;
+        Atom ajunk;
+        int ijunk;
+        unsigned long *data = (unsigned long *) 0, uljunk;
+        Display *disp = FbTk::App::instance()->display();
+        // Check if KDE v2.x dock applet
+        if (XGetWindowProperty(disp, client,
+                               XInternAtom(FbTk::App::instance()->display(), 
+                                           "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False),
+                               0l, 1l, False,
+                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
+                               &uljunk, (unsigned char **) &data) == Success) {
+					
+            if (data)
+                iskdedockapp = True;
+            XFree((void *) data);
+            data = 0;
+        }
+
+        // Check if KDE v1.x dock applet
+        if (!iskdedockapp) {
+            Atom kwm1 = XInternAtom(FbTk::App::instance()->display(), 
+                                    "KWM_DOCKWINDOW", False);
+            if (XGetWindowProperty(disp, client,
+                                   kwm1, 0l, 1l, False,
+                                   kwm1, &ajunk, &ijunk, &uljunk,
+                                   &uljunk, (unsigned char **) &data) == Success && data) {
+                iskdedockapp = (data && data[0] != 0);
+                XFree((void *) data);
+                data = 0;
+            }
+        }
+
+        if (iskdedockapp) {
+            XSelectInput(disp, client, StructureNotifyMask);
+
+            if (slit())
+                slit()->addClient(client);
+
+            return 0; // dont create a FluxboxWindow for this one
+        }
+#endif // KDE
+#endif // SLIT
+
     WinClient *winclient = new WinClient(client, *this);
 
     if (winclient->initial_state == WithdrawnState) {
