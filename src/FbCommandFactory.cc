@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.21 2003/12/03 22:13:21 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.22 2003/12/19 03:55:10 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -62,6 +62,7 @@ FbCommandFactory::FbCommandFactory() {
     const char* commands[] = {
         "arrangewindows",
         "close",
+        "commanddialog",
         "detachclient",
         "exec",
         "execcommand",
@@ -108,6 +109,7 @@ FbCommandFactory::FbCommandFactory() {
         "sendtoworkspace",
         "setstyle",
         "setworkspacename",
+        "setworkspacenamedialog",
         "shade",
         "shadewindow",
         "showdesktop",
@@ -147,6 +149,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ExecuteCmd(arguments); // execute command on key screen
     else if (command == "quit")
         return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
+    else if (command == "commanddialog") // run specified fluxbox command
+        return new CommandDialogCmd();
     //
     // Current focused window commands
     //
@@ -252,8 +256,14 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ShowRootMenuCmd();
     else if (command == "workspacemenu")
         return new ShowWorkspaceMenuCmd();
-    else if (command == "setworkspacename")
-        return new SetWorkspaceNameCmd();
+    else if (command == "setworkspacename") {
+        if (arguments.empty())
+            return new SetWorkspaceNameCmd("empty");
+        else
+            return new SetWorkspaceNameCmd(arguments);
+    }
+    else if (command == "setworkspacenamedialog")
+        return new WorkspaceNameDialogCmd();
     //
     // special commands
     //
