@@ -988,7 +988,7 @@ Changes for 0.9.9:
   * Fix missing sanitycheck in fbsetbg (Thanks Tom Ryan)
     fbsetbg
 *04/01/21:
-  * Added more international keywords and     (Thanks Antonio Gomez)
+  * Added more international keywords and     (Thanks Antonio Gomes)
     Portuguese locales for fluxbox-generate_menu.in
   * Added automatic reload of the new menu in   (Han)
     fluxbox-generate_menu
