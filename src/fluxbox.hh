@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.23 2002/08/11 20:36:43 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.24 2002/08/13 21:18:17 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -69,20 +69,21 @@
 */
 class Fluxbox : public BaseDisplay, public TimeoutHandler {	
 public:
+	Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
+	virtual ~Fluxbox();
 	
-	
-	static Fluxbox *instance(int m_argc=0, char **m_argv=0, char *dpy_name=0, char *rc=0);
+	static Fluxbox *instance() { return singleton; }
 	
 	inline bool useTabs() { return *m_rc_tabs; }
 	inline bool useIconBar() { return *m_rc_iconbar; }
 	inline void saveTabs(bool value) { *m_rc_tabs = value; }
 	inline void saveIconBar(bool value) { m_rc_iconbar = value; }
 #ifdef HAVE_GETPID
-	inline const Atom &getFluxboxPidAtom() const { return fluxbox_pid; }
+	inline Atom getFluxboxPidAtom() const { return fluxbox_pid; }
 	#ifdef KDE
 	//For KDE dock applets
-	inline const Atom &getKWM1DockwindowAtom() const { return kwm1_dockwindow; } //KDE v1.x
-	inline const Atom &getKWM2DockwindowAtom() const { return kwm2_dockwindow; } //KDE v2.x
+	inline Atom getKWM1DockwindowAtom() const { return kwm1_dockwindow; } //KDE v1.x
+	inline Atom getKWM2DockwindowAtom() const { return kwm2_dockwindow; } //KDE v2.x
 	#endif
 #endif // HAVE_GETPID
 
@@ -232,7 +233,8 @@ private:
 	bool no_focus, reconfigure_wait, reread_menu_wait;
 	Time last_time;
 	Window masked;
-	char *rc_file, **argv;
+	std::string rc_file; ///< resource filename
+	char **argv;
 	int argc;
 	Keys *key;
 	std::string slitlist_path;
@@ -240,7 +242,6 @@ private:
 	static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
 
 protected:
-	Fluxbox(int, char **, char * = 0, char * = 0);
 	char *getRcFilename();
 	void getDefaultDataFilename(char *, std::string &);
 	void load_rc();
@@ -250,11 +251,7 @@ protected:
 	void real_reconfigure();
 
 	virtual void process_event(XEvent *);
-	//only main should be able to creat new blackbox object
-	//TODO this must be removed!
-	friend int main(int,char **);
-	static Fluxbox *singleton;	//singleton object ( can only be destroyed by main )
-	virtual ~Fluxbox();
+	static Fluxbox *singleton;
 
 };
 

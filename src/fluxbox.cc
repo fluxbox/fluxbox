@@ -22,28 +22,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.65 2002/08/11 20:38:23 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.66 2002/08/13 21:19:00 fluxgen Exp $
 
-//Use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
+#include "fluxbox.hh"
 
 #include "i18n.hh"
-#include "fluxbox.hh"
 #include "Basemenu.hh"
 #include "Clientmenu.hh"
 #include "Rootmenu.hh"
 #include "Screen.hh"
-
-#ifdef SLIT
-#include "Slit.hh"
-#endif // SLIT
-
 #include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
@@ -51,6 +38,19 @@
 #include "StringUtil.hh"
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
+
+#ifdef SLIT
+#include "Slit.hh"
+#endif // SLIT
+
+//Use GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#ifdef		HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -63,11 +63,8 @@
 #endif // SHAPE
 
 #include <cstdio>
-
-#ifdef STDC_HEADERS
-#include <stdlib.h>
-#include <string.h>
-#endif // STDC_HEADERS
+#include <cstdlib>
+#include <cstring>
 
 #ifdef HAVE_UNISTD_H
 #include <sys/types.h>
@@ -284,19 +281,12 @@ getString() {
 //static singleton var
 Fluxbox *Fluxbox::singleton=0;
 
-//------------ instance ---------------------
-//returns singleton object of Fluxbox class
-//since we only need to create one instance of Fluxbox
-//-------------------------------------------
-Fluxbox *Fluxbox::instance(int m_argc, char **m_argv, char *dpy_name, char *rc) {
-	return singleton;
-}
 //default values for titlebar left and right
 //don't forget to change last value in m_rc_titlebar_* if you add more to these
 Fluxbox::Titlebar Fluxbox::m_titlebar_left[] = {STICK};
 Fluxbox::Titlebar Fluxbox::m_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 
-Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
+Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc)
 : BaseDisplay(m_argv[0], dpy_name),
 m_resourcemanager(), m_screen_rm(),
 m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
@@ -314,10 +304,15 @@ m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
 focused_window(0), masked_window(0),
 timer(this),
 no_focus(false),
-rc_file(rc),
+rc_file(rc ? rc : ""),
 argv(m_argv), argc(m_argc), 
 key(0)
 {
+
+	if (singleton != 0) {
+		cerr<<"Fatal! There can only one instance of fluxbox class."<<endl;
+		abort();
+	}
 
 	//singleton pointer
 	singleton = this;
@@ -1911,9 +1906,9 @@ void Fluxbox::save_rc(void) {
 	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc); //merge database together
 	XrmPutFileDatabase(old_blackboxrc, dbfile.get());
 	XrmDestroyDatabase(old_blackboxrc);
-	#ifdef DEBUG
+#ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;	
-	#endif
+#endif // DEBUG
 }
 
 //-------- getRcFilename -------------
@@ -1922,12 +1917,12 @@ void Fluxbox::save_rc(void) {
 char *Fluxbox::getRcFilename() {
 	char *dbfile=0;
  
-	if (!rc_file) {		
+	if (rc_file.size() == 0) {
 		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);
 		return StringUtil::strdup(str.c_str());
 
 	} else
-		dbfile = StringUtil::strdup(rc_file);
+		dbfile = StringUtil::strdup(rc_file.c_str());
  
 	return dbfile;
 }
@@ -2473,7 +2468,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 		old_wkspc->menu()->setItemSelected(old_win->getWindowNumber(), false);
 		
 	}
-	
+
 	if (win && ! win->isIconic()) {
 		// make sure we have a valid win pointer with a valid screen
 		ScreenList::iterator winscreen = 
@@ -2491,7 +2486,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 			wkspc->menu()->setItemSelected(win->getWindowNumber(), true);
 		}
 	} else
-		focused_window = (FluxboxWindow *) 0;
+		focused_window = 0;
 
 	if (tbar != 0)
 		tbar->redrawWindowLabel(True);
