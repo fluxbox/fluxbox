@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.15 2002/01/18 18:28:17 pekdon Exp $
+// $Id: Tab.cc,v 1.16 2002/01/20 02:15:23 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -29,6 +29,7 @@
 
 #include "i18n.hh"
 #include "DrawUtil.hh"
+#include "Screen.hh"
 
 #include <iostream>
 using namespace std;
@@ -1049,7 +1050,7 @@ unsigned int Tab::calcCenterYPos() {
 // Returns the tabplacement string of the 
 // tabplacement number on success else 0.
 //----------------------------------------
-const char *Tab::getTabPlacementString(int placement) {	
+const char *Tab::getTabPlacementString(Tab::Placement placement) {	
 	for (int i=0; i<(PNONE / 5); i++) {
 		if (m_tabplacementlist[i] == placement)
 			return m_tabplacementlist[i].string;
@@ -1062,10 +1063,10 @@ const char *Tab::getTabPlacementString(int placement) {
 // tabplacement string on success else
 // the type none on failure.
 //----------------------------------------
-int Tab::getTabPlacementNum(const char *string) {
+Tab::Placement Tab::getTabPlacementNum(const char *string) {
 	for (int i=0; i<(PNONE / 5); i ++) {
 		if (m_tabplacementlist[i] == string) {
-			return m_tabplacementlist[i].tp;
+			return static_cast<Tab::Placement>(m_tabplacementlist[i].tp);
 		}
 	}
 	return PNONE;
@@ -1075,9 +1076,9 @@ int Tab::getTabPlacementNum(const char *string) {
 // Returns the tabplacement string of the 
 // tabplacement number on success else 0.
 //----------------------------------------
-const char *Tab::getTabAlignmentString(int placement) {	
+const char *Tab::getTabAlignmentString(Tab::Alignment alignment) {	
 	for (int i=0; i<ANONE; i++) {
-		if (m_tabalignmentlist[i] == placement)
+		if (m_tabalignmentlist[i] == alignment)
 			return m_tabalignmentlist[i].string;
 	}
 	return 0;
@@ -1088,10 +1089,10 @@ const char *Tab::getTabAlignmentString(int placement) {
 // tabplacement string on success else
 // the type none on failure.
 //----------------------------------------
-int Tab::getTabAlignmentNum(const char *string) {
+Tab::Alignment Tab::getTabAlignmentNum(const char *string) {
 	for (int i=0; i<ANONE; i++) {
 		if (m_tabalignmentlist[i] == string) {
-			return m_tabalignmentlist[i].tp;
+			return static_cast<Tab::Alignment>(m_tabalignmentlist[i].tp);
 		}
 	}
 	return ANONE;

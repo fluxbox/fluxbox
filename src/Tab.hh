@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.7 2002/01/18 18:28:17 pekdon Exp $
+// $Id: Tab.hh,v 1.8 2002/01/20 02:15:23 fluxgen Exp $
 
 #ifndef _TAB_HH_
 #define _TAB_HH_
@@ -27,9 +27,7 @@
 #ifndef _IMAGE_HH_
 #include "Image.hh"
 #endif
-#ifndef _SCREEN_HH_
-#include "Screen.hh"
-#endif
+
 #ifndef _WINDOW_HH_
 #include "Window.hh"
 #endif
@@ -39,6 +37,9 @@
 
 class Tab {
 public:
+	enum Placement{ PTOP = 0, PBOTTOM = 5, PLEFT = 10, PRIGHT = 15, PNONE = 20};
+	enum Alignment{ ALEFT = 0, ACENTER, ARIGHT, ARELATIVE, ANONE };
+
 	Tab(FluxboxWindow *win, Tab *prev=0, Tab *next=0);
 	~Tab();
 	void draw(bool pressed);
@@ -70,14 +71,11 @@ public:
 	static Tab *getFirst(Tab *current);
 	static Tab *getLast(Tab *current);
 	void disconnect();
-	
-	enum { PTOP = 0, PBOTTOM = 5, PLEFT = 10, PRIGHT = 15, PNONE = 20};
-	enum { ALEFT = 0, ACENTER, ARIGHT, ARELATIVE, ANONE };
 
-	static const char *getTabPlacementString(int placement);
-	static int getTabPlacementNum(const char *string);
-	static const char *getTabAlignmentString(int placement);
-	static int getTabAlignmentNum(const char *string);
+	static const char *getTabPlacementString(Tab::Placement placement);
+	static Tab::Placement getTabPlacementNum(const char *string);
+	static const char *getTabAlignmentString(Tab::Alignment alignment);
+	static Tab::Alignment getTabAlignmentNum(const char *string);
 	//TODO: do these have to be public?
 	void resizeGroup(void); // used when (un)shading windows
 	void calcIncrease(void);
