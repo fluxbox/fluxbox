@@ -7,7 +7,7 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # warning: could not set environment variable 'DISPLAY'\n
 $ #Usage
-# Fluxkbox %s: (c) 2001 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
   -display <string>\t\tuse display connection.\n\
   -rc <string>\t\t\tuse alternate resource file.\n\
   -version\t\t\tdisplay version and exit.\n\

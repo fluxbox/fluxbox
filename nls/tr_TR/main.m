@@ -7,7 +7,7 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # ikaz : 'DISPLAY' verisini oturtamadým\n
 $ #Usage
-# Fluxbox %s: (c) 2001 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
   -display <metin>\t\tekraný kullan.\n\
   -rc <metin>\t\t\tbaþka bir ayarlama dosyasýný kullan.\n\
   -version\t\t\tnesil bilgisini gösterir ve çýkar.\n\

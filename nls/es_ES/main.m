@@ -7,7 +7,7 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # cuidado: no se puede establecer la variable de ambiente 'DISPLAY'
 $ #Usage
-# Fluxbox %s: (c) 2001 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
   -display <string> conexión de despliegue.\n\
   -rc <string>      archivo alternativo de recuros.\n\
   -version          mostrar la versión y cerrar.\n\

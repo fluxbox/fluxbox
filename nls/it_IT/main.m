@@ -7,7 +7,7 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # warning: non posso settare la variabile di ambiente 'DISPLAY'\n
 $ #Usage
-# Fluxkbox %s: (c) 2001 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
   -display <string>\t\tusa la connesione al display.\n\
   -rc <string>\t\t\tusa file di risorse alternativo.\n\
   -version\t\t\tmostra la versione ed esci.\n\
