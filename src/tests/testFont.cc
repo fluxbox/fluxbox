@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: testFont.cc,v 1.3 2002/10/19 14:13:05 fluxgen Exp $
+// $Id: testFont.cc,v 1.4 2002/11/12 22:50:36 fluxgen Exp $
 
 #include "Font.hh"
 #include "BaseDisplay.hh"
@@ -83,7 +83,11 @@ public:
 			x, y + m_font.descent(), x + text_w, y + m_font.descent());	
 		XSetForeground(getXDisplay(), wingc, 0xFF00FF); // don't care what color it is
 		XDrawLine(getXDisplay(), m_win, wingc,
-			x, y - text_h , x + text_w, y - text_h );		
+			x, y - text_h , x + text_w, y - text_h );
+		XSetForeground(getXDisplay(), wingc, 0xFF0000); // don't care what color it is
+		XDrawLine(getXDisplay(), m_win, wingc,
+			x, y, x + text_w, y);
+
 		XSetForeground(getXDisplay(), wingc, 0);
 		m_font.drawText(m_win, 0, wingc,
 			m_text.c_str(), m_text.size(),
