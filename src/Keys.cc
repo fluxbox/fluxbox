@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.23 2003/02/28 23:55:37 fluxgen Exp $
+//$Id: Keys.cc,v 1.24 2003/04/14 12:10:16 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -108,6 +108,8 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {"LastTab", LASTTAB},
     {"MoveTabPrev", MOVETABPREV},
     {"MoveTabNext", MOVETABNEXT},
+    {"AttachLast", ATTACHLAST},
+    {"DetachClient", DETACHCLIENT},
     {"ShadeWindow", SHADE},
     {"MaximizeWindow", MAXIMIZE},
     {"StickWindow", STICK},

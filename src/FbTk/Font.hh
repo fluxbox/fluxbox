@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.3 2002/12/08 18:37:08 fluxgen Exp $
+//$Id: Font.hh,v 1.4 2003/04/14 12:07:03 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -64,7 +64,8 @@ public:
     int ascent() const;
     int descent() const;
     /**
-       Rotate font in any angle (currently only 90 degrees supported and just XFont implementation)
+       Rotate font in any angle 
+       (currently only 90 degrees supported and just XFont implementation)
     */
     void rotate(float angle);
 
@@ -79,7 +80,9 @@ public:
        @param y position
        @param rotate if the text should be drawn rotated (if it's rotated before)
     */	
-    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, bool rotate=true) const;
+    void drawText(Drawable w, int screen, GC gc, 
+                  const char *text, size_t len, 
+                  int x, int y, bool rotate=true) const;
     bool isAntialias() const { return m_antialias; }
     /// @return true if the font is rotated, else false
     bool isRotated() const { return m_rotated; }

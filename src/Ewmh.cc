@@ -19,15 +19,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.14 2003/04/09 17:20:00 rathnor Exp $
+// $Id: Ewmh.cc,v 1.15 2003/04/14 12:11:21 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
 #include "Screen.hh"
 #include "Window.hh"
 #include "fluxbox.hh"
+#include "WinClient.hh"
 
 #include <iostream>
+#include <algorithm>
 #include <new>
 using namespace std;
 
@@ -116,8 +118,8 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
         unsigned int desktop = static_cast<unsigned int>(*data);
         if (desktop == 0xFFFFFFFF && !win.isStuck())
             win.stick();
-        else if (win.getScreen())
-            win.getScreen()->sendToWorkspace(desktop, &win, false);
+        else
+            win.getScreen().sendToWorkspace(desktop, &win, false);
 
         XFree(data);
     }
@@ -147,7 +149,15 @@ void Ewmh::updateClientList(BScreen &screen) {
         Workspace::Windows::const_iterator it = (*workspace_it)->getWindowList().begin();
         Workspace::Windows::const_iterator it_end = (*workspace_it)->getWindowList().end();		
         for (; it != it_end; ++it) {
-            wl[win++] = (*it)->getClientWindow();
+            if ((*it)->numClients() == 1)
+                wl[win++] = (*it)->getClientWindow();
+            else {
+                // add every client in fluxboxwindow to list window list
+                std::list<WinClient *>::iterator client_it = (*it)->clientList().begin();
+                std::list<WinClient *>::iterator client_it_end = (*it)->clientList().end();
+                for (; client_it != client_it_end; ++client_it)
+                    wl[win++] = (*client_it)->window();
+            }
         }
     }
 
@@ -207,11 +217,11 @@ void Ewmh::updateWorkspaceCount(BScreen &screen) {
 }
 
 void Ewmh::updateState(FluxboxWindow &win) {
-
+    //!! TODO
 }
 
 void Ewmh::updateLayer(FluxboxWindow &win) {
-    //TODO _NET_WM_WINDOW_TYPE
+    //!! TODO _NET_WM_WINDOW_TYPE
 }
 
 void Ewmh::updateHints(FluxboxWindow &win) {
@@ -223,9 +233,11 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     if (win.isStuck())
         workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
 
-    XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(),
-                    m_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
-                    (unsigned char *)&workspace, 1);
+    for_each(win.clientList().begin(),
+             win.clientList().end(),
+             FbTk::ChangeProperty(FbTk::App::instance()->display(),
+                    m_net_wm_desktop, PropModeReplace,
+                    (unsigned char *)&workspace, 1));
 }
 
 // return true if we did handle the atom here

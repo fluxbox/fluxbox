@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.7 2003/02/23 16:52:16 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.8 2003/04/14 12:06:25 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -33,7 +33,7 @@ namespace FbTk {
 Display *FbWindow::s_display = 0;
 
 FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
-                     m_width(0), m_height(0), m_border_width(0) {
+                     m_width(0), m_height(0), m_border_width(0), m_destroy(true) {
 
     if (s_display == 0)
         s_display = App::instance()->display();
@@ -45,7 +45,7 @@ FbWindow::FbWindow(int screen_num,
                    int depth,
                    int class_type):
     m_screen_num(screen_num),
-    m_parent(0) {
+    m_parent(0), m_destroy(true) {
 	
     create(RootWindow(FbTk::App::instance()->display(), screen_num), 
            x, y, width, height, eventmask,
@@ -53,11 +53,12 @@ FbWindow::FbWindow(int screen_num,
 };
 
 FbWindow::FbWindow(const FbWindow &parent,
-                   int x, int y, size_t width, size_t height, long eventmask,
+                   int x, int y, unsigned int width, unsigned int height, 
+                   long eventmask,
                    bool override_redirect, 
                    int depth, int class_type):
    m_parent(&parent),
-   m_screen_num(parent.screenNumber()) { 
+   m_screen_num(parent.screenNumber()), m_destroy(true) { 
 
     create(parent.window(), x, y, width, height, eventmask, 
            override_redirect, depth, class_type);
@@ -65,8 +66,13 @@ FbWindow::FbWindow(const FbWindow &parent,
 	
 };
 
+FbWindow::FbWindow(Window client):m_parent(0), m_window(client),
+                                  m_destroy(false) { // don't destroy this window
+    updateGeometry();
+}
+
 FbWindow::~FbWindow() {
-    if (m_window != 0)
+    if (m_window != 0 && m_destroy)
         XDestroyWindow(s_display, m_window);
 }
 
@@ -82,7 +88,7 @@ void FbWindow::setBackgroundPixmap(Pixmap bg_pixmap) {
 void FbWindow::setBorderColor(const FbTk::Color &border_color) {
     XSetWindowBorder(s_display, m_window, border_color.pixel());
 }
-void FbWindow::setBorderWidth(size_t size) {	
+void FbWindow::setBorderWidth(unsigned int size) {	
     XSetWindowBorderWidth(s_display, m_window, size);
     m_border_width = size;
 }
@@ -100,7 +106,7 @@ void FbWindow::clear() {
 }
 
 FbWindow &FbWindow::operator = (Window win) {
-    if (m_window != 0)
+    if (m_window != 0 && m_destroy)
         XDestroyWindow(s_display, m_window);
     m_window = win;
     if (m_window != 0)
@@ -127,13 +133,13 @@ void FbWindow::move(int x, int y) {
     m_y = y;
 }
 
-void FbWindow::resize(size_t width, size_t height) {
+void FbWindow::resize(unsigned int width, unsigned int height) {
     XResizeWindow(s_display, m_window, width, height);
     m_width = width;
     m_height = height;
 }
 
-void FbWindow::moveResize(int x, int y, size_t width, size_t height) {
+void FbWindow::moveResize(int x, int y, unsigned int width, unsigned int height) {
     XMoveResizeWindow(s_display, m_window, x, y, width, height);
     m_x = x;
     m_y = y;
@@ -152,6 +158,7 @@ void FbWindow::raise() {
 int FbWindow::screenNumber() const {
     return m_screen_num;
 }
+
 void FbWindow::updateGeometry() {
     if (m_window == 0)
         return;
@@ -164,7 +171,7 @@ void FbWindow::updateGeometry() {
 }
 
 void FbWindow::create(Window parent, int x, int y,
-                      size_t width, size_t height, 
+                      unsigned int width, unsigned int height, 
                       long eventmask, bool override_redirect,
                       int depth, int class_type) {
                      

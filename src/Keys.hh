@@ -1,5 +1,5 @@
 // Keys.hh for Fluxbox - an X11 Window manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.20 2003/02/28 23:37:41 fluxgen Exp $
+// $Id: Keys.hh,v 1.21 2003/04/14 12:10:14 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -51,6 +51,7 @@ public:
         LEFTWORKSPACE, RIGHTWORKSPACE,
         KILLWINDOW, NEXTWINDOW,	PREVWINDOW,
         NEXTTAB, PREVTAB, FIRSTTAB, LASTTAB, MOVETABPREV, MOVETABNEXT,
+        ATTACHLAST, DETACHCLIENT,
         SHADE, MAXIMIZE, 
         STICK,       // Make Sticky
         EXECUTE,	// Run command

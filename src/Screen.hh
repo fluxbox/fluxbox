@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.73 2003/03/03 21:51:06 rathnor Exp $
+// $Id: Screen.hh,v 1.74 2003/04/14 12:13:36 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -30,7 +30,6 @@
 #include "Theme.hh"
 #include "BaseDisplay.hh"
 #include "Workspace.hh"
-#include "Tab.hh"
 #include "Resource.hh"
 #include "Subject.hh"
 #include "FbWinFrameTheme.hh"
@@ -58,6 +57,7 @@ class Slit;
 class Toolbar;
 class FbWinFrameTheme;
 class RootTheme;
+class WinClient;
 
 namespace FbTk {
 class MenuTheme;
@@ -85,7 +85,6 @@ public:
     inline bool isSemiSloppyFocus() const { return (*resource.focus_model == Fluxbox::SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
     inline bool isScreenManaged() const { return managed; }
-    inline bool isTabRotateVertical() const { return *resource.tab_rotate_vertical; }
     inline bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
     inline bool isWorkspaceWarping() const { return *resource.workspace_warping; }
     inline bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
@@ -188,14 +187,10 @@ public:
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
     inline int getRowPlacementDirection() const { return resource.row_direction; }
     inline int getColPlacementDirection() const { return resource.col_direction; }
-    inline unsigned int getTabWidth() const { return *resource.tab_width; }
-    inline unsigned int getTabHeight() const { return *resource.tab_height; }
 
     inline int getSlitLayerNum() const { return (*resource.slit_layernum).getNum(); }
     inline int getToolbarLayerNum() const { return (*resource.toolbar_layernum).getNum(); }
 
-    inline Tab::Placement getTabPlacement() const { return *resource.tab_placement; }
-    inline Tab::Alignment getTabAlignment() const { return *resource.tab_alignment; }
 
     inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
@@ -218,11 +213,6 @@ public:
     inline void saveFullMax(bool f) { resource.full_max = f;  }
     inline void saveFocusNew(bool f) { resource.focus_new = f;  }
     inline void saveFocusLast(bool f) { resource.focus_last = f;  }
-    inline void saveTabWidth(unsigned int w) { resource.tab_width = w;  }
-    inline void saveTabHeight(unsigned int h) { resource.tab_height = h;  }
-    inline void saveTabPlacement(Tab::Placement p) { *resource.tab_placement = p;  }
-    inline void saveTabAlignment(Tab::Alignment a) { *resource.tab_alignment = a;  }
-    inline void saveTabRotateVertical(bool r) { resource.tab_rotate_vertical = r;   }
     inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
     inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
     inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
@@ -301,6 +291,7 @@ public:
     void updateNetizenWindowLower(Window);
     /// create window frame for client window and attach it
     FluxboxWindow *createWindow(Window clientwin);
+    FluxboxWindow *createWindow(WinClient &client);
     void setupWindowActions(FluxboxWindow &win);
 
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT, LEFTRIGHT,
@@ -386,7 +377,7 @@ private:
 
         Resource<bool> toolbar_auto_hide,
             image_dither, opaque_move, full_max,
-            max_over_slit, tab_rotate_vertical,
+            max_over_slit,
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
@@ -394,13 +385,10 @@ private:
         Resource<std::string> rootcommand;		
         Resource<Fluxbox::FocusModel> focus_model;
         bool ordered_dither;
-        Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold,
-            tab_width, tab_height;
+        Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold;            
         Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;
         int placement_policy, row_direction, col_direction;
 
-        Resource<Tab::Placement> tab_placement;
-        Resource<Tab::Alignment> tab_alignment;
         Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
         Resource<int> toolbar_on_head;
         Resource<Toolbar::Placement> toolbar_placement;
