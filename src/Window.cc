@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.173 2003/05/13 11:14:05 rathnor Exp $
+// $Id: Window.cc,v 1.174 2003/05/13 14:05:00 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2054,7 +2054,9 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         // Auto-group from tab?
         if (!client->isTransient()) {
+#ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO check grouping here"<<endl;
+#endif // DEBUG
         }
 
         fluxbox->ungrab();
