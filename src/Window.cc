@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.291 2004/06/20 04:49:32 rathnor Exp $
+// $Id: Window.cc,v 1.292 2004/06/29 12:41:23 rathnor Exp $
 
 #include "Window.hh"
 
@@ -3056,13 +3056,18 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
     if (m_attaching_tab == 0)
         return;
 
-    ungrabPointer(CurrentTime);
-
     parent().drawRectangle(screen().rootTheme().opGC(),
                            m_last_move_x, m_last_move_y, 
                            m_labelbuttons[m_attaching_tab]->width(), 
                            m_labelbuttons[m_attaching_tab]->height());
+
+    ungrabPointer(CurrentTime);
+
     Fluxbox::instance()->ungrab();
+
+    // make sure we clean up here, since this object may be deleted inside attachClient
+    WinClient *old_attached = m_attaching_tab;
+    m_attaching_tab = 0;
 
     if (interrupted)
         return;
@@ -3089,21 +3094,19 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
         if (attach_to_win != this &&
             attach_to_win != 0 && attach_to_win->isTabable()) {
 
-            attach_to_win->attachClient(*m_attaching_tab);
-
+            attach_to_win->attachClient(*old_attached);
+            // we could be deleted here, DO NOT do anything else that alters this object
         } else if (attach_to_win != this) { 
             // disconnect client if we didn't drop on a window
-            WinClient &client = *m_attaching_tab;
-            detachClient(*m_attaching_tab);
+            WinClient &client = *old_attached;
+            detachClient(*old_attached);
             // move window by relative amount of mouse movement
             // since just detached, move relative to old location
             if (client.m_win != 0)
                 client.m_win->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
 
         }
-                    
     }
-    m_attaching_tab = 0;
 }
 
 void FluxboxWindow::restore(WinClient *client, bool remap) {

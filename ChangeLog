@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/29:
+  * Fix rectangle cleaning on attaching tabs (Simon)
+    Window.cc
 *04/06/27:
   * Fixed bug in systray (Henrik)
     (this fixes the problem with "sim" in systray)
