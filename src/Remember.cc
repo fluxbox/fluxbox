@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.35 2004/02/20 09:05:38 fluxgen Exp $
+// $Id: Remember.cc,v 1.36 2004/04/18 17:53:15 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -785,6 +785,10 @@ void Remember::setupFrame(FluxboxWindow &win) {
             screen.changeWorkspaceID(app->workspace);
     }
 
+    if (app->decostate_remember)
+        win.setDecorationMask(app->decostate);
+
+
     if (app->dimensions_remember)
         win.resize(app->w, app->h);
     
@@ -823,9 +827,6 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     // external tabs aren't available atm...
     //if (app->tabstate_remember) ...
-
-    if (app->decostate_remember)
-        win.setDecorationMask(app->decostate);
 
     if (app->stuckstate_remember)
         // if inconsistent...
