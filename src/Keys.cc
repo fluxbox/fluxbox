@@ -197,26 +197,21 @@ bool Keys::load(char *filename) {
 				if (keyarg==1) //first arg is modifier
 					mod = getModifier(val);					
 				else if (keyarg>1) {
-					
-					//keyarg=0;
-					key = getKey(val);
-					if (!key){ //if no keycode was found try the modifier
-						int tmpmod = getModifier(val);
-						if (tmpmod)
-							mod |= tmpmod; //add it to modifier
-							
-					} else if (!current_key) {
-									
-						current_key = new t_key(key, mod);
-						last_key = current_key;
-						
-					} else { 
-						
-						t_key *temp_key = new t_key(key, mod);
-						last_key->keylist.push_back(temp_key);
-						last_key = temp_key;
-					}
 
+					//keyarg=0;
+					int tmpmod=getModifier(val);
+					if(tmpmod) mod|=tmpmod; //If it's a modifier
+					else{ 
+						key = getKey(val); // else get the key
+						if (!current_key) {
+							current_key = new t_key(key, mod);
+							last_key = current_key;
+						} else { 
+							t_key *temp_key = new t_key(key, mod);
+							last_key->keylist.push_back(temp_key);
+							last_key = temp_key;
+						}
+					}
 				}			
 
 			} else {
@@ -303,10 +298,10 @@ bool Keys::load(char *filename) {
 	return true;
 }
 
-//--------- grabKey ---------------
+//--------- grabKey ---------------------
 // Grabs a key with the modifier
 // and with numlock,capslock and scrollock
-//---------------------------------
+//----------------------------------------
 void Keys::grabKey(unsigned int key, unsigned int mod) {
 	
 	Fluxbox *fluxbox = Fluxbox::instance();	
