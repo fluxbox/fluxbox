@@ -1,6 +1,6 @@
 # util/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
 SUBDIRS = fbrun
-bin_SCRIPTS = bsetbg
+bin_SCRIPTS = bsetbg fluxbox-generate_menu
 bin_PROGRAMS =		bsetroot
 bsetroot_SOURCES =	bsetroot.cc bsetroot.hh
 bsetroot_LDADD =	../src/BaseDisplay.o ../src/Timer.o ../src/Image.o ../src/i18n.o ../src/FbAtoms.o
@@ -13,3 +13,6 @@ distclean-local:
 
 bsetroot.o: bsetroot.cc ../config.h bsetroot.hh ../src/BaseDisplay.hh \
  ../src/Timer.hh ../src/Image.hh ../src/FbAtoms.hh
+
+../data/menu: fluxbox-generate_menu
+	./fluxbox-generate_menu -o ../data/menu -p ${prefix}/share -m "Fluxbox-${VERSION}"
