@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.8:
 *04/01/09:
+  * Fixed color parse bug (Henrik)
+    removing whitespaces
+    Color.cc
   * Fixed an iconify bug in "All Windows" mode in IconbarTool (Henrik)
     IconbarTool.cc
 *04/01/08:
