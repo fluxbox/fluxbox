@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.11 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.12 2002/10/29 16:08:42 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -129,12 +129,12 @@ public:
 	*/
 	inline Window getWindowID() const { return frame.window; }
 
-	inline unsigned int getWidth() const { return frame.width; }
-	inline unsigned int getHeight() const { return frame.height; }
+	inline unsigned int width() const { return frame.width; }
+	inline unsigned int height() const { return frame.height; }
 	inline unsigned int getExposedHeight() const { return ((do_auto_hide) ? frame.bevel_w : frame.height); }
-	inline int getX() const	{ return ((hidden) ? frame.x_hidden : frame.x); }
-	inline int getY() const	{ return ((hidden) ? frame.y_hidden : frame.y); }
-	inline IconBar *getIconBar() { return iconbar; }
+	inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
+	inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
+	inline const IconBar *iconBar()  const { return iconbar; }
 	/**
 		@name eventhandlers
 	*/
@@ -188,17 +188,16 @@ private:
 	public:
 		Toolbar *toolbar;
 
-		virtual void timeout(void);
+		virtual void timeout();
 	} hide_handler;
 
-	Fluxbox *fluxbox; ///< obsolete
-	BScreen *screen;  ///< screen on wich this toolbar exist
+	BScreen *screen;
 	BImageControl *image_ctrl; 
-	BTimer clock_timer, *hide_timer;
+	BTimer clock_timer, hide_timer;
 	Toolbarmenu *toolbarmenu;
 	IconBar *iconbar;
 	
-	std::string new_workspace_name; ///< temp variable in edit mode
+	std::string new_workspace_name; ///< temp variable in edit workspace name mode
 
 	friend class HideHandler;
 	friend class Toolbarmenu;
