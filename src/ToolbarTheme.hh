@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.1 2002/12/02 19:56:08 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.2 2003/02/15 01:58:52 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -29,9 +29,9 @@
 #include "Texture.hh"
 #include "Color.hh"
 #include "Text.hh"
-/**
-  Toolbar theme class container
-*/
+#include "Subject.hh"
+
+/// toolbar theme class container
 class ToolbarTheme: public FbTk::Theme {
 public:
     explicit ToolbarTheme(int screen_num);
@@ -71,6 +71,9 @@ public:
     GC buttonPicGC() const { return m_button_pic_gc; }
     ///@}
     FbTk::Justify justify() const { return *m_justify; }
+
+    void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
+    void removeListener(FbTk::Observer &obs) { m_theme_change_sig.detach(&obs); }
 private:
     // text colors
     FbTk::ThemeItem<FbTk::Color> m_label_textcolor, m_window_textcolor, m_clock_textcolor;
@@ -82,6 +85,8 @@ private:
     // graphic context
     GC m_label_text_gc, m_window_text_gc, m_clock_text_gc, m_button_pic_gc;
     Display *m_display;
+
+    FbTk::Subject m_theme_change_sig;
 };
 
 #endif // TOOLBARTHEME_HH

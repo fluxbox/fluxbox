@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.1 2003/01/05 22:14:10 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.2 2003/02/15 01:55:27 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -29,6 +29,7 @@
 #include "Text.hh"
 #include "Color.hh"
 #include "FbTk/Theme.hh"
+#include "Subject.hh"
 
 class FbWinFrameTheme: public FbTk::Theme {
 public:
@@ -76,6 +77,9 @@ public:
     GC labelTextUnfocusGC() const { return m_label_text_unfocus_gc; }
 
     void reconfigTheme();
+
+    void addListener(FbTk::Observer &obs) { m_theme_change.attach(&obs); }
+    void removeListener(FbTk::Observer &obs) { m_theme_change.detach(&obs); }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_label_focus, m_label_unfocus;
     FbTk::ThemeItem<FbTk::Texture> m_title_focus, m_title_unfocus;
@@ -91,6 +95,8 @@ private:
     FbTk::ThemeItem<FbTk::Justify> m_textjustify;
 
     GC m_label_text_focus_gc, m_label_text_unfocus_gc;
+
+    FbTk::Subject m_theme_change;
 };
 
 #endif // FBWINFRAMETHEME_HH

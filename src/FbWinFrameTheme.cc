@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.1 2003/01/05 22:14:10 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.2 2003/02/15 01:55:45 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -81,5 +81,8 @@ void FbWinFrameTheme::reconfigTheme() {
 
     gcv.foreground = m_label_unfocus_color->pixel();
     XChangeGC(disp, m_label_text_unfocus_gc, gc_value_mask, &gcv);
+
+    // notify listeners
+    m_theme_change.notify();
 }
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.1 2002/12/02 19:56:38 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.2 2003/02/15 01:59:00 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -106,4 +106,7 @@ void ToolbarTheme::reconfigTheme() {
     gcv.foreground = m_button_color->pixel();
     XChangeGC(m_display, m_button_pic_gc,
               gc_value_mask, &gcv);
+
+    // notify listeners
+    m_theme_change_sig.notify();
 }
