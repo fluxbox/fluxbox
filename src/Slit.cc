@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.98 2004/08/31 15:26:38 rathnor Exp $
+// $Id: Slit.cc,v 1.99 2004/08/31 19:27:21 akir Exp $
 
 #include "Slit.hh"
 
@@ -1232,19 +1232,20 @@ void Slit::setupMenu() {
     m_layermenu->setInternalMenu();
     m_clientlist_menu.setInternalMenu();
    
-    typedef list<pair<const char *, Slit::Placement> > Placements;
+    typedef pair<const char *, Slit::Placement> PlacementP;
+    typedef list<PlacementP> Placements;
     Placements place_menu;
 
     // menu is 3 wide, 5 down
-    place_menu.push_back(make_pair(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Slit::TOPLEFT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
-    place_menu.push_back(make_pair(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
-    place_menu.push_back(make_pair((const char *)0, Slit::TOPLEFT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
-    place_menu.push_back(make_pair(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
-    place_menu.push_back(make_pair(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Slit::BOTTOMRIGHT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Slit::TOPLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Slit::LEFTCENTER));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Slit::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Slit::TOPCENTER));
+    place_menu.push_back(PlacementP((const char *)0, Slit::TOPLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Slit::BOTTOMCENTER));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Slit::TOPRIGHT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Slit::RIGHTCENTER));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Slit::BOTTOMRIGHT));
     
 
     // create items in sub menu
