@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.24 2003/12/08 19:31:40 fluxgen Exp $
+# $Id: fbsetbg,v 1.25 2003/12/12 13:07:47 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -59,7 +59,7 @@ command="`basename \"$0\"`"
 # Functions
 display_usage() {
     cat << EOF
-Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper] [-l] [-h] [-i] [-p]
+Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper] [-bB bsetrootoptions] [-l] [-h] [-i] [-p]
 Use \`\`$command -h'' for a complete help message.
 
 EOF
@@ -71,23 +71,24 @@ display_help() {
 
 Options:
 
-    -f  Set fullscreen wallpaper
-    -c  Set centered wallpaper
-    -t  Set tiled wallpaper
+    -f  Set fullscreen wallpaper.
+    -c  Set centered wallpaper.
+    -t  Set tiled wallpaper.
     -a  Set maximized wallpaper, preserving aspect.
         ( if your bgsetter doesn't support this
           we fall back to -f )
-    -u  Use specified wallpapersetter, use no argument to forget
+    -u  Use specified wallpapersetter, use no argument to forget.
+    -b  Forward the options to bsetroot.
 
-    -F,-C,-T,-A,-U same as uncapsed but without remembering.
+    -F,-C,-T,-A,-U,-B same as uncapsed but without remembering.
 
-    -h  Display this help
+    -h  Display this help.
 
-    -l  Set previous wallpaper
+    -l  Set previous wallpaper.
 
-    -i  Information about selected wallpaper command
-    -d  (deprecated, use -i) Debug info
-    -p  Tips
+    -i  Information about selected wallpaper command.
+    -d  (deprecated, use -i) Debug info.
+    -p  Tips.
 
 
 Files:
@@ -162,6 +163,10 @@ message() {
 remembercommand() {
     grep -vs "|${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
     mv -f ${lastwallpaper}.tmp ${lastwallpaper}
+    if [ "$option" = bsetroot ]; then
+        echo $option'|'$wallpaper'|'$DISPLAY >> $lastwallpaper
+        return
+    fi
     # Make dir/../../path/file.jpg work
     case $wallpaper in
         # no spaces allowed between the varname and '|'
@@ -246,6 +251,15 @@ while [ $# -gt 0 ]; do
             wallpaper=$2
             remember=false
             break ;;
+        -b) option=bsetroot
+            shift
+            wallpaper=$*
+            break ;;
+        -B) option=bsetroot
+            shift
+            wallpaper=$*
+            remember=false
+            break;;
         -l)
             if [ -r "$lastwallpaper" ]; then
                 option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
@@ -403,16 +417,25 @@ fi
 
 option=${option:='$full'}
 
-if [ ! -r "$wallpaper" ]; then
-    message "Can't find wallpaper $wallpaper"
-    exit 1
-fi
+
 
 if [ -z "$DISPLAY" ];then
     message "You are not connected to an X session\nPerhaps you should set the DISPLAY environment variable?"
     exit 1
 fi
 
+if [ "$option" = bsetroot ]; then
+    bsetroot $wallpaper
+    if [ ! "$remember" = false ]; then
+        remembercommand
+    fi
+    exit 0
+fi
+
+if [ ! -r "$wallpaper" ]; then
+    message "Can't find wallpaper $wallpaper"
+    exit 1
+fi
 
 $WPSETTER `eval echo $option` "$wallpaper"
 if [ $? -ne 0 ]; then
