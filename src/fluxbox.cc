@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.240 2004/04/22 21:07:57 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.241 2004/04/26 09:25:42 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -588,6 +588,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // SLIT        
 
     } // end init screens
+    XAllowEvents(disp, ReplayPointer, CurrentTime);
 
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
