@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.33 2004/10/10 16:35:29 akir Exp $
+// $Id$
 
 #include "FbRun.hh"
 
@@ -258,6 +258,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             hide();
             FbTk::App::instance()->end(); // end program
             break;
+        case XK_KP_Enter:
         case XK_Return:
             run(text());
             break;
