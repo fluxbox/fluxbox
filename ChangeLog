@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/02/20:
+   * Fixed a size bug without titlebar (Henrik)
+     Window.cc, FbWinFrame.cc
+   * Fixed a clientmenu update bug (Henrik)
+     Workspace.hh/cc
+   * Fixed slit client resize bug (Henrik)
+     Slit.hh/cc
 *03/02/19:
    * Fixed transient raise/lower (Henrik)
 *03/02/17:
