@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.89 2002/12/01 13:41:58 rathnor Exp $
+// $Id: Screen.cc,v 1.90 2002/12/02 23:19:16 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -39,6 +39,7 @@
 #include "Iconmenu.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
+#include "DirHelper.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -295,6 +296,9 @@ BScreen::BScreen(ResourceManager &rm,
                       fluxbox->getStyleFilename(), getRootCommand().c_str());
 
     theme->reconfigure(*resource.antialias);
+    // set database for new Theme Engine
+    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename());
+
     // special case for tab rotated
     if (*resource.tab_rotate_vertical && 
         ( *resource.tab_placement == Tab::PLEFT || *resource.tab_placement == Tab::PRIGHT)) {
@@ -519,11 +523,15 @@ void BScreen::reconfigure() {
 #endif // DEBUG
     Fluxbox::instance()->loadRootCommand(this);
     theme->setRootCommand(getRootCommand());
-    theme->load(Fluxbox::instance()->getStyleFilename());
+    const string &filename = Fluxbox::instance()->getStyleFilename();
+    theme->load(filename.c_str()); // old theme engine
+    FbTk::ThemeManager::instance().load(filename.c_str()); // new theme engine
     theme->reconfigure(*resource.antialias);
+    
     // special case for tab rotated
     if (*resource.tab_rotate_vertical && 
-        ( *resource.tab_placement == Tab::PLEFT || *resource.tab_placement == Tab::PRIGHT)) {
+        ( *resource.tab_placement == Tab::PLEFT || 
+          *resource.tab_placement == Tab::PRIGHT)) {
         theme->getWindowStyle().tab.font.rotate(90);
     } else  {
         theme->getWindowStyle().tab.font.rotate(0);
@@ -532,11 +540,12 @@ void BScreen::reconfigure() {
     I18n *i18n = I18n::instance();
 
     const char *s = i18n->getMessage(
-        FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
-        "W: 0000 x H: 0000");
+                                     FBNLS::ScreenSet, 
+                                     FBNLS::ScreenPositionLength,
+                                     "W: 0000 x H: 0000");
     int l = strlen(s);
 
-    //TODO: repeat from somewhere else?
+    //TODO: repeated from somewhere else?
     geom_h = theme->getWindowStyle().font.height();
     geom_w = theme->getWindowStyle().font.textWidth(s, l);
     geom_w += getBevelWidth()*2;
@@ -591,8 +600,10 @@ void BScreen::reconfigure() {
 
 
     m_toolbar->reconfigure();
-
-
+    if (m_toolbar->theme().font().isAntialias() != *resource.antialias)
+        m_toolbar->theme().font().setAntialias(*resource.antialias);
+    m_toolbar->setPlacement(*resource.toolbar_placement);
+    
     if (m_slit.get())
         m_slit->reconfigure();
 	
@@ -1450,7 +1461,8 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
                                     " error, no directory defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else { // else 'y'
-                        createStyleMenu(menu, newmenu, str_label.c_str(), (newmenu) ? str_cmd.c_str() : str_label.c_str());						
+                        createStyleMenu(menu, newmenu, str_label.c_str(), 
+                                        (newmenu) ? str_cmd.c_str() : str_label.c_str());
                     } // end of else 'y' 
                 } // end of stylesdir
                 else if (str_key == "workspaces") {
@@ -1487,18 +1499,18 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
             else
                 stylesmenu = menu;
 
-            DIR *d = opendir(stylesdir.c_str());
+            DirHelper d(stylesdir.c_str());
             int entries = 0;
             struct dirent *p;
 
             // get the total number of directory entries
-            while ((p = readdir(d))) entries++;
+            while ((p = d.read())) entries++;
 		
-            rewinddir(d);
+            d.rewind();
 
             char **ls = new char* [entries];
             int index = 0;
-            while ((p = readdir(d)))
+            while ((p = d.read()))
                 ls[index++] = StringUtil::strdup(p->d_name);
 
             qsort(ls, entries, sizeof(char *), dcmp);
