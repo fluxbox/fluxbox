@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.74 2002/08/30 16:07:17 fluxgen Exp $
+// $Id: Window.cc,v 1.75 2002/08/31 10:52:30 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3263,8 +3263,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 				else if (dby > 0 && dby < screen->getEdgeSnapThreshold())
 					dy = dbby - frame.snap_h;
 			}
-			// Warp to next or previous workspace?
-			if (screen->isWorkspaceWarping()) {
+			// Warp to next or previous workspace?, must have moved sideways some
+			int moved_x=me->x_root - frame.resize_x;
+			// save last event point
+			frame.resize_x = me->x_root;
+			frame.resize_y = me->y_root;
+			if (moved_x && screen->isWorkspaceWarping()) {
 				int cur_id = screen->getCurrentWorkspaceID();
 				int new_id = cur_id;
 				const int warpPad = screen->getEdgeSnapThreshold();
@@ -3277,13 +3281,14 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 						frame.x > int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
 					//warp left
 					new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
-					dx = screen->getWidth() - me->x_root;
+					dx = screen->getWidth() - me->x_root-1;
 				}
 				if (new_id != cur_id) {
 					XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
 
 					screen->changeWorkspaceID(new_id);
 
+					frame.resize_x = me->x_root+dx;
 					if (!screen->doOpaqueMove()) {
 						dx += frame.move_x; // for rectangle in correct position
 					} else {
