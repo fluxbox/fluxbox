@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.83 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: Slit.cc,v 1.84 2003/12/18 18:03:21 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -235,16 +235,16 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_hidden(false),
       m_screen(scr),
-      m_slitmenu(*scr.menuTheme(), 
+      m_slitmenu(scr.menuTheme(), 
                  scr.imageControl(),
                  *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      m_placement_menu(*scr.menuTheme(),
+      m_placement_menu(scr.menuTheme(),
                        scr.imageControl(),
                        *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      m_clientlist_menu(*scr.menuTheme(),
+      m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
                         *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      m_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
+      m_layermenu(new LayerMenu<Slit>(scr.menuTheme(),
                                       scr.imageControl(),
                                       *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                       this,

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.cc,v 1.6 2003/12/17 00:45:30 fluxgen Exp $
+// $Id: SendToMenu.cc,v 1.7 2003/12/18 18:03:21 fluxgen Exp $
 
 #include "SendToMenu.hh"
 
@@ -45,7 +45,7 @@ private:
 };
 
 SendToMenu::SendToMenu(FluxboxWindow &win):
-    FbMenu(*win.screen().menuTheme(),
+    FbMenu(win.screen().menuTheme(),
            win.screen().imageControl(), 
            *win.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_win(win) {

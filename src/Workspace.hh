@@ -71,7 +71,7 @@ public:
     FluxboxWindow *lastFocusedWindow() { return m_lastfocus; }
     const FluxboxWindow *lastFocusedWindow() const { return m_lastfocus; }	
 
-    FbTk::Menu &menu() { return m_clientmenu; }
+    inline FbTk::Menu &menu() { return m_clientmenu; }
     inline const FbTk::Menu &menu() const { return m_clientmenu; }
     ///	name of this workspace
     inline const std::string &name() const { return m_name; }

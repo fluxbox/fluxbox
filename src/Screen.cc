@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.250 2003/12/18 15:27:21 fluxgen Exp $
+// $Id: Screen.cc,v 1.251 2003/12/18 18:03:21 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -355,8 +355,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // before we load the theme
 
     winFrameTheme().font().setAntialias(*resource.antialias);
-    menuTheme()->titleFont().setAntialias(*resource.antialias);
-    menuTheme()->frameFont().setAntialias(*resource.antialias);
+    menuTheme().titleFont().setAntialias(*resource.antialias);
+    menuTheme().frameFont().setAntialias(*resource.antialias);
 
 
     // create geometry window 
@@ -600,7 +600,7 @@ void BScreen::update(FbTk::Subject *subj) {
 }
 
 FbTk::Menu *BScreen::createMenu(const std::string &label) {
-    FbTk::Menu *menu = new FbMenu(*menuTheme(), 
+    FbTk::Menu *menu = new FbMenu(menuTheme(), 
                                   imageControl(), 
                                   *layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
     if (!label.empty())
@@ -1142,7 +1142,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         if (winclient->fbwindow()) // may have been set in an atomhandler
             win = winclient->fbwindow();
         else {
-            win = new FluxboxWindow(*winclient, *this, 
+            win = new FluxboxWindow(*winclient,
                                     winFrameTheme(),
                                     *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
             
@@ -1183,7 +1183,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 }
 
 FluxboxWindow *BScreen::createWindow(WinClient &client) {
-    FluxboxWindow *win = new FluxboxWindow(client, *this, 
+    FluxboxWindow *win = new FluxboxWindow(client,
                                            winFrameTheme(),
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
 #ifdef SLIT

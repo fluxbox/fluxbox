@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.253 2003/12/14 01:06:22 fluxgen Exp $
+// $Id: Window.cc,v 1.254 2003/12/18 18:03:21 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -248,7 +248,7 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
     m_object->moveToLayer(m_layernum);
 }
 
-FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
+FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
                              FbTk::XLayer &layer):
     oplock(false),
     m_hintsig(*this),
@@ -262,16 +262,16 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     iconic(false), focused(false),
     stuck(false), m_managed(false),
     maximized(MAX_NONE),
-    m_screen(scr),
+    m_screen(client.screen()),
     display(FbTk::App::instance()->display()),
-    m_windowmenu(*scr.menuTheme(), scr.imageControl(),
-                 *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+    m_windowmenu(client.screen().menuTheme(), client.screen().imageControl(),
+                 *client.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
-    m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
-    m_layeritem(m_frame->window(), layer),
+    m_frame(tm, client.screen().imageControl(), 0, 0, 100, 100),
+    m_layeritem(m_frame.window(), layer),
     m_layernum(layer.getLayerNum()),
-    m_parent(scr.rootWindow()),
+    m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
 
     init();
@@ -539,12 +539,15 @@ void FluxboxWindow::init() {
 
     setState(m_current_state);
 
+    // add extra menus
+    addExtraMenu("Send To...", new SendToMenu(*this));
     addExtraMenu("Layer...",
-                 new LayerMenu<FluxboxWindow>(*screen().menuTheme(), 
+                 new LayerMenu<FluxboxWindow>(screen().menuTheme(), 
                                               screen().imageControl(), 
                                               *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                               this,
                                               false));
+
     // the layermenu will get deleted as an extra menu
     // don't call setupWindow here as the addExtraMenu call should
 
@@ -3093,22 +3096,6 @@ const FbTk::FbWindow &FluxboxWindow::fbWindow() const {
     return frame().window(); 
 }
 
-int FluxboxWindow::x() const {
-    return frame().x();
-}
-
-int FluxboxWindow::y() const {
-    return frame().y();
-}
-
-unsigned int FluxboxWindow::width() const { 
-    return frame().width();
-}
-
-unsigned int FluxboxWindow::height() const { 
-    return frame().height();
-}
-
 unsigned int FluxboxWindow::titlebarHeight() const {
     return frame().titlebarHeight();
 }
@@ -3321,7 +3308,6 @@ void FluxboxWindow::setupWindow() {
     // sets up our window
     // we allow both to be done at once to share the commands
 
-    FbWinFrame &frame = *m_frame.get();
     WinButtonTheme &winbutton_theme = screen().winButtonTheme();
 
     typedef FbTk::RefCount<FbTk::Command> CommandRef;
@@ -3343,7 +3329,7 @@ void FluxboxWindow::setupWindow() {
     CommandRef show_menu_cmd(new WindowCmd(*this, &FluxboxWindow::popupMenu));
 
     // clear old buttons from frame
-    frame.removeAllButtons();
+    frame().removeAllButtons();
     //!! TODO: fix this ugly hack
     // get titlebar configuration
     const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
@@ -3354,14 +3340,14 @@ void FluxboxWindow::setupWindow() {
             if (isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
                 newbutton = new WinButton(*this, winbutton_theme,
                                           WinButton::MINIMIZE, 
-                                          frame.titlebar(), 
+                                          frame().titlebar(), 
                                           0, 0, 10, 10);
                 newbutton->setOnClick(iconify_cmd);
 
             } else if (isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
                 newbutton = new WinButton(*this, winbutton_theme,
                                           WinButton::MAXIMIZE, 
-                                          frame.titlebar(), 
+                                          frame().titlebar(), 
                                           0, 0, 10, 10);
 
                 newbutton->setOnClick(maximize_cmd, 1);
@@ -3371,7 +3357,7 @@ void FluxboxWindow::setupWindow() {
             } else if (m_client->isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
                 newbutton = new WinButton(*this, winbutton_theme,
                                           WinButton::CLOSE, 
-                                          frame.titlebar(), 
+                                          frame().titlebar(), 
                                           0, 0, 10, 10);
 
                 newbutton->setOnClick(close_cmd);
@@ -3379,7 +3365,7 @@ void FluxboxWindow::setupWindow() {
             } else if ((*dir)[i] == Fluxbox::STICK) {
                 WinButton *winbtn = new WinButton(*this, winbutton_theme,
                                                   WinButton::STICK,
-                                                  frame.titlebar(),
+                                                  frame().titlebar(),
                                                   0, 0, 10, 10);
                 stateSig().attach(winbtn);
                 winbtn->setOnClick(stick_cmd);
@@ -3387,7 +3373,7 @@ void FluxboxWindow::setupWindow() {
             } else if ((*dir)[i] == Fluxbox::SHADE) {
                 WinButton *winbtn = new WinButton(*this, winbutton_theme,
                                                   WinButton::SHADE,
-                                                  frame.titlebar(),
+                                                  frame().titlebar(),
                                                   0, 0, 10, 10);               
                 winbtn->setOnClick(shade_cmd);
             }
@@ -3395,33 +3381,33 @@ void FluxboxWindow::setupWindow() {
             if (newbutton != 0) {
                 newbutton->show();
                 if (c == 0)
-                    frame.addLeftButton(newbutton);
+                    frame().addLeftButton(newbutton);
                 else
-                    frame.addRightButton(newbutton);
+                    frame().addRightButton(newbutton);
             }
         } //end for i
         dir = &Fluxbox::instance()->getTitlebarRight();
     } // end for c
 
-    frame.reconfigure();
+    frame().reconfigure();
 
     // setup titlebar
-    frame.setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
-    frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
-    frame.setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
-    frame.setOnClickTitlebar(lower_cmd, 2); // on release with button 2
-    frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
+    frame().setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
+    frame().setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
+    frame().setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
+    frame().setOnClickTitlebar(lower_cmd, 2); // on release with button 2
+    frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
 
     // end setup frame
 
     // setup menu
-    FbTk::Menu &menu = m_windowmenu;
-    menu.removeAll(); // clear old items
-    menu.disableTitle(); // not titlebar
+
+    menu().removeAll(); // clear old items
+    menu().disableTitle(); // not titlebar
     
     // set new menu items
-    menu.insert("Shade", shade_cmd);
-    menu.insert("Stick", stick_cmd);
+    menu().insert("Shade", shade_cmd);
+    menu().insert("Stick", stick_cmd);
     // create maximize item with:
     // button1: Maximize normal
     // button2: Maximize Vertical
@@ -3430,23 +3416,23 @@ void FluxboxWindow::setupWindow() {
     maximize_item->setCommand(1, maximize_cmd);
     maximize_item->setCommand(2, maximize_vert_cmd);
     maximize_item->setCommand(3, maximize_horiz_cmd);
-    menu.insert(maximize_item);
-    menu.insert("Iconify", iconify_cmd);
-    menu.insert("Raise", raise_cmd);
-    menu.insert("Lower", lower_cmd);
+    menu().insert(maximize_item);
+    menu().insert("Iconify", iconify_cmd);
+    menu().insert("Raise", raise_cmd);
+    menu().insert("Lower", lower_cmd);
 
-    menu.insert("Send To...", new SendToMenu(*this));
+
 
     ExtraMenus::iterator it = m_extramenus.begin();
     ExtraMenus::iterator it_end = m_extramenus.end();
     for (; it != it_end; ++it) {
         it->second->disableTitle(); // be sure there is no title
-        menu.insert(it->first, it->second);
+        menu().insert(it->first, it->second);
     }
 
 
-    menu.insert("---");
-    menu.insert("Close", close_cmd);
+    menu().insert("---");
+    menu().insert("Close", close_cmd);
 
-    menu.reconfigure(); // update graphics
+    menu().reconfigure(); // update graphics
 }

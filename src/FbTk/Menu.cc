@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.50 2003/12/17 00:43:22 fluxgen Exp $
+// $Id: Menu.cc,v 1.51 2003/12/18 18:03:23 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -89,9 +89,9 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
         torn =
         visible = false;
 
-    menu.x =
-        menu.y =
-        menu.x_shift =
+
+
+    menu.x_shift =
         menu.y_shift =
         menu.x_move =
         menu.y_move = 0;
@@ -600,8 +600,6 @@ void Menu::internal_hide() {
 
 void Menu::move(int x, int y) {
 
-    menu.x = x;
-    menu.y = y;
     menu.window.move(x, y);
 
     if (which_sub != -1)
@@ -663,47 +661,47 @@ void Menu::drawSubmenu(unsigned int index) {
         if (item->submenu()->m_parent != this)
             item->submenu()->m_parent = this;
 			
-        int sbl = index / menu.persub, i = index - (sbl * menu.persub),
-            x = menu.x +
-            ((menu.item_w * (sbl + 1)) + menu.window.borderWidth()), y;
+        int sbl = index / menu.persub, i = index - (sbl * menu.persub);
+        int new_x = x() + ((menu.item_w * (sbl + 1)) + menu.window.borderWidth());
+        int new_y;
 		
         if (m_alignment == ALIGNTOP) {
-            y = (((shifted) ? menu.y_shift : menu.y) +
-                 ((title_vis) ? menu.title_h + menu.title.borderWidth() : 0) -
-                 ((item->submenu()->title_vis) ?
-                  item->submenu()->menu.title_h + menu.window.borderWidth() : 0));
+            new_y = (((shifted) ? menu.y_shift : y()) +
+                     ((title_vis) ? menu.title_h + menu.title.borderWidth() : 0) -
+                     ((item->submenu()->title_vis) ?
+                      item->submenu()->menu.title_h + menu.window.borderWidth() : 0));
         } else {
-            y = (((shifted) ? menu.y_shift : menu.y) +
-                 (menu.item_h * i) +
-                 ((title_vis) ? menu.title_h + menu.window.borderWidth() : 0) -
-                 ((item->submenu()->title_vis) ?
+            new_y = (((shifted) ? menu.y_shift : y()) +
+                     (menu.item_h * i) +
+                     ((title_vis) ? menu.title_h + menu.window.borderWidth() : 0) -
+                     ((item->submenu()->title_vis) ?
                   item->submenu()->menu.title_h + menu.window.borderWidth() : 0));
         }
 			
         if (m_alignment == ALIGNBOTTOM &&
-            (y + item->submenu()->height()) > ((shifted) ? menu.y_shift :
-                                               menu.y) + height()) {
-            y = (((shifted) ? menu.y_shift : menu.y) +
-                 height() - item->submenu()->height());
+            (new_y + item->submenu()->height()) > ((shifted) ? menu.y_shift :
+                                                   y()) + height()) {
+            new_y = (((shifted) ? menu.y_shift : y()) +
+                     height() - item->submenu()->height());
         }
 
-        if ((x + item->submenu()->width()) > m_screen_width) {
-            x = ((shifted) ? menu.x_shift : menu.x) -
+        if ((new_x + item->submenu()->width()) > m_screen_width) {
+            new_x = ((shifted) ? menu.x_shift : x()) -
                 item->submenu()->width() - menu.window.borderWidth();
         }
 			
-        if (x < 0)
-            x = 0;
+        if (new_x < 0)
+            new_x = 0;
 
-        if ((y + item->submenu()->height()) > m_screen_height) {
-            y = m_screen_height - item->submenu()->height() -
+        if ((new_y + item->submenu()->height()) > m_screen_height) {
+            new_y = m_screen_height - item->submenu()->height() -
                 menu.window.borderWidth() * 2;
         }
 			
-        if (y < 0)
-            y = 0;
+        if (new_y < 0)
+            new_y = 0;
 
-        item->submenu()->move(x, y);
+        item->submenu()->move(new_x, new_y);
         if (! moving)
             drawItem(index, true);
 		
@@ -1068,8 +1066,8 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
                 drawItem(w, item->isEnabled(), true, true);
         }
     } else {
-        menu.x_move = be.x_root - menu.x;
-        menu.y_move = be.y_root - menu.y;
+        menu.x_move = be.x_root - x();
+        menu.y_move = be.y_root - y();
     }
 }
 
@@ -1133,10 +1131,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                 if (which_sub >= 0)
                     drawSubmenu(which_sub);
             } else {
-                menu.x = me.x_root - menu.x_move,
-                    menu.y = me.y_root - menu.y_move;
-	
-                menu.window.move(menu.x, menu.y);
+                menu.window.move(me.x_root - menu.x_move, me.y_root - menu.y_move);
 
                 // if (which_sub >= 0)
                 //     drawSubmenu(which_sub);
@@ -1245,19 +1240,19 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
     if (menu.frame != ce.window)
         return;
 
-    menu.x_shift = menu.x, menu.y_shift = menu.y;
-    if (menu.x + width() > m_screen_width) {
+    menu.x_shift = x(), menu.y_shift = y();
+    if (x() + width() > m_screen_width) {
         menu.x_shift = m_screen_width - width() - 2*m_border_width;
         shifted = true;
-    } else if (menu.x < 0) {
+    } else if (x() < 0) {
         menu.x_shift = 0; //-m_border_width;
         shifted = true;
     }
 
-    if (menu.y + height() + 2*m_border_width > m_screen_height) {
+    if (y() + height() + 2*m_border_width > m_screen_height) {
         menu.y_shift = m_screen_height - height() - 2*m_border_width;
         shifted = true;
-    } else if (menu.y + (signed) menu.title_h < 0) {
+    } else if (y() + (signed) menu.title_h < 0) {
         menu.y_shift = 0; // -m_border_width;;
         shifted = true;
     }
@@ -1295,7 +1290,7 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     }
 
     if (shifted) {
-        menu.window.move(menu.x, menu.y);
+        //        menu.window.move(menu.x, menu.y);
         shifted = false;
     }
 }

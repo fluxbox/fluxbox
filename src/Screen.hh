@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.127 2003/12/12 18:18:12 fluxgen Exp $
+// $Id: Screen.hh,v 1.128 2003/12/18 18:03:21 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -204,8 +204,8 @@ public:
 
     inline FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
     inline const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
-    inline MenuTheme *menuTheme() { return m_menutheme.get(); }
-    inline const MenuTheme *menuTheme() const { return m_menutheme.get(); }
+    inline MenuTheme &menuTheme() { return *m_menutheme.get(); }
+    inline const MenuTheme &menuTheme() const { return *m_menutheme.get(); }
     inline const RootTheme &rootTheme() const { return *m_root_theme.get(); }
     inline WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
     inline const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }

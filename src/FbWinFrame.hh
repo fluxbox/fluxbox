@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.26 2003/12/16 23:34:36 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.27 2003/12/18 18:03:21 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -54,8 +54,8 @@ class FbWinFrame:public FbTk::EventHandler {
 public:
 
     /// create a top level window
-    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
-               int screen_num, int x, int y,
+    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
+               int x, int y,
                unsigned int width, unsigned int height);
 
     /// create a frame window inside another FbWindow, NOT IMPLEMENTED!

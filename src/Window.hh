@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.103 2003/12/17 01:21:49 fluxgen Exp $
+// $Id: Window.hh,v 1.104 2003/12/18 18:03:22 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -32,6 +32,7 @@
 #include "Subject.hh"
 #include "EventHandler.hh"
 #include "XLayerItem.hh"
+#include "FbWinFrame.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -132,10 +133,10 @@ public:
     };
 
     enum ResizeCorner {
-      LEFTTOP,
-      LEFTBOTTOM,
-      RIGHTBOTTOM,
-      RIGHTTOP
+        LEFTTOP,
+        LEFTBOTTOM,
+        RIGHTBOTTOM,
+        RIGHTTOP
     };
 
     typedef struct _blackbox_hints {
@@ -152,7 +153,7 @@ public:
     typedef std::list<WinClient *> ClientList;
 
     /// create a window from a client
-    FluxboxWindow(WinClient &client, BScreen &scr,
+    FluxboxWindow(WinClient &client,
                   FbWinFrameTheme &tm,
                   FbTk::XLayer &layer);
 
@@ -312,22 +313,24 @@ public:
 
     const std::string &title() const;
     const std::string &iconTitle() const;
-    int x() const;
-    int y() const;
+    inline int x() const { return frame().x(); }
+    inline int y() const { return frame().y(); }
+    inline unsigned int width() const { return frame().width(); }
+    inline unsigned int height() const { return frame().height(); }
+
     unsigned int workspaceNumber() const { return m_workspace_number; }
 
     int layerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
  
-    unsigned int width() const;
-    unsigned int height() const;
+
     unsigned int titlebarHeight() const;
 
     bool isLowerTab() const;
     int initialState() const;
 
-    FbWinFrame &frame() { return *m_frame.get(); }
-    const FbWinFrame &frame() const { return *m_frame.get(); }
+    inline FbWinFrame &frame() { return m_frame; }
+    inline const FbWinFrame &frame() const { return m_frame; }
 
     /**
        @name signals
@@ -455,7 +458,7 @@ private:
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
-    std::auto_ptr<FbWinFrame> m_frame;
+    FbWinFrame m_frame;
 
     FbTk::XLayerItem m_layeritem;
     int m_layernum;

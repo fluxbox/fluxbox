@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.87 2003/12/14 01:10:39 fluxgen Exp $
+// $Id: Workspace.cc,v 1.88 2003/12/18 18:03:22 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -110,7 +110,7 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
                      const std::string &name, unsigned int id):
     m_screen(scrn),
     m_lastfocus(0),
-    m_clientmenu(*scrn.menuTheme(), scrn.imageControl(),
+    m_clientmenu(scrn.menuTheme(), scrn.imageControl(),
                  *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_layermanager(layermanager),
     m_name(name),
@@ -123,7 +123,7 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
         m_cascade_x[i] = 32 + scrn.getHeadX(i);
         m_cascade_y[i] = 32 + scrn.getHeadY(i);
     }
-    m_clientmenu.setInternalMenu();
+    menu().setInternalMenu();
     setName(name);
 }
 
@@ -254,7 +254,7 @@ void Workspace::removeAll() {
 
 
 void Workspace::reconfigure() {
-    m_clientmenu.reconfigure();
+    menu().reconfigure();
 
     Windows::iterator it = m_windowlist.begin();
     Windows::iterator it_end = m_windowlist.end();
@@ -361,7 +361,7 @@ bool Workspace::loadGroups(const std::string &filename) {
 }
 
 void Workspace::update(FbTk::Subject *subj) {
-    m_clientmenu.update();
+    menu().update();
 }
 
 
@@ -379,8 +379,8 @@ void Workspace::setName(const std::string &name) {
 	
     screen().updateWorkspaceNamesAtom();
 	
-    m_clientmenu.setLabel(m_name.c_str());
-    m_clientmenu.update();
+    menu().setLabel(m_name.c_str());
+    menu().update();
 }
 
 /**
@@ -400,7 +400,7 @@ void Workspace::shutdown() {
 
 void Workspace::updateClientmenu() {
     // remove all items and then add them again
-    m_clientmenu.removeAll();
+    menu().removeAll();
     // for each fluxboxwindow add every client in them to our clientlist    
     Windows::iterator win_it = m_windowlist.begin();
     Windows::iterator win_it_end = m_windowlist.end();
@@ -411,10 +411,10 @@ void Workspace::updateClientmenu() {
         FluxboxWindow::ClientList::iterator client_it_end = 
             (*win_it)->clientList().end();
         for (; client_it != client_it_end; ++client_it)
-            m_clientmenu.insert(new ClientMenuItem(*(*client_it)));
+            menu().insert(new ClientMenuItem(*(*client_it)));
     }
 
-    m_clientmenu.update();
+    menu().update();
 }
 
 void Workspace::placeWindow(FluxboxWindow &win) {

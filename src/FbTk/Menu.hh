@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.28 2003/12/17 00:43:22 fluxgen Exp $
+// $Id: Menu.hh,v 1.29 2003/12/18 18:03:23 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -140,8 +140,8 @@ public:
     inline FbWindow &titleWindow() { return menu.title; }
     inline FbWindow &frameWindow() { return menu.frame; }
     inline const std::string &label() const { return menu.label; }  
-    inline int x() const { return menu.x; }
-    inline int y() const { return menu.y; }
+    inline int x() const { return menu.window.x(); }
+    inline int y() const { return menu.window.y(); }
     inline unsigned int width() const { return menu.window.width(); }
     inline unsigned int height() const { return menu.window.height(); }
     inline unsigned int numberOfItems() const { return menuitems.size(); }
@@ -203,7 +203,7 @@ private:
         FbTk::FbWindow window, frame, title;
 
         std::string label;
-        int x, y, x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
+        int x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
             grab_x, grab_y;
         unsigned int title_h, frame_h, item_w, item_h, bevel_w,
             bevel_h;

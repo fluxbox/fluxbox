@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.34 2003/12/12 15:19:22 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.35 2003/12/18 18:03:21 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -203,7 +203,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     
     //number of windows to show in client list
     num = win;
-    screen.rootWindow().changeProperty(m_net_client_list, 
+    screen.rootWindow().changeProperty(m_net_client_list,
                                        XA_CARDINAL, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
 	

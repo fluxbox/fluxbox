@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.131 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.132 2003/12/18 18:03:21 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -191,15 +191,15 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     frame(*this, scrn.screenNumber()),
     m_window_pm(0),
     m_screen(scrn),
-    m_layermenu(*scrn.menuTheme(), 
+    m_layermenu(scrn.menuTheme(), 
                 scrn.imageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                 this,
                 true),
-    m_placementmenu(*scrn.menuTheme(),
+    m_placementmenu(scrn.menuTheme(),
                     scrn.imageControl(),
                     *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-    m_toolbarmenu(*scrn.menuTheme(),
+    m_toolbarmenu(scrn.menuTheme(),
                   scrn.imageControl(),
                   *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_theme(scrn.screenNumber()),
@@ -792,7 +792,7 @@ void Toolbar::setupMenus() {
 
     if (screen().hasXinerama()) {
         // TODO: nls (main label plus menu heading
-        menu().insert("On Head...", new XineramaHeadMenu<Toolbar>(*screen().menuTheme(),
+        menu().insert("On Head...", new XineramaHeadMenu<Toolbar>(screen().menuTheme(),
                                                                   screen(),
                                                                   screen().imageControl(),
                                                                   *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),

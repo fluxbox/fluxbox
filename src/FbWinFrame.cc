@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.66 2003/12/16 12:46:14 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.67 2003/12/18 18:03:21 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -43,11 +43,11 @@
 using namespace std;
 
 FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
-                       int screen_num, int x, int y,
+                       int x, int y,
                        unsigned int width, unsigned int height):
     m_theme(theme),
     m_imagectrl(imgctrl),
-    m_window(screen_num, x, y, width, height,  ButtonPressMask | ButtonReleaseMask |
+    m_window(theme.screenNum(), x, y, width, height,  ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | EnterWindowMask, true),
     m_titlebar(m_window, 0, 0, 100, 16, 
                ButtonPressMask | ButtonReleaseMask |
