@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.129 2003/05/07 11:33:12 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.130 2003/05/07 23:17:38 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -48,7 +48,7 @@
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #ifdef SLIT
