@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.5 2003/12/30 18:10:43 fluxgen Exp $
+// $Id: KeyUtil.hh,v 1.6 2003/12/31 00:39:26 fluxgen Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
@@ -75,7 +75,9 @@ public:
        @return corresponding modifier mask
     */
     static unsigned int keycodeToModmask(unsigned int keycode);
-
+    int numlock() const { return m_numlock; }
+    int capslock() const { return m_capslock; }
+    int scrolllock() const { return m_scrolllock; }
 private:
     void loadModmap();
 
