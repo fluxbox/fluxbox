@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/05/02:
+  * Added new nls item for windowmenu: Layer
+    nls/C/Windowmenu.m    
   * New command: exit
     (Henrik)
     FbCommandFactory.cc
