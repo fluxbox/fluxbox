@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.2 2002/09/08 10:58:30 fluxgen Exp $
+// $Id: Gnome.cc,v 1.3 2002/09/10 12:23:03 fluxgen Exp $
 
 #include "Gnome.hh"
+
 #include "Window.hh"
 #include "Screen.hh"
 
@@ -94,14 +95,9 @@ void Gnome::setupWindow(FluxboxWindow &win) {
 		XFree (data);
 	}
 
-	if (XGetWindowProperty(disp, win.getClientWindow(),
-		m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL,
-			&ret_type, &fmt, &nitems, &bytes_after,
-			(unsigned char **)&data) == Success && data) {
-#ifdef DEBUG	
-		cerr<<__FILE__<<"("<<__LINE__<<"): Workspace: "<<*data<<endl;
-#endif // DEBUG
-	}
+	// make sure we get right workspace
+	updateWorkspace(win);
+
 }
 
 void Gnome::updateClientList(const BScreen &screen) {
@@ -188,6 +184,10 @@ void Gnome::updateWorkspaceCount(const BScreen &screen) {
 
 void Gnome::updateWorkspace(FluxboxWindow &win) {
 	int val = win.getWorkspaceNumber(); 
+#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
+		") for window("<<&win<<")"<<endl;
+#endif // DEBUG
 	XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
 		m_gnome_wm_win_workspace, 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
