@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.133 2003/04/15 12:18:37 fluxgen Exp $
+// $Id: Window.cc,v 1.134 2003/04/15 12:31:53 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1863,8 +1863,10 @@ void FluxboxWindow::handleEvent(XEvent &event) {
     switch (event.type) {
     case ConfigureRequest:
         configureRequestEvent(event.xconfigurerequest);
+        break;
     case MapNotify:
         mapNotifyEvent(event.xmap);
+        break;
     case MapRequest:
         mapRequestEvent(event.xmaprequest);
         break;
