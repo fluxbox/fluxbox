@@ -1,3 +1,6 @@
+// Rootmenu.hh for fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+//
 // Rootmenu.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -22,32 +25,23 @@
 #ifndef  ROOTMENU_HH
 #define  ROOTMENU_HH
 
-// forward declarations
-class Rootmenu;
-class BScreen;
-
 #include "Basemenu.hh"
 
-
-class Rootmenu : public Basemenu {
-private:
-  BScreen *screen;
-  Window auto_group_window;
-
+class Rootmenu: public Basemenu {
+public:
+	explicit Rootmenu(BScreen *scr);
+	void setAutoGroupWindow(Window window);
+	void show();
 
 protected:
   virtual void itemSelected(int button, unsigned int index);
 
-
-public:
-  Rootmenu(BScreen *);
-  void setAutoGroupWindow(Window window);
-
-
 private:
   Window useAutoGroupWindow();
+  Window auto_group_window;
+
 };
 
 
-#endif // _ROOTMENU_HH_
+#endif // ROOTMENU_HH
 
