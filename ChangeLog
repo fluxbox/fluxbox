@@ -1,12 +1,30 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
 *02/12/02:
+   * Added DirHelper class (Henrik)
+     DirHelper.hh/cc
+   * Change Toolbar events to FbTk::EventHandler (Henrik)
+     fluxbox.cc, Toolbar.hh/cc
+   * Converted Toolbar theme to the new theme engine (Henrik)
+     FbTk/ToolbarTheme.hh/cc, Toolbar.hh/cc, Screen.cc/hh, Theme.hh/cc
+   * New Theme engine in place in FbTk (Henrik)
+     Theme.hh/cc
    * Re-indented src tree from tab-indent to spaces (emacs offset 4) (Simon)
      src/**/*.{cc,hh}
 *02/11/30:
+   * Changed name from BImage to TextureRender and moved it to TextureRender.hh/cc (Henrik)
+   * Changed name from Image.hh/cc to ImageControl.hh/cc and made some cleaning (Henrik)
    * Fixed bug [ 642203 ] configure / make problem, solaris sparc
      plus more compatibility issues with old tools/shells (Simon/Han)
      fluxbox-generate_menu
+*02/11/27:
+   * Added FbTk::EventManager and changed FbTk::EventHandler to interface
+     class for XEvents.	 
+     EventHandler.hh, SignalHandler.hh/cc, App.hh/cc, FbRun.hh/cc ...
+*02/11/26:
+   * Fixed DrawUtil::doAligment
+   * Moved some FbTk files into src/FbTk
+   * Fixed FbRun application to FbTk only
 *02/11/25:
    * Fixed vertical tabs for XFontImp
      XFontImp.cc/hh, Font.hh/cc, Tab.cc, Screen.cc, DrawUtil.cc/hh
