@@ -19,15 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.1 2003/09/06 15:46:00 fluxgen Exp $
+// $Id: KeyUtil.cc,v 1.2 2003/09/08 19:18:22 fluxgen Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
 
 #include <X11/keysym.h>
-
-#include <iostream>
-using namespace std;
 
 namespace FbTk {
 
@@ -37,7 +34,6 @@ int KeyUtil::s_scrolllock_mod = 0;
 bool KeyUtil::s_init = false;
 
 void KeyUtil::init() {
-    cerr<<"init"<<endl;
     Display *disp = FbTk::App::instance()->display();
 
     XModifierKeymap *modmap = XGetModifierMapping(disp);
