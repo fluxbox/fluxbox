@@ -22,14 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.35 2002/10/19 14:07:00 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.36 2002/10/25 21:05:01 fluxgen Exp $
 
 #include "Toolbar.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
 #include "Clientmenu.hh"
-#include "Icon.hh"
+#include "Iconmenu.hh"
 #include "Rootmenu.hh"
 #include "Screen.hh"
 #include "Window.hh"

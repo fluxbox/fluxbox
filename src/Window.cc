@@ -22,13 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.94 2002/10/23 21:59:37 fluxgen Exp $
+// $Id: Window.cc,v 1.95 2002/10/25 21:01:49 fluxgen Exp $
 
 #include "Window.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
-#include "Icon.hh"
+#include "Iconmenu.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "Windowmenu.hh"

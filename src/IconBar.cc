@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.16 2002/10/15 17:10:48 fluxgen Exp $
+// $Id: IconBar.cc,v 1.17 2002/10/25 20:59:56 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
 #include "Screen.hh"
+#include "fluxbox.hh"
 
 #include <algorithm>
 
