@@ -174,6 +174,7 @@ std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() {
         return "LineDoubleDash";
         break;
     };
+    return "LineSolid";
 }
 
 template<>
@@ -208,6 +209,7 @@ std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() {
         return "JoinRound";
         break;
     };
+    return "JoinMiter";
 }
 
 template<>
@@ -245,6 +247,7 @@ std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() {
         return "CapProjecting";
         break;
     };
+    return "CapNotLast";
 }
 
 template<>
