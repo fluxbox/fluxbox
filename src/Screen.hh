@@ -22,15 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.48 2002/10/25 20:56:12 fluxgen Exp $
+// $Id: Screen.hh,v 1.49 2002/11/16 22:13:19 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
 #include "Theme.hh"
 #include "BaseDisplay.hh"
-#include "Netizen.hh"
-#include "Timer.hh"
 #include "Workspace.hh"
 #include "Tab.hh"
 #include "Resource.hh"
@@ -69,6 +67,7 @@ class Configmenu;
 class Workspacemenu;
 class Iconmenu;
 class Rootmenu;
+class Netizen;
 
 class BScreen : public ScreenInfo {
 public:
