@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.69 2002/08/14 22:52:06 fluxgen Exp $
+// $Id: Window.cc,v 1.70 2002/08/16 10:50:20 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2800,9 +2800,10 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
 
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
-	#ifdef GNOME
+#ifdef GNOME
 	loadGnomeAtoms();
-	#endif
+#endif // GNOME
+
 	if ((ne->window == client.window) && (! ne->override_redirect) && (visible)) {
 		Fluxbox *fluxbox = Fluxbox::instance();
 		BaseDisplay::GrabGuard gg(*fluxbox);
@@ -2826,7 +2827,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 		visible = true;
 		iconic = false;
 
-		// Auto-group?
+		// Auto-group from tab?
 		if (!transient) {
 			// Grab and clear the auto-group window
 			FluxboxWindow* autoGroupWindow = screen->useAutoGroupWindow();
@@ -2848,53 +2849,21 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 // else false
 //-------------------------------------------------
 bool FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
-	if (ue->window == client.window) {
-		#ifdef DEBUG
-		fprintf(stderr,
-			I18n::instance()->getMessage(
-			 FBNLS::WindowSet, FBNLS::WindowUnmapNotify,
-			 "FluxboxWindow::unmapNotifyEvent() for 0x%lx\n"),
-			client.window);
-		#endif // DEBUG
+	if (ue->window != client.window)
+		return false;	
+	
+#ifdef DEBUG
+	fprintf(stderr,
+		I18n::instance()->getMessage(
+		 FBNLS::WindowSet, FBNLS::WindowUnmapNotify,
+		 "FluxboxWindow::unmapNotifyEvent() for 0x%lx\n"),
+		client.window);
+#endif // DEBUG
 
-		Fluxbox *fluxbox = Fluxbox::instance();
-		BaseDisplay::GrabGuard gg(*fluxbox);
-		fluxbox->grab();
-		if (! validateClient())
-			return false;
+	restore(false);
 
-		XChangeSaveSet(display, client.window, SetModeDelete);
-		XSelectInput(display, client.window, NoEventMask);
+	return true; // make sure this one deletes
 
-		XDeleteProperty(display, client.window, fluxbox->getWMStateAtom());
-		XDeleteProperty(display, client.window, fluxbox->getFluxboxAttributesAtom());
-
-		XUnmapWindow(display, frame.window);
-		XUnmapWindow(display, client.window);
-
-		XEvent dummy;
-		if (! XCheckTypedWindowEvent(display, client.window, ReparentNotify,
-				 &dummy)) {
-			#ifdef DEBUG
-			fprintf(stderr,
-				I18n::instance()->getMessage(
-					 FBNLS::WindowSet, FBNLS::WindowUnmapNotifyReparent,		
-					 "FluxboxWindow::unmapNotifyEvent(): reparent 0x%lx to "
-					 "root.\n"), client.window);
-			#endif // DEBUG
-			restoreGravity();
-			XReparentWindow(display, client.window, screen->getRootWindow(),
-				client.x, client.y);
-		}
-
-		XFlush(display);
-
-		fluxbox->ungrab();
-
-		return true;
-	}
-
-	return false;
 }
 
 //----------- destroyNotifyEvent -------------
@@ -2904,9 +2873,9 @@ bool FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 //--------------------------------------------
 bool FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
 	if (de->window == client.window) {
-		#ifdef DEBUG
+#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<endl;
-		#endif
+#endif // DEBUG
 		XUnmapWindow(display, frame.window);		
 		return true;
 	}
@@ -3746,7 +3715,7 @@ void FluxboxWindow::checkTransient() {
 				
 			while (tr->client.transient) {
 				tr = tr->client.transient;
-				if (tr == tr->client.transient) { //ops! something is wrong with transient
+				if (tr && tr == tr->client.transient) { //ops! something is wrong with transient
 					tr->client.transient = 0;
 				}
 			}
@@ -3761,7 +3730,7 @@ void FluxboxWindow::checkTransient() {
 					
 				while (tr->client.transient) {
 					tr = tr->client.transient;
-					if (tr == tr->client.transient) { //ops! somehtin is wrong with transient
+					if (tr && tr == tr->client.transient) { //ops! somehtin is wrong with transient
 						tr->client.transient = 0;
 					}
 				}
@@ -3779,7 +3748,7 @@ void FluxboxWindow::checkTransient() {
 
 }
 
-void FluxboxWindow::restore() {
+void FluxboxWindow::restore(bool remap) {
 	XChangeSaveSet(display, client.window, SetModeDelete);
 	XSelectInput(display, client.window, NoEventMask);
 
@@ -3789,11 +3758,23 @@ void FluxboxWindow::restore() {
 	XUnmapWindow(display, client.window);
 
 	XSetWindowBorderWidth(display, client.window, client.old_bw);
-	XReparentWindow(display, client.window, screen->getRootWindow(),
-									client.x, client.y);
-	XMapWindow(display, client.window);
-		
-	XFlush(display);
+		XEvent dummy;
+	if (! XCheckTypedWindowEvent(display, client.window, ReparentNotify,
+			 &dummy)) {
+#ifdef DEBUG
+		fprintf(stderr,
+			I18n::instance()->getMessage(
+				 FBNLS::WindowSet, FBNLS::WindowUnmapNotifyReparent,		
+				 "FluxboxWindow::restore: reparent 0x%lx to "
+				 "root.\n"), client.window);
+#endif // DEBUG
+		XReparentWindow(display, client.window, screen->getRootWindow(),
+			client.x, client.y);
+	}
+
+	if (remap)
+		XMapWindow(display, client.window);
+
 }
 
 
