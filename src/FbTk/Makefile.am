@@ -6,6 +6,9 @@ endif
 if MULTIBYTE
 xmb_SOURCE= XmbFontImp.hh XmbFontImp.cc
 endif
+if XPM
+xpm_SOURCE= ImageXPM.hh ImageXPM.cc
+endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Directory.hh Directory.cc \
@@ -31,5 +34,8 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	FbPixmap.hh FbPixmap.cc \
 	FbDrawable.hh FbDrawable.cc \
 	XrmDatabaseHelper.hh \
+	Image.hh Image.cc \
+	PixmapWithMask.hh \
+	${xpm_SOURCE} \
 	${xft_SOURCE} \
 	${xmb_SOURCE}
