@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.19 2002/05/17 11:07:36 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.20 2002/05/29 06:22:31 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -104,7 +104,7 @@ public:
 	inline const char *getStyleFilename(void) const { return m_rc_stylefile->c_str(); }
 
 	inline const char *getMenuFilename(void) const { return m_rc_menufile->c_str(); }
-
+	inline const std::string &getSlitlistFilename(void) const { return *m_rc_slitlistfile; }
 	inline int getColorsPerChannel(void) const { return *m_rc_colors_per_channel; }
 
 	inline const timeval &getAutoRaiseDelay(void) const { return resource.auto_raise_delay; }
@@ -124,6 +124,7 @@ public:
 	void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
 	void saveMenuFilename(const char *);
 	void saveTitlebarFilename(const char *);
+	void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
 	void saveMenuSearch(Window, Basemenu *);
 	void saveWindowSearch(Window, FluxboxWindow *);
 	void saveToolbarSearch(Window, Toolbar *);
@@ -188,7 +189,7 @@ private:
 	Resource<bool> m_rc_tabs, m_rc_iconbar;
 	Resource<int> m_rc_colors_per_channel;
 	Resource<std::string> m_rc_stylefile, 
-		m_rc_menufile, m_rc_keyfile;	
+		m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile;
 	
 	Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
 	Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
@@ -229,12 +230,14 @@ private:
 	char *rc_file, **argv;
 	int argc;
 	Keys *key;
+	std::string slitlist_path;
 	//default arguments for titlebar left and right
 	static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
 
 protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
 	char *getRcFilename();
+	void getDefaultDataFilename(char *, std::string &);
 	void load_rc(void);
 	
 	void reload_rc(void);

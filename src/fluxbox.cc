@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.59 2002/05/24 13:25:25 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.60 2002/05/29 06:22:31 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -300,6 +300,7 @@ m_rc_colors_per_channel(m_resourcemanager, 4, "session.colorsPerChannel", "Sessi
 m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
 m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
 m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
+m_rc_slitlistfile(m_resourcemanager, "", "session.slitlistFile", "Session.SlitlistFile"),
 m_rc_titlebar_left(m_resourcemanager, TitlebarList(&m_titlebar_left[0], &m_titlebar_left[1]), "session.titlebar.left", "Session.Titlebar.Left"),
 m_rc_titlebar_right(m_resourcemanager, TitlebarList(&m_titlebar_right[0], &m_titlebar_right[3]), "session.titlebar.right", "Session.Titlebar.Right"),
 m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
@@ -415,7 +416,7 @@ void Fluxbox::setupConfigFiles() {
 	createInit = createKeys = createMenu = false;
 
 	string dirname = getenv("HOME")+string("/.")+string(RC_PATH) + "/";
-	string initFile, keysFile, menuFile;
+	string initFile, keysFile, menuFile, slitlistFile;
 	initFile = dirname+RC_INIT_FILE;
 	keysFile = dirname+"keys";
 	menuFile = dirname+"menu";
@@ -1923,6 +1924,13 @@ char *Fluxbox::getRcFilename() {
 	return dbfile;
 }
 
+//-------- getDefaultDataFilename -------------
+// Provides default filename of data file
+//---------------------------------------------
+void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
+	filename = string(getenv("HOME")+string("/.")+RC_PATH+string("/")+name);
+}
+
 void Fluxbox::load_rc(void) {
 	XrmDatabaseHelper database;
 	
@@ -1952,6 +1960,17 @@ void Fluxbox::load_rc(void) {
 		delete [] tmpvar;
 	} else
 		m_rc_menufile.setDefaultValue();
+ 
+ 	if (m_rc_slitlistfile->size()) {
+ 		char *tmpvar =StringUtil::expandFilename(m_rc_slitlistfile->c_str());
+ 		*m_rc_slitlistfile = (tmpvar==0 ? "" : tmpvar);
+ 		delete [] tmpvar;
+ 	}
+ 	if (!m_rc_slitlistfile->size()) {
+ 		string filename;
+ 		getDefaultDataFilename("slitlist", filename);
+ 		m_rc_slitlistfile.setFromString(filename.c_str());
+ 	}
 
 	if (*m_rc_colors_per_channel < 2)
 		*m_rc_colors_per_channel = 2;
