@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.8 2002/03/20 14:10:03 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.9 2002/03/27 18:47:12 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -53,7 +53,7 @@ public:
 
 	inline const char *getLabel(void) const { return menu.label; }
 
-	int insert(const char *, int = 0, const char * = (const char *) 0, int = -1);
+	int insert(const char *, int = 0, const char * = 0, int = -1);
 	int insert(const char **, int = -1, int = 0);
 	int insert(const char *, Basemenu *, int = -1);
 	int remove(unsigned int item);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.15 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.16 2002/03/27 18:47:12 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -224,7 +224,7 @@ int Basemenu::insert(const char *label, Basemenu *submenu, int pos) {
 	return menuitems.size();
 }
 
-
+/*
 int Basemenu::insert(const char **ulabel, int pos, int function) {
 	assert(ulabel);
 	BasemenuItem *item = new BasemenuItem(*ulabel, function);
@@ -236,7 +236,7 @@ int Basemenu::insert(const char **ulabel, int pos, int function) {
 
 	return menuitems.size();
 }
-
+*/
 
 int Basemenu::remove(unsigned int index) {
 	if (index >= menuitems.size()) {

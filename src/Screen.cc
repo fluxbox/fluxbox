@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.38 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Screen.cc,v 1.39 2002/03/27 18:47:12 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -696,7 +696,7 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
 	iconList.push_back(w);
 
-	iconmenu->insert((const char **) w->getIconTitle());	
+	iconmenu->insert(w->getIconTitle());
 	iconmenu->update();
 	toolbar->addIcon(w);
 }
