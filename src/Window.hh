@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.51 2003/02/22 15:10:43 rathnor Exp $
+// $Id: Window.hh,v 1.52 2003/02/23 01:08:09 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -224,7 +224,6 @@ public:
     const FluxboxWindow *getTransientFor() const { return client.transient_for; }
     FluxboxWindow *getTransientFor() { return client.transient_for; }
 	
-    Window getFrameWindow() const { return m_frame.window().window(); }
     Window getClientWindow() const { return client.window; }
 
     FbTk::FbWindow &getFbWindow() { return m_frame.window(); }
