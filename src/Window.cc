@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.42 2002/04/09 23:17:11 fluxgen Exp $
+// $Id: Window.cc,v 1.43 2002/04/12 14:54:57 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3337,11 +3337,35 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 				XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 					 frame.move_x, frame.move_y, frame.resize_w,
 					 frame.resize_h);
-			} else
+			} else {
+				// Warp to next or previous workspace?
+				if (screen->isWorkspaceWarping()) {
+					int cur_id = screen->getCurrentWorkspaceID();
+					int new_id = cur_id;
+					const int warpPad = screen->getEdgeSnapThreshold();
+					if (me->x_root >= int(screen->getWidth()) - warpPad &&
+							frame.x < int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
+						new_id = (cur_id + 1) % screen->getCount();
+						dx = -me->x_root;
+					} else if (me->x_root <= warpPad &&
+							frame.x > int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
+						new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
+						dx = screen->getWidth() - me->x_root;
+					}
+					if (new_id != cur_id) {
+						frame.x += dx;
+						XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
+						screen->reassociateWindow(this, new_id, True);
+						screen->changeWorkspaceID(new_id);
+						setInputFocus();
+					}
+				}
+
 				configure(dx, dy, frame.width, frame.height);
+			}
 
 			screen->showPosition(dx, dy);
-		}
+        }
 	} else if (functions.resize &&
 			(((me->state & Button1Mask) && (me->window == frame.right_grip ||
 			 me->window == frame.left_grip)) ||
