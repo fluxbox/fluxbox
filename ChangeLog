@@ -1,5 +1,25 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*02/10/03:
+   * Fixed Toolbar worlspace label text color.
+     Theme.cc
+*02/10/25:
+   * Icon.hh/cc renamed to Iconmenu.hh/cc
+   * Clean up
+      BaseDisplay.hh/cc, Screen.cc/hh, Tab.cc, Window.cc
+*02/10/24:
+   * Updated fluxbox-generate_menu (Thanks Han)
+*02/10/23:
+   * Fixed auto_ptr assignment so it compiles with gcc 2.95.x
+     fluxbox.cc, Window.cc	 
+   * Minor cleaning in Windowmenu.cc/hh
+*02/10/22:
+   * Fixed isGroupable for FluxboxWindow,
+   	 It should report if the window is groupable if it's
+	 not transient, nonresiable and nonmaximizable
+	 Window.hh/cc
+*02/10/20:
+   * Updated it_IT translation (Thanks Filippo Pappalardo)
 *02/10/19:
    * Fixed terminal option for fluxbox-generate_menu (Thanks Han)
    * Fixed bug [ 604634 ] Fluxbox 0.1.11 menu on iconbar problem
