@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.86 2003/04/25 11:56:12 fluxgen Exp $
+// $Id: Screen.hh,v 1.87 2003/04/26 14:47:40 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -31,7 +31,6 @@
 #include "Resource.hh"
 #include "Subject.hh"
 #include "MultLayers.hh"
-#include "XLayerItem.hh"
 #include "ToolbarHandler.hh"
 #include "Slit.hh"
 
@@ -56,6 +55,7 @@ namespace FbTk {
 class MenuTheme;
 class Menu;
 class ImageControl;
+class XLayerItem;
 };
 
 /// Handles screen connection, screen clients and workspaces
