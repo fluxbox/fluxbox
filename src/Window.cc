@@ -1,5 +1,5 @@
 // Window.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Window.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.264 2004/01/19 18:32:12 fluxgen Exp $
+// $Id: Window.cc,v 1.265 2004/01/21 15:42:59 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1791,8 +1791,8 @@ void FluxboxWindow::setState(unsigned long new_state) {
 
     for_each(m_clientlist.begin(), m_clientlist.end(),
              FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
-                            PropModeReplace,
-                            (unsigned char *)state, 2));
+                                  PropModeReplace,
+                                  (unsigned char *)state, 2));
 
     saveBlackboxAttribs();
     //notify state changed
