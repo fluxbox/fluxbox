@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.136 2003/05/11 15:24:09 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.137 2003/05/11 17:11:59 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1242,7 +1242,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             //!! just attach last window to focused window
             if (m_focused_window) {
                 Workspace *space = keyscreen->getCurrentWorkspace();
-                Workspace::Windows &wins = space->getWindowList();
+                Workspace::Windows &wins = space->windowList();
                 if (wins.size() == 1)
                     break;
                 BScreen::FocusedWindows &fwins = keyscreen->getFocusedList();

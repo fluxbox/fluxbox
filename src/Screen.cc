@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.155 2003/05/11 15:26:34 fluxgen Exp $
+// $Id: Screen.cc,v 1.156 2003/05/11 17:11:59 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1068,7 +1068,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     // reassociate all windows that are stuck to the new workspace
     Workspace *wksp = getCurrentWorkspace();
-    Workspace::Windows wins = wksp->getWindowList();
+    Workspace::Windows wins = wksp->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
         if ((*it)->isStuck()) {
@@ -1138,24 +1138,28 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 }
 
 
-void BScreen::addNetizen(Netizen *n) {
-    netizenList.push_back(n);
+void BScreen::addNetizen(Window win) {
+    Netizen *net = new Netizen(*this, win);
+    netizenList.push_back(net);
 
-    n->sendWorkspaceCount();
-    n->sendCurrentWorkspace();
+    net->sendWorkspaceCount();
+    net->sendCurrentWorkspace();
 
+    // send all windows to netizen
     Workspaces::iterator it = workspacesList.begin();
     Workspaces::iterator it_end = workspacesList.end();
     for (; it != it_end; ++it) {
-        for (int i = 0; i < (*it)->getCount(); ++i) {
-            n->sendWindowAdd((*it)->getWindow(i)->getClientWindow(),
+        Workspace::Windows::iterator win_it = (*it)->windowList().begin();
+        Workspace::Windows::iterator win_it_end = (*it)->windowList().end();
+        for (; win_it != win_it_end; ++win_it) {
+            net->sendWindowAdd((*win_it)->getClientWindow(), 
                              (*it)->workspaceID());
         }
     }
 
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
 		Fluxbox::instance()->getFocusedWindow()->getClientWindow() : None);
-    n->sendWindowFocus(f);
+    net->sendWindowFocus(f);
 }
 
 void BScreen::removeNetizen(Window w) {
@@ -1475,7 +1479,7 @@ void BScreen::nextFocus(int opts) {
     bool have_focused = false;
     int focused_window_number = -1;
     FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
-    const int num_windows = getCurrentWorkspace()->getCount();
+    const int num_windows = getCurrentWorkspace()->numberOfWindows();
 
     if (focused != 0) {
         if (focused->screen().getScreenNumber() == 
@@ -1535,7 +1539,7 @@ void BScreen::nextFocus(int opts) {
             cycling_window = it;
         } else { // not stacked cycling
             Workspace *wksp = getCurrentWorkspace();
-            Workspace::Windows &wins = wksp->getWindowList();
+            Workspace::Windows &wins = wksp->windowList();
             Workspace::Windows::iterator it = wins.begin();
             
             if (!have_focused) {
@@ -1565,7 +1569,7 @@ void BScreen::prevFocus(int opts) {
     bool have_focused = false;
     int focused_window_number = -1;
     FluxboxWindow *focused;
-    int num_windows = getCurrentWorkspace()->getCount();
+    int num_windows = getCurrentWorkspace()->numberOfWindows();
 	
     if ((focused = Fluxbox::instance()->getFocusedWindow())) {
         if (focused->screen().getScreenNumber() ==
@@ -1578,7 +1582,7 @@ void BScreen::prevFocus(int opts) {
     if (num_windows >= 1) {
         if (!(opts & CYCLELINEAR)) {
             if (!cycling_focus) {
-                cycling_focus = True;
+                cycling_focus = true;
                 cycling_window = focused_list.end();
                 cycling_last = 0;
             } else {
@@ -1628,7 +1632,7 @@ void BScreen::prevFocus(int opts) {
         } else { // not stacked cycling
             
             Workspace *wksp = getCurrentWorkspace();
-            Workspace::Windows &wins = wksp->getWindowList();
+            Workspace::Windows &wins = wksp->windowList();
             Workspace::Windows::iterator it = wins.begin();
             
             if (!have_focused) {
@@ -1666,7 +1670,7 @@ void BScreen::raiseFocus() {
             focused_window_number = fb->getFocusedWindow()->getWindowNumber();
         }
 
-    if ((getCurrentWorkspace()->getCount() > 1) && have_focused)
+    if ((getCurrentWorkspace()->numberOfWindows() > 1) && have_focused)
         fb->getFocusedWindow()->raise();
 }
 
@@ -1693,7 +1697,7 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
         left = win.getXFrame(),
         right = win.getXFrame() + win.width() + 2*borderW;
 
-    Workspace::Windows &wins = getCurrentWorkspace()->getWindowList();
+    Workspace::Windows &wins = getCurrentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
         if ((*it) == &win) continue; // skip self
@@ -2378,14 +2382,14 @@ void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
  Goes to the workspace "right" of the current
 */
 void BScreen::nextWorkspace(const int delta) {
-    changeWorkspaceID( (getCurrentWorkspaceID()+delta) % getCount());
+    changeWorkspaceID( (getCurrentWorkspaceID() + delta) % getCount());
 }
 
 /**
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(const int delta) {
-    changeWorkspaceID( (getCurrentWorkspaceID()-delta+getCount()) % getCount());
+    changeWorkspaceID( (getCurrentWorkspaceID() - delta + getCount()) % getCount());
 }
 
 /**

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.9 2003/05/11 13:36:11 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.10 2003/05/11 17:11:58 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -152,7 +152,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         BScreen::Workspaces::const_iterator workspace_it = m_screen.getWorkspacesList().begin();
         BScreen::Workspaces::const_iterator workspace_it_end = m_screen.getWorkspacesList().end();
         for (; workspace_it != workspace_it_end; ++workspace_it) {
-            Workspace::Windows &wins = (*workspace_it)->getWindowList();
+            Workspace::Windows &wins = (*workspace_it)->windowList();
             Workspace::Windows::iterator wit = wins.begin();
             Workspace::Windows::iterator wit_end = wins.end();
             for (; wit != wit_end; ++wit) {
@@ -180,7 +180,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
     break;
     case WORKSPACE:
     {
-        Workspace::Windows &wins = m_screen.getCurrentWorkspace()->getWindowList();
+        Workspace::Windows &wins = m_screen.getCurrentWorkspace()->windowList();
         Workspace::Windows::iterator wit = wins.begin();
         Workspace::Windows::iterator wit_end = wins.end();
         for (; wit != wit_end; ++wit) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.92 2003/05/10 22:45:08 fluxgen Exp $
+// $Id: Screen.hh,v 1.93 2003/05/11 17:11:58 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -252,7 +252,7 @@ public:
     void updateWorkspaceNamesAtom();
 	
     void addWorkspaceName(const char *name);
-    void addNetizen(Netizen *net);
+    void addNetizen(Window win);
     void removeNetizen(Window win);
     void addIcon(FluxboxWindow *win);
     void removeIcon(FluxboxWindow *win);

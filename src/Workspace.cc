@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.62 2003/05/11 15:35:03 fluxgen Exp $
+// $Id: Workspace.cc,v 1.63 2003/05/11 17:14:41 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -114,12 +114,12 @@ Workspace::GroupList Workspace::m_groups;
 
 Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int i):
     m_screen(scrn),
-    lastfocus(0),
+    m_lastfocus(0),
     m_clientmenu(*scrn.menuTheme(), scrn.getScreenNumber(), *scrn.getImageControl()),
     m_layermanager(layermanager),
     m_name(""),
     m_id(i),
-    cascade_x(32), cascade_y(32) {
+    m_cascade_x(32), m_cascade_y(32) {
 
     m_clientmenu.setInternalMenu();
     setName(screen().getNameOfWorkspace(m_id));
@@ -134,9 +134,9 @@ Workspace::~Workspace() {
 void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
     // make sure we have this window in the list
     if (std::find(m_windowlist.begin(), m_windowlist.end(), win) != m_windowlist.end())
-        lastfocus = win;
+        m_lastfocus = win;
     else
-        lastfocus = 0;
+        m_lastfocus = 0;
 }
 
 int Workspace::addWindow(FluxboxWindow &w, bool place) {
@@ -212,8 +212,8 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     if (w == 0)
         return -1;
 
-    if (lastfocus == w) {
-        lastfocus = 0;
+    if (m_lastfocus == w) {
+        m_lastfocus = 0;
     }
 
     if (w->isFocused()) {
@@ -246,8 +246,8 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
     updateClientmenu();
 
-    if (lastfocus == w || m_windowlist.empty())
-        lastfocus = 0;
+    if (m_lastfocus == w || m_windowlist.empty())
+        m_lastfocus = 0;
 
     if (!w->isStuck()) {
         FluxboxWindow::ClientList::iterator client_it = 
@@ -314,21 +314,7 @@ void Workspace::reconfigure() {
     }
 }
 
-
-const FluxboxWindow *Workspace::getWindow(unsigned int index) const {
-    if (index < m_windowlist.size())
-        return m_windowlist[index];
-    return 0;
-}
-
-FluxboxWindow *Workspace::getWindow(unsigned int index) {
-    if (index < m_windowlist.size())
-        return m_windowlist[index];
-    return 0;
-}
-
-
-int Workspace::getCount() const {
+int Workspace::numberOfWindows() const {
     return m_windowlist.size();
 }
 
@@ -670,15 +656,15 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     // cascade placement or smart placement failed
     if (! placed) {
 
-        if (((unsigned) cascade_x > (screen().getWidth() / 2)) ||
-            ((unsigned) cascade_y > (screen().getHeight() / 2)))
-            cascade_x = cascade_y = 32;
+        if (((unsigned) m_cascade_x > (screen().getWidth() / 2)) ||
+            ((unsigned) m_cascade_y > (screen().getHeight() / 2)))
+            m_cascade_x = m_cascade_y = 32;
 
-        place_x = cascade_x;
-        place_y = cascade_y;
+        place_x = m_cascade_x;
+        place_y = m_cascade_y;
 
-        cascade_x += win.getTitleHeight();
-        cascade_y += win.getTitleHeight();
+        m_cascade_x += win.getTitleHeight();
+        m_cascade_y += win.getTitleHeight();
     }
 
     if (place_x + win_w > (signed) screen().getWidth())

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.170 2003/05/11 15:32:23 fluxgen Exp $
+// $Id: Window.cc,v 1.171 2003/05/11 17:14:41 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -857,7 +857,7 @@ void FluxboxWindow::getWMProtocols() {
             else if (proto[i] == fbatoms->getWMTakeFocusAtom())
                 send_focus_message = true;
             else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
-                screen().addNetizen(new Netizen(screen(), m_client->window()));
+                screen().addNetizen(m_client->window());
         }
 
         XFree(proto);
@@ -2855,7 +2855,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     // now check window edges
 
     Workspace::Windows &wins = 
-        screen().getCurrentWorkspace()->getWindowList();
+        screen().getCurrentWorkspace()->windowList();
 
     Workspace::Windows::iterator it = wins.begin();
     Workspace::Windows::iterator it_end = wins.end();

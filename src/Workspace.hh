@@ -1,5 +1,5 @@
 // Workspace.hh for Fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
 // Workspace.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -52,9 +52,8 @@ public:
     ~Workspace();
 	
     void setLastFocusedWindow(FluxboxWindow *w);
-    /**
-       Set workspace name
-    */
+
+    ///   Set workspace name
     void setName(const std::string &name);
     void showAll();
     void hideAll();
@@ -66,11 +65,13 @@ public:
     int addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
     void removeWindow(WinClient &client);
-    BScreen &screen() { return m_screen; }
-    FluxboxWindow *getLastFocusedWindow() { return lastfocus; }
 
+    BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }	
-    const FluxboxWindow *getLastFocusedWindow() const { return lastfocus; }	
+
+    FluxboxWindow *lastFocusedWindow() { return m_lastfocus; }
+    const FluxboxWindow *lastFocusedWindow() const { return m_lastfocus; }	
+
     FbTk::Menu &menu() { return m_clientmenu; }
     inline const FbTk::Menu &menu() const { return m_clientmenu; }
     ///	name of this workspace
@@ -79,18 +80,13 @@ public:
        @return the number of this workspace, note: obsolete, should be in BScreen
     */
     inline unsigned int workspaceID() const { return m_id; }	
-    /**
-       @param id the window id number
-       @return window that match the id, else 0
-    */
-    FluxboxWindow *getWindow(unsigned int id);
-    const FluxboxWindow *getWindow(unsigned int id) const;
-    const Windows &getWindowList() const { return m_windowlist; }
-    Windows &getWindowList() { return m_windowlist; }
+
+    const Windows &windowList() const { return m_windowlist; }
+    Windows &windowList() { return m_windowlist; }
 
     bool isCurrent() const;
     bool isLastWindow(FluxboxWindow *window) const;
-    int getCount() const;
+    int numberOfWindows() const;
     void checkGrouping(FluxboxWindow &win);
     static bool loadGroups(const std::string &filename);
 protected:
@@ -100,7 +96,7 @@ private:
     void updateClientmenu();
 
     BScreen &m_screen;
-    FluxboxWindow *lastfocus;
+    FluxboxWindow *m_lastfocus;
     FbTk::Menu m_clientmenu;
 
     typedef std::list<FluxboxWindow *> WindowStack;
@@ -114,7 +110,7 @@ private:
 
     std::string m_name;  ///< name of this workspace
     unsigned int m_id;	///< id, obsolete, this should be in BScreen
-    int cascade_x, cascade_y;
+    int m_cascade_x, m_cascade_y;
 };
 
 
