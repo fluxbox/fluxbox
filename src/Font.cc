@@ -19,11 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.7 2002/08/04 15:36:19 fluxgen Exp $
+//$Id: Font.cc,v 1.8 2002/08/20 02:22:29 fluxgen Exp $
 
 
 #include "Font.hh"
-#include "StringUtil.hh"
 
 #ifdef    HAVE_CONFIG_H
 #include "../config.h"
@@ -215,7 +214,7 @@ const char *Font::getFontElement(const char *pattern, char *buf, int bufsiz, ...
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
 	while((v = va_arg(va, char *)) != 0) {
-		p = StringUtil::strcasestr(pattern, v);
+		p = strcasestr(pattern, v);
 		if (p) {
 			std::strncpy(buf, p+1, bufsiz-2);
 			p2 = strchr(buf, '-');
