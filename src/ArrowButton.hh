@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.hh,v 1.4 2003/10/13 23:51:04 fluxgen Exp $
+// $Id: ArrowButton.hh,v 1.5 2004/08/26 15:09:33 rathnor Exp $
 
 #ifndef ARROWBUTTON_HH
 #define ARROWBUTTON_HH
@@ -45,10 +45,13 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ce);
 
     void setMouseMotionHandler(FbTk::EventHandler *eh) { m_mouse_handler = eh; }
+
+    void updateTheme(const FbTk::Theme &theme);
 private:
     void drawArrow();
     Type m_arrow_type;
     FbTk::EventHandler *m_mouse_handler;
+    int m_arrowscale;
 };
 
 #endif // ARROWBUTTON_HH

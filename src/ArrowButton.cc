@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.7 2004/08/25 17:16:40 rathnor Exp $
+// $Id: ArrowButton.cc,v 1.8 2004/08/26 15:09:33 rathnor Exp $
 
 #include "ArrowButton.hh"
+#include "ButtonTheme.hh"
 
 ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
                          const FbTk::FbWindow &parent,
@@ -29,7 +30,8 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
                          unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
     m_arrow_type(arrow_type),
-    m_mouse_handler(0) {
+    m_mouse_handler(0),
+    m_arrowscale(300) {
 
     setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
                  EnterWindowMask | LeaveWindowMask);
@@ -41,7 +43,8 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
                          unsigned int width, unsigned int height):
     FbTk::Button(screen_num, x, y, width, height),
     m_arrow_type(arrow_type),
-    m_mouse_handler(0) {
+    m_mouse_handler(0),
+    m_arrowscale(300) {
 
     setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
                  EnterWindowMask | LeaveWindowMask);
@@ -84,15 +87,20 @@ void ArrowButton::drawArrow() {
     XPoint pts[3];
     unsigned int w = width();
     unsigned int h = height();
-    // arrow size: half of the button
-    unsigned int ax = w / 2;
-    unsigned int ay = h / 2;
+
+    int arrowscale_n = m_arrowscale;
+    int arrowscale_d = 100;
+    unsigned int ax = arrowscale_d * w / arrowscale_n;
+    unsigned int ay = arrowscale_d * h / arrowscale_n;
+    // if these aren't an even number, left and right arrows end up different
+    if (( ax % 2 ) == 1) ax++;
+    if (( ay % 2 ) == 1) ay++;
     switch (m_arrow_type) {
     case LEFT:
 		// start at the tip
         pts[0].x = (w / 2) - (ax / 2); pts[0].y = h / 2;
-        pts[1].x = ax; pts[1].y = ay / 2;
-        pts[2].x = 0; pts[2].y = - ay;
+        pts[1].x = ax; pts[1].y = -ay / 2;
+        pts[2].x = 0; pts[2].y = ay;
         break;
     case RIGHT:
         pts[0].x = (w / 2) + (ax / 2); pts[0].y = h / 2;
@@ -118,3 +126,12 @@ void ArrowButton::drawArrow() {
     }
 }
 
+void ArrowButton::updateTheme(const FbTk::Theme &theme) {
+    // it must be a button theme
+    const ButtonTheme &btheme = static_cast<const ButtonTheme &>(theme);
+
+    m_arrowscale = btheme.scale();
+    if (m_arrowscale == 0) m_arrowscale = 300; // default is 0 => 300
+    else if (m_arrowscale < 100) m_arrowscale = 100; // otherwise clamp
+    else if (m_arrowscale > 100000) m_arrowscale = 100000; // clamp below overflow when *100
+}

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.8 2003/12/16 17:06:49 fluxgen Exp $
+// $Id: Button.hh,v 1.9 2004/08/26 15:09:33 rathnor Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -35,6 +35,8 @@
 #include <memory>
 
 namespace FbTk {
+
+class Theme;
 
 class Button:public FbTk::FbWindow, public EventHandler, 
              private NotCopyable {
@@ -66,6 +68,9 @@ public:
     virtual void buttonReleaseEvent(XButtonEvent &event);
     virtual void exposeEvent(XExposeEvent &event);
     //@}
+
+    // in case it cares about a theme
+    virtual void updateTheme(const FbTk::Theme &theme) {}
 
     /// @return true if the button is pressed, else false
     bool pressed() const { return m_pressed; }

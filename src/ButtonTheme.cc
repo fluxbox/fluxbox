@@ -8,7 +8,8 @@ ButtonTheme::ButtonTheme(int screen_num,
     ToolTheme(screen_num, name, alt_name),
     m_pic_color(*this, name + ".picColor", alt_name + ".PicColor"),
     m_pressed_texture(*this, name + ".pressed", alt_name + ".Pressed"),
-    m_gc(RootWindow(FbTk::App::instance()->display(), screen_num)) {
+    m_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_scale(*this, name + ".scale", alt_name + ".Scale") {
 
 }
 

@@ -16,10 +16,12 @@ public:
 
     inline const FbTk::Texture &pressed() const { return *m_pressed_texture; }
     inline GC gc() const { return m_gc.gc(); }
+    inline int scale() const { return *m_scale; } // scale factor for inside objects
 private:
     FbTk::ThemeItem<FbTk::Color> m_pic_color;
     FbTk::ThemeItem<FbTk::Texture> m_pressed_texture;    
     FbTk::GContext m_gc;
+    FbTk::ThemeItem<int> m_scale;
 };
 
 #endif // BUTTONTHEME_HH

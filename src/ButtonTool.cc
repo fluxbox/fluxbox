@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ButtonTool.cc,v 1.3 2004/01/13 14:41:32 rathnor Exp $
+// $Id: ButtonTool.cc,v 1.4 2004/08/26 15:09:33 rathnor Exp $
 
 #include "ButtonTool.hh"
 
@@ -55,6 +55,7 @@ void ButtonTool::renderTheme() {
     btn.setBorderColor(theme().border().color());
     btn.setBorderWidth(theme().border().width());
     btn.setAlpha(theme().alpha());
+    btn.updateTheme(static_cast<const FbTk::Theme &>(theme()));
 
     Pixmap old_pm = m_cache_pm;
     if (!theme().texture().usePixmap()) {

@@ -1,8 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/26:
-	* Fixed 2 possible Memleaks (Mathias)
-		Ewmh.cc
+  * Make arrow in toolbar buttons scalable size (Simon)
+    - new theme item: toolbar.button.scale:  <number>
+      The number is a scale factor, which is divided into 100 to give
+      the size relative to the button. 100 gives a arrow the same size 
+      as button, 200 gives half the size, 300 a third, etc.
+    - default is now 300, not 200
+    - also fix size balance with left/right arrows
+    ArrowButton.hh/cc ButtonTheme.hh/cc ButtonTool.cc FbTk/Button.hh
+  * Fixed 2 possible Memleaks (Mathias)
+    Ewmh.cc
   * Re-implement bevels in toolbar, plus numerous toolbar-related theme
     fixes => old styles now look like they used to! (Simon)
     Toolbar.cc ToolbarItem.h ToolTheme.cc ToolbarTheme.cc ToolFactory.cc
