@@ -51,13 +51,14 @@ fluxbox_SOURCES = AtomHandler.hh BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basem
 	Clientmenu.cc Clientmenu.hh Configmenu.cc Configmenu.hh \
 	DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
 	FbAtoms.hh FbAtoms.cc fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
-	IconBar.cc IconBar.hh Iconmenu.cc Iconmenu.hh Image.cc Image.hh i18n.cc i18n.hh \
+	IconBar.cc IconBar.hh Iconmenu.cc Iconmenu.hh ImageControl.cc ImageControl.hh i18n.cc i18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh nl_types_cygnus.h \
 	Rootmenu.cc Rootmenu.hh Resource.hh Resource.cc \
 	Screen.cc Screen.hh \
 	Slit.cc Slit.hh StringUtil.cc StringUtil.hh Subject.cc Subject.hh \
-	Tab.hh Tab.cc Theme.hh Theme.cc Timer.cc Timer.hh Toolbar.cc Toolbar.hh Observer.cc Observer.hh\
+	Tab.hh Tab.cc TextureRender.hh TextureRender.cc Theme.hh Theme.cc \
+	Timer.cc Timer.hh Toolbar.cc Toolbar.hh Observer.cc Observer.hh\
 	Window.cc Window.hh Windowmenu.cc Windowmenu.hh \
 	Workspace.cc Workspace.hh Workspacemenu.cc Workspacemenu.hh \
 	XrmDatabaseHelper.hh	
