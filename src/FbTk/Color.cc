@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: Color.cc,v 1.2 2002/11/28 19:22:40 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -39,6 +39,7 @@ unsigned char maxValue(unsigned short colval) {
 };
 
 namespace FbTk {
+
 Color::Color():
 m_allocated(false),
 m_screen(0) {
@@ -78,10 +79,13 @@ bool Color::setFromString(const char *color_string, int screen) {
 
 	XColor color;
 
-	if (! XParseColor(disp, colm, color_string, &color))
+	if (! XParseColor(disp, colm, color_string, &color)) {
 		cerr<<"FbTk::Color: Parse color error: \""<<color_string<<"\""<<endl;
-	else if (! XAllocColor(disp, colm, &color))
+		return false;
+	} else if (! XAllocColor(disp, colm, &color)) {
 		cerr<<"FbTk::Color: Allocation error: \""<<color_string<<"\""<<endl;
+		return false;
+	}
 
 
 
