@@ -1,6 +1,23 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/12:
+  * Added menu delay/click to open or close submenus (Henrik)  
+    In menuMode: Click you need to click on the menu item to open it.
+    The menuDelay is the delay to open an submenu.
+    The menuDelayClose is so you don't need to aim that much when
+    you're moving the cursor to the submenu, over the item below
+    or above, so it stays visible.
+    new resource items:
+    session.screen0.menuMode:  can be either Click or Delay (default: Delay)
+    session.screen0.menuDelay:  in usec  (default: 0 )
+    session.screen0.menuDelayClose: in usec (default: 0 )
+    example:
+    session.screen0.menuMode: Delay
+    session.screen0.menuDelay: 250000
+    session.screen0.menuDelayClose: 200000
+    Notice how the menuDelay is a bit larger than menuCloseDelay
+    this is so the previous menu can close before you open the next
+
   * Fixed bug when adding alot of new workspaces (Henrik)
     Ewmh.cc
   * Removed Next/Prev client from window menu (Henrik)
@@ -15,7 +32,7 @@ Changes for 0.9.7:
 *03/12/11:
   * Added remember position (Thanks Mathias Gumz)
     Usage:  [app] (fbrun)
-            [Position]    (WINCENTER) ){0 0}
+            [Position]    (WINCENTER) {0 0}
             [end]
     and inside the { } is the relative position
     possible values for () are:
