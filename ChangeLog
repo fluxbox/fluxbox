@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
-Changes for 0.9.12
+Changes for 0.9.13
+*05/01/29:
+  * Added icon-support for fbgm (thanx to Dung N. Lam)
+    new options:
+      -d  path(s) to search for *.desktop files
+      -ds wider search for *.desktop files (takes more time)
+      -i  path(s) to search for icons
+      -is wider search for icons (worth the extra time)
+    util/fluxbox-generate_menu.in
 *05/01/24:
   * Fix a compileproblem for FreeBSD4.x (Mathias)
     FbTk/Timer.hh
