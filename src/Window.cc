@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.135 2003/04/15 14:40:24 fluxgen Exp $
+// $Id: Window.cc,v 1.136 2003/04/15 18:55:33 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -457,8 +457,8 @@ void FluxboxWindow::init() {
     }
 
     setState(current_state);
-    m_frame.resizeForClient(wattrib.width, wattrib.height);
-
+    //    m_frame.resizeForClient(wattrib.width, wattrib.height);
+    m_frame.reconfigure();
     // no focus default
     setFocusFlag(false);
 
@@ -482,8 +482,13 @@ void FluxboxWindow::attachClient(WinClient &client) {
         ClientList::iterator client_it_end = old_win->clientList().end();
         for (; client_it != client_it_end; ++client_it) {
             fb->saveWindowSearch((*client_it)->window(), this);
+
             // reparent window to this
-            m_frame.setClientWindow(*(*client_it));           
+            m_frame.setClientWindow(**client_it);
+            resizeClient(**client_it, 
+                         m_frame.clientArea().width(),
+                         m_frame.clientArea().height());
+
             (*client_it)->m_win = this;
             // create a labelbutton for this client and 
             // associate it with the pointer
@@ -1057,40 +1062,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
     }
 
     if (send_event && ! moving) {
-        ClientList::iterator client_it = m_clientlist.begin();
-        ClientList::iterator client_it_end = m_clientlist.end();
-        for (; client_it != client_it_end; ++client_it) {
-            WinClient &client = *(*client_it);
-            /*
-              Send event telling where the root position 
-              of the client window is. (ie frame pos + client pos inside the frame = send pos)
-            */
-            //!!
-            client.x = m_frame.x();
-            client.y = m_frame.y();
-            client.resize(m_frame.clientArea().width(),
-                          m_frame.clientArea().height());
-            client.updateRect(m_frame.x() + m_frame.clientArea().x(),
-                              m_frame.y() + m_frame.clientArea().y(),
-                              m_frame.clientArea().width(),
-                              m_frame.clientArea().height());
-        
-            XEvent event;
-            event.type = ConfigureNotify;
-
-            event.xconfigure.display = display;
-            event.xconfigure.event = client.window();
-            event.xconfigure.window = client.window();
-            event.xconfigure.x = m_frame.x() + m_frame.clientArea().x();
-            event.xconfigure.y = m_frame.y() + m_frame.clientArea().y();
-            event.xconfigure.width = client.width();
-            event.xconfigure.height = client.height();
-            event.xconfigure.border_width = client.old_bw;
-            event.xconfigure.above = m_frame.window().window();
-            event.xconfigure.override_redirect = false;
-
-            screen.updateNetizenConfigNotify(&event);
-        } // end for        
+        sendConfigureNotify();
     }
 }	
 
@@ -2139,11 +2111,21 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         ch = cr.height;
 
 
+    bool send_notify = false;
     // the request is for client window so we resize the frame to it first
-    if (frame().width() != cw || frame().height() != ch)
+    if (frame().width() != cw || frame().height() != ch) {        
         frame().resizeForClient(cw, ch);
-    if (frame().x() != cx || frame().y() != cy)
+        send_notify = true;
+    }
+
+    if (frame().x() != cx || frame().y() != cy) {
         move(cx, cy);
+        // since we already send a notify in move we don't need to do that again
+        send_notify = false;
+    } 
+
+    if (send_notify)
+        sendConfigureNotify();
 
     if (cr.value_mask & CWStackMode) {
         switch (cr.detail) {
@@ -2990,4 +2972,49 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
     last_resize_w = dx;
     last_resize_h = dy;
     last_resize_x = m_frame.x() + m_frame.width() - last_resize_w;	
+}
+
+void FluxboxWindow::resizeClient(WinClient &client, 
+                                 unsigned int height, unsigned int width) {
+    client.resize(m_frame.clientArea().width(),
+                  m_frame.clientArea().height());
+    client.updateRect(m_frame.x() + m_frame.clientArea().x(),
+                      m_frame.y() + m_frame.clientArea().y(),
+                      m_frame.clientArea().width(),
+                      m_frame.clientArea().height());    
+}
+
+void FluxboxWindow::sendConfigureNotify() {
+    ClientList::iterator client_it = m_clientlist.begin();
+    ClientList::iterator client_it_end = m_clientlist.end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient &client = *(*client_it);
+        /*
+          Send event telling where the root position 
+          of the client window is. (ie frame pos + client pos inside the frame = send pos)
+        */
+        //!!
+        client.x = m_frame.x();
+        client.y = m_frame.y();
+        resizeClient(client, 
+                     m_frame.clientArea().width(),
+                     m_frame.clientArea().height());
+
+        
+        XEvent event;
+        event.type = ConfigureNotify;
+
+        event.xconfigure.display = display;
+        event.xconfigure.event = client.window();
+        event.xconfigure.window = client.window();
+        event.xconfigure.x = m_frame.x() + m_frame.clientArea().x();
+        event.xconfigure.y = m_frame.y() + m_frame.clientArea().y();
+        event.xconfigure.width = client.width();
+        event.xconfigure.height = client.height();
+        event.xconfigure.border_width = client.old_bw;
+        event.xconfigure.above = m_frame.window().window();
+        event.xconfigure.override_redirect = false;
+
+        screen.updateNetizenConfigNotify(&event);
+    } // end for        
 }
