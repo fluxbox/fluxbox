@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.10 2003/08/27 14:12:45 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.11 2003/09/12 23:32:02 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -48,9 +48,9 @@ MenuTheme::MenuTheme(int screen_num):
     titlefont_justify(*this, "menu.title.justify", "Menu.Title.Justify"),
     bullet_pos(*this, "menu.bullet.position", "Menu.Bullet.Position"),
     m_bullet(*this, "menu.bullet", "Menu.Bullet"),
-    m_border_width(*this, "borderWidth", "BorderWidth"),
-    m_bevel_width(*this, "bevelWidth", "BevelWidth"),
-    m_border_color(*this, "borderColor", "BorderColor"),
+    m_border_width(*this, "menu.borderWidth", "Menu.BorderWidth"),
+    m_bevel_width(*this, "menu.bevelWidth", "Menu.BevelWidth"),
+    m_border_color(*this, "menu.borderColor", "Menu.BorderColor"),
     m_bullet_pixmap(*this, "menu.submenu.pixmap", "Menu.Submenu.Pixmap"),
     m_selected_pixmap(*this, "menu.selected.pixmap", "Menu.Selected.Pixmap"),
     m_unselected_pixmap(*this, "menu.unselected.pixmap", "Menu.Unselected.Pixmap"),
@@ -65,6 +65,7 @@ MenuTheme::MenuTheme(int screen_num):
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
+    *m_border_width = 0;
 
     Window rootwindow = RootWindow(m_display, screen_num);
 
@@ -99,6 +100,18 @@ void MenuTheme::reconfigTheme() {
 
     // notify any listeners
     m_theme_change_sig.notify();
+}
+
+bool MenuTheme::fallback(ThemeItem_base &item) {
+    if (item.name() == "menu.borderWidth") {
+        return ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
+    } else if (item.name() == "menu.borderColor") {
+        return ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
+    } else if (item.name() == "menu.bevelWidth") {
+        return ThemeManager::instance().loadItem(item, "bevelWidth", "BevelWidth");
+    }
+
+    return false;
 }
 
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.8 2003/08/27 14:07:16 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.9 2003/09/12 23:32:02 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -42,6 +42,8 @@ public:
     virtual ~MenuTheme();
 
     void reconfigTheme();
+
+    bool fallback(ThemeItem_base &item);
 
     /**
        @name text colors
