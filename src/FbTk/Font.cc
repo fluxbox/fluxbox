@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.19 2004/09/01 00:09:03 akir Exp $
+//$Id: Font.cc,v 1.20 2004/09/03 14:17:47 akir Exp $
 
 
 #include "StringUtil.hh"
@@ -357,42 +357,44 @@ bool Font::load(const std::string &name) {
     // everything after ':' is a fontoption
     // -> extract 'halo' and 'shadow' and
     // load remaining fname
-    std::list< std::string > tokens;
     size_t                   sep= name.find_first_of(':');
-    std::string              fname;
 
     if ( sep != std::string::npos ) {
+
+        std::list< std::string > tokens;
+        std::string              fname;
+
         fname= std::string(name.c_str(), sep + 1);
         FbTk::StringUtil::stringtok(tokens, name.substr(sep + 1, name.length()), ",");
-                }
-    else
-        fname= name;
 
-    tokens.unique();
-    bool firstone= true;
-    std::list< std::string >::const_iterator token;
+        tokens.unique();
+        bool firstone= true;
+        std::list< std::string >::const_iterator token;
 
-    // check tokens and extract extraoptions for halo and shadow
-    for( token= tokens.begin(); token != tokens.end(); token++ ) {
-        if ( (*token).find("halo",0) != std::string::npos ) {
-            m_halo= true;
-            extract_halo_options(*token, m_halo_color);
-        }
-        else if ( (*token).find("shadow", 0) != std::string::npos ) {
-            m_shadow= true;
-            extract_shadow_options(*token, m_shadow_color, m_shadow_offx, m_shadow_offy);
+        // check tokens and extract extraoptions for halo and shadow
+        for( token= tokens.begin(); token != tokens.end(); token++ ) {
+            if ( (*token).find("halo",0) != std::string::npos ) {
+                m_halo= true;
+                extract_halo_options(*token, m_halo_color);
             }
-        else {
-            if ( !firstone )
-              fname+= ", ";
-            else
-              firstone= false;
-            fname= fname + *token;
+            else if ( (*token).find("shadow", 0) != std::string::npos ) {
+                m_shadow= true;
+                extract_shadow_options(*token, m_shadow_color, m_shadow_offx, m_shadow_offy);
+                }
+            else {
+                if ( !firstone )
+                  fname+= ", ";
+                else
+                  firstone= false;
+                fname= fname + *token;
+            }
         }
-    }
 
-    m_fontstr = fname;
-    return m_fontimp->load(fname.c_str());
+        m_fontstr = fname;
+    } else
+        m_fontstr = name;
+
+    return m_fontimp->load(m_fontstr.c_str());
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
