@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.10 2003/08/11 14:40:15 fluxgen Exp $
+// $Id: Button.cc,v 1.11 2003/08/13 09:25:16 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -31,8 +31,8 @@ namespace FbTk {
 
 Button::Button(int screen_num, int x, int y,
                unsigned int width, unsigned int height):
-    m_win(screen_num, x, y, width, height,
-          ExposureMask | ButtonPressMask | ButtonReleaseMask),
+    FbWindow(screen_num, x, y, width, height,
+             ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),
     m_background_pm(0),
     m_pressed_pm(0),
@@ -40,24 +40,24 @@ Button::Button(int screen_num, int x, int y,
     m_pressed(false) {
 
     // add this to eventmanager
-    FbTk::EventManager::instance()->add(*this, m_win); 
+    FbTk::EventManager::instance()->add(*this, *this); 
 }
 
 Button::Button(const FbWindow &parent, int x, int y, 
                unsigned int width, unsigned int height):
-    m_win(parent, x, y, width, height,
-          ExposureMask | ButtonPressMask | ButtonReleaseMask),
+    FbWindow(parent, x, y, width, height,
+             ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),
     m_background_pm(0),
     m_pressed_pm(0),
-    m_gc(DefaultGC(FbTk::App::instance()->display(), m_win.screenNumber())),
+    m_gc(DefaultGC(FbTk::App::instance()->display(), screenNumber())),
     m_pressed(false) {
     // add this to eventmanager
-    FbTk::EventManager::instance()->add(*this, m_win);
+    FbTk::EventManager::instance()->add(*this, *this);
 }
 
 Button::~Button() {
-    FbTk::EventManager::instance()->remove(m_win);
+    FbTk::EventManager::instance()->remove(*this);
 }
 
 void Button::setOnClick(RefCount<Command> &cmd, int button) {
@@ -66,18 +66,6 @@ void Button::setOnClick(RefCount<Command> &cmd, int button) {
         return;
     //set on click command for the button
     m_onclick[button - 1] = cmd;
-}
-
-void Button::move(int x, int y) {
-    window().move(x, y);
-}
-
-void Button::resize(unsigned int w, unsigned int h) {
-    window().resize(w, h);
-}
-
-void Button::moveResize(int x, int y, unsigned int width, unsigned int height) {
-    window().moveResize(x, y, width, height);
 }
 
 void Button::setPixmap(Pixmap pm) {
@@ -90,40 +78,28 @@ void Button::setPressedPixmap(Pixmap pm) {
 
 void Button::setBackgroundColor(const Color &color) {
     m_background_color = color;    
-    window().setBackgroundColor(color);
-    clear();
-    window().updateTransparent();
+    FbTk::FbWindow::setBackgroundColor(color);
 }
 
 void Button::setBackgroundPixmap(Pixmap pm) {
     m_background_pm = pm;
-    window().setBackgroundPixmap(pm);
-    clear();
-    window().updateTransparent();
-}
-
-void Button::show() {
-    m_win.show();
-}
-
-void Button::hide() {
-    m_win.hide();
+    FbTk::FbWindow::setBackgroundPixmap(pm);
 }
 
 void Button::buttonPressEvent(XButtonEvent &event) {
     if (m_pressed_pm != 0)
-        m_win.setBackgroundPixmap(m_pressed_pm);
+        FbWindow::setBackgroundPixmap(m_pressed_pm);
     m_pressed = true;    
     clear();
-    window().updateTransparent();
+    FbWindow::updateTransparent();
 }
 
 void Button::buttonReleaseEvent(XButtonEvent &event) {
     m_pressed = false;
     if (m_background_pm)
-        m_win.setBackgroundPixmap(m_background_pm);
+        FbWindow::setBackgroundPixmap(m_background_pm);
     else
-        m_win.setBackgroundColor(m_background_color);
+        FbWindow::setBackgroundColor(m_background_color);
 
     clear(); // clear background
 
@@ -131,26 +107,26 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
         Display *disp = App::instance()->display();
 
         if (m_gc == 0) // get default gc if we dont have one
-            m_gc = DefaultGC(disp, m_win.screenNumber());
+            m_gc = DefaultGC(disp, screenNumber());
 
-        XCopyArea(disp, m_foreground_pm, m_win.window(), m_gc, 0, 0, width(), height(), 0, 0);
+        XCopyArea(disp, m_foreground_pm, window(), m_gc, 0, 0, width(), height(), 0, 0);
     }
 
     if (event.button > 0 && event.button <= 5 &&
         m_onclick[event.button -1].get() != 0)
         m_onclick[event.button - 1]->execute();
 
-    window().updateTransparent();
+    FbWindow::updateTransparent();
 }
 
 void Button::exposeEvent(XExposeEvent &event) {
     if (m_background_pm)
-        m_win.setBackgroundPixmap(m_background_pm);
+        FbWindow::setBackgroundPixmap(m_background_pm);
     else
-        m_win.setBackgroundColor(m_background_color);
+        FbWindow::setBackgroundColor(m_background_color);
 
     clear();
-    window().updateTransparent(event.x, event.y, event.width, event.height);
+    FbWindow::updateTransparent(event.x, event.y, event.width, event.height);
 }
 
 }; // end namespace FbTk

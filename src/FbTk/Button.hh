@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.4 2003/04/28 22:22:25 fluxgen Exp $
+// $Id: Button.hh,v 1.5 2003/08/13 09:25:16 fluxgen Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -36,7 +36,7 @@
 
 namespace FbTk {
 
-class Button:public EventHandler, 
+class Button:public FbTk::FbWindow, public EventHandler, 
              private NotCopyable {
 public:
     Button(int screen_num, int x, int y, unsigned int width, unsigned int height);
@@ -45,10 +45,6 @@ public:
 	
     /// sets action when the button is clicked with #button mouse btn
     void setOnClick(RefCount<Command> &com, int button = 1);
-
-    virtual void move(int x, int y);
-    virtual void resize(unsigned int width, unsigned int height);
-    virtual void moveResize(int x, int y, unsigned int width, unsigned int height);
 
     /// sets foreground pixmap 
     void setPixmap(Pixmap pm);
@@ -60,11 +56,7 @@ public:
     void setBackgroundPixmap(Pixmap pm);
     /// sets background color
     void setBackgroundColor(const Color &color);
-    /// show button
-    void show();
-    /// hide button
-    void hide();
-    virtual void clear() { m_win.clear(); }
+
     /**
        @name eventhandlers
      */
@@ -76,21 +68,10 @@ public:
 
     /// @return true if the button is pressed, else false
     bool pressed() const { return m_pressed; }
-    /**
-       @name position and size of the button
-     */
-    //@{
-    int x() const { return m_win.x(); }
-    int y() const { return m_win.y(); }
-    unsigned int width() const { return m_win.width(); }
-    unsigned int height() const { return m_win.height(); }
-    //@}
-    FbWindow &window() { return m_win; }
-    const FbWindow &window() const { return m_win; }
+
     GC gc() const { return m_gc; }
 
 private:
-    FbTk::FbWindow m_win; ///< window for button
     Pixmap m_foreground_pm; ///< foreground pixmap
     Pixmap m_background_pm; ///< background pixmap
     Color m_background_color; ///< background color
