@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.21 2003/06/05 13:20:05 fluxgen Exp $
+// $Id: Remember.cc,v 1.22 2003/06/05 17:40:02 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -145,7 +145,8 @@ std::string getWMClass(Window w) {
         } else {
             //m_class_name = "";
         }
-        return instance_name.c_str();
+
+        return instance_name;
     }
 }
 
