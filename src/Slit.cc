@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.50 2003/05/11 19:01:09 fluxgen Exp $
+// $Id: Slit.cc,v 1.51 2003/05/13 13:28:28 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -306,7 +306,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     attrib.colormap = screen().rootWindow().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = SubstructureRedirectMask | ButtonPressMask |
-        EnterWindowMask | LeaveWindowMask;
+        EnterWindowMask | LeaveWindowMask | ExposureMask;
 
     frame.x = frame.y = 0;
     frame.width = frame.height = 1;
@@ -458,7 +458,7 @@ void Slit::addClient(Window w) {
 
     // reactivate events for frame.window
     frame.window.setEventMask(SubstructureRedirectMask |
-                              ButtonPressMask | EnterWindowMask | LeaveWindowMask);
+                              ButtonPressMask | EnterWindowMask | LeaveWindowMask | ExposureMask);
 
     // setup event for slit client window
     client->enableEvents();
@@ -524,7 +524,7 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
         XChangeSaveSet(disp, client->window, SetModeDelete);
         // reactivate events to frame.window
         frame.window.setEventMask(SubstructureRedirectMask | ButtonPressMask |
-                                  EnterWindowMask | LeaveWindowMask);
+                                          EnterWindowMask | LeaveWindowMask | ExposureMask);
         XFlush(disp);
     }
 
@@ -638,13 +638,17 @@ void Slit::reconfigure() {
     Pixmap tmp = frame.pixmap;
     FbTk::ImageControl *image_ctrl = screen().getImageControl();
     const FbTk::Texture &texture = m_slit_theme->texture();
-    if (texture.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (texture.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID) &&
+        texture.pixmap().drawable() == 0) {
         frame.pixmap = None;
         frame.window.setBackgroundColor(texture.color());
     } else {
         frame.pixmap = image_ctrl->renderImage(frame.width, frame.height,
                                                texture);
-        frame.window.setBackgroundPixmap(frame.pixmap);
+        if (frame.pixmap == 0)
+            frame.window.setBackgroundColor(texture.color());
+        else
+            frame.window.setBackgroundPixmap(frame.pixmap);
     }
 
     if (tmp) 
@@ -878,11 +882,11 @@ void Slit::reposition() {
     }
 
     if (isHidden()) {
-        frame.window.moveResize(frame.x_hidden,
-                                frame.y_hidden, frame.width, frame.height);
+        frame.window.moveResize(frame.x_hidden, frame.y_hidden,
+                                frame.width, frame.height);
     } else {
-        frame.window.moveResize(frame.x,
-                                frame.y, frame.width, frame.height);
+        frame.window.moveResize(frame.x,  frame.y,
+                                frame.width, frame.height);
     }
 }
 
@@ -1059,7 +1063,7 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
         reconfigure();
 }
 
-void Slit::exposeEvent(XExposeEvent &event) {
+void Slit::exposeEvent(XExposeEvent &ev) {
     frame.window.clear();
 }
 
