@@ -31,6 +31,7 @@
 #include "Timer.hh"
 #include <sys/types.h>
 #include <unistd.h>
+#include <cassert>
 
 //static var
 BTimer::TimerList BTimer::m_timerlist;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.9 2002/04/08 22:29:45 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.10 2002/05/17 16:31:34 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -27,6 +27,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cctype>
+#include <cassert>
 #include <memory>
 
 using namespace std;
