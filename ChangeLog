@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/02:
+  * fluxbox-generate_menu changes: (Han)
+    * Updated German locales from Mathias Gumz
+    * More firefox support.
+    * Updated compat-notes.
 *04/02/28:
   * Improved rendering speed when changing workspace or creating new window (Henrik)
     FbWinFrame.cc
