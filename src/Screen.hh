@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.57 2003/01/07 02:03:57 fluxgen Exp $
+// $Id: Screen.hh,v 1.58 2003/01/07 02:50:20 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -44,6 +44,10 @@
 #include <fstream>
 #include <memory>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
 class Configmenu;
 class Workspacemenu;
 class Iconmenu;
@@ -55,7 +59,7 @@ namespace FbTk {
 class MenuTheme;
 };
 
-/// Handles screen connection
+/// Handles screen connection and screen clients
 /**
  Create a toolbar and workspaces, handles switching between workspaces and windows
  */
