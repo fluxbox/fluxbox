@@ -61,7 +61,7 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
 
     disableTitle();
     // build menu
-    update(0);
+    updateMenu(0);
 }
 
 void SendToMenu::update(FbTk::Subject *subj) {
@@ -75,7 +75,7 @@ void SendToMenu::update(FbTk::Subject *subj) {
                 setItemEnabled(i, true);
             // disable send to on the workspace which the window exist
             setItemEnabled(m_win.workspaceNumber(), false);
-            FbMenu::update();
+            updateMenu();
             // we're done
             return;
         } else if (subj == &(theme().reconfigSig())) {
@@ -98,5 +98,5 @@ void SendToMenu::update(FbTk::Subject *subj) {
 
     setItemEnabled(m_win.workspaceNumber(), false);
 
-    FbMenu::update();
+    updateMenu();
 }

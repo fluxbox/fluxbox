@@ -123,7 +123,7 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
         FbTk::MenuItem *item = new FbTk::MenuItem("unavailable");
         item->setEnabled(false);
         menu->insert(item);
-        menu->update();
+        menu->updateMenu();
         return menu;
     }
     
@@ -147,7 +147,7 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, SaveOnClose, "Save on close", "Save remembered attributes on close"),
                                       remember, win, Remember::REM_SAVEONCLOSE));
 
-    menu->update();
+    menu->updateMenu();
     return menu;
 };
 

@@ -86,6 +86,7 @@ public:
                 break;
             case IconbarTool::CURRENT:
                 m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
+                m_win.raiseAndFocus();
                 break;
             case IconbarTool::FOLLOW:
             default:

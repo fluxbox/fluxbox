@@ -40,7 +40,7 @@ static void updateItems(FbTk::Menu &menu, BScreen &screen) {
         for (; client_it != client_it_end; ++client_it)
             menu.insert(new IconMenuItem(**client_it));
     }
-    menu.update();
+    menu.updateMenu();
 }
 
 IconMenu::IconMenu(BScreen &screen):

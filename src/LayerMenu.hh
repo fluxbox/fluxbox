@@ -109,7 +109,7 @@ LayerMenu<ItemType>::LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
                                                m_object, layer_menuitems[i].layernum));               
         }
     }
-    update();
+    updateMenu();
 }
 
 #endif // LAYERMENU_HH

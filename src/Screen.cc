@@ -1704,7 +1704,7 @@ void BScreen::initMenu() {
                            exit_fb);
     }
 
-    m_rootmenu->update();
+    m_rootmenu->updateMenu();
 }
 
 
@@ -1765,7 +1765,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                         *resource.auto_raise,
                                         save_and_reconfigure));
 
-    focus_menu->update();
+    focus_menu->updateMenu();
 
     menu.insert(focusmenu_label, focus_menu);
 #ifdef SLIT
@@ -1845,14 +1845,14 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         menu_alpha_item->setCommand(saverc_cmd);
         alpha_menu->insert(menu_alpha_item);
 
-        alpha_menu->update();
+        alpha_menu->updateMenu();
         menu.insert(alphamenu_label, alpha_menu);
     }
 #endif // HAVE_XRENDER
 #undef _BOOLITEM
 
     // finaly update menu 
-    menu.update();
+    menu.updateMenu();
 }
 
 

@@ -277,7 +277,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 
     menu.insert(new FbTk::MenuSeparator());
 
-    menu.update();
+    menu.updateMenu();
 }
                 
 inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
@@ -367,7 +367,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     RefCount<Command> s_and_reconfig(save_and_reconfig);
     m_menu.insert(new BoolMenuItem(_FBTEXT(Toolbar, ShowIcons, "Show Pictures", "chooses if little icons are shown next to title in the iconbar") , 
 	                *m_rc_use_pixmap, s_and_reconfig));
-    m_menu.update();
+    m_menu.updateMenu();
     // must be internal menu, otherwise toolbar main menu tries to delete it.
     m_menu.setInternalMenu();
 

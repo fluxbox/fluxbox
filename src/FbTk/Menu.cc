@@ -398,13 +398,13 @@ void Menu::enableTitle() {
     setTitleVisibility(true);
 }
 
-void Menu::update(int active_index) {
+void Menu::updateMenu(int active_index) {
     if (title_vis) {
         menu.item_w = theme().titleFont().textWidth(menu.label.c_str(),
                                                     menu.label.size());
 		
         menu.item_w += (theme().bevelWidth() * 2);
-    }	else
+    } else
         menu.item_w = 1;
 
     unsigned int ii = 0;
@@ -626,7 +626,7 @@ void Menu::update(int active_index) {
 void Menu::show() {
 
     if (m_need_update)
-        update();
+        updateMenu();
 
     menu.window.showSubwindows();
     menu.window.show();
@@ -677,7 +677,7 @@ void Menu::clearWindow() {
     if (alpha() < 255) {
         renderTransp(0, 0,
                      menu.frame.width(), menu.frame.height());
-        update();
+        updateMenu();
     }
 
     menu.title.clear();
@@ -1368,7 +1368,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
             menuitems[which_press]->click(1, event.time);
             itemSelected(1, which_press);
             m_need_update = true;
-            update();
+            updateMenu();
         }
         break;
     default:
@@ -1413,7 +1413,7 @@ void Menu::reconfigure() {
     menu.title.setBorderWidth(theme().borderWidth());
     
 
-    update();
+    updateMenu();
 
 }
     

@@ -61,12 +61,12 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
                 item = find(i);
                 if (item && item->isSelected()) {
                     setItemSelected(i, false);
-                    FbTk::Menu::update(i);
+                    updateMenu(i);
                     break;
                 }
             }
             setItemSelected(screen.currentWorkspace()->workspaceID() + 2, true);
-            FbTk::Menu::update(screen.currentWorkspace()->workspaceID() + 2);
+            updateMenu(screen.currentWorkspace()->workspaceID() + 2);
         } else if (subj == &screen.workspaceCountSig() || 
                    subj == &screen.workspaceNamesSig()) {
             while (numberOfItems() > 2) {
@@ -88,7 +88,7 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
             insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
                    MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
 
-            FbTk::Menu::update(-1);
+            updateMenu(-1);
         }
     } else {
         FbTk::Menu::update(subj);
@@ -126,5 +126,5 @@ void WorkspaceMenu::init(BScreen &screen) {
 
     insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
            MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
-    FbMenu::update();
+    updateMenu();
 }

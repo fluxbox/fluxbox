@@ -89,7 +89,7 @@ static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
             parent.insert(new StyleMenuItem(filelist[file_index], style));
     } 
     // update menu graphics
-    parent.update();
+    parent.updateMenu();
     Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
 
 }
@@ -124,7 +124,7 @@ static void createRootCmdMenu(FbTk::Menu &parent, const string &label,
             parent.insert(new RootCmdMenuItem(filelist[file_index], rootcmd, cmd));
     }
     // update menu graphics
-    parent.update();
+    parent.updateMenu();
     Fluxbox::instance()->saveMenuFilename(rootcmddir.c_str());
 
 }
@@ -270,7 +270,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
             submenu->setLabel(str_label.c_str());
 
         parseMenu(parse, *submenu);
-        submenu->update();
+        submenu->updateMenu();
         menu.insert(str_label.c_str(), submenu);
         // save to screen list so we can delete it later
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
@@ -339,7 +339,7 @@ static void parseWindowMenu(Parser &parse, FbTk::Menu &menu, FluxboxWindow &win)
         } else if (pitem.key() == "submenu") {
             FbTk::Menu *submenu = MenuCreator::createMenu(pitem.label(), menu.screenNumber());
             parseWindowMenu(parse, *submenu, win);
-            submenu->update();
+            submenu->updateMenu();
             menu.insert(pitem.label().c_str(), submenu);
 
         } else { // try non window menu specific stuff

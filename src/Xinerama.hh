@@ -99,7 +99,7 @@ XineramaHeadMenu<ItemType>::XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbT
     // TODO: nls
     insert(new XineramaHeadMenuItem<ItemType>(
                "All Heads", m_object, 0, saverc_cmd));
-    update();
+    updateMenu();
 }
 
 #endif // XINERAMA_HH

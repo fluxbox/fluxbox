@@ -882,7 +882,7 @@ void Toolbar::setupMenus() {
         place_menu.pop_front();
     }
     menu().insert(_FBTEXT(Menu, Placement, "Placement", "Title of Placement menu"), &placementMenu());
-    placementMenu().update();
+    placementMenu().updateMenu();
 
 
     // this saves resources and clears the slit window to update alpha value
@@ -899,7 +899,7 @@ void Toolbar::setupMenus() {
     alpha_menuitem->setCommand(set_alpha_cmd);
 
     menu().insert(alpha_menuitem);
-    menu().update();
+    menu().updateMenu();
 }
 
 void Toolbar::saveOnHead(int head) {

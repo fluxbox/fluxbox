@@ -39,8 +39,8 @@ FbMenu::~FbMenu() {
 
 }
 
-void FbMenu::update(int index) {
-    FbTk::Menu::update(index);
+void FbMenu::updateMenu(int index) {
+    FbTk::Menu::updateMenu(index);
     m_shape->update();
 }
 

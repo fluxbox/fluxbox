@@ -135,6 +135,9 @@ public:
 
     bool verbose() const { return m_verbose; }
     void setVerbose(bool value) { m_verbose = value; }
+
+    // dump theme out to filename, stdout if no filename is given
+    void dump(Theme& theme, const char* filename = 0) const;
     //    void listItems();
 private:
     ThemeManager();

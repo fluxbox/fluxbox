@@ -69,7 +69,7 @@ public:
     inline Alignment alignment() const { return m_align; }
     inline int size() const { return m_item_list.size(); }
     inline bool empty() const { return m_item_list.empty(); }
-    inline const Item selected() const { return m_selected; }
+    inline const Item& selected() const { return m_selected; }
     inline Item selected() { return m_selected; }
     unsigned int maxWidthPerClient() const;
     inline unsigned int maxHeightPerClient() const { return (empty() ? height() : height()/size()); }    

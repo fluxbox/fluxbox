@@ -353,7 +353,7 @@ bool Workspace::loadGroups(const std::string &filename) {
 }
 
 void Workspace::update(FbTk::Subject *subj) {
-    menu().update();
+    menu().updateMenu();
 }
 
 
@@ -373,7 +373,7 @@ void Workspace::setName(const std::string &name) {
     screen().updateWorkspaceNamesAtom();
 	
     menu().setLabel(m_name.c_str());
-    menu().update();
+    menu().updateMenu();
 }
 
 /**
@@ -407,7 +407,7 @@ void Workspace::updateClientmenu() {
             menu().insert(new ClientMenuItem(*(*client_it)));
     }
 
-    menu().update();
+    menu().updateMenu();
 }
 
 void Workspace::placeWindow(FluxboxWindow &win) {

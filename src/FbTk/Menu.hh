@@ -117,7 +117,7 @@ public:
     void setLabel(const char *labelstr);
     /// move menu to x,y
     void move(int x, int y);
-    virtual void update(int active_index = -1);
+    virtual void updateMenu(int active_index = -1);
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
     inline void setMinimumSublevels(int m) { menu.minsub = m; }

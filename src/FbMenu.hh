@@ -36,7 +36,7 @@ public:
     FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer);
     virtual ~FbMenu();
-    void update(int index = -1);
+    void updateMenu(int index = -1);
     void clearWindow();
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
