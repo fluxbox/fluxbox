@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.hh,v 1.1 2004/06/07 11:46:05 rathnor Exp $
+// $Id: I18n.hh,v 1.2 2004/07/19 13:53:46 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
@@ -44,7 +44,7 @@
 extern "C" {
 #include <nl_types.h>
 }
-#elif defined(__CYGWIN__)
+#elif defined(__CYGWIN__) || defined(__EMX__)
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
@@ -68,7 +68,7 @@ void catclose(nl_catd cat);
 // ignore the description, it's for helping translators
 #define _FBTEXT(msgset, msgid, default_text, description) \
     i18n.getMessage(FBNLS::msgset ## Set, FBNLS::msgset ## msgid, default_text)
-
+    
 // This ensure that FbTk nls stuff is in a kind of namespace of its own
 #define _FBTKTEXT( msgset, msgid, default_text, description) \
     i18n.getMessage(FBNLS::FbTk ## msgset ## Set, FBNLS::FbTk ## msgset ## msgid, default_text)

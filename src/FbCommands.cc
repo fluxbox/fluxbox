@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.24 2004/04/22 21:12:32 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.25 2004/07/19 13:52:15 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -37,6 +37,15 @@
 
 #include <fstream>
 #include <iostream>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#if defined(__EMX__) && defined(HAVE_PROCESS_H)
+#include <process.h> // for P_NOWAIT
+#endif // __EMX__
+
 using namespace std;
 
 namespace FbCommands {
@@ -46,7 +55,7 @@ ExecuteCmd::ExecuteCmd(const std::string &cmd, int screen_num):m_cmd(cmd), m_scr
 }
 
 void ExecuteCmd::execute() {
-#ifndef    __EMX__
+#ifndef __EMX__
     if (! fork()) {
         std::string displaystring("DISPLAY=");
         displaystring += DisplayString(FbTk::App::instance()->display());
@@ -70,7 +79,7 @@ void ExecuteCmd::execute() {
         exit(0);
     }
 #else //   __EMX__
-    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), 0);
+    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_cmd.c_str(), 0);
 #endif // !__EMX__
 
 }
@@ -125,9 +134,9 @@ void ShowRootMenuCmd::execute() {
     int wx, wy;
     unsigned int mask;
 
-    if ( XQueryPointer(FbTk::App::instance()->display(),
-                       screen->rootWindow().window(), &root_ret, &window_ret,
-                       &rx, &ry, &wx, &wy, &mask) ) {
+    if (XQueryPointer(FbTk::App::instance()->display(),
+                      screen->rootWindow().window(), &root_ret, &window_ret,
+                      &rx, &ry, &wx, &wy, &mask) ) {
 
         if ( rx - (screen->getRootmenu().width()/2) > 0 )
             rx-= screen->getRootmenu().width()/2;
