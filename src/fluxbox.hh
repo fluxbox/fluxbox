@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.88 2004/05/02 20:48:16 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.89 2004/07/15 09:52:14 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -302,7 +302,8 @@ private:
     typedef AtomHandlerContainer::iterator AtomHandlerContainerIt;
 
     AtomHandlerContainer m_atomhandler;
-    std::vector<Toolbar *> m_toolbars;
+    typedef std::vector<Toolbar *> Toolbars;
+    Toolbars m_toolbars;
 
     bool m_starting;
     bool m_shutdown;
