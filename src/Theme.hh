@@ -42,7 +42,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.9 2002/05/15 09:35:49 fluxgen Exp $
+// $Id: Theme.hh,v 1.10 2002/07/19 21:44:06 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -124,7 +124,7 @@ public:
 	void load(const char *filename);
 	void reconfigure();
 	
-	inline void setRootCommand(std::string command) { m_rootcommand = command; }
+	inline void setRootCommand(const std::string &command) { m_rootcommand = command; }
 	
 	
 	
