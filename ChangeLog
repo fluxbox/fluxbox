@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/20:
+   * Moved SlitTheme and SlitClient out from Slit.cc into new files (Henrik)
+     SlitClient.hh/cc, SlitTheme.hh
+   * Moved Slit resource from BScreen to Slit (Henrik)
+     Slit.hh/cc, Screen.hh/cc
 *03/06/18:
    * Fixed toolbar and slit maximize implementation (Henrik)
      Toolbar.hh/cc, Slit.hh/cc
