@@ -109,6 +109,7 @@ public:
 	{ return resource.image_dither; }
 	inline const Bool &doOrderedDither(void) const
 	{ return resource.ordered_dither; }
+	inline const Bool &doMaxOverSlit(void) const { return resource.max_over_slit; }
 	inline const Bool &doOpaqueMove(void) const { return resource.opaque_move; }
 	inline const Bool &doFullMax(void) const { return resource.full_max; }
 	inline const Bool &doFocusNew(void) const { return resource.focus_new; }
@@ -197,6 +198,7 @@ public:
 	inline void saveEdgeSnapThreshold(int t)
 	{ resource.edge_snap_threshold = t; }
 	inline void saveImageDither(Bool d) { resource.image_dither = d; }
+	inline void saveMaxOverSlit(Bool m) { resource.max_over_slit = m; }
 	inline void saveOpaqueMove(Bool o) { resource.opaque_move = o; }
 	inline void saveFullMax(Bool f) { resource.full_max = f; }
 	inline void saveFocusNew(Bool f) { resource.focus_new = f; }
@@ -311,7 +313,7 @@ private:
 
 		Bool toolbar_on_top, toolbar_auto_hide, sloppy_focus, auto_raise,
 			auto_edge_balance, image_dither, ordered_dither, opaque_move, full_max,
-			focus_new, focus_last, tab_rotate_vertical, semi_sloppy_focus,
+			focus_new, focus_last, max_over_slit, tab_rotate_vertical, semi_sloppy_focus,
 			sloppy_window_grouping;
 
 		int workspaces, toolbar_placement, toolbar_width_percent, placement_policy,
