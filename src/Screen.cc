@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.220 2003/08/17 13:21:32 fluxgen Exp $
+// $Id: Screen.cc,v 1.221 2003/08/17 19:06:10 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2068,7 +2068,7 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
     int slen = stylesdir.size();
     // for each file in directory add filename and path to menu
     for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
-        std::string style(stylesdir + '/' + filelist[file_index])
+        std::string style(stylesdir + '/' + filelist[file_index]);
 
         if (FbTk::Directory::isRegularFile(style)) {
             FbTk::MenuItem *item = new StyleMenuItem(filelist[file_index], style);
