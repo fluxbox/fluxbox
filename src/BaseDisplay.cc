@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.21 2002/10/25 20:51:54 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.22 2002/11/12 14:40:26 fluxgen Exp $
 
 
 
@@ -31,7 +31,7 @@
 #include "Timer.hh"
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 // use GNU extensions
@@ -49,14 +49,9 @@
 #include <fcntl.h>
 #endif // HAVE_FCNTL_H
 
-#ifdef	HAVE_STDIO_H
-#include <stdio.h>
-#endif // HAVE_STDIO_H
-
-#ifdef	STDC_HEADERS
-#include <stdlib.h>
-#include <string.h>
-#endif // STDC_HEADERS
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef	HAVE_UNISTD_H
 #include <sys/types.h>
@@ -72,21 +67,21 @@
 #endif // HAVE_SIGNAL_H
 
 #ifndef	 SA_NODEFER
-#	ifdef	 SA_INTERRUPT
-#		define SA_NODEFER SA_INTERRUPT
-#	else // !SA_INTERRUPT
-#		define SA_NODEFER (0)
-#	endif // SA_INTERRUPT
+#ifdef	 SA_INTERRUPT
+#define SA_NODEFER SA_INTERRUPT
+#else // !SA_INTERRUPT
+#define SA_NODEFER (0)
+#endif // SA_INTERRUPT
 #endif // SA_NODEFER
 
 #ifdef		HAVE_SYS_WAIT_H
-#	include <sys/types.h>
-#	include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #endif // HAVE_SYS_WAIT_H
 
 #if defined(HAVE_PROCESS_H) && defined(__EMX__)
-#	include <process.h>
-#endif //	 HAVE_PROCESS_H						 __EMX__
+#include <process.h>
+#endif // HAVE_PROCESS_H	 && __EMX__
 
 #include <iostream>
 using namespace std;
