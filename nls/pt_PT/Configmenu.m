@@ -45,12 +45,12 @@ $ #TabPlacement
 $ #TabRotateVertical
 # Rodar Tabs Verticais
 $ #SemiSloppyFocus
-# Semi Sloppy Focus
+# Semi Focus Desordenado
 $ #MaxOverSlit
 # Maximizar Sobre Slit
 $ #SloppyWindowGrouping
-# Sloppy Janela Em Grupo
+# Janela Em Grupo Desordenada
 $ #WorkspaceWarping
-# Workspace Warping
+# Alternando Workspace
 $ #DesktopWheeling
-# Desktop Wheeling
+# Rodando Area Trabalho
