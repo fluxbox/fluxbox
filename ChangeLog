@@ -1,6 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/06/07:
+  * New menu theme items:
+    menu.titleHeight: integer
+    menu.itemHeight: integer
+    The height of the item/title will be the biggest of
+    font height + bevel and the specified height, so the
+    text will always fit.
+    MenuTheme.hh/cc
+    (Henrik)
+  * Improved menu transparent rendering speed and
+    the text is not transparent anymore so you are able
+    to see the text even if you have 100% transparency
+    Menu.hh/cc  (Henrik)
+  * Moved drawing of menu items to MenuItem class
+    MenuItem.hh/cc, MenuSeparator.hh/cc (Henrik)
   * Initial NLS update (Simon)
     - use _FBTEXT, or _FBTKTEXT for all strings that go to the user
     - regenerate fluxbox-nls.hh when adding new strings
