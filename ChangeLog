@@ -1,6 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/10:
+  * Cosmetic and cleanup changes to FbTk/* (Mathias)
+      - mostly tabs -> spaces, wrong indention etc
+      - using FbDrawable::s_display now instead of
+        FbTk::App::instance()->display()
+      - added warning about "wrong" wallpapersetter
+    FbTk/FbPixmap.(cc|hh) FbTk/FbWindow.(cc|hh) 
+    FbTk/FbPixmap.cc FbTk/EventHandler.cc Ewmh.cc
   * Clean up some unused variables (thanks Ryan O'Hara)
     FbTk/XLayer.cc
 *04/09/09:
