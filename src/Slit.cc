@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.86 2003/12/20 19:10:49 fluxgen Exp $
+// $Id: Slit.cc,v 1.87 2004/01/10 02:58:21 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -1144,6 +1144,9 @@ void Slit::loadClientList(const char *filename) {
 }
 
 void Slit::updateClientmenu() {
+    if (screen().isShuttingdown()) 
+        return;
+
     // clear old items
     m_clientlist_menu.removeAll();
     m_clientlist_menu.setLabel("Clients");
