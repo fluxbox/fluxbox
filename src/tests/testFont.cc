@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: testFont.cc,v 1.7 2004/09/01 12:41:11 fluxgen Exp $
+// $Id: testFont.cc,v 1.8 2004/09/12 00:06:37 fluxgen Exp $
 
 #include "App.hh"
 #include "FbWindow.hh"
@@ -87,7 +87,7 @@ public:
                        x, y, x + text_w, y);
         wingc.setForeground(FbTk::Color(m_foreground.c_str(), m_win.screenNumber()));
         cerr<<"text width: "<<m_font.textWidth(m_text.c_str(), m_text.size())<<endl;
-        m_font.drawText(m_win.drawable(),
+        m_font.drawText(m_win,
                         0, wingc.gc(),
 			m_text.c_str(), m_text.size(),
                         x, y);
