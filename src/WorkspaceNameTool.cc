@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.4 2003/08/13 10:19:38 fluxgen Exp $
+// $Id: WorkspaceNameTool.cc,v 1.5 2003/08/26 23:20:07 fluxgen Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -42,6 +42,7 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
     m_button.setText(m_screen.currentWorkspace()->name());
 
     // setup signals
+    screen.workspaceNamesSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
     theme.reconfigSig().attach(this);
 
@@ -69,6 +70,8 @@ void WorkspaceNameTool::moveResize(int x, int y,
 
 void WorkspaceNameTool::update(FbTk::Subject *subj) {
     m_button.setText(m_screen.currentWorkspace()->name());
+    if (m_button.width() != width())
+        resize(width(), height());
     renderTheme();
 }
 
