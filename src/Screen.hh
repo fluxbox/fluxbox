@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.31 2002/04/19 09:34:10 fluxgen Exp $
+// $Id: Screen.hh,v 1.32 2002/05/08 10:10:19 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -79,6 +79,7 @@ public:
 	inline bool isTabRotateVertical(void) { return *resource.tab_rotate_vertical; }
 	inline bool isSloppyWindowGrouping(void) { return *resource.sloppy_window_grouping; }
 	inline bool isWorkspaceWarping(void) { return *resource.workspace_warping; }
+	inline bool isDesktopWheeling(void) { return *resource.desktop_wheeling; }
 	inline bool doAutoRaise(void) { return resource.auto_raise; }
 	inline bool doImageDither(void) { return *resource.image_dither; }
 	inline bool doMaxOverSlit(void) { return *resource.max_over_slit; }
@@ -175,6 +176,7 @@ public:
 	inline void saveTabRotateVertical(bool r) { resource.tab_rotate_vertical = r;   }
 	inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
 	inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
+	inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
@@ -298,7 +300,7 @@ private:
 			image_dither, opaque_move, full_max,
 			max_over_slit, tab_rotate_vertical,
 			sloppy_window_grouping, workspace_warping,
-			focus_last, focus_new;
+			desktop_wheeling, focus_last, focus_new;
 		Resource<std::string> rootcommand;		
 		bool auto_raise, sloppy_focus, semi_sloppy_focus,
 			ordered_dither;

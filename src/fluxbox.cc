@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.56 2002/05/08 09:33:11 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.57 2002/05/08 10:14:51 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -973,9 +973,9 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 						checkMenu();
 						screen->getRootmenu()->show();
 					}
-				} else if (be.button == 4) {
+				} else if (screen->isDesktopWheeling() && be.button == 4) {
 					screen->nextWorkspace(1);
-				} else if (be.button == 5) {
+				} else if (screen->isDesktopWheeling() && be.button == 5) {
 					screen->prevWorkspace(1);
 				}
 			}

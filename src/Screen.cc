@@ -16,13 +16,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.48 2002/05/07 13:54:42 fluxgen Exp $
+// $Id: Screen.cc,v 1.49 2002/05/08 10:12:17 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -202,6 +202,7 @@ max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
 tab_rotate_vertical(rm, true, scrname+".tab.rotatevertical", altscrname+".Tab.RotateVertical"),
 sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
 workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
+desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
 focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
 focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
 rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
