@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.8 2004/08/10 11:22:10 fluxgen Exp $
+//$Id: Font.hh,v 1.9 2004/08/10 18:08:37 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -56,7 +56,8 @@ public:
     /// @return true if utf-8 mode is enabled, else false
     static bool utf8() { return m_utf8mode; }
     void setAntialias(bool flag);
-    inline void setShadow(bool flag) { m_shadow = flag; }
+    inline void setShadow(bool flag) { m_shadow = flag; if (m_shadow) setHalo(false); }
+    inline void setHalo(bool flag)   { m_halo = flag; if (m_halo) setShadow(false); }
     /**
        @param text text to check size
        @param size length of text in bytes
@@ -92,6 +93,7 @@ public:
     /// @return rotated angle
     float angle() const { return m_angle; }
     bool shadow() const { return m_shadow; }
+    bool halo() const { return m_halo; }
 private:
 	
     std::auto_ptr<FontImp> m_fontimp; ///< font implementation
@@ -102,6 +104,11 @@ private:
     bool m_rotated; ///< wheter we're rotated or not
     float m_angle; ///< rotation angle
     bool m_shadow; ///< shadow text
+    std::string m_shadow_color; ///< shadow color
+    int m_shadow_offx; ///< offset y for shadow
+    int m_shadow_offy; ///< offset x for shadow
+    bool m_halo; ///< halo text
+    std::string m_halo_color; ///< halo color
     std::string m_locale; ///< system encoding
     iconv_t m_iconv;
 };

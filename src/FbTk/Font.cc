@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.8 2004/08/10 11:21:50 fluxgen Exp $
+//$Id: Font.cc,v 1.9 2004/08/10 18:08:37 fluxgen Exp $
 
 
+#include "StringUtil.hh"
 #include "Font.hh"
 #include "FontImp.hh"
 #include "I18n.hh"
@@ -56,11 +57,26 @@
 #include <iostream> 
 #include <cstring>
 #include <cstdlib>
+#include <list>
 #include <typeinfo>
+
+
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#define FB_istringstream istringstream
+#elif HAVE_STRSTREAM
+#include <strstream>
+#define FB_istringstream istrstream
+#else
+#error "You dont have sstream or strstream headers!"
+#endif // HAVE_STRSTREAM
 
 #include <cstdlib>
 
 using namespace std;
+
+
+namespace {
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
@@ -74,7 +90,7 @@ using namespace std;
    @param len number of chars to convert
    @return the recoded string, or 0 on failure
 */
-static char* recode(iconv_t cd,
+char* recode(iconv_t cd,
                     const char *msg, size_t size) {
 
     // If empty message, yes this can happen, return
@@ -110,6 +126,75 @@ static char* recode(iconv_t cd,
     return new_msg;
 }
 
+
+int extract_halo_options(const std::string& opts, std::string& color) {
+   std::list< std::string > tokens;
+   size_t sep= opts.find_first_of(':');
+
+   if ( sep == std::string::npos )
+       return 1;
+
+   FbTk::StringUtil::stringtok(tokens, opts.substr(sep + 1, opts.length()), ";");
+   tokens.unique();
+   std::list< std::string >::const_iterator token;
+
+   for ( token= tokens.begin(); token != tokens.end(); token++ ) {
+       if ( (*token).find("color=", 0) != std::string::npos ) {
+           size_t s= (*token).find_first_of('=');
+           std::string c= (*token).substr(s + 1, (*token).length());
+           if ( !c.empty() )
+               std::swap(color, c);
+       }
+   }
+
+   return 1;
+}
+
+int extract_shadow_options(const std::string& opts, 
+                           std::string& color, 
+                           int& offx, int& offy) {
+
+   std::list< std::string > tokens;
+   size_t sep= opts.find_first_of(':');
+
+   if ( sep == std::string::npos )
+       return 1;
+
+   FbTk::StringUtil::stringtok(tokens, opts.substr(sep + 1, opts.length()), ";");
+   tokens.unique();
+   std::list< std::string >::const_iterator token;
+
+   for ( token= tokens.begin(); token != tokens.end(); token++ ) {
+       if ( (*token).find("color=", 0) != std::string::npos ) {
+           size_t s= (*token).find_first_of('=');
+           std::string c= (*token).substr(s + 1, (*token).length());
+           if ( !c.empty() )
+               std::swap(color, c);
+       }
+       else if ( (*token).find("offsetx=", 0) != std::string::npos ) {
+           size_t s= (*token).find_first_of('=');
+           FB_istringstream o((*token).substr(s + 1, (*token).length()));
+           if ( !o.eof() ) {
+               o >> offx;
+           }
+       }
+       else if ( (*token).find("offsety=", 0) != std::string::npos ) {
+           size_t s= (*token).find_first_of('=');
+           FB_istringstream o((*token).substr(s + 1, (*token).length()));
+           if ( !o.eof() ) {
+               o >> offy;
+           }
+       }
+   }
+
+   return 1;
+
+};
+
+}; // end nameless namespace
+
+
+
 namespace FbTk {
 
 bool Font::m_multibyte = false; 
@@ -117,7 +202,10 @@ bool Font::m_utf8mode = false;
 
 Font::Font(const char *name, bool antialias):
     m_fontimp(0),
-    m_antialias(false), m_rotated(false), m_shadow(false),
+    m_antialias(false), m_rotated(false), 
+    m_shadow(false), m_shadow_color("#000000"), 
+    m_shadow_offx(1), m_shadow_offy(1),
+    m_halo(false), m_halo_color("#ffffff"),
     m_iconv((iconv_t)-1) {
 
     // MB_CUR_MAX returns the size of a char in the current locale
@@ -222,46 +310,49 @@ void Font::setAntialias(bool flag) {
 bool Font::load(const std::string &name) {
     if (name.size() == 0)
         return false;
-    // copy name so we can manipulate it
-    std::string new_name = name;
 
     m_shadow = false;
+    m_halo = false;
 
-    // find font option "shadow"	
-    size_t start_pos = new_name.find_first_of(':');
-    if (start_pos != std::string::npos) {        
-        size_t shadow_pos = new_name.find("shadow", start_pos);
-        if (shadow_pos != std::string::npos) {
-            m_shadow = true;
-            // erase "shadow" since it's not a valid option for the font
-            new_name.erase(shadow_pos, 6);
-            
-            // is the option row empty?
-            if (new_name.find_first_not_of("\t ,", start_pos + 1) == std::string::npos)
-                new_name.erase(start_pos); // erase the ':' and the rest of the line
-            else {
-                // there might be some options left so we need to remove the ","
-                // before/after "shadow" option
-                size_t pos = new_name.find_last_not_of("\t ", shadow_pos);
-                if (pos != std::string::npos) {
-                    if (new_name[pos] == ',')
-                        new_name.erase(pos, 1);
-                
+    // everything after ':' is a fontoption
+    // -> extract 'halo' and 'shadow' and
+    // load remaining fname
+    std::list< std::string > tokens;
+    size_t                   sep= name.find_first_of(':');
+    std::string              fname;
+
+    if ( sep != std::string::npos ) {
+        fname= std::string(name.c_str(), sep + 1);
+        FbTk::StringUtil::stringtok(tokens, name.substr(sep + 1, name.length()), ",");
                 }
+    else
+        fname= name;
 
-                // ok, we removed the "," and "shadow" now we need to determine
-                // if we need to remove the ":" , so we search for anything except
-                // \t and space and if we dont find anything the ":" is removed
-                if (new_name.find_first_not_of("\t ", start_pos + 1) == std::string::npos)
-                    new_name.erase(start_pos, 1);               
+    tokens.unique();
+    bool firstone= true;
+    std::list< std::string >::const_iterator token;
 
+    // check tokens and extract extraoptions for halo and shadow
+    for( token= tokens.begin(); token != tokens.end(); token++ ) {
+        if ( (*token).find("halo",0) != std::string::npos ) {
+            m_halo= true;
+            extract_halo_options(*token, m_halo_color);
+        }
+        else if ( (*token).find("shadow", 0) != std::string::npos ) {
+            m_shadow= true;
+            extract_shadow_options(*token, m_shadow_color, m_shadow_offx, m_shadow_offy);
             }
-
+        else {
+            if ( !firstone )
+              fname+= ", ";
+            else
+              firstone= false;
+            fname= fname + *token;
         }
     }
 
-    m_fontstr = name;
-    return m_fontimp->load(new_name.c_str());
+    m_fontstr = fname;
+    return m_fontimp->load(fname.c_str());
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
@@ -312,13 +403,25 @@ void Font::drawText(Drawable w, int screen, GC gc,
 
     const char *real_text = rtext ? rtext : text;
 
-    // draw shadow first
-    if (first_run && m_shadow) {
+    // draw "effects" first
+    if (first_run) {
+        if (m_shadow) {
         FbTk::GContext shadow_gc(w);
-        shadow_gc.setForeground(FbTk::Color("black", screen));
-        first_run = false; // so we don't end up in a loop
-        drawText(w, screen, shadow_gc.gc(), real_text, len, x + 1, y + 1);
+            shadow_gc.setForeground(FbTk::Color(m_shadow_color.c_str(), screen));
+            first_run = false;
+            drawText(w, screen, shadow_gc.gc(), real_text, len,
+                     x + m_shadow_offx, y + m_shadow_offy, rotate);
         first_run = true;
+        } else if (m_halo) {
+            FbTk::GContext halo_gc(w);
+            halo_gc.setForeground(FbTk::Color(m_halo_color.c_str(), screen));
+            first_run = false;
+            drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y + 1, rotate);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y + 1, rotate);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x - 1, y - 1, rotate);
+            drawText(w, screen, halo_gc.gc(), real_text, len, x + 1, y - 1, rotate);
+            first_run = true;
+        }
     }
 
     if (!rotate && isRotated()) {
