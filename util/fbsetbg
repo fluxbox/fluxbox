@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.12 2003/07/20 11:23:51 rathnor Exp $
+# $Id: fbsetbg,v 1.13 2003/07/29 09:29:45 fluxgen Exp $
 
 #
 # Portability notes:
@@ -154,9 +154,9 @@ case $WPSETTER in
         debugstory="chbg is a nice app. You won't have any problems."
         ;;
     xsri)
-	full='--center-x --center-y --scale-width=100 --scale-width=100'
-	tile='--tile'
-	center='--center-x --center-y'
+        full='--center-x --center-y --scale-width=100 --scale-width=100'
+        tile='--tile'
+        center='--center-x --center-y'
         aspect=$full
         debugstory="This is a RedHat specific app. I can't find docs about it."
         ;;
@@ -182,17 +182,17 @@ case $WPSETTER in
         debugstory="wmsetbg is a nice app. You won't have any problems."
         ;;
     xsetbg)
-	tile='-border black'
-	center='-center -border black'
+        tile='-border black'
+        center='-center -border black'
         aspect='-fullscreen -border black'
-	full=$aspect #broken
+        full=$aspect #broken
         debugstory="xsetbg is actually xli. The fillscreen option (-f) is broken, defaults to (-a). $standardrant"
-	;;
+        ;;
     xli)
-	tile='-onroot -quiet -border black'
-	center='-center -onroot -quiet -border black'
+        tile='-onroot -quiet -border black'
+        center='-center -onroot -quiet -border black'
         aspect='-fullscreen -onroot -quiet -border black'
-	full=$aspect #broken
+        full=$aspect #broken
         debugstory='The fillscreen option (-f) is broken, defaults to (-a). $standardrant'
         ;;
     qiv)

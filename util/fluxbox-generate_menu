@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.40 2003/07/17 23:39:34 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.41 2003/07/29 09:29:45 fluxgen Exp $
 
 #
 # Portability notes:
@@ -787,8 +787,9 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
        append_submenu "${MUSICMENU}"
-               normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix grecord \
-                   kmidi xplaycd soundtracker grip easytag audacity zinf rhythmbox
+               normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
+                           grecord kmidi xplaycd soundtracker grip easytag audacity \
+                           zinf rhythmbox
                find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
                find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
