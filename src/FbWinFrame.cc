@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.13 2003/02/23 13:40:22 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.14 2003/02/23 21:32:37 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -140,7 +140,7 @@ void FbWinFrame::shade() {
     if (!m_shaded) {
         m_width_before_shade = m_window.width();
         m_height_before_shade = m_window.height();
-        m_window.resize(m_window.width(), m_titlebar.height() + 2*m_titlebar.borderWidth());
+        m_window.resize(m_window.width(), m_titlebar.height());
     } else {
         m_window.resize(m_width_before_shade, m_height_before_shade);
         m_grip_left.clear();
