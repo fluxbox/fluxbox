@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.14 2003/08/27 14:04:12 fluxgen Exp $
+// $Id: FbRun.hh,v 1.15 2004/04/18 14:16:09 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -82,6 +82,7 @@ private:
     void firstHistoryItem();
     void lastHistoryItem();
     void tabCompleteHistory();
+    void tabCompleteApps();
 
     FbTk::Font m_font; ///< font used to draw command text
     Display *m_display;  ///< display connection
@@ -89,8 +90,14 @@ private:
     FbTk::GContext m_gc; ///< graphic context
     bool m_end; ///< marks when this object is done
     std::vector<std::string> m_history; ///< history list of commands
-    size_t m_current_history_item; ///< holds current position in command history
     std::string m_history_file; ///< holds filename for command history file
+    size_t m_current_history_item; ///< holds current position in command history
+    
+    typedef std::vector<std::string> AppsContainer;
+    typedef AppsContainer::iterator AppsContainerIt;
+    AppsContainer m_apps; ///< holds all apps in $PATH
+    size_t m_current_apps_item; ///< holds current position in apps-history
+    
     Cursor m_cursor;
 
     FbTk::FbPixmap m_pixmap;

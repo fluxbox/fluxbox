@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.25 2004/02/28 10:43:20 fluxgen Exp $
+// $Id: FbRun.cc,v 1.26 2004/04/18 14:16:09 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -42,11 +42,15 @@
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 
 #include <iostream>
 #include <iterator>
 #include <fstream>
+#include <algorithm>
 #include <cassert>
 
 using namespace std;
@@ -59,6 +63,7 @@ FbRun::FbRun(int x, int y, size_t width):
     m_gc(*this),
     m_end(false),
     m_current_history_item(0),
+    m_current_apps_item(0),
     m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)) {
     
     setGC(m_gc.gc());
@@ -96,6 +101,44 @@ FbRun::FbRun(int x, int y, size_t width):
         wmhints.icon_pixmap = m_pixmap.drawable();
         XSetWMHints(m_display, window(), &wmhints);
     }
+
+  
+    string path= getenv("PATH");
+
+    unsigned int l;
+    unsigned int r;
+
+    for(l= 0, r= 0; r < path.size(); r++) {
+        if (path[r]==':' && r - l > 0) {
+            struct dirent** namelist;
+            struct stat buf;
+            int n;
+
+            string dir= path.substr(l, r - l);
+            n= scandir(dir.c_str(), &namelist, 0, alphasort);
+            if (n >= 0) {
+                while(n--) {
+                    if (!stat((dir + "/" + namelist[n]->d_name).c_str(), &buf) 
+                        && S_ISREG(buf.st_mode) && 
+                        (buf.st_mode & S_IXUSR 
+                         || buf.st_mode & S_IXGRP 
+                         || buf.st_mode & S_IXOTH)) {
+                            m_apps.push_back(namelist[n]->d_name);
+                    }
+                    free(namelist[n]);
+                }
+                free(namelist);
+            }
+            l= r + 1;
+        }
+    }
+
+    sort(m_apps.begin(), m_apps.end());
+    unique(m_apps.begin(), m_apps.end());
+    reverse(m_apps.begin(), m_apps.end());
+
+    if (!m_apps.empty())
+        m_current_apps_item= 1;
 }
 
 
@@ -225,6 +268,10 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             case XK_n:
                 nextHistoryItem();
                 break;
+            case XK_Tab:
+                tabCompleteHistory();
+                setCursorPosition(cp);
+                break;
             }
         } else if (ke.state == (Mod1Mask | ShiftMask)) {
             switch (ks) {
@@ -253,7 +300,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             nextHistoryItem();
             break;
         case XK_Tab:
-            tabCompleteHistory();
+            tabCompleteApps();
             setCursorPosition(cp);
             break;
         }
@@ -331,6 +378,27 @@ void FbRun::tabCompleteHistory() {
             history_item--;
         }
         if (history_item == m_current_history_item) XBell(m_display, 0);
+    }
+}
+
+void FbRun::tabCompleteApps() {
+    if ( m_current_apps_item == 0 || m_apps.empty() ) {
+      XBell(m_display, 0);
+    } else {
+        unsigned int nr= 0;
+        int apps_item = m_current_apps_item - 1;
+        string prefix = text().substr(0, cursorPosition());
+        while (apps_item != m_current_apps_item && nr++ < m_apps.size()) {
+            if (apps_item <= -1 )
+                apps_item= m_apps.size() - 1;
+            if (m_apps[apps_item].find(prefix) == 0) {
+                m_current_apps_item = apps_item;
+                setText(m_apps[m_current_apps_item]);
+                break;
+            }
+            apps_item--;
+        }
+        if (apps_item == m_current_apps_item) XBell(m_display, 0);
     }
 }
 
