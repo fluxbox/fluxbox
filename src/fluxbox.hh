@@ -22,13 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.53 2003/05/04 23:38:06 rathnor Exp $
+// $Id: fluxbox.hh,v 1.54 2003/05/10 14:01:07 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
 
+#include "App.hh"
 #include "Resource.hh"
-#include "BaseDisplay.hh"
 #include "Timer.hh"
 #include "Observer.hh"
 #include "SignalHandler.hh"
@@ -65,11 +65,12 @@ class Keys;
 class BScreen;
 class FbAtoms;
 
+
+///	main class for the window manager.
 /**
-	main class for the window manager.
 	singleton type
 */
-class Fluxbox : public BaseDisplay, public FbTk::TimeoutHandler, 
+class Fluxbox : public FbTk::App, public FbTk::TimeoutHandler, 
                 public FbTk::SignalEventHandler,
                 public FbTk::Observer {
 public:
@@ -78,7 +79,12 @@ public:
     virtual ~Fluxbox();
 	
     static Fluxbox *instance() { return s_singleton; }
-	
+    /// main event loop
+    void eventLoop();
+    bool validateWindow(Window win) const;
+    void grab();
+    void ungrab();
+
     inline Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
 
     FluxboxWindow *searchGroup(Window, FluxboxWindow *);
@@ -140,7 +146,7 @@ public:
     inline void maskWindowEvents(Window w, FluxboxWindow *bw)
         { m_masked = w; m_masked_window = bw; }
 
-    void watchKeyRelease(BScreen *screen, unsigned int mods);
+    void watchKeyRelease(BScreen &screen, unsigned int mods);
 
     void setFocusedWindow(FluxboxWindow *w);
     void revertFocus(BScreen *screen);
@@ -175,11 +181,11 @@ public:
     inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
     inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
-
+    bool isStartup() const { return m_starting; }
     enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 	
     typedef std::vector<Fluxbox::Titlebar> TitlebarList;
-		
+
 private:
     struct cursor {
         Cursor session, move, ll_angle, lr_angle;
@@ -259,7 +265,9 @@ private:
 	
     static Fluxbox *s_singleton;
     std::vector<AtomHandler *> m_atomhandler;
-
+    bool m_starting;
+    bool m_shutdown;
+    int m_server_grabs;
 };
 
 
