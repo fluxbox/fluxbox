@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.91 2002/10/19 10:56:30 fluxgen Exp $
+// $Id: Window.cc,v 1.92 2002/10/22 14:39:21 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -287,7 +287,7 @@ tab(0) {
 
 	// use tab? and don't create a tab on windows that's not
 	// maximizable as default (such as dialogs)
-	if (decorations.tab && fluxbox->useTabs() && decorations.maximize)
+	if (decorations.tab && fluxbox->useTabs() && isGroupable())
 		tab = new Tab(this, 0, 0);
 
 	decorate();
@@ -432,6 +432,12 @@ FluxboxWindow::~FluxboxWindow() {
 #ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
 #endif // DEBUG
+}
+
+bool FluxboxWindow::isGroupable() const {
+	if (isResizable() && isMaximizable() && ! isTransient())
+		return true;
+	return false;
 }
 
 Window FluxboxWindow::createToplevelWindow(
@@ -990,7 +996,7 @@ void FluxboxWindow::reconfigure() {
 	
 	if (Fluxbox::instance()->useTabs()) {
 		//no tab and we allowed to use tab? then create it 
-		if (!tab && decorations.tab) {			
+		if (!tab && isGroupable()) {
 			tab = new Tab(this, 0, 0);		
 			if (current_state == IconicState)
 				tab->iconify();
@@ -1545,7 +1551,7 @@ bool FluxboxWindow::setInputFocus() {
 //----------------------------------
 void FluxboxWindow::setTab(bool flag) {
 	if (flag) {
-		if (!tab)
+		if (!tab && isGroupable())
 			tab = new Tab(this, 0, 0);
 		tab->focus(); // draws the tab with correct texture
 		tab->setPosition(); // set tab windows position
@@ -2436,7 +2442,7 @@ void FluxboxWindow::redrawLabel() {
 			screen->getScreenNumber(),
 			gc,
 			getTitle().c_str(), getTitle().size(),
-			frame.bevel_w, frame.bevel_w/4 + screen->getWindowStyle()->font.height());
+			frame.bevel_w, frame.bevel_w/2 + screen->getWindowStyle()->font.ascent());
 	}
 }
 
@@ -3289,7 +3295,7 @@ void FluxboxWindow::resumeMoving() {
 	screen->raiseFocus();
 	if (screen->doShowWindowPos())
 		screen->showPosition(frame.move_x, frame.move_y);
-	XSync(display,false);
+	XSync(display, false);
 	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 		frame.move_x, frame.move_y, frame.resize_w,
 		frame.resize_h);
