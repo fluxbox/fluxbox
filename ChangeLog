@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/17:
+  * Disabled resizing for shaded/iconic windows (Mathias)
+    Window.cc
+  * Rewrote the restart-procedure of fluxbox so it calls the
+    destructors correctly (Mathias)
+    fluxbox.cc/hh main.cc
+  * cosmetic changes (Mathias)
+    Screen.cc/hh Window.cc ScreenResource.cc
 *04/10/16:
   * Added option to specify what to do with windows, that got activated on
     a different workspaces than the current one (thru NET_ACTIVE_WINDOW
