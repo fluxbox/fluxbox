@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.48 2003/02/17 02:40:00 fluxgen Exp $
+// $Id: Workspace.cc,v 1.49 2003/02/20 12:06:26 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -101,6 +101,7 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int
     m_id(i),
     cascade_x(32), cascade_y(32) {
 
+    m_clientmenu.setInternalMenu();
     setName(screen.getNameOfWorkspace(m_id));
 
 }
