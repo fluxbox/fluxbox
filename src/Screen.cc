@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.159 2003/05/12 04:47:34 fluxgen Exp $
+// $Id: Screen.cc,v 1.160 2003/05/13 00:23:05 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -884,10 +884,50 @@ void BScreen::reconfigure() {
     //reconfigure menus
     workspacemenu->reconfigure();
     m_configmenu->reconfigure();
-	
+
+    // We need to check to see if the timestamps
+    // changed before we actually can restore the menus 
+    // in the same way, since we can't really say if
+    // any submenu is in the same place as before if the
+    // menu changed.
+
+    // if timestamp changed then no restoring
+    bool restore_menus = ! Fluxbox::instance()->menuTimestampsChanged();
+
+    // destroy old timestamps
+    Fluxbox::instance()->clearMenuFilenames();
+
+    // save submenu index so we can restore them afterwards
+    vector<int> remember_sub;
+    if (restore_menus) {
+        FbTk::Menu *menu = m_rootmenu.get();
+        while (menu) {
+            int r = menu->currentSubmenu();
+            if (r < 0) break;
+            remember_sub.push_back(r);
+            menu = menu->find(r)->submenu();
+        }
+    }
+
     initMenu();
     m_rootmenu->reconfigure();		
 
+    if (restore_menus) {
+        // restore submenus, no timestamp changed
+        FbTk::Menu *menu = m_rootmenu.get();
+        for (int i = 0; i < (int)remember_sub.size(); i++ ) {
+            int sub = remember_sub[i];
+            if (!menu || sub < 0) 
+                break;
+            FbTk::MenuItem *item = menu->find(sub);
+            if (item != 0) {
+                menu->drawSubmenu(sub);
+                menu = item->submenu();
+            } else
+                menu = 0;
+
+        }
+    }
 
     if (getToolbar()) {
         getToolbar()->setPlacement(*resource.toolbar_placement);
@@ -2165,41 +2205,41 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                              i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuOpaqueMove,
                                               "Opaque Window Moving"),
-                             *resource.opaque_move, save_and_reconfigure));
+                             *resource.opaque_move, saverc_cmd));
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuFullMax,
                                               "Full Maximization"),
-                             *resource.full_max, save_and_reconfigure));
+                             *resource.full_max, saverc_cmd));
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuFocusNew,
                                               "Focus New Windows"),
-                             *resource.focus_new, save_and_reconfigure));
+                             *resource.focus_new, saverc_cmd));
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuFocusLast,
                                               "Focus Last Window on Workspace"),
-                             *resource.focus_last, save_and_reconfigure));
+                             *resource.focus_last, saverc_cmd));
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuMaxOverSlit,
                                               "Maximize Over Slit"),
-                             *resource.max_over_slit, save_and_reconfigure));
+                             *resource.max_over_slit, saverc_cmd));
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuWorkspaceWarping,
                                               "Workspace Warping"),
-                             *resource.workspace_warping, save_and_reconfigure));
+                             *resource.workspace_warping, saverc_cmd));
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuDesktopWheeling,
                                               "Desktop MouseWheel Switching"),
-                             *resource.desktop_wheeling, save_and_reconfigure));
+                             *resource.desktop_wheeling, saverc_cmd));
 
     menu.insert(new BoolMenuItem("Click Raises",
 				 *resource.click_raises,
-				 save_and_reconfigure));    
+				 saverc_cmd));    
     // setup antialias cmd to reload style and save resource on toggle
     menu.insert(new BoolMenuItem("antialias", *resource.antialias, 
                                  save_and_reconfigure));
