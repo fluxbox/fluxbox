@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.155 2004/09/12 14:56:19 rathnor Exp $
+// $Id: Toolbar.cc,v 1.156 2004/10/21 10:36:57 akir Exp $
 
 #include "Toolbar.hh"
 
@@ -104,6 +104,7 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
 
+template<>
 string FbTk::Resource<Toolbar::Placement>::
 getString() {
     switch (m_value) {
