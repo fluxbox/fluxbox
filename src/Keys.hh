@@ -18,6 +18,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: Keys.hh,v 1.3 2002/01/07 23:46:58 fluxgen Exp $
+
 #ifndef _KEYS_HH_
 #define _KEYS_HH_
 
@@ -49,19 +52,20 @@ enum KeyAction{
 			LASTKEYGRAB
 	};
 	
-	Keys(char *filename);
+	Keys(Display *display, char *filename=0);
 	~Keys();
 	bool load(char *filename=0);
 	KeyAction getAction(XKeyEvent *ke);
 	bool reconfigure(char *filename);
 	const char *getActionStr(KeyAction action);
 	std::string getExecCommand() { return m_execcmdstring; }
+
 private:
 	void deleteTree();
-	
+	void ungrabKeys();
 	void bindKey(unsigned int key, unsigned int mod);
-	unsigned int getModifier(char *modstr);
-	unsigned int getKey(char *keystr);
+	unsigned int getModifier(const char *modstr);
+	unsigned int getKey(const char *keystr);
 	void grabKey(unsigned int key, unsigned int mod);
 	std::string filename;	
 	
@@ -112,6 +116,7 @@ private:
 	std::vector<t_key *> m_keylist;	
 	t_key *m_abortkey; //abortkey for keygrabbing chain
 	std::string m_execcmdstring; //copy of the execcommandstring
+	Display *m_display;
 };
 
 #endif // _KEYS_HH_
