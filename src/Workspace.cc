@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.11 2002/02/16 11:28:16 fluxgen Exp $
+// $Id: Workspace.cc,v 1.12 2002/02/26 22:34:49 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -188,12 +188,14 @@ void Workspace::removeAll(void) {
 void Workspace::raiseWindow(FluxboxWindow *w) {
 	FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
 
-	while (bottom->isTransient() && bottom->getTransientFor())
+	while (bottom->isTransient() && bottom->getTransientFor() &&
+			bottom->getTransientFor() != bottom) //prevent infinite loop
 		bottom = bottom->getTransientFor();
 
 	int i = 1;
 	win = bottom;
-	while (win->hasTransient() && win->getTransient()) {
+	while (win->hasTransient() && win->getTransient() &&
+			win->getTransient() != win) {//prevent infinite loop
 		win = win->getTransient();
 
 		i++;
@@ -213,9 +215,10 @@ void Workspace::raiseWindow(FluxboxWindow *w) {
 			wkspc->stackingList.push_front(win);
 		}
 
-		if (! win->hasTransient() || ! win->getTransient())
+		if (! win->hasTransient() || ! win->getTransient() ||
+			win->getTransient() == win) //prevent infinite loop
 			break;
-
+		
 		win = win->getTransient();
 	}
 
@@ -224,16 +227,17 @@ void Workspace::raiseWindow(FluxboxWindow *w) {
 	delete [] nstack;
 }
 
-
 void Workspace::lowerWindow(FluxboxWindow *w) {
 	FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
 
-	while (bottom->isTransient() && bottom->getTransientFor())
+	while (bottom->isTransient() && bottom->getTransientFor()
+			&& bottom->getTransientFor() != bottom) //prevent infinite loop
 		bottom = bottom->getTransientFor();
 
 	int i = 1;
 	win = bottom;
-	while (win->hasTransient() && win->getTransient()) {
+	while (win->hasTransient() && win->getTransient() && 
+			win->getTransient() != win) { //prevent infinite loop
 		win = win->getTransient();
 
 		i++;
@@ -252,7 +256,8 @@ void Workspace::lowerWindow(FluxboxWindow *w) {
 			wkspc->stackingList.push_back(win);
 		}
 
-		if (! win->getTransientFor())
+		if (! win->getTransientFor() || 
+			win->getTransientFor() == win)//prevent infinite loop
 			break;
 
 		win = win->getTransientFor();
