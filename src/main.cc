@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.2 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: main.cc,v 1.3 2002/01/11 09:31:10 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
       }
     } else if (! strcmp(argv[i], "-version")) {
 			// print current version string
-			printf("Fluxbox %s : (c) 2001 Henrik Kinnunen \n\n",
+			printf("Fluxbox %s : (c) 2001 - 2002 Henrik Kinnunen \n\n",
 						__fluxbox_version);
 
       ::exit(0);
@@ -151,7 +151,7 @@ int main(int argc, char **argv) {
 #else // !NLS
 			0, 0,
 #endif // NLS
-			"Fluxbox %s : (c) 2001 Henrik Kinnunen\n\n"
+			"Fluxbox %s : (c) 2001 - 2002 Henrik Kinnunen\n\n"
 			"  -display <string>\t\tuse display connection.\n"
 			"  -rc <string>\t\t\tuse alternate resource file.\n"
 			"  -version\t\t\tdisplay version and exit.\n"
