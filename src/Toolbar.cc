@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.97 2003/07/01 12:41:44 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.98 2003/07/10 11:48:14 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -54,6 +54,8 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif // HAVE_CONFIG_H
+
+#include "Shape.hh"
 
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
@@ -269,8 +271,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_rc_on_head(scrn.resourceManager(), 0,
                  scrn.name() + ".toolbar.onhead", scrn.altName() + ".Toolbar.onHead"),
     m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER, 
-                   scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement")
-{
+                   scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),
+    m_shape(new Shape(frame.window, 0)) {
 
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
@@ -397,11 +399,17 @@ bool Toolbar::isVertical() const {
 }
 
 void Toolbar::addIcon(FluxboxWindow *w) {
+    if (w == 0)
+        return;
+
     if (m_iconbar.get() != 0)
         FbTk::EventManager::instance()->add(*this, m_iconbar->addIcon(w));
 }
 
 void Toolbar::delIcon(FluxboxWindow *w) {
+    if (w == 0)
+        return;
+
     if (m_iconbar.get() != 0)
         FbTk::EventManager::instance()->remove(m_iconbar->delIcon(w));
 }
@@ -473,7 +481,13 @@ void Toolbar::reconfigure() {
         m_iconbar->setVertical(vertical);
 
     frame.bevel_w = theme().bevelWidth();
-
+    // destroy shape if the theme wasn't specified with one,
+    // or create one 
+    if (theme().shape() == false && m_shape.get())
+        m_shape.reset(0);
+    else if (theme().shape() && m_shape.get() == 0) {
+        m_shape.reset(new Shape(frame.window, 0));
+    }
     // recallibrate size
     setPlacement(placement());
 
@@ -740,12 +754,15 @@ void Toolbar::reconfigure() {
 
     frame.workspace_label.clear();
     frame.window_label.clear();
-    frame.clock.clear();
+    frame.clock.clear();    
     frame.psbutton.clear();
     frame.nsbutton.clear();
     frame.pwbutton.clear();
     frame.nwbutton.clear();
-	
+
+    if (theme().shape() && m_shape.get())
+        m_shape->update();
+
     redrawWindowLabel();
     if (m_iconbar.get()) 
         m_iconbar->reconfigure();
@@ -1199,6 +1216,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y;
         frame.x_hidden = head_x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
         break;
 
     case BOTTOMLEFT:
@@ -1206,7 +1225,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = head_x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
-
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
         break;
 
     case TOPCENTER:
@@ -1214,11 +1234,15 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
         break;
     case TOPRIGHT:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
         break;
 
     case BOTTOMRIGHT:
@@ -1226,6 +1250,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
         break;
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
@@ -1234,42 +1260,56 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPRIGHT | Shape::TOPLEFT);
         break;
     case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case LEFTTOP:
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case LEFTBOTTOM:
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPRIGHT | Shape::BOTTOMRIGHT);
         break;
     case RIGHTCENTER:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + (head_h - frame.height)/2;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     case RIGHTTOP:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     case RIGHTBOTTOM:
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
+        if (m_shape.get())
+            m_shape->setPlaces(Shape::TOPLEFT | Shape::BOTTOMLEFT);
         break;
     }
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.36 2003/06/26 12:22:42 rathnor Exp $
+// $Id: Toolbar.hh,v 1.37 2003/07/10 11:45:22 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -42,6 +42,7 @@
 class BScreen;
 class Strut;
 class IconBar;
+class Shape;
 
 namespace FbTk {
 class ImageControl;
@@ -205,6 +206,7 @@ private:
     FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
     FbTk::Resource<int> m_rc_on_head;
     FbTk::Resource<Placement> m_rc_placement;
+    std::auto_ptr<Shape> m_shape;
 };
 
 
