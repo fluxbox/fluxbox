@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/22:
+  * Fix UnderMousePlacement, patch #1052534, close #1048000 (thanx Mike)
+    src/Workspace.cc
 *04/11/20:
   * Fix for (possible) segfaults at Restart/Exit 
     and fix start of former iconic windows (Mathias)
