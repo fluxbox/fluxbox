@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.63 2002/08/02 13:00:23 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.64 2002/08/04 15:00:50 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -534,17 +534,17 @@ void Fluxbox::process_event(XEvent *e) {
 	{
 		FluxboxWindow *win = (FluxboxWindow *) 0;
 
-		#ifdef SLIT
+#ifdef SLIT
 		Slit *slit = (Slit *) 0;
-		#endif // SLIT
+#endif // SLIT
 		
 		if ((win = searchWindow(e->xconfigurerequest.window))) {
 			win->configureRequestEvent(&e->xconfigurerequest);
 
-		#ifdef SLIT
+#ifdef SLIT
 		} else if ((slit = searchSlit(e->xconfigurerequest.window))) {
 			slit->configureRequestEvent(&e->xconfigurerequest);
-		#endif // SLIT
+#endif // SLIT
 
 		} else {
 			grab();
@@ -571,17 +571,17 @@ void Fluxbox::process_event(XEvent *e) {
 	break;
 	case MapRequest:
 	{
-		#ifdef		DEBUG
+#ifdef		DEBUG
 		fprintf(stderr,
 			I18n::instance()->
 				getMessage(
 				FBNLS::blackboxSet, FBNLS::blackboxMapRequest,
 				 "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
 					e->xmaprequest.window);
-		#endif // DEBUG
+#endif // DEBUG
 		
-		#ifdef SLIT
-		#ifdef KDE
+#ifdef SLIT
+#ifdef KDE
 		//Check and see if client is KDE dock applet.
 		//If so add to Slit
 		bool iskdedockapp = False;
@@ -620,8 +620,8 @@ void Fluxbox::process_event(XEvent *e) {
 			}
 			return;
 		}
-		#endif //KDE
-		#endif // SLIT
+#endif //KDE
+#endif // SLIT
 			
 		FluxboxWindow *win = searchWindow(e->xmaprequest.window);
 
@@ -1045,11 +1045,11 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 // Handles XClientMessageEvent
 //-----------------------------------------
 void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
-	#ifdef DEBUG
+#ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]=0x"<<hex<<ce.data.l[0]<<
-		"  type=0x"<<ce.message_type<<dec<<endl;
+	"  message_type=0x"<<ce.message_type<<dec<<endl;
 	
-	#endif
+#endif // DEBUG
 
 	if (ce.format != 32)
 		return;
@@ -1501,10 +1501,11 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 	FluxboxWindow *win = 0;
 	win = searchWindow(ce.window);
 	screen = searchScreen(ce.window);
+
 	if (ce.message_type == getGnomeWorkspaceAtom()) {
-		#ifdef DEBUG
+#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
-		#endif//!DEBUG
+#endif//!DEBUG
 		if ( win !=0 && // the message sent to client window?
 				win->getScreen() && ce.data.l[0] >= 0 &&
 				ce.data.l[0] < (signed)win->getScreen()->getCount()) {
@@ -1517,15 +1518,15 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 		return true;
 	} else if (win) {
 		if (ce.message_type == getGnomeStateAtom()) {
-			#ifdef DEBUG
+#ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
-			#endif
+#endif // DEBUG
 			
-			#ifdef DEBUG
+#ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): Mask of members to change:"<<
 				hex<<ce.data.l[0]<<dec<<endl; // mask_of_members_to_change
 			cerr<<"New members:"<<ce.data.l[1]<<endl;
-			#endif
+#endif // DEBUG
 	
 			//get new states			
 			int flag = ce.data.l[0] & ce.data.l[1];
@@ -1533,9 +1534,10 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 			win->setGnomeState(flag);
 			
 		} else if (ce.message_type == getGnomeHintsAtom()) {
-			#ifdef DEBUG
+#ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
-			#endif
+#endif // DEBUG
+
 		} else 
 			return false; //the gnome atom wasn't found or not supported
 	} else	
