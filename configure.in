@@ -104,7 +104,7 @@ AC_ARG_ENABLE(
 AC_MSG_CHECKING([whether to include the new WM Spec])
 AC_ARG_ENABLE(
   newwmspec,
-[  --enable-newwmspec        include code for the new WM Spec [default=yes]],
+[  --enable-newwmspec      include code for the new WM Spec [default=yes]],
   if test x$enableval = "xyes"; then
 	AC_MSG_RESULT([yes])
 	NEWWMSPEC=true
@@ -205,7 +205,7 @@ dnl Check GNOME
 AC_MSG_CHECKING([whether to have GNOME support])
 AC_ARG_ENABLE(
   gnome,
-[  --enable-gnome            GNOME support [default=yes]],
+[  --enable-gnome          GNOME support [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
 	AC_DEFINE(USE_GNOME, 1, "Gnome 1 support")
@@ -248,6 +248,27 @@ if test "x$XFT" = "xtrue" ; then
 fi
 
 AM_CONDITIONAL(XFT, test x$XFT = xtrue)
+
+AC_MSG_CHECKING([wheter to have Xrender (transparent) support])
+AC_ARG_ENABLE(
+  xrender,
+[  --enable-xrender        Xrender (transparent) support [default=yes]],
+  if test x$enableval = "xyes"; then
+	AC_MSG_RESULT([yes])
+	AC_CHECK_LIB(Xrender, XRenderCreatePicture, 
+		AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
+		LIBS="$LIBS -lXrender")
+  else
+    AC_MSG_RESULT([no])	
+  fi,  
+  AC_MSG_RESULT([yes])
+  AC_CHECK_LIB(Xrender, XRenderCreatePicture, 
+	AC_DEFINE(HAVE_XRENDER, 1, "Xrender support")
+	LIBS="$LIBS -lXrender")
+)
+
+
+
 
 
 AC_MSG_CHECKING([whether to have Xmb (multibyte font, utf-8) support])
