@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/17:
+  * Fixed some icc warnings (Henrik)
+    ...
+  * Changed menu delay resource values to milliseconds instead of microsec (Henrik)
+    Max value for each delay is 5000 msec (5 seconds)
+    A good set of values are:
+    session.screen0.menuDelay: 400
+    session.screen0.menuDelayClose: 300
+    MenuTheme.hh, Menu.cc, Screen.cc
 *03/12/15:
   * Fix mozilla focus issue (Simon)
     - When input focus hint not present assume false rather than true
