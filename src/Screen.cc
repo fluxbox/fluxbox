@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.117 2003/03/03 21:51:04 rathnor Exp $
+// $Id: Screen.cc,v 1.118 2003/03/22 05:13:08 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -961,7 +961,9 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 #endif // DEBUG
 
         if (focused && focused->isMoving()) {
-            reassociateGroup(focused, id, true);
+            if (doOpaqueMove())
+                reassociateGroup(focused, id, true);
+            // don't reassociate if not opaque moving
             focused->pauseMoving();
         }
 

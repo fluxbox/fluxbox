@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.103 2003/03/03 21:51:11 rathnor Exp $
+// $Id: fluxbox.cc,v 1.104 2003/03/22 05:13:08 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -614,12 +614,17 @@ void Fluxbox::setupConfigFiles() {
 
 void Fluxbox::handleEvent(XEvent * const e) {
 
-    if ((masked == e->xany.window) && masked_window &&
-        (e->type == MotionNotify)) {
-        last_time = e->xmotion.time;
-        masked_window->motionNotifyEvent(e->xmotion);
+    // it is possible (e.g. during moving) for a window
+    // to mask all events to go to it 
+    if ((masked == e->xany.window) && masked_window) {
+        if (e->type == MotionNotify) {
+            last_time = e->xmotion.time;
+            masked_window->motionNotifyEvent(e->xmotion);
+            return;
+        } else if (e->type == ButtonRelease) {
+            e->xbutton.window = masked_window->getFbWindow().window();
+        }
 
-        return;
     }
     // try FbTk::EventHandler first
     FbTk::EventManager::instance()->handleEvent(*e);

@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
+*03/03/22:
+   * Fix outline moving, warping, etc (Simon)
+     Window.hh/cc Screen.cc fluxbox.cc
 *03/03/03:
    * Add code for Toolbar modes (Simon)
      AtomHandler.hh EventManager.cc Ewmh.hh/cc Gnome.hh/cc 

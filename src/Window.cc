@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.128 2003/03/03 21:51:09 rathnor Exp $
+// $Id: Window.cc,v 1.129 2003/03/22 05:13:08 rathnor Exp $
 
 #include "Window.hh"
 
@@ -190,7 +190,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     // display connection
     display = FbTk::App::instance()->display();
 
-    blackbox_attrib.workspace = workspace_number = window_number = -1;
+    blackbox_attrib.workspace = workspace_number = move_ws = window_number = -1;
 
     blackbox_attrib.flags = blackbox_attrib.attrib = blackbox_attrib.stack = 0;
     blackbox_attrib.premax_x = blackbox_attrib.premax_y = 0;
@@ -1054,7 +1054,7 @@ void FluxboxWindow::iconify() {
 void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     if (iconic || reassoc) {
         screen->reassociateWindow(this, screen->getCurrentWorkspace()->workspaceID(), false);
-    } else if (workspace_number != screen->getCurrentWorkspace()->workspaceID())
+    } else if (moving || workspace_number != screen->getCurrentWorkspace()->workspaceID())
         return;
 
     bool was_iconic = iconic;
@@ -1119,9 +1119,6 @@ void FluxboxWindow::close() {
 void FluxboxWindow::withdraw() {
     visible = false;
     iconic = false;
-
-    if (isMoving())
-        stopMoving();
 
     if (isResizing())
         stopResizing();
@@ -2065,6 +2062,9 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
 
 void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
+    if (isMoving() && me.window == screen->getRootWindow()) {
+        me.window = m_frame.window().window();
+    }
     if ((me.state & Button1Mask) && functions.move &&
         (m_frame.titlebar() == me.window || m_frame.label() == me.window ||
          m_frame.handle() == me.window || m_frame.window() == me.window) && !isResizing()) {
@@ -2084,30 +2084,32 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             last_resize_x = me.x_root;
             last_resize_y = me.y_root;
             if (moved_x && screen->isWorkspaceWarping()) {
-                int cur_id = screen->getCurrentWorkspaceID();
-                int new_id = cur_id;
+                unsigned int cur_id = screen->getCurrentWorkspaceID();
+                unsigned int new_id = cur_id;
                 const int warpPad = screen->getEdgeSnapThreshold();
+                // 1) if we're inside the border threshold
+                // 2) if we moved in the right direction
                 if (me.x_root >= int(screen->getWidth()) - warpPad - 1 &&
-                    m_frame.x() < int(me.x_root - button_grab_x - screen->getBorderWidth())) {
+                    moved_x > 0) {
                     //warp right
                     new_id = (cur_id + 1) % screen->getCount();
                     dx = - me.x_root; // move mouse back to x=0
                 } else if (me.x_root <= warpPad &&
-                           m_frame.x() > int(me.x_root - button_grab_x - screen->getBorderWidth())) {
+                    moved_x < 0) {
                     //warp left
-                    new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
+                    new_id = (cur_id + screen->getCount() - 1) % screen->getCount();
                     dx = screen->getWidth() - me.x_root-1; // move mouse to screen width - 1
                 }
-
                 if (new_id != cur_id) {
                     XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
-
+                    
                     screen->changeWorkspaceID(new_id);
 
                     last_resize_x = me.x_root + dx;
                     
-                    // change dx to be relative to window rather than motion event
-                    dx += m_frame.x();
+                    // dx is the difference, so our new x is what it would  have been
+                    // without the warp, plus the difference.
+                    dx += me.x_root - button_grab_x;
                 }
             }
 
@@ -2117,7 +2119,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                                last_move_x, last_move_y, 
                                m_frame.width() + 2*frame().window().borderWidth(),
                                m_frame.height() + 2*frame().window().borderWidth());
-
                 XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                                dx, dy, 
                                m_frame.width() + 2*frame().window().borderWidth(),
@@ -2299,17 +2300,21 @@ bool FluxboxWindow::validateClient() {
 void FluxboxWindow::startMoving(Window win) {
     moving = true;
     Fluxbox *fluxbox = Fluxbox::instance();
-    XGrabPointer(display, win, False, Button1MotionMask |
+    // grabbing (and masking) on the root window allows us to 
+    // freely map and unmap the window we're moving.
+    XGrabPointer(display, screen->getRootWindow(), False, Button1MotionMask |
                  ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
                  None, fluxbox->getMoveCursor(), CurrentTime);
 
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
 
-    fluxbox->maskWindowEvents(client.window, this);
+    move_ws = workspace_number;
+    fluxbox->maskWindowEvents(screen->getRootWindow(), this);
     last_move_x = frame().x();
     last_move_y = frame().y();
     if (! screen->doOpaqueMove()) {
+        fluxbox->grab();
         XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                        frame().x(), frame().y(),
                        frame().width() + 2*frame().window().borderWidth(), 
@@ -2331,6 +2336,11 @@ void FluxboxWindow::stopMoving() {
                        frame().width() + 2*frame().window().borderWidth(),
                        frame().height() + 2*frame().window().borderWidth());
         moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
+        if (workspace_number != screen->getCurrentWorkspaceID()) {
+            screen->reassociateGroup(this, screen->getCurrentWorkspaceID(), true);
+            m_frame.show();
+        }
+        fluxbox->ungrab();
     } else
         moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
 
@@ -2341,11 +2351,31 @@ void FluxboxWindow::stopMoving() {
 }
 
 void FluxboxWindow::pauseMoving() {
+    if (screen->doOpaqueMove()) {
+        return;
+    }
 
+    XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+                   last_move_x, last_move_y, 
+                   m_frame.width() + 2*frame().window().borderWidth(),
+                   m_frame.height() + 2*frame().window().borderWidth());
+    
 }
 
 
 void FluxboxWindow::resumeMoving() {
+    if (screen->doOpaqueMove()) {
+        return;
+    }
+    
+    if (workspace_number == screen->getCurrentWorkspaceID()) {
+        m_frame.show();
+    }
+    XSync(display,false);
+    XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+                   last_move_x, last_move_y, 
+                   m_frame.width() + 2*frame().window().borderWidth(),
+                   m_frame.height() + 2*frame().window().borderWidth());
 
 }
 
@@ -2385,7 +2415,7 @@ void FluxboxWindow::stopResizing(Window win) {
 	
     XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                    last_resize_x, last_resize_y,
-                   last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
+                   last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                    last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
     screen->hideGeometry();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.52 2003/02/23 01:08:09 fluxgen Exp $
+// $Id: Window.hh,v 1.53 2003/03/22 05:13:08 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -356,6 +356,7 @@ private:
     int last_resize_x, last_resize_y; // handles last button press event for resize
     int last_move_x, last_move_y; // handles last pos for non opaque moving
     unsigned int last_resize_h, last_resize_w; // handles height/width for resize "window"
+    unsigned int move_ws; // handles home workspace for opaque workspace warping
 
     int focus_mode, window_number;
     unsigned int workspace_number;
