@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.29 2004/01/13 14:41:32 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.30 2004/01/14 23:06:13 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -519,7 +519,19 @@ void IconbarTool::renderWindow(FluxboxWindow &win) {
     renderButton(*button);
 }
 
+
 void IconbarTool::renderTheme() {
+
+    // update button sizes before we get max width per client!
+    IconList::iterator icon_it = m_icon_list.begin();
+    const IconList::iterator icon_it_end = m_icon_list.end(); 
+    for (; icon_it != icon_it_end; ++icon_it) {
+        if ((*icon_it)->win().isFocused())
+            (*icon_it)->setBorderWidth(m_theme.focusedBorder().width());
+        else // unfocused
+            (*icon_it)->setBorderWidth(m_theme.unfocusedBorder().width());
+    }    
+    
     Pixmap tmp = m_focused_pm;
     Pixmap err_tmp = m_focused_err_pm;
     unsigned int icon_width = m_icon_container.maxWidthPerClient();
@@ -531,8 +543,8 @@ void IconbarTool::renderTheme() {
                                                            m_icon_container.height(),
                                                            m_theme.focusedTexture());
         m_focused_err_pm = m_screen.imageControl().renderImage(icon_width+1,
-                                                           m_icon_container.height(),
-                                                           m_theme.focusedTexture());
+                                                               m_icon_container.height(),
+                                                               m_theme.focusedTexture());
     }
         
     if (tmp)
@@ -579,8 +591,7 @@ void IconbarTool::renderTheme() {
     m_icon_container.setAlpha(m_theme.alpha());
 
     // update buttons
-    IconList::iterator icon_it = m_icon_list.begin();
-    IconList::iterator icon_it_end = m_icon_list.end();
+    icon_it = m_icon_list.begin();
     for (; icon_it != icon_it_end; ++icon_it)
         renderButton(*(*icon_it));
 }
@@ -599,6 +610,8 @@ void IconbarTool::renderButton(IconButton &button) {
         button.setGC(m_theme.focusedText().textGC());     
         button.setFont(m_theme.focusedText().font());
         button.setJustify(m_theme.focusedText().justify());
+        button.setBorderWidth(m_theme.focusedBorder().width());
+        button.setBorderColor(m_theme.focusedBorder().color());
 
         if (!wider_button && m_focused_pm != 0)
             button.setBackgroundPixmap(m_focused_pm);
@@ -607,8 +620,7 @@ void IconbarTool::renderButton(IconButton &button) {
         else
             button.setBackgroundColor(m_theme.focusedTexture().color());            
 
-        button.setBorderWidth(m_theme.focusedBorder().width());
-        button.setBorderColor(m_theme.focusedBorder().color());
+
 
     } else { // unfocused
         if (m_icon_container.selected() == &button)
@@ -617,6 +629,8 @@ void IconbarTool::renderButton(IconButton &button) {
         button.setGC(m_theme.unfocusedText().textGC());
         button.setFont(m_theme.unfocusedText().font());
         button.setJustify(m_theme.unfocusedText().justify());
+        button.setBorderWidth(m_theme.unfocusedBorder().width());
+        button.setBorderColor(m_theme.unfocusedBorder().color());
 
         if (!wider_button && m_unfocused_pm != 0)
             button.setBackgroundPixmap(m_unfocused_pm);
@@ -625,8 +639,6 @@ void IconbarTool::renderButton(IconButton &button) {
         else
             button.setBackgroundColor(m_theme.unfocusedTexture().color());
 
-        button.setBorderWidth(m_theme.unfocusedBorder().width());
-        button.setBorderColor(m_theme.unfocusedBorder().color());
     }
 
     button.clear();
