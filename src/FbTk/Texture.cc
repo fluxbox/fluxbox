@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.7 2004/01/11 20:33:24 fluxgen Exp $
+// $Id: Texture.cc,v 1.8 2004/01/11 21:04:21 fluxgen Exp $
 
 #include "Texture.hh"
 
@@ -77,9 +77,7 @@ void Texture::setFromString(const char * const texture_str) {
         else if (strstr(ts, "sunken"))
             addType(Texture::SUNKEN);
         else if (strstr(ts, "flat"))
-            addType(Texture::FLAT);
-        else if (strstr(ts, "invert"))
-            addType(Texture::INVERT);
+            addType(Texture::FLAT);        
         else
             addType(Texture::RAISED);
 
@@ -88,6 +86,9 @@ void Texture::setFromString(const char * const texture_str) {
                 addType(Texture::BEVEL2);
             else
                 addType(Texture::BEVEL1);
+
+        if (strstr(ts, "invert"))
+            addType(Texture::INVERT);
 
         if (strstr(ts, "interlaced"))
             addType(Texture::INTERLACED);
