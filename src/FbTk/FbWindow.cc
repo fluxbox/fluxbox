@@ -50,7 +50,8 @@ FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_
 
 }
 
-FbWindow::FbWindow(const FbWindow& the_copy):m_parent(the_copy.parent()),
+FbWindow::FbWindow(const FbWindow& the_copy):FbDrawable(),
+                                             m_parent(the_copy.parent()),
                                              m_screen_num(the_copy.screenNumber()), m_window(the_copy.window()),
                                              m_x(the_copy.x()), m_y(the_copy.y()),
                                              m_width(the_copy.width()), m_height(the_copy.height()),
