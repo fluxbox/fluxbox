@@ -19,12 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.6 2003/02/15 01:54:54 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.7 2003/02/17 22:45:42 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
 #include "EventManager.hh"
 #include "App.hh"
+#ifdef SHAPE
+//#include "Shape.hh"
+#endif // SHAPE
 
 #include <iostream>
 using namespace std;
@@ -64,7 +67,8 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int 
     m_use_titlebar(true), 
     m_use_handle(true),
     m_button_pm(0),
-    m_themelistener(*this) {
+    m_themelistener(*this),
+    //    m_shape(new Shape(m_window, 0)) { //Shape::TOPLEFT | Shape::TOPRIGHT)) {
     theme.addListener(m_themelistener);
     init();
 }
@@ -381,6 +385,8 @@ void FbWinFrame::configureNotifyEvent(XConfigureEvent &event) {
 
 void FbWinFrame::reconfigure() {
     m_window.clear();
+    //    if (m_shape.get())
+    //        m_shape->update();
 
     // align titlebar and render it
     if (m_use_titlebar)
@@ -397,7 +403,7 @@ void FbWinFrame::reconfigure() {
             client_height = m_window.height() - m_handle.height();
     }
 
-    m_clientarea.moveResize(0, next_y,
+    m_clientarea.moveResize(0, m_titlebar.y() + next_y,
                             m_window.width(), client_height);
 
     if (m_clientwin != 0) {
@@ -476,8 +482,9 @@ void FbWinFrame::redrawTitlebar() {
 */
 void FbWinFrame::reconfigureTitlebar() {
     // resize titlebar to window size with font height
-    m_titlebar.resize(m_window.width() - m_titlebar.borderWidth(), m_theme.font().height() == 0 ? 
-                      16 : m_theme.font().height() + m_bevel*2 + 2);
+    m_titlebar.moveResize(-m_titlebar.borderWidth(), -m_titlebar.borderWidth(),
+                          m_window.width(),
+                      m_theme.font().height() == 0 ? 16 : m_theme.font().height() + m_bevel*2 + 2);
 
     // draw left buttons first
     unsigned int next_x = m_bevel; 
@@ -493,7 +500,8 @@ void FbWinFrame::reconfigureTitlebar() {
     // space left on titlebar between left and right buttons
     unsigned int space_left = m_titlebar.width() - next_x;
     if (m_buttons_right.size() != 0)
-        space_left -= (m_buttons_right.size() + 1)*button_size;
+        space_left -= m_buttons_right.size() * (button_size + m_bevel);
+
     space_left -= m_bevel;
 	
     m_label.moveResize(
