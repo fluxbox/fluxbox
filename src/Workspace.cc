@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.32 2002/10/13 21:52:00 fluxgen Exp $
+// $Id: Workspace.cc,v 1.33 2002/10/22 14:47:22 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -354,7 +354,12 @@ void Workspace::checkGrouping(FluxboxWindow &win) {
 	cerr<<__FILE__<<"("<<__LINE__<<"): Checking grouping. ("<<win.instanceName()<<"/"<<
 		win.className()<<")"<<endl;	
 #endif // DEBUG
-
+	if (!win.isGroupable()) { // make sure this window can hold a tab
+#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): window can't use a tab"<<endl;
+#endif // DEBUG
+		return;
+	}
 	// go throu every group and search for matching win instancename
 	GroupList::iterator g(m_groups.begin());
 	GroupList::iterator g_end(m_groups.end());
@@ -374,11 +379,17 @@ void Workspace::checkGrouping(FluxboxWindow &win) {
 				cerr<<__FILE__<<" check group with : "<<(*wit)->instanceName()<<endl;
 #endif // DEBUG
 				if (find_if((*g).begin(), (*g).end(), FindInGroup(*(*wit))) != (*g).end()) {
+					// make sure the window is groupable
+					if ( !(*wit)->isGroupable())
+						break; // try next name
 					//toggle tab on
 					if ((*wit)->getTab() == 0)
 						(*wit)->setTab(true);
 					if (win.getTab() == 0)
 						win.setTab(true);
+					// did we succefully set the tab?
+					if ((*wit)->getTab() == 0)
+						break; // try another window
 					(*wit)->getTab()->insert(win.getTab());
 
 					return; // grouping done
