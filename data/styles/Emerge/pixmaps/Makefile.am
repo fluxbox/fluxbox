@@ -1,4 +1,3 @@
-SUBDIRS=pixmaps
 styledir = $(pkgdatadir)/styles/Emerge/pixmaps
 
 style_DATA = bullet.xpm close.xpm icon.xpm max.xpm stick-unfocus.xpm \
