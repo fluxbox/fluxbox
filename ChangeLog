@@ -1,5 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/16:
+  * Added option to specify what to do with windows, that got activated on
+    a different workspaces than the current one (thru NET_ACTIVE_WINDOW
+    for example, guinotification-plugin from gaim) (Mathias)
+       session.screen0.followModel: <value>
+    with <value> one of :
+
+      Ignore  - ignore the activated window
+      Follow  - go to the workspace of the window
+      Current | CurrentWorkspace | Fetch - get the window onto the 
+                                           current workspace
+    Screen.hh/cc ScreenResource.cc Ewmh.cc
+
 *04/10/11:
   * Fix a bad nls string name - it ended with Set, but was a string (Simon)
     main.cc
