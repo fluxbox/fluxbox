@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.14 2003/08/30 11:59:29 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.15 2003/09/06 15:43:27 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -31,6 +31,8 @@
 #include "fluxbox.hh"
 #include "SimpleCommand.hh"
 #include "Screen.hh"
+
+#include <sstream>
 
 // autoregister this module to command parser
 FbCommandFactory FbCommandFactory::s_autoreg;
@@ -72,6 +74,7 @@ FbCommandFactory::FbCommandFactory() {
         "quit",
         "raise",
         "reconfigure",
+        "resize",
         "resizehorizontal",
         "resizevertical",
         "restart",
@@ -129,10 +132,16 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::maximizeVertical);
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
+    else if (command == "resize") {
+      std::istringstream is(arguments); 
+      int dx = 0, dy = 0;
+      is >> dx >> dy;
+      return new ResizeCmd(dx, dy);
+    }
     else if (command == "resizehorizontal")
-        return new ResizeHorizontalCmd(atoi(arguments.c_str()));
+        return new ResizeCmd(atoi(arguments.c_str()),0);
     else if (command == "resizevertical")
-        return new ResizeVerticalCmd(atoi(arguments.c_str()));
+        return new ResizeCmd(0,atoi(arguments.c_str()));
     else if (command == "moveright")
         return new MoveRightCmd(atoi(arguments.c_str()));
     else if (command == "moveleft")

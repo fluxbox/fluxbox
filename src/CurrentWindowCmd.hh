@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.hh,v 1.3 2003/08/19 23:37:31 fluxgen Exp $
+// $Id: CurrentWindowCmd.hh,v 1.4 2003/09/06 15:43:27 fluxgen Exp $
 
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
@@ -110,19 +110,16 @@ protected:
     void real_execute();
 };
 
-// resize vertical
-class ResizeVerticalCmd: public MoveHelper {
-public:
-  explicit ResizeVerticalCmd(int step_size);
-protected:
-  void real_execute();
-};
-
 // resize horizontal
-class ResizeHorizontalCmd: public MoveHelper{
+class ResizeCmd: public WindowHelperCmd{
 public:
-  explicit ResizeHorizontalCmd(int step_size);
+  explicit ResizeCmd(int step_size_x, int step_size_y);
 protected:
   void real_execute();
+
+private:
+
+  const int m_step_size_x;
+  const int m_step_size_y;
 };
 #endif // CURRENTWINDOWCMD_HH

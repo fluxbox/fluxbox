@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.4 2003/08/19 23:37:31 fluxgen Exp $
+// $Id: CurrentWindowCmd.cc,v 1.5 2003/09/06 15:43:27 fluxgen Exp $
 
 #include "CurrentWindowCmd.hh"
 
@@ -85,13 +85,11 @@ void MoveUpCmd::real_execute() {
     fbwindow().move(fbwindow().x(), fbwindow().y() - stepSize());
 }
 
-ResizeHorizontalCmd::ResizeHorizontalCmd(int step_size):MoveHelper(step_size) { }
-void ResizeHorizontalCmd::real_execute() {
-  fbwindow().resize(fbwindow().width() + stepSize() * fbwindow().winClient().width_inc, fbwindow().height());
-}
+ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
+  m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
-ResizeVerticalCmd::ResizeVerticalCmd(int step_size):MoveHelper(step_size) { }
-void ResizeVerticalCmd::real_execute() {
-  fbwindow().resize(fbwindow().width(), fbwindow().height() + stepSize() * fbwindow().winClient().height_inc);
+void ResizeCmd::real_execute() {
+  fbwindow().resize(
+      fbwindow().width() + m_step_size_x * fbwindow().winClient().width_inc,
+      fbwindow().height() + m_step_size_y * fbwindow().winClient().height_inc );
 }
-
