@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.19 2004/04/04 12:18:48 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.20 2004/04/25 16:27:28 rathnor Exp $
 
 #
 # Portability notes:
@@ -963,6 +963,17 @@ else
         fi
     done
 fi
+# a unix system without any terms. that's odd
+if [ -z "$DEFAULT_TERM" ]; then
+    cat << EOF >&2
+
+Warning: I can't find any terminal-emulators in your PATH.  Please fix
+your PATH or specify your favourite terminal-emulator with the -t option
+
+EOF
+    DEFAULT_TERM=xterm
+fi
+
 DEFAULT_TERMNAME=`echo $DEFAULT_TERM|awk '{print $1}'`
 DEFAULT_TERMNAME=`basename $DEFAULT_TERMNAME`
 
@@ -982,15 +993,6 @@ else
 fi
 DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
 DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
-
-
-# a unix system without any terms. that's odd
-if [ -z "$DEFAULT_TERM" ]; then
-    cat << EOF >&2
-Warning: I can't find any terminal-emulators in your PATH.
-Please fix your PATH or specify your favourite terminal with the -t option
-EOF
-fi
 
 
 # Start of menu
@@ -1162,7 +1164,7 @@ append_submenu "${GAMESMENU}"
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
         gnotski iagno knights eboard xboard scid freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins smclone openmortal \
-        quake2 quake3 skoosh same-gnome enigma xbill icebreaker
+        quake2 quake3 skoosh same-gnome enigma xbill icebreaker scorched3d
     find_it et append "[exec] (Enemy Territory) {et}"
     find_it ut append "[exec] (Unreal Tournament) {ut}" || \
         find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
@@ -1260,7 +1262,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_submenu ${WINDOWMANAGERS}
     #hard to properly maintain since there are so many exceptions to the rule.
-    for wm in icewm ion kde sawfish enlightenment openbox evilwm waimea xfce pekwm; do
+    for wm in icewm ion kde sawfish enlightenment fvwm openbox evilwm waimea xfce pekwm; do
         find_it start${wm} append "[restart] (${wm}) {start${wm}}" ||\
             find_it ${wm} append "[restart] (${wm}) {${wm}}"
     done
