@@ -4,6 +4,7 @@ Changes for 0.9.11
   * Fix to show title of current tabbed-window as the label of the 
     iconbar-button-group (Mathias)
     Window.cc
+  * Fixed typo nls/pl_PL/Translation.m (Mathias)
 *04/09/29:
   * Fix to make menuseparators not selectable (Mathias)
     FbTk/Menu.cc
