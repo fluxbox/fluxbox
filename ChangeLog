@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
 *03/05/19:
+   * Add back some Xinerama support (still need placement + maximise) (Simon)
+     Screen.hh/cc Toolbar.cc Slit.cc Xinerama.hh
    * Fix bsetroot segfault (Simon)
      FbWindow.cc
 *03/05/18:

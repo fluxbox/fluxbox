@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.55 2003/05/17 11:00:50 fluxgen Exp $
+// $Id: Slit.cc,v 1.56 2003/05/19 14:26:30 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -51,6 +51,10 @@
 #include "FbMenu.hh"
 #include "Transparent.hh"
 #include "IntResMenuItem.hh"
+
+#ifdef XINERAMA
+#include "Xinerama.hh"
+#endif // XINERAMA
 
 #include <algorithm>
 #include <iostream>
@@ -790,8 +794,20 @@ void Slit::reposition() {
         head_w,
         head_h;
 
-    head_w = screen().width();
-    head_h = screen().height();
+#ifdef XINERAMA
+    if (screen().hasXinerama()) {
+        int head = screen().getSlitOnHead();
+        head_x = screen().getHeadX(head);
+        head_y = screen().getHeadY(head);
+        head_w = screen().getHeadWidth(head);
+        head_h = screen().getHeadHeight(head);
+    } else 
+#endif // XINERAMA
+    {
+        head_w = screen().width();
+        head_h = screen().height();
+    }
+
     int border_width = screen().rootTheme().borderWidth();
     int bevel_width = screen().rootTheme().bevelWidth();
 
@@ -1206,6 +1222,18 @@ void Slit::setupMenu() {
 
     m_slitmenu.insert("Layer...", m_layermenu.get());
 
+#ifdef XINERAMA
+    if (screen().hasXinerama()) {
+        m_slitmenu.insert("On Head...", new XineramaHeadMenu<Slit>(
+                        *screen().menuTheme(),
+                        screen(),
+                        screen().imageControl(),
+                        *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                        this
+                        ));
+    }
+                    
+#endif //XINERAMA
     m_slitmenu.insert(new BoolMenuItem(i18n->getMessage(
                                                         CommonSet, CommonAutoHide,
                                                         "Auto hide"),

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.84 2003/05/17 11:30:59 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.85 2003/05/19 14:26:30 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -42,6 +42,10 @@
 #include "RootTheme.hh"
 #include "BoolMenuItem.hh"
 #include "FbWinFrameTheme.hh"
+
+#ifdef XINERAMA
+#include "Xinerama.hh"
+#endif XINERAMA
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -134,6 +138,18 @@ void setupMenus(Toolbar &tbar) {
     menu.setInternalMenu();
 
     menu.insert("Layer...", &tbar.layermenu());
+#ifdef XINERAMA
+    if (tbar.screen().hasXinerama()) {
+        menu.insert("On Head...", new XineramaHeadMenu<Toolbar>(
+                        *tbar.screen().menuTheme(),
+                        tbar.screen(),
+                        tbar.screen().imageControl(),
+                        *tbar.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                        &tbar
+                        ));
+    }
+                    
+#endif //XINERAMA
 
     // setup items in placement menu
     struct {
@@ -1091,10 +1107,21 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_w,
         head_h;
 
-    m_place = where;
+#ifdef XINERAMA
+    if (screen().hasXinerama()) {
+        int head = screen().getToolbarOnHead();
+        head_x = screen().getHeadX(head);
+        head_y = screen().getHeadY(head);
+        head_w = screen().getHeadWidth(head);
+        head_h = screen().getHeadHeight(head);
+    } else 
+#endif // XINERAMA
+    {
+        head_w = screen().width();
+        head_h = screen().height();
+    }
 
-    head_w = screen().width();
-    head_h = screen().height();
+    m_place = where;
 
     frame.width = head_w * screen().getToolbarWidthPercent() / 100;
     frame.height = m_theme.font().height();

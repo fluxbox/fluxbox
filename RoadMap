@@ -117,7 +117,7 @@ Bugfixes/lower priority:
 Release:      0.9.3
 Approx Date:  26 May, 2003
 Major Features:
- - Xinerama                             (Simon)
+ = Xinerama                             (Simon)
  * XRandr                               (Henrik)
 Minor Features:
  - Add some sort of program launch function (Simon)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.99 2003/05/18 22:00:04 fluxgen Exp $
+// $Id: Screen.hh,v 1.100 2003/05/19 14:26:30 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -116,8 +116,8 @@ public:
     inline void saveSlitDirection(Slit::Direction d) { resource.slit_direction = d;  }
     inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
     
-    inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
-    inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
+    inline int getSlitOnHead() const { return *resource.slit_on_head; }
+    inline void saveSlitOnHead(int h) { *resource.slit_on_head = h;  }
 
     inline const Toolbar *toolbar() const { return m_toolbarhandler->getToolbar(); }
     inline Toolbar *toolbar() { return m_toolbarhandler->getToolbar(); }
@@ -296,6 +296,29 @@ public:
     /// (and maximized windows?)
     void updateSize();
 
+#ifdef XINERAMA
+    // Xinerama-related functions
+    inline bool hasXinerama() const { return m_xinerama_avail; }
+    inline int numHeads() const { return m_xinerama_num_heads; }
+
+    void initXinerama(Display *display);
+
+    int getHead(int x, int y) const;
+    int getCurrHead() const;
+    int getHeadX(int head) const;
+    int getHeadY(int head) const;
+    int getHeadWidth(int head) const;
+    int getHeadHeight(int head) const;
+
+    // magic to allow us to have "on head" placement without
+    // the object really knowing about it.
+    template <typename OnHeadObject>
+    int getOnHead(OnHeadObject &obj);
+
+    template <typename OnHeadObject>
+    void setOnHead(OnHeadObject &obj, int head);
+#endif // XINERAMA
+
     // notify netizens
     void updateNetizenCurrentWorkspace();
     void updateNetizenWorkspaceCount();
@@ -412,9 +435,7 @@ private:
         FbTk::Resource<bool> slit_auto_hide;
         FbTk::Resource<Slit::Placement> slit_placement;
         FbTk::Resource<Slit::Direction> slit_direction;
-        FbTk::Resource<int> slit_alpha;
-
-        unsigned int slit_on_head;
+        FbTk::Resource<int> slit_alpha, slit_on_head;
 
         std::string strftime_format;
 
@@ -425,6 +446,21 @@ private:
     } resource;
 
     std::auto_ptr<ToolbarHandler> m_toolbarhandler;
+
+#ifdef XINERAMA
+    // Xinerama related private data
+    bool m_xinerama_avail;
+    int m_xinerama_num_heads;
+    
+    int m_xinerama_center_x, m_xinerama_center_y;
+
+    struct XineramaHeadInfo {
+        int x, y, width, height;        
+    } *m_xinerama_headinfo;
+
+    
+
+#endif
 };
 
 

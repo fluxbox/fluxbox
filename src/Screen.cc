@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.171 2003/05/18 22:01:14 fluxgen Exp $
+// $Id: Screen.cc,v 1.172 2003/05/19 14:26:29 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -113,6 +113,12 @@
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
+
+#ifdef XINERAMA
+extern  "C" {
+#include <X11/extensions/Xinerama.h>
+}
+#endif // XINERAMA
 
 #include <iostream>
 #include <memory>
@@ -480,13 +486,14 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
     toolbar_placement(rm, Toolbar::BOTTOMCENTER, 
                       scrname+".toolbar.placement", altscrname+".Toolbar.Placement"),
-     slit_auto_hide(rm, false, 
-                     scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
-     slit_placement(rm, Slit::BOTTOMRIGHT,
-                    scrname+".slit.placement", altscrname+".Slit.Placement"),
-     slit_direction(rm, Slit::VERTICAL, 
-                    scrname+".slit.direction", altscrname+".Slit.Direction"),
-     slit_alpha(rm, 255, scrname+".slit.alpha", altscrname+".Slit.Alpha") {
+    slit_auto_hide(rm, false, 
+                   scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
+    slit_placement(rm, Slit::BOTTOMRIGHT,
+                   scrname+".slit.placement", altscrname+".Slit.Placement"),
+    slit_direction(rm, Slit::VERTICAL, 
+                   scrname+".slit.direction", altscrname+".Slit.Direction"),
+    slit_alpha(rm, 255, scrname+".slit.alpha", altscrname+".Slit.Alpha"),
+    slit_on_head(rm, 0, scrname+".slit.onhead", altscrname+".Slit.onHead") {
 
 };
 
@@ -515,6 +522,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 
     Display *disp = FbTk::App::instance()->display();
+
+#ifdef XINERAMA
+    initXinerama(disp);
+#endif // XINERAMA
 
     event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
         SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
@@ -761,6 +772,12 @@ BScreen::~BScreen() {
     }
 
     netizenList.clear();
+
+#ifdef XINERAMA
+    if (hasXinerama() && m_xinerama_headinfo) {
+        delete [] m_xinerama_headinfo;
+    }
+#endif // XINERAMA
 }
 
 const FbTk::Menu &BScreen::toolbarModemenu() const {
@@ -2524,3 +2541,102 @@ void BScreen::updateSize() {
     //!! TODO: should we re-maximize the maximized windows?
     
 }
+
+#ifdef XINERAMA
+
+void BScreen::initXinerama(Display *display) {
+    if (!XineramaIsActive(display)) {
+        m_xinerama_avail = false;
+        m_xinerama_headinfo = 0;
+        return;
+    }
+    m_xinerama_avail = true;
+
+    XineramaScreenInfo *screen_info;
+    int number;
+    screen_info = XineramaQueryScreens(display, &number);
+    m_xinerama_headinfo = new XineramaHeadInfo[number];
+    m_xinerama_num_heads = number;
+    for (int i=0; i < number; i++) {
+        m_xinerama_headinfo[i].x = screen_info[i].x_org;
+        m_xinerama_headinfo[i].y = screen_info[i].y_org;
+        m_xinerama_headinfo[i].width = screen_info[i].width;
+        m_xinerama_headinfo[i].height = screen_info[i].height;
+    }
+
+}
+
+int BScreen::getHead(int x, int y) const {
+    if (!hasXinerama()) return 0;
+
+    for (int i=0; i < m_xinerama_num_heads; i++) {
+        if (x >= m_xinerama_headinfo[i].x &&
+            x < (m_xinerama_headinfo[i].x + m_xinerama_headinfo[i].width) &&
+            y >= m_xinerama_headinfo[i].y &&
+            y < (m_xinerama_headinfo[i].y + m_xinerama_headinfo[i].height)) {
+            return i+1;
+        }
+    }
+
+    return 0;
+}
+
+int BScreen::getCurrHead() const {
+    if (!hasXinerama()) return 0;
+    int root_x, root_y, ignore_i;
+
+    unsigned int ignore_ui;
+
+    Window ignore_w;
+
+    XQueryPointer(FbTk::App::instance()->display(),
+                  rootWindow().window(), &ignore_w, 
+                  &ignore_w, &root_x, &root_y,
+                  &ignore_i, &ignore_i, &ignore_ui);
+    return getHead(root_x, root_y);
+
+}
+
+int BScreen::getHeadX(int head) const {
+    if (head == 0 || head > m_xinerama_num_heads) return 0;
+    return m_xinerama_headinfo[head-1].x;
+}
+
+int BScreen::getHeadY(int head) const {
+    if (head == 0 || head > m_xinerama_num_heads) return 0;
+    return m_xinerama_headinfo[head-1].y;
+}
+
+int BScreen::getHeadWidth(int head) const {
+    if (head == 0 || head > m_xinerama_num_heads) return width();
+    return m_xinerama_headinfo[head-1].width;
+}
+
+int BScreen::getHeadHeight(int head) const {
+    if (head == 0 || head > m_xinerama_num_heads) return height();
+    return m_xinerama_headinfo[head-1].height;
+}
+
+template <>
+int BScreen::getOnHead<Toolbar>(Toolbar &tbar) {
+    return getToolbarOnHead();
+}
+
+template <>
+void BScreen::setOnHead<Toolbar>(Toolbar &tbar, int head) {
+    saveToolbarOnHead(head);
+    tbar.reconfigure();
+}
+
+template <>
+int BScreen::getOnHead<Slit>(Slit &tbar) {
+    return getSlitOnHead();
+}
+
+template <>
+void BScreen::setOnHead<Slit>(Slit &slit, int head) {
+    saveSlitOnHead(head);
+    slit.reconfigure();
+}
+
+#endif // XINERAMA
