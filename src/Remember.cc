@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.1 2003/04/26 07:57:00 rathnor Exp $
+// $Id: Remember.cc,v 1.2 2003/04/26 11:24:55 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -40,12 +40,8 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-/*
-  #include <string>
-  #include <memory>
-  #include <stdio.h>
-*/
-
+#include <string>
+#include <memory>
 
 #ifndef    MAXPATHLEN
 #define    MAXPATHLEN 255
@@ -196,8 +192,8 @@ Application* Remember::find(const char* app_name) {
         return NULL;
 }
 
-int Remember::parseApp(ifstream &file, Application *a) {
-    string line;
+int Remember::parseApp(std::ifstream &file, Application *a) {
+    std::string line;
     int row = 0;
     while (! file.eof()) {
         if (getline(file, line)) {
@@ -218,17 +214,17 @@ int Remember::parseApp(ifstream &file, Application *a) {
                     continue; //read next line
                 if (str_key == "Workspace") {
                     unsigned int w;
-                    istringstream iss(str_label.c_str());
+                    std::istringstream iss(str_label.c_str());
                     iss >> w;
                     a->rememberWorkspace(w);
                 } else if (str_key == "Dimensions") {
                     unsigned int h,w;
-                    istringstream iss(str_label.c_str());
+                    std::istringstream iss(str_label.c_str());
                     iss >> w >> h;
                     a->rememberDimensions(w,h);
                 } else if (str_key == "Position") {
                     unsigned int x,y;
-                    istringstream iss(str_label);
+                    std::istringstream iss(str_label);
                     iss >> x >> y;
                     a->rememberPosition(x,y);
                 } else if (str_key == "Shaded") {
@@ -255,7 +251,7 @@ int Remember::parseApp(ifstream &file, Application *a) {
                         unsigned int mask;
                         const char * str = str_label.c_str();
                         // it'll have at least one char and \0, so this is safe
-                        istringstream iss(str);
+                        std::istringstream iss(str);
                         // check for hex
                         if (str[0] == '0' && str[1] == 'x') {
                             iss.seekg(2);
@@ -285,23 +281,23 @@ void Remember::load() {
 #ifdef DEBUG
     cerr << "Loading apps file..." << endl;
 #endif // DEBUG
-    string apps_string = getenv("HOME")+string("/.")+RC_PATH+string("/")+"apps";
-    ifstream apps_file(apps_string.c_str());
+    std::string apps_string = getenv("HOME")+std::string("/.")+RC_PATH+std::string("/")+"apps";
+    std::ifstream apps_file(apps_string.c_str());
     if (!apps_file.fail()) {
         if (!apps_file.eof()) {
-            string line;
+            std::string line;
             int row = 0;
             while (getline(apps_file, line) && ! apps_file.eof()) {
                 row++;
                 if (line[0] == '#')
                     continue;
-                string key;
+                std::string key;
                 int pos=0;
                 int err = StringUtil::getStringBetween(key, line.c_str(), '[', ']');
 
                 if (err >0 && key == "app") {
                     pos += err;
-                    string label;
+                    std::string label;
                     err = StringUtil::getStringBetween(label, line.c_str()+pos, '(', ')');
                     if (err>0) {
                         Application *a;
@@ -332,8 +328,8 @@ void Remember::save() {
 #ifdef DEBUG
     cerr << "Saving apps file..." << endl;
 #endif // DEBUG
-    string apps_string = getenv("HOME")+string("/.")+RC_PATH+string("/")+"apps";
-    ofstream apps_file(apps_string.c_str());
+    std::string apps_string = getenv("HOME")+std::string("/.")+RC_PATH+std::string("/")+"apps";
+    std::ofstream apps_file(apps_string.c_str());
     Apps::iterator it = apps.begin();
     Apps::iterator it_end = apps.end();
     for (; it != it_end; ++it) {

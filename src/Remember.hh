@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.1 2003/04/26 07:57:00 rathnor Exp $
+// $Id: Remember.hh,v 1.2 2003/04/26 11:24:55 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -30,14 +30,11 @@
 #include "Window.hh"
 #include "AtomHandler.hh"
 #include "Screen.hh"
-
-/*
-#include <iostream>
-#include <string>
 #include "StringUtil.hh"
-*/
+
 #include <fstream>
 #include <map>
+#include <string>
 
 class Application {
 public:
@@ -123,7 +120,7 @@ public:
         REM_LASTATTRIB // not actually used
     };
 
-    typedef std::map<string,Application *> Apps;
+    typedef std::map<std::string,Application *> Apps;
     Remember();
 
     Application* find(WinClient &winclient);
@@ -166,7 +163,7 @@ public:
 private:
 
     // returns number of lines read
-    int parseApp(ifstream &file, Application *a);
+    int parseApp(std::ifstream &file, Application *a);
     Apps apps;
 
 };
