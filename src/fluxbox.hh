@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.15 2002/04/09 12:09:03 cout Exp $
+// $Id: fluxbox.hh,v 1.16 2002/04/12 13:02:12 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -217,7 +217,8 @@ private:
 #endif // SLIT
 
 	std::list<MenuTimestamp *> menuTimestamps;
-	std::list<BScreen *> screenList;
+	typedef std::list<BScreen *> ScreenList;
+	ScreenList screenList;
 
 	FluxboxWindow *focused_window, *masked_window;
 	BTimer timer;
