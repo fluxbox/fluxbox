@@ -616,7 +616,7 @@ void FluxboxWindow::shape() {
 
 
 /// attach a client to this window and destroy old window
-void FluxboxWindow::attachClient(WinClient &client) {
+void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     //!! TODO: check for isGroupable in client
     if (client.m_win == this)
         return;
@@ -666,6 +666,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
             btn->setJustify(frame().theme().justify());
             m_labelbuttons[(*client_it)] = btn;
             frame().addLabelButton(*btn);
+	    if(x >= 0)
+		    frame().moveLabelButtonTo(*btn, x ,y);
             btn->show();
             // we need motion notify so we mask it
             btn->setEventMask(ExposureMask | ButtonPressMask | 
@@ -2033,6 +2035,7 @@ void FluxboxWindow::popupMenu() {
         return;
     }
 
+    menu().disableTitle();
     int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
     if (!decorations.titlebar) // if we don't have any titlebar
         menu_y = 0;
@@ -3183,7 +3186,6 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
 
     int dest_x = 0, dest_y = 0;
     Window child = 0;
-
     if (XTranslateCoordinates(display, parent().window(), 
                               parent().window(),
                               x, y, &dest_x, &dest_y, &child)) {        
@@ -3200,10 +3202,11 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
                     attach_to_win = client->fbwindow();
             }
         }
+
         if (attach_to_win != this &&
             attach_to_win != 0 && attach_to_win->isTabable()) {
-
-            attach_to_win->attachClient(*old_attached);
+	    
+            attach_to_win->attachClient(*old_attached,x,y );
             // we could be deleted here, DO NOT do anything else that alters this object
         } else if (attach_to_win != this) { 
             // disconnect client if we didn't drop on a window
@@ -3215,6 +3218,12 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
                 client.m_win->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
 
         }
+	else if(attach_to_win==this && attach_to_win->isTabable()) {
+		//reording of tabs within a frame
+		FbWinFrame *frame=&attach_to_win->frame();
+		frame->moveLabelButtonTo(*m_labelbuttons[old_attached], x, y);
+	}
+		
     }
 }
 
