@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.30 2002/02/10 11:18:17 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.31 2002/02/11 11:33:14 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -551,15 +551,13 @@ void Fluxbox::process_event(XEvent *e) {
 		FluxboxWindow *win = searchWindow(e->xmaprequest.window);
 
 		if (! win) {
-			try {
-				win = new FluxboxWindow(e->xmaprequest.window);
-			} catch (FluxboxWindow::Error error) {
-				FluxboxWindow::showError(error);
+			win = new FluxboxWindow(e->xmaprequest.window);
+			if (!win->isManaged()) {
 				delete win;
 				win = 0;
 			}
 		}
-			
+
 		if ((win = searchWindow(e->xmaprequest.window)))
 			win->mapRequestEvent(&e->xmaprequest);
 
@@ -568,7 +566,6 @@ void Fluxbox::process_event(XEvent *e) {
 	case MapNotify:
 	{
 		FluxboxWindow *win = searchWindow(e->xmap.window);
-		XMapWindow(getXDisplay(), e->xmap.window);
 		if (win!=0)
 			win->mapNotifyEvent(&e->xmap);
 
@@ -591,10 +588,10 @@ void Fluxbox::process_event(XEvent *e) {
 		if ((win = searchWindow(e->xunmap.window))!=0 ) {
 			// only process windows with StructureNotify selected 
 	     	// (ignore SubstructureNotify)				
-			if (win->getClientWindow() != e->xunmap.window ||
-					win->isTransient()) {
+//			if (win->getClientWindow() != e->xunmap.window ||
+//					win->isTransient()) {
 				win->unmapNotifyEvent(&e->xunmap);
-			}
+//			}
 		#ifdef SLIT
 		} else if ((slit = searchSlit(e->xunmap.window))!=0) {
 			slit->removeClient(e->xunmap.window);
@@ -1718,10 +1715,7 @@ void Fluxbox::shutdown(void) {
 //saves resources
 //----------------------
 void Fluxbox::save_rc(void) {
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): Saving resources --------------"<<endl;
-	#endif
-	
+
 	XrmDatabase new_blackboxrc = 0;
 	
 	char rc_string[1024];
@@ -1906,9 +1900,6 @@ void Fluxbox::load_rc(void) {
 	
 	//get resource filename
 	auto_ptr<char> dbfile(getRcFilename());
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): dbfile="<<dbfile.get()<<endl;
-	#endif
 	if (dbfile.get()) {
 		if (!m_resourcemanager.load(dbfile.get())) {
 			cerr<<"Faild to load database:"<<dbfile.get()<<endl;
