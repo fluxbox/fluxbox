@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/12:
+  * Support for bsetroot in fbsetbg (Han)
 *03/12/11:
   * Added remember position (Thanks Mathias Gumz)
     Usage:  [app] (fbrun)
