@@ -1,5 +1,5 @@
 // Resource.hh
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.10 2003/04/25 11:40:58 fluxgen Exp $
+// $Id: Resource.hh,v 1.11 2003/05/07 11:32:42 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -56,40 +56,8 @@ private:
     std::string m_altname; ///< alternative name 
 };
 
-class ResourceManager;
-
-/**
-	Real resource class
-*/
 template <typename T>
-class Resource:public Resource_base
-{
-public:	
-    Resource(ResourceManager &rm, T val, 
-             const std::string &name, const std::string &altname):
-	Resource_base(name, altname),
-	m_value(val), m_defaultval(val),
-	m_rm(rm)
-	{
-            m_rm.addResource(*this); // add this to resource handler
-	}
-    virtual ~Resource() {
-        m_rm.removeResource(*this); // remove this from resource handler
-    }
-
-    inline void setDefaultValue() {  m_value = m_defaultval; }
-    void setFromString(const char *strval);
-    inline Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
-	
-    std::string getString();	
-    inline T& operator*() { return m_value; }
-    inline const T& operator*() const { return m_value; }
-    inline T *operator->() { return &m_value; }
-    inline const T *operator->() const { return &m_value; }
-private:
-    T m_value, m_defaultval;
-    ResourceManager &m_rm;
-};
+class Resource;
 
 class ResourceManager
 {
@@ -127,6 +95,39 @@ private:
 
     static bool m_init;
     ResourceList m_resourcelist;
+};
+
+/**
+	Real resource class
+*/
+template <typename T>
+class Resource:public Resource_base
+{
+public:	
+    Resource(ResourceManager &rm, T val, 
+             const std::string &name, const std::string &altname):
+	Resource_base(name, altname),
+	m_value(val), m_defaultval(val),
+	m_rm(rm)
+	{
+            m_rm.addResource(*this); // add this to resource handler
+	}
+    virtual ~Resource() {
+        m_rm.removeResource(*this); // remove this from resource handler
+    }
+
+    inline void setDefaultValue() {  m_value = m_defaultval; }
+    void setFromString(const char *strval);
+    inline Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
+	
+    std::string getString();	
+    inline T& operator*() { return m_value; }
+    inline const T& operator*() const { return m_value; }
+    inline T *operator->() { return &m_value; }
+    inline const T *operator->() const { return &m_value; }
+private:
+    T m_value, m_defaultval;
+    ResourceManager &m_rm;
 };
 
 #endif //_RESOURCE_HH_
