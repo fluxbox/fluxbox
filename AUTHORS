@@ -14,17 +14,21 @@ Contributors:
     Oliwier Ptak  <aleczapka@gmx.net>
       - suggestions, styles and webpage
     Paul W Brannan <pbrannan@atdesk.com>
-	  - consulting, code clean up
+      - consulting, code clean up
     Rando Christensen <digiwano@babblica.net>
-	  - Documentation
-	Takashi KATAYAMA <valcyrie@hi-ho.ne.jp>
-	  - Japanese translation
-	Miroslav Iordanov <m_iordo@yahoo.com>
-	  - Bulgarian translation
-	Luis Medinas <metalgodin@excite.com>
-	  - Portuguese translation
-	Stanislav Karchebny <berk@madfire.net>
-	  - minor additions, fixes, cleanups...
+      - Documentation
+    Takashi KATAYAMA <valcyrie@hi-ho.ne.jp>
+      - Japanese translation
+    Miroslav Iordanov <m_iordo@yahoo.com>
+      - Bulgarian translation
+    Luis Medinas <metalgodin@excite.com>
+      - Portuguese translation
+    Stanislav Karchebny <berk@madfire.net>
+      - minor additions, fixes, cleanups...
+    Steve Cooper <stevencooper@isomedia.com>
+      - Workspace warping, window cycling with optional parameters
+
+
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 
