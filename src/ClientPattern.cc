@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.3 2003/06/13 13:03:44 fluxgen Exp $
+// $Id: ClientPattern.cc,v 1.4 2003/10/12 16:25:28 rathnor Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
@@ -39,6 +39,9 @@
 #include <string>
 #include <memory>
 #include <cstdio>
+
+// needed as well for index on some systems (e.g. solaris)
+#include <strings.h> 
 
 using namespace std;
 
