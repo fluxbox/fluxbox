@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.211 2003/12/21 15:13:00 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.212 2003/12/21 15:24:28 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1946,7 +1946,8 @@ void Fluxbox::revertFocus(BScreen &screen, bool wait_for_end) {
         // when doFocusLast is set, we don't do exact sloppy focus - we 
         // go to the last focused window, rather than the pointer window
         // i.e. we ignore any EnterNotify events until the focus sending arrives
-        ignore_event = EnterNotify;
+        if (screen.getFocusModel() != BScreen::CLICKTOFOCUS)
+            ignore_event = EnterNotify;
     }
 
     // if setting focus fails, or isn't possible, fallback correctly
@@ -2004,13 +2005,14 @@ void Fluxbox::addRedirectEvent(BScreen *screen,
 }
 
 // So that an object may remove the ignore on its own
+// stop_type of None means remove all redirects for this window
 void Fluxbox::removeRedirectEvent(long stop_type, Window stop_win) {
     RedirectEvents::iterator it = m_redirect_events.begin();
     RedirectEvents::iterator it_end = m_redirect_events.end();
     RedirectEvent *re = 0;
     for (; it != it_end; ++it) {
         re = *it;
-        if (re->stop_type == re->stop_type && re->stop_win == stop_win) {
+        if (re->stop_win == stop_win && (stop_type == None || stop_type == re->stop_type)) {
             m_redirect_events.erase(it);
             delete re;
             return;

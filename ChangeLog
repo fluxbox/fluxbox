@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/21:
+  * And another attempt at sloppy focus issues (Simon)
+    WinClient.cc Window.cc fluxbox.cc
   * Fixed "mozilla" input focus bug (Henrik)
     We must assume Passive when no input hint is set
     WinClient.cc

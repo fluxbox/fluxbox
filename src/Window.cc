@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.254 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: Window.cc,v 1.255 2003/12/21 15:24:28 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1190,23 +1190,27 @@ bool FluxboxWindow::setInputFocus(long ignore_event) {
         }
     } 
 
+    bool ret = false;
+
     if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
         m_client->getFocusMode() == WinClient::F_PASSIVE) {
         m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
 
-        // People can ignore an event until the focus comes through
-        // this is most likely to be an EnterNotify for sloppy focus
-        if (ignore_event)
-            Fluxbox::instance()->addRedirectEvent(
-                &screen(), ignore_event, None,
-                FocusIn, m_client->window(), None);
-                                                  
         // this may or may not send, but we've setInputFocus already, so return true
         m_client->sendFocus(); 
-        return true;
+        ret = true;
     } else {
-        return m_client->sendFocus(); // checks if it should send or not
+        ret = m_client->sendFocus(); // checks if it should send or not
     }
+
+    // People can ignore an event until the focus comes through
+    // this is most likely to be an EnterNotify for sloppy focus
+    if (ret && m_client->getFocusMode() != WinClient::F_NOINPUT && ignore_event != None)
+        Fluxbox::instance()->addRedirectEvent(
+            &screen(), ignore_event, None,
+            FocusIn, m_client->window(), None);
+                                                  
+    return ret;
 }
 
 void FluxboxWindow::hide() {

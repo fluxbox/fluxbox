@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.35 2003/12/21 13:57:38 fluxgen Exp $
+// $Id: WinClient.cc,v 1.36 2003/12/21 15:24:28 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -118,8 +118,10 @@ WinClient::~WinClient() {
     if (m_blackbox_hint != 0)
         XFree(m_blackbox_hint);
 
-    if (window())
+    if (window()) {
         fluxbox->removeWindowSearch(window());
+        fluxbox->removeRedirectEvent(None, window());
+    }
 
     m_win = 0;
 }
