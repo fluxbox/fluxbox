@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*04/12/21:
+  * Fixed problems with gtk2-fullscreen-mode (gimp2, galeon etc) (Mathias)
+    - synchronize _NET_WM_STATE in Ewmh-Handler
+    - disable shape (aka round corners) in fullscreen-mode
+    Window.cc/hh Ewmh.cc/hh
+  * Added new command, which sets the current window onto head<int> (Mathias)
+    SetHead <int>
+    Remember.cc/hh FbCommandFactory.cc CurrentWindowCmd.cc/hh
 *04/12/18:
   * Fix possible segfault when new text in TextBox is
     smaller than the old one (Mathias)
