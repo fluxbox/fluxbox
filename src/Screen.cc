@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.262 2004/01/19 18:29:43 fluxgen Exp $
+// $Id: Screen.cc,v 1.263 2004/01/19 22:07:24 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1468,9 +1468,17 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
     if (w->isIconic()) {
         removeIcon(w);
         getWorkspace(wkspc_id)->addWindow(*w);
+        // client list need to notify now even though
+        // we didn't remove/add any window,
+        // so listeners that uses the client list to 
+        // show whats on current/other workspace
+        // gets updated
+        m_clientlist_sig.notify(); 
     } else if (ignore_sticky || ! w->isStuck()) {
         getWorkspace(w->workspaceNumber())->removeWindow(w);
         getWorkspace(wkspc_id)->addWindow(*w);
+        // see comment above
+        m_clientlist_sig.notify();
     }
 }
 
