@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.15 2002/05/08 14:19:12 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.16 2002/09/01 11:41:22 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -84,7 +84,7 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 		"Focus Last Window on Workspace"), 5);
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuMaxOverSlit,
-		"Maxmize Over Slit"), 6);
+		"Maximize Over Slit"), 6);
     insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuTabs,
 		"Use Tabs"), CMENU_USE_TABS);
