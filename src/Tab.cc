@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.16 2002/01/20 02:15:23 fluxgen Exp $
+// $Id: Tab.cc,v 1.17 2002/01/26 11:16:25 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -96,24 +96,25 @@ void Tab::createTabWindow() {
 	XSetWindowAttributes attrib;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-			m_win->getScreen()->getWindowStyle()->tab.border_color.getPixel();
+		m_win->getScreen()->getWindowStyle()->tab.border_color.getPixel();
 	attrib.colormap = m_win->getScreen()->getColormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
-						ButtonMotionMask | ExposureMask | EnterWindowMask;
+		ButtonMotionMask | ExposureMask | EnterWindowMask;
 	//Notice that m_size_w gets the TOTAL width of tabs INCLUDING borders
 	m_tabwin = XCreateWindow(m_display, m_win->getScreen()->getRootWindow(), 
-							-30000, -30000, //TODO: So that it wont flicker or
-											// appear before the window do
-			m_size_w - m_win->getScreen()->getWindowStyle()->tab.border_width_2x,
-			m_size_h - m_win->getScreen()->getWindowStyle()->tab.border_width_2x,
-							m_win->getScreen()->getWindowStyle()->tab.border_width,
-							m_win->getScreen()->getDepth(), InputOutput,
-							m_win->getScreen()->getVisual(), attrib_mask, &attrib);
+		-30000, -30000, //TODO: So that it wont flicker or
+			// appear before the window do
+		m_size_w - m_win->getScreen()->getWindowStyle()->tab.border_width_2x,
+		m_size_h - m_win->getScreen()->getWindowStyle()->tab.border_width_2x,
+			m_win->getScreen()->getWindowStyle()->tab.border_width,
+			m_win->getScreen()->getDepth(), InputOutput,
+			m_win->getScreen()->getVisual(), attrib_mask, &attrib);
+
 	//set grab
 	XGrabButton(m_display, Button1, Mod1Mask, m_tabwin, True,
-				ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-				GrabModeAsync, None, Fluxbox::instance()->getMoveCursor());
+		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+		GrabModeAsync, None, Fluxbox::instance()->getMoveCursor());
 
 	//save to tabsearch
 	Fluxbox::instance()->saveTabSearch(m_tabwin, this);	
