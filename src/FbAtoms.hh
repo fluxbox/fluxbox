@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.6 2002/08/14 21:53:07 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.7 2002/09/07 20:10:54 fluxgen Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
@@ -27,7 +27,7 @@
 #include <X11/Xatom.h>
 
 /**
-	atom handler, should probably be a singleton
+	atom handler for base atoms
 */
 class FbAtoms {
 public:
@@ -35,17 +35,6 @@ public:
 	virtual ~FbAtoms();
 	static FbAtoms *instance();
 
-#ifdef GNOME
-	inline Atom getGnomeProtAtom() const { return gnome_wm_prot; }
-	inline Atom getGnomeClientListAtom() const { return gnome_wm_win_client_list; }
-	inline Atom getGnomeSupportingWMCheckAtom() const { return gnome_wm_supporting_wm_check; }
-	inline Atom getGnomeWorkspaceAtom() const { return gnome_wm_win_workspace; }
-	inline Atom getGnomeWorkspaceCountAtom() const { return gnome_wm_win_workspace_count; }
-	inline Atom getGnomeWorkspaceNamesAtom() const { return gnome_wm_win_workspace_names; }
-	inline Atom getGnomeStateAtom() const { return gnome_wm_win_state; }
-	inline Atom getGnomeHintsAtom() const { return gnome_wm_win_hints; }
-	inline Atom getGnomeLayerAtom() const { return gnome_wm_win_layer; }
-#endif //GNOME
 
 	inline Atom getWMChangeStateAtom() const { return xa_wm_change_state; }
 	inline Atom getWMStateAtom() const { return xa_wm_state; }
@@ -87,43 +76,6 @@ public:
 	inline Atom getFluxboxChangeWindowFocusAtom() const { return blackbox_change_window_focus; }
 	inline Atom getFluxboxCycleWindowFocusAtom() const { return blackbox_cycle_window_focus; }
 
-#ifdef NEWWMSPEC
-
-	// root window properties
-	inline Atom getNETSupportedAtom() const { return net_supported; }
-	inline Atom getNETClientListAtom() const { return net_client_list; }
-	inline Atom getNETClientListStackingAtom() const { return net_client_list_stacking; }
-	inline Atom getNETNumberOfDesktopsAtom() const { return net_number_of_desktops; }
-	inline Atom getNETDesktopGeometryAtom() const { return net_desktop_geometry; }
-	inline Atom getNETDesktopViewportAtom() const { return net_desktop_viewport; }
-	inline Atom getNETCurrentDesktopAtom() const { return net_current_desktop; }
-	inline Atom getNETDesktopNamesAtom() const { return net_desktop_names; }
-	inline Atom getNETActiveWindowAtom() const { return net_active_window; }
-	inline Atom getNETWorkareaAtom() const { return net_workarea; }
-	inline Atom getNETSupportingWMCheckAtom() const { return net_supporting_wm_check; }
-	inline Atom getNETVirtualRootsAtom() const { return net_virtual_roots; }
-
-	// root window messages
-	inline Atom getNETCloseWindowAtom() const { return net_close_window; }
-	inline Atom getNETWMMoveResizeAtom() const { return net_wm_moveresize; }
-
-	// application window properties
-	inline Atom getNETPropertiesAtom() const { return net_properties; }
-	inline Atom getNETWMNameAtom() const { return net_wm_name; }
-	inline Atom getNETWMDesktopAtom() const { return net_wm_desktop; }
-	inline Atom getNETWMWindowTypeAtom() const { return net_wm_window_type; }
-	inline Atom getNETWMStateAtom() const { return net_wm_state; }
-	inline Atom getNETWMStrutAtom() const { return net_wm_strut; }
-	inline Atom getNETWMIconGeometryAtom() const { return net_wm_icon_geometry; }
-	inline Atom getNETWMIconAtom() const { return net_wm_icon; }
-	inline Atom getNETWMPidAtom() const { return net_wm_pid; }
-	inline Atom getNETWMHandledIconsAtom() const { return net_wm_handled_icons; }
-
-	// application protocols
-	inline Atom getNETWMPingAtom() const { return net_wm_ping; }
-
-#endif // NEWWMSPEC
-
 private:
 	void initAtoms(Display *disp);
 // NETAttributes
@@ -140,40 +92,6 @@ private:
 	Atom blackbox_change_workspace, blackbox_change_window_focus,
 		blackbox_cycle_window_focus;
 
-#ifdef		NEWWMSPEC
-
-	// root window properties
-	Atom net_supported, net_client_list, net_client_list_stacking,
-		net_number_of_desktops, net_desktop_geometry, net_desktop_viewport,
-		net_current_desktop, net_desktop_names, net_active_window, net_workarea,
-		net_supporting_wm_check, net_virtual_roots;
-
-	// root window messages
-	Atom net_close_window, net_wm_moveresize;
-
-	// application window properties
-	Atom net_properties, net_wm_name, net_wm_desktop, net_wm_window_type,
-		net_wm_state, net_wm_strut, net_wm_icon_geometry, net_wm_icon, net_wm_pid,
-		net_wm_handled_icons;
-	
-			
-	// application protocols
-	Atom net_wm_ping;
-
-#endif // NEWWMSPEC
-
-#ifdef GNOME
-//	union {
-		Atom gnome_wm_win_layer, gnome_wm_win_state, gnome_wm_win_hints,
-			gnome_wm_win_app_state, gnome_wm_win_expanded_size,
-			gnome_wm_win_icons, gnome_wm_win_workspace,
-			gnome_wm_win_workspace_count,	gnome_wm_win_workspace_names,
-			gnome_wm_win_client_list;
-//		Atom gnome_atom_list[10];	
-//	};	
-	Atom gnome_wm_prot;
-	Atom gnome_wm_supporting_wm_check;	
-#endif // GNOME
 	Atom xa_wm_colormap_windows, xa_wm_protocols, xa_wm_state,
 		xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state,
 		motif_wm_hints;

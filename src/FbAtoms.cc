@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.3 2002/08/14 21:53:07 fluxgen Exp $
+// $Id: FbAtoms.cc,v 1.4 2002/09/07 20:12:47 fluxgen Exp $
 
 #include "FbAtoms.hh"
 
@@ -90,53 +90,4 @@ void FbAtoms::initAtoms(Display *display) {
 	blackbox_cycle_window_focus =
 		XInternAtom(display, "_BLACKBOX_CYCLE_WINDOW_FOCUS", False);
 
-#ifdef NEWWMSPEC
-
-	net_supported = XInternAtom(display, "_NET_SUPPORTED", False);
-	net_client_list = XInternAtom(display, "_NET_CLIENT_LIST", False);
-	net_client_list_stacking = XInternAtom(display, "_NET_CLIENT_LIST_STACKING", False);
-	net_number_of_desktops = XInternAtom(display, "_NET_NUMBER_OF_DESKTOPS", False);
-	net_desktop_geometry = XInternAtom(display, "_NET_DESKTOP_GEOMETRY", False);
-	net_desktop_viewport = XInternAtom(display, "_NET_DESKTOP_VIEWPORT", False);
-	net_current_desktop = XInternAtom(display, "_NET_CURRENT_DESKTOP", False);
-	net_desktop_names = XInternAtom(display, "_NET_DESKTOP_NAMES", False);
-	net_active_window = XInternAtom(display, "_NET_ACTIVE_WINDOW", False);
-	net_workarea = XInternAtom(display, "_NET_WORKAREA", False);
-	net_supporting_wm_check = XInternAtom(display, "_NET_SUPPORTING_WM_CHECK", False);
-	net_virtual_roots = XInternAtom(display, "_NET_VIRTUAL_ROOTS", False);
-
-	net_close_window = XInternAtom(display, "_NET_CLOSE_WINDOW", False);
-	net_wm_moveresize = XInternAtom(display, "_NET_WM_MOVERESIZE", False);
-
-	net_properties = XInternAtom(display, "_NET_PROPERTIES", False);
-	net_wm_name = XInternAtom(display, "_NET_WM_NAME", False);
-	net_wm_desktop = XInternAtom(display, "_NET_WM_DESKTOP", False);
-	net_wm_window_type = XInternAtom(display, "_NET_WM_WINDOW_TYPE", False);
-	net_wm_state = XInternAtom(display, "_NET_WM_STATE", False);
-	net_wm_strut = XInternAtom(display, "_NET_WM_STRUT", False);
-	net_wm_icon_geometry = XInternAtom(display, "_NET_WM_ICON_GEOMETRY", False);
-	net_wm_icon = XInternAtom(display, "_NET_WM_ICON", False);
-	net_wm_pid = XInternAtom(display, "_NET_WM_PID", False);
-	net_wm_handled_icons = XInternAtom(display, "_NET_WM_HANDLED_ICONS", False);
-
-	net_wm_ping = XInternAtom(display, "_NET_WM_PING", False);
-	
-#endif // NEWWMSPEC
-
-#ifdef GNOME
-	
-	gnome_wm_win_layer = XInternAtom(display, "_WIN_LAYER", False);
-	gnome_wm_win_state = XInternAtom(display, "_WIN_STATE", False);
-	gnome_wm_win_hints = XInternAtom(display, "_WIN_HINTS", False);
-	gnome_wm_win_app_state = XInternAtom(display, "_WIN_APP_STATE", False);
-	gnome_wm_win_expanded_size = XInternAtom(display, "_WIN_EXPANDED_SIZE", False);
-	gnome_wm_win_icons = XInternAtom(display, "_WIN_ICONS", False);
-	gnome_wm_win_workspace = XInternAtom(display, "_WIN_WORKSPACE", False);
-	gnome_wm_win_workspace_count = XInternAtom(display, "_WIN_WORKSPACE_COUNT", False);
-	gnome_wm_win_workspace_names = XInternAtom(display, "_WIN_WORKSPACE_NAMES", False);
-	gnome_wm_win_client_list = XInternAtom(display, "_WIN_CLIENT_LIST", False);
-	gnome_wm_prot = XInternAtom(display, "_WIN_PROTOCOLS", False);
-	gnome_wm_supporting_wm_check = XInternAtom(display, "_WIN_SUPPORTING_WM_CHECK", False);
-	
-#endif // GNOME
 }
