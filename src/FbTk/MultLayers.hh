@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.hh,v 1.6 2003/07/20 18:05:40 rathnor Exp $
+// $Id: MultLayers.hh,v 1.7 2004/07/15 09:52:57 fluxgen Exp $
 
 #ifndef FBTK_MULTLAYERS_HH
 #define FBTK_MULTLAYERS_HH
@@ -34,8 +34,8 @@ class XLayer;
 
 class MultLayers {
 public:
-    MultLayers(int numlayers);
-    ~MultLayers();
+    explicit MultLayers(int numlayers);
+    virtual ~MultLayers();
     XLayerItem *getLowestItemAboveLayer(int layernum);
 
     /// if there are none below, it will return null
