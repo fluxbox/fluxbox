@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.17 2004/06/13 10:59:54 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.18 2004/06/13 12:01:15 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -70,6 +70,9 @@ MenuTheme::MenuTheme(int screen_num):
     m_real_title_height(*m_title_height),
     m_real_item_height(*m_item_height)
 { 
+    m_real_item_height = m_real_item_height == 0 ? 1 : m_real_item_height;
+    m_real_title_height = m_real_title_height == 0 ? 1 : m_real_title_height;
+
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
@@ -97,6 +100,9 @@ void MenuTheme::reconfigTheme() {
     m_real_item_height = std::max(*m_item_height, frameFont().height() + 2*bevelWidth());
     m_real_title_height = std::max(*m_title_height,
                                    titleFont().height() + 2*bevelWidth());
+
+    m_real_item_height = m_real_item_height == 0 ? 1 : m_real_item_height;
+    m_real_title_height = m_real_title_height == 0 ? 1 : m_real_title_height;
 
     m_bullet_pixmap->scale(itemHeight(), itemHeight());
     m_selected_pixmap->scale(itemHeight(), itemHeight());

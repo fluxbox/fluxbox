@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.65 2004/06/13 10:58:34 fluxgen Exp $
+// $Id: Menu.cc,v 1.66 2004/06/13 12:01:52 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -160,7 +160,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
                                 event_mask, // mask
                                 false, // override redirect
                                 true); // save under
-                                
+
     evm.add(*this, menu.title);
 
     event_mask |= PointerMotionMask;
@@ -171,6 +171,8 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
                                 false,  // override redirect
                                 true); // save under
     evm.add(*this, menu.frame);
+
+    menu.title.raise();
 
 }
 
@@ -531,7 +533,7 @@ void Menu::update(int active_index) {
 
     menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + 
                               menu.title.borderWidth()*2 : 0), 
-                          menu.window.width(), menu.frame_h);
+                          width(), menu.frame_h);
 
 
     if (m_need_update && (m_frame_pm.width() != menu.frame.width() ||
