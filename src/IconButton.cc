@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.8 2003/09/10 21:41:18 fluxgen Exp $
+// $Id: IconButton.cc,v 1.9 2003/10/31 10:37:09 rathnor Exp $
 
 #include "IconButton.hh"
 
@@ -118,7 +118,6 @@ void IconButton::resize(unsigned int width, unsigned int height) {
 }
 
 void IconButton::clear() {
-    FbTk::TextButton::clear();
     setupWindow();
 }
 
@@ -152,7 +151,7 @@ void IconButton::update(FbTk::Subject *subj) {
         m_icon_pixmap.copy(hints->icon_pixmap);
         m_icon_pixmap.scale(m_icon_window.height(), m_icon_window.height());
 
-        m_icon_window.setBackgroundPixmap(m_icon_pixmap.drawable());
+        setBackgroundPixmap(m_icon_pixmap.drawable());
     } else {
         // no icon pixmap
         m_icon_window.move(0, 0);
@@ -186,15 +185,12 @@ void IconButton::update(FbTk::Subject *subj) {
 }
 
 void IconButton::setupWindow() {
-    
-    m_icon_window.clear();
 
-    if (m_win.clientList().size() == 0)
-        return;
-
-    setText(m_win.winClient().title());
-    // draw with x offset and y offset
-    drawText();
+    if (!m_win.clientList().empty()) {
+        setText(m_win.winClient().title());
+        // draw with x offset and y offset
+    }
+    FbTk::TextButton::clear();
 }
 
 void IconButton::drawText(int x, int y) {

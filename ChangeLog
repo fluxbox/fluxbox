@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/31:
+  * Fix iconbar button alignment and squash inactive tools (Simon)
+    - also fix a bunch of rounding issues
+    -> keep in mind that titlebar/iconbar width may not be exactly
+       divisible by the number of clients/labels in it
+    Container.cc FbWinFrame.cc SystemTray.hh Screen.cc ToolbarItem.hh 
+    Toolbar.cc
 *03/10/30:
   * Fix handling of theme's with a zero handleWidth (Simon)
     FbWinFrame.cc

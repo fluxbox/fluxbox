@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.hh,v 1.2 2003/08/16 12:12:21 fluxgen Exp $
+// $Id: SystemTray.hh,v 1.3 2003/10/31 10:37:09 rathnor Exp $
 
 #ifndef SYSTEMTRAY_HH
 #define SYSTEMTRAY_HH
@@ -48,6 +48,8 @@ public:
                     unsigned int width, unsigned int height);
     void show();
     void hide();
+
+    bool active() { return !m_clients.empty(); }
 
     bool clientMessage(const XClientMessageEvent &event);
     void exposeEvent(XExposeEvent &event);

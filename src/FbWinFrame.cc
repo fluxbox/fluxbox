@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.61 2003/10/30 20:27:51 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.62 2003/10/31 10:37:09 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -229,6 +229,8 @@ void FbWinFrame::setFocus(bool newvalue) {
     if (m_focused == newvalue)
         return;
 
+    m_focused = newvalue;
+
     if (currentLabel()) {
         if (newvalue) // focused
             renderButtonFocus(*m_current_label);       
@@ -236,10 +238,8 @@ void FbWinFrame::setFocus(bool newvalue) {
             renderButtonUnfocus(*m_current_label);
     }
 
-    m_focused = newvalue;
-
-    renderButtons();
     renderTitlebar();
+    renderButtons(); // parent relative buttons -> need render after titlebar
     renderHandles();
 }
 
@@ -713,6 +713,7 @@ void FbWinFrame::redrawTitle() {
         return;
 
     int button_width = label().width()/m_labelbuttons.size();
+    int rounding_error = label().width() - m_labelbuttons.size()*button_width;
     //!! TODO: bevel
     //int border_width = m_labelbuttons.front()->window().borderWidth();
     int border_width =  m_labelbuttons.size() != 0 ?
@@ -720,13 +721,20 @@ void FbWinFrame::redrawTitle() {
 
     LabelList::iterator btn_it = m_labelbuttons.begin();
     LabelList::iterator btn_it_end = m_labelbuttons.end();
+    int extra = 0;
     for (unsigned int last_x = 0;
          btn_it != btn_it_end; 
-         ++btn_it, last_x += button_width + border_width) {        
+         ++btn_it, last_x += button_width + border_width + extra) {
         // since we add border width pixel we should remove
         // the same size for inside width so we can fit all buttons into label
+        if (rounding_error != 0) {
+            extra = 1;
+            --rounding_error;
+        } else
+            extra = 0;
+
         (*btn_it)->moveResize(last_x - border_width, - border_width,
-                              button_width, 
+                              button_width + extra, 
                               label().height() + border_width);
         if (isVisible())
             (*btn_it)->clear();

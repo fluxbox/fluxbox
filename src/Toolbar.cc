@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.125 2003/10/14 00:21:52 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.126 2003/10/31 10:37:09 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -832,7 +832,7 @@ void Toolbar::saveOnHead(int head) {
 
 void Toolbar::rearrangeItems() {
     if (m_resize_lock || screen().isShuttingdown() ||
-        m_item_list.size() == 0)
+        m_item_list.empty())
         return;
     // lock this
     m_resize_lock = true;
@@ -841,37 +841,57 @@ void Toolbar::rearrangeItems() {
     ItemList::iterator item_it_end = m_item_list.end();
     int fixed_width = 0; // combined size of all fixed items
     int fixed_items = 0; // number of fixed items
+    int relative_items = 0;
     for (; item_it != item_it_end; ++item_it) {
-        if ((*item_it)->type() == ToolbarItem::FIXED) {
+        if ((*item_it)->type() == ToolbarItem::FIXED && (*item_it)->active()) {
             fixed_width += (*item_it)->width() + (*item_it)->borderWidth()*2;
             fixed_items++;
+        } else if ((*item_it)->type() == ToolbarItem::RELATIVE && (*item_it)->active()) {
+            relative_items++;
         }
     }
-    // calculate what's going to be left over to the relative sized items
+
+    // calculate what's going to be le ft over to the relative sized items
     int relative_width = 0;
+    int rounding_error = 0;
     if (fixed_items == 0) // no fixed items, then the rest is the entire width
         relative_width = width();
     else {
-        const int relative_items = m_item_list.size() - fixed_items;
         if (relative_items == 0)
             relative_width = 0;
-        else // size left after fixed items / number of relative items
+        else { // size left after fixed items / number of relative items
             relative_width = (width() - fixed_width)/relative_items;
+            rounding_error = width() - fixed_width - relative_items*relative_width;
+        }
     }
-
     // now move and resize the items
-    int next_x = m_item_list.front()->borderWidth();
+    int next_x = 0;
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+        if (!(*item_it)->active()) {
+            (*item_it)->hide();
+            continue;
+        }
+
+        int borderW = (*item_it)->borderWidth();
+        (*item_it)->show();
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
-            (*item_it)->moveResize(next_x, 0, relative_width, height());
+            int extra = 0;
+            if (rounding_error != 0) { // distribute rounding error over all relatives
+                extra = 1;
+                --rounding_error;
+            }
+
+            (*item_it)->moveResize(next_x, -borderW, extra + relative_width-2*borderW, height());
         } else { // fixed size
-            (*item_it)->moveResize(next_x, 0,
+            (*item_it)->moveResize(next_x, -borderW,
                                    (*item_it)->width(), height()); 
         }
-        next_x += (*item_it)->width() + (*item_it)->borderWidth()*2;
+        next_x += (*item_it)->width() + borderW*2;
     }
     // unlock
     m_resize_lock = false;
+    frame.window.clear();
+
 }
 
 void Toolbar::deleteItems() {

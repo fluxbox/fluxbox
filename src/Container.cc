@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.6 2003/10/26 21:05:03 fluxgen Exp $
+// $Id: Container.cc,v 1.7 2003/10/31 10:37:09 rathnor Exp $
 
 #include "Container.hh"
 
@@ -30,7 +30,6 @@
 Container::Container(const FbTk::FbWindow &parent):
     FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), m_selected(0),
     m_update_lock(false) {
-
     FbTk::EventManager::instance()->add(*this, *this);
 }
 
@@ -177,18 +176,37 @@ void Container::repositionItems() {
 
     ItemList::iterator it = m_item_list.begin();
     const ItemList::iterator it_end = m_item_list.end();
-    int next_x = 0;
-    for (; it != it_end; ++it, next_x += max_width_per_client) {
+    int borderW = m_item_list.front()->borderWidth();
+
+    int rounding_error = width() - ((maxWidthPerClient() + borderW)* m_item_list.size() - borderW);
+
+    int next_x = -borderW; // zero so the border of the first shows
+        int extra = 0;
+    for (; it != it_end; ++it, next_x += max_width_per_client + borderW + extra) {
+        if (rounding_error != 0) {
+            --rounding_error;
+            extra = 1;
+        } else {
+            extra = 0;
+        }
         // resize each clients including border in size
-        (*it)->moveResize(next_x - (*it)->borderWidth(),
-                          -(*it)->borderWidth(), 
-                          max_width_per_client - (*it)->borderWidth(),
-                          height() + (*it)->borderWidth());
+        (*it)->moveResize(next_x,
+                          -borderW,
+                          max_width_per_client + extra,
+                          height());
         (*it)->clear();
     }
 }
 
 
 unsigned int Container::maxWidthPerClient() const {
-    return (size() == 0 ? width() : (width() + size()*m_item_list.front()->borderWidth())/size());
+    int count = size();
+    if (count == 0)
+        return width();
+    else {
+        int borderW = m_item_list.front()->borderWidth();
+        // there're count-1 borders to fit in with the windows
+        // -> 1 per window plus end
+        return (width() - (count - 1) * borderW) / count;
+    }
 }

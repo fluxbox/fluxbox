@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.239 2003/10/28 17:39:59 rathnor Exp $
+// $Id: Screen.cc,v 1.240 2003/10/31 10:37:09 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -328,16 +328,16 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     Fluxbox *fluxbox = Fluxbox::instance();
+    // load this screens resources
+    fluxbox->load_rc(*this);
+
+    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
+
     // setup image cache engine
     m_image_control.reset(new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
                                                  fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
     root_colormap_installed = true;
-
-    // load this screens resources
-    fluxbox->load_rc(*this);
-
-    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
 
 #ifdef SLIT
     if (slit()) // this will load theme and reconfigure slit
