@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.2 2003/01/10 01:02:02 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.3 2003/04/28 22:27:29 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -97,8 +97,9 @@ TextureRender::~TextureRender() {
 
 
 Pixmap TextureRender::render(const FbTk::Texture &texture) {
-
-    if (texture.type() & FbTk::Texture::PARENTRELATIVE)
+    if (texture.pixmap().drawable() != 0)
+        return renderPixmap(texture);
+    else if (texture.type() & FbTk::Texture::PARENTRELATIVE)
         return ParentRelative;
     else if (texture.type() & FbTk::Texture::SOLID)
         return renderSolid(texture);
@@ -257,6 +258,18 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
 
 }
 
+Pixmap TextureRender::renderPixmap(const FbTk::Texture &src_texture) {
+    if (width != src_texture.pixmap().width() ||
+        height != src_texture.pixmap().height()) {
+        // copy src_texture's pixmap and 
+        // scale to fit our size
+        FbPixmap new_pm(src_texture.pixmap());
+        new_pm.scale(width, height);
+        return new_pm.release();
+    }
+    // return copy of pixmap
+    return FbPixmap(src_texture.pixmap()).release();
+}
 
 XImage *TextureRender::renderXImage() {
     Display *disp = FbTk::App::instance()->display();
@@ -488,12 +501,12 @@ XImage *TextureRender::renderXImage() {
             nberr = terr;
         }
 
-        delete [] rerr;
-        delete [] gerr;
-        delete [] berr;
-        delete [] nrerr;
-        delete [] ngerr;
-        delete [] nberr;
+            delete [] rerr;
+            delete [] gerr;
+            delete [] berr;
+            delete [] nrerr;
+            delete [] ngerr;
+            delete [] nberr;
 #endif // ORDEREDPSUEDO
 
         } break;

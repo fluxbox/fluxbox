@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.hh,v 1.1 2003/01/09 21:09:49 fluxgen Exp $
+// $Id: TextureRender.hh,v 1.2 2003/04/28 22:27:29 fluxgen Exp $
 
 #ifndef FBTK_TEXTURRENDER_HH
 #define FBTK_TEXTURRENDER_HH
@@ -51,7 +51,8 @@ public:
     Pixmap renderSolid(const FbTk::Texture &src_texture);
     /// render gradient texture to pixmap
     Pixmap renderGradient(const FbTk::Texture &src_texture);
-
+    /// scales and renders a pixmap
+    Pixmap renderPixmap(const FbTk::Texture &src_texture);
 private:
     /**
        Render to pixmap
