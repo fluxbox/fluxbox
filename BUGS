@@ -2,6 +2,8 @@ Known bugs and missing features that will be fixed in future version:
 
 bugs:
 
+* MenuAlpha (at least) isn't 'per-screen' - takes the value of the highest 
+  numbered screen.
 * Window handle is invisible sometimes.
 * KDE support needs attention (e.g. klipper).
 * Some menus don't close when you click on items.
