@@ -1,6 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/15:
+   * Fixed new height resource for toolbar (Henrik)
+     This will override the styles font height
+     session.screen0.toolbar.height
+   * Added support for system tray (_NET_SYSTEM_TRAY)  (Henrik)
+     SystemTray.hh/cc, Toolbar.cc
 *03/08/13:
+   * Fixed shape bug when switching between shaped themes and non shaped (Henrik)
+     Shape.cc
    * Fixed default values for FbTk::Texture theme items (Henrik)
      Theme.cc
    * Added border theme items to ToolbarItems (Henrik)
