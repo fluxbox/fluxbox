@@ -29,16 +29,22 @@ DEFAULT_STYLE=$(pkgdatadir)/styles/Clean
 DEFAULT_KEYSFILE=$(pkgdatadir)/keys
 DEFAULT_INITFILE=
 
-AM_CPPFLAGS= -Wall @CPPFLAGS@ \
--DLOCALEPATH=\"$(pkgdatadir)/nls\" \
--DDEFAULTMENU=\"$(DEFAULT_MENU)\" \
--DDEFAULTSTYLE=\"$(DEFAULT_STYLE)\" \
--DDEFAULTKEYSFILE=\"$(DEFAULT_KEYSFILE)\"\
--DDEFAULT_INITFILE=\"$(pkgdatadir)/init\"\
--IFbTk
+AM_CPPFLAGS= -Wall @CPPFLAGS@ -IFbTk
 
 bin_PROGRAMS= fluxbox
+BUILT_SOURCES = defaults.hh
+defaults.hh: Makefile
+	echo '// This file is generated from makefile. Do not edit!' > defaults.hh
+	echo '#define DEFAULTMENU "$(DEFAULTMENU)"' >> defaults.hh
+	echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"' >> defaults.hh
+	echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"' >> defaults.hh
+	echo '#define DEFAULT_INITFILE "$(pkgdatadir)/init"' >> defaults.hh
+	echo '#define LOCALEPATH "$(pkgdatadir)/nls"' >> defaults.hh
 
+# some extra deps for I18n and fluxbox
+
+I18n.$(OBJEXT): defaults.hh
+fluxbox.$(OBJEXT): defaults.hh
 
 if NEWWMSPEC
 newwmspec_SOURCE= Ewmh.hh Ewmh.cc
