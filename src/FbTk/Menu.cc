@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.52 2004/01/08 22:07:00 fluxgen Exp $
+// $Id: Menu.cc,v 1.53 2004/01/16 11:02:54 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -253,9 +253,6 @@ void Menu::lower() {
 }
 
 void Menu::nextItem() {
-    if (which_press >= 0 && which_press == static_cast<signed>(menuitems.size() - 1))
-        return;
-
     int old_which_press = which_press;
 
     if (old_which_press >= 0 && 
@@ -264,26 +261,24 @@ void Menu::nextItem() {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
-            menuitems[old_which_press]->submenu()->menu.window.hide();
+            menuitems[old_which_press]->submenu()->internal_hide();
         }
         drawItem(old_which_press, false, true, true);
     }
 
     // restore old in case we changed which_press
     which_press = old_which_press;
-    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()))
+    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size() - 1))
         which_press = 0;
-    else if (which_press > 0 && which_press < static_cast<signed>(menuitems.size() - 1))
+    else
         which_press++;
 
 
     if (menuitems[which_press] == 0)
         return;
 
-    if (menuitems[which_press]->submenu())
-        drawSubmenu(which_press);
-    else
-        drawItem(which_press, true, true, true);
+
+    drawItem(which_press, true, true, true);
 
 }
 
@@ -295,24 +290,23 @@ void Menu::prevItem() {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
-            menuitems[old_which_press]->submenu()->menu.window.hide();            
+            menuitems[old_which_press]->submenu()->internal_hide();            
         }
         drawItem(old_which_press, false, true, true);
     }
     // restore old in case we changed which_press
     which_press = old_which_press;
 
-    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()))
-        which_press = 0;
+    if (which_press <= 0 || which_press >= static_cast<signed>(menuitems.size()))
+        which_press = menuitems.size() - 1;
     else if (which_press - 1 >= 0)
         which_press--;
 
-    if (menuitems[which_press] != 0) {
-        if (menuitems[which_press]->submenu())
-            drawSubmenu(which_press);
-        else
-            drawItem(which_press, true, true, true);
-    }
+    if (menuitems[which_press] == 0)
+        return;
+
+
+    drawItem(which_press, true, true, true);
 
 }
 
@@ -324,6 +318,10 @@ void Menu::enterSubmenu() {
     if (submenu == 0)
         return;
 
+    if (submenu->menuitems.size() == 0)
+        return;
+
+    drawSubmenu(which_press);
     submenu->grabInputFocus();
     submenu->which_press = -1; // so we land on 0 after nextItem()
     submenu->nextItem();
@@ -335,11 +333,14 @@ void Menu::enterParent() {
 
     Menu *submenu = menuitems[which_press]->submenu();
     if (submenu)
-        submenu->menu.window.hide();
+        submenu->internal_hide();
 
     drawItem(which_press, false, true, true);
     which_press = -1; // dont select any in this 
-    // return focus to parent but keep this window open
+    // hide self
+    visible = false;
+    menu.window.hide();
+    // return focus to parent
     parent()->grabInputFocus();
 }
 
@@ -1324,7 +1325,8 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Return:
         // send fake button 1 click
-        if (which_press >= 0 && which_press < static_cast<signed>(menuitems.size())) {
+        if (which_press >= 0 && which_press < static_cast<signed>(menuitems.size()) &&
+            isItemEnabled(which_press)) {
             menuitems[which_press]->click(1, event.time);
             itemSelected(1, which_press);
             m_need_update = true;
