@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.145 2003/05/13 14:05:58 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.146 2003/05/14 12:10:54 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -361,13 +361,13 @@ static Window last_bad_window = None;
 
 static int handleXErrors(Display *d, XErrorEvent *e) {
 #ifdef DEBUG
-    
+    /*    
     char errtxt[128];
     
     XGetErrorText(d, e->error_code, errtxt, 128);
     cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<(int)e->error_code<<") opcodes "<<
         (int)e->request_code<<"/"<<(int)e->minor_code<<" resource 0x"<<hex<<(int)e->resourceid<<dec<<endl;
-
+    */
 #endif // !DEBUG
 
     if (e->error_code == BadWindow)
@@ -1160,7 +1160,8 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         case Keys::WORKSPACE6:
             mousescreen->changeWorkspaceID(5);
             break;
-        case Keys::WORKSPACE7:            mousescreen->changeWorkspaceID(6);
+        case Keys::WORKSPACE7:            
+            mousescreen->changeWorkspaceID(6);
             break;
         case Keys::WORKSPACE8:
             mousescreen->changeWorkspaceID(7);
@@ -1626,11 +1627,9 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         WinClient::WinClientSubj *subj = dynamic_cast<WinClient::WinClientSubj *>(changedsub);
         WinClient &client = subj->winClient();
 
-        if (client.fbwindow()) {
-            BScreen &screen = client.fbwindow()->screen();
-            screen.updateNetizenWindowDel(client.window());
-            screen.removeClient(client);
-        }
+        BScreen &screen = client.screen();
+        screen.updateNetizenWindowDel(client.window());
+        screen.removeClient(client);
 
         removeWindowSearch(client.window());        
         //!! TODO
