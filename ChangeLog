@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/16:
+  * Fix restart command not reading its args (Simon)
+    MenuCreator.cc
 *04/09/12:
   * Preliminary support for Composite extension (Simon)
     - Relies on external compositing manager using _NET_WM_WINDOW_OPACITY

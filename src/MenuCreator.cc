@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.15 2004/09/12 00:31:11 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.16 2004/09/16 14:08:46 rathnor Exp $
 
 #include "MenuCreator.hh"
 
@@ -278,24 +278,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
             screen->saveMenu(*submenu);
 
     } // end of submenu
-    else if (str_key == "restart") {
-        FbTk::RefCount<FbTk::Command> restart_fb(CommandParser::instance().
-                                                 parseLine("restart"));
-        if (str_label.empty())
-            menu.insert(_FBTEXT(Menu, Restart, "Restart", "Restart Command"), restart_fb);
-        else
-            menu.insert(str_label.c_str(), restart_fb);
-    } // end of restart
-    else if (str_key == "reconfig") { // reconf
-        FbTk::RefCount<FbTk::Command> 
-            reconfig_fb_cmd(CommandParser::instance().
-                            parseLine("reconfigure"));
-        if (str_label.empty())
-            menu.insert(_FBTEXT(Menu, Reconfigure, "Reload Config", "Reload all the configs"), reconfig_fb_cmd);
-        else 
-            menu.insert(str_label.c_str(), reconfig_fb_cmd);
-
-    } else if (str_key == "stylesdir" || str_key == "stylesmenu") {
+    else if (str_key == "stylesdir" || str_key == "stylesmenu") {
         createStyleMenu(menu, str_label, 
                         str_key == "stylesmenu" ? str_cmd : str_label);
     } // end of stylesdir
@@ -321,8 +304,19 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         // we need to attach command with arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
         FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
-        if (*command != 0)
+        if (*command != 0) {
+            // special NLS default labels
+            if (str_label.empty()) {
+                if (str_key == "reconfig" || str_key == "reconfigure") {
+                    menu.insert(_FBTEXT(Menu, Reconfigure, "Reload Config", "Reload all the configs"), command);
+                    return;
+                } else if (str_key == "restart") {
+                    menu.insert(_FBTEXT(Menu, Restart, "Restart", "Restart Command"), command);
+                    return;
+                }
+            }
             menu.insert(str_label.c_str(), command);
+        }
     }
     if (menu.numberOfItems() != 0) {
         FbTk::MenuItem *item = menu.find(menu.numberOfItems() - 1);
