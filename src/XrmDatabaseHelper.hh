@@ -26,6 +26,7 @@
 #ifndef _XRMDATABASEHELPER_HH_
 #define _XRMDATABASEHELPER_HH_
 
+#include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 class XrmDatabaseHelper
