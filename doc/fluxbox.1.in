@@ -1065,34 +1065,6 @@ than the existing group size get resized automatically) and can be moved as a
 group around the desktop or to a different workspace.
 Default value is
 .IR True .
-.TP
-.B session.screen0.tab.placement:
-Tells Fluxbox where to put the tab on the window.  This can be customised
-through Fluxbox's Configuration/Tab Placement menu.  Values are
-.IR Top
-.IR Bottom
-.IR Left
-.IR Right
-.TP
-.B session.screen0.tab.alignment:
-Tells Fluxbox how to align tabs to the window.  Values are
-.IR Top
-.IR Bottom
-.IR Left
-.IR Right
-.IR Center
-.IR Relative
-This should also be done via the Configuration/Tab Placement menu.
-.TP
-.B session.screen0.tab.rotatevertical:
-If True, will rotate text on the tab so it is readable on vertically-
-placed tabs.  Once again, use the Configuration/Tab Placement menu.
-.TP
-.B session.screen0.tab.width:
-Width of window tabs in pixels.
-.TP
-.B session.screen0.tab.height:
-Height of window tabs in pixels.
 .PP
 When running Fluxbox in a multiple desktop environment the
 .B screen0
