@@ -46,7 +46,7 @@
 # _NET_CURRENT_DESKTOP
 
 # The wallpapersetter is selected in this order
-wpsetters=${wpsetters:=Esetroot wmsetbg feh chbg display qiv xv xsri xli xsetbg} # broken icewmbg'
+wpsetters=${wpsetters:=Esetroot wmsetbg feh hsetroot chbg display qiv xv xsri xli xsetbg} # broken icewmbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 
 
@@ -419,6 +419,13 @@ case $WPSETTER in
         tile='--bg-tile'
         center='--bg-center'
         aspect=$full
+        debugstory=$standardok
+        ;;
+    hsetroot)
+        full='-fill'
+        tile='-tile'
+        center='-center'
+        aspect='-full'
         debugstory=$standardok
         ;;
     icewmbg)
