@@ -1,15 +1,14 @@
-News in 0.9.1:
-   * MRU (Most Recently Used) window cycling
-   * Embedded tabs in titlebar
-   * Toolbar modes
-     * Off (no toolbar visible)
-	 * None (no icons and no windows in toolbar)
-	 * Icons (icons on all workspaces)
-	 * Workspace Icons (icons on current workspace)
-	 * Workspace (both icons and windows on current workspace)
-	 * All Windows (both icons and windows on all workspaces)
+News in 0.9.2:
+    * Transparent menus
+    * Pixmap themes
+      * New theme items:
+        window.<button name>.unfocus.pixmap
+        window.<button name>.pixmap
+        window.<button name>.pressed.pixmap
+        See http://fluxbox.org/version-0.9.php for more info
+    * Remember..something
 Bug fixes: 
-   * [ 721107 ] Window resizing problem in a mozilla/phoenix window
-   * Toolbar and Slit now properly save layer when changed
+    * Slit autohide bug
+    * and some other minor bugs
 
 See ChangeLog for more details
