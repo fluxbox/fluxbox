@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.67 2004/06/14 12:24:23 fluxgen Exp $
+// $Id: Menu.cc,v 1.68 2004/06/14 16:09:48 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -915,44 +915,50 @@ int Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_t
         
     } 
 	
-    
-    if (item->isToggleItem() && item->isSelected()) {
-        if (theme().selectedPixmap().pixmap().drawable()) {
-            // enable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         theme().selectedPixmap().mask().drawable());
-            XSetClipOrigin(FbTk::App::instance()->display(),
-                           gc, sel_x, item_y);
-            // copy bullet pixmap to frame
-            m_frame_pm.copyArea(theme().selectedPixmap().pixmap().drawable(),
-                                gc,
-                                0, 0,
-                                sel_x, item_y,
-                                theme().selectedPixmap().width(),
-                                theme().selectedPixmap().height());
-            // disable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         None);
-        } else {
-            if (menu.sel_pixmap) {
-                m_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
-                                    theme().hiliteGC().gc(), 
-                                    0, 0,                                 
-                                    sel_x, sel_y,
-                                    half_w, half_w);
-            } else {
-                m_frame_pm.fillRectangle(theme().hiliteGC().gc(),
-                                         sel_x, sel_y, half_w, half_w);
-            }
-        }
-        
-    }
 
     if (render_trans) {
         renderTransp(item_x, item_y,
                      width(), theme().itemHeight()); 
+    }
+    //!!
+    //!! TODO: Move this out to MenuItem
+    //!! current problem: menu.sel_pixmap needs a image control instance
+    //!! to be generated :(
+    //!!
+    if (item->isToggleItem() && item->isSelected()) {
+        Display *disp = FbTk::App::instance()->display();
+        if (theme().selectedPixmap().pixmap().drawable()) {
+
+            // enable clip mask
+            XSetClipMask(disp,
+                         gc,
+                         theme().selectedPixmap().mask().drawable());
+            XSetClipOrigin(disp,
+                           gc, sel_x, item_y);
+            // copy bullet pixmap to frame
+            m_real_frame_pm.copyArea(theme().selectedPixmap().pixmap().drawable(),
+                                     gc,
+                                     0, 0,
+                                     sel_x, item_y,
+                                     theme().selectedPixmap().width(),
+                                     theme().selectedPixmap().height());
+            // disable clip mask
+            XSetClipMask(disp,
+                         gc,
+                         None);
+        } else {
+            if (menu.sel_pixmap) {
+                m_real_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
+                                         theme().hiliteGC().gc(), 
+                                         0, 0,                                 
+                                         sel_x, sel_y,
+                                         half_w, half_w);
+            } else {
+                m_real_frame_pm.fillRectangle(theme().hiliteGC().gc(),
+                                              sel_x, sel_y, half_w, half_w);
+            }
+        }
+        
     }
 
     item->draw(m_real_frame_pm, theme(), highlight, 
