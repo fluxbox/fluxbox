@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.65 2002/08/30 14:03:31 fluxgen Exp $
+// $Id: Screen.cc,v 1.66 2002/09/07 20:22:08 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -220,9 +220,11 @@ toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altsc
 BScreen::BScreen(ResourceManager &rm, Fluxbox *b, 
 	const string &screenname, const string &altscreenname,
 	int scrn) : ScreenInfo(b, scrn),
-#ifdef GNOME
-gnome_win(None),
-#endif
+m_clientlist_sig(*this),  // client signal
+m_workspacecount_sig(*this), // workspace count signal
+m_workspacenames_sig(*this), // workspace names signal 
+m_currentworkspace_sig(*this), // current workspace signal
+
 theme(0),
 resource(rm, screenname, altscreenname)
 {
@@ -279,9 +281,6 @@ resource(rm, screenname, altscreenname)
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), colormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
-	#ifdef GNOME
-	initGnomeAtoms();
-	#endif 
 
 	#ifdef NEWWMSPEC
 	Atom netwmsupported[] = {
@@ -446,6 +445,8 @@ resource(rm, screenname, altscreenname)
 				if (!win->isManaged()) {
 					delete win;
 					win = 0;
+				} else {
+					Fluxbox::instance()->attachSignals(*win);
 				}
 				
 				if (win) {
@@ -475,9 +476,6 @@ namespace {
 }
 
 BScreen::~BScreen() {
-	#ifdef GNOME
-	XDestroyWindow(getBaseDisplay()->getXDisplay(), gnome_win);
-	#endif
 	if (! managed) return;
 
 	if (geom_pixmap != None)
@@ -666,30 +664,7 @@ void BScreen::removeWorkspaceNames() {
 }
 
 void BScreen::updateWorkspaceNamesAtom() {
-
-#ifdef GNOME	
-	XTextProperty	text;
-	int number_of_desks = workspaceNames.size();
-	
-	char s[1024];
-	char *names[number_of_desks];		
-	
-	for (int i = 0; i < number_of_desks; i++) {		
-		sprintf(s, "Desktop %i", i);
-		names[i] = new char[strlen(s) + 1];
-		strcpy(names[i], s);
-	}
-	
-	if (XStringListToTextProperty(names, number_of_desks, &text)) {
-		XSetTextProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-			 &text, FbAtoms::instance()->getGnomeWorkspaceNamesAtom());
-		XFree(text.value);
-	}
-	
-	for (int i = 0; i < number_of_desks; i++)
-		delete names[i];			
-
-#endif
+	m_workspacenames_sig.notify();
 
 }
 
@@ -899,21 +874,15 @@ void BScreen::removeNetizen(Window w) {
 
 
 void BScreen::updateNetizenCurrentWorkspace() {
-	#ifdef NEWWMSPEC
+#ifdef NEWWMSPEC
 	//update _NET_WM_CURRENT_DESKTOP
 	int workspace = getCurrentWorkspaceID();
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
 		getBaseDisplay()->getNETCurrentDesktopAtom(), XA_CARDINAL, 32, PropModeReplace,
 			(unsigned char *)&workspace, 1);
-	#endif
-	#ifdef GNOME
-	//update _WIN_WORKSPACE
-	int gnome_workspace = getCurrentWorkspaceID();
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		FbAtoms::instance()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32, PropModeReplace,
-			(unsigned char *)&gnome_workspace, 1);
-	updateGnomeClientList();
-	#endif
+#endif // NEWWMSPEC
+
+	 m_currentworkspace_sig.notify();
 	
 	Netizens::iterator it = netizenList.begin();
 	Netizens::iterator it_end = netizenList.end();
@@ -931,22 +900,15 @@ void BScreen::updateNetizenWorkspaceCount() {
 	for (; it != it_end; ++it) {
 		(*it)->sendWorkspaceCount();
 	}
-	#ifdef NEWWMSPEC
+#ifdef NEWWMSPEC
 	//update _NET_WM_NUMBER_OF_DESKTOPS
 	int numworkspaces = getCount()-1;
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
 		getBaseDisplay()->getNETNumberOfDesktopsAtom(), XA_CARDINAL, 32, PropModeReplace,
 			(unsigned char *)&numworkspaces, 1);
-	#endif
-	
-	#ifdef GNOME 
-	{
-	int numworkspaces = getCount();
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		FbAtoms::instance()->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32, PropModeReplace,
-			(unsigned char *)&numworkspaces, 1);
-	}	
-	#endif
+#endif // NEWWMSPEC
+
+	m_workspacecount_sig.notify();	
 	
 }
 
@@ -969,9 +931,8 @@ void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
 	for (; it != it_end; ++it) {
 		(*it)->sendWindowAdd(w, p);
 	}
-	#ifdef GNOME
-	updateGnomeClientList();
-	#endif
+
+	m_clientlist_sig.notify();
 	
 }
 
@@ -982,9 +943,8 @@ void BScreen::updateNetizenWindowDel(Window w) {
 	for (; it != it_end; ++it) {
 		(*it)->sendWindowDel(w);
 	}
-	#ifdef GNOME
-	updateGnomeClientList();
-	#endif
+	
+	m_clientlist_sig.notify();
 }
 
 
@@ -1760,74 +1720,4 @@ FluxboxWindow* BScreen::useAutoGroupWindow() {
 	auto_group_window = 0;
 	return w ? Fluxbox::instance()->searchWindow(w) : 0;
 }
-
-#ifdef GNOME
-void BScreen::initGnomeAtoms() {
-
-	/* create the GNOME window */
-	gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
-		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
-	FbAtoms *fba = FbAtoms::instance();
-	/* supported WM check */
-	 XChangeProperty(getBaseDisplay()->getXDisplay(),
-		getRootWindow(), fba->getGnomeSupportingWMCheckAtom(), 
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-
-	XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
-		fba->getGnomeSupportingWMCheckAtom(), 
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-
-	Atom gnomeatomlist[] = {
-		fba->getGnomeWorkspaceAtom(),
-		fba->getGnomeWorkspaceCountAtom(),
-		fba->getGnomeStateAtom(),
-		fba->getGnomeWorkspaceNamesAtom(),
-		fba->getGnomeHintsAtom(),
-		fba->getGnomeClientListAtom(),
-//		getBaseDisplay()->getGnomeLayerAtom(), // not supported yet
-	};
-
-	//list atoms that we support
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(), 
-		fba->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
-		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
-
-}
-
-void BScreen::updateGnomeClientList() {
-	int num=0;
-	Workspaces::iterator workspace_it = workspacesList.begin();
-	Workspaces::iterator workspace_it_end = workspacesList.end();
-	for (; workspace_it != workspace_it_end; ++workspace_it) {
-		num += (*workspace_it)->getWindowList().size();
-	}
-	//int num = getCurrentWorkspace()->getWindowList().size();
-	
-	Window *wl = new Window[num];
-	//start the iterator from begining
-	workspace_it = workspacesList.begin();
-	int win=0;
-	for (; workspace_it != workspace_it_end; ++workspace_it) {
-	
-		// Fill in array of window ID's
-		Workspace::Windows::const_iterator it = (*workspace_it)->getWindowList().begin();
-		Workspace::Windows::const_iterator it_end = (*workspace_it)->getWindowList().end();		
-		for (; it != it_end; ++it) {
-			//check if the window don't want to be visible in the list
-			if (! ( (*it)->getGnomeHints() & FluxboxWindow::WIN_STATE_HIDDEN) ) {
-				wl[win++] = (*it)->getClientWindow();
-			}
-		}
-	}
-	//number of windows to show in client list
-	num = win;
-	XChangeProperty(getBaseDisplay()->getXDisplay(), 
-		getRootWindow(), FbAtoms::instance()->getGnomeClientListAtom(), XA_CARDINAL, 32,
-		PropModeReplace, (unsigned char *)wl, num);
-	
-	if (wl)
-		delete wl;
-}
-
-#endif //!GNOME
 

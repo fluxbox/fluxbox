@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.43 2002/08/30 14:03:31 fluxgen Exp $
+// $Id: Screen.hh,v 1.44 2002/09/07 20:19:13 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -64,6 +64,9 @@
 
 class BScreen : public ScreenInfo {
 public:
+	typedef std::vector<Workspace *> Workspaces;
+	typedef std::vector<std::string> WorkspaceNames;
+	
 	BScreen(ResourceManager &rm, Fluxbox *b, 
 		const std::string &screenname, const std::string &altscreenname,
 		int scrn);
@@ -133,8 +136,20 @@ public:
 	inline unsigned int getIconCount() const { return iconList.size(); }
 	inline const Icons &getIconList() const { return iconList; }
 	inline Icons &getIconList() { return iconList; }
+	const Workspaces &getWorkspacesList() const { return workspacesList; }
+	const WorkspaceNames &getWorkspaceNames() const { return workspaceNames; }
+
+	/// client list signal
+	FbTk::Subject &clientListSig() { return m_clientlist_sig; } 
+	/// workspace count signal
+	FbTk::Subject &workspaceCountSig() { return m_workspacecount_sig; }
+	/// workspace names signal 
+	FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
+	/// current workspace signal
+	FbTk::Subject &currentWorkspaceSig() { return m_currentworkspace_sig; }
+			
 	/// @return the resource value of number of workspace
-	inline int getNumberOfWorkspaces() const { return *resource.workspaces; }
+	inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 	inline Toolbar::Placement getToolbarPlacement() const { return *resource.toolbar_placement; }
 #ifdef XINERAMA
 	inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
@@ -255,13 +270,27 @@ public:
 	// prevFocus/nextFocus option bits
 	enum { CYCLESKIPLOWERTABS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
 				CYCLEDEFAULT = 0x00 };
+
+	class ScreenSubject:public FbTk::Subject {
+	public:
+		ScreenSubject(BScreen &scr):m_scr(scr) { }
+		const BScreen &screen() const { return m_scr; }
+		BScreen &screen() { return m_scr; }
+	private:
+		BScreen &m_scr;
+	};
+	
 private:
 	bool doSkipWindow(const FluxboxWindow *w, int options);
-	#ifdef GNOME
-	void initGnomeAtoms();
-	void updateGnomeClientList();
-	Window gnome_win;
-	#endif
+
+	ScreenSubject 
+		m_clientlist_sig,  ///< client signal
+		m_workspacecount_sig, ///< workspace count signal
+		m_workspacenames_sig, ///< workspace names signal 
+		m_currentworkspace_sig; ///< current workspace signal
+		
+		
+	
 	Theme *theme;
 	
 	Bool root_colormap_installed, managed, geom_visible;
@@ -294,8 +323,8 @@ private:
 	unsigned int geom_w, geom_h;
 	unsigned long event_mask;
 
-    typedef std::vector<std::string> WorkspaceNames;
-    typedef std::vector<Workspace *> Workspaces;
+    
+    
 
     WorkspaceNames workspaceNames;
     Workspaces workspacesList;
