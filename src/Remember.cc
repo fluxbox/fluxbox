@@ -21,18 +21,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.32 2003/12/11 15:23:14 fluxgen Exp $
+// $Id: Remember.cc,v 1.33 2003/12/19 00:48:41 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
-#include "StringUtil.hh"
 #include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
 #include "FbMenu.hh"
-#include "MenuItem.hh"
-#include "App.hh"
 #include "FbCommands.hh"
+#include "fluxbox.hh"
+
+#include "FbTk/StringUtil.hh"
+#include "FbTk/MenuItem.hh"
+#include "FbTk/App.hh"
+
 
 #include <X11/Xlib.h>
 

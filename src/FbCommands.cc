@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.18 2003/12/03 22:13:21 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.19 2003/12/19 00:47:30 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -115,27 +115,25 @@ void ShowRootMenuCmd::execute() {
     if (screen == 0)
         return;
 
-    if (screen->getRootmenu()) {
+    Window root_ret;
+    Window window_ret;
 
-      Window root_ret;
-      Window window_ret;
+    int rx, ry;
+    int wx, wy;
+    unsigned int mask;
 
-      int rx, ry;
-      int wx, wy;
-      unsigned int mask;
+    if ( XQueryPointer(FbTk::App::instance()->display(),
+                       screen->rootWindow().window(), &root_ret, &window_ret,
+                       &rx, &ry, &wx, &wy, &mask) ) {
 
-      if ( XQueryPointer(FbTk::App::instance()->display(),
-            screen->rootWindow().window(), &root_ret, &window_ret,
-            &rx, &ry, &wx, &wy, &mask) ) {
-
-        if ( rx - (screen->getRootmenu()->width()/2) > 0 )
-          rx-= screen->getRootmenu()->width()/2;
-        screen->getRootmenu()->move(rx, ry);
-      }
-
-      screen->getRootmenu()->show();
-      screen->getRootmenu()->grabInputFocus();
+        if ( rx - (screen->getRootmenu().width()/2) > 0 )
+            rx-= screen->getRootmenu().width()/2;
+        screen->getRootmenu().move(rx, ry);
     }
+
+    screen->getRootmenu().show();
+    screen->getRootmenu().grabInputFocus();
+
 }
 
 void ShowWorkspaceMenuCmd::execute() {
@@ -143,26 +141,26 @@ void ShowWorkspaceMenuCmd::execute() {
     if (screen == 0)
         return;
 
-    if (screen->getWorkspacemenu()) {
+ 
 
-      Window root_ret;
-      Window window_ret;
+    Window root_ret;
+    Window window_ret;
 
-      int rx, ry;
-      int wx, wy;
-      unsigned int mask;
+    int rx, ry;
+    int wx, wy;
+    unsigned int mask;
 
-      if ( XQueryPointer(FbTk::App::instance()->display(),
-            screen->rootWindow().window(), &root_ret, &window_ret,
-            &rx, &ry, &wx, &wy, &mask) ) {
+    if ( XQueryPointer(FbTk::App::instance()->display(),
+                       screen->rootWindow().window(), &root_ret, &window_ret,
+                       &rx, &ry, &wx, &wy, &mask) ) {
 
-        if ( rx - (screen->getWorkspacemenu()->width()/2) > 0 )
-          rx-= screen->getWorkspacemenu()->width()/2;
-        screen->getWorkspacemenu()->move(rx, ry);
-      }
-      screen->getWorkspacemenu()->show();
-      screen->getWorkspacemenu()->grabInputFocus();
+        if ( rx - (screen->getWorkspacemenu().width()/2) > 0 )
+            rx-= screen->getWorkspacemenu().width()/2;
+        screen->getWorkspacemenu().move(rx, ry);
     }
+    screen->getWorkspacemenu().show();
+    screen->getWorkspacemenu().grabInputFocus();
+ 
 }
 
 void SetWorkspaceNameCmd::execute() {
