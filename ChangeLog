@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/09:
+  * tidy+replace qiv with display in screenshot, add jpg option (Han)
+    fluxbox-generate_menu.in
   * Added forgotten [macrocmd] to menuitems (Mathias)
     MenuCreator.cc
   * Cleanup of code (Mathias)

@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.28 2004/08/22 04:29:16 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.29 2004/09/09 15:25:26 rathnor Exp $
 
 #
 # Portability notes:
@@ -152,7 +152,7 @@ append() {
             echo >> ${MENUFILENAME}
         fi
     else
-        echo "      $*" >> ${MENUFILENAME}        
+        echo "      $*" >> ${MENUFILENAME}
     fi
 }
 
@@ -1257,7 +1257,8 @@ append_submenu "${FBSETTINGSMENU}"
             "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
             find_it xmessage append \
             "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
-        find_it import append "[exec] (${SCREENSHOT}) {import screenshot.png && qiv -W 50 screenshot.png}"
+        find_it import append "[exec] (${SCREENSHOT} - JPG) {import screenshot.jpg && display -resize 50% screenshot.jpg}"
+        find_it import append "[exec] (${SCREENSHOT} - PNG) {import screenshot.png && display -resize 50% screenshot.png}"
         find_it fbrun append "[exec] (${RUNCOMMAND}) {fbrun $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
