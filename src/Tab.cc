@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.37 2002/10/29 16:03:15 fluxgen Exp $
+// $Id: Tab.cc,v 1.38 2002/11/12 16:13:24 rathnor Exp $
 
 #include "Tab.hh"
 
@@ -389,7 +389,7 @@ void Tab::draw(bool pressed) const {
 			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
 			l += (dx * 4);
 
-			if (l < m_size_w)
+			if (l < m_size_w || dlen == 0)
 				break;
 		}
 	}
