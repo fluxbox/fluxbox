@@ -268,8 +268,7 @@ Changes for 0.9.6:
      Subject.cc
    * Fixed minor bug in FbTk::Button (Henrik)
      It did a execute() and then a updateTransparent (in buttonRelease), 
-     which could 
-     be dangerous if the execute() killed the object
+     which could be dangerous if the execute() killed the object
      Button.cc
    * Fix when selecting + unneeded submenu redraw on enter+motion (Simon)
      Menu.cc
