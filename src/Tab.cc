@@ -769,10 +769,26 @@ void Tab::motionNotifyEvent(XMotionEvent *me) {
 // of currentchain. 
 //-----------------------------------
 Tab *Tab::getFirst(Tab *current) {
-	if (current==0)
+	if (!current)
 		return 0;
-	for (; current->m_prev != 0; current = current->m_prev);
-	return current;
+		
+	Tab *i=current;
+	
+	for (; i->m_prev != 0; i = i->m_prev);
+	return i;
+}
+
+//-------------- getFirst() ---------
+// Returns the first Tab in the chain 
+// of currentchain. 
+//-----------------------------------
+Tab *Tab::getLast(Tab *current) {
+	if (!current)
+		return 0;
+	Tab *i=current;
+	
+	for (; i->m_next != 0; i = i->m_next);
+	return i;
 }
 
 //-------------- insert ------------
