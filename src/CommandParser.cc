@@ -20,14 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandParser.cc,v 1.3 2003/07/01 09:04:52 fluxgen Exp $
+// $Id: CommandParser.cc,v 1.4 2003/08/11 13:47:51 fluxgen Exp $
 
 #include "CommandParser.hh"
 
 #include "StringUtil.hh"
 
 #include <vector>
-#include <iostream>
 using namespace std;
 
 namespace {
@@ -74,10 +73,6 @@ FbTk::Command *CommandParser::parseLine(const std::string &line) {
     }
 
     // now we have parsed command and arguments
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): command = ["<<
-      command<<"] arguments=["<<arguments<<"]"<<endl;
-#endif // DEBUG
 
     command = FbTk::StringUtil::toLower(command);
 
