@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.4 2003/01/10 02:16:29 fluxgen Exp $
+// $Id: Button.cc,v 1.5 2003/02/23 16:52:17 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -42,7 +42,7 @@ Button::Button(int screen_num, int x, int y,
 }
 
 Button::Button(const FbWindow &parent, int x, int y, 
-               size_t width, size_t height):
+               unsigned int width, unsigned int height):
     m_win(parent, x, y, width, height,
           ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.6 2003/02/03 13:39:57 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.7 2003/02/23 16:52:16 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -157,9 +157,10 @@ void FbWindow::updateGeometry() {
         return;
 
     Window root;
-    size_t border_width, depth;
+    unsigned int border_width, depth;
     XGetGeometry(s_display, m_window, &root, &m_x, &m_y,
-                 &m_width, &m_height, &border_width, &depth);
+                 (unsigned int *)&m_width, (unsigned int *)&m_height, 
+                 &border_width, &depth);
 }
 
 void FbWindow::create(Window parent, int x, int y,
