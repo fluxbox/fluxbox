@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.62 2002/07/14 01:00:23 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.63 2002/08/02 13:00:23 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -58,38 +58,36 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#ifdef		SHAPE
+#ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
-#ifdef		HAVE_STDIO_H
-#	include <stdio.h>
-#endif // HAVE_STDIO_H
+#include <cstdio>
 
-#ifdef		STDC_HEADERS
-#	include <stdlib.h>
-#	include <string.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#include <string.h>
 #endif // STDC_HEADERS
 
-#ifdef		HAVE_UNISTD_H
-#	include <sys/types.h>
-#	include <unistd.h>
+#ifdef HAVE_UNISTD_H
+#include <sys/types.h>
+#include <unistd.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef		HAVE_SYS_PARAM_H
-#	include <sys/param.h>
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
 
 #ifndef	 MAXPATHLEN
 #define	 MAXPATHLEN 255
 #endif // MAXPATHLEN
 
-#ifdef		HAVE_SYS_SELECT_H
-#	include <sys/select.h>
+#ifdef HAVE_SYS_SELECT_H
+#include <sys/select.h>
 #endif // HAVE_SYS_SELECT_H
 
-#ifdef		HAVE_SIGNAL_H
-#	include <signal.h>
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
 #endif // HAVE_SIGNAL_H
 
 #ifdef		HAVE_SYS_SIGNAL_H
@@ -124,14 +122,20 @@
 using namespace std;
 
 #ifndef	 HAVE_BASENAME
-static inline char *basename (char *);
-static inline char *basename (char *s) {
+namespace {
+
+char *basename (char *s) {
 	char *save = s;
 
-	while (*s) if (*s++ == '/') save = s;
+	while (*s) {
+		if (*s++ == '/')
+			save = s;
+	}
 
 	return save;
 }
+};
+
 #endif // HAVE_BASENAME
 
 #define RC_PATH "fluxbox"
