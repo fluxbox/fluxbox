@@ -1,5 +1,5 @@
 // Screen.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Screen.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.55 2002/12/13 20:16:17 fluxgen Exp $
+// $Id: Screen.hh,v 1.56 2003/01/05 22:24:55 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -95,8 +95,10 @@ public:
 
     inline bool isSlitOnTop() const { return resource.slit_on_top; }
     inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
+#ifdef SLIT
     inline Slit *getSlit() { return m_slit.get(); }
     inline const Slit *getSlit() const { return m_slit.get(); }
+#endif // SLIT
     inline int getSlitPlacement() const { return resource.slit_placement; }
     inline int getSlitDirection() const { return resource.slit_direction; }
     inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
@@ -122,6 +124,14 @@ public:
     inline unsigned int getBorderWidth() const { return theme->getBorderWidth(); }
     inline unsigned int getBorderWidth2x() const { return theme->getBorderWidth()*2; }
     inline unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
+
+    /*
+      maximum screen surface
+    */
+    unsigned int getMaxLeft() const;
+    unsigned int getMaxRight() const;
+    unsigned int getMaxTop() const;
+    unsigned int getMaxBottom() const;
 
     typedef std::vector<FluxboxWindow *> Icons;
 
@@ -210,6 +220,8 @@ public:
 
     inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
     inline Theme::MenuStyle *getMenuStyle() { return &theme->getMenuStyle(); } 
+    inline FbWinFrameTheme &winFrameTheme() { return m_windowtheme; }
+    inline const FbWinFrameTheme &winFrameTheme() const { return m_windowtheme; }
     const Theme *getTheme() const { return theme; }
     FluxboxWindow *getIcon(unsigned int index);
 
@@ -262,6 +274,9 @@ public:
     void updateNetizenConfigNotify(XEvent *);
     void updateNetizenWindowRaise(Window);
     void updateNetizenWindowLower(Window);
+    /// create window frame for client window and attach it
+    FluxboxWindow *createWindow(Window clientwin);
+    void setupWindowActions(FluxboxWindow &win);
 
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT, LEFTRIGHT,
            RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
@@ -318,9 +333,9 @@ private:
     Rootmenus rootmenuList;
     Netizens netizenList;
     Icons iconList;
-
+#ifdef SLIT
     std::auto_ptr<Slit> m_slit;
-
+#endif // SLIT
     std::auto_ptr<Toolbar> m_toolbar;
     Workspace *current_workspace;
     Workspacemenu *workspacemenu;
@@ -333,6 +348,8 @@ private:
 
     Window auto_group_window;
 	
+    FbWinFrameTheme m_windowtheme;
+		
     struct ScreenResource {
         ScreenResource(ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
