@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.146 2004/06/21 15:23:42 rathnor Exp $
+// $Id: Toolbar.cc,v 1.147 2004/07/14 23:39:29 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -260,7 +260,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
 
     // show all windows
     frame.window.showSubwindows();
-    frame.window.show();
+    //    frame.window.show();
 
     scrn.resourceManager().unlock();
     // setup to listen to child events
@@ -351,7 +351,7 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
-    updateVisibleState();
+    //    updateVisibleState();
 
     if (!doAutoHide() && isHidden())
         toggleHidden();

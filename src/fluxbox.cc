@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.245 2004/06/21 15:23:42 rathnor Exp $
+// $Id: fluxbox.cc,v 1.246 2004/07/14 23:38:53 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -592,6 +592,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             screen->slit()->show();
 #endif // SLIT        
 
+
     } // end init screens
     XAllowEvents(disp, ReplayPointer, CurrentTime);
 
@@ -627,6 +628,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // FbTk::ThemeManager::instance().listItems();
     //
     //    m_resourcemanager.dump();
+
+#ifdef USE_TOOLBAR
+    // finally, show toolbar
+    Toolbars::iterator toolbar_it = m_toolbars.begin();
+    Toolbars::iterator toolbar_it_end = m_toolbars.end();
+    for (; toolbar_it != toolbar_it_end; ++toolbar_it)
+        (*toolbar_it)->updateVisibleState();
+#endif // USE_TOOLBAR
+
 }
 
 
@@ -692,6 +702,7 @@ void Fluxbox::grab() {
 void Fluxbox::ungrab() {
     if (! --m_server_grabs)
         XUngrabServer(display());
+
     if (m_server_grabs < 0)
         m_server_grabs = 0;
 }
@@ -860,6 +871,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
 #ifdef DEBUG
         cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
+        
 #endif // DEBUG
 
         WinClient *winclient = searchWindow(e->xmaprequest.window);
@@ -900,9 +912,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
             win->mapRequestEvent(e->xmaprequest);
     }
         break;
-    case MapNotify: {
+    case MapNotify:
         // handled directly in FluxboxWindow::handleEvent
-    } break;
+        break;
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
 	break;	
@@ -951,6 +963,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
     } break;
     case EnterNotify: {
+
         m_last_time = e->xcrossing.time;
         BScreen *screen = 0;
 
@@ -965,6 +978,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 			
     } break;
     case LeaveNotify:
+
         m_last_time = e->xcrossing.time;
         break;
     case Expose:
@@ -995,7 +1009,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
     } break;
     case FocusOut:{
-
         // and here we ignore some window losing the special grab focus
         if (e->xfocus.mode == NotifyGrab ||
             e->xfocus.detail == NotifyPointer ||
@@ -1018,6 +1031,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         handleClientMessage(e->xclient);
 	break;
     default: {
+        
 #ifdef HAVE_RANDR
         if (e->type == m_randr_event_type) {
             // update root window size in screen
@@ -1966,6 +1980,8 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
     }
 #ifdef DEBUG
     cerr<<"Setting Focused window = "<<client<<endl;
+    if (client != 0 && client->fbwindow() != 0)
+        cerr<<"title: "<<client->fbwindow()->title()<<endl;
     cerr<<"Current Focused window = "<<m_focused_window<<endl;
     cerr<<"------------------"<<endl;
 #endif // DEBUG    
