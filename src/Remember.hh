@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.5 2003/05/10 22:47:15 fluxgen Exp $
+// $Id: Remember.hh,v 1.6 2003/06/05 13:33:27 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -115,6 +115,9 @@ class WinClient;
  */
 class Remember : public AtomHandler {
 public:
+    /**
+     * holds which attributes to remember
+     */
     enum Attribute {
         REM_WORKSPACE=0,
         REM_DIMENSIONS,
@@ -129,7 +132,7 @@ public:
         REM_LASTATTRIB // not actually used
     };
 
-    typedef std::map<std::string,Application *> Apps;
+    typedef std::map<std::string, Application *> Apps;
     Remember();
 
     Application* find(WinClient &winclient);
