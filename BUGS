@@ -1,42 +1,70 @@
 Known bugs and missing features that will be fixed in future version:
 
-bugs:
+BUGS:
 
-* Remember menu sometimes isn't present in window menu. Probably need to 
-  add a signal for menu reconfigures (Screen::setupWindowActions)
-* MenuAlpha (at least) isn't 'per-screen' - takes the value of the highest 
-  numbered screen.
-* Window handle is invisible sometimes.
-* KDE support needs attention (e.g. klipper).
-* Some menus don't close when you click on items.
-* Transparancy for the slit does not always work right.
-* After startup the font of the toolbar is to big; reload config works 
-  around this.
-* Transient windows seem to not have a X border - is this right?
-* saving of number of workspaces on restart
-* multiple transients -> in openoffice - focus jumps between until user 
-                         does something
-                      -> in mozilla - alt-tabbing does strange thigns with 
-                         other transient layer-wise (other transient flashes)
-* gaim (0.64) crashes when remembering dimensions... is this a gaim bug?
-* workspace switching extremely slow in some cases. Particularly, user has 
-  large number of [remote] xload windows.
-* Can lock up on workspace change - possibly related to above as it 
-  works when there aren't too many xload windows started up yet.
-* Remember-patch grouping can change order on each restart. Need to turn 
-  off remember functionality when restarting (only use it for first 
-  instance).
+  * Slit (check toolbar too) layernum isn't initialised to resource 
+    value on init. Also check why Fluxbox::Layer is used rather than int.
 
-other todo:
+  * Remember menu sometimes isn't present in window menu. Probably need
+    to add a signal for menu reconfigures (Screen::setupWindowActions)
+
+  * MenuAlpha (at least) isn't 'per-screen' - takes the value of the
+    highest numbered screen.
+
+  * Window handle is invisible sometimes.
+
+  * KDE support needs attention (e.g. klipper).
+
+  * Some menus don't close when you click on items.
+
+  * Transparancy for the slit does not always work right.
+
+  * After startup the font of the toolbar is to big; reload config works
+    around this.
+
+  * Transient windows seem to not have a X border - is this right?
+
+  * Saving of number of workspaces on restart
+
+  * Multiple transients:
+    in openoffice - focus jumps between until user does something
+    in mozilla    - alt-tabbing does strange thigns with other transient
+                    layer-wise (other transient flashes)
+
+  * gaim (0.64) crashes when remembering dimensions... is this a gaim
+    bug?
+
+  * Workspace switching extremely slow in some cases. Particularly, user
+    has large number of [remote] xload windows.
+
+  * Can lock up on workspace change - possibly related to above as it
+    works when there aren't too many xload windows started up yet.
+
+  * Remember-patch grouping can change order on each restart. Need to
+    turn off remember functionality when restarting (only use it for
+    first instance).
+
+  * If you toggle a setting in the configuration-menu the notch does not
+    indicate the change until you point to another option.
+
+Other TODO:
+
 FAQ items for:
- * "My window (e.g. mplayer/xmms) stops updating when I move windows 
-    around" => outline moving does this, it's not a bug, etc etc.
 
-fixed bugs (or not-our-fault bugs):
-* Some people get weird transparency behaviour.
-  -> this appears to be a problem with nvidia drivers, make sure
-     RenderAccel is off (Option "RenderAccel" "false").
-     (thanks RJNFC on #fluxbox, and barlad in gentoo forums)
-* Disabling full-maximize doesn't work (fixed in cvs).
-* Workspace1... Workspace12 are disabled
-* MoveTab* actions are disabled
+  * "My window (e.g. mplayer/xmms) stops updating when I move
+    windows around"
+    - outline moving does this, it's not a bug, etc etc.
+
+
+Fixed bugs (or not-our-fault bugs):
+
+  * Some people get weird transparency behaviour:
+    - this appears to be a problem with nvidia drivers, make sure
+      RenderAccel is off (Option "RenderAccel" "false"). (thanks RJNFC
+      on #fluxbox, and barlad in gentoo forums)
+
+  * Disabling full-maximize doesn't work (fixed in cvs).
+
+  * Workspace1... Workspace12 are disabled
+
+  * MoveTab* actions are disabled
