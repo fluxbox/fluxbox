@@ -1,8 +1,8 @@
 // Timer.hh for fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Timer.hh for Blackbox - An X11 Window Manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -25,21 +25,7 @@
 #ifndef	 TIMER_HH
 #define	 TIMER_HH
 
-#ifdef HAVE_CONFIG_H
-#include "../config.h"
-#endif //HAVE_CONFIG_H
-
-#ifdef TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h> 
-#else //!TIME_WITH_SYS_TIME 
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else // !HAVE_SYS_TIME_H
-#include <time.h>
-#endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
-
+#include <ctime> 
 #include <list>
 
 /**
