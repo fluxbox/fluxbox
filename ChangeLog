@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/30:
+  * Focus issue (Henrik) 
+    Window.cc/hh, fluxbox.hh/cc
+*03/12/29:
+  * Removed dublicate call to load theme in startup (Henrik)
+    Screen.cc
+  * Random wallpaper for fbsetbg (Thanks Han)
+    fbsetbg, fluxbox-generate_menu
 *03/12/22:
   * Fix rendering of icon buttons when larger from rounding (Simon)
     Container.hh IconbarTool.hh/cc
@@ -93,8 +101,8 @@ Changes for 0.9.7:
     or above, so it stays visible.
     new resource items:
     session.screen0.menuMode:  can be either Click or Delay (default: Delay)
-    session.screen0.menuDelay:  in usec  (default: 0 )
-    session.screen0.menuDelayClose: in usec (default: 0 )
+    session.screen0.menuDelay:  in msec  (default: 0 )
+    session.screen0.menuDelayClose: in msec (default: 0 )
     example:
     session.screen0.menuMode: Delay
     session.screen0.menuDelay: 400000
