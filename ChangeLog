@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/27:
+   * Changed FbRun to use FbTk::TextBox
+     FbRun.hh/cc
+   * Added a workspace name setting tool (Henrik)
+     new action name: SetWorkspaceName
+     SetWorkspaceName.hh/cc, FbCommands.hh/cc, FbCommandFactory.cc
+   * Added TextBox for input window (Henrik)
+     TextBox.hh/cc
 *03/08/25:
    * Fix some style initialisation issues (Simon)
      Screen.hh/cc FbWinFrame.cc
