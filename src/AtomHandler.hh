@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.12 2003/07/28 15:06:33 rathnor Exp $
+// $Id: AtomHandler.hh,v 1.13 2004/01/09 02:06:55 fluxgen Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -32,6 +32,7 @@ class BScreen;
 
 class AtomHandler {
 public:
+
     virtual ~AtomHandler() { }
 
     virtual void initForScreen(BScreen &screen) = 0;
@@ -58,6 +59,8 @@ public:
     /// should this object be updated or not?
     bool update() const { return m_update; }
 protected:
+    AtomHandler():m_update(true) { }
+
     void disableUpdate() { m_update = false; }
     void enableUpdate() { m_update = true; }	
 private:
