@@ -354,7 +354,7 @@ void Basemenu::update(void) {
 	if (title_vis) {
 		tmp = menu.title_pixmap;
 		texture = &(screen->getMenuStyle()->title);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			menu.title_pixmap = None;
 			XSetWindowBackground(display, menu.title,
 				 texture->getColor()->getPixel());
@@ -369,7 +369,7 @@ void Basemenu::update(void) {
 
 	tmp = menu.frame_pixmap;
 	texture = &(screen->getMenuStyle()->frame);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		menu.frame_pixmap = None;
 		XSetWindowBackground(display, menu.frame,
 			 texture->getColor()->getPixel());
@@ -382,7 +382,7 @@ void Basemenu::update(void) {
 
 	tmp = menu.hilite_pixmap;
 	texture = &(screen->getMenuStyle()->hilite);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid))
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID))
 		menu.hilite_pixmap = None;
 	else
 		menu.hilite_pixmap =
@@ -390,7 +390,7 @@ void Basemenu::update(void) {
 	if (tmp) image_ctrl->removeImage(tmp);
 
 	tmp = menu.sel_pixmap;
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid))
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID))
 		menu.sel_pixmap = None;
 	else {
 		int hw = menu.item_h / 2;
