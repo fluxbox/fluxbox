@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.210 2003/12/19 13:37:28 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.211 2003/12/21 15:13:00 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1531,42 +1531,6 @@ void Fluxbox::save_rc() {
     for (; it != it_end; ++it) {
         BScreen *screen = *it;
         int screen_number = screen->screenNumber();
-  
-        sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
-                ((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
-                 "LeftToRight" : "RightToLeft"));
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-
-        sprintf(rc_string, "session.screen%d.colPlacementDirection: %s", screen_number,
-                ((screen->getColPlacementDirection() == BScreen::TOPBOTTOM) ?
-                 "TopToBottom" : "BottomToTop"));
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-
-        string placement;
-		
-        switch (screen->getPlacementPolicy()) {
-        case BScreen::CASCADEPLACEMENT:
-            placement = "CascadePlacement";
-            break;
-
-        case BScreen::COLSMARTPLACEMENT:
-            placement = "ColSmartPlacement";
-            break;
-
-        case BScreen::UNDERMOUSEPLACEMENT:
-            placement = "UnderMousePlacement";
-            break;
-
-        default:
-        case BScreen::ROWSMARTPLACEMENT:
-            placement = "RowSmartPlacement";
-            break;
-        }
-		
-        sprintf(rc_string, "session.screen%d.windowPlacement: %s", screen_number,
-                placement.c_str());
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-
 
         // these are static, but may not be saved in the users resource file,
         // writing these resources will allow the user to edit them at a later
