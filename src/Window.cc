@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.125 2003/02/22 21:40:35 fluxgen Exp $
+// $Id: Window.cc,v 1.126 2003/02/23 13:40:22 rathnor Exp $
 
 #include "Window.hh"
 
@@ -349,6 +349,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     }
 
     setState(current_state);
+    m_frame.resizeForClient(wattrib.width, wattrib.height);
 
     // no focus default
     setFocusFlag(false);
@@ -497,21 +498,22 @@ void FluxboxWindow::reconfigure() {
 void FluxboxWindow::positionWindows() {
 
     m_frame.window().setBorderWidth(screen->getBorderWidth());
-    m_frame.clientArea().setBorderWidth(screen->getFrameWidth());
+    m_frame.clientArea().setBorderWidth(0); // client area bordered by other things
 
+    m_frame.titlebar().setBorderWidth(screen->getBorderWidth());
     if (decorations.titlebar) {
-        m_frame.titlebar().setBorderWidth(screen->getBorderWidth());
         m_frame.showTitlebar();
     } else {
         m_frame.hideTitlebar();
     }
+    
+    m_frame.handle().setBorderWidth(screen->getBorderWidth());
+    m_frame.gripLeft().setBorderWidth(screen->getBorderWidth());
+    m_frame.gripRight().setBorderWidth(screen->getBorderWidth());
 
-    if (decorations.handle) {
-        m_frame.handle().setBorderWidth(screen->getBorderWidth());
-        m_frame.gripLeft().setBorderWidth(screen->getBorderWidth());
-        m_frame.gripRight().setBorderWidth(screen->getBorderWidth());
+    if (decorations.handle)
         m_frame.showHandle();
-    } else 
+    else 
         m_frame.hideHandle();
 	
     m_frame.reconfigure();
@@ -2111,11 +2113,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             if (! screen->doOpaqueMove()) {
                 XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                                last_move_x, last_move_y, 
-                               m_frame.width(), m_frame.height());
+                               m_frame.width() + 2*frame().window().borderWidth(),
+                               m_frame.height() + 2*frame().window().borderWidth());
 
                 XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                                dx, dy, 
-                               m_frame.width(), m_frame.height());
+                               m_frame.width() + 2*frame().window().borderWidth(),
+                               m_frame.height() + 2*frame().window().borderWidth());
                 last_move_x = dx;
                 last_move_y = dy;
             } else {
@@ -2138,7 +2142,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             // draw over old rect
             XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                            last_resize_x, last_resize_y,
-                           last_resize_w - 1, last_resize_h-1);
+                           last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
+                           last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
 
             // move rectangle
@@ -2165,7 +2170,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             // draw resize rectangle
             XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                            last_resize_x, last_resize_y,
-                           last_resize_w - 1, last_resize_h - 1);
+                           last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
+                           last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
             if (screen->doShowWindowPos())
                 screen->showGeometry(gx, gy);
@@ -2304,7 +2310,8 @@ void FluxboxWindow::startMoving(Window win) {
     if (! screen->doOpaqueMove()) {
         XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                        frame().x(), frame().y(),
-                       frame().width(), frame().height());
+                       frame().width() + 2*frame().window().borderWidth(), 
+                       frame().height() + 2*frame().window().borderWidth());
         screen->showPosition(frame().x(), frame().y());
     }
 }
@@ -2319,7 +2326,8 @@ void FluxboxWindow::stopMoving() {
     if (! screen->doOpaqueMove()) {
         XDrawRectangle(FbTk::App::instance()->display(), screen->getRootWindow(), screen->getOpGC(),
                        last_move_x, last_move_y, 
-                       frame().width(), frame().height());
+                       frame().width() + 2*frame().window().borderWidth(),
+                       frame().height() + 2*frame().window().borderWidth());
         moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
     } else
         moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
@@ -2349,12 +2357,12 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
                  CurrentTime);
 
     int gx = 0, gy = 0;
-    button_grab_x = x - screen->getBorderWidth();
-    button_grab_y = y - screen->getBorderWidth2x();
+    button_grab_x = x;
+    button_grab_y = y;
     last_resize_x = m_frame.x();
     last_resize_y = m_frame.y();
-    last_resize_w = m_frame.width() + screen->getBorderWidth2x();
-    last_resize_h = m_frame.height() + screen->getBorderWidth2x();
+    last_resize_w = m_frame.width();
+    last_resize_h = m_frame.height();
 
     if (left)
         left_fixsize(&gx, &gy);
@@ -2366,7 +2374,8 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
 
     XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                    last_resize_x, last_resize_y,
-                   last_resize_w - 1, last_resize_h - 1);
+                   last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
+                   last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 }
 
 void FluxboxWindow::stopResizing(Window win) {
@@ -2374,7 +2383,8 @@ void FluxboxWindow::stopResizing(Window win) {
 	
     XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
                    last_resize_x, last_resize_y,
-                   last_resize_w - 1, last_resize_h - 1);
+                   last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
+                   last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
     screen->hideGeometry();
 
@@ -2385,8 +2395,8 @@ void FluxboxWindow::stopResizing(Window win) {
 
 	
     moveResize(last_resize_x, last_resize_y,
-               last_resize_w - screen->getBorderWidth2x(),
-               last_resize_h - screen->getBorderWidth2x());
+               last_resize_w;
+               last_resize_h;
 	
     XUngrabPointer(display, CurrentTime);
 }
@@ -2596,7 +2606,11 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
     int titlebar_height = (decorations.titlebar ? frame().titlebar().height()  + frame().titlebar().borderWidth() : 0);
     int handle_height = (decorations.handle ? frame().handle().height() + frame().handle().borderWidth() : 0);
     int decoration_height = titlebar_height + handle_height;
+
+    // dx is new width = current width + difference between new and old x values
     int dx = m_frame.width() + m_frame.x() - last_resize_x;
+
+    // dy = new height (w/o decorations), similarly
     int dy = last_resize_h - client.base_height - decoration_height;
 
     // check minimum size
@@ -2617,7 +2631,7 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
     if (client.height_inc == 0)
         client.height_inc = 1;
 
-    // set snaping
+    // set snapping
     dx /= client.width_inc;
     dy /= client.height_inc;
 

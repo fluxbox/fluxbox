@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.12 2003/02/23 00:57:55 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.13 2003/02/23 13:40:22 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -170,16 +170,16 @@ void FbWinFrame::resize(unsigned int width, unsigned int height) {
 }
 
 void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
-    // total height for frame without client
-    int handle_height = m_handle.height() + m_handle.borderWidth();
-    int titlebar_height = m_titlebar.height() + m_titlebar.borderWidth();
-    unsigned int total_height = handle_height + titlebar_height;
-    // resize frame height with total height + specified height
-    if (!m_use_titlebar)
-        total_height -= titlebar_height;
-    if (!m_use_handle)
-        total_height -= handle_height;
-    resize(width, total_height + height);
+    // total height for frame
+    unsigned int total_height = height;
+
+    // having a titlebar = 1 extra border + titlebar height
+    if (m_use_titlebar)
+        total_height += m_titlebar.height() + m_titlebar.borderWidth();
+    // having a handle = 1 extra border + handle height
+    if (m_use_handle)
+        total_height += m_handle.height() + m_handle.borderWidth();
+    resize(width, total_height);
 }
 
 void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height) {
@@ -280,8 +280,10 @@ void FbWinFrame::hideTitlebar() {
     m_titlebar.hide();
     m_use_titlebar = false;
     m_clientarea.raise();
+
+    // only take away one borderwidth (as the other border is still the "top" border)
     m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
-                    m_titlebar.borderWidth()*2);
+                    m_titlebar.borderWidth());
 #ifdef DEBUG
     cerr<<__FILE__<<": Hide Titlebar"<<endl;
 #endif // DEBUG
@@ -293,30 +295,43 @@ void FbWinFrame::showTitlebar() {
 
     m_titlebar.show();
     m_use_titlebar = true;
+
+    // only add one borderwidth (as the other border is still the "top" border)
+    m_window.resize(m_window.width(), m_window.height() + m_titlebar.height() +
+                    m_titlebar.borderWidth());
+
 #ifdef DEBUG
     cerr<<__FILE__<<": Show Titlebar"<<endl;
 #endif // DEBUG
 }
 
 void FbWinFrame::hideHandle() {
+    if (!m_use_handle)
+        return;
     m_handle.hide();
     m_grip_left.hide();
     m_grip_right.hide();
     m_use_handle = false;
+    m_window.resize(m_window.width(), m_window.height() - m_handle.height() -
+                    m_handle.borderWidth());
+
 }
 
 void FbWinFrame::showHandle() {
+    if (m_use_handle)
+        return;
     m_handle.show();
     m_grip_left.show();
     m_grip_right.show();
     m_use_handle = true;
+    m_window.resize(m_window.width(), m_window.height() + m_handle.height() +
+                    m_handle.borderWidth());
 }
 
 void FbWinFrame::hideAllDecorations() {
     hideHandle();
     hideTitlebar();
-    m_window.setBorderWidth(0);
-    m_window.resize(m_clientarea.width(), m_clientarea.height());
+    // resize done by hide*
     reconfigure();
 }
 
@@ -325,7 +340,7 @@ void FbWinFrame::showAllDecorations() {
         showHandle();
     if (!m_use_titlebar)
         showTitlebar();
-    resizeForClient(m_clientarea.width(), m_clientarea.height());
+    // resize shouldn't be necessary
     reconfigure();
 }
 
@@ -395,6 +410,10 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
         redrawTitlebar();
     else if (m_label == event.window) 
         redrawTitle();
+    else if (m_handle == event.window ||
+             m_grip_left == event.window ||
+             m_grip_right == event.window) 
+        renderHandles();
 }
 
 void FbWinFrame::handleEvent(XEvent &event) {
@@ -415,28 +434,28 @@ void FbWinFrame::reconfigure() {
     if (m_use_titlebar)
         reconfigureTitlebar();
 
-    // setup client area size/pos
-    int next_y = m_titlebar.height() + m_titlebar.borderWidth();
-    unsigned int client_height = 
-        m_window.height() - next_y;
-    /*- m_titlebar.height() - m_titlebar.y() - m_handle.height();*/
-
-    if (!m_use_titlebar) {
-        next_y = -m_titlebar.y();
-        if (!m_use_handle)
-            client_height = m_window.height();
-        else
-            client_height = m_window.height() - m_handle.height();
+    int client_top = 0;
+    int client_height = m_window.height();
+    if (m_use_titlebar) {
+        // only one borderwidth as titlebar is really at -borderwidth
+        int titlebar_height = m_titlebar.height() + m_titlebar.borderWidth();
+        client_top += titlebar_height;
+        client_height -= titlebar_height;
     }
 
-    m_clientarea.moveResize(0, m_titlebar.y() + next_y,
+    if (m_use_handle) {
+        client_height -= m_handle.height() + m_handle.borderWidth();
+    }
+
+    m_clientarea.moveResize(0, client_top,
                             m_window.width(), client_height);
 
     if (m_clientwin != 0) {
         XMoveResizeWindow(FbTk::App::instance()->display(), m_clientwin,
                           0, 0,
                           m_clientarea.width(), m_clientarea.height());
-    }
+   }
+
 
     if (!m_use_handle) // no need to do anything more
         return;
@@ -444,19 +463,18 @@ void FbWinFrame::reconfigure() {
     // align handle and grips
     const int grip_height = m_handle.height();
     const int grip_width = 20; //TODO
-    
-    const int ypos = m_window.height() - grip_height;
 
-    m_grip_left.moveResize(0, ypos,
+    const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
+
+    m_grip_left.moveResize(-m_handle.borderWidth(), ypos,
                            grip_width, grip_height);
 
     m_handle.moveResize(grip_width, ypos,
-                        m_window.width() - grip_width*2, grip_height);
-   
-    m_grip_right.moveResize(m_window.width() - grip_width, ypos,
+                        m_window.width() - grip_width*2 - m_handle.borderWidth()*2, grip_height);
+
+    m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
                             grip_width, grip_height);
 
-    
     // render the theme
     renderButtons();
     renderHandles();

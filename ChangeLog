@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
 *03/02/22:
+   * Fix frame size and window moving/resizing/outline bugs (Simon)
+     Window.cc FbWinFrame.cc
    * s/""/'' so the shell does not have to expand the contents of the string
      in fluxbox_generatemenu (Han)
    * Added portability notes in fluxbox_generatemenu (Han)
