@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.33 2002/10/22 14:46:11 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.34 2002/11/12 22:15:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -842,20 +842,21 @@ void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 		}
 		
 		if (re->x >= 0 && re->x <= (signed) menu.width &&
-				re->y >= 0 && re->y <= (signed) menu.title_h)
-			if (re->button == 3)
-				hide();
-			} else if (re->window == menu.frame &&
-				re->x >= 0 && re->x < (signed) menu.width &&
-				re->y >= 0 && re->y < (signed) menu.frame_h) {
+			re->y >= 0 && re->y <= (signed) menu.title_h)
+		if (re->button == 3)
+			hide();
 			
-			if (re->button == 3) {
-				hide();
-			} else {
-				int sbl = (re->x / menu.item_w), i = (re->y / menu.item_h),
-					ix = sbl * menu.item_w, iy = i * menu.item_h,
-					w = (sbl * menu.persub) + i,
-					p = (which_sbl * menu.persub) + which_press;
+	} else if (re->window == menu.frame &&
+		re->x >= 0 && re->x < (signed) menu.width &&
+		re->y >= 0 && re->y < (signed) menu.frame_h) {
+			
+		if (re->button == 3) {
+			hide();
+		} else {
+			int sbl = (re->x / menu.item_w), i = (re->y / menu.item_h),
+				ix = sbl * menu.item_w, iy = i * menu.item_h,
+				w = (sbl * menu.persub) + i,
+				p = (which_sbl * menu.persub) + which_press;
 
 			if (w < static_cast<int>(menuitems.size()) && w >= 0) {
 				drawItem(p, (p == which_sub), True);
@@ -868,6 +869,7 @@ void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 				}
 			} else
 				drawItem(p, False, True);
+				
 		}
 	}
 }
