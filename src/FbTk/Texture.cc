@@ -22,7 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: Texture.cc,v 1.2 2002/11/30 14:13:43 rathnor Exp $
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
 
 #include "Texture.hh"
 
