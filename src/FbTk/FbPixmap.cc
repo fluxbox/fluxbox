@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.14 2004/09/10 15:46:08 akir Exp $
+// $Id: FbPixmap.cc,v 1.15 2004/09/11 12:33:14 rathnor Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -305,28 +305,26 @@ Pixmap FbPixmap::getRootPixmap(int screen_num) {
     };
 
     Pixmap root_pm = None;
-
     for (prop = 0; prop_ids[prop]; prop++) {
         if (XGetWindowProperty(s_display,
                                RootWindow(s_display, screen_num),
                                XInternAtom(s_display, prop_ids[prop], False),
-                               0L, 4,
+                               0l, 4l,
                                False, XA_PIXMAP,
                                &real_type, &real_format,
                                &items_read, &items_left,
-                               (unsigned char **) &data) == Success &&
-            real_format == 32 && items_read == 1) {
+                               (unsigned char **) &data) == Success) {
+            if (real_format == 32 && items_read == 1) {
 
-            if (strcmp(prop_ids[prop], "_XSETROOT_ID") == 0) {
-                if (print_error) {
+                if (print_error && strcmp(prop_ids[prop], "_XSETROOT_ID") == 0) {
                     fprintf(stderr, "%s", error_message);
                     print_error = false;
-                }
-            } else
-                root_pm = (Pixmap) (*data);
-
+                } else
+                    root_pm = (Pixmap) (*data);
+            }
             XFree(data);
-            break;
+            if (root_pm != None)
+                break;
         }
     }
 

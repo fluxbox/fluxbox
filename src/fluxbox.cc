@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.252 2004/09/08 16:50:42 akir Exp $
+// $Id: fluxbox.cc,v 1.253 2004/09/11 12:33:14 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -386,18 +386,20 @@ void copyFile(const std::string &from, const std::string &to) {
 } // end anonymous
 
 static int handleXErrors(Display *d, XErrorEvent *e) {
-#ifdef DEBUG
-    /*    
-    char errtxt[128];
-    
-    XGetErrorText(d, e->error_code, errtxt, 128);
-    cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<(int)e->error_code<<") opcodes "<<
-        (int)e->request_code<<"/"<<(int)e->minor_code<<" resource 0x"<<hex<<(int)e->resourceid<<dec<<endl;
-    */
-#endif // !DEBUG
-
     if (e->error_code == BadWindow)
         last_bad_window = e->resourceid;
+#ifdef DEBUG
+    else {
+        // ignore bad window ones, they happen a lot 
+        // when windows close themselves
+        char errtxt[128];
+
+        XGetErrorText(d, e->error_code, errtxt, 128);
+        cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<(int)e->error_code<<") opcodes "<<
+            (int)e->request_code<<"/"<<(int)e->minor_code<<" resource 0x"<<hex<<(int)e->resourceid<<dec<<endl;
+    }
+#endif // !DEBUG
+
 
     return False;
 }
@@ -501,6 +503,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setTimeout(to);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
+    //XSynchronize(disp, True);
 
     s_singleton = this;
     m_have_shape = false;
@@ -633,10 +636,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     FbTk::ThemeManager::instance().load(FbTk::StringUtil::expandFilename(getStyleFilename()));
 
     XSynchronize(disp, False);
+    //XSynchronize(disp, True);
     sync(false);
 
     m_reconfigure_wait = m_reread_menu_wait = false;
-	
+
     // Create keybindings handler and load keys file	
     m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
@@ -1813,7 +1817,7 @@ void Fluxbox::load_rc(BScreen &screen) {
         for (unsigned int i=0; i<paths.size(); ++i)
             FbTk::Image::addSearchPath(paths[i]);
     }
-    
+
     if (!dbfile.empty()) {
         if (!m_screen_rm.load(dbfile.c_str())) {
             cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "Failed trying to read rc file")<<":"<<dbfile<<endl;

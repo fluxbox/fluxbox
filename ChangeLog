@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/11:
+  * Fix issues that caused unnecessary X errors (Simon)
+    fluxbox.cc Window.cc FbTk/Menu.cc FbTk/FbPixmap.cc FbTk/FbWindow.hh/cc
 *04/09/10:
   * Cosmetic and cleanup changes to FbTk/* (Mathias)
       - tabs -> spaces, wrong indention etc in all mentioned

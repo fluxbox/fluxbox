@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.33 2004/09/10 15:46:08 akir Exp $
+// $Id: FbWindow.hh,v 1.34 2004/09/11 12:33:14 rathnor Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -119,7 +119,7 @@ public:
     void setCursor(Cursor cur);
     /// uses the parents cursor instead
     void unsetCursor();
-    void reparent(const FbWindow &parent, int x, int y);
+    void reparent(const FbWindow &parent, int x, int y, bool continuing = true);
 
     bool property(Atom property,
                   long long_offset, long long_length,

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.39 2004/09/10 15:46:08 akir Exp $
+// $Id: FbWindow.cc,v 1.40 2004/09/11 12:33:14 rathnor Exp $
 
 #include "FbWindow.hh"
 #include "FbPixmap.hh"
@@ -315,10 +315,11 @@ void FbWindow::unsetCursor() {
     XUndefineCursor(s_display, window());
 }
 
-void FbWindow::reparent(const FbWindow &parent, int x, int y) {
+void FbWindow::reparent(const FbWindow &parent, int x, int y, bool continuing) {
     XReparentWindow(s_display, window(), parent.window(), x, y);
     m_parent = &parent;
-    updateGeometry();
+    if (continuing) // we will continue managing this window after reparent
+        updateGeometry();
 }
 
 std::string FbWindow::textProperty(Atom property) const {

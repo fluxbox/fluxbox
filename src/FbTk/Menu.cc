@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.80 2004/09/09 14:29:10 akir Exp $
+// $Id: Menu.cc,v 1.81 2004/09/11 12:33:14 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -433,7 +433,7 @@ void Menu::update(int active_index) {
     }
 
     int itmp = (theme().itemHeight() * menu.persub);
-    menu.frame_h = itmp < 0 ? 0 : itmp;
+    menu.frame_h = itmp < 1 ? 1 : itmp;
 
     int new_width = (menu.sublevels * menu.item_w);
     int new_height = menu.frame_h;
@@ -442,8 +442,12 @@ void Menu::update(int active_index) {
         new_height += theme().titleHeight() + ((menu.frame_h > 0)?menu.title.borderWidth():0);
 
 
-    if (new_width < 1) 
-        new_width = menu.item_w;
+    if (new_width < 1) {
+        if (menu.item_w > 0) 
+            new_width = menu.item_w;
+        else
+            new_width = 1;
+    }
 
     if (new_height < 1)
         new_height = 1;
@@ -548,7 +552,7 @@ void Menu::update(int active_index) {
     }
 
     menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + 
-                              menu.title.borderWidth()*2 : 0), 
+                              menu.title.borderWidth()*2 : 1), 
                           width(), menu.frame_h);
 
 
