@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.16 2003/09/10 14:06:37 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.17 2003/09/29 13:01:01 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -40,7 +40,7 @@ FbCommandFactory FbCommandFactory::s_autoreg;
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
-    const char commands[][52] = {
+    const char* commands[] = {
         "arrangewindows",
         "close",
         "detachclient",
