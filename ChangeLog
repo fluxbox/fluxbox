@@ -1,4 +1,10 @@
 (Format: Year/Month/Day)
+Changes for 0.9.10:
+*04/04/27:
+  * Fix up several toolbar theme items and alignments (Simon)
+    - big improvement in look/compatibility of older styles
+    Toolbar.cc Theme.hh/cc ThemeItems.hh ToolbarTheme.cc MenuTheme.cc Text.cc
+    IconbarTheme.cc SlitTheme.cc WorkspaceNameTheme.hh IconbarTool.cc
 Changes for 0.9.9:
 *04/04/22:
   * New Command: Deiconify <mode> <dest>

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.13 2003/10/13 23:47:38 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.14 2004/04/26 15:04:37 rathnor Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -29,7 +29,7 @@
 using namespace std;
 
 template<>
-void FbTk::ThemeItem<bool>::load() { }
+void FbTk::ThemeItem<bool>::load(const std::string *name, const std::string *altname) { }
 
 template<>
 void FbTk::ThemeItem<bool>::setDefaultValue() {

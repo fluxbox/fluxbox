@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Text.cc,v 1.2 2003/08/11 14:59:57 fluxgen Exp $
+// $Id: Text.cc,v 1.3 2004/04/26 15:04:37 rathnor Exp $
 
 #include "Text.hh"
 
@@ -82,7 +82,7 @@ void ThemeItem<FbTk::Justify>::setFromString(const char *value) {
 
 // do nothing
 template <>
-void ThemeItem<FbTk::Justify>::load() {
+void ThemeItem<FbTk::Justify>::load(const std::string *name, const std::string *altname) {
 }
 
 }; // end namespace FbTk

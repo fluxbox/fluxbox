@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.2 2003/07/10 14:16:11 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.3 2004/04/26 15:04:37 rathnor Exp $
 
 #include "MenuTheme.hh"
 #include "StringUtil.hh"
@@ -27,7 +27,7 @@
 using namespace std;
 
 template <>
-void FbTk::ThemeItem<Shape::ShapePlace>::load() { }
+void FbTk::ThemeItem<Shape::ShapePlace>::load(const std::string *name, const std::string *altname) { }
 
 template <>
 void FbTk::ThemeItem<Shape::ShapePlace>::setDefaultValue() {

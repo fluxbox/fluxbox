@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.14 2004/01/08 22:07:58 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.15 2004/04/26 15:04:37 rathnor Exp $
 
 #include "MenuTheme.hh"
 
@@ -136,7 +136,7 @@ void ThemeItem<MenuTheme::BulletType>::setFromString(const char *str) {
 }
 
 template <>
-void ThemeItem<MenuTheme::BulletType>::load() {
+void ThemeItem<MenuTheme::BulletType>::load(const std::string *name, const std::string *altname) {
     // do nothing, we don't have anything extra to load
 }
 
@@ -151,7 +151,7 @@ void ThemeItem<unsigned int>::setFromString(const char *str) {
 }
 
 template <>
-void ThemeItem<unsigned int>::load() {
+void ThemeItem<unsigned int>::load(const std::string *name, const std::string *altname) {
 }
 
 

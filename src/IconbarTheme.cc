@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.8 2004/01/13 14:41:32 rathnor Exp $
+// $Id: IconbarTheme.cc,v 1.9 2004/04/26 15:04:36 rathnor Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -64,25 +64,17 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     ThemeManager &tm = ThemeManager::instance();
 
     if (&m_focused_texture == &item) {
-        // special case for textures since they're using .load()
-        FbTk::ThemeItem<FbTk::Texture> tmp_item(m_focused_texture.theme(),
-                                                "window.label.focus", "Window.Title.Focus");
-        tmp_item.load();
-        // copy texture
-        *m_focused_texture = *tmp_item;
-        return true;
-    } else if (&m_unfocused_texture == &item) {
-        // special case for textures since they're using .load()
-        FbTk::ThemeItem<FbTk::Texture> tmp_item(m_unfocused_texture.theme(),
-                                                "window.label.unfocus", "Window.Label.Unfocus");
-        tmp_item.load();
-        // copy texture
-        *m_unfocused_texture = *tmp_item;
-        return true;
-    } else if (&m_empty_texture == &item) {
-        return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) ? 
-                true : 
+        return (tm.loadItem(item, "window.label.focus", "Window.Label.Focus") ||
                 tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel"));
+
+    } else if (&m_unfocused_texture == &item) {
+        return (tm.loadItem(item, "window.label.unfocus", "Window.Label.Unfocus") ||
+                tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel"));
+    } else if (&m_empty_texture == &item) {
+        return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) || 
+                tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel") ||
+                tm.loadItem(item, "toolbar", "toolbar")
+            ); 
     } else if (item.name() == m_name + ".borderWidth" || 
                item.name() == m_name + ".focused.borderWidth" ||
                item.name() == m_name + ".unfocused.borderWidth")

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.25 2004/01/12 20:24:06 fluxgen Exp $
+// $Id: Theme.cc,v 1.26 2004/04/26 15:04:37 rathnor Exp $
 
 #include "Theme.hh"
 
@@ -157,11 +157,10 @@ bool ThemeManager::loadItem(ThemeItem_base &resource) {
 bool ThemeManager::loadItem(ThemeItem_base &resource, const std::string &name, const std::string &alt_name) {
     XrmValue value;
     char *value_type;
-
     if (XrmGetResource(*m_database, name.c_str(),
                        alt_name.c_str(), &value_type, &value)) {
         resource.setFromString(value.addr);
-        resource.load(); // load additional stuff by the ThemeItem
+        resource.load(&name, &alt_name); // load additional stuff by the ThemeItem
     } else
         return false;
 
@@ -171,11 +170,10 @@ bool ThemeManager::loadItem(ThemeItem_base &resource, const std::string &name, c
 std::string ThemeManager::resourceValue(const std::string &name, const std::string &altname) {
     XrmValue value;
     char *value_type;
-	
     if (*m_database != 0 && XrmGetResource(*m_database, name.c_str(),
-                                           altname.c_str(), &value_type, &value) && value.addr != 0) {
+                                           altname.c_str(), &value_type, &value) && value.addr != 0)
         return string(value.addr);
-    }
+
     return "";
 }
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTheme.hh,v 1.1 2003/08/29 00:51:55 fluxgen Exp $
+// $Id: WorkspaceNameTheme.hh,v 1.2 2004/04/26 15:04:37 rathnor Exp $
 
 #ifndef WORKSPACENAMETHEME_HH
 #define WORKSPACENAMETHEME_HH
@@ -40,14 +40,9 @@ public:
                                                            "toolbar.label.textColor", 
                                                            "Toolbar.Label.TextColor");
         } else if (item.name() == "toolbar.workspace") {
-
-            // special case for textures since they're using .load()
-            FbTk::ThemeItem<FbTk::Texture> tmp_item(*this,
-                                                    "toolbar.label", "Toolbar.Label");
-            tmp_item.load();
-            // copy texture
-            *textureTheme() = *tmp_item;
-            return true;
+            return FbTk::ThemeManager::instance().loadItem(item, 
+                                                           "toolbar.label", 
+                                                           "Toolbar.Label");
         }
 
         return ToolTheme::fallback(item);

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.35 2004/03/22 20:08:08 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.36 2004/04/26 15:04:37 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -597,9 +597,10 @@ void IconbarTool::renderButton(IconButton &button) {
     button.setPixmap(*m_rc_use_pixmap);
     button.setAlpha(m_theme.alpha());
 
-    // if we're rendering a button, there must be a back button.
     // The last button is always the regular width
-    bool wider_button = (button.width() != m_icon_container.back()->width());
+    bool wider_button = false;
+    if (!m_icon_container.empty())
+        wider_button = (button.width() != m_icon_container.back()->width());
 
     if (button.win().isFocused()) { // focused texture
         m_icon_container.setSelected(m_icon_container.find(&button));
@@ -685,6 +686,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
         return;
 
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
+    renderButton(*button);
     m_icon_container.insertItem(button);    
     m_icon_list.push_back(button);
 

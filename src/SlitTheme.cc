@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitTheme.cc,v 1.2 2003/08/29 23:52:14 fluxgen Exp $
+// $Id: SlitTheme.cc,v 1.3 2004/04/26 15:04:37 rathnor Exp $
 
 #include "SlitTheme.hh"
 
@@ -42,13 +42,9 @@ void SlitTheme::reconfigTheme() {
 
 bool SlitTheme::fallback(FbTk::ThemeItem_base &item) {
     if (&item == &m_texture) {
-        // special case for textures since they're using .load()
-        FbTk::ThemeItem<FbTk::Texture> tmp_item(m_texture.theme(),
-                                                "toolbar", "Toolbar");
-        tmp_item.load();
-        // copy texture
-        *m_texture = *tmp_item;
-        return true;
+        return FbTk::ThemeManager::instance().loadItem(item,
+                                                       "toolbar",
+                                                       "Toolbar");
     } else if (item.name().find(".borderWidth") != std::string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item,
                                                        "borderWidth",

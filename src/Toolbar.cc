@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.138 2004/01/21 13:36:09 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.139 2004/04/26 15:04:37 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -876,9 +876,24 @@ void Toolbar::rearrangeItems() {
     int fixed_width = 0; // combined size of all fixed items
     int fixed_items = 0; // number of fixed items
     int relative_items = 0;
+    int last_bw = 0; // we show the largest border of adjoining items
+    bool first = true;
     for (; item_it != item_it_end; ++item_it) {
+        if (!(*item_it)->active())
+            continue;
+
+        if (!first) {
+            if ((*item_it)->borderWidth() > last_bw)
+                fixed_width += (*item_it)->borderWidth();
+            else
+                fixed_width += last_bw;
+        } else
+                first = false;
+
+        last_bw = (*item_it)->borderWidth();
+
         if ((*item_it)->type() == ToolbarItem::FIXED && (*item_it)->active()) {
-            fixed_width += (*item_it)->width() + (*item_it)->borderWidth()*2;
+            fixed_width += (*item_it)->width();
             fixed_items++;
         } else if ((*item_it)->type() == ToolbarItem::RELATIVE && (*item_it)->active()) {
             relative_items++;
@@ -899,14 +914,22 @@ void Toolbar::rearrangeItems() {
         }
     }
     // now move and resize the items
-    int next_x = 0;
+    // borderWidth added back on straight away
+    int next_x = -2*m_item_list.front()->borderWidth(); // list isn't empty
+    last_bw = 0;
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
         if (!(*item_it)->active()) {
             (*item_it)->hide();
             continue;
         }
-
         int borderW = (*item_it)->borderWidth();
+
+        if (borderW > last_bw) 
+            next_x += borderW;
+        else
+            next_x += last_bw;
+        last_bw = borderW;
+
         (*item_it)->show();
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
             int extra = 0;
@@ -915,12 +938,12 @@ void Toolbar::rearrangeItems() {
                 --rounding_error;
             }
 
-            (*item_it)->moveResize(next_x, -borderW, extra + relative_width-2*borderW, height());
+            (*item_it)->moveResize(next_x, -borderW, extra + relative_width, height());
         } else { // fixed size
             (*item_it)->moveResize(next_x, -borderW,
                                    (*item_it)->width(), height()); 
         }
-        next_x += (*item_it)->width() + borderW*2;
+        next_x += (*item_it)->width();
     }
     // unlock
     m_resize_lock = false;

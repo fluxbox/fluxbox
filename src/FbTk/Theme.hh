@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.15 2004/01/02 22:55:15 fluxgen Exp $
+// $Id: Theme.hh,v 1.16 2004/04/26 15:04:37 rathnor Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -50,7 +50,7 @@ public:
     virtual ~ThemeItem_base() { }
     virtual void setFromString(const char *str) = 0;
     virtual void setDefaultValue() = 0;
-    virtual void load() = 0; // if it needs to load additional stuff
+    virtual void load(const std::string *name = 0, const std::string *altname = 0) = 0; // if it needs to load additional stuff
     const std::string &name() const { return m_name; }
     const std::string &altName() const { return m_altname; }
 private:
@@ -70,7 +70,9 @@ public:
     /// specialized
     void setFromString(const char *strval);
     /// specialized
-    void load();
+    // name and altname may be different to the primary ones (e.g. from fallback)
+    // if they are null, then the original name is used
+    void load(const std::string *name = 0, const std::string *altname = 0);
     /**
        @name access operators
     */

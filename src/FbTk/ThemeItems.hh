@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.5 2004/02/10 19:03:04 fluxgen Exp $
+// $Id: ThemeItems.hh,v 1.6 2004/04/26 15:04:37 rathnor Exp $
 
 /// @file implements common theme items
 
@@ -42,7 +42,7 @@ using namespace std;
 
 // create default handlers for Color, Font, Texture, int and string
 template <>
-void FbTk::ThemeItem<std::string>::load() { }
+void FbTk::ThemeItem<std::string>::load(const std::string *name, const std::string *altname) { }
 
 template <>
 void FbTk::ThemeItem<std::string>::setDefaultValue() { 
@@ -55,7 +55,7 @@ void FbTk::ThemeItem<std::string>::setFromString(const char *str) {
 }
 
 template <>
-void FbTk::ThemeItem<int>::load() { }
+void FbTk::ThemeItem<int>::load(const std::string *name, const std::string *altname) { }
 
 template <>
 void FbTk::ThemeItem<int>::setDefaultValue() {
@@ -103,18 +103,21 @@ void ThemeItem<FbTk::Font>::setFromString(const char *str) {
 
 // do nothing
 template <>
-void ThemeItem<FbTk::Font>::load() {
+void ThemeItem<FbTk::Font>::load(const std::string *name, const std::string *altname) {
 }
 
 
 template <>
-void ThemeItem<FbTk::Texture>::load() {
+void ThemeItem<FbTk::Texture>::load(const std::string *o_name, const std::string *o_altname) {
+    const std::string &m_name = (o_name==0)?name():*o_name;
+    const std::string &m_altname = (o_altname==0)?altName():*o_altname;
+
     string color_name(ThemeManager::instance().
-                      resourceValue(name()+".color", altName()+".Color"));
+                      resourceValue(m_name+".color", m_altname+".Color"));
     string colorto_name(ThemeManager::instance().
-                        resourceValue(name()+".colorTo", altName()+".ColorTo"));
+                        resourceValue(m_name+".colorTo", m_altname+".ColorTo"));
     string pixmap_name(ThemeManager::instance().
-                       resourceValue(name()+".pixmap", altName()+".Pixmap"));
+                       resourceValue(m_name+".pixmap", m_altname+".Pixmap"));
 
 
     // set default value if we failed to load color
@@ -137,7 +140,7 @@ void ThemeItem<FbTk::Texture>::load() {
                                                              m_tm.screenNum()));
     if (pm.get() == 0) {
         if (FbTk::ThemeManager::instance().verbose()) {
-            cerr<<"Resource("<<name()+".pixmap"
+            cerr<<"Resource("<<m_name+".pixmap"
                 <<"): Failed to load image: "<<pixmap_name<<endl;
         }
         m_value.pixmap() = 0;
@@ -163,8 +166,7 @@ void ThemeItem<FbTk::Texture>::setFromString(const char *str) {
 
 // not used
 template <>
-void FbTk::ThemeItem<PixmapWithMask>::
-load() { }
+void FbTk::ThemeItem<PixmapWithMask>::load(const std::string *name, const std::string *altname) { }
 
 template <>
 void FbTk::ThemeItem<PixmapWithMask>::
@@ -211,7 +213,7 @@ void ThemeItem<FbTk::Color>::setFromString(const char *str) {
 
 // does nothing
 template <>
-void ThemeItem<FbTk::Color>::load() { }
+void ThemeItem<FbTk::Color>::load(const std::string *name, const std::string *altname) { }
 
 } // end namespace FbTk
 
