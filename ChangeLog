@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/04:
+  * Fix duplicate icons in icon list with amsn (Henrik)
+    - Check Fluxbox::update(FluxboxWindow::stateSig), 
+      the win.screen().addIcon 
+    Screen.cc
+  * Fix crash on shutdown (Henrik)
+    - workspacemenu must be destroyed before
+      clientlists
+    Screen.cc
 *04/09/03:
   * Fix crash on startup on amd64 (Simon)
     - We may need to review usages of 0 as opposed to NULL
