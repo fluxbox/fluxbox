@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.70 2002/08/17 22:14:00 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.71 2002/08/18 11:01:52 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -331,6 +331,12 @@ key(0)
 	sigh->registerHandler(SIGUSR1, this);	
 	sigh->registerHandler(SIGUSR2, this);
 
+	//setup cursor bitmaps
+	cursor.session = XCreateFontCursor(getXDisplay(), XC_left_ptr);
+	cursor.move = XCreateFontCursor(getXDisplay(), XC_fleur);
+	cursor.ll_angle = XCreateFontCursor(getXDisplay(), XC_ll_angle);
+	cursor.lr_angle = XCreateFontCursor(getXDisplay(), XC_lr_angle);
+
 	//singleton pointer
 	singleton = this;
 	BaseDisplay::GrabGuard gg(*this);
@@ -379,7 +385,7 @@ key(0)
 
 		screenList.push_back(screen);
 	}
-	
+
 	I18n *i18n = I18n::instance();
 	if (screenList.size() == 0) {
 		fprintf(stderr,
@@ -390,12 +396,7 @@ key(0)
 
 		throw static_cast<int>(3);
 	}
-	//setup cursor bitmaps
-	cursor.session = XCreateFontCursor(getXDisplay(), XC_left_ptr);
-	cursor.move = XCreateFontCursor(getXDisplay(), XC_fleur);
-	cursor.ll_angle = XCreateFontCursor(getXDisplay(), XC_ll_angle);
-	cursor.lr_angle = XCreateFontCursor(getXDisplay(), XC_lr_angle);
-
+	
 	XSynchronize(getXDisplay(), False);
 	XSync(getXDisplay(), False);
 
