@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/14:
+   * More optimization to reduce flicker in titlebar
+     Screen.cc, FbWinFrame.cc/hh, TextButton.hh/cc, FbWindow.hh/cc
 *03/09/13:
+   * Fixed minor compilation problem for Solaris (Thanks NivenHuH)
+     Resource.hh
    * Added new theme items (Henrik)
      * menu.borderWidth
      * menu.borderColor
