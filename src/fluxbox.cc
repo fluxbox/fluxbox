@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.160 2003/06/23 13:35:45 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.161 2003/06/24 15:02:39 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -2329,7 +2329,6 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             old_wkspc = old_screen->getWorkspace(old_win->workspaceNumber());
 
             old_win->setFocusFlag(false);
-            old_wkspc->menu().setItemSelected(old_win->windowNumber(), false);
         }
     }
 
@@ -2346,9 +2345,6 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             wkspc = screen->getWorkspace(win->workspaceNumber());		
             m_focused_window = win;     // update focused window
             win->setFocusFlag(true); // set focus flag
-            // select this window in workspace menu
-            if (wkspc != 0)
-                wkspc->menu().setItemSelected(win->windowNumber(), true);
         }
     } else
         m_focused_window = 0;
