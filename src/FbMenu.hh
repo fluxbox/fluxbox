@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenu.hh,v 1.4 2004/04/18 18:53:55 fluxgen Exp $
+// $Id: FbMenu.hh,v 1.5 2004/06/27 13:43:09 fluxgen Exp $
 
 #ifndef FBMENU_HH
 #define FBMENU_HH
@@ -35,7 +35,7 @@ class FbMenu:public FbTk::Menu {
 public:
     FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer);
-    ~FbMenu();
+    virtual ~FbMenu();
     void update(int index = -1);
     void clearWindow();
     void raise() { m_layeritem.raise(); }
