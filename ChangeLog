@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/10:
+  * Added temporarly nice separator line (Thanks ciaranm)
+    use [nop] (---) to get a nice separator line in the menu
+    Window.cc, Menu.cc
   * Fixed geometry window bug when resizing (Henrik)
     Window.cc, Screen.cc
   * Cleaning in menu code (Henrik)
