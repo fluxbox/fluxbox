@@ -1,7 +1,27 @@
 (Format: Year/Month/Day)
-Changes for 0.1.12:
+Changes for 0.1.13:
+*02/09/14:
+   * Fixed bug [ 604463 ] mplayer fullscreen fails (Henrik)
+     Window.cc
+
+Changes for 0.1.12/13:
+*02/09/12:
+   * Removed -fg and -bg settings in fluxbox-generate_menu
+   * Made a temporary fix for sticky windows (Thanks Simon Bowden)
+*02/09/10:
+   * Fixed deadlock in the new transient handling
+     Window.cc
+   * Fixed minor issue with sending window to another workspace via 
+     blackbox-atoms.
+     Window.cc
+   * Fixed focus issue for transients.
+     Window.cc
+   * Fixed so Gnome win state is checked after window creation.
+     bug [ 548957 ] fspanel doesnt become sticky
+	 Window.cc
 *02/09/08:
    * Fixed new transient handling
+     Workspace.cc/hh, Screen.cc/hh, Window.cc/hh, Slit.cc, Toolbar.cc
 *02/09/07:
    * Fixed save workspace names when add/remove workspace (Thanks Simon Bowden)
      Workspacemenu.cc
