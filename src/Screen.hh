@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.14 2002/02/02 19:51:15 pekdon Exp $
+// $Id: Screen.hh,v 1.15 2002/02/07 14:48:56 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -248,6 +248,9 @@ public:
 				 WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
 
 private:
+	#ifdef GNOME
+	void initGnomeAtoms();
+	#endif
 	Theme *theme;
 	
 	Bool root_colormap_installed, managed, geom_visible;
@@ -266,9 +269,9 @@ private:
 	LinkedList<Netizen> *netizenList;
 	LinkedList<FluxboxWindow> *iconList;
 
-#ifdef		SLIT
+	#ifdef		SLIT
 	Slit *slit;
-#endif // SLIT
+	#endif // SLIT
 
 	Toolbar *toolbar;
 	Workspace *current_workspace;
