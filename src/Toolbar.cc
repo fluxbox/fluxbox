@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.116 2003/08/27 00:11:57 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.117 2003/08/27 19:56:56 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -584,7 +584,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     if (max_height < m_iconbar_theme.unfocusedText().font().height())
         max_height = m_iconbar_theme.unfocusedText().font().height();
 
-    if (*m_rc_height != 0)
+    if (theme().height() > 0)
+        max_height = theme().height();
+
+    if (*m_rc_height > 0 && *m_rc_height < 100)
         max_height = *m_rc_height;
 
     frame.height = max_height;
