@@ -1,6 +1,8 @@
 Changes for 0.1.6:
 *02/01/05:
    * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay )
+   * Fixed bug in Windowmenu (Thanks Chris Elston)
+   * Fixed error in nls/it_IT/Makefile.am
 *02/01/04:
    * Fixed keybinding bug (Thanks Devaux Fabien)
 *02/01/01:
