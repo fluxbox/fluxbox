@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.2 2003/08/16 12:12:21 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.3 2003/08/27 00:11:24 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -168,25 +168,22 @@ unsigned int SystemTray::borderWidth() const {
 
 bool SystemTray::clientMessage(const XClientMessageEvent &event) {
     static const int SYSTEM_TRAY_REQUEST_DOCK  =  0;
-    static const int SYSTEM_TRAY_BEGIN_MESSAGE =  1;
-    static const int SYSTEM_TRAY_CANCEL_MESSAGE = 2;
+    //    static const int SYSTEM_TRAY_BEGIN_MESSAGE =  1;
+    //    static const int SYSTEM_TRAY_CANCEL_MESSAGE = 2;
 
     if (event.message_type == 
         XInternAtom(FbTk::App::instance()->display(), "_NET_SYSTEM_TRAY_OPCODE", False)) {
 
         int type = event.data.l[1];
         if (type == SYSTEM_TRAY_REQUEST_DOCK) {
-#ifdef DEBUG
-            cerr<<__FILE__<<": REQUEST DOCK"<<endl;
-#endif // DEBUG
             addClient(event.data.l[2]);
         }
-#ifdef DEBUG
+        /*
         else if (type == SYSTEM_TRAY_BEGIN_MESSAGE)
             cerr<<"BEGIN MESSAGE"<<endl;
         else if (type == SYSTEM_TRAY_CANCEL_MESSAGE)
             cerr<<"CANCEL MESSAGE"<<endl;
-#endif // DEBUG
+        */
 
         return true;
     }
