@@ -3,8 +3,8 @@
 SUBDIRS = styles
 CLEANFILES = menu menu.in menu.pre init
 MAINTAINERCLEANFILES = Makefile.in
-pkgdata_DATA = titlebar keys menu init
-EXTRA_DIST= titlebar keys init.in generate_menu README.style README.menu README
+pkgdata_DATA = keys menu init
+EXTRA_DIST= keys init.in generate_menu README.style README.menu README
 all-local: menu init
 distclean-local:
 	rm -f *\~
