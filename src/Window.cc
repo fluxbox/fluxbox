@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.159 2003/05/07 11:33:56 fluxgen Exp $
+// $Id: Window.cc,v 1.160 2003/05/07 16:21:26 rathnor Exp $
 
 #include "Window.hh"
 
@@ -121,8 +121,20 @@ static Bool queueScanner(Display *, XEvent *e, char *args) {
     return false;
 }
 
-/// raise window and do the same for each transient it holds
+/// returns the deepest transientFor, asserting against a close loop
+WinClient *getRootTransientFor(WinClient *client) {
+    while (client->transientFor()) {
+        assert(client != client->transientFor());
+        client = client->transientFor();
+    }
+    return client;
+}
+
+
+/// raise window and do the same for each transient of the current window
 void raiseFluxboxWindow(FluxboxWindow &win) {
+    if (win.oplock) return;
+    win.oplock = true;
 
     if (!win.isIconic()) {
         win.getScreen().updateNetizenWindowRaise(win.getClientWindow());
@@ -130,33 +142,40 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
     }
 
     // for each transient do raise
-    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
+    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
     for (; it != it_end; ++it) {
-        if (!(*it)->isIconic())
-            raiseFluxboxWindow(*(*it));
+        if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
+            // TODO: should we also check if it is the active client?
+            raiseFluxboxWindow(*(*it)->fbwindow());
     }
+    win.oplock = false;
 }
 
 /// lower window and do the same for each transient it holds
 void lowerFluxboxWindow(FluxboxWindow &win) {
+    if (win.oplock) return;
+    win.oplock = true;
 
     if (!win.isIconic()) {
         win.getScreen().updateNetizenWindowLower(win.getClientWindow());
         win.getLayerItem().lower();
     }
 
-    // for each transient do lower
-    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
+    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
     for (; it != it_end; ++it) {
-        if (!(*it)->isIconic())
-            lowerFluxboxWindow(*(*it));
+        if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
+            // TODO: should we also check if it is the active client?
+            lowerFluxboxWindow(*(*it)->fbwindow());
     }
+    win.oplock = false;
 }
 
 /// raise window and do the same for each transient it holds
 void tempRaiseFluxboxWindow(FluxboxWindow &win) {
+    if (win.oplock) return;
+    win.oplock = true;
 
     if (!win.isIconic()) {
         // don't update netizen, as it is only temporary
@@ -164,12 +183,14 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
     }
 
     // for each transient do raise
-    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    WinClient::TransientList::const_iterator it = win.winClient().transientList().begin();
+    WinClient::TransientList::const_iterator it_end = win.winClient().transientList().end();
     for (; it != it_end; ++it) {
-        if (!(*it)->isIconic())
-            tempRaiseFluxboxWindow(*(*it));
+        if ((*it)->fbwindow() && !(*it)->fbwindow()->isIconic())
+            // TODO: should we also check if it is the active client?
+            tempRaiseFluxboxWindow(*(*it)->fbwindow());
     }
+    win.oplock = false;
 }
 
 class SetClientCmd:public FbTk::Command {
@@ -195,14 +216,15 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
 FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme, 
                              FbTk::XLayer &layer):
+    oplock(false),
     m_hintsig(*this),
     m_statesig(*this),
     m_layersig(*this),
     m_workspacesig(*this),
     m_diesig(*this),
     moving(false), resizing(false), shaded(false), maximized(false),
-    iconic(false), transient(false), focused(false),
-    stuck(false), modal(false), send_focus_message(false), m_managed(false),
+    iconic(false), focused(false),
+    stuck(false), send_focus_message(false), m_managed(false),
     screen(scr),
     timer(this),
     display(0),
@@ -227,14 +249,15 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
 FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme, 
                              FbTk::XLayer &layer):
+    oplock(false),
     m_hintsig(*this),
     m_statesig(*this),
     m_layersig(*this),
     m_workspacesig(*this),
     m_diesig(*this),
     moving(false), resizing(false), shaded(false), maximized(false),
-    iconic(false), transient(false), focused(false),
-    stuck(false), modal(false), send_focus_message(false), m_managed(false),
+    iconic(false), focused(false),
+    stuck(false), send_focus_message(false), m_managed(false),
     screen(scr),
     timer(this),
     display(0),
@@ -399,10 +422,10 @@ void FluxboxWindow::init() {
     m_managed = true; //this window is managed
 	
     // update transient infomation
-    updateTransientInfo();
+    m_client->updateTransientInfo();
 	
     // adjust the window decorations based on transience and window sizes
-    if (transient) {
+    if (m_client->isTransient()) {
         decorations.maximize =  functions.maximize = false;
         decorations.handle = decorations.border = false;
     }	
@@ -419,7 +442,7 @@ void FluxboxWindow::init() {
     upsize();
 
     bool place_window = true;
-    if (fluxbox->isStartup() || transient ||
+    if (fluxbox->isStartup() || m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
         setGravityOffsets();
 
@@ -454,8 +477,10 @@ void FluxboxWindow::init() {
     m_frame.resizeForClient(wattrib.width, wattrib.height);
 
     // if we're a transient then we should be on the same layer as our parent
-    if (isTransient())
-        getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());       
+    if (m_client->isTransient() && 
+        m_client->transientFor()->fbwindow() &&
+        m_client->transientFor()->fbwindow() != this)
+        getLayerItem().setLayer(m_client->transientFor()->fbwindow()->getLayerItem().getLayer());       
     else // if no parent then set default layer
         moveToLayer(m_layernum);
     
@@ -535,14 +560,6 @@ void FluxboxWindow::attachClient(WinClient &client) {
             btn->setOnClick(set_client_cmd);
             evm.add(*this, btn->window()); // we take care of button events for this
 
-            // update transients in client to have this as transient_for
-            WinClient::TransientList::iterator trans_it = 
-                (*client_it)->transientList().begin();
-            WinClient::TransientList::iterator trans_it_end = 
-                (*client_it)->transientList().end();
-            for (; trans_it != trans_it_end; ++trans_it) {
-                (*trans_it)->m_client->transient_for = this;
-            }
         }
 
         // add client and move over all attached clients 
@@ -571,14 +588,6 @@ void FluxboxWindow::attachClient(WinClient &client) {
         evm.add(*this, btn->window()); // we take care of button events for this
 
         client.m_win = this;    
-        // update transients in client to have this as transient_for
-        WinClient::TransientList::iterator trans_it = 
-            client.transientList().begin();
-        WinClient::TransientList::iterator trans_it_end = 
-            client.transientList().end();
-        for (; trans_it != trans_it_end; ++trans_it) {
-            (*trans_it)->m_client->transient_for = this;
-        }
 
         Fluxbox::instance()->saveWindowSearch(client.window(), this);
     }
@@ -632,7 +641,7 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     client.m_win = 0;
     m_clientlist.remove(&client);
 
-    if (m_client == &client && m_clientlist.size() == 0)
+    if (m_client == &client && m_clientlist.empty())
         m_client = 0;
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
@@ -719,7 +728,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 }
 
 bool FluxboxWindow::isGroupable() const {
-    if (isResizable() && isMaximizable() && !isTransient())
+    if (isResizable() && isMaximizable() && !winClient().isTransient())
         return true;
     return false;
 }
@@ -1136,12 +1145,12 @@ bool FluxboxWindow::setInputFocus() {
 
     bool ret = false;
 
-    if (m_client->transients.size() && modal) {
-        std::list<FluxboxWindow *>::iterator it = m_client->transients.begin();
-        std::list<FluxboxWindow *>::iterator it_end = m_client->transients.end();
+    if (!m_client->transients.empty() && m_client->isModal()) {
+        WinClient::TransientList::iterator it = m_client->transients.begin();
+        WinClient::TransientList::iterator it_end = m_client->transients.end();
         for (; it != it_end; ++it) {
-            if ((*it)->modal)
-                return (*it)->setInputFocus();
+            if ((*it)->isModal())
+                return (*it)->fbwindow()->setCurrentClient(**it,true);
         }
     } else {
         if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
@@ -1184,7 +1193,6 @@ void FluxboxWindow::show() {
    Unmaps the window and removes it from workspace list
 */
 void FluxboxWindow::iconify() {
-
     if (isIconic()) // no need to iconify if we're already
         return;
 
@@ -1202,22 +1210,28 @@ void FluxboxWindow::iconify() {
         client.setEventMask(NoEventMask);
         client.hide();
         client.setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
-        if (client.transientFor()) {
-            if (! client.transientFor()->isIconic()) {
-                client.transientFor()->iconify();
-            }            
+        if (client.transientFor() &&
+            client.transientFor()->fbwindow()) {
+            if (!client.transientFor()->fbwindow()->isIconic()) {
+                client.transientFor()->fbwindow()->iconify();
+            }
         }
 
-        if (client.transientList().size()) {
-            for_each(client.transientList().begin(),
-                     client.transientList().end(),
-                     mem_fun(&FluxboxWindow::iconify));
+        if (!client.transientList().empty()) {
+            WinClient::TransientList::iterator it = client.transientList().begin();
+            WinClient::TransientList::iterator it_end = client.transientList().end();
+            for (; it != it_end; it++)
+                if ((*it)->fbwindow()) 
+                    (*it)->fbwindow()->iconify();
         }
     }
 
 }
 
 void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
+    if (oplock) return;
+    oplock = true;
+
     if (iconic || reassoc) {
         screen.reassociateWindow(this, screen.getCurrentWorkspace()->workspaceID(), false);
     } else if (moving || workspace_number != screen.getCurrentWorkspace()->workspaceID())
@@ -1245,22 +1259,22 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
         m_frame.setFocus(focused);
 
 
-    if (reassoc && m_client->transients.size()) {
+    if (reassoc && !m_client->transients.empty()) {
         // deiconify all transients
         client_it = clientList().begin();
         for (; client_it != client_it_end; ++client_it) {
-            
-            std::list<FluxboxWindow *>::iterator trans_it = 
+            //TODO: Can this get stuck in a loop?
+            WinClient::TransientList::iterator trans_it = 
                 (*client_it)->transientList().begin();
-            std::list<FluxboxWindow *>::iterator trans_it_end = 
+            WinClient::TransientList::iterator trans_it_end = 
                 (*client_it)->transientList().end();
             for (; trans_it != trans_it_end; ++trans_it) {
-                (*trans_it)->deiconify(true, false);
-            }            
+                if ((*trans_it)->fbwindow())
+                    (*trans_it)->fbwindow()->deiconify(true, false);
+            }
         }
-        
     }
-
+    oplock = false;
     if (do_raise)
 	raise();
 }
@@ -1412,34 +1426,30 @@ void FluxboxWindow::raise() {
         deiconify();
 
     // get root window
-    FluxboxWindow *win = this;
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
+    WinClient *client = getRootTransientFor(m_client);
+
     // if we don't have any root window use this as root
-    if (win == 0) 
-        win = this;
+    if (client == 0) 
+        client = m_client;
 
     // raise this window and every transient in it
-    raiseFluxboxWindow(*win);
+    if (client->fbwindow())
+        raiseFluxboxWindow(*client->fbwindow());
 }
 
 void FluxboxWindow::lower() {
     if (isIconic())
         deiconify();
 
-    // get root window (i.e the bottom window)
-    FluxboxWindow *bottom = this;
-    while (bottom->getTransientFor()) {
-        bottom = bottom->getTransientFor();
-        assert(bottom != bottom->getTransientFor());
-    }
+    // get root window
+    WinClient *client = getRootTransientFor(m_client);
     
-    if (bottom == 0)
-        bottom = this;
+    // if we don't have any root window use this as root
+    if (client == 0) 
+        client = m_client;
 
-    lowerFluxboxWindow(*bottom);
+    if (client->fbwindow())
+        lowerFluxboxWindow(*client->fbwindow());
 }
 
 void FluxboxWindow::tempRaise() {
@@ -1447,17 +1457,14 @@ void FluxboxWindow::tempRaise() {
         deiconify();
 
     // get root window
-    FluxboxWindow *win = this;
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
+    WinClient *client = getRootTransientFor(m_client);
+    
     // if we don't have any root window use this as root
-    if (win == 0) 
-        win = this;
+    if (client == 0) 
+        client = m_client;
 
-    // raise this window and every transient in it
-    tempRaiseFluxboxWindow(*win);
+    if (client->fbwindow())
+        tempRaiseFluxboxWindow(*client->fbwindow());
 }
 
 
@@ -1466,84 +1473,103 @@ void FluxboxWindow::raiseLayer() {
     if (getLayerNum() == (Fluxbox::instance()->getMenuLayer()+1))
         return;
 
-    FluxboxWindow *win = this;
-        
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
+    // get root window
+    WinClient *client = getRootTransientFor(m_client);
+    
+    // if we don't have any root window use this as root
+    if (client == 0) 
+        client = m_client;
 
-    if (!win->isIconic()) {
-        screen.updateNetizenWindowRaise(win->getClientWindow());
-        win->getLayerItem().raiseLayer();
-        win->setLayerNum(win->getLayerItem().getLayerNum());
-    }
+    FluxboxWindow *win = client->fbwindow();
+    if (!win) return;
 
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    if (!win->isIconic())
+        screen.updateNetizenWindowRaise(client->window());
+
+    win->getLayerItem().raiseLayer();
+
+    // remember number just in case a transient happens to revisit this window
+    int layer_num = win->getLayerItem().getLayerNum();
+    win->setLayerNum(layer_num);
+
+    WinClient::TransientList::const_iterator it = client->transientList().begin();
+    WinClient::TransientList::const_iterator it_end = client->transientList().end();
     for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            screen.updateNetizenWindowRaise((*it)->getClientWindow());
-            (*it)->getLayerItem().raiseLayer();
-            (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
+        win = (*it)->fbwindow();
+        if (win && !win->isIconic()) {
+            screen.updateNetizenWindowRaise((*it)->window());
+            win->getLayerItem().moveToLayer(layer_num);
+            win->setLayerNum(layer_num);
         }
     }
 }
 
 void FluxboxWindow::lowerLayer() {
-    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = this;
+    // get root window
+    WinClient *client = getRootTransientFor(m_client);
     
-    while (bottom->getTransientFor()) {
-        bottom = bottom->getTransientFor();
-        assert(bottom != bottom->getTransientFor());
-    }
-    
-    win = bottom;
-    
+    // if we don't have any root window use this as root
+    if (client == 0) 
+        client = m_client;
+
+    FluxboxWindow *win = client->fbwindow();
+    if (!win) return;
+
     if (!win->isIconic()) {
-        screen.updateNetizenWindowLower(win->getClientWindow());
-        win->getLayerItem().lowerLayer();
-        win->setLayerNum(win->getLayerItem().getLayerNum());
+        screen.updateNetizenWindowLower(client->window());
     }
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    win->getLayerItem().lowerLayer();
+    // remember number just in case a transient happens to revisit this window
+    int layer_num = win->getLayerItem().getLayerNum();
+    win->setLayerNum(layer_num);
+
+    WinClient::TransientList::const_iterator it = client->transientList().begin();
+    WinClient::TransientList::const_iterator it_end = client->transientList().end();
     for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            screen.updateNetizenWindowLower((*it)->getClientWindow());
-            (*it)->getLayerItem().lowerLayer();
-            (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
+        win = (*it)->fbwindow();
+        if (win && !win->isIconic()) {
+            screen.updateNetizenWindowLower((*it)->window());
+            win->getLayerItem().moveToLayer(layer_num);
+            win->setLayerNum(layer_num);
         }
     }
-
 }
+
 
 void FluxboxWindow::moveToLayer(int layernum) {
     Fluxbox * fluxbox = Fluxbox::instance();
-
-    FluxboxWindow *win = this;
 
     // don't let it set its layer into menu area
     if (layernum <= fluxbox->getMenuLayer()) {
         layernum = fluxbox->getMenuLayer() + 1;
     }
 
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
+    // get root window
+    WinClient *client = getRootTransientFor(m_client);
+    
+    // if we don't have any root window use this as root
+    if (client == 0) 
+        client = m_client;
+
+    FluxboxWindow *win = client->fbwindow();
+    if (!win) return;
 
     if (!win->isIconic()) {
-        screen.updateNetizenWindowRaise(win->getClientWindow());
-        win->getLayerItem().moveToLayer(layernum);
-        win->setLayerNum(win->getLayerItem().getLayerNum());
+        screen.updateNetizenWindowRaise(client->window());
     }
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    win->getLayerItem().lowerLayer();
+    // remember number just in case a transient happens to revisit this window
+    layernum = win->getLayerItem().getLayerNum();
+    win->setLayerNum(layernum);
+
+    WinClient::TransientList::const_iterator it = client->transientList().begin();
+    WinClient::TransientList::const_iterator it_end = client->transientList().end();
     for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            screen.updateNetizenWindowRaise((*it)->getClientWindow());
-            (*it)->getLayerItem().moveToLayer(layernum);
-            (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
+        win = (*it)->fbwindow();
+        if (win && !win->isIconic()) {
+            screen.updateNetizenWindowRaise((*it)->window());
+            win->getLayerItem().moveToLayer(layernum);
+            win->setLayerNum(layernum);
         }
     }
 }
@@ -1992,7 +2018,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState);		
 			
-        if (transient || screen.doFocusNew())
+        if (client->isTransient() || screen.doFocusNew())
             setInputFocus();
         else
             setFocusFlag(false);			
@@ -2003,7 +2029,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
         iconic = false;
 
         // Auto-group from tab?
-        if (!transient) {
+        if (!client->isTransient()) {
             cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO check grouping here"<<endl;
         }
 
@@ -2055,12 +2081,18 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
         break;
 
     case XA_WM_TRANSIENT_FOR: {
-        bool was_transient = isTransient();
-        updateTransientInfo();
+        // TODO: this property notify should be handled by winclient
+        // but for now we'll justhave to update all transient info
+        //bool was_transient = isTransient();
+        ClientList::iterator it = clientList().begin();
+        ClientList::iterator it_end = clientList().end();
+        for (; it != it_end; it++) 
+            (*it)->updateTransientInfo();
         reconfigure();
+        // TODO: this is broken whilst we don't know which client
         // update our layer to be the same layer as our transient for
-        if (isTransient() && isTransient() != was_transient)
-            getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());
+        //if (isTransient() && isTransient() != was_transient)
+        //    getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());
             
     } break;
 
@@ -2097,7 +2129,8 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
                 functions.resize=false;
                 functions.maximize=false;
             } else {
-                if (! isTransient()) {
+                // TODO: is broken while handled by FbW, needs to be in WinClient
+                if (! winClient().isTransient()) {
                     decorations.maximize = true;
                     decorations.handle = true;
                     functions.maximize = true;	        
@@ -2929,12 +2962,6 @@ void FluxboxWindow::updateIcon() {
     }
 }
 
-void FluxboxWindow::updateTransientInfo() {
-    for_each(clientList().begin(),
-             clientList().end(),
-             mem_fun(&WinClient::updateTransientInfo));
-}
-
 void FluxboxWindow::restore(WinClient *client, bool remap) {
     if (client->m_win != this)
         return;
@@ -2987,39 +3014,6 @@ void FluxboxWindow::restore(bool remap) {
 
 void FluxboxWindow::timeout() {
     raise();
-}
-
-bool FluxboxWindow::isTransient() const { 
-    if (m_client == 0)
-        return false;
-    
-    return (m_client->transientFor() ? true : false); 
-}
-
-bool FluxboxWindow::hasTransient() const {
-    if (m_client == 0)
-        return false;
-    return (m_client->transients.size() ? true : false);
-}
-
-const std::list<FluxboxWindow *> &FluxboxWindow::getTransients() const { 
-    return m_client->transients; 
-} 
-
-std::list<FluxboxWindow *> &FluxboxWindow::getTransients() { 
-    return m_client->transients; 
-}
-
-const FluxboxWindow *FluxboxWindow::getTransientFor() const { 
-    if (m_client == 0)
-        return 0;
-    return m_client->transient_for; 
-}
-
-FluxboxWindow *FluxboxWindow::getTransientFor() { 
-    if (m_client == 0)
-        return 0;
-    return m_client->transient_for; 
 }
 
 Window FluxboxWindow::getClientWindow() const  { 

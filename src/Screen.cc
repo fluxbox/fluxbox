@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.146 2003/05/07 13:50:41 rathnor Exp $
+// $Id: Screen.cc,v 1.147 2003/05/07 16:21:25 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -973,8 +973,14 @@ void BScreen::removeClient(WinClient &client) {
     focused_list.remove(&client);
     if (cyc == &client) {
         cycling_window = focused_list.end();
-    } else if (focused && &focused->winClient() == &client)
-        Fluxbox::instance()->revertFocus(&focused->getScreen());
+    } else if (focused && &focused->winClient() == &client) {
+        // if we are focused, then give our focus to our transient parent
+        // or revert normally
+        if (client.transientFor() && client.transientFor()->fbwindow())
+            client.transientFor()->fbwindow()->setInputFocus();
+        else
+            Fluxbox::instance()->revertFocus(&focused->getScreen());
+    }
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.66 2003/05/01 13:19:36 rathnor Exp $
+// $Id: Window.hh,v 1.67 2003/05/07 16:21:26 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -238,8 +238,6 @@ public:
        @name accessors		
     */
     //@{
-    bool isTransient() const;
-    bool hasTransient() const;
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
     inline bool isVisible() const { return m_frame.isVisible(); }
@@ -267,11 +265,6 @@ public:
     inline const FbTk::XLayerItem &getLayerItem() const { return m_layeritem; }
     inline FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
 
-    const std::list<FluxboxWindow *> &getTransients() const;
-    std::list<FluxboxWindow *> &getTransients();
-    const FluxboxWindow *getTransientFor() const;
-    FluxboxWindow *getTransientFor();
-	
     Window getClientWindow() const;
 
     FbTk::FbWindow &getFbWindow() { return m_frame.window(); }
@@ -335,6 +328,9 @@ public:
         FluxboxWindow &m_win;
     };
 
+    bool oplock; // Used to help stop transient loops occurring by locking a window 
+                 // during certain operations
+
 private:
     void init();
 
@@ -347,8 +343,6 @@ private:
     void updateIcon();
     /// try to attach current attaching client to a window at pos x, y
     void attachTo(int x, int y);
-
-    void updateTransientInfo();
 
     bool getState();
     /// gets title string from client window and updates frame's title
@@ -387,8 +381,8 @@ private:
     std::string m_class_name; /// class name from WM_CLASS
 	
     //Window state
-    bool moving, resizing, shaded, maximized, iconic, transient,
-        focused, stuck, modal, send_focus_message, m_managed;
+    bool moving, resizing, shaded, maximized, iconic,
+        focused, stuck, send_focus_message, m_managed;
     WinClient *m_attaching_tab;
 
     BScreen &screen; /// screen on which this window exist

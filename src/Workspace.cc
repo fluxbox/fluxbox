@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.58 2003/05/04 23:38:06 rathnor Exp $
+// $Id: Workspace.cc,v 1.59 2003/05/07 16:21:26 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -57,13 +57,13 @@ using namespace std;
 
 namespace { // anonymous
 
-int countTransients(const FluxboxWindow &win) {
-    if (win.getTransients().size() == 0)
+int countTransients(const WinClient &client) {
+    if (client.transientList().empty())
         return 0;
     // now go throu the entire tree and count transients
-    size_t ret = win.getTransients().size();	
-    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    size_t ret = client.transientList().size();	
+    WinClient::TransientList::const_iterator it = client.transientList().begin();
+    WinClient::TransientList::const_iterator it_end = client.transientList().end();
     for (; it != it_end; ++it)
         ret += countTransients(*(*it));
 
@@ -219,52 +219,22 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     if (w->isFocused()) {
         if (screen.isSloppyFocus()) {
             Fluxbox::instance()->revertFocus(&screen);
-        } else if (w->isTransient() && w->getTransientFor() &&
-                   w->getTransientFor()->isVisible()) {
-            w->getTransientFor()->setInputFocus();
         } else {
-            FluxboxWindow *top = 0;
-
-            // this bit is pretty dodgy at present
-            // it gets the next item down, then scans through our windowlist to see if it is 
-            // in this workspace. If not, goes down more
-            /* //!! TODO! FbTk::XLayerItem *item = 0, *lastitem = w->getLayerItem();
-               do {
-               item = m_layermanager.getItemBelow(*lastitem);
-               Windows::iterator it = m_windowlist.begin();
-               Windows::iterator it_end = m_windowlist.end();
-               for (; it != it_end; ++it) {
-               if ((*it)->getLayerItem() == item) {
-               // found one!
-               top = *it;
-               }
-               }
-
-               lastitem = item;
-                
-               } while (item && !top);
-            
-               if (!top) {
-               // look upwards
-               lastitem = w->getLayerItem();
-               do {
-               item = m_layermanager.getItemAbove(*lastitem);
-               Windows::iterator it = m_windowlist.begin();
-               Windows::iterator it_end = m_windowlist.end();
-               for (; it != it_end; ++it) {
-               if ((*it)->getLayerItem() == item) {
-               // found one!
-               top = *it;
-               }
-               }
-               lastitem = item;
-               } while (item && !top);
-
-               }
-            */
-            if (top == 0|| !top->setInputFocus()) {
-                Fluxbox::instance()->revertFocus(&screen);
+            // go up the transient tree looking for a focusable window
+            WinClient *client = 0;
+            if (w->numClients() > 0) {
+                client = w->winClient().transientFor();
+                while (client) {
+                    if (client->fbwindow() &&
+                        client->fbwindow() != w && // can't be this window
+                        client->fbwindow()->isVisible() &&
+                        client->fbwindow()->setCurrentClient(*client, true))
+                        break;
+                    client = client->transientFor();
+                }
             }
+            if (client == 0) // we were unsuccessful
+                Fluxbox::instance()->revertFocus(&screen);
         }
     }
 	

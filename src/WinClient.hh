@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.2 2003/04/14 12:08:21 fluxgen Exp $
+// $Id: WinClient.hh,v 1.3 2003/05/07 16:21:26 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -36,7 +36,7 @@ class FluxboxWindow;
 /// Holds client window info 
 class WinClient:public FbTk::FbWindow {
 public:
-    typedef std::list<FluxboxWindow *> TransientList;
+    typedef std::list<WinClient *> TransientList;
 
     WinClient(Window win, FluxboxWindow &fbwin);
 
@@ -56,10 +56,13 @@ public:
 
     /// updates transient window information
     void updateTransientInfo();
-    FluxboxWindow *transientFor() { return transient_for; }
-    const FluxboxWindow *transientFor() const { return transient_for; }
+    WinClient *transientFor() { return transient_for; }
+    const WinClient *transientFor() const { return transient_for; }
     TransientList &transientList() { return transients; }
     const TransientList &transientList() const { return transients; }
+    bool isTransient() const { return transient_for != 0; }
+    bool isModal() const { return modal; }
+
     bool operator == (const FluxboxWindow &win) const {
         return (m_win == &win);
     }
@@ -73,8 +76,8 @@ public:
        remove or move these to private
      */
 
-    FluxboxWindow *transient_for; // which window are we a transient for?
-    std::list<FluxboxWindow *> transients;  // which windows are our transients?
+    WinClient *transient_for; // which window are we a transient for?
+    std::list<WinClient *> transients;  // which windows are our transients?
     Window window_group;
 
  
@@ -105,6 +108,7 @@ public:
     };
 
 private:
+    bool modal;
     std::string m_title, m_icon_title;
     WinClientSubj m_diesig;
 };
