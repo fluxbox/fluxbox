@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.8 2002/04/12 15:06:07 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.9 2002/08/14 22:43:30 fluxgen Exp $
 
 #ifndef STRINGUTIL_HH
 #define STRINGUTIL_HH
@@ -34,7 +34,7 @@ char *strdup(const char *);
 //Similar to `strstr' but this function ignores the case of both strings
 const char *strcasestr(const char *str, const char *ptn);
 	
-char *expandFilename(const char *filename);
+std::string expandFilename(const std::string &filename);
 int getStringBetween(std::string& out, const char *instr, const char first, const char last,
 	const char *ok_chars=" \t\n");
 

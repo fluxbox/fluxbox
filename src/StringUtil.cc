@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.10 2002/05/17 16:31:34 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.11 2002/08/14 22:43:30 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -66,18 +66,21 @@ const char *strcasestr(const char *str, const char *ptn) {
 //------------- expandFilename ----------------------
 // if ~ then expand it to home of user
 // returns expanded filename 
-// (note: the function creates new memory for the string)
 //---------------------------------------------------
-char *expandFilename(const char *filename) {
+string expandFilename(const std::string &filename) {
   
-	auto_ptr<char> retval( new char[strlen(filename)+strlen(getenv("HOME"))+2]);
-  if (filename[0]=='~') {
-    strcpy(retval.get(), getenv("HOME"));
-    strcat(retval.get(), &filename[1]);
-  } else
-    return StringUtil::strdup(filename);	//return unmodified value
+	string retval;
+	size_t pos = filename.find_first_not_of(" \t");
+	if (pos != std::string::npos && filename[pos] == '~') {  	
+    	retval = getenv("HOME");
+		if (pos != filename.size()) {
+			// copy from the character after '~'
+			retval += static_cast<const char *>(filename.c_str() + pos + 1);
+		}
+	} else
+		return filename; //return unmodified value
   
-  return StringUtil::strdup(retval.get());	//return modified value
+	return retval;
 }
 
 //------------- getStringBetween -----------
