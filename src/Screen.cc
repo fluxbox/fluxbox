@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.191 2003/06/23 14:33:43 fluxgen Exp $
+// $Id: Screen.cc,v 1.192 2003/06/24 13:56:01 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -55,6 +55,7 @@
 #include "FbWinFrame.hh"
 #include "FbWindow.hh"
 #include "Strut.hh"
+#include "SlitTheme.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -488,9 +489,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->update();
 
 #ifdef SLIT
-    if (slit())
-        slit()->reconfigure();
+    if (slit()) // this will load theme and reconfigure slit
+        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
 #endif // SLIT
+
     if (toolbar())
         toolbar()->reconfigure();
 
