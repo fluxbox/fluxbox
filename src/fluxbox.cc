@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.140 2003/05/12 04:23:31 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.141 2003/05/12 04:28:05 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -492,13 +492,19 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         char scrname[128], altscrname[128];
         sprintf(scrname, "session.screen%d", i);
         sprintf(altscrname, "session.Screen%d", i);
-        BScreen *screen = new BScreen(m_screen_rm, scrname, altscrname, i, getNumberOfLayers());
+        BScreen *screen = new BScreen(m_screen_rm, 
+                                      scrname, altscrname,
+                                      i, getNumberOfLayers());
         if (! screen->isScreenManaged()) {
             delete screen;			
             continue;
         }
-        m_screen_list.push_back(screen);
-        
+#ifdef HAVE_RANDR
+        XRRSelectInput(disp, screen->rootWindow().window(),
+                       RRScreenChangeNotifyMask);
+#endif // HAVE_RANDR
+
+        m_screen_list.push_back(screen);        
         m_atomhandler.push_back(&screen->getToolbarHandler());
         
         // attach screen signals to this
