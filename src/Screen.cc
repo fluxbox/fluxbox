@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.77 2002/11/12 14:37:18 rathnor Exp $
+// $Id: Screen.cc,v 1.78 2002/11/12 22:58:40 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -971,24 +971,24 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	session_stack[i++] = configmenu->tabmenu().windowID();
 	session_stack[i++] = configmenu->windowID();
 
-	#ifdef		SLIT
+#ifdef		SLIT
 	session_stack[i++] = slit->menu().getDirectionmenu()->windowID();
 	session_stack[i++] = slit->menu().getPlacementmenu()->windowID();
-	#ifdef XINERAMA
+#ifdef XINERAMA
 	if (hasXinerama()) {
 		session_stack[i++] = slit->menu().getHeadmenu()->windowID();
 	}
-	#endif // XINERAMA
+#endif // XINERAMA
 	session_stack[i++] = slit->menu().windowID();
-	#endif // SLIT
+#endif // SLIT
 
 	session_stack[i++] =
 		m_toolbar->getMenu()->getPlacementmenu()->windowID();
-	#ifdef XINERAMA
+#ifdef XINERAMA
 	if (hasXinerama()) {
 		session_stack[i++] = m_toolbar->getMenu()->getHeadmenu()->windowID();
 	}
-	#endif // XINERAMA
+#endif // XINERAMA
 	session_stack[i++] = m_toolbar->getMenu()->windowID();
 
 	Rootmenus::iterator rit = rootmenuList.begin();
@@ -1001,10 +1001,10 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	if (m_toolbar->isOnTop())
 		session_stack[i++] = m_toolbar->getWindowID();
 
-	#ifdef		SLIT
+#ifdef		SLIT
 	if (slit->isOnTop())
 		session_stack[i++] = slit->getWindowID();
-	#endif // SLIT
+#endif // SLIT
 	if (!workspace_stack.empty()) {
 		Workspace::Stack::const_reverse_iterator it = workspace_stack.rbegin();
 		Workspace::Stack::const_reverse_iterator it_end = workspace_stack.rend();
