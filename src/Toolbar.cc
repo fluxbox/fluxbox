@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.151 2004/08/31 15:26:38 rathnor Exp $
+// $Id: Toolbar.cc,v 1.152 2004/08/31 19:38:42 akir Exp $
 
 #include "Toolbar.hh"
 
@@ -68,6 +68,7 @@
   #include <string.h>
 #endif
 #include <iterator>
+#include <typeinfo>
 
 using namespace std;
 
@@ -832,26 +833,27 @@ void Toolbar::setupMenus() {
                                                     *this,
                                                     _FBTEXT(Toolbar, OnHead, "Toolbar on Head", "Title of toolbar on head menu")));
     }
-
-    typedef list<pair<const char *, Toolbar::Placement> > Placements;
+    
+    typedef pair<const char*, Toolbar::Placement> PlacementP;
+    typedef list<PlacementP> Placements;
     Placements place_menu;
 
     // menu is 3 wide, 5 down
-    place_menu.push_back(make_pair(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Toolbar::TOPLEFT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, LeftTop, "Left Top", "Left Top"), Toolbar::LEFTTOP));
-    place_menu.push_back(make_pair(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Toolbar::LEFTCENTER));
-    place_menu.push_back(make_pair(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Toolbar::LEFTBOTTOM));
-    place_menu.push_back(make_pair(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Toolbar::BOTTOMLEFT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Toolbar::TOPCENTER));
-    place_menu.push_back(make_pair((const char *)0, Toolbar::TOPLEFT));
-    place_menu.push_back(make_pair((const char *)0, Toolbar::TOPLEFT));
-    place_menu.push_back(make_pair((const char *)0, Toolbar::TOPLEFT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Toolbar::BOTTOMCENTER));
-    place_menu.push_back(make_pair(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Toolbar::TOPRIGHT));
-    place_menu.push_back(make_pair(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), Toolbar::RIGHTTOP));
-    place_menu.push_back(make_pair(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Toolbar::RIGHTCENTER));
-    place_menu.push_back(make_pair(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Toolbar::RIGHTBOTTOM));
-    place_menu.push_back(make_pair(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopLeft, "Top Left", "Top Left"), Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftTop, "Left Top", "Left Top"), Toolbar::LEFTTOP));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftCenter, "Left Center", "Left Center"), Toolbar::LEFTCENTER));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, LeftBottom, "Left Bottom", "Left Bottom"), Toolbar::LEFTBOTTOM));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomLeft, "Bottom Left", "Bottom Left"), Toolbar::BOTTOMLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopCenter, "Top Center", "Top Center"), Toolbar::TOPCENTER));
+    place_menu.push_back(PlacementP((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP((const char *)0, Toolbar::TOPLEFT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomCenter, "Bottom Center", "Bottom Center"), Toolbar::BOTTOMCENTER));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, TopRight, "Top Right", "Top Right"), Toolbar::TOPRIGHT));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, RightTop, "Right Top", "Right Top"), Toolbar::RIGHTTOP));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Toolbar::RIGHTCENTER));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Toolbar::RIGHTBOTTOM));
+    place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT));
     
 
     placementMenu().setMinimumSublevels(3);
