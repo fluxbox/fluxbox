@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.2 2003/06/12 15:14:03 rathnor Exp $
+//$Id: StringUtil.hh,v 1.3 2003/07/01 01:49:13 rathnor Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -45,6 +45,8 @@ int getStringBetween(std::string& out, const char *instr,
 
 /// converts a string to lover case
 void toLower(char * const conv);
+
+std::string toLower(const std::string &conv);
 
 
 /// Breaks a string into tokens

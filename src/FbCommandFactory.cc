@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.5 2003/06/30 22:21:33 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.6 2003/07/01 01:49:09 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -153,10 +153,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "prevworkspace" && arguments.size() == 0)
         return new PrevWorkspaceCmd();
     else if (command == "workspace") {
-        int num = 0;
+        int num = 1; // workspaces appear 1-indexed to the user
         if (!arguments.empty())
             num = atoi(arguments.c_str());
-        return new JumpToWorkspaceCmd(num);
+        return new JumpToWorkspaceCmd(num-1);
     } else if (command == "nextwindow")
         return new NextWindowCmd(atoi(arguments.c_str()));
     else if (command == "prevwindow")

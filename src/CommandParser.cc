@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandParser.cc,v 1.1 2003/06/30 14:44:43 fluxgen Exp $
+// $Id: CommandParser.cc,v 1.2 2003/07/01 01:49:09 rathnor Exp $
 
 #include "CommandParser.hh"
 
@@ -79,7 +79,7 @@ FbTk::Command *CommandParser::parseLine(const std::string &line) {
       command<<"] arguments=["<<arguments<<"]"<<endl;
 #endif // DEBUG
 
-    FbTk::StringUtil::toLower(command);
+    command = FbTk::StringUtil::toLower(command);
 
     // we didn't find any matching command in default commands,
     // so we search in the command creators modules for a matching command string

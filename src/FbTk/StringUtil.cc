@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.2 2003/06/12 15:14:02 rathnor Exp $
+// $Id: StringUtil.cc,v 1.3 2003/07/01 01:49:13 rathnor Exp $
 
 #include "StringUtil.hh"
 
@@ -150,6 +150,13 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
 void toLower(char * const conv) {
     for (size_t byte_pos = 0; byte_pos < strlen(conv); ++byte_pos)
         conv[byte_pos] = tolower(conv[byte_pos]);
+}
+
+std::string toLower(const std::string &conv) {
+    char ret_str[conv.size()+1]; 
+    ::strcpy(ret_str, conv.c_str());
+    toLower(ret_str);
+    return ret_str;
 }
 
 }; // end namespace StringUtil
