@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRootWindow.cc,v 1.1 2003/05/10 22:50:19 fluxgen Exp $
+// $Id: FbRootWindow.cc,v 1.2 2003/05/12 04:29:50 fluxgen Exp $
 
 #include "FbRootWindow.hh"
 #include "App.hh"
@@ -60,4 +60,8 @@ FbRootWindow::FbRootWindow(int screen_num):
         m_visual = DefaultVisual(disp, screen_num);
         m_colormap = DefaultColormap(disp, screen_num);
     }
+}
+
+void FbRootWindow::updateGeometry() {
+    FbWindow::updateGeometry();
 }

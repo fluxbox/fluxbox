@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRootWindow.hh,v 1.1 2003/05/10 22:50:19 fluxgen Exp $
+// $Id: FbRootWindow.hh,v 1.2 2003/05/12 04:29:23 fluxgen Exp $
 
 #ifndef FBROOTWINDOW_HH
 #define FBROOTWINDOW_HH
@@ -37,7 +37,7 @@ public:
     void hide() { }
     // we should not assign a new window to this
     FbTk::FbWindow &operator = (Window win) { return *this; }
-
+    void updateGeometry();
     inline Visual *visual() const { return m_visual; }
     inline Colormap colormap() const { return m_colormap; } 
 
