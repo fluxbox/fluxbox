@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.9 2002/01/11 09:20:42 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.10 2002/01/11 12:30:22 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -198,15 +198,15 @@ void Configmenu::itemSelected(int button, int index) {
 				break;
 			case 4:  // focus new windows
 				screen->saveFocusNew((! screen->doFocusNew()));
-
-				
-			case 6: // maximize over slit
-				screen->saveMaxOverSlit((! screen->doMaxOverSlit()));
-				setItemSelected(index, screen->doMaxOverSlit());
-				break;	
 			
 				setItemSelected(index, screen->doFocusNew());
 				break;
+				
+			case 6: // maximize over slit
+				screen->saveMaxOverSlit( !screen->doMaxOverSlit() );
+				setItemSelected(index, screen->doMaxOverSlit());
+				break;	
+
 
 			case 5:  // focus last window on workspace
 				screen->saveFocusLast((! screen->doFocusLast()));
