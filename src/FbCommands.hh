@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.20 2004/10/06 11:40:28 akir Exp $
+// $Id: FbCommands.hh,v 1.21 2004/10/21 10:23:58 akir Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -121,7 +121,6 @@ public:
     void execute();
 };
 
-} // end namespace FbCommands
 
 class SetResourceValueCmd: public FbTk::Command {
 public:
@@ -168,5 +167,7 @@ private:
     Mode m_mode;
     Destination m_dest;
 };
+
+} // end namespace FbCommands
 
 #endif // FBCOMMANDS_HH
