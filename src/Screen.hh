@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.62 2003/01/12 18:46:01 fluxgen Exp $
+// $Id: Screen.hh,v 1.63 2003/01/12 23:54:10 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -53,6 +53,7 @@ class Netizen;
 class Slit;
 class Toolbar;
 class FbWinFrameTheme;
+class RootTheme;
 
 namespace FbTk {
 class MenuTheme;
@@ -393,6 +394,7 @@ private:
 
 
     } resource;
+    std::auto_ptr<RootTheme> m_root_theme;
 };
 
 
