@@ -51,6 +51,9 @@ $ #MaxOverSlit
 $ #SloppyWindowGrouping
 # Hafsig Fönster Gruppering
 $ #WorkspaceWarping
-# Workspace Warping
+# Dra fönster mellan arbetsytor
 $ #DesktopWheeling
-# Desktop Wheeling
+# Ändra arbetsyta med mushjulet
+$ #AntiAlias
+# Kantutjämning
+

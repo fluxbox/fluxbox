@@ -54,3 +54,5 @@ $ #WorkspaceWarping
 # ウィンドウドラッグでワークスペースを移動
 $ #DesktopWheeling
 # マウスホイールでワークスペース切り換え
+$ #AntiAlias
+# アンチエイリアス

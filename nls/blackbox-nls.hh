@@ -43,6 +43,7 @@ enum {
 	ConfigmenuSloppyWindowGrouping = 0x19,
 	ConfigmenuWorkspaceWarping = 0x1a,
 	ConfigmenuDesktopWheeling = 0x1b,
+	ConfigmenuAntiAlias = 0x1c,
 
 	IconSet = 0x4,
 	IconIcons = 0x1,

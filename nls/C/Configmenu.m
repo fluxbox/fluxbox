@@ -54,3 +54,5 @@ $ #WorkspaceWarping
 # Workspace Warping
 $ #DesktopWheeling
 # Desktop Wheeling
+$ #AntiAlias
+# AntiAlias
