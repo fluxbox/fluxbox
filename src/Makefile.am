@@ -60,7 +60,12 @@ REGEXP_SOURCE = RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
 endif
 endif
 if TOOLBAR_SRC
-TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc ToolbarTheme.hh ToolbarTheme.cc IconBar.hh IconBar.cc
+TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc \
+	ToolbarTheme.hh ToolbarTheme.cc Iconbar.hh Iconbar.cc ToolbarItem.hh ToolbarItem.cc \
+	ClockTool.hh ClockTool.cc WorkspaceNameTool.hh WorkspaceNameTool.cc \
+	IconbarTool.hh IconbarTool.cc IconbarTheme.hh IconbarTheme.cc \
+	ToolTheme.hh ToolTheme.cc \
+	IconButton.hh IconButton.cc IconButtonTheme.hh IconButtonTheme.cc
 endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
@@ -93,6 +98,8 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbCommandFactory.hh FbCommandFactory.cc \
 	Shape.hh Shape.cc \
 	MenuTheme.hh MenuTheme.cc \
+	Container.hh Container.cc \
+	TextTheme.hh TextTheme.cc \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
