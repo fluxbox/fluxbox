@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.46 2002/04/12 14:56:15 fluxgen Exp $
+// $Id: Screen.cc,v 1.47 2002/04/28 19:54:10 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -589,35 +589,39 @@ void BScreen::reconfigure(void) {
 	if (tmp) image_control->removeImage(tmp);
 
 	XSetWindowBorderWidth(getBaseDisplay()->getXDisplay(), geom_window,
-												theme->getBorderWidth());
+		theme->getBorderWidth());
 	XSetWindowBorder(getBaseDisplay()->getXDisplay(), geom_window,
-									 theme->getBorderColor().getPixel());
+		theme->getBorderColor().getPixel());
 
+	//reconfigure menus
 	workspacemenu->reconfigure();
 	iconmenu->reconfigure();
 
+	configmenu->reconfigure();
+	
 	{
 		int remember_sub = rootmenu->currentSubmenu();
 		initMenu();
 		raiseWindows(0, 0);
-		rootmenu->reconfigure();
+		rootmenu->reconfigure();		
 		rootmenu->drawSubmenu(remember_sub);
 	}
 
-	configmenu->reconfigure();
 
 	toolbar->reconfigure();
 
 #ifdef		SLIT
 	slit->reconfigure();
 #endif // SLIT
-
+	
+	//reconfigure workspaces
 	Workspaces::iterator wit = workspacesList.begin();
 	Workspaces::iterator wit_end = workspacesList.end();
 	for (; wit != wit_end; ++wit) {
 		(*wit)->reconfigure();
 	}
 
+	//reconfigure Icons
 	Icons::iterator iit = iconList.begin();
 	Icons::iterator iit_end = iconList.end();
 	for (; iit != iit_end; ++iit) {
@@ -1194,7 +1198,7 @@ void BScreen::initMenu(void) {
 		rootmenuList.erase(rootmenuList.begin(), rootmenuList.end());
 
 		while (rootmenu->numberOfItems())
-			rootmenu->remove(0);
+			rootmenu->remove(0);			
 	} else
 		rootmenu = new Rootmenu(this);
 
