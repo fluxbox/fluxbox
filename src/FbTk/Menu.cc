@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.9 2003/02/15 01:48:16 fluxgen Exp $
+// $Id: Menu.cc,v 1.10 2003/02/16 15:03:22 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -178,7 +178,6 @@ int Menu::insert(const char *label, RefCount<Command> &cmd, int pos) {
 
 int Menu::insert(const char *label, int pos) {
     return insert(new MenuItem(label), pos);
-    return menuitems.size();
 }
 
 int Menu::insert(const char *label, Menu *submenu, int pos) {
@@ -191,7 +190,8 @@ int Menu::insert(MenuItem *item, int pos) {
         menuitems.push_back(item);
     } else {
         menuitems.insert(menuitems.begin() + pos, item);
-    }    
+    }
+    return menuitems.size();
 }
 
 int Menu::remove(unsigned int index) {
