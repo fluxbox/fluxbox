@@ -2,6 +2,7 @@
 
 SUBDIRS = data doc nls src util
 MAINTAINERCLEANFILES = aclocal.m4 config.h.in configure Makefile.in stamp-h.in
+ACLOCAL_AMFLAGS = -I .
 
 uninstall-local:
 	rmdir $(pkgdatadir)
