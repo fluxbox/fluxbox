@@ -8,15 +8,14 @@ BUGS:
 
   * vertical toolbar alignment reported broken with pixmap themes
 
-  * Some builds/distros seem to require all supported locales to be 
+  * Some builds/distros seem to require all supported locales to be
     installed to build properly (e.g. mdk, gentoo reported), this ok?
-
 
   * Window handle is invisible sometimes.
 
-  * Default style stuff is completely broken (e.g. try breaking the path to 
+  * Default style stuff is completely broken (e.g. try breaking the path to
     your styleFile in init file)
-    => I also couldn't see an error about that, but maybe it got lost in 
+    => I also couldn't see an error about that, but maybe it got lost in
        debug output? Check that too.
 
   * Some menus don't close when you click on items.
@@ -44,22 +43,29 @@ BUGS:
     turn off remember functionality when restarting (only use it for
     first instance).
 
+  * Focus problems with aterm.
+
+
 Other TODO:
 
 FAQ items for:
 
-  * "My window (e.g. mplayer/xmms) stops updating when I move
-    windows around"
+  * "My window (e.g. mplayer/xmms) stops updating with non-opaque
+    window moving.
     - outline moving does this, it's not a bug, etc etc.
+
+  * Focus problems with gtk2 apps.
+    - This is a gtk2 bug, it also happens in gdm.
 
 
 Fixed bugs (or not-our-fault bugs):
+
   * KDE dockapp support (e.g klipper)
     => fixed
 
   * Icons menu isn't in Workspaces menu
     => fixed
-	
+
   * Some people get weird transparency behaviour:
     - this appears to be a problem with nvidia drivers, make sure
       RenderAccel is off (Option "RenderAccel" "false"). (thanks RJNFC
@@ -74,7 +80,7 @@ Fixed bugs (or not-our-fault bugs):
   * Transient windows seem to not have a X border - is this right?
     => no, they ought to have a border
 
-  * Slit (check toolbar too) layernum isn't initialised to resource 
+  * Slit (check toolbar too) layernum isn't initialised to resource
     value on init. Also check why Fluxbox::Layer is used rather than int.
     => Fixed by reorganising the way ResourceManager works.
        Fluxbox::Layer is used so that we can give some layers names
@@ -98,7 +104,7 @@ Fixed bugs (or not-our-fault bugs):
                     layer-wise (other transient flashes)
     => fixed
 
-  * workspace menu sometimes rendered poorly when empty. Possibly only 
+  * workspace menu sometimes rendered poorly when empty. Possibly only
     when the only window in it was iconified. Screenshot (Thanks EsKi):
     http://www.cse.unsw.edu.au/~simonb/fluxbox/bad_workspace_menu.png
     => fixed
