@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.6 2003/08/11 14:59:07 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.7 2003/09/10 21:28:13 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -50,6 +50,7 @@ public:
     void rotate();
     /// scales the pixmap to specified size
     void scale(unsigned int width, unsigned int height);
+    void resize(unsigned int width, unsigned int height);
     /// drops pixmap and returns it
     Pixmap release();
 
