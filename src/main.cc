@@ -20,11 +20,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.20 2003/07/11 15:03:02 fluxgen Exp $
+// $Id: main.cc,v 1.21 2003/07/18 15:44:36 rathnor Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
 #include "version.h"
+#include "defaults.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -55,8 +56,15 @@ void showInfo(ostream &ostr) {
 #endif
     ostr<<endl<<"Compiler version: "<<__VERSION__<<endl;    
 
+    ostr<<endl<<"Defaults:"<<endl;
+    ostr<<"    menu: "<<DEFAULTMENU<<endl;
+    ostr<<"   style: "<<DEFAULTSTYLE<<endl;
+ 
+    ostr<<"    keys: "<<DEFAULTKEYSFILE<<endl;
+    ostr<<"    init: "<<DEFAULT_INITFILE<<endl;
+
     const char NOT[] = "-";
-    ostr<<"Compiled options ("<<NOT<<" => disabled): "<<endl<<
+    ostr<<endl<<"Compiled options ("<<NOT<<" => disabled): "<<endl<<
 #ifndef DEBUG
         NOT<<
 #endif // DEBUG                

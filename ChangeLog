@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/19:
+   * Add compiled-in defaults to fluxbox -info (thanks Matt Hope)
+     main.cc
    * Redo ResourceManager so that it loads resources on registration, and
      only opens the database in blocks of requests    (Simon)
      - fixes initial loading of init resources (e.g. toolbar.layer)
