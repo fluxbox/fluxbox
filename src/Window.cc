@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.23 2002/01/27 13:13:33 fluxgen Exp $
+// $Id: Window.cc,v 1.24 2002/02/04 06:53:14 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -77,18 +77,18 @@ windowmenu(0),
 tab(0)
 {
 
-#ifdef		DEBUG
+	#ifdef DEBUG
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
-#	ifdef		NLS
+	#ifdef NLS
 			WindowSet, WindowCreating,
-#	else // !NLS
+	#else // !NLS
 			0, 0,
-#	endif // NLS
+	#endif // NLS
 			"FluxboxWindow::FluxboxWindow(): creating 0x%lx\n"),
 		w);
-#endif // DEBUG
+	#endif // DEBUG
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
@@ -116,24 +116,24 @@ tab(0)
 			switch (dir[i]) {
 				case Fluxbox::SHADE:
 					decorations.shade = true;
-					break;
+				break;
 				case Fluxbox::MAXIMIZE:
 					decorations.maximize = true;	
-					break;
+				break;
 				case Fluxbox::MINIMIZE:
 					decorations.iconify = true;			
 				break;
 				case Fluxbox::STICK:
 					decorations.sticky = true;
-					break;
+				break;
 				case Fluxbox::CLOSE:
 					decorations.close = true;
-					break;
+				break;
 				case Fluxbox::MENU:
 					decorations.menu = true;
-					break;
+				break;
 				default:
-					break;
+				break;
 			}
 		}
 		//next right
@@ -161,8 +161,7 @@ tab(0)
 	// fetch client size and placement
 	XWindowAttributes wattrib;
 	if ((! XGetWindowAttributes(display, client.window, &wattrib)) ||
-			(! wattrib.screen) || wattrib.override_redirect) {		
-		//fluxbox->ungrab();
+			(! wattrib.screen) || wattrib.override_redirect) {
 		throw FluxboxWindow::XGETWINDOWATTRIB;
 	}
 
@@ -197,12 +196,12 @@ tab(0)
 	getWMHints();
 	getWMNormalHints();
 
-#ifdef		SLIT
+	#ifdef		SLIT
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
 		throw NOERROR;
 	}
-#endif // SLIT
+	#endif // SLIT
 
 	managed = true;
 	fluxbox->saveWindowSearch(client.window, this);
@@ -392,27 +391,28 @@ tab(0)
 	}
 
 	setFocusFlag(false);
-
+	/*
 	#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
 	#endif
-	
+	*/
 	//TODO move this
 	#ifdef GNOME		
 	int val = workspace_number; 
-	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
-		PropModeReplace, (unsigned char *)&val, 1);
+	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
 	#endif
 
 }
 
 
 FluxboxWindow::~FluxboxWindow(void) {
+	#ifdef GNOME
+	XDeleteProperty (display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom());
+	#endif
+
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
-	//TODO: Move this to Workspace::removeWindow
-	if (client.transient_for)	
-		fluxbox->setFocusedWindow(client.transient_for);	
 	
 	if (moving || resizing) {
 		screen->hideGeometry();
@@ -448,6 +448,9 @@ FluxboxWindow::~FluxboxWindow(void) {
 	if (client.blackbox_hint)
 		XFree(client.blackbox_hint);		
 
+	//TODO: Move this to Workspace::removeWindow
+	if (client.transient_for)	
+		fluxbox->setFocusedWindow(client.transient_for);	
 	
 	if (client.window_group)
 		fluxbox->removeGroupSearch(client.window_group);
@@ -576,30 +579,29 @@ Window FluxboxWindow::createToplevelWindow(int x, int y, unsigned int width,
 {
 	XSetWindowAttributes attrib_create;
 	unsigned long create_mask = CWBackPixmap | CWBorderPixel | CWColormap |
-															CWOverrideRedirect | CWEventMask;
+		CWOverrideRedirect | CWEventMask;
 
 	attrib_create.background_pixmap = None;
 	attrib_create.colormap = screen->getColormap();
 	attrib_create.override_redirect = True;
 	attrib_create.event_mask = ButtonPressMask | ButtonReleaseMask |
-														 ButtonMotionMask | EnterWindowMask;
+		ButtonMotionMask | EnterWindowMask;
 
 	return (XCreateWindow(display, screen->getRootWindow(), x, y, width, height,
-			borderwidth, screen->getDepth(), InputOutput,
-			screen->getVisual(), create_mask,
-			&attrib_create));
+		borderwidth, screen->getDepth(), InputOutput,
+		screen->getVisual(), create_mask,
+		&attrib_create));
 }
 
 
 Window FluxboxWindow::createChildWindow(Window parent, Cursor cursor) {
 	XSetWindowAttributes attrib_create;
-	unsigned long create_mask = CWBackPixmap | CWBorderPixel |
-															CWEventMask;
+	unsigned long create_mask = CWBackPixmap | CWBorderPixel | CWEventMask;
 
 	attrib_create.background_pixmap = None;
 	attrib_create.event_mask = ButtonPressMask | ButtonReleaseMask |
-														 ButtonMotionMask | ExposureMask |
-														 EnterWindowMask | LeaveWindowMask;
+		ButtonMotionMask | ExposureMask |
+		EnterWindowMask | LeaveWindowMask;
 
 	if (cursor) {
 		create_mask |= CWCursor;
@@ -607,8 +609,8 @@ Window FluxboxWindow::createChildWindow(Window parent, Cursor cursor) {
 	}
 
 	return (XCreateWindow(display, parent, 0, 0, 1, 1, 0,
-			screen->getDepth(), InputOutput, screen->getVisual(),
-			create_mask, &attrib_create));
+		screen->getDepth(), InputOutput, screen->getVisual(),
+		create_mask, &attrib_create));
 }
 
 
@@ -626,13 +628,13 @@ void FluxboxWindow::associateClientWindow(void) {
 
 	XFlush(display);
 
-	attrib_set.event_mask = PropertyChangeMask | StructureNotifyMask |
-													FocusChangeMask;
-	attrib_set.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask |
-																		 ButtonMotionMask;
+	attrib_set.event_mask = 
+		PropertyChangeMask | StructureNotifyMask | FocusChangeMask;
+	attrib_set.do_not_propagate_mask = 
+		ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
 
 	XChangeWindowAttributes(display, client.window, CWEventMask|CWDontPropagate,
-													&attrib_set);
+		&attrib_set);
 
 #ifdef		SHAPE
 	if (Fluxbox::instance()->hasShapeExtensions()) {
@@ -642,13 +644,13 @@ void FluxboxWindow::associateClientWindow(void) {
 		unsigned int ufoo;
 
 		XShapeQueryExtents(display, client.window, &frame.shaped, &foo, &foo,
-							&ufoo, &ufoo, &foo, &foo, &foo, &ufoo, &ufoo);
+			&ufoo, &ufoo, &foo, &foo, &foo, &ufoo, &ufoo);
 
 		if (frame.shaped) {
 			XShapeCombineShape(display, frame.window, ShapeBounding,
-						frame.mwm_border_w, frame.y_border +
-						frame.mwm_border_w, client.window,
-						ShapeBounding, ShapeSet);
+				frame.mwm_border_w, frame.y_border +
+				frame.mwm_border_w, client.window,
+				ShapeBounding, ShapeSet);
 
 			int num = 1;
 			XRectangle xrect[2];
@@ -665,22 +667,23 @@ void FluxboxWindow::associateClientWindow(void) {
 			}
 
 			XShapeCombineRectangles(display, frame.window, ShapeBounding, 0, 0,
-					xrect, num, ShapeUnion, Unsorted);
+				xrect, num, ShapeUnion, Unsorted);
 		}
 	}
 #endif // SHAPE
 	//create the buttons
 	if (decorations.iconify) 
-		createButton(Fluxbox::MINIMIZE, FluxboxWindow::iconifyPressed_cb, FluxboxWindow::iconifyButton_cb, FluxboxWindow::iconifyDraw_cb);			
+		createButton(Fluxbox::MINIMIZE, FluxboxWindow::iconifyPressed_cb, 
+			FluxboxWindow::iconifyButton_cb, FluxboxWindow::iconifyDraw_cb);
 	if (decorations.maximize)
-		createButton(Fluxbox::MAXIMIZE, FluxboxWindow::maximizePressed_cb, FluxboxWindow::maximizeButton_cb, 
-				FluxboxWindow::maximizeDraw_cb);
+		createButton(Fluxbox::MAXIMIZE, FluxboxWindow::maximizePressed_cb, 
+			FluxboxWindow::maximizeButton_cb, FluxboxWindow::maximizeDraw_cb);
 	if (decorations.close) 
 		createButton(Fluxbox::CLOSE, FluxboxWindow::closePressed_cb, 
-				FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);		
+			FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);		
 	if (decorations.sticky)
 		createButton(Fluxbox::STICK, FluxboxWindow::stickyPressed_cb, 
-				FluxboxWindow::stickyButton_cb, FluxboxWindow::stickyDraw_cb);
+			FluxboxWindow::stickyButton_cb, FluxboxWindow::stickyDraw_cb);
 
 	if (decorations.menu)//TODO
 		createButton(Fluxbox::MENU, 0, 0, 0);
@@ -758,7 +761,7 @@ void FluxboxWindow::decorate(void) {
 		if (tmp) image_ctrl->removeImage(tmp);
 
 		XSetWindowBorder(display, frame.title,
-										 screen->getBorderColor()->getPixel());
+			 screen->getBorderColor()->getPixel());
 
 		decorateLabel();
 		
@@ -821,7 +824,7 @@ void FluxboxWindow::decorate(void) {
 	}
 		
 	XSetWindowBorder(display, frame.window,
-									 screen->getBorderColor()->getPixel());
+		screen->getBorderColor()->getPixel());
 }
 
 
@@ -860,10 +863,10 @@ void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventP
 }
 
 Window FluxboxWindow::findTitleButton(int type) {
-	for (unsigned int i=0; i<buttonlist.size(); i++)
+	for (unsigned int i=0; i<buttonlist.size(); i++) {
 		if (buttonlist[i].type == type)
 			return buttonlist[i].win;
-
+	}
 	return 0;
 }
 void FluxboxWindow::stickyButton_cb(FluxboxWindow *t, XButtonEvent *be) {
@@ -914,26 +917,25 @@ void FluxboxWindow::stickyDraw_cb(FluxboxWindow *t, Window w, bool pressed) {
 	t->drawButtonBase(w, pressed);
 	if (t->stuck) {
 		XFillRectangle(t->display, w, 
-								((t->focused) ? t->screen->getWindowStyle()->b_pic_focus_gc :
-					t->screen->getWindowStyle()->b_pic_unfocus_gc),
-					t->frame.button_w/2-t->frame.button_w/4, t->frame.button_h/2-t->frame.button_h/4,
-					t->frame.button_w/2, t->frame.button_h/2);
+			((t->focused) ? t->screen->getWindowStyle()->b_pic_focus_gc :
+			t->screen->getWindowStyle()->b_pic_unfocus_gc),
+			t->frame.button_w/2-t->frame.button_w/4, t->frame.button_h/2-t->frame.button_h/4,
+			t->frame.button_w/2, t->frame.button_h/2);
 	} else {
 		XFillRectangle(t->display, w, 
-								((t->focused) ? t->screen->getWindowStyle()->b_pic_focus_gc :
-					t->screen->getWindowStyle()->b_pic_unfocus_gc),
-					t->frame.button_w/2, t->frame.button_h/2,
-					t->frame.button_w/5, t->frame.button_h/5);
+			((t->focused) ? t->screen->getWindowStyle()->b_pic_focus_gc :
+			t->screen->getWindowStyle()->b_pic_unfocus_gc),
+			t->frame.button_w/2, t->frame.button_h/2,
+			t->frame.button_w/5, t->frame.button_h/5);
 	}
 }
 
 void FluxboxWindow::iconifyDraw_cb(FluxboxWindow *t, Window w, bool pressed) {
 	t->drawButtonBase(w, pressed);
 	XDrawRectangle(t->display, w,
-			((t->focused) ? t->screen->getWindowStyle()->b_pic_focus_gc :
-			t->screen->getWindowStyle()->b_pic_unfocus_gc),
-			2, t->frame.button_h - 5, t->frame.button_w - 5, 2);
-
+		((t->focused) ? t->screen->getWindowStyle()->b_pic_focus_gc :
+		t->screen->getWindowStyle()->b_pic_unfocus_gc),
+		2, t->frame.button_h - 5, t->frame.button_w - 5, 2);
 }
 
 void FluxboxWindow::maximizeDraw_cb(FluxboxWindow *t, Window w, bool pressed) {
@@ -1065,7 +1067,7 @@ void FluxboxWindow::positionButtons(bool redecorate_label) {
 	//Draw the label
 	frame.label_w = lw - by;
 	XMoveResizeWindow(display, frame.label, lx, frame.bevel_w,
-										frame.label_w, frame.label_h);
+		frame.label_w, frame.label_h);
 	if (redecorate_label) 
 		decorateLabel();
 	if (tab) {
@@ -1537,6 +1539,10 @@ void FluxboxWindow::getBlackboxHints(void) {
 
 void FluxboxWindow::configure(int dx, int dy,
 							 unsigned int dw, unsigned int dh) {
+	//we don't want negative size
+	if (dw <0 || dh<0)
+		return;
+
 	bool send_event = (frame.x != dx || frame.y != dy);
 
 	if ((dw != frame.width) || (dh != frame.height)) {
@@ -1598,7 +1604,7 @@ void FluxboxWindow::configure(int dx, int dy,
 	if (send_event && ! moving) {
 		client.x = dx + frame.mwm_border_w + screen->getBorderWidth();
 		client.y = dy + frame.y_border + frame.mwm_border_w +
-							 screen->getBorderWidth();
+			screen->getBorderWidth();
 
 		XEvent event;
 		event.type = ConfigureNotify;
@@ -2079,7 +2085,8 @@ void FluxboxWindow::stick(void) {
 		blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 
 	}
-	
+	//find a STICK button in window
+	redrawAllButtons();
 	setState(current_state);
 }
 
@@ -2530,17 +2537,17 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 
 void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 	if (ue->window == client.window) {
-#ifdef		DEBUG
+		#ifdef DEBUG
 		fprintf(stderr,
 			I18n::instance()->getMessage(
-#ifdef		NLS
-					 WindowSet, WindowUnmapNotify,
-#else // !NLS
-					 0, 0,
-#endif // NLS
-					 "FluxboxWindow::unmapNotifyEvent() for 0x%lx\n"),
-						client.window);
-#endif // DEBUG
+		#ifdef NLS
+			 WindowSet, WindowUnmapNotify,
+		#else // !NLS
+			 0, 0,
+		#endif // NLS
+			 "FluxboxWindow::unmapNotifyEvent() for 0x%lx\n"),
+			client.window);
+		#endif // DEBUG
 
 		Fluxbox *fluxbox = Fluxbox::instance();
 		BaseDisplay::GrabGuard gg(*fluxbox);
@@ -3099,7 +3106,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 			resizing = true;
 
-			fluxbox->grab();
+//			fluxbox->grab();
 
 			int gx, gy;
 			frame.grab_x = me->x - screen->getBorderWidth();
