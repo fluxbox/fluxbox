@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.cc,v 1.1 2003/08/11 14:28:38 fluxgen Exp $
+// $Id: TextTheme.cc,v 1.2 2003/08/12 00:20:47 fluxgen Exp $
 
 #include "TextTheme.hh"
 
@@ -38,6 +38,7 @@ TextTheme::TextTheme(FbTk::Theme &theme,
                                    theme.screenNum()), 0, 0)) {
     // load default font
     m_font->load("fixed");
+    update();
 }
 
 TextTheme::~TextTheme() {
