@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.8 2004/09/01 08:00:24 akir Exp $
+// $Id: MenuItem.cc,v 1.9 2004/09/10 16:48:15 akir Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -37,11 +37,13 @@ void MenuItem::click(int button, int time) {
         m_command->execute();
 }
 
-void MenuItem::draw(FbDrawable &draw, 
+void MenuItem::draw(FbDrawable &draw,
                     const MenuTheme &theme,
                     bool highlight,
-                    int x, int y, 
+                    int x, int y,
                     unsigned int width, unsigned int height) const {
+
+    Display *disp = App::instance()->display();
     //
     // Icon
     //
@@ -58,11 +60,8 @@ void MenuItem::draw(FbDrawable &draw,
             int icon_x = x + theme.bevelWidth();
             int icon_y = y + theme.bevelWidth();
             // enable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         m_icon->pixmap->mask().drawable());
-            XSetClipOrigin(FbTk::App::instance()->display(),
-                           gc, icon_x, icon_y);
+            XSetClipMask(disp, gc, m_icon->pixmap->mask().drawable());
+            XSetClipOrigin(disp, gc, icon_x, icon_y);
 
             draw.copyArea(m_icon->pixmap->pixmap().drawable(),
                           gc,
@@ -71,9 +70,7 @@ void MenuItem::draw(FbDrawable &draw,
                           m_icon->pixmap->width(), m_icon->pixmap->height());
 
             // restore clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         None);
+            XSetClipMask(disp, gc, None);
         }
 
     }
@@ -90,7 +87,7 @@ void MenuItem::draw(FbDrawable &draw,
     int text_y = y, text_x = x;
 
     int text_w = theme.frameFont().textWidth(label().c_str(), label().size());
-    
+
     int height_offset = theme.itemHeight() - (theme.frameFont().height() + 2*theme.bevelWidth());
     text_y = y + theme.bevelWidth() + theme.frameFont().ascent() + height_offset/2; ///2 + height/2;
 
@@ -98,15 +95,15 @@ void MenuItem::draw(FbDrawable &draw,
     case FbTk::LEFT:
         text_x = x + theme.bevelWidth() + height + 1;
         break;
-			
+
     case FbTk::RIGHT:
         text_x = x +  width - (height + theme.bevelWidth() + text_w);
-        break;			
+        break;
     default: //center
         text_x = x + ((width + 1 - text_w) / 2);
         break;
     }
-    
+
     theme.frameFont().drawText(draw.drawable(), // drawable
                                theme.screenNum(),
                                tgc.gc(),
@@ -127,11 +124,8 @@ void MenuItem::draw(FbDrawable &draw,
     // ToggleItem
     //
     if (isToggleItem() && theme.unselectedPixmap().pixmap().drawable() != 0) {
-        XSetClipMask(FbTk::App::instance()->display(),
-                     gc,
-                     theme.unselectedPixmap().mask().drawable());
-        XSetClipOrigin(FbTk::App::instance()->display(),
-                       gc, sel_x, y);
+        XSetClipMask(disp, gc, theme.unselectedPixmap().mask().drawable());
+        XSetClipOrigin(disp, gc, sel_x, y);
         // copy bullet pixmap to drawable
         draw.copyArea(theme.unselectedPixmap().pixmap().drawable(),
                       gc,
@@ -140,22 +134,17 @@ void MenuItem::draw(FbDrawable &draw,
                       theme.unselectedPixmap().width(),
                       theme.unselectedPixmap().height());
         // disable clip mask
-        XSetClipMask(FbTk::App::instance()->display(),
-                     gc,
-                     None);
+        XSetClipMask(disp, gc, None);
     }
 
-    // 
+    //
     // Submenu
     //
     if (submenu()) {
         if (theme.bulletPixmap().pixmap().drawable() != 0) {
             // enable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         theme.bulletPixmap().mask().drawable());
-            XSetClipOrigin(FbTk::App::instance()->display(),
-                           gc, sel_x, y);
+            XSetClipMask(disp, gc, theme.bulletPixmap().mask().drawable());
+            XSetClipOrigin(disp, gc, sel_x, y);
             // copy bullet pixmap to frame
             draw.copyArea(theme.bulletPixmap().pixmap().drawable(),
                           gc,
@@ -164,9 +153,7 @@ void MenuItem::draw(FbDrawable &draw,
                           theme.bulletPixmap().width(),
                           theme.bulletPixmap().height());
             // disable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         None);
+            XSetClipMask(disp, gc, None);
         } else {
             unsigned int half_w = height / 2, quarter_w = height / 4;
             int sel_y = y + height/4;
@@ -193,11 +180,11 @@ void MenuItem::draw(FbDrawable &draw,
                     tri[2].x = 0;
                     tri[2].y = -4;
                 }
-			
+
                 draw.fillPolygon(gc, tri, 3, Convex,
                                  CoordModePrevious);
                 break;
-			
+
             case MenuTheme::DIAMOND:
                 XPoint dia[4];
 
@@ -233,7 +220,7 @@ void MenuItem::setIcon(const std::string &filename, int screen_num) {
         m_icon.reset(new Icon);
 
     m_icon->filename = FbTk::StringUtil::expandFilename(filename);
-    m_icon->pixmap.reset(Image::load(m_icon->filename.c_str(), 
+    m_icon->pixmap.reset(Image::load(m_icon->filename.c_str(),
                          screen_num));
 }
 
@@ -245,8 +232,8 @@ unsigned int MenuItem::width(const MenuTheme &theme) const {
     // textwidth + bevel width on each side of the text
     const unsigned int icon_width = height(theme);
     const unsigned int normal = theme.frameFont().textWidth(label().c_str(), label().size()) +
-                                2 * (theme.bevelWidth() + icon_width); 
-    
+                                2 * (theme.bevelWidth() + icon_width);
+
     return m_icon.get() == 0 ? normal : normal + icon_width;
 }
 

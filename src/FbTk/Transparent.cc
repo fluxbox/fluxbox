@@ -1,6 +1,6 @@
 // Transparent.cc for FbTk - Fluxbox Toolkit
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.6 2004/06/07 11:46:05 rathnor Exp $
+// $Id: Transparent.cc,v 1.7 2004/09/10 16:48:15 akir Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
@@ -47,7 +47,7 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
     XRenderPictFormat pic_format;
     pic_format.type  = PictTypeDirect;
     pic_format.depth = 8; // alpha with bit depth 8
-    pic_format.direct.alphaMask = 0xff;    
+    pic_format.direct.alphaMask = 0xff;
     XRenderPictFormat *format = XRenderFindFormat(disp, PictFormatType |
                                                   PictFormatDepth | PictFormatAlphaMask,
                                                   &pic_format, 0);
@@ -109,8 +109,8 @@ Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int s
     // check for RENDER support
     if (!s_init) {
         int major_opcode, first_event, first_error;
-        if (XQueryExtension(disp, "RENDER", 
-                            &major_opcode, 
+        if (XQueryExtension(disp, "RENDER",
+                            &major_opcode,
                             &first_event, &first_error) == False) {
             s_render = false;
         } else { // we got RENDER support
@@ -119,7 +119,7 @@ Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int s
         s_init = true;
     }
 
-    
+
 #ifdef HAVE_XRENDER
     if (!s_render)
         return;
@@ -127,13 +127,13 @@ Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int s
     allocAlpha(m_alpha);
 
 
-    XRenderPictFormat *format = 
-        XRenderFindVisualFormat(disp, 
+    XRenderPictFormat *format =
+        XRenderFindVisualFormat(disp,
                                 DefaultVisual(disp, screen_num));
 
 
     if (src != 0 && format != 0) {
-        m_src_pic = XRenderCreatePicture(disp, src, format, 
+        m_src_pic = XRenderCreatePicture(disp, src, format,
                                          0, 0);
     }
 
@@ -181,8 +181,8 @@ void Transparent::setDest(Drawable dest, int screen_num) {
     // create new dest pic if we have a valid dest drawable
     if (dest != 0) {
 
-        XRenderPictFormat *format = 
-            XRenderFindVisualFormat(disp, 
+        XRenderPictFormat *format =
+            XRenderFindVisualFormat(disp,
                                     DefaultVisual(disp, screen_num));
         if (format == 0) {
             _FB_USES_NLS;
@@ -191,7 +191,7 @@ void Transparent::setDest(Drawable dest, int screen_num) {
             cerr<<endl;
         }
         m_dest_pic = XRenderCreatePicture(disp, dest, format, 0, 0);
-       
+
 
     }
     m_dest = dest;
@@ -208,7 +208,7 @@ void Transparent::setSource(Drawable source, int screen_num) {
     if (m_alpha_pic != 0)
         freeAlpha();
 
-    Display *disp = FbTk::App::instance()->display();   
+    Display *disp = FbTk::App::instance()->display();
 
     if (m_src_pic != 0) {
         XRenderFreePicture(disp, m_src_pic);
@@ -220,8 +220,8 @@ void Transparent::setSource(Drawable source, int screen_num) {
     // create new source pic if we have a valid source drawable
     if (m_source != 0) {
 
-        XRenderPictFormat *format = 
-            XRenderFindVisualFormat(disp, 
+        XRenderPictFormat *format =
+            XRenderFindVisualFormat(disp,
                                     DefaultVisual(disp, screen_num));
         if (format == 0) {
             _FB_USES_NLS;
@@ -229,8 +229,8 @@ void Transparent::setSource(Drawable source, int screen_num) {
             fprintf(stderr, _FBTKTEXT(Error, NoRenderVisualFormat, "Failed to find format for screen(%d)", "XRenderFindVisualFormat failed... include %d for screen number"), screen_num);
             cerr<<endl;
         }
-        m_src_pic = XRenderCreatePicture(disp, m_source, format, 
-                                         0, 0);    
+        m_src_pic = XRenderCreatePicture(disp, m_source, format,
+                                         0, 0);
     }
 
     // recreate new alpha
@@ -247,13 +247,13 @@ void Transparent::render(int src_x, int src_y,
         m_alpha_pic  == 0 || !s_render)
         return;
     // render src+alpha to dest picture
-    XRenderComposite(FbTk::App::instance()->display(), 
-                     PictOpOver, 
+    XRenderComposite(FbTk::App::instance()->display(),
+                     PictOpOver,
                      m_src_pic,
-                     m_alpha_pic, 
-                     m_dest_pic, 
+                     m_alpha_pic,
+                     m_dest_pic,
                      src_x, src_y,
-                     0, 0, 
+                     0, 0,
                      dest_x, dest_y,
                      width, height);
 
@@ -284,4 +284,4 @@ void Transparent::freeAlpha() {
 }; // end namespace FbTk
 
 
- 
+
