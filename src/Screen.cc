@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $id$
+// $Id: Screen.cc,v 1.20 2002/02/07 14:46:23 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -294,30 +294,7 @@ resource(rm, screenname, altscreenname)
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
 	#ifdef GNOME
-
-	/* create the GNOME window */
-	Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
-		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
-
-	/* supported WM check */
-	 XChangeProperty(getBaseDisplay()->getXDisplay(),
-		getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-
-	XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
-		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-	 
-	Atom gnomeatomlist[] = {
-		getBaseDisplay()->getGnomeWorkspaceAtom(),
-		getBaseDisplay()->getGnomeWorkspaceCountAtom(),
-		getBaseDisplay()->getGnomeStateAtom()
-	};
-
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(), 
-		getBaseDisplay()->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
-		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
-
+	initGnomeAtoms();
 	#endif 
 
 	#ifdef NEWWMSPEC
@@ -1718,3 +1695,33 @@ void BScreen::leftWorkspace(void) {
 	if (getCurrentWorkspaceID() > 0)
 		changeWorkspaceID(getCurrentWorkspaceID()-1);
 }
+
+#ifdef GNOME
+void BScreen::initGnomeAtoms(void) {
+
+	/* create the GNOME window */
+	Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
+		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
+
+	/* supported WM check */
+	 XChangeProperty(getBaseDisplay()->getXDisplay(),
+		getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+
+	XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
+		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+	 
+	Atom gnomeatomlist[] = {
+		getBaseDisplay()->getGnomeWorkspaceAtom(),
+		getBaseDisplay()->getGnomeWorkspaceCountAtom(),
+		getBaseDisplay()->getGnomeStateAtom(),
+		getBaseDisplay()->getGnomeHintsAtom()
+	};
+
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(), 
+		getBaseDisplay()->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
+		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
+
+}
+#endif //!GNOME
