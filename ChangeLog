@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *05/01/24:
+  * Fix a compileproblem for FreeBSD4.x (Mathias)
+    FbTk/Timer.hh
   * Updated a lot of Copyright dates and mail-info (Mathias)
   * Close #1107227, #1107222
     data/Makefile.am util/fluxbox-generate_menu.in
