@@ -5,7 +5,7 @@ bin_SCRIPTS = bsetbg fluxbox-generate_menu
 bin_PROGRAMS =		bsetroot
 bsetroot_SOURCES =	bsetroot.cc bsetroot.hh
 bsetroot_LDADD =	../src/BaseDisplay.o ../src/i18n.o ../src/FbAtoms.o \
-	../src/StringUtil.o ../src/FbTk/libFbTk.a
+	../src/FbTk/libFbTk.a
 
 MAINTAINERCLEANFILES =	Makefile.in
 EXTRA_DIST=bsetbg fluxbox-generate_menu
