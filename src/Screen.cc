@@ -1,8 +1,8 @@
 // Screen.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Screen.cc for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.91 2002/12/04 22:43:18 fluxgen Exp $
+// $Id: Screen.cc,v 1.92 2002/12/13 20:19:05 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -190,7 +190,6 @@ getString() {
 template<>
 string Resource<Toolbar::Placement>::
 getString() {
-    cerr<<"m_value = "<<m_value<<endl;
     switch (m_value) {
     case Toolbar::TOPLEFT:
         return string("TopLeft");
@@ -300,7 +299,6 @@ BScreen::BScreen(ResourceManager &rm,
             getScreenNumber(), XVisualIDFromVisual(getVisual()),
             getDepth());
 
-    rootmenu = 0;
     Fluxbox * const fluxbox = Fluxbox::instance();
 #ifdef HAVE_GETPID
     pid_t bpid = getpid();
@@ -421,12 +419,12 @@ BScreen::BScreen(ResourceManager &rm,
     m_slit.reset(new Slit(this));
 #endif // SLIT
 
-    initMenu();
+    initMenu(); // create and initiate rootmenu
 
     raiseWindows(Workspace::Stack());
 
     //update menus
-    rootmenu->update();
+    m_rootmenu->update();
 
     if (m_slit.get())
         m_slit->reconfigure();
@@ -535,7 +533,6 @@ BScreen::~BScreen() {
     }
     netizenList.clear();
 
-    delete rootmenu;
     delete workspacemenu;
     delete m_iconmenu;
     delete configmenu;
@@ -624,11 +621,11 @@ void BScreen::reconfigure() {
     configmenu->reconfigure();
 	
     {
-        int remember_sub = rootmenu->currentSubmenu();
+        int remember_sub = m_rootmenu->currentSubmenu();
         initMenu();
         raiseWindows(Workspace::Stack());
-        rootmenu->reconfigure();		
-        rootmenu->drawSubmenu(remember_sub);
+        m_rootmenu->reconfigure();		
+        m_rootmenu->drawSubmenu(remember_sub);
     }
 
     m_toolbar->setPlacement(*resource.toolbar_placement);
@@ -663,7 +660,7 @@ void BScreen::rereadMenu() {
     initMenu();
     raiseWindows(Workspace::Stack());
 
-    rootmenu->reconfigure();
+    m_rootmenu->reconfigure();
 }
 
 
@@ -1053,7 +1050,7 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
     for (; rit != rit_end; ++rit) {
         session_stack[i++] = (*rit)->windowID();
     }
-    session_stack[i++] = rootmenu->windowID();
+    session_stack[i++] = m_rootmenu->windowID();
 
     if (m_toolbar->isOnTop())
         session_stack[i++] = m_toolbar->getWindowID();
@@ -1235,13 +1232,13 @@ void BScreen::raiseFocus() {
 void BScreen::initMenu() {
     I18n *i18n = I18n::instance();
 	
-    if (rootmenu) {
+    if (m_rootmenu.get()) {
         rootmenuList.erase(rootmenuList.begin(), rootmenuList.end());
 
-        while (rootmenu->numberOfItems())
-            rootmenu->remove(0);			
+        while (m_rootmenu->numberOfItems())
+            m_rootmenu->remove(0);			
     } else
-        rootmenu = new Rootmenu(this);
+        m_rootmenu.reset(new Rootmenu(this));
 
     bool defaultMenu = true;
     Fluxbox * const fb = Fluxbox::instance();
@@ -1264,8 +1261,8 @@ void BScreen::initMenu() {
                             string label;
                             err = StringUtil::getStringBetween(label, line.c_str()+pos, '(', ')');
                             if (err>0) {
-                                rootmenu->setLabel(label.c_str());
-                                defaultMenu = parseMenuFile(menu_file, rootmenu, row);
+                                m_rootmenu->setLabel(label.c_str());
+                                defaultMenu = parseMenuFile(menu_file, m_rootmenu.get(), row);
                             } else
                                 cerr<<"Error in menufile. Line("<<row<<")"<<endl;
                             break;
@@ -1285,19 +1282,19 @@ void BScreen::initMenu() {
     }
 
     if (defaultMenu) {
-        rootmenu->setInternalMenu();
-        rootmenu->insert(i18n->getMessage(
+        m_rootmenu->setInternalMenu();
+        m_rootmenu->insert(i18n->getMessage(
             FBNLS::ScreenSet, FBNLS::Screenxterm,
             "xterm"),
                          BScreen::EXECUTE,
                          i18n->getMessage(
                              FBNLS::ScreenSet, FBNLS::Screenxterm,
                              "xterm"));
-        rootmenu->insert(i18n->getMessage(
+        m_rootmenu->insert(i18n->getMessage(
             FBNLS::ScreenSet, FBNLS::ScreenRestart,
             "Restart"),
                          BScreen::RESTART);
-        rootmenu->insert(i18n->getMessage(
+        m_rootmenu->insert(i18n->getMessage(
             FBNLS::ScreenSet, FBNLS::ScreenExit,
             "Exit"),
                          BScreen::EXIT);
