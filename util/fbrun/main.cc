@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.12 2004/09/03 14:18:48 akir Exp $
+// $Id: main.cc,v 1.13 2004/09/12 09:42:43 akir Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -43,7 +43,7 @@ void showUsage(const char *progname) {
         "   -h [height]                 Window height in pixels"<<endl<<
         "   -display [display string]   Display name"<<endl<<
         "   -pos [x] [y]                Window position in pixels"<<endl<<
-        "   -pos nearmouse              Window position near mouse"<<endl<<
+        "   -nearmouse                  Window position near mouse"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
         "   -na                         Disable antialias"<<endl<<
