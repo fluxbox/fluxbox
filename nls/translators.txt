@@ -1,5 +1,24 @@
+Adding a new translation
+------------------------
+
+1. Take the directory C, copy to a directory named by your locale.
+2. Edit Makefile.am add your directory to the SUBDIRS.
+3. Copy a Makefile.am from some other translation, the newest or 
+   the one closest to your directory.
+4. Edit the Makefile.am in your directory. Change ::
+
+     THE_LANG = sv_SE
+     CODESET = ISO-8859-1
+
+5. Add your directory at the end of configure.in.
+6. run ./autogen.sh (in upper directory)
+7. run ./configure
+     
+
+
 List of translators contrubutors
 --------------------------------
 
 pl_PL: offtza@gazeta.pl
 nl_NL: Han Boetes <han@mijncomputer.nl>
+sl_SI: Ales Jagodnik <ales.jagodnik@siol.net>
