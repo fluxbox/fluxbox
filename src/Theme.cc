@@ -1,5 +1,5 @@
 // Theme.cc for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.11 2002/01/08 21:37:39 fluxgen Exp $
+// $Id: Theme.cc,v 1.12 2002/01/09 00:08:19 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -76,9 +76,9 @@ m_imagecontrol(ic),
 m_display(display),
 m_colormap(colormap),
 m_screennum(screennum),
-m_rootcommand(rootcommand ? "" : rootcommand) //we dont want to send 0-pointer to std::string
+m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointer to std::string	
 {
-	
+
 	//default settings	
 	m_menustyle.titlefont.set = m_menustyle.framefont.set = m_toolbarstyle.font.set =
 		m_windowstyle.font.set = m_windowstyle.tab.font.set =  0;
