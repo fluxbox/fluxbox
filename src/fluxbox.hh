@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.67 2003/07/19 13:51:24 rathnor Exp $
+// $Id: fluxbox.hh,v 1.68 2003/07/23 10:43:30 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -281,6 +281,7 @@ private:
     bool m_have_shape; ///< if shape is supported by server
     const char *m_RC_PATH;
     const char *m_RC_INIT_FILE;
+    Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.173 2003/07/21 15:26:57 rathnor Exp $
+// $Id: fluxbox.cc,v 1.174 2003/07/23 10:43:30 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -423,7 +423,14 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_server_grabs(0),
       m_randr_event_type(0),
       m_RC_PATH("fluxbox"),
-      m_RC_INIT_FILE("init") {
+      m_RC_INIT_FILE("init"),
+      // For KDE dock applets
+      // KDE v1.x
+      m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
+                                    "KWM_DOCKWINDOW", False)),
+      // KDE v2.x
+      m_kwm2_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
+                                    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)) {
       
 
     if (s_singleton != 0)
@@ -780,6 +787,52 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
         break;
     case MapRequest: {
+#ifdef SLIT
+#ifdef KDE
+        //Check and see if client is KDE dock applet.
+        //If so add to Slit
+        bool iskdedockapp = false;
+        Atom ajunk;
+        int ijunk;
+        unsigned long *data = (unsigned long *) 0, uljunk;
+        Display *disp = FbTk::App::instance()->display();
+        // Check if KDE v2.x dock applet
+        if (XGetWindowProperty(disp, e->xmaprequest.window,
+                               m_kwm2_dockwindow, 0l, 1l, False,
+                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
+                               &uljunk, (unsigned char **) &data) == Success) {
+					
+            if (data)
+                iskdedockapp = True;
+            XFree((void *) data);
+            data = 0;
+        }
+
+        // Check if KDE v1.x dock applet
+        if (!iskdedockapp) {
+            if (XGetWindowProperty(disp, e->xmaprequest.window,
+                                   m_kwm1_dockwindow, 0l, 1l, False,
+                                   m_kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
+                                   &uljunk, (unsigned char **) &data) == Success && data) {
+                iskdedockapp = (data && data[0] != 0);
+                XFree((void *) data);
+                data = 0;
+            }
+        }
+
+        if (iskdedockapp) {
+            XSelectInput(disp, e->xmaprequest.window, StructureNotifyMask);
+            ScreenList::iterator it = m_screen_list.begin();			
+            for (; (*it) == m_screen_list.back(); ++it) {
+                if ((*it)->slit())
+                    (*it)->slit()->addClient(e->xmaprequest.window);
+            }
+
+            return; // dont create a FluxboxWindow for this one
+        }
+#endif // KDE
+#endif // SLIT
+
 #ifdef DEBUG
         cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
 #endif // DEBUG

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.73 2003/07/19 11:55:49 rathnor Exp $
+// $Id: Slit.cc,v 1.74 2003/07/23 10:42:12 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -969,45 +969,6 @@ void Slit::handleEvent(XEvent &event) {
         removeClient(event.xdestroywindow.window, false);
     } else if (event.type == UnmapNotify) {        
        removeClient(event.xunmap.window);
-    } else if (event.type == MapRequest) {
-#ifdef KDE
-        //Check and see if client is KDE dock applet.
-        //If so add to Slit
-        bool iskdedockapp = false;
-        Atom ajunk;
-        int ijunk;
-        unsigned long *data = (unsigned long *) 0, uljunk;
-        Display *disp = FbTk::App::instance()->display();
-        // Check if KDE v2.x dock applet
-        if (XGetWindowProperty(disp, event.xmaprequest.window,
-                               m_kwm2_dockwindow, 0l, 1l, False,
-                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
-                               &uljunk, (unsigned char **) &data) == Success) {
-					
-            if (data)
-                iskdedockapp = True;
-            XFree((void *) data);
-            data = 0;
-        }
-
-        // Check if KDE v1.x dock applet
-        if (!iskdedockapp) {
-            if (XGetWindowProperty(disp, event.xmaprequest.window,
-                                   m_kwm1_dockwindow, 0l, 1l, False,
-                                   m_kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
-                                   &uljunk, (unsigned char **) &data) == Success && data) {
-                iskdedockapp = (data && data[0] != 0);
-                XFree((void *) data);
-                data = 0;
-            }
-        }
-
-        if (iskdedockapp) {
-            XSelectInput(disp, event.xmaprequest.window, StructureNotifyMask);
-            addClient(event.xmaprequest.window);
-        }
-#endif //KDE
-        
     }
 }
 
