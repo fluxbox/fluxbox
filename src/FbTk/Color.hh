@@ -1,5 +1,5 @@
 // Color.hh for Fluxbox Window Manager 
-// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at fluxbox dot org)
+// Copyright (c) 2002 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // from Image.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
