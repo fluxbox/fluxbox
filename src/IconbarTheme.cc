@@ -7,6 +7,7 @@ IconbarTheme::IconbarTheme(int screen_num,
     FbTk::Theme(screen_num),
     m_focused_texture(*this, name + ".focused", altname + ".Focused"),
     m_unfocused_texture(*this, name + ".unfocused", altname + ".Unfocused"),
+    m_empty_texture(*this, name + ".empty", altname + ".Empty"),
     m_focused_text(*this, name + ".focused", altname + ".Focused"),
     m_unfocused_text(*this, name + ".unfocused", altname + ".Unfocused") {
 

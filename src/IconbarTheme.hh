@@ -16,8 +16,10 @@ public:
 
     const FbTk::Texture &focusedTexture() const { return *m_focused_texture; }
     const FbTk::Texture &unfocusedTexture() const { return *m_unfocused_texture; }
+    const FbTk::Texture &emptyTexture() const { return *m_empty_texture; }
+    
 private:
-    FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture;
+    FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture, m_empty_texture;
     TextTheme m_focused_text, m_unfocused_text;
 };
 
