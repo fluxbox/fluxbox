@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.12 2002/02/20 23:13:32 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.13 2002/03/19 00:12:36 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -71,20 +71,20 @@ using namespace std;
 Toolbar::Toolbar(BScreen *scrn):
 screen(scrn),
 image_ctrl(screen->getImageControl()),
+clock_timer(this), 	// get the clock updating every minute
 iconbar(0)
 {
 
-	fluxbox = Fluxbox::instance();
-	
-	// get the clock updating every minute
-	clock_timer = new BTimer(fluxbox, this);
+	fluxbox = Fluxbox::instance();	
+
+
 	timeval now;
 	gettimeofday(&now, 0);
-	clock_timer->setTimeout((60 - (now.tv_sec % 60)) * 1000);
-	clock_timer->start();
+	clock_timer.setTimeout((60 - (now.tv_sec % 60)) * 1000);
+	clock_timer.start();
 
 	hide_handler.toolbar = this;
-	hide_timer = new BTimer(fluxbox, &hide_handler);
+	hide_timer = new BTimer(&hide_handler);
 	hide_timer->setTimeout(fluxbox->getAutoRaiseDelay());
 	hide_timer->fireOnce(True);
 
@@ -199,7 +199,6 @@ Toolbar::~Toolbar(void) {
 	XDestroyWindow(display, frame.window);
 
 	delete hide_timer;
-	delete clock_timer;
 	delete toolbarmenu;
 	if (iconbar)
 		delete iconbar; 
@@ -1198,7 +1197,7 @@ void Toolbar::timeout(void) {
 
 	timeval now;
 	gettimeofday(&now, 0);
-	clock_timer->setTimeout((60 - (now.tv_sec % 60)) * 1000);
+	clock_timer.setTimeout((60 - (now.tv_sec % 60)) * 1000);
 }
 
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.7 2002/02/17 18:49:02 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.8 2002/03/19 00:12:36 fluxgen Exp $
 
 #ifndef   TOOLBAR_HH
 #define   TOOLBAR_HH
@@ -99,7 +99,7 @@ private:
   Fluxbox *fluxbox;
   BScreen *screen;
   BImageControl *image_ctrl; 
-  BTimer *clock_timer, *hide_timer;
+  BTimer clock_timer, *hide_timer;
   Toolbarmenu *toolbarmenu;
 	class IconBar *iconbar;
 	
