@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.15 2002/07/19 21:16:53 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.16 2002/08/04 15:09:30 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -136,7 +136,7 @@ static void signalhandler(int sig) {
 	static int re_enter = 0;
 
 	switch (sig) {
-	case SIGCHLD:
+	case SIGCHLD: // we don't want the child process to kill us
 		int status;
 		waitpid(-1, &status, WNOHANG | WUNTRACED);
 
@@ -192,18 +192,18 @@ static void signalhandler(int sig) {
 
 // convenience functions
 #ifndef		__EMX__
-void bexec(const char *command, char* displaystring) {
+void bexec(const char *command, char *displaystring) {
 	if (! fork()) {
 		setsid();
 		putenv(displaystring);
-		execl("/bin/sh", "/bin/sh", "-c", command, NULL);
+		execl("/bin/sh", "/bin/sh", "-c", command, 0);
 		exit(0);
 	}
 }
 #endif // !__EMX__
 
 
-BaseDisplay::BaseDisplay(char *app_name, char *dpy_name):FbAtoms(0),
+BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):FbAtoms(0),
 m_startup(true), m_shutdown(false), 
 m_display_name(XDisplayName(dpy_name)), m_app_name(app_name),
 m_server_grabs(0)

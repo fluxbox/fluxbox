@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.22 2002/07/19 21:14:11 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.23 2002/08/04 15:09:30 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -46,15 +46,18 @@ class ScreenInfo;
 #define PropBlackboxHintsElements		(5)
 #define PropBlackboxAttributesElements	(8)
 
-void bexec(const char *command, char* displaystring);
+/// obsolete
+void bexec(const char *command, char *displaystring);
 
 class BaseDisplay:private NotCopyable, public FbAtoms
 {
-
 public:
-	BaseDisplay(char *, char * = 0);
-	virtual ~BaseDisplay(void);
-	
+	BaseDisplay(const char *app_name, const char *display_name = 0);
+	virtual ~BaseDisplay();
+	/**
+		obsolete
+		@see FluxboxWindow
+	*/
 	enum Attrib {
 		ATTRIB_SHADED = 0x01,
 		ATTRIB_MAXHORIZ = 0x02,
@@ -79,31 +82,31 @@ public:
 
 	inline ScreenInfo *getScreenInfo(int s)	{ return screenInfoList[s]; }
 
-	inline bool hasShapeExtensions(void) const { return shape.extensions; }
-	inline bool doShutdown(void) const { return m_shutdown; }
-	inline bool isStartup(void) const { return m_startup; }
+	inline bool hasShapeExtensions() const { return shape.extensions; }
+	inline bool doShutdown() const { return m_shutdown; }
+	inline bool isStartup() const { return m_startup; }
 
-	inline const Cursor &getSessionCursor(void) const { return cursor.session; }
-	inline const Cursor &getMoveCursor(void) const { return cursor.move; }
-	inline const Cursor &getLowerLeftAngleCursor(void) const { return cursor.ll_angle; }
-	inline const Cursor &getLowerRightAngleCursor(void) const { return cursor.lr_angle; }
+	inline const Cursor &getSessionCursor() const { return cursor.session; }
+	inline const Cursor &getMoveCursor() const { return cursor.move; }
+	inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
+	inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
-	inline Display *getXDisplay(void) { return m_display; }
+	inline Display *getXDisplay() { return m_display; }
 
-	inline const char *getXDisplayName(void) const	{ return const_cast<const char *>(m_display_name); }
-	inline const char *getApplicationName(void) const { return const_cast<const char *>(m_app_name); }
+	inline const char *getXDisplayName() const	{ return m_display_name; }
+	inline const char *getApplicationName() const { return m_app_name; }
 
-	inline int getNumberOfScreens(void) const { return number_of_screens; }
-	inline int getShapeEventBase(void) const	{ return shape.event_basep; }
+	inline int getNumberOfScreens() const { return number_of_screens; }
+	inline int getShapeEventBase() const	{ return shape.event_basep; }
 
-	inline void shutdown(void) { m_shutdown = true; }
-	inline void run(void) { m_startup = m_shutdown = false; }
+	inline void shutdown() { m_shutdown = true; }
+	inline void run() { m_startup = m_shutdown = false; }
 
 	bool validateWindow(Window);
 
-	void grab(void);
-	void ungrab(void);
-	void eventLoop(void);
+	void grab();
+	void ungrab();
+	void eventLoop();
 
 	// another pure virtual... this is used to handle signals that BaseDisplay
 	// doesn't understand itself
@@ -119,6 +122,9 @@ public:
 		private:
 		BaseDisplay &m_bd;
 	};
+
+protected:	
+	virtual void process_event(XEvent *) = 0;
 
 private:
 	struct cursor {
@@ -136,37 +142,34 @@ private:
     typedef std::vector<ScreenInfo *> ScreenInfoList;
     ScreenInfoList screenInfoList;    
 
-	char *m_display_name, *m_app_name;
+	const char *m_display_name, *m_app_name;
 	int number_of_screens, m_server_grabs, colors_per_channel;
-
-protected:	
-	virtual void process_event(XEvent *) = 0;
 
 };
 
 
 class ScreenInfo {
 public:
-	ScreenInfo(BaseDisplay *, int);
-	~ScreenInfo(void);
+	ScreenInfo(BaseDisplay *bdisp, int screen_num);
+	~ScreenInfo();
 
-	inline BaseDisplay *getBaseDisplay(void) { return basedisplay; }
+	inline BaseDisplay *getBaseDisplay() { return basedisplay; }
 
-	inline Visual *getVisual(void) { return visual; }
-	inline const Window &getRootWindow(void) const { return root_window; }
-	inline const Colormap &colormap(void) const { return m_colormap; }
+	inline Visual *getVisual() { return visual; }
+	inline const Window &getRootWindow() const { return root_window; }
+	inline const Colormap &colormap() const { return m_colormap; }
 
-	inline int getDepth(void) const { return depth; }
-	inline int getScreenNumber(void) const { return screen_number; }
+	inline int getDepth() const { return depth; }
+	inline int getScreenNumber() const { return screen_number; }
 
-	inline unsigned int getWidth(void) const { return width; }
-	inline unsigned int getHeight(void) const { return height; }
+	inline unsigned int getWidth() const { return width; }
+	inline unsigned int getHeight() const { return height; }
 
 #ifdef XINERAMA
-	inline bool hasXinerama(void) const { return m_hasXinerama; }
-	inline int getNumHeads(void) const { return xineramaNumHeads; }
+	inline bool hasXinerama() const { return m_hasXinerama; }
+	inline int getNumHeads() const { return xineramaNumHeads; }
 	unsigned int getHead(int x, int y) const;
-	unsigned int getCurrHead(void) const;
+	unsigned int getCurrHead() const;
 	unsigned int getHeadWidth(unsigned int head) const;
 	unsigned int getHeadHeight(unsigned int head) const;
 	int getHeadX(unsigned int head) const;
