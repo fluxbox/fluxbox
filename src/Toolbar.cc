@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.22 2002/05/03 13:14:06 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.23 2002/05/24 11:38:32 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -540,7 +540,7 @@ void Toolbar::reconfigure(void) {
 		if (!iconbar) {
 			iconbar = new IconBar(screen, frame.window_label);
 			if (screen->getIconCount()) {
-                BScreen::Icons & l = screen->getIconList();
+				BScreen::Icons & l = screen->getIconList();
 				BScreen::Icons::iterator it = l.begin();
 				BScreen::Icons::iterator it_end = l.end();
 				for(; it != it_end; ++it) {
