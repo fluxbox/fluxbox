@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.4 2003/09/06 14:05:32 fluxgen Exp $
+// $Id: WorkspaceCmd.cc,v 1.5 2003/09/20 10:46:01 grubert Exp $
 
 #include "WorkspaceCmd.hh"
 
@@ -120,28 +120,19 @@ void ArrangeWindowsCmd::execute() {
     if (win_count == 0) 
         return;
 
-    const unsigned int max_weigth = screen->width();
+    const unsigned int max_width = screen->width();
     const unsigned int max_heigth = screen->height();
 
-
-    unsigned int cols = 1; // columns
-    unsigned int rows = 1; // rows
-
-    // Calculates the "best" width / heigth ratio ( basically it
-    // chooses the two divisors of win_count which are closest to
-    // each other)
-    int rt = win_count; // holds last t value
-    for (unsigned int i = 1; i <= win_count; ++i) {
-        int t = (win_count / i) - i;
-      
-        if (t < rt && t >= 0 && (win_count % i) == 0) {
-            rt = t;
-            rows = i;
-            cols = win_count / i;
-        }
-    }
-  
-    const unsigned int cal_width = max_weigth/cols; // calculated width ratio (width of every window)
+	// try to get the same number of rows as columns.
+	unsigned int rows = int(sqrt(win_count));  // truncate to lower
+	unsigned int cols = int(0.99 + float(win_count) / float(rows));
+	if (max_width<max_heigth) {	// rotate
+		unsigned int tmp;
+		tmp = rows;	
+		rows = cols;
+		cols = tmp;
+	}
+    const unsigned int cal_width = max_width/cols; // calculated width ratio (width of every window)
     const unsigned int cal_heigth = max_heigth/rows; // heigth ratio (heigth of every window)
 
     // Resizes and sets windows positions in columns and rows.
@@ -152,7 +143,12 @@ void ArrangeWindowsCmd::execute() {
     for (unsigned int i = 0; i < rows; ++i) {
         x_offs = 0;
         for (unsigned int j = 0; j < cols && window < win_count; ++j, ++window) {
-            windowlist[window]->moveResize(x_offs, y_offs, cal_width, cal_heigth);
+			if (window==(win_count-1)) {
+				// the last window gets everything that is left.
+	            windowlist[window]->moveResize(x_offs, y_offs, max_width-x_offs, cal_heigth);
+			} else {
+	            windowlist[window]->moveResize(x_offs, y_offs, cal_width, cal_heigth);
+			}
             // next x offset
             x_offs += cal_width;
         }
