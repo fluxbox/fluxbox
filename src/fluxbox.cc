@@ -465,6 +465,12 @@ Fluxbox::~Fluxbox() {
         delete m_toolbars.back();
         m_toolbars.pop_back();
     }
+   
+    // destroy screens
+    while (!m_screen_list.empty()) {
+        delete m_screen_list.back();
+        m_screen_list.pop_back();
+    }
 
     // destroy atomhandlers
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
@@ -472,11 +478,7 @@ Fluxbox::~Fluxbox() {
          it++) {
         delete (*it).first;
     }
-
-    while (!m_screen_list.empty()) {
-        delete m_screen_list.back();
-        m_screen_list.pop_back();
-    }
+    m_atomhandler.clear();
 
     clearMenuFilenames();
 }
@@ -1159,11 +1161,13 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                     (*it).first->updateLayer(win);
             }
         } else if ((&(win.dieSig())) == changedsub) { // window death signal
+            
             for (AtomHandlerContainerIt it= m_atomhandler.begin();
-                 it != m_atomhandler.end(); ++it) {
+                it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
                     (*it).first->updateFrameClose(win);
             }
+
             // make sure each workspace get this
             BScreen &scr = win.screen();
             scr.removeWindow(&win);

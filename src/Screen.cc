@@ -408,9 +408,6 @@ BScreen::~BScreen() {
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
 
-    // slit must be destroyed before headAreas (Struts)
-    m_slit.reset(0);
-
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
 
@@ -420,12 +417,27 @@ BScreen::~BScreen() {
     removeWorkspaceNames();
 
     destroyAndClearList(m_workspaces_list);
-    destroyAndClearList(m_icon_list);
     destroyAndClearList(m_netizen_list);
 
+    //why not destroyAndClearList(m_icon_list); ? 
+    //problem with that: a delete FluxboxWindow* calls m_diesig.notify()
+    //which leads to screen.removeWindow() which leads to removeIcon(win)
+    //which would modify the m_icon_list anyways...
+    Icons tmp;
+    tmp = m_icon_list;
+    while(!tmp.empty()) {
+        removeWindow(tmp.back());
+        tmp.back()->restore(true);
+        delete (tmp.back());
+        tmp.pop_back();
+    }
+    
     if (hasXinerama() && m_xinerama_headinfo) {
         delete [] m_xinerama_headinfo;
     }
+
+    // slit must be destroyed before headAreas (Struts)
+    m_slit.reset(0);
 
     // TODO fluxgen: check if this is the right place
     delete [] m_head_areas;
@@ -771,7 +783,7 @@ void BScreen::addIcon(FluxboxWindow *w) {
 void BScreen::removeIcon(FluxboxWindow *w) {
     if (w == 0)
         return;
-	
+
     Icons::iterator erase_it = remove_if(getIconList().begin(),
                                          getIconList().end(),
                                          bind2nd(equal_to<FluxboxWindow *>(), w));
@@ -1677,8 +1689,6 @@ void BScreen::initMenu() {
 
     }
 
-
-    
     if (m_rootmenu.get() == 0) {
         _FB_USES_NLS;
         m_rootmenu.reset(createMenu(_FBTEXT(Menu, DefaultRootMenu, "Fluxbox default menu", "Title of fallback root menu")));
@@ -1841,7 +1851,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 #endif // HAVE_XRENDER
 #undef _BOOLITEM
 
-
     // finaly update menu 
     menu.update();
 }
@@ -1854,7 +1863,6 @@ void BScreen::shutdown() {
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
              mem_fun(&Workspace::shutdown));
-
 }
 
 
