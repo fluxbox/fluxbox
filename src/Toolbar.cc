@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.27 2002/08/12 03:25:55 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.28 2002/08/17 22:22:57 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -1172,14 +1172,7 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			//save workspace names
 			Fluxbox::instance()->save_rc();
 
-		} else if (! IsModifierKey(ks)) {/* ks == XK_Shift_L || ks == XK_Shift_R ||
-			ks == XK_Control_L || ks == XK_Control_R ||
-			ks == XK_Caps_Lock || ks == XK_Shift_Lock ||
-			ks == XK_Meta_L || ks == XK_Meta_R ||
-			ks == XK_Alt_L || ks == XK_Alt_R ||
-			ks == XK_Super_L || ks == XK_Super_R ||
-			ks == XK_Hyper_L || ks == XK_Hyper_R)) {
-			*/
+		} else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
 
 			if (ks == XK_BackSpace && new_workspace_name.size())
 				new_workspace_name.erase(new_workspace_name.size()-1);
