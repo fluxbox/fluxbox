@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.18 2003/09/29 14:22:07 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.19 2003/10/25 22:11:22 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -62,6 +62,7 @@ FbCommandFactory::FbCommandFactory() {
         "maximizewindow",
         "minimize",
         "minimizewindow",
+        "moveto",
         "move",
         "movedown",
         "moveleft",
@@ -80,6 +81,7 @@ FbCommandFactory::FbCommandFactory() {
         "quit",
         "raise",
         "reconfigure",
+        "resizeto",
         "resize",
         "resizehorizontal",
         "resizevertical",
@@ -144,10 +146,22 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         is >> dx >> dy;
         return new ResizeCmd(dx, dy);
     }
+    else if (command == "resizeto") {
+        std::istringstream is(arguments);
+        int dx = 0, dy = 0;
+        is >> dx >> dy;
+        return new ResizeToCmd(dx, dy);
+    }
     else if (command == "resizehorizontal")
         return new ResizeCmd(atoi(arguments.c_str()),0);
     else if (command == "resizevertical")
         return new ResizeCmd(0,atoi(arguments.c_str()));
+    else if (command == "moveto") {
+       std::istringstream is(arguments);
+       int dx = 0, dy = 0;
+       is >> dx >> dy;
+       return new MoveToCmd(dx,dy);    
+    }
     else if (command == "move") {
         std::istringstream is(arguments);
         int dx = 0, dy = 0;

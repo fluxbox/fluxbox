@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.hh,v 1.5 2003/09/10 14:07:48 fluxgen Exp $
+// $Id: CurrentWindowCmd.hh,v 1.6 2003/10/25 22:11:22 fluxgen Exp $
 
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
@@ -69,6 +69,7 @@ private:
     const int m_workspace_num;
 };
 
+// move cmd, relative position
 class MoveCmd: public WindowHelperCmd {
 public:
     explicit MoveCmd(const int step_size_x, const int step_size_y);
@@ -80,10 +81,34 @@ private:
     const int m_step_size_y;
 };
 
-// resize cmd
+// resize cmd, relative size
 class ResizeCmd: public WindowHelperCmd{
 public:
   explicit ResizeCmd(int step_size_x, int step_size_y);
+protected:
+  void real_execute();
+
+private:
+
+  const int m_step_size_x;
+  const int m_step_size_y;
+};
+
+class MoveToCmd: public WindowHelperCmd {
+public:
+    explicit MoveToCmd(const int step_size_x, const int step_size_y);
+protected:
+    void real_execute();
+
+private:
+    const int m_step_size_x;
+    const int m_step_size_y;
+};
+
+// resize cmd
+class ResizeToCmd: public WindowHelperCmd{
+public:
+  explicit ResizeToCmd(int step_size_x, int step_size_y);
 protected:
   void real_execute();
 
