@@ -19,13 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.cc,v 1.1 2002/08/13 23:57:04 fluxgen Exp $
+// $Id: SignalHandler.cc,v 1.2 2002/08/17 22:15:31 fluxgen Exp $
 
 #include "SignalHandler.hh"
 
 namespace FbTk {
 
-SignalHandler::EventHandler *SignalHandler::s_signal_handler[NSIG];
+EventHandler<SignalEvent> *SignalHandler::s_signal_handler[NSIG];
 
 SignalHandler::SignalHandler() {
 	// clear signal list
@@ -38,7 +38,8 @@ SignalHandler *SignalHandler::instance() {
 	return &singleton;
 }
 
-bool SignalHandler::registerHandler(int signum, EventHandler *eh, EventHandler **oldhandler_ret) {
+bool SignalHandler::registerHandler(int signum, EventHandler<SignalEvent> *eh, 
+	EventHandler<SignalEvent> **oldhandler_ret) {
 	// must be less than NSIG
 	if (signum >= NSIG)
 		return false;
@@ -68,8 +69,11 @@ void SignalHandler::removeHandler(int signum) {
 
 void SignalHandler::handleSignal(int signum) {
 	// make sure we got a handler for this signal
-	if (s_signal_handler[signum] != 0)
-		s_signal_handler[signum]->handleSignal(signum);
+	if (s_signal_handler[signum] != 0) {
+		SignalEvent sigev;
+		sigev.signum = signum;
+		s_signal_handler[signum]->handleEvent(&sigev);
+	}
 }
 
 }; 
