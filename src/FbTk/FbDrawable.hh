@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.hh,v 1.1 2003/04/29 08:49:36 fluxgen Exp $
+// $Id: FbDrawable.hh,v 1.2 2003/05/10 13:28:11 fluxgen Exp $
 #ifndef FBTK_FBDRAWABLE_HH
 #define FBTK_FBDRAWABLE_HH
 
@@ -27,6 +27,7 @@
 
 namespace FbTk {
 
+/// Basic drawing functions for X drawables
 class FbDrawable {
 public:
     virtual ~FbDrawable() { }
