@@ -20,12 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.25 2003/12/09 08:48:08 rathnor Exp $
+// $Id: main.cc,v 1.26 2004/01/11 13:12:02 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
 #include "version.h"
 #include "defaults.hh"
+
 #include "FbTk/Theme.hh"
 
 #ifdef HAVE_CONFIG_H
@@ -253,7 +254,9 @@ int main(int argc, char **argv) {
         cerr<<"Fluxbox: Unknown error."<<endl;
         abort();
     }
- 
+    // destroy fluxbox
+    fluxbox.reset(0);
+
     // restore cout and cin streams
     if (outbuf != 0)
         cout.rdbuf(outbuf);
