@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.19 2003/10/25 22:11:22 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.20 2003/11/17 00:33:16 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -36,7 +36,22 @@
 #include "FbTk/MacroCommand.hh"
 
 #include <string>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifdef HAVE_SSTREAM
 #include <sstream>
+#define FB_istringstream istringstream
+#elif HAVE_STRSTREAM 
+#include <strstream>
+#define FB_istringstream istrstream
+#else
+#error "You dont have sstream or strstream headers!"
+#endif // HAVE_STRSTREAM
+
+using namespace std;
 
 // autoregister this module to command parser
 FbCommandFactory FbCommandFactory::s_autoreg;
@@ -141,13 +156,13 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
     else if (command == "resize") {
-        std::istringstream is(arguments); 
+        FB_istringstream is(arguments.c_str()); 
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new ResizeCmd(dx, dy);
     }
     else if (command == "resizeto") {
-        std::istringstream is(arguments);
+        FB_istringstream is(arguments.c_str());
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new ResizeToCmd(dx, dy);
@@ -157,13 +172,13 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "resizevertical")
         return new ResizeCmd(0,atoi(arguments.c_str()));
     else if (command == "moveto") {
-       std::istringstream is(arguments);
+       FB_istringstream is(arguments.c_str());
        int dx = 0, dy = 0;
        is >> dx >> dy;
        return new MoveToCmd(dx,dy);    
     }
     else if (command == "move") {
-        std::istringstream is(arguments);
+        FB_istringstream is(arguments.c_str());
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new MoveCmd(dx, dy);

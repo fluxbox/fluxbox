@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.4 2003/10/12 16:25:28 rathnor Exp $
+// $Id: ClientPattern.cc,v 1.5 2003/11/17 00:29:30 fluxgen Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
@@ -34,7 +34,6 @@
 
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
 #include <string>
 #include <memory>
@@ -42,6 +41,21 @@
 
 // needed as well for index on some systems (e.g. solaris)
 #include <strings.h> 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#define FB_istringstream istringstream
+#elif HAVE_STRSTREAM 
+#include <strstream>
+#define FB_istringstream istrstream
+#else
+#error "You dont have sstream or strstream headers!"
+#endif // HAVE_STRSTREAM
+
 
 using namespace std;
 
@@ -120,7 +134,7 @@ ClientPattern::ClientPattern(const char *str):
                                              str+pos,
                                              '{', '}');
         if (err > 0) {
-            istringstream iss(number.c_str());
+            FB_istringstream iss(number.c_str());
             iss >> m_matchlimit;
             pos+=err;
         }
