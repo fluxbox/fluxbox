@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/07:
+  * Fixed LC_TIME issue for ClockTool (Thanks to Christian Storm)
+    FbTk/I18n.cc
 *04/10/06:
   * Memory allocation improvements in TextureRender. (Henrik)
     The texture render doesn't need to allocate red, green and blue
