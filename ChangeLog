@@ -1,4 +1,10 @@
 (Format: Year/Month/Day)
+Changes for 0.9.8:
+*04/01/08:
+  * Minor fixes for signed/unsigned warnings in FbTk (Henrik)
+    FbTk/*
+
+------------------------------------------------------------------------
 Changes for 0.9.7:
 *04/01/02:
   * Added new styles Emerge (from Nuno Alexandre) and 
