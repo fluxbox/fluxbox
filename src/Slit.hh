@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.36 2003/07/19 11:55:49 rathnor Exp $
+/// $Id: Slit.hh,v 1.37 2003/08/11 16:02:38 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -47,7 +47,7 @@ class FbMenu;
 class Strut;
 
 /// Handles dock apps
-class Slit : public FbTk::TimeoutHandler, public FbTk::EventHandler {
+class Slit: public FbTk::EventHandler {
 public:
     
     /**
@@ -63,6 +63,41 @@ public:
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
+    void setDirection(Direction dir);
+    void setPlacement(Placement place);
+    void setAutoHide(bool val);
+    void addClient(Window clientwin);
+    void removeClient(Window clientwin, bool remap = true);
+    void reconfigure();
+    void reposition();
+    void shutdown();
+    /// save clients name in a file
+    void saveClientList();
+    /// cycle slit clients up one step
+    void cycleClientsUp();
+    /// cycle slit clients down one step
+    void cycleClientsDown();
+    /**
+       @name eventhandlers
+    */
+    //@{
+    void handleEvent(XEvent &event);
+    void buttonPressEvent(XButtonEvent &event);
+    void enterNotifyEvent(XCrossingEvent &event);
+    void leaveNotifyEvent(XCrossingEvent &event);
+    void configureRequestEvent(XConfigureRequestEvent &event);
+    void exposeEvent(XExposeEvent &event);
+    //@}
+	
+    void moveToLayer(int layernum);
+    void toggleHidden();
+
+    BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
+    SlitTheme &theme() { return *m_slit_theme.get(); }
+    const SlitTheme &theme() const { return *m_slit_theme.get(); }
+
+    FbTk::XLayerItem &layerItem() { return *m_layeritem; }
     inline bool isHidden() const { return m_hidden; }
     inline bool doAutoHide() const { return *m_rc_auto_hide; }
     inline Direction direction() const { return *m_rc_direction; }
@@ -78,43 +113,7 @@ public:
 
     inline unsigned int width() const { return frame.width; }
     inline unsigned int height() const { return frame.height; }
-
-    void setDirection(Direction dir);
-    void setPlacement(Placement place);
-    void setAutoHide(bool val);
-    void addClient(Window clientwin);
-    void removeClient(Window clientwin, bool remap = true);
-    void reconfigure();
-    void reposition();
-    void shutdown();
-    /// save clients name in a file
-    void saveClientList();
-    /// cycle slit clients up one step
-    void cycleClientsUp();
-    /// cycle slit clients down one step
-    void cycleClientsDown();
-
-    BScreen &screen() { return m_screen; }
-    const BScreen &screen() const { return m_screen; }
-    SlitTheme &theme() { return *m_slit_theme.get(); }
-    const SlitTheme &theme() const { return *m_slit_theme.get(); }
-    /**
-       @name eventhandlers
-    */
-    //@{
-    void handleEvent(XEvent &event);
-    void buttonPressEvent(XButtonEvent &event);
-    void enterNotifyEvent(XCrossingEvent &event);
-    void leaveNotifyEvent(XCrossingEvent &event);
-    void configureRequestEvent(XConfigureRequestEvent &event);
-    void exposeEvent(XExposeEvent &event);
-    //@}
-	
-    void moveToLayer(int layernum);
-    FbTk::XLayerItem &layerItem() { return *m_layeritem; }
-
-    virtual void timeout();
-
+    
 private:
     void clearWindow();
     void setupMenu();
