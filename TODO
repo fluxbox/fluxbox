@@ -24,7 +24,6 @@
 * Fix configurable toolbar
   so the user can configure toolbar in a config file
 * Finnish (Finland) translation
-* Wheel-config support
 * Separator in the menus
 * "Iconify group"/group commands in Windowmenu
 * Call and navigate menus from the keyboard (bind a menu to a key

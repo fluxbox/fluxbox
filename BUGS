@@ -3,7 +3,7 @@ Known bugs and missing features that will be fixed in future version:
 bugs:
 
 * Window handle is invisible sometimes.
-* Disabling full-maximize doesn't work.
+
 * Some menus don't close when you click on items.
 * Transparancy for the slit does not always work right.
 * After startup the font of the toolbar is to big; reload config works 
@@ -22,3 +22,4 @@ fixed bugs (or not-our-fault bugs):
   -> this appears to be a problem with nvidia drivers, make sure
      RenderAccel is off (Option "RenderAccel" "false").
      (thanks RJNFC on #fluxbox, and barlad in gentoo forums)
+* Disabling full-maximize doesn't work (fixed in cvs).

@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/18:
+   * Fixed toolbar and slit maximize implementation (Henrik)
+     Toolbar.hh/cc, Slit.hh/cc
+   * Fixed _NET_WM_STRUT support (Henrik)
+     Ewmh.hh/cc, AtomHandler.hh, Gnome.hh, Remember.hh, ToolbarHandler.hh
+	 Screen.hh/cc, fluxbox.cc, Window.hh/cc
+   * Added Strut.hh which contains left, right, top and bottom (Henrik)
+*03/06/16:
+   * Fixed trailing whitespace in group file loading (Henrik)
+     Workspace.cc
 *03/06/15:
    * Apply workaround for strftime test - fails with gcc 3.3 due to 
      compiler bug? - thanks Joshua Kwan (Simon)
@@ -27,12 +37,14 @@ Changes for 0.9.4:
      - e.g. [app] (title=.*gaim.*) 
        will match anything with gaim in the title ("gaim", "the gaim 
        window", etc.
-     RegExp.hh/cc ClientPattern.hh/cc configure.in Makefile.am Remember.hh/cc WinClient.hh/cc StringUtil.hh/cc
+     RegExp.hh/cc ClientPattern.hh/cc configure.in Makefile.am Remember.hh/cc
+	 WinClient.hh/cc StringUtil.hh/cc
 *03/06/12:
    * Renamed i18n.hh/cc to I18n.hh/cc (Henrik)
 *03/06/11:
    * Added nls for antialias (Thanks ...)
      nls/C/Configmenu.m, Screen.cc, nls/C/ja_JP/Configmenu.m
+---------------------------------------------------------------------------------
 Changes for 0.9.3:
 *03/06/08:
    * Add Reconfigure and Restart Key actions, thanks Jann Fisher (Simon)
