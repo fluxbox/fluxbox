@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.1 2003/01/09 17:46:10 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.2 2003/02/15 01:58:06 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -59,6 +59,20 @@ void RestartFluxboxCmd::execute() {
 
 void ReconfigureFluxboxCmd::execute() {
     Fluxbox::instance()->reconfigure();
+}
+
+SetStyleCmd::SetStyleCmd(const std::string &filename):m_filename(filename) {
+
+}
+
+void SetStyleCmd::execute() {
+#ifdef DEBUG
+    cerr<<__FILE__<<":Loading style: "<<m_filename<<endl;
+#endif // DEBUG
+    Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
+    Fluxbox::instance()->save_rc();
+    FbTk::ThemeManager::instance().load(m_filename.c_str());
+
 }
 
 }; // end namespace FbCommands
