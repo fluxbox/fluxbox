@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.115 2003/08/24 23:15:02 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.116 2003/08/27 00:11:57 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -47,7 +47,7 @@
 #include "BoolMenuItem.hh"
 #include "Xinerama.hh"
 #include "Strut.hh"
-
+#include "FbCommands.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -742,13 +742,13 @@ void Toolbar::setupMenus() {
 
     FbTk::Menu &menu = tbar.menu();
     //!! TODO: this should be inserted by the workspace tool
-    /*    
+        
 
-    RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
+    RefCount<Command> start_edit(new FbCommands::SetWorkspaceNameCmd());
     menu.insert(i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
-    "Edit current workspace name"),
-    start_edit);
-    */
+                                 "Edit current workspace name"),
+                start_edit);
+    
     menu.setLabel(i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarToolbarTitle,
                                    "Toolbar")); 
 
