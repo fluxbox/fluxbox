@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.19 2002/09/10 11:06:26 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.20 2002/10/19 17:12:44 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -110,7 +110,7 @@ sendGroupToMenu(this) {
 	setItemEnabled(3, window.isIconifiable());
 	setItemEnabled(4, window.isMaximizable());
 	setItemEnabled(9, window.isClosable());
-	setItemEnabled(10, true); //we should always be able to enable the tab
+	setItemEnabled(10, window.isResizable()); // tab option
 
 }
 
@@ -199,7 +199,8 @@ void Windowmenu::reconfigure() {
 	setItemEnabled(2, window.isIconifiable());
 	setItemEnabled(3, window.isMaximizable());
 	setItemEnabled(8, window.isClosable());
-
+	setItemEnabled(10, window.isResizable()); // tab option only enabled if resizable
+	
 	sendToMenu.reconfigure();
 	sendGroupToMenu.reconfigure();
 	
