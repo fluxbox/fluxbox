@@ -18,7 +18,9 @@
 .\"
 .\" Changed to fluxbox  by Henrik Kinnunen (fluxgen@linuxmail.org)
 .\"
-.\" Updated for fluxbox 0.5.1 by Matthew Hawkins <matt@mh.dropbear.id.au>
+.\" Updated for fluxbox 0.1.5 by Matthew Hawkins <matt@mh.dropbear.id.au>
+.\"
+.\" Updated for version 0.1.6 by Rando Christensen <eyez@babblica.net>
 .\"
 .\" ..define sort of <blockquote><pre> macro
 .de EX
@@ -80,7 +82,7 @@ Display version info and exit.
 .TP
 .BI \-rc \ rcfile
 Use another rcfile than the default
-.IR  "~/.fluxboxrc" .
+.IR  "~/.fluxbox/init" .
 .TP
 .BI \-display \ display
 Start Fluxbox on the specified display.
@@ -102,14 +104,15 @@ When started, Fluxbox will try to find a default menufile in
 You can provide a system-wide menu for your users here.
 .PP
 On exit or restart, Fluxbox will save user defaults in the file
-.I ~/.fluxboxrc
+.I ~/.fluxbox/init
 in the user's home directory.
 Some resources in this file can be edited by hand.
 .SH USING FLUXBOX
 Fluxbox includes keyboard handling.  0.1.4 integrated
 .IR bbkeys (1)
 however from version 0.1.5 the whole keyboard handling code was rewritten
-from scratch.
+from scratch. You can get a script to convert your bbkeys file into fluxbox
+format at the fluxbox webpage, http://fluxbox.sourceforge.net/.
 .SS Root window (background):
 Right click (button 3) will pop up the root menu.
 With this you can launch your applications.
@@ -148,6 +151,10 @@ Send window to another workspace.
 When you select the workspace with the middle button, Fluxbox will
 send you along with the application to the selected workspace
 .TP
+.B Send Group To...
+Sends a window, along with all windows currently grouped with it, to 
+another workspace. Follows the same rules as Send To...
+.TP
 .B Shade
 Shade the window (display titlebar only)
 .TP
@@ -181,12 +188,22 @@ When you doubleclick on the titlebar of a window, it will `shade', so
 that only the titlebar stays visible.
 Another double click will redisplay the window contents.
 .SS Window Buttons:
-The button at the left upper corner of a window is the Minimize button.
-Clicking with any button causes the window to be iconified.
-The rightmost button (with the X) closes the application.
-The other button on the right (if present) maximizes the window in three ways:
+In fluxbox, the window button's configuration is controlled by your 
+.I ~/.fluxbox/titlebar
+file, which specifies which buttons to put on the right of left side of
+the title bar. The default is:
+.EX 0
+Right: minimize maximize close
+Left: sticky
+.EE
+Clicking the minimize button with any button causes the window to be iconified.
+Clicking the close button with any button closes the application.
+The maximize button (if present) maximizes the window in three ways:
 Button 1 causes full screen maximization, button 2 maximizes the window only
 vertically, and button 3 only horizontally.
+The Sticky button sets has the same meaning as the 
+.I (Un)Stick window
+menu option.
 .SS Any menu:
 Clicking button 3 in a menu will popdown the menu.
 Clicking button 1 on the titlebar of any (sub)menu and then dragging it somewhere
@@ -210,7 +227,7 @@ in your home directory, and to create a menu file, e.g.
 in this directory, or copy the system-wide menu file to this location.
 Next, we have to tell Fluxbox to load our menu file instead of the default.
 This is accomplished by adding (or changing) a resource value in the
-.I ~/.fluxboxrc
+.I ~/.fluxbox/init
 file e.g.:
 .EX
 session.menuFile:       ~/.fluxbox/menu
@@ -624,6 +641,19 @@ window.button.pressed.colorTo:	Color
 window.frame.focusColor:	Color
 window.frame.unfocusColor:	Color
 
+! Tab settings
+! if these are unset, some reasonable defaults will be picked.
+window.tab.justify:                     Right
+window.tab.label.unfocus:               Texture
+window.tab.label.unfocus.color:         Color
+window.tab.label.unfocus.textColor:     Color
+window.tab.label.focus:                 Texture
+window.tab.label.focus.color:           Color
+window.tab.label.focus.textColor:       Color
+window.tab.borderWidth:                 1
+window.tab.borderColor:                 Color
+window.tab.font:                        fixed
+
 ! Font and justification for window labels
 window.font:	Font
 window.justify:	\fIcenter\fR, \fIleft\fR, or \fIright\fR
@@ -674,6 +704,8 @@ file.  The file takes the format of :
 In the example below, Mod1 is the 'Alt' key on the PC keyboard and Mod4 is
 one of the three extra keys on a pc104 branded with a sickening corporate logo.
 .EX
+# Fluxbox keys file.
+# Any line starting with a # is a comment.
 Mod1 Tab :NextWindow 
 Mod1 F1 :Workspace1 
 Mod1 F2 :Workspace2 
@@ -696,6 +728,53 @@ Control n Mod1 n :NextTab
 .EE
 As you can see from the last line, keybinds can be chained in a fashion similar
 to emacs keybindings.
+Here is a list of possible Operations:
+.EX
+Minimize
+Raise
+Lower
+Close
+Workspace1
+Workspace2
+Workspace3
+Workspace4
+Workspace5
+Workspace6
+Workspace7
+Workspace8
+Workspace9
+Workspace10
+Workspace11
+Workspace12
+NextWorkspace
+PrevWorkspace
+LeftWorkspace
+RightWorkspace
+KillWindow
+NextWindow
+PrevWindow
+NextTab
+PrevTab
+ShadeWindow
+MaximizeWindow
+StickWindow
+ExecCommand
+MaximizeVertical
+MaximizeHorizontal
+NudgeRight
+NudgeLeft
+NudgeUp
+NudgeDown
+BigNudgeRight
+BigNudgeLeft
+BigNudgeUp
+BigNudgeDown
+HorizontalIncrement
+VerticalIncrement
+HorizontalDecrement
+VerticalDecrement
+ToggleDecor
+.EE
 .SH TITLEBAR FILE
 Fluxbox lets you customise the button layout on the window titlebar.  This is
 done by modifying the
@@ -727,9 +806,30 @@ bbpager -w &
 exec fluxbox
 .EE
 Of course to use the slit you must have slit support compiled in.
+.SH CONFIGURATION MENU
+Fluxbox has a few options that are configured by a configure menu.
+Most are self-explanatory, but here are a few notes:
+.TP
+.B Tab Placement
+The Tabs can be placed almost anywhere on a window. Again, these are
+mostly self-explanatory. however, using the
+.I Relative
+options will make the total width of all tabs be equal to the total width
+of the window. The 
+.I Rotate Vertical Tabs
+option makes tabs that are placed on the Right or left side of the window 
+be turned on their sides.
+.TP
+.B Sloppy Window Grouping
+This option allows you to drop a tab anywhere on the target window to group it,
+instead of only on the target window's tab.
+.TP
+.B Maximize Slit Stop
+This option makes maximizing windows stop at the slit border, so that your 
+slit stays visible at all times.
 .SH RESOURCE FILE
 Usually the
-.I ~/.fluxboxrc
+.I ~/.fluxbox/init
 resource file is created and maintained by Fluxbox itself.
 All options from the
 .B [config]
@@ -774,6 +874,11 @@ The
 format is used.
 The default value is:
 .IR "%I:%M %p" .
+.TP
+.B session.screen0.rootCommand:
+This overrides the style's rootCommand. When this value is set, it will keep
+your background the same, regardless of what any style would like your 
+background to be.
 .TP
 .B session.autoRaiseDelay:
 Adjusts the delay (in ms) before focused windows will raise when using the
@@ -913,7 +1018,7 @@ gkrellm in the slit, always visible yet out of the way of real work.
 Fluxbox uses
 .RB $ HOME
 to find its
-.I .fluxboxrc
+.I .fluxbox/init
 file, and to resolve stylefile and \-directory names.
 .TP
 .B DISPLAY
