@@ -1,5 +1,5 @@
 // MenuItem.hh for FbTk - Fluxbox Toolkit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,20 +19,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.hh,v 1.5 2004/06/07 20:33:20 fluxgen Exp $
+// $Id: MenuItem.hh,v 1.6 2004/06/10 11:40:43 fluxgen Exp $
 
 #ifndef FBTK_MENUITEM_HH
 #define FBTK_MENUITEM_HH
 
 #include "RefCount.hh"
 #include "Command.hh"
-#include <string>
 
+#include <string>
+#include <memory>
 namespace FbTk {
 
 class Menu;
 class MenuTheme;
 class FbDrawable;
+class PixmapWithMask;
 
 ///   An interface for a menu item in Menu
 class MenuItem {
@@ -77,6 +79,7 @@ public:
     virtual inline void setEnabled(bool enabled) { m_enabled = enabled; }
     virtual inline void setLabel(const char *label) { m_label = (label ? label : ""); }
     virtual inline void setToggleItem(bool val) { m_toggle_item = val; }
+    void setIcon(const std::string &filename, int screen_num);
     Menu *submenu() { return m_submenu; }
     /** 
         @name accessors
@@ -94,7 +97,7 @@ public:
                       bool highlight,
                       int x, int y,
                       unsigned int width, unsigned int height) const;
-    virtual void updateTheme(const MenuTheme &theme) { }
+    virtual void updateTheme(const MenuTheme &theme);
     /**
        Called when the item was clicked with a specific button
        @param button the button number
@@ -111,6 +114,12 @@ private:
     RefCount<Command> m_command; ///< command to be executed
     bool m_enabled, m_selected;
     bool m_toggle_item;
+
+    struct Icon {
+        std::auto_ptr<PixmapWithMask> pixmap;
+        std::string filename;
+    };
+    std::auto_ptr<Icon> m_icon;
 };
 
 } // end namespace FbTk

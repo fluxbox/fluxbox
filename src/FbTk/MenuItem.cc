@@ -19,12 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.2 2004/06/07 20:34:23 fluxgen Exp $
+// $Id: MenuItem.cc,v 1.3 2004/06/10 11:40:43 fluxgen Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
 #include "GContext.hh"
 #include "MenuTheme.hh"
+#include "PixmapWithMask.hh"
+#include "Image.hh"
 #include "App.hh"
 
 namespace FbTk {
@@ -39,12 +41,51 @@ void MenuItem::draw(FbDrawable &draw,
                     bool highlight,
                     int x, int y, 
                     unsigned int width, unsigned int height) const {
+    //
+    // Icon
+    //
+    if (m_icon.get() != 0 && m_icon->pixmap.get() != 0) {
+        // scale pixmap to right size
+        if (height - 2*theme.bevelWidth() != m_icon->pixmap->height() &&
+            !m_icon->filename.empty()) {
+            unsigned int scale_size = height - 2*theme.bevelWidth();
+            m_icon->pixmap->scale(scale_size, scale_size);
+        }
+
+        if (m_icon->pixmap->pixmap().drawable() != 0) {
+            GC gc = theme.frameTextGC().gc();
+            int icon_x = x + theme.bevelWidth();
+            int icon_y = y + theme.bevelWidth();
+            // enable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         m_icon->pixmap->mask().drawable());
+            XSetClipOrigin(FbTk::App::instance()->display(),
+                           gc, icon_x, icon_y);
+
+            draw.copyArea(m_icon->pixmap->pixmap().drawable(),
+                          gc,
+                          0, 0,
+                          icon_x, icon_y,
+                          m_icon->pixmap->width(), m_icon->pixmap->height());
+
+            // restore clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         None);
+        }
+
+    }
+
     if (label().empty())
         return;
 
     const GContext &tgc =
         (highlight ? theme.hiliteTextGC() :
          (isEnabled() ? theme.frameTextGC() : theme.disableTextGC() ) );
+    //
+    // Text
+    //
     int text_y = y, text_x = x;
 
     int text_w = theme.frameFont().textWidth(label().c_str(), label().size());
@@ -63,7 +104,7 @@ void MenuItem::draw(FbDrawable &draw,
         text_x = x + ((width + 1 - text_w) / 2);
         break;
     }
-
+    
     theme.frameFont().drawText(draw.drawable(), // drawable
                                theme.screenNum(),
                                tgc.gc(),
@@ -80,6 +121,9 @@ void MenuItem::draw(FbDrawable &draw,
     if (theme.bulletPos() == FbTk::RIGHT)
         sel_x += width - height - 2*theme.bevelWidth();
 
+    //
+    // ToggleItem
+    //
     if (isToggleItem() && theme.unselectedPixmap().pixmap().drawable() != 0) {
         XSetClipMask(FbTk::App::instance()->display(),
                      gc,
@@ -99,7 +143,9 @@ void MenuItem::draw(FbDrawable &draw,
                      None);
     }
 
-
+    // 
+    // Submenu
+    //
     if (submenu()) {
         if (theme.bulletPixmap().pixmap().drawable() != 0) {
             // enable clip mask
@@ -171,6 +217,21 @@ void MenuItem::draw(FbDrawable &draw,
         }
     }
 
+
+}
+
+void MenuItem::setIcon(const std::string &filename, int screen_num) {
+    if (filename.empty()) {
+        if (m_icon.get() != 0)
+            m_icon.reset(0);
+        return;
+    }
+
+    if (m_icon.get() == 0)
+        m_icon.reset(new Icon);
+
+    m_icon->filename = filename;
+    m_icon->pixmap.reset(Image::load(filename.c_str(), screen_num));
 }
 
 unsigned int MenuItem::height(const MenuTheme &theme) const {
@@ -179,10 +240,21 @@ unsigned int MenuItem::height(const MenuTheme &theme) const {
 
 unsigned int MenuItem::width(const MenuTheme &theme) const {
     // textwidth + bevel width on each side of the text
-    return theme.frameFont().textWidth(label().c_str(), label().size()) + 2*(theme.bevelWidth() + height(theme));
+    int normal = theme.frameFont().textWidth(label().c_str(), label().size()) + 2*(theme.bevelWidth() + height(theme));
+    if (m_icon.get() == 0) 
+        return normal;
+    else
+        return normal + 2 * (theme.bevelWidth()  + height(theme));
     
 }
 
+void MenuItem::updateTheme(const MenuTheme &theme) {
+    if (m_icon.get() == 0)
+        return;
 
+    m_icon->pixmap.reset(Image::load(m_icon->filename.c_str(), theme.screenNum()));
+
+
+}
 
 }; // end namespace FbTk
