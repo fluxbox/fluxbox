@@ -1,6 +1,17 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/18:
+  * Fixed menu time stamp for root menu (Thanks Mathias Gumz)
+    the root menu now reloads if you edit the menu file
+    Screen.cc
+  * Added Control-c to the TextBox.cc so the (Thanks Mathias Gumz)
+    TextBox gets cleared if one presses Control-c
+    TextBox.cc
+  * Fixed so @ and | works in text box (Thanks Mathias Gumz)	
+    TextBox.cc
 *04/03/16:
+  * Minor fix for ${INSTALL} and reload fluxbox menu  (Han)
+    with fluxbox-generate_menu
   * Fix the fix, and a bit more for placeWindow (Simon)
     Workspace.cc
 *04/03/15:
