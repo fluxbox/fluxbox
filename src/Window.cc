@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.54 2002/05/21 21:22:05 fluxgen Exp $
+// $Id: Window.cc,v 1.55 2002/05/30 00:46:22 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -340,7 +340,7 @@ tab(0)
 }
 
 
-FluxboxWindow::~FluxboxWindow(void) {
+FluxboxWindow::~FluxboxWindow() {
 	if (screen==0) //the window wasn't created 
 		return;
 	
@@ -513,7 +513,7 @@ Window FluxboxWindow::createChildWindow(Window parent, Cursor cursor) {
 }
 
 
-void FluxboxWindow::associateClientWindow(void) {
+void FluxboxWindow::associateClientWindow() {
 	XSetWindowBorderWidth(display, client.window, 0);
 	getWMName();
 	getWMIconName();
@@ -601,7 +601,7 @@ void FluxboxWindow::associateClientWindow(void) {
 }
 
 
-void FluxboxWindow::decorate(void) {
+void FluxboxWindow::decorate() {
 		
 	if (tab)
 		tab->decorate();
@@ -727,7 +727,7 @@ void FluxboxWindow::decorate(void) {
 }
 
 
-void FluxboxWindow::decorateLabel(void) {
+void FluxboxWindow::decorateLabel() {
 	Pixmap tmp = frame.flabel;
 	BTexture *texture = &(screen->getWindowStyle()->l_focus);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
@@ -1251,7 +1251,7 @@ void FluxboxWindow::positionButtons(bool redecorate_label) {
 }
 
 
-void FluxboxWindow::reconfigure(void) {
+void FluxboxWindow::reconfigure() {
 	upsize();
 	
 	if (Fluxbox::instance()->useTabs()) {
@@ -1314,7 +1314,7 @@ void FluxboxWindow::reconfigure(void) {
 }
 
 
-void FluxboxWindow::positionWindows(void) {
+void FluxboxWindow::positionWindows() {
 	XResizeWindow(display, frame.window, frame.width,
 							((shaded) ? frame.title_h : frame.height));
 	XSetWindowBorderWidth(display, frame.window, screen->getBorderWidth());
@@ -1354,7 +1354,7 @@ void FluxboxWindow::positionWindows(void) {
 }
 
 
-void FluxboxWindow::getWMName(void) {
+void FluxboxWindow::getWMName() {
 
 	XTextProperty text_prop;
 	char **list;
@@ -1403,7 +1403,7 @@ void FluxboxWindow::getWMName(void) {
 }
 
 
-void FluxboxWindow::getWMIconName(void) {
+void FluxboxWindow::getWMIconName() {
 
 	XTextProperty text_prop;
 	char **list;
@@ -1433,7 +1433,7 @@ void FluxboxWindow::getWMIconName(void) {
 }
 
 
-void FluxboxWindow::getWMProtocols(void) {
+void FluxboxWindow::getWMProtocols() {
 	Atom *proto;
 	int num_return = 0;
 	Fluxbox *fluxbox = Fluxbox::instance();
@@ -1453,7 +1453,7 @@ void FluxboxWindow::getWMProtocols(void) {
 }
 
 
-void FluxboxWindow::getWMHints(void) {
+void FluxboxWindow::getWMHints() {
 	XWMHints *wmhint = XGetWMHints(display, client.window);
 	if (! wmhint) {
 		visible = true;
@@ -1496,7 +1496,7 @@ void FluxboxWindow::getWMHints(void) {
 }
 
 
-void FluxboxWindow::getWMNormalHints(void) {
+void FluxboxWindow::getWMNormalHints() {
 	long icccm_mask;
 	XSizeHints sizehint;
 	if (! XGetWMNormalHints(display, client.window, &sizehint, &icccm_mask)) {
@@ -1554,67 +1554,74 @@ void FluxboxWindow::getWMNormalHints(void) {
 }
 
 
-void FluxboxWindow::getMWMHints(void) {
+void FluxboxWindow::getMWMHints() {
 	int format;
 	Atom atom_return;
 	unsigned long num, len;
 	Fluxbox *fluxbox = Fluxbox::instance();
-	if (XGetWindowProperty(display, client.window,
+	if (!XGetWindowProperty(display, client.window,
 			fluxbox->getMotifWMHintsAtom(), 0,
 			PropMwmHintsElements, false,
 			fluxbox->getMotifWMHintsAtom(), &atom_return,
 			 &format, &num, &len,
 			(unsigned char **) &client.mwm_hint) == Success &&
-			client.mwm_hint)
-		if (num == PropMwmHintsElements) {
-			if (client.mwm_hint->flags & MwmHintsDecorations)
-				if (client.mwm_hint->decorations & MwmDecorAll)
-					decorations.titlebar = decorations.handle = decorations.border =
-						decorations.iconify = decorations.maximize =
-						decorations.close = decorations.menu = true;
-				else {
-					decorations.titlebar = decorations.handle = decorations.border =
-						decorations.iconify = decorations.maximize =
-						decorations.close = decorations.menu = decorations.tab = false;
+			client.mwm_hint) {
+		return;
+	}
+	if (num != PropMwmHintsElements)
+		return;
+	
+	if (client.mwm_hint->flags & MwmHintsDecorations) {
+		if (client.mwm_hint->decorations & MwmDecorAll) {
+			decorations.titlebar = decorations.handle = decorations.border =
+				decorations.iconify = decorations.maximize =
+				decorations.close = decorations.menu = true;
+		} else {
+			decorations.titlebar = decorations.handle = decorations.border =
+				decorations.iconify = decorations.maximize =
+				decorations.close = decorations.menu = decorations.tab = false;
 
-					if (client.mwm_hint->decorations & MwmDecorBorder)
-						decorations.border = true;
-					if (client.mwm_hint->decorations & MwmDecorHandle)
-						decorations.handle = true;
-					if (client.mwm_hint->decorations & MwmDecorTitle)
-						decorations.titlebar = decorations.tab = true; //only tab on windows with titlebar
-					if (client.mwm_hint->decorations & MwmDecorMenu)
-						decorations.menu = true;
-					if (client.mwm_hint->decorations & MwmDecorIconify)
-						decorations.iconify = true;
-					if (client.mwm_hint->decorations & MwmDecorMaximize)
-						decorations.maximize = true;
-				}
-
-			if (client.mwm_hint->flags & MwmHintsFunctions)
-				if (client.mwm_hint->functions & MwmFuncAll) {
-					functions.resize = functions.move = functions.iconify =
-						functions.maximize = functions.close = true;
-				} else {
-					functions.resize = functions.move = functions.iconify =
-						functions.maximize = functions.close = false;
-
-					if (client.mwm_hint->functions & MwmFuncResize)
-						functions.resize = true;
-					if (client.mwm_hint->functions & MwmFuncMove)
-						functions.move = true;
-					if (client.mwm_hint->functions & MwmFuncIconify)
-						functions.iconify = true;
-					if (client.mwm_hint->functions & MwmFuncMaximize)
-						functions.maximize = true;
-					if (client.mwm_hint->functions & MwmFuncClose)
-						functions.close = true;
-				}
+			if (client.mwm_hint->decorations & MwmDecorBorder)
+				decorations.border = true;
+			if (client.mwm_hint->decorations & MwmDecorHandle)
+				decorations.handle = true;
+			if (client.mwm_hint->decorations & MwmDecorTitle)
+				decorations.titlebar = decorations.tab = true; //only tab on windows with titlebar
+			if (client.mwm_hint->decorations & MwmDecorMenu)
+				decorations.menu = true;
+			if (client.mwm_hint->decorations & MwmDecorIconify)
+				decorations.iconify = true;
+			if (client.mwm_hint->decorations & MwmDecorMaximize)
+				decorations.maximize = true;
 		}
+	}
+	
+	if (client.mwm_hint->flags & MwmHintsFunctions) {
+		if (client.mwm_hint->functions & MwmFuncAll) {
+			functions.resize = functions.move = functions.iconify =
+				functions.maximize = functions.close = true;
+		} else {
+			functions.resize = functions.move = functions.iconify =
+				functions.maximize = functions.close = false;
+
+			if (client.mwm_hint->functions & MwmFuncResize)
+				functions.resize = true;
+			if (client.mwm_hint->functions & MwmFuncMove)
+				functions.move = true;
+			if (client.mwm_hint->functions & MwmFuncIconify)
+				functions.iconify = true;
+			if (client.mwm_hint->functions & MwmFuncMaximize)
+				functions.maximize = true;
+			if (client.mwm_hint->functions & MwmFuncClose)
+				functions.close = true;
+		}
+	}
+	
+	
 }
 
 
-void FluxboxWindow::getBlackboxHints(void) {
+void FluxboxWindow::getBlackboxHints() {
 	int format;
 	Atom atom_return;
 	unsigned long num, len;
@@ -1746,7 +1753,7 @@ void FluxboxWindow::configure(int dx, int dy,
 }
 
 
-bool FluxboxWindow::setInputFocus(void) {
+bool FluxboxWindow::setInputFocus() {
 	#ifdef GNOME
 	if (gnome_hints & WIN_HINTS_SKIP_FOCUS)
 		return false;
@@ -1841,7 +1848,7 @@ void FluxboxWindow::setTab(bool flag) {
 //------------- iconify ----------------
 // Unmaps the window and removes it from workspace list
 //--------------------------------------
-void FluxboxWindow::iconify(void) {
+void FluxboxWindow::iconify() {
 
 	if (iconic)
 		return;
@@ -1912,7 +1919,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool raise) {
 }
 
 
-void FluxboxWindow::close(void) {
+void FluxboxWindow::close() {
 	Fluxbox *fluxbox = Fluxbox::instance();
 	XEvent ce;
 	ce.xclient.type = ClientMessage;
@@ -1929,7 +1936,7 @@ void FluxboxWindow::close(void) {
 }
 
 
-void FluxboxWindow::withdraw(void) {
+void FluxboxWindow::withdraw() {
 	visible = false;
 	iconic = false;
 	if (isMoving())
@@ -2269,7 +2276,7 @@ void FluxboxWindow::setWorkspace(int n) {
 }
 
 
-void FluxboxWindow::shade(void) {
+void FluxboxWindow::shade() {
 	if (decorations.titlebar) {
 		if (shaded) {
 			XResizeWindow(display, frame.window, frame.width, frame.height);
@@ -2293,7 +2300,7 @@ void FluxboxWindow::shade(void) {
 }
 
 
-void FluxboxWindow::stick(void) {
+void FluxboxWindow::stick() {
 
 	if (tab) //if it got a tab then do tab's stick on all of the objects in the list
 		tab->stick(); //this window will stick too.
@@ -2450,7 +2457,7 @@ void FluxboxWindow::setState(unsigned long new_state) {
 }
 
 //TODO: why ungrab in if-statement?
-bool FluxboxWindow::getState(void) {
+bool FluxboxWindow::getState() {
 	current_state = 0;
 
 	Atom atom_return;
@@ -2478,7 +2485,7 @@ bool FluxboxWindow::getState(void) {
 }
 
 
-void FluxboxWindow::setGravityOffsets(void) {
+void FluxboxWindow::setGravityOffsets() {
 	// translate x coordinate
 	switch (client.win_gravity) {
 		// handle Westward gravity
@@ -2531,7 +2538,7 @@ void FluxboxWindow::setGravityOffsets(void) {
 }
 
 
-void FluxboxWindow::restoreAttributes(void) {
+void FluxboxWindow::restoreAttributes() {
 	if (!getState())
 		current_state = NormalState;
 
@@ -2619,7 +2626,7 @@ void FluxboxWindow::restoreAttributes(void) {
 }
 
 
-void FluxboxWindow::restoreGravity(void) {
+void FluxboxWindow::restoreGravity() {
 	// restore x coordinate
 	switch (client.win_gravity) {
 		// handle Westward gravity
@@ -2657,7 +2664,7 @@ void FluxboxWindow::restoreGravity(void) {
 	}
 }
 
-bool FluxboxWindow::isLowerTab(void) const {
+bool FluxboxWindow::isLowerTab() const {
 	Tab* chkTab = (tab ? tab->first() : 0);
 	while (chkTab) {
 		const FluxboxWindow* chkWin = chkTab->getWindow();
@@ -2669,7 +2676,7 @@ bool FluxboxWindow::isLowerTab(void) const {
 	return false;
 }
 
-void FluxboxWindow::redrawLabel(void) {
+void FluxboxWindow::redrawLabel() {
 	if (focused) {
 		if (frame.flabel)
 			XSetWindowBackgroundPixmap(display, frame.label, frame.flabel);
@@ -2695,7 +2702,7 @@ void FluxboxWindow::redrawLabel(void) {
 }
 
 
-void FluxboxWindow::redrawAllButtons(void) {
+void FluxboxWindow::redrawAllButtons() {
 	for (unsigned int i=0; i<buttonlist.size(); i++)
 		if (buttonlist[i].draw)
 			buttonlist[i].draw(this, buttonlist[i].win, false);
@@ -3429,7 +3436,7 @@ void FluxboxWindow::toggleDecoration() {
 	}
 }
 
-bool FluxboxWindow::validateClient(void) {
+bool FluxboxWindow::validateClient() {
 	XSync(display, false);
 
 	XEvent e;
@@ -3715,7 +3722,7 @@ void FluxboxWindow::checkTransient() {
 
 }
 
-void FluxboxWindow::restore(void) {
+void FluxboxWindow::restore() {
 	XChangeSaveSet(display, client.window, SetModeDelete);
 	XSelectInput(display, client.window, NoEventMask);
 
@@ -3733,7 +3740,7 @@ void FluxboxWindow::restore(void) {
 }
 
 
-void FluxboxWindow::timeout(void) {
+void FluxboxWindow::timeout() {
 	if (tab)
 		tab->raise();
 	screen->getWorkspace(workspace_number)->raiseWindow(this);
@@ -3788,7 +3795,7 @@ void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
 }
 
 
-void FluxboxWindow::upsize(void) {
+void FluxboxWindow::upsize() {
 	// convert client.width/height into frame sizes
 
 	frame.bevel_w = screen->getBevelWidth();
@@ -3824,7 +3831,7 @@ void FluxboxWindow::upsize(void) {
 }
 
 
-void FluxboxWindow::downsize(void) {
+void FluxboxWindow::downsize() {
 	// convert frame.width/height into client sizes
 
 	frame.y_handle = frame.height - frame.handle_h;
