@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.13 2002/09/14 15:03:32 fluxgen Exp $
+// $Id: Image.hh,v 1.14 2002/09/15 09:41:24 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -140,7 +140,6 @@ public:
 			unsigned int **, unsigned int **);
 	void setDither(bool d) { dither = d; }
 	void setColorsPerChannel(int cpc);
-	void parseTexture(FbTk::Texture *ret_texture, const char *sval);
 
 	virtual void timeout();
 

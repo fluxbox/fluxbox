@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.15 2002/09/14 15:05:00 fluxgen Exp $
+// $Id: Image.cc,v 1.16 2002/09/15 09:42:00 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -115,7 +115,7 @@ BImage::BImage(BImageControl *c, unsigned int w, unsigned int h) {
 }
 
 
-BImage::~BImage(void) {
+BImage::~BImage() {
 	if (red) delete [] red;
 	if (green) delete [] green;
 	if (blue) delete [] blue;
@@ -293,7 +293,7 @@ Pixmap BImage::renderGradient(const FbTk::Texture *texture) {
 }
 
 
-XImage *BImage::renderXImage(void) {
+XImage *BImage::renderXImage() {
 	I18n *i18n = I18n::instance();
 	XImage *image =
 		XCreateImage(control->baseDisplay()->getXDisplay(),
@@ -696,7 +696,7 @@ XImage *BImage::renderXImage(void) {
 }
 
 
-Pixmap BImage::renderPixmap(void) {
+Pixmap BImage::renderPixmap() {
 	I18n *i18n = I18n::instance();
 	Pixmap pixmap =
 		XCreatePixmap(control->baseDisplay()->getXDisplay(),
@@ -737,7 +737,7 @@ Pixmap BImage::renderPixmap(void) {
 }
 
 
-void BImage::bevel1(void) {
+void BImage::bevel1() {
 	if (width > 2 && height > 2) {
 		unsigned char *pr = red, *pg = green, *pb = blue;
 
@@ -875,7 +875,7 @@ void BImage::bevel1(void) {
 }
 
 
-void BImage::bevel2(void) {
+void BImage::bevel2() {
 	if (width > 4 && height > 4) {
 		unsigned char r, g, b, rr ,gg ,bb, *pr = red + width + 1,
 			*pg = green + width + 1, *pb = blue + width + 1;
@@ -954,7 +954,7 @@ void BImage::bevel2(void) {
 }
 
 
-void BImage::invert(void) {
+void BImage::invert() {
 	register unsigned int i, j, wh = (width * height) - 1;
 	unsigned char tmp;
 
@@ -1082,7 +1082,7 @@ void BImage::dgradient() {
 }
 
 
-void BImage::hgradient(void) {
+void BImage::hgradient() {
 	float drx, dgx, dbx,
 		xr = (float) from->red(),
 		xg = (float) from->green(),
@@ -1181,7 +1181,7 @@ void BImage::hgradient(void) {
 }
 
 
-void BImage::vgradient(void) {
+void BImage::vgradient() {
 	float dry, dgy, dby,
 		yr = (float) from->red(),
 		yg = (float) from->green(),
@@ -1261,7 +1261,7 @@ void BImage::vgradient(void) {
 }
 
 
-void BImage::pgradient(void) {
+void BImage::pgradient() {
 	// pyramid gradient -	based on original dgradient, written by
 	// Mosfet (mosfet@kde.org)
 	// adapted from kde sources for Blackbox by Brad Hughes
@@ -1378,7 +1378,7 @@ void BImage::pgradient(void) {
 }
 
 
-void BImage::rgradient(void) {
+void BImage::rgradient() {
 	// rectangle gradient -	based on original dgradient, written by
 	// Mosfet (mosfet@kde.org)
 	// adapted from kde sources for Blackbox by Brad Hughes
@@ -1494,7 +1494,7 @@ void BImage::rgradient(void) {
 }
 
 
-void BImage::egradient(void) {
+void BImage::egradient() {
 	// elliptic gradient -	based on original dgradient, written by
 	// Mosfet (mosfet@kde.org)
 	// adapted from kde sources for Blackbox by Brad Hughes
@@ -1621,7 +1621,7 @@ void BImage::egradient(void) {
 }
 
 
-void BImage::pcgradient(void) {
+void BImage::pcgradient() {
 	// pipe cross gradient -	based on original dgradient, written by
 	// Mosfet (mosfet@kde.org)
 	// adapted from kde sources for Blackbox by Brad Hughes
@@ -1739,7 +1739,7 @@ void BImage::pcgradient(void) {
 }
 
 
-void BImage::cdgradient(void) {
+void BImage::cdgradient() {
 	// cross diagonal gradient -	based on original dgradient, written by
 	// Mosfet (mosfet@kde.org)
 	// adapted from kde sources for Blackbox by Brad Hughes
@@ -2169,7 +2169,7 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 }
 
 
-BImageControl::~BImageControl(void) {
+BImageControl::~BImageControl() {
 	if (sqrt_table) {
 		delete [] sqrt_table;
 	}
@@ -2240,6 +2240,7 @@ Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
 
 Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
 			const FbTk::Texture *texture) {
+
 	if (texture->type() & FbTk::Texture::PARENTRELATIVE)
 		return ParentRelative;
 
@@ -2408,76 +2409,6 @@ unsigned long BImageControl::getSqrt(unsigned int x) {
 
 	return (*(sqrt_table + x));
 }
-
-
-void BImageControl::parseTexture(FbTk::Texture *texture, const char *texture_string) {
-	if ((! texture) || (! texture_string))
-		return;
-
-	int t_len = strlen(texture_string) + 1;
-	char *ts = new char[t_len];
-	if (! ts) return;
-
-	// convert to lower case
-	for (int byte_pos = 0; byte_pos < t_len; byte_pos++)
-		*(ts + byte_pos) = tolower(*(texture_string + byte_pos));
-
-	using namespace FbTk;
-
-	if (strstr(ts, "parentrelative")) {
-		texture->setType(Texture::PARENTRELATIVE);
-	} else {
-		texture->setType(Texture::NONE);
-
-		if (strstr(ts, "solid"))
-			texture->addType(Texture::SOLID);
-		else if (strstr(ts, "gradient")) {
-			texture->addType(Texture::GRADIENT);
-			if (strstr(ts, "crossdiagonal"))
-				texture->addType(Texture::CROSSDIAGONAL);
-			else if (strstr(ts, "rectangle"))
-				texture->addType(Texture::RECTANGLE);
-			else if (strstr(ts, "pyramid"))
-				texture->addType(Texture::PYRAMID);
-			else if (strstr(ts, "pipecross"))
-				texture->addType(Texture::PIPECROSS);
-			else if (strstr(ts, "elliptic"))
-				texture->addType(Texture::ELLIPTIC);
-			else if (strstr(ts, "diagonal"))
-				texture->addType(Texture::DIAGONAL);
-			else if (strstr(ts, "horizontal"))
-				texture->addType(Texture::HORIZONTAL);
-			else if (strstr(ts, "vertical"))
-				texture->addType(Texture::VERTICAL);
-			else
-				texture->addType(Texture::DIAGONAL);
-		} else
-			texture->addType(Texture::SOLID);
-
-		if (strstr(ts, "raised"))
-			texture->addType(Texture::RAISED);
-		else if (strstr(ts, "sunken"))
-			texture->addType(Texture::SUNKEN);
-		else if (strstr(ts, "flat"))
-			texture->addType(Texture::FLAT);
-		else
-			texture->addType(Texture::RAISED);
-
-		if (! (texture->type() & Texture::FLAT))
-			if (strstr(ts, "bevel2"))
-				texture->addType(Texture::BEVEL2);
-			else
-				texture->addType(Texture::BEVEL1);
-
-#ifdef INTERLACE
-		if (strstr(ts, "interlaced"))
-			texture->addType(Texture::INTERLACED);
-#endif // INTERLACE
-	}
-
-	delete [] ts;
-}
-
 
 void BImageControl::timeout() {
 	CacheList::iterator it = cache.begin();
