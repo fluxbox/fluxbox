@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.23 2003/08/04 12:44:43 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.24 2003/08/15 13:52:06 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -319,6 +319,11 @@ void FbWindow::unsetCursor() {
     XUndefineCursor(s_display, window());
 }
 
+void FbWindow::reparent(const FbWindow &parent, int x, int y) {
+    XReparentWindow(s_display, window(), parent.window(), x, y);
+    m_parent = &parent;
+    updateGeometry();
+}
 
 bool FbWindow::property(Atom property,
                         long long_offset, long long_length,
