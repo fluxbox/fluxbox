@@ -1,5 +1,26 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/01/09:
+   * Adjusted some files to FbTk::ImageControl and FbTk::Timer
+     Basemenu.hh, FbWinFrame.hh/cc, IconBar.cc, Slit.hh, Toolbar.hh, Theme.hh
+     Window.hh/cc
+   * Removed bexec from BaseDisplay
+     Theme.cc, fluxbox.cc, BaseDisplay.hh/cc
+   * Moved Timer.hh/cc, ImageControl.hh/cc and TextureRender.hh/cc to FbTk
+   * Removed Rootmenu.hh/cc
+   * Added FbCommands.hh/cc which contains some default commands that
+     fluxbox handles, like RestartFluxboxCmd, ExitFluxboxCmd, 
+	 ReconfigureFluxboxCmd and ExecuteCmd
+   * Changed Client menu in Workspace to FbTk::Menu
+     Workspace.hh
+   * Changed Workspace and Rootmenu menu to FbTk::Menu
+     Screen.hh/cc
+   * Removed Iconmenu and disabled Stylemenu in BScreen
+     Screen.hh/cc
+   * Removed exec and function item from MenuItem
+     Menu.hh/cc
+   * Fixed menu border color, border width and bevel width
+     MenuTheme.hh/cc, Menu.cc
 *03/01/06:
    * Fixed action/menu setup in setupWindowActions
      Screen.cc
