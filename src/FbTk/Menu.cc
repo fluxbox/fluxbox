@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.54 2004/01/21 09:03:13 fluxgen Exp $
+// $Id: Menu.cc,v 1.55 2004/02/27 11:55:27 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -508,7 +508,7 @@ void Menu::update(int active_index) {
 
     menu.frame.setBackgroundPixmap(m_frame_pm.drawable());
 
-    clearWindow();
+    //    clearWindow();
 
     if (title_vis && visible) 
         redrawTitle();
@@ -523,6 +523,12 @@ void Menu::update(int active_index) {
 
         if (m_parent && visible)
             m_parent->drawSubmenu(m_parent->which_sub);
+
+        menu.frame.clearArea(0, active_index * menu.item_h,
+                             width(), menu.item_h);
+        menu.frame.updateTransparent(0, active_index * menu.item_h,
+                                     width(), menu.item_h);
+
     }
 
     menu.window.clear();
@@ -979,9 +985,11 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     menu.frame.clearArea(item_x, item_y,
                          menu.item_w, menu.item_h, False);
 
+    if (render_trans) {
+        menu.frame.updateTransparent(item_x, item_y,
+                                     menu.item_w, menu.item_h);
+    }
     
-    menu.frame.updateTransparent(item_x, item_y,
-                                 menu.item_w, menu.item_h);
     
 }
 
@@ -1228,11 +1236,15 @@ void Menu::exposeEvent(XExposeEvent &ee) {
                 Menuitems::iterator it_end = menuitems.end();
                 for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
                     unsigned int index = ii + (i * menu.persub);
-                    drawItem(index, (which_sub == static_cast<signed>(index)), true, true,
+                    drawItem(index, 
+                             (which_sub == static_cast<signed>(index)), // highlight
+                             true, // clear
+                             false, // render trans
                              ee.x, ee.y, ee.width, ee.height);
                 }
             }
         }
+        menu.frame.updateTransparent(ee.x, ee.y, ee.width, ee.height);
     }
 }
 
