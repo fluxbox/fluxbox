@@ -1,45 +1,38 @@
-News in 0.1.7:
-* Title bar configuration is moved to the init file
-* Fluxbox will auto copy the default files to ~/.fluxbox/
-  if they don't exist
-* Partial Gnome support:
-  - Atoms supported:
-    _WIN_WORKSPACE
-    _WIN_WORKSPACE_COUNT
-    _WIN_WORKSPACE_NAMES
-    _WIN_CLIENT_LIST
-    _WIN_STATE :
-	    WIN_STATE_MINIMIZED
-	    WIN_STATE_STICKY 
-	    WIN_STATE_SHADED
-    _WIN_HINT :
-        WIN_HINTS_SKIP_FOCUS
-* Tree new languages
-  - Portuguese
-  - Bulgarian
-  - Japanese
-* New key bindings and with parameter support
-  - NudgeRight <step>
-  - NudgeLeft <step>
-  - NudgeUp <step>
-  - NudgeDown <step>
-  - PrevWorkspace <step>
-  - NextWorkspace <step>
-  - Workspace <workspacenum>
-    We keep the Workspace1 Workspace2 etc
-    but they will be removed in next release
-  (new) - LeftWorkspace
-    this will change to the workspace to the left (no workspace cycling)
-  (new) - RightWorkspace
-    this will change to the workspace to the right (no workspace cycling)
-  (new) - SendToWorkspace <workspacenum>
-     sends current window to a workspace
- 
-* Huge code clean up
+News in Fluxbox 0.1.8:
 
-Bugfixes in 0.1.7:
-* BadWindow error in ~FluxboxWindow
-* negative width in a window
-* Fixed lower/raise of windows when using windowmenu/keybinding
-  so now tabs should follow
-* Slit always on top crash
+* Code clean up
+* NLS-fixes
+* Better window cycling with optional parameters.
+  NextWindow and PrevWindow now takes an integer parameter
+  parameter values:
+     0 or unspecified = Default/current behavior - no skipping
+     1 = Skip: lower tabs
+     2 = Skip: stuck windows
+     3 = Skip: lower tabs/stuck windows
+     4 = Skip: shaded windows
+     5 = Skip: lower tabs/shaded windows
+     6 = Skip: stuck windows/shaded windows
+     7 = Skip: lower tabs/stuck windows/shaded windows
+* Xinerama support ( configure option --enable-xinerama )
+* Workspace warping, drag window between workspaces, 
+  does only work with opaque moving
+* You can enable tabs in "Tabs off"-mode,
+  and the second tab will appere when the first
+  one is draged into the window.
+* Keybinding for Root menu (action RootMenu)
+  This will popup the root menu
+* Keybinding for Toggle decor (action ToggleDecor)
+  This will toggle the decor of a window
+* Smarter Next/Prev focus,
+  Makes new windows get inserted after the focused window in 
+  the cycling order instead of always at the end.
+
+Bugfixes in Fluxbox 0.1.8:
+
+*  Window dragging + workspace changing ( bug [ 528101 ] )
+*  Minor taskbar issue, it will update iconbar-text now 
+   ( bug [ 533436 ] )
+* "decoration.handle" bug, which caused the window to 
+   have wrong height with no decorations
+* Slit-client window bug.
+   
