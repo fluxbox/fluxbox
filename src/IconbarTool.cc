@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.37 2004/06/07 11:46:04 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.38 2004/06/07 21:43:02 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -42,6 +42,7 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/MacroCommand.hh"
+#include "FbTk/MenuSeparator.hh"
 
 #include <typeinfo>
 #include <string>
@@ -166,22 +167,27 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
                                                             *Fluxbox::instance(), 
                                                             &Fluxbox::save_rc));
     
-    menu.insert(new ToolbarModeMenuItem(_FBTEXT(Toolbar, IconbarModeNone, "None", "No icons are shown in the iconbar"),
+
+    menu.insert(new ToolbarModeMenuItem(_FBTEXT(Toolbar, IconbarModeNone, 
+                                                "None", "No icons are shown in the iconbar"),
                     handler, 
                     IconbarTool::NONE, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
-                    _FBTEXT(Toolbar, IconbarModeIcons, "Icons", "Iconified windows from all workspaces are shown"),
+                    _FBTEXT(Toolbar, IconbarModeIcons, 
+                            "Icons", "Iconified windows from all workspaces are shown"),
                     handler, 
                     IconbarTool::ICONS, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
-                    _FBTEXT(Toolbar, IconbarModeWorkspaceIcons, "WorkspaceIcons", "Iconified windows from this workspace are shown"),
+                    _FBTEXT(Toolbar, IconbarModeWorkspaceIcons, 
+                            "WorkspaceIcons", "Iconified windows from this workspace are shown"),
                     handler,
                     IconbarTool::WORKSPACEICONS, saverc_cmd));
 
     menu.insert(new ToolbarModeMenuItem(
-                    _FBTEXT(Toolbar, IconbarModeWorkspace, "Workspace", "Normal and iconified windows from this workspace are shown"),
+                    _FBTEXT(Toolbar, IconbarModeWorkspace, 
+                            "Workspace", "Normal and iconified windows from this workspace are shown"),
                     handler, 
                     IconbarTool::WORKSPACE, saverc_cmd));
 
@@ -207,7 +213,8 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
                     handler,
                     Container::RIGHT, saverc_cmd));
 
-    menu.insert("---"); // separator line
+    menu.insert(new FbTk::MenuSeparator());
+
     menu.update();
 }
                 
