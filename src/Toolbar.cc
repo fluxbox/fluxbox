@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.37 2002/10/29 16:09:37 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.38 2002/11/14 11:38:38 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -1106,13 +1106,21 @@ void Toolbar::timeout() {
 
 
 void Toolbar::HideHandler::timeout() {
+	if (toolbar->isEditing()) { // don't hide if we're editing workspace label
+		toolbar->hide_timer.fireOnce(false);
+		toolbar->hide_timer.start(); // restart timer and try next timeout
+		return;
+	}
+	toolbar->hide_timer.fireOnce(true);
+
 	toolbar->hidden = ! toolbar->hidden;
-	if (toolbar->hidden)
+	if (toolbar->hidden) {
 		XMoveWindow(toolbar->display, toolbar->frame.window,
-		toolbar->frame.x_hidden, toolbar->frame.y_hidden);
-	else
+			toolbar->frame.x_hidden, toolbar->frame.y_hidden);
+	} else {
 		XMoveWindow(toolbar->display, toolbar->frame.window,
-		toolbar->frame.x, toolbar->frame.y);
+			toolbar->frame.x, toolbar->frame.y);
+	}
 }
 
 
