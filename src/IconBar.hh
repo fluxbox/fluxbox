@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.13 2003/04/14 14:43:58 fluxgen Exp $
+// $Id: IconBar.hh,v 1.14 2003/04/15 12:06:11 fluxgen Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
@@ -58,7 +58,7 @@ class IconBar
 {
 public:
     typedef std::list<Window> WindowList;
-    IconBar(BScreen *scrn, Window parent, FbTk::Font &font);
+    IconBar(BScreen &scrn, Window parent, FbTk::Font &font);
     ~IconBar();
     void draw(); //TODO
     void reconfigure();
@@ -73,6 +73,8 @@ public:
 
     void draw(const IconBarObj * const obj, int width) const;
     void setVertical(bool value) { m_vertical = value; }
+    BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
 private:
     typedef std::list<IconBarObj *> IconList;
 
@@ -80,7 +82,7 @@ private:
     void decorate(Window win);
     void repositionIcons();
     Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
-    BScreen *m_screen;
+    BScreen &m_screen;
     Display *m_display;
     Window m_parent;
     IconList m_iconlist;	

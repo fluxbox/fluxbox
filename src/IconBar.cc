@@ -19,13 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.29 2003/04/14 14:44:17 fluxgen Exp $
+// $Id: IconBar.cc,v 1.30 2003/04/15 12:05:47 fluxgen Exp $
 
 #include "IconBar.hh"
 
 #include "i18n.hh"
 #include "Screen.hh"
-#include "fluxbox.hh"
 #include "Window.hh"
 #include "ImageControl.hh"
 #include "Text.hh"
@@ -52,9 +51,9 @@ unsigned int IconBarObj::width() const {
     unsigned int border_width, depth;	//not used
     int x, y; //not used
 
-    Display *m_display = Fluxbox::instance()->getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
 
-    XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
+    XGetGeometry(disp, m_iconwin, &root, &x, &y, 
                  &width, &height, &border_width, &depth);
 
     return width;
@@ -68,23 +67,24 @@ unsigned int IconBarObj::height() const {
     unsigned int border_width, depth;	//not used
     int x, y; //not used
 
-    Display *m_display = Fluxbox::instance()->getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
 
-    XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
+    XGetGeometry(disp, m_iconwin, &root, &x, &y, 
                  &width, &height, &border_width, &depth);
 
     return height;
 }
 
 
-IconBar::IconBar(BScreen *scrn, Window parent, FbTk::Font &font):
+IconBar::IconBar(BScreen &scrn, Window parent, FbTk::Font &font):
     m_screen(scrn),
+    m_display(FbTk::App::instance()->display()),
     m_parent(parent),
     m_focus_pm(None),
     m_vertical(false),
     m_font(font)
 {
-    m_display = scrn->getBaseDisplay()->getXDisplay();
+
 }
 
 IconBar::~IconBar() {
@@ -157,13 +157,13 @@ IconBar::WindowList *IconBar::delAllIcons() {
  with the size width * height
 */
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
-    FbTk::ImageControl *image_ctrl = m_screen->getImageControl();
+    FbTk::ImageControl *image_ctrl = screen().getImageControl();
     Pixmap tmp = m_focus_pm;
-    const FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
+    const FbTk::Texture *texture = &(screen().getWindowStyle()->tab.l_focus);
 	
     //If we are working on a PARENTRELATIVE, change to right focus value
     if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
-        texture = &(m_screen->getWindowStyle()->tab.t_focus);
+        texture = &(screen().getWindowStyle()->tab.t_focus);
     }
 		
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
@@ -184,8 +184,8 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 */
 void IconBar::decorate(Window win) {
 
-    XSetWindowBorderWidth(m_display, win, m_screen->getWindowStyle()->tab.border_width);
-    XSetWindowBorder(m_display, win, m_screen->getWindowStyle()->tab.border_color.pixel());
+    XSetWindowBorderWidth(m_display, win, screen().getWindowStyle()->tab.border_width);
+    XSetWindowBorder(m_display, win, screen().getWindowStyle()->tab.border_color.pixel());
     if (m_focus_pm)
         XSetWindowBackgroundPixmap(m_display, win, m_focus_pm);
     else
@@ -314,34 +314,16 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
 
     title_text_w = m_font.textWidth(
         fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
-    int l = title_text_w;
-    unsigned int dlen=fluxboxwin->getIconTitle().size();
-    unsigned int bevel_w = m_screen->getBevelWidth();
-    int dx=bevel_w*2;
-    /*	
-    for (; dlen >= 0; dlen--) {
-        l = m_font.textWidth(
-            fluxboxwin->getIconTitle().c_str(), dlen);
-        l += (bevel_w * 4);
-		
-        if (l < width)
-            break;
-    }
 
-        switch (m_screen->getWindowStyle()->tab.justify) {
-    case Text::Font::RIGHT:
-        dx += width - l;
-        break;
-    case Text::CENTER:
-        dx += (width - l) / 2;
-        break;
-    default:
-        break;
-        }*/
+    unsigned int bevel_w = screen().getBevelWidth();
+    int dx=bevel_w*2;
+
     // center by default
     unsigned int newlen = 0;
-    dx = FbTk::doAlignment(m_vertical ? obj->height() : obj->width(), bevel_w*2, FbTk::CENTER, m_font,
-                           fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size(),
+    dx = FbTk::doAlignment(m_vertical ? obj->height() : obj->width(), 
+                           bevel_w*2, FbTk::CENTER, m_font,
+                           fluxboxwin->getIconTitle().c_str(), 
+                           fluxboxwin->getIconTitle().size(),
                            newlen);
     //Draw title to m_iconwin
 
@@ -352,12 +334,11 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
         dy = obj->height() - dx;
         dx = tmp;
     }
-    //cerr<<"Drawing text: "<<dx<<", "<<dy<<endl;
 
     m_font.drawText(
         iconwin,
-        m_screen->getScreenNumber(),
-        m_screen->getWindowStyle()->tab.l_text_focus_gc,
+        screen().getScreenNumber(),
+        screen().getWindowStyle()->tab.l_text_focus_gc,
         fluxboxwin->getIconTitle().c_str(), newlen,
         dx, dy,	m_vertical);
 
