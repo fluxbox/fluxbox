@@ -15,6 +15,7 @@
 #include "bsetroot.hh"
 
 #include <iostream>
+using namespace std;
 
 bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
   : BaseDisplay(argv[0], dpy_name) {
@@ -120,10 +121,10 @@ bsetroot::~bsetroot(void) {
 
 		delete [] pixmaps;
 	}
-#ifdef DEBUG
+	#ifdef DEBUG
 	else
 		cerr<<"~bsetroot: why don't we have any pixmaps?"<<endl;
-#endif // DEBUG
+	#endif // DEBUG
 
 	if (img_ctrl) {
 		int i = 0;
