@@ -22,21 +22,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.47 2002/10/15 10:54:40 fluxgen Exp $
+// $Id: Screen.hh,v 1.48 2002/10/25 20:56:12 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
 #include "Theme.hh"
 #include "BaseDisplay.hh"
-#include "Configmenu.hh"
-#include "Icon.hh"
 #include "Netizen.hh"
-#include "Rootmenu.hh"
 #include "Timer.hh"
 #include "Workspace.hh"
-#include "Workspacemenu.hh"
-#include "fluxbox.hh"
+#include "Tab.hh"
+#include "Resource.hh"
+#include "Toolbar.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -65,13 +63,19 @@
 #include <list>
 #include <vector>
 #include <fstream>
+#include <memory>
+
+class Configmenu;
+class Workspacemenu;
+class Iconmenu;
+class Rootmenu;
 
 class BScreen : public ScreenInfo {
 public:
 	typedef std::vector<Workspace *> Workspaces;
 	typedef std::vector<std::string> WorkspaceNames;
 	
-	BScreen(ResourceManager &rm, Fluxbox *b, 
+	BScreen(ResourceManager &rm,
 		const std::string &screenname, const std::string &altscreenname,
 		int scrn);
 	~BScreen();
@@ -99,8 +103,10 @@ public:
 	
 	inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
 	inline BImageControl *getImageControl() { return image_control; }
-	inline Rootmenu *getRootmenu() { return rootmenu; }
-	inline const std::string &getRootCommand(void ) const { return *resource.rootcommand; }
+	const Rootmenu * const getRootmenu() const { return rootmenu; }
+	Rootmenu * const getRootmenu() { return rootmenu; }
+	
+	inline const std::string &getRootCommand() const { return *resource.rootcommand; }
 #ifdef	 SLIT
 	inline bool isSlitOnTop() const { return resource.slit_on_top; }
 	inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
@@ -119,12 +125,14 @@ public:
 
 #endif // SLIT
 
-	inline Toolbar *getToolbar() { return toolbar; }
+	inline const Toolbar * const getToolbar() const { return m_toolbar.get(); }
+	inline Toolbar * const getToolbar() { return m_toolbar.get(); }
 
 	inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
 	inline Workspace *getCurrentWorkspace() { return current_workspace; }
 
-	inline Workspacemenu *getWorkspacemenu() { return workspacemenu; }
+	const Workspacemenu * const getWorkspacemenu() const { return workspacemenu; }
+	Workspacemenu * const getWorkspacemenu() { return workspacemenu; }
 
 	inline unsigned int getHandleWidth() const { return theme->getHandleWidth(); }
 	inline unsigned int getBevelWidth() const { return theme->getBevelWidth(); }
@@ -201,8 +209,8 @@ public:
 	inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
 	inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
 	inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
-	inline void iconUpdate() { iconmenu->update(); }
-	inline Iconmenu *getIconmenu() { return iconmenu; }
+	void iconUpdate();
+	inline const Iconmenu *getIconmenu() const { return m_iconmenu; }
 	inline void setAutoGroupWindow(Window w = 0) { auto_group_window = w; }
 	void setAntialias(bool value);
 	
@@ -289,6 +297,12 @@ public:
 	};
 	
 private:
+	void createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory);
+
+	bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
+
+	void initMenu();
+
 	bool doSkipWindow(const FluxboxWindow *w, int options);
 
 	ScreenSubject 
@@ -296,7 +310,6 @@ private:
 		m_workspacecount_sig, ///< workspace count signal
 		m_workspacenames_sig, ///< workspace names signal 
 		m_currentworkspace_sig; ///< current workspace signal
-		
 		
 	
 	Theme *theme;
@@ -306,10 +319,9 @@ private:
 	Pixmap geom_pixmap;
 	Window geom_window;
 
-	Fluxbox *fluxbox;
 	BImageControl *image_control;
 	Configmenu *configmenu;
-	Iconmenu *iconmenu;
+	Iconmenu *m_iconmenu;
 
 	Rootmenu *rootmenu;
 
@@ -320,11 +332,11 @@ private:
     Netizens netizenList;
     Icons iconList;
 
-	#ifdef		SLIT
+#ifdef		SLIT
 	Slit *slit;
-	#endif // SLIT
+#endif // SLIT
 
-	Toolbar *toolbar;
+	std::auto_ptr<Toolbar> m_toolbar;
 	Workspace *current_workspace;
 	Workspacemenu *workspacemenu;
 
@@ -382,22 +394,7 @@ private:
 		#endif // HAVE_STRFTIME
 
 	} resource;
-
-	void createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory);
-protected:
-	bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
-
-	bool readDatabaseTexture(char *, char *, FbTk::Texture *, unsigned long);
-	bool readDatabaseColor(char *, char *, FbTk::Color *, unsigned long);
-
-	void readDatabaseFontSet(char *, char *, XFontSet *);
-	XFontSet createFontSet(char *);
-	void readDatabaseFont(char *, char *, XFontStruct **);
-
-	void initMenu();
-
-
 };
 
 
-#endif // _SCREEN_HH_
+#endif // SCREEN_HH
