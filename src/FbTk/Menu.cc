@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.36 2003/08/27 14:14:04 fluxgen Exp $
+// $Id: Menu.cc,v 1.37 2003/08/30 01:03:48 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -90,8 +90,6 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_alignment(ALIGNDONTCARE),
     m_border_width(0),
     m_themeobserver(*this), 
-    /*    m_trans(new Transparent(getRootPixmap(screen_num), 0,
-          tm.alpha(), screen_num)),*/
     m_need_update(true) {
 
     // make sure we get updated when the theme is reloaded
@@ -136,9 +134,6 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
 
     menu.height = menu.title_h + 2 + menu.frame_h;
 
-    //    m_root_pm = getRootPixmap(screen_num);
-    //    m_trans->setSource(m_root_pm, screen_num);
-    //    m_trans->setAlpha(alpha());
     long event_mask = ButtonPressMask | ButtonReleaseMask | 
         ButtonMotionMask | KeyPressMask | ExposureMask | FocusChangeMask;
     //create menu window
@@ -529,12 +524,11 @@ void Menu::update(int active_index) {
 
     if (title_vis && visible) 
         redrawTitle();
-
+    /*
     if (m_need_update) {
         for (unsigned int i = 0; visible && i < menuitems.size(); i++) {
             if (i == (unsigned int)which_sub) {
                 drawItem(i, true, true, false);
-                drawSubmenu(i);
             } else
                 drawItem(i, (i == active_index && isItemEnabled(i)), true, false);
         }
@@ -542,7 +536,8 @@ void Menu::update(int active_index) {
         if (m_parent && visible)
             m_parent->drawSubmenu(m_parent->which_sub);
     }
-
+    */
+    menu.window.clear();
     renderTransFrame();
                     
     m_need_update = false;
@@ -656,22 +651,7 @@ void Menu::redrawTitle() {
                   m_theme.titleTextGC(), // graphic context
                   text, len,  // text string with lenght
                   dx, font.ascent() + menu.bevel_w);  // position
-    /*    if (m_trans.get()) {
 
-    if (m_trans->alpha() != 255) {
-    Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
-
-    if (m_root_pm != root_pm) {
-    m_trans->setSource(root_pm, menu.title.screenNumber());
-    m_root_pm = root_pm;
-    }
-    m_trans->setDest(menu.title.window(), menu.title.screenNumber());
-    m_trans->render(menu.window.x() + menu.title.x() + menu.window.borderWidth()*2, 
-    menu.window.y() + menu.title.y() + menu.window.borderWidth()*2, 
-    0, 0,
-    menu.title.width(), menu.title.height());
-    }
-    }*/
     menu.title.updateTransparent();
     
 }
@@ -1003,16 +983,13 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
         }
     }
 
-    XClearArea(m_display, menu.frame.window(),
-               item_x, item_y,
-               menu.item_w, menu.item_h, False);
+    menu.frame.clearArea(item_x, item_y,
+                         menu.item_w, menu.item_h, False);
 
-    menu.title.setAlpha(alpha());
-    menu.frame.setAlpha(alpha());
-    menu.window.setAlpha(alpha());
-
+    
     menu.frame.updateTransparent(item_x, item_y,
                                  menu.item_w, menu.item_h);
+    
 }
 
 void Menu::setLabel(const char *labelstr) {
@@ -1029,10 +1006,7 @@ void Menu::setItemSelected(unsigned int index, bool sel) {
     if (! item) return;
 
     item->setSelected(sel);
-    if (visible) {
-        drawItem(index, (index == (unsigned int)which_sub), true, true);
-        
-    }
+
 }
 
 
@@ -1054,8 +1028,7 @@ void Menu::setItemEnabled(unsigned int index, bool enable) {
     if (! item) return;
 
     item->setEnabled(enable);
-    if (visible) 
-        drawItem(index, (index == static_cast<unsigned int>(which_sub)), true, true);
+
 }
 
 
@@ -1136,8 +1109,6 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                     re.y > iy && re.y < (signed) (iy + menu.item_h)) {
                     menuitems[w]->click(re.button, re.time);
                     itemSelected(re.button, w);
-                    m_need_update = true;
-                    update(w); // update any changed item
                 }
             } else {
                 drawItem(p, isItemEnabled(p) && (p == which_sub), true, true);
@@ -1167,8 +1138,8 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 	
                 menu.window.move(menu.x, menu.y);
 
-                if (which_sub >= 0)
-                    drawSubmenu(which_sub);
+                // if (which_sub >= 0)
+                 //     drawSubmenu(which_sub);
             }
         }
     } else if ((! (me.state & Button1Mask)) && me.window == menu.frame &&
@@ -1215,9 +1186,6 @@ void Menu::exposeEvent(XExposeEvent &ee) {
     if (ee.window == menu.title) {
         redrawTitle();
     } else if (ee.window == menu.frame) {
-        if (menuitems.size() == 0)
-            return;
-
         // this is a compilicated algorithm... lets do it step by step...
         // first... we see in which sub level the expose starts... and how many
         // items down in that sublevel
@@ -1308,9 +1276,6 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     if (shifted) {
         menu.window.move(menu.x, menu.y);
         shifted = false;
-
-        if (which_sub >= 0)
-            drawSubmenu(which_sub);
     }
 }
 
@@ -1383,37 +1348,11 @@ void Menu::reconfigure() {
     menu.frame.setAlpha(alpha());
     menu.title.setAlpha(alpha());
     menu.window.setAlpha(alpha());
-    /*
-      if (m_trans.get() && m_trans->alpha() != alpha())
-      m_trans->setAlpha(alpha());
-    */
+
     update();
 }
     
 void Menu::renderTransFrame() {
-    /*    if (m_trans.get() == 0 || moving)
-          return;
-
-          if (m_trans->alpha() != alpha())
-          m_trans->setAlpha(alpha());
-
-          if (m_trans->alpha() != 255) {
-
-          Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
-
-          if (m_root_pm != root_pm) {
-          m_trans->setSource(root_pm, menu.window.screenNumber());
-          m_root_pm = root_pm;
-          }
-          menu.frame.clear();
-          m_trans->setDest(menu.frame.window(), menu.window.screenNumber());
-          m_trans->render(menu.window.x() + menu.frame.x() + menu.window.borderWidth(), 
-          menu.window.y() + menu.frame.y() + menu.window.borderWidth(),
-          0, 0,
-          menu.frame.width(), menu.frame.height());
-
-          }
-    */
     menu.frame.clear();
     menu.frame.updateTransparent();
 }
