@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.47 2004/06/20 04:49:32 rathnor Exp $
+// $Id: Ewmh.cc,v 1.48 2004/07/21 18:56:34 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -181,7 +181,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 break;
             } else if (atoms[l] == m_net_wm_window_type_desktop) {
                 /*
-                 * _NET_WM_WINDOW_TYPE_DOCK indicates a "false desktop" window
+                 * _NET_WM_WINDOW_TYPE_DESKTOP indicates a "false desktop" window
                  * We let it be the size it wants, but it gets no decoration,
                  * is hidden in the toolbar and window cycling list, plus
                  * windows don't tab with it and is right on the bottom.
@@ -493,6 +493,14 @@ void Ewmh::updateState(FluxboxWindow &win) {
 
 void Ewmh::updateLayer(FluxboxWindow &win) {
     //!! TODO _NET_WM_WINDOW_TYPE
+    /*
+    if (win.getLayer() == Fluxbox::instance()->getAboveDockLayer()) {
+        // _NET_WM_STATE_BELOW
+        
+    } else if (win.getLayer() == Fluxbox::instance()->getBottomLayer()) {
+        // _NET_WM_STATE_ABOVE
+    }
+    */
 }
 
 void Ewmh::updateHints(FluxboxWindow &win) {
@@ -637,6 +645,9 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
 
 bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_net_wm_strut) {
+#ifdef DEBUG
+        cerr<<"_NET_WM_STRUT"<<endl;
+#endif // DEBUG
         updateStrut(winclient);
         return true;
     }
@@ -759,13 +770,13 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
                state == m_net_wm_state_skip_taskbar) {        
         win.setFocusHidden(value);
         win.setIconHidden(win.isFocusHidden());
-    } else if (state == m_net_wm_state_below) {
+    } else if (state == m_net_wm_state_below) {  // bottom layer
         if (value)
             win.moveToLayer(Fluxbox::instance()->getBottomLayer());
         else
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
 
-    } else if (state == m_net_wm_state_above) {
+    } else if (state == m_net_wm_state_above) { // above layer
         if (value)
             win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
         else
@@ -790,13 +801,13 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
                state == m_net_wm_state_skip_taskbar) {
         win.setFocusHidden(!win.isFocusHidden());
         win.setIconHidden(!win.isIconHidden());
-    } else if (state == m_net_wm_state_below) {
+    } else if (state == m_net_wm_state_below) { // bottom layer
         if (win.layerNum() == Fluxbox::instance()->getBottomLayer())
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
         else
             win.moveToLayer(Fluxbox::instance()->getBottomLayer());
 
-    } else if (state == m_net_wm_state_above) {
+    } else if (state == m_net_wm_state_above) { // top layer
         if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
         else
