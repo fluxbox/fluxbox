@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.35 2004/06/07 20:24:38 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.36 2004/06/15 11:03:17 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -415,11 +415,10 @@ int FbWindow::screenNumber() const {
 
 long FbWindow::eventMask() const {
     XWindowAttributes attrib;
-    if (XGetWindowAttributes(s_display, window(), 
-                         &attrib) == Success) {
-        return attrib.your_event_mask;
-    }
-    return 0;
+    XGetWindowAttributes(s_display, window(), 
+                         &attrib);
+    return attrib.your_event_mask;
+
 }
 
 void FbWindow::setBufferPixmap(Pixmap pm) {
