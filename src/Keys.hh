@@ -1,5 +1,5 @@
 // Keys.hh for Fluxbox - an X11 Window manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.26 2003/06/30 14:57:14 fluxgen Exp $
+// $Id: Keys.hh,v 1.27 2003/08/19 16:18:54 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -52,7 +52,7 @@ public:
     */
     static unsigned int cleanMods(unsigned int mods)
         //remove numlock, capslock and scrolllock
-        { return mods & (~Mod2Mask & ~Mod5Mask & ~LockMask);}
+        { return mods & (~s_capslock_mod & ~s_numlock_mod & ~s_scrolllock_mod); }
 
     unsigned int keycodeToModmask(unsigned int keycode);
     void loadModmap();
@@ -132,21 +132,13 @@ private:
     */
     bool mergeTree(t_key *newtree, t_key *basetree=0);
 
-#ifdef DEBUG
-    /// debug function
-    void showTree();
-    /// debug function
-    void showKeyTree(t_key *key, unsigned int w=0);
-#endif //DEBUG
-
-    int m_capslock_mod, m_numlock_mod, m_scrolllock_mod; ///< modifiers
+    static int s_capslock_mod, s_numlock_mod, s_scrolllock_mod; ///< modifiers
 		
     std::vector<t_key *> m_keylist;	
-    t_key *m_abortkey;           ///< abortkey for keygrabbing chain
     std::string m_execcmdstring; ///< copy of the execcommandstring
     int m_param;                 ///< copy of the param argument
-    Display *m_display;			 ///< display connection
-    XModifierKeymap *m_modmap;    // Modifier->keycode mapping
+    Display *m_display;          ///< display connection
+    XModifierKeymap *m_modmap;   ///< Modifier->keycode mapping
 };
 
-#endif // _KEYS_HH_
+#endif // KEYS_HH

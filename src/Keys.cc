@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.35 2003/07/02 05:42:21 fluxgen Exp $
+//$Id: Keys.cc,v 1.36 2003/08/19 16:19:28 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -71,15 +71,16 @@
 
 using namespace std;
 
+int Keys::s_capslock_mod = 0;
+int Keys::s_numlock_mod = 0;
+int Keys::s_scrolllock_mod = 0;
+
 Keys::Keys(const char *filename):
-    m_capslock_mod(0),
-    m_numlock_mod(0),
-    m_scrolllock_mod(0),
-    m_abortkey(0),
     m_display(FbTk::App::instance()->display()),
-    m_modmap(0)
-{
+    m_modmap(0) {
+
     loadModmap();
+
     if (filename != 0)
         load(filename);
 }
@@ -92,17 +93,13 @@ Keys::~Keys() {
     deleteTree();
 }
 
-/// Destroys the keytree and m_abortkey
+/// Destroys the keytree
 void Keys::deleteTree() {
     while (!m_keylist.empty()) {
-        if (m_keylist.back() && m_keylist.back() != 0)
+        if (m_keylist.back())
             delete m_keylist.back();		
         m_keylist.pop_back();
     }
-    if (m_abortkey) {
-        delete m_abortkey;
-        m_abortkey=0;
-    }	
 }
 
 /// Ungrabs the keys
@@ -243,35 +240,35 @@ void Keys::grabKey(unsigned int key, unsigned int mod) {
         // Grab with numlock, capslock and scrlock	
 
         //numlock	
-        XGrabKey(m_display, key, mod|m_numlock_mod,
+        XGrabKey(m_display, key, mod|s_numlock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);		
         //scrolllock
-        XGrabKey(m_display, key, mod|m_scrolllock_mod,
+        XGrabKey(m_display, key, mod|s_scrolllock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);	
         //capslock
-        XGrabKey(m_display, key, mod|m_capslock_mod,
+        XGrabKey(m_display, key, mod|s_capslock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);
 	
         //capslock+numlock
-        XGrabKey(m_display, key, mod|m_capslock_mod|m_numlock_mod,
+        XGrabKey(m_display, key, mod|s_capslock_mod|s_numlock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);
 
         //capslock+scrolllock
-        XGrabKey(m_display, key, mod|m_capslock_mod|m_scrolllock_mod,
+        XGrabKey(m_display, key, mod|s_capslock_mod|s_scrolllock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);						
 	
         //capslock+numlock+scrolllock
-        XGrabKey(m_display, key, mod|m_capslock_mod|m_scrolllock_mod|m_numlock_mod,
+        XGrabKey(m_display, key, mod|s_capslock_mod|s_scrolllock_mod|s_numlock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);						
 
         //numlock+scrollLock
-        XGrabKey(m_display, key, mod|m_numlock_mod|m_scrolllock_mod,
+        XGrabKey(m_display, key, mod|s_numlock_mod|s_scrolllock_mod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);
 	
@@ -287,10 +284,10 @@ unsigned int Keys::getModifier(const char *modstr) {
     if (!modstr)
         return 0;
     struct t_modlist{
-        char *string;
+        char *str;
         unsigned int mask;
         bool operator == (const char *modstr) {
-            return  (strcasecmp(string, modstr) == 0 && mask !=0);
+            return  (strcasecmp(str, modstr) == 0 && mask !=0);
         }
     } modlist[] = {
         {"SHIFT", ShiftMask},
@@ -304,7 +301,7 @@ unsigned int Keys::getModifier(const char *modstr) {
     };
 
     // find mod mask string
-    for (unsigned int i=0; modlist[i].string!=0; i++) {
+    for (unsigned int i=0; modlist[i].str !=0; i++) {
         if (modlist[i] == modstr)		
             return modlist[i].mask;		
     }
@@ -480,13 +477,13 @@ void Keys::loadModmap() {
 
             switch (ks) {
             case XK_Caps_Lock:
-                m_capslock_mod = mods[i];
+                s_capslock_mod = mods[i];
                 break;
             case XK_Scroll_Lock:
-                m_scrolllock_mod = mods[i];
+                s_scrolllock_mod = mods[i];
                 break;
             case XK_Num_Lock:
-                m_numlock_mod = mods[i];
+                s_numlock_mod = mods[i];
                 break;
             }
         }
