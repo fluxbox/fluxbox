@@ -123,6 +123,7 @@ On exit or restart, Fluxbox will save user defaults in the file
 .I ~/.fluxbox/init
 in the user's home directory.
 Some resources in this file can be edited by hand.
+.\" -----------------------
 .SH USING FLUXBOX
 Fluxbox includes keyboard handling. In order to customize your keybindings,
 edit the file
