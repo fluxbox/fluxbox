@@ -51,6 +51,6 @@ $ #MaxOverSlit
 $ #SloppyWindowGrouping
 # Window内にタブドロップでもタブグループに
 $ #WorkspaceWarping
-# Workspace Warping
+# ウィンドウドラッグでワークスペースを移動
 $ #DesktopWheeling
-# Desktop Wheeling
+# マウスホイールでワークスペース切り換え

@@ -1,9 +1,9 @@
 $set 10 #Windowmenu
 
 $ #SendTo
-# 移動先ワークスペース ...
+# 送る ...
 $ #SendGroupTo
-# 移動先グループ ...
+# グループを送る ...
 $ #Shade
 # バーに格納
 $ #Iconify
@@ -20,3 +20,5 @@ $ #KillClient
 # 強制終了
 $ #Close
 # 閉じる
+$ #Tab
+# タブ
