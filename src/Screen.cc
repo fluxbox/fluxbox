@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.92 2002/12/13 20:19:05 fluxgen Exp $
+// $Id: Screen.cc,v 1.93 2003/01/05 22:26:56 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -40,6 +40,8 @@
 #include "StringUtil.hh"
 #include "Netizen.hh"
 #include "DirHelper.hh"
+#include "WinButton.hh"
+#include "SimpleCommand.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -270,7 +272,7 @@ BScreen::BScreen(ResourceManager &rm,
                              m_workspacecount_sig(*this), // workspace count signal
                              m_workspacenames_sig(*this), // workspace names signal 
                              m_currentworkspace_sig(*this), // current workspace signal
-                             theme(0),
+                             theme(0), m_windowtheme(scrn),
                              resource(rm, screenname, altscreenname)
 {
     Display *disp = BaseDisplay::getXDisplay();
@@ -425,10 +427,10 @@ BScreen::BScreen(ResourceManager &rm,
 
     //update menus
     m_rootmenu->update();
-
+#ifdef SLIT
     if (m_slit.get())
         m_slit->reconfigure();
-
+#endif // SLIT
 
     // start with workspace 0
     changeWorkspaceID(0);
@@ -472,20 +474,13 @@ BScreen::BScreen(ResourceManager &rm,
                 continue;
 
             if (attrib.map_state != IsUnmapped) {
-				
-                FluxboxWindow *win = new FluxboxWindow(children[i], this);
-                if (!win->isManaged()) {
-                    delete win;
-                    win = 0;
-                } else {
-                    Fluxbox::instance()->attachSignals(*win);
-                }
-				
+				FluxboxWindow *win = createWindow(children[i]);
+
                 if (win) {
                     XMapRequestEvent mre;
                     mre.window = children[i];
                     win->restoreAttributes();
-                    win->mapRequestEvent(&mre);
+                    win->mapRequestEvent(mre);
                 }
             }
         }
@@ -541,6 +536,25 @@ BScreen::~BScreen() {
 
     delete theme;
 
+}
+
+/// TODO
+unsigned int BScreen::getMaxLeft() const {
+    return 0;
+}
+
+/// TODO
+unsigned int BScreen::getMaxRight() const {
+    return getWidth();
+}
+
+/// TODO
+unsigned int BScreen::getMaxTop() const {
+    return 0;
+}
+/// TODO
+unsigned int BScreen::getMaxBottom() const {
+    return getHeight();
 }
 
 void BScreen::iconUpdate() { 
@@ -633,10 +647,11 @@ void BScreen::reconfigure() {
     if (m_toolbar->theme().font().isAntialias() != *resource.antialias)
         m_toolbar->theme().font().setAntialias(*resource.antialias);
    
-    
+#ifdef SLIT    
     if (m_slit.get())
         m_slit->reconfigure();
-	
+#endif // SLIT
+
     //reconfigure workspaces
     Workspaces::iterator wit = workspacesList.begin();
     Workspaces::iterator wit_end = workspacesList.end();
@@ -1004,7 +1019,100 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
     }
 }
 
+FluxboxWindow *BScreen::createWindow(Window client) {
+    FluxboxWindow *win = new FluxboxWindow(client, this, getScreenNumber(), *getImageControl(), winFrameTheme());
+ 
+#ifdef SLIT
+    if (win->initialState() == WithdrawnState)
+        getSlit()->addClient(win->getClientWindow());
+#endif // SLIT
 
+    if (!win->isManaged()) {
+        delete win;
+        return 0;
+    } else {
+        Fluxbox::instance()->saveWindowSearch(client, win);
+        Fluxbox::instance()->attachSignals(*win);
+        setupWindowActions(*win);
+     }
+    return win;
+}
+
+void BScreen::setupWindowActions(FluxboxWindow &win) {
+
+    FbWinFrame &frame = win.frame();
+
+    // clear old buttons from frame
+    frame.removeAllButtons();
+
+    typedef FbTk::RefCount<FbTk::Command> CommandRef;
+
+    using namespace FbTk;
+
+    //create new buttons
+    if (win.isIconifiable()) {
+        FbTk::Button *iconifybtn = new WinButton(WinButton::MINIMIZE, frame.titlebar(), 0, 0, 10, 10);
+        CommandRef iconifycmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::iconify));
+        iconifybtn->setOnClick(iconifycmd);
+        iconifybtn->show();
+        frame.addRightButton(iconifybtn);
+#ifdef DEBUG
+        cerr<<"Creating iconify button"<<endl;
+#endif //DEBUG
+    }
+
+    if (win.isMaximizable()) {
+        FbTk::Button *maximizebtn = new WinButton(WinButton::MAXIMIZE, frame.titlebar(), 0, 0, 10, 10);
+        CommandRef maximizecmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::maximize));
+        CommandRef maximize_horiz_cmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::maximizeHorizontal));
+        CommandRef maximize_vert_cmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::maximizeVertical));
+
+        maximizebtn->setOnClick(maximizecmd, 1);
+        maximizebtn->setOnClick(maximize_horiz_cmd, 3);
+        maximizebtn->setOnClick(maximize_vert_cmd, 2);
+        maximizebtn->show();
+        frame.addRightButton(maximizebtn);
+#ifdef DEBUG
+        cerr<<"Creating maximize button"<<endl;
+#endif // DEBUG
+    }
+
+    if (win.isClosable()) {
+        Button *closebtn = new WinButton(WinButton::CLOSE, frame.titlebar(), 0, 0, 10, 10);
+        CommandRef closecmd(new SimpleCommand<FluxboxWindow>(win, &FluxboxWindow::close));
+        closebtn->setOnClick(closecmd);
+        closebtn->show();
+        frame.addRightButton(closebtn);
+#ifdef DEBUG
+        cerr<<"Creating close button"<<endl;
+#endif // DEBUG
+    }
+    /*
+    if (decorations.sticky) {
+        FbTk::Button *stickbtn = new WinButton(WinButton::STICK, m_frame.titlebar(),
+                                               0, 0, 10, 10);
+        FbTk::RefCount<FbTk::Command> stickcmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::stick));
+        stickbtn->setOnClick(stickcmd);
+        stickbtn->show();
+        m_frame.addLeftButton(stickbtn);
+#ifdef DEBUG
+        cerr<<"Creating sticky button"<<endl;
+#endif // DEBUG
+    }
+    */
+    /*    if (decorations.shade) {
+        FbTk::Button *shadebtn = new WinButton(WinButton::SHADE, m_frame.titlebar(),
+                                               0, 0, 10, 10);
+        FbTk::RefCount<FbTk::Command> shadecmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::shade));
+        shadebtn->setOnClick(shadecmd);
+        shadebtn->show();
+        m_frame.addRightButton(shadebtn);
+#ifdef DEBUG
+        cerr<<"Creating shade button"<<endl;
+#endif // DEBUG
+    }
+    */
+}
 void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
     Window session_stack[(workspace_stack.size() + workspacesList.size() + rootmenuList.size() + 30)];
@@ -1606,8 +1714,10 @@ void BScreen::shutdown() {
         }
     }
 
+#ifdef SLIT
     if (m_slit.get())
         m_slit->shutdown();
+#endif // SLIT
 
 }
 
