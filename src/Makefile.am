@@ -49,7 +49,7 @@ fluxbox_SOURCES= BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	IconBar.cc IconBar.hh Theme.hh Theme.cc \
 	StringUtil.cc StringUtil.hh DrawUtil.cc DrawUtil.hh nl_types_cygnus.h \
 	XrmDatabaseHelper.hh NotCopyable.hh Resource.hh Resource.cc \
-	Font.hh Font.cc FontImp.hh XFontImp.hh XFontImp.cc XmbFontImp.hh XmbFontImp.cc\
+	Font.hh Font.cc FontImp.hh XFontImp.hh XFontImp.cc XmbFontImp.hh XmbFontImp.cc XftFontImp.hh XftFontImp.cc\
 	FbAtoms.hh FbAtoms.cc Color.hh Color.cc Texture.hh Texture.cc \
 	SignalHandler.hh SignalHandler.cc \
 	EventHandler.hh AtomHandler.hh Gnome.hh Gnome.cc Ewmh.hh Ewmh.cc\
