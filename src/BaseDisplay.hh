@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.17 2002/03/19 21:19:55 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.18 2002/03/23 02:02:01 pekdon Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -172,8 +172,8 @@ public:
 	unsigned int getCurrHead(void) const;
 	unsigned int getHeadWidth(unsigned int head) const;
 	unsigned int getHeadHeight(unsigned int head) const;
-	int getHeadX(unsigned int head);
-	int getHeadY(unsigned int head);
+	int getHeadX(unsigned int head) const;
+	int getHeadY(unsigned int head) const;
 #endif // XINERAMA
 
 private:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.10 2002/03/19 21:19:55 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.11 2002/03/23 02:02:00 pekdon Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -454,28 +454,29 @@ ScreenInfo::~ScreenInfo(void) {
 // x,y. If it fails or Xinerama isn't
 // activated it'll return head nr 0
 //-----------------------------------------
-unsigned int ScreenInfo::getHead(int x, int y) {
+unsigned int ScreenInfo::getHead(int x, int y) const {
 
 	// is Xinerama extensions enabled?
 	if (hasXinerama()) {
 		// check if last head is still active
-		if ((xineramaInfos[xineramaLastHead].x_org <= x) &&
+/*		if ((xineramaInfos[xineramaLastHead].x_org <= x) &&
 				((xineramaInfos[xineramaLastHead].x_org +
 				xineramaInfos[xineramaLastHead].width) > x) &&
 				(xineramaInfos[xineramaLastHead].y_org <= y) &&
 				((xineramaInfos[xineramaLastHead].y_org +
 				xineramaInfos[xineramaLastHead].height) > y)) {
 			return xineramaLastHead;
-		} else {
+		} else { */
 			// go trough all the heads, and search
 			for (int i = 0; (signed) i < xineramaNumHeads; i++) {
 				if (xineramaInfos[i].x_org <= x &&
-						xineramaInfos[i].x_org + xineramaInfos[i].width) > x &&
+						(xineramaInfos[i].x_org + xineramaInfos[i].width) > x &&
 						xineramaInfos[i].y_org <= y &&
-						xineramaInfos[i].y_org + xineramaInfos[i].height) > y)
-					return (xineramaLastHead = i);
+						(xineramaInfos[i].y_org + xineramaInfos[i].height) > y)
+					// return (xineramaLastHead = i);
+					return i;
 			}
-		}
+	//	}
 	}
 
 	return 0;
@@ -506,7 +507,7 @@ unsigned int ScreenInfo::getCurrHead(void) const {
 //----------- getHeadWidth ------------
 // Returns the width of head
 //-------------------------------------
-unsigned int ScreenInfo::getHeadWidth(unsigned int head) {
+unsigned int ScreenInfo::getHeadWidth(unsigned int head) const {
 
 	if (hasXinerama()) {
 		if ((signed) head >= xineramaNumHeads) {

@@ -241,6 +241,23 @@ AC_ARG_ENABLE(
 )
 AC_SUBST(GNOME)
 
+dnl Check for Xinerama support
+XINERAMA=""
+AC_MSG_CHECKING([whether to build support for the Xinerama extension])
+AC_ARG_ENABLE(xinerama,
+[  --enable-xinerama       enable xinerama extension [default=no]], , [enable_xinerama=no])
+
+if test "x$enable_xinerama" = "xyes"; then
+	AC_MSG_RESULT([yes])
+	AC_CHECK_LIB(Xinerama, XineramaQueryScreens,
+			XINERAMA="-DXINERAMA"; Xinerama_libs="-lXinerama", )
+else
+	AC_MSG_RESULT([no])
+fi
+AC_SUBST(XINERAMA)
+
+LIBS="$LIBS $Xinerama_libs"
+
 dnl Determine the return type of signal handlers
 AC_TYPE_SIGNAL
 

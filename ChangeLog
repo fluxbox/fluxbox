@@ -22,6 +22,14 @@ changes for 0.1.8:
      5 = Skip: lower tabs/shaded windows
      6 = Skip: stuck windows/shaded windows
      7 = Skip: lower tabs/stuck windows/shaded windows
+*02/03/15:
+	* Xinerama support, maximizes windows to the current heads size, places
+	windows on the current head, makes it possible to place toolbar on
+	the different heads, also possible with the slit. Menus will be placed
+	on the current head too. (Claes Nästen)
+*02/03/13:
+	* Fixed window placement, now tabs are taking in account. Also,
+	no spaced are put inbetween windows to save space. (Claes Nästen)
 *02/03/11:
    * Fixed some KDE stuff in Slit.cc (Thanks Tommi Komulainen)
 *02/03/08:

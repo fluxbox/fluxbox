@@ -1,7 +1,7 @@
 # util/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
 
 CPPFLAGS= @CPPFLAGS@ @DEBUG@ @NLS@ @TIMEDCACHE@ @NEWWMSPEC@ @INTERLACE@ \
-@ORDEREDPSEUDO@ @KDE@ @GNOME@
+@ORDEREDPSEUDO@ @KDE@ @GNOME@ @XINERAMA@
 
 bin_SCRIPTS = bsetbg
 bin_PROGRAMS =		bsetroot
