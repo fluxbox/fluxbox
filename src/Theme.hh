@@ -42,7 +42,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.11 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Theme.hh,v 1.12 2002/07/23 18:38:31 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -111,16 +111,17 @@ public:
 		DrawUtil::Font font;
 
 	} ToolbarStyle;	
-	
-	inline WindowStyle &getWindowStyle(void) { return m_windowstyle; }
-	inline MenuStyle &getMenuStyle(void) { return m_menustyle; }
-	inline ToolbarStyle &getToolbarStyle(void) { return m_toolbarstyle; }
-	inline unsigned int getBevelWidth(void) const { return m_bevel_width; }
-	inline unsigned int getBorderWidth(void) const { return m_border_width; }
-	inline unsigned int getHandleWidth(void) const { return m_handle_width; }
-	inline unsigned int getFrameWidth(void) const { return m_frame_width; }
-	inline const GC &getOpGC(void) const { return m_opgc; }
-	inline const FbTk::Color &getBorderColor(void) const { return m_border_color; }
+		
+	inline WindowStyle &getWindowStyle() { return m_windowstyle; }
+	inline MenuStyle &getMenuStyle() { return m_menustyle; }
+	inline ToolbarStyle &getToolbarStyle() { return m_toolbarstyle; }
+	inline const FbTk::Texture &getSlitTexture() const { return m_slit_texture; }
+	inline unsigned int getBevelWidth() const { return m_bevel_width; }
+	inline unsigned int getBorderWidth() const { return m_border_width; }
+	inline unsigned int getHandleWidth() const { return m_handle_width; }
+	inline unsigned int getFrameWidth() const { return m_frame_width; }
+	inline GC getOpGC() const { return m_opgc; }
+	inline const FbTk::Color &getBorderColor() const { return m_border_color; }
 	void load(const char *filename);
 	void reconfigure();
 	
@@ -164,7 +165,7 @@ private:
 	Colormap m_colormap;
 	int m_screennum;
 	std::string m_rootcommand;
-
+	FbTk::Texture m_slit_texture;
 };
 
 

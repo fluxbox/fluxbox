@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.18 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Slit.cc,v 1.19 2002/07/23 18:38:31 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -408,7 +408,7 @@ void Slit::reconfigure(void) {
 
 	Pixmap tmp = frame.pixmap;
 	BImageControl *image_ctrl = screen->getImageControl();
-	FbTk::Texture *texture = &(screen->getToolbarStyle()->toolbar);
+	const FbTk::Texture *texture = &(screen->getTheme()->getSlitTexture());
 	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.pixmap = None;
 		XSetWindowBackground(display, frame.window,

@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.23 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Theme.cc,v 1.24 2002/07/23 18:38:31 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -286,7 +286,7 @@ void Theme::load(const char *filename){
 		m_database = XrmGetFileDatabase(DEFAULTSTYLE);
 
 	loadMenuStyle();
-	loadToolbarStyle();
+	loadToolbarStyle();	
 	loadWindowStyle();
 	loadTabStyle();
 	loadRootCommand();
@@ -665,7 +665,7 @@ void Theme::loadRootCommand() {
 
 }
 
-void Theme::loadMisc(void) {
+void Theme::loadMisc() {
 	unsigned int screen_width_div2 = WidthOfScreen(ScreenOfDisplay(m_display, m_screennum)) / 2;
 	XrmValue value;
 	char *value_type=0;
@@ -705,6 +705,14 @@ void Theme::loadMisc(void) {
 
 	readDatabaseColor("borderColor", "BorderColor", &m_border_color,
 		BlackPixel(m_display, m_screennum));		
+
+	// load slit style, if it wasn't found fall back to toolbarstyle
+	if (!readDatabaseTexture("slit", "Slit",
+		&m_slit_texture, 
+		BlackPixel(m_display, m_screennum)) ) {
+		m_slit_texture = m_toolbarstyle.toolbar;
+	}
+
 }
 
 
@@ -807,7 +815,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 	}
 
 	if (!retval)
-		fprintf(stderr, "Faild in readTexture\n");
+		cerr<<"Failed to load texture for: "<<rname<<endl;
 	
 	return retval;
 }
