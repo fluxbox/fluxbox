@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.196 2003/06/24 14:57:05 fluxgen Exp $
+// $Id: Window.cc,v 1.197 2003/06/25 06:02:15 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -380,7 +380,7 @@ void FluxboxWindow::init() {
     // display connection
     display = FbTk::App::instance()->display();
 
-    m_blackbox_attrib.workspace = m_workspace_number = 0;
+    m_blackbox_attrib.workspace = m_workspace_number = ~0;
 
     m_blackbox_attrib.flags = m_blackbox_attrib.attrib = m_blackbox_attrib.stack = 0;
     m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_y = 0;
@@ -2782,8 +2782,6 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     /*
      * Snap to screen/head edges
      * Snap to windows
-     * Snap to toolbar
-     * Snap to slit
      */
 
     if (screen().getEdgeSnapThreshold() == 0) return;
