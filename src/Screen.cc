@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.143 2003/05/04 13:04:31 rathnor Exp $
+// $Id: Screen.cc,v 1.144 2003/05/04 23:38:06 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1069,12 +1069,6 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
         workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
 
-        if (focused && &focused->getScreen() == this &&
-            (! focused->isStuck()) && (!focused->isMoving())) {
-            current_workspace->setLastFocusedWindow(focused);
-            Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
-        }
-
         // set new workspace
         current_workspace = getWorkspace(id);
 
@@ -1084,13 +1078,10 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
         current_workspace->showAll();
 
-        if (*resource.focus_last && current_workspace->getLastFocusedWindow() &&
-            !(focused && focused->isMoving())) {
-            current_workspace->getLastFocusedWindow()->setInputFocus();		
-
-        } else if (focused && (focused->isStuck() || focused->isMoving())) {
+        if (focused && (focused->isStuck() || focused->isMoving())) {
             focused->setInputFocus();
-        }
+        } else
+            Fluxbox::instance()->revertFocus(this);
 
         if (focused && focused->isMoving()) {
             focused->resumeMoving();
@@ -2429,6 +2420,26 @@ void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
         focused_list.push_front(client);
         client->fbwindow()->raise();
     }
+}
+
+/**
+ * Used to find out which window was last focused on the given workspace
+ * If workspace is outside the ID range, then the absolute last focused window
+ * is given.
+ */
+WinClient *BScreen::getLastFocusedWindow(int workspace) {
+    if (focused_list.empty()) return 0;
+    if (workspace < 0 || workspace >= (int) getCount())
+        return focused_list.front();
+
+    FocusedWindows::iterator it = focused_list.begin();    
+    FocusedWindows::iterator it_end = focused_list.end();
+    for (; it != it_end; ++it)
+        if ((*it)->fbwindow() &&
+            (((int)(*it)->fbwindow()->getWorkspaceNumber()) == workspace 
+             || (*it)->fbwindow()->isStuck()))
+            return *it;
+    return 0;
 }
 
 /**

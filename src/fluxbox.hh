@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.52 2003/05/04 16:55:40 rathnor Exp $
+// $Id: fluxbox.hh,v 1.53 2003/05/04 23:38:06 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -143,6 +143,7 @@ public:
     void watchKeyRelease(BScreen *screen, unsigned int mods);
 
     void setFocusedWindow(FluxboxWindow *w);
+    void revertFocus(BScreen *screen);
     void shutdown();
     void load_rc(BScreen &scr);
     void loadRootCommand(BScreen &scr);

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.5 2003/04/27 02:26:21 rathnor Exp $
+// $Id: WinClient.cc,v 1.6 2003/05/04 23:38:06 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -70,8 +70,6 @@ WinClient::~WinClient() {
         if (transientFor() == m_win) {
             transient_for = 0;
         }
-
-        fluxbox->setFocusedWindow(transient_for);
 
         if (transient_for != 0) {
             FluxboxWindow::ClientList::iterator client_it = 

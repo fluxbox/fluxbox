@@ -104,7 +104,7 @@ Major Features:
 Minor Features:
  - more keybinding actions              (Both)
  * directional focus movement           (Simon)
- = fix up focus issues                  (Simon)
+ * fix up focus issues                  (Simon)
  * snap to windows                      (Simon)
  - improved command-line help option    (Henrik)
  = pixmap buttons                       (Henrik)
@@ -112,7 +112,7 @@ Minor Features:
 Bugfixes/lower priority:
  - Bugs from 0.9.1                      (Both)
  * stop window moving from borders      (Simon)
- = Focus acts sloppy on window close/warp (Simon)
+ * Focus acts sloppy on window close/warp (Simon)
 
 ----------------------------------------------------------
 Release:      0.9.3

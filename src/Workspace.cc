@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.57 2003/05/04 13:07:17 rathnor Exp $
+// $Id: Workspace.cc,v 1.58 2003/05/04 23:38:06 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -218,7 +218,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
     if (w->isFocused()) {
         if (screen.isSloppyFocus()) {
-            Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
+            Fluxbox::instance()->revertFocus(&screen);
         } else if (w->isTransient() && w->getTransientFor() &&
                    w->getTransientFor()->isVisible()) {
             w->getTransientFor()->setInputFocus();
@@ -263,7 +263,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
                }
             */
             if (top == 0|| !top->setInputFocus()) {
-                Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
+                Fluxbox::instance()->revertFocus(&screen);
             }
         }
     }

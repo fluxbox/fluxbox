@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.18 2003/04/25 11:14:11 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.19 2003/05/04 23:38:06 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -337,9 +337,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
             return true;
         // ce.window = window to focus
 		
-        // should move set focus somewhere else
-        // so we don't need fluxbox depedencies here	
-        Fluxbox::instance()->setFocusedWindow(win);
+        win->setInputFocus();
         return true;
     } else if (ce.message_type == m_net_close_window) {
         if (win == 0)
