@@ -65,10 +65,9 @@ endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	BoolMenuItem.hh \
-	${newwmspec_SOURCE} \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
-	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
+	fluxbox.cc fluxbox.hh \
 	I18n.cc I18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh \
@@ -82,7 +81,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Window.cc Window.hh \
 	Workspace.cc Workspace.hh \
 	FbCommands.hh FbCommands.cc LayerMenu.hh \
-	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh \
+	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh FbMenu.cc \
 	WinClient.hh WinClient.cc \
 	Strut.hh \
 	Xinerama.hh \
@@ -91,6 +90,9 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	WorkspaceCmd.hh WorkspaceCmd.cc \
 	CommandParser.hh CommandParser.cc \
 	FbCommandFactory.hh FbCommandFactory.cc \
+	Shape.hh Shape.cc \
+	MenuTheme.hh MenuTheme.cc \
+	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
 
