@@ -1,5 +1,16 @@
 Changes for 0.1.7:
-*02/20/20:
+*02/02/26:
+   * indentation in Workspace.hh
+   * Added key action SENDTOWORKSPACE (Thanks Oliwier Ptak)
+*02/02/24:
+   * Added setupConfigFiles in class Fluxbox
+     copies configfiles to ~/.fluxbox/
+*02/02/23:
+   * Added Bulgarian translation (Thanks Miroslav Iordanov)
+   * Added Japanese translation (Thanks Takashi KATAYAMA)
+*02/02/21:
+   * Bugfix in _WIN_CLIENT_LIST
+*02/02/20:
    * Added _WIN_CLIENT_LIST
    * Fixed parameter to keybindings (Thanks Tomer Kol)
    * Fixed a bug in BScreen::raiseWindow 
@@ -36,7 +47,7 @@ Changes for 0.1.7:
 *02/02/04:
    * Fixed some unsigned/signed warnings
    * Moved from LinkedList to STL in some files (Thanks Paul W Brannan)
-   * Added pt_PT to nls (Thanks Luis Medinas)
+   * Added pt_PT to nls  (Portuguese) (Thanks Luis Medinas)
    * Fixed multibyte in Iconbar (Thanks Jesper Louis Andersen)
    * Removed some unnecessary timer->stop() (Thanks Jesper Louis Andersen)
 *02/02/02:

@@ -1,6 +1,6 @@
 -- AUTHORS for Fluxbox 
 Author:
-    Henrik Kinnunen <fluxgen@linuxmail.org>
+    Henrik Kinnunen <fluxgen@users.sourceforge.net>
 
 Contributors:
     Joel Carlbark <skypher@linuxmail.org>
@@ -13,6 +13,16 @@ Contributors:
       - suggestions, bug reports and beta testing
     Oliwier Ptak  <aleczapka@gmx.net>
       - suggestions, styles and webpage
+    Paul W Brannan <pbranna@clemson.edu>
+	  - consulting, code clean up
+    Rando Christensen <digiwano@babblica.net>
+	  - Documentation
+	Takashi KATAYAMA <valcyrie@hi-ho.ne.jp>
+	  - Japanese translation
+	Miroslav Iordanov <m_iordo@yahoo.com>
+	  - Bulgarian translation
+	Luis Medinas <metalgodin@excite.com>
+	  - Portuguese translation
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 

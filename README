@@ -9,9 +9,12 @@ Compile and Install:
 and then as root
 # make install
 
-for KDE slitsupport: (Allows kde tray icons to be placed in the fluxbox slit)
+For KDE slitsupport: (Allows kde tray icons to be placed in the fluxbox slit)
    ./configure --enable-kde
-	 
+
+For Gnome support:
+  --enable-gnome
+ 
 For more information and FAQ go to http://fluxbox.sourceforge.net
 
 To disable tabs and/or iconbar just  change it in configure menu.
