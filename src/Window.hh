@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.22 2002/05/30 00:38:22 fluxgen Exp $
+// $Id: Window.hh,v 1.23 2002/05/30 15:49:10 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -41,7 +41,7 @@
 #include <vector>
 #include <string>
 
-//#define PropMwmHintsElements	3
+#define PropMwmHintsElements	3
 
 class Tab;
 
