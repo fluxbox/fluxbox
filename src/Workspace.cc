@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.17 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Workspace.cc,v 1.18 2002/04/09 23:18:12 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -58,23 +58,18 @@
 #include <iostream>
 using namespace std;
 
-#ifdef DEBUG
-#include <iostream>
-using namespace std;
-#endif
-
 Workspace::Workspace(BScreen *scrn, unsigned int i):
 screen(scrn),
 lastfocus(0),
-name(""),
-id(i),
+m_name(""),
+m_id(i),
 cascade_x(32), cascade_y(32)
 {
 
 	clientmenu = new Clientmenu(this);
 
 	char *tmp;
-	screen->getNameOfWorkspace(id, &tmp);
+	screen->getNameOfWorkspace(m_id, &tmp);
 	setName(tmp);
 
 	if (tmp)
@@ -94,7 +89,7 @@ const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	if (place)
 		placeWindow(w);
 
-	w->setWorkspace(id);
+	w->setWorkspace(m_id);
 	w->setWindowNumber(windowList.size());
 
 	stackingList.push_front(w);
@@ -118,7 +113,7 @@ const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	clientmenu->insert(w->getTitle().c_str());
 	clientmenu->update();
 
-	screen->updateNetizenWindowAdd(w->getClientWindow(), id);
+	screen->updateNetizenWindowAdd(w->getClientWindow(), m_id);
 
 	raiseWindow(w);
 
@@ -310,7 +305,7 @@ void Workspace::reconfigure(void) {
 }
 
 
-FluxboxWindow *Workspace::getWindow(unsigned int index) {
+FluxboxWindow *Workspace::getWindow(unsigned int index) const{
 	if (index < windowList.size())
 		return windowList[index];
 
@@ -318,7 +313,7 @@ FluxboxWindow *Workspace::getWindow(unsigned int index) {
 }
 
 
-const int Workspace::getCount(void) {
+const int Workspace::getCount(void) const {
 	return windowList.size();
 }
 
@@ -329,36 +324,36 @@ void Workspace::update(void) {
 }
 
 
-bool Workspace::isCurrent(void) {
-	return (id == screen->getCurrentWorkspaceID());
+bool Workspace::isCurrent(void) const{
+	return (m_id == screen->getCurrentWorkspaceID());
 }
 
 
-bool Workspace::isLastWindow(FluxboxWindow *w) {
+bool Workspace::isLastWindow(FluxboxWindow *w) const{
 	return (w == windowList.back());
 }
 
 void Workspace::setCurrent(void) {
-	screen->changeWorkspaceID(id);
+	screen->changeWorkspaceID(m_id);
 }
 
 
-void Workspace::setName(char *new_name) {
+void Workspace::setName(const char *name) {
 
-	if (new_name) {
-		name = new_name;
-	} else {
+	if (name) {
+		m_name = name;
+	} else { //if name == 0 then set default name from nls
 		char tname[128];
 		sprintf(tname, I18n::instance()->
 			getMessage(
 			FBNLS::WorkspaceSet, FBNLS::WorkspaceDefaultNameFormat,
-			"Workspace %d"), id + 1);
-		name = tname;
+			"Workspace %d"), m_id + 1); //m_id starts at 0
+		m_name = tname;
 	}
 	
 	screen->updateWorkspaceNamesAtom();
 	
-	clientmenu->setLabel(name.c_str());
+	clientmenu->setLabel(m_name.c_str());
 	clientmenu->update();
 }
 

@@ -42,23 +42,23 @@ class Workspace {
 public:
 	typedef std::vector<FluxboxWindow *> Windows;
 	
-	Workspace(BScreen *, unsigned int = 0);
+	Workspace(BScreen *screen, unsigned int workspaceid= 0);
 	~Workspace(void);
 
-	inline BScreen *getScreen(void) { return screen; }
-	inline FluxboxWindow *getLastFocusedWindow(void) { return lastfocus; }	
-	inline Clientmenu *getMenu(void) { return clientmenu; }
-	inline const char *getName(void) const { return name.c_str(); }
-	inline const unsigned int getWorkspaceID(void) const { return id; }	
+	inline BScreen *getScreen(void) const { return screen; }
+	inline FluxboxWindow *getLastFocusedWindow(void) const { return lastfocus; }	
+	inline Clientmenu *menu(void) const { return clientmenu; }
+	inline const std::string &name(void) const { return m_name; }
+	inline const unsigned int workspaceID(void) const { return m_id; }	
 	inline void setLastFocusedWindow(FluxboxWindow *w) { lastfocus = w; }
-	FluxboxWindow *getWindow(unsigned int id);
+	FluxboxWindow *getWindow(unsigned int id) const;
 	inline Windows &getWindowList() { return windowList; }
-	bool isCurrent(void);
-	bool isLastWindow(FluxboxWindow *);	
-	const int addWindow(FluxboxWindow *, bool = False);
+	bool isCurrent(void) const;
+	bool isLastWindow(FluxboxWindow *window) const;	
+	const int addWindow(FluxboxWindow *window, bool place = false);
 	const int removeWindow(FluxboxWindow *);
-	const int getCount(void);
- 
+	const int getCount(void) const;
+	void setName(const char *name);
 	void showAll(void);
 	void hideAll(void);
 	void removeAll(void);
@@ -67,7 +67,6 @@ public:
 	void reconfigure();
 	void update();
 	void setCurrent(void);
-	void setName(char *);
 	void shutdown(void);
 
 private:
@@ -81,16 +80,13 @@ private:
 	WindowStack stackingList;
 	Windows windowList;
 
-	std::string name;
-	unsigned int id;
+	std::string m_name;
+	unsigned int m_id;
 	int cascade_x, cascade_y;
 
 
 protected:
 	void placeWindow(FluxboxWindow *);
-
-
-
 };
 
 
