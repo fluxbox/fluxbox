@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/11:
+   * Fixed a minor focus bug, the m_focused_window was out of sync after revertFocus (Henrik)
+     fluxbox.cc
+   * Changed so FbTk::Timer executes a FbTk::Command instead of calling TimoutHandler (Henrik)
+     Timer.hh/cc, fluxbox.cc, Slit.hh/cc, ImageControl.hh/cc	
+   * Added new files for Toolbar (Henrik)
+     WorkspaceNameTool.hh/cc, ClockTool.hh/cc, ToolbarItem.hh/cc, ToolTheme.hh/cc
+     TextTheme.hh/cc
 *03/08/10:
    * Fix session.menuFile to work with ~ properly (Simon)
      fluxbox.hh/cc Screen.cc     
