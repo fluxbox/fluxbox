@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.hh,v 1.6 2004/01/02 13:28:38 fluxgen Exp $
+// $Id: RootTheme.hh,v 1.7 2004/03/22 21:01:42 fluxgen Exp $
 
 #ifndef ROOTTHEME_HH
 #define ROOTTHEME_HH
@@ -44,6 +44,14 @@ public:
     void reconfigTheme();
 
     GC opGC() const { return m_opgc.gc(); }
+
+    void setLineAttributes(unsigned int width,
+                           int line_style,
+                           int cap_style,
+                           int join_style) {
+        m_opgc.setLineAttributes(width, line_style, cap_style, join_style);
+    }
+    
     //!! TODO we should need this later
     void lock(bool value) { m_lock = value; }
 private:

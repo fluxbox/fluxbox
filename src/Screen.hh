@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.135 2004/03/21 09:00:25 rathnor Exp $
+// $Id: Screen.hh,v 1.136 2004/03/22 21:01:10 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -431,6 +431,10 @@ private:
         FbTk::Resource<PlacementPolicy> placement_policy;
         FbTk::Resource<RowDirection> row_direction;
         FbTk::Resource<ColumnDirection> col_direction;
+        FbTk::Resource<int> gc_line_width;
+        FbTk::Resource<FbTk::GContext::LineStyle> gc_line_style;
+        FbTk::Resource<FbTk::GContext::JoinStyle> gc_join_style;
+        FbTk::Resource<FbTk::GContext::CapStyle>  gc_cap_style;
 
     } resource;
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.cc,v 1.7 2004/01/02 13:28:38 fluxgen Exp $
+// $Id: RootTheme.cc,v 1.8 2004/03/22 21:01:42 fluxgen Exp $
 
 #include "RootTheme.hh"
 
@@ -37,6 +37,7 @@ RootTheme::RootTheme(int screen_num, std::string &screen_root_command):
     m_opgc.setForeground(WhitePixel(disp, screen_num)^BlackPixel(disp, screen_num));
     m_opgc.setFunction(GXxor);
     m_opgc.setSubwindowMode(IncludeInferiors);
+    m_opgc.setLineAttributes(1, LineSolid, CapNotLast, JoinMiter);
 }
 
 RootTheme::~RootTheme() {

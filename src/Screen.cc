@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.270 2004/03/21 09:00:24 rathnor Exp $
+// $Id: Screen.cc,v 1.271 2004/03/22 21:01:10 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -306,6 +306,113 @@ setFromString(char const *strval) {
         setDefaultValue();
 }
 
+template<>
+void FbTk::Resource<FbTk::GContext::LineStyle>::setDefaultValue() {
+    *(*this) = FbTk::GContext::LINESOLID;
+}
+
+template<>
+std::string FbTk::Resource<FbTk::GContext::LineStyle>::getString() {
+    switch(m_value) {
+    case FbTk::GContext::LINESOLID:
+        return "LineSolid";
+        break;
+    case FbTk::GContext::LINEONOFFDASH:
+        return "LineOnOffDash";
+        break;
+    case FbTk::GContext::LINEDOUBLEDASH:
+        return "LineDoubleDash";
+        break;
+    };
+}
+
+template<>
+void FbTk::Resource<FbTk::GContext::LineStyle>
+::setFromString(char const *strval) { 
+
+    if (strcasecmp(strval, "LineSolid") == 0 )
+        m_value = FbTk::GContext::LINESOLID;
+    else if (strcasecmp(strval, "LineOnOffDash") == 0 )
+        m_value = FbTk::GContext::LINEONOFFDASH;
+    else if (strcasecmp(strval, "LineDoubleDash") == 0) 
+        m_value = FbTk::GContext::LINEDOUBLEDASH;
+    else
+        setDefaultValue();
+}
+
+template<>
+void FbTk::Resource<FbTk::GContext::JoinStyle>::setDefaultValue() {
+    *(*this) = FbTk::GContext::JOINMITER;
+}
+
+template<>
+std::string FbTk::Resource<FbTk::GContext::JoinStyle>::getString() {
+    switch(m_value) {
+    case FbTk::GContext::JOINMITER:
+        return "JoinMiter";
+        break;
+    case FbTk::GContext::JOINBEVEL:
+        return "JoinBevel";
+        break;
+    case FbTk::GContext::JOINROUND:
+        return "JoinRound";
+        break;
+    };
+}
+
+template<>
+void FbTk::Resource<FbTk::GContext::JoinStyle>
+::setFromString(char const *strval) { 
+
+    if (strcasecmp(strval, "JoinRound") == 0 )
+        m_value = FbTk::GContext::JOINROUND;
+    else if (strcasecmp(strval, "JoinMiter") == 0 )
+        m_value = FbTk::GContext::JOINMITER;
+    else if (strcasecmp(strval, "JoinBevel") == 0) 
+        m_value = FbTk::GContext::JOINBEVEL;
+    else
+        setDefaultValue();
+}
+
+template<>
+void FbTk::Resource<FbTk::GContext::CapStyle>::setDefaultValue() {
+    *(*this) = FbTk::GContext::CAPNOTLAST;
+}
+
+template<>
+std::string FbTk::Resource<FbTk::GContext::CapStyle>::getString() {
+    switch(m_value) {
+    case FbTk::GContext::CAPNOTLAST:
+        return "CapNotLast";
+        break;
+    case FbTk::GContext::CAPBUTT:
+        return "CapButt";
+        break;
+    case FbTk::GContext::CAPROUND:
+        return "CapRound";
+        break;
+    case FbTk::GContext::CAPPROJECTING:
+        return "CapProjecting";
+        break;
+    };
+}
+
+template<>
+void FbTk::Resource<FbTk::GContext::CapStyle>
+::setFromString(char const *strval) { 
+
+    if (strcasecmp(strval, "CapNotLast") == 0 )
+        m_value = FbTk::GContext::CAPNOTLAST;
+    else if (strcasecmp(strval, "CapProjecting") == 0 )
+        m_value = FbTk::GContext::CAPPROJECTING;
+    else if (strcasecmp(strval, "CapRound") == 0) 
+        m_value = FbTk::GContext::CAPROUND;
+    else if (strcasecmp(strval, "CapButt" ) == 0)
+        m_value = FbTk::GContext::CAPBUTT;
+    else
+        setDefaultValue();
+}
+
 namespace {
 
 class StyleMenuItem: public FbTk::MenuItem {
@@ -378,7 +485,20 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
     placement_policy(rm, ROWSMARTPLACEMENT, scrname+".windowPlacement", altscrname+".WindowPlacement"),
     row_direction(rm, LEFTRIGHT, scrname+".rowPlacementDirection", altscrname+".RowPlacementDirection"),
-    col_direction(rm, TOPBOTTOM, scrname+".colPlacementDirection", altscrname+".ColPlacementDirection") {
+    col_direction(rm, TOPBOTTOM, scrname+".colPlacementDirection", altscrname+".ColPlacementDirection"),
+    gc_line_width(rm, 1, scrname+".overlay.lineWidth", altscrname+".Overlay.LineWidth"),
+    gc_line_style(rm, 
+                  FbTk::GContext::LINESOLID, 
+                  scrname+".overlay.lineStyle", 
+                  altscrname+".Overlay.LineStyle"),
+    gc_join_style(rm,
+                  FbTk::GContext::JOINMITER,
+                  scrname+".overlay.joinStyle",
+                  altscrname+".Overlay.JoinStyle"),
+    gc_cap_style(rm,
+                 FbTk::GContext::CAPNOTLAST,
+                 scrname+".overlay.capStyle",
+                 altscrname+".overlay.CapStyle") {
 
 }
 
@@ -584,6 +704,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_root_theme->lock(true);
     FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
     m_root_theme->lock(false);
+    m_root_theme->setLineAttributes(*resource.gc_line_width,
+                                    *resource.gc_line_style,
+                                    *resource.gc_cap_style,
+                                    *resource.gc_join_style);
 
     int i;
     unsigned int nchild;
