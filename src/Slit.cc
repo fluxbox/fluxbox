@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.70 2003/07/03 13:01:58 fluxgen Exp $
+// $Id: Slit.cc,v 1.71 2003/07/06 07:09:53 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -1340,5 +1340,5 @@ void Slit::setupMenu() {
 
 void Slit::moveToLayer(int layernum) {
     m_layeritem->moveToLayer(layernum);
-    m_rc_layernum = static_cast<Fluxbox::Layer>(layernum);
+    *m_rc_layernum = layernum;
 }
