@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.35 2002/10/22 14:41:13 fluxgen Exp $
+// $Id: Window.hh,v 1.36 2002/11/15 12:14:39 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -46,6 +46,7 @@
 #define PropMwmHintsElements	3
 
 class Tab;
+
 
 /**
 	Creates the window frame and handles any window event for it
@@ -232,19 +233,18 @@ private:
 	// state and hint signals
 	WinSubject m_hintsig, m_statesig, m_workspacesig;
 
-	BImageControl *image_ctrl; //image control for rendering
+	BImageControl *image_ctrl; /// image control for rendering
 	
-	// got from WM_CLASS
-	std::string m_instance_name;
-	std::string m_class_name;
+	std::string m_instance_name; /// instance name from WM_CLASS
+	std::string m_class_name; /// class name from WM_CLASS
 	
 	//Window state
 	bool moving, resizing, shaded, maximized, visible, iconic, transient,
 		focused, stuck, modal, send_focus_message, managed;
 
-	BScreen *screen;
+	BScreen *screen; /// screen on which this window exist
 	BTimer timer;
-	Display *display;
+	Display *display; /// display connection (obsolete by BaseDisplay singleton)
 	BaseDisplay::BlackboxAttributes blackbox_attrib;
 
 	Time lastButtonPressTime;

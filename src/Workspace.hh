@@ -25,16 +25,18 @@
 #ifndef	 WORKSPACE_HH
 #define	 WORKSPACE_HH
 
+
 #include "Clientmenu.hh"
-#include "Window.hh"
 #include "NotCopyable.hh"
 
 #include <X11/Xlib.h>
+
 #include <string>
 #include <vector>
 #include <list>
 
 class BScreen;
+class FluxboxWindow;
 
 /**
 	Handles a single workspace
@@ -68,14 +70,10 @@ public:
 
 	const BScreen *getScreen() const { return screen; }	
 	const FluxboxWindow *getLastFocusedWindow() const { return lastfocus; }	
-	Clientmenu *menu() { return &m_clientmenu; }
-	/**
-		@return client menu 
-	*/
-	inline const Clientmenu *menu() const { return &m_clientmenu; }
-	/**
-		@return name of this workspace
-	*/
+	Clientmenu &menu() { return m_clientmenu; }
+	///	client menu 
+	inline const Clientmenu &menu() const { return m_clientmenu; }
+	///	name of this workspace
 	inline const std::string &name() const { return m_name; }
 	/**
 		@return the number of this workspace, note: obsolete, should be in BScreen
