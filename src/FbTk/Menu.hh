@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.36 2004/06/14 12:23:57 fluxgen Exp $
+// $Id: Menu.hh,v 1.37 2004/06/27 13:51:24 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -125,12 +125,14 @@ public:
     /// hide menu
     virtual void hide();
     virtual void clearWindow();
+    void setActiveIndex(int index) { m_active_index = index; }
     /*@}*/
 	
     /**
        @name accessors
     */
     //@{
+    inline int activeIndex() const { return m_active_index; }
     inline bool isTorn() const { return torn; }
     inline bool isVisible() const { return visible; }
     inline int screenNumber() const { return menu.window.screenNumber(); }
@@ -156,6 +158,8 @@ public:
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
     inline MenuItem *find(unsigned int index) { return menuitems[index]; }
     //@}
+    /// @return true if index is valid
+    inline bool validIndex(int index) const { return (index < static_cast<int>(numberOfItems()) && index >= 0); }
 
 protected:
 
@@ -168,8 +172,8 @@ protected:
     }
 
     virtual void itemSelected(int button, unsigned int index) { }
-    virtual int drawItem(unsigned int index, bool highlight = false, 
-                         bool clear= false, bool render_trans = true,
+    virtual int drawItem(unsigned int index,
+                         bool clear = false, bool render_trans = true,
                          int x= -1, int y= -1, 
                          unsigned int width= 0, unsigned int height= 0);
     virtual void redrawTitle();
@@ -178,7 +182,8 @@ protected:
     inline const Menu *parent() const { return m_parent; }
 
     void update(FbTk::Subject *);
-
+    void renderTransp(int x, int y,
+                      unsigned int width, unsigned int height);
 private: 
 
     void openSubmenu();
@@ -186,8 +191,7 @@ private:
     void startHide();
     void stopHide();
 
-    void renderTransp(int x, int y,
-                      unsigned int width, unsigned int height);
+
     typedef std::vector<MenuItem *> Menuitems;
     const MenuTheme &m_theme;
     Menu *m_parent;
@@ -215,6 +219,8 @@ private:
 
         unsigned int frame_h, item_w;
     } menu;
+
+    int m_active_index; ///< current highlighted index
 
     Drawable m_root_pm;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused

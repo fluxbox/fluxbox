@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.68 2004/06/14 16:09:48 fluxgen Exp $
+// $Id: Menu.cc,v 1.69 2004/06/27 13:50:24 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -89,6 +89,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_screen_width(DisplayWidth(FbTk::App::instance()->display(), tm.screenNum())),
     m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm.screenNum())),
     m_alignment(ALIGNDONTCARE),
+    m_active_index(-1),
     m_need_update(true) {
 
     // setup timers
@@ -198,9 +199,7 @@ Menu::~Menu() {
         m_image_ctrl.removeImage(menu.sel_pixmap);
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    evm.remove(menu.title);
-    evm.remove(menu.frame);
-    evm.remove(menu.window);
+
     if (s_focused == this)
         s_focused = 0;
 }
@@ -261,7 +260,9 @@ int Menu::remove(unsigned int index) {
         which_sub = -1;
     else if (static_cast<unsigned int>(which_sub) > index)
         which_sub--;
+
     m_need_update = true; // we need to redraw the menu
+
     return menuitems.size();
 }
 
@@ -283,30 +284,36 @@ void Menu::lower() {
 void Menu::nextItem() {
     int old_which_press = which_press;
 
-    if (old_which_press >= 0 && 
-        old_which_press < static_cast<signed>(menuitems.size()) && 
+    if (validIndex(old_which_press) && 
         menuitems[old_which_press] != 0) {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
             menuitems[old_which_press]->submenu()->internal_hide();
         }
-        drawItem(old_which_press, false, true, true);
+        drawItem(old_which_press, 
+                 true,  // clear
+                 true); // transp
     }
 
     // restore old in case we changed which_press
     which_press = old_which_press;
-    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size() - 1))
+    if (!validIndex(which_press))
         which_press = 0;
     else
         which_press++;
 
 
-    if (menuitems[which_press] == 0)
+    if (menuitems[which_press] == 0) {
+        m_active_index = -1;
         return;
+    }
 
+    m_active_index = which_press;    
 
-    drawItem(which_press, true, true, true);
+    drawItem(which_press, 
+             true,  // clear
+             true); // transp
 
 }
 
@@ -314,32 +321,39 @@ void Menu::prevItem() {
 
     int old_which_press = which_press;
 
-    if (old_which_press >= 0 && old_which_press < static_cast<signed>(menuitems.size())) {
+    if (validIndex(old_which_press)) {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
             // since it might hide the parent if we use Menu::hide
             menuitems[old_which_press]->submenu()->internal_hide();            
         }
-        drawItem(old_which_press, false, true, true);
+        drawItem(old_which_press, 
+                 true,  // clear
+                 true); // transp
     }
     // restore old in case we changed which_press
     which_press = old_which_press;
 
-    if (which_press <= 0 || which_press >= static_cast<signed>(menuitems.size()))
+    if (!validIndex(which_press))
         which_press = menuitems.size() - 1;
     else if (which_press - 1 >= 0)
         which_press--;
 
-    if (menuitems[which_press] == 0)
+    if (menuitems[which_press] == 0) {
+        m_active_index = -1;
         return;
+    }
 
+    m_active_index = which_press;
 
-    drawItem(which_press, true, true, true);
+    drawItem(which_press, 
+             true,  // clear
+             true); // transp
 
 }
 
 void Menu::enterSubmenu() {
-    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()))
+    if (!validIndex(which_press))
         return;
 
     Menu *submenu = menuitems[which_press]->submenu();
@@ -356,14 +370,16 @@ void Menu::enterSubmenu() {
 }
 
 void Menu::enterParent() {
-    if (which_press < 0 || which_press >= static_cast<signed>(menuitems.size()) || parent() == 0)
+    if (!validIndex(which_press) || parent() == 0)
         return;
 
     Menu *submenu = menuitems[which_press]->submenu();
     if (submenu)
         submenu->internal_hide();
 
-    drawItem(which_press, false, true, true);
+    drawItem(which_press, 
+             true,  // clear
+             true); // transp
     which_press = -1; // dont select any in this 
     // hide self
     visible = false;
@@ -422,7 +438,7 @@ void Menu::update(int active_index) {
     int new_height = menu.frame_h;
 
     if (title_vis)
-        new_height += theme().titleHeight() + ((menu.frame_h>0)?menu.title.borderWidth():0);
+        new_height += theme().titleHeight() + ((menu.frame_h > 0)?menu.title.borderWidth():0);
 
 
     if (new_width < 1) 
@@ -588,18 +604,9 @@ void Menu::update(int active_index) {
         renderTransp(0, 0,
                      m_real_frame_pm.width(), m_real_frame_pm.height());
         for (unsigned int i = 0; i < menuitems.size(); i++) {
-            if (i == (unsigned int)which_sub) {
-                drawItem(i,      // index
-                         true,   // highlight
-                         true,   // clear
-                         false); // render_trans
-            } else {
-                drawItem(i,     // index
-                                // highlight
-                         (static_cast<signed>(i) == active_index && isItemEnabled(i)), 
-                         true,  // clear 
-                         false); // render transparent
-            }
+            drawItem(i,      // index
+                     true,   // clear
+                     false); // render_trans
         }
         
     }
@@ -609,6 +616,7 @@ void Menu::update(int active_index) {
 
 
 void Menu::show() {
+
     if (m_need_update)
         update();
 
@@ -632,15 +640,18 @@ void Menu::hide() {
     if (!isVisible())
         return;
 
-    if ((! torn) && m_parent && m_parent->isVisible()) {
+
+    // if not torn and parent is visible, go to first parent
+    // and hide it
+    if (!torn && m_parent && m_parent->isVisible()) {
         Menu *p = m_parent;
 
         while (p->isVisible() && (! p->torn) && p->m_parent)
             p = p->m_parent;
         p->internal_hide();
-    } else
+    } else // if we dont have a parent then do hide here
         internal_hide();
-    
+
 }
 
 void Menu::grabInputFocus() {
@@ -666,21 +677,24 @@ void Menu::clearWindow() {
 }
 
 void Menu::internal_hide() {
-    if (which_sub >= 0) {
+
+    if (validIndex(which_sub)) {
         MenuItem *tmp = menuitems[which_sub];
         tmp->submenu()->internal_hide();
     }
 
-    if (m_parent && (! torn)) {
-        m_parent->drawItem(m_parent->which_sub, false, true);
-
-        m_parent->which_sub = -1;
-    } else if (shown && shown->menu.window == menu.window)
+    if (shown && shown->menu.window == menu.window)
         shown = (Menu *) 0;
 
     torn = visible = false;
     which_sub = which_press = which_sub = -1;
 
+    // if we have an active index we need to redraw it 
+    // as non active
+    int old = m_active_index;
+    m_active_index = -1;
+    drawItem(old, true); // clear old area from highlight
+    
     menu.window.hide();
 }
 
@@ -709,7 +723,7 @@ void Menu::move(int x, int y) {
         renderTransp(0, 0,
                      m_real_frame_pm.width(), m_real_frame_pm.height());
         for (size_t i=0; i < menuitems.size(); ++i) {
-            drawItem(i, false, // highlight
+            drawItem(i,
                      true, // clear
                      false); // transparent
         }
@@ -759,8 +773,7 @@ void Menu::redrawTitle() {
 
 
 void Menu::drawSubmenu(unsigned int index) {
-    if (which_sub >= 0 && static_cast<unsigned int>(which_sub) != index && 
-        static_cast<unsigned int>(which_sub) < menuitems.size()) {
+    if (validIndex(which_sub) && static_cast<unsigned int>(which_sub) != index) {
         MenuItem *itmp = menuitems[which_sub];
 
         if (! itmp->submenu()->isTorn())
@@ -822,7 +835,7 @@ void Menu::drawSubmenu(unsigned int index) {
 
         item->submenu()->move(new_x, new_y);
         if (! moving)
-            drawItem(index, true);
+            drawItem(index);
 		
         if (! item->submenu()->isVisible()) {
             item->submenu()->show();
@@ -847,7 +860,7 @@ bool Menu::hasSubmenu(unsigned int index) const {
 }
 
 
-int Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_trans,
+int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
                    int x, int y, unsigned int w, unsigned int h) {
     if (index >= menuitems.size() || menuitems.size() == 0 ||
         menu.persub == 0)
@@ -862,7 +875,7 @@ int Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_t
     int sel_x = 0, sel_y = 0;
     unsigned int hilite_w = menu.item_w, hilite_h = theme().itemHeight();
     unsigned int half_w = theme().itemHeight() / 2, quarter_w = theme().itemHeight() / 4;
-
+    bool highlight = (index == m_active_index);
     GC gc =
         ((highlight || item->isSelected()) ? theme().hiliteTextGC().gc() :
          theme().frameTextGC().gc());
@@ -1044,7 +1057,7 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
         int sbl = (be.x / menu.item_w), i = (be.y / theme().itemHeight());
         int w = (sbl * menu.persub) + i;
 
-        if (w < static_cast<int>(menuitems.size()) && w >= 0) {
+        if (validIndex(w)) {
             which_press = i;
             which_sbl = sbl;
 
@@ -1054,7 +1067,9 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
                 if (!item->submenu()->isVisible())
                     drawSubmenu(w);
             } else
-                drawItem(w, item->isEnabled(), true, true);
+                drawItem(w, 
+                         true,  // clear
+                         true); // render transparency
 
         }
     } else {
@@ -1078,7 +1093,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                 renderTransp(0, 0,
                              m_real_frame_pm.width(), m_real_frame_pm.height());
                 for (size_t i=0; i < menuitems.size(); ++i) {
-                    drawItem(i, false, // highlight
+                    drawItem(i, 
                              true, // clear
                              false); // transparent
                 }
@@ -1100,20 +1115,28 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             w = (sbl * menu.persub) + i,
             p = (which_sbl * menu.persub) + which_press;
 
-        if (w < static_cast<int>(menuitems.size()) && w >= 0) {
+        if (validIndex(w)) {
             if (p == w && isItemEnabled(w)) {
                 if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
                     re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
                     menuitems[w]->click(re.button, re.time);
                     itemSelected(re.button, w);
                     // just redraw this item
-                    drawItem(w, true, true, true);
+                    drawItem(w, 
+                             true,  // clear
+                             true); // transparent
                 }
             } else {
-                drawItem(p, isItemEnabled(p) && (p == which_sub), true, true);
+                drawItem(p, 
+                         true,  // clear
+                         true); // transparent
             }
-        } else
-            drawItem(p, false, true, true);
+            
+        } else {
+            drawItem(p,
+                     true,  // clear
+                     true); // transparent
+        }
     }
 }
 
@@ -1126,7 +1149,9 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (! moving) {
             // if not moving: start moving operation
             if (m_parent && (! torn)) {
-                m_parent->drawItem(m_parent->which_sub, false, true, true);
+                m_parent->drawItem(m_parent->which_sub, 
+                                   true,  // clear
+                                   true); // render transparency
                 m_parent->which_sub = -1;
             }
 
@@ -1140,65 +1165,83 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             menu.window.move(me.x_root - menu.x_move, me.y_root - menu.y_move);
         }
 
-    } else if ((! (me.state & Button1Mask)) && me.window == menu.frame &&
-               me.x >= 0 && me.x < (signed) width() &&
-               me.y >= 0 && me.y < (signed) menu.frame_h) {
+    } else if (!(me.state & Button1Mask) && me.window == menu.frame) {
         stopHide();
-        int sbl = (me.x / menu.item_w), i = (me.y / theme().itemHeight()),
+        int sbl = (me.x / menu.item_w), 
+            i = (me.y / theme().itemHeight()),
             w = (sbl * menu.persub) + i;
+       
+        if (validIndex(m_active_index) && w != m_active_index) {
 
-        if ((i != which_press || sbl != which_sbl) &&
-            (w < static_cast<int>(menuitems.size()) && w >= 0)) {
+            int old = m_active_index;
+            m_active_index = -1;
+            MenuItem *item = menuitems[old];
 
-            if (which_press != -1 && which_sbl != -1) {
+            if (item != 0) {
 
-                int p = which_sbl * menu.persub + which_press;
-                MenuItem *item = menuitems[p];
-                // don't redraw disabled items on enter/leave
-                if (item != 0 && item->isEnabled()) {
+                drawItem(old,
+                         true,  // clear
+                         true); // transparent
 
-                    drawItem(p, false, // highlight
-                             true,  // clear
-                             true); // transparent
+                if (item->submenu()) {
 
-                    if (item->submenu()) {
-
-                        if (item->submenu()->isVisible() &&
-                            !item->submenu()->isTorn()) {
-                            // setup hide timer for submenu
-                            item->submenu()->startHide();
-                        }
+                    if (item->submenu()->isVisible() &&
+                        !item->submenu()->isTorn()) {
+                        // setup hide timer for submenu
+                        item->submenu()->startHide();
                     }
-
-                }
+                }                
 
             }
 
-            which_press = i;
-            which_sbl = sbl;
+        }
 
-            MenuItem *itmp = menuitems[w];
 
-            if (itmp->submenu()) {
+        which_press = i;
+        which_sbl = sbl;
 
-                drawItem(w, true, true);
+        m_active_index = -1;
 
-                if (theme().menuMode() == MenuTheme::DELAY_OPEN) {
-                    // setup show menu timer
-                    timeval timeout;
-                    timeout.tv_sec = 0;
-                    timeout.tv_usec = theme().delayOpen() * 1000; // transformed to usec
-                    m_submenu_timer.setTimeout(timeout);
-                    m_submenu_timer.start();
+        if (!validIndex(w))
+            return;
 
-                }
 
-            } else {
-                m_submenu_timer.stop();
-                if (itmp->isEnabled())
-                    drawItem(w, true, true, true);
+        MenuItem *itmp = menuitems[w];
+
+        m_active_index = w;
+
+        if (itmp == 0)
+            return;
+
+        if (itmp->submenu()) {
+            // if submenu,
+            // draw item highlighted and
+            // start submenu open delay
+
+            drawItem(w, 
+                     true); // clear
+            
+            if (theme().menuMode() == MenuTheme::DELAY_OPEN) {
+                // setup show menu timer
+                timeval timeout;
+                timeout.tv_sec = 0;
+                timeout.tv_usec = theme().delayOpen() * 1000; // transformed to usec
+                m_submenu_timer.setTimeout(timeout);
+                m_submenu_timer.start();
+
+            }
+
+        } else { 
+            // else normal menu item
+            // draw highlighted
+            m_submenu_timer.stop();
+            if (itmp->isEnabled()) {
+                drawItem(w, 
+                         true,  // clear
+                         true); // transp
             }
         }
+        
     }
 }
 
@@ -1238,7 +1281,7 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
     if (shifted)
         menu.window.move(menu.x_shift, menu.y_shift);
     
-    if (which_sub >= 0 && static_cast<size_t>(which_sub) < menuitems.size()) {
+    if (validIndex(which_sub)) {
         MenuItem *tmp = menuitems[which_sub];
         if (tmp->submenu()->isVisible()) {
             int sbl = (ce.x / menu.item_w), i = (ce.y / theme().itemHeight()),
@@ -1247,7 +1290,9 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
             if (w != which_sub && (! tmp->submenu()->isTorn())) {
                 tmp->submenu()->internal_hide();
 
-                drawItem(which_sub, false, true, true);
+                drawItem(which_sub, 
+                         true,  // clear
+                         true); // transp
                 which_sub = -1;
             }
         }
@@ -1261,7 +1306,9 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     if (which_press != -1 && which_sbl != -1 && menuitems.size() > 0) {
         int p = (which_sbl * menu.persub) + which_press;
 
-        drawItem(p, (p == which_sub), true, true);
+        drawItem(p, 
+                 true,  // clear
+                 true); // transp
 
         which_sbl = which_press = -1;
     }
@@ -1298,7 +1345,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         break;
     case XK_Return:
         // send fake button 1 click
-        if (which_press >= 0 && which_press < static_cast<signed>(menuitems.size()) &&
+        if (validIndex(which_press) && 
             isItemEnabled(which_press)) {
             menuitems[which_press]->click(1, event.time);
             itemSelected(1, which_press);
@@ -1345,15 +1392,16 @@ void Menu::reconfigure() {
     
 
 void Menu::openSubmenu() {
-    if (!isVisible() || which_press < 0 || which_press >= static_cast<signed>(menuitems.size()) ||
-        which_sbl < 0 || which_sbl >= static_cast<signed>(menuitems.size()))
+    if (!isVisible() || ! validIndex(which_press) ||
+        ! validIndex(which_sbl))
         return;
 
     int item = which_sbl * menu.persub + which_press;
-    if (item < 0 || item >= static_cast<signed>(menuitems.size()))
+    if (!validIndex(item))
         return;
 
-    drawItem(item, true, true);
+    drawItem(item, 
+             true); // clear
     if (menuitems[item]->submenu() != 0 && !menuitems[item]->submenu()->isVisible())
         drawSubmenu(item);
 
