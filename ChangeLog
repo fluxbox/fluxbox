@@ -1,15 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/01:
+  * Fixed antialias bug in fbrun   (Henrik)
+    Antialias is enabled by default for FbRun 
+	Changed switch -a to -na (disable antialias)
+	FbRun/main.cc
 *03/11/29:
   * Added shadow text (Henrik)
     To use shadow in text you need to add option to your font style item.
-	The theme item will continue to work in old fluxbox and it'll just 
-	ignore the "shadow" option
-	Example:
-	menu.title.font: Verdana-10:bold,shadow
-	menu.frame.font: Verdana-8:shadow
+    The theme item will continue to work in old fluxbox and it'll just 
+    ignore the "shadow" option
+    Example:
+    menu.title.font: Verdana-10:bold,shadow
+    menu.frame.font: Verdana-8:shadow
     window.font: sans-8:shadow
-	*.font: sans-12:shadow
+    *.font: sans-12:shadow
 *03/11/27:
   * The "Send To..."-menu is back (Henrik)
     SendToMenu.hh/cc, Window.cc
@@ -48,7 +53,7 @@ Changes for 0.9.6:
 *03/11/15:
   * Moved fluxbox-generate_menu to fluxbox-generate_menu.in  (Thanks Han)
     fixed empty submenu problem
-	fluxbox-generate_menu.in, util/Makefile.am, data/Makefile.am
+    fluxbox-generate_menu.in, util/Makefile.am, data/Makefile.am
 *03/10/31:
   * Fix slit client map on restart and surplus menu redraw (Simon)
     SlitClient.hh Slit.cc Menu.cc
@@ -80,7 +85,7 @@ Changes for 0.9.6:
 *03/10/26:
   * Fixed bug in FbWindow::setNew  (Henrik)
     It didn't update member variables
-	FbWindow.cc	
+    FbWindow.cc
 *03/10/25:
   * Fixed whitespace in filenames for pixmaps (Henrik)
     StringUtil.hh/cc, ThemeItems.hh
@@ -109,7 +114,7 @@ Changes for 0.9.6:
 *03/10/14:
   * Bug fix in NextWindow/PrevWindow Command  (Henrik)
     it was only executed when last event = keyevent
-    WorkspaceCmd.cc	
+    WorkspaceCmd.cc
   * New theme items:
     * toolbar.button.size for fixed buttons in the toolbar
     * toolbar.button.borderWidth
@@ -118,7 +123,7 @@ Changes for 0.9.6:
     * toolbar.button.color
     * toolbar.button.colorTo
     * toolbar.button.pixmap
-    * toolbar.button.picColor	
+    * toolbar.button.picColor
     * toolbar.button.pressed.color
     * toolbar.button.pressed.colorTo
     * toolbar.button.pressed
@@ -126,7 +131,7 @@ Changes for 0.9.6:
     FbTk/ Button.hh/cc
   * Added new tools for the toolbar (Henrik)
    - nextworkspace/prevworkspace creates left/right arrows that changes workspace
-   - nextwindow/prevwindow creates left/right arrows that changes focused window	
+   - nextwindow/prevwindow creates left/right arrows that changes focused window
    ToolFactory.hh/cc
   * Added new files  (Henrik)
    - GenericTool.hh/cc  helper class for simple tools like buttons
