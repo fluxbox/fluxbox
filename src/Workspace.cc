@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.78 2003/07/28 15:06:35 rathnor Exp $
+// $Id: Workspace.cc,v 1.79 2003/08/04 16:28:10 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -37,8 +37,8 @@
 #include "MenuItem.hh"
 
 // use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
+#ifndef  _GNU_SOURCE
+#define  _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CONFIG_H
@@ -409,8 +409,7 @@ void Workspace::setName(const std::string &name) {
     } else { //if name == 0 then set default name from nls
         char tname[128];
         sprintf(tname, I18n::instance()->
-                getMessage(
-                           FBNLS::WorkspaceSet, 
+                getMessage(FBNLS::WorkspaceSet, 
                            FBNLS::WorkspaceDefaultNameFormat,
                            "Workspace %d"), m_id + 1); //m_id starts at 0
         m_name = tname;
@@ -551,7 +550,7 @@ void Workspace::placeWindow(FluxboxWindow &win) {
 
             while (!placed &&
                    (left_right ? test_x + win_w < head_right
-                               : test_x > head_left)) {
+                    : test_x > head_left)) {
 
                 placed = true;
 
@@ -626,7 +625,7 @@ void Workspace::placeWindow(FluxboxWindow &win) {
 
         while (!placed &&
                (left_right ? test_x + win_w < head_right
-                           : test_x > head_left)) {
+                : test_x > head_left)) {
                 
             if (left_right)
                 next_x = head_right; // it will get shrunk
