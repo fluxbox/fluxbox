@@ -1,3 +1,5 @@
+// Netizen.hh for Fluxbox 
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // Netizen.hh for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -22,34 +24,29 @@
 #ifndef	 NETIZEN_HH
 #define	 NETIZEN_HH
 
-// forward declaration
-class Netizen;
-
 #include <X11/Xlib.h>
 
-#include "BaseDisplay.hh"
-#include "Screen.hh"
-
+class BScreen;
 
 class Netizen {
 public:
-	Netizen(BScreen *, Window);
+	Netizen(BScreen *scr, Window w);
 
-	inline const Window &getWindowID(void) const { return window; }
+	inline Window getWindowID() const { return window; }
 
-	void sendWorkspaceCount(void);
-	void sendCurrentWorkspace(void);
+	void sendWorkspaceCount();
+	void sendCurrentWorkspace();
 
-	void sendWindowFocus(Window);
-	void sendWindowAdd(Window, unsigned long);
-	void sendWindowDel(Window);
-	void sendWindowRaise(Window);
-	void sendWindowLower(Window);
+	void sendWindowFocus(Window w);
+	void sendWindowAdd(Window w, unsigned long p);
+	void sendWindowDel(Window w);
+	void sendWindowRaise(Window w);
+	void sendWindowLower(Window w);
 
-	void sendConfigNotify(XEvent *);
+	void sendConfigNotify(XEvent *xe);
 private:
 	BScreen *screen;
-	BaseDisplay *basedisplay;
+	Display *m_display; ///< display connection
 	Window window;
 	XEvent event;
 

@@ -19,8 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+#include "Netizen.hh"
+
+#include "Screen.hh"
+
+// use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -29,92 +32,85 @@
 #include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#include "Netizen.hh"
-
-
 Netizen::Netizen(BScreen *scr, Window win):
 screen(scr), 
-basedisplay(scr->getBaseDisplay()),
+m_display(scr->getBaseDisplay()->getXDisplay()),
 window(win) {
-	screen = scr;
-	basedisplay = screen->getBaseDisplay();
 	window = win;
 
 	event.type = ClientMessage;
-	event.xclient.message_type = basedisplay->getFluxboxStructureMessagesAtom();
-	event.xclient.display = basedisplay->getXDisplay();
+	event.xclient.message_type = FbAtoms::instance()->getFluxboxStructureMessagesAtom();
+	event.xclient.display = m_display;
 	event.xclient.window = window;
 	event.xclient.format = 32;
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyStartupAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyStartupAtom();
 	event.xclient.data.l[1] = event.xclient.data.l[2] =
 	event.xclient.data.l[3] = event.xclient.data.l[4] = 0l;
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
 
-void Netizen::sendWorkspaceCount(void) {
+void Netizen::sendWorkspaceCount() {
  
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWorkspaceCountAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWorkspaceCountAtom();
 	event.xclient.data.l[1] = screen->getCount();
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
 
-void Netizen::sendCurrentWorkspace(void) {
+void Netizen::sendCurrentWorkspace() {
 
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyCurrentWorkspaceAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyCurrentWorkspaceAtom();
 	event.xclient.data.l[1] = screen->getCurrentWorkspaceID();
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
 
 void Netizen::sendWindowFocus(Window w) {
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWindowFocusAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWindowFocusAtom();
 	event.xclient.data.l[1] = w;
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
 
 void Netizen::sendWindowAdd(Window w, unsigned long p) {
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWindowAddAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWindowAddAtom();
 	event.xclient.data.l[1] = w;
 	event.xclient.data.l[2] = p;
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 
 	event.xclient.data.l[2] = 0l;
 }
 
 
 void Netizen::sendWindowDel(Window w) {
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWindowDelAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWindowDelAtom();
 	event.xclient.data.l[1] = w;
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
 
 void Netizen::sendWindowRaise(Window w) {
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWindowRaiseAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWindowRaiseAtom();
 	event.xclient.data.l[1] = w;
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
 
 void Netizen::sendWindowLower(Window w) {
-	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWindowLowerAtom();
+	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWindowLowerAtom();
 	event.xclient.data.l[1] = w;
 
-	XSendEvent(basedisplay->getXDisplay(), window, False, NoEventMask, &event);
+	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
 
-
 void Netizen::sendConfigNotify(XEvent *e) {
-	XSendEvent(basedisplay->getXDisplay(), window, False,
-						 StructureNotifyMask, e);
+	XSendEvent(m_display, window, False, StructureNotifyMask, e);
 }
