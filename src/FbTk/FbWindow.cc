@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.19 2003/05/19 08:27:49 rathnor Exp $
+// $Id: FbWindow.cc,v 1.20 2003/05/19 22:38:55 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -186,6 +186,37 @@ void FbWindow::setCursor(Cursor cur) {
 
 void FbWindow::unsetCursor() {
     XUndefineCursor(s_display, window());
+}
+
+
+bool FbWindow::property(Atom property,
+                        long long_offset, long long_length,
+                        bool do_delete,
+                        Atom req_type,
+                        Atom *actual_type_return,
+                        int *actual_format_return,
+                        unsigned long *nitems_return,
+                        unsigned long *bytes_after_return,
+                        unsigned char **prop_return) const {
+   if (XGetWindowProperty(s_display, window(), 
+                          property, long_offset, long_length, do_delete, 
+                          req_type, actual_type_return,
+                          actual_format_return, nitems_return,
+                          bytes_after_return, prop_return) == Success)
+       return true;
+
+   return false;
+}
+
+void FbWindow::changeProperty(Atom property, Atom type,
+                              int format,
+                              int mode,
+                              unsigned char *data,
+                              int nelements) {
+    
+    XChangeProperty(s_display, m_window, property, type,
+                    format, mode, 
+                    data, nelements);
 }
 
 int FbWindow::screenNumber() const {
