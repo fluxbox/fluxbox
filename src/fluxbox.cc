@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.130 2003/05/07 23:17:38 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.131 2003/05/10 14:32:35 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -352,6 +352,25 @@ getString() {
     }
 }
 
+static Window last_bad_window = None;
+
+
+static int handleXErrors(Display *d, XErrorEvent *e) {
+#ifdef DEBUG
+    char errtxt[128];
+	
+    XGetErrorText(d, e->error_code, errtxt, 128);
+    cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<e->error_code<<") opcodes "<<
+        e->request_code<<"/"<<e->minor_code<<" resource 0x"<<hex<<e->resourceid<<dec<<endl;
+#endif // !DEBUG
+
+    if (e->error_code == BadWindow)
+        last_bad_window = e->resourceid;
+
+    return False;
+}
+
+
 //static singleton var
 Fluxbox *Fluxbox::s_singleton=0;
 
@@ -361,7 +380,7 @@ Fluxbox::Titlebar Fluxbox::s_titlebar_left[] = {STICK};
 Fluxbox::Titlebar Fluxbox::s_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 
 Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfilename)
-    : BaseDisplay(argv[0], dpy_name),
+    : FbTk::App(dpy_name),
       m_fbatoms(new FbAtoms()),
       m_resourcemanager(), m_screen_rm(),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
@@ -388,14 +407,20 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_last_time(0),
       m_masked(0),
       m_rc_file(rcfilename ? rcfilename : ""),
-      m_argv(argv), m_argc(argc) {
+      m_argv(argv), m_argc(argc),
+      m_starting(true),
+      m_shutdown(false),
+      m_server_grabs(0) {
       
 
     if (s_singleton != 0) {
         cerr<<"Fatal! There can only one instance of fluxbox class."<<endl;
         abort();
     }
-	
+
+    // setup X error handler
+    XSetErrorHandler((XErrorHandler) handleXErrors);
+
     //catch system signals
     SignalHandler *sigh = SignalHandler::instance();
 	
@@ -445,10 +470,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_fluxbox_pid = XInternAtom(disp, "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
 
-    int i;
     load_rc();
-    //allocate screens
-    for (i = 0; i < getNumberOfScreens(); i++) {
+    // Allocate screens
+    for (int i = 0; i < ScreenCount(display()); i++) {
         char scrname[128], altscrname[128];
         sprintf(scrname, "session.screen%d", i);
         sprintf(altscrname, "session.Screen%d", i);
@@ -496,6 +520,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
     ungrab();
+    m_starting = false;
 }
 
 
@@ -511,6 +536,53 @@ Fluxbox::~Fluxbox() {
     for (; it != it_end; ++it)
         delete *it;
 	
+}
+
+void Fluxbox::eventLoop() {
+    while (m_shutdown) {
+        if (XPending(display())) {
+            XEvent e;
+            XNextEvent(display(), &e);
+
+            if (last_bad_window != None && e.xany.window == last_bad_window) {
+#ifdef DEBUG
+                fprintf(stderr,
+                        I18n::instance()->
+                        getMessage(
+                                   FBNLS::BaseDisplaySet, FBNLS::BaseDisplayBadWindowRemove,
+                                   "Fluxbox::eventLoop(): removing bad window "
+                                   "from event queue\n"));
+#endif // DEBUG
+            } else {
+                last_bad_window = None;
+                handleEvent(&e);
+            }
+        } else {
+            FbTk::Timer::updateTimers(ConnectionNumber(display())); //handle all timers
+        }
+    }
+}
+
+bool Fluxbox::validateWindow(Window window) const {
+    XEvent event;
+    if (XCheckTypedWindowEvent(display(), window, DestroyNotify, &event)) {
+        XPutBackEvent(display(), &event);
+        return false;
+    }
+
+    return true;
+}
+
+void Fluxbox::grab() {
+    if (! m_server_grabs++)
+       XGrabServer(display());
+}
+
+void Fluxbox::ungrab() {
+    if (! --m_server_grabs)
+        XUngrabServer(display());
+    if (m_server_grabs < 0)
+        m_server_grabs = 0;
 }
 
 /**
@@ -779,18 +851,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
         handleClientMessage(e->xclient);
 	break;
     default: {
-
-#ifdef SHAPE
-        if (e->type == getShapeEventBase()) {
-            XShapeEvent *shape_event = (XShapeEvent *) e;
-            FluxboxWindow *win = (FluxboxWindow *) 0;
-
-            if ((win = searchWindow(e->xany.window)) ||
-                (shape_event->kind != ShapeBounding))
-                win->shapeEvent(shape_event);
-        }
-#endif // SHAPE
     }
+
     }
 }
 
@@ -961,7 +1023,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         FluxboxWindow *win = searchWindow(ce.window);
 
         if (win && win->validateClient()) {
-            BlackboxHints net;
+            FluxboxWindow::BlackboxHints net;
             net.flags = ce.data.l[0];
             net.attrib = ce.data.l[1];
             net.workspace = ce.data.l[2];
@@ -1105,9 +1167,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                             m_focused_window->getClientWindow());
             }
             break;
-        case Keys::NEXTWINDOW:	//activate next window
-        {
+        case Keys::NEXTWINDOW: { //activate next window
             unsigned int mods = Keys::cleanMods(ke.state);
+            if (mousescreen == 0)
+                break;
             if (mods == 0) { // can't stacked cycle unless there is a mod to grab
                 mousescreen->nextFocus(m_key->getParam() | BScreen::CYCLELINEAR);
                 break;
@@ -1115,14 +1178,15 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             if (!m_watching_screen && !(m_key->getParam() & BScreen::CYCLELINEAR)) {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
-                watchKeyRelease(mousescreen, mods);
+                watchKeyRelease(*mousescreen, mods);
             }
             mousescreen->nextFocus(m_key->getParam());
             break;
         }
-        case Keys::PREVWINDOW:	//activate prev window
-        {
+        case Keys::PREVWINDOW:	{//activate prev window
             unsigned int mods = Keys::cleanMods(ke.state);
+            if (mousescreen == 0)
+                break;
             if (mods == 0) { // can't stacked cycle unless there is a mod to grab
                 mousescreen->prevFocus(m_key->getParam() | BScreen::CYCLELINEAR);
                 break;
@@ -1130,7 +1194,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             if (!m_watching_screen && !(m_key->getParam() & BScreen::CYCLELINEAR)) {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
-                watchKeyRelease(mousescreen, mods);
+                watchKeyRelease(*mousescreen, mods);
             }
             mousescreen->prevFocus(m_key->getParam());
             break;
@@ -1422,9 +1486,9 @@ void Fluxbox::handleSignal(int signum) {
                 i18n->getMessage(
                     FBNLS::BaseDisplaySet, FBNLS::BaseDisplaySignalCaught,
                     "%s:	signal %d caught\n"),
-                getApplicationName(), signum);
+                m_argv[0], signum);
 
-        if (! isStartup() && ! re_enter) {
+        if (! m_starting && ! re_enter) {
             re_enter = 1;
             fprintf(stderr,
                     i18n->getMessage(
@@ -1630,7 +1694,7 @@ void Fluxbox::restart(const char *prog) {
     shutdown();
 
     if (prog) {
-        execlp(prog, prog, NULL);
+        execlp(prog, prog, 0);
         perror(prog);
     }
 
@@ -1641,7 +1705,6 @@ void Fluxbox::restart(const char *prog) {
 
 /// prepares fluxbox for a shutdown
 void Fluxbox::shutdown() {
-    BaseDisplay::shutdown();
 
     XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
 
@@ -1652,7 +1715,7 @@ void Fluxbox::shutdown() {
         if(*it)
             (*it)->shutdown();
     }
-
+    m_shutdown = true;
     XSync(FbTk::App::instance()->display(), False);
 
 }
@@ -2236,14 +2299,30 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
     Workspace *old_wkspc = 0, *wkspc = 0;
 
     if (m_focused_window != 0) {
-        old_win = m_focused_window;
-        old_screen = &old_win->getScreen();
+        // check if m_focused_window is valid
+        bool found = false;
+        std::map<Window, FluxboxWindow *>::iterator it = m_window_search.begin();
+        std::map<Window, FluxboxWindow *>::iterator it_end = m_window_search.end();
+        for (; it != it_end; ++it) {
+            if (it->second == m_focused_window) {
+                // we found it, end loop
+                found = true;
+                break;
+            }
+        }
 
-        old_tbar = old_screen->getToolbar();
-        old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
+        if (!found) {
+            m_focused_window = 0;
+        } else {
+            old_win = m_focused_window;
+            old_screen = &old_win->getScreen();
 
-        old_win->setFocusFlag(false);
-        old_wkspc->menu().setItemSelected(old_win->getWindowNumber(), false);
+            old_tbar = old_screen->getToolbar();
+            old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
+
+            old_win->setFocusFlag(false);
+            old_wkspc->menu().setItemSelected(old_win->getWindowNumber(), false);
+        }
     }
 
     if (win && ! win->isIconic()) {
@@ -2332,14 +2411,14 @@ void Fluxbox::revertFocus(BScreen *screen) {
 
 
 
-void Fluxbox::watchKeyRelease(BScreen *screen, unsigned int mods) {
+void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
     if (mods == 0) {
         cerr<<"WARNING: attempt to grab without modifiers!"<<endl;
         return;
     }
-    m_watching_screen = screen;
+    m_watching_screen = &screen;
     m_watch_keyrelease = mods;
     XGrabKeyboard(FbTk::App::instance()->display(),
-                  screen->getRootWindow(), True, 
+                  screen.getRootWindow(), True, 
                   GrabModeAsync, GrabModeAsync, CurrentTime);
 }
