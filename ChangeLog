@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/04/14:
+  * Hopefully fix the "stange" hang on restart (Simon)
+    - remove big sync-ed grab on all Button1 events
+    - Also tidy and fix tab moving
+    Window.cc
   * Fixed a menu title bug (Thanks Mathias Gumz)
     Menu.cc
 *04/04/12:

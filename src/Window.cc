@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.277 2004/04/12 23:03:34 fluxgen Exp $
+// $Id: Window.cc,v 1.278 2004/04/14 15:17:20 rathnor Exp $
 
 #include "Window.hh"
 
@@ -974,9 +974,6 @@ void FluxboxWindow::associateClientWindow(bool use_attrs, int x, int y, unsigned
 
 void FluxboxWindow::grabButtons() {
 
-    XGrabButton(display, Button1, AnyModifier, 
-		frame().window().window(), True, ButtonPressMask,
-		GrabModeSync, GrabModeSync, None, None);		
     XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame().window().window());
 
     if (Fluxbox::instance()->useMod1()) {
@@ -2387,7 +2384,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
     if (Fluxbox::instance()->getIgnoreBorder()
         && !(me.state & Mod1Mask) // really should check for exact matches
-        && !(isMoving() || isResizing())) {
+        && !(isMoving() || isResizing() || m_attaching_tab != 0)) {
         int borderw = frame().window().borderWidth();
         if (me.x_root < (frame().x() + borderw) ||
             me.y_root < (frame().y() + borderw) ||
@@ -2416,6 +2413,11 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
         if (! isMoving()) {
             startMoving(me.window);
+            // save first event point
+            m_last_resize_x = me.x_root;
+            m_last_resize_y = me.y_root;
+            m_button_grab_x = me.x_root - frame().x() - frame().window().borderWidth();
+            m_button_grab_y = me.y_root - frame().y() - frame().window().borderWidth();
         } else {
             int dx = me.x_root - m_button_grab_x, 
                 dy = me.y_root - m_button_grab_y;
@@ -2539,67 +2541,56 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             screen().showGeometry(gx, gy);
         }
-    } else if ((me.state & Button2Mask) && inside_titlebar && client != 0) {
-        if (s_num_grabs > 0)
-            return;
+    } else if ((me.state & Button2Mask) && inside_titlebar && (client != 0 || m_attaching_tab != 0)) {
         //
         // drag'n'drop code for tabs
         //
+        FbTk::TextButton &active_button = *m_labelbuttons[(m_attaching_tab==0)?client:m_attaching_tab];
+;
         if (m_attaching_tab == 0) {
+            if (s_num_grabs > 0)
+                return;
             // start drag'n'drop for tab
             m_attaching_tab = client;
-            grabPointer(me.window, False, Button2MotionMask |
+            grabPointer(me.window, False, ButtonMotionMask |
                         ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                        None, frame().theme().moveCursor(), CurrentTime);
-            m_last_move_x = me.x_root - 1;
-            m_last_move_y = me.y_root - 1;
-        
+                        None, frame(). theme().moveCursor(), CurrentTime);
+            int borderw = active_button.borderWidth();
+            // relative position on button
+            m_button_grab_x = me.x;
+            m_button_grab_y = me.y;
+            // last known root mouse position
+            m_last_move_x = me.x_root - me.x;
+            m_last_move_y = me.y_root - me.y;
+            // hijack extra vars for initial grab location
+            m_last_resize_x = me.x_root;
+            m_last_resize_y = me.y_root;
+
+            Fluxbox::instance()->grab();
+
             parent().drawRectangle(screen().rootTheme().opGC(),
                                    m_last_move_x, m_last_move_y,
-                                   m_labelbuttons[client]->width(), 
-                                   m_labelbuttons[client]->height());
+                                   active_button.width(), 
+                                   active_button.height());
         } else { 
             // we already grabed and started to drag'n'drop tab
             // so we update drag'n'drop-rectangle
-            int dx = me.x_root - 1, dy = me.y_root - 1;
+            int dx = me.x_root - m_button_grab_x, dy = me.y_root - m_button_grab_y;
 
-            dx -= frame().window().borderWidth();
-            dy -= frame().window().borderWidth();
-
-            if (screen().getEdgeSnapThreshold()) {
-                int drx = screen().width() - (dx + 1);
-
-                if (dx > 0 && dx < drx && dx < screen().getEdgeSnapThreshold()) 
-                    dx = 0;
-                else if (drx > 0 && drx < screen().getEdgeSnapThreshold())
-                    dx = screen().width() - 1;
-
-                int dty, dby;
-		
-                dty = dy;
-                dby = -dy - 1;
-
-                if (dy > 0 && dty < screen().getEdgeSnapThreshold())
-                    dy = 0;
-                else if (dby > 0 && dby < screen().getEdgeSnapThreshold())
-                    dy = - 1;
-		
-            }
-		
             //erase rectangle
             parent().drawRectangle(screen().rootTheme().opGC(),
                                    m_last_move_x, m_last_move_y, 
-                                   m_labelbuttons[client]->width(), 
-                                   m_labelbuttons[client]->height());
+                                   active_button.width(), 
+                                   active_button.height());
 
 
             // redraw rectangle at new pos
             m_last_move_x = dx;
-            m_last_move_y = dy;			
+            m_last_move_y = dy;	
             parent().drawRectangle(screen().rootTheme().opGC(),
                                    m_last_move_x, m_last_move_y,
-                                   m_labelbuttons[client]->width(), 
-                                   m_labelbuttons[client]->height());
+                                   active_button.width(), 
+                                   active_button.height());
 
 			
         }
@@ -3073,7 +3064,7 @@ void FluxboxWindow::attachTo(int x, int y) {
                            m_last_move_x, m_last_move_y, 
                            m_labelbuttons[m_attaching_tab]->width(), 
                            m_labelbuttons[m_attaching_tab]->height());
-            
+    Fluxbox::instance()->ungrab();
     int dest_x = 0, dest_y = 0;
     Window child = 0;
 
@@ -3086,10 +3077,6 @@ void FluxboxWindow::attachTo(int x, int y) {
         if (client)
             attach_to_win = client->fbwindow();
 
-        cerr<<"client = "<<client<<", child = "<<hex<<child<<dec<<", fbwin = "<<attach_to_win<<endl;
-
-        cerr<<"client = "<<client<<", child = "<<hex<<child<<dec<<", fbwin = "<<attach_to_win<<endl;
-
         if (attach_to_win != this &&
             attach_to_win != 0) {
 
@@ -3099,9 +3086,10 @@ void FluxboxWindow::attachTo(int x, int y) {
             // disconnect client if we didn't drop on a window
             WinClient &client = *m_attaching_tab;
             detachClient(*m_attaching_tab);
-            // move to drop zone
+            // move window by relative amount of mouse movement
+            // since just detached, move relative to old location
             if (client.m_win != 0)
-                client.m_win->move(x, y);
+                client.m_win->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
 
         }
                     
