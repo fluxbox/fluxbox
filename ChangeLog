@@ -1,5 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/07/10:
+   * Added new shape theme items (Henrik)
+      * toolbar.shape: <bool> this will make the toolbar shape the corners that are towards center
+	    of the screen
+      * menu.shape: <shape items> 
+	  * window.shape: <shape items>
+	  Where shape items can be TopLeft TopRight BottomLeft and BottomRight
+	  example: menu.shape: TopRight BottomLeft
+	 ToolbarTheme.hh/cc, Toolbar.cc/hh, FbTk/Menu.hh, FbMenu.hh/cc, Screen.hh/cc,
+	 MenuTheme.hh/cc, FbWinFrameTheme.hh/cc, FbWinFrame.cc/hh
+   * Applied patch that keeps the fbrun_history clean by not allowing
+     duplicates to get placed in the history. (Thanks David J Burger <dburger<(a|T)>hawaii.edu>)
+     FbRun.cc
+   * fbsetbg updates (Han)
 *03/07/05:
    * Fix winclient death signalling - fixes remember issues with applying
      attributes to wrong windows (Simon)
