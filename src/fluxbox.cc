@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.251 2004/08/31 15:26:39 rathnor Exp $
+// $Id: fluxbox.cc,v 1.252 2004/09/08 16:50:42 akir Exp $
 
 #include "fluxbox.hh"
 
@@ -467,12 +467,13 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     FbTk::fontInit();
 
+    Display *disp = FbTk::App::instance()->display();
     // For KDE dock applets
     // KDE v1.x
-    m_kwm1_dockwindow = XInternAtom(FbTk::App::instance()->display(), 
+    m_kwm1_dockwindow = XInternAtom(disp,
                                     "KWM_DOCKWINDOW", False);
     // KDE v2.x
-    m_kwm2_dockwindow = XInternAtom(FbTk::App::instance()->display(), 
+    m_kwm2_dockwindow = XInternAtom(disp,
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False);
     // setup X error handler
     XSetErrorHandler((XErrorHandler) handleXErrors);
@@ -500,8 +501,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_reconfig_timer.setTimeout(to);
     m_reconfig_timer.setCommand(reconfig_cmd);
     m_reconfig_timer.fireOnce(true);
-
-    Display *disp = FbTk::App::instance()->display();
 
     s_singleton = this;
     m_have_shape = false;
