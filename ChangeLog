@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/02:
+   * autogrouping-from-tab patch (Thanks Steve Cooper)
 *02/07/23:
    * Fixed "send to..." bug (Thanks Bradley C Bailey)
    * Moved BTexture from Image.hh to FbTk::Texture in Texture.hh
