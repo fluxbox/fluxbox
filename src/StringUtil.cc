@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.8 2002/03/20 11:32:03 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.9 2002/04/08 22:29:45 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -35,7 +35,9 @@ namespace StringUtil
 {
 
 //------- strdup ------------------------
-//TODO: comment this
+// Takes a pointer to string *s as an argument,
+// creates a new string n, copies s to n and
+// returns a pointer to n.
 //----------------------------------------
 char *strdup(const char *s) {
   int l = strlen(s) + 1;
@@ -48,14 +50,13 @@ char *strdup(const char *s) {
 // Tries to find a string in another and
 // ignoring the case of the characters
 // Returns 0 on success else pointer to str.
-// TODO: comment this
 //---------------------------------
 const char *strcasestr(const char *str, const char *ptn) {
 	const char *s2, *p2;
 	for( ; *str; str++) {
 		for(s2=str, p2=ptn; ; s2++,p2++) {	
-			if (!*p2) return str;
-			if (toupper(*s2) != toupper(*p2)) break;
+			if (!*p2) return str; // check if we reached the end of ptn, if so, return str
+			if (toupper(*s2) != toupper(*p2)) break; // check if the chars match(ignoring case)
 		}
 	}
 	return 0;
