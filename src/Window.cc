@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.153 2003/04/27 14:36:04 rathnor Exp $
+// $Id: Window.cc,v 1.154 2003/04/28 12:56:38 rathnor Exp $
 
 #include "Window.hh"
 
@@ -326,6 +326,7 @@ void FluxboxWindow::init() {
     FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*m_client));
     btn->setOnClick(set_client_cmd);
     evm.add(*this, btn->window()); // we take care of button events for this
+    evm.add(*this, m_client->window());
 
     //    m_frame.reconfigure();
 
@@ -495,6 +496,7 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
     // reparent client win to this frame 
     m_frame.setClientWindow(client);
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
 
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
@@ -505,6 +507,7 @@ void FluxboxWindow::attachClient(WinClient &client) {
         ClientList::iterator client_it_end = old_win->clientList().end();
         for (; client_it != client_it_end; ++client_it) {
             fb->saveWindowSearch((*client_it)->window(), this);
+            evm.add(*this, (*client_it)->window());
 
             // reparent window to this
             m_frame.setClientWindow(**client_it);
@@ -522,7 +525,6 @@ void FluxboxWindow::attachClient(WinClient &client) {
             m_labelbuttons[(*client_it)] = btn;
             m_frame.addLabelButton(*btn);
             btn->show();
-            FbTk::EventManager &evm = *FbTk::EventManager::instance();
             // we need motion notify so we mask it
             btn->window().setEventMask(ExposureMask | ButtonPressMask | 
                                        ButtonReleaseMask | ButtonMotionMask);
@@ -633,10 +635,13 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     if (m_client == &client && m_clientlist.size() == 0)
         m_client = 0;
 
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    evm.remove(client.window());
+
     FbTk::Button *label_btn = m_labelbuttons[&client];
     if (label_btn != 0) {
         m_frame.removeLabelButton(*label_btn);
-        FbTk::EventManager::instance()->remove(label_btn->window());
+        evm.remove(label_btn->window());
         delete label_btn;
         label_btn = 0;
     }
