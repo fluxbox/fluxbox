@@ -1,6 +1,16 @@
 Changes for 0.1.7:
+*02/02/16:
+   * Updated include guards
+*02/02/13:
+   * Fixed bug in Window.cc
+*02/02/11:
+   * Fixed bug in Screen and Workspace
+   * Fixed timer bug in BaseDisplay
+   * Remove throw in FluxboxWindow
+     creation of a window should be checked with isManaged
 *02/02/09:
    * Fixed bug in Workspace::removeWindow
+   * Moved to STL vector in BaseDisplay (Thanks Paul W Brannan)
 *02/02/08:
    * Back to stl list
    * Fixed bug in Basemenu.hh (Thanks Paul W Brannan)
