@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/17:
+  * Fix for possible segfault at exit/restart (Mathias)
+    Screen.cc
 *04/11/15:
+  * Moved CVS-Repository from sourceforge.net over to Subversion on berlios.de
   * Updated swedish locales and a few new menu-entries
     from Jonas Ericsson (jmaster at telia.com)
     fluxbox-generate_menu.in
