@@ -1,9 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/07:
+   * Updated fluxbox-generate_menu (Thanks Han)
+     Test before warning, browser details, minor indent issues
+*03/08/04:
+   * Added transparent window (Henrik)
+     FbWindow.hh/cc, Button.cc, FbWinFrame.hh/cc, FbWinFrameTheme.hh/cc
 *03/08/03:
    * Improve inclusion of GNOME and KDE menus (Simon and Han)
      fluxbox-generate_menu data/Makefile.am
 *03/07/29:
+   * Minor fixes in fluxbox-generate_menu, fbsetbg and styles (Thanks Han)
    * Fixed kde dockapp bug (Henrik)
      Screen.cc, fluxbox.cc
    * Added icon menu to workspace menu (Henrik)
