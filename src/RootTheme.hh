@@ -19,13 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.hh,v 1.4 2003/09/12 21:34:22 fluxgen Exp $
+// $Id: RootTheme.hh,v 1.5 2003/09/12 23:33:13 fluxgen Exp $
 
 #ifndef ROOTTHEME_HH
 #define ROOTTHEME_HH
 
 #include "FbTk/Theme.hh"
-#include "FbTk/Color.hh"
 #include "FbTk/GContext.hh"
 
 #include <X11/Xlib.h>
@@ -44,13 +43,10 @@ public:
 
     void reconfigTheme();
 
-    int bevelWidth() const { return *m_bevel_width; }
-    int handleWidth() const { return *m_handle_width; }
     GC opGC() const { return m_opgc.gc(); }
 
 private:
     FbTk::ThemeItem<std::string> m_root_command;
-    FbTk::ThemeItem<int> m_bevel_width, m_handle_width;
     std::string &m_screen_root_command; ///< string to execute and override theme rootCommand
     FbTk::GContext m_opgc;
 };
