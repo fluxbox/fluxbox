@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.65 2003/06/23 13:32:30 fluxgen Exp $
+// $Id: Slit.cc,v 1.66 2003/06/24 13:48:34 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -308,7 +308,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     FbTk::EventManager::instance()->add(*this, frame.window);
     m_transp.reset(new FbTk::Transparent(screen().rootPixmap(), frame.window.drawable(), 
-                                         255,
+                                         *m_rc_alpha,
                                          screen().screenNumber()));
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
@@ -318,7 +318,6 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     setupMenu();
 
-    reconfigure();
 }
 
 
@@ -626,8 +625,6 @@ void Slit::removeClient(Window w, bool remap) {
 
 void Slit::reconfigure() {
 
-    m_transp->setAlpha(*m_rc_alpha);
-
     frame.width = 0;
     frame.height = 0;
 
@@ -706,6 +703,15 @@ void Slit::reconfigure() {
 
     if (tmp) 
         image_ctrl.removeImage(tmp);
+
+    if (m_transp.get()) {
+        if (frame.pixmap == 0)
+            m_transp->setDest(frame.window.drawable(), frame.window.screenNumber());
+        else
+            m_transp->setDest(frame.pixmap, frame.window.screenNumber());
+
+        m_transp->setAlpha(*m_rc_alpha);
+    }
 
     clearWindow();
 
@@ -1079,12 +1085,23 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
 }
 
 void Slit::exposeEvent(XExposeEvent &ev) {
-    clearWindow();
+    // we don't need to clear the entire window 
+    // just the are that gets exposed
+    frame.window.clearArea(ev.x, ev.y, ev.width, ev.height);
+    if (m_transp.get()) {
+        if (screen().rootPixmap() != m_transp->source())
+            m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
+
+        m_transp->render(frame.window.x() + ev.x, frame.window.y() + ev.y,
+                         ev.x, ev.y,
+                         ev.width, ev.height);
+        
+    }
 }
 
 void Slit::clearWindow() {
     frame.window.clear();
-    if (frame.pixmap != 0) {
+    if (m_transp.get()) {
         if (screen().rootPixmap() != m_transp->source())
             m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
 
@@ -1233,10 +1250,28 @@ void Slit::setupMenu() {
                                        *m_rc_maximize_over, 
                                        save_and_reconfigure_slit));
 
+    // this saves resources and clears the slit window to update alpha value
     FbTk::MenuItem *alpha_menuitem = new IntResMenuItem("Alpha", 
                                                         m_rc_alpha,
                                                         0, 255);
-    alpha_menuitem->setCommand(save_and_reconfigure_slit);
+    // helper for setting new alpha value for slit
+    class SetAlpha:public FbCommands::SaveResources {
+    public:
+        SetAlpha(Slit &slit, int &alpha):m_slit(slit), m_alpha(alpha) { }
+        void execute() { 
+            FbCommands::SaveResources::execute();
+            if (m_slit.m_transp.get())
+                m_slit.m_transp->setAlpha(m_alpha); 
+            else
+                cerr<<"NO TRANSP!"<<endl;
+            m_slit.clearWindow(); 
+        }
+    private:  
+        Slit &m_slit;
+        int &m_alpha;
+    };
+    RefCount<Command> set_alpha_cmd(new SetAlpha(*this, *m_rc_alpha));
+    alpha_menuitem->setCommand(set_alpha_cmd);
     m_slitmenu.insert(alpha_menuitem);
 
     m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(SlitSet, SlitSlitDirection,
@@ -1280,8 +1315,8 @@ void Slit::setupMenu() {
                                                     place_menu[i].base,
                                                     place_menu[i].default_str);
             m_placement_menu.insert(new PlaceSlitMenuItem(i18n_str, *this,
-                                                        place_menu[i].slit_placement,
-                                                        save_and_reconfigure));
+                                                          place_menu[i].slit_placement,
+                                                          save_and_reconfigure));
         }
     }
     // finaly update sub menu
