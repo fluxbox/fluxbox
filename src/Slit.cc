@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.76 2003/08/04 12:53:10 fluxgen Exp $
+// $Id: Slit.cc,v 1.77 2003/08/11 16:05:18 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -234,7 +234,7 @@ unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask |
 
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_hidden(false),
-      m_screen(scr), m_timer(this), 
+      m_screen(scr),
       m_slitmenu(*scr.menuTheme(), 
                  scr.screenNumber(), 
                  scr.imageControl(),
@@ -283,12 +283,13 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
 
     frame.pixmap = None;
-
+    // setup timer
     m_timer.setTimeout(200); // default timeout
     m_timer.fireOnce(true);
+    FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Slit>(*this, &Slit::toggleHidden));
+    m_timer.setCommand(toggle_hidden);
 
     // create main window
-
     XSetWindowAttributes attrib;
     unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
         CWColormap | CWOverrideRedirect | CWEventMask;
@@ -1098,7 +1099,7 @@ void Slit::clearWindow() {
 
 }
 
-void Slit::timeout() {
+void Slit::toggleHidden() {
     if (doAutoHide()) {
         if (!m_slitmenu.isVisible()) {
             m_timer.fireOnce(true);
