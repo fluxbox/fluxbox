@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.15 2003/12/10 21:40:22 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.16 2004/01/02 13:04:26 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -102,16 +102,13 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
     else if (item.name() == "window.handleWidth")
         return FbTk::ThemeManager::instance().loadItem(item, "handleWidth", "HandleWidth");
     else if (item.name() == "window.label.active") {
-        // special case for textures since they're using .load()
-        FbTk::ThemeItem<FbTk::Texture> tmp_item(m_label_active.theme(),
-                                                "window.label.unfocus", "Window.Label.Unfocus");
-        tmp_item.load();
         // copy texture
-        *m_label_active = *tmp_item;
+        *m_label_active = *m_label_unfocus;
         return true;
+    } else if (item.name() == "window.label.active.textColor") {
+        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor", 
+                                                       "Window.Label.Unfocus.TextColor");
     }
-    else if (item.name() == "window.label.active.textColor")
-        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
     
 
     return false;
@@ -138,8 +135,5 @@ void FbWinFrameTheme::reconfigTheme() {
     m_label_text_active_gc.setForeground(*m_label_active_color);
     m_button_pic_focus_gc.setForeground(*m_button_focus_color);
     m_button_pic_unfocus_gc.setForeground(*m_button_unfocus_color);
-
-    // notify listeners
-    m_theme_change.notify();
 }
 
