@@ -21,10 +21,13 @@
 
 #include "StringUtil.hh"
 
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cctype>
+#include <memory>
+
+using namespace std;
 
 //------- strdup ------------------------
 //TODO: comment this
@@ -37,12 +40,15 @@ char *StringUtil::strdup(const char *s) {
 }
 
 //------- strcasestr --------------
+// Tries to find a string in another and
+// ignoring the case of the characters
+// Returns 0 on success else pointer to str.
 // TODO: comment this
 //---------------------------------
 const char * StringUtil::strcasestr(const char *str, const char *ptn) {
 	const char *s2, *p2;
 	for( ; *str; str++) {
-		for(s2=str,p2=ptn; ; s2++,p2++) {
+		for(s2=str, p2=ptn; ; s2++,p2++) {	
 			if (!*p2) return str;
 			if (toupper(*s2) != toupper(*p2)) break;
 		}
@@ -57,13 +63,12 @@ const char * StringUtil::strcasestr(const char *str, const char *ptn) {
 //---------------------------------------------------
 char *StringUtil::expandFilename(const char *filename) {
   
-	char retval[strlen(filename)+strlen(getenv("HOME"))+2];
-  retval[0]=0; //mark end
+	auto_ptr<char> retval( new char[strlen(filename)+strlen(getenv("HOME"))+2]);
   if (filename[0]=='~') {
-    strcat(retval, getenv("HOME"));
-    strcat(retval, &filename[1]);
+    strcat(retval.get(), getenv("HOME"));
+    strcat(retval.get(), &filename[1]);
   } else
     return StringUtil::strdup(filename);	//return unmodified value
   
-  return StringUtil::strdup(retval);	//return modified value
+  return StringUtil::strdup(retval.get());	//return modified value
 }
