@@ -1117,7 +1117,7 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			if (ks == XK_Return)	//change workspace name if keypress = Return
 				screen->getCurrentWorkspace()->setName(const_cast<char *>(new_workspace_name.c_str()));
 
-			new_workspace_name.clear(); //erase temporary workspace name
+			new_workspace_name.erase(); //erase temporary workspace name
 			
 			screen->getCurrentWorkspace()->getMenu()->hide();
 			screen->getWorkspacemenu()->
