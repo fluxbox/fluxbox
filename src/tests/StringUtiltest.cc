@@ -48,10 +48,10 @@ void testStringtok() {
 }
 
 void testExpandFilename() {
-	auto_ptr<char> filename(StringUtil::expandFilename("~/filename/~filename2/file3~/file4"));
+	string filename(StringUtil::expandFilename("~/filename/~filename2/file3~/file4"));
 	cerr<<"test ";
 	string test = string(getenv("HOME"))+"/filename/~filename2/file3~/file4";
-	if (strcmp(test.c_str(), filename.get())==0)
+	if (test == filename)
 		cerr<<"ok.";
 	else
 		cerr<<"faild";
