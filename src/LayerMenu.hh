@@ -1,6 +1,6 @@
 // LayerMenu.hh for Fluxbox - fluxbox toolkit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-//                and Simon Bowden    (rathnor at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//                     and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -20,15 +20,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.8 2004/06/07 21:15:08 fluxgen Exp $
+// $Id: LayerMenu.hh,v 1.9 2004/06/27 13:43:59 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
 
 #include "MenuItem.hh"
-#include "FbMenu.hh"
+#include "ToggleMenu.hh"
 #include "RefCount.hh"
 #include "SimpleCommand.hh"
+#include "I18n.hh"
 
 #include "fluxbox.hh"
 
@@ -58,10 +59,11 @@ private:
 
 /// Create a layer menu inside from the given menu 
 template <typename ItemType>
-class LayerMenu : public FbMenu {
+class LayerMenu : public ToggleMenu {
 public:
     LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
               FbTk::XLayer &layer, ItemType *item, bool save_rc);
+
 
 private:
     ItemType *m_object;
@@ -71,25 +73,26 @@ private:
 template <typename ItemType>
 LayerMenu<ItemType>::LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
                                FbTk::XLayer &layer, ItemType *item, bool save_rc):
-    FbMenu(tm, imgctrl, layer), 
+    ToggleMenu(tm, imgctrl, layer), 
     m_object(item) 
 {
-    
+    _FB_USES_NLS;
+
     Fluxbox *fluxbox = Fluxbox::instance();
     
     struct {
         int set;
         int base;
         const char *default_str;
-                int layernum;
+        int layernum;
     } layer_menuitems[]  = {
         //TODO: nls
-        {0, 0, "Above Dock", fluxbox->getAboveDockLayer()},
-        {0, 0, "Dock", fluxbox->getDockLayer()},
-        {0, 0, "Top", fluxbox->getTopLayer()},
-        {0, 0, "Normal", fluxbox->getNormalLayer()},
-        {0, 0, "Bottom", fluxbox->getBottomLayer()},
-        {0, 0, "Desktop", fluxbox->getDesktopLayer()},
+        {0, 0, _FBTEXT(Layer, AboveDock, "Above Dock", "Layer above dock"), fluxbox->getAboveDockLayer()},
+        {0, 0, _FBTEXT(Layer, Dock, "Dock", "Layer dock"), fluxbox->getDockLayer()},
+        {0, 0, _FBTEXT(Layer, Top, "Top", "Layer top"), fluxbox->getTopLayer()},
+        {0, 0, _FBTEXT(Layer, Normal, "Normal", "Layer normal"), fluxbox->getNormalLayer()},
+        {0, 0, _FBTEXT(Layer, Bottom, "Bottom", "Layer bottom"), fluxbox->getBottomLayer()},
+        {0, 0, _FBTEXT(Layer, Desktop, "Desktop", "Layer desktop"), fluxbox->getDesktopLayer()},
     };
     
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
