@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.22 2003/02/02 16:32:37 rathnor Exp $
+//$Id: Keys.cc,v 1.23 2003/02/28 23:55:37 fluxgen Exp $
 
 
 #include "Keys.hh"
 
 #include "StringUtil.hh"
+#include "App.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
@@ -132,15 +133,14 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {0, LASTKEYGRAB}
 };	
 
-Keys::Keys(Display *display, const char *filename):
+Keys::Keys(const char *filename):
     m_capslock_mod(0),
     m_numlock_mod(0),
     m_scrolllock_mod(0),
     m_abortkey(0),
-    m_display(display)
+    m_display(FbTk::App::instance()->display())
 {
     determineModmap();
-    assert(display);
     if (filename != 0)
         load(filename);
 }
@@ -150,9 +150,7 @@ Keys::~Keys() {
     deleteTree();
 }
 
-//--------- deleteTree -----------
-// Destroys the keytree and m_abortkey
-//--------------------------------
+/// Destroys the keytree and m_abortkey
 void Keys::deleteTree() {
     while (!m_keylist.empty()) {
         if (m_keylist.back() && m_keylist.back() != 0)
@@ -165,9 +163,7 @@ void Keys::deleteTree() {
     }	
 }
 
-//-------- ungrabKeys ---------
-// Ungrabs the keys
-//-----------------------------
+/// Ungrabs the keys
 void Keys::ungrabKeys() {
     for (int screen=0; screen<ScreenCount(m_display); screen++) {
         XUngrabKey(m_display, AnyKey, AnyModifier,
@@ -175,11 +171,11 @@ void Keys::ungrabKeys() {
     }
 }
 
-//-------------- load ----------------
-// Load and grab keys
-// Returns true on success else false
-// TODO: error checking
-//------------------------------------
+/** 
+    Load and grab keys
+    TODO: error checking
+    @return true on success else false
+*/
 bool Keys::load(const char *filename) {
     if (!filename)
         return false;
@@ -222,14 +218,14 @@ bool Keys::load(const char *filename) {
 		
         for (unsigned int argc=0; argc<val.size(); argc++) {
 
-            if (val[argc][0]!=':') {
+            if (val[argc][0] != ':') {
                 keyarg++;
                 if (keyarg==1) //first arg is modifier
                     mod = getModifier(val[argc].c_str());
                 else if (keyarg>1) {
 
                     //keyarg=0;
-                    int tmpmod=getModifier(val[argc].c_str());
+                    int tmpmod = getModifier(val[argc].c_str());
                     if(tmpmod)
                         mod|=tmpmod; //If it's a modifier
                     else { 
@@ -351,17 +347,17 @@ bool Keys::load(const char *filename) {
                 }
 				
                 break; //dont process this linebuffer more
-            }	
-        }
-    }
+            }  // end if
+        } // end for
+    } // end while
 
     return true;
 }
 
-//--------- grabKey ---------------------
-// Grabs a key with the modifier
-// and with numlock,capslock and scrollock
-//----------------------------------------
+/**
+ Grabs a key with the modifier
+ and with numlock,capslock and scrollock
+*/
 void Keys::grabKey(unsigned int key, unsigned int mod) {
 
     for (int screen=0; screen<ScreenCount(m_display); screen++) {
@@ -411,11 +407,10 @@ void Keys::grabKey(unsigned int key, unsigned int mod) {
 			
 }
 
-//------------ getModifier ---------------
-// Returns the modifier for the modstr
-// else zero on failure.
-// TODO fix more masks
-//----------------------------------------
+/**
+ @return the modifier for the modstr else zero on failure.
+ TODO fix more masks
+*/
 unsigned int Keys::getModifier(const char *modstr) {
     if (!modstr)
         return 0;
@@ -445,10 +440,9 @@ unsigned int Keys::getModifier(const char *modstr) {
     return 0;	
 }
 
-//----------- getKey ----------------
-// Returns keycode of keystr on success
-// else it returns zero
-//-----------------------------------
+/**
+ @return keycode of keystr on success else 0
+*/
 unsigned int Keys::getKey(const char *keystr) {
     if (!keystr)
         return 0;
@@ -456,9 +450,9 @@ unsigned int Keys::getKey(const char *keystr) {
                             XStringToKeysym(keystr));
 }
 
-//--------- getAction -----------------
-// returns the KeyAction of the XKeyEvent
-//-------------------------------------
+/**
+ @return the KeyAction of the XKeyEvent
+*/
 Keys::KeyAction Keys::getAction(XKeyEvent *ke) {	
     static t_key *next_key = 0;
     //remove numlock, capslock and scrolllock
@@ -509,20 +503,19 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
     return Keys::LASTKEYGRAB;
 }
 
-//--------- reconfigure -------------
-// deletes the tree and load configuration
-// returns true on success else false
-//-----------------------------------
+/**
+ deletes the tree and load configuration
+ returns true on success else false
+*/
 bool Keys::reconfigure(const char *filename) {
     deleteTree();
     return load(filename);
 }
 
-//------------- getActionStr ------------------
-// Tries to find the action for the key
-// Returns actionstring on success else
-// 0 on failure
-//---------------------------------------------
+/**
+ Tries to find the action for the key
+ @return actionstring on success else 0 on failure
+*/
 const char *Keys::getActionStr(KeyAction action) {
     for (unsigned int i=0; m_actionlist[i].string!=0 ; i++) {
         if (m_actionlist[i].action == action) 
@@ -533,11 +526,10 @@ const char *Keys::getActionStr(KeyAction action) {
 }
 
 #ifdef DEBUG
-//--------- showTree -----------
-// Debug function that show the
-// keytree. Starts with the
-// rootlist
-//------------------------------
+/*
+ Debug function that show the
+ keytree. Starts with the rootlist
+*/
 void Keys::showTree() {
     for (unsigned int i=0; i<m_keylist.size(); i++) {
         if (m_keylist[i]) {
@@ -548,9 +540,9 @@ void Keys::showTree() {
     }
 }
 
-//---------- showKeyTree --------
-// Debug function to show t_key tree
-//-------------------------------
+/**
+ Debug function to show t_key tree
+*/
 void Keys::showKeyTree(t_key *key, unsigned int w) {	
     for (unsigned int i=0; i<w+1; i++)
         cerr<<"-";	
@@ -565,10 +557,10 @@ void Keys::showKeyTree(t_key *key, unsigned int w) {
 }
 #endif //DEBUG
 
-//------------ mergeTree ---------------
-// Merges two chains and binds new keys
-// Returns true on success else false.
-//---------------------------------------
+/**
+ Merges two chains and binds new keys
+ @return true on success else false.
+*/
 bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
     if (basetree==0) {
         unsigned int baselist_i=0;
@@ -641,6 +633,9 @@ Keys::t_key::~t_key() {
     }
 }
 
+/**
+ determines modifier mapping for caps, num and scroll lock
+*/
 void Keys::determineModmap() {
     // mask to use for modifier
     int mods[] = {
