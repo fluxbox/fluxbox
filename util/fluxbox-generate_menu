@@ -43,7 +43,9 @@ Options:
 
   only for packagers:
 
-    -p	Package-datadir; default is /usr/local/share
+    -p	Package-datadir; default is /usr/share
+    -n	Gnome-datadir; default is Package-datadir
+    -q	KDE-datadir; default is Package-datadir
 
 EOF
 }
@@ -65,7 +67,7 @@ Henrik Kinnunnen:	Project leader.
 Han Boetes:		Packaging, debugging and scripts.
 Jeramy B. Smith:	Packaging assistance, gnome and kde menu system.
 Xyrnix:			Mysterious guest developer who made find_it module.
-filipe:			Italian locales and find_term module.
+felipe:			Italian locales and find_term module.
 EOF
     echo -e `whoami`":		Innocent bystander.\n"
 }
@@ -110,13 +112,15 @@ menu_entry_dir() {
 }
 
 # Get options.
-while getopts ":khagt:p:o:m:" COMMAND_LINE_ARGUMENT ; do
+while getopts ":khagt:p:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
     case "${COMMAND_LINE_ARGUMENT}" in
 	k) KDEMENU=yes ;;
 	g) GNOMEMENU=yes ;;
 	t) MY_TERM=${OPTARG};;
 	o) FILENAME=${OPTARG} ;;
 	p) PKGDATADIR=${OPTARG} ;;
+	n) GPKGDATADIR=${OPTARG} ;;
+	q) KPKGDATADIR=${OPTARG} ;;
 	m) MENUTITLE=${OPTARG} ;;
 	h) display_usage ; exit 0 ;;
 	a) display_authors ; exit 0 ;;
@@ -127,7 +131,7 @@ done
 
 # Set Defaults
 
-# menufile name and make a backup
+# menufile name
 if [ -z ${FILENAME} ]; then
     FILENAME=${HOME}/.fluxbox/menu
 fi
@@ -138,15 +142,24 @@ if ! touch ${FILENAME}; then
     exit 1
 fi
 
-if [ ! -z ${FILENAME} ]; then
-    if [ -w ${FILENAME} ]; then
-	cp -f ${FILENAME} ${FILENAME}.bak
-    fi
+# backup menu
+if [ -w ${FILENAME} ]; then
+    mv ${FILENAME} ${FILENAME}.bak
 fi
 
 #packagedatadir
-if [ -z "${PKGDATADIR}" ]; then
+if [ ! -d "${PKGDATADIR}" ]; then
     PKGDATADIR=/usr/share
+fi
+
+#gnome packagedatadir
+if [ ! -d "${GPKGDATADIR}" ]; then
+    GPKGDATADIR=${PKGDATADIR}
+fi
+
+#kde packagedatadir
+if [ ! -d "${KPKGDATADIR}" ]; then
+    KPKGDATADIR=${PKGDATADIR}
 fi
 
 # menutitle
@@ -464,12 +477,12 @@ append_submenu ${XUTILSMENU}
 append_menu_end
 
 # gnome menu
-if [ -d ${PKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
+if [ -d ${GPKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
     append_submenu ${GNOMEMENUTEXT}
-    for a in `ls ${PKGDATADIR}/gnome/apps`; do
-	if [ -d ${PKGDATADIR}/gnome/apps/"${a}" ] ; then
+    for a in `ls ${GPKGDATADIR}/gnome/apps`; do
+	if [ -d ${GPKGDATADIR}/gnome/apps/"${a}" ] ; then
 	    append_submenu "${a}"
-	    menu_entry_dir "${PKGDATADIR}/gnome/apps/"${a}""
+	    menu_entry_dir "${GPKGDATADIR}/gnome/apps/"${a}""
 	    menu_entry_dircheck "/etc/X11/applnk/"${a}""
 	    append_menu_end
 	fi
@@ -478,23 +491,23 @@ if [ -d ${PKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
 fi
 
 # kde submenu
-if [ -d ${PKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
+if [ -d ${KPKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
     append_submenu ${KDEMENUTEXT}
-    for a in `ls ${PKGDATADIR}/applnk/`; do
-	if [ -d ${PKGDATADIR}/applnk/"${a}" ]; then
+    for a in `ls ${KPKGDATADIR}/applnk/`; do
+	if [ -d ${KPKGDATADIR}/applnk/"${a}" ]; then
 	    append_submenu "${a}"
-	    for x in `ls ${PKGDATADIR}/applnk/"${a}"`; do
-		if [ -d ${PKGDATADIR}/applnk/"${a}"/"${x}" ]; then
+	    for x in `ls ${KPKGDATADIR}/applnk/"${a}"`; do
+		if [ -d ${KPKGDATADIR}/applnk/"${a}"/"${x}" ]; then
 		    append_submenu "${x}"
-		    menu_entry_dir ${PKGDATADIR}/applnk/"${a}"/"${x}"
+		    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"/"${x}"
 		    append_menu_end
 		fi
 	    done
-	    menu_entry_dir ${PKGDATADIR}/applnk/"${a}"
+	    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"
 	    append_menu_end
 	fi
     done
-    menu_entry_dir ${PKGDATADIR}/applnk/
+    menu_entry_dir ${KPKGDATADIR}/applnk/
     append_menu_end
 fi
 
