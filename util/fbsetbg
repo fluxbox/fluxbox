@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.30 2004/03/11 00:08:34 rathnor Exp $
+# $Id: fbsetbg,v 1.31 2004/06/17 16:12:20 rathnor Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -162,10 +162,11 @@ message() {
     # if [ -t 1 ]; then
     #     echo "$command: $@"
     # else
+    extra_args="-default okay"
         if find_it gxmessage; then
-            gxmessage -center "$command: $@"
+            gxmessage $extra_args -center "$command: $@" &
         else
-            xmessage -center "$command: $@"
+            xmessage $extra_args -center "$command: $@" &
         fi
     # fi
 }

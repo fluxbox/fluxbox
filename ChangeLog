@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/18:
+  * background xmessage in fbsetbg so it doesn't block anything
+    also set the "okay" button to default so you can just press enter
+    (Simon)
+    fbsetbg
 *04/06/17:
   * Improve rendering speed of toolbar (Simon)
     - remove many redundant renders (esp. startup)
