@@ -47,16 +47,19 @@ if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 
-fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc BaseDisplay.hh \
+fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
+	BaseDisplay.cc BaseDisplay.hh \
 	BoolMenuItem.hh \
 	DirHelper.hh DirHelper.cc DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
-	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc FbWinFrameTheme.hh FbWinFrameTheme.cc \
+	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
+	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
 	IconBar.cc IconBar.hh \
 	i18n.cc i18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh nl_types_cygnus.h \
 	Resource.hh Resource.cc \
+	RootTheme.hh RootTheme.cc \
 	Screen.cc Screen.hh \
 	Slit.cc Slit.hh StringUtil.cc StringUtil.hh \
 	TextButton.hh TextButton.cc \
@@ -68,4 +71,5 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc Ba
 	Workspace.cc Workspace.hh \
 	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc LayerMenu.hh \
 	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh WinClient.hh WinClient.cc
+
 LDADD=FbTk/libFbTk.a
