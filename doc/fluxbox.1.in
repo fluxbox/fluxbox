@@ -288,6 +288,8 @@ Be sure that your menu is usable, then choose `Restart' from the default
 Fluxbox root menu. If only the contents of the menu file changed, only
 .I reload config
 is needed.
+.PP
+A menu reload can also be forced by sending SIGUSR2.
 .SS Menu behaviour
 The behaviour of the menu can be configured in the 
 .I ~/.fluxbox/init
@@ -1219,6 +1221,14 @@ file, and to resolve stylefile and \-directory names.
 .B DISPLAY
 When no other display was given on the command line, Fluxbox will start on the
 display specified by this variable.
+.SH SIGNALS
+Upon receipt of 
+.B SIGHUP
+fluxbox loads the configuration, 
+.B SIGUSR1
+forces reloading of configuration and 
+.B SIGUSR2
+reloads the menu file.
 .SH AUTHOR and CREDITS
 Blackbox was written and maintained by Brad Hughes
 .nh \" hyphenation off
