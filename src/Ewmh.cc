@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.4 2002/10/16 23:32:17 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.5 2002/11/23 14:54:50 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -329,6 +329,9 @@ void Ewmh::createAtoms() {
 	m_net_virtual_roots = XInternAtom(disp, "_NET_VIRTUAL_ROOTS", False);
 
 	m_net_close_window = XInternAtom(disp, "_NET_CLOSE_WINDOW", False);
+	m_net_moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
+	
+	// TODO: implement this one
 	m_net_wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
 
 	m_net_properties = XInternAtom(disp, "_NET_PROPERTIES", False);
