@@ -1,7 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.1.10:
 *02/06/03:
-   * Fixed slit client bug 
+   * Fixed bug [ 562882 ] "bbpager in slit doesn't work correctly".
+     The client was removed from netizenlist in ~FluxboxWindow.
+   * Fixed bug [ 562713 ] "incorrect listings in workspace menu".
+     Normal insert of new clients in the list again, in 
+	 Workspace::addWindow
 *02/06/01:
    * Updated nl_NL locales in fluxbox-generate_menu (THanks Han Boetes)
 *02/05/31:
