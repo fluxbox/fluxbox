@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.30 2004/02/27 14:22:27 fluxgen Exp $
+// $Id: Menu.hh,v 1.31 2004/04/18 18:48:58 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -115,7 +115,7 @@ public:
     void setLabel(const char *labelstr);
     /// move menu to x,y
     void move(int x, int y);
-    void update(int active_index = -1);
+    virtual void update(int active_index = -1);
     void setItemSelected(unsigned int index, bool val);
     void setItemEnabled(unsigned int index, bool val);
     inline void setMinimumSublevels(int m) { menu.minsub = m; }
