@@ -141,7 +141,14 @@ Left clicking (button 1) on an application in the Workspaces menu will bring
 you to that workspace and raise/focus that application;
 middle clicking (button 2) will warp the application to the current workspace.
 .SS Toolbar:
-The toolbar consists of three fields: a workspace name, the iconbar and a clock.
+The toolbar contains up to eight fields/tools: a workspace name, the iconbar, the systemtray,
+a clock and arrows for previous and next workspace and windows.
+.PP
+The contents can be configured in fluxbox init-file in the entry
+.EX
+session.screen0.toolbar.tools: clock, iconbar, workspacename
+.EE
+
 .\" A left click on the toolbar will bring it to the foreground, a
 .\" middle click will hide it behind other windows (if AlwaysOnTop is not set), and
 .\" the right button brings up a little menu.
