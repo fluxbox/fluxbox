@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.8 2004/01/11 12:53:46 fluxgen Exp $
+// $Id: GContext.hh,v 1.9 2004/03/22 20:56:15 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -37,6 +37,11 @@ class Font;
 /// wrapper for X GC
 class GContext {
 public:
+
+    typedef enum JoinStyle { JOINMITER= JoinMiter, JOINROUND= JoinRound, JOINBEVEL= JoinBevel };
+    typedef enum LineStyle { LINESOLID= LineSolid, LINEONOFFDASH= LineOnOffDash, LINEDOUBLEDASH= LineDoubleDash };
+    typedef enum CapStyle { CAPNOTLAST= CapNotLast, CAPBUTT= CapButt, CAPROUND= CapRound, CAPPROJECTING= CapProjecting };
+  
     /// for FbTk drawable
     explicit GContext(const FbTk::FbDrawable &drawable);
     /// for X drawable
@@ -94,6 +99,15 @@ public:
     inline void setFillRule(int rule) {
         XSetFillRule(m_display, m_gc, rule);
     }
+
+    inline void setLineAttributes(unsigned int width, 
+                                  int line_style, 
+                                  int cap_style, 
+                                  int join_style) {
+
+        XSetLineAttributes(m_display, m_gc, width, line_style, cap_style, join_style);
+    }
+      
 
     void copy(GC gc);
     void copy(const GContext &gc);
