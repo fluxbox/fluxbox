@@ -42,7 +42,7 @@ bin_PROGRAMS= fluxbox
 
 fluxbox_SOURCES= BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	Clientmenu.cc Clientmenu.hh Configmenu.cc Configmenu.hh \
-	Icon.cc Icon.hh Image.cc Image.hh LinkedList.cc LinkedList.hh \
+	Icon.cc Icon.hh Image.cc Image.hh  \
 	Netizen.cc Netizen.hh Rootmenu.cc Rootmenu.hh Screen.cc Screen.hh\
 	Slit.cc Slit.hh Timer.cc Timer.hh Toolbar.cc Toolbar.hh \
 	Window.cc Window.hh Windowmenu.cc Windowmenu.hh \
