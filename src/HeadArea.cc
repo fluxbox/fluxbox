@@ -38,9 +38,9 @@ void HeadArea::clearStrut(Strut *str) {
     if (str == 0)
         return;
     // find strut and erase it
-    std::list<Strut *>::iterator pos = find(m_strutlist.begin(),
-                                            m_strutlist.end(),
-                                            str);
+    std::list<Strut *>::iterator pos = std::find(m_strutlist.begin(),
+                                                 m_strutlist.end(),
+                                                 str);
     if (pos == m_strutlist.end()) {
         std::cerr << "clearStrut() failed because the strut was not found" << std::endl;
         return;
@@ -77,7 +77,7 @@ bool HeadArea::updateAvailableWorkspaceArea() {
     m_available_workspace_area.reset(new Strut(0, 0, 0, 0, 0));
     
     // calculate max area
-    for_each(m_strutlist.begin(),
+    std::for_each(m_strutlist.begin(),
              m_strutlist.end(),
              MaxArea(*m_available_workspace_area.get()));
 
