@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.36 2003/06/06 02:18:34 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.37 2003/06/10 12:14:35 fluxgen Exp $
 
 #
 # Portability notes:
@@ -100,18 +100,27 @@ EOF
 }
 
 # ugly code for solaris compat.
-find_it() {
-    file=`which $1 2> /dev/null`
-    if [ -x "$file" ]; then
-        if [ $# -gt 1 ]; then
-            shift
-            $*
-        fi
-        return 0
-    else
-        return 1
-    fi
-}
+case $(uname) in
+    Linux|*BSD)
+        find_it() {
+            which $1 > /dev/null 2>&1 && shift && $*
+            }
+        ;;
+    *)
+        find_it() {
+            file=`which $1 2> /dev/null`
+            if [ -x "$file" ]; then
+                if [ $# -gt 1 ]; then
+                    shift
+                    $*
+                fi
+                return 0
+            else
+                return 1
+            fi
+        }
+        ;;
+esac
 
 append() {
     echo "      $*" >> ${FILENAME}
@@ -189,6 +198,7 @@ SYSTEMSTYLES='System Styles'
 TERMINALMENU='Terminals'
 USERSTYLES='User Styles'
 VIDEOMENU='Video'
+WINDOWMANAGERS='Window Managers'
 WORKSPACEMENU='Workspace List'
 XUTILSMENU='X-utils'
 
@@ -201,6 +211,7 @@ case ${LC_ALL} in
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='óÔÉÌÉ'
         #USERSTYLES='óÔÉÌÉ'
+        #WINDOWMANAGERS='WindowManagers'
         BROWSERMENU='âÒÁÕÚÅÒÙ'
         CONFIGUREMENU='îÁÓÔÒÏÊËÁ'
         EDITORMENU='òÅÄÁËÔÏÒÙ'
@@ -220,6 +231,7 @@ case ${LC_ALL} in
         XUTILSMENU='X-ÕÔÉÌÉÔÙ'
         ;;
     de_DE*) # german locales
+        #WINDOWMANAGERS='Window Managers'
         BACKGROUNDMENU='Hintergrundbilder'
         BACKGROUNDMENUTITLE='Hintergrundbild setzen'
         BROWSERMENU='Internet-Browser'
@@ -251,6 +263,7 @@ case ${LC_ALL} in
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='Stiler'
         #USERSTYLES='Stiler'
+        #WINDOWMANAGERS='Window Managers'
         BROWSERMENU='Browsers'
         CONFIGUREMENU='Konfiguration'
         EDITORMENU='Editorer'
@@ -291,6 +304,7 @@ case ${LC_ALL} in
         SYSTEMSTYLES='Systeem Stylen'
         TERMINALMENU='Terminals'
         USERSTYLES='Gebruikers Stylen'
+        WINDOWMANAGERS='Window Managers'
         WORKSPACEMENU='Werkveld Lijst'
         XUTILSMENU='X-utils'
         ;;
@@ -301,6 +315,7 @@ case ${LC_ALL} in
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='Tyylit'
         #USERSTYLES='Tyylit'
+        #WINDOWMANAGERS='Window Managers'
         BROWSERMENU='Selaimet'
         CONFIGUREMENU='Konfigurointi'
         EDITORMENU='Editorit'
@@ -326,6 +341,7 @@ case ${LC_ALL} in
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='¥¹¥¿¥¤¥ë'
         #USERSTYLES='¥¹¥¿¥¤¥ë'
+        #WINDOWMANAGERS='Window Managers'
         BROWSERMENU='¥Ö¥é¥¦¥¶'
         CONFIGUREMENU='ÀßÄê'
         EDITORMENU='¥¨¥Ç¥£¥¿'
@@ -350,7 +366,8 @@ case ${LC_ALL} in
         #FILEUTILSMENU='File utils'
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='Styles de la Systeme'
-        #USERSTYLES='Styles de la '
+        #USERSTYLES='Styles de la'
+        #WINDOWMANAGERS='Window Managers'
         BROWSERMENU='Navigateurs'
         CONFIGUREMENU='Configurer'
         EDITORMENU='Editeurs'
@@ -376,6 +393,7 @@ case ${LC_ALL} in
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='Stile'
         #USERSTYLES='Stile'
+        #WINDOWMANAGERS='Window Managers'
         BROWSERMENU='Browsers'
         CONFIGUREMENU='Configurazione'
         EDITORMENU='Editori'
@@ -399,6 +417,7 @@ case ${LC_ALL} in
         #FILEUTILSMENU='File utils'
         #OFFICEMENU='Office'
         #RESTARTITEM='Restart'
+        #WINDOWMANAGERS='WindowManagers'
         BACKGROUNDMENU='Fundaluri'
         BACKGROUNDMENUTITLE='Alege fundalul'
         BROWSERMENU='Navigatoare'
@@ -424,6 +443,7 @@ case ${LC_ALL} in
         ;;
     es_ES*) # spanish locales
         #FILEUTILSMENU='File utils'
+        #WINDOWMANAGERS='WindowManagers'
         BACKGROUNDMENU='Fondos'
 	BACKGROUNDMENUTITLE='Seleccionar Fondo'
 	BROWSERMENU='Navegadores'
@@ -451,6 +471,7 @@ case ${LC_ALL} in
         ;;
     pl_PL*) # Polish locales
         #FILEUTILSMENU='File utils'
+        #WINDOWMANAGERS='WindowManagers'
         BACKGROUNDMENU='Tapety'
         BACKGROUNDMENUTITLE='Ustaw tapet?'
         BROWSERMENU='Przegl?darki'
@@ -508,6 +529,19 @@ if [ ! "${INSTALL}" = "Yes" ];then
 # Name of the outputfile
 # FILENAME=${HOME}/.fluxbox/menu
 
+# MENUTITLE=\`fluxbox -version|cut -d " " -f-2\`
+
+# standard url for console-browsers
+# HOMEPAGE=fluxbox.org
+
+# location with your own menu-entries
+# USERMENU=~/.fluxbox/usermenu
+
+# --- Datadirs
+# These are datadirs; So if fluxbox data is installed in
+#   /usr/share/fluxbox
+# your datadir is: /usr/share
+
 # Data-dir
 # PKGDATADIR=/usr/share
 
@@ -518,21 +552,12 @@ if [ ! "${INSTALL}" = "Yes" ];then
 # Kde data-dir
 # KPKGDATADIR=/opt/kde/share
 
-# MENUTITLE=\`fluxbox -version|cut -d " " -f-2\`
-
-# standard url for console-browsers
-# HOMEPAGE=fluxbox.org
-
-# location with your own menu-entries
-# USERMENU=~/.fluxbox/usermenu
-
 # Sepparate the list of background-dirs with semicolumns ':'
 # BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:/usr/local/share/fluxbox/backgrounds/:/usr/share/wallpapers"
 
-
 # --- Boolean variables.
-# Setting a variable to no won't help. Comment them out if you don't want them.
-# Setting are overruled by the command-line options.
+# Setting a variable to ``no'' won't help. Comment them out if you don't
+# want them.  Setting are overruled by the command-line options.
 
 # Include all backgrounds in your backgrounds-directory
 # BACKGROUNDMENUITEM=yes
@@ -763,7 +788,7 @@ append_submenu "${MULTIMEDIAMENU}"
 
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix grecord \
-                   kmidi xplaycd soundtracker grip easytag audacity zinf
+                   kmidi xplaycd soundtracker grip easytag audacity zinf rhythmbox
                find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
                find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
@@ -890,7 +915,7 @@ append_submenu "${FBSETTINGSMENU}"
             append_menu_end
         else
             echo "Warning: You wanted a background-menu but I couldn't find any backgrounds in:
-    $BACKGROUND_DIRS"
+    $BACKGROUND_DIRS" >&2
         fi
     fi
 
@@ -905,7 +930,33 @@ append_submenu "${FBSETTINGSMENU}"
               "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
         find_it fbrun append "[exec] (Run) {fbrun}"
-        find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu}"
+        find_it fluxbox-generate_menu append "[exec] (regenerate menu) {fluxbox-generate_menu}"
+    append_menu_end
+
+    append_submenu ${WINDOWMANAGERS}
+        find_it starticewm append "[restart] (icewm) {starticewm}" ||\
+            find_it icewm append "[restart] (icewm) {icewm}"
+        find_it ion append "[restart] (ion) {ion}"
+        find_it startkde append "[restart] (kde) {startkde}"
+        find_it startsawfish append "[restart] (sawfish) {startsawfish}" ||\
+            find_it sawfish append "[restart] (sawfish) {sawfish}"
+        find_it startgnome append "[restart] (gnome) {startgnome}" ||\
+            find_it gnome-session append "[restart] (gnome) {gnome-session}"
+        find_it startwindowmaker append "[restart] (windowmaker) {startwindowmaker}" ||\
+            find_it wmaker append "[restart] (windowmaker) {wmaker}"
+        find_it startenlightenment append "[restart] (enlightenment) {startenlightenment}" ||\
+            find_it enlightenment append "[restart] (enlightenment) {enlightenment}"
+        find_it startafterstep append "[restart] (afterstep) {startafterstep}" ||\
+            find_it afterstep append "[restart] (afterstep) {afterstep}"
+        find_it startopenbox append "[restart] (openbox) {startopenbox}" ||\
+            find_it openbox append "[restart] (openbox) {openbox}"
+        find_it startevilwm append "[restart] (evilwm) {startevilwm}" ||\
+            find_it evilwm append "[restart] (evilwm) {evilwm}"
+        find_it startwaimea append "[restart] (waimea) {startwaimea}" ||\
+            find_it waimea append "[restart] (waimea) {waimea}"
+        find_it startxfce append "[restart] (xfce) {startxfce}"
+        find_it startpekwm append "[restart] (pekwm) {startpekwm}" ||\
+            find_it pekwm append "[restart] (pekwm) {pekwm}"
     append_menu_end
 
     append "[reconfig] (${RELOADITEM})"
