@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.47 2002/12/03 17:02:53 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.48 2002/12/04 17:58:01 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -69,6 +69,7 @@
 #include <iostream>
 
 using namespace std;
+
 // toolbar frame
 Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
     window(screen_num, // screen (parent)
@@ -276,7 +277,7 @@ void Toolbar::reconfigure() {
         if (w > frame.workspace_label_w)
             frame.workspace_label_w = w;
     }
-
+    
     if (frame.workspace_label_w < frame.clock_w)
         frame.workspace_label_w = frame.clock_w;
     else if (frame.workspace_label_w > frame.clock_w)
@@ -285,7 +286,7 @@ void Toolbar::reconfigure() {
     frame.window_label_w =
         (frame.width - (frame.clock_w + (frame.button_w * 4) +
                         frame.workspace_label_w + (frame.bevel_w * 8) + 6));
-
+    
     if (hidden)
         frame.window.moveResize(frame.x_hidden, frame.y_hidden,
                                 frame.width, frame.height);
@@ -293,51 +294,75 @@ void Toolbar::reconfigure() {
         frame.window.moveResize(frame.x, frame.y,
                                 frame.width, frame.height);
     }
-    
-    cerr<<"workspace label width = "<<frame.workspace_label_w<<endl;
+
     bool vertical = isVertical();
-    unsigned int size_w = frame.workspace_label_w;
-    unsigned int size_h = frame.label_h;
-    unsigned int swap_var = 0;
-    if (vertical) {
-        swap_var = size_w;
-        size_w = size_h;
-        size_h = swap_var;
-    }
-    frame.workspace_label.moveResize(frame.bevel_w, frame.bevel_w, size_w, size_h);
+    unsigned int next_x = frame.workspace_label_w;
+    unsigned int next_y = frame.window.height();
     
-    size_w = frame.workspace_label_w + 1;
-    size_h = frame.bevel_w + 1;
     if (vertical) {
-        swap_var = size_w;
-        size_w = size_h;
-        size_h = swap_var;
+        next_x = frame.window.width();
+        next_y = frame.workspace_label_w;
     }
+    
+    frame.workspace_label.moveResize(frame.bevel_w, frame.bevel_w, next_x, next_y);
+    next_x = 0;
+    next_y = 0;
+    if (vertical) {
+        next_y += frame.workspace_label.height() + 1;
+    } else {
+        next_x += frame.workspace_label.width() + 1;
+    }
+
     frame.psbutton.moveResize(frame.bevel_w * 2 +
-                              size_w , size_h,
+                              next_x , next_y,
                               frame.button_w, frame.button_w);
     if (vertical)
-        size_h += frame.button_w + 1;
+        next_y += frame.psbutton.height() + 1;
     else
-        size_w += frame.button_w + 1;
+        next_x += frame.psbutton.width() + 1;
 
     frame.nsbutton.moveResize(frame.bevel_w * 3 +
-                              size_w, size_h,
+                              next_x, next_y,
                               frame.button_w, frame.button_w);
-    frame.window_label.moveResize(frame.bevel_w * 4 +
-                                  frame.button_w * 2 + frame.workspace_label_w + 3,
-                                  frame.bevel_w, frame.window_label_w, frame.label_h);
-    frame.pwbutton.moveResize(frame.bevel_w * 5 +
-                              frame.button_w * 2 + frame.workspace_label_w +
-                              frame.window_label_w + 4, frame.bevel_w + 1,
+    size_t label_w = frame.window_label_w;
+    size_t label_h = frame.height;
+
+    if (vertical) {
+        next_y += frame.nsbutton.height() + 1;
+        label_w = frame.width;
+        label_h = frame.window_label_w - frame.width + frame.height;
+
+    } else
+        next_x += frame.nsbutton.width() + 1;
+       
+
+    frame.window_label.moveResize(next_x, next_y,
+                                  label_w, label_h);
+    if (vertical)
+        next_y += frame.window_label.height() + 1;
+    else
+        next_x += frame.window_label.width() + 1;
+
+    frame.pwbutton.moveResize(next_x, next_y,
                               frame.button_w, frame.button_w);
-    frame.nwbutton.moveResize(frame.bevel_w * 6 +
-                              frame.button_w * 3 + frame.workspace_label_w +
-                              frame.window_label_w + 5, frame.bevel_w + 1,
+    if (vertical)
+        next_y += frame.pwbutton.height() + 1;
+    else
+        next_x += frame.pwbutton.width() + 1;
+
+    frame.nwbutton.moveResize(next_x, next_y,
                               frame.button_w, frame.button_w);
-    frame.clock.moveResize(frame.width - frame.clock_w -
-                           frame.bevel_w, frame.bevel_w, frame.clock_w,
-                           frame.label_h);
+    size_t clock_w = frame.width - next_x - frame.nwbutton.width() - 1;
+    size_t clock_h = frame.height;
+    if (vertical) {
+        next_y += frame.nwbutton.height() + 1;
+        clock_w = frame.width;
+        clock_h = frame.height - next_y;
+    } else
+        next_x += frame.nwbutton.width() + 1;
+
+    frame.clock.moveResize(next_x, next_y,
+                           clock_w, clock_h);
 
     Pixmap tmp = frame.base;
     const FbTk::Texture *texture = &(m_theme.toolbar());
@@ -345,7 +370,7 @@ void Toolbar::reconfigure() {
         frame.base = None;
         frame.window.setBackgroundColor(texture->color());
     } else {
-        frame.base = image_ctrl.renderImage(frame.width, frame.height, *texture);
+        frame.base = image_ctrl.renderImage(frame.window.width(), frame.window.height(), *texture);
         frame.window.setBackgroundPixmap(frame.base);
     }
     if (tmp) image_ctrl.removeImage(tmp);
@@ -357,7 +382,7 @@ void Toolbar::reconfigure() {
         frame.window_label.setBackgroundColor(texture->color());
     } else {
         frame.label =
-            image_ctrl.renderImage(frame.window_label_w, frame.label_h, *texture);
+            image_ctrl.renderImage(frame.window_label.width(), frame.window_label.height(), *texture);
         frame.window_label.setBackgroundPixmap(frame.label);
     }
     if (tmp) image_ctrl.removeImage(tmp);
@@ -369,7 +394,8 @@ void Toolbar::reconfigure() {
         frame.workspace_label.setBackgroundColor(texture->color());
     } else {
         frame.wlabel =
-            image_ctrl.renderImage(frame.workspace_label_w, frame.label_h, *texture);
+            image_ctrl.renderImage(frame.workspace_label.width(), 
+                                   frame.workspace_label.height(), *texture);
         frame.workspace_label.setBackgroundPixmap(frame.wlabel);
     }
     if (tmp) image_ctrl.removeImage(tmp);
@@ -381,7 +407,7 @@ void Toolbar::reconfigure() {
         frame.clock.setBackgroundColor(texture->color());
     } else {
         frame.clk =
-            image_ctrl.renderImage(frame.clock_w, frame.label_h, *texture);
+            image_ctrl.renderImage(frame.clock.width(), frame.clock.height(), *texture);
         frame.clock.setBackgroundPixmap(frame.clk);
     }
     if (tmp) image_ctrl.removeImage(tmp);
@@ -543,13 +569,18 @@ void Toolbar::checkClock(bool redraw, bool date) {
                                        m_theme.justify(),
                                        m_theme.font(),
                                        t, strlen(t), newlen);
-			
+        int dy = 1 + m_theme.font().ascent();
+	if (m_theme.font().isRotated()) {
+            int tmp = dy;
+            dy = frame.clock.height() - dx;
+            dx = tmp;
+        }		
         m_theme.font().drawText(
             frame.clock.window(),
             screen()->getScreenNumber(),
             m_theme.clockTextGC(),
             t, newlen,
-            dx, 1 + m_theme.font().ascent());
+            dx, dy);
     }
 }
 
@@ -568,13 +599,20 @@ void Toolbar::redrawWindowLabel(bool redraw) {
                                        m_theme.justify(),
                                        m_theme.font(),
                                        foc->getTitle().c_str(), foc->getTitle().size(), newlen);
-			
+	int dy = 1 + m_theme.font().ascent();
+
+        if (m_theme.font().isRotated()) {
+            int tmp = dy;
+            dy = frame.window_label.height() - dx;
+            dx = tmp;
+        }
+    
         m_theme.font().drawText(
             frame.window_label.window(),
             screen()->getScreenNumber(),
             m_theme.windowTextGC(),
             foc->getTitle().c_str(), newlen,
-            dx, 1 + m_theme.font().ascent());
+            dx, dy);
     } else
         frame.window_label.clear();
 }
@@ -594,13 +632,18 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
                                    m_theme.justify(),
                                    m_theme.font(),
                                    text, textlen, newlen);
-			
+    int dy = 1 + m_theme.font().ascent();
+    if (m_theme.font().isRotated()) {
+        int tmp = dy;
+        dy = frame.workspace_label_w - dx;
+        dx = tmp;
+    }
     m_theme.font().drawText(
         frame.workspace_label.window(),
         screen()->getScreenNumber(),
         m_theme.labelTextGC(),
         text, newlen,
-        dx, 1 + m_theme.font().ascent());
+        dx, dy);
 }
 
 
@@ -693,7 +736,7 @@ void Toolbar::edit() {
 
     editing = true;	//mark for editing
 	
-    //workspace labe already got intput focus ?
+    //workspace label already has intput focus ?
     if (XGetInputFocus(display, &window, &foo) &&
         window == frame.workspace_label)
         return;
@@ -1069,9 +1112,39 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
             screen()->getBorderWidth();
         break;
     case LEFTCENTER:
-        frame.x = 0;
+        frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2;
-        frame.x_hidden = head_x + head_w - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.x_hidden = frame.x - frame.width + screen()->getBevelWidth() + screen()->getBorderWidth();
+        frame.y_hidden = frame.y;
+        break;
+    case LEFTTOP:
+        frame.x = head_x;
+        frame.y = head_y;
+        frame.x_hidden = frame.x - frame.width + screen()->getBevelWidth() + screen()->getBorderWidth();
+        frame.y_hidden = frame.y;
+        break;
+    case LEFTBOTTOM:
+        frame.x = head_x;
+        frame.y = head_y + head_h - frame.height;
+        frame.x_hidden = frame.x - frame.width + screen()->getBevelWidth() + screen()->getBorderWidth();
+        frame.y_hidden = frame.y;
+        break;
+    case RIGHTCENTER:
+        frame.x = head_x + head_w - frame.width;
+        frame.y = head_y + (head_h - frame.height)/2;
+        frame.x_hidden = frame.x + frame.width - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.y_hidden = frame.y;
+        break;
+    case RIGHTTOP:
+        frame.x = head_x + head_w - frame.width;
+        frame.y = head_y;
+        frame.x_hidden = frame.x + frame.width - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.y_hidden = frame.y;
+        break;
+    case RIGHTBOTTOM:
+        frame.x = head_x + head_w - frame.width;
+        frame.y = head_y + head_h - frame.height;
+        frame.x_hidden = frame.x + frame.width - screen()->getBevelWidth() - screen()->getBorderWidth();
         frame.y_hidden = frame.y;
         break;
     }
@@ -1207,7 +1280,7 @@ void Toolbarmenu::reconfigure() {
     Basemenu::reconfigure();
 }
 
-
+//TODO: fix placement
 Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu &tm)
     : Basemenu(tm.m_toolbar.screen()), m_toolbarmenu(tm) {
 
@@ -1217,12 +1290,18 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu &tm)
         ToolbarSet, ToolbarToolbarPlacement,
         "Toolbar Placement"));
     setInternalMenu();
-    setMinimumSublevels(3);
+    setMinimumSublevels(5);
 
+    insert("Left Top", Toolbar::LEFTTOP);
+    insert("Left Center", Toolbar::LEFTCENTER);
+    insert("Left Bottom", Toolbar::LEFTBOTTOM);
+    
     insert(i18n->getMessage(
         CommonSet, CommonPlacementTopLeft,
         "Top Left"),
            Toolbar::TOPLEFT);
+    insert("");
+
     insert(i18n->getMessage(
         CommonSet, CommonPlacementBottomLeft,
         "Bottom Left"),
@@ -1231,6 +1310,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu &tm)
         CommonSet, CommonPlacementTopCenter,
         "Top Center"),
            Toolbar::TOPCENTER);
+    insert("");
     insert(i18n->getMessage(
         CommonSet, CommonPlacementBottomCenter,
         "Bottom Center"),
@@ -1239,13 +1319,15 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu &tm)
         CommonSet, CommonPlacementTopRight,
         "Top Right"),
            Toolbar::TOPRIGHT);
+    insert("");
     insert(i18n->getMessage(
         CommonSet, CommonPlacementBottomRight,
         "Bottom Right"),
            Toolbar::BOTTOMRIGHT);
 
-    insert("Left Center", Toolbar::LEFTCENTER);
-
+    insert("Right Top", Toolbar::RIGHTTOP);
+    insert("Right Center", Toolbar::RIGHTCENTER);
+    insert("Right Bottom", Toolbar::RIGHTBOTTOM);
     update();
 }
 
