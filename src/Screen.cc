@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.241 2003/11/16 22:33:55 rathnor Exp $
+// $Id: Screen.cc,v 1.242 2003/12/03 23:08:48 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -189,40 +189,12 @@ private:
     const std::string m_filename;
 };
 
-class AddWorkspaceCmd:public FbTk::Command {
-public:
-    explicit AddWorkspaceCmd(BScreen &scrn):m_screen(scrn) { }
-    void execute() {
-        m_screen.addWorkspace();
-    }
-private:
-    BScreen &m_screen;
-};
-
-class RemoveLastWorkspaceCmd:public FbTk::Command {
-public:
-    explicit RemoveLastWorkspaceCmd(BScreen &scrn):m_screen(scrn) { }
-    void execute() {
-        m_screen.removeLastWorkspace();
-    }
-private:
-    BScreen &m_screen;
-};
-
-class ReloadStyleCmd: public FbTk::Command {
-public:
-    void execute() {
-        FbCommands::SetStyleCmd cmd(Fluxbox::instance()->getStyleFilename());
-        cmd.execute();
-    }
-};
-
 void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
     menu.removeAll(); // clear all items
     using namespace FbTk;
     menu.setLabel("Workspace");
-    RefCount<Command> new_workspace(new AddWorkspaceCmd(scr));
-    RefCount<Command> remove_last(new RemoveLastWorkspaceCmd(scr));
+    RefCount<Command> new_workspace(new FbTk::SimpleCommand<BScreen, int>(scr, &BScreen::addWorkspace));
+    RefCount<Command> remove_last(new FbTk::SimpleCommand<BScreen, int>(scr, &BScreen::removeLastWorkspace));
     //!! TODO: NLS
     menu.insert("New Workspace", new_workspace);
     menu.insert("Remove Last", remove_last);
