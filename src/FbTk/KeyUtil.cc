@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.6 2003/12/31 11:57:47 fluxgen Exp $
+// $Id: KeyUtil.cc,v 1.7 2004/02/10 18:55:12 fluxgen Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
@@ -172,7 +172,7 @@ unsigned int KeyUtil::getModifier(const char *modstr) {
     struct t_modlist{
         char *str;
         unsigned int mask;
-        bool operator == (const char *modstr) {
+        bool operator == (const char *modstr) const {
             return  (strcasecmp(str, modstr) == 0 && mask !=0);
         }
     } modlist[] = {
