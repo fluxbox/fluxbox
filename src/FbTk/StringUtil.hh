@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.5 2003/08/22 22:11:19 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.6 2003/09/29 14:01:48 fluxgen Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -53,6 +53,10 @@ std::string toUpper(const std::string &conv);
 #undef basename
 #endif // basename
 std::string basename(const std::string &basename);
+
+
+/// removes the first whitespace characters of the string
+std::string::size_type removeFirstWhitespace(std::string &str);
 
 /// Breaks a string into tokens
 template <typename Container>

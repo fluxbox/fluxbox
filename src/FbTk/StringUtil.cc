@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.6 2003/08/22 22:11:19 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.7 2003/09/29 14:01:48 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -176,6 +176,13 @@ std::string basename(const std::string &filename) {
     if (first_pos != std::string::npos)
         return filename.substr(first_pos + 1);
     return filename;
+}
+
+string::size_type removeFirstWhitespace(std::string &str) {
+    string::size_type first_pos = str.find_first_not_of(" \t");
+    if (first_pos != string::npos)
+        str.erase(0, first_pos);
+    return first_pos;
 }
 
 }; // end namespace StringUtil
