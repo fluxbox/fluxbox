@@ -22,12 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.20 2003/01/12 18:03:24 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.21 2003/01/12 18:52:35 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
 
-#include "Basemenu.hh"
 #include "Timer.hh"
 #include "IconBar.hh"
 #include "ToolbarTheme.hh"
