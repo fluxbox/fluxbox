@@ -22,12 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.17 2003/01/09 22:06:49 fluxgen Exp $
+/// $Id: Slit.hh,v 1.18 2003/01/12 17:53:10 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
 
-#include "Basemenu.hh"
+#include "Menu.hh"
+#include "FbWindow.hh"
+#include "Timer.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -35,95 +37,43 @@
 #include <list>
 #include <string>
 #include <memory>
-
-// forward declaration
-class Slit;
-
-/// menu in slit
-class Slitmenu : public Basemenu {
-public:
-    explicit Slitmenu(Slit &theslist);
-    virtual ~Slitmenu();
-
-    const Basemenu &getDirectionmenu() const { return m_directionmenu; }
-    const Basemenu &getPlacementmenu() const { return m_placementmenu; }
-
-#ifdef XINERAMA
-    const Basemenu *getHeadmenu() const { return m_headmenu.get(); }
-#endif // XINERAMA
-
-    void reconfigure();
-
-protected:
-    virtual void itemSelected(int button, unsigned int index);
-    virtual void internal_hide();
-
-private: 
-    class Directionmenu : public Basemenu {
-    public:
-        Directionmenu(Slitmenu &sm);
-
-    protected:
-        virtual void itemSelected(int button, unsigned int index);
-
-    private:
-        Slitmenu &slitmenu;
-    };
-
-    class Placementmenu : public Basemenu {
-    public:
-        Placementmenu(Slitmenu &sm);
-
-    protected: 
-        virtual void itemSelected(int button, unsigned int index);
-
-    private:
-        Slitmenu &slitmenu;
-    };
-
-    Slit &slit;
-
-#ifdef XINERAMA
-    class Headmenu : public Basemenu {
-    public:
-        Headmenu(Slitmenu &sm);
-    protected: 
-        virtual void itemSelected(int button, unsigned int index);
-    private:
-        Slitmenu &slitmenu;
-    };
-    friend class Headmenu;
-    std::auto_ptr<Headmenu> m_headmenu;
-#endif // XINERAMA
-
-    Placementmenu m_placementmenu;
-    Directionmenu m_directionmenu;
-
-
-
-    friend class Directionmenu;
-    friend class Placementmenu;
-};
+class BScreen;
+class SlitClient;
 
 /// Handles dock apps
-class Slit : public FbTk::TimeoutHandler {
+class Slit : public FbTk::TimeoutHandler, public FbTk::EventHandler {
 public:
-    explicit Slit(BScreen *screen);
+    
+    /**
+       Client alignment
+    */
+    enum Direction { VERTICAL = 1, HORIZONTAL };
+    /**
+       Screen placement
+    */
+    enum Placement { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
+           TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
+
+    explicit Slit(BScreen &screen, const char *filename = 0);
     virtual ~Slit();
 
     inline bool isOnTop() const { return on_top; }
     inline bool isHidden() const { return hidden; }
     inline bool doAutoHide() const { return do_auto_hide; }
+    inline Direction direction() const { return m_direction; }
+    inline Placement placement() const { return m_placement; }
+    FbTk::Menu &menu() { return slitmenu; }
 
-    Slitmenu &menu() { return slitmenu; }
-
-    inline const Window &getWindowID() const { return frame.window; }
+    inline Window getWindowID() const { return frame.window.window(); }
 
     inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
     inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
 
     inline unsigned int width() const { return frame.width; }
     inline unsigned int height() const { return frame.height; }
+
+    void setDirection(Direction dir);
+    void setPlacement(Placement place);
     void setOnTop(bool val);
     void setAutoHide(bool val);
     void addClient(Window clientwin);
@@ -131,57 +81,39 @@ public:
     void reconfigure();
     void reposition();
     void shutdown();
+    /// save clients name in a file
     void saveClientList();
+    /// cycle slit clients up one step
+    void cycleClientsUp();
+    /// cycle slit clients down one step
+    void cycleClientsDown();
+
     BScreen *screen() { return m_screen; }
     const BScreen *screen() const { return m_screen; }
     /**
        @name eventhandlers
     */
     //@{
-    void buttonPressEvent(XButtonEvent *bp);
-    void enterNotifyEvent(XCrossingEvent *en);
-    void leaveNotifyEvent(XCrossingEvent *ln);
-    void configureRequestEvent(XConfigureRequestEvent *cr);
+    void handleEvent(XEvent &event);
+    void buttonPressEvent(XButtonEvent &event);
+    void enterNotifyEvent(XCrossingEvent &event);
+    void leaveNotifyEvent(XCrossingEvent &event);
+    void configureRequestEvent(XConfigureRequestEvent &event);
     //@}
 	
     virtual void timeout();
 
-    /**
-       Client alignment
-    */
-    enum { VERTICAL = 1, HORIZONTAL };
-    /**
-       Screen placement
-    */
-    enum { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
-           TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
 
 private:
-    class SlitClient {
-    public:
-        SlitClient(BScreen *screen, Window client_window);	// For adding an actual window
-        SlitClient(const char *name);		// For adding a placeholder
-
-        // Now we pre-initialize a list of slit clients with names for
-        // comparison with incoming client windows.  This allows the slit
-        // to maintain a sorted order based on a saved window name list.
-        // Incoming windows not found in the list are appended.  Matching
-        // duplicates are inserted after the last found instance of the
-        // matching name.
-        std::string match_name;
-
-        Window window, client_window, icon_window;
-
-        int x, y;
-        unsigned int width, height;
-
-        void initialize(BScreen *screen = 0, Window client_window= None);
-    };
+    void setupMenu();
 	
     void removeClient(SlitClient *client, bool remap, bool destroy);
-    void loadClientList();
-	
+    void loadClientList(const char *filename);
+    void updateClientmenu();
+
     bool on_top, hidden, do_auto_hide;
+    Direction m_direction;
+    Placement m_placement;
 
     BScreen *m_screen;
     FbTk::Timer timer;
@@ -189,17 +121,19 @@ private:
     typedef std::list<SlitClient *> SlitClients;
 
     SlitClients clientList;
-    Slitmenu slitmenu;
+    FbTk::Menu slitmenu, placement_menu, clientlist_menu;
     std::string clientListPath;
+    std::string m_filename;
 
     struct frame {
         Pixmap pixmap;
-        Window window;
+        FbTk::FbWindow window;
 
         int x, y, x_hidden, y_hidden;
         unsigned int width, height;
     } frame;
-
+    // for KDE
+    Atom kwm1_dockwindow, kwm2_dockwindow;
 };
 
 
