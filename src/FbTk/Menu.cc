@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.10 2003/02/16 15:03:22 fluxgen Exp $
+// $Id: Menu.cc,v 1.11 2003/02/23 01:00:02 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -328,7 +328,6 @@ void Menu::update() {
         if (tmp) 
             m_image_ctrl.removeImage(tmp);
 
-        menu.title.clear();
     }
 
     tmp = menu.frame_pixmap;
@@ -375,9 +374,7 @@ void Menu::update() {
 
     menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + menu.title.borderWidth()*2 : 0), 
                           menu.window.width(), menu.frame_h);
-    menu.window.clear();
-    menu.title.clear();
-    menu.frame.clear();
+    clearWindow();
 
     if (title_vis && visible) 
         redrawTitle();
@@ -424,6 +421,11 @@ void Menu::hide() {
         internal_hide();
 }
 
+void Menu::clearWindow() {
+    menu.window.clear();
+    menu.title.clear();
+    menu.frame.clear();
+}
 
 void Menu::internal_hide() {
     if (which_sub >= 0) {
@@ -670,7 +672,8 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
     if (dosel && item->isSelected() &&
         (menu.sel_pixmap != ParentRelative)) {
         if (menu.sel_pixmap) {
-            XCopyArea(m_display, highlight ? menu.frame_pixmap : menu.sel_pixmap, menu.frame.window(),
+            XCopyArea(m_display, 
+                      highlight ? menu.frame_pixmap : menu.sel_pixmap, menu.frame.window(),
                       m_theme.hiliteGC(), 0, 0,
                       half_w, half_w, sel_x, sel_y);
         } else {
@@ -692,11 +695,11 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
 
     if (dosel && item->submenu()) {
         switch (m_theme.bullet()) {
-        case SQUARE:
+        case MenuTheme::SQUARE:
             XDrawRectangle(m_display, menu.frame.window(), gc, sel_x, sel_y, half_w, half_w);
             break;
 
-        case TRIANGLE:
+        case MenuTheme::TRIANGLE:
             XPoint tri[3];
 
             if (m_theme.bulletPos() == FbTk::RIGHT) {
@@ -719,7 +722,7 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
                          CoordModePrevious);
             break;
 			
-        case DIAMOND:
+        case MenuTheme::DIAMOND:
             XPoint dia[4];
 
             dia[0].x = sel_x + quarter_w - 3;
@@ -733,6 +736,8 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
 
             XFillPolygon(m_display, menu.frame.window(), gc, dia, 4, Convex,
                          CoordModePrevious);
+            break;
+        default:
             break;
         }
     }
