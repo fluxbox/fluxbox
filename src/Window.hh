@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.15 2002/04/03 23:01:04 fluxgen Exp $
+// $Id: Window.hh,v 1.16 2002/04/04 13:19:10 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -120,22 +120,23 @@ public:
 	FluxboxWindow(Window, BScreen * = 0);
 	virtual ~FluxboxWindow(void);
 
-	inline const bool isTransient(void) const { return ((transient) ? true : false); }
-	inline const bool hasTransient(void) const { return ((client.transient) ? true : false); }
-	inline const bool isManaged() const { return managed; }
-	inline const bool isFocused(void) const { return focused; }
-	inline const bool isVisible(void) const { return visible; }
-	inline const bool isIconic(void) const { return iconic; }
-	inline const bool isShaded(void) const { return shaded; }
-	inline const bool isMaximized(void) const { return maximized; }
-	inline const bool isIconifiable(void) const { return functions.iconify; }
-	inline const bool isMaximizable(void) const { return functions.maximize; }
-	inline const bool isResizable(void) const { return functions.resize; }
-	inline const bool isClosable(void) const { return functions.close; }
-	inline const bool isStuck(void) const { return stuck; }
-	inline const bool hasTitlebar(void) const { return decorations.titlebar; }
-	inline const bool hasTab(void) const { return (tab!=0 ? true : false); }
-	static void showError(FluxboxWindow::Error error);
+	inline bool isTransient(void) const { return ((transient) ? true : false); }
+	inline bool hasTransient(void) const { return ((client.transient) ? true : false); }
+	inline bool isManaged() const { return managed; }
+	inline bool isFocused(void) const { return focused; }
+	inline bool isVisible(void) const { return visible; }
+	inline bool isIconic(void) const { return iconic; }
+	inline bool isShaded(void) const { return shaded; }
+	inline bool isMaximized(void) const { return maximized; }
+	inline bool isIconifiable(void) const { return functions.iconify; }
+	inline bool isMaximizable(void) const { return functions.maximize; }
+	inline bool isResizable(void) const { return functions.resize; }
+	inline bool isClosable(void) const { return functions.close; }
+	inline bool isStuck(void) const { return stuck; }
+	inline bool hasTitlebar(void) const { return decorations.titlebar; }
+	inline bool hasTab(void) const { return (tab!=0 ? true : false); }
+	inline bool isMoving(void) const { return moving; }
+	inline bool isResizing(void) const { return resizing; }
 	inline BScreen *getScreen(void) const { return screen; }
 	inline Tab *getTab(void) const { return tab; }
 	inline FluxboxWindow *getTransient(void) const { return client.transient; }
@@ -148,18 +149,18 @@ public:
 
 	inline const std::string &getTitle(void) const { return client.title; }
 	inline const std::string &getIconTitle(void) const { return client.icon_title; }
-	inline const int getXFrame(void) const { return frame.x; }
-	inline const int getYFrame(void) const { return frame.y; }
-	inline const int getXClient(void) const { return client.x; }
-	inline const int getYClient(void) const { return client.y; }
-	inline const unsigned int getWorkspaceNumber(void) const { return workspace_number; }
-	inline const int getWindowNumber(void) const { return window_number; }
-	inline const WinLayer getLayer(void) const { return m_layer; }
-	inline const unsigned int getWidth(void) const { return frame.width; }
-	inline const unsigned int getHeight(void) const { return frame.height; }
-	inline const unsigned int getClientHeight(void) const { return client.height; }
-	inline const unsigned int getClientWidth(void) const { return client.width; }
-	inline const unsigned int getTitleHeight(void) const { return frame.title_h; }
+	inline int getXFrame(void) const { return frame.x; }
+	inline int getYFrame(void) const { return frame.y; }
+	inline int getXClient(void) const { return client.x; }
+	inline int getYClient(void) const { return client.y; }
+	inline unsigned int getWorkspaceNumber(void) const { return workspace_number; }
+	inline int getWindowNumber(void) const { return window_number; }
+	inline WinLayer getLayer(void) const { return m_layer; }
+	inline unsigned int getWidth(void) const { return frame.width; }
+	inline unsigned int getHeight(void) const { return frame.height; }
+	inline unsigned int getClientHeight(void) const { return client.height; }
+	inline unsigned int getClientWidth(void) const { return client.width; }
+	inline unsigned int getTitleHeight(void) const { return frame.title_h; }
 
 	inline void setWindowNumber(int n) { window_number = n; }
 	
@@ -197,6 +198,8 @@ public:
 	void exposeEvent(XExposeEvent *);
 	void configureRequestEvent(XConfigureRequestEvent *);
 
+	static void showError(FluxboxWindow::Error error);
+	
 	#ifdef SHAPE
 	void shapeEvent(XShapeEvent *);
 	#endif // SHAPE
@@ -212,6 +215,7 @@ public:
 	void setGnomeState(int state);
 	inline int getGnomeHints() const { return gnome_hints; }
 	#endif
+	
 private:
 	BImageControl *image_ctrl;
 	
@@ -302,7 +306,10 @@ private:
 	void grabButtons();
 	
 	void createButton(int type, ButtonEventProc, ButtonEventProc, ButtonDrawProc);
-	
+	void startMoving(Window win);
+	void stopMoving();
+	void startResizing(XMotionEvent *me, bool left); 
+	void stopResizing(Window win=0);	
 	#ifdef GNOME
 	
 	void updateGnomeAtoms();

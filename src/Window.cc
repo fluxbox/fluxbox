@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.37 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Window.cc,v 1.38 2002/04/04 13:19:10 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1495,9 +1495,9 @@ void FluxboxWindow::getWMIconName(void) {
 
 			XFree((char *) text_prop.value);
 		} else
-			client.icon_title = getTitle(); //assign title to icon title
+			client.icon_title = getTitle();
 	} else
-		client.icon_title = getTitle(); //assign title to icon title
+		client.icon_title = getTitle();
 }
 
 
@@ -2035,6 +2035,10 @@ void FluxboxWindow::close(void) {
 void FluxboxWindow::withdraw(void) {
 	visible = false;
 	iconic = false;
+	if (isMoving())
+		stopMoving();
+	if (isResizing())
+		stopResizing();
 
 	XUnmapWindow(display, frame.window);
 
@@ -3295,46 +3299,11 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent *re) {
 	if (! validateClient())
 		return;
 
-	if (moving) {
-		moving = false;
-						
-		fluxbox->maskWindowEvents(0, (FluxboxWindow *) 0);
-
-		if (! screen->doOpaqueMove()) {
-			XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-		 		 frame.move_x, frame.move_y, frame.resize_w,
-			 	 frame.resize_h);
-
-			configure(frame.move_x, frame.move_y, frame.width, frame.height);
-			fluxbox->ungrab();
-		} else
-			configure(frame.x, frame.y, frame.width, frame.height);
-
-		screen->hideGeometry();
-		XUngrabPointer(display, CurrentTime);
-	} else if (resizing) {
-		XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-			frame.resize_x, frame.resize_y,
-			frame.resize_w, frame.resize_h);
-
-		screen->hideGeometry();
-
-		if (re->window == frame.left_grip)
-			left_fixsize();
-		else
-			right_fixsize();
-
-		resizing = false;
-		configure(frame.resize_x, frame.resize_y,
-				frame.resize_w - screen->getBorderWidth2x(),
-				frame.resize_h - screen->getBorderWidth2x());
-	
-		if (tab)
-			tab->resize();
-			
-		fluxbox->ungrab();
-		XUngrabPointer(display, CurrentTime);
-	} else if (re->window == frame.window) {
+	if (isMoving())
+		stopMoving();		
+	else if (isResizing())
+		stopResizing();
+	else if (re->window == frame.window) {
 		if (re->button == 2 && re->state == Mod1Mask)
 			XUngrabPointer(display, CurrentTime);
 	} else {
@@ -3356,39 +3325,13 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent *re) {
 
 
 void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
-	Fluxbox *fluxbox = Fluxbox::instance();
 	if ((me->state & Button1Mask) && functions.move &&
 			(frame.title == me->window || frame.label == me->window ||
-			 frame.handle == me->window || frame.window == me->window) && !resizing) {
+			 frame.handle == me->window || frame.window == me->window) && !isResizing()) {
 			 
-		if (! moving) {
-			XGrabPointer(display, me->window, False, Button1MotionMask |
-								ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-								None, fluxbox->getMoveCursor(), CurrentTime);
-
-			if (windowmenu && windowmenu->isVisible())
-				windowmenu->hide();
-
-			moving = true;
-
-			fluxbox->maskWindowEvents(client.window, this);
-
-			if (! screen->doOpaqueMove()) {
-				fluxbox->grab();
-
-				frame.move_x = frame.x;
-				frame.move_y = frame.y;
-				frame.resize_w = frame.width + screen->getBorderWidth2x();
-				frame.resize_h = ((shaded) ? frame.title_h : frame.height) +
-						screen->getBorderWidth2x();
-
-				screen->showPosition(frame.x, frame.y);
-
-				XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-				frame.move_x, frame.move_y,
-					frame.resize_w, frame.resize_h);
-			}
-		} else {
+		if (! isMoving()) {
+			startMoving(me->window);			
+		} else {			
 			int dx = me->x_root - frame.grab_x, dy = me->y_root - frame.grab_y;
 
 			dx -= screen->getBorderWidth();
@@ -3429,8 +3372,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 			if (! screen->doOpaqueMove()) {
 				XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-						frame.move_x, frame.move_y, frame.resize_w,
-						frame.resize_h);
+						frame.move_x, frame.move_y, frame.resize_w, frame.resize_h);
 
 				frame.move_x = dx;
 				frame.move_y = dy;
@@ -3441,7 +3383,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 			} else
 				configure(dx, dy, frame.width, frame.height);
 
-				screen->showPosition(dx, dy);
+			screen->showPosition(dx, dy);
 		}
 	} else if (functions.resize &&
 			(((me->state & Button1Mask) && (me->window == frame.right_grip ||
@@ -3449,35 +3391,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 			 me->window == frame.window)) {
 		bool left = (me->window == frame.left_grip);
 
-		if (! resizing) {
-			XGrabPointer(display, me->window, false, ButtonMotionMask |
-				ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None,
-				((left) ? fluxbox->getLowerLeftAngleCursor() :
-				fluxbox->getLowerRightAngleCursor()),
-				CurrentTime);
-
-			resizing = true;
-
-//			fluxbox->grab();
-
-			int gx, gy;
-			frame.grab_x = me->x - screen->getBorderWidth();
-			frame.grab_y = me->y - screen->getBorderWidth2x();
-			frame.resize_x = frame.x;
-			frame.resize_y = frame.y;
-			frame.resize_w = frame.width + screen->getBorderWidth2x();
-			frame.resize_h = frame.height + screen->getBorderWidth2x();
-
-			if (left)
-				left_fixsize(&gx, &gy);
-			else
-				right_fixsize(&gx, &gy);
-
-			screen->showGeometry(gx, gy);
-
-			XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-				frame.resize_x, frame.resize_y,
-				frame.resize_w, frame.resize_h);
+		if (! resizing) {			
+			startResizing(me, left); 
 		} else if (resizing) {
 			XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 				frame.resize_x, frame.resize_y,
@@ -3566,6 +3481,110 @@ bool FluxboxWindow::validateClient(void) {
 	return true;
 }
 
+void FluxboxWindow::startMoving(Window win) {
+	moving = true;
+	Fluxbox *fluxbox = Fluxbox::instance();
+	XGrabPointer(display, win, False, Button1MotionMask |
+		ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+		None, fluxbox->getMoveCursor(), CurrentTime);
+
+	if (windowmenu && windowmenu->isVisible())
+		windowmenu->hide();
+
+	fluxbox->maskWindowEvents(client.window, this);
+
+	if (! screen->doOpaqueMove()) {
+		fluxbox->grab();
+
+		frame.move_x = frame.x;
+		frame.move_y = frame.y;
+		frame.resize_w = frame.width + screen->getBorderWidth2x();
+		frame.resize_h = ((shaded) ? frame.title_h : frame.height) +
+			screen->getBorderWidth2x();
+
+		screen->showPosition(frame.x, frame.y);
+
+		XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+			frame.move_x, frame.move_y,
+			frame.resize_w, frame.resize_h);
+	}
+}
+
+void FluxboxWindow::stopMoving() {
+	moving = false;
+	Fluxbox *fluxbox = Fluxbox::instance();
+					
+	fluxbox->maskWindowEvents(0, (FluxboxWindow *) 0);
+
+	if (! screen->doOpaqueMove()) {
+		XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+	 		 frame.move_x, frame.move_y, frame.resize_w,
+		 	 frame.resize_h);
+
+		configure(frame.move_x, frame.move_y, frame.width, frame.height);
+		fluxbox->ungrab();
+	} else
+		configure(frame.x, frame.y, frame.width, frame.height);
+
+	screen->hideGeometry();
+	XUngrabPointer(display, CurrentTime);
+	
+	XSync(display, False); //make sure the redraw is made before we continue
+}
+
+void FluxboxWindow::startResizing(XMotionEvent *me, bool left) {
+	resizing = true;
+	Fluxbox *fluxbox = Fluxbox::instance();
+	XGrabPointer(display, me->window, false, ButtonMotionMask |	ButtonReleaseMask, 
+		GrabModeAsync, GrabModeAsync, None,
+		((left) ? fluxbox->getLowerLeftAngleCursor() : fluxbox->getLowerRightAngleCursor()),
+		CurrentTime);
+
+	int gx, gy;
+	frame.grab_x = me->x - screen->getBorderWidth();
+	frame.grab_y = me->y - screen->getBorderWidth2x();
+	frame.resize_x = frame.x;
+	frame.resize_y = frame.y;
+	frame.resize_w = frame.width + screen->getBorderWidth2x();
+	frame.resize_h = frame.height + screen->getBorderWidth2x();
+
+	if (left)
+		left_fixsize(&gx, &gy);
+	else
+		right_fixsize(&gx, &gy);
+	
+	screen->showGeometry(gx, gy);
+
+	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+		frame.resize_x, frame.resize_y,
+		frame.resize_w, frame.resize_h);
+}
+
+void FluxboxWindow::stopResizing(Window win) {
+	resizing = false;
+	
+	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+		frame.resize_x, frame.resize_y,
+		frame.resize_w, frame.resize_h);
+
+	screen->hideGeometry();
+
+	if (win == frame.left_grip)
+		left_fixsize();
+	else
+		right_fixsize();
+
+	
+	configure(frame.resize_x, frame.resize_y,
+		frame.resize_w - screen->getBorderWidth2x(),
+		frame.resize_h - screen->getBorderWidth2x());
+	
+	if (tab)
+		tab->resize();
+			
+	Fluxbox::instance()->ungrab();
+	XUngrabPointer(display, CurrentTime);
+}
 
 void FluxboxWindow::restore(void) {
 	XChangeSaveSet(display, client.window, SetModeDelete);
