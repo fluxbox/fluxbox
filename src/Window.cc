@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.193 2003/06/18 13:55:17 fluxgen Exp $
+// $Id: Window.cc,v 1.194 2003/06/22 21:29:32 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3057,17 +3057,8 @@ void FluxboxWindow::attachTo(int x, int y) {
     m_attaching_tab = 0;
 }
 
-//finds and redraw the icon label
 void FluxboxWindow::updateIcon() {
-    //!! TODO we shouldn't know about the toolbar in fluxboxwindow!
-    if (screen().toolbar()) {
-        const IconBar *iconbar = 0;
-        const IconBarObj *icon = 0;
-        if ((iconbar = screen().toolbar()->iconBar()) != 0) {
-            if ((icon = iconbar->findIcon(this)) != 0)
-                iconbar->draw(icon, icon->width());
-        }
-    }
+    //!! TODO: notify listeners about icon name change
 }
 
 void FluxboxWindow::restore(WinClient *client, bool remap) {
