@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.8 2003/06/29 08:22:24 rathnor Exp $
+# $Id: fbsetbg,v 1.9 2003/07/02 05:42:47 fluxgen Exp $
 
 #
 # Portability notes:
@@ -150,6 +150,7 @@ case $WPSETTER in
         center='-once -mode center'
         aspect='-once -mode smart -max_grow 100 -max_size 100'
         debugstory="chbg is a nice app. You won't have any problems."
+        ;;
     xsri)
 	full='--center-x --center-y --scale-width=100 --scale-width=100'
 	tile='--tile'
