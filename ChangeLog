@@ -1,6 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/14:
+   * Fixed Shape events, this fixes some decor issues with gkrellm and xmms (Henrik)
+     Window.cc/hh, fluxbox.cc/hh
+   * Fixed crash bug when client died and clientlist wasn't updated (Henrik)
+     WinClient.hh/cc, Screen.cc, Workspace.hh, fluxbox.cc
 *03/05/13:
+   * Fixed transparent slit and minor bug in transparent (Henrik)
+     Slit.cc, Screen.hh/cc, Transparent.cc
    * Fixed Slit redraw bug (Henrik)
      Slit.cc
    * Removed ScreenInfo.hh/cc (Henrik)
