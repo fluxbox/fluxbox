@@ -84,7 +84,8 @@ void Timer::setCommand(RefCount<Command> &cmd) {
 void Timer::start() {
     gettimeofday(&m_start, 0);
 
-    if (! m_timing) {
+    // only add Timers that actually DO something
+    if (! m_timing && *m_handler) {
         m_timing = true;
         addTimer(this); //add us to the list
     }
