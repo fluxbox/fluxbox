@@ -19,18 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.12 2002/05/02 07:08:24 fluxgen Exp $
+// $Id: Tab.hh,v 1.13 2002/05/19 15:35:39 fluxgen Exp $
 
 #ifndef TAB_HH
 #define TAB_HH
 
-#ifndef _IMAGE_HH_
 #include "Image.hh"
-#endif
-
-#ifndef _WINDOW_HH_
 #include "Window.hh"
-#endif
+
 
 //Note: Tab is a friend of FluxboxWindow
 
@@ -42,15 +38,14 @@ public:
 
 	Tab(FluxboxWindow *win, Tab *prev=0, Tab *next=0);
 	~Tab();
-	void draw(bool pressed);
-	inline Tab *next() const { return m_next; }
-	inline Tab *prev() const { return m_prev; }
-	inline Tab *last() { return getLast(this); }
-	inline Tab *first() { return getFirst(this); }
-	
-	inline FluxboxWindow *getWindow() const { return m_win; }
-	inline unsigned int getTabWidth() const { return m_size_w; } 
-	inline unsigned int getTabHeight() const { return m_size_h; }
+
+	void setConfigured(bool value) { m_configured = value; }
+	Tab *next() { return m_next; }
+	Tab *prev() { return m_prev; }
+	Tab *last() { return getLast(this); }
+	Tab *first() { return getFirst(this); }
+	FluxboxWindow *getWindow() { return m_win; }
+
 	void focus();
 	void decorate();
 	void deiconify();
@@ -60,30 +55,45 @@ public:
 	void withdraw();	
 	void stick();
 	void resize();
-	void shade();
-	//position tab to follow (FluxboxWindow *) m_win 
-	void setPosition();	
+	void shade();	
+	void setPosition();	//position tab to follow (FluxboxWindow *) m_win 
 	void moveNext();
 	void movePrev();
+	
 	//event handlers
 	void buttonReleaseEvent(XButtonEvent *be);
 	void buttonPressEvent(XButtonEvent *be);
 	void exposeEvent(XExposeEvent *ee);	
 	void motionNotifyEvent(XMotionEvent *me);
-	static Tab *getFirst(Tab *current);
-	static Tab *getLast(Tab *current);
+	
 	void disconnect();
-
+	
+	//accessors
+	
 	static const char *getTabPlacementString(Tab::Placement placement);
 	static Tab::Placement getTabPlacementNum(const char *string);
 	static const char *getTabAlignmentString(Tab::Alignment alignment);
 	static Tab::Alignment getTabAlignmentNum(const char *string);
-
+	
+	const Tab *next() const { return m_next; }
+	const Tab *prev() const { return m_prev; }
+	const Tab *last() const { return getLast(const_cast<Tab *>(this)); }
+	const Tab *first() const { return getFirst(const_cast<Tab *>(this)); }
+	
+	const FluxboxWindow *getWindow() const { return m_win; }
+	unsigned int getTabWidth() const { return m_size_w; } 
+	unsigned int getTabHeight() const { return m_size_h; }
+	
 	void resizeGroup(void); // used when (un)shading windows
 	void calcIncrease(void);
-	inline bool configured() { return m_configured; }
-	inline void setConfigured(bool value) { m_configured = value; }
+	bool configured() const { return m_configured; }
+	void draw(bool pressed) const;
+
+	static Tab *getFirst(Tab *current);
+	static Tab *getLast(Tab *current);
+
 private:	
+
 	bool m_configured;
 	
 	void insert(Tab *next);	
@@ -124,7 +134,7 @@ private:
 			return (tp==p);
 		}
 		inline bool operator == (const char *str) {
-			if (strcasecmp(string, str)==0)
+			if (strcasecmp(string, str) == 0)
 				return true;
 			return false;
 		}
@@ -134,4 +144,4 @@ private:
 
 };
 
-#endif //_TAB_HH_
+#endif //TAB_HH
