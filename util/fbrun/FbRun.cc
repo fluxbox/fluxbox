@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.7 2002/11/26 17:13:36 fluxgen Exp $
+// $Id: FbRun.cc,v 1.8 2002/11/27 21:56:56 fluxgen Exp $
 
 #include "FbRun.hh"
 
 #include "App.hh"
+#include "EventManager.hh"
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -48,6 +49,7 @@ m_current_history_item(0) {
 
 FbRun::~FbRun() {
 	hide();
+	FbTk::EventManager::instance()->unregisterEventHandler(m_win);
 	XDestroyWindow(m_display, m_win);
 }
 
@@ -70,7 +72,7 @@ void FbRun::run(const std::string &command) {
 		else 
 			cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
 	}
-
+	FbTk::App::instance()->end(); // end application
 	m_end = true; // mark end of processing
 }
 
@@ -192,7 +194,9 @@ void FbRun::createWindow(int x, int y, size_t width, size_t height) {
 		throw string("Failed to create FbRun window!");
 
 	XSelectInput(m_display, m_win, KeyPressMask|ExposureMask);
-
+	
+	FbTk::EventManager::instance()->registerEventHandler(*this, m_win);
+	
 	setNoMaximize();
 
 	m_width = width;
@@ -200,46 +204,41 @@ void FbRun::createWindow(int x, int y, size_t width, size_t height) {
 
 }
 
-void FbRun::handleEvent(XEvent * const xev) {
-	switch (xev->type) {
-		case KeyPress: {
-			KeySym ks;
-			char keychar[1];
-			XLookupString(&xev->xkey, keychar, 1, &ks, 0);
-			if (ks == XK_Escape) {
-				m_end = true;
-				hide();
-				return; // no more processing
-			} else if (ks == XK_Return) {
-				run(m_runtext);
-				m_runtext = ""; // clear text
-			} else if (ks == XK_BackSpace) {
-				if (m_runtext.size() != 0) { // we can't erase what we don't have ;)
-					m_runtext.erase(m_runtext.size()-1);
-					redrawLabel();
-				}
-			} else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
-				m_runtext+=keychar[0]; // append character
-				redrawLabel(); 
-			} else if (IsCursorKey(ks)) {
-				
-				switch (ks) {
-				case XK_Up:
-					prevHistoryItem();
-				break;
-				case XK_Down:
-					nextHistoryItem();
-				break;
-				}
-				redrawLabel();
-			}
-		} break;
-		case Expose:
+void FbRun::keyPressEvent(XKeyEvent &ke) {
+	KeySym ks;
+	char keychar[1];
+	XLookupString(&ke, keychar, 1, &ks, 0);
+	if (ks == XK_Escape) {
+		m_end = true;
+		hide();
+		return; // no more processing
+	} else if (ks == XK_Return) {
+		run(m_runtext);
+		m_runtext = ""; // clear text
+	} else if (ks == XK_BackSpace) {
+		if (m_runtext.size() != 0) { // we can't erase what we don't have ;)
+			m_runtext.erase(m_runtext.size()-1);
 			redrawLabel();
+		}
+	} else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
+		m_runtext+=keychar[0]; // append character
+		redrawLabel(); 
+	} else if (IsCursorKey(ks)) {
+		
+		switch (ks) {
+		case XK_Up:
+			prevHistoryItem();
 		break;
-		default:
+		case XK_Down:
+			nextHistoryItem();
 		break;
+		}
+		redrawLabel();
 	}
+}
+
+void FbRun::exposeEvent(XExposeEvent &ev) {
+	redrawLabel();
 }
 
 void FbRun::getSize(size_t &width, size_t &height) {

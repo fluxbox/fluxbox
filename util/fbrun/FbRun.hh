@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.6 2002/11/15 14:03:14 fluxgen Exp $
+// $Id: FbRun.hh,v 1.7 2002/11/27 21:56:02 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -33,7 +33,7 @@
 /**
 	Creates and managed a run window
 */
-class FbRun: public FbTk::EventHandler<XEvent> {
+class FbRun: public FbTk::EventHandler {
 public:
 	FbRun(int x = 0, int y = 0, size_t width = 200);
 	~FbRun();
@@ -63,6 +63,14 @@ public:
 	  @return true on success, else false
 	*/
 	bool loadHistory(const char *filename);
+	/**
+		@name events
+	*/
+	///@{
+	void exposeEvent(XExposeEvent &ev);
+	void keyPressEvent(XKeyEvent &ev);
+	///@}
+	
 private:
 	void nextHistoryItem();
 	void prevHistoryItem();
