@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.2 2003/04/20 14:47:35 fluxgen Exp $
+// $Id: Transparent.cc,v 1.3 2003/04/26 12:44:24 fluxgen Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
@@ -173,7 +173,9 @@ void Transparent::setSource(Drawable source, int screen_num) {
 #ifdef HAVE_XRENDER
     if (m_source == source)
         return;
-
+    // save old alpha value so we can recreate new later
+    // with the same value
+    unsigned char old_alpha = m_alpha;
     if (m_alpha_pic != 0)
         freeAlpha();
 
@@ -185,7 +187,6 @@ void Transparent::setSource(Drawable source, int screen_num) {
     }
 
     m_source = source;
-    allocAlpha(m_alpha);
 
     // create new source pic if we have a valid source drawable
     if (m_source != 0) {
@@ -198,6 +199,10 @@ void Transparent::setSource(Drawable source, int screen_num) {
         m_src_pic = XRenderCreatePicture(disp, m_source, format, 
                                          0, 0);    
     }
+
+    // recreate new alpha
+    allocAlpha(old_alpha);
+
 #endif // HAVE_XRENDER
 }
 
