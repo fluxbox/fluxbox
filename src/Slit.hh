@@ -25,85 +25,81 @@
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
 
+#include "Basemenu.hh"
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-// forward declaration
-class Slit;
-class Slitmenu;
-
-#include "Basemenu.hh"
-
 #include <list>
 #include <string>
+#include <memory>
+
+// forward declaration
+class Slit;
 
 class Slitmenu : public Basemenu {
 public:
 	explicit Slitmenu(Slit &theslist);
 	virtual ~Slitmenu();
 
-	inline Basemenu *getDirectionmenu() { return directionmenu; }
-	inline Basemenu *getPlacementmenu() { return placementmenu; }
+	const Basemenu &getDirectionmenu() const { return m_directionmenu; }
+	const Basemenu &getPlacementmenu() const { return m_placementmenu; }
+
 #ifdef XINERAMA
-	inline Basemenu *getHeadmenu() { return headmenu; }
+	const Basemenu *getHeadmenu() const { return m_headmenu.get(); }
 #endif // XINERAMA
 
 	void reconfigure();
 
+protected:
+	virtual void itemSelected(int button, unsigned int index);
+	virtual void internal_hide();
+
 private: 
 	class Directionmenu : public Basemenu {
-	private:
-		Slitmenu *slitmenu;
+	public:
+		Directionmenu(Slitmenu &sm);
 
 	protected:
 		virtual void itemSelected(int button, unsigned int index);
 
-	public:
-		Directionmenu(Slitmenu *);
+	private:
+		Slitmenu &slitmenu;
 	};
 
 	class Placementmenu : public Basemenu {
-	private:
-		Slitmenu *slitmenu;
+	public:
+		Placementmenu(Slitmenu &sm);
 
 	protected: 
 		virtual void itemSelected(int button, unsigned int index);
 
-	public:
-		Placementmenu(Slitmenu *);
+	private:
+		Slitmenu &slitmenu;
 	};
+
+	Slit &slit;
 
 #ifdef XINERAMA
 	class Headmenu : public Basemenu {
 	public:
-		Headmenu(Slitmenu *);
-	private:
-		Slitmenu *slitmenu;
-
+		Headmenu(Slitmenu &sm);
 	protected: 
 		virtual void itemSelected(int button, unsigned int index);
-
+	private:
+		Slitmenu &slitmenu;
 	};
+	friend class Headmenu;
+	std::auto_ptr<Headmenu> m_headmenu;
 #endif // XINERAMA
 
-	Directionmenu *directionmenu;
-	Placementmenu *placementmenu;
-#ifdef XINERAMA
-	Headmenu *headmenu;
-#endif // XINERAMA
-	Slit &slit;
+	Placementmenu m_placementmenu;
+	Directionmenu m_directionmenu;
+
+
 
 	friend class Directionmenu;
 	friend class Placementmenu;
-#ifdef XINERAMA
-	friend class Headmenu;
-#endif // XINERAMA
-	friend class Slit;
-
-
-protected:
-	virtual void itemSelected(int button, unsigned int index);
-	virtual void internal_hide();
 };
 
 
@@ -125,14 +121,16 @@ public:
 
 	inline unsigned int width() const { return frame.width; }
 	inline unsigned int height() const { return frame.height; }
-
+	void setOnTop(bool val);
+	void setAutoHide(bool val);
 	void addClient(Window clientwin);
 	void removeClient(Window clientwin, bool = true);
 	void reconfigure();
 	void reposition();
 	void shutdown();
 	void saveClientList();
-
+	BScreen *screen() { return m_screen; }
+	const BScreen *screen() const { return m_screen; }
 	/**
 		@name eventhandlers
 	*/
@@ -182,10 +180,7 @@ private:
 	
 	bool on_top, hidden, do_auto_hide;
 
-	Display *display; ///< display connection
-
-	Fluxbox *fluxbox; ///< obsolete
-	BScreen *screen;
+	BScreen *m_screen;
 	BTimer timer;
 
 	typedef std::list<SlitClient *> SlitClients;
@@ -202,12 +197,6 @@ private:
 		unsigned int width, height;
 	} frame;
 
-	friend class Slitmenu;
-	friend class Slitmenu::Directionmenu;
-	friend class Slitmenu::Placementmenu;
-	#ifdef XINERAMA
-	friend class Slitmenu::Headmenu;
-	#endif // XINERAMA
 };
 
 
