@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.38 2002/07/23 13:47:05 fluxgen Exp $
+// $Id: Screen.hh,v 1.39 2002/07/23 18:37:05 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -89,7 +89,7 @@ public:
 	inline bool doFocusLast(void) const { return *resource.focus_last; }
 	inline bool doShowWindowPos(void) const { return *resource.show_window_pos; }
 
-	inline const GC &getOpGC() const { return theme->getOpGC(); }
+	inline GC getOpGC() const { return theme->getOpGC(); }
 	
 	inline const FbTk::Color *getBorderColor(void) const { return &theme->getBorderColor(); }
 	inline BImageControl *getImageControl(void) { return image_control; }
@@ -196,7 +196,7 @@ public:
 	inline Theme::WindowStyle *getWindowStyle(void) { return &theme->getWindowStyle(); } 
 	inline Theme::MenuStyle *getMenuStyle(void) { return &theme->getMenuStyle(); } 
 	inline Theme::ToolbarStyle *getToolbarStyle(void) { return &theme->getToolbarStyle(); } 
-
+	const Theme *getTheme() const { return theme; }
 	FluxboxWindow *getIcon(unsigned int index);
 
 	int addWorkspace(void);
