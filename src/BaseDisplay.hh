@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.30 2002/10/25 20:52:42 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.31 2002/11/15 11:57:33 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -60,7 +60,7 @@ public:
 	static BaseDisplay *instance();
 
 	/**
-		obsolete
+		obsolete by FluxboxWindow
 		@see FluxboxWindow
 	*/
 	enum Attrib {
