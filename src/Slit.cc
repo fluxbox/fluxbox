@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.43 2003/05/01 15:03:36 rathnor Exp $
+// $Id: Slit.cc,v 1.44 2003/05/01 15:35:24 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -1007,14 +1007,13 @@ void Slit::leaveNotifyEvent(XCrossingEvent &ev) {
     if (hidden) {
         if (timer.isTiming()) 
             timer.stop();
-    } else if (! slitmenu.isVisible()) {
-        if (! timer.isTiming()) 
-            timer.start();
     } else {
-        // the menu is open, keep it firing until it closes
-        timer.fireOnce(false);
-        if (! timer.isTiming()) 
+        if (! timer.isTiming()) {
+            // the menu is open, keep it firing until it closes
+            if (slitmenu.isVisible()) 
+                timer.fireOnce(false);
             timer.start();
+        }
     }
 
 }
@@ -1057,10 +1056,14 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
 
 
 void Slit::timeout() {
-    if (!slitmenu.isVisible()) {
-        timer.fireOnce(true);
+    if (do_auto_hide) {
+        if (!slitmenu.isVisible()) {
+            timer.fireOnce(true);
+        } else 
+            return;
     } else 
-        return;
+        if (!hidden) return;
+        
     hidden = ! hidden; // toggle hidden state
     if (hidden)
         frame.window.move(frame.x_hidden, frame.y_hidden);
@@ -1129,6 +1132,12 @@ void Slit::saveClientList() {
 void Slit::setAutoHide(bool val) {
     do_auto_hide = val;
     screen().saveSlitAutoHide(val);
+    if (do_auto_hide)
+        if (! timer.isTiming()) {
+            if (slitmenu.isVisible())
+                timer.fireOnce(false);
+            timer.start();
+        }
 }
 
 void Slit::setupMenu() {
