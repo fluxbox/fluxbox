@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.23 2002/02/11 11:52:07 fluxgen Exp $
+// $Id: Screen.cc,v 1.24 2002/02/17 18:56:14 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -224,6 +224,9 @@ toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altsc
 BScreen::BScreen(ResourceManager &rm, Fluxbox *b, 
 	const string &screenname, const string &altscreenname,
 	int scrn) : ScreenInfo(b, scrn),
+#ifdef GNOME
+gnome_win(None),
+#endif
 theme(0),
 resource(rm, screenname, altscreenname)
 {
@@ -231,7 +234,7 @@ resource(rm, screenname, altscreenname)
 
 	event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
-		ButtonPressMask | ButtonReleaseMask;//| SubstructureNotifyMask;
+		ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
 
 	XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), event_mask);
@@ -487,6 +490,9 @@ namespace {
 }
 
 BScreen::~BScreen(void) {
+	#ifdef GNOME
+	XDestroyWindow(getBaseDisplay()->getXDisplay(), gnome_win);
+	#endif
 	if (! managed) return;
 
 	if (geom_pixmap != None)
@@ -675,7 +681,7 @@ void BScreen::updateWorkspaceNamesAtom(void) {
 	
 	for (int i = 0; i < number_of_desks; i++)
 		delete names[i];			
-  	
+
 #endif
 
 }
@@ -1055,31 +1061,38 @@ void BScreen::nextFocus(void) {
 	Bool have_focused = False;
 	int focused_window_number = -1;
 	FluxboxWindow *next;
-
-	if (fluxbox->getFocusedWindow())
+	const int num_windows = getCurrentWorkspace()->getCount();
+	
+	if (fluxbox->getFocusedWindow()) {
 		if (fluxbox->getFocusedWindow()->getScreen()->getScreenNumber() ==
 			getScreenNumber()) {
 			have_focused = True;
 			focused_window_number = fluxbox->getFocusedWindow()->getWindowNumber();
 		}
+	}
 
-	if ((getCurrentWorkspace()->getCount() > 1) && have_focused) {
+	if (num_windows > 1 && have_focused) {
 		int next_window_number = focused_window_number;
+	
+		//try to set next window to focus		
 		do {
-			if ((++next_window_number) >= getCurrentWorkspace()->getCount())
-				next_window_number = 0;
-
+			if ((++next_window_number) >= num_windows)
+				next_window_number = 0;	
 			next = getCurrentWorkspace()->getWindow(next_window_number);
-		} while ((! next->setInputFocus()) && (next_window_number !=
-						 focused_window_number));
+		} while ((!next->setInputFocus()) && next_window_number !=
+				 focused_window_number);
 
-		if (next_window_number != focused_window_number)
+		if (next_window_number != focused_window_number) {
+			next->setInputFocus();
 			getCurrentWorkspace()->raiseWindow(next);
-	} else if (getCurrentWorkspace()->getCount() >= 1) {
-		next = current_workspace->getWindow(0);
+		}
 
-		current_workspace->raiseWindow(next);
-		next->setInputFocus();
+	} else if (num_windows >= 1) {
+		next = current_workspace->getWindow(0);
+	 	
+		//don't raise next window if input focus fails
+		if (next->setInputFocus())
+			current_workspace->raiseWindow(next);
 	}
 }
 
@@ -1100,7 +1113,7 @@ void BScreen::prevFocus(void) {
 		int prev_window_number = focused_window_number;
 		do {
 			if ((--prev_window_number) < 0)
-	prev_window_number = getCurrentWorkspace()->getCount() - 1;
+				prev_window_number = getCurrentWorkspace()->getCount() - 1;
 
 			prev = getCurrentWorkspace()->getWindow(prev_window_number);
 		} while ((! prev->setInputFocus()) && (prev_window_number !=
@@ -1135,8 +1148,6 @@ void BScreen::raiseFocus(void) {
 			raiseWindow(fluxbox->getFocusedWindow());
 }
 
-
-// XXX - no good parsing here
 void BScreen::InitMenu(void) {
 	I18n *i18n = I18n::instance();
 	
@@ -1462,91 +1473,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 				 		" error, no directory defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else { // else 'y'
-						char *stylesdir;
-						const char *directory = ((newmenu) ? str_cmd.c_str() : str_label.c_str());
-						
-						// perform shell style ~ home directory expansion
-						stylesdir = StringUtil::expandFilename(directory);
-						
-						struct stat statbuf;
-
-						if (! stat(stylesdir, &statbuf)) { // stat
-							if (S_ISDIR(statbuf.st_mode)) { // dir
-								Rootmenu *stylesmenu;
-								if (newmenu)
-									stylesmenu = new Rootmenu(this);
-								else
-									stylesmenu = menu;
-
-								DIR *d = opendir(stylesdir);
-								int entries = 0;
-								struct dirent *p;
-
-								// get the total number of directory entries
-								while ((p = readdir(d))) entries++;
-								rewinddir(d);
-
-								char **ls = new char* [entries];
-								int index = 0;
-								while ((p = readdir(d)))
-									ls[index++] = StringUtil::strdup(p->d_name);
-
-								qsort(ls, entries, sizeof(char *), dcmp);
-
-								int n, slen = strlen(stylesdir);
-								for (n = 0; n < entries; n++) { // for
-									int nlen = strlen(ls[n]);
-									char style[MAXPATHLEN + 1];
-
-									strncpy(style, stylesdir, slen);
-									*(style + slen) = '/';
-									strncpy(style + slen + 1, ls[n], nlen + 1);
-
-									if ((! stat(style, &statbuf)) && S_ISREG(statbuf.st_mode))
-										stylesmenu->insert(ls[n], BScreen::SETSTYLE, style);
-									delete [] ls[n];
-								} // end for 
-
-								delete [] ls;
-
-								stylesmenu->update();
-
-								if (newmenu) {
-									stylesmenu->setLabel(str_label.c_str());
-									menu->insert(str_label.c_str(), stylesmenu);
-									rootmenuList.push_back(stylesmenu);
-								}
-
-								fluxbox->saveMenuFilename(stylesdir);
-							} else { // dir
-								fprintf(stderr,
-								i18n->
-								getMessage(
-							#ifdef NLS
-								ScreenSet, ScreenSTYLESDIRErrorNotDir,
-							#else // !NLS
-					 			0, 0,
-							#endif // NLS	
-					 			"BScreen::parseMenuFile:"
-					 			" [stylesdir/stylesmenu] error, %s is not a"
-					 			" directory\n"), stylesdir);
-								cerr<<"Row: "<<row<<endl;
-							} // end of 'dir'
-						} else { // stat
-							fprintf(stderr,
-							i18n->
-							getMessage(
-						#ifdef NLS
-				 			ScreenSet, ScreenSTYLESDIRErrorNoExist,
-						#else // !NLS
-				 			0, 0,
-						#endif // NLS
-				 			"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-				 			" error, %s does not exist\n"), stylesdir);
-							cerr<<"Row: "<<row<<endl;
-						} // end of 'stat'
-						
-						delete stylesdir;
+						createStyleMenu(menu, newmenu, str_label.c_str(), (newmenu) ? str_cmd.c_str() : str_label.c_str());						
 					} // end of else 'y' 
 			 	} // end of stylesdir
 				else if (str_key == "workspaces") {
@@ -1571,6 +1498,87 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 	return ((menu->getCount() == 0) ? true : false);
 }
 
+void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory) {
+	I18n *i18n = I18n::instance();
+	
+	// perform shell style ~ home directory expansion
+	auto_ptr<char> stylesdir(StringUtil::expandFilename(directory));
+						
+	struct stat statbuf;
+
+	if (! stat(stylesdir.get(), &statbuf)) { // stat
+		if (S_ISDIR(statbuf.st_mode)) { // dir
+			Rootmenu *stylesmenu;
+			if (newmenu)
+				stylesmenu = new Rootmenu(this);
+			else
+				stylesmenu = menu;
+
+			DIR *d = opendir(stylesdir.get());
+			int entries = 0;
+			struct dirent *p;
+
+			// get the total number of directory entries
+			while ((p = readdir(d))) entries++;
+		
+			rewinddir(d);
+
+			char **ls = new char* [entries];
+			int index = 0;
+			while ((p = readdir(d)))
+				ls[index++] = StringUtil::strdup(p->d_name);
+
+			qsort(ls, entries, sizeof(char *), dcmp);
+
+			int n, slen = strlen(stylesdir.get());
+			for (n = 0; n < entries; n++) { // for
+				int nlen = strlen(ls[n]);
+				char style[MAXPATHLEN + 1];
+				strncpy(style, stylesdir.get(), slen);
+				*(style + slen) = '/';
+				strncpy(style + slen + 1, ls[n], nlen + 1);
+				if ((! stat(style, &statbuf)) && S_ISREG(statbuf.st_mode))
+						stylesmenu->insert(ls[n], BScreen::SETSTYLE, style);
+					delete [] ls[n];
+			} 
+
+			delete [] ls;
+
+			stylesmenu->update();
+			if (newmenu) {
+				stylesmenu->setLabel(label);
+				menu->insert(label, stylesmenu);
+				rootmenuList.push_back(stylesmenu);
+			}
+
+			fluxbox->saveMenuFilename(stylesdir.get());
+		} else { // dir
+			fprintf(stderr,
+			i18n->
+			getMessage(
+				#ifdef NLS
+				ScreenSet, ScreenSTYLESDIRErrorNotDir,
+				#else // !NLS
+				0, 0,
+				#endif // NLS	
+				"BScreen::parseMenuFile:"
+				" [stylesdir/stylesmenu] error, %s is not a"
+				" directory\n"), stylesdir.get());
+		} // end of 'dir'
+	} else { // stat
+		fprintf(stderr,
+		i18n->
+		getMessage(
+		#ifdef NLS
+			ScreenSet, ScreenSTYLESDIRErrorNoExist,
+		#else // !NLS
+			0, 0,
+		#endif // NLS
+		"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
+		" error, %s does not exist\n"), stylesdir.get());
+	} // end of 'stat'
+
+}
 
 void BScreen::shutdown(void) {
 	fluxbox->grab();
@@ -1727,7 +1735,7 @@ void BScreen::leftWorkspace(void) {
 void BScreen::initGnomeAtoms(void) {
 
 	/* create the GNOME window */
-	Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
+	gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
 
 	/* supported WM check */
@@ -1738,14 +1746,16 @@ void BScreen::initGnomeAtoms(void) {
 	XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
 		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-	 
+
 	Atom gnomeatomlist[] = {
 		getBaseDisplay()->getGnomeWorkspaceAtom(),
 		getBaseDisplay()->getGnomeWorkspaceCountAtom(),
 		getBaseDisplay()->getGnomeStateAtom(),
+		getBaseDisplay()->getGnomeWorkspaceNamesAtom(),
 		getBaseDisplay()->getGnomeHintsAtom()
 	};
 
+	//list atoms that we support
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(), 
 		getBaseDisplay()->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
 		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
