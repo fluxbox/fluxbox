@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.13 2003/07/29 09:29:45 fluxgen Exp $
+# $Id: fbsetbg,v 1.14 2003/08/04 16:49:25 fluxgen Exp $
 
 #
 # Portability notes:
@@ -141,9 +141,13 @@ for wpsetter in $wpsetters; do
     fi
 done
 
-standardrant="$WPSETTER sets the 'wrong' wallpaper. Transparant apps like aterm and
-xchat won't work right with it. Consider using wmsetbg (from windowmaker)
+standardrant=\
+"$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and apps like aterm
+and xchat won't work right with it. Consider using chbg, wmsetbg (from windowmaker)
 or Esetroot (from Eterm)"
+
+standardok=\
+"$WPSETTER is a nice wallpapersetter. You won't have any problems."
 
 case $WPSETTER in
     chbg)
@@ -151,7 +155,7 @@ case $WPSETTER in
         tile='-once -mode tile'
         center='-once -mode center'
         aspect='-once -mode smart -max_grow 100 -max_size 100'
-        debugstory="chbg is a nice app. You won't have any problems."
+        debugstory=$standardok
         ;;
     xsri)
         full='--center-x --center-y --scale-width=100 --scale-width=100'
@@ -172,14 +176,14 @@ case $WPSETTER in
         tile=''
         center='-c'
         aspect='-fit'
-        debugstory="Esetroot is a nice app. You won't have any problems."
+        debugstory=$standardok
         ;;
     wmsetbg)
         full='-s -S'
         tile='-t'
         center='-b black -e'
         aspect='-b black -a'
-        debugstory="wmsetbg is a nice app. You won't have any problems."
+        debugstory=$standardok
         ;;
     xsetbg)
         tile='-border black'
@@ -218,7 +222,8 @@ case $WPSETTER in
 errormessages with aterm. Don't use it unless you have to."
         ;;
     '')
-        message "I can't find an app to set the wallpaper with. You can install one in
+        message \
+"I can't find an app to set the wallpaper with. You can install one in
 many many ways but I will give you some simple advice: install Eterm and
 you're set. Eterm provides Esetroot and thats a great wallpaper setter. I
 recommend you install the package provided by your distro."
