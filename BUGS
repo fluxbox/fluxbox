@@ -2,9 +2,11 @@ Known bugs and missing features that will be fixed in future version:
 
 bugs:
 
-* Window handle is invisible sometimes
-* It maximize over everything
-* Some menus doesn't close when you click on items
+* Window handle is invisible sometimes.
+* Disabling full-maximize doesn't work.
+* Some menus don't close when you click on items.
+* Transparancy for the slit does not always work right.
+* After startup the font of the toolbar is to big; reload config works around this.
 * Transient windows seem to not have a X border - is this right?
 * saving of number of workspaces on restart
 
