@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.131 2003/05/10 14:32:35 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.132 2003/05/10 14:43:45 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -539,7 +539,7 @@ Fluxbox::~Fluxbox() {
 }
 
 void Fluxbox::eventLoop() {
-    while (m_shutdown) {
+    while (!m_shutdown) {
         if (XPending(display())) {
             XEvent e;
             XNextEvent(display(), &e);
