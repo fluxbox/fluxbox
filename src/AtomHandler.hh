@@ -1,6 +1,6 @@
 // AtomHandler for fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at fluxbox.org)
-//
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//                    2003 Simon Bowden    (rathnor at users.sourceforge.net)
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.10 2003/07/04 14:06:20 rathnor Exp $
+// $Id: AtomHandler.hh,v 1.11 2003/07/10 11:23:35 fluxgen Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
