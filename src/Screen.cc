@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.154 2003/05/11 13:36:10 fluxgen Exp $
+// $Id: Screen.cc,v 1.155 2003/05/11 15:26:34 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -981,7 +981,7 @@ void BScreen::removeClient(WinClient &client) {
         if (client.transientFor() && client.transientFor()->fbwindow())
             client.transientFor()->fbwindow()->setInputFocus();
         else
-            Fluxbox::instance()->revertFocus(&focused->screen());
+            Fluxbox::instance()->revertFocus(focused->screen());
     }
 }
 
@@ -1092,7 +1092,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     if (focused && (focused->isStuck() || focused->isMoving())) {
         focused->setInputFocus();
     } else
-        Fluxbox::instance()->revertFocus(this);
+        Fluxbox::instance()->revertFocus(*this);
 
     if (focused && focused->isMoving()) {
         focused->resumeMoving();
