@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.71 2002/08/18 11:01:52 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.72 2002/08/30 13:11:47 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -339,8 +339,7 @@ key(0)
 
 	//singleton pointer
 	singleton = this;
-	BaseDisplay::GrabGuard gg(*this);
-	gg.grab();
+	grab();
 	
 	setupConfigFiles();
 	

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.27 2002/08/30 12:58:08 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.28 2002/08/30 13:09:24 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -108,17 +108,6 @@ public:
 	void grab();
 	void ungrab();
 	void eventLoop();
-
-	class GrabGuard:private NotCopyable
-	{
-		public:
-		GrabGuard(BaseDisplay &bd):m_bd(bd) { }
-		~GrabGuard() { m_bd.ungrab(); }
-		inline void grab() { m_bd.grab(); }		
-		inline void ungrab() { m_bd.ungrab(); }		
-		private:
-		BaseDisplay &m_bd;
-	};
 
 private:
 

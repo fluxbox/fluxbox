@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.71 2002/08/28 19:47:27 fluxgen Exp $
+// $Id: Window.cc,v 1.72 2002/08/30 13:08:35 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -86,7 +86,6 @@ tab(0)
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	
 	blackbox_attrib.workspace = workspace_number = window_number = -1;
 
@@ -153,6 +152,7 @@ tab(0)
 	XWindowAttributes wattrib;
 	if ((! XGetWindowAttributes(display, client.window, &wattrib)) ||
 			(! wattrib.screen) || wattrib.override_redirect) {
+		fluxbox->ungrab();
 		return;
 	}
 
@@ -161,8 +161,10 @@ tab(0)
 	else
 		screen = fluxbox->searchScreen(RootWindowOfScreen(wattrib.screen));
 
-	if (!screen)
+	if (!screen) {
+		fluxbox->ungrab();
 		return;
+	}
 
 	image_ctrl = screen->getImageControl();
 
@@ -190,6 +192,7 @@ tab(0)
 
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
+		fluxbox->ungrab();
 		return;
 	}
 #endif // SLIT
@@ -329,6 +332,7 @@ tab(0)
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
 #endif // DEBUG
 
+	fluxbox->ungrab();
 }
 
 
@@ -1776,22 +1780,24 @@ bool FluxboxWindow::setInputFocus() {
 	}
 
 	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	if (! validateClient())
 		return false;
 
 	bool ret = false;
 
-	if (client.transient && modal)
+	if (client.transient && modal) {
+		fluxbox->ungrab();
 		return client.transient->setInputFocus();
-	else {
+	} else {
 		if (! focused) {
 			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
 				XSetInputFocus(display, client.window,
 					RevertToPointerRoot, CurrentTime);
-			} else
+			} else {
+				fluxbox->ungrab();
 				return false;
+			}
 
 			fluxbox->setFocusedWindow(this);
 			
@@ -2410,7 +2416,6 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
 void FluxboxWindow::installColormap(bool install) {
 	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	if (! validateClient()) return;
 
@@ -2731,7 +2736,6 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
 					client.window);
 #endif // DEBUG
 	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	if (! validateClient())
 		return;
@@ -2806,7 +2810,6 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 
 	if ((ne->window == client.window) && (! ne->override_redirect) && (visible)) {
 		Fluxbox *fluxbox = Fluxbox::instance();
-		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
 		if (! validateClient())
 			return;
@@ -2997,7 +3000,6 @@ void FluxboxWindow::exposeEvent(XExposeEvent *ee) {
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent *cr) {
 	if (cr->window == client.window) {
 		Fluxbox *fluxbox = Fluxbox::instance();
-		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
 		if (! validateClient())
 			return;
@@ -3061,7 +3063,6 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent *cr) {
 
 void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	
 	if (! validateClient())	
@@ -3182,7 +3183,6 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent *re) {
 	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 
 	if (! validateClient())
@@ -3310,7 +3310,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 			if (screen->doShowWindowPos())
 				screen->showPosition(dx, dy);
-        }
+		}
 	} else if (functions.resize &&
 			(((me->state & Button1Mask) && (me->window == frame.right_grip ||
 			 me->window == frame.left_grip)) ||
@@ -3358,7 +3358,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 #ifdef		SHAPE
 void FluxboxWindow::shapeEvent(XShapeEvent *) {
 	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
 	
 	if (fluxbox->hasShapeExtensions()) {
 		if (frame.shaped) {			
