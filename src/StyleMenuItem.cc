@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StyleMenuItem.cc,v 1.1 2004/05/02 20:54:16 fluxgen Exp $
+// $Id: StyleMenuItem.cc,v 1.2 2004/05/03 21:37:38 fluxgen Exp $
 
 #include "StyleMenuItem.hh"
 
@@ -31,8 +31,7 @@
 
 StyleMenuItem::StyleMenuItem(const std::string &label, const std::string &filename):
     FbTk::MenuItem(label.c_str()), 
-    m_filename(FbTk::StringUtil::
-               expandFilename(filename)) {
+    m_filename(filename) {
     // perform shell style ~ home directory expansion
     // and insert style      
     FbTk::RefCount<FbTk::Command> 
