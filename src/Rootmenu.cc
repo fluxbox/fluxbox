@@ -19,8 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//Use GNU extensions
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -97,14 +96,14 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 			case BScreen::SETSTYLE:
 				if (item->exec().size()) {
 					fluxbox->saveStyleFilename(item->exec().c_str());
-					fluxbox->reconfigureTabs(); //TODO
+					fluxbox->reconfigureTabs();
 				}
-
+				fluxbox->reconfigure();
+				break;
 			case BScreen::RECONFIGURE:
 				fluxbox->reconfigure();
 				return;
 			}
-
 			if (! (screen->getRootmenu()->isTorn() || isTorn()) &&
 					item->function() != BScreen::RECONFIGURE &&
 					item->function() != BScreen::SETSTYLE)
