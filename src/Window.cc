@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.134 2003/04/15 12:31:53 fluxgen Exp $
+// $Id: Window.cc,v 1.135 2003/04/15 14:40:24 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -238,7 +238,7 @@ FluxboxWindow::~FluxboxWindow() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<")"<<endl;
 #endif // DEBUG
-    if (moving || resizing) {
+    if (moving || resizing || m_attaching_tab) {
         screen.hideGeometry();
         XUngrabPointer(display, CurrentTime);
     }
@@ -266,21 +266,24 @@ FluxboxWindow::~FluxboxWindow() {
             detachClient(*m_clientlist.back());
         }
     }
-
+    Fluxbox::instance()->removeWindowSearch(m_frame.window().window());
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
 #endif // DEBUG
 }
 
 
-void FluxboxWindow::init() {
+void FluxboxWindow::init() { 
+    m_attaching_tab = 0;
     assert(m_client);
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
     m_clientlist.push_back(m_client);
 #ifdef DEBUG
-    cerr<<__FILE__<<": FluxboxWindow::init(this="<<this<<", client="<<hex<<m_client->window()<<dec<<")"<<endl;
-#endif // DEBUG
+    cerr<<__FILE__<<": FluxboxWindow::init(this="<<this<<", client="<<hex<<
+        m_client->window()<<", frame = "<<m_frame.window().window()<<dec<<")"<<endl;
+
+#endif // DEBUG    
     TextButton *btn =  new TextButton(m_frame.label(), 
                                       m_frame.theme().font(),
                                       m_client->title());
@@ -360,6 +363,8 @@ void FluxboxWindow::init() {
 
 
     Fluxbox *fluxbox = Fluxbox::instance();
+
+    fluxbox->saveWindowSearch(m_frame.window().window(), this);
 
     timer.setTimeout(fluxbox->getAutoRaiseDelay());
     timer.fireOnce(true);
@@ -2187,15 +2192,17 @@ void FluxboxWindow::shapeEvent(XShapeEvent *) { }
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
 
-
     if (isMoving())
         stopMoving();		
     else if (isResizing())
         stopResizing();
+    else if (m_attaching_tab)
+        attachTo(re.x_root, re.y_root);
     else if (re.window == m_frame.window()) {
         if (re.button == 2 && re.state == Mod1Mask)
             XUngrabPointer(display, CurrentTime);
-        m_frame.buttonReleaseEvent(re);
+        else 
+            m_frame.buttonReleaseEvent(re);
     } else {
         m_frame.buttonReleaseEvent(re);
     }
@@ -2208,7 +2215,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     }
     bool inside_titlebar = (m_frame.titlebar() == me.window || m_frame.label() == me.window ||
                             m_frame.handle() == me.window || m_frame.window() == me.window);
-
+    WinClient *client = 0;
     if (!inside_titlebar) {
         // determine if we're in titlebar
         Client2ButtonMap::iterator it = m_labelbuttons.begin();
@@ -2216,6 +2223,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         for (; it != it_end; ++it) {
             if ((*it).second->window() == me.window) {
                 inside_titlebar = true;
+                client = (*it).first;
                 break;
             }
         }
@@ -2336,6 +2344,74 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             if (screen.doShowWindowPos())
                 screen.showGeometry(gx, gy);
+        }
+    } else if ((me.state & Button2Mask) && inside_titlebar && client != 0) {
+
+        //
+        // drag'n'drop code for tabs
+        //
+        if (m_attaching_tab == 0) {
+            cerr<<"starting m_attching_tab for  this="<<this<<endl;
+            // start drag'n'drop for tab
+            m_attaching_tab = client;
+
+            XGrabPointer(display, me.window, False, Button2MotionMask |
+                         ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+                         None, Fluxbox::instance()->getMoveCursor(), CurrentTime);
+            last_move_x = me.x_root - 1;
+            last_move_y = me.y_root - 1;
+        
+            XDrawRectangle(display, getScreen().getRootWindow(), 
+                           getScreen().getOpGC(),
+                           last_move_x, last_move_y,
+                           m_labelbuttons[client]->width(), 
+                           m_labelbuttons[client]->height());
+        } else { 
+            // we already grabed and started to drag'n'drop tab
+            // so we update drag'n'drop-rectangle
+            int dx = me.x_root - 1, dy = me.y_root - 1;
+
+            dx -= getScreen().getBorderWidth();
+            dy -= getScreen().getBorderWidth();
+
+            if (getScreen().getEdgeSnapThreshold()) {
+                int drx = getScreen().getWidth() - (dx + 1);
+
+                if (dx > 0 && dx < drx && dx < getScreen().getEdgeSnapThreshold()) 
+                    dx = 0;
+                else if (drx > 0 && drx < getScreen().getEdgeSnapThreshold())
+                    dx = getScreen().getWidth() - 1;
+
+                int dty, dby;
+		
+                dty = dy;
+                dby = -dy - 1;
+
+                if (dy > 0 && dty < getScreen().getEdgeSnapThreshold())
+                    dy = 0;
+                else if (dby > 0 && dby < getScreen().getEdgeSnapThreshold())
+                    dy = - 1;
+		
+            }
+		
+            //erase rectangle
+            XDrawRectangle(display, getScreen().getRootWindow(),
+                           getScreen().getOpGC(),
+                           last_move_x, last_move_y, 
+                           m_labelbuttons[client]->width(), 
+                           m_labelbuttons[client]->height());
+
+
+            //redraw rectangle at new pos
+            last_move_x = dx;
+            last_move_y = dy;			
+            XDrawRectangle(display, getScreen().getRootWindow(), 
+                           getScreen().getOpGC(),
+                           last_move_x, last_move_y,
+                           m_labelbuttons[client]->width(), 
+                           m_labelbuttons[client]->height());
+
+			
         }
     }
 
@@ -2590,6 +2666,39 @@ void FluxboxWindow::stopResizing(Window win) {
                last_resize_h);
 	
     XUngrabPointer(display, CurrentTime);
+}
+
+void FluxboxWindow::attachTo(int x, int y) {
+    if (m_attaching_tab == 0)
+        return;
+
+    XUngrabPointer(display, CurrentTime);
+
+
+    XDrawRectangle(display, getScreen().getRootWindow(),
+                   getScreen().getOpGC(),
+                   last_move_x, last_move_y, 
+                   m_labelbuttons[m_attaching_tab]->width(), 
+                   m_labelbuttons[m_attaching_tab]->height());
+            
+    int dest_x = 0, dest_y = 0;
+    Window child = 0;
+
+    if (XTranslateCoordinates(display, getScreen().getRootWindow(), 
+                              getScreen().getRootWindow(),
+                              x, y, &dest_x, &dest_y, &child)) {        
+        // search for a fluxboxwindow 
+        FluxboxWindow *attach_to_win = Fluxbox::instance()->searchWindow(child);
+
+        if (attach_to_win != this &&
+            attach_to_win != 0) {
+            attach_to_win->attachClient(*m_attaching_tab);
+        } else if (attach_to_win != this) { // disconnect client if we didn't drop on a window
+            detachClient(*m_attaching_tab);
+        }
+                    
+    }
+    m_attaching_tab = 0;
 }
 
 //finds and redraw the icon label

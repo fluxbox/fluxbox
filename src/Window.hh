@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.54 2003/04/14 14:45:14 fluxgen Exp $
+// $Id: Window.hh,v 1.55 2003/04/15 14:39:15 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -318,7 +318,9 @@ private:
     void startResizing(Window win, int x, int y, bool left); 
     void stopResizing(Window win=0);
     void updateIcon();
-	
+    /// try to attach current attaching client to a window at pos x, y
+    void attachTo(int x, int y);
+
     void updateTransientInfo();
 
     bool getState();
@@ -355,6 +357,7 @@ private:
     //Window state
     bool moving, resizing, shaded, maximized, visible, iconic, transient,
         focused, stuck, modal, send_focus_message, m_managed;
+    WinClient *m_attaching_tab;
 
     BScreen &screen; /// screen on which this window exist
     FbTk::Timer timer;
