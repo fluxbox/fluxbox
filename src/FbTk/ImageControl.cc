@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.14 2004/08/31 15:26:39 rathnor Exp $
+// $Id: ImageControl.cc,v 1.15 2004/09/09 21:13:10 akir Exp $
 
 #include "ImageControl.hh"
 
@@ -139,13 +139,15 @@ ImageControl::~ImageControl() {
         delete [] grad_ybuffer;
     }
 
+    Display *disp = FbTk::App::instance()->display();
+    
     if (m_colors) {
         unsigned long *pixels = new unsigned long [m_num_colors];
 
         for (unsigned int color = 0; color < m_num_colors; color++)
             *(pixels + color) = (*(m_colors + color)).pixel;
 
-        XFreeColors(FbTk::App::instance()->display(), m_colormap, pixels, m_num_colors, 0);
+        XFreeColors(disp, m_colormap, pixels, m_num_colors, 0);
 
         delete [] m_colors;
     }
@@ -153,7 +155,6 @@ ImageControl::~ImageControl() {
     if (cache.size() > 0) {
         CacheList::iterator it = cache.begin();
         CacheList::iterator it_end = cache.end();
-        Display *disp = FbTk::App::instance()->display();
         for (; it != it_end; ++it) {
             XFreePixmap(disp, (*it)->pixmap);
             delete (*it);
@@ -190,6 +191,7 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
     tmp.pixel1 = text.color().pixel();
     tmp.pixel2 = text.colorTo().pixel();
     */
+    
     CacheList::iterator it = cache.begin(); 	 
     CacheList::iterator it_end = cache.end(); 	 
     for (; it != it_end; ++it) { 	 
