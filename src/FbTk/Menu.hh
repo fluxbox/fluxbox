@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.7 2003/02/03 13:40:52 fluxgen Exp $
+// $Id: Menu.hh,v 1.8 2003/02/15 01:47:43 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -35,6 +35,7 @@
 #include "EventHandler.hh"
 #include "RefCount.hh"
 #include "Command.hh"
+#include "Observer.hh"
 #include "XLayerItem.hh"
 
 namespace FbTk {
@@ -151,7 +152,7 @@ protected:
     inline Menu *parent() { return m_parent; }
     inline const Menu *parent() const { return m_parent; }
 
-private:
+private: 
     typedef std::vector<MenuItem *> Menuitems;
     const MenuTheme &m_theme;
     Display *m_display;
@@ -178,6 +179,17 @@ private:
             bevel_h;
     } menu;
 
+    class ThemeObserver:public Observer {
+    public:
+        ThemeObserver(FbTk::Menu &menu):m_menu(menu) { }
+        void update(FbTk::Subject *subj) {
+            m_menu.reconfigure();
+        }
+    private:
+        Menu &m_menu;
+    };
+
+    ThemeObserver m_themeobserver;
 };
 
 }; // end namespace FbTk

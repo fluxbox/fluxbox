@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.8 2003/02/03 13:41:19 fluxgen Exp $
+// $Id: Menu.cc,v 1.9 2003/02/15 01:48:16 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -60,7 +60,11 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_screen_width(DisplayWidth(m_display, screen_num)),
     m_screen_height(DisplayHeight(m_display, screen_num)),
     m_alignment(ALIGNDONTCARE),
-    m_border_width(0) {
+    m_border_width(0),
+    m_themeobserver(*this) {
+
+    // make sure we get updated when the theme is reloaded
+    tm.addListener(m_themeobserver);
 
     title_vis =
         movable =
@@ -105,7 +109,8 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     unsigned long attrib_mask = CWOverrideRedirect | CWEventMask;
     XSetWindowAttributes attrib;
     attrib.override_redirect = True;
-    attrib.event_mask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | ExposureMask;
+    attrib.event_mask = ButtonPressMask | ButtonReleaseMask | 
+        ButtonMotionMask | KeyPressMask | ExposureMask;
 
     //create menu window
     menu.window = XCreateWindow(m_display, RootWindow(m_display, screen_num), 
@@ -917,10 +922,16 @@ void Menu::exposeEvent(XExposeEvent &ee) {
     if (ee.window == menu.title) {
         redrawTitle();
     } else if (ee.window == menu.frame) {
+        if (menuitems.size() == 0)
+            return;
+
         // this is a compilicated algorithm... lets do it step by step...
         // first... we see in which sub level the expose starts... and how many
         // items down in that sublevel
-
+        if (menu.item_w == 0)
+            menu.item_w = 1;
+        if (menu.item_h == 0)
+            menu.item_h = 1;
         unsigned int sbl = (ee.x / menu.item_w), id = (ee.y / menu.item_h),
             // next... figure out how many sublevels over the redraw spans
             sbl_d = ((ee.x + ee.width) / menu.item_w),
