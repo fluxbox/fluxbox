@@ -66,8 +66,10 @@ void Image::shutdown() {
     // for more than one type
     ImageMap::iterator it = s_image_map.begin();
     ImageMap::iterator it_end = s_image_map.end();
-    for (; it != it_end; it++)
-        handlers.insert(it->second);
+    for (; it != it_end; it++) {
+        if (it->second)
+            handlers.insert(it->second);
+    }
 
     // free the unique handlers
     std::set<ImageBase*>::iterator handler_it = handlers.begin();
@@ -87,9 +89,9 @@ PixmapWithMask *Image::load(const std::string &filename, int screen_num) {
 
     // determine file ending
     std::string extension(StringUtil::toUpper(StringUtil::findExtension(filename)));
-
+    
     // valid handle?
-    if (s_image_map[extension] == 0)
+    if (s_image_map.find(extension) == s_image_map.end())
         return false;
     
     // load file
