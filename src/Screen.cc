@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.24 2002/02/17 18:56:14 fluxgen Exp $
+// $Id: Screen.cc,v 1.25 2002/02/17 19:19:05 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -702,9 +702,18 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
 void BScreen::removeIcon(FluxboxWindow *w) {
 	if (! w) return;
-
-    std::remove(iconList.begin(), iconList.end(), w);
-
+	{
+    Icons::iterator it = iconList.begin();
+	Icons::iterator it_end = iconList.end();
+	for (; it != it_end; ++it) {
+		if (*it == w) {
+			iconList.erase(it);
+			break;
+		}
+	}
+	}
+	//std::remove(iconList.begin(), iconList.end(), w);
+	
 	iconmenu->remove(w->getWindowNumber());
 	iconmenu->update();
 	toolbar->delIcon(w);
