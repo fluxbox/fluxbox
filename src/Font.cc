@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.1 2002/03/21 10:51:48 fluxgen Exp $
+//$Id: Font.cc,v 1.2 2002/03/21 11:05:41 fluxgen Exp $
 #include "Font.hh"
 #include <cstdarg>
 #include <iostream> //for debug msg
@@ -138,7 +138,7 @@ XFontSet Font::createFontSet(Display *display, const char *fontname) {
 		if (nmissing) XFreeStringList(missing);
 
 		setlocale(LC_CTYPE, "C");
-		fs = XCreateFontSet(m_display, fontname,
+		fs = XCreateFontSet(display, fontname,
 			&missing, &nmissing, &def);
 		setlocale(LC_CTYPE, "");
 	}
