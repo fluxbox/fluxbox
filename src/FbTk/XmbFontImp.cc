@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.3 2002/12/01 13:42:15 rathnor Exp $
+// $Id: XmbFontImp.cc,v 1.4 2002/12/02 19:31:05 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
@@ -40,6 +40,8 @@
 #include <cstdio>
 #include <cstdarg>
 #include <iostream>
+#include <cstring>
+
 using namespace std;
 
 namespace {
@@ -53,8 +55,10 @@ const char *strcasestr(const char *str, const char *ptn) {
     const char *s2, *p2;
     for( ; *str; str++) {
         for(s2=str, p2=ptn; ; s2++,p2++) {	
-            if (!*p2) return str; // check if we reached the end of ptn, if so, return str
-            if (toupper(*s2) != toupper(*p2)) break; // check if the chars match(ignoring case)
+            // check if we reached the end of ptn, if so, return str
+            if (!*p2) return str; 
+            // check if the chars match(ignoring case)
+            if (toupper(*s2) != toupper(*p2)) break; 
         }
     }
     return 0;
