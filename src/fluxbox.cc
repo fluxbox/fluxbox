@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.191 2003/09/14 11:23:48 rathnor Exp $
+// $Id: fluxbox.cc,v 1.192 2003/09/14 11:56:11 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -866,7 +866,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     } break;
     case FocusOut:{
         // and here we ignore some window losing the special grab focus
-        if (e->xfocus.mode == NotifyUngrab ||
+        if (e->xfocus.mode == NotifyGrab ||
             e->xfocus.detail == NotifyPointer)
             break;
         WinClient *winclient = searchWindow(e->xfocus.window);
