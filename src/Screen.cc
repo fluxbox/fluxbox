@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.62 2002/08/14 22:21:06 fluxgen Exp $
+// $Id: Screen.cc,v 1.63 2002/08/16 11:01:09 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1582,7 +1582,7 @@ void BScreen::shutdown() {
 
 	{
 		while (!iconList.empty()) {
-			iconList.back()->restore();
+			iconList.back()->restore(true); // restore with remap
 			delete iconList.back(); // the window removes it self from iconlist
 		}
 	}
