@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.95 2003/02/09 14:11:13 rathnor Exp $
+// $Id: fluxbox.cc,v 1.96 2003/02/17 12:31:17 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -38,6 +38,7 @@
 #include "AtomHandler.hh"
 #include "ImageControl.hh"
 #include "EventManager.hh"
+#include "FbCommands.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1168,8 +1169,8 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     break;
                 case Keys::EXECUTE: //execute command on keypress
                     {
-                        cerr<<"TODO"<<endl;
-			
+                        FbCommands::ExecuteCmd cmd(key->getExecCommand());
+                        cmd.execute();			
                     }
                     break;
                 case Keys::QUIT:
