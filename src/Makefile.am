@@ -61,7 +61,7 @@ endif
 endif
 if TOOLBAR_SRC
 TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc \
-	ToolbarTheme.hh ToolbarTheme.cc Iconbar.hh Iconbar.cc ToolbarItem.hh ToolbarItem.cc \
+	ToolbarTheme.hh ToolbarTheme.cc ToolbarItem.hh ToolbarItem.cc \
 	ClockTool.hh ClockTool.cc WorkspaceNameTool.hh WorkspaceNameTool.cc \
 	IconbarTool.hh IconbarTool.cc IconbarTheme.hh IconbarTheme.cc \
 	ToolTheme.hh ToolTheme.cc \
