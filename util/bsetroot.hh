@@ -4,7 +4,6 @@
 #include "../src/BaseDisplay.hh"
 #include "../src/Image.hh"
 
-
 class bsetroot : public BaseDisplay {
 public:
 	bsetroot(int, char **, char * = 0);
@@ -16,7 +15,8 @@ public:
 	void modula(int, int);
 	void solid(void);
 	void usage(int = 0);
-	
+	void setRootAtoms(Pixmap pixmap, int screen);
+
 private:
 	BImageControl **img_ctrl;
 	Pixmap *pixmaps;

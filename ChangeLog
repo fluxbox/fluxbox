@@ -1,5 +1,7 @@
 Changes for 0.1.7:
 *02/01/18:
+   * Fixed bsetroot, now Eterm's, XChat's and similiar will be able to use
+     bsetroots background images. (Claes Nästén)
    * Fixed ResourceManager 
    * Changed resources to Resource<T> in class Fluxbox
    * Added Resource.hh/.cc, XrmDatabaseHelper.hh, NotCopyable.hh
