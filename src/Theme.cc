@@ -57,6 +57,7 @@
 #include "i18n.hh"
 #include "Basemenu.hh"
 #include "fluxbox.hh"
+#include "StringUtil.hh"
 
 #include <X11/Xresource.h>
 #include <stdio.h>
@@ -66,21 +67,6 @@
 #ifndef	 FONT_ELEMENT_SIZE
 #	define	 FONT_ELEMENT_SIZE 50
 #endif // FONT_ELEMENT_SIZE
-
-#ifndef HAVE_STRCASESTR 
-
-const char * strcasestr(const char *str, const char *ptn) {
-	const char *s2, *p2;
-	for( ; *str; str++) {
-		for(s2=str,p2=ptn; ; s2++,p2++) {
-			if (!*p2) return str;
-			if (toupper(*s2) != toupper(*p2)) break;
-		}
-	}
-	return NULL;
-}
-
-#endif
 
 Theme::Theme(Display *display, Window rootwindow, Colormap colormap, int screennum, BImageControl *ic, const char *filename) {
 
@@ -1161,7 +1147,7 @@ const char *Theme::getFontElement(const char *pattern, char *buf, int bufsiz, ..
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
 	while((v = va_arg(va, char *)) != NULL) {
-		p = strcasestr(pattern, v);
+		p = StringUtil::strcasestr(pattern, v);
 		if (p) {
 			strncpy(buf, p+1, bufsiz-2);
 			p2 = strchr(buf, '-');
