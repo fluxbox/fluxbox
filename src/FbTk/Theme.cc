@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.21 2003/11/16 22:33:55 rathnor Exp $
+// $Id: Theme.cc,v 1.22 2003/12/03 00:18:58 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -74,7 +74,7 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
 }
 
 bool ThemeManager::load(const std::string &filename) {
-    std::string location = FbTk::StringUtil::expandFilename(filename).c_str();
+    std::string location = FbTk::StringUtil::expandFilename(filename);
     std::string prefix = "";
 
     if (Directory::isDirectory(filename)) {
