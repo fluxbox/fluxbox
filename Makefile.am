@@ -7,3 +7,6 @@ uninstall-local:
 	rmdir $(pkgdatadir)
 distclean-local:
 	rm -f *\~
+
+source-doc:
+	doxygen Doxyfile
