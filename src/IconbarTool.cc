@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.27 2004/01/09 11:59:10 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.28 2004/01/10 01:19:13 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -45,7 +45,6 @@
 #include <typeinfo>
 #include <string>
 #include <iterator>
-#include <iostream>
 using namespace std;
 
 template<>
@@ -494,11 +493,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
     }
 
     // unlock container and update graphics
-    renderTheme();
     m_icon_container.setUpdateLock(false);
     m_icon_container.update();
     m_icon_container.showSubwindows();
     
+    renderTheme();
 }
 
 IconButton *IconbarTool::findButton(FluxboxWindow &win) {
@@ -675,7 +674,6 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
         return;
 
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
-    button->setPixmap(*m_rc_use_pixmap);
     m_icon_container.insertItem(button);    
     m_icon_list.push_back(button);
 
