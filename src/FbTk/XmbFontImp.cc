@@ -1,6 +1,6 @@
 // XmbFontImp.cc for FbTk fluxbox toolkit
 // Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.11 2004/09/03 17:05:35 rathnor Exp $
+// $Id: XmbFontImp.cc,v 1.12 2004/09/10 16:12:01 akir Exp $
 
 #include "XmbFontImp.hh"
 
@@ -58,25 +58,6 @@
 using namespace std;
 
 namespace {
-
-#ifndef HAVE_STRCASESTR
-//!! TODO this is moved to StringUtil 
-// Tries to find a string in another and
-// ignoring the case of the characters
-// Returns 0 on success else pointer to str.
-const char *strcasestr(const char *str, const char *ptn) {
-    const char *s2, *p2;
-    for( ; *str; str++) {
-        for(s2=str, p2=ptn; ; s2++,p2++) {	
-            // check if we reached the end of ptn, if so, return str
-            if (!*p2) return str; 
-            // check if the chars match(ignoring case)
-            if (toupper(*s2) != toupper(*p2)) break; 
-        }
-    }
-    return 0;
-}
-#endif //HAVE_STRCASESTR
 
 const char *getFontSize(const char *pattern, int *size) {
     const char *p;
@@ -178,13 +159,13 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
                    "-r-", "-i-", "-o-", "-ri-", "-ro-", NULL);
     getFontSize(fontname, &pixel_size);
 
-    if (! strcmp(weight, "*")) 
+    if (! strcmp(weight, "*"))
         strncpy(weight, "medium", FONT_ELEMENT_SIZE);
-    if (! strcmp(slant, "*")) 
+    if (! strcmp(slant, "*"))
         strncpy(slant, "r", FONT_ELEMENT_SIZE);
-    if (pixel_size < 3) 
+    if (pixel_size < 3)
         pixel_size = 3;
-    else if (pixel_size > 97) 
+    else if (pixel_size > 97)
         pixel_size = 97;
 
     buf_size = strlen(fontname) + (FONT_ELEMENT_SIZE * 2) + 64;
@@ -240,26 +221,28 @@ bool XmbFontImp::load(const std::string &fontname) {
     m_fontset = set;
     m_setextents = XExtentsOfFontSet(m_fontset);
 
-    return true;	
+    return true;
 }
 
-void XmbFontImp::drawText(Drawable w, int screen, GC gc, const char *text, 
+void XmbFontImp::drawText(Drawable w, int screen, GC gc, const char *text,
                           size_t len, int x, int y) const {
 
     if (text == 0 || len == 0 || w == 0 || m_fontset == 0)
         return;
+
+    Display* disp = App::instance()->display();
 #ifdef X_HAVE_UTF8_STRING
     if (m_utf8mode) {
-        Xutf8DrawString(App::instance()->display(), w, m_fontset,
-			gc, x, y,
-			text, len);
-    } else 
+        Xutf8DrawString(disp, w, m_fontset,
+            gc, x, y,
+            text, len);
+    } else
 #endif //X_HAVE_UTF8_STRING
-	{
-            XmbDrawString(App::instance()->display(), w, m_fontset,
-                          gc, x, y,
-                          text, len);
-	}
+    {
+        XmbDrawString(disp, w, m_fontset,
+                      gc, x, y,
+                      text, len);
+    }
 }
 
 unsigned int XmbFontImp::textWidth(const char * const text, unsigned int len) const {
