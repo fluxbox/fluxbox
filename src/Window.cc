@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.50 2002/05/07 13:50:34 fluxgen Exp $
+// $Id: Window.cc,v 1.51 2002/05/17 13:27:20 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -82,7 +82,7 @@ tab(0)
 {
 	
 	lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
-
+	#ifdef DEBUG
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
@@ -90,6 +90,7 @@ tab(0)
 			"FluxboxWindow::FluxboxWindow(): creating 0x%lx\n"),
 			w);
 
+	#endif //DEBUG
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
@@ -399,8 +400,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 		return;
 
 	Fluxbox *fluxbox = Fluxbox::instance();
-	
-	
+
 	if (moving || resizing) {
 		screen->hideGeometry();
 		XUngrabPointer(display, CurrentTime);
@@ -413,23 +413,38 @@ FluxboxWindow::~FluxboxWindow(void) {
 	} else //it's iconic
 		screen->removeIcon(this);
 
-	if (windowmenu)
+	if (windowmenu) {
 		delete windowmenu;
+		windowmenu = 0;
+	}
 
-	if (tab!=0)
+	if (tab!=0) {
 		delete tab;	
-	tab = 0;
+		tab = 0;
+	}
 	
-	if (client.mwm_hint!=0)
+	if (client.mwm_hint!=0) {
 		XFree(client.mwm_hint);
+		client.mwm_hint = 0;
+	}
+	if (client.blackbox_hint!=0) {
+		XFree(client.blackbox_hint);
+		client.blackbox_hint = 0;
+	}
 
-	if (client.blackbox_hint!=0)
-		XFree(client.blackbox_hint);		
-
-	//TODO: Move this to Workspace::removeWindow
-	if (client.transient_for!=0)	
-		fluxbox->setFocusedWindow(client.transient_for);	
 	
+	if (client.transient_for!=0) {
+		//guard from having transient_for = this
+		if (client.transient_for == this) {
+			#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): WARNING! client.transient_for == this WARNING!"<<endl;
+			#endif //DEBUG
+			client.transient_for = 0;
+		}
+		
+		fluxbox->setFocusedWindow(client.transient_for);
+	}
+
 	if (client.window_group)
 		fluxbox->removeGroupSearch(client.window_group);
 
