@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.149 2003/05/15 12:00:46 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.150 2003/05/15 23:30:03 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -838,7 +838,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
         if ((e->xcrossing.window == e->xcrossing.root) &&
             (screen = searchScreen(e->xcrossing.window))) {
-            screen->getImageControl()->installRootColormap();
+            screen->imageControl().installRootColormap();
 
         }
 			
@@ -902,7 +902,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
         if (be.button == 1) {
             if (! screen->isRootColormapInstalled())
-                screen->getImageControl()->installRootColormap();
+                screen->imageControl().installRootColormap();
 
             if (screen->getWorkspacemenu()->isVisible())
                 screen->getWorkspacemenu()->hide();
@@ -2069,68 +2069,6 @@ void Fluxbox::load_rc(BScreen &screen) {
             screen.savePlacementPolicy(BScreen::CASCADEPLACEMENT);
     } else
         screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
-    
-#ifdef SLIT
-    sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.Slit.Placement", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "TopLeft", value.size))
-            screen.saveSlitPlacement(Slit::TOPLEFT);
-        else if (! strncasecmp(value.addr, "CenterLeft", value.size))
-            screen.saveSlitPlacement(Slit::CENTERLEFT);
-        else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-            screen.saveSlitPlacement(Slit::BOTTOMLEFT);
-        else if (! strncasecmp(value.addr, "TopCenter", value.size))
-            screen.saveSlitPlacement(Slit::TOPCENTER);
-        else if (! strncasecmp(value.addr, "BottomCenter", value.size))
-            screen.saveSlitPlacement(Slit::BOTTOMCENTER);
-        else if (! strncasecmp(value.addr, "TopRight", value.size))
-            screen.saveSlitPlacement(Slit::TOPRIGHT);
-        else if (! strncasecmp(value.addr, "BottomRight", value.size))
-            screen.saveSlitPlacement(Slit::BOTTOMRIGHT);
-        else
-            screen.saveSlitPlacement(Slit::CENTERRIGHT);
-    } else
-        screen.saveSlitPlacement(Slit::CENTERRIGHT);
-
-    sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "Horizontal", value.size))
-            screen.saveSlitDirection(Slit::HORIZONTAL);
-        else
-            screen.saveSlitDirection(Slit::VERTICAL);
-    } else
-        screen.saveSlitDirection(Slit::VERTICAL);
-
-
-    sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.Slit.AutoHide", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "True", value.size))
-            screen.saveSlitAutoHide(true);
-        else
-            screen.saveSlitAutoHide(false);
-    } else
-        screen.saveSlitAutoHide(false);
-    /*
-      #ifdef XINERAMA
-      int tmp_head;
-      sprintf(name_lookup, "session.screen%d.slit.onHead", screen_number);
-      sprintf(class_lookup, "Session.Screen%d.Slit.OnHead", screen_number);
-      if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-      &value)) {
-      if (sscanf(value.addr, "%d", &tmp_head) != 1)
-      tmp_head = 0;
-      } else
-      tmp_head = 0;
-      screen->saveSlitOnHead(tmp_head);
-      #endif // XINERAMA
-    */
-#endif // SLIT
     
 #ifdef HAVE_STRFTIME
     sprintf(name_lookup, "session.screen%d.strftimeFormat", screen_number);

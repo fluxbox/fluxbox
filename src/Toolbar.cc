@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.82 2003/05/15 12:00:45 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.83 2003/05/15 23:30:03 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -256,10 +256,10 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_hide_timer(&hide_handler),
     m_toolbarmenu(menu),
     m_placementmenu(*scrn.menuTheme(),
-                    scrn.screenNumber(), *scrn.getImageControl()),
+                    scrn.screenNumber(), scrn.imageControl()),
     m_layermenu(*scrn.menuTheme(), 
                 scrn.screenNumber(), 
-                *scrn.getImageControl(),
+                scrn.imageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                 this,
                 true),
@@ -325,7 +325,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
 
 
 Toolbar::~Toolbar() {
-    FbTk::ImageControl &image_ctrl = *screen().getImageControl();
+    FbTk::ImageControl &image_ctrl = screen().imageControl();
     if (frame.base) image_ctrl.removeImage(frame.base);
     if (frame.label) image_ctrl.removeImage(frame.label);
     if (frame.wlabel) image_ctrl.removeImage(frame.wlabel);
@@ -568,7 +568,7 @@ void Toolbar::reconfigure() {
     frame.clock.moveResize(next_x + text_x, next_y + text_y,
                            clock_w, clock_h);
 
-    FbTk::ImageControl &image_ctrl = *screen().getImageControl();
+    FbTk::ImageControl &image_ctrl = screen().imageControl();
 
     Pixmap tmp = frame.base;
     const FbTk::Texture *texture = &(m_theme.toolbar());

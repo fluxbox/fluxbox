@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.177 2003/05/15 12:00:46 fluxgen Exp $
+// $Id: Window.cc,v 1.178 2003/05/15 23:30:07 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -236,16 +236,16 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_screen(scr),
     m_timer(this),
     display(0),
-    m_windowmenu(menutheme, scr.screenNumber(), *scr.getImageControl()),
+    m_windowmenu(menutheme, scr.screenNumber(), scr.imageControl()),
     m_layermenu(new LayerMenu<FluxboxWindow>(menutheme, 
                                              scr.screenNumber(),
-                                             *scr.getImageControl(), 
+                                             scr.imageControl(), 
                                              *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                              this,
                                              false)),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
-    m_frame(new FbWinFrame(tm, *scr.getImageControl(), scr.screenNumber(), 0, 0, 100, 100)),
+    m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {
@@ -269,16 +269,16 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
     m_screen(scr),
     m_timer(this),
     display(0),
-    m_windowmenu(menutheme, scr.screenNumber(), *scr.getImageControl()),
+    m_windowmenu(menutheme, scr.screenNumber(), scr.imageControl()),
     m_layermenu(new LayerMenu<FluxboxWindow>(menutheme, 
                                              scr.screenNumber(), 
-                                             *scr.getImageControl(),
+                                             scr.imageControl(),
                                              *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                              this,
                                              false)),
     m_old_decoration(DECOR_NORMAL),
     m_client(new WinClient(w, *this)),
-    m_frame(new FbWinFrame(tm, *scr.getImageControl(), scr.screenNumber(), 0, 0, 100, 100)),
+    m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {

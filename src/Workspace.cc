@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.65 2003/05/15 12:00:46 fluxgen Exp $
+// $Id: Workspace.cc,v 1.66 2003/05/15 23:30:07 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -115,7 +115,7 @@ Workspace::GroupList Workspace::m_groups;
 Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int i):
     m_screen(scrn),
     m_lastfocus(0),
-    m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), *scrn.getImageControl()),
+    m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), scrn.imageControl()),
     m_layermanager(layermanager),
     m_name(""),
     m_id(i),

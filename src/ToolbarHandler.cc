@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.12 2003/05/15 12:00:45 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.13 2003/05/15 23:30:05 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -91,9 +91,9 @@ void setupModeMenu(FbTk::Menu &menu, ToolbarHandler &handler) {
 ToolbarHandler::ToolbarHandler(BScreen &screen, ToolbarMode mode) 
     : m_screen(screen), m_mode(mode), m_toolbar(0), m_current_workspace(0),
       m_modemenu(*screen.menuTheme(),
-                 screen.screenNumber(), *screen.getImageControl()),
+                 screen.screenNumber(), screen.imageControl()),
       m_toolbarmenu(*screen.menuTheme(),
-                 screen.screenNumber(), *screen.getImageControl())
+                 screen.screenNumber(), screen.imageControl())
 {
     m_modemenu.setInternalMenu();
     setupModeMenu(m_modemenu, *this);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.167 2003/05/15 12:00:44 fluxgen Exp $
+// $Id: Screen.cc,v 1.168 2003/05/15 23:26:38 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -53,6 +53,7 @@
 #include "WinClient.hh"
 #include "Subject.hh"
 #include "FbWinFrame.hh"
+#include "SlitResource.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -141,7 +142,7 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 FbTk::Menu *createMenuFromScreen(BScreen &screen) {
     FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
                                   screen.screenNumber(), 
-                                  *screen.getImageControl(), 
+                                  screen.imageControl(), 
                                   *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
     return menu;
 }
@@ -197,28 +198,6 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
 
-template<>
-void Resource<Slit::Placement>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "TopLeft")==0)
-        m_value = Slit::TOPLEFT;
-    else if (strcasecmp(strval, "CenterLeft")==0)
-        m_value = Slit::CENTERLEFT;
-    else if (strcasecmp(strval, "BottomLeft")==0)
-        m_value = Slit::BOTTOMLEFT;
-    else if (strcasecmp(strval, "TopCenter")==0)
-        m_value = Slit::TOPCENTER;
-    else if (strcasecmp(strval, "BottomCenter")==0)
-        m_value = Slit::BOTTOMCENTER;
-    else if (strcasecmp(strval, "TopRight")==0)
-        m_value = Slit::TOPRIGHT;
-    else if (strcasecmp(strval, "CenterRight")==0)
-        m_value = Slit::CENTERRIGHT;
-    else if (strcasecmp(strval, "BottomRight")==0)
-        m_value = Slit::BOTTOMRIGHT;
-    else
-        setDefaultValue();
-}
 
 template<>
 void Resource<ToolbarHandler::ToolbarMode>::
@@ -239,16 +218,6 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
 
-template<>
-void Resource<Slit::Direction>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "Vertical") == 0) 
-        m_value = Slit::VERTICAL;
-    else if (strcasecmp(strval, "Horizontal") == 0) 
-        m_value = Slit::HORIZONTAL;
-    else
-        setDefaultValue();
-}
 
 string Resource<Toolbar::Placement>::
 getString() {
@@ -295,37 +264,6 @@ getString() {
 }
 
 
-string Resource<Slit::Placement>::
-getString() {
-    switch (m_value) {
-    case Slit::TOPLEFT:
-        return string("TopLeft");
-        break;
-    case Slit::CENTERLEFT:
-        return string("CenterLeft");
-        break;
-    case Slit::BOTTOMLEFT:
-        return string("BottomLeft");
-        break;
-    case Slit::TOPCENTER:
-        return string("TopCenter");
-        break;			
-    case Slit::BOTTOMCENTER:
-        return string("BottomCenter");
-        break;
-    case Slit::TOPRIGHT:
-        return string("TopRight");
-        break;
-    case Slit::CENTERRIGHT:
-        return string("CenterRight");
-        break;
-    case Slit::BOTTOMRIGHT:
-        return string("BottomRight");
-        break;
-    }
-    //default string
-    return string("BottomRight");
-}
 
 template<>
 string Resource<ToolbarHandler::ToolbarMode>::
@@ -354,22 +292,6 @@ getString() {
     // default string
     return string("Icons");
 }
-
-template<>
-string Resource<Slit::Direction>::
-getString() {
-    switch (m_value) {
-    case Slit::VERTICAL:
-        return string("Vertical");
-        break;
-    case Slit::HORIZONTAL:
-        return string("Horizontal");
-        break;
-    }
-    // default string
-    return string("Vertical");
-}
-
 
 namespace {
 
@@ -420,6 +342,84 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
 }
 
 };
+
+
+template<>
+void Resource<Slit::Placement>::setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft")==0)
+        m_value = Slit::TOPLEFT;
+    else if (strcasecmp(strval, "CenterLeft")==0)
+        m_value = Slit::CENTERLEFT;
+    else if (strcasecmp(strval, "BottomLeft")==0)
+        m_value = Slit::BOTTOMLEFT;
+    else if (strcasecmp(strval, "TopCenter")==0)
+        m_value = Slit::TOPCENTER;
+    else if (strcasecmp(strval, "BottomCenter")==0)
+        m_value = Slit::BOTTOMCENTER;
+    else if (strcasecmp(strval, "TopRight")==0)
+        m_value = Slit::TOPRIGHT;
+    else if (strcasecmp(strval, "CenterRight")==0)
+        m_value = Slit::CENTERRIGHT;
+    else if (strcasecmp(strval, "BottomRight")==0)
+        m_value = Slit::BOTTOMRIGHT;
+    else
+        setDefaultValue();
+}
+
+template<>
+void Resource<Slit::Direction>::setFromString(const char *strval) {
+    if (strcasecmp(strval, "Vertical") == 0) 
+        m_value = Slit::VERTICAL;
+    else if (strcasecmp(strval, "Horizontal") == 0) 
+        m_value = Slit::HORIZONTAL;
+    else
+        setDefaultValue();
+}
+
+string Resource<Slit::Placement>::getString() {
+    switch (m_value) {
+    case Slit::TOPLEFT:
+        return string("TopLeft");
+        break;
+    case Slit::CENTERLEFT:
+        return string("CenterLeft");
+        break;
+    case Slit::BOTTOMLEFT:
+        return string("BottomLeft");
+        break;
+    case Slit::TOPCENTER:
+        return string("TopCenter");
+        break;			
+    case Slit::BOTTOMCENTER:
+        return string("BottomCenter");
+        break;
+    case Slit::TOPRIGHT:
+        return string("TopRight");
+        break;
+    case Slit::CENTERRIGHT:
+        return string("CenterRight");
+        break;
+    case Slit::BOTTOMRIGHT:
+        return string("BottomRight");
+        break;
+    }
+    //default string
+    return string("BottomRight");
+}
+
+template<>
+string Resource<Slit::Direction>::getString() {
+    switch (m_value) {
+    case Slit::VERTICAL:
+        return string("Vertical");
+        break;
+    case Slit::HORIZONTAL:
+        return string("Horizontal");
+        break;
+    }
+    // default string
+    return string("Vertical");
+}
 
 
 template <>
@@ -483,13 +483,13 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
     toolbar_placement(rm, Toolbar::BOTTOMCENTER, 
                       scrname+".toolbar.placement", altscrname+".Toolbar.Placement"),
-    slit_auto_hide(rm, false, scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
-    slit_placement(rm, Slit::BOTTOMRIGHT,
-                   scrname+".slit.placement", altscrname+".Slit.Placement"),
-    slit_direction(rm, Slit::VERTICAL, scrname+".slit.direction", altscrname+".Slit.Direction"),
-    slit_alpha(rm, 255, scrname+".slit.alpha", altscrname+".Slit.Alpha")
-
-{
+     slit_auto_hide(rm, false, 
+                     scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
+     slit_placement(rm, Slit::BOTTOMRIGHT,
+                    scrname+".slit.placement", altscrname+".Slit.Placement"),
+     slit_direction(rm, Slit::VERTICAL, 
+                    scrname+".slit.direction", altscrname+".Slit.Direction"),
+     slit_alpha(rm, 255, scrname+".slit.alpha", altscrname+".Slit.Alpha") {
 
 };
 
@@ -559,16 +559,15 @@ BScreen::BScreen(ResourceManager &rm,
 
     XDefineCursor(disp, rootWindow().window(), fluxbox->getSessionCursor());
 
-    image_control =
-        new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
-                               fluxbox->getCacheLife(), fluxbox->getCacheMax());
-    image_control->installRootColormap();
+    m_image_control.reset(new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
+                                               fluxbox->getCacheLife(), fluxbox->getCacheMax()));
+    imageControl().installRootColormap();
     root_colormap_installed = true;
 
     fluxbox->load_rc(*this);
     FbTk::Menu::setAlpha(*resource.menu_alpha);
 
-    image_control->setDither(*resource.image_dither);
+    imageControl().setDither(*resource.image_dither);
 
     // setup windowtheme, toolbartheme for antialias
     // before we load the theme
@@ -608,7 +607,7 @@ BScreen::BScreen(ResourceManager &rm,
             geom_pixmap = None;
             geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
-            geom_pixmap = image_control->renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
                                                      winFrameTheme().titleFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
@@ -618,7 +617,7 @@ BScreen::BScreen(ResourceManager &rm,
             geom_pixmap = None;
             geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {
-            geom_pixmap = image_control->renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
                                                      winFrameTheme().labelFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
@@ -643,7 +642,7 @@ BScreen::BScreen(ResourceManager &rm,
                  Fluxbox::instance()->getSlitlistFilename().c_str()));
 #endif // SLIT
 
-    m_toolbarhandler = new ToolbarHandler(*this, getToolbarMode());
+    m_toolbarhandler.reset(new ToolbarHandler(*this, toolbarMode()));
 
     setupWorkspacemenu(*this, *workspacemenu);
 
@@ -739,7 +738,7 @@ BScreen::~BScreen() {
         return;
 
     if (geom_pixmap != None)
-        image_control->removeImage(geom_pixmap);
+        imageControl().removeImage(geom_pixmap);
 
 
     removeWorkspaceNames();
@@ -763,17 +762,15 @@ BScreen::~BScreen() {
     for(; n_it != n_it_end; ++n_it) {
         delete (*n_it);
     }
+
     netizenList.clear();
-
-    delete image_control;
-
 }
 
-const FbTk::Menu &BScreen::getToolbarModemenu() const {
+const FbTk::Menu &BScreen::toolbarModemenu() const {
     return m_toolbarhandler->getModeMenu();
 }
 
-FbTk::Menu &BScreen::getToolbarModemenu() {
+FbTk::Menu &BScreen::toolbarModemenu() {
     return m_toolbarhandler->getModeMenu();
 }
 
@@ -861,7 +858,7 @@ void BScreen::reconfigure() {
             geom_pixmap = None;
             geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
-            geom_pixmap = image_control->renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
                                                      winFrameTheme().titleFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
@@ -871,13 +868,13 @@ void BScreen::reconfigure() {
             geom_pixmap = None;
             geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {
-            geom_pixmap = image_control->renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
                                                      winFrameTheme().labelFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
     if (tmp)
-        image_control->removeImage(tmp);
+        imageControl().removeImage(tmp);
 
     geom_window.setBorderWidth(m_root_theme->borderWidth());
     geom_window.setBorderColor(m_root_theme->borderColor());
@@ -936,10 +933,10 @@ void BScreen::reconfigure() {
     }
 
 #ifdef SLIT    
-    if (m_slit.get()) {
-        m_slit->setPlacement(static_cast<Slit::Placement>(getSlitPlacement()));
-        m_slit->setDirection(static_cast<Slit::Direction>(getSlitDirection()));
-        m_slit->reconfigure();
+    if (slit()) {
+        slit()->setPlacement(static_cast<Slit::Placement>(getSlitPlacement()));
+        slit()->setDirection(static_cast<Slit::Direction>(getSlitDirection()));
+        slit()->reconfigure();
     }
 #endif // SLIT
 
@@ -953,7 +950,7 @@ void BScreen::reconfigure() {
              iconList.end(),
              mem_fun(&FluxboxWindow::reconfigure));
 
-    image_control->timeout();
+    imageControl().timeout();
 
 }
 

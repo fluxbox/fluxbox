@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.35 2003/05/15 12:00:43 fluxgen Exp $
+// $Id: IconBar.cc,v 1.36 2003/05/15 23:30:06 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -162,7 +162,7 @@ IconBar::WindowList *IconBar::delAllIcons() {
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
     //!! TODO: iconbar style theme
 
-    FbTk::ImageControl *image_ctrl = screen().getImageControl();
+    FbTk::ImageControl &image_ctrl = screen().imageControl();
     Pixmap tmp = m_focus_pm;
     const FbTk::Texture *texture = &(screen().winFrameTheme().labelFocusTexture());
 	
@@ -176,11 +176,11 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
         m_focus_pixel = texture->color().pixel();
     } else {
         m_focus_pm =
-            image_ctrl->renderImage(width, height, *texture);
+            image_ctrl.renderImage(width, height, *texture);
     }
 
     if (tmp)
-        image_ctrl->removeImage(tmp);
+        image_ctrl.removeImage(tmp);
 }
 
 /**

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.97 2003/05/15 12:00:44 fluxgen Exp $
+// $Id: Screen.hh,v 1.98 2003/05/15 23:25:36 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -94,11 +94,11 @@ public:
     inline bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool antialias() const { return *resource.antialias; }
 
-    inline FbTk::ImageControl *getImageControl() { return image_control; }
+    inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
-    const FbTk::Menu &getToolbarModemenu() const ;
-    FbTk::Menu &getToolbarModemenu() ;
+    const FbTk::Menu &toolbarModemenu() const;
+    FbTk::Menu &toolbarModemenu();
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
@@ -180,7 +180,7 @@ public:
     inline int getToolbarWidthPercent() const { return *resource.toolbar_width_percent; }
     inline Resource<int> &getToolbarWidthPercentResource() { return resource.toolbar_width_percent; }
     inline const Resource<int> &getToolbarWidthPercentResource() const { return resource.toolbar_width_percent; }
-    inline ToolbarHandler::ToolbarMode getToolbarMode() const { return *resource.toolbar_mode; }
+    inline ToolbarHandler::ToolbarMode toolbarMode() const { return *resource.toolbar_mode; }
     inline int getPlacementPolicy() const { return resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
     inline int getRowPlacementDirection() const { return resource.row_direction; }
@@ -349,7 +349,7 @@ private:
     Pixmap geom_pixmap;
     FbTk::FbWindow geom_window;
 
-    FbTk::ImageControl *image_control;
+    std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbTk::Menu> m_configmenu;
 
     std::auto_ptr<FbTk::Menu> m_rootmenu;
@@ -424,7 +424,7 @@ private:
 
     } resource;
 
-    ToolbarHandler *m_toolbarhandler;
+    std::auto_ptr<ToolbarHandler> m_toolbarhandler;
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.53 2003/05/15 12:00:45 fluxgen Exp $
+// $Id: Slit.cc,v 1.54 2003/05/15 23:30:06 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -264,22 +264,22 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_screen(scr), m_timer(this), 
       m_slitmenu(*scr.menuTheme(), 
                  scr.screenNumber(), 
-                 *scr.getImageControl(),
+                 scr.imageControl(),
                  *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_placement_menu(*scr.menuTheme(),
                        scr.screenNumber(),
-                       *scr.getImageControl(),
+                       scr.imageControl(),
                        *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_clientlist_menu(*scr.menuTheme(),
                         scr.screenNumber(),
-                        *scr.getImageControl(),
+                        scr.imageControl(),
                         *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
-                                           scr.screenNumber(),
-                                           *scr.getImageControl(),
-                                           *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                           this,
-                                           true)),
+                                      scr.screenNumber(),
+                                      scr.imageControl(),
+                                      *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                      this,
+                                      true)),
       //For KDE dock applets
       m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
                                     "KWM_DOCKWINDOW", False)), //KDE v1.x
@@ -337,7 +337,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
 Slit::~Slit() {
     if (frame.pixmap != 0)
-        screen().getImageControl()->removeImage(frame.pixmap);
+        screen().imageControl().removeImage(frame.pixmap);
 }
 
 
@@ -643,14 +643,14 @@ void Slit::reconfigure() {
         frame.window.show();
 
     Pixmap tmp = frame.pixmap;
-    FbTk::ImageControl *image_ctrl = screen().getImageControl();
+    FbTk::ImageControl &image_ctrl = screen().imageControl();
     const FbTk::Texture &texture = m_slit_theme->texture();
     if (texture.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID) &&
         texture.pixmap().drawable() == 0) {
         frame.pixmap = None;
         frame.window.setBackgroundColor(texture.color());
     } else {
-        frame.pixmap = image_ctrl->renderImage(frame.width, frame.height,
+        frame.pixmap = image_ctrl.renderImage(frame.width, frame.height,
                                                texture);
         if (frame.pixmap == 0)
             frame.window.setBackgroundColor(texture.color());
@@ -659,7 +659,7 @@ void Slit::reconfigure() {
     }
 
     if (tmp) 
-        image_ctrl->removeImage(tmp);
+        image_ctrl.removeImage(tmp);
 
     clearWindow();
     int x, y;
