@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.9 2003/12/30 18:15:55 fluxgen Exp $
+// $Id: WorkspaceCmd.cc,v 1.10 2004/01/16 09:21:31 fluxgen Exp $
 
 #include "WorkspaceCmd.hh"
 
@@ -123,8 +123,9 @@ void ArrangeWindowsCmd::execute() {
     if (win_count == 0) 
         return;
 
-    const unsigned int max_width = screen->width();
-    const unsigned int max_heigth = screen->height();
+    const int head = screen->getCurrHead();
+    const unsigned int max_width = screen->maxRight(head) - screen->maxLeft(head);
+    const unsigned int max_heigth = screen->maxBottom(head) - screen->maxTop(head);
 
 	// try to get the same number of rows as columns.
 	unsigned int rows = int(sqrt(win_count));  // truncate to lower
