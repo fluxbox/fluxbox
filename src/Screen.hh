@@ -22,41 +22,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.16 2002/02/08 13:35:20 fluxgen Exp $
+// $Id: Screen.hh,v 1.17 2002/02/17 10:28:18 fluxgen Exp $
 
-#ifndef	 _SCREEN_HH_
-#define	 _SCREEN_HH_
-
+#ifndef	 SCREEN_HH
+#define	 SCREEN_HH
 
 #include "Theme.hh"
-
-#ifndef _BASEDISPLAY_HH_
 #include "BaseDisplay.hh"
-#endif
-#ifndef _CONFIGMENU_HH_
 #include "Configmenu.hh"
-#endif
-#ifndef _ICON_HH_
 #include "Icon.hh"
-#endif
-#ifndef _NETIZEN_HH_
 #include "Netizen.hh"
-#endif
-#ifndef _ROOTMENU_HH_
 #include "Rootmenu.hh"
-#endif
-#ifndef _TIMER_HH_
 #include "Timer.hh"
-#endif
-#ifndef _WORKSPACE_HH_
 #include "Workspace.hh"
-#endif
-#ifndef _WORKSPACEMENU_HH_
 #include "Workspacemenu.hh"
-#endif
-#ifndef _FLUXBOX_HH_
 #include "fluxbox.hh"
-#endif
 
 #ifdef		SLIT
 #	include "Slit.hh"
@@ -206,8 +186,8 @@ public:
 	//scroll workspaces
 	void nextWorkspace();
 	void prevWorkspace();
-  void rightWorkspace();
-  void leftWorkspace();
+	void rightWorkspace();
+	void leftWorkspace();
 
 	void removeWorkspaceNames(void);
 	void updateWorkspaceNamesAtom(void);
@@ -251,6 +231,7 @@ public:
 private:
 	#ifdef GNOME
 	void initGnomeAtoms();
+	Window gnome_win;
 	#endif
 	Theme *theme;
 	
