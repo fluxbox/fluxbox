@@ -1,6 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/12:
+  * Removed Next/Prev client from window menu (Henrik)
+    Window.cc
+  * Added aligment for buttons in iconbar (Henrik)
+    Change Left, Relative or Right via the Iconbar mode menu
+    New resource item:
+    session.screen0.iconbar.clientWidth: integer
+    session.screen0.iconbar.alignment:  LEFT, RELATIVE or RIGHT
+    IconbarTool.hh/cc, Container.hh/cc
   * Support for bsetroot in fbsetbg (Han)
 *03/12/11:
   * Added remember position (Thanks Mathias Gumz)
