@@ -86,10 +86,6 @@
 #	include <stdarg.h>
 #endif // HAVE_STDARG_H
 
-#ifndef		HAVE_SNPRINTF
-#	include "bsd-snprintf.h"
-#endif // !HAVE_SNPRINTF
-
 #ifndef	 MAXPATHLEN
 #define	 MAXPATHLEN 255
 #endif // MAXPATHLEN
@@ -210,6 +206,8 @@ full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
 max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
 tab_rotate_vertical(rm, true, scrname+".tab.rotatevertical", altscrname+".Tab.RotateVertical"),
 sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
+focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
+focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
 rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
 workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
 toolbar_width_percent(rm, 65, scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
@@ -269,9 +267,9 @@ resource(rm, screenname, altscreenname)
 	pid_t bpid = getpid();
 
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-			fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
-			sizeof(pid_t) * 8, PropModeReplace,
-			(unsigned char *) &bpid, 1);
+		fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
+		sizeof(pid_t) * 8, PropModeReplace,
+		(unsigned char *) &bpid, 1);
 	#endif // HAVE_GETPID
 
 
@@ -286,7 +284,7 @@ resource(rm, screenname, altscreenname)
 
 	image_control =
 		new BImageControl(fluxbox, this, True, fluxbox->getColorsPerChannel(),
-				fluxbox->getCacheLife(), fluxbox->getCacheMax());
+			fluxbox->getCacheLife(), fluxbox->getCacheMax());
 	image_control->installRootColormap();
 	root_colormap_installed = True;
 
@@ -474,7 +472,7 @@ resource(rm, screenname, altscreenname)
 					delete tempwin;
 					tempwin = 0;
 				} catch (...) {
-					cerr<<"FATAL: Unknown catch"<<endl;
+					cerr<<"FATAL: Unknown exception"<<endl;
 				}
 
 				FluxboxWindow *win = fluxbox->searchWindow(children[i]);
@@ -731,9 +729,9 @@ int BScreen::addWorkspace(void) {
 	workspacesList->insert(wkspc);
 
 	workspacemenu->insert(wkspc->getName(), wkspc->getMenu(),
-			wkspc->getWorkspaceID() + 1);
+		wkspc->getWorkspaceID() + 1);
 	workspacemenu->update();
-
+	saveWorkspaces(workspacesList->count());
 	toolbar->reconfigure();
 
 	updateNetizenWorkspaceCount();	
@@ -762,7 +760,7 @@ int BScreen::removeLastWorkspace(void) {
 		toolbar->reconfigure();
 
 		updateNetizenWorkspaceCount();
-	
+		saveWorkspaces(workspacesList->count());
 		return workspacesList->count();
 	}
 
@@ -799,7 +797,7 @@ void BScreen::changeWorkspaceID(int id) {
 
 		current_workspace->showAll();
 
-		if (resource.focus_last && current_workspace->getLastFocusedWindow())
+		if (*resource.focus_last && current_workspace->getLastFocusedWindow())
 			current_workspace->getLastFocusedWindow()->setInputFocus();		
 			
 	}
