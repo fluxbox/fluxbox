@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.1 2002/12/13 20:24:33 fluxgen Exp $
+// $Id: Button.cc,v 1.2 2002/12/16 11:05:35 fluxgen Exp $
 
 #include "Button.hh"
 
 #include "Command.hh"
 #include "EventManager.hh"
+#include "App.hh"
 
 namespace FbTk {
 
@@ -34,18 +35,19 @@ Button::Button(int screen_num, int x, int y,
           ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),
     m_pressed_pm(0),
-    m_gc(0) {
+    m_gc(DefaultGC(FbTk::App::instance()->display(), screen_num)) {
+
     // add this to eventmanager
     FbTk::EventManager::instance()->add(*this, m_win); 
 }
 
-Button::Button(FbWindow &parent, int x, int y, 
+Button::Button(const FbWindow &parent, int x, int y, 
                size_t width, size_t height):
     m_win(parent, x, y, width, height,
           ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),
     m_pressed_pm(0),
-    m_gc(0) {
+    m_gc(DefaultGC(FbTk::App::instance()->display(), m_win.screenNumber())) {
     // add this to eventmanager
     FbTk::EventManager::instance()->add(*this, m_win);
 }
@@ -76,11 +78,14 @@ void Button::setPressedPixmap(Pixmap pm) {
 
 void Button::setBackgroundColor(const Color &color) {
     m_win.setBackgroundColor(color);
+    m_background_color = color;
+    clear();
 }
 
 void Button::setBackgroundPixmap(Pixmap pm) {
     m_win.setBackgroundPixmap(pm);
-    m_foreground_pm = pm;
+    m_background_pm = pm;
+    clear();
 }
 
 void Button::show() {
@@ -93,19 +98,49 @@ void Button::hide() {
 
 void Button::buttonPressEvent(XButtonEvent &event) {
     m_win.setBackgroundPixmap(m_pressed_pm);
-    m_win.clear();
-    m_pressed = true;
+    m_pressed = true;    
+    clear();
+    
 }
 
 void Button::buttonReleaseEvent(XButtonEvent &event) {
-    // set normal pixmap
-    m_win.setBackgroundPixmap(m_foreground_pm);
-    m_win.clear();
-
-    if (*m_onclick != 0) // check on click action
-        m_onclick->execute(); // do on click action
-
     m_pressed = false;
+    if (m_background_pm)
+        m_win.setBackgroundPixmap(m_background_pm);
+    else
+        m_win.setBackgroundColor(m_background_color);
+    clear(); // clear background
+
+    if (m_foreground_pm) { // draw foreground
+        Display *disp = App::instance()->display();
+
+        if (m_gc == 0) // get default gc
+            m_gc = DefaultGC(disp, m_win.screenNumber());
+    
+        XCopyArea(disp, m_foreground_pm, m_win.window(), m_gc, 0, 0, width(), height(), 0, 0);
+    }
+
+    if (event.x < 0 || event.y < 0 ||
+        event.x > width() || event.y > height())
+        return;
+
+    // call commands
+    switch (event.button) {
+    case Button1:
+        if (*m_onclick_left != 0)
+            m_onclick_left->execute();
+        break;
+    case Button2:
+        if (*m_onclick_middle != 0)
+            m_onclick_middle->execute();
+        break;
+    case Button3:
+        if (*m_onclick_right != 0)
+            m_onclick_right->execute();
+        break;
+    };
+
+    
 }
 
 void Button::exposeEvent(XExposeEvent &event) {
