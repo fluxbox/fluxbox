@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.118 2003/07/28 18:28:03 fluxgen Exp $
+// $Id: Screen.hh,v 1.119 2003/08/11 15:32:46 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -104,6 +104,7 @@ public:
 
     inline Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
     inline Workspace *currentWorkspace() { return m_current_workspace; }
+    inline const Workspace *currentWorkspace() const { return m_current_workspace; }
 
     const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
@@ -181,7 +182,6 @@ public:
     void setAntialias(bool value);
 	
     inline const char *getStrftimeFormat() { return resource.strftime_format.c_str(); }
-    void saveStrftimeFormat(const char *format);
 
     inline int getDateFormat() { return resource.date_format; }
     inline void saveDateFormat(int f) { resource.date_format = f; }
