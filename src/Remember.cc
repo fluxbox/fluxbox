@@ -36,6 +36,7 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/MenuItem.hh"
 #include "FbTk/App.hh"
+#include "FbTk/stringstream.hh"
 
 
 #include <X11/Xlib.h>
@@ -52,19 +53,6 @@
 #include <memory>
 #include <set>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef HAVE_SSTREAM
-#include <sstream>
-#define FB_istringstream istringstream
-#elif HAVE_STRSTREAM
-#include <strstream>
-#define FB_istringstream istrstream
-#else
-#error "You dont have sstream or strstream headers!"
-#endif // HAVE_STRSTREAM
 
 using namespace std;
 
@@ -173,7 +161,7 @@ bool handleStartupItem(const string &line, int offset) {
         if (pos > 0) {
             option = str.substr(0, pos);
             if (option == "screen") {
-                FB_istringstream iss(str.c_str() + pos + 1);
+                FbTk_istringstream iss(str.c_str() + pos + 1);
                 iss >> screen;
             } else {
                 error = true;
@@ -333,7 +321,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 continue; //read next line
             if (str_key == "Workspace") {
                 unsigned int w;
-                FB_istringstream iss(str_label.c_str());
+                FbTk_istringstream iss(str_label.c_str());
                 iss >> w;
                 app.rememberWorkspace(w);
             } else if (str_key == "Head") {
@@ -356,17 +344,17 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 } else if (str_label == "MENU") {
                     l = Fluxbox::instance()->getMenuLayer();
                 } else {
-                    FB_istringstream iss(str_label.c_str());
+                    FbTk_istringstream iss(str_label.c_str());
                     iss >> l;
                 }
                 app.rememberLayer(l);
             } else if (str_key == "Dimensions") {
                 unsigned int h,w;
-                FB_istringstream iss(str_label.c_str());
+                FbTk_istringstream iss(str_label.c_str());
                 iss >> w >> h;
                 app.rememberDimensions(w,h);
             } else if (str_key == "Position") {
-                FB_istringstream iss;
+                FbTk_istringstream iss;
                 unsigned int r= 0;
                 unsigned int x= 0;
                 unsigned int y= 0;
@@ -426,7 +414,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                     unsigned int mask;
                     const char * str = str_label.c_str();
                     // it'll have at least one char and \0, so this is safe
-                    FB_istringstream iss(str);
+                    FbTk_istringstream iss(str);
                     // check for hex
                     if (str[0] == '0' && str[1] == 'x') {
                         iss.seekg(2);

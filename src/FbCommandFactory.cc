@@ -34,22 +34,10 @@
 
 #include "FbTk/StringUtil.hh"
 #include "FbTk/MacroCommand.hh"
+#include "FbTk/stringstream.hh"
 
 #include <string>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef HAVE_SSTREAM
-#include <sstream>
-#define FB_istringstream istringstream
-#elif HAVE_STRSTREAM 
-#include <strstream>
-#define FB_istringstream istrstream
-#else
-#error "You dont have sstream or strstream headers!"
-#endif // HAVE_STRSTREAM
 
 using namespace std;
 
@@ -151,11 +139,11 @@ FbCommandFactory::FbCommandFactory() {
         "workspace12",
         /* end note */
         "workspacemenu",
-        ""
+        0
     };
 
     for (int i=0;; ++i) {
-        if (strcmp(commands[i], "") == 0)
+        if (commands[i] == 0)
             break;
         addCommand(commands[i]);
     }
@@ -229,13 +217,13 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
     else if (command == "resize") {
-        FB_istringstream is(arguments.c_str()); 
+        FbTk_istringstream is(arguments.c_str()); 
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new ResizeCmd(dx, dy);
     }
     else if (command == "resizeto") {
-        FB_istringstream is(arguments.c_str());
+        FbTk_istringstream is(arguments.c_str());
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new ResizeToCmd(dx, dy);
@@ -245,13 +233,13 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "resizevertical")
         return new ResizeCmd(0,atoi(arguments.c_str()));
     else if (command == "moveto") {
-       FB_istringstream is(arguments.c_str());
+       FbTk_istringstream is(arguments.c_str());
        int dx = 0, dy = 0;
        is >> dx >> dy;
        return new MoveToCmd(dx,dy);    
     }
     else if (command == "move") {
-        FB_istringstream is(arguments.c_str());
+        FbTk_istringstream is(arguments.c_str());
         int dx = 0, dy = 0;
         is >> dx >> dy;
         return new MoveCmd(dx, dy);
@@ -367,7 +355,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     //
     else if (command == "deiconify") {
 
-        FB_istringstream iss(arguments);
+        FbTk_istringstream iss(arguments);
         string mode;
         string d;
         DeiconifyCmd::Destination dest;
@@ -419,7 +407,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
           c= FbTk::StringUtil::toLower(cmd);
 
           FbTk::Command* fbcmd= stringToCommand(c,a);
-          if ( fbcmd ) {
+          if (fbcmd) {
             FbTk::RefCount<FbTk::Command> rfbcmd(fbcmd);
             macro->add(rfbcmd);
           }
