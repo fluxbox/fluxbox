@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/02/18:
+  * Change workspace when clicking on a window in iconbar that's on (Henrik)
+    another workspace
+    IconButton.cc
 *04/02/16:
   * Added remember hidden state for apps (Thanks Mathias Gumz)
     You mark apps in the apps-file with
