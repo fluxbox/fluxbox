@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.30 2003/10/06 06:22:43 rathnor Exp $
+// $Id: WinClient.cc,v 1.31 2003/12/04 21:31:02 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -555,7 +555,7 @@ void WinClient::removeModal() {
 
 bool WinClient::validateClient() const {
     Display *display = FbTk::App::instance()->display();
-    XSync(display, false);
+    FbTk::App::instance()->sync(false);
 
     XEvent e;
     if (( XCheckTypedWindowEvent(display, window(), DestroyNotify, &e) ||

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.38 2003/10/05 07:19:30 rathnor Exp $
+//$Id: Keys.cc,v 1.39 2003/12/04 21:31:02 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -111,7 +111,7 @@ bool Keys::load(const char *filename) {
     //free memory of previous grabs
     deleteTree();
 
-    XSync(m_display, False);
+    FbTk::App::instance()->sync(false);
 						
     //open the file
     ifstream infile(filename);

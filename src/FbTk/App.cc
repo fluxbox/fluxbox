@@ -55,6 +55,10 @@ App::~App() {
     s_app = 0;
 }
 
+void App::sync(bool discard) {
+    XSync(display(), discard);
+}
+
 void App::eventLoop() {
     XEvent ev;
     while (!m_done) {

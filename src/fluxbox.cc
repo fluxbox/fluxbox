@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.203 2003/12/03 00:49:20 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.204 2003/12/04 21:31:02 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -585,7 +585,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     FbTk::ThemeManager::instance().load(getStyleFilename());
 
     XSynchronize(disp, False);
-    XSync(disp, False);
+    sync(false);
 
     m_reconfigure_wait = m_reread_menu_wait = false;
 	
@@ -1516,7 +1516,7 @@ void Fluxbox::shutdown() {
     for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::shutdown));
 
     m_shutdown = true;
-    XSync(FbTk::App::instance()->display(), False);
+    sync(false);
 
 }
 

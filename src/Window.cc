@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.246 2003/11/27 22:02:28 fluxgen Exp $
+// $Id: Window.cc,v 1.247 2003/12/04 21:31:02 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -262,7 +262,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     stuck(false), m_managed(false),
     maximized(MAX_NONE),
     m_screen(scr),
-    display(0),
+    display(FbTk::App::instance()->display()),
     m_windowmenu(*scr.menuTheme(), scr.screenNumber(), scr.imageControl(),
                  *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_old_decoration(DECOR_NORMAL),
@@ -393,9 +393,6 @@ void FluxboxWindow::init() {
     frame().resize(m_client->width(), m_client->height());
 
     m_last_focus_time.tv_sec = m_last_focus_time.tv_usec = 0;
-
-    // display connection
-    display = FbTk::App::instance()->display();
 
     m_blackbox_attrib.workspace = m_workspace_number = ~0;
 
@@ -558,20 +555,20 @@ void FluxboxWindow::init() {
     if (m_shaped)
         shape();
 
-    XSync(display, false);
+    FbTk::App::instance()->sync(false);
+
 }
 
 /// apply shape to this window
 void FluxboxWindow::shape() {
 #ifdef SHAPE
     if (m_shaped) {
-        Display *disp = FbTk::App::instance()->display();
-        XShapeCombineShape(disp,
+        XShapeCombineShape(display,
                            frame().window().window(), ShapeBounding,
                            0, frame().clientArea().y(), // xOff, yOff
                            m_client->window(),
                            ShapeBounding, ShapeSet);
-        XFlush(disp);
+        XFlush(display);
     }
 #endif // SHAPE
 
@@ -1971,14 +1968,13 @@ void FluxboxWindow::handleEvent(XEvent &event) {
             } else {
                 m_shaped = false;
                 // set no shape
-                Display *disp = FbTk::App::instance()->display();
-                XShapeCombineMask(disp,
+                XShapeCombineMask(display,
                                   frame().window().window(), ShapeBounding,
                                   0, 0,
                                   None, ShapeSet);
             }
 
-            XSync(FbTk::App::instance()->display(), False);
+            FbTk::App::instance()->sync(false);
             break;
         }
 #endif // SHAPE
@@ -2813,7 +2809,7 @@ void FluxboxWindow::stopMoving() {
     screen().hideGeometry();
     XUngrabPointer(display, CurrentTime);
 	
-    XSync(display, False); //make sure the redraw is made before we continue
+    FbTk::App::instance()->sync(false); //make sure the redraw is made before we continue
 }
 
 void FluxboxWindow::pauseMoving() {
@@ -2837,7 +2833,8 @@ void FluxboxWindow::resumeMoving() {
     if (m_workspace_number == screen().currentWorkspaceID()) {
         frame().show();
     }
-    XSync(display,false);
+
+    FbTk::App::instance()->sync(false);
 
     parent().drawRectangle(screen().rootTheme().opGC(),
                            m_last_move_x, m_last_move_y, 

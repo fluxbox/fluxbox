@@ -47,6 +47,7 @@ public:
     virtual ~App();
     /// display connection
     Display *display() const { return m_display; }
+    void sync(bool discard);
     /// starts event loop
     virtual void eventLoop();
     /// forces an end to event loop

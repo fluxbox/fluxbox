@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.243 2003/12/04 00:08:05 fluxgen Exp $
+// $Id: Screen.cc,v 1.244 2003/12/04 21:31:02 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -279,7 +279,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                               SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
                               ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask);
 
-    XSync(disp, False);
+    FbTk::App::instance()->sync(false);
 
     XSetErrorHandler((XErrorHandler) old);
 
@@ -810,7 +810,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         id == m_current_workspace->workspaceID())
         return;
 
-    XSync(FbTk::App::instance()->display(), true);
+    FbTk::App::instance()->sync(true);
 
     WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
     FluxboxWindow *focused = 0;
@@ -877,7 +877,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     }
 
 
-    XSync(FbTk::App::instance()->display(), True);
+    FbTk::App::instance()->sync(true);
 
     if (win && &win->screen() == this &&
         (! win->isStuck())) {
@@ -1012,7 +1012,7 @@ void BScreen::updateNetizenConfigNotify(XEvent &e) {
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
-    XSync(FbTk::App::instance()->display(), false);
+    FbTk::App::instance()->sync(false);
 
 #ifdef SLIT
 #ifdef KDE
@@ -1121,7 +1121,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         win->show();
     }
 
-    XSync(FbTk::App::instance()->display(), False);
+    FbTk::App::instance()->sync(false);
     return win;
 }
 
@@ -2005,9 +2005,8 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
 }
 
 void BScreen::shutdown() {
-    Display *disp = FbTk::App::instance()->display();
     rootWindow().setEventMask(NoEventMask);
-    XSync(disp, False);
+    FbTk::App::instance()->sync(false);
     m_shutdown = true;
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
