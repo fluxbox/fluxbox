@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.41 2003/11/19 12:57:27 rathnor Exp $
+// $Id: Menu.cc,v 1.42 2003/11/28 22:52:20 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -785,9 +785,9 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     }
 	
     GC gc =
-        ((highlight || item->isSelected()) ? m_theme.hiliteTextGC() :
-         m_theme.frameTextGC());
-    GC tgc =
+        ((highlight || item->isSelected()) ? m_theme.hiliteTextGC().gc() :
+         m_theme.frameTextGC().gc());
+    const GContext &tgc =
         (highlight ? m_theme.hiliteTextGC() :
          (item->isEnabled() ? m_theme.frameTextGC() : m_theme.disableTextGC() ) );
 	
@@ -842,11 +842,11 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     if (dohilite && highlight && (menu.hilite_pixmap != ParentRelative)) {
         if (menu.hilite_pixmap) {
             m_frame_pm.copyArea(menu.hilite_pixmap,
-                                m_theme.hiliteGC(), hoff_x, hoff_y,
+                                m_theme.hiliteGC().gc(), hoff_x, hoff_y,
                                 hilite_x, hilite_y,
                                 hilite_w, hilite_h);
         } else {            
-            m_frame_pm.fillRectangle(m_theme.hiliteGC(),
+            m_frame_pm.fillRectangle(m_theme.hiliteGC().gc(),
                                      hilite_x, hilite_y, hilite_w, hilite_h);
         }
         
@@ -876,12 +876,12 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
         } else {
             if (menu.sel_pixmap) {
                 m_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
-                                    m_theme.hiliteGC(), 
+                                    m_theme.hiliteGC().gc(), 
                                     0, 0,                                 
                                     sel_x, sel_y,
                                     half_w, half_w);
             } else {
-                m_frame_pm.fillRectangle(m_theme.hiliteGC(),
+                m_frame_pm.fillRectangle(m_theme.hiliteGC().gc(),
                                          sel_x, sel_y, half_w, half_w);
             }
         }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.9 2003/09/12 23:32:02 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.10 2003/11/28 22:53:10 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -83,11 +83,16 @@ public:
        @name graphic contexts
     */
     ///@{
-    GC titleTextGC() const { return t_text_gc.gc(); }
-    GC frameTextGC() const { return f_text_gc.gc(); }
-    GC hiliteTextGC() const { return h_text_gc.gc(); }
-    GC disableTextGC() const { return d_text_gc.gc(); }
-    GC hiliteGC() const { return hilite_gc.gc(); }
+    const GContext &titleTextGC() const { return t_text_gc; }
+    const GContext &frameTextGC() const { return f_text_gc; }
+    const GContext &hiliteTextGC() const { return h_text_gc; }
+    const GContext &disableTextGC() const { return d_text_gc; }
+    const GContext &hiliteGC() const { return hilite_gc; }
+    GContext &titleTextGC() { return t_text_gc; }
+    GContext &frameTextGC() { return f_text_gc; }
+    GContext &hiliteTextGC() { return h_text_gc; }
+    GContext &disableTextGC() { return d_text_gc; }
+    GContext &hiliteGC() { return hilite_gc; }
     ///@}
     BulletType bullet() const { return *m_bullet; }
     FbTk::Justify bulletPos() const { return *bullet_pos; }
