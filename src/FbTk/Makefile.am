@@ -7,7 +7,8 @@ if MULTIBYTE
 xmb_SOURCE= XmbFontImp.hh XmbFontImp.cc
 endif
 
-libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh EventHandler.hh Font.cc Font.hh FontImp.hh NotCopyable.hh \
+libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh EventHandler.hh EventManager.hh EventManager.cc \
+	Font.cc Font.hh FontImp.hh NotCopyable.hh \
 	SignalHandler.cc SignalHandler.hh  Texture.cc Texture.hh \
 	XFontImp.cc XFontImp.hh \
 	${xft_SOURCE} \
