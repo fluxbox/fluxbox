@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.hh,v 1.2 2003/08/19 16:13:25 fluxgen Exp $
+// $Id: IconButton.hh,v 1.3 2003/09/10 21:40:01 fluxgen Exp $
 
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
@@ -38,6 +38,9 @@ public:
 
     void exposeEvent(XExposeEvent &event);
     void clear();
+    void clearArea(int x, int y,
+                   unsigned int width, unsigned int height,
+                   bool exposure = false);
     void moveResize(int x, int y,
                     unsigned int width, unsigned int height);
     void resize(unsigned int width, unsigned int height);
@@ -45,7 +48,8 @@ public:
     void update(FbTk::Subject *subj);
     FluxboxWindow &win() { return m_win; }
     const FluxboxWindow &win() const { return m_win; }
-    
+protected:
+    void drawText(int x = 0, int y = 0);
 private:
     void setupWindow();
 
