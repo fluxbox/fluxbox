@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.103 2003/05/20 11:03:10 rathnor Exp $
+// $Id: Screen.hh,v 1.104 2003/06/12 15:22:59 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -281,8 +281,10 @@ public:
     void reconfigure();	
     void rereadMenu();
     void shutdown();
+    /// show position window centered on the screen with "X x Y" text
     void showPosition(int x, int y);
-    void showGeometry(unsigned int, unsigned int);
+    /// show geomentry with "width x height"-text, not size of window
+    void showGeometry(unsigned int width, unsigned int height);
     void hideGeometry();
 
     void notifyReleasedKeys(XKeyEvent &ke);
@@ -358,6 +360,8 @@ private:
     void initMenu();
 
     bool doSkipWindow(const FluxboxWindow *w, int options);
+
+    void renderGeomWindow();
 
     ScreenSubject 
     m_clientlist_sig,  ///< client signal
