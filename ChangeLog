@@ -1,5 +1,37 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/01/12:
+   * BoolMenuItem, for changing bool values from menu
+     BoolMenuItem.hh/cc
+   * Fixed optional visability for SlitClients,
+     see client list menu in Slit
+   * Changed Slit::frame.window to an FbTk::FbWindow
+   * Fixed scrollClientsUp/Down function in Slit
+   * Moved SlitClient to Slit.cc
+   * Changed Slit to an FbTk::EventHandler
+     Slit.hh/cc
+   * Changed SlitMenu to FbTk::Menu in Slit and fixed a client menu
+     Slit.hh/cc   
+   * Added MenuItem.hh/cc in FbTk
+   * Fixed bug in FbTk::Menu
+     Menu.cc
+   * Removed Clientmenu.cc/hh
+   * Changed Clientmenu in BScreen to FbTk::Menu
+     Screen.hh/cc
+   * Changed Toolbarmenu in Toolbar to FbTk::Menu
+     Toolbar.hh/cc
+   * Removed toolbar dep from Workspace
+     Workspace.cc
+   * Removed slit functions from class Fluxbox
+     fluxbox.hh
+   * Removed Basemenu.hh/cc, Clientmenu.cc/hh, Workspacemenu.hh/cc,
+     Windowmenu.hh/cc and Iconmenu.hh/cc
+   * Moved KDE slit handling from class Fluxbox to class Slit
+*03/01/10:
+   * Fixed bug in FluxboxWindow::configureRequestEvent
+     Window.cc
+   * Added FbTk::MacroCommand
+     MacroCommand.hh/cc
 *03/01/09:
    * Adjusted some files to FbTk::ImageControl and FbTk::Timer
      Basemenu.hh, FbWinFrame.hh/cc, IconBar.cc, Slit.hh, Toolbar.hh, Theme.hh
