@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.133 2003/04/25 11:56:13 fluxgen Exp $
+// $Id: Screen.cc,v 1.134 2003/04/25 16:07:46 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -673,7 +673,7 @@ BScreen::BScreen(ResourceManager &rm,
 		
         if (children[i] == None) continue;
 
-        XWMHints *wmhints = XGetWMHints(getBaseDisplay()->getXDisplay(),
+        XWMHints *wmhints = XGetWMHints(FbTk::App::instance()->display(),
                                         children[i]);
 
         if (wmhints) {
@@ -1034,7 +1034,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         return;
 	
     if (id != current_workspace->workspaceID()) {
-        XSync(BaseDisplay::getXDisplay(), true);
+        XSync(FbTk::App::instance()->display(), true);
         FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
@@ -1101,7 +1101,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
         win = Fluxbox::instance()->getFocusedWindow();
 
     if (id != current_workspace->workspaceID()) {
-        XSync(BaseDisplay::getXDisplay(), True);
+        XSync(FbTk::App::instance()->display(), True);
 
         if (win && &win->getScreen() == this &&
             (! win->isStuck())) {
