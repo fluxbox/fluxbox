@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.221 2004/01/13 12:55:25 rathnor Exp $
+// $Id: fluxbox.cc,v 1.222 2004/01/16 11:28:00 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -753,7 +753,26 @@ void Fluxbox::handleEvent(XEvent * const e) {
     } else if (e->type == PropertyNotify)
         m_last_time = e->xproperty.time;
 
-    
+    // we need to check focus out for menus before
+    // we call FbTk eventhandler
+    // so we can get FbTk::Menu::focused() before it sets to 0
+    if (e->type == FocusOut && 
+        FbTk::Menu::focused() != 0 &&
+        FbTk::Menu::focused()->window() == e->xfocus.window) {
+            // find screen num
+            BScreen *screen = 0;
+            ScreenList::iterator it = m_screen_list.begin();
+            ScreenList::iterator it_end = m_screen_list.end();
+            for (; it != it_end; ++it) {
+                if ( (*it)->screenNumber() == 
+                     FbTk::Menu::focused()->fbwindow().screenNumber())
+                    screen = (*it);
+            }
+            if (screen != 0)
+                revertFocus(*screen);
+        }
+    }
+
     // try FbTk::EventHandler first
     FbTk::EventManager::instance()->handleEvent(*e);
 
