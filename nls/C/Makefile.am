@@ -37,17 +37,17 @@ uninstall-local:
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		rm -f Translation.m; \
-		echo -e "//This file is generated from nls/C" > ../blackbox-nls.hh; \
-		echo -e "#ifndef BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
-		echo -e "#define BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
-		echo -e "namespace FBNLS {" >> ../blackbox-nls.hh;	\
-		echo -e "enum {" >> ../blackbox-nls.hh;	\
+		echo "//This file is generated from nls/C" > ../blackbox-nls.hh; \
+		echo "#ifndef BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
+		echo "#define BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
+		echo "namespace FBNLS {" >> ../blackbox-nls.hh;	\
+		echo "enum {" >> ../blackbox-nls.hh;	\
 		awk -f ../convert.awk header=../blackbox-nls.hh \
 			output=Translation.m $(MFILES); \
-		echo -e "	dummy_not_used = 0 //just for the ending" >> ../blackbox-nls.hh; \
-		echo -e "}; //end enum\n" >> ../blackbox-nls.hh; \
-		echo -e "}; //end namespace\n" >> ../blackbox-nls.hh; \
-		echo -e "#endif //BLACKBOX_NLS_HH\n" >> ../blackbox-nls.hh; \
+		echo "	dummy_not_used = 0 //just for the ending" >> ../blackbox-nls.hh; \
+		echo "}; //end enum" >> ../blackbox-nls.hh; \
+		echo "}; //end namespace" >> ../blackbox-nls.hh; \
+		echo "#endif //BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
 	fi
 
 blackbox.cat: Translation.m
