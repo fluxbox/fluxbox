@@ -27,10 +27,10 @@
 namespace FbTk {
 
 /// a simple command 
-template <typename Receiver>
+template <typename Receiver, typename ReturnType=void>
 class SimpleCommand: public Command {
 public:
-    typedef void (Receiver::* Action)();
+    typedef ReturnType (Receiver::* Action)();
     SimpleCommand(Receiver &r, Action a):
         m_receiver(r), m_action(a) { }
     void execute() { (m_receiver.*m_action)(); }
