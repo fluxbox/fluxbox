@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.1 2002/09/07 20:32:44 fluxgen Exp $
+// $Id: Gnome.hh,v 1.2 2002/09/08 10:57:34 fluxgen Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -65,15 +65,16 @@ public:
 	Gnome();
 	~Gnome();
 	void initForScreen(const BScreen &screen);
+	void setupWindow(FluxboxWindow &win);
 
 	void updateClientList(const BScreen &screen);
 	void updateWorkspaceNames(const BScreen &screen);
 	void updateCurrentWorkspace(const BScreen &screen);
 	void updateWorkspaceCount(const BScreen &screen);
 
-	void updateState(FluxboxWindow *win);
-	void updateHints(FluxboxWindow *win);
-	void updateWorkspace(FluxboxWindow *win);
+	void updateState(FluxboxWindow &win);
+	void updateHints(FluxboxWindow &win);
+	void updateWorkspace(FluxboxWindow &win);
 
 
 	bool checkClientMessage(const XClientMessageEvent &ce, BScreen *screen, FluxboxWindow *win);
