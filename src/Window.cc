@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.49 2002/05/07 13:31:11 fluxgen Exp $
+// $Id: Window.cc,v 1.50 2002/05/07 13:50:34 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3510,6 +3510,10 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 
 void FluxboxWindow::toggleDecoration() {
 	static bool decor = false;
+	//don't toggle decor if the window is shaded
+	if (isShaded())
+		return;
+	
 	if (!decor) {
 		setDecoration(DECOR_NONE); 
 		decor = true;
