@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.132 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.133 2003/12/19 03:57:40 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -748,7 +748,7 @@ void Toolbar::setupMenus() {
     //!! TODO: this should be inserted by the workspace tool
         
 
-    RefCommand start_edit(CommandParser::instance().parseLine("setworkspacename"));
+    RefCommand start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
     menu().insert(i18n.getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
                                    "Edit current workspace name"),
                   start_edit);
