@@ -1,5 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*03/01/05: --- huge commit ---
+   * Added FbWinFrame.hh/cc, FbWinFrameTheme.hh/cc
+   * Updated Window.cc/hh to use FbWinFrame
+   * Removed XINERAMA and Slit from class FluxboxWindow
+   * Moved creation of titlebar buttons to BScreen::setupActions
+   * FluxboxWindow object creation is now done in BScreen::createWindow(xclientwindow)
+   * FluxboxWindow setups actions in BScreen::setupWindowActions(FluxboxWindow)
+   * Fixed getMaxLeft/Right/Top/Bottom functions in BScreen to get max workspace area
+   * FluxboxWindow is now a FbTk::EventHandler
+   * Clamped texture size in TexturRender so it doesnt crash n burn on bad sizes
+   * Adjusted Tab.cc, Windowmenu.cc, fluxbox.cc to match new FluxboxWindow
+   * Added WinButton.hh/cc for simple fluxboxwindow button drawing
+   * Added border size to FbTk::FbWindow
 *03/01/04:
    * Added spanish locales (Muchas gracias Alberto G. Hierro)
 *02/12/29:
