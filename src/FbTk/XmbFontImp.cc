@@ -1,5 +1,5 @@
 // XmbFontImp.cc for FbTk fluxbox toolkit
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,14 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.5 2003/02/17 23:36:43 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.6 2003/04/26 18:57:51 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
 #include "App.hh"
-
-//!! TODO: Change this
-#include "../StringUtil.hh"
+#include "StringUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -104,7 +102,7 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
     buf[bufsiz-1] = 0;
     buf[bufsiz-2] = '*';
     while((v = va_arg(va, char *)) != 0) {
-        p = StringUtil::strcasestr(pattern, v);
+        p = FbTk::StringUtil::strcasestr(pattern, v);
         if (p) {
             std::strncpy(buf, p+1, bufsiz-2);
             p2 = strchr(buf, '-');

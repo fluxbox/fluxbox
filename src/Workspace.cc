@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.55 2003/04/25 11:22:40 fluxgen Exp $
+// $Id: Workspace.cc,v 1.56 2003/04/26 18:57:10 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -432,7 +432,7 @@ bool Workspace::loadGroups(const std::string &filename) {
         string line;
         vector<string> names;
         getline(infile, line);
-        StringUtil::stringtok(names, line);
+        FbTk::StringUtil::stringtok(names, line);
         m_groups.push_back(names);
     }
 	

@@ -12,14 +12,17 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
 	ImageControl.hh ImageControl.cc \
 	MacroCommand.hh MacroCommand.cc \
-	Menu.hh Menu.cc MenuItem.hh MenuItem.cc MenuTheme.hh MenuTheme.cc NotCopyable.hh \
+	Menu.hh Menu.cc MenuItem.hh MenuItem.cc \
+	MenuTheme.hh MenuTheme.cc NotCopyable.hh \
 	RefCount.hh SimpleCommand.hh SignalHandler.cc SignalHandler.hh \
 	Text.hh Text.cc \
-	Texture.cc Texture.hh TextureRender.hh TextureRender.cc Theme.hh Theme.cc Timer.hh Timer.cc \
+	Texture.cc Texture.hh TextureRender.hh TextureRender.cc \
+	Theme.hh Theme.cc Timer.hh Timer.cc \
 	XFontImp.cc XFontImp.hh \
 	Button.hh Button.cc \
 	Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh \
 	XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh \
+	StringUtil.hh StringUtil.cc \
 	Subject.hh Subject.cc Observer.hh Observer.cc \
 	Transparent.hh Transparent.cc \
 	FbPixmap.hh FbPixmap.cc \

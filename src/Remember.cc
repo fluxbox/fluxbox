@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.7 2003/04/26 14:36:21 rathnor Exp $
+// $Id: Remember.cc,v 1.8 2003/04/26 18:56:39 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -207,10 +207,12 @@ int Remember::parseApp(ifstream &file, Application *a) {
             if (line[0] != '#') { //the line is commented
                 int parse_pos = 0, err = 0;
                 string str_key, str_label;
-                err = StringUtil::getStringBetween(str_key, line.c_str(), '[', ']');
+                err = FbTk::StringUtil::getStringBetween(str_key, 
+                                                         line.c_str(), 
+                                                         '[', ']');
                 if (err > 0 ) {
                     parse_pos += err;
-                    err = StringUtil::getStringBetween(str_label, 
+                    err = FbTk::StringUtil::getStringBetween(str_label, 
                                                        line.c_str() + parse_pos, 
                                                        '{', '}');
                     if (err>0) {
@@ -308,12 +310,16 @@ void Remember::load() {
                     continue;
                 string key;
                 int pos=0;
-                int err = StringUtil::getStringBetween(key, line.c_str(), '[', ']');
+                int err = FbTk::StringUtil::getStringBetween(key, 
+                                                             line.c_str(), 
+                                                             '[', ']');
 
                 if (err >0 && key == "app") {
                     pos += err;
                     string label;
-                    err = StringUtil::getStringBetween(label, line.c_str()+pos, '(', ')');
+                    err = FbTk::StringUtil::getStringBetween(label, 
+                                                             line.c_str()+pos,
+                                                             '(', ')');
                     if (err>0) {
                         Application *a;
                         Apps::iterator i = apps.find(label);
