@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.2 2003/01/07 01:30:57 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.3 2003/01/09 18:03:33 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -337,10 +337,8 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
     if (event.button > 5 || event.button < 1)
         return;
 
-    if (*m_commands[event.button - 1].click_pressed) {
-        cerr<<"Pressed event button = "<<event.button<<endl;
+    if (*m_commands[event.button - 1].click_pressed)
         m_commands[event.button - 1].click_pressed->execute();
-    }
 }
 
 void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
@@ -381,7 +379,7 @@ void FbWinFrame::configureNotifyEvent(XConfigureEvent &event) {
 
 void FbWinFrame::reconfigure() {
     m_window.clear();
-	
+
     // align titlebar and render it
     if (m_use_titlebar)
         reconfigureTitlebar();
@@ -660,8 +658,9 @@ void FbWinFrame::init() {
     m_shaded = false;
     m_label.show();
 
-      showHandle();
+    showHandle();
     showTitlebar();
+
     // note: we don't show clientarea yet
 
     setEventHandler(*this);
