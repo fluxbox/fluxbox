@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.5 2003/08/12 12:16:28 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.6 2003/08/13 09:57:40 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -30,6 +30,9 @@
 #include "Window.hh"
 #include "IconButton.hh"
 #include "Workspace.hh"
+
+#include <iostream>
+using namespace std;
 
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::RELATIVE),
@@ -46,7 +49,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     screen.currentWorkspaceSig().attach(this);
 
     update(0);
-    renderTheme();
+
 }
 
 IconbarTool::~IconbarTool() {
@@ -94,6 +97,10 @@ unsigned int IconbarTool::height() const {
     return m_icon_container.height();
 }
 
+unsigned int IconbarTool::borderWidth() const {
+    return m_icon_container.borderWidth();
+}
+
 void IconbarTool::update(FbTk::Subject *subj) {
     // ignore updates if we're shutting down
     if (m_screen.isShuttingdown())
@@ -138,10 +145,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
     Workspace::Windows::iterator it = space.windowList().begin();
     Workspace::Windows::iterator it_end = space.windowList().end();
     for (; it != it_end; ++it) {
+        
         // we just want windows that has clients
         if ((*it)->clientList().size() == 0)
             continue;
-
+        
         IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), **it);
         items.push_back(button);
         m_icon_list.push_back(button);
@@ -209,11 +217,16 @@ void IconbarTool::renderTheme() {
     if (tmp)
         m_screen.imageControl().removeImage(m_empty_pm);
 
+    m_icon_container.setBorderWidth(m_theme.border().width());
+    m_icon_container.setBorderColor(m_theme.border().color());
+
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
     IconList::iterator icon_it_end = m_icon_list.end();
     for (; icon_it != icon_it_end; ++icon_it)
         renderButton(*(*icon_it));
+
+
 }
 
 void IconbarTool::renderButton(IconButton &button) {
@@ -228,6 +241,9 @@ void IconbarTool::renderButton(IconButton &button) {
         else
             button.setBackgroundColor(m_theme.focusedTexture().color());            
 
+        button.setBorderWidth(m_theme.focusedBorder().width());
+        button.setBorderColor(m_theme.focusedBorder().color());
+
     } else { // unfocused
         button.setGC(m_theme.unfocusedText().textGC());
         button.setFont(m_theme.unfocusedText().font());
@@ -237,6 +253,9 @@ void IconbarTool::renderButton(IconButton &button) {
             button.setBackgroundPixmap(m_unfocused_pm);
         else
             button.setBackgroundColor(m_theme.unfocusedTexture().color());
+
+        button.setBorderWidth(m_theme.unfocusedBorder().width());
+        button.setBorderColor(m_theme.unfocusedBorder().color());
     }
 }
 
