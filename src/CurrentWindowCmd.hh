@@ -87,6 +87,16 @@ private:
     const int m_workspace_num;
 };
 
+// goto tab
+class GoToTabCmd: public WindowHelperCmd {
+public:
+    explicit GoToTabCmd(int tab_num):m_tab_num(tab_num) { }
+protected:
+    void real_execute();
+private:
+    const int m_tab_num;
+};
+
 // move cmd, relative position
 class MoveCmd: public WindowHelperCmd {
 public:

@@ -60,6 +60,18 @@ void SendToPrevWorkspaceCmd::real_execute() {
     fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
 
+void GoToTabCmd::real_execute() {
+    if (fbwindow().numClients() <= 1 || m_tab_num > fbwindow().numClients())
+        return;
+
+    FluxboxWindow::ClientList::iterator it = fbwindow().clientList().begin();
+
+    int num = m_tab_num;
+    while (--num > 0) ++it;
+
+    fbwindow().setCurrentClient(**it, true);
+}
+
 void WindowHelperCmd::execute() {
     WinClient *client = Fluxbox::instance()->getFocusedWindow();
     if (client && client->fbwindow()) // guarantee that fbwindow() exists too

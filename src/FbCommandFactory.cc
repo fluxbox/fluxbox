@@ -131,6 +131,7 @@ FbCommandFactory::FbCommandFactory() {
         "showdesktop",
         "stick",
         "stickwindow",
+        "tab",
         "toggledecor",
         "windowmenu",
         "workspace",
@@ -286,7 +287,13 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SendToPrevWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "killwindow" || command == "kill")
         return new KillWindowCmd();
-     else if (command == "nexttab")
+    else if (command == "tab") {
+        // XXX
+        int num = 1;
+        if (!arguments.empty())
+            num = atoi(arguments.c_str());
+        return new GoToTabCmd(num);
+    } else if (command == "nexttab")
         return new CurrentWindowCmd(&FluxboxWindow::nextClient);
     else if (command == "prevtab")
         return new CurrentWindowCmd(&FluxboxWindow::prevClient);
