@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.287 2004/09/05 01:11:41 fluxgen Exp $
+// $Id: Screen.cc,v 1.288 2004/09/06 13:17:56 akir Exp $
 
 
 #include "Screen.hh"
@@ -410,12 +410,14 @@ BScreen::~BScreen() {
     
     if (! managed)
         return;
+    
+    if (m_rootmenu.get() != 0)
+        m_rootmenu->removeAll();
+    
     // Since workspacemenu holds client list menus (from workspace)
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
 
-    if (m_rootmenu.get() != 0)
-        m_rootmenu->removeAll();
 
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
