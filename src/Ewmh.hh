@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.15 2004/01/20 14:30:33 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.16 2004/01/21 09:37:04 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -27,6 +27,7 @@
 #include <vector>
 #include <map>
 
+/// Implementes Extended Window Manager Hints ( http://www.freedesktop.org/Standards/wm-spec )
 class Ewmh:public AtomHandler {
 public:
 
@@ -86,7 +87,12 @@ private:
     Atom m_net_close_window, m_net_wm_moveresize;
 
     // application window properties
-    Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, m_net_wm_window_type,
+    Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, 
+        // types
+        m_net_wm_window_type,
+        m_net_wm_window_type_dock,
+
+        // states
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
 	m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
         m_net_wm_state_fullscreen,

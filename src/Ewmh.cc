@@ -1,5 +1,5 @@
 // Ewmh.cc for fluxbox
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at user.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at user.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.39 2004/01/19 22:43:08 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.40 2004/01/21 09:37:10 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -81,6 +81,10 @@ void Ewmh::initForScreen(BScreen &screen) {
 	m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
+
+        // window type
+        m_net_wm_window_type,
+        m_net_wm_window_type_dock,
 
         // root properties
         m_net_client_list,
@@ -164,6 +168,44 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
     }
 
     updateWorkspace(win);
+
+    /* From Extended Window Manager Hints, draft 1.3:
+     *
+     * _NET_WM_WINDOW_TYPE, ATOM[]/32
+     *
+     * This SHOULD be set by the Client before mapping to a list of atoms
+     * indicating the functional type of the window. This property SHOULD
+     * be used by the window manager in determining the decoration, 
+     * stacking position and other behavior of the window. The Client 
+     * SHOULD specify window types in order of preference (the first being
+     * most preferable) but MUST include at least one of the basic window 
+     * type atoms from the list below. This is to allow for extension of 
+     * the list of types whilst providing default behavior for Window 
+     * Managers that do not recognize the extensions. 
+     *
+     */
+    win.winClient().property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM, 
+                             &ret_type, &fmt, &nitems, &bytes_after, 
+                             &data); 
+    if (data) {
+        Atom *atoms = (unsigned long *)data;
+        for (unsigned long l=0; l<nitems; ++l) {
+            /* From Extended Window Manager Hints, draft 1.3:
+             *
+             * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature. 
+             * Typically a Window Manager would keep such windows on top 
+             * of all other windows.
+             *
+             */
+            if (atoms[l] == m_net_wm_window_type_dock) {
+                win.moveToLayer(Fluxbox::instance()->getDockLayer());
+                // we also assume it shouldn't be visible in any toolbar
+                win.setHidden(true);
+                break;
+            }
+
+        }
+    }
 }
 
 void Ewmh::updateFrameClose(FluxboxWindow &win) {
@@ -319,7 +361,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 			 &text, m_net_desktop_names);
         XFree(text.value);
     }
-	
+
     for (size_t i = 0; i < number_of_desks; i++)
         delete [] names[i];	
 }
@@ -457,6 +499,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     }
 
 }
+
 
 // return true if we did handle the atom here
 bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
@@ -599,8 +642,11 @@ void Ewmh::createAtoms() {
     m_net_properties = XInternAtom(disp, "_NET_PROPERTIES", False);
     m_net_wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
     m_net_wm_desktop = XInternAtom(disp, "_NET_WM_DESKTOP", False);
+
+    // type atoms
     m_net_wm_window_type = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
-	
+    m_net_wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
+
     // state atom and the supported state atoms
     m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
     m_net_wm_state_sticky = XInternAtom(disp, "_NET_WM_STATE_STICKY", False);
