@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.3 2003/02/16 01:13:24 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.4 2003/02/23 01:03:56 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -74,6 +74,8 @@ public:
 
     GC labelTextFocusGC() const { return m_label_text_focus_gc; }
     GC labelTextUnfocusGC() const { return m_label_text_unfocus_gc; }
+    GC buttonPicFocusGC() const { return m_button_pic_focus_gc; }
+    GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc; }
 
     void reconfigTheme();
 
@@ -94,7 +96,7 @@ private:
     FbTk::ThemeItem<FbTk::Justify> m_textjustify;
 
     GC m_label_text_focus_gc, m_label_text_unfocus_gc;
-
+    GC m_button_pic_focus_gc, m_button_pic_unfocus_gc;
     FbTk::Subject m_theme_change;
 };
 

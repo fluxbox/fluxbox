@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.2 2003/02/15 01:55:45 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.3 2003/02/23 01:02:52 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -60,7 +60,8 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     Window rootwin = RootWindow(disp, screen_num);
     m_label_text_focus_gc = XCreateGC(disp, rootwin, 0, 0);
     m_label_text_unfocus_gc = XCreateGC(disp, rootwin, 0, 0);
-
+    m_button_pic_focus_gc = XCreateGC(disp, rootwin, 0, 0);
+    m_button_pic_unfocus_gc = XCreateGC(disp, rootwin, 0, 0);
 }
 
 FbWinFrameTheme::~FbWinFrameTheme() {
@@ -68,6 +69,8 @@ FbWinFrameTheme::~FbWinFrameTheme() {
     Display *disp = FbTk::App::instance()->display();
     XFreeGC(disp, m_label_text_focus_gc);
     XFreeGC(disp, m_label_text_unfocus_gc);
+    XFreeGC(disp, m_button_pic_focus_gc);
+    XFreeGC(disp, m_button_pic_unfocus_gc);
 }
 
 void FbWinFrameTheme::reconfigTheme() {
@@ -81,6 +84,12 @@ void FbWinFrameTheme::reconfigTheme() {
 
     gcv.foreground = m_label_unfocus_color->pixel();
     XChangeGC(disp, m_label_text_unfocus_gc, gc_value_mask, &gcv);
+
+    gcv.foreground = m_button_focus_color->pixel();
+    XChangeGC(disp, m_button_pic_focus_gc, gc_value_mask, &gcv);
+
+    gcv.foreground = m_button_unfocus_color->pixel();
+    XChangeGC(disp, m_button_pic_unfocus_gc, gc_value_mask, &gcv);
 
     // notify listeners
     m_theme_change.notify();
