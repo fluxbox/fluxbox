@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.29 2003/08/18 09:32:15 fluxgen Exp $
+// $Id: Remember.cc,v 1.30 2003/11/17 00:20:54 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -43,11 +43,24 @@
 
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
 #include <string>
 #include <memory>
 #include <set>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifdef HAVE_SSTREAM
+#include <sstream>
+#define FB_istringstream istringstream
+#elif HAVE_STRSTREAM 
+#include <strstream>
+#define FB_istringstream istrstream
+#else
+#error "You dont have sstream or strstream headers!"
+#endif // HAVE_STRSTREAM
 
 using namespace std;
 
@@ -157,7 +170,7 @@ bool handleStartupItem(const string &line, int offset) {
         if (pos > 0) {
             option = str.substr(0, pos);
             if (option == "screen") {
-                istringstream iss(str.c_str() + pos + 1);
+                FB_istringstream iss(str.c_str() + pos + 1);
                 iss >> screen;
             } else {
                 error = true;
@@ -303,22 +316,22 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 continue; //read next line
             if (str_key == "Workspace") {
                 unsigned int w;
-                istringstream iss(str_label.c_str());
+                FB_istringstream iss(str_label.c_str());
                 iss >> w;
                 app.rememberWorkspace(w);
             } else if (str_key == "Layer") {
                 unsigned int l;
-                istringstream iss(str_label.c_str());
+                FB_istringstream iss(str_label.c_str());
                 iss >> l;
                 app.rememberLayer(l);
             } else if (str_key == "Dimensions") {
                 unsigned int h,w;
-                istringstream iss(str_label.c_str());
+                FB_istringstream iss(str_label.c_str());
                 iss >> w >> h;
                 app.rememberDimensions(w,h);
             } else if (str_key == "Position") {
                 unsigned int x,y;
-                istringstream iss(str_label);
+                FB_istringstream iss(str_label.c_str());
                 iss >> x >> y;
                 app.rememberPosition(x,y);
             } else if (str_key == "Shaded") {
@@ -350,7 +363,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                     unsigned int mask;
                     const char * str = str_label.c_str();
                     // it'll have at least one char and \0, so this is safe
-                    istringstream iss(str);
+                    FB_istringstream iss(str);
                     // check for hex
                     if (str[0] == '0' && str[1] == 'x') {
                         iss.seekg(2);
