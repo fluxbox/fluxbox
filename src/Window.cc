@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.241 2003/10/06 06:22:43 rathnor Exp $
+// $Id: Window.cc,v 1.242 2003/10/26 20:59:07 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -499,8 +499,13 @@ void FluxboxWindow::init() {
             place_window = false;
 
     }
+    if (wattrib.width <= 0)
+        wattrib.width = 1;
+    if (wattrib.height <= 0)
+        wattrib.height = 1;
 
-    frame().moveResizeForClient(wattrib.x, wattrib.y, wattrib.width, wattrib.height);
+    frame().moveResizeForClient(wattrib.x, wattrib.y,
+                                wattrib.width, wattrib.height);
 
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() && 
