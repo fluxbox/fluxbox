@@ -1,5 +1,22 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/13:
+   * Added new theme items (Henrik)
+     * menu.borderWidth
+     * menu.borderColor
+     * menu.bevelWidth
+     * window.handleWidth
+     * window.bevelWidth
+     MenuTheme.cc, FbWinFrameTheme.cc/hh, RootTheme.hh/cc, 
+     Window.cc, Screen.cc
+   * Optimized rendering for windows (Henrik)
+     Reduced flicker
+     FbWinFrame.hh/cc, Window.cc
+   * Changed fallback options for window button pixmaps (Henrik)
+     *.focus/unfocus will fallback to old style if no pixmap is detected
+     WinButton.cc
+   * Added anjuta, blender -w, wings, rox filer, vmware, xlock 
+     to fluxbox-generate_menu  (Thanks Pol)
 *03/09/12:
    * Fix a couple of issues related to windows reparenting themselves
      to escape the WM. Hopefully fixes mplayer/vncviewer fullscreen
