@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.3 2003/04/28 22:25:13 fluxgen Exp $
+// $Id: Theme.cc,v 1.4 2003/05/08 15:10:57 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -105,6 +105,9 @@ void ThemeItem<FbTk::Texture>::load() {
         if (mask != 0)
             XFreePixmap(dpy, mask);
     } else { // failure
+#ifdef DEBUG
+        cerr<<"Couldn't load pixmap: "<<pixmap_name<<endl;
+#endif // DEBUG
         // create empty pixmap
         m_value.pixmap() = FbTk::FbPixmap();
     }
