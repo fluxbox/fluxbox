@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.87 2004/01/10 02:58:21 fluxgen Exp $
+// $Id: Slit.cc,v 1.88 2004/01/30 11:06:25 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -57,6 +57,7 @@
 #include "SlitClient.hh"
 #include "Xutil.hh"
 #include "FbAtoms.hh"
+#include "FbTk/StringUtil.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -415,7 +416,7 @@ void Slit::addClient(Window w) {
     // Look for slot in client list by name
     SlitClient *client = 0;
     std::string match_name;
-    match_name = Xutil::getWMName(w);
+    match_name = Xutil::getWMClassName(w);
     SlitClients::iterator it = m_client_list.begin();
     SlitClients::iterator it_end = m_client_list.end();
     bool found_match = false;
@@ -1123,22 +1124,34 @@ void Slit::toggleHidden() {
 }
 
 void Slit::loadClientList(const char *filename) {
-    if (filename == 0)
+    if (filename == 0 || filename[0] == '\0')
         return;
 
-    m_filename = filename; // save filename so we can save client list later
+    // save filename so we can save client list later
+    m_filename = FbTk::StringUtil::expandFilename(filename); 
 
     struct stat buf;
-    if (!stat(filename, &buf)) {
+    if (stat(filename, &buf) != 0) {
         std::ifstream file(filename);
         std::string name;
         while (! file.eof()) {
             name = "";
             std::getline(file, name); // get the entire line
-            if (name.size() > 0) { // don't add client unless we have a valid line
-                SlitClient *client = new SlitClient(name.c_str());
-                m_client_list.push_back(client);
-            }
+            if (name.size() <= 0)
+                continue;
+             
+            // remove whitespaces from start and end
+            FbTk::StringUtil::removeFirstWhitespace(name);
+
+            // the cleaned string could still be a comment, or blank
+            if ( name.size() <= 0 || name[0] == '#' || name[0] == '!' )
+                continue;
+
+            // trailing whitespace won't affect the above test
+            FbTk::StringUtil::removeTrailingWhitespace(name);
+
+            SlitClient *client = new SlitClient(name.c_str());
+            m_client_list.push_back(client);
         }
     }
 }

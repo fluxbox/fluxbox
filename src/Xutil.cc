@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xutil.cc,v 1.3 2004/01/11 16:04:39 fluxgen Exp $
+// $Id: Xutil.cc,v 1.4 2004/01/30 11:06:25 rathnor Exp $
 
 #include "Xutil.hh"
 
@@ -30,6 +30,8 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <iostream>
+using namespace std;
 
 namespace Xutil {
 
@@ -77,6 +79,58 @@ std::string getWMName(Window window) {
     }
 
     return name;
+}
+
+
+// The name of this particular instance
+std::string getWMClassName(Window win) {
+    XClassHint ch;
+    std::string instance_name;
+
+    if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
+#ifdef DEBUG
+        cerr<<"Xutil: Failed to read class hint!"<<endl;
+#endif //DEBUG
+        instance_name = "";
+    } else {        
+
+        XFree(ch.res_class);
+        
+        if (ch.res_class != 0) {
+            instance_name = const_cast<char *>(ch.res_name);
+            XFree(ch.res_name);
+            ch.res_name = 0;
+        } else
+            instance_name = "";
+    }
+
+    return instance_name;
+
+}
+
+// the name of the general class of the app
+std::string getWMClassClass(Window win) {
+    XClassHint ch;
+    std::string class_name;
+
+    if (XGetClassHint(FbTk::App::instance()->display(), win, &ch) == 0) {
+#ifdef DEBUG
+        cerr<<"Xutil: Failed to read class hint!"<<endl;
+#endif //DEBUG
+        class_name = "";
+    } else {        
+
+        XFree(ch.res_name);
+        
+        if (ch.res_class != 0) {
+            class_name = const_cast<char *>(ch.res_class);
+            XFree(ch.res_class);
+            ch.res_class = 0;
+        } else
+            class_name = "";
+    }
+
+    return class_name;
 }
 
 }; // end namespace Xutil

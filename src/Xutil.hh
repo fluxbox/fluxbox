@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xutil.hh,v 1.2 2004/01/11 16:04:39 fluxgen Exp $
+// $Id: Xutil.hh,v 1.3 2004/01/30 11:06:25 rathnor Exp $
 
 #ifndef XUTIL_HH
 #define XUTIL_HH
@@ -32,6 +32,10 @@
 namespace Xutil {
 
 std::string getWMName(Window window);
+
+std::string getWMClassName(Window win);
+std::string getWMClassClass(Window win);
+
 
 }; // end namespace Xutil
 
