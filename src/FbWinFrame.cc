@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.27 2003/06/13 21:00:18 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.28 2003/06/23 14:18:54 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -687,6 +687,7 @@ void FbWinFrame::renderTitlebar() {
 void FbWinFrame::renderHandles() {
     if (!m_use_handle || !m_visible)
         return;
+
     render(m_theme.handleFocusTexture(), m_handle_focused_color, 
            m_handle_focused_pm,
            m_handle.width(), m_handle.height());
@@ -765,17 +766,19 @@ void FbWinFrame::renderButtons() {
 }
 
 void FbWinFrame::init() {
-    // clear pixmaps
+
     m_current_label = 0; // no focused button at first
+
+    // clear pixmaps
     m_title_focused_pm = m_title_unfocused_pm = 0;
     m_label_focused_pm = m_label_unfocused_pm = 0;
-    m_button_unfocused_pm = m_button_pressed_pm = 0;
-    m_double_click_time = 200;
-    m_button_pm = 0;
-    m_button_size = 26;
-    m_handle_focused_pm = 
-        m_handle_unfocused_pm = 0;
+    m_handle_focused_pm = m_handle_unfocused_pm = 0;
+    m_button_pm = m_button_unfocused_pm = m_button_pressed_pm = 0;
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
+
+    m_double_click_time = 200;
+    m_button_size = 26;
+
     m_clientarea.setBorderWidth(0);
     m_shaded = false;
     m_label.show();
@@ -783,7 +786,7 @@ void FbWinFrame::init() {
     showHandle();
     showTitlebar();
 
-    // note: we don't show clientarea yet
+    // Note: we don't show clientarea yet
 
     setEventHandler(*this);
 
@@ -825,7 +828,7 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
         col = tex.color();
     } else
         pm = m_imagectrl.renderImage(w, h, tex);
-		
+
     if (tmp) 
         m_imagectrl.removeImage(tmp);
 
@@ -852,10 +855,11 @@ void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::getUnFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
-                                  FbTk::Color &label_color, FbTk::Color &title_color) {
-    if (m_label_unfocused_pm != 0)
+                                  FbTk::Color &label_color, 
+                                  FbTk::Color &title_color) {
+    if (m_label_unfocused_pm != 0) {
         label_pm = m_label_unfocused_pm;            
-    else
+    } else
         label_color = m_label_unfocused_color;            
 
     if (m_title_unfocused_pm != 0)
@@ -866,8 +870,8 @@ void FbWinFrame::getUnFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 
 void FbWinFrame::renderLabelButtons() {
     if (!m_visible) return;
-    Pixmap label_pm = None;
-    Pixmap not_used_pm = None;
+    Pixmap label_pm = 0;
+    Pixmap not_used_pm = 0;
     FbTk::Color label_color;
     FbTk::Color not_used_color;
     getCurrentFocusPixmap(label_pm, not_used_pm,
@@ -876,8 +880,10 @@ void FbWinFrame::renderLabelButtons() {
     ButtonList::iterator btn_it = m_labelbuttons.begin();
     ButtonList::iterator btn_it_end = m_labelbuttons.end();        
     for (; btn_it != btn_it_end; ++btn_it) {
+
         (*btn_it)->setGC(theme().labelTextFocusGC());
         (*btn_it)->window().setBorderWidth(1);
+
         if (m_label_unfocused_pm != 0)
             (*btn_it)->setBackgroundPixmap(m_label_unfocused_pm);
         else
@@ -892,6 +898,7 @@ void FbWinFrame::renderLabelButtons() {
             m_current_label->setBackgroundPixmap(label_pm);
         } else
             m_current_label->setBackgroundColor(label_color);
+
         m_current_label->clear();
     }
     
