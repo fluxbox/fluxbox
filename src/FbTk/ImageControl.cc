@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.11 2004/01/11 12:40:47 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.12 2004/01/21 14:15:29 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -115,6 +115,7 @@ ImageControl::ImageControl(int screen_num, bool dither,
 ImageControl::~ImageControl() {
     if (sqrt_table) {
         delete [] sqrt_table;
+        sqrt_table = 0;
     }
 
     if (grad_xbuffer) {
