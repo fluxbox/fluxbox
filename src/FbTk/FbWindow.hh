@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.20 2003/08/04 12:43:21 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.21 2003/08/13 09:28:44 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -67,11 +67,11 @@ public:
              int class_type = InputOutput);
 
     virtual ~FbWindow();
-    void setBackgroundColor(const FbTk::Color &bg_color);
-    void setBackgroundPixmap(Pixmap bg_pixmap);
-    void setBorderColor(const FbTk::Color &border_color);
-    void setBorderWidth(unsigned int size);
-    /// set window name (title)
+    virtual void setBackgroundColor(const FbTk::Color &bg_color);
+    virtual void setBackgroundPixmap(Pixmap bg_pixmap);
+    virtual void setBorderColor(const FbTk::Color &border_color);
+    virtual void setBorderWidth(unsigned int size);
+    /// set window name ("title")
     void setName(const char *name);
     void setEventMask(long mask);
     /// clear window with background pixmap or color
