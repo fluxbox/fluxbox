@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.9 2002/03/19 14:30:42 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.10 2002/04/03 12:08:54 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -42,7 +42,7 @@ private:
 		Toolbarmenu *toolbarmenu;
 
 	protected:
-		virtual void itemSelected(int, int);
+		virtual void itemSelected(int button, unsigned int index);
 
 	public:
 		Placementmenu(Toolbarmenu *);
@@ -56,7 +56,7 @@ private:
 		Toolbarmenu *toolbarmenu;
 
 	protected:
-		virtual void itemSelected(int, int); 
+		virtual void itemSelected(int button, unsigned int index); 
 	};
 	#endif // XINERAMA
  
@@ -73,7 +73,7 @@ private:
 
 
 protected:
-	virtual void itemSelected(int, int);
+	virtual void itemSelected(int button, unsigned int index);
 	virtual void internal_hide(void);
 
 public:

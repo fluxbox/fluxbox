@@ -170,7 +170,7 @@ void Windowmenu::show(void) {
 }
 
 
-void Windowmenu::itemSelected(int button, int index) {
+void Windowmenu::itemSelected(int button, unsigned int index) {
 	BasemenuItem *item = find(index);
 
 	switch (item->function()) {
@@ -254,7 +254,7 @@ Windowmenu::SendtoWorkspacemenu::SendtoWorkspacemenu(Windowmenu *w)
 }
 
 
-void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, int index) {
+void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int index) {
 	if (button > 2) return;
 
 	if (index <= windowmenu->screen->getCount()) {
@@ -272,7 +272,7 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, int index) {
 
 
 void Windowmenu::SendtoWorkspacemenu::update(void) {
-	int i, r = getCount();
+	unsigned int i, r = getCount();
 
 	if (getCount() != 0) {
 		for (i = 0; i < r; ++i)
@@ -291,7 +291,7 @@ void Windowmenu::SendtoWorkspacemenu::show(void) {
 	Basemenu::show();
 }
 
-void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, int index) {
+void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int index) {
 	if (button > 2)
 		return;
 

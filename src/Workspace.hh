@@ -1,3 +1,6 @@
+// Workspace.hh for Fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Workspace.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //

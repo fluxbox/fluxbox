@@ -55,7 +55,7 @@ private:
 		Slitmenu *slitmenu;
 
 	protected:
-		virtual void itemSelected(int, int);
+		virtual void itemSelected(int button, unsigned int index);
 
 	public:
 		Directionmenu(Slitmenu *);
@@ -66,7 +66,7 @@ private:
 		Slitmenu *slitmenu;
 
 	protected: 
-		virtual void itemSelected(int, int);
+		virtual void itemSelected(int button, unsigned int index);
 
 	public:
 		Placementmenu(Slitmenu *);
@@ -101,7 +101,7 @@ private:
 
 
 protected:
-	virtual void itemSelected(int, int);
+	virtual void itemSelected(int button, unsigned int index);
 	virtual void internal_hide(void);
 };
 

@@ -722,8 +722,8 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 
 	update();
 
-	if (slit->isOnTop()) setItemSelected(2, True);
-	if (slit->doAutoHide()) setItemSelected(3, True);
+	if (slit->isOnTop()) setItemSelected(2, true);
+	if (slit->doAutoHide()) setItemSelected(3, true);
 }
 
 
@@ -738,30 +738,32 @@ Slitmenu::~Slitmenu(void) {
 }
 
 
-void Slitmenu::itemSelected(int button, int index) {
+void Slitmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item) return;
 
 		switch (item->function()) {
 		case 1: // always on top
-			{
-	Bool change = ((slit->isOnTop()) ?	False : True);
-	slit->on_top = change;
-	setItemSelected(2, change);
+		{
+			bool change = ((slit->isOnTop()) ?	false : true);
+			slit->on_top = change;
+			setItemSelected(2, change);
 
-	if (slit->isOnTop()) slit->screen->raiseWindows((Window *) 0, 0);
-	break;
-			}
+			if (slit->isOnTop())
+				slit->screen->raiseWindows((Window *) 0, 0);
+			
+		break;
+		}
 
 		case 2: // auto hide
-			{
-	Bool change = ((slit->doAutoHide()) ?	False : True);
-	slit->do_auto_hide = change;
-	setItemSelected(3, change);
+		{
+			bool change = ((slit->doAutoHide()) ?	false : true);
+			slit->do_auto_hide = change;
+			setItemSelected(3, change);
 
-	break;
-			}
+		break;
+		}
 		}
 	}
 }
@@ -820,13 +822,13 @@ Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 	update();
 
 	if (sm->slit->screen->getSlitDirection() == Slit::HORIZONTAL)
-		setItemSelected(0, True);
+		setItemSelected(0, true);
 	else
-		setItemSelected(1, True);
+		setItemSelected(1, true);
 }
 
 
-void Slitmenu::Directionmenu::itemSelected(int button, int index) {
+void Slitmenu::Directionmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item) return;
@@ -834,11 +836,11 @@ void Slitmenu::Directionmenu::itemSelected(int button, int index) {
 		slitmenu->slit->screen->saveSlitDirection(item->function());
 
 		if (item->function() == Slit::HORIZONTAL) {
-			setItemSelected(0, True);
-			setItemSelected(1, False);
+			setItemSelected(0, true);
+			setItemSelected(1, false);
 		} else {
-			setItemSelected(0, False);
-			setItemSelected(1, True);
+			setItemSelected(0, false);
+			setItemSelected(1, true);
 		}
 
 		hide();
@@ -931,7 +933,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 }
 
 
-void Slitmenu::Placementmenu::itemSelected(int button, int index) {
+void Slitmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item) return;

@@ -21,8 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//use GNU extension
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -71,7 +70,7 @@ Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
 }
 
 
-void Workspacemenu::itemSelected(int button, int index) {
+void Workspacemenu::itemSelected(int button, unsigned int index) {
   if (button == 1) {
     if (index == 0)
       screen->addWorkspace();

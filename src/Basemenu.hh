@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.9 2002/03/27 18:47:12 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.10 2002/04/03 12:08:53 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -129,7 +129,7 @@ protected:
 	inline void setHideTree(bool h) { hide_tree = h; }
 	inline void setMinimumSublevels(int m) { menu.minsub = m; }
 
-	virtual void itemSelected(int, int) = 0;
+	virtual void itemSelected(int button, unsigned int index) = 0;
 	virtual void drawItem(unsigned int index, bool highlight= false, bool clear= false,
 			int x= -1, int y= -1, unsigned int width= 0, unsigned int height= 0);
 	virtual void redrawTitle();

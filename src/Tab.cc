@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.20 2002/02/04 06:50:48 fluxgen Exp $
+// $Id: Tab.cc,v 1.21 2002/04/03 12:08:54 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -284,8 +284,10 @@ void Tab::stick() {
 			win->blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->stuck = false;
-			if (!win->isIconic())
-				win->getScreen()->reassociateWindow(win, -1, true);
+			if (!win->isIconic()) {
+				BScreen *screen = win->getScreen();
+				screen->reassociateWindow(win, screen->getCurrentWorkspace()->getWorkspaceID(), true);
+			}
 
 		} else {
 			win->stuck = true;

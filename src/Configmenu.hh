@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.hh,v 1.3 2002/02/17 18:57:47 fluxgen Exp $
+// $Id: Configmenu.hh,v 1.4 2002/04/03 12:08:54 fluxgen Exp $
 
 #ifndef   CONFIGMENU_HH
 #define   CONFIGMENU_HH
@@ -41,7 +41,7 @@ private:
     Configmenu *configmenu;
 
   protected:
-    virtual void itemSelected(int, int);
+    virtual void itemSelected(int button, unsigned int index);
 
   public:
     Focusmenu(Configmenu *);
@@ -52,7 +52,7 @@ private:
     Configmenu *configmenu;
 
   protected:
-    virtual void itemSelected(int, int);
+    virtual void itemSelected(int button, unsigned int index);
 
   public:
     Placementmenu(Configmenu *);
@@ -63,7 +63,7 @@ private:
     Configmenu *configmenu;
 		void setSelected(void);
   protected:
-    virtual void itemSelected(int, int);
+    virtual void itemSelected(int button, unsigned int index);
 
   public:
     Tabmenu(Configmenu *);
@@ -81,7 +81,7 @@ private:
 
 
 protected:
-  virtual void itemSelected(int, int);
+  virtual void itemSelected(int button, unsigned int index);
 
 
 public:

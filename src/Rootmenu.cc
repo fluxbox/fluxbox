@@ -56,7 +56,7 @@ Rootmenu::Rootmenu(BScreen *scrn) : Basemenu(scrn) {
 }
 
 
-void Rootmenu::itemSelected(int button, int index) {
+void Rootmenu::itemSelected(int button, unsigned int index) {
 	
 	Fluxbox *fluxbox = Fluxbox::instance();
 	

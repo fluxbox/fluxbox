@@ -44,7 +44,7 @@ private:
 		Windowmenu *windowmenu;
 
 	protected:
-		virtual void itemSelected(int, int);
+		virtual void itemSelected(int button, unsigned int index);
 
 	public:
 		SendtoWorkspacemenu(Windowmenu *);
@@ -56,9 +56,9 @@ private:
  	
 	class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
 	protected:	
-		virtual void itemSelected(int, int);
+		virtual void itemSelected(int button, unsigned int index);
 	public:
-		SendGroupToWorkspacemenu(Windowmenu *);
+		SendGroupToWorkspacemenu(Windowmenu *winmenu);
 				
 	};
 	
@@ -69,7 +69,7 @@ private:
 	friend class SendGroupToWorkspacemenu;
 
 protected:
-	virtual void itemSelected(int, int);
+	virtual void itemSelected(int button, unsigned int index);
 
 
 public:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.26 2002/04/02 23:14:54 fluxgen Exp $
+// $Id: Screen.hh,v 1.27 2002/04/03 12:08:54 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -124,8 +124,8 @@ public:
 	inline const unsigned int getCurrentWorkspaceID() const { return current_workspace->getWorkspaceID(); }
 
     typedef std::vector<FluxboxWindow *> Icons;
-	inline const unsigned int getCount(void) { return workspacesList.size(); }
-	inline const int getIconCount(void) { return iconList.size(); }
+	inline const unsigned int getCount(void) const { return workspacesList.size(); }
+	inline const unsigned int getIconCount(void) const { return iconList.size(); }
 	inline Icons &getIconList(void) { return iconList; }
 
 	inline const int getNumberOfWorkspaces(void) { return *resource.workspaces; }

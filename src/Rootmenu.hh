@@ -35,7 +35,7 @@ private:
 
 
 protected:
-  virtual void itemSelected(int, int);
+  virtual void itemSelected(int button, unsigned int index);
 
 
 public:

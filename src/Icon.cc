@@ -19,8 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//Use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -50,9 +49,9 @@ Iconmenu::Iconmenu(BScreen *scrn) : Basemenu(scrn) {
 }
 
 
-void Iconmenu::itemSelected(int button, int index) {
+void Iconmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
-		if (index >= 0 && index < screen->getIconCount()) {
+		if (index < screen->getIconCount()) {
 			FluxboxWindow *win = screen->getIcon(index);
 
 			if (win)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.16 2002/03/29 21:47:58 pekdon Exp $
+// $Id: Toolbar.cc,v 1.17 2002/04/03 12:08:54 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1308,9 +1308,9 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 	update();
 
 	if (toolbar->isOnTop())
-		setItemSelected(1, True);
+		setItemSelected(1, true);
 	if (toolbar->doAutoHide())
-		setItemSelected(2, True);
+		setItemSelected(2, true);
 }
 
 
@@ -1325,7 +1325,7 @@ Toolbarmenu::~Toolbarmenu(void) {
 }
 
 
-void Toolbarmenu::itemSelected(int button, int index) {
+void Toolbarmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item) return;
@@ -1333,7 +1333,7 @@ void Toolbarmenu::itemSelected(int button, int index) {
 		switch (item->function()) {
 		case 1: // always on top
 			{
-			Bool change = ((toolbar->isOnTop()) ? False : True);
+			bool change = ((toolbar->isOnTop()) ? False : True);
 			toolbar->on_top = change;
 				setItemSelected(1, change);
 
@@ -1343,7 +1343,7 @@ void Toolbarmenu::itemSelected(int button, int index) {
 
 		case 2: // auto hide
 			{
-	Bool change = ((toolbar->doAutoHide()) ?	False : True);
+	bool change = ((toolbar->doAutoHide()) ?	False : True);
 	toolbar->do_auto_hide = change;
 	setItemSelected(2, change);
 
@@ -1450,7 +1450,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 }
 
 
-void Toolbarmenu::Placementmenu::itemSelected(int button, int index) {
+void Toolbarmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item)
@@ -1494,7 +1494,7 @@ Toolbarmenu::Headmenu::Headmenu(Toolbarmenu *tm)
 }
 
 
-void Toolbarmenu::Headmenu::itemSelected(int button, int index) {
+void Toolbarmenu::Headmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item)
