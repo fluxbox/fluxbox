@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.24 2003/05/15 12:00:42 fluxgen Exp $
+// $Id: Gnome.cc,v 1.25 2003/05/19 22:40:40 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -53,9 +53,9 @@ void Gnome::initForScreen(BScreen &screen) {
     Window gnome_win = XCreateSimpleWindow(disp,
                                            screen.rootWindow().window(), 0, 0, 5, 5, 0, 0, 0);
     // supported WM check
-    XChangeProperty(disp, screen.rootWindow().window(), 
-                    m_gnome_wm_supporting_wm_check, 
-                    XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+    screen.rootWindow().changeProperty(m_gnome_wm_supporting_wm_check, 
+                                       XA_CARDINAL, 32, 
+                                       PropModeReplace, (unsigned char *) &gnome_win, 1);
 
     XChangeProperty(disp, gnome_win, 
                     m_gnome_wm_supporting_wm_check, 
@@ -71,9 +71,10 @@ void Gnome::initForScreen(BScreen &screen) {
     };
 
     //list atoms that we support
-    XChangeProperty(disp, screen.rootWindow().window(), 
-                    m_gnome_wm_prot, XA_ATOM, 32, PropModeReplace,
-                    (unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
+    screen.rootWindow().changeProperty(m_gnome_wm_prot, 
+                                       XA_ATOM, 32, PropModeReplace,
+                                       (unsigned char *)gnomeatomlist, 
+                                       (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
 
     m_gnomewindows.push_back(gnome_win);
 
@@ -92,10 +93,9 @@ void Gnome::setupWindow(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     long flags, *data = 0;
 
-    if (XGetWindowProperty(disp, win.clientWindow(), 
-                           m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL, 
-                           &ret_type, &fmt, &nitems, &bytes_after, 
-                           (unsigned char **) &data) ==  Success && data) {
+    if (win.winClient().property(m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL, 
+                                 &ret_type, &fmt, &nitems, &bytes_after, 
+                                 (unsigned char **) &data) && data) {
         flags = *data;
         setState(&win, flags);
         XFree (data);
@@ -172,11 +172,9 @@ void Gnome::updateClientList(BScreen &screen) {
     }
     //number of windows to show in client list
     num = win;
-    XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.rootWindow().window(), 
-                    m_gnome_wm_win_client_list, 
-                    XA_CARDINAL, 32,
-                    PropModeReplace, (unsigned char *)wl, num);
+    screen.rootWindow().changeProperty(m_gnome_wm_win_client_list, 
+                                       XA_CARDINAL, 32,
+                                       PropModeReplace, (unsigned char *)wl, num);
 	
     delete[] wl;
 }
@@ -206,19 +204,16 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
 
 void Gnome::updateCurrentWorkspace(BScreen &screen) {
     int workspace = screen.currentWorkspaceID();
-    XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.rootWindow().window(),
-                    m_gnome_wm_win_workspace, XA_CARDINAL, 32, PropModeReplace,
-                    (unsigned char *)&workspace, 1);
+    screen.rootWindow().changeProperty(m_gnome_wm_win_workspace, XA_CARDINAL, 32, PropModeReplace,
+                                       (unsigned char *)&workspace, 1);
 
     updateClientList(screen); // make sure the client list is updated too
 }
 
 void Gnome::updateWorkspaceCount(BScreen &screen) {
     int numworkspaces = screen.getCount();
-    XChangeProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
-                    m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
-                    (unsigned char *)&numworkspaces, 1);
+    screen.rootWindow().changeProperty(m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
+                                       (unsigned char *)&numworkspaces, 1);
 }
 
 void Gnome::updateWorkspace(FluxboxWindow &win) {
@@ -227,9 +222,9 @@ void Gnome::updateWorkspace(FluxboxWindow &win) {
     cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
         ") for window("<<&win<<")"<<endl;
 #endif // DEBUG
-    XChangeProperty(FbTk::App::instance()->display(), win.clientWindow(), 
-                    m_gnome_wm_win_workspace, 
-                    XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
+    win.winClient().changeProperty(m_gnome_wm_win_workspace, 
+                                   XA_CARDINAL, 32, PropModeReplace,
+                                   (unsigned char *)&val, 1);
 }
 
 void Gnome::updateState(FluxboxWindow &win) {
@@ -242,18 +237,18 @@ void Gnome::updateState(FluxboxWindow &win) {
     if (win.isShaded())
         state |= WIN_STATE_SHADED;
 	
-    XChangeProperty(FbTk::App::instance()->display(), win.clientWindow(), 
-                    m_gnome_wm_win_state,
-                    XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
+    win.winClient().changeProperty(m_gnome_wm_win_state,
+                                   XA_CARDINAL, 32, 
+                                   PropModeReplace, (unsigned char *)&state, 1);
 }
 
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     // our layers are in the opposite direction to GNOME
     int layernum = Fluxbox::instance()->getDesktopLayer() - win.layerNum();
-    XChangeProperty(FbTk::App::instance()->display(), win.clientWindow(), 
-                    m_gnome_wm_win_layer,
-                    XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&layernum, 1);
+    win.winClient().changeProperty(m_gnome_wm_win_layer,
+                                   XA_CARDINAL, 32, PropModeReplace, 
+                                   (unsigned char *)&layernum, 1);
     
 }
 

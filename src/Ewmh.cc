@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.25 2003/05/15 12:00:42 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.26 2003/05/19 22:40:16 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -56,8 +56,8 @@ void Ewmh::initForScreen(BScreen &screen) {
     if (wincheck != None) {
         m_windows.push_back(wincheck);
 		
-        XChangeProperty(disp, screen.rootWindow().window(), m_net_supporting_wm_check, XA_WINDOW, 32,
-			PropModeReplace, (unsigned char *) &wincheck, 1);
+        screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
+                                           PropModeReplace, (unsigned char *) &wincheck, 1);
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *) &wincheck, 1);
 
@@ -86,18 +86,16 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_supporting_wm_check		
     };
 
-    XChangeProperty(disp, screen.rootWindow().window(), 
-                    m_net_supported, XA_ATOM, 32,
-                    PropModeReplace, 
-                    (unsigned char *) &atomsupported, 
-                    (sizeof atomsupported)/sizeof atomsupported[0]);
+    screen.rootWindow().changeProperty(m_net_supported, XA_ATOM, 32,
+                                       PropModeReplace, 
+                                       (unsigned char *) &atomsupported, 
+                                       (sizeof atomsupported)/sizeof atomsupported[0]);
 
 	
 }
 
 void Ewmh::setupWindow(FluxboxWindow &win) {
 
-    Display *disp = FbTk::App::instance()->display();
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
@@ -112,10 +110,9 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
         XFree(data);
 	}
 */
-    if (XGetWindowProperty(disp, win.clientWindow(), 
-                           m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
-                           &ret_type, &fmt, &nitems, &bytes_after, 
-                           (unsigned char **) &data) ==  Success && data) {
+    if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
+                                 &ret_type, &fmt, &nitems, &bytes_after, 
+                                 (unsigned char **) &data) && data) {
         unsigned int desktop = static_cast<unsigned int>(*data);
         if (desktop == 0xFFFFFFFF && !win.isStuck())
             win.stick();
@@ -192,11 +189,9 @@ void Ewmh::updateClientList(BScreen &screen) {
     
     //number of windows to show in client list
     num = win;
-    XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.rootWindow().window(), 
-                    m_net_client_list, 
-                    XA_CARDINAL, 32,
-                    PropModeReplace, (unsigned char *)wl, num);
+    screen.rootWindow().changeProperty(m_net_client_list, 
+                                       XA_CARDINAL, 32,
+                                       PropModeReplace, (unsigned char *)wl, num);
 	
     delete [] wl;
 }
@@ -224,18 +219,15 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
     size_t workspace = screen.currentWorkspaceID();
-    XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.rootWindow().window(),
-                    m_net_current_desktop, XA_CARDINAL, 32, PropModeReplace,
-                    (unsigned char *)&workspace, 1);
+    screen.rootWindow().changeProperty(m_net_current_desktop, XA_CARDINAL, 32, PropModeReplace,
+                                       (unsigned char *)&workspace, 1);
 
 }
 
 void Ewmh::updateWorkspaceCount(BScreen &screen) {
     size_t numworkspaces = screen.getCount();
-    XChangeProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
-                    m_net_number_of_desktops, XA_CARDINAL, 32, PropModeReplace,
-                    (unsigned char *)&numworkspaces, 1);
+    screen.rootWindow().changeProperty(m_net_number_of_desktops, XA_CARDINAL, 32, PropModeReplace,
+                                       (unsigned char *)&numworkspaces, 1);
 }
 
 void Ewmh::updateState(FluxboxWindow &win) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.181 2003/05/19 15:39:06 rathnor Exp $
+// $Id: Window.cc,v 1.182 2003/05/19 22:43:48 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1023,8 +1023,7 @@ void FluxboxWindow::getMWMHints() {
     Atom atom_return;
     unsigned long num, len;
     Atom  motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-    if (!XGetWindowProperty(display, m_client->window(),
-                            motif_wm_hints, 0,
+    if (!m_client->property(motif_wm_hints, 0,
                             PropMwmHintsElements, false,
                             motif_wm_hints, &atom_return,
                             &format, &num, &len,
@@ -1835,12 +1834,11 @@ void FluxboxWindow::restoreAttributes() {
     FbAtoms *fbatoms = FbAtoms::instance();
 	
     BlackboxAttributes *net;
-    if (XGetWindowProperty(display, m_client->window(),
-                           fbatoms->getFluxboxAttributesAtom(), 0l,
+    if (m_client->property(fbatoms->getFluxboxAttributesAtom(), 0l,
                            PropBlackboxAttributesElements, false,
                            fbatoms->getFluxboxAttributesAtom(), &atom_return, &foo,
-                           &nitems, &ulfoo, (unsigned char **) &net) ==
-        Success && net && nitems == (unsigned)PropBlackboxAttributesElements) {
+                           &nitems, &ulfoo, (unsigned char **) &net) &&
+        net && nitems == (unsigned)PropBlackboxAttributesElements) {
         m_blackbox_attrib.flags = net->flags;
         m_blackbox_attrib.attrib = net->attrib;
         m_blackbox_attrib.workspace = net->workspace;
