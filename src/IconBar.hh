@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.14 2003/04/15 12:06:11 fluxgen Exp $
+// $Id: IconBar.hh,v 1.15 2003/06/26 12:22:42 rathnor Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
@@ -64,12 +64,15 @@ public:
     void reconfigure();
     Window addIcon(FluxboxWindow *fluxboxwin);
     Window delIcon(FluxboxWindow *fluxboxwin);
-    WindowList *delAllIcons();
+    WindowList *delAllIcons(bool ignore_stuck = false);
     void buttonPressEvent(XButtonEvent *be);	
     FluxboxWindow *findWindow(Window w);
     IconBarObj *findIcon(FluxboxWindow * const fluxboxwin);
     const IconBarObj *findIcon(const FluxboxWindow * const fluxboxwin) const;
     void exposeEvent(XExposeEvent *ee);
+
+    void enableUpdates();
+    void disableUpdates();    
 
     void draw(const IconBarObj * const obj, int width) const;
     void setVertical(bool value) { m_vertical = value; }
@@ -90,6 +93,8 @@ private:
     unsigned long m_focus_pixel;
     bool m_vertical;
     FbTk::Font &m_font;
+
+    int allow_updates;
 };
 
 #endif // ICONBAR_HH

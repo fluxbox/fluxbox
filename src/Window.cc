@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.198 2003/06/25 13:37:06 fluxgen Exp $
+// $Id: Window.cc,v 1.199 2003/06/26 12:22:43 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1286,6 +1286,7 @@ void FluxboxWindow::maximizeVertical() {
 
 
 void FluxboxWindow::setWorkspace(int n) {
+    unsigned int old_wkspc = m_workspace_number;
 
     m_workspace_number = n;
 
@@ -1293,10 +1294,12 @@ void FluxboxWindow::setWorkspace(int n) {
     m_blackbox_attrib.workspace = m_workspace_number;
 
     // notify workspace change
+    if (!stuck && old_wkspc != m_workspace_number) {
 #ifdef DEBUG
-    cerr<<this<<" notify workspace signal"<<endl;
+        cerr<<this<<" notify workspace signal"<<endl;
 #endif // DEBUG
-    m_workspacesig.notify();
+        m_workspacesig.notify();
+    }
 }
 
 void FluxboxWindow::setLayerNum(int layernum) {
@@ -1354,6 +1357,9 @@ void FluxboxWindow::stick() {
     }
  
     setState(m_current_state);
+    // notify since some things consider "stuck" to be a pseudo-workspace
+    m_workspacesig.notify();
+
 }
 
 

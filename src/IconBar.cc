@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.37 2003/06/13 05:02:09 fluxgen Exp $
+// $Id: IconBar.cc,v 1.38 2003/06/26 12:22:42 rathnor Exp $
 
 #include "IconBar.hh"
 
@@ -84,7 +84,8 @@ IconBar::IconBar(BScreen &scrn, Window parent, FbTk::Font &font):
     m_parent(parent),
     m_focus_pm(None),
     m_vertical(false),
-    m_font(font)
+    m_font(font),
+    allow_updates(0)
 {
 
 }
@@ -103,9 +104,10 @@ Window IconBar::addIcon(FluxboxWindow *fluxboxwin) {
     decorate(iconwin);	
     //add window object to list	
     m_iconlist.push_back(new IconBarObj(fluxboxwin, iconwin));
+
     //reposition all icons to fit windowbar
     repositionIcons();
-	
+
     XMapSubwindows(m_display, iconwin);
     XMapWindow(m_display, iconwin);	
 	
@@ -139,16 +141,25 @@ Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
  * Removes all icons from list
  * Return X Windows of the removed iconobjs
  */
-IconBar::WindowList *IconBar::delAllIcons() {
+IconBar::WindowList *IconBar::delAllIcons(bool ignore_stuck) {
     Window retwin = None;
     WindowList *ret = new WindowList();
-    while (!m_iconlist.empty()) {
-            IconBarObj *obj = m_iconlist.back();
-            m_iconlist.pop_back();
-            retwin = obj->getIconWin();
-            ret->push_back(retwin);
-            delete obj;
-            XDestroyWindow(m_display, retwin);
+    IconList::iterator it = m_iconlist.begin();
+    IconList::iterator tmp = m_iconlist.end();
+    IconList::iterator it_end = m_iconlist.end();
+    while (it != it_end) {
+            IconBarObj *obj = *it;
+            if (!ignore_stuck || !obj->getFluxboxWin()->isStuck()) {
+                retwin = obj->getIconWin();
+                ret->push_back(retwin);
+                tmp = it;
+                ++it;
+                m_iconlist.erase(tmp);
+                delete obj;
+                XDestroyWindow(m_display, retwin);
+            } else {
+                ++it;
+            }
     }
     repositionIcons();
     return ret;
@@ -243,11 +254,22 @@ void IconBar::exposeEvent(XExposeEvent *ee) {
     }	
 }
 
+void IconBar::enableUpdates() {
+    --allow_updates;
+    if (allow_updates <= 0) 
+        repositionIcons();
+    
+}
+
+void IconBar::disableUpdates() {
+    ++allow_updates;
+}
+
 /**
  Calculates and moves/resizes the icons
 */
 void IconBar::repositionIcons() {
-    if (m_iconlist.size() == 0)
+    if (m_iconlist.size() == 0 || allow_updates > 0)
         return;
 		
     Window root;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.27 2003/06/23 14:16:04 rathnor Exp $
+// $Id: Gnome.cc,v 1.28 2003/06/26 12:22:42 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -218,7 +218,10 @@ void Gnome::updateWorkspaceCount(BScreen &screen) {
 }
 
 void Gnome::updateWorkspace(FluxboxWindow &win) {
-    int val = win.workspaceNumber(); 
+    int val = win.workspaceNumber();
+    if (win.isStuck()) {
+        val = -1;
+    }
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): setting workspace("<<val<<
         ") for window("<<&win<<")"<<endl;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.95 2003/06/25 12:33:28 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.96 2003/06/26 12:22:42 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -404,11 +404,11 @@ void Toolbar::delIcon(FluxboxWindow *w) {
         FbTk::EventManager::instance()->remove(m_iconbar->delIcon(w));
 }
 
-void Toolbar::delAllIcons() {
+void Toolbar::delAllIcons(bool ignore_stuck) {
     if (m_iconbar.get() == 0)
         return;
 
-    IconBar::WindowList *deleted = m_iconbar->delAllIcons();
+    IconBar::WindowList *deleted = m_iconbar->delAllIcons(ignore_stuck);
     IconBar::WindowList::iterator it = deleted->begin();
     IconBar::WindowList::iterator it_end = deleted->end();
     for (; it != it_end; ++it) {
@@ -419,6 +419,16 @@ void Toolbar::delAllIcons() {
     
 bool Toolbar::containsIcon(const FluxboxWindow &win) const {
     return (m_iconbar->findIcon(&win) != 0);
+}
+
+void Toolbar::enableUpdates() {
+    if (m_iconbar.get() != 0)
+        m_iconbar->enableUpdates();
+}
+
+void Toolbar::disableUpdates() {
+    if (m_iconbar.get() != 0)
+        m_iconbar->disableUpdates();
 }
 
 void Toolbar::enableIconBar() {

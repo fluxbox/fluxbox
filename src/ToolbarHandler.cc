@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.17 2003/06/24 16:27:18 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.18 2003/06/26 12:22:42 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -199,6 +199,10 @@ void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
 void ToolbarHandler::initForScreen(BScreen &screen) {
     if (&m_screen != &screen) 
         return;
+
+    if (m_toolbar.get() != 0)
+        m_toolbar->disableUpdates();
+
     switch (mode()) {
     case OFF:
         break;
@@ -212,6 +216,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
             Workspace::Windows::iterator wit = wins.begin();
             Workspace::Windows::iterator wit_end = wins.end();
             for (; wit != wit_end; ++wit) {
+                if (!m_toolbar->containsIcon(**wit))
                     m_toolbar->addIcon(*wit);
 /*
                 FluxboxWindow::ClientList::iterator cit = (*wit)->clientList().begin();
@@ -238,7 +243,8 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         Workspace::Windows::iterator wit = wins.begin();
         Workspace::Windows::iterator wit_end = wins.end();
         for (; wit != wit_end; ++wit) {
-            m_toolbar->addIcon(*wit);
+            if (!m_toolbar->containsIcon(**wit))
+                m_toolbar->addIcon(*wit);
         }
     }
     // fall through and add icons for this workspace
@@ -255,6 +261,10 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
     }
     break;
     }
+
+    if (m_toolbar.get() != 0)
+        m_toolbar->enableUpdates();
+
 }
 
 void ToolbarHandler::setupWindow(FluxboxWindow &win) {
@@ -305,7 +315,7 @@ void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
         }
         break;
     case WORKSPACE:
-        if (win.workspaceNumber() == m_current_workspace)
+        if (win.isStuck() || win.workspaceNumber() == m_current_workspace)
             m_toolbar->delIcon(&win);
         break;
     case ALLWINDOWS:
@@ -364,7 +374,8 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
             m_toolbar->addIcon(&win);
     } else {
         // relies on the fact that this runs but does nothing if window isn't contained.
-        m_toolbar->delIcon(&win);
+        if (!win.isStuck())
+            m_toolbar->delIcon(&win);
     }
 }
 
@@ -375,8 +386,10 @@ void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
     // otherwise ignore it
     if (mode() != WORKSPACE && mode() != WORKSPACEICONS)
         return;
-    m_toolbar->delAllIcons();
+    m_toolbar->disableUpdates();
+    m_toolbar->delAllIcons(true);
     initForScreen(m_screen);
+    m_toolbar->enableUpdates();
     m_toolbar->redrawWorkspaceLabel(true);
 }
 
