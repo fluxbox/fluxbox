@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.158 2003/06/15 11:38:35 rathnor Exp $
+// $Id: fluxbox.cc,v 1.159 2003/06/18 13:51:37 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -133,7 +133,7 @@ using namespace FbTk;
 #ifndef	 HAVE_BASENAME
 namespace {
 
-char *basename (char *s) {
+char *basename(char *s) {
     char *save = s;
 
     while (*s) {
@@ -803,10 +803,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case CreateNotify:
 	break;
     case DestroyNotify: {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): DestroyNotify window="<<hex<<
-            e->xdestroywindow.window<<dec<<endl;
-#endif // DEBUG
         FluxboxWindow *win = searchWindow(e->xdestroywindow.window);        
         if (win != 0) {
             WinClient *client = win->findClient(e->xdestroywindow.window);
@@ -827,10 +823,18 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case MotionNotify: 
         break;
-    case PropertyNotify:
+    case PropertyNotify: {
         m_last_time = e->xproperty.time;
-        // handled in FluxboxWindow::handleEvent			
-        break;
+        FluxboxWindow *win = searchWindow(e->xproperty.window);
+        if (win == 0)
+            break;
+        // most of them are handled in FluxboxWindow::handleEvent
+        // but some special cases like ewmh propertys needs to be checked 
+        for (int i=0; i<m_atomhandler.size(); ++i) {
+            if (m_atomhandler[i]->propertyNotify(*win, e->xproperty.atom))
+                break;
+        }
+    } break;
     case EnterNotify: {
         m_last_time = e->xcrossing.time;
         BScreen *screen = 0;
