@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.18 2002/03/23 02:02:01 pekdon Exp $
+// $Id: BaseDisplay.hh,v 1.19 2002/04/04 14:27:56 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -63,14 +63,11 @@ public:
 		ATTRIB_WORKSPACE = 0x10,
 		ATTRIB_STACK = 0x20,		
 		ATTRIB_DECORATION = 0x40
-	};
-	
-	enum Decor {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
-	
+	};	
 	
 	typedef struct _blackbox_hints {
 		unsigned long flags, attrib, workspace, stack;
-		Decor decoration;
+		int decoration;
 	} BlackboxHints;
 
 	typedef struct _blackbox_attributes {
