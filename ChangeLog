@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/10:
+  * Fixed icon in menu and improved menu loading speed (Henrik)
+    New option for menu file:
+    [key] (label) {argument to key} <the icon filename>
+    example:
+    [exec] (aterm) {aterm} <terminal.xpm>
+    MenuItem.cc/hh, FbMenuParser.hh/cc, MenuCreator.cc
 *04/06/08:
   * Fix up bsetroot nls, and couple of other tweaks (Simon)
     util/Makefile.am bsetroot.cc nls/Makefile.am fluxbox-nls.hh nlsinfo 
