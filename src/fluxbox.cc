@@ -324,86 +324,55 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_fluxbox_pid = XInternAtom(disp, "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
 
-    // Allocate screens
-    for (int i = 0; i < ScreenCount(display()); i++) {
-        char scrname[128], altscrname[128];
-        sprintf(scrname, "session.screen%d", i);
-        sprintf(altscrname, "session.Screen%d", i);
-        BScreen *screen = new BScreen(m_screen_rm.lock(),
-                                      scrname, altscrname,
-                                      i, getNumberOfLayers());
-        if (! screen->isScreenManaged()) {
-            delete screen;
-            continue;
+
+    vector<int> screens;
+    int i;
+
+    // default is "use all screens"
+    for (i = 0; i < ScreenCount(disp); i++)
+        screens.push_back(i);
+
+    // find out, on what "screens" fluxbox should run
+    for (i = 1; i < m_argc; i++) {
+        if (! strcmp(m_argv[i], "-screen")) {
+            if ((++i) >= m_argc) {
+                cerr<<"error, -screen requires argument\n";
+                exit(1);
+            }
+
+            // "all" is default
+            if (! strcmp(m_argv[i], "all"))
+                break;
+
+            vector<string> vals;
+            vector<int> scrtmp;
+            int scrnr = 0;
+            FbTk::StringUtil::stringtok(vals, m_argv[i], ",:");
+            for (vector<string>::iterator scrit = vals.begin(); 
+                 scrit != vals.end(); scrit++) {
+                scrnr = atoi(scrit->c_str());
+                if (scrnr >= 0 && scrnr < ScreenCount(disp))
+                    scrtmp.push_back(scrnr);
+            }
+
+            if (!vals.empty())
+                swap(scrtmp, screens);
         }
-        // add to our list
-        m_screen_list.push_back(screen);
-
-        // now we can create menus (which needs this screen to be in screen_list)
-        screen->initMenus();
-
-#ifdef HAVE_GETPID
-        pid_t bpid = getpid();
-
-        screen->rootWindow().changeProperty(getFluxboxPidAtom(), XA_CARDINAL,
-                                            sizeof(pid_t) * 8, PropModeReplace,
-                                            (unsigned char *) &bpid, 1);
-#endif // HAVE_GETPID
-
-#ifdef HAVE_RANDR
-        // setup RANDR for this screens root window
-        // we need to determine if we should use old randr select input function or not
-#ifdef X_RRScreenChangeSelectInput
-        // use old set randr event
-        XRRScreenChangeSelectInput(disp, screen->rootWindow().window(), True);
-#else
-        XRRSelectInput(disp, screen->rootWindow().window(),
-                       RRScreenChangeNotifyMask);
-#endif // X_RRScreenChangeSelectInput
-
-#endif // HAVE_RANDR
-
-
-#ifdef USE_TOOLBAR
-        m_toolbars.push_back(new Toolbar(*screen,
-                                         *screen->layerManager().
-                                         getLayer(Fluxbox::instance()->getNormalLayer())));
-#endif // USE_TOOLBAR
-
-        // must do this after toolbar is created
-        screen->initWindows();
-
-        // attach screen signals to this
-        screen->currentWorkspaceSig().attach(this);
-        screen->workspaceCountSig().attach(this);
-        screen->workspaceNamesSig().attach(this);
-        screen->workspaceAreaSig().attach(this);
-        screen->clientListSig().attach(this);
-
-        // initiate atomhandler for screen specific stuff
-        for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end();
-             it++) {
-            (*it).first->initForScreen(*screen);
-        }
-
-        revertFocus(*screen); // make sure focus style is correct
-#ifdef SLIT
-        if (screen->slit())
-            screen->slit()->show();
-#endif // SLIT
-
-
-    } // end init screens
+    }
+    
+    // init all "screens"
+    for(i = 0; i < screens.size(); i++)
+        initScreen(screens[i]);
+    
     XAllowEvents(disp, ReplayPointer, CurrentTime);
 
-
-    m_keyscreen = m_mousescreen = m_screen_list.front();
 
     if (m_screen_list.empty()) {
         throw string(_FBTEXT(Fluxbox, ErrorNoScreens,
                              "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", "Error message when no unmanaged screens found - usually means another window manager is running"));
     }
+
+    m_keyscreen = m_mousescreen = m_screen_list.front();
 
     // setup theme manager to have our style file ready to be scanned
     FbTk::ThemeManager::instance().load(FbTk::StringUtil::expandFilename(getStyleFilename()));
@@ -466,6 +435,84 @@ Fluxbox::~Fluxbox() {
 
     clearMenuFilenames();
 }
+
+
+int Fluxbox::initScreen(int scrnr) {
+    
+    Display* disp = display();
+    char scrname[128], altscrname[128];
+    sprintf(scrname, "session.screen%d", scrnr);
+    sprintf(altscrname, "session.Screen%d", scrnr);
+    BScreen *screen = new BScreen(m_screen_rm.lock(),
+                                  scrname, altscrname,
+                                  scrnr, getNumberOfLayers());
+
+    // already handled
+    if (! screen->isScreenManaged()) {
+        delete screen;
+        return 0;
+    }
+    
+    // add to our list
+    m_screen_list.push_back(screen);
+
+    // now we can create menus (which needs this screen to be in screen_list)
+    screen->initMenus();
+
+#ifdef HAVE_GETPID
+    pid_t bpid = getpid();
+
+    screen->rootWindow().changeProperty(getFluxboxPidAtom(), XA_CARDINAL,
+                                        sizeof(pid_t) * 8, PropModeReplace,
+                                        (unsigned char *) &bpid, 1);
+#endif // HAVE_GETPID
+
+#ifdef HAVE_RANDR
+    // setup RANDR for this screens root window
+    // we need to determine if we should use old randr select input function or not
+#ifdef X_RRScreenChangeSelectInput
+    // use old set randr event
+    XRRScreenChangeSelectInput(disp, screen->rootWindow().window(), True);
+#else
+    XRRSelectInput(disp, screen->rootWindow().window(),
+                   RRScreenChangeNotifyMask);
+#endif // X_RRScreenChangeSelectInput
+
+#endif // HAVE_RANDR
+
+
+#ifdef USE_TOOLBAR
+    m_toolbars.push_back(new Toolbar(*screen,
+                                     *screen->layerManager().
+                                     getLayer(Fluxbox::instance()->getNormalLayer())));
+#endif // USE_TOOLBAR
+
+    // must do this after toolbar is created
+    screen->initWindows();
+
+    // attach screen signals to this
+    screen->currentWorkspaceSig().attach(this);
+    screen->workspaceCountSig().attach(this);
+    screen->workspaceNamesSig().attach(this);
+    screen->workspaceAreaSig().attach(this);
+    screen->clientListSig().attach(this);
+
+    // initiate atomhandler for screen specific stuff
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end();
+         it++) {
+        (*it).first->initForScreen(*screen);
+    }
+
+    revertFocus(*screen); // make sure focus style is correct
+#ifdef SLIT
+    if (screen->slit())
+        screen->slit()->show();
+#endif // SLIT
+
+    return 1;
+}
+
 
 void Fluxbox::eventLoop() {
     Display *disp = display();

@@ -98,7 +98,7 @@ public:
     WinClient *searchWindow(Window);
     inline WinClient *getFocusedWindow() { return m_focused_window; }
 
-
+    int initScreen(int screen_nr);
     BScreen *searchScreen(Window w);
 
     inline unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
