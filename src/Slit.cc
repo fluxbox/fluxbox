@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.49 2003/05/11 17:42:51 fluxgen Exp $
+// $Id: Slit.cc,v 1.50 2003/05/11 19:01:09 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -934,7 +934,7 @@ void Slit::handleEvent(XEvent &event) {
         Display *disp = FbTk::App::instance()->display();
         // Check if KDE v2.x dock applet
         if (XGetWindowProperty(disp, event.xmaprequest.window,
-                               kwm2_dockwindow, 0l, 1l, False,
+                               m_kwm2_dockwindow, 0l, 1l, False,
                                XA_WINDOW, &ajunk, &ijunk, &uljunk,
                                &uljunk, (unsigned char **) &data) == Success) {
 					
@@ -947,8 +947,8 @@ void Slit::handleEvent(XEvent &event) {
         // Check if KDE v1.x dock applet
         if (!iskdedockapp) {
             if (XGetWindowProperty(disp, event.xmaprequest.window,
-                                   kwm1_dockwindow, 0l, 1l, False,
-                                   kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
+                                   m_kwm1_dockwindow, 0l, 1l, False,
+                                   m_kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
                                    &uljunk, (unsigned char **) &data) == Success) {
                 iskdedockapp = (data && data[0] != 0);
                 XFree((char *) data);
