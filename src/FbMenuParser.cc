@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenuParser.cc,v 1.1 2004/05/02 21:02:26 fluxgen Exp $
+// $Id: FbMenuParser.cc,v 1.2 2004/06/10 11:42:35 fluxgen Exp $
 
 #include "FbMenuParser.hh"
 
@@ -59,6 +59,10 @@ Parser &FbMenuParser::operator >> (Parser::Item &out) {
         first = '{';
         second = '}';
         break;
+    case ICON:
+        first = '<';
+        second = '>';
+        break;
     case DONE: // get new line and call this again
         if (!nextLine()) {
             out = Parser::s_empty_item;
@@ -78,6 +82,8 @@ Parser &FbMenuParser::operator >> (Parser::Item &out) {
         else if (m_curr_token == NAME)
             m_curr_token = ARGUMENT;
         else if (m_curr_token == ARGUMENT)
+            m_curr_token = ICON;
+        else if (m_curr_token == ICON)
             m_curr_token = DONE;
 
         out = Parser::s_empty_item;
@@ -101,6 +107,10 @@ Parser &FbMenuParser::operator >> (Parser::Item &out) {
         break;
     case ARGUMENT:
         out.first = "ARGUMENT";
+        m_curr_token = ICON;
+        break;
+    case ICON:
+        out.first = "ICON";
         m_curr_token = DONE;
         break;
     case DONE:

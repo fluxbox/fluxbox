@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenuParser.hh,v 1.1 2004/05/02 21:02:26 fluxgen Exp $
+// $Id: FbMenuParser.hh,v 1.2 2004/06/10 11:42:35 fluxgen Exp $
 
 #ifndef FBMENUPARSER_HH
 #define FBMENUPARSER_HH
@@ -52,7 +52,7 @@ private:
     int m_row;
     int m_curr_pos;
     std::string m_curr_line;
-    enum Object {TYPE, NAME, ARGUMENT, DONE} m_curr_token;
+    enum Object {TYPE, NAME, ARGUMENT, ICON, DONE} m_curr_token;
 };
 
 #endif // FBMENUPARSER_HH
