@@ -1,5 +1,5 @@
 // main.cc for FbRun
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen(at)linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.8 2002/12/05 00:07:39 fluxgen Exp $
+// $Id: main.cc,v 1.9 2003/04/27 01:04:39 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -32,7 +32,7 @@
 using namespace std;
 
 void showUsage(const char *progname) {
-    cerr<<"fbrun 1.1.2 : (c) 2002 Henrik Kinnunen"<<endl;
+    cerr<<"fbrun 1.1.3 : (c) 2002-2003 Henrik Kinnunen"<<endl;
     cerr<<"Usage: "<<
         progname<<" [arguments]"<<endl<<
         "Arguments: "<<endl<<
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
         if (antialias)
             fbrun.setAntialias(antialias);
         // expand and load command history
-        string expanded_filename = StringUtil::expandFilename(history_file);
+        string expanded_filename = FbTk::StringUtil::expandFilename(history_file);
         if (!fbrun.loadHistory(expanded_filename.c_str()))
             cerr<<"FbRun Warning: Failed to load history file: "<<expanded_filename<<endl;
 
