@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.3 2002/11/12 19:16:26 fluxgen Exp $
+// $Id: main.cc,v 1.4 2002/11/13 22:25:59 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "BaseDisplay.hh"
@@ -79,36 +79,26 @@ int main(int argc, char **argv) {
 	// parse arguments
 	for (int i=1; i<argc; i++) {
 		if (strcmp(argv[i], "-font") == 0 && i+1 < argc) {
-			++i;
-			fontname = argv[i];
+			fontname = argv[++i];
 		} else if (strcmp(argv[i], "-title") == 0 && i+1 < argc) {
-			++i;
-			title = argv[i];
+			title = argv[++i];
 		} else if (strcmp(argv[i], "-text") == 0 && i+1 < argc) {
-			++i;
-			text = argv[i];
+			text = argv[++i];
 		} else if (strcmp(argv[i], "-w") == 0 && i+1 < argc) {
-			++i;
-			width = atoi(argv[i]);			
+			width = atoi(argv[++i]);			
 		} else if (strcmp(argv[i], "-h") == 0 && i+1 < argc) {
-			++i;
-			height = atoi(argv[i]);
+			height = atoi(argv[++i]);
 			set_height = true; // mark true else the height of font will be used
 		} else if (strcmp(argv[i], "-display") == 0 && i+1 < argc) {
-			++i;
-			display_name = argv[i];
+			display_name = argv[++i];
 		} else if (strcmp(argv[i], "-pos") == 0 && i+2 < argc) {
-			++i;
-			x = atoi(argv[i]);
-			++i;
-			y = atoi(argv[i]);
+			x = atoi(argv[++i]);
+			y = atoi(argv[++i]);
 			set_pos = true;
 		} else if (strcmp(argv[i], "-fg") == 0 && i+1 < argc) {
-			++i;
-			foreground = argv[i];
+			foreground = argv[++i];
 		} else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
-			++i;
-			background = argv[i];
+			background = argv[++i];
 		} else if (strcmp(argv[i], "-a") == 0) {
 			antialias = true;
 		} else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
