@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.43 2003/02/02 16:32:40 rathnor Exp $
+// $Id: Window.hh,v 1.44 2003/02/03 13:53:48 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -55,6 +55,7 @@ class BScreen;
 namespace FbTk {
 class MenuTheme;
 class ImageControl;
+class XLayer;
 };
 
 /// Creates the window frame and handles any window event for it
@@ -96,8 +97,10 @@ public:
     };
 
     /// create fluxbox window with parent win and screen connection
-    FluxboxWindow(Window win, BScreen *scr, int screen_num, FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
-                  FbTk::MenuTheme &menutheme);
+    FluxboxWindow(Window win, BScreen *scr, 
+                  int screen_num, FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
+                  FbTk::MenuTheme &menutheme,
+                  FbTk::XLayer &layer);
     virtual ~FluxboxWindow();
 
 
@@ -197,8 +200,8 @@ public:
     const BScreen *getScreen() const { return screen; }
     BScreen *getScreen() { return screen; }
 
-    const FbTk::XLayerItem *getLayerItem() const { return m_layeritem; }
-    FbTk::XLayerItem *getLayerItem() { return m_layeritem; }
+    const FbTk::XLayerItem &getLayerItem() const { return m_layeritem; }
+    FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
 
     const Tab *getTab() const { return tab; }
     Tab *getTab() { return tab; }
@@ -328,7 +331,9 @@ private:
 
     Time lastButtonPressTime;
     FbTk::Menu m_windowmenu;
-    FbTk::XLayerItem *m_layeritem;
+    
+
+    FbTk::XLayerItem m_layeritem;
     int m_layernum;
 
     timeval lastFocusTime;
