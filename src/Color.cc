@@ -19,9 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.1 2002/09/14 12:47:50 fluxgen Exp $
+// $Id: Color.cc,v 1.2 2002/09/14 13:49:51 fluxgen Exp $
 
 #include "Color.hh"
+
+#include "BaseDisplay.hh"
+
+#include <iostream>
+using namespace std;
 
 namespace {
 unsigned char maxValue(unsigned short colval) {
@@ -35,35 +40,29 @@ unsigned char maxValue(unsigned short colval) {
 
 namespace FbTk {
 Color::Color():
-m_allocated(false) {
+m_allocated(false),
+m_screen(0) {
 
+}
+
+Color::Color(const Color &col_copy) {
+	copy(col_copy);
 }
 
 Color::Color(unsigned char red, unsigned char green, unsigned char blue, int screen):
 m_red(red),	m_green(green), m_blue(blue), 
-m_pixel(0), m_allocated(false) { 
-	
-	Display *disp = BaseDisplay::getXDisplay();
-	XColor color;
-	// fill xcolor structure
-	color.red = red;
-	color.blue = blue;
-	color.green = green;
-	
-	if (!XAllocColor(disp, DefaultColormap(disp, screen), &color)) {
-		cerr<<"FbTk::Color: Allocation error."<<endl;
-	} else {
-		setRGB(maxValue(color.red),
-			maxValue(color.green),
-			maxValue(color.blue));
-		setPixel(color.pixel);
-		setAllocated(true);
-	}
+m_pixel(0), m_allocated(false),
+m_screen(screen) { 
+	allocate(red, green, blue, screen);
 }
 
 Color::Color(const char *color_string, int screen):
 m_allocated(false) {
 	setFromString(color_string, screen);
+}
+
+Color::~Color() {
+	free();
 }
 
 bool Color::setFromString(const char *color_string, int screen) {
@@ -90,18 +89,65 @@ bool Color::setFromString(const char *color_string, int screen) {
 		maxValue(color.green),
 		maxValue(color.blue));
 	setAllocated(true);
+	m_screen = screen;
 
 	return true;
 }
 
+Color &Color::Color::operator  = (const Color &col_copy) {
+	copy(col_copy);
+	return *this;
+}
+
 void Color::free() {
 	if (isAllocated()) {
-		unsigned long pixel = col.pixel();
-		XFreeColors(disp, colm, &pixel, 1, 0);
+		unsigned long pixel = m_pixel;
+		Display *disp = BaseDisplay::getXDisplay();
+		XFreeColors(disp, DefaultColormap(disp, m_screen), &pixel, 1, 0);
 		setPixel(0);
 		setRGB(0, 0, 0);
 		setAllocated(false);
 	}	
 }
 
+void Color::copy(const Color &col_copy) {
+	if (!col_copy.isAllocated()) {
+		free();
+		return;
+	}
+	
+	free();
+		
+	allocate(col_copy.red(), 
+		col_copy.green(),
+		col_copy.blue(),
+		col_copy.m_screen);
+	
+}
+
+void Color::allocate(unsigned char red, unsigned char green, unsigned char blue, int screen) {
+
+	Display *disp = BaseDisplay::getXDisplay();
+	XColor color;
+	// fill xcolor structure
+	color.red = red;
+	color.blue = blue;
+	color.green = green;
+	
+	if (!XAllocColor(disp, DefaultColormap(disp, screen), &color)) {
+		cerr<<"FbTk::Color: Allocation error."<<endl;
+	} else {
+		setRGB(maxValue(color.red),
+			maxValue(color.green),
+			maxValue(color.blue));
+		setPixel(color.pixel);
+		setAllocated(true);
+	}
+}
+
+void Color::setRGB(unsigned char red, unsigned char green, unsigned char blue) {
+	m_red = red;
+	m_green = green;
+	m_blue = blue;
+}
 };
