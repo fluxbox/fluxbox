@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.17 2002/10/24 11:26:16 fluxgen Exp $
+//$Id: Font.cc,v 1.18 2002/10/24 11:30:45 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -86,16 +86,16 @@ m_antialias(false) {
 	// antialias is prio 1
 #ifdef USE_XFT
 	if (antialias) {
-		m_fontimp.reset(std::auto_ptr<FontImp>(new XftFontImp(0, m_utf8mode)).release());
+		m_fontimp.reset(new XftFontImp(0, m_utf8mode));
 		m_antialias = true;
 	}
 #endif //USE_XFT
 	// if we didn't create a Xft font then create basic font
 	if (m_fontimp.get() == 0) {
 		if (m_multibyte || m_utf8mode)
-			m_fontimp.reset(std::auto_ptr<FontImp>(new XmbFontImp(0, m_utf8mode)).release());
+			m_fontimp.reset(new XmbFontImp(0, m_utf8mode));
 		else // basic font implementation
-			m_fontimp.reset(std::auto_ptr<FontImp>(new XFontImp()).release());
+			m_fontimp.reset(new XFontImp());
 	}
 	
 	if (name != 0) {
@@ -112,14 +112,14 @@ void Font::setAntialias(bool flag) {
 	bool loaded = m_fontimp->loaded();
 #ifdef USE_XFT
 	if (flag && !isAntialias()) {
-		m_fontimp.reset(std::auto_ptr<FontImp>(new XftFontImp(m_fontstr.c_str(), m_utf8mode)).release());
+		m_fontimp.reset(new XftFontImp(m_fontstr.c_str(), m_utf8mode));
 	} else if (!flag && isAntialias()) 
 #endif // USE_XFT
 	{
 		if (m_multibyte || m_utf8mode)
-			m_fontimp.reset(std::auto_ptr<FontImp>(new XmbFontImp(m_fontstr.c_str(), m_utf8mode)).release());
+			m_fontimp.reset(new XmbFontImp(m_fontstr.c_str(), m_utf8mode));
 		else {
-			m_fontimp.reset(std::auto_ptr<FontImp>(new XFontImp(m_fontstr.c_str())).release());
+			m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
 		}
 	}
 
