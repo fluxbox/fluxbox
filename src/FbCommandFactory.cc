@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.17 2003/09/29 13:01:01 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.18 2003/09/29 14:22:07 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -32,6 +32,10 @@
 #include "SimpleCommand.hh"
 #include "Screen.hh"
 
+#include "FbTk/StringUtil.hh"
+#include "FbTk/MacroCommand.hh"
+
+#include <string>
 #include <sstream>
 
 // autoregister this module to command parser
@@ -51,6 +55,7 @@ FbCommandFactory::FbCommandFactory() {
         "killwindow",
         "leftworkspace",
         "lower",
+        "macrocmd",
         "maximize",
         "maximizehorizontal",
         "maximizevertical",
@@ -217,5 +222,44 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new ShowWorkspaceMenuCmd();
     else if (command == "setworkspacename")
         return new SetWorkspaceNameCmd();
+    //
+    // special commands
+    //
+    else if (command == "macrocmd") {
+      std::string cmd;
+      int   err= 0;
+      int   parse_pos= 0;
+      FbTk::MacroCommand* macro= new FbTk::MacroCommand();
+
+      while (true) {
+        parse_pos+= err;
+        err= FbTk::StringUtil::getStringBetween(cmd, arguments.c_str() + parse_pos,
+                                              '{', '}', " \t\n", true);
+        if ( err > 0 ) {
+          std::string c, a;
+          std::string::size_type first_pos = FbTk::StringUtil::removeFirstWhitespace(cmd);
+          std::string::size_type second_pos= cmd.find_first_of(" \t", first_pos);
+          if (second_pos != std::string::npos) {
+            a= cmd.substr(second_pos);
+            FbTk::StringUtil::removeFirstWhitespace(a);
+            cmd.erase(second_pos);
+          }
+          c= FbTk::StringUtil::toLower(cmd);
+
+          FbTk::Command* fbcmd= stringToCommand(c,a);
+          if ( fbcmd ) {
+            FbTk::RefCount<FbTk::Command> rfbcmd(fbcmd);
+            macro->add(rfbcmd);
+          }
+        }
+        else
+          break;
+      }
+
+      if ( macro->size() > 0 )
+        return macro;
+
+      delete macro;
+    }
     return 0;
 }
