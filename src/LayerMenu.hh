@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.7 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: LayerMenu.hh,v 1.8 2004/06/07 21:15:08 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
@@ -44,7 +44,7 @@ public:
     LayerMenuItem(const char *label, ItemType *object, int layernum):
         FbTk::MenuItem(label), m_object(object), m_layernum(layernum) {}
 
-    bool isEnabled() const { return m_object->layerItem().getLayerNum() != m_layernum; } ;
+    bool isEnabled() const { return m_object->layerItem().getLayerNum() != m_layernum; }
     void click(int button, int time) {
         m_object->moveToLayer(m_layernum);
         FbTk::MenuItem::click(button, time);
