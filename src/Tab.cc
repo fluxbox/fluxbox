@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.45 2002/11/27 21:51:33 fluxgen Exp $
+// $Id: Tab.cc,v 1.46 2002/11/30 20:56:54 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -28,6 +28,7 @@
 #include "Screen.hh"
 #include "fluxbox.hh"
 #include "Rootmenu.hh"
+#include "ImageControl.hh"
 
 #include <iostream>
 using namespace std;
