@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/16:
+   * Fixed logging file and better info message (Henrik)
+     New argument to fluxbox -log <filename>
+	 main.cc
 *03/05/14:
    * Fixed Shape events, this fixes some decor issues with gkrellm and xmms (Henrik)
      Window.cc/hh, fluxbox.cc/hh

@@ -10,7 +10,7 @@ $ #Usage
 # Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <sträng>\t\tanvänd skärmanslutning.\n\
   -rc <sträng>\t\t\tanvänd alternativ resursfil.\n\
-  -version\t\t\tvisa version och avsluta.\n\  
+  -version\t\t\tvisa version och avsluta.\n\
   -info\t\t\t\tVisar nyttig information.\n\
   -log <filenamn>\t\t\tloggar utskriften till en fil.\n\
   -help\t\t\t\tvisa denna hjälptext och avsluta.\n\n
