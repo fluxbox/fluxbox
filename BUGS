@@ -3,7 +3,7 @@ Known bugs and missing features that will be fixed in future version:
 bugs:
 
 * Window handle is invisible sometimes.
-
+* KDE support needs attention (e.g. klipper).
 * Some menus don't close when you click on items.
 * Transparancy for the slit does not always work right.
 * After startup the font of the toolbar is to big; reload config works 
