@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.5 2002/12/09 22:12:56 fluxgen Exp $
+// $Id: XFontImp.cc,v 1.6 2003/09/11 20:00:09 fluxgen Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
+#include "GContext.hh"
+#include "FbPixmap.hh"
 
 #include <X11/Xutil.h>
 
@@ -125,14 +127,11 @@ void XFontImp::rotate(float angle) {
 
     m_angle = angle;
 
-    char val;
-    XImage *I1, *I2;
     // X system default vars
     Display *dpy = App::instance()->display();
     Window rootwin = DefaultRootWindow(dpy);
     int screen = DefaultScreen(dpy);
 
-    GC font_gc;
     char text[3];
     int ichar, i, j, index, boxlen = 60;
     int vert_w, vert_h, vert_len, bit_w, bit_h, bit_len;
@@ -147,14 +146,12 @@ void XFontImp::rotate(float angle) {
         return;
 
     // create the depth 1 canvas bitmap
-    Pixmap canvas = XCreatePixmap(dpy, rootwin, boxlen, boxlen, 1);
+    FbTk::FbPixmap canvas(rootwin, boxlen, boxlen, 1);
  
     // create graphic context for our canvas
-    font_gc = XCreateGC(dpy, canvas, 0, 0);
-
-    XSetBackground(dpy, font_gc, None);
-
-    XSetFont(dpy, font_gc, m_fontstruct->fid);
+    FbTk::GContext font_gc(canvas);
+    font_gc.setBackground(None);
+    font_gc.setFont(m_fontstruct->fid);
 
     // allocate space for rotated font
     m_rotfont = new(nothrow) XRotFontStruct;
@@ -207,21 +204,24 @@ void XFontImp::rotate(float angle) {
         // width in bytes
         vert_len = (vert_w-1)/8+1;   
 
-        XSetForeground(dpy, font_gc, None);
-        XFillRectangle(dpy, canvas, font_gc, 0, 0, boxlen, boxlen);
-
+        font_gc.setForeground(None);        
+        canvas.fillRectangle(font_gc.gc(),
+                             0, 0,
+                             boxlen, boxlen);
         // draw the character centre top right on canvas
         sprintf(text, "%c", ichar);
-        XSetForeground(dpy, font_gc, 1);
-        XDrawImageString(dpy, canvas, font_gc, boxlen/2 - lbearing,
+        font_gc.setForeground(1);
+        XDrawImageString(dpy, canvas.drawable(), font_gc.gc(),
+                         boxlen/2 - lbearing,
                          boxlen/2 - descent, text, 1);
 
         // reserve memory for first XImage
-        vertdata = (unsigned char *) malloc((unsigned)(vert_len*vert_h));
+        vertdata = new unsigned char[vert_len * vert_h];
 
-        /* create the XImage ... */
-        I1 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap,
-                          0, (char *)vertdata, vert_w, vert_h, 8, 0);
+        XImage *I1 = XCreateImage(dpy, DefaultVisual(dpy, screen), 
+                                  1, XYBitmap,
+                                  0, (char *)vertdata, 
+                                  vert_w, vert_h, 8, 0);
 
         if (I1 == None) {				
             cerr<<"RotFont: Cant create ximage."<<endl;
@@ -232,12 +232,14 @@ void XFontImp::rotate(float angle) {
 
         I1->byte_order = I1->bitmap_bit_order = MSBFirst;
 
-        /* extract character from canvas ... */
-        XGetSubImage(dpy, canvas, boxlen/2, boxlen/2 - vert_h,
+        // extract character from canvas
+        XGetSubImage(dpy, canvas.drawable(), 
+                     boxlen/2, boxlen/2 - vert_h,
                      vert_w, vert_h, 1, XYPixmap, I1, 0, 0);
+
         I1->format = XYBitmap; 
 
-        /* width, height of rotated character ... */
+        // width, height of rotated character
         if (dir == 2) { 
             bit_w = vert_w;
             bit_h = vert_h; 
@@ -246,17 +248,17 @@ void XFontImp::rotate(float angle) {
             bit_h = vert_w; 
         }
 
-        /* width in bytes ... */
+        // width in bytes
         bit_len = (bit_w-1)/8 + 1;
 
         m_rotfont->per_char[ichar-32].glyph.bit_w = bit_w;
         m_rotfont->per_char[ichar-32].glyph.bit_h = bit_h;
 
-        /* reserve memory for the rotated image ... */
+        // reserve memory for the rotated image
         bitdata = (unsigned char *)calloc((unsigned)(bit_h * bit_len), 1);
 
-        /* create the image ... */
-        I2 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap, 0,
+        // create the image
+        XImage *I2 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap, 0,
                           (char *)bitdata, bit_w, bit_h, 8, 0); 
 
         if (I2 == None) {
@@ -268,16 +270,16 @@ void XFontImp::rotate(float angle) {
 
         I2->byte_order = I2->bitmap_bit_order = MSBFirst;
 
-        /* map vertical data to rotated character ... */
+        // map vertical data to rotated character
         for (j = 0; j < bit_h; j++) {
             for (i = 0; i < bit_w; i++) {
-				/* map bits ... */
+                char val = 0;
                 if (dir == 1) {
                     val = vertdata[i*vert_len + (vert_w-j-1)/8] &
                         (128>>((vert_w-j-1)%8));
                 } else if (dir == 2) {
                     val = vertdata[(vert_h-j-1)*vert_len +
-                                  (vert_w-i-1)/8] & (128>>((vert_w-i-1)%8));
+                                   (vert_w-i-1)/8] & (128>>((vert_w-i-1)%8));
                 } else {
                     val = vertdata[(vert_h-i-1)*vert_len + j/8] & 
                         (128>>(j%8));
@@ -295,16 +297,12 @@ void XFontImp::rotate(float angle) {
  
         // put the image into the bitmap 
         XPutImage(dpy, m_rotfont->per_char[ichar-32].glyph.bm, 
-                  font_gc, I2, 0, 0, 0, 0, bit_w, bit_h);
+                  font_gc.gc(), I2, 0, 0, 0, 0, bit_w, bit_h);
 
         // free the image and data
         XDestroyImage(I1);
         XDestroyImage(I2);
     }
-
-    /* free pixmap and GC ... */
-    XFreePixmap(dpy, canvas);
-    XFreeGC(dpy, font_gc);
 
 }
 
