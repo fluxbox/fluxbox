@@ -1,5 +1,5 @@
 // FbWinFrameTheme.hh for Fluxbox Window Manager
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.14 2004/01/02 13:05:19 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.15 2004/01/11 16:13:09 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -69,8 +69,6 @@ public:
     const FbTk::Color &labelUnfocusColor() const { return *m_label_unfocus_color; }
     const FbTk::Color &labelActiveColor() const { return *m_label_active_color; }
 
-    const FbTk::Color &frameFocuscolor() const { return *m_frame_focus_color; }
-    const FbTk::Color &frameUnfocuscolor() const { return *m_frame_unfocus_color; }
     const FbTk::Color &buttonFocuscolor() const { return *m_button_focus_color; }
     const FbTk::Color &buttonUnfocuscolor() const { return *m_button_unfocus_color; }
     //@}
@@ -110,7 +108,6 @@ private:
     FbTk::ThemeItem<FbTk::Texture> m_grip_focus, m_grip_unfocus;
 
     FbTk::ThemeItem<FbTk::Color> m_label_focus_color, m_label_unfocus_color, m_label_active_color;
-    FbTk::ThemeItem<FbTk::Color> m_frame_focus_color, m_frame_unfocus_color;
     FbTk::ThemeItem<FbTk::Color> m_button_focus_color, m_button_unfocus_color;
     
     FbTk::ThemeItem<FbTk::Font> m_font;

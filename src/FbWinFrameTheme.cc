@@ -1,5 +1,5 @@
 // FbWinFrameTheme.cc for Fluxbox Window Manager
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.16 2004/01/02 13:04:26 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.17 2004/01/11 16:13:09 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -52,9 +52,6 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_label_unfocus_color(*this, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor"),
     m_label_active_color(*this, "window.label.active.textColor", "Window.Label.Active.TextColor"),
     
-    m_frame_focus_color(*this, "window.frame.focusColor", "Window.Frame.FocusColor"), 
-    m_frame_unfocus_color(*this, "window.frame.unfocusColor", "Window.Frame.UnfocusColor"),
-
     m_button_focus_color(*this, "window.button.focus.picColor", "Window.Button.Focus.PicColor"),
     m_button_unfocus_color(*this, "window.button.unfocus.picColor", "Window.Button.Unfocus.PicColor"),
 
