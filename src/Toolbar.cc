@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.61 2003/02/23 00:49:01 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.62 2003/02/23 12:04:27 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -327,6 +327,14 @@ void Toolbar::delIcon(FluxboxWindow *w) {
 }
 		
 void Toolbar::reconfigure() {
+
+    if (do_auto_hide == false && 
+        do_auto_hide != screen().doToolbarAutoHide()) {
+        hide_timer.start();
+    }
+
+    do_auto_hide = screen().doToolbarAutoHide();
+
     bool vertical = isVertical();
 
     if (m_iconbar.get())
@@ -969,13 +977,19 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
 
             if (x < (signed) frame.bevel_w)
                 x = frame.bevel_w;
+            int dy = 1 + m_theme.font().ascent();
+            if (m_theme.font().isRotated()) {
+                int tmp = dy;
+                dy = frame.workspace_label_w - x;
+                x = tmp;
+            }
 
             m_theme.font().drawText(
                 frame.workspace_label.window(),
                 screen().getScreenNumber(),
                 screen().getWindowStyle()->l_text_focus_gc,
                 new_workspace_name.c_str(), l,
-                x, 1 + m_theme.font().ascent()); 
+                x, dy);
 
             XDrawRectangle(display, frame.workspace_label.window(),
                            screen().getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
