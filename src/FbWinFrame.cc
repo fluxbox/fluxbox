@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.10 2003/02/20 23:21:23 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.11 2003/02/22 18:31:00 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -171,13 +171,14 @@ void FbWinFrame::resize(unsigned int width, unsigned int height) {
 
 void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
     // total height for frame without client
-    unsigned int total_height = m_handle.height() + m_handle.borderWidth() + 
-        m_titlebar.height() + m_titlebar.borderWidth();
+    int handle_height = m_handle.height() + m_handle.borderWidth();
+    int titlebar_height = m_titlebar.height() + m_titlebar.borderWidth();
+    unsigned int total_height = handle_height + titlebar_height;
     // resize frame height with total height + specified height
     if (!m_use_titlebar)
-        total_height -= m_titlebar.height() + m_titlebar.borderWidth();
+        total_height -= titlebar_height;
     if (!m_use_handle)
-        total_height -= m_handle.height() + m_handle.borderWidth();
+        total_height -= handle_height;
     resize(width, total_height + height);
 }
 
@@ -279,7 +280,8 @@ void FbWinFrame::hideTitlebar() {
     m_titlebar.hide();
     m_use_titlebar = false;
     m_clientarea.raise();
-    m_window.resize(m_window.width(), m_window.height() - m_titlebar.height());
+    m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
+                    m_titlebar.borderWidth()*2);
 #ifdef DEBUG
     cerr<<__FILE__<<": Hide Titlebar"<<endl;
 #endif // DEBUG
@@ -313,7 +315,8 @@ void FbWinFrame::showHandle() {
 void FbWinFrame::hideAllDecorations() {
     hideHandle();
     hideTitlebar();
-    resizeForClient(m_clientarea.width(), m_clientarea.height() - m_window.borderWidth());
+    m_window.setBorderWidth(0);
+    m_window.resize(m_clientarea.width(), m_clientarea.height());
     reconfigure();
 }
 
@@ -322,7 +325,8 @@ void FbWinFrame::showAllDecorations() {
         showHandle();
     if (!m_use_titlebar)
         showTitlebar();
-    resizeForClient(m_clientarea.width(), m_clientarea.height() - m_window.borderWidth());
+    resizeForClient(m_clientarea.width(), m_clientarea.height());
+    reconfigure();
 }
 
 /**
@@ -412,8 +416,10 @@ void FbWinFrame::reconfigure() {
         reconfigureTitlebar();
 
     // setup client area size/pos
-    int next_y = m_titlebar.height() + 2*m_titlebar.borderWidth();
-    unsigned int client_height = m_window.height() - m_titlebar.height() - m_handle.height();
+    int next_y = m_titlebar.height() + m_titlebar.borderWidth();
+    unsigned int client_height = 
+        m_window.height() - next_y;
+    /*- m_titlebar.height() - m_titlebar.y() - m_handle.height();*/
 
     if (!m_use_titlebar) {
         next_y = -m_titlebar.y();
@@ -511,7 +517,8 @@ void FbWinFrame::reconfigureTitlebar() {
     // resize titlebar to window size with font height
     m_titlebar.moveResize(-m_titlebar.borderWidth(), -m_titlebar.borderWidth(),
                           m_window.width(),
-                      m_theme.font().height() == 0 ? 16 : m_theme.font().height() + m_bevel*2 + 2);
+                          m_theme.font().height() == 0 ? 16 : 
+                          m_theme.font().height() + m_bevel*2 + 2);
 
     // draw left buttons first
     unsigned int next_x = m_bevel; 
