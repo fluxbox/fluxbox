@@ -22,69 +22,76 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.2 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: i18n.cc,v 1.3 2002/04/04 00:21:48 fluxgen Exp $
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
+//usr GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
+#ifdef	HAVE_CONFIG_H
+#include "../config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
 
 #include <X11/Xlocale.h>
 
-#ifdef    STDC_HEADERS
-#  include <stdlib.h>
-#  include <string.h>
-#  include <stdio.h>
+#ifdef STDC_HEADERS
+#	include <stdlib.h>
+#	include <string.h>
+#	include <stdio.h>
 #endif // STDC_HEADERS
 
-#ifdef    HAVE_LOCALE_H
-#  include <locale.h>
+#ifdef		HAVE_LOCALE_H
+#	include <locale.h>
 #endif // HAVE_LOCALE_H
 
+#include <iostream>
+using std::cerr;
+using std::endl;
+using std::string;
 
 void NLSInit(const char *catalog) {
-  I18n *i18n = I18n::instance();
-  i18n->openCatalog(catalog);
+	I18n *i18n = I18n::instance();
+	i18n->openCatalog(catalog);
 }
 
 
-I18n::I18n(void) {
-#ifdef    HAVE_SETLOCALE
-  locale = setlocale(LC_ALL, "");
-  if (! locale) {
-    fprintf(stderr, "failed to set locale, reverting to \"C\"\n");
+I18n::I18n():m_multibyte(false), m_catalog_fd(0) {
+#ifdef		HAVE_SETLOCALE
+	//make sure we don't get 0 to m_locale string
+	char *temp = setlocale(LC_ALL, "");
+	m_locale = ( temp ?  temp : ""); 
+	if (m_locale.size() == 0) {
+		cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
 #endif // HAVE_SETLOCALE
-    locale = "C";
-    mb = 0;
-#ifdef    HAVE_SETLOCALE
-  } else if (! strcmp(locale, "C") || ! strcmp(locale, "POSIX")) {
-    mb = 0;
-  } else {
-    mb = 1;
-    // truncate any encoding off the end of the locale
-    char *l = strchr(locale, '.');
-    if (l) *l = '\0';
-  }
+		m_locale = "C";
+#ifdef		HAVE_SETLOCALE
+	} else {		
+		// MB_CUR_MAX returns the size of a char in the current locale
+		if (MB_CUR_MAX > 1)
+			m_multibyte = true;
+		
+		// truncate any encoding off the end of the locale
+				
+		string::size_type index = m_locale.find('@');
+		if (index != string::npos)
+			m_locale.erase(index); //erase all characters starting at index 				
+		
+		index = m_locale.find('.');
+		if (index != string::npos) 
+			m_locale.erase(index); //erase all characters starting at index 
+	}
 #endif // HAVE_SETLOCALE
-
-  catalog_filename = (char *) 0;
-  catalog_fd = (nl_catd) -1;
 }
 
 
-I18n::~I18n(void) {
-  delete catalog_filename;
+I18n::~I18n() {
 
 #if defined(NLS) && defined(HAVE_CATCLOSE)
-  if (catalog_fd != (nl_catd) -1)
-    catclose(catalog_fd);
+	if (m_catalog_fd != (nl_catd)-1)
+		catclose(m_catalog_fd);
 #endif // HAVE_CATCLOSE
 }
 
@@ -95,37 +102,35 @@ I18n *I18n::instance() {
 
 void I18n::openCatalog(const char *catalog) {
 #if defined(NLS) && defined(HAVE_CATOPEN)
-  int lp = strlen(LOCALEPATH), lc = strlen(locale),
-      ct = strlen(catalog), len = lp + lc + ct + 3;
-  catalog_filename = new char[len];
+	
+	string catalog_filename = LOCALEPATH;
+	catalog_filename += '/';
+	catalog_filename += m_locale;
+	catalog_filename += '/';
+	catalog_filename += catalog;
 
-  strncpy(catalog_filename, LOCALEPATH, lp);
-  *(catalog_filename + lp) = '/';
-  strncpy(catalog_filename + lp + 1, locale, lc);
-  *(catalog_filename + lp + lc + 1) = '/';
-  strncpy(catalog_filename + lp + lc + 2, catalog, ct + 1);
+#ifdef		MCLoadBySet
+	m_catalog_fd = catopen(catalog_filename.c_str(), MCLoadBySet);
+#else // !MCLoadBySet
+	m_catalog_fd = catopen(catalog_filename.c_str(), NL_CAT_LOCALE);
+#endif // MCLoadBySet
 
-#  ifdef    MCLoadBySet
-  catalog_fd = catopen(catalog_filename, MCLoadBySet);
-#  else // !MCLoadBySet
-  catalog_fd = catopen(catalog_filename, NL_CAT_LOCALE);
-#  endif // MCLoadBySet
-
-  if (catalog_fd == (nl_catd) -1)
-    fprintf(stderr, "failed to open catalog, using default messages\n");
+	if (m_catalog_fd == (nl_catd)-1)
+		cerr<<"Warning: Failed to open catalog, using default messages."<<endl;
 	
 #else // !HAVE_CATOPEN
-  catalog_fd = (nl_catd) -1;
-  catalog_filename = (char *) 0;
+	
+	m_catalog_fd = (nl_catd)-1;
 #endif // HAVE_CATOPEN
 }
 
 
-const char *I18n::getMessage(int set, int msg, const char *s) {
-#if   defined(NLS) && defined(HAVE_CATGETS)
-  if (catalog_fd != (nl_catd) -1)
-    return (const char *) catgets(catalog_fd, set, msg, s);
-  else
+const char *I18n::getMessage(int set_number, int message_number, const char *default_message) {
+
+#if defined(NLS) && defined(HAVE_CATGETS)
+	if (m_catalog_fd != (nl_catd)-1)
+		return (const char *) catgets(m_catalog_fd, set_number, message_number, default_message);
+	else
 #endif
-    return s;
+		return default_message;
 }

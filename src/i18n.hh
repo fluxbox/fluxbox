@@ -22,14 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.6 2002/03/18 15:46:42 fluxgen Exp $
+// $Id: i18n.hh,v 1.7 2002/04/04 00:21:48 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
 
-#ifdef		NLS
-#	include "../nls/blackbox-nls.hh"
-#endif // NLS
+#include "../nls/blackbox-nls.hh"
 
 #ifdef		HAVE_LOCALE_H
 #	include <locale.h>
@@ -46,34 +44,26 @@ extern "C" {
 #	include "nl_types_cygnus.h"
 #endif
 
+#include <string>
+
 class I18n {
-private:
-	char *locale, *catalog_filename;
-	int mb;
-	nl_catd catalog_fd;
-
-
-protected:
-	I18n(void);
- 
 public:
-	//so old compilators dont complain
-	~I18n(void);
-	
 	static I18n *instance();
-	inline const char *getLocale(void) const { return locale; }
-	inline const char *getCatalogFilename(void) const { return catalog_filename; }
-	
-	inline const int multibyte(void) const { return mb; }
+	inline const char *getLocale(void) const { return m_locale.c_str(); }
+	inline bool multibyte(void) const { return m_multibyte; }
+	inline const nl_catd &getCatalogFd(void) const { return m_catalog_fd; }
 
-	inline const nl_catd &getCatalogFd(void) const { return catalog_fd; }
-
-	const char *getMessage(int, int, const char * = 0);
+	const char *getMessage(int set_number, int message_number, const char *default_messsage = 0);
 	void openCatalog(const char *);
+private:
+	I18n();
+	~I18n();
+	std::string m_locale;
+	bool m_multibyte;
+	nl_catd m_catalog_fd;
+
 };
 
+void NLSInit(const char *);
 
-//extern I18n *i18n;
-extern void NLSInit(const char *);
-
-#endif // __i18n_h
+#endif // I18N_HH
