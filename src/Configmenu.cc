@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.13 2002/04/12 15:14:09 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.14 2002/04/28 16:00:27 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -195,6 +195,9 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			}
+			//save resources
+			Fluxbox::instance()->save_rc();
+			
 		}
 }
 
@@ -289,7 +292,10 @@ void Configmenu::Focusmenu::itemSelected(int button, unsigned int index) {
 
 			break;
 			}
-
+			//save resources
+			Fluxbox::instance()->save_rc();
+			
+			//toggle options
 			setItemSelected(0, !(configmenu->screen->isSloppyFocus() || 
 							configmenu->screen->isSemiSloppyFocus()));
 			setItemSelected(1, configmenu->screen->isSloppyFocus());
@@ -427,6 +433,8 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 
 			break;
 			}
+			//save resources
+			Fluxbox::instance()->save_rc();
 		}
 	}
 }
@@ -638,7 +646,8 @@ void Configmenu::Tabmenu::itemSelected(int button, unsigned int index) {
 					configmenu->screen->saveTabRotateVertical(True);
 				break;
 			}
-
+			//save resources
+			Fluxbox::instance()->save_rc();
 			Fluxbox::instance()->reconfigureTabs(); //TODO
 			setSelected();			
 	}
