@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.13 2002/05/08 14:12:28 fluxgen Exp $
+// $Id: Slit.cc,v 1.14 2002/05/29 06:21:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -42,9 +42,60 @@
 #include "Toolbar.hh"
 
 #include <algorithm>
+#include <iostream>
+#include <cassert>
 
+#ifdef HAVE_SYS_STAT_H
+#	include <sys/types.h>
+#	include <sys/stat.h>
+#endif // HAVE_SYS_STAT_H
+
+
+// Utility method for extracting name from window
+namespace {
+	void getWMName(BScreen *screen, Window window, std::string& name) {
+		assert(screen);
+		name = "";
+	
+		if (screen != 0 && window != None) {
+			Display *display = screen->getBaseDisplay()->getXDisplay();
+	
+			XTextProperty text_prop;
+			char **list;
+			int num;
+			I18n *i18n = I18n::instance();
+		
+			if (XGetWMName(display, window, &text_prop)) {
+				if (text_prop.value && text_prop.nitems > 0) {
+					if (text_prop.encoding != XA_STRING) {
+						
+						text_prop.nitems = strlen((char *) text_prop.value);
+						
+						if ((XmbTextPropertyToTextList(display, &text_prop,
+									&list, &num) == Success) &&
+								(num > 0) && *list) {
+							name = static_cast<char *>(*list);
+							XFreeStringList(list);
+						} else
+							name = (char *)text_prop.value;
+							
+					} else
+						name = (char *)text_prop.value;
+				} else
+					name = i18n->getMessage(
+						FBNLS::WindowSet, FBNLS::WindowUnnamed,
+						"Unnamed");
+			} else {
+				name = i18n->getMessage(
+					FBNLS::WindowSet, FBNLS::WindowUnnamed,
+					"Unnamed");
+			}
+		}
+	}
+}; // End anonymous namespace
 
 Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(*this) {
+	assert(scr);
 	fluxbox = Fluxbox::instance();
 
 	on_top = screen->isSlitOnTop();
@@ -66,7 +117,7 @@ Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(*this) {
 	attrib.colormap = screen->getColormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = SubstructureRedirectMask | ButtonPressMask |
-											EnterWindowMask | LeaveWindowMask;
+		EnterWindowMask | LeaveWindowMask;
 
 	frame.x = frame.y = 0;
 	frame.width = frame.height = 1;
@@ -77,6 +128,9 @@ Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(*this) {
 			screen->getDepth(), InputOutput, screen->getVisual(),
 			create_mask, &attrib);
 	fluxbox->saveSlitSearch(frame.window, this);
+
+	// Get client list for sorting purposes
+	loadClientList();
 
 	reconfigure();
 }
@@ -102,8 +156,37 @@ void Slit::addClient(Window w) {
 
 	fluxbox->grab();
 	if (fluxbox->validateWindow(w)) {
-		SlitClient *client = new SlitClient;
-		client->client_window = w;
+		// Look for slot in client list by name
+		SlitClient *client = 0;
+		std::string match_name;
+		::getWMName(screen, w, match_name);
+		SlitClients::iterator it = clientList.begin();
+		SlitClients::iterator it_end = clientList.end();
+		bool found_match = false;
+		for (; it != it_end; ++it) {
+			// If the name matches...
+			if ((*it)->match_name == match_name) {
+				// Use the slot if no window is assigned
+				if ((*it)->window == None) {
+					client = (*it);
+					client->initialize(screen, w);
+					break;
+				}
+				// Otherwise keep looking for an unused match or a non-match
+				found_match = true;		// Possibly redundant
+				
+			} else if (found_match) {
+				// Insert before first non-match after a previously found match?
+				client = new SlitClient(screen, w);
+				clientList.insert(it, client);
+				break;
+			}
+		}
+		// Append to client list?
+		if (client == 0) {
+			client = new SlitClient(screen, w);
+			clientList.push_back(client);
+		}
 
 		XWMHints *wmhints = XGetWMHints(display, w);
 
@@ -184,22 +267,26 @@ void Slit::addClient(Window w) {
 			SubstructureNotifyMask | EnterWindowMask);
 		XFlush(display);
 
-		clientList.push_back(client);
-
 		fluxbox->saveSlitSearch(client->client_window, this);
 		fluxbox->saveSlitSearch(client->icon_window, this);
 		reconfigure();
+
+		saveClientList();
 	}
 
 	fluxbox->ungrab();
 }
 
 
-void Slit::removeClient(SlitClient *client, bool remap) {
+void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
 	fluxbox->removeSlitSearch(client->client_window);
 	fluxbox->removeSlitSearch(client->icon_window);
 
-    clientList.remove(client);
+	// Destructive removal?
+	if (destroy)
+	    clientList.remove(client);
+	else // Clear the window info, but keep around to help future sorting?
+		client->initialize();
 
 	screen->removeNetizen(client->window);
 
@@ -214,7 +301,9 @@ void Slit::removeClient(SlitClient *client, bool remap) {
 		XFlush(display);
 	}
 
-	delete client;
+	// Destructive removal?
+	if (destroy)
+		delete client;
 }
 
 
@@ -227,7 +316,7 @@ void Slit::removeClient(Window w, bool remap) {
 	SlitClients::iterator it_end = clientList.end();
 	for (; it != it_end; ++it) {
 		if ((*it)->window == w) {
-			removeClient((*it), remap);
+			removeClient((*it), remap, false);
 			reconf = true;
 
 			break;
@@ -243,16 +332,25 @@ void Slit::reconfigure(void) {
 	frame.width = 0;
 	frame.height = 0;
 
+	// Need to count windows because not all client list entries
+	// actually correspond to mapped windows.
+	int num_windows = 0;
+
 	switch (screen->getSlitDirection()) {
 	case VERTICAL:
 		{
 			SlitClients::iterator it = clientList.begin();
 			SlitClients::iterator it_end = clientList.end();
 			for (; it != it_end; ++it) {
-				frame.height += (*it)->height + screen->getBevelWidth();
-
-				if (frame.width < (*it)->width)
-					frame.width = (*it)->width;
+				//client created window?
+				if ((*it)->window != None) {
+					num_windows++;
+					frame.height += (*it)->height + screen->getBevelWidth();
+					
+					//frame width < client window?
+					if (frame.width < (*it)->width) 
+						frame.width = (*it)->width;
+				}
 			}
 		}
 
@@ -273,10 +371,14 @@ void Slit::reconfigure(void) {
 			SlitClients::iterator it = clientList.begin();
 			SlitClients::iterator it_end = clientList.end();
 			for (; it != it_end; ++it) {
-				frame.width += (*it)->width + screen->getBevelWidth();
-
-				if (frame.height < (*it)->height)
-					frame.height = (*it)->height;
+				//client created window?
+				if ((*it)->window != None) {
+					num_windows++;
+					frame.width += (*it)->width + screen->getBevelWidth();
+					//frame height < client height?
+					if (frame.height < (*it)->height)
+						frame.height = (*it)->height;
+				}
 			}
 		}
 
@@ -299,7 +401,8 @@ void Slit::reconfigure(void) {
 	XSetWindowBorder(display, frame.window,
 		screen->getBorderColor()->getPixel());
 
-	if (clientList.size()==0)
+	//did we actually use slit slots
+	if (num_windows == 0)
 		XUnmapWindow(display, frame.window);
 	else
 		XMapWindow(display, frame.window);
@@ -316,7 +419,9 @@ void Slit::reconfigure(void) {
 			texture);
 		XSetWindowBackgroundPixmap(display, frame.window, frame.pixmap);
 	}
-	if (tmp) image_ctrl->removeImage(tmp);
+
+	if (tmp) 
+		image_ctrl->removeImage(tmp);
 	XClearWindow(display, frame.window);
 
 	int x, y;
@@ -330,6 +435,10 @@ void Slit::reconfigure(void) {
 			SlitClients::iterator it = clientList.begin();
 			SlitClients::iterator it_end = clientList.end();
 			for (; it != it_end; ++it) {
+				//client created window?
+				if ((*it)->window == None)
+					continue;
+
 				x = (frame.width - (*it)->width) / 2;
 
 				XMoveResizeWindow(display, (*it)->window, x, y,
@@ -371,6 +480,10 @@ void Slit::reconfigure(void) {
 			SlitClients::iterator it = clientList.begin();
 			SlitClients::iterator it_end = clientList.end();
 			for (; it != it_end; ++it) {
+				//client created window?
+				if ((*it)->window == None)
+					continue;
+
 				y = (frame.height - (*it)->height) / 2;
 
 				XMoveResizeWindow(display, (*it)->window, x, y,
@@ -556,8 +669,9 @@ void Slit::reposition(void) {
 
 
 void Slit::shutdown(void) {
+	saveClientList();
 	while (clientList.size() != 0)
-		removeClient(clientList.front());
+		removeClient(clientList.front(), true, true);
 }
 
 
@@ -661,6 +775,39 @@ void Slit::timeout(void) {
 		XMoveWindow(display, frame.window, frame.x_hidden, frame.y_hidden);
 	else
 		XMoveWindow(display, frame.window, frame.x, frame.y);
+}
+
+void Slit::loadClientList(void) {
+	const std::string &filename = fluxbox->getSlitlistFilename();
+	struct stat buf;
+	if (!stat(filename.c_str(), &buf))
+	{
+		std::ifstream file(fluxbox->getSlitlistFilename().c_str());
+		std::string name;
+		while (! file.eof()) {
+			name = "";
+			file >> name;
+			if (name.size() > 0) {
+				SlitClient *client = new SlitClient(name.c_str());
+				clientList.push_back(client);
+			}
+		}
+	}
+}
+
+void Slit::saveClientList(void) {
+	const std::string &filename = fluxbox->getSlitlistFilename();
+	std::ofstream file(filename.c_str());
+	SlitClients::iterator it = clientList.begin();
+	SlitClients::iterator it_end = clientList.end();
+	std::string prevName;
+	std::string name;
+	for (; it != it_end; ++it) {
+		name = (*it)->match_name;
+		if (name != prevName)
+			file << name.c_str() << std::endl;
+		prevName = name;
+	}
 }
 
 
@@ -928,5 +1075,26 @@ void Slitmenu::Headmenu::itemSelected(int button, unsigned int index) {
 }
 
 #endif // XINERAMA
+
+Slit::SlitClient::SlitClient(const char *name)
+{
+	initialize();
+	match_name = name;
+}
+
+Slit::SlitClient::SlitClient(BScreen *screen, Window w)
+{
+	initialize(screen, w);
+}
+
+void Slit::SlitClient::initialize(BScreen *screen, Window w) {
+	assert(screen);
+	client_window = w;
+	window = icon_window = None;
+	x = y = 0;
+	width = height = 0;
+	if (match_name.size() == 0)
+		getWMName(screen, client_window, match_name);
+}
 
 #endif // SLIT

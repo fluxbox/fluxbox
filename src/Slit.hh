@@ -35,6 +35,7 @@ class Slitmenu;
 #include "Basemenu.hh"
 
 #include <list>
+#include <string>
 
 class Slitmenu : public Basemenu {
 public:
@@ -130,6 +131,7 @@ public:
 	void reconfigure(void);
 	void reposition(void);
 	void shutdown(void);
+	void saveClientList(void);
 
 	void buttonPressEvent(XButtonEvent *);
 	void enterNotifyEvent(XCrossingEvent *);
@@ -145,13 +147,27 @@ public:
 private:
 	class SlitClient {
 	public:
+		SlitClient(BScreen *, Window);	// For adding an actual window
+		SlitClient(const char *);		// For adding a placeholder
+
+		// Now we pre-initialize a list of slit clients with names for
+		// comparison with incoming client windows.  This allows the slit
+		// to maintain a sorted order based on a saved window name list.
+		// Incoming windows not found in the list are appended.  Matching
+		// duplicates are inserted after the last found instance of the
+		// matching name.
+		std::string match_name;
+
 		Window window, client_window, icon_window;
 
 		int x, y;
 		unsigned int width, height;
+
+		void initialize(BScreen * = NULL, Window = None);
 	};
 	
-	void removeClient(SlitClient *, bool = true);
+	void removeClient(SlitClient *, bool, bool);
+	void loadClientList(void);
 	
 	Bool on_top, hidden, do_auto_hide;
 	Display *display;
@@ -164,6 +180,7 @@ private:
 
 	SlitClients clientList;
 	Slitmenu slitmenu;
+	std::string clientListPath;
 
 	struct frame {
 		Pixmap pixmap;
