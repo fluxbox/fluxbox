@@ -1,12 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/05:
+  * Fix for BScreen::reassociateWindow (Mathias)
+    Simon's last changes made fluxbox crash when "Sticky" or "Workspace"
+	options in the apps-file where used. This fix also solves <Current> and
+	<SemiFollow>-Deiconifymode for Iconbar, when Iconbar is in
+	<Icons-only>-mode
+   Screen.cc IconButton.cc
 *05/01/04:
   * Added apps to fluxbox-generate_menu (thanx to Uwe Weissenbacher <UweWeissenbacher@gmx.net>)
   * Added ko_KR (thanx Jo Hyunseok <ttrand at gmail dot com>)
   * Updated ru_RU (thanx php-coder)
     ru_RU/Translation.m
   * Fix some initialisation states, especially window placement with no 
-    decorations through apps (e.g. aterm)
+    decorations through apps (e.g. aterm) (Simon)
     Window.hh/cc Screen.cc Ewmh.cc
 *05/01/02:
   * Fix for #996298, Windows dont respect toolbar.border.width (Mathias)
