@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.64 2003/12/09 08:48:08 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.65 2003/12/11 12:48:39 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -743,8 +743,10 @@ void FbWinFrame::redrawTitle() {
         (*btn_it)->moveResize(last_x - border_width, - border_width,
                               button_width + extra, 
                               label().height() + border_width);
-        if (isVisible())
+        if (isVisible()) {
             (*btn_it)->clear();
+            (*btn_it)->updateTransparent();
+        }
     }
 
     if (isVisible()) {
@@ -1159,6 +1161,7 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_focused_color);
 
     button.clear();
+    button.updateTransparent();
 }
 
 void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
@@ -1179,6 +1182,7 @@ void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_active_color);
 
     button.clear();
+    button.updateTransparent();
 }
 
 void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
@@ -1196,6 +1200,7 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_unfocused_color);
 
     button.clear(); 
+    button.updateTransparent();
 }
 
 void FbWinFrame::updateTransparent() {
