@@ -105,6 +105,6 @@ void Netizen::sendWindowLower(Window w) {
     XSendEvent(m_display, window(), False, NoEventMask, &event);
 }
 
-void Netizen::sendConfigNotify(XEvent *e) {
-    XSendEvent(m_display, window(), False, StructureNotifyMask, e);
+void Netizen::sendConfigNotify(XEvent &ev) {
+    XSendEvent(m_display, window(), False, StructureNotifyMask, &ev);
 }

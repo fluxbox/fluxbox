@@ -43,7 +43,7 @@ public:
     void sendWindowRaise(Window w);
     void sendWindowLower(Window w);
 
-    void sendConfigNotify(XEvent *xe);
+    void sendConfigNotify(XEvent &xe);
 private:
     const BScreen &m_screen;
     Display *m_display; ///< display connection
