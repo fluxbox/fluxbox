@@ -54,7 +54,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "January 5th, 2004" "0.9.7"
+.TH fluxbox 1 "August 9th, 2004" "0.9.9"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -188,6 +188,19 @@ Fluxbox manages following layers: Above Dock, Dock, Top, Normal, Bottom, Desktop
 Presumably the list is from top to bottom. Slit and toolbar can be assigned to
 a layer with the menu, applications might be assigned to a layer in the apps file.
 .\" TODO the apps file has numbers for layers
+.SS Focus Model
+The window that has the focus is the one that recieves keys and mouse events.
+The focus model is selectable via the Configuration menu.
+.P
+For
+.B Click To Focus
+The window must be clicked to get the focus. 
+In
+.B Semi Sloppy Focus 
+the focus is transferred to the window under the mouse, after some delay.
+For
+.B Sloppy Focus
+tabbed windows are activated by moving the mouse into the tab.
 .SS Window Titlebar and Borders:
 A left click on any place of the window's border, will raise it.
 Dragging then moves the window.
