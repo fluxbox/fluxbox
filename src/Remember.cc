@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.33 2003/12/19 00:48:41 fluxgen Exp $
+// $Id: Remember.cc,v 1.34 2004/02/16 10:25:33 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -208,15 +208,16 @@ Application::Application(bool grouped)
     : is_grouped(grouped),
       group(0)
 {
-    workspace_remember =
+	decostate_remember     = 
 	dimensions_remember =
+	hiddenstate_remember   = 
+	jumpworkspace_remember = 
+	layer_remember         = 
 	position_remember =
-	stuckstate_remember =
-	decostate_remember =
 	shadedstate_remember =
+	stuckstate_remember    = 
 	tabstate_remember =
-	jumpworkspace_remember =
-        layer_remember =
+	workspace_remember     = 
 	save_on_close_remember = false;
 }
 
@@ -363,6 +364,8 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 app.rememberShadedstate((str_label=="yes"));
             } else if (str_key == "Tab") {
                 app.rememberTabstate((str_label=="yes"));
+            } else if (str_key == "Hidden") {
+                app.rememberHiddenstate((str_label=="yes")); 
             } else if (str_key == "Deco") {
                 if (str_label == "NONE") {
                     app.rememberDecostate((unsigned int) 0);
@@ -545,6 +548,9 @@ void Remember::save() {
         if (a.tabstate_remember) {
             apps_file << "  [Tab]\t\t{" << ((a.tabstate)?"yes":"no") << "}" << endl;
         }
+        if (a.hiddenstate_remember) {
+            apps_file << "  [Hidden]\t\t{" << ((a.tabstate)?"yes":"no") << "}" << endl;
+        }
         if (a.decostate_remember) {
             switch (a.decostate) {
             case (0) :
@@ -601,6 +607,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     case REM_POSITION:
         return app->position_remember;
         break;
+    case REM_HIDDENSTATE:
+        return app->hiddenstate_remember;
+        break;
     case REM_STUCKSTATE:
         return app->stuckstate_remember;
         break;
@@ -646,6 +655,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_POSITION:
         app->rememberPosition(win->x(), win->y());
         break;
+    case REM_HIDDENSTATE:
+        app->rememberHiddenstate(win->isHidden());
+        break;
     case REM_SHADEDSTATE:
         app->rememberShadedstate(win->isShaded());
         break;
@@ -690,6 +702,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
         break;
     case REM_POSITION:
         app->forgetPosition();
+        break;
+    case REM_HIDDENSTATE:
+        app->forgetHiddenstate();
         break;
     case REM_STUCKSTATE:
         app->forgetStuckstate();
@@ -794,6 +809,8 @@ void Remember::setupFrame(FluxboxWindow &win) {
         if (win.isStuck() && !app->stuckstate ||
             !win.isStuck() && app->stuckstate)
             win.stick(); // toggles
+    if (app->hiddenstate_remember)
+        win.setHidden(true);
 
     if (app->layer_remember)
         win.moveToLayer(app->layer);

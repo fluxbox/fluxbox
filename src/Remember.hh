@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.14 2004/01/19 18:26:25 fluxgen Exp $
+// $Id: Remember.hh,v 1.15 2004/02/16 10:25:34 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -50,6 +50,7 @@ public:
     inline void forgetShadedstate() { shadedstate_remember = false; }
     inline void forgetTabstate() { tabstate_remember = false; }
     inline void forgetDecostate() { decostate_remember = false; }
+    inline void forgetHiddenstate() { hiddenstate_remember= false; }
     inline void forgetStuckstate() { stuckstate_remember = false; }
     inline void forgetJumpworkspace() { jumpworkspace_remember = false; }
     inline void forgetLayer() { layer_remember = false; }
@@ -59,6 +60,9 @@ public:
         { workspace = ws; workspace_remember = true; }
     inline void rememberDimensions(int width, int height) 
         { w = width; h = height; dimensions_remember = true; }
+
+    inline void rememberHiddenstate(bool state)
+        { hiddenstate= state; hiddenstate_remember= true; }
     inline void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
         { x = posx; y = posy; refc = rfc; position_remember = true; }
     inline void rememberShadedstate(bool state)
@@ -102,6 +106,9 @@ public:
     bool stuckstate_remember;
     bool stuckstate;
 
+    bool hiddenstate_remember;
+    bool hiddenstate;
+
     bool jumpworkspace_remember;
     bool jumpworkspace;
 
@@ -129,16 +136,17 @@ public:
      * holds which attributes to remember
      */
     enum Attribute {
-        REM_WORKSPACE=0,
+        REM_DECOSTATE= 0,
         REM_DIMENSIONS,
-        REM_POSITION,
-        REM_STUCKSTATE,
-        REM_DECOSTATE,
-        REM_SHADEDSTATE,
-        //REM_TABSTATE, ... external tabs disabled atm
-        REM_LAYER,
+        REM_HIDDENSTATE,
         REM_JUMPWORKSPACE,
+        REM_LAYER,
+        REM_POSITION,
         REM_SAVEONCLOSE,
+        REM_SHADEDSTATE,
+        REM_STUCKSTATE,
+        //REM_TABSTATE, ... external tabs disabled atm
+        REM_WORKSPACE,
         REM_LASTATTRIB // not actually used
     };
 
