@@ -2,7 +2,7 @@ dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,0.1.13-cvs,no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.1.13,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -258,6 +258,10 @@ AC_ARG_ENABLE(
 		AC_MSG_RESULT([no])
 		XFT=false
 	)
+  AC_CHECK_LIB(Xft, XftDrawStringUtf8,
+		LIBS="$LIBS -lXft"
+		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support"),
+        )
 )
 AM_CONDITIONAL(XFT, test x$XFT = xtrue)
 
