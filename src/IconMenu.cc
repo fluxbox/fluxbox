@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconMenu.cc,v 1.2 2004/06/07 11:46:04 rathnor Exp $
+// $Id: IconMenu.cc,v 1.3 2004/06/07 21:42:05 fluxgen Exp $
 
 #include "IconMenu.hh"
 
@@ -27,6 +27,8 @@
 #include "IconMenuItem.hh"
 #include "fluxbox.hh"
 #include "FbTk/I18n.hh"
+
+#include <typeinfo>
 
 static void updateItems(FbTk::Menu &menu, BScreen &screen) {
     menu.removeAll();
