@@ -19,11 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.6 2002/11/13 16:44:42 fluxgen Exp $
+// $Id: FbRun.cc,v 1.7 2002/11/26 17:13:36 fluxgen Exp $
 
 #include "FbRun.hh"
 
-#include "BaseDisplay.hh"
+#include "App.hh"
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -38,7 +38,7 @@ using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
 m_font("fixed"),
 m_win(None),
-m_display(BaseDisplay::getXDisplay()),
+m_display(FbTk::App::instance()->display()),
 m_bevel(4),
 m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
 m_end(false),
