@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.22 2003/07/28 16:29:25 rathnor Exp $
+// $Id: WinClient.cc,v 1.23 2003/07/28 18:30:02 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -506,6 +506,8 @@ void WinClient::setGroupLeftWindow(Window win) {
 }
 
 bool WinClient::hasGroupLeftWindow() const {
+    // try to find _FLUXBOX_GROUP_LEFT atom in window
+    // if we have one then we have a group left window
     int format;
     Atom atom_return;
     unsigned long num = 0, len = 0;
@@ -518,14 +520,13 @@ bool WinClient::hasGroupLeftWindow() const {
                    &format, &num, &len,
                    (unsigned char **) &data) &&
         data) {
-        if (num != 1) {
             XFree(data);
-            return false;
-        } else {
-            XFree(data);
-            return true;
-        }
+            if (num != 1)
+                return false;
+            else
+                return true;
     }
+
     return false;
 }
 
