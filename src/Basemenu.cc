@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.31 2002/10/13 22:37:14 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.32 2002/10/19 14:00:09 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -467,7 +467,7 @@ void Basemenu::redrawTitle() {
 		m_screen->getScreenNumber(),
 		m_screen->getMenuStyle()->t_text_gc, // graphic context
 		text, len,  // text string with lenght
-		dx, m_screen->getMenuStyle()->titlefont.height() + menu.bevel_w/2);  // position
+		dx, m_screen->getMenuStyle()->titlefont.ascent() + menu.bevel_w);  // position
 
 
 }
@@ -613,7 +613,7 @@ void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 	if (text) {		
 		text_w = m_screen->getMenuStyle()->framefont.textWidth(text, len);
 
-		text_y = item_y + menu.bevel_w/4 + m_screen->getMenuStyle()->framefont.height();
+		text_y = item_y + menu.bevel_w/2 + m_screen->getMenuStyle()->framefont.ascent();
 
 		switch(m_screen->getMenuStyle()->framefont_justify) {
 		case DrawUtil::Font::LEFT:
