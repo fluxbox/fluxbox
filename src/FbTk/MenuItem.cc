@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.4 2004/07/05 09:40:08 fluxgen Exp $
+// $Id: MenuItem.cc,v 1.5 2004/08/03 21:31:31 fluxgen Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -28,6 +28,7 @@
 #include "PixmapWithMask.hh"
 #include "Image.hh"
 #include "App.hh"
+#include "StringUtil.hh"
 
 namespace FbTk {
 
@@ -230,8 +231,9 @@ void MenuItem::setIcon(const std::string &filename, int screen_num) {
     if (m_icon.get() == 0)
         m_icon.reset(new Icon);
 
-    m_icon->filename = filename;
-    m_icon->pixmap.reset(Image::load(filename.c_str(), screen_num));
+    m_icon->filename = FbTk::StringUtil::expandFilename(filename);
+    m_icon->pixmap.reset(Image::load(m_icon->filename.c_str(), 
+                         screen_num));
 }
 
 unsigned int MenuItem::height(const MenuTheme &theme) const {
