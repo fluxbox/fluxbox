@@ -1,0 +1,115 @@
+! TarishedCopper.style
+! by The Dixie Flatline.
+! root image copyright(c)1999 propaganda.themes.org
+! used w/o permission (for non-canned release)
+! ----
+! You may only distribute this theme with the original
+! root image or with the original blackbox source.
+! ----
+! for Blackbox 0.60.x -ONLY-
+! missing: slit border color
+
+toolbar:			raised gradient bevel1
+toolbar.color:			black
+toolbar.colorTo:		black
+toolbar.label:			Raised Gradient pipecross Bevel1
+toolbar.label.color:		rgb:4e/38/32
+toolbar.label.colorTo:		rgb:af/89/7c
+toolbar.label.textColor:	black
+toolbar.windowLabel:            Raised Gradient pyramid Bevel1
+toolbar.windowLabel.color:      black
+toolbar.windowLabel.colorTo:    rgb:af/89/7c
+toolbar.windowLabel.textColor:  black
+toolbar.clock:			Raised Gradient pipecross bevel1
+toolbar.clock.color:		rgb:4e/38/32
+toolbar.clock.colorTo:		rgb:af/89/7c
+toolbar.clock.textColor:	black
+toolbar.button:			Raised gradient pipecross bevel1
+toolbar.button.color:		rgb:4e/38/32
+toolbar.button.colorTo:		rgb:af/89/7c
+toolbar.button.picColor:	black
+toolbar.button.pressed:		Flat Gradient Diagonal Bevel1
+toolbar.button.pressed.color:	rgb:32/32/32
+toolbar.button.pressed.colorTo:	rgb:82/6d/53
+toolbar.justify:		center
+
+menu.title:			Raised Gradient pipecross Bevel1
+menu.title.color:		rgb:4e/38/32
+menu.title.colorTo:		rgb:af/89/7c
+menu.title.textColor:		black
+menu.title.justify:		center
+menu.frame:			raised Gradient elliptic Bevel1
+menu.frame.color:		black
+menu.frame.colorTo:		rgb:af/89/7c
+menu.frame.textColor:		black
+menu.frame.justify:		center
+menu.hilite:			sunken gradient crossdiagonal bevel1
+menu.hilite.color:		rgb:4e/38/32
+menu.hilite.colorTo:		rgb:af/89/7c
+menu.hilite.textColor:		rgb:ff/ff/ff
+menu.bullet:			empty
+menu.bullet.position:		right
+
+window.title.focus:		Raised Gradient Diagonal bevel1
+window.title.focus.color:	black
+window.title.focus.colorTo:	black
+window.title.unfocus:		Raised Gradient Diagonal bevel1
+window.title.unfocus.color:	black
+window.title.unfocus.colorTo:	black
+
+window.label.focus:		raised Gradient pyramid Bevel1
+window.label.focus.color:	black
+window.label.focus.colorTo:	rgb:b3/8c/7f
+window.label.focus.textColor:	black
+
+window.label.unfocus:		raised Gradient pyramid Bevel1
+window.label.unfocus.color:	black
+window.label.unfocus.colorTo:	rgb:6c/54/4c
+window.label.unfocus.textColor:	black
+
+window.button.focus:		Raised Gradient pipecross Bevel1
+window.button.focus.color:	rgb:4e/38/32
+window.button.focus.colorTo:	rgb:af/89/7c
+window.button.focus.picColor:	black
+window.button.unfocus:		raised gradient pyramid bevel2
+window.button.unfocus.color:	black
+window.button.unfocus.colorTo:	rgb:6c/54/4c
+window.button.unfocus.picColor:	black
+window.button.pressed:		Flat Gradient Diagonal Bevel1
+window.button.pressed.color:	rgb:32/32/32
+window.button.pressed.colorTo:	rgb:82/6d/53
+
+window.frame.focusColor:	rgb:4e/38/32
+window.frame.unfocusColor:	rgb:4c/36/30
+
+window.handle.focus:		raised Gradient pyramid Bevel2
+window.handle.focus.color:	black
+window.handle.focus.colorTo:	rgb:af/89/7c
+window.handle.unfocus:		raised Gradient pyramid Bevel2
+window.handle.unfocus.color:	black
+window.handle.unfocus.colorTo:	rgb:6c/54/4c
+
+window.grip.focus:		raised gradient pipecross bevel1
+window.grip.focus.color:	rgb:4e/38/32
+window.grip.focus.colorTo:	rgb:af/89/7c
+window.grip.unfocus:		raised gradient pyramid bevel1
+window.grip.unfocus.color:	black
+window.grip.unfocus.colorTo:	rgb:6c/54/4c
+
+borderWidth:			1
+bevelWidth:			1
+handleWidth:			5
+window.justify:			CenterJustify
+
+toolbar.font:                   lucidasans-10
+menu.title.Font:		lucidasans-10
+menu.frame.font:                lucidasans-10
+window.font:                    lucidasans-10
+menuFont:                       lucidasans-10
+titleFont:                      lucidasans-10
+
+borderColor:			rgb:00/00/00
+rootCommand:			bsetroot -gradient flatcrossdiagonalgradient -from black -to rgb:af/89/7c
+
+! fin
+
