@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.158 2003/05/04 16:55:40 rathnor Exp $
+// $Id: Window.cc,v 1.159 2003/05/07 11:33:56 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1238,7 +1238,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     
     m_frame.show();
 
-    if (was_iconic && screen.doFocusNew())
+    if (was_iconic || screen.doFocusNew())
         setInputFocus();
 
     if (focused != m_frame.focused())
