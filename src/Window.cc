@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.244 2003/11/19 12:57:27 rathnor Exp $
+// $Id: Window.cc,v 1.245 2003/11/27 14:31:28 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -31,6 +31,8 @@
 #include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"
+#include "FbTk/MultiButtonMenuItem.hh"
+
 
 #include "WinClient.hh"
 #include "I18n.hh"
@@ -3431,9 +3433,15 @@ void FluxboxWindow::setupWindow() {
     // set new menu items
     menu.insert("Shade", shade_cmd);
     menu.insert("Stick", stick_cmd);
-    menu.insert("Maximize", maximize_cmd);
-    menu.insert("Maximize Vertical", maximize_vert_cmd);
-    menu.insert("Maximize Horizontal", maximize_horiz_cmd);
+    // create maximize item with:
+    // button1: Maximize normal
+    // button2: Maximize Vertical
+    // button3: Maximize Horizontal
+    FbTk::MultiButtonMenuItem *maximize_item = new FbTk::MultiButtonMenuItem(3, "Maximize");
+    maximize_item->setCommand(1, maximize_cmd);
+    maximize_item->setCommand(2, maximize_vert_cmd);
+    maximize_item->setCommand(3, maximize_horiz_cmd);
+    menu.insert(maximize_item);
     menu.insert("Iconify", iconify_cmd);
     menu.insert("Raise", raise_cmd);
     menu.insert("Lower", lower_cmd);
