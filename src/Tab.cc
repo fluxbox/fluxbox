@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.41 2002/11/17 13:40:01 fluxgen Exp $
+// $Id: Tab.cc,v 1.42 2002/11/25 14:07:21 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -367,43 +367,30 @@ void Tab::draw(bool pressed) const {
 	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
 		m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
 
-	// Different routines for drawing rotated text
-	// TODO: rotated font
-	/*if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
-			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
-			(!m_win->isShaded() && m_win->getScreen()->isTabRotateVertical())) {
-
-		tabtext_w = DrawUtil::XRotTextWidth(m_win->getScreen()->getWindowStyle()->tab.rot_font,
-						m_win->getTitle().c_str(), m_win->getTitle().size());
-		tabtext_w += (m_win->frame.bevel_w * 4);
-
-		DrawUtil::DrawRotString(m_display, m_tabwin, gc,
-				m_win->getScreen()->getWindowStyle()->tab.rot_font,
-				m_win->getScreen()->getWindowStyle()->tab.font.justify,
-				tabtext_w, m_size_w, m_size_h,
-				m_win->frame.bevel_w, m_win->getTitle().c_str());
-
-	} else {
-	*/
 	int dx=0;
 	Theme::WindowStyle *winstyle = m_win->getScreen()->getWindowStyle();
 	size_t dlen = m_win->getTitle().size();
 	size_t l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
+	
+	size_t max_width = m_size_w; // special cases in rotated mode
+	if (winstyle->tab.font.isRotated())
+		max_width = m_size_h;
+
 	if ( l > m_size_w) {
 		for (; dlen >= 0; dlen--) {
 			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen) + m_win->frame.bevel_w*4;
 
-			if (l < m_size_w || dlen == 0)
+			if (l < max_width || dlen == 0)
 				break;
 		}
 	}
 
 	switch (winstyle->tab.justify) {
 	case DrawUtil::Font::RIGHT:
-		dx += m_size_w - l - m_win->frame.bevel_w*3;
+		dx += max_width - l - m_win->frame.bevel_w*3;
 	break;
 	case DrawUtil::Font::CENTER:
-		dx += (m_size_w - l) / 2;
+		dx += (max_width - l) / 2;
 	break;
 	case DrawUtil::Font::LEFT:
 		dx = m_win->frame.bevel_w;
@@ -411,14 +398,21 @@ void Tab::draw(bool pressed) const {
 	default:
 	break;
 	}	
-		
-	m_win->getScreen()->getWindowStyle()->tab.font.drawText(
+	
+	int dy = winstyle->tab.font.ascent() + m_win->frame.bevel_w;
+	// swap dx and dy if we're rotated
+	if (winstyle->tab.font.isRotated()) {
+		int tmp = dy;
+		dy = m_size_h - dx; // upside down
+		dx = tmp;
+	}
+	
+	winstyle->tab.font.drawText(
 		m_tabwin,
 		m_win->getScreen()->getScreenNumber(),
 		gc,
 		m_win->getTitle().c_str(), dlen,
-		dx, 
-		m_win->getScreen()->getWindowStyle()->tab.font.ascent() + m_win->frame.bevel_w);
+		dx, dy);
 
 }
 

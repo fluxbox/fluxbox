@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.83 2002/11/24 20:56:06 fluxgen Exp $
+// $Id: Screen.cc,v 1.84 2002/11/25 14:07:21 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -286,6 +286,13 @@ resource(rm, screenname, altscreenname)
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
 	theme->reconfigure(*resource.antialias);
+	// special case for tab rotated
+	if (*resource.tab_rotate_vertical && 
+		( *resource.tab_placement == Tab::PLEFT || *resource.tab_placement == Tab::PRIGHT)) {
+		theme->getWindowStyle().tab.font.rotate(90);
+	} else  {
+		theme->getWindowStyle().tab.font.rotate(0);
+	}
 
 	const char *s =	i18n->getMessage(
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
@@ -504,7 +511,14 @@ void BScreen::reconfigure() {
 	theme->setRootCommand(getRootCommand());
 	theme->load(Fluxbox::instance()->getStyleFilename());
 	theme->reconfigure(*resource.antialias);
-	
+	// special case for tab rotated
+	if (*resource.tab_rotate_vertical && 
+		( *resource.tab_placement == Tab::PLEFT || *resource.tab_placement == Tab::PRIGHT)) {
+		theme->getWindowStyle().tab.font.rotate(90);
+	} else  {
+		theme->getWindowStyle().tab.font.rotate(0);
+	}
+
 	I18n *i18n = I18n::instance();
 
 	const char *s = i18n->getMessage(

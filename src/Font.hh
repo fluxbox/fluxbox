@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.8 2002/10/19 14:00:37 fluxgen Exp $
+//$Id: Font.hh,v 1.9 2002/11/25 14:07:21 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -62,8 +62,13 @@ public:
 	unsigned int height() const;	
 	int ascent() const;
 	int descent() const;
+	/**
+	  Rotate font in any angle (currently only 90 degrees supported and just XFont implementation)
+	*/
+	void rotate(float angle);
 	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-	bool isAntialias() const { return m_antialias; }
+	bool isAntialias() const { return m_antialias; }	
+	bool isRotated() const { return m_rotated; }
 private:
 	
 	std::auto_ptr<FontImp> m_fontimp;
@@ -71,6 +76,7 @@ private:
 	static bool m_multibyte;
 	static bool m_utf8mode;
 	bool m_antialias;
+	bool m_rotated; ///< wheter we're rotated or not
 };
 
 }; //end namespace FbTk

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.17 2002/10/29 16:06:23 fluxgen Exp $
+// $Id: Theme.hh,v 1.18 2002/11/25 14:07:21 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -82,7 +82,6 @@ public:
 			FbTk::Color border_color;
 			unsigned int border_width;
 			unsigned int border_width_2x;
-			DrawUtil::XRotFontStruct *rot_font;
 		} tab;
 	
 	} WindowStyle;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.21 2002/11/24 05:23:36 rathnor Exp $
+//$Id: Font.cc,v 1.22 2002/11/25 14:07:21 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -69,7 +69,7 @@ bool Font::m_utf8mode = false;
 
 Font::Font(const char *name, bool antialias):
 m_fontimp(0),
-m_antialias(false) {
+m_antialias(false), m_rotated(false) {
 	
 	// MB_CUR_MAX returns the size of a char in the current locale
 	if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
@@ -115,7 +115,7 @@ Font::~Font() {
 void Font::setAntialias(bool flag) {
 	bool loaded = m_fontimp->loaded();
 #ifdef USE_XFT
-	if (flag && !isAntialias()) {
+	if (flag && !isAntialias() && !m_rotated) {
 		m_fontimp.reset(new XftFontImp(m_fontstr.c_str(), m_utf8mode));
 	} else if (!flag && isAntialias()) 
 #endif // USE_XFT
@@ -163,5 +163,24 @@ void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len,
 		return;
 	m_fontimp->drawText(w, screen, gc, text, len, x, y);		
 }	
+
+void Font::rotate(float angle) {
+#ifdef USE_XFT
+	// if we are rotated and we are changing to horiz text 
+	// and we were antialiased before we rotated then change to XftFontImp
+	if (isRotated() && angle == 0 && isAntialias())
+		m_fontimp.reset(new XftFontImp(m_fontstr.c_str(), m_utf8mode));
+#endif // USE_XFT
+	// change to a font imp that handles rotated fonts (i.e just XFontImp at the moment)
+	// if we're going to rotate this font
+	if (angle != 0 && isAntialias() && !isRotated()) {
+		m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
+	}
+
+	//Note: only XFontImp implements FontImp::rotate
+	m_fontimp->rotate(angle);
+
+	m_rotated = (angle == 0 ? false : true);
+}
 
 };

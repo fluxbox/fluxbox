@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FontImp.hh,v 1.3 2002/10/19 13:57:48 fluxgen Exp $
+// $Id: FontImp.hh,v 1.4 2002/11/25 14:07:20 fluxgen Exp $
 
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
@@ -35,6 +35,7 @@ namespace FbTk {
 /**
 	FontImp, second part of the bridge pattern for fonts
 	pure interface class.
+	@see Font
 */
 class FontImp {
 public:
@@ -46,6 +47,7 @@ public:
 	virtual int descent() const = 0;
 	virtual unsigned int height() const = 0;
 	virtual bool loaded() const = 0;
+	virtual void rotate(float angle) { } // by default, no rotate support
 protected:
 	FontImp() { }
 };

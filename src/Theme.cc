@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.34 2002/11/15 13:10:48 fluxgen Exp $
+// $Id: Theme.cc,v 1.35 2002/11/25 14:07:21 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -471,17 +471,6 @@ void Theme::loadTabStyle() {
 	
 	loadFontFromDatabase(m_windowstyle.tab.font, "window.tab.font", "Window.Tab.Font");
 	
-	//TODO: fix rotated font
-	//--------- rotated font for left and right tabs
-	// TODO: add extra checking
-	/*if (XrmGetResource(m_database, "window.tab.font", "Window.Tab.Font",
-			&value_type, &value)) {		
-		if (! (m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, value.addr, 90.0)) )
-			m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, "fixed", 90);
-	} else
-		m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, "fixed", 90);
-	*/
-
 	if (XrmGetResource(m_database, "window.tab.justify", "Window.Tab.Justify",
 			 &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
