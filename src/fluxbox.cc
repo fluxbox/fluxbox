@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.166 2003/06/30 20:36:57 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.167 2003/07/01 20:29:44 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -877,6 +877,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
     } break;
     case FocusIn: {
+
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
             break;
@@ -886,7 +887,22 @@ void Fluxbox::handleEvent(XEvent * const e) {
             setFocusedWindow(win);
 	
     } break;
-    case FocusOut:
+    case FocusOut:{
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out!"<<endl;
+#endif // DEBUG
+        if (e->xfocus.mode == NotifyUngrab ||
+            e->xfocus.detail == NotifyPointer)
+            break;
+        FluxboxWindow *win = searchWindow(e->xfocus.window);
+        if (win == 0 && FbTk::Menu::focused() == 0) {
+#ifdef DEBUG
+            cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
+#endif // DEBUG
+            if (getFocusedWindow())
+                getFocusedWindow()->setInputFocus();
+        }
+    }
 	break;
     case ClientMessage:
         handleClientMessage(e->xclient);
