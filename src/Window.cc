@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.191 2003/06/13 20:49:05 fluxgen Exp $
+// $Id: Window.cc,v 1.192 2003/06/15 18:35:32 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2055,39 +2055,21 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 	break;
 
     case NormalState: {
-        // if the window was destroyed while autogrouping
+        // if this window was destroyed while autogrouping
         bool destroyed = false;
-
+       
         // check WM_CLASS only when we changed state to NormalState from 
-        // WithdrawnState (ICCC 4.1.2.5)				
-        XClassHint ch;
-        if (XGetClassHint(display, client->window(), &ch) == 0) {
-            cerr<<"Failed to read class hint!"<<endl;
-        } else {
-            if (ch.res_name != 0) {
-                m_instance_name = const_cast<char *>(ch.res_name);
-                XFree(ch.res_name);
-            } else
-                m_instance_name = "";
+        // WithdrawnState (ICCC 4.1.2.5)
+        client->updateWMClassHint();
 
-            if (ch.res_class != 0) {
-                m_class_name = const_cast<char *>(ch.res_class);
-                XFree(ch.res_class);
-            } else 
-                m_class_name = "";
-
-            
-            Workspace *wsp = screen().getWorkspace(m_workspace_number);
-            // we must be resizable AND maximizable to be autogrouped
-            //!! TODO: there should be an isGroupable() function
-            if (wsp != 0 && isResizable() && isMaximizable()) {
-                destroyed = wsp->checkGrouping(*this);
-            }
-            
-        }
-	// if we wasn't grouped with another window we deiconify ourself
-	if (!destroyed)
+        Workspace *wsp = screen().getWorkspace(m_workspace_number);
+        if (wsp != 0 && isGroupable())
+            destroyed = wsp->checkGrouping(*this);
+                
+	// if we wasn't grouped with another window we deiconify ourself	
+        if (!destroyed)
             deiconify(false);
+
 
     } break;
     case InactiveState:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.77 2003/06/12 14:34:28 fluxgen Exp $
+// $Id: Window.hh,v 1.78 2003/06/15 18:34:48 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -304,8 +304,7 @@ public:
     unsigned int width() const;
     unsigned int height() const;
     unsigned int titlebarHeight() const;
-    const std::string &className() const { return m_class_name; }
-    const std::string &instanceName() const { return m_instance_name; }
+
     bool isLowerTab() const;
     int initialState() const;
 
@@ -350,7 +349,7 @@ private:
     void shape();
 
     void grabButtons();
-	
+
     void startMoving(Window win);
     void stopMoving();
     void startResizing(Window win, int x, int y, bool left); 
@@ -389,9 +388,6 @@ private:
     // state and hint signals
     WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig;
 
-    std::string m_instance_name; /// instance name from WM_CLASS
-    std::string m_class_name; /// class name from WM_CLASS
-	
     // Window states
     bool moving, resizing, shaded, maximized, iconic,
         focused, stuck, send_focus_message, m_managed;
