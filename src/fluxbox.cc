@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.180 2003/08/11 16:06:51 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.181 2003/08/11 20:59:58 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -563,6 +563,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                      "Make sure you don't have another window manager running.");
     }
 
+    // setup theme manager to have our style file ready to be scanned
+    FbTk::ThemeManager::instance().load(getStyleFilename());
 
     XSynchronize(disp, False);
     XSync(disp, False);
