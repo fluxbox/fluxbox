@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.6 2003/04/15 11:59:02 fluxgen Exp $
+// $Id: FbAtoms.cc,v 1.7 2003/04/26 18:56:02 fluxgen Exp $
 
 #include "FbAtoms.hh"
 #include "App.hh"
@@ -53,8 +53,6 @@ FbAtoms *FbAtoms::instance() {
 void FbAtoms::initAtoms() {
     Display *display = FbTk::App::instance()->display();
 
-    xa_wm_colormap_windows =
-        XInternAtom(display, "WM_COLORMAP_WINDOWS", False);
     xa_wm_protocols = XInternAtom(display, "WM_PROTOCOLS", False);
     xa_wm_state = XInternAtom(display, "WM_STATE", False);
     xa_wm_change_state = XInternAtom(display, "WM_CHANGE_STATE", False);

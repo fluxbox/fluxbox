@@ -19,16 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.9 2003/04/15 11:57:34 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.10 2003/04/26 18:56:02 fluxgen Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
-/**
-	atom handler for base atoms
-*/
+/// atom handler for basic X atoms
 class FbAtoms {
 public:
     FbAtoms();
@@ -42,7 +40,6 @@ public:
     inline Atom getWMDeleteAtom() const { return xa_wm_delete_window; }
     inline Atom getWMProtocolsAtom() const { return xa_wm_protocols; }
     inline Atom getWMTakeFocusAtom() const { return xa_wm_take_focus; }
-    inline Atom getWMColormapAtom() const { return xa_wm_colormap_windows; }
 
     // this atom is for normal app->WM hints about decorations, stacking,
     // starting workspace etc...
@@ -50,7 +47,7 @@ public:
 
     // these atoms are for normal app->WM interaction beyond the scope of the
     // ICCCM...
-    inline Atom getFluxboxAttributesAtom() const	{ return blackbox_attributes; }
+    inline Atom getFluxboxAttributesAtom() const { return blackbox_attributes; }
     inline Atom getFluxboxChangeAttributesAtom() const { return blackbox_change_attributes; }
 
     // these atoms are for window->WM interaction, with more control and
@@ -92,7 +89,7 @@ private:
     Atom blackbox_change_workspace, blackbox_change_window_focus,
         blackbox_cycle_window_focus;
 
-    Atom xa_wm_colormap_windows, xa_wm_protocols, xa_wm_state,
+    Atom xa_wm_protocols, xa_wm_state,
         xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state;
        
     bool m_init;
