@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.3 2003/04/15 12:12:29 fluxgen Exp $
+// $Id: WinClient.cc,v 1.4 2003/04/25 11:21:17 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -28,6 +28,7 @@
 #include "Screen.hh"
 #include "i18n.hh"
 #include "FbAtoms.hh"
+#include "EventManager.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -113,6 +114,7 @@ WinClient::~WinClient() {
 
     if (m_win != 0)
         m_win->removeClient(*this);
+    FbTk::EventManager::instance()->remove(window());
     m_win = 0;
 
 }
