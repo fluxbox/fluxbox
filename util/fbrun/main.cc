@@ -19,16 +19,31 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.1 2002/08/20 02:04:34 fluxgen Exp $
+// $Id: main.cc,v 1.2 2002/11/12 16:46:17 fluxgen Exp $
 
 #include "FbRun.hh"
+#include "BaseDisplay.hh"
 
 #include <string>
 #include <iostream>
+
 using namespace std;
 
+class App:public BaseDisplay {
+public:
+	App(const char *displaystr):BaseDisplay("FbRun", displaystr) { }
+	FbRun &fbrun() { return m_fbrun; }
+	void handleEvent(XEvent * const ev) {
+		m_fbrun.handleEvent(ev);
+		if (m_fbrun.end())
+			shutdown();
+	}
+private:
+	FbRun m_fbrun;
+};
+
 void showUsage(const char *progname) {
-	cerr<<"fbrun 1.1.0 : (c) 2002 Henrik Kinnunen"<<endl;
+	cerr<<"fbrun 1.1.1 : (c) 2002 Henrik Kinnunen"<<endl;
 	cerr<<"Usage: "<<
 		progname<<" [arguments]"<<endl<<
 		"Arguments: "<<endl<<
@@ -41,6 +56,7 @@ void showUsage(const char *progname) {
 		"   -pos [x] [y]                Window position in pixels"<<endl<<
 		"   -fg [color name]            Foreground text color"<<endl<<
 		"   -bg [color name]            Background color"<<endl<<
+		"   -a                          Antialias"<<endl<<
 		"   -help                       Show this help"<<endl<<endl<<
 		"Example: fbrun -fg black -bg white -text xterm -title \"run xterm\""<<endl;
 }
@@ -50,6 +66,7 @@ int main(int argc, char **argv) {
 	size_t width = 200, height = 32; // default size of window
 	bool set_height = false; // use height of font by default
 	bool set_pos = false; // set position
+	bool antialias = false; // antialias text
 	string fontname; // font name
 	string title("Run program"); // default title
 	string text;         // default input text
@@ -90,6 +107,8 @@ int main(int argc, char **argv) {
 		} else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
 			++i;
 			background = argv[i];
+		} else if (strcmp(argv[i], "-a") == 0) {
+			antialias = true;
 		} else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
 			showUsage(argv[0]);
 			exit(0);
@@ -102,15 +121,11 @@ int main(int argc, char **argv) {
 	}
 
 	try {
-
-		Display *disp = 0;
-
-		// establish display connection
-		disp = XOpenDisplay(display_name.c_str());
-		if (disp == 0)
-			throw string("Can't open display: " + display_name);
 		
-		FbRun fbrun(disp);
+		App application(display_name.c_str());
+		Display *disp = application.getXDisplay();
+				
+		FbRun &fbrun = application.fbrun();
 		if (fontname.size() != 0) {
 			if (!fbrun.loadFont(fontname.c_str())) {
 				cerr<<"Failed to load font: "<<fontname<<endl;
@@ -142,7 +157,8 @@ int main(int argc, char **argv) {
 
 		if (set_height)
 			fbrun.resize(width, height);
-		
+		if (antialias)
+			fbrun.setAntialias(antialias);
 		fbrun.setTitle(title);
 		fbrun.setText(text);
 		fbrun.show();
@@ -150,12 +166,7 @@ int main(int argc, char **argv) {
 		if (set_pos)
 			fbrun.move(x, y);
 
-		XEvent event;
-		// main loop
-		while (!fbrun.end()) {
-			XNextEvent(disp, &event);
-			fbrun.handleEvent(&event);
-		}
+		application.eventLoop();
 
 	} catch (string errstr) {
 		cerr<<"Error: "<<errstr<<endl;
