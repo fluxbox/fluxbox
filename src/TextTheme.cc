@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.cc,v 1.5 2003/08/16 11:33:13 fluxgen Exp $
+// $Id: TextTheme.cc,v 1.6 2003/08/27 18:05:12 fluxgen Exp $
 
 #include "TextTheme.hh"
 
@@ -33,9 +33,7 @@ TextTheme::TextTheme(FbTk::Theme &theme,
     m_font(theme, name + ".font", altname + ".Font"),
     m_text_color(theme, name + ".textColor", altname + ".TextColor"),
     m_justify(theme, name + ".justify", altname + ".Justify"),
-    m_text_gc(XCreateGC(FbTk::App::instance()->display(),
-                        RootWindow(FbTk::App::instance()->display(), 
-                                   theme.screenNum()), 0, 0)) {
+    m_text_gc(RootWindow(FbTk::App::instance()->display(), theme.screenNum())) {
     *m_justify = FbTk::LEFT;
     // set default values
     m_font->load("fixed");
@@ -45,15 +43,11 @@ TextTheme::TextTheme(FbTk::Theme &theme,
 }
 
 TextTheme::~TextTheme() {
-    if (m_text_gc)
-        XFreeGC(FbTk::App::instance()->display(), m_text_gc);
+
 }
 
 void TextTheme::update() {
-    XGCValues gcv;
-    gcv.foreground = m_text_color->pixel();
-    XChangeGC(FbTk::App::instance()->display(), m_text_gc,
-              GCForeground, &gcv);
+    m_text_gc.setForeground(*m_text_color);
 }
 
 void TextTheme::setAntialias(bool value) {

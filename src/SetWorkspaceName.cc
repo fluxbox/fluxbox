@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SetWorkspaceName.cc,v 1.1 2003/08/26 23:48:19 fluxgen Exp $
+// $Id: SetWorkspaceName.cc,v 1.2 2003/08/27 18:05:12 fluxgen Exp $
 
 #include "SetWorkspaceName.hh"
 
@@ -43,8 +43,7 @@ SetWorkspaceName::SetWorkspaceName(BScreen &screen):
     m_textbox(*this, m_font, screen.currentWorkspace()->name()),
     m_label(*this, m_font, "Set workspace name:"),
     m_font("fixed"),
-    m_gc(XCreateGC(FbTk::App::instance()->display(), m_textbox.window(),
-                   0, 0)),
+    m_gc(m_textbox),
     m_screen(screen),
     m_move_x(0),
     m_move_y(0) {
@@ -58,12 +57,12 @@ SetWorkspaceName::SetWorkspaceName(BScreen &screen):
     m_label.show();
 
     m_textbox.setBackgroundColor(FbTk::Color("white", m_textbox.screenNumber()));
-    XGCValues gc_val;
+
     FbTk::Color black("black", m_textbox.screenNumber());
-    gc_val.foreground = black.pixel();
-    XChangeGC(FbTk::App::instance()->display(), m_gc,
-              GCForeground, &gc_val);
-    m_textbox.setGC(m_gc);
+    m_gc.setForeground(black);
+
+    m_textbox.setGC(m_gc.gc());
+
     m_textbox.moveResize(0, m_label.height(),
                          200, m_font.height() + 2);    
     m_textbox.show();
@@ -80,9 +79,6 @@ SetWorkspaceName::SetWorkspaceName(BScreen &screen):
 
 SetWorkspaceName::~SetWorkspaceName() {
     FbTk::EventManager::instance()->remove(*this);
-    if (m_gc)
-        XFreeGC(FbTk::App::instance()->display(), m_gc);
-
     hide();
 }
 

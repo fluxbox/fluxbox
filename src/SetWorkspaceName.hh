@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SetWorkspaceName.hh,v 1.1 2003/08/26 23:48:19 fluxgen Exp $
+// $Id: SetWorkspaceName.hh,v 1.2 2003/08/27 18:05:12 fluxgen Exp $
 
 #ifndef SETWORKSPACENAME_HH
 #define SETWORKSPACENAME_HH
@@ -27,6 +27,7 @@
 #include "FbTk/TextBox.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/Font.hh"
+#include "FbTk/GContext.hh"
 
 class BScreen;
 
@@ -47,7 +48,7 @@ private:
     FbTk::TextBox m_textbox;
     FbTk::TextButton m_label;
     FbTk::Font m_font;
-    GC m_gc;
+    FbTk::GContext m_gc;
     BScreen &m_screen;
     int m_move_x, m_move_y;
 };

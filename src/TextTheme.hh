@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.hh,v 1.2 2003/08/13 09:54:30 fluxgen Exp $
+// $Id: TextTheme.hh,v 1.3 2003/08/27 18:05:12 fluxgen Exp $
 
 #ifndef TEXTTHEME_HH
 #define TEXTTHEME_HH
@@ -29,6 +29,7 @@
 #include "FbTk/Font.hh"
 #include "FbTk/Color.hh"
 #include "FbTk/Text.hh"
+#include "FbTk/GContext.hh"
 
 class TextTheme {
 public:
@@ -43,12 +44,12 @@ public:
     const FbTk::Font &font() const { return *m_font; }
     const FbTk::Color &textColor() const { return *m_text_color; }
     FbTk::Justify justify() const { return *m_justify; }
-    GC textGC() const { return m_text_gc; }
+    GC textGC() const { return m_text_gc.gc(); }
 private:
     FbTk::ThemeItem<FbTk::Font> m_font;
     FbTk::ThemeItem<FbTk::Color> m_text_color;
     FbTk::ThemeItem<FbTk::Justify> m_justify;
-    GC m_text_gc;
+    FbTk::GContext m_text_gc;
 };
 
 #endif // TEXTTHEME_HH
