@@ -87,11 +87,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 		fprintf(stderr,
 			I18n::instance()->
 			getMessage(
-#ifdef    NLS
-				bsetrootSet, bsetrootMustSpecify,
-#else // !NLS
-				0, 0,
-#endif // NLS
+				FBNLS::bsetrootSet, FBNLS::bsetrootMustSpecify,
 				"%s: error: must specify on of: -solid, -mod, -gradient\n"),
 			getApplicationName());
 
@@ -371,11 +367,7 @@ void bsetroot::gradient(void) {
 void bsetroot::usage(int exit_code) {
 	fprintf(stderr,
 		I18n::instance()->getMessage(
-#ifdef    NLS	
-			bsetrootSet, bsetrootUsage,
-#else // !NLS
-			0, 0,
-#endif // NLS
+			FBNLS::bsetrootSet, FBNLS::bsetrootUsage,
 			"%s 2.1 : (c) 2002 Claes Nasten\n"
 			"%s 2.0 : (c) 1997-2000 Brad Hughes\n\n"
 			"  -display <string>        display connection\n"
@@ -406,11 +398,7 @@ int main(int argc, char **argv) {
 		if ((++i) >= argc) {
 			fprintf(stderr,
 				I18n::instance()->getMessage(
-#ifdef    NLS
-					mainSet, mainDISPLAYRequiresArg,
-#else // !NLS
-					0, 0,
-#endif // NLS
+					FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,
 					"error: '-display' requires an argument\n"));
 	
 				::exit(1);
