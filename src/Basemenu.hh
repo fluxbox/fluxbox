@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.7 2002/02/17 19:00:04 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.8 2002/03/20 14:10:03 fluxgen Exp $
 
-#ifndef   BASEMENU_HH
-#define   BASEMENU_HH
+#ifndef	 BASEMENU_HH
+#define	 BASEMENU_HH
 
 #include <X11/Xlib.h>
 #include <vector>
@@ -40,103 +40,100 @@ class BImageControl;
 class BScreen;
 
 class Basemenu {
+public:
+	explicit Basemenu(BScreen *);
+	virtual ~Basemenu(void);
+
+	inline const Bool &isTorn(void) const { return torn; }
+	inline const Bool &isVisible(void) const { return visible; }
+
+	inline BScreen *getScreen(void) const { return screen; }
+
+	inline const Window &getWindowID(void) const { return menu.window; }
+
+	inline const char *getLabel(void) const { return menu.label; }
+
+	int insert(const char *, int = 0, const char * = (const char *) 0, int = -1);
+	int insert(const char **, int = -1, int = 0);
+	int insert(const char *, Basemenu *, int = -1);
+	int remove(unsigned int item);
+
+	inline const int &getX(void) const { return menu.x; }
+	inline const int &getY(void) const { return menu.y; }
+	inline int getCount(void) { return menuitems.size(); }
+	inline const int &getCurrentSubmenu(void) const { return which_sub; }
+
+	inline const unsigned int &getWidth(void) const { return menu.width; }
+	inline const unsigned int &getHeight(void) const { return menu.height; }
+	inline const unsigned int &getTitleHeight(void) const { return menu.title_h; }
+
+	inline void setInternalMenu(void) { internal_menu = True; }
+	inline void setAlignment(int a) { alignment = a; }
+	inline void setTorn(void) { torn = True; }
+	inline void removeParent(void) { if (internal_menu) parent = (Basemenu *) 0; }
+
+	bool hasSubmenu(unsigned int index);
+	bool isItemSelected(unsigned int index);
+	bool isItemEnabled(unsigned int index);
+
+	void buttonPressEvent(XButtonEvent *);
+	void buttonReleaseEvent(XButtonEvent *);
+	void motionNotifyEvent(XMotionEvent *);
+	void enterNotifyEvent(XCrossingEvent *);
+	void leaveNotifyEvent(XCrossingEvent *);
+	void exposeEvent(XExposeEvent *);
+	void reconfigure(void);
+	void setLabel(const char *n);
+	void move(int, int);
+	void update(void);
+	void setItemSelected(unsigned int index, bool val);
+	void setItemEnabled(unsigned int, bool val);
+
+	virtual void drawSubmenu(unsigned int index);
+	virtual void show(void);
+	virtual void hide(void);
+
+	enum { ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
+	enum { RIGHT = 1, LEFT };
+	enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
+
 private:
 	typedef std::vector<BasemenuItem *> Menuitems;
 	Menuitems menuitems;
-  Fluxbox *fluxbox;
-  Basemenu *parent;
-  BImageControl *image_ctrl;
-  BScreen *screen;
+	Fluxbox *fluxbox;
+	Basemenu *parent;
+	BImageControl *image_ctrl;
+	BScreen *screen;
 
-  Bool moving, visible, movable, torn, internal_menu, title_vis, shifted,
-    hide_tree;
-  Display *display;
-  int which_sub, which_press, which_sbl, alignment;
+	Bool moving, visible, movable, torn, internal_menu, title_vis, shifted,
+		hide_tree;
+	Display *display;
+	int which_sub, which_press, which_sbl, alignment;
 
-  struct _menu {
-    Pixmap frame_pixmap, title_pixmap, hilite_pixmap, sel_pixmap;
-    Window window, frame, title;
+	struct _menu {
+		Pixmap frame_pixmap, title_pixmap, hilite_pixmap, sel_pixmap;
+		Window window, frame, title;
 
-    char *label;
-    int x, y, x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
-      grab_x, grab_y;
-    unsigned int width, height, title_h, frame_h, item_w, item_h, bevel_w,
-      bevel_h;
-  } menu;
+		char *label;
+		int x, y, x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
+			grab_x, grab_y;
+		unsigned int width, height, title_h, frame_h, item_w, item_h, bevel_w,
+			bevel_h;
+	} menu;
 
 
 protected:
-  inline BasemenuItem *find(int index) { return menuitems[index]; }
-  inline void setTitleVisibility(Bool b) { title_vis = b; }
-  inline void setMovable(Bool b) { movable = b; }
-  inline void setHideTree(Bool h) { hide_tree = h; }
-  inline void setMinimumSublevels(int m) { menu.minsub = m; }
+	inline BasemenuItem *find(unsigned int index) { return menuitems[index]; }
+	inline void setTitleVisibility(bool b) { title_vis = b; }
+	inline void setMovable(bool b) { movable = b; }
+	inline void setHideTree(bool h) { hide_tree = h; }
+	inline void setMinimumSublevels(int m) { menu.minsub = m; }
 
-  virtual void itemSelected(int, int) = 0;
-  virtual void drawItem(int, Bool = False, Bool = False,
-			int = -1, int = -1, unsigned int = 0, unsigned int = 0);
-  virtual void redrawTitle();
-  virtual void internal_hide(void);
-
-
-public:
-  Basemenu(BScreen *);
-  virtual ~Basemenu(void);
-
-  inline const Bool &isTorn(void) const { return torn; }
-  inline const Bool &isVisible(void) const { return visible; }
-
-  inline BScreen *getScreen(void) { return screen; }
-
-  inline const Window &getWindowID(void) const { return menu.window; }
-
-  inline const char *getLabel(void) const { return menu.label; }
-
-  int insert(const char *, int = 0, const char * = (const char *) 0, int = -1);
-  int insert(const char **, int = -1, int = 0);
-  int insert(const char *, Basemenu *, int = -1);
-  int remove(int);
-
-  inline const int &getX(void) const { return menu.x; }
-  inline const int &getY(void) const { return menu.y; }
-  inline int getCount(void) { return menuitems.size(); }
-  inline const int &getCurrentSubmenu(void) const { return which_sub; }
-
-  inline const unsigned int &getWidth(void) const { return menu.width; }
-  inline const unsigned int &getHeight(void) const { return menu.height; }
-  inline const unsigned int &getTitleHeight(void) const { return menu.title_h; }
-
-  inline void setInternalMenu(void) { internal_menu = True; }
-  inline void setAlignment(int a) { alignment = a; }
-  inline void setTorn(void) { torn = True; }
-  inline void removeParent(void)
-    { if (internal_menu) parent = (Basemenu *) 0; }
-
-  Bool hasSubmenu(int);
-  Bool isItemSelected(int);
-  Bool isItemEnabled(int);
-
-  void buttonPressEvent(XButtonEvent *);
-  void buttonReleaseEvent(XButtonEvent *);
-  void motionNotifyEvent(XMotionEvent *);
-  void enterNotifyEvent(XCrossingEvent *);
-  void leaveNotifyEvent(XCrossingEvent *);
-  void exposeEvent(XExposeEvent *);
-  void reconfigure(void);
-  void setLabel(const char *n);
-  void move(int, int);
-  void update(void);
-  void setItemSelected(int, Bool);
-  void setItemEnabled(int, Bool);
-
-  virtual void drawSubmenu(int);
-  virtual void show(void);
-  virtual void hide(void);
-
-  enum { ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
-  enum { RIGHT = 1, LEFT };
-  enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
-
+	virtual void itemSelected(int, int) = 0;
+	virtual void drawItem(unsigned int index, bool highlight= false, bool clear= false,
+			int x= -1, int y= -1, unsigned int width= 0, unsigned int height= 0);
+	virtual void redrawTitle();
+	virtual void internal_hide(void);
 };
 
 class BasemenuItem {

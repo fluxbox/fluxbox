@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.12 2002/03/19 14:30:42 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.13 2002/03/20 14:10:03 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -236,8 +236,8 @@ int Basemenu::insert(const char **ulabel, int pos, int function) {
 }
 
 
-int Basemenu::remove(int index) {
-	if (index < 0 || index >= menuitems.size()) {
+int Basemenu::remove(unsigned int index) {
+	if (index >= menuitems.size()) {
 		#ifdef DEBUG
 		std::cout << "Bad index (" << index << ") given to Basemenu::remove()"
 		          << " -- should be between 0 and " << menuitems.size()-1
@@ -264,9 +264,9 @@ int Basemenu::remove(int index) {
 		delete item;
 	}
 
-	if (which_sub == index)
+	if (static_cast<unsigned int>(which_sub) == index)
 		which_sub = -1;
-	else if (which_sub > index)
+	else if (static_cast<unsigned int>(which_sub) > index)
 		which_sub--;
 
 	return menuitems.size();
@@ -426,13 +426,14 @@ void Basemenu::update(void) {
 
 	if (title_vis && visible) redrawTitle();
 
-	int i = 0;
-	for (i = 0; visible && i < menuitems.size(); i++)
-		if (i == which_sub) {
+	unsigned int i = 0;
+	for (i = 0; visible && i < menuitems.size(); i++) {
+		if (i == (unsigned int)which_sub) {
 			drawItem(i, True, 0);
 			drawSubmenu(i);
 		} else
 			drawItem(i, False, 0);
+	}
 
 	if (parent && visible)
 		parent->drawSubmenu(parent->which_sub);
@@ -541,15 +542,16 @@ void Basemenu::redrawTitle(void) {
 }
 
 
-void Basemenu::drawSubmenu(int index) {
-	if (which_sub >= 0 && which_sub != index) {
+void Basemenu::drawSubmenu(unsigned int index) {
+	if (which_sub >= 0 && static_cast<unsigned int>(which_sub) != index && 
+		static_cast<unsigned int>(which_sub) < menuitems.size()) {
 		BasemenuItem *itmp = menuitems[which_sub];
 
 		if (! itmp->submenu()->isTorn())
 			itmp->submenu()->internal_hide();
 	}
 
-	if (index >= 0 && index < menuitems.size()) {
+	if (index < menuitems.size()) {
 		BasemenuItem *item = menuitems[index];
 		if (item->submenu() && visible && (! item->submenu()->isTorn()) &&
 				item->isEnabled()) {
@@ -648,26 +650,26 @@ void Basemenu::drawSubmenu(int index) {
 }
 
 
-Bool Basemenu::hasSubmenu(int index) {
-	if ((index >= 0) && (index < menuitems.size()))
+bool Basemenu::hasSubmenu(unsigned int index) {
+	if (index < menuitems.size())
 		if (menuitems[index]->submenu())
-			return True;
+			return true;
 		else
-			return False;
+			return false;
 	else
-		return False;
+		return false;
 }
 
 
-void Basemenu::drawItem(int index, Bool highlight, Bool clear,
+void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 			 int x, int y, unsigned int w, unsigned int h)
 {
-	if (index < 0 || index > menuitems.size()) return;
+	if (index >= menuitems.size()) return;
 
 	BasemenuItem *item = menuitems[index];
 	if (! item) return;
 	
-	Bool dotext = True, dohilite = True, dosel = True;
+	bool dotext = true, dohilite = true, dosel = true;
 	const char *text = item->label();
 	int sbl = index / menu.persub, i = index - (sbl * menu.persub);
 	int item_x = (sbl * menu.item_w), item_y = (i * menu.item_h);
@@ -843,39 +845,39 @@ void Basemenu::setLabel(const char *l) {
 }
 
 
-void Basemenu::setItemSelected(int index, Bool sel) {
-	if (index < 0 || index >= menuitems.size()) return;
+void Basemenu::setItemSelected(unsigned int index, bool sel) {
+	if (index >= menuitems.size()) return;
 
 	BasemenuItem *item = find(index);
 	if (! item) return;
 
 	item->setSelected(sel);
-	if (visible) drawItem(index, (index == which_sub), True);
+	if (visible) drawItem(index, (index == (unsigned int)which_sub), true);
 }
 
 
-Bool Basemenu::isItemSelected(int index) {
-	if (index < 0 || index >= menuitems.size()) return False;
+bool Basemenu::isItemSelected(unsigned int index) {
+	if (index >= menuitems.size()) return false;
 
 	BasemenuItem *item = find(index);
-	if (! item) return False;
+	if (! item) return false;
 
 	return item->isSelected();
 }
 
 
-void Basemenu::setItemEnabled(int index, Bool enable) {
-	if (index < 0 || index >= menuitems.size()) return;
+void Basemenu::setItemEnabled(unsigned int index, bool enable) {
+	if (index >= menuitems.size()) return;
 
 	BasemenuItem *item = find(index);
 	if (! item) return;
 
 	item->setEnabled(enable);
-	if (visible) drawItem(index, (index == which_sub), True);
+	if (visible) drawItem(index, (index == static_cast<unsigned int>(which_sub)), True);
 }
 
 
-Bool Basemenu::isItemEnabled(int index) {
+bool Basemenu::isItemEnabled(unsigned int index) {
 	if (index < 0 || index >= menuitems.size()) return False;
 
 	BasemenuItem *item = find(index);
@@ -890,7 +892,7 @@ void Basemenu::buttonPressEvent(XButtonEvent *be) {
 		int sbl = (be->x / menu.item_w), i = (be->y / menu.item_h);
 		int w = (sbl * menu.persub) + i;
 
-		if (w < menuitems.size() && w >= 0) {
+		if (w < static_cast<int>(menuitems.size()) && w >= 0) {
 			which_press = i;
 			which_sbl = sbl;
 
@@ -933,7 +935,7 @@ void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 					w = (sbl * menu.persub) + i,
 					p = (which_sbl * menu.persub) + which_press;
 
-			if (w < menuitems.size() && w >= 0) {
+			if (w < static_cast<int>(menuitems.size()) && w >= 0) {
 				drawItem(p, (p == which_sub), True);
 
 				if	(p == w && isItemEnabled(w)) {
@@ -979,7 +981,7 @@ void Basemenu::motionNotifyEvent(XMotionEvent *me) {
 		w = (sbl * menu.persub) + i;
 
 		if ((i != which_press || sbl != which_sbl) &&
-				(w < menuitems.size() && w >= 0)) {
+				(w < static_cast<int>(menuitems.size()) && w >= 0)) {
 			if (which_press != -1 && which_sbl != -1) {
 				int p = (which_sbl * menu.persub) + which_press;
 				BasemenuItem *item = menuitems[p];
@@ -1029,7 +1031,7 @@ void Basemenu::exposeEvent(XExposeEvent *ee) {
 		for (i = sbl; i <= sbl_d; i++) {
 			// set the iterator to the first item in the sublevel needing redrawing
 			int index = id + i * menu.persub;
-			if (index < menuitems.size() && index >= 0) {
+			if (index < static_cast<int>(menuitems.size()) && index >= 0) {
 				Menuitems::iterator it = menuitems.begin() + index;
 				Menuitems::iterator it_end = menuitems.end();
 				for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
