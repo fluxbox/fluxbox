@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.27 2004/01/11 16:14:41 fluxgen Exp $
+// $Id: main.cc,v 1.28 2004/01/12 12:25:16 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -178,7 +178,7 @@ int main(int argc, char **argv) {
             }
         } else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
             // print current version string
-            cout<<"Fluxbox "<<__fluxbox_version<<" : (c) 2001-2003 Henrik Kinnunen "<<endl<<endl;
+            cout<<"Fluxbox "<<__fluxbox_version<<" : (c) 2001-2004 Henrik Kinnunen "<<endl<<endl;
             exit(0);
         } else if (strcmp(argv[i], "-log") == 0 ) {
             if (i + 1 >= argc) {
