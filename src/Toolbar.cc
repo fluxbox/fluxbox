@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.51 2003/01/05 22:37:46 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.52 2003/01/07 02:07:43 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -712,21 +712,21 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         FluxboxWindow *fluxboxwin = 0;
         // if we clicked on a icon then show window menu
         if ( m_iconbar.get() != 0 && (fluxboxwin = m_iconbar->findWindow(be.window)) ) {
-            const Windowmenu * const wm = fluxboxwin->getWindowmenu();
-            if (wm != 0) {
-                int menu_y = be.y_root - wm->height();
-                int menu_x = be.x_root;
-                // make sure the menu is visible
-                if (menu_y < 0) {
-                    menu_y = 0;
-                }
-                if (menu_x < 0) {
-                    menu_x = 0;
-                } else if (menu_x + wm->width() > screen()->getWidth()) {
-                    menu_x = screen()->getWidth() - wm->width();
-                }
-                fluxboxwin->showMenu(menu_x, menu_y);
+            const FbTk::Menu &wm = fluxboxwin->getWindowmenu();
+
+            int menu_y = be.y_root - wm.height();
+            int menu_x = be.x_root;
+            // make sure the menu is visible
+            if (menu_y < 0) {
+                menu_y = 0;
             }
+            if (menu_x < 0) {
+                menu_x = 0;
+            } else if (menu_x + wm.width() > screen()->getWidth()) {
+                menu_x = screen()->getWidth() - wm.width();
+            }
+            fluxboxwin->showMenu(menu_x, menu_y);
+
         } else if (! m_toolbarmenu.isVisible()) {
             int x, y;
 
