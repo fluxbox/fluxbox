@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.104 2003/02/15 02:03:09 fluxgen Exp $
+// $Id: Screen.cc,v 1.105 2003/02/16 01:14:54 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -423,8 +423,8 @@ BScreen::BScreen(ResourceManager &rm,
 	
     int l = strlen(s);
 
-    geom_h = theme->getWindowStyle().font.height();
-    geom_w = theme->getWindowStyle().font.textWidth(s, l);
+    geom_h = m_windowtheme.font().height();
+    geom_w = m_windowtheme.font().textWidth(s, l);
 	
     geom_w += getBevelWidth()*2;
     geom_h += getBevelWidth()*2;
@@ -441,27 +441,25 @@ BScreen::BScreen(ResourceManager &rm,
                       InputOutput, getVisual(), mask, &attrib);
     geom_visible = false;
 
-    if (theme->getWindowStyle().l_focus.type() & FbTk::Texture::PARENTRELATIVE) {
-        if (theme->getWindowStyle().t_focus.type() ==
+    if (m_windowtheme.labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (m_windowtheme.titleFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            XSetWindowBackground(disp, geom_window,
-				 theme->getWindowStyle().t_focus.color().pixel());
+            geom_window.setBackgroundColor(m_windowtheme.titleFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     theme->getWindowStyle().t_focus);
-            XSetWindowBackgroundPixmap(disp, geom_window, geom_pixmap);
+                                                     m_windowtheme.titleFocusTexture());
+            geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (theme->getWindowStyle().l_focus.type() ==
+        if (m_windowtheme.labelFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            XSetWindowBackground(disp, geom_window,
-				 theme->getWindowStyle().l_focus.color().pixel());
+            geom_window.setBackgroundColor(m_windowtheme.labelFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     theme->getWindowStyle().l_focus);
-            XSetWindowBackgroundPixmap(disp, geom_window, geom_pixmap);
+                                                     m_windowtheme.labelFocusTexture());
+           geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
 
@@ -486,7 +484,7 @@ BScreen::BScreen(ResourceManager &rm,
     m_slit.reset(new Slit(*this));
 #endif // SLIT
 
-    m_toolbar.reset(new Toolbar(this));
+    m_toolbar.reset(new Toolbar(*this));
 
     setupWorkspacemenu(*this, *workspacemenu);
 
@@ -579,8 +577,6 @@ BScreen::~BScreen() {
     if (geom_pixmap != None)
         image_control->removeImage(geom_pixmap);
 
-    if (geom_window != None)
-        XDestroyWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
     removeWorkspaceNames();
 
@@ -645,15 +641,6 @@ void BScreen::reconfigure() {
     FbTk::ThemeManager::instance().load(filename.c_str()); // new theme engine
     theme->reconfigure(*resource.antialias);
     
-    // special case for tab rotated
-    if (*resource.tab_rotate_vertical && 
-        ( *resource.tab_placement == Tab::PLEFT || 
-          *resource.tab_placement == Tab::PRIGHT)) {
-        theme->getWindowStyle().tab.font.rotate(90);
-    } else  {
-        theme->getWindowStyle().tab.font.rotate(0);
-    }
-
     I18n *i18n = I18n::instance();
 
     const char *s = i18n->getMessage(
@@ -663,44 +650,38 @@ void BScreen::reconfigure() {
     int l = strlen(s);
 
     //TODO: repeated from somewhere else?
-    geom_h = theme->getWindowStyle().font.height();
-    geom_w = theme->getWindowStyle().font.textWidth(s, l);
+    geom_h = m_windowtheme.font().height();
+    geom_w = m_windowtheme.font().textWidth(s, l);
     geom_w += getBevelWidth()*2;
     geom_h += getBevelWidth()*2;
 
     Pixmap tmp = geom_pixmap;
-    if (theme->getWindowStyle().l_focus.type() & FbTk::Texture::PARENTRELATIVE) {
-        if (theme->getWindowStyle().t_focus.type() ==
+    if (m_windowtheme.labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (m_windowtheme.titleFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-                                 theme->getWindowStyle().t_focus.color().pixel());
+            geom_window.setBackgroundColor(m_windowtheme.titleFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     theme->getWindowStyle().t_focus);
-            XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
-                                       geom_window, geom_pixmap);
+                                                     m_windowtheme.titleFocusTexture());
+            geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (theme->getWindowStyle().l_focus.type() ==
+        if (m_windowtheme.labelFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-                                 theme->getWindowStyle().l_focus.color().pixel());
+            geom_window.setBackgroundColor(m_windowtheme.labelFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     theme->getWindowStyle().l_focus);
-            XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
-                                       geom_window, geom_pixmap);
+                                                     m_windowtheme.labelFocusTexture());
+            geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
     if (tmp)
         image_control->removeImage(tmp);
 
-    XSetWindowBorderWidth(getBaseDisplay()->getXDisplay(), geom_window,
-                          theme->getBorderWidth());
-    XSetWindowBorder(getBaseDisplay()->getXDisplay(), geom_window,
-                     theme->getBorderColor().pixel());
+    geom_window.setBorderWidth(theme->getBorderWidth());
+    geom_window.setBorderColor(theme->getBorderColor());
 
     //reconfigure menus
     workspacemenu->reconfigure();
@@ -1848,17 +1829,16 @@ void BScreen::showPosition(int x, int y) {
 #ifdef XINERAMA
         unsigned int head = hasXinerama() ? getCurrHead() : 0;
 
-        XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
-                          getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
-                          getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, geom_w, geom_h);
+        geom_window.moveResize(getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
+                               getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, 
+                               geom_w, geom_h);
 #else // !XINERMA
-        XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
-                          (getWidth() - geom_w) / 2,
-                          (getHeight() - geom_h) / 2, geom_w, geom_h);
+        geom_window.moveResize((getWidth() - geom_w) / 2,
+                               (getHeight() - geom_h) / 2, geom_w, geom_h);
 #endif // XINERAMA
 
-        XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
-        XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
+        geom_window.show();
+        geom_window.raise();
 
         geom_visible = true;
     }
@@ -1867,18 +1847,18 @@ void BScreen::showPosition(int x, int y) {
 	
     snprintf(label, label_size,
              I18n::instance()->getMessage(
-                 FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
-                 "X: %4d x Y: %4d"), x, y);
+                                          FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
+                                          "X: %4d x Y: %4d"), x, y);
 
-    XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
+    geom_window.clear();
 
-    theme->getWindowStyle().font.drawText(
-        geom_window,
-        getScreenNumber(),
-        theme->getWindowStyle().l_text_focus_gc,
-        label, strlen(label),
-        theme->getBevelWidth(), theme->getBevelWidth() + 
-        theme->getWindowStyle().font.ascent());
+    m_windowtheme.font().drawText(
+                                  geom_window.window(),
+                                  getScreenNumber(),
+                                  m_windowtheme.labelTextFocusGC(),
+                                  label, strlen(label),
+                                  theme->getBevelWidth(), theme->getBevelWidth() + 
+                                  m_windowtheme.font().ascent());
 		
 }
 
@@ -1888,16 +1868,15 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 #ifdef XINERAMA
         unsigned int head = hasXinerama() ? getCurrHead() : 0;
 
-        XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
-                          getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
-                          getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, geom_w, geom_h);
+        geom_window.moveResize(getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
+                               getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, 
+                               geom_w, geom_h);
 #else // !XINERMA
-        XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
-                          (getWidth() - geom_w) / 2,
-                          (getHeight() - geom_h) / 2, geom_w, geom_h);
+        geom_window.moveResize((getWidth() - geom_w) / 2,
+                               (getHeight() - geom_h) / 2, geom_w, geom_h);
 #endif // XINERAMA
-        XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
-        XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
+        geom_window.show();
+        geom_window.raise();
 
         geom_visible = true;
     }
@@ -1906,25 +1885,25 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 
     sprintf(label,
             I18n::instance()->getMessage(
-                FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
-                "W: %4d x H: %4d"), gx, gy);
+                                         FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
+                                         "W: %4d x H: %4d"), gx, gy);
 
-    XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
+    geom_window.clear();
 
     //TODO: geom window again?! repeated
-    theme->getWindowStyle().font.drawText(
-        geom_window,
-        getScreenNumber(),
-        theme->getWindowStyle().l_text_focus_gc,
-        label, strlen(label),
-        theme->getBevelWidth(), theme->getBevelWidth() + 
-        theme->getWindowStyle().font.ascent());	
+    m_windowtheme.font().drawText(
+                                  geom_window.window(),
+                                  getScreenNumber(),
+                                  m_windowtheme.labelTextFocusGC(),
+                                  label, strlen(label),
+                                  theme->getBevelWidth(), theme->getBevelWidth() + 
+                                  m_windowtheme.font().ascent());	
 }
 
 
 void BScreen::hideGeometry() {
     if (geom_visible) {
-        XUnmapWindow(getBaseDisplay()->getXDisplay(), geom_window);
+        geom_window.hide();
         geom_visible = false;
     }
 }
