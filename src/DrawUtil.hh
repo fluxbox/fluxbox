@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.5 2002/04/03 23:00:10 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.6 2002/07/10 14:38:43 fluxgen Exp $
 
 #ifndef DRAWUTIL_HH
 #define DRAWUTIL_HH
@@ -28,8 +28,8 @@
 
 namespace DrawUtil
 {
-	struct Font 
-	{
+	// note: obsolete!
+	struct Font {
 		enum FontJustify {LEFT=0, RIGHT, CENTER};
 	
 		XFontSet set;
