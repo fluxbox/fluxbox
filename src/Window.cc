@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.245 2003/11/27 14:31:28 fluxgen Exp $
+// $Id: Window.cc,v 1.246 2003/11/27 22:02:28 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -47,6 +47,7 @@
 #include "FbWinFrame.hh"
 #include "WinButton.hh"
 #include "WinButtonTheme.hh"
+#include "SendToMenu.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -3384,9 +3385,7 @@ void FluxboxWindow::setupWindow() {
                                           0, 0, 10, 10);
 
                 newbutton->setOnClick(close_cmd);
-#ifdef DEBUG
-                cerr<<__FILE__<<": Creating close button"<<endl;
-#endif // DEBUG
+
             } else if ((*dir)[i] == Fluxbox::STICK) {
                 WinButton *winbtn = new WinButton(*this, winbutton_theme,
                                                   WinButton::STICK,
@@ -3450,12 +3449,15 @@ void FluxboxWindow::setupWindow() {
     menu.insert("Next Client", next_client_cmd);
     menu.insert("Prev Client", prev_client_cmd);
 
+    menu.insert("Send To...", new SendToMenu(*this));
+
     ExtraMenus::iterator it = m_extramenus.begin();
     ExtraMenus::iterator it_end = m_extramenus.end();
     for (; it != it_end; ++it) {
         it->second->disableTitle(); // be sure there is no title
         menu.insert(it->first, it->second);
     }
+
 
     menu.insert("------------------");
     menu.insert("Close", close_cmd);
