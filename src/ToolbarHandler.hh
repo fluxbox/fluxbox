@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.7 2003/07/28 15:06:34 rathnor Exp $
+// $Id: ToolbarHandler.hh,v 1.8 2003/09/08 18:18:25 fluxgen Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -49,7 +49,6 @@ public:
     ~ToolbarHandler() { }
 
     void setMode(ToolbarMode mode, bool initialise = true);
-    ToolbarMode mode() const { return *m_rc_mode; };
 
     inline const Toolbar *toolbar() const { return m_toolbar.get(); }
     inline Toolbar *toolbar() { return m_toolbar.get(); }
@@ -85,13 +84,12 @@ public:
 
     inline BScreen &screen() { return m_screen; }
     inline const BScreen &screen() const { return m_screen; }
-
+    ToolbarMode mode() const { return m_mode; }
 private:
     BScreen &m_screen;
-    FbTk::Resource<ToolbarMode> m_rc_mode;
     std::auto_ptr<Toolbar> m_toolbar;
     unsigned int m_current_workspace;
-
+    ToolbarMode m_mode;
     FbTk::Menu m_modemenu;
     FbTk::Menu m_toolbarmenu;
 };

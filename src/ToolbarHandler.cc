@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.27 2003/08/11 20:51:32 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.28 2003/09/08 18:18:25 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -45,109 +45,9 @@
 
 using namespace std;
 
-template<>
-void FbTk::Resource<ToolbarHandler::ToolbarMode>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "Off") == 0) 
-        m_value = ToolbarHandler::OFF;
-    else if (strcasecmp(strval, "None") == 0) 
-        m_value = ToolbarHandler::NONE;
-    else if (strcasecmp(strval, "Icons") == 0) 
-        m_value = ToolbarHandler::ICONS;
-    else if (strcasecmp(strval, "WorkspaceIcons") == 0) 
-        m_value = ToolbarHandler::WORKSPACEICONS;
-    else if (strcasecmp(strval, "Workspace") == 0) 
-        m_value = ToolbarHandler::WORKSPACE;
-    else if (strcasecmp(strval, "AllWindows") == 0) 
-        m_value = ToolbarHandler::ALLWINDOWS;
-    else
-        setDefaultValue();
-}
-
-
-template<>
-string FbTk::Resource<ToolbarHandler::ToolbarMode>::
-getString() {
-    switch (m_value) {
-    case ToolbarHandler::OFF:
-        return string("Off");
-        break;
-    case ToolbarHandler::NONE:
-        return string("None");
-        break;
-    case ToolbarHandler::LASTMODE:
-    case ToolbarHandler::ICONS:
-        return string("Icons");
-        break;
-    case ToolbarHandler::WORKSPACEICONS:
-        return string("WorkspaceIcons");
-        break;
-    case ToolbarHandler::WORKSPACE:
-        return string("Workspace");
-        break;
-    case ToolbarHandler::ALLWINDOWS:
-        return string("AllWindows");
-        break;
-    }
-    // default string
-    return string("Icons");
-}
-
-namespace {
-
-class ToolbarModeMenuItem : public FbTk::MenuItem {
-public:
-    ToolbarModeMenuItem(const char *label, ToolbarHandler &handler, 
-                        ToolbarHandler::ToolbarMode mode, 
-                        FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
-    }
-    bool isEnabled() const { return m_handler.mode() != m_mode; }
-    void click(int button, int time) {
-        m_handler.setMode(m_mode);
-        FbTk::MenuItem::click(button, time);
-    }
-
-private:
-    ToolbarHandler &m_handler;
-    ToolbarHandler::ToolbarMode m_mode;
-};
-
-void setupModeMenu(FbTk::Menu &menu, ToolbarHandler &handler) {
-    //I18n *i18n = I18n::instance();
-    //using namespace FBNLS;
-    using namespace FbTk;
-
-    // TODO: nls
-    menu.setLabel("Toolbar Mode");
-
-    RefCount<Command> saverc_cmd(new SimpleCommand<Fluxbox>(
-        *Fluxbox::instance(), 
-        &Fluxbox::save_rc));
-    
-    //TODO: nls
-    menu.insert(new ToolbarModeMenuItem("Off", handler, 
-                                        ToolbarHandler::OFF, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("None", handler, 
-                                        ToolbarHandler::NONE, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("Icons", handler, 
-                                        ToolbarHandler::ICONS, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("Workspace Icons", handler, 
-                                        ToolbarHandler::WORKSPACEICONS, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("Workspace", handler, 
-                                        ToolbarHandler::WORKSPACE, saverc_cmd));
-    menu.insert(new ToolbarModeMenuItem("All Windows", handler, 
-                                        ToolbarHandler::ALLWINDOWS, saverc_cmd));
-    menu.update();
-}
-                
-}; // end anonymous namespace
-
 ToolbarHandler::ToolbarHandler(BScreen &screen) 
     : m_screen(screen), 
       // no need to lock since only one resource
-      m_rc_mode(screen.resourceManager(), ToolbarHandler::ICONS,
-                screen.name() + ".toolbar.mode", screen.altName() + ".Toolbar.Mode"), 
       m_toolbar(0),
       m_current_workspace(0),
       m_modemenu(*screen.menuTheme(),
@@ -156,8 +56,11 @@ ToolbarHandler::ToolbarHandler(BScreen &screen)
                     screen.screenNumber(), screen.imageControl()) {
     m_modemenu.setInternalMenu();
     m_toolbarmenu.setInternalMenu();
-    setupModeMenu(m_modemenu, *this);
-    setMode(*m_rc_mode, false); // the atomhandler part will initialise it shortly
+
+    m_mode = WORKSPACE;
+    m_toolbar.reset(new Toolbar(m_screen, 
+                                *m_screen.layerManager().getLayer(Fluxbox::instance()->getNormalLayer()), 
+                                m_toolbarmenu));
     // now add this to the config menus for the screen
     // (we only want it done once, so it can't go in initforscreen)
 
@@ -166,10 +69,9 @@ ToolbarHandler::ToolbarHandler(BScreen &screen)
 }
 
 void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
-    if (newmode < 0 || newmode >= LASTMODE || (newmode == mode() && initialise)) 
+    if (newmode < 0 || newmode >= LASTMODE) 
         return;
 
-    *m_rc_mode = newmode;
     
     if (newmode == OFF) {
         m_toolbarmenu.removeAll();
