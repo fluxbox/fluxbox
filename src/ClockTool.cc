@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.4 2003/08/15 14:00:20 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.5 2003/08/15 15:30:18 fluxgen Exp $
 
 #include "ClockTool.hh"
 
@@ -145,7 +145,7 @@ void ClockTool::renderTheme() {
         m_button.setBackgroundColor(m_theme.texture().color());
     } else {
         m_pixmap = m_screen.imageControl().renderImage(m_button.width(), m_button.height(), m_theme.texture());
-        m_button.FbTk::FbWindow::setBackgroundPixmap(m_pixmap);
+        m_button.setBackgroundPixmap(m_pixmap);
     }
 
     if (old_pm)
