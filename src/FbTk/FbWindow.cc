@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.26 2003/09/14 09:51:40 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.27 2003/10/14 21:49:21 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -425,6 +425,7 @@ void FbWindow::create(Window parent, int x, int y,
     assert(m_window);
 
     updateGeometry();
+    FbWindow::setBackgroundColor(Color("gray", screenNumber()));
 }
 
 bool operator == (Window win, const FbWindow &fbwin) {
