@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.110 2003/06/24 15:01:54 fluxgen Exp $
+// $Id: Screen.hh,v 1.111 2003/06/24 16:29:54 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -30,9 +30,9 @@
 #include "Resource.hh"
 #include "Subject.hh"
 #include "MultLayers.hh"
-#include "ToolbarHandler.hh"
 #include "FbRootWindow.hh"
 #include "NotCopyable.hh"
+#include "fluxbox.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -46,6 +46,7 @@
 
 class Netizen;
 class Toolbar;
+class ToolbarHandler;
 class FbWinFrameTheme;
 class RootTheme;
 class WinButtonTheme;
@@ -105,8 +106,8 @@ public:
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
 
-    inline const Toolbar *toolbar() const { return m_toolbarhandler->getToolbar(); }
-    inline Toolbar *toolbar() { return m_toolbarhandler->getToolbar(); }
+    const Toolbar *toolbar() const;
+    Toolbar *toolbar();
 
     inline const ToolbarHandler &toolbarHandler() const { return *m_toolbarhandler; }
     inline ToolbarHandler &toolbarHandler() { return *m_toolbarhandler; }
@@ -161,7 +162,6 @@ public:
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 
-    inline ToolbarHandler::ToolbarMode toolbarMode() const { return *resource.toolbar_mode; }
     inline int getPlacementPolicy() const { return resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
     inline int getRowPlacementDirection() const { return resource.row_direction; }
@@ -171,9 +171,6 @@ public:
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
     inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
-
-
-    inline void saveToolbarMode(ToolbarHandler::ToolbarMode m) { *resource.toolbar_mode = m; }
 
     inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
     inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
@@ -413,9 +410,6 @@ private:
         FbTk::Resource<int> workspaces, edge_snap_threshold, menu_alpha;
 
         int placement_policy, row_direction, col_direction;
-
-        FbTk::Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
-
 
         std::string strftime_format;
 
