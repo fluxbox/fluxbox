@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.12 2003/07/19 13:51:24 rathnor Exp $
+// $Id: FbCommands.cc,v 1.13 2003/08/11 14:52:10 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -97,13 +97,9 @@ SetStyleCmd::SetStyleCmd(const std::string &filename):m_filename(filename) {
 }
 
 void SetStyleCmd::execute() {
-#ifdef DEBUG
-    cerr<<__FILE__<<":Loading style: "<<m_filename<<endl;
-#endif // DEBUG
     Fluxbox::instance()->saveStyleFilename(m_filename.c_str());
     Fluxbox::instance()->save_rc();
-    FbTk::ThemeManager::instance().load(m_filename.c_str());
-
+    FbTk::ThemeManager::instance().load(m_filename);
 }
 
 void ShowRootMenuCmd::execute() {
