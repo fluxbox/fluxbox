@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.27 2003/06/18 13:34:30 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.28 2003/07/02 14:31:43 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -243,7 +243,6 @@ void Ewmh::updateLayer(FluxboxWindow &win) {
 }
 
 void Ewmh::updateHints(FluxboxWindow &win) {
-
 }
 
 void Ewmh::updateWorkspace(FluxboxWindow &win) {
@@ -251,11 +250,13 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
     if (win.isStuck())
         workspace = 0xFFFFFFFF; // appear on all desktops/workspaces
 
-    for_each(win.clientList().begin(),
-             win.clientList().end(),
-             FbTk::ChangeProperty(FbTk::App::instance()->display(),
-                    m_net_wm_desktop, PropModeReplace,
-                    (unsigned char *)&workspace, 1));
+    FluxboxWindow::ClientList::iterator it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
+    for (; it != it_end; ++it) {
+        (*it)->changeProperty(m_net_wm_desktop, XA_CARDINAL, 32, PropModeReplace,
+                              (unsigned char *)&workspace, 1);
+    }
+
 }
 
 // return true if we did handle the atom here
