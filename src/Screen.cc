@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.213 2003/08/10 12:50:04 rathnor Exp $
+// $Id: Screen.cc,v 1.214 2003/08/11 16:27:23 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -356,9 +356,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     menuTheme()->titleFont().setAntialias(*resource.antialias);
     menuTheme()->frameFont().setAntialias(*resource.antialias);
 
-    // load database for theme engine
-    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
-
 
     // create geometry window 
 
@@ -435,8 +432,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->update();
 
 #ifdef SLIT
-    if (slit()) // this will load theme and reconfigure slit
-        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
+    //    if (slit()) // this will load theme and reconfigure slit
+    //        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
 #endif // SLIT
 
     // start with workspace 0
@@ -495,6 +492,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rm.unlock();
 
     XFree(children);
+
+    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
+
     XFlush(disp);
 }
 
@@ -504,7 +504,6 @@ BScreen::~BScreen() {
 
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
-
 
     removeWorkspaceNames();
 
@@ -614,8 +613,8 @@ void BScreen::reconfigure() {
     m_menutheme->frameFont().setAntialias(*resource.antialias);
 
     // load theme
-    std::string theme_filename(Fluxbox::instance()->getStyleFilename());
-    FbTk::ThemeManager::instance().load(theme_filename.c_str());
+    //    std::string theme_filename(Fluxbox::instance()->getStyleFilename());
+    //    FbTk::ThemeManager::instance().load(theme_filename.c_str());
 
     I18n *i18n = I18n::instance();
 
@@ -697,7 +696,7 @@ void BScreen::reconfigure() {
              m_icon_list.end(),
              mem_fun(&FluxboxWindow::reconfigure));
 
-    imageControl().timeout();
+    imageControl().cleanCache();
     // notify objects that the screen is reconfigured
     m_reconfigure_sig.notify();
 }
@@ -865,6 +864,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         focused = focused_client->fbwindow();
         
 #ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): "<<focused_client<<endl;
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
 #endif // DEBUG
 
@@ -1247,12 +1247,6 @@ void BScreen::updateAvailableWorkspaceArea() {
              m_strutlist.end(),
              MaxArea(*m_available_workspace_area.get()));
 }
-
-void BScreen::saveStrftimeFormat(const char *format) {
-    //make sure std::string don't get 0 string
-    resource.strftime_format = (format ? format : "");
-}
-
 
 void BScreen::addWorkspaceName(const char *name) {
     m_workspace_names.push_back(name);
