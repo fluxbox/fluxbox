@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.66 2003/07/19 11:55:49 rathnor Exp $
+// $Id: fluxbox.hh,v 1.67 2003/07/19 13:51:24 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -191,8 +191,11 @@ public:
     bool haveShape() const { return m_have_shape; }
     int shapeEventbase() const { return m_shape_eventbase; }
     void getDefaultDataFilename(char *, std::string &);
+    // screen mouse was in at last key event
     BScreen *mouseScreen() { return m_mousescreen; }
+    // screen of window that last key event (i.e. focused window) went to
     BScreen *keyScreen() { return m_keyscreen; }
+    // screen we are watching for modifier changes
     BScreen *watchingScreen() { return m_watching_screen; }
     const XEvent &lastEvent() const { return m_last_event; }
 private:

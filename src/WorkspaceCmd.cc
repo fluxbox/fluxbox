@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.2 2003/07/01 09:47:41 fluxgen Exp $
+// $Id: WorkspaceCmd.cc,v 1.3 2003/07/19 13:51:24 rathnor Exp $
 
 #include "WorkspaceCmd.hh"
 #include "Workspace.hh"
@@ -74,25 +74,25 @@ void PrevWindowCmd::execute() {
 }
 
 void NextWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
         screen->nextWorkspace();
 }
 
 void PrevWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
         screen->prevWorkspace();
 }
 
 void LeftWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
         screen->leftWorkspace(m_param);
 }
 
 void RightWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0)
         screen->rightWorkspace(m_param);
 }
@@ -100,14 +100,14 @@ void RightWorkspaceCmd::execute() {
 JumpToWorkspaceCmd::JumpToWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
 
 void JumpToWorkspaceCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen != 0 && m_workspace_num >= 0 && m_workspace_num < screen->getNumberOfWorkspaces())
         screen->changeWorkspaceID(m_workspace_num);
 }
 
 
 void ArrangeWindowsCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
 
@@ -159,7 +159,7 @@ void ArrangeWindowsCmd::execute() {
 }
 
 void ShowDesktopCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->keyScreen();
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
 

@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/19:
+   * Make most Commands execute on mouse screen rather than screen 
+     of focused window (Simon)
+     FbCommands.cc WorkspaceCmd.cc
    * Fix xinerama options (again) for Slit and Toolbar (Simon)
      Xinerama.hh Slit.hh/cc Toolbar.hh/cc
    * Move menu alpha setting into MenuTheme (Simon)

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.11 2003/07/01 20:24:19 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.12 2003/07/19 13:51:24 rathnor Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -47,10 +47,10 @@ void ExecuteCmd::execute() {
         char intbuff[64];
         int screen_num = m_screen_num;
         if (screen_num < 0) {
-            if (Fluxbox::instance()->keyScreen() == 0)
+            if (Fluxbox::instance()->mouseScreen() == 0)
                 screen_num = 0;
             else
-                screen_num = Fluxbox::instance()->keyScreen()->screenNumber();
+                screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
         } 
 
         sprintf(intbuff, "%d", screen_num);
