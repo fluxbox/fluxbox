@@ -22,12 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.189 2003/06/11 14:51:56 fluxgen Exp $
+// $Id: Window.cc,v 1.190 2003/06/12 14:35:36 fluxgen Exp $
 
 #include "Window.hh"
 
 #include "WinClient.hh"
-#include "i18n.hh"
+#include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "StringUtil.hh"
@@ -814,7 +814,6 @@ void FluxboxWindow::associateClientWindow() {
 
 
 void FluxboxWindow::grabButtons() {
-    Fluxbox *fluxbox = Fluxbox::instance();
 
     XGrabButton(display, Button1, AnyModifier, 
 		frame().clientArea().window(), True, ButtonPressMask,
@@ -2968,7 +2967,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
     resizing = true;
-    Fluxbox *fluxbox = Fluxbox::instance();
+
     XGrabPointer(display, win, false, ButtonMotionMask | ButtonReleaseMask, 
                  GrabModeAsync, GrabModeAsync, None,
                  (left ? frame().theme().lowerLeftAngleCursor() : frame().theme().lowerRightAngleCursor()),

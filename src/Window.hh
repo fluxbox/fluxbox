@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.76 2003/05/26 04:24:24 rathnor Exp $
+// $Id: Window.hh,v 1.77 2003/06/12 14:34:28 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -346,6 +346,7 @@ public:
 
 private:
     void init();
+    /// applies a shape mask to the window if it has one
     void shape();
 
     void grabButtons();
@@ -371,8 +372,6 @@ private:
     void saveBlackboxHints();
     void setNetWMAttributes();
     void associateClientWindow();
-    void createWinButtons();
-    void decorateLabel();
 	
     void restoreGravity();
     void setGravityOffsets();
@@ -396,6 +395,7 @@ private:
     // Window states
     bool moving, resizing, shaded, maximized, iconic,
         focused, stuck, send_focus_message, m_managed;
+
     WinClient *m_attaching_tab;
 
     BScreen &m_screen; /// screen on which this window exist
