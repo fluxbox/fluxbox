@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.85 2002/11/27 13:01:28 fluxgen Exp $
+// $Id: Screen.cc,v 1.86 2002/11/27 21:55:36 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -81,6 +81,17 @@
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif // HAVE_STDARG_H
+
+#ifdef TIME_WITH_SYS_TIME
+#include <sys/time.h>
+#include <time.h>
+#else // !TIME_WITH_SYS_TIME
+#ifdef	HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else // !HAVE_SYS_TIME_H
+#include <time.h>
+#endif // HAVE_SYS_TIME_H
+#endif // TIME_WITH_SYS_TIME
 
 #ifndef  MAXPATHLEN
 #define	 MAXPATHLEN 255
@@ -215,9 +226,7 @@ tab_width(rm, 64, scrname+".tab.width", altscrname+".Tab.Width"),
 tab_height(rm, 16, scrname+".tab.height", altscrname+".Tab.Height"),
 tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
 tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
-#ifdef XINERAMA
 toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
-#endif // XINERAMA
 toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
 
@@ -326,7 +335,7 @@ resource(rm, screenname, altscreenname)
 				 theme->getWindowStyle().t_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-				 &theme->getWindowStyle().t_focus);
+				 theme->getWindowStyle().t_focus);
 			XSetWindowBackgroundPixmap(disp, geom_window, geom_pixmap);
 		}
 	} else {
@@ -337,7 +346,7 @@ resource(rm, screenname, altscreenname)
 				 theme->getWindowStyle().l_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-				 &theme->getWindowStyle().l_focus);
+				 theme->getWindowStyle().l_focus);
 			XSetWindowBackgroundPixmap(disp, geom_window, geom_pixmap);
 		}
 	}
@@ -381,9 +390,10 @@ resource(rm, screenname, altscreenname)
 
 	//update menus
 	rootmenu->update();
-#ifdef SLIT
-	m_slit->reconfigure();
-#endif // SLIT
+
+	if (m_slit.get())
+		m_slit->reconfigure();
+
 
 	// start with workspace 0
 	changeWorkspaceID(0);
@@ -541,7 +551,7 @@ void BScreen::reconfigure() {
 				theme->getWindowStyle().t_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-				&theme->getWindowStyle().t_focus);
+				theme->getWindowStyle().t_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				geom_window, geom_pixmap);
 		}
@@ -553,7 +563,7 @@ void BScreen::reconfigure() {
 				theme->getWindowStyle().l_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-				&theme->getWindowStyle().l_focus);
+				theme->getWindowStyle().l_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				geom_window, geom_pixmap);
 		}
@@ -582,9 +592,9 @@ void BScreen::reconfigure() {
 
 	m_toolbar->reconfigure();
 
-#ifdef		SLIT
-	m_slit->reconfigure();
-#endif // SLIT
+
+	if (m_slit.get())
+		m_slit->reconfigure();
 	
 	//reconfigure workspaces
 	Workspaces::iterator wit = workspacesList.begin();
@@ -974,7 +984,7 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	session_stack[i++] = configmenu->tabmenu().windowID();
 	session_stack[i++] = configmenu->windowID();
 
-#ifdef		SLIT
+#ifdef SLIT
 	session_stack[i++] = m_slit->menu().getDirectionmenu().windowID();
 	session_stack[i++] = m_slit->menu().getPlacementmenu().windowID();
 #ifdef XINERAMA
@@ -1019,12 +1029,10 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
 }
 
-#ifdef		HAVE_STRFTIME
 void BScreen::saveStrftimeFormat(const char *format) {
 	//make sure std::string don't get 0 string
 	resource.strftime_format = (format ? format : "");
 }
-#endif // HAVE_STRFTIME
 
 
 void BScreen::addWorkspaceName(const char *name) {
@@ -1556,9 +1564,8 @@ void BScreen::shutdown() {
 		}
 	}
 
-#ifdef SLIT
-	m_slit->shutdown();
-#endif // SLIT
+	if (m_slit.get())
+		m_slit->shutdown();
 
 }
 
@@ -1630,21 +1637,8 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 			 "W: %4d x H: %4d"), gx, gy);
 
 	XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
-	/*
-	if (I18n::instance()->multibyte())
-		XmbDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-			theme->getWindowStyle().font.set, theme->getWindowStyle().l_text_focus_gc,
-			theme->getBevelWidth(), theme->getBevelWidth() -
-			theme->getWindowStyle().font.set_extents->max_ink_extent.y,
-			label, strlen(label));
-	else
-		XDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-		theme->getWindowStyle().l_text_focus_gc,
-		theme->getBevelWidth(),
-		theme->getWindowStyle().font.fontstruct->ascent +
-		theme->getBevelWidth(), label, strlen(label));
-	*/
-	//TODO: geom window again?! repeat
+
+	//TODO: geom window again?! repeated
 	theme->getWindowStyle().font.drawText(
 		geom_window,
 		getScreenNumber(),
@@ -1662,49 +1656,48 @@ void BScreen::hideGeometry() {
 	}
 }
 
-//-------------- nextWorkspace ---------------
-// Goes to the workspace "right" of the current
-//--------------------------------------------
+/**
+ Goes to the workspace "right" of the current
+*/
 void BScreen::nextWorkspace(const int delta) {
 	changeWorkspaceID( (getCurrentWorkspaceID()+delta) % getCount());
 }
 
-//------------- prevWorkspace ----------------
-// Goes to the workspace "left" of the current
-//--------------------------------------------
+/**
+ Goes to the workspace "left" of the current
+*/
 void BScreen::prevWorkspace(const int delta) {
 	changeWorkspaceID( (getCurrentWorkspaceID()-delta+getCount()) % getCount());
 }
 
-//-------------- rightWorkspace ---------------
-// Goes to the workspace "right" of the current
-//--------------------------------------------
+/**
+ Goes to the workspace "right" of the current
+*/
 void BScreen::rightWorkspace(const int delta) {
 	if (getCurrentWorkspaceID()+delta < getCount())
 		changeWorkspaceID(getCurrentWorkspaceID()+delta);
 }
 
-//------------- leftWorkspace ----------------
-// Goes to the workspace "left" of the current
-//--------------------------------------------
+/**
+ Goes to the workspace "left" of the current
+*/
 void BScreen::leftWorkspace(const int delta) {
 	if (getCurrentWorkspaceID() >= static_cast<unsigned int>(delta))
 		changeWorkspaceID(getCurrentWorkspaceID()-delta);
 }
 
-//-------- doSkipWindow
-// Returns true if the windows should be skiped
-// else false
-//----------
+/**
+  @return true if the windows should be skiped else false
+*/
 bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
 	return ((opts & CYCLESKIPSTUCK) != 0 && w->isStuck() || // skip if stuck
 			(opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
 			(opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
 }
 
-//----------- useAutoGroupWindow -------------
-// Access and clear the auto-group window
-//--------------------------------------------
+/**
+ Access and clear the auto-group window
+*/
 FluxboxWindow* BScreen::useAutoGroupWindow() {
 	Window w = auto_group_window;
 	auto_group_window = 0;
