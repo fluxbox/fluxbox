@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.27 2002/08/17 22:13:00 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.28 2002/09/07 20:24:06 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -35,6 +35,7 @@
 #include "Window.hh"
 #include "Tab.hh"
 #include "Toolbar.hh"
+#include "Observer.hh"
 
 #ifdef	SLIT
 #include "Slit.hh"
@@ -64,13 +65,17 @@
 #include <map>
 #include <list>
 
+class AtomHandler;
+
+
 /**
 	main class for the window manager.
 	singleton type
 */
 class Fluxbox : public BaseDisplay, public TimeoutHandler, 
 	public FbTk::EventHandler<FbTk::SignalEvent>,
-	public FbAtoms {
+	public FbAtoms,
+	public FbTk::Observer {
 public:
 	Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
 	virtual ~Fluxbox();
@@ -153,6 +158,9 @@ public:
 	
 	/// handle any system signal sent to the application
 	void handleEvent(FbTk::SignalEvent * const signum);
+	void update(FbTk::Subject *changed);
+
+	void attachSignals(FluxboxWindow &win);
 
 	virtual void timeout();
 	
@@ -161,6 +169,7 @@ public:
 	inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
 	inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
+	
 
 #ifdef	SLIT
 	Slit *searchSlit(Window);
@@ -181,18 +190,6 @@ private:
 		Cursor session, move, ll_angle, lr_angle;
 	} cursor;
 
-	void setupConfigFiles();
-	void handleButtonEvent(XButtonEvent &be);
-	void handleUnmapNotify(XUnmapEvent &ue);
-	void handleClientMessage(XClientMessageEvent &ce);
-	void handleKeyEvent(XKeyEvent &ke);	
-	void doWindowAction(Keys::KeyAction action, const int param);
-	#ifdef GNOME
-	bool checkGnomeAtoms(XClientMessageEvent &ce);
-	#endif
-	#ifdef NEWWMSPEC
-	bool checkNETWMAtoms(XClientMessageEvent &ce);
-	#endif
 	typedef struct MenuTimestamp {
 		char *filename;
 		time_t timestamp;
@@ -203,6 +200,29 @@ private:
 		timeval auto_raise_delay;
 	} resource;
 		
+
+	std::string getRcFilename();
+	void getDefaultDataFilename(char *, std::string &);
+	void load_rc();
+	
+	void reload_rc();
+	void real_rereadMenu();
+	void real_reconfigure();
+
+	void handleEvent(XEvent *xe);
+	
+	void setupConfigFiles();
+	void handleButtonEvent(XButtonEvent &be);
+	void handleUnmapNotify(XUnmapEvent &ue);
+	void handleClientMessage(XClientMessageEvent &ce);
+	void handleKeyEvent(XKeyEvent &ke);	
+	void doWindowAction(Keys::KeyAction action, const int param);
+
+	#ifdef NEWWMSPEC
+	bool checkNETWMAtoms(XClientMessageEvent &ce);
+	#endif
+
+	
 	ResourceManager m_resourcemanager, m_screen_rm;
 	
 	//--- Resources
@@ -254,18 +274,9 @@ private:
 	std::string slitlist_path;
 	//default arguments for titlebar left and right
 	static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
-
-	std::string getRcFilename();
-	void getDefaultDataFilename(char *, std::string &);
-	void load_rc();
 	
-	void reload_rc();
-	void real_rereadMenu();
-	void real_reconfigure();
-
-	void handleEvent(XEvent *xe);
 	static Fluxbox *singleton;
-
+	std::vector<AtomHandler *> m_atomhandler;
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.73 2002/08/30 14:07:38 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.74 2002/09/07 20:25:39 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -39,6 +39,10 @@
 #include "StringUtil.hh"
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
+#include "AtomHandler.hh"
+#include "Gnome.hh"
+//#include "Ewmh.hh"
+
 #ifdef SLIT
 #include "Slit.hh"
 #endif // SLIT
@@ -118,6 +122,7 @@
 #include <string>
 #include <memory>
 #include <algorithm>
+#include <typeinfo>
 
 using namespace std;
 using namespace FbTk;
@@ -336,6 +341,10 @@ key(0)
 	cursor.move = XCreateFontCursor(getXDisplay(), XC_fleur);
 	cursor.ll_angle = XCreateFontCursor(getXDisplay(), XC_ll_angle);
 	cursor.lr_angle = XCreateFontCursor(getXDisplay(), XC_lr_angle);
+	
+	// setup atom handlers
+	m_atomhandler.push_back(new Gnome());
+//	m_atomhandler.push_back(new Ewmh()); // TODO
 
 	//singleton pointer
 	singleton = this;
@@ -376,10 +385,19 @@ key(0)
 		sprintf(scrname, "session.screen%d", i);
 		sprintf(altscrname, "session.Screen%d", i);
 		BScreen *screen = new BScreen(m_screen_rm, this, scrname, altscrname, i);
-
 		if (! screen->isScreenManaged()) {
-			delete screen;
+			delete screen;			
 			continue;
+		}
+		// attach screen signals to this
+		screen->currentWorkspaceSig().attach(this);
+		screen->workspaceCountSig().attach(this);
+		screen->workspaceNamesSig().attach(this);
+		screen->clientListSig().attach(this);
+		
+		// initiate atomhandler for screen specific stuff
+		for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
+			m_atomhandler[i]->initForScreen(*screen);
 		}
 
 		screenList.push_back(screen);
@@ -411,7 +429,13 @@ key(0)
 }
 
 
-Fluxbox::~Fluxbox(void) {
+Fluxbox::~Fluxbox() {
+	// destroy atomhandlers
+	while (!m_atomhandler.empty()) {
+		delete m_atomhandler.back();
+		m_atomhandler.pop_back();
+	}
+	
 	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
 	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
 	for (; it != it_end; ++it) {
@@ -645,7 +669,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
 			win = new FluxboxWindow(e->xmaprequest.window);
 			if (!win->isManaged()) {
 				delete win;
-				win = 0;
+				win = 0;				
+			} else {
+				// attach signals
+				attachSignals(*win);
 			}
 		}
 
@@ -884,9 +911,9 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 		FluxboxWindow *win = (FluxboxWindow *) 0;
 		Basemenu *menu = (Basemenu *) 0;
 
-		#ifdef		SLIT
+#ifdef		SLIT
 		Slit *slit = (Slit *) 0;
-		#endif // SLIT
+#endif // SLIT
 
 		Toolbar *tbar = (Toolbar *) 0;			
 		Tab *tab = 0;
@@ -901,10 +928,10 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 		} else if ((menu = searchMenu(be.window))) {
 			menu->buttonPressEvent(&be);
 
-		#ifdef		SLIT
+#ifdef	SLIT
 		} else if ((slit = searchSlit(be.window))) {
 			slit->buttonPressEvent(&be);
-		#endif // SLIT
+#endif // SLIT
 
 		} else if ((tbar = searchToolbar(be.window))) {
 			tbar->buttonPressEvent(&be);
@@ -1107,17 +1134,12 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 			win->changeBlackboxHints(&net);
 		}
 	} else {
-		bool val = false;
-		#ifdef GNOME
-		val  = checkGnomeAtoms(ce);
-		#endif //!GNOME
-	
-		#ifdef NEWWMSPEC
-		if (!val)
-			val = checkNETWMAtoms(ce);
-		#endif //!NEWWMSPEC
-		//disable `unused`-warning
-		val = true;
+		FluxboxWindow *win = searchWindow(ce.window);
+		BScreen *screen = searchScreen(ce.window);
+		
+		for (size_t i=0; i<m_atomhandler.size(); ++i) {
+			m_atomhandler[i]->checkClientMessage(ce, screen, win);
+		}
 	}
 }
 //----------- handleKeyEvent ---------------
@@ -1531,80 +1553,6 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 	}
 
 }
-#ifdef GNOME
-//---------------- checkGnomeAtoms ---------------
-// Tries to find Gnome atoms in message
-// Returns true on success else false
-//---------------------------------------------
-bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
-	BScreen *screen = 0;
-	FluxboxWindow *win = 0;
-	win = searchWindow(ce.window);
-	screen = searchScreen(ce.window);
-
-	if (ce.message_type == getGnomeWorkspaceAtom()) {
-#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
-#endif//!DEBUG
-		if ( win !=0 && // the message sent to client window?
-				win->getScreen() && ce.data.l[0] >= 0 &&
-				ce.data.l[0] < (signed)win->getScreen()->getCount()) {
-			win->getScreen()->changeWorkspaceID(ce.data.l[0]);
-					
-		} else if (screen!=0 && //the message sent to root window?
-				ce.data.l[0] >= 0 &&
-				ce.data.l[0] < (signed)screen->getCount())
-			screen->changeWorkspaceID(ce.data.l[0]);
-		return true;
-	} else if (win) {
-		if (ce.message_type == getGnomeStateAtom()) {
-#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
-#endif // DEBUG
-			
-#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): Mask of members to change:"<<
-				hex<<ce.data.l[0]<<dec<<endl; // mask_of_members_to_change
-			cerr<<"New members:"<<ce.data.l[1]<<endl;
-#endif // DEBUG
-	
-			//get new states			
-			int flag = ce.data.l[0] & ce.data.l[1];
-			//set states			
-			win->setGnomeState(flag);
-			
-		} else if (ce.message_type == getGnomeHintsAtom()) {
-#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
-#endif // DEBUG
-
-		} else 
-			return false; //the gnome atom wasn't found or not supported
-	} else	
-		return false; //no gnome atom
-
-	return true;
-}
-#endif //!GNOME
-
-#ifdef NEWWMSPEC
-//----------- checkNETWMAtoms -------------------
-// Tries to find NEWWM atom in clientmessage
-// Returns true on success else false
-//-----------------------------------------------
-bool Fluxbox::checkNETWMAtoms(XClientMessageEvent &ce) {
-	
-	if (ce.message_type == getNETWMDesktopAtom()) { //_NET_WM_DESKTOP
-		BScreen *screen = searchScreen(ce.window);
-
-		if (screen && ce.data.l[0] >= 0 &&
-			ce.data.l[0] < screen->getCount())
-			screen->changeWorkspaceID(ce.data.l[0]);
-	} else return false;
-
-	return true;
-}
-#endif //!NEWWMSPEC
 
 void Fluxbox::handleEvent(SignalEvent * const sig) {
 	I18n *i18n = I18n::instance();
@@ -1655,9 +1603,80 @@ void Fluxbox::handleEvent(SignalEvent * const sig) {
 			abort();
 		break;
 	}
+}
 
-	
 
+void Fluxbox::update(FbTk::Subject *changedsub) {
+
+	if (typeid(*changedsub) == typeid(FluxboxWindow)) {
+		FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
+		FluxboxWindow &win = winsub->win();
+		if ((&(win.hintSig())) == changedsub) { // hint signal
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<") hint signal from "<<&win<<endl;
+#endif // DEBUG
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateHints(&win);
+			}
+		} else if ((&(win.stateSig())) == changedsub) { // state signal
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<") state signal from "<<&win<<endl;
+#endif // DEBUG
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateState(&win);
+			}
+		} else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<") workspace signal from "<<&win<<endl;
+#endif // DEBUG
+			
+		}
+		
+	} else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
+		BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
+		BScreen &screen = subj->screen();
+		if ((&(screen.workspaceCountSig())) == changedsub) {
+#ifdef DEBUG	
+			cerr<<__FILE__<<"("<<__LINE__<<"): workspace count signal"<<endl;
+#endif // DEBUG
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateWorkspaceCount(screen);
+			}
+		} else if ((&(screen.workspaceNamesSig())) == changedsub) {
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): workspace names signal"<<endl;
+#endif // DEBUG
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateWorkspaceNames(screen);
+			}
+		} else if ((&(screen.currentWorkspaceSig())) == changedsub) {
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): current workspace signal"<<endl;
+#endif // DEBUG	
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateCurrentWorkspace(screen);
+			}
+		} else if ((&(screen.clientListSig())) == changedsub) {
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): client list signal"<<endl;
+#endif // DEBUG
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateClientList(screen);
+			}
+		}
+	}
+}
+
+void Fluxbox::attachSignals(FluxboxWindow &win) {
+	win.hintSig().attach(this);
+	win.stateSig().attach(this);
+	win.workspaceSig().attach(this);
 }
 
 
