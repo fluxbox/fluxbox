@@ -1,5 +1,5 @@
-// Directory.hh
-// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// FileUtil.hh
+// Copyright (c) 2002 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -21,19 +21,49 @@
 
 // $Id$
 
-#ifndef FBTK_DIRECTORY_HH
-#define FBTK_DIRECTORY_HH
+#ifndef FBTK_FILEUTIL_HH
+#define FBTK_FILEUTIL_HH
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+#ifdef HAVE_CTIME
+  #include <ctime>
+#else
+  #include <time.h>
+#endif
+#include <sys/types.h>
+#include <dirent.h>
+
+#include <string>
 
 #include "NotCopyable.hh"
 
-#include <sys/types.h>
-#include <dirent.h>
-#include <string>
-
 namespace FbTk {
 
+/// Wrapper for file routines
+
+namespace FileUtil {
+
+    /// @return true if file is a directory
+    bool isDirectory(const char* filename);
+    /// @return true if a file is a regular file
+    bool isRegularFile(const char* filename);
+    /// @return true if a file executable for user
+    bool isExecutable(const char* filename);
+
+    /// gets timestamp of last status change
+    /// @return timestamp
+    /// @return -1 (failure)
+    time_t getLastStatusChangeTimestamp(const char* filename);
+
+    /// copies file 'from' to 'to'
+    bool copyFile(const char* from, const char* to);
+
+}; // end of File namespace
+    
 ///  Wrapper class for DIR * routines
-class Directory: private FbTk::NotCopyable {
+class Directory : private FbTk::NotCopyable {
 public:
     explicit Directory(const char *dir = 0);
     ~Directory();
@@ -52,12 +82,6 @@ public:
     bool open(const char *dir);
     /// @return number of entries in the directory
     size_t entries() const { return m_num_entries; }
-    /// @return true if file is a directory
-    static bool isDirectory(const std::string &filename);
-    /// @return true if a file is a regular file
-    static bool isRegularFile(const std::string &filename);
-    /// @return true if a file executable for user
-    static bool isExecutable(const std::string &filename);
     
 private:
     std::string m_name;
@@ -67,4 +91,4 @@ private:
 
 } // end namespace FbTk
 
-#endif // FBTK_DIRECTORY_HH
+#endif // FBTK_FILEUTIL_HH

@@ -13,7 +13,7 @@ xpm_SOURCE= ImageXPM.hh ImageXPM.cc
 endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
-	Directory.hh Directory.cc \
+	FileUtil.hh FileUtil.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
 	I18n.cc I18n.hh \

@@ -1,5 +1,5 @@
-// Directory.cc
-// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// FileUtil.cc
+// Copyright (c) 2002 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -21,12 +21,69 @@
 
 // $Id$
 
-#include "Directory.hh"
+#include "FileUtil.hh"
 
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <iostream>
+#include <fstream>
+
+using std::ifstream;
+using std::ofstream;
+using std::cerr;
+using std::endl;
+
 namespace FbTk {
+
+time_t FileUtil::getLastStatusChangeTimestamp(const char* filename) {
+    struct stat buf;
+    if (filename && !stat(filename, &buf)) {
+        return buf.st_ctime;
+    } else 
+        return (time_t)-1;
+}
+
+bool FileUtil::isDirectory(const char* filename) {
+    struct stat buf;
+    if (!filename || stat(filename, &buf))
+        return false;
+
+    return S_ISDIR(buf.st_mode);
+}
+
+bool FileUtil::isRegularFile(const char* filename) {
+    struct stat buf;
+    if (!filename || stat(filename, &buf))
+        return false;
+
+    return S_ISREG(buf.st_mode);
+}
+
+bool FileUtil::isExecutable(const char* filename) {
+    struct stat buf;
+    if (!filename || !stat(filename, &buf))
+        return false;
+
+    return buf.st_mode & S_IXUSR || 
+           buf.st_mode & S_IXGRP ||
+           buf.st_mode & S_IXOTH;
+}
+
+bool FileUtil::copyFile(const char* from, const char* to) {
+    ifstream from_file(from);
+    ofstream to_file(to);
+
+    if (!to_file.good())
+        cerr << "Can't write file '"<<to<<"'."<<endl;
+    else if (from_file.good()) {
+        to_file<<from_file.rdbuf();
+        return true;
+    } else
+        cerr << "Can't copy from '"<<from<<"' to '"<<to<<"'."<<endl;
+    
+    return false;
+}
 
 Directory::Directory(const char *dir):m_dir(0),
 m_num_entries(0) {
@@ -89,30 +146,5 @@ bool Directory::open(const char *dir) {
     return true;
 }
 
-bool Directory::isDirectory(const std::string &filename) {
-    struct stat statbuf;
-    if (stat(filename.c_str(), &statbuf) != 0)
-        return false;
-
-    return S_ISDIR(statbuf.st_mode);
-}
-
-bool Directory::isRegularFile(const std::string &filename) {
-    struct stat statbuf;
-    if (stat(filename.c_str(), &statbuf) != 0)
-        return false;
-
-    return S_ISREG(statbuf.st_mode);
-}
-
-bool Directory::isExecutable(const std::string &filename) {
-    struct stat statbuf;
-    if (stat(filename.c_str(), &statbuf) != 0)
-        return false;
-
-    return statbuf.st_mode & S_IXUSR || 
-           statbuf.st_mode & S_IXGRP ||
-           statbuf.st_mode & S_IXOTH;
-}
 
 }; // end namespace FbTk

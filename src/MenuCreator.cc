@@ -46,7 +46,7 @@
 #include "FbTk/MacroCommand.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/StringUtil.hh"
-#include "FbTk/Directory.hh"
+#include "FbTk/FileUtil.hh"
 #include "FbTk/MenuSeparator.hh"
 #include "FbTk/MenuIcon.hh"
 
@@ -58,12 +58,12 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
     m_object->moveToLayer(m_layernum);
 }
 
-static void createStyleMenu(FbTk::Menu &parent, const std::string &label, 
+static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
                                    const std::string &directory) {
     // perform shell style ~ home directory expansion
     string stylesdir(FbTk::StringUtil::expandFilename(directory));
 
-    if (!FbTk::Directory::isDirectory(stylesdir))
+    if (!FbTk::FileUtil::isDirectory(stylesdir.c_str()))
         return;
 
     FbTk::Directory dir(stylesdir.c_str());
@@ -81,25 +81,25 @@ static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
         std::string style(stylesdir + '/' + filelist[file_index]);
         // add to menu only if the file is a regular file, and not a
         // .file or a backup~ file
-        if ((FbTk::Directory::isRegularFile(style) &&
+        if ((FbTk::FileUtil::isRegularFile(style.c_str()) &&
              (filelist[file_index][0] != '.') &&
              (style[style.length() - 1] != '~')) ||
-            FbTk::Directory::isRegularFile(style + "/theme.cfg") ||
-            FbTk::Directory::isRegularFile(style + "/style.cfg"))
+            FbTk::FileUtil::isRegularFile((style + "/theme.cfg").c_str()) ||
+            FbTk::FileUtil::isRegularFile((style + "/style.cfg").c_str()))
             parent.insert(new StyleMenuItem(filelist[file_index], style));
-    } 
+    }
     // update menu graphics
     parent.updateMenu();
     Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
 
 }
 
-static void createRootCmdMenu(FbTk::Menu &parent, const string &label, 
+static void createRootCmdMenu(FbTk::Menu &parent, const string &label,
                                 const string &directory, const string &cmd) {
     // perform shell style ~ home directory expansion
     string rootcmddir(FbTk::StringUtil::expandFilename(directory));
 
-    if (!FbTk::Directory::isDirectory(rootcmddir))
+    if (!FbTk::FileUtil::isDirectory(rootcmddir.c_str()))
         return;
 
     FbTk::Directory dir(rootcmddir.c_str());
@@ -114,13 +114,13 @@ static void createRootCmdMenu(FbTk::Menu &parent, const string &label,
 
     // for each file in directory add filename and path to menu
     for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
-        
+
         string rootcmd(rootcmddir+ '/' + filelist[file_index]);
         // add to menu only if the file is a regular file, and not a
         // .file or a backup~ file
-        if ((FbTk::Directory::isRegularFile(rootcmd) &&
+        if ((FbTk::FileUtil::isRegularFile(rootcmd.c_str()) &&
              (filelist[file_index][0] != '.') &&
-             (rootcmd[rootcmd.length() - 1] != '~'))) 
+             (rootcmd[rootcmd.length() - 1] != '~')))
             parent.insert(new RootCmdMenuItem(filelist[file_index], rootcmd, cmd));
     }
     // update menu graphics
@@ -172,10 +172,10 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
 
     const int screen_number = menu.screenNumber();
     _FB_USES_NLS;
-    
+
     if (str_key == "end") {
         return;
-    } else if (str_key == "nop") { 
+    } else if (str_key == "nop") {
         menu.insert(str_label.c_str());
     } else if (str_key == "icons") {
         FbTk::Menu *submenu = MenuCreator::createMenuType("iconmenu", menu.screenNumber());
@@ -195,7 +195,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         // execute and hide menu
         using namespace FbTk;
         RefCount<Command> exec_cmd(CommandParser::instance().parseLine("exec " + str_cmd));
-        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu, 
+        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu,
                                                                   &Menu::hide));
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
@@ -205,7 +205,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
     } else if (str_key == "macrocmd") {
         using namespace FbTk;
         RefCount<Command> macro_cmd(CommandParser::instance().parseLine("macrocmd " + str_cmd));
-        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu, 
+        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu,
                                                                   &Menu::hide));
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
@@ -218,7 +218,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
         if (screen != 0)
             menu.insert(str_label.c_str(), &screen->configMenu());
-    } // end of config                
+    } // end of config
     else if (str_key == "include") { // include
 
         // this will make sure we dont get stuck in a loop
@@ -229,7 +229,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         safe_counter++;
 
         string newfile = FbTk::StringUtil::expandFilename(str_label);
-        if (FbTk::Directory::isDirectory(newfile)) {
+        if (FbTk::FileUtil::isDirectory(newfile.c_str())) {
             // inject every file in this directory into the current menu
             FbTk::Directory dir(newfile.c_str());
 
@@ -241,7 +241,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
             for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
                 std::string thisfile(newfile + '/' + filelist[file_index]);
 
-                if (FbTk::Directory::isRegularFile(thisfile) &&
+                if (FbTk::FileUtil::isRegularFile(thisfile.c_str()) &&
                         (filelist[file_index][0] != '.') &&
                         (thisfile[thisfile.length() - 1] != '~')) {
                     MenuCreator::createFromFile(thisfile, menu, false);
@@ -259,7 +259,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
 
     } // end of include
     else if (str_key == "submenu") {
-            
+
         FbTk::Menu *submenu = MenuCreator::createMenu("", screen_number);
         if (submenu == 0)
             return;
@@ -274,21 +274,21 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         menu.insert(str_label.c_str(), submenu);
         // save to screen list so we can delete it later
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
-        if (screen != 0)                    
+        if (screen != 0)
             screen->saveMenu(*submenu);
 
     } // end of submenu
     else if (str_key == "stylesdir" || str_key == "stylesmenu") {
-        createStyleMenu(menu, str_label, 
+        createStyleMenu(menu, str_label,
                         str_key == "stylesmenu" ? str_cmd : str_label);
     } // end of stylesdir
     else if (str_key == "themesdir" || str_key == "themesmenu") {
-        createStyleMenu(menu, str_label, 
+        createStyleMenu(menu, str_label,
                         str_key == "themesmenu" ? str_cmd : str_label);
     } // end of themesdir
-    else if (str_key == "wallpapers" || str_key == "wallpapermenu" || 
+    else if (str_key == "wallpapers" || str_key == "wallpapermenu" ||
              str_key == "rootcommands") {
-         createRootCmdMenu(menu, str_label, str_label, 
+         createRootCmdMenu(menu, str_label, str_label,
                           str_cmd == "" ? "fbsetbg" : str_cmd);
     } // end of wallpapers
     else if (str_key == "workspaces") {
@@ -353,8 +353,8 @@ FbTk::Menu *MenuCreator::createMenu(const std::string &label, int screen_number)
     if (screen == 0)
         return 0;
 
-    FbTk::Menu *menu = new FbMenu(screen->menuTheme(), 
-                                  screen->imageControl(), 
+    FbTk::Menu *menu = new FbMenu(screen->menuTheme(),
+                                  screen->imageControl(),
                                   *screen->layerManager().
                                   getLayer(Fluxbox::instance()->getMenuLayer()));
     if (!label.empty())
@@ -390,7 +390,7 @@ FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_
     std::string label;
     if (require_begin && !getStart(parser, label))
         return 0;
-    
+
     FbTk::Menu *menu = createMenu(label, screen_number);
     if (menu != 0)
         parseMenu(parser, *menu);
@@ -416,8 +416,8 @@ bool MenuCreator::createFromFile(const std::string &filename,
 }
 
 
-bool MenuCreator::createFromFile(const std::string &filename, 
-                                 FbTk::Menu &inject_into, 
+bool MenuCreator::createFromFile(const std::string &filename,
+                                 FbTk::Menu &inject_into,
                                  FluxboxWindow &win, bool require_begin) {
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
@@ -446,7 +446,7 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
     return 0;
 }
 
-bool MenuCreator::createWindowMenuItem(const std::string &type, 
+bool MenuCreator::createWindowMenuItem(const std::string &type,
                                        const std::string &label,
                                        FbTk::Menu &menu,
                                        FluxboxWindow &win) {
@@ -502,10 +502,10 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         if (screen == 0)
             return false;
-        FbTk::Menu *submenu = new LayerMenu<FluxboxWindow>(screen->menuTheme(), 
-                                                           screen->imageControl(), 
+        FbTk::Menu *submenu = new LayerMenu<FluxboxWindow>(screen->menuTheme(),
+                                                           screen->imageControl(),
                                                            *screen->layerManager().
-                                                           getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                                           getLayer(Fluxbox::instance()->getMenuLayer()),
                                                            &win,
                                                            false);
         submenu->disableTitle();

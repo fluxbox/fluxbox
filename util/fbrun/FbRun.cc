@@ -27,7 +27,7 @@
 #include "EventManager.hh"
 #include "Color.hh"
 #include "KeyUtil.hh"
-#include "Directory.hh"
+#include "FileUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -393,18 +393,18 @@ void FbRun::tabCompleteApps() {
                                     filename;
 
                         // directories in dirmode ?
-                        if (add_dirs && dir.isDirectory(fncomplete) &&
+                        if (add_dirs && FbTk::FileUtil::isDirectory(fncomplete.c_str()) &&
                             filename != ".." && filename != ".") {
                             m_apps.push_back(fncomplete); 
                         // executables in dirmode ?
-                        } else if (add_dirs && dir.isRegularFile(fncomplete) && 
-                                   dir.isExecutable(fncomplete) && 
+                        } else if (add_dirs && FbTk::FileUtil::isRegularFile(fncomplete.c_str()) && 
+                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) && 
                                    (prefix == "" || 
                                     fncomplete.substr(0, prefix.size()) == prefix)) {
                             m_apps.push_back(fncomplete);
                         // executables in $PATH ?
-                        } else if (dir.isRegularFile(fncomplete) && 
-                                   dir.isExecutable(fncomplete) && 
+                        } else if (FbTk::FileUtil::isRegularFile(fncomplete.c_str()) && 
+                                   FbTk::FileUtil::isExecutable(fncomplete.c_str()) && 
                                    (prefix == "" || 
                                     filename.substr(0, prefix.size()) == prefix)) {
                             m_apps.push_back(filename);
@@ -440,7 +440,7 @@ void FbRun::tabCompleteApps() {
             }
             if (m_apps[apps_item].find(prefix) == 0) {
                 m_current_apps_item = apps_item;
-                if (add_dirs && FbTk::Directory::isDirectory(m_apps[m_current_apps_item]))
+                if (add_dirs && FbTk::FileUtil::isDirectory(m_apps[m_current_apps_item].c_str()))
                     setText(m_apps[m_current_apps_item] +  "/");
                 else
                     setText(m_apps[m_current_apps_item]);

@@ -38,6 +38,7 @@
 
 #include "FbTk/I18n.hh"
 #include "FbTk/Image.hh"
+#include "FbTk/FileUtil.hh"
 #include "FbTk/KeyUtil.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
@@ -151,24 +152,11 @@ class Toolbar { };
 using namespace std;
 using namespace FbTk;
 
-static Window last_bad_window = None;
 namespace {
-void copyFile(const std::string &from, const std::string &to) {
-        ifstream from_file(from.c_str());
-        ofstream to_file(to.c_str());
 
-        if (! to_file.good()) {
-            cerr<<"Can't write file: "<<to<<endl;
-        } else if (from_file.good()) {
-            to_file<<from_file.rdbuf(); //copy file
-        } else {
-            cerr<<"Can't copy from "<<from<<" to "<<to<<endl;
-        }
-}
-
-} // end anonymous
-
-static int handleXErrors(Display *d, XErrorEvent *e) {
+Window last_bad_window = None;
+ 
+int handleXErrors(Display *d, XErrorEvent *e) {
     if (e->error_code == BadWindow)
         last_bad_window = e->resourceid;
 #ifdef DEBUG
@@ -183,10 +171,10 @@ static int handleXErrors(Display *d, XErrorEvent *e) {
     }
 #endif // !DEBUG
 
-
     return False;
 }
 
+} // end anonymous
 
 //static singleton var
 Fluxbox *Fluxbox::s_singleton=0;
@@ -573,15 +561,15 @@ void Fluxbox::setupConfigFiles() {
 
     // copy key configuration
     if (create_keys)
-        copyFile(DEFAULTKEYSFILE, keys_file);
+        FbTk::FileUtil::copyFile(DEFAULTKEYSFILE, keys_file.c_str());
 
     // copy menu configuration
     if (create_menu)
-        copyFile(DEFAULTMENU, menu_file);
+        FbTk::FileUtil::copyFile(DEFAULTMENU, menu_file.c_str());
 
     // copy init file
     if (create_init)
-        copyFile(DEFAULT_INITFILE, init_file);
+        FbTk::FileUtil::copyFile(DEFAULT_INITFILE, init_file.c_str());
 
 }
 
@@ -1644,10 +1632,11 @@ bool Fluxbox::menuTimestampsChanged() const {
     std::list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
     std::list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
     for (; it != it_end; ++it) {
-        struct stat buf;
+        
+        time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp((*it)->filename.c_str());
 
-        if (! stat((*it)->filename.c_str(), &buf)) {
-            if ((*it)->timestamp != buf.st_ctime)
+        if (timestamp >= 0) {
+            if (timestamp != (*it)->timestamp)
                 return true;
         } else
             return true;
@@ -1683,13 +1672,12 @@ void Fluxbox::rereadMenu(bool show_after_reread) {
 
 
 void Fluxbox::real_rereadMenu() {
-    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it)
-        delete *it;
-
-    m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
-    for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::rereadMenu));
+    
+    clearMenuFilenames();
+    
+    for_each(m_screen_list.begin(), 
+             m_screen_list.end(), 
+             mem_fun(&BScreen::rereadMenu));
 
     if(m_show_menu_after_reread) {
 
@@ -1716,13 +1704,13 @@ void Fluxbox::saveMenuFilename(const char *filename) {
     }
 
     if (! found) {
-        struct stat buf;
+        time_t timestamp = FbTk::FileUtil::getLastStatusChangeTimestamp(filename);
 
-        if (! stat(filename, &buf)) {
+        if (timestamp >= 0) {
             MenuTimestamp *ts = new MenuTimestamp;
 
             ts->filename = filename;
-            ts->timestamp = buf.st_ctime;
+            ts->timestamp = timestamp;
 
             m_menu_timestamps.push_back(ts);
         }
@@ -1730,12 +1718,10 @@ void Fluxbox::saveMenuFilename(const char *filename) {
 }
 
 void Fluxbox::clearMenuFilenames() {
-    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it)
-         delete *it;
-
-    m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
+    while(!m_menu_timestamps.empty()) {
+        delete m_menu_timestamps.back();
+        m_menu_timestamps.pop_back();
+    }
 }
 
 void Fluxbox::timed_reconfigure() {

@@ -26,7 +26,7 @@
 #include "XrmDatabaseHelper.hh"
 #include "App.hh"
 #include "StringUtil.hh"
-#include "Directory.hh"
+#include "FileUtil.hh"
 #include "I18n.hh"
 #include "Image.hh"
 
@@ -87,14 +87,14 @@ bool ThemeManager::load(const std::string &filename, int screen_num) {
     std::string location = FbTk::StringUtil::expandFilename(filename);
     std::string prefix = "";
 
-    if (Directory::isDirectory(filename)) {
+    if (FileUtil::isDirectory(filename.c_str())) {
         prefix = location;
 
         location.append("/theme.cfg");
-        if (!Directory::isRegularFile(location)) {
+        if (!FileUtil::isRegularFile(location.c_str())) {
             location = prefix;
             location.append("/style.cfg");
-            if (!Directory::isRegularFile(location)) {
+            if (!FileUtil::isRegularFile(location.c_str())) {
                 cerr<<"Error loading theme file "<<location<<": not a regular file"<<endl;
                 return false;
             }
