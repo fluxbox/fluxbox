@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.33 2004/05/17 15:01:32 rathnor Exp $
+// $Id: FbWindow.cc,v 1.34 2004/05/24 13:09:32 rathnor Exp $
 
 #include "FbWindow.hh"
 
@@ -240,11 +240,11 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
 
 void FbWindow::setAlpha(unsigned char alpha) {
 #ifdef HAVE_XRENDER
-    if (m_transparent.get() == 0 && alpha != 0) {
+    if (m_transparent.get() == 0 && alpha < 255) {
         m_transparent.reset(new Transparent(getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
-    } else if (alpha != 0 && alpha != m_transparent->alpha())
+    } else if (alpha < 255 && alpha != m_transparent->alpha())
         m_transparent->setAlpha(alpha);
-    else if (alpha == 0)
+    else if (alpha == 255)
         m_transparent.reset(0); // destroy transparent object
 #endif // HAVE_XRENDER
 }

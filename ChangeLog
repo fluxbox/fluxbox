@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/24:
+  * Fix handling alpha value of zero (Simon)
+    FbWindow.cc
 *04/05/21:
   * fluxbox-generate_menu:
     Updated polish locales from: £ukasz Wrzosek (unl at poczta dot fm)
