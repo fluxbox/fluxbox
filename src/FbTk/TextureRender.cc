@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.11 2004/08/31 15:26:39 rathnor Exp $
+// $Id: TextureRender.cc,v 1.12 2004/10/06 09:30:54 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -49,11 +49,13 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     control(imgctrl),
     colors(_colors),
     ncolors(ncolors),
+    cpc(imgctrl.colorsPerChannel()),
+    cpccpc(cpc * cpc),
+    red(0), green(0), blue(0),
+    width(static_cast<signed>((w > 0 ? w : 1))), height(static_cast<signed>(h > 0 ? h : 1)),
     xtable(0), ytable(0) {
 
     _FB_USES_NLS;
-    width = ((signed) w > 0) ? w : 1;
-    height = ((signed) h > 0) ? h : 1;
     // clamp to "normal" size
     if (width > 3200) {
         cerr<<"TextureRender: "<<_FBTKTEXT(Error, BigWidth, "Warning! Width > 3200 setting Width = 3200", "Image width seems too big, clamping")<<endl;
@@ -65,6 +67,37 @@ TextureRender::TextureRender(ImageControl &imgctrl,
         height = 3200;
     }
 
+
+    imgctrl.colorTables(&red_table, &green_table, &blue_table,
+                        &red_offset, &green_offset, &blue_offset,
+                        &red_bits, &green_bits, &blue_bits);
+	
+}
+
+
+TextureRender::~TextureRender() {
+    if (red != 0) delete [] red;
+    if (green != 0) delete [] green;
+    if (blue != 0) delete [] blue;	
+}
+
+
+Pixmap TextureRender::render(const FbTk::Texture &texture) {
+    if (texture.pixmap().drawable() != 0)
+        return renderPixmap(texture);
+    else if (texture.type() & FbTk::Texture::PARENTRELATIVE)
+        return ParentRelative;
+    else if (texture.type() & FbTk::Texture::SOLID)
+        return renderSolid(texture);
+    else if (texture.type() & FbTk::Texture::GRADIENT) {
+        allocateColorTables();
+        return renderGradient(texture);
+    }
+
+    return None;
+}
+
+void TextureRender::allocateColorTables() {
     red = new(nothrow) unsigned char[width * height];
     if (red == 0) {
         char sbuf[128];
@@ -87,36 +120,8 @@ TextureRender::TextureRender(ImageControl &imgctrl,
         throw string("TextureRender::TextureRender(): " +string(_FBTKTEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
     }
 
-    cpc = imgctrl.colorsPerChannel();
-    cpccpc = cpc * cpc;
 
-    imgctrl.colorTables(&red_table, &green_table, &blue_table,
-                        &red_offset, &green_offset, &blue_offset,
-                        &red_bits, &green_bits, &blue_bits);
-	
 }
-
-
-TextureRender::~TextureRender() {
-    delete [] red;
-    delete [] green;
-    delete [] blue;	
-}
-
-
-Pixmap TextureRender::render(const FbTk::Texture &texture) {
-    if (texture.pixmap().drawable() != 0)
-        return renderPixmap(texture);
-    else if (texture.type() & FbTk::Texture::PARENTRELATIVE)
-        return ParentRelative;
-    else if (texture.type() & FbTk::Texture::SOLID)
-        return renderSolid(texture);
-    else if (texture.type() & FbTk::Texture::GRADIENT)
-        return renderGradient(texture);
-
-    return None;
-}
-
 
 Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
 
@@ -300,7 +305,7 @@ XImage *TextureRender::renderXImage() {
 
     o = image->bits_per_pixel + ((image->byte_order == MSBFirst) ? 1 : 0);
 
-    if (control.doDither() && width > 1 && height > 1) {
+    if (control.doDither()) {
         unsigned char dither4[4][4] = { 
             {0, 4, 1, 5},
             {6, 2, 7, 3},
@@ -564,7 +569,9 @@ XImage *TextureRender::renderXImage() {
         XDestroyImage(image);
         return (XImage *) 0;
     }
-} else {
+} else { // end do dither
+
+    // no dither:
     switch (control.visual()->c_class) {
     case StaticColor:
     case PseudoColor:

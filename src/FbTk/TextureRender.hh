@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.hh,v 1.2 2003/04/28 22:27:29 fluxgen Exp $
+// $Id: TextureRender.hh,v 1.3 2004/10/06 09:30:54 fluxgen Exp $
 
 #ifndef FBTK_TEXTURRENDER_HH
 #define FBTK_TEXTURRENDER_HH
@@ -54,6 +54,8 @@ public:
     /// scales and renders a pixmap
     Pixmap renderPixmap(const FbTk::Texture &src_texture);
 private:
+    /// allocates red, green and blue for gradient rendering
+    void allocateColorTables();
     /**
        Render to pixmap
        @return rendered pixmap
