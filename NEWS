@@ -1,4 +1,9 @@
 News in 0.9.6:
+    * Add image search paths when loading a style
+      now looks for pixmaps in <stylebase> and <stylebase>/pixmaps
+      now looks for styles in <stylesdir>/<stylename>/theme.cfg
+      => for this, stylebase is the style directory
+      pixmap styles should use the new format for portability
     * Added startup script to be used with startfluxbox, to get a 
       consistent frontend for both *dm and startx and your fluxbox-session
     * Added "!" as a comment line for keys file
