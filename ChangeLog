@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/13:
+   * Fixed restoring submenus after a reconfigure (Thanks MrChuoi)
+     Screen.cc, fluxbox.cc/hh
+   * Added auto hide menu item to toolbar menu (Thanks MrChuoi)
+     Toolbar.cc
 *03/05/12:
    * Fixed basic RANDR support  (Henrik)
      Resizes toolbar and slit when root window size changes.
@@ -17,6 +22,7 @@ Changes for 0.9.3:
      Screen.hh
    * Removed BaseDisplay.hh/cc (Henrik)
      BaseDisplay.hh/cc, fluxbox.hh, Window.cc/hh
+--------------------------------------------------------------
 Changes for 0.9.2:
 *03/05/08:
    * Fixed sloppy focus for embedded tabs (Simon)
