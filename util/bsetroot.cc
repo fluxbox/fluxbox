@@ -1,13 +1,13 @@
-#ifdef    HAVE_CONFIG_H
+#ifdef HAVE_CONFIG_H
 #  include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef    STDC_HEADERS
+#ifdef STDC_HEADERS
 #  include <string.h>
 #  include <stdlib.h>
 #endif // STDC_HEADERS
 
-#ifdef    HAVE_STDIO_H
+#ifdef HAVE_STDIO_H
 #  include <stdio.h>
 #endif // HAVE_STDIO_H
 
@@ -197,7 +197,7 @@ void bsetroot::solid(void) {
     if (! c.isAllocated())
 				c.setPixel(BlackPixel(getXDisplay(), screen));
 
-		gcv.foreground = c.getPixel();
+		gcv.foreground = c.pixel();
 		gc = XCreateGC(getXDisplay(), getScreenInfo(screen)->getRootWindow(),
 			GCForeground , &gcv);
 
@@ -271,8 +271,8 @@ void bsetroot::modula(int x, int y) {
 		if (! b.isAllocated())
 			b.setPixel(BlackPixel(getXDisplay(), screen));
 
-		gcv.foreground = f.getPixel();
-		gcv.background = b.getPixel();
+		gcv.foreground = f.pixel();
+		gcv.background = b.pixel();
 
 		gc = XCreateGC(getXDisplay(), getScreenInfo(screen)->getRootWindow(),
 			GCForeground | GCBackground, &gcv);
@@ -322,13 +322,13 @@ void bsetroot::gradient(void) {
 		XGCValues gcv;
 
 		img_ctrl[screen]->parseTexture(&texture, grad);
-		img_ctrl[screen]->parseColor(texture.getColor(), fore);
-		img_ctrl[screen]->parseColor(texture.getColorTo(), back);
+		img_ctrl[screen]->parseColor(&texture.color(), fore);
+		img_ctrl[screen]->parseColor(&texture.colorTo(), back);
 
-		if (! texture.getColor()->isAllocated())
-			texture.getColor()->setPixel(WhitePixel(getXDisplay(), screen));
-		if (! texture.getColorTo()->isAllocated())
-			texture.getColorTo()->setPixel(BlackPixel(getXDisplay(), screen));
+		if (! texture.color().isAllocated())
+			texture.color().setPixel(WhitePixel(getXDisplay(), screen));
+		if (! texture.colorTo().isAllocated())
+			texture.colorTo().setPixel(BlackPixel(getXDisplay(), screen));
 
 		tmp = img_ctrl[screen]->renderImage(getScreenInfo(screen)->getWidth(),
 			getScreenInfo(screen)->getHeight(), &texture);
