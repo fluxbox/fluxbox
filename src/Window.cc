@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.249 2003/12/10 22:28:07 fluxgen Exp $
+// $Id: Window.cc,v 1.250 2003/12/10 23:08:03 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -264,7 +264,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     maximized(MAX_NONE),
     m_screen(scr),
     display(FbTk::App::instance()->display()),
-    m_windowmenu(*scr.menuTheme(), scr.screenNumber(), scr.imageControl(),
+    m_windowmenu(*scr.menuTheme(), scr.imageControl(),
                  *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
@@ -541,7 +541,6 @@ void FluxboxWindow::init() {
 
     addExtraMenu("Layer...",
                  new LayerMenu<FluxboxWindow>(*screen().menuTheme(), 
-                                              screen().screenNumber(),
                                               screen().imageControl(), 
                                               *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                               this,

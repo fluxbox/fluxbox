@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.246 2003/12/10 22:28:07 fluxgen Exp $
+// $Id: Screen.cc,v 1.247 2003/12/10 23:08:03 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -131,17 +131,6 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
     running = false;
 
     return -1;
-}
-
-FbTk::Menu *createMenuFromScreen(BScreen &screen, const char *label = 0) {
-    FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
-                                  screen.screenNumber(), 
-                                  screen.imageControl(), 
-                                  *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
-    if (label)
-        menu->setLabel(label);
-
-    return menu;
 }
 
 class FocusModelMenuItem : public FbTk::MenuItem {
@@ -353,10 +342,10 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // setup workspaces and workspace menu
 
-    workspacemenu.reset(createMenuFromScreen(*this));
+    workspacemenu.reset(createMenu(""));
     workspacemenu->setInternalMenu();
     //!! TODO: NLS
-    m_iconmenu.reset(createMenuFromScreen(*this, "Icons"));
+    m_iconmenu.reset(createMenu("Icons"));
     m_iconmenu->setInternalMenu();
 
     if (*resource.workspaces != 0) {
@@ -392,7 +381,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     fluxbox->load_rc(*this);
 
     // TODO: nls
-    m_configmenu.reset(createMenuFromScreen(*this, "Configuration"));
+    m_configmenu.reset(createMenu("Configuration"));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
 
@@ -567,6 +556,16 @@ void BScreen::update(FbTk::Subject *subj) {
     // if another signal is added later, will need to differentiate here
 
     renderGeomWindow();
+}
+
+FbTk::Menu *BScreen::createMenu(const std::string &label) {
+    FbTk::Menu *menu = new FbMenu(*menuTheme(), 
+                                  imageControl(), 
+                                  *layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
+    if (!label.empty())
+        menu->setLabel(label.c_str());
+
+    return menu;
 }
 
 void BScreen::reconfigure() {
@@ -1548,7 +1547,7 @@ void BScreen::initMenu() {
         m_rootmenu_list.clear();
 
     } else
-        m_rootmenu.reset(createMenuFromScreen(*this));
+        m_rootmenu.reset(createMenu(""));
 
     bool defaultMenu = true;
     Fluxbox * const fb = Fluxbox::instance();
@@ -1759,7 +1758,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                        "no menu label defined\n"));
                     cerr<<"Row: "<<row<<endl;
                 } else {
-                    FbTk::Menu *submenu = createMenuFromScreen(*this);
+                    FbTk::Menu *submenu = createMenu("");
 
                     if (str_cmd.size())
                         submenu->setLabel(str_cmd.c_str());
@@ -1873,7 +1872,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // be deleted toghether with the parent
     const char *focusmenu_label = i18n->getMessage(ConfigmenuSet, ConfigmenuFocusModel,
                                                    "Focus Model");
-    FbTk::Menu *focus_menu = createMenuFromScreen(*this, focusmenu_label);
+    FbTk::Menu *focus_menu = createMenu(focusmenu_label ? focusmenu_label : "");
 
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                                ConfigmenuClickToFocus,

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.43 2003/11/28 23:26:27 fluxgen Exp $
+// $Id: Menu.cc,v 1.44 2003/12/10 23:08:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -48,45 +48,18 @@
 
 using namespace std;
 
-namespace {
-Pixmap getRootPixmap(int screen_num) {
-    Pixmap root_pm = 0;
-    // get root pixmap for transparency
-    Display *disp = FbTk::App::instance()->display();
-    Atom real_type;
-    int real_format;
-    unsigned long items_read, items_left;
-    unsigned int *data;
-    if (XGetWindowProperty(disp, RootWindow(disp, screen_num), 
-                           XInternAtom(disp, "_XROOTPMAP_ID", false),
-                           0L, 1L, 
-                           false, XA_PIXMAP, &real_type,
-                           &real_format, &items_read, &items_left, 
-                           (unsigned char **) &data) == Success && 
-        items_read) { 
-        root_pm = (Pixmap) (*data);                  
-        XFree(data);
-    }
-
-    return root_pm; 
-}
-
-}; // end anonymous namespace
-
 namespace FbTk {
 
 static Menu *shown = 0;
 
 Menu *Menu::s_focused = 0;
 
-Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
+Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_theme(tm),
-    m_screen_num(screen_num),
     m_image_ctrl(imgctrl),
-    m_display(FbTk::App::instance()->display()),
     m_parent(0),
-    m_screen_width(DisplayWidth(m_display, screen_num)),
-    m_screen_height(DisplayHeight(m_display, screen_num)),
+    m_screen_width(DisplayWidth(FbTk::App::instance()->display(), tm.screenNum())),
+    m_screen_height(DisplayHeight(FbTk::App::instance()->display(), tm.screenNum())),
     m_alignment(ALIGNDONTCARE),
     m_border_width(0),
     m_themeobserver(*this), 
@@ -123,7 +96,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
 
     menu.bevel_w = 2;
 
-    menu.width = menu.title_h = menu.item_w = menu.frame_h =
+    menu.title_h = menu.item_w = menu.frame_h =
         m_theme.titleFont().height() + menu.bevel_w * 2;
 
     menu.sublevels =
@@ -132,13 +105,11 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
 
     menu.item_h = m_theme.frameFont().height() + menu.bevel_w;
 
-    menu.height = menu.title_h + 2 + menu.frame_h;
-
     long event_mask = ButtonPressMask | ButtonReleaseMask | 
         ButtonMotionMask | KeyPressMask | ExposureMask | FocusChangeMask;
-    //create menu window
-    menu.window = FbTk::FbWindow(screen_num,
-                                 menu.x, menu.y, menu.width, menu.height,
+    // create menu window
+    menu.window = FbTk::FbWindow(tm.screenNum(),
+                                 0, 0, 10, 10,
                                  event_mask,
                                  true); // override redirect
 
@@ -152,7 +123,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     event_mask |= EnterWindowMask | LeaveWindowMask;
     //create menu title
     menu.title = FbTk::FbWindow(menu.window,
-                                0, 0, menu.width, menu.height,
+                                0, 0, width(), menu.title_h,
                                 event_mask);
                                 
     evm.add(*this, menu.title);
@@ -160,7 +131,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     event_mask |= PointerMotionMask;
     menu.frame = FbTk::FbWindow(menu.window,
                                 0, menu.title_h,
-                                menu.width, menu.frame_h, 
+                                width(), menu.frame_h ? menu.frame_h : 1, 
                                 event_mask);
     evm.add(*this, menu.frame);
     // update style 
@@ -421,30 +392,36 @@ void Menu::update(int active_index) {
         menu.persub = 0;
     }
 
-    menu.width = (menu.sublevels * (menu.item_w));
-    if (! menu.width) menu.width = menu.item_w;
-
     menu.frame_h = (menu.item_h * menu.persub);
     if (menu.frame_h < 0)
         menu.frame_h = 0;
 
-    menu.height = menu.frame_h;
-    if (title_vis)
-        menu.height += menu.title_h + ((menu.frame_h>0)?menu.title.borderWidth():0);
 
-    if (menu.height < 1)
-        menu.height = 1;
+    int new_width = (menu.sublevels * menu.item_w);
+    int new_height = menu.frame_h;
+
+    if (title_vis)
+        new_height += menu.title_h + ((menu.frame_h>0)?menu.title.borderWidth():0);
+
+
+    if (new_width < 1) 
+        new_width = menu.item_w;
+
+    if (new_height < 1)
+        new_height = 1;
+
+    menu.window.resize(new_width, new_height);
 
     Pixmap tmp;
     if (title_vis) {
         tmp = menu.title_pixmap;
         const FbTk::Texture &tex = m_theme.titleTexture();
-        if (tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+        if (!tex.usePixmap()) {
             menu.title_pixmap = None;
             menu.title.setBackgroundColor(tex.color());
         } else {
             menu.title_pixmap =
-                m_image_ctrl.renderImage(menu.width, menu.title_h, tex);
+                m_image_ctrl.renderImage(width(), menu.title_h, tex);
             menu.title.setBackgroundPixmap(menu.title_pixmap);
         }
 
@@ -455,11 +432,11 @@ void Menu::update(int active_index) {
 
     tmp = menu.frame_pixmap;
     const FbTk::Texture &frame_tex = m_theme.frameTexture();
-    if (frame_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!frame_tex.usePixmap()) {
         menu.frame_pixmap = None;
     } else {
         menu.frame_pixmap =
-            m_image_ctrl.renderImage(menu.width, menu.frame_h, frame_tex);        
+            m_image_ctrl.renderImage(width(), menu.frame_h, frame_tex);        
     }
 
     if (tmp)
@@ -467,18 +444,18 @@ void Menu::update(int active_index) {
 
     tmp = menu.hilite_pixmap;
     const FbTk::Texture &hilite_tex = m_theme.hiliteTexture();
-    if (hilite_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
+    if (!hilite_tex.usePixmap()) {
         menu.hilite_pixmap = None;
-    else
+    } else
         menu.hilite_pixmap =
             m_image_ctrl.renderImage(menu.item_w, menu.item_h, hilite_tex);
     if (tmp)
         m_image_ctrl.removeImage(tmp);
 
     tmp = menu.sel_pixmap;
-    if (hilite_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
+    if (!hilite_tex.usePixmap()) {
         menu.sel_pixmap = None;
-    else {
+    } else {
         int hw = menu.item_h / 2;
         menu.sel_pixmap =
             m_image_ctrl.renderImage(hw, hw, hilite_tex);
@@ -486,11 +463,11 @@ void Menu::update(int active_index) {
     if (tmp) 
         m_image_ctrl.removeImage(tmp);
 
-    menu.window.resize(menu.width, menu.height);
+
 
     if (title_vis) {
         menu.title.moveResize(-menu.title.borderWidth(), -menu.title.borderWidth(), 
-                              menu.width + menu.title.borderWidth(), menu.title_h);
+                              width() + menu.title.borderWidth(), menu.title_h);
     }
 
     menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + 
@@ -637,11 +614,11 @@ void Menu::redrawTitle() {
 
     switch (m_theme.titleFontJustify()) {
     case FbTk::RIGHT:
-        dx += menu.width - l;
+        dx += width() - l;
         break;
 
     case FbTk::CENTER:
-        dx += (menu.width - l) / 2;
+        dx += (width() - l) / 2;
         break;
     default:
         break;
@@ -695,10 +672,10 @@ void Menu::drawSubmenu(unsigned int index) {
         }
 			
         if (m_alignment == ALIGNBOTTOM &&
-            (y + item->submenu()->menu.height) > ((shifted) ? menu.y_shift :
-                                                  menu.y) + menu.height) {
+            (y + item->submenu()->height()) > ((shifted) ? menu.y_shift :
+                                                  menu.y) + height()) {
             y = (((shifted) ? menu.y_shift : menu.y) +
-                 menu.height - item->submenu()->menu.height);
+                 height() - item->submenu()->height());
         }
 
         if ((x + item->submenu()->width()) > m_screen_width) {
@@ -1090,13 +1067,13 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             update();
         }
 
-        if (re.x >= 0 && re.x <= (signed) menu.width &&
+        if (re.x >= 0 && re.x <= (signed) width() &&
             re.y >= 0 && re.y <= (signed) menu.title_h &&
             re.button == 3)
             hide();
 			
     } else if (re.window == menu.frame &&
-               re.x >= 0 && re.x < (signed) menu.width &&
+               re.x >= 0 && re.x < (signed) width() &&
                re.y >= 0 && re.y < (signed) menu.frame_h) {
 			
         int sbl = (re.x / menu.item_w), i = (re.y / menu.item_h),
@@ -1147,7 +1124,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             }
         }
     } else if ((! (me.state & Button1Mask)) && me.window == menu.frame &&
-               me.x >= 0 && me.x < (signed) menu.width &&
+               me.x >= 0 && me.x < (signed) width() &&
                me.y >= 0 && me.y < (signed) menu.frame_h) {
         int sbl = (me.x / menu.item_w), i = (me.y / menu.item_h),
             w = (sbl * menu.persub) + i;
@@ -1230,16 +1207,16 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
         return;
 
     menu.x_shift = menu.x, menu.y_shift = menu.y;
-    if (menu.x + menu.width > m_screen_width) {
-        menu.x_shift = m_screen_width - menu.width - 2*m_border_width;
+    if (menu.x + width() > m_screen_width) {
+        menu.x_shift = m_screen_width - width() - 2*m_border_width;
         shifted = true;
     } else if (menu.x < 0) {
         menu.x_shift = 0; //-m_border_width;
         shifted = true;
     }
 
-    if (menu.y + menu.height + 2*m_border_width > m_screen_height) {
-        menu.y_shift = m_screen_height - menu.height - 2*m_border_width;
+    if (menu.y + height() + 2*m_border_width > m_screen_height) {
+        menu.y_shift = m_screen_height - height() - 2*m_border_width;
         shifted = true;
     } else if (menu.y + (signed) menu.title_h < 0) {
         menu.y_shift = 0; // -m_border_width;;

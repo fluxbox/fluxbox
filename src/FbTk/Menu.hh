@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.24 2003/12/08 16:39:44 fluxgen Exp $
+// $Id: Menu.hh,v 1.25 2003/12/10 23:08:06 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -57,7 +57,7 @@ public:
     */
     enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
 	
-    Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl);
+    Menu(MenuTheme &tm, ImageControl &imgctrl);
     virtual ~Menu();
 
     /**
@@ -132,7 +132,7 @@ public:
     //@{
     inline bool isTorn() const { return torn; }
     inline bool isVisible() const { return visible; }
-    inline int screenNumber() const { return m_screen_num; }
+    inline int screenNumber() const { return menu.window.screenNumber(); }
     inline Window window() const { return menu.window.window(); }
     inline FbWindow &fbwindow() { return menu.window; }
     inline const FbWindow &fbwindow() const { return menu.window; }
@@ -141,8 +141,8 @@ public:
     inline const std::string &label() const { return menu.label; }  
     inline int x() const { return menu.x; }
     inline int y() const { return menu.y; }
-    inline unsigned int width() const { return menu.width; }
-    inline unsigned int height() const { return menu.height; }
+    inline unsigned int width() const { return menu.window.width(); }
+    inline unsigned int height() const { return menu.window.height(); }
     inline unsigned int numberOfItems() const { return menuitems.size(); }
     inline int currentSubmenu() const { return which_sub; } 
     inline unsigned int titleHeight() const { return menu.title_h; }
@@ -178,8 +178,6 @@ private:
 
     typedef std::vector<MenuItem *> Menuitems;
     const MenuTheme &m_theme;
-    Display *m_display;
-    const int m_screen_num;
     Menu *m_parent;
     ImageControl &m_image_ctrl;
     Menuitems menuitems;
@@ -198,7 +196,7 @@ private:
         std::string label;
         int x, y, x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
             grab_x, grab_y;
-        unsigned int width, height, title_h, frame_h, item_w, item_h, bevel_w,
+        unsigned int title_h, frame_h, item_w, item_h, bevel_w,
             bevel_h;
     } menu;
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.130 2003/12/08 17:29:44 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.131 2003/12/10 23:08:03 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -192,16 +192,15 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_window_pm(0),
     m_screen(scrn),
     m_layermenu(*scrn.menuTheme(), 
-                scrn.screenNumber(), 
                 scrn.imageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                 this,
                 true),
     m_placementmenu(*scrn.menuTheme(),
-                    scrn.screenNumber(), scrn.imageControl(),
+                    scrn.imageControl(),
                     *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_toolbarmenu(*scrn.menuTheme(),
-                  scrn.screenNumber(), scrn.imageControl(),
+                  scrn.imageControl(),
                   *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_theme(scrn.screenNumber()),
     m_layeritem(frame.window, layer),

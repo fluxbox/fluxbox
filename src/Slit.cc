@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.82 2003/12/07 16:39:43 fluxgen Exp $
+// $Id: Slit.cc,v 1.83 2003/12/10 23:08:03 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -236,19 +236,15 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_hidden(false),
       m_screen(scr),
       m_slitmenu(*scr.menuTheme(), 
-                 scr.screenNumber(), 
                  scr.imageControl(),
                  *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_placement_menu(*scr.menuTheme(),
-                       scr.screenNumber(),
                        scr.imageControl(),
                        *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_clientlist_menu(*scr.menuTheme(),
-                        scr.screenNumber(),
                         scr.imageControl(),
                         *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
-                                      scr.screenNumber(),
                                       scr.imageControl(),
                                       *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                       this,

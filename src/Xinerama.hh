@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xinerama.hh,v 1.6 2003/12/03 22:12:26 fluxgen Exp $
+// $Id: Xinerama.hh,v 1.7 2003/12/10 23:08:03 fluxgen Exp $
 
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
@@ -74,7 +74,7 @@ private:
 template <typename ItemType>
 XineramaHeadMenu<ItemType>::XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
                                FbTk::XLayer &layer, ItemType &item, const char * title = 0):
-    FbMenu(tm, screen.screenNumber(), imgctrl, layer), 
+    FbMenu(tm, imgctrl, layer), 
     m_object(item) 
 {
     if (title)

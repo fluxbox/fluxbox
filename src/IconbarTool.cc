@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.20 2003/12/07 17:51:02 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.21 2003/12/10 23:08:03 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -186,7 +186,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
               screen.name() + ".iconbar.mode", screen.altName() + ".Iconbar.Mode"),
     m_rc_use_pixmap(screen.resourceManager(), true,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
-    m_menu(*screen.menuTheme(), menu.screenNumber(), screen.imageControl(),
+    m_menu(*screen.menuTheme(), screen.imageControl(),
            *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())) {
 
     // setup mode menu

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.6 2003/12/03 22:12:26 fluxgen Exp $
+// $Id: LayerMenu.hh,v 1.7 2003/12/10 23:08:03 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
@@ -60,7 +60,7 @@ private:
 template <typename ItemType>
 class LayerMenu : public FbMenu {
 public:
-    LayerMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+    LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
               FbTk::XLayer &layer, ItemType *item, bool save_rc);
 
 private:
@@ -69,9 +69,9 @@ private:
 
 
 template <typename ItemType>
-LayerMenu<ItemType>::LayerMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+LayerMenu<ItemType>::LayerMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
                                FbTk::XLayer &layer, ItemType *item, bool save_rc):
-    FbMenu(tm, screen_num, imgctrl, layer), 
+    FbMenu(tm, imgctrl, layer), 
     m_object(item) 
 {
     
@@ -93,18 +93,16 @@ LayerMenu<ItemType>::LayerMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl
     };
     
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
-                                     *Fluxbox::instance(), 
-                                     &Fluxbox::save_rc));
+                                             *Fluxbox::instance(), 
+                                             &Fluxbox::save_rc));
 
     for (size_t i=0; i < 6; ++i) {
         // TODO: fetch nls string
         if (save_rc) {    
-            insert(new LayerMenuItem<ItemType>(
-                                               layer_menuitems[i].default_str, 
+            insert(new LayerMenuItem<ItemType>(layer_menuitems[i].default_str, 
                                                m_object, layer_menuitems[i].layernum, saverc_cmd));
         } else {
-            insert(new LayerMenuItem<ItemType>(
-                                               layer_menuitems[i].default_str, 
+            insert(new LayerMenuItem<ItemType>(layer_menuitems[i].default_str, 
                                                m_object, layer_menuitems[i].layernum));               
         }
     }

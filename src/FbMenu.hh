@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenu.hh,v 1.2 2003/07/10 11:25:13 fluxgen Exp $
+// $Id: FbMenu.hh,v 1.3 2003/12/10 23:08:03 fluxgen Exp $
 
 #ifndef FBMENU_HH
 #define FBMENU_HH
@@ -33,7 +33,7 @@ class Shape;
 /// a layered and shaped menu
 class FbMenu:public FbTk::Menu {
 public:
-    FbMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+    FbMenu(MenuTheme &tm, FbTk::ImageControl &imgctrl,
            FbTk::XLayer &layer);
     ~FbMenu();
     void clearWindow();

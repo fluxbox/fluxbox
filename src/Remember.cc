@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.30 2003/11/17 00:20:54 fluxgen Exp $
+// $Id: Remember.cc,v 1.31 2003/12/10 23:08:03 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -109,11 +109,7 @@ private:
 FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enabled) {
     // each fluxboxwindow has its own windowmenu
     // so we also create a remember menu just for it...
-    BScreen &screen = win.screen();
-    FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
-                                  screen.screenNumber(), 
-                                  screen.imageControl(), 
-                                  *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
+    FbTk::Menu *menu = win.screen().createMenu("");
 
     // if enabled, then we want this to be a unavailable menu
     if (!enabled) {
@@ -141,8 +137,6 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
                                       Remember::REM_SHADEDSTATE));
     menu->insert(new RememberMenuItem("Layer", remember, win,
                                       Remember::REM_LAYER));
-    //    menu->insert(new RememberMenuItem("Tab", remember, win,
-    //                                     Remember::REM_TABSTATE));
     menu->insert(new RememberMenuItem("Save on close", remember, win,
                                       Remember::REM_SAVEONCLOSE));
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.125 2003/09/29 12:53:58 rathnor Exp $
+// $Id: Screen.hh,v 1.126 2003/12/10 23:08:03 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -112,6 +112,8 @@ public:
     const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
 
+
+
     unsigned int currentWorkspaceID() const;
     Pixmap rootPixmap() const;
     /*
@@ -160,6 +162,8 @@ public:
     //@}
 
     void update(FbTk::Subject *subj);
+
+    FbTk::Menu *createMenu(const std::string &label);
 
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
