@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.29 2003/07/19 03:59:56 rathnor Exp $
+// $Id: Menu.cc,v 1.30 2003/07/20 08:12:36 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -557,6 +557,8 @@ void Menu::update() {
 
 
 void Menu::show() {
+    if (m_need_update)
+        update();
     menu.window.showSubwindows();
     menu.window.show();
     //!! TODO, this should probably be done explicit if one don't want to raise

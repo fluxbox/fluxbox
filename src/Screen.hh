@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.115 2003/07/20 02:45:57 rathnor Exp $
+// $Id: Screen.hh,v 1.116 2003/07/20 08:12:36 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -193,6 +193,9 @@ public:
     inline MenuTheme *menuTheme() { return m_menutheme.get(); }
     inline const MenuTheme *menuTheme() const { return m_menutheme.get(); }
     inline const RootTheme &rootTheme() const { return *m_root_theme.get(); }
+    inline WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
+    inline const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }
+
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }
 
@@ -311,8 +314,8 @@ public:
     void updateAvailableWorkspaceArea();
 
     // for extras to add menus. These menus must be marked
-    // internal for their safety, and the extension must
-    // delete and remove the menu itself
+    // internal for their safety, and __the extension__ must
+    // delete and remove the menu itself (opposite to Window)
     void addConfigMenu(const char *label, FbTk::Menu &menu);
     void removeConfigMenu(FbTk::Menu &menu);
 

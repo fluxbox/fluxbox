@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.27 2003/07/10 13:23:09 rathnor Exp $
+// $Id: Remember.cc,v 1.28 2003/07/20 08:12:36 rathnor Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -93,7 +93,7 @@ private:
     Remember::Attribute m_attrib;
 };
 
-FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
+FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enabled) {
     // each fluxboxwindow has its own windowmenu
     // so we also create a remember menu just for it...
     BScreen &screen = win.screen();
@@ -101,7 +101,16 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
                                   screen.screenNumber(), 
                                   screen.imageControl(), 
                                   *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
-    menu->disableTitle();
+
+    // if enabled, then we want this to be a unavailable menu
+    if (!enabled) {
+        FbTk::MenuItem *item = new FbTk::MenuItem("unavailable");
+        item->setEnabled(false);
+        menu->insert(item);
+        menu->update();
+        return menu;
+    }
+    
     // TODO: nls
     menu->insert(new RememberMenuItem("Workspace", remember, win,
                                       Remember::REM_WORKSPACE));
@@ -676,28 +685,13 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     // we don't touch the window if it is a transient
     // of something else
-    int menupos = win.menu().numberOfItems()-2;
-    if (menupos < -1)
-        menupos = -1;
 
-    if (winclient.transientFor()) {
-        // still put something in the menu so people don't get confused
-        // so, we add a disabled item...
-        // TODO: nls
-        FbTk::MenuItem *item = new FbTk::MenuItem("Remember...");
-        item->setEnabled(false);
-        win.menu().insert(item, menupos);
-        win.menu().update();
-        return;
-    }
-
-    // add the menu, this -2 is somewhat dodgy... :-/
     // All windows get the remember menu.
     // TODO: nls
-    win.menu().insert("Remember...", 
-                               createRememberMenu(*this, win), 
-                               menupos);
-    win.menu().reconfigure();
+    win.addExtraMenu("Remember...", createRememberMenu(*this, win, (winclient.transientFor() == 0)));
+
+    if (winclient.transientFor()) 
+        return;
 
     Application *app = find(winclient);
     if (app == 0) 

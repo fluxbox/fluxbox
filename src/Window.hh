@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.84 2003/07/17 17:56:28 rathnor Exp $
+// $Id: Window.hh,v 1.85 2003/07/20 08:12:36 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -198,6 +198,8 @@ public:
     void moveToLayer(int layernum);
 
     void reconfigure();
+    void setupWindow();
+
     void installColormap(bool);
     void restore(WinClient *client, bool remap);
     void restore(bool remap);
@@ -288,8 +290,17 @@ public:
     FbTk::Menu &menu() { return m_windowmenu; }
     const FbTk::Menu &menu() const { return m_windowmenu; }
 
-    FbTk::Menu &layermenu() { return *m_layermenu.get(); }
-    const FbTk::Menu &layermenu() const { return *m_layermenu.get(); }
+    // this should perhaps be a refcount??
+    typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
+
+    // for extras to add menus. 
+    // These menus will be marked internal, 
+    // and deleted when the window dies (as opposed to Screen
+    void addExtraMenu(const char *label, FbTk::Menu *menu);
+    void removeExtraMenu(FbTk::Menu *menu);
+
+    ExtraMenus &extraMenus() { return m_extramenus; }
+    const ExtraMenus &extraMenus() const { return m_extramenus; }
 
     const FbTk::FbWindow &parent() const { return m_parent; }
     FbTk::FbWindow &parent() { return m_parent; }
@@ -403,9 +414,7 @@ private:
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
 
-    std::auto_ptr<FbTk::Menu> m_layermenu;
     FbTk::Menu m_windowmenu;
-
 
     timeval m_last_focus_time;
 
@@ -451,6 +460,7 @@ private:
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
 
+    ExtraMenus m_extramenus;
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.19 2003/07/19 03:59:56 rathnor Exp $
+// $Id: Menu.hh,v 1.20 2003/07/20 08:12:36 rathnor Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -77,7 +77,7 @@ public:
     int remove(unsigned int item);
     /// remove all items
     void removeAll();
-    inline void setInternalMenu() { internal_menu = true; }
+    inline void setInternalMenu(bool val = true) { internal_menu = val; }
     inline void setAlignment(Alignment a) { m_alignment = a; }
     inline void setTorn() { torn = true; }
     inline void removeParent() { if (internal_menu) m_parent = 0; }
@@ -160,7 +160,7 @@ public:
 
 protected:
 
-    inline void setTitleVisibility(bool b) { title_vis = b; }
+    inline void setTitleVisibility(bool b) { title_vis = b; m_need_update = true; }
     inline void setMovable(bool b) { movable = b; }
     inline void setHideTree(bool h) { hide_tree = h; }
 

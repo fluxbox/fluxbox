@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.205 2003/07/20 02:45:57 rathnor Exp $
+// $Id: Screen.cc,v 1.206 2003/07/20 08:12:36 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -35,7 +35,6 @@
 #include "StringUtil.hh"
 #include "Netizen.hh"
 #include "Directory.hh"
-#include "WinButton.hh"
 #include "SimpleCommand.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
@@ -1069,7 +1068,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         focused_list.push_back(&win->winClient());
     
     if (new_win) {
-        setupWindowActions(*win);
         Fluxbox::instance()->attachSignals(*win);
     }
 
@@ -1107,134 +1105,12 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // WinClient already exists).
     
     Fluxbox::instance()->saveWindowSearch(client.window(), win);
-    setupWindowActions(*win);
     Fluxbox::instance()->attachSignals(*win);
     // winclient actions should have been setup when the WinClient was created
     if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
         win->show();      
     }
     return win;
-}
-
-void BScreen::setupWindowActions(FluxboxWindow &win) {
-
-    FbWinFrame &frame = win.frame();
-
-
-    typedef FbTk::RefCount<FbTk::Command> CommandRef;
-
-    using namespace FbTk;
-    typedef RefCount<Command> CommandRef;
-    typedef SimpleCommand<FluxboxWindow> WindowCmd;
-
-    CommandRef iconify_cmd(new WindowCmd(win, &FluxboxWindow::iconify));
-    CommandRef maximize_cmd(new WindowCmd(win, &FluxboxWindow::maximize));
-    CommandRef maximize_vert_cmd(new WindowCmd(win, &FluxboxWindow::maximizeVertical));
-    CommandRef maximize_horiz_cmd(new WindowCmd(win, &FluxboxWindow::maximizeHorizontal));
-    CommandRef close_cmd(new WindowCmd(win, &FluxboxWindow::close));
-    CommandRef shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
-    CommandRef raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
-    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
-    CommandRef raise_and_focus_cmd(new WindowCmd(win, &FluxboxWindow::raiseAndFocus));
-    CommandRef stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
-    CommandRef show_menu_cmd(new WindowCmd(win, &FluxboxWindow::popupMenu));
-
-    // clear old buttons from frame
-    frame.removeAllButtons();
-    //!! TODO: fix this ugly hack
-    // get titlebar configuration
-    const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
-    for (char c=0; c<2; c++) {
-        for (size_t i=0; i< dir->size(); ++i) {
-            //create new buttons
-            FbTk::Button *newbutton = 0;
-            if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
-                newbutton = new WinButton(win, *m_winbutton_theme.get(),
-                                          WinButton::MINIMIZE, 
-                                          frame.titlebar(), 
-                                          0, 0, 10, 10);
-                newbutton->setOnClick(iconify_cmd);
-
-            } else if (win.isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
-                newbutton = new WinButton(win, *m_winbutton_theme.get(),
-                                          WinButton::MAXIMIZE, 
-                                          frame.titlebar(), 
-                                          0, 0, 10, 10);
-
-                newbutton->setOnClick(maximize_cmd, 1);
-                newbutton->setOnClick(maximize_horiz_cmd, 3);
-                newbutton->setOnClick(maximize_vert_cmd, 2);
-
-            } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
-                newbutton = new WinButton(win, *m_winbutton_theme.get(),
-                                          WinButton::CLOSE, 
-                                          frame.titlebar(), 
-                                          0, 0, 10, 10);
-
-                newbutton->setOnClick(close_cmd);
-#ifdef DEBUG
-                cerr<<__FILE__<<": Creating close button"<<endl;
-#endif // DEBUG
-            } else if ((*dir)[i] == Fluxbox::STICK) {
-                WinButton *winbtn = new WinButton(win, *m_winbutton_theme.get(),
-                                                  WinButton::STICK,
-                                                  frame.titlebar(),
-                                                  0, 0, 10, 10);
-                win.stateSig().attach(winbtn);
-                winbtn->setOnClick(stick_cmd);
-                newbutton = winbtn;                
-            } else if ((*dir)[i] == Fluxbox::SHADE) {
-                WinButton *winbtn = new WinButton(win, *m_winbutton_theme.get(),
-                                                  WinButton::SHADE,
-                                                  frame.titlebar(),
-                                                  0, 0, 10, 10);               
-                winbtn->setOnClick(shade_cmd);
-            }
-        
-            if (newbutton != 0) {
-                newbutton->show();
-                if (c == 0)
-                    frame.addLeftButton(newbutton);
-                else
-                    frame.addRightButton(newbutton);
-            }
-        } //end for i
-        dir = &Fluxbox::instance()->getTitlebarRight();
-    } // end for c
-
-    frame.reconfigure();
-
-    // setup titlebar
-    frame.setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
-    frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
-    frame.setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
-    frame.setOnClickTitlebar(lower_cmd, 2); // on release with button 2
-    frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
-    // setup menu
-    FbTk::Menu &menu = win.menu();
-    menu.removeAll(); // clear old items
-    menu.disableTitle(); // not titlebar
-
-    // set new menu items
-    menu.insert("Shade", shade_cmd);
-    menu.insert("Stick", stick_cmd);
-    menu.insert("Maximize", maximize_cmd);
-    menu.insert("Maximize Vertical", maximize_vert_cmd);
-    menu.insert("Maximize Horizontal", maximize_horiz_cmd);
-    menu.insert("Iconify", iconify_cmd);
-    menu.insert("Raise", raise_cmd);
-    menu.insert("Lower", lower_cmd);
-    menu.insert("Layer...", &win.layermenu());
-    CommandRef next_client_cmd(new WindowCmd(win, &FluxboxWindow::nextClient));
-    CommandRef prev_client_cmd(new WindowCmd(win, &FluxboxWindow::prevClient));
-    menu.insert("Next Client", next_client_cmd);
-    menu.insert("Prev Client", prev_client_cmd);
-
-    menu.insert("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
-    menu.insert("Close", close_cmd);
-
-    menu.reconfigure(); // update graphics
-
 }
 
 Strut *BScreen::requestStrut(int left, int right, int top, int bottom) {

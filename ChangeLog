@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/20:
+   * Fix disappearing Remember menu, plus titles of sub-window menus
+     -> can now use addExtraMenus for windows in extensions (Simon)
+     Menu.hh/cc Window.hh/cc Screen.hh/cc Remember.cc
    * Fix crash with toolbarmode = OFF, and put toolbar menu back into
      screen's configure menu (Simon)
      Screen.hh/cc ToolbarHandler.cc

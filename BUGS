@@ -2,9 +2,6 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
-  * Remember menu sometimes isn't present in window menu. Probably need
-    to add a signal for menu reconfigures (Screen::setupWindowActions)
-
   * Window handle is invisible sometimes.
 
   * KDE support needs attention (e.g. klipper).
@@ -75,6 +72,10 @@ Fixed bugs (or not-our-fault bugs):
     highest numbered screen.
     => Fixed, moved alpha setting into MenuTheme rather than static value
 
+  * Remember menu sometimes isn't present in window menu. Probably need
+    to add a signal for menu reconfigures (Screen::setupWindowActions)
+    => Fixed, added "ExtraMenus" for windows that get added whenever it
+       is rebuilt.
 
 ------------------------------
 Core dumps and notes
