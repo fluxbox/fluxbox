@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.cc,v 1.4 2003/08/22 14:48:10 fluxgen Exp $
+// $Id: WinButtonTheme.cc,v 1.5 2003/08/22 15:19:39 fluxgen Exp $
 
 #include "WinButtonTheme.hh"
 
@@ -110,7 +110,7 @@ void WinButtonTheme::reconfigTheme() {
     if (m_frame_theme.titleHeight() == 0) {
         // calculate height from font and border width to scale pixmaps
         const int bevel = 1;
-        size = m_frame_theme.font().height() + bevel*2 + 2;
+        size = m_frame_theme.font().height() + 2;
 
     } // else  use specified height to scale pixmaps
 
