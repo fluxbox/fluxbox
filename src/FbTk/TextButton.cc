@@ -29,8 +29,8 @@ using namespace std;
 
 namespace FbTk {
 
-TextButton::TextButton(const FbTk::FbWindow &parent, 
-                       const FbTk::Font &font, 
+TextButton::TextButton(const FbTk::FbWindow &parent,
+                       const FbTk::Font &font,
                        const std::string &text):
     FbTk::Button(parent, 0, 0, 10, 10),
     m_font(&font),
@@ -53,7 +53,7 @@ void TextButton::resize(unsigned int width, unsigned int height) {
 void TextButton::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
     m_buffer.resize(width, height);
-    
+
     if (backgroundPixmap() != ParentRelative)
         FbWindow::setBackgroundPixmap(m_buffer.drawable());
     Button::moveResize(x, y, width, height);
@@ -94,7 +94,7 @@ void TextButton::setTextPadding(unsigned int padding) {
     setTextPaddingRight(padding/2);
 }
 
-/// clear window and redraw text 
+/// clear window and redraw text
 void TextButton::clear() {
     TextButton::clearArea(0, 0,
                           width(), height());
@@ -113,12 +113,12 @@ void TextButton::clearArea(int x, int y,
                               width, height);
 
         } else { // fill with background color
-            FbTk::GContext gc(m_buffer);        
+            FbTk::GContext gc(m_buffer);
             gc.setForeground(backgroundColor());
             m_buffer.fillRectangle(gc.gc(),
                                    x, y,
                                    width, height);
-            
+
         }
 
         drawText();
@@ -128,14 +128,14 @@ void TextButton::clearArea(int x, int y,
         updateTransparent(x, y, width, height);
 
         FbWindow::clearArea(x, y, width, height, exposure);
-        
-    } else { // parent relative 
+
+    } else { // parent relative
         FbWindow::setBufferPixmap(0);
-        FbWindow::setBackgroundPixmap(backgroundPixmap());     
+        FbWindow::setBackgroundPixmap(backgroundPixmap());
         Button::clearArea(x, y, width, height, exposure);
         updateTransparent(x, y, width, height);
         drawText();
-    }   
+    }
 }
 
 unsigned int TextButton::textWidth() const {

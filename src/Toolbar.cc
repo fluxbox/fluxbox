@@ -116,7 +116,7 @@ getString() {
         break;
     case Toolbar::TOPCENTER:
         return string("TopCenter");
-        break;			
+        break;
     case Toolbar::BOTTOMCENTER:
         return string("BottomCenter");
         break;
@@ -156,7 +156,7 @@ public:
     SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
     void execute() {
         m_tbar.setPlacement(m_place);
-        m_tbar.reconfigure();        
+        m_tbar.reconfigure();
         Fluxbox::instance()->save_rc();
     }
 private:
@@ -175,7 +175,7 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
            ButtonPressMask | ButtonReleaseMask | ExposureMask |
            EnterWindowMask | LeaveWindowMask | SubstructureNotifyMask,
 
-           true) // override redirect 
+           true) // override redirect
 {
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
@@ -196,9 +196,9 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_window_pm(0),
     m_screen(scrn),
     m_layeritem(frame.window, layer),
-    m_layermenu(scrn.menuTheme(), 
+    m_layermenu(scrn.menuTheme(),
                 scrn.imageControl(),
-                *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
                 this,
                 true),
     m_placementmenu(scrn.menuTheme(),
@@ -211,23 +211,23 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_tool_factory(scrn),
     m_strut(0),
     // lock rcmanager here
-    m_rc_auto_hide(scrn.resourceManager().lock(), false, 
+    m_rc_auto_hide(scrn.resourceManager().lock(), false,
                    scrn.name() + ".toolbar.autoHide", scrn.altName() + ".Toolbar.AutoHide"),
     m_rc_maximize_over(scrn.resourceManager(), false,
                        scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
     m_rc_visible(scrn.resourceManager(), true, scrn.name() + ".toolbar.visible", scrn.altName() + ".Toolbar.Visible"),
-    m_rc_width_percent(scrn.resourceManager(), 65, 
-                       scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),  
-    m_rc_alpha(scrn.resourceManager(), 255, 
-                       scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),  
-    m_rc_layernum(scrn.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
+    m_rc_width_percent(scrn.resourceManager(), 65,
+                       scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),
+    m_rc_alpha(scrn.resourceManager(), 255,
+                       scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),
+    m_rc_layernum(scrn.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()),
                   scrn.name() + ".toolbar.layer", scrn.altName() + ".Toolbar.Layer"),
     m_rc_on_head(scrn.resourceManager(), 0,
                  scrn.name() + ".toolbar.onhead", scrn.altName() + ".Toolbar.onHead"),
-    m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER, 
+    m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER,
                    scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),
     m_rc_height(scrn.resourceManager(), 0, scrn.name() + ".toolbar.height", scrn.altName() + ".Toolbar.Height"),
-    m_rc_tools(scrn.resourceManager(), "workspacename, prevworkspace, nextworkspace, iconbar, systemtray, prevwindow, nextwindow, clock", 
+    m_rc_tools(scrn.resourceManager(), "workspacename, prevworkspace, nextworkspace, iconbar, systemtray, prevwindow, nextwindow, clock",
                scrn.name() + ".toolbar.tools", scrn.altName() + ".Toolbar.Tools"),
     m_shape(new Shape(frame.window, 0)),
     m_resize_lock(false) {
@@ -248,13 +248,13 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     setupMenus();
     // add menu to screen
     screen().addConfigMenu(_FBTEXT(Toolbar, Toolbar, "Toolbar", "title of toolbar menu item"), menu());
-    
+
     // geometry settings
     frame.width = width;
     frame.height = 10;
     frame.bevel_w = 1;
     frame.grab_x = frame.grab_y = 0;
-    
+
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
     FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
@@ -270,7 +270,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     // setup to listen to child events
     FbTk::EventManager::instance()->addParent(*this, window());
     // get everything together
-    reconfigure(); 
+    reconfigure();
     // this gets done by the screen later as it loads
 
 }
@@ -304,7 +304,7 @@ void Toolbar::updateStrut() {
     // if the user dont want to request space for toolbar.
     if (doAutoHide() || *m_rc_maximize_over) {
         if (had_strut)
-            screen().updateAvailableWorkspaceArea();            
+            screen().updateAvailableWorkspaceArea();
         return;
     }
 
@@ -366,7 +366,7 @@ void Toolbar::reconfigure() {
 
     bool need_update = false;
     // parse and transform to lower case
-    std::list<std::string> tools;    
+    std::list<std::string> tools;
     FbTk::StringUtil::stringtok(tools, *m_rc_tools, ", ");
     transform(tools.begin(),
               tools.end(),
@@ -393,10 +393,10 @@ void Toolbar::reconfigure() {
         deleteItems();
 
         m_tools = tools; // copy values
-        
+
         if (m_tools.size()) {
             // make lower case
-            transform(m_tools.begin(), m_tools.end(), 
+            transform(m_tools.begin(), m_tools.end(),
                       m_tools.begin(),
                       FbTk::StringUtil::toLower);
 
@@ -421,7 +421,7 @@ void Toolbar::reconfigure() {
 
     frame.bevel_w = theme().bevelWidth();
     // destroy shape if the theme wasn't specified with one,
-    // or create one 
+    // or create one
     if (theme().shape() == false && m_shape.get())
         m_shape.reset(0);
     else if (theme().shape() && m_shape.get() == 0) {
@@ -451,7 +451,7 @@ void Toolbar::reconfigure() {
     }
     if (tmp)
         screen().imageControl().removeImage(tmp);
-        
+
     frame.window.setBorderColor(theme().border().color());
     frame.window.setBorderWidth(theme().border().width());
 
@@ -463,7 +463,7 @@ void Toolbar::reconfigure() {
     }
     frame.window.clear();
     frame.window.updateTransparent();
-    
+
     if (theme().shape() && m_shape.get())
         m_shape->update();
 
@@ -480,7 +480,7 @@ void Toolbar::reconfigure() {
     }
 
     menu().reconfigure();
-    // we're done with all resizing and stuff now we can request a new 
+    // we're done with all resizing and stuff now we can request a new
     // area to be reserved on screen
     updateStrut();
 
@@ -499,7 +499,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         int head = screen().getHead(be.x_root, be.y_root);
         int borderw = menu().fbwindow().borderWidth();
         pair<int, int> m = screen().clampToHead(head,
-                                                be.x_root - (menu().width() / 2), 
+                                                be.x_root - (menu().width() / 2),
                                                 be.y_root - (menu().titleWindow().height() / 2),
                                                 menu().width() + 2*borderw,
                                                 menu().height() + 2*borderw);
@@ -513,7 +513,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         menu().grabInputFocus();
     } else
         menu().hide();
-	
+
 }
 
 
@@ -551,9 +551,9 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
         return;
 
     if (isHidden()) {
-        if (m_hide_timer.isTiming()) 
+        if (m_hide_timer.isTiming())
             m_hide_timer.stop();
-    } else if (! menu().isVisible() && ! m_hide_timer.isTiming()) 
+    } else if (! menu().isVisible() && ! m_hide_timer.isTiming())
         m_hide_timer.start();
 
 }
@@ -578,7 +578,7 @@ void Toolbar::handleEvent(XEvent &event) {
         event.xconfigure.window != window().window()) {
         rearrangeItems();
     }
-*/  
+*/
 }
 
 void Toolbar::update(FbTk::Subject *subj) {
@@ -626,7 +626,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     int border_width = theme().border().width();
 
     frame.width = (head_w - 2*border_width) * (*m_rc_width_percent) / 100;
-    //!! TODO: change this 
+    //!! TODO: change this
     // max height of each toolbar items font...
     unsigned int max_height = m_tool_factory.maxFontHeight();
 
@@ -769,13 +769,13 @@ void Toolbar::toggleHidden() {
     m_hidden = ! m_hidden;
     if (isHidden())
         frame.window.move(frame.x_hidden, frame.y_hidden);
-    else 
+    else
         frame.window.move(frame.x, frame.y);
 
 }
 
 void Toolbar::moveToLayer(int layernum) {
-    m_layeritem.moveToLayer(layernum); 
+    m_layeritem.moveToLayer(layernum);
     *m_rc_layernum = layernum;
 }
 
@@ -787,15 +787,15 @@ void Toolbar::setupMenus() {
     typedef SimpleCommand<Toolbar> ToolbarCommand;
 
     //!! TODO: this should be inserted by the workspace tool
-        
+
 
     RefCommand start_edit(CommandParser::instance().parseLine("setworkspacenamedialog"));
     menu().insert(_FBTEXT(Toolbar, EditWkspcName,
                           "Edit current workspace name", "Edit current workspace name"),
                   start_edit);
-    
+
     menu().setLabel(_FBTEXT(Toolbar, Toolbar,
-                            "Toolbar", "Title of Toolbar menu")); 
+                            "Toolbar", "Title of Toolbar menu"));
 
     MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
                                                     m_rc_width_percent,
@@ -809,7 +809,7 @@ void Toolbar::setupMenus() {
     toolbar_menuitem_macro->add(save_resources);
 
     RefCommand reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
-    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);  
+    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);
 
     menu().insert(toolbar_menuitem);
 
@@ -823,7 +823,7 @@ void Toolbar::setupMenus() {
     visible_macro->add(toggle_visible);
     visible_macro->add(save_resources);
     RefCommand toggle_visible_cmd(visible_macro);
-    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, "Visible", "Whether this item is visible"), 
+    menu().insert(new BoolMenuItem(_FBTEXT(Common, Visible, "Visible", "Whether this item is visible"),
                                    *m_rc_visible, toggle_visible_cmd));
 
     menu().insert(new BoolMenuItem(_FBTEXT(Common, MaximizeOver,"Maximize Over", "Maximize over this thing when maximizing"),
@@ -842,7 +842,7 @@ void Toolbar::setupMenus() {
                                                     *this,
                                                     _FBTEXT(Toolbar, OnHead, "Toolbar on Head", "Title of toolbar on head menu")));
     }
-    
+
     typedef pair<const char*, Toolbar::Placement> PlacementP;
     typedef list<PlacementP> Placements;
     Placements place_menu;
@@ -863,7 +863,7 @@ void Toolbar::setupMenus() {
     place_menu.push_back(PlacementP(_FBTEXT(Align, RightCenter, "Right Center", "Right Center"), Toolbar::RIGHTCENTER));
     place_menu.push_back(PlacementP(_FBTEXT(Align, RightBottom, "Right Bottom", "Right Bottom"), Toolbar::RIGHTBOTTOM));
     place_menu.push_back(PlacementP(_FBTEXT(Align, BottomRight, "Bottom Right", "Bottom Right"), Toolbar::BOTTOMRIGHT));
-    
+
 
     placementMenu().setMinimumSublevels(3);
     // create items in sub menu
@@ -877,7 +877,7 @@ void Toolbar::setupMenus() {
         } else {
             RefCommand setplace(new SetToolbarPlacementCmd(*this, placement));
             placementMenu().insert(str, setplace);
-                                                              
+
         }
         place_menu.pop_front();
     }
@@ -886,12 +886,12 @@ void Toolbar::setupMenus() {
 
 
     // this saves resources and clears the slit window to update alpha value
-    FbTk::MenuItem *alpha_menuitem = 
+    FbTk::MenuItem *alpha_menuitem =
         new IntResMenuItem(_FBTEXT(Common, Alpha, "Alpha", "Transparency level"),
                            m_rc_alpha,
                            0, 255);
     // setup command for alpha value
-    MacroCommand *alpha_macrocmd = new MacroCommand(); 
+    MacroCommand *alpha_macrocmd = new MacroCommand();
     RefCount<Command> alpha_cmd(new SimpleCommand<Toolbar>(*this, &Toolbar::updateAlpha));
     alpha_macrocmd->add(save_resources);
     alpha_macrocmd->add(alpha_cmd);
@@ -908,7 +908,7 @@ void Toolbar::saveOnHead(int head) {
 }
 
 /*
- * Place items next to each other, with a bevel width between, 
+ * Place items next to each other, with a bevel width between,
  * above and below each item. BUT, if there is no bevel width, then
  * borders should be merged for evenness.
  */
@@ -998,7 +998,7 @@ void Toolbar::rearrangeItems() {
         if (bevel_width == 0) {
             offset = -borderW;
             size_offset = 0;
-            if (borderW > last_bw) 
+            if (borderW > last_bw)
                 next_x += borderW;
             else
                 next_x += last_bw;
@@ -1014,10 +1014,10 @@ void Toolbar::rearrangeItems() {
             (*item_it)->moveResize(next_x + offset, offset, extra + relative_width, height() - size_offset);
         } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
             (*item_it)->moveResize(next_x + offset, offset,
-                                   height() - size_offset, height() - size_offset); 
+                                   height() - size_offset, height() - size_offset);
         } else { // fixed size
             (*item_it)->moveResize(next_x + offset, offset,
-                                   (*item_it)->width(), height() - size_offset); 
+                                   (*item_it)->width(), height() - size_offset);
         }
         (*item_it)->show();
         next_x += (*item_it)->width() + bevel_width;
