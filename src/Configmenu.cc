@@ -34,10 +34,8 @@
 #include "Toolbar.hh"
 #include "Window.hh"
 
-#define CMENU_USE_TABS	8
-#define CMENU_USE_ICONS	9
-#define CMENU_SLOPPY_WIN_GROUP 10	
-#define CMENU_TAB_ROTATE 21
+enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP, CMENU_TAB_ROTATE=21};
+
 
 Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	screen = scr;
@@ -114,6 +112,14 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 				0, 0,
 #endif // NLS
 				"Focus Last Window on Workspace"), 5);
+	insert(i18n->getMessage(
+#ifdef		NLS
+				ConfigmenuSet, ConfigmenuMaxOverSlit,
+#else // !NLS
+				0, 0,
+#endif // NLS
+				"Maxmize Over Slit"), 6);
+
 
     insert(i18n->getMessage(
 #ifdef   NLS
@@ -138,6 +144,7 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
        "Sloppy Window Grouping"), CMENU_SLOPPY_WIN_GROUP);
 
 	update();
+	setItemSelected(8, screen->doMaxOverSlit());
 
 	setItemSelected(3, screen->getImageControl()->doDither());
 	setItemSelected(4, screen->doOpaqueMove());
@@ -187,6 +194,12 @@ void Configmenu::itemSelected(int button, int index) {
 			case 4:  // focus new windows
 				screen->saveFocusNew((! screen->doFocusNew()));
 
+				
+			case 6: // maximize over slit
+				screen->saveMaxOverSlit((! screen->doMaxOverSlit()));
+				setItemSelected(index, screen->doMaxOverSlit());
+				break;	
+			
 				setItemSelected(index, screen->doFocusNew());
 				break;
 
