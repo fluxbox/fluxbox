@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.32 2003/04/28 14:45:11 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.33 2003/05/12 19:55:07 fluxgen Exp $
 
 #
 # Portability notes:
@@ -188,6 +188,7 @@ STYLEMENUTITLE='Choose a style...'
 SYSTEMSTYLES='System Styles'
 TERMINALMENU='Terminals'
 USERSTYLES='User Styles'
+VIDEOMENU='Video'
 WORKSPACEMENU='Workspace List'
 XUTILSMENU='X-utils'
 
@@ -758,13 +759,13 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
 
-       append_submenu "${MISCMENU}"
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay
+       append_submenu "${VIDEOMENU}"
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay xawtv
            find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
        append_submenu "${XUTILSMENU}"
-           normal_find xfontsel xman xload xfigxbiff editres viewres xclock xmag
+           normal_find xfontsel xman xload xfigxbiff editres viewres xclock xmag wmagnify
        append_menu_end
 append_menu_end
 
@@ -878,9 +879,9 @@ append_submenu "${FBSETTINGSMENU}"
         normal_find fluxconf fluxkeys fluxmenu
         # if gxmessage exitst use it; else use xmessage
         find_it gxmessage append \
-          "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
+          "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
             find_it xmessage append \
-              "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+              "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
         find_it fbrun append "[exec] (Run) {fbrun}"
         find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu}"
