@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GenericTool.hh,v 1.1 2003/10/13 23:35:53 fluxgen Exp $
+// $Id: GenericTool.hh,v 1.2 2003/10/26 20:11:27 fluxgen Exp $
 
 #ifndef GENERICTOOL_HH
 #define GENERICTOOL_HH
@@ -40,7 +40,7 @@ class FbWindow;
 class GenericTool: public ToolbarItem, public FbTk::Observer, private FbTk::NotCopyable {
 public:
     GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type, ToolTheme &theme);
-    virtual ~GenericTool() { }
+    virtual ~GenericTool();
     void move(int x, int y);
     void resize(unsigned int x, unsigned int y);
     void moveResize(int x, int y,

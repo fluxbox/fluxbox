@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GenericTool.cc,v 1.1 2003/10/13 23:35:54 fluxgen Exp $
+// $Id: GenericTool.cc,v 1.2 2003/10/26 20:11:27 fluxgen Exp $
 
 #include "GenericTool.hh"
 #include "FbTk/FbWindow.hh"
@@ -36,6 +36,10 @@ GenericTool::GenericTool(FbTk::FbWindow *new_window, ToolbarItem::Type type,
 
     if (new_window == 0)
         throw std::string("GenericTool: Error! Tried to create a tool with window = 0");
+}
+
+GenericTool::~GenericTool() {
+
 }
 
 void GenericTool::move(int x, int y) {
