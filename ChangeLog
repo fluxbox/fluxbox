@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/23:
+   * Fixed KDE dockapp bug (Henrik)
+     Slit.cc, fluxbox.hh/cc
 *03/07/21:
    * Really fix focus stuff. Should be properly standards compliant now (I 
      hope). This also fixes a crash introduced yesterday.   (Simon)

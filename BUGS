@@ -4,7 +4,7 @@ BUGS:
 
   * Window handle is invisible sometimes.
 
-  * KDE support needs attention (e.g. klipper).
+
 
   * Some menus don't close when you click on items.
 
@@ -41,6 +41,8 @@ FAQ items for:
 
 
 Fixed bugs (or not-our-fault bugs):
+  * KDE dockapp support (e.g klipper)
+    => fixed
 
   * Some people get weird transparency behaviour:
     - this appears to be a problem with nvidia drivers, make sure
