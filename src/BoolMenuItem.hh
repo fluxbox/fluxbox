@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BoolMenuItem.hh,v 1.1 2003/01/12 18:15:23 fluxgen Exp $
+// $Id: BoolMenuItem.hh,v 1.2 2003/08/27 14:25:32 fluxgen Exp $
 
 #ifndef BOOLMENUITEM_HH
 #define BOOLMENUITEM_HH
@@ -33,6 +33,7 @@ public:
                  FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_item(item) { 
         FbTk::MenuItem::setSelected(m_item);
+        setToggleItem(true);
     }
     BoolMenuItem(const char *label, bool &item):
         FbTk::MenuItem(label), m_item(item) {
