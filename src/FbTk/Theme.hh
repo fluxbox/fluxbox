@@ -1,5 +1,5 @@
 // Theme.hh for FbTk - Fluxbox ToolKit
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.3 2003/04/25 18:13:29 fluxgen Exp $
+// $Id: Theme.hh,v 1.4 2003/05/18 22:12:23 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -32,7 +32,7 @@
 #include <list>
 #include <string>
 
-#include "../XrmDatabaseHelper.hh"
+#include "XrmDatabaseHelper.hh"
 
 namespace FbTk {
 
