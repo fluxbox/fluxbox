@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.53 2002/12/01 13:41:58 rathnor Exp $
+// $Id: Screen.hh,v 1.54 2002/12/02 20:05:29 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -202,7 +202,6 @@ public:
 
     inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
     inline Theme::MenuStyle *getMenuStyle() { return &theme->getMenuStyle(); } 
-    inline Theme::ToolbarStyle *getToolbarStyle() { return &theme->getToolbarStyle(); } 
     const Theme *getTheme() const { return theme; }
     FluxboxWindow *getIcon(unsigned int index);
 
