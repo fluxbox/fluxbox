@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.16 2002/08/04 15:09:30 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.17 2002/08/13 23:58:26 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -124,72 +124,6 @@ static int handleXErrors(Display *, XErrorEvent *e) {
 	return(False);
 }
 
-
-// signal handler to allow for proper and gentle shutdown
-
-#ifndef	 HAVE_SIGACTION
-static RETSIGTYPE signalhandler(int sig) {
-#else //	HAVE_SIGACTION
-static void signalhandler(int sig) {
-#endif // HAVE_SIGACTION
-	I18n *i18n = I18n::instance();
-	static int re_enter = 0;
-
-	switch (sig) {
-	case SIGCHLD: // we don't want the child process to kill us
-		int status;
-		waitpid(-1, &status, WNOHANG | WUNTRACED);
-
-		#ifndef HAVE_SIGACTION
-		// assume broken, braindead sysv signal semantics
-		signal(SIGCHLD, (RETSIGTYPE (*)(int)) signalhandler);
-		#endif // HAVE_SIGACTION
-
-		break;
-
-	default:
-		if (base_display->handleSignal(sig)) {
-
-		#ifndef HAVE_SIGACTION
-			// assume broken, braindead sysv signal semantics
-			signal(sig, (RETSIGTYPE (*)(int)) signalhandler);
-		#endif // HAVE_SIGACTION
-
-			return;
-		}
-
-		fprintf(stderr,
-			i18n->getMessage(
-				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplaySignalCaught,
-				 "%s:	signal %d caught\n"),
-			base_display->getApplicationName(), sig);
-
-		if (! base_display->isStartup() && ! re_enter) {
-			internal_error = True;
-
-			re_enter = 1;
-			fprintf(stderr,
-				i18n->getMessage(
-					FBNLS::BaseDisplaySet, FBNLS::BaseDisplayShuttingDown,
-					"shutting down\n"));
-			base_display->shutdown();
-		}
-
-		if (sig != SIGTERM && sig != SIGINT) {
-			fprintf(stderr,
-				i18n->getMessage(
-				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplayAborting,
-				 "aborting... dumping core\n"));
-			abort();
-		}
-
-		exit(0);
-
-		break;
-	}
-}
-
-
 // convenience functions
 #ifndef		__EMX__
 void bexec(const char *command, char *displaystring) {
@@ -212,32 +146,6 @@ m_server_grabs(0)
 	last_bad_window = None;
 	I18n *i18n = I18n::instance();
 	::base_display = this;
-
-#ifdef		HAVE_SIGACTION
-	struct sigaction action;
-
-	action.sa_handler = signalhandler;
-	action.sa_mask = sigset_t();
-	action.sa_flags = SA_NOCLDSTOP | SA_NODEFER;
-
-	sigaction(SIGSEGV, &action, NULL);
-	sigaction(SIGFPE, &action, NULL);
-	sigaction(SIGTERM, &action, NULL);
-	sigaction(SIGINT, &action, NULL);
-	sigaction(SIGCHLD, &action, NULL);
-	sigaction(SIGHUP, &action, NULL);
-	sigaction(SIGUSR1, &action, NULL);
-	sigaction(SIGUSR2, &action, NULL);
-#else // !HAVE_SIGACTION
-	signal(SIGSEGV, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGFPE, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGTERM, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGINT, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGUSR1, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGUSR2, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGHUP, (RETSIGTYPE (*)(int)) signalhandler);
-	signal(SIGCHLD, (RETSIGTYPE (*)(int)) signalhandler);
-#endif // HAVE_SIGACTION
 
 	if (! (m_display = XOpenDisplay(dpy_name))) {
 		fprintf(stderr,

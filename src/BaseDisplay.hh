@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.23 2002/08/04 15:09:30 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.24 2002/08/13 23:58:26 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -97,7 +97,7 @@ public:
 	inline const char *getApplicationName() const { return m_app_name; }
 
 	inline int getNumberOfScreens() const { return number_of_screens; }
-	inline int getShapeEventBase() const	{ return shape.event_basep; }
+	inline int getShapeEventBase() const { return shape.event_basep; }
 
 	inline void shutdown() { m_shutdown = true; }
 	inline void run() { m_startup = m_shutdown = false; }
@@ -107,10 +107,6 @@ public:
 	void grab();
 	void ungrab();
 	void eventLoop();
-
-	// another pure virtual... this is used to handle signals that BaseDisplay
-	// doesn't understand itself
-	virtual Bool handleSignal(int) = 0;
 
 	class GrabGuard:private NotCopyable
 	{
