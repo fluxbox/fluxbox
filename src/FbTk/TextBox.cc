@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.6 2004/01/08 22:02:52 fluxgen Exp $
+// $Id: TextBox.cc,v 1.7 2004/01/21 12:32:53 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -161,7 +161,7 @@ void TextBox::clear() {
 
     // draw cursor position
     int cursor_pos = font().textWidth(text().c_str() + m_start_pos, m_cursor_pos) + 1;
-    drawLine(gc(), cursor_pos, 0, cursor_pos, font().height());
+    drawLine(gc(), cursor_pos, center_pos, cursor_pos, center_pos - font().height());
 }
 
 void TextBox::moveResize(int x, int y,
