@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.23 2004/06/12 14:30:50 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.24 2004/08/05 10:51:40 rathnor Exp $
 
 #
 # Portability notes:
@@ -284,37 +284,37 @@ case ${LC_ALL} in
 # $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
-        BACKGROUNDMENU='Backgrounds (CHANGE ME!)'
-        BACKGROUNDMENUTITLE='Set the Background (CHANGE ME!)'
+        BACKGROUNDMENU='Обои'
+        BACKGROUNDMENUTITLE='Установить обои'
         BROWSERMENU='Браузеры'
         CONFIGUREMENU='Настройка'
         EDITORMENU='Редакторы'
         EXITITEM='Выйти'
         FBSETTINGSMENU='FB-настройки'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
-        GAMESMENU='Games (CHANGE ME!)'
+        FILEUTILSMENU='Файловые утилиты'
+        FLUXBOXCOMMAND='Выполнить команду'
+        GAMESMENU='Игры'
         GNOMEMENUTEXT='Gnome-меню'
         GRAPHICMENU='Графика'
         KDEMENUTEXT='KDE-меню'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        LOCKSCREEN='Заблокировать экран'
         MISCMENU='Прочее'
         MUSICMENU='Звук'
         NETMENU='Сеть'
-        OFFICEMENU='Office (CHANGE ME!)'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        OFFICEMENU='Офисные приложения'
+        RANDOMBACKGROUND='Случайные обои'
+        REGENERATEMENU='Создать меню заново'
         RELOADITEM='Перенастроить'
         RESTARTITEM='Перезапустить'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='Выполнить'
+        SCREENSHOT='Снимок экрана'
         STYLEMENUTITLE='Выберите стиль'
-        SYSTEMSTYLES='Стили'
+        SYSTEMSTYLES='Системные стили'
         TERMINALMENU='Терминалы'
-        TOOLS='Tools (CHANGE ME!)'
-        USERSTYLES='Стили'
-        WINDOWMANAGERS='WindowManagers (CHANGE ME!)'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        TOOLS='Утилиты'
+        USERSTYLES='Пользовательские стили'
+        WINDOWMANAGERS='Менеджеры окон'
+        WINDOWNAME='Имя окна'
         WORKSPACEMENU='Рабочие пространства'
         XUTILSMENU='X-утилиты'
         ;;
@@ -870,7 +870,7 @@ while [ $# -gt 0 ]; do
         -g) GNOMEMENU=yes; shift;;
         -t) MY_TERM=${2}; testoption ex $1 $2; shift 2;;
         -b) MY_BROWSER=${2}; testoption ex $1 $2; shift 2;;
-        -o) MENUFILENAME=${2}; testoption fi $1 $2; shift 2;;
+        -o) MENUFILENAME=${2}; shift 2; CHECKINIT=NO ;;
         -p) PREFIX=${2}; testoption di $1 $2; shift 2;;
         -n) GNOME_PREFIX=${2}; testoption di $1 $2; shift 2;;
         -q) KDE_PREFIX=${2}; testoption di $1 $2; shift 2;;
@@ -1065,7 +1065,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu P2P
-        normal_find gtk-gnutella lopster nicotine pyslsk xmule amule
+        normal_find gtk-gnutella lopster nicotine pyslsk xmule amule dcgui-qt
         find_it TekNap      append "[exec]   (TekNap) {${DEFAULT_TERM} -e TekNap}"
         find_it giFTcurs      append "[exec]   (giFTcurs) {${DEFAULT_TERM} -e giFTcurs}"
     append_menu_end
@@ -1079,7 +1079,7 @@ append_submenu "${NETMENU}"
         find_it yafc      append "[exec]   (yafc) {${DEFAULT_TERM} -e yafc}"
     append_menu_end
 
-    normal_find pan xnmap
+    normal_find pan xnmap skype
 
 append_menu_end
 
@@ -1286,3 +1286,11 @@ fi
 
 echo 'Menu successfully generated.'
 echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
+
+if [ -z "$CHECKINIT" ]; then
+    INITMENUFILENAME=`awk '/menuFile/ {print $2}' $HOME/.fluxbox/init`
+    cmp $INITMENUFILENAME $MENUFILENAME 2> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Warning: Your $HOME/.fluxbox/init does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
+    fi
+fi

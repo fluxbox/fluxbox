@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/05:
+  * Check if init is consistent with menufile location (Han)
+    fluxbox-generate_menu.in
+  * Russion translation updates (thanks Roman Yepishev)
+    fluxbox-generate_menu.in
 *04/08/03:
   * Fixed pixmap filename expansion for menu pixmaps (Thanks Mathias Gumz)
     FbTk/MenuItem.cc
