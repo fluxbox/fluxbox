@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.32 2003/01/12 17:56:15 fluxgen Exp $
+// $Id: Slit.cc,v 1.33 2003/01/12 23:52:37 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -654,7 +654,6 @@ void Slit::reconfigure() {
         y = 0;
 
         {
-            cerr<<"Clients: "<<clientList.size()<<endl;
             SlitClients::iterator it = clientList.begin();
             SlitClients::iterator it_end = clientList.end();
             for (; it != it_end; ++it) {
@@ -831,6 +830,9 @@ void Slit::shutdown() {
 }
 
 void Slit::cycleClientsUp() {
+    if (clientList.size() < 2)
+        return;
+
     // rotate client list up, ie the first goes last
     SlitClients::iterator it = clientList.begin();
     SlitClient *client = *it;
@@ -840,6 +842,9 @@ void Slit::cycleClientsUp() {
 }
 
 void Slit::cycleClientsDown() {
+    if (clientList.size() < 2)
+        return;
+
     // rotate client list down, ie the last goes first
     SlitClient *client = clientList.back();
     clientList.remove(client);
