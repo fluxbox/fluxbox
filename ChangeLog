@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/29:
+  * Fix cycling using keys in menus (didn't wrap upwards) (Simon)
+    FbTk/Menu.cc
   * Fix rendering bug when revisiting >1 column menus (Simon)
     FbTk/Menu.cc
   * Fix crash when extramenus not attached to windowmenu (Simon)

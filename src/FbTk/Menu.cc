@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.76 2004/08/29 14:37:52 rathnor Exp $
+// $Id: Menu.cc,v 1.77 2004/08/29 14:53:23 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -300,11 +300,9 @@ void Menu::nextItem() {
     }
 
     // restore old in case we changed which_press
-    which_press = old_which_press;
+    which_press = old_which_press + 1;
     if (!validIndex(which_press))
         which_press = 0;
-    else
-        which_press++;
 
 
     if (menuitems[which_press] == 0) {
@@ -340,12 +338,10 @@ void Menu::prevItem() {
                  true); // transp
     }
     // restore old in case we changed which_press
-    which_press = old_which_press;
+    which_press = old_which_press - 1;
 
     if (!validIndex(which_press))
         which_press = menuitems.size() - 1;
-    else if (which_press - 1 >= 0)
-        which_press--;
 
     if (menuitems[which_press] == 0) {
         m_active_index = -1;
