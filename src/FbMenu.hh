@@ -1,6 +1,6 @@
 // FbMenu.hh for Fluxbox Window Manager
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-//
+//                and Simon Bowden    (rathnor at users.sourceforge.net)
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,23 +19,30 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenu.hh,v 1.1 2003/02/18 15:06:25 rathnor Exp $
+// $Id: FbMenu.hh,v 1.2 2003/07/10 11:25:13 fluxgen Exp $
 
 #ifndef FBMENU_HH
 #define FBMENU_HH
 
 #include "Menu.hh"
 #include "XLayerItem.hh"
+#include <memory>
 
-/// a layered menu
+class MenuTheme;
+class Shape;
+/// a layered and shaped menu
 class FbMenu:public FbTk::Menu {
 public:
-    FbMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
-                FbTk::XLayer &layer):FbTk::Menu(tm, screen_num, imgctrl), m_layeritem(fbwindow(), layer) { }
+    FbMenu(MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+           FbTk::XLayer &layer);
+    ~FbMenu();
+    void clearWindow();
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
+    void reconfigure();
 private:
     FbTk::XLayerItem m_layeritem;
+    std::auto_ptr<Shape> m_shape;
 };
 
 #endif // FBMENU_HH
