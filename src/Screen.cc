@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.49 2002/05/08 10:12:17 fluxgen Exp $
+// $Id: Screen.cc,v 1.50 2002/05/08 14:24:57 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -400,8 +400,13 @@ resource(rm, screenname, altscreenname)
 	initMenu();
 
 	raiseWindows(0, 0);
-	rootmenu->update();
 
+	//update menus
+	rootmenu->update();
+	#ifdef SLIT
+	slit->reconfigure();
+	#endif
+	
 	changeWorkspaceID(0);
 	updateNetizenWorkspaceCount();
 	
