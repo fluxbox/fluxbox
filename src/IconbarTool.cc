@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.6 2003/08/13 09:57:40 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.7 2003/08/15 17:23:23 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -257,6 +257,8 @@ void IconbarTool::renderButton(IconButton &button) {
         button.setBorderWidth(m_theme.unfocusedBorder().width());
         button.setBorderColor(m_theme.unfocusedBorder().color());
     }
+
+    button.clear();
 }
 
 void IconbarTool::deleteIcons() {
