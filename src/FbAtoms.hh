@@ -19,21 +19,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.5 2002/08/12 19:25:35 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.6 2002/08/14 21:53:07 fluxgen Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+
 /**
 	atom handler, should probably be a singleton
 */
-class FbAtoms
-{
+class FbAtoms {
 public:
 	explicit FbAtoms(Display *display);
 	virtual ~FbAtoms();
-	void initAtoms(Display *display);
+	static FbAtoms *instance();
 
 #ifdef GNOME
 	inline Atom getGnomeProtAtom() const { return gnome_wm_prot; }
@@ -125,6 +125,7 @@ public:
 #endif // NEWWMSPEC
 
 private:
+	void initAtoms(Display *disp);
 // NETAttributes
 	Atom blackbox_attributes, blackbox_change_attributes, blackbox_hints;
 
@@ -177,6 +178,7 @@ private:
 		xa_wm_delete_window, xa_wm_take_focus, xa_wm_change_state,
 		motif_wm_hints;
 	bool m_init;
+	static FbAtoms *s_singleton;
 };
 
 #endif //FBATOMS_HH

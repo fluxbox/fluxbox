@@ -19,24 +19,36 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.2 2002/03/18 20:29:16 fluxgen Exp $
+// $Id: FbAtoms.cc,v 1.3 2002/08/14 21:53:07 fluxgen Exp $
 
 #include "FbAtoms.hh"
 
+#include <string>
+using namespace std;
+
+FbAtoms *FbAtoms::s_singleton = 0;
+
 FbAtoms::FbAtoms(Display *display):m_init(false) {
-	if (display)
-		initAtoms(display);
+	if (s_singleton != 0)
+		throw string("You can only create one instance of FbAtoms");
+
+	if (display == 0)
+		throw string("Must supply FbAtoms with an valid display connection");
+
+	s_singleton = this;
+	initAtoms(display);
 }
 
 FbAtoms::~FbAtoms() {
 
 }
 
+FbAtoms *FbAtoms::instance() {
+	assert(s_singleton);
+	return s_singleton;
+}
+
 void FbAtoms::initAtoms(Display *display) {
-	if (m_init) //already done init?
-		return;
-	else
-		m_init = true;
 
 	xa_wm_colormap_windows =
 		XInternAtom(display, "WM_COLORMAP_WINDOWS", False);
