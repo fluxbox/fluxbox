@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.92 2004/10/10 16:06:24 akir Exp $
+// $Id: fluxbox.hh,v 1.93 2004/10/18 01:26:54 akir Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -83,7 +83,7 @@ public:
     Fluxbox(int argc, char **argv, const char * dpy_name= 0, 
             const char *rcfilename = 0);
     virtual ~Fluxbox();
-	
+
     static Fluxbox *instance() { return s_singleton; }
     /// main event loop
     void eventLoop();
@@ -98,7 +98,7 @@ public:
     WinClient *searchWindow(Window);
     inline WinClient *getFocusedWindow() { return m_focused_window; }
 
-		
+
     BScreen *searchScreen(Window w);
 
     inline unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
@@ -138,7 +138,7 @@ public:
         inline int getNum() const { return m_num; }
 
         Layer &operator=(int num) { m_num = num; return *this; }
-        
+
     private:
         int m_num;
     };
@@ -193,17 +193,20 @@ public:
     void checkMenu();
 
     void hideExtraMenus(BScreen &screen);
-	
+
     /// handle any system signal sent to the application
     void handleSignal(int signum);
     void update(FbTk::Subject *changed);
 
     void attachSignals(FluxboxWindow &win);
     void attachSignals(WinClient &winclient);
-	
+
     void timed_reconfigure();
 
     bool isStartup() const { return m_starting; }
+    bool isRestarting() const { return m_restarting; }
+
+    const std::string &getRestartArgument() const { return m_restart_argument; }
 
     /// get screen from number
     BScreen *findScreen(int num);
@@ -221,6 +224,7 @@ public:
     // screen we are watching for modifier changes
     BScreen *watchingScreen() { return m_watching_screen; }
     const XEvent &lastEvent() const { return m_last_event; }
+
 private:
 
     typedef struct MenuTimestamp {
@@ -232,24 +236,24 @@ private:
 
     std::string getRcFilename();
     void load_rc();
-	
     void reload_rc();
+
     void real_rereadMenu();
     void real_reconfigure();
 
     void handleEvent(XEvent *xe);
-	
+
     void setupConfigFiles();
     void handleButtonEvent(XButtonEvent &be);
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
     void handleKeyEvent(XKeyEvent &ke);	
     void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
-    
+
     std::auto_ptr<FbAtoms> m_fbatoms;
 
     FbTk::ResourceManager m_resourcemanager, &m_screen_rm;
-	
+
     //--- Resources
 
     FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;
@@ -258,11 +262,11 @@ private:
         m_rc_double_click_interval, m_rc_update_delay_time,
         m_rc_tabs_padding,
         m_rc_focused_tab_min_width;
-    FbTk::Resource<std::string> m_rc_stylefile, 
+    FbTk::Resource<std::string> m_rc_stylefile,
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile;
 
-	
+
     FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
     FbTk::Resource<TabsAttachArea> m_rc_tabs_attach_area;
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
@@ -277,7 +281,7 @@ private:
     // The group leader (which may not be mapped, so may not have a WinClient) 
     // will have it's window being the group index
     std::multimap<Window, WinClient *> m_group_search;
-	
+
     std::list<MenuTimestamp *> m_menu_timestamps;
     typedef std::list<BScreen *> ScreenList;
     ScreenList m_screen_list;
@@ -297,6 +301,9 @@ private:
     std::string m_rc_file; ///< resource filename
     char **m_argv;
     int m_argc;
+
+    std::string m_restart_argument; ///< what to restart
+
     XEvent m_last_event;
 
     FbTk::Timer m_reconfig_timer; ///< when we execute reconfig command we must wait at least to next event round
@@ -315,6 +322,7 @@ private:
     Toolbars m_toolbars;
 
     bool m_starting;
+    bool m_restarting;
     bool m_shutdown;
     int m_server_grabs;
     int m_randr_event_type; ///< the type number of randr event

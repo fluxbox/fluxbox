@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.32 2004/10/11 22:48:35 rathnor Exp $
+// $Id: main.cc,v 1.33 2004/10/18 01:26:54 akir Exp $
 
 #include "fluxbox.hh"
 #include "version.h"
@@ -28,6 +28,7 @@
 
 #include "FbTk/Theme.hh"
 #include "FbTk/I18n.hh"
+#include "FbTk/StringUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -73,10 +74,10 @@ void showInfo(ostream &ostr) {
 #endif // __fluxbox_compiler_version
 
     ostr<<endl<<_FBTEXT(Common, Defaults, "Defaults", "Default values compiled in")<<":"<<endl;
-    
+
     ostr<<_FBTEXT(Common, DefaultMenuFile, "    menu", "default menu file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTMENU<<endl;
     ostr<<_FBTEXT(Common, DefaultStyle, "   style", "default style (right aligned - make sure same width as other default values)")<<": "<<DEFAULTSTYLE<<endl;
- 
+
     ostr<<_FBTEXT(Common, DefaultKeyFile, "    keys", "default key file (right aligned - make sure same width as other default values)")<<": "<<DEFAULTKEYSFILE<<endl;
     ostr<<_FBTEXT(Common, DefaultInitFile, "    init", "default init file (right aligned - make sure same width as other default values)")<<": "<<DEFAULT_INITFILE<<endl;
 
@@ -87,7 +88,7 @@ void showInfo(ostream &ostr) {
         _FBTEXT(Common, Disabled, "disabled", "option is turned off")<<"): "<<endl<<
 #ifndef DEBUG
         NOT<<
-#endif // DEBUG                
+#endif // DEBUG
         "DEBUG"<<endl<<
 
 #ifndef SLIT
@@ -107,7 +108,7 @@ void showInfo(ostream &ostr) {
 
 #ifndef USE_GNOME
         NOT<<
-#endif // USE_GNOME 
+#endif // USE_GNOME
         "GNOME"<<endl<<
 
 #ifndef KDE
@@ -153,14 +154,14 @@ void showInfo(ostream &ostr) {
 }
 
 int main(int argc, char **argv) {
-	
+
     std::string session_display = "";
     std::string rc_file;
     std::string log_filename;
 
     FbTk::NLSInit("fluxbox.cat");
     _FB_USES_NLS;
-	
+
     int i;
     for (i = 1; i < argc; ++i) {
         if (! strcmp(argv[i], "-rc")) {
@@ -249,11 +250,11 @@ int main(int argc, char **argv) {
     }
 
     try {
-		
+
         fluxbox.reset(new Fluxbox(argc, argv, session_display.c_str(), rc_file.c_str()));
         fluxbox->eventLoop();
 
-	exitcode = EXIT_SUCCESS;
+        exitcode = EXIT_SUCCESS;
 
     } catch (std::out_of_range &oor) {
         cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorOutOfRange, "Out of range", "Error message")<<": "<<oor.what()<<endl;
@@ -271,6 +272,10 @@ int main(int argc, char **argv) {
         cerr<<"Fluxbox: "<<_FBTEXT(main, ErrorUnknown, "Unknown error", "Error message")<<"."<<endl;
         abort();
     }
+
+    bool restarting = fluxbox->isRestarting();
+    const std::string restart_argument(fluxbox->getRestartArgument());
+
     // destroy fluxbox
     fluxbox.reset(0);
 
@@ -279,6 +284,17 @@ int main(int argc, char **argv) {
         cout.rdbuf(outbuf);
     if (errbuf != 0)
         cerr.rdbuf(errbuf);
+
+    if (restarting) {
+        if (restart_argument.c_str()) {
+            execlp(restart_argument.c_str(), restart_argument.c_str(), 0);
+            perror(restart_argument.c_str());
+        }
+
+        // fall back in case the above execlp doesn't work
+        execvp(argv[0], argv);
+        execvp(FbTk::StringUtil::basename(argv[0]).c_str(), argv);
+    }
 
     return exitcode;
 }

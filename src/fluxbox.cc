@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.258 2004/10/10 16:06:23 akir Exp $
+// $Id: fluxbox.cc,v 1.259 2004/10/18 01:26:54 akir Exp $
 
 #include "fluxbox.hh"
 
@@ -238,6 +238,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_file(rcfilename ? rcfilename : ""),
       m_argv(argv), m_argc(argc),
       m_starting(true),
+      m_restarting(false),
       m_shutdown(false),
       m_server_grabs(0),
       m_randr_event_type(0),
@@ -457,6 +458,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 
 Fluxbox::~Fluxbox() {
+
     // destroy toolbars
     while (!m_toolbars.empty()) {
         delete m_toolbars.back();
@@ -1357,14 +1359,11 @@ void Fluxbox::removeGroupSearch(Window window) {
 void Fluxbox::restart(const char *prog) {
     shutdown();
 
-    if (prog) {
-        execlp(prog, prog, 0);
-        perror(prog);
-    }
+    m_restarting = true;
 
-    // fall back in case the above execlp doesn't work
-    execvp(m_argv[0], m_argv);
-    execvp(StringUtil::basename(m_argv[0]).c_str(), m_argv);
+    if (prog) {
+        m_restart_argument = prog;
+    }
 }
 
 /// prepares fluxbox for a shutdown
@@ -1377,7 +1376,8 @@ void Fluxbox::shutdown() {
     XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
 
     //send shutdown to all screens
-    for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::shutdown));
+    for_each(m_screen_list.begin(), 
+             m_screen_list.end(), mem_fun(&BScreen::shutdown));
 
     sync(false);
 
