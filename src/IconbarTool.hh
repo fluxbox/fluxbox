@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.1 2003/08/11 15:42:29 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.2 2003/08/12 00:18:43 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -30,7 +30,7 @@
 
 #include "FbTk/Observer.hh"
 
-#include <map>
+#include <list>
 
 #include <X11/Xlib.h>
 
@@ -42,6 +42,8 @@ class FluxboxWindow;
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScreen &screen);
+    ~IconbarTool();
+
     void move(int x, int y);
     void resize(unsigned int width, unsigned int height);
     void moveResize(int x, int y,
@@ -59,10 +61,12 @@ private:
     BScreen &m_screen;
     Container m_icon_container;
     const IconbarTheme &m_theme;
+    // cached pixmaps
     Pixmap m_focused_pm, m_unfocused_pm;
+    Pixmap m_empty_pm; ///< pixmap for empty container
 
-    typedef std::map<FluxboxWindow *, IconButton *> Icon2WinMap;
-    Icon2WinMap m_icon2winmap;
+    typedef std::list<IconButton *> IconList;
+    IconList m_icon_list;
 };
 
 #endif // ICONBARTOOL_HH

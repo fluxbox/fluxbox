@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.1 2003/08/11 15:42:29 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.2 2003/08/12 00:19:14 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -29,6 +29,7 @@
 #include "IconbarTheme.hh"
 #include "Window.hh"
 #include "IconButton.hh"
+#include "Workspace.hh"
 
 #include <iostream>
 using namespace std;
@@ -42,37 +43,34 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     ToolbarItem(ToolbarItem::RELATIVE),
     m_screen(screen),
     m_icon_container(parent),
-    m_theme(theme) {
+    m_theme(theme),
+    m_focused_pm(0),
+    m_unfocused_pm(0),
+    m_empty_pm(0) {
 
     theme.reconfigSig().attach(this);
+
     screen.clientListSig().attach(this);
+    screen.currentWorkspaceSig().attach(this);
 
-    // for debug
-    /*    FbTk::RefCount<FbTk::Command> show_text(new ShowTextCmd());
-    FbTk::Button *button = new TextButton(m_icon_container, theme.focusedText().font(), "ONE WINDOW");
-    button->setOnClick(show_text);
-    button->setGC(theme.focusedText().textGC());
-    button->setBackgroundColor(theme.focusedTexture().color());
-    button->clear();
-    m_icon_container.insertItem(button);
-
-    button = new TextButton(m_icon_container, theme.focusedText().font(), "ONE WINDOW");
-    button->setOnClick(show_text);
-    button->setGC(theme.focusedText().textGC());
-    button->setBackgroundColor(theme.focusedTexture().color());
-    button->clear();
-    m_icon_container.insertItem(button);
-
-    button = new TextButton(m_icon_container, theme.focusedText().font(), "ONE WINDOW");
-    button->setOnClick(show_text);
-    button->setGC(theme.focusedText().textGC());
-    button->setBackgroundColor(theme.focusedTexture().color());
-    button->clear();
-    m_icon_container.insertItem(button);
-    
-    m_icon_container.showSubwindows();
-    */
+    update(0);
     renderTheme();
+}
+
+IconbarTool::~IconbarTool() {
+    while (!m_icon_list.empty()) {
+        delete m_icon_list.back();
+        m_icon_list.pop_back();
+    }
+
+    // remove cached images
+    if (m_focused_pm)
+        m_screen.imageControl().removeImage(m_focused_pm);
+    if (m_unfocused_pm)
+        m_screen.imageControl().removeImage(m_focused_pm);
+    if (m_empty_pm)
+        m_screen.imageControl().removeImage(m_empty_pm);
+
 }
 
 void IconbarTool::move(int x, int y) {
@@ -108,6 +106,41 @@ unsigned int IconbarTool::height() const {
 }
 
 void IconbarTool::update(FbTk::Subject *subj) {
+    // just focus signal?
+    if (subj != 0 && typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
+        renderTheme();
+        return;
+    }
+
+    // ok, we got some signal that we need to update our iconbar container
+
+    // remove all clients and add them again...the only way to do it now
+    m_icon_container.removeAll();
+
+    while (!m_icon_list.empty()) {
+        delete m_icon_list.back();
+        m_icon_list.pop_back();
+    }
+
+    // get current workspace and all it's clients
+    Workspace &space = *m_screen.currentWorkspace();
+    // build a ItemList and add it (faster than adding single items)
+    Container::ItemList items;
+    Workspace::Windows::iterator it = space.windowList().begin();
+    Workspace::Windows::iterator it_end = space.windowList().end();
+    for (; it != it_end; ++it) {
+        // we just want windows that has clients
+        if ((*it)->clientList().size() == 0)
+            continue;
+
+        IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), **it);
+        items.push_back(button);
+        m_icon_list.push_back(button);
+        (*it)->focusSig().attach(this);
+    }
+
+    m_icon_container.showSubwindows();
+    m_icon_container.insertItems(items);
 
     renderTheme();
 }
@@ -118,7 +151,7 @@ void IconbarTool::renderTheme() {
         m_focused_pm = 0;        
     } else {
         m_focused_pm = m_screen.imageControl().renderImage(m_icon_container.maxWidthPerClient(),
-                                                           m_icon_container.maxHeightPerClient(),
+                                                           m_icon_container.height(),
                                                            m_theme.focusedTexture());
     }
         
@@ -130,19 +163,34 @@ void IconbarTool::renderTheme() {
         m_unfocused_pm = 0;        
     } else {
         m_unfocused_pm = m_screen.imageControl().renderImage(m_icon_container.maxWidthPerClient(),
-                                                             m_icon_container.maxHeightPerClient(),
+                                                             m_icon_container.height(),
                                                              m_theme.unfocusedTexture());
     }
     if (tmp)
         m_screen.imageControl().removeImage(tmp);
 
+    // if we dont have any icons then we should render empty texture
+    tmp = m_empty_pm;
+    if (m_theme.emptyTexture().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+        m_empty_pm = 0;
+        m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
+    } else {
+        m_empty_pm = m_screen.imageControl().renderImage(m_icon_container.width(), m_icon_container.height(),
+                                                         m_theme.emptyTexture());
+        m_icon_container.setBackgroundPixmap(m_empty_pm);
+    }
+
+    if (tmp)
+        m_screen.imageControl().removeImage(m_empty_pm);
 
     // update buttons
-    Icon2WinMap::iterator icon_it = m_icon2winmap.begin();
-    Icon2WinMap::iterator icon_it_end = m_icon2winmap.end();
+    IconList::iterator icon_it = m_icon_list.begin();
+    IconList::iterator icon_it_end = m_icon_list.end();
     for (; icon_it != icon_it_end; ++icon_it) {
-        IconButton &button = *(*icon_it).second;
-        if (button.win().isFocused()) {
+
+        IconButton &button = *(*icon_it);
+
+        if (button.win().isFocused()) { // focused texture
             button.setGC(m_theme.focusedText().textGC());     
             button.setFont(m_theme.focusedText().font());
             button.setJustify(m_theme.focusedText().justify());
