@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.84 2002/12/01 13:42:06 rathnor Exp $
+// $Id: fluxbox.cc,v 1.85 2002/12/02 23:49:56 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -41,6 +41,7 @@
 #include "XrmDatabaseHelper.hh"
 #include "AtomHandler.hh"
 #include "ImageControl.hh"
+#include "EventManager.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -409,13 +410,11 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc
 
     I18n *i18n = I18n::instance();
     if (screenList.size() == 0) {
-        fprintf(stderr,
+        throw string(
                 i18n->
                 getMessage(
                     FBNLS::blackboxSet, FBNLS::blackboxNoManagableScreens,
-                    "Fluxbox::Fluxbox: no managable screens found, aborting.\n"));
-
-        throw static_cast<int>(3);
+                    "Fluxbox::Fluxbox: no managable screens found, aborting."));
     }
 	
     XSynchronize(getXDisplay(), False);
@@ -572,126 +571,127 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case ButtonRelease:
     case ButtonPress:
         handleButtonEvent(e->xbutton);
+        FbTk::EventManager::instance()->handleEvent(*e);
 	break;	
     case ConfigureRequest:
-    {
-        FluxboxWindow *win = (FluxboxWindow *) 0;
+        {
+            FluxboxWindow *win = (FluxboxWindow *) 0;
 
 #ifdef SLIT
-        Slit *slit = (Slit *) 0;
+            Slit *slit = (Slit *) 0;
 #endif // SLIT
 		
-        if ((win = searchWindow(e->xconfigurerequest.window))) {
-            win->configureRequestEvent(&e->xconfigurerequest);
+            if ((win = searchWindow(e->xconfigurerequest.window))) {
+                win->configureRequestEvent(&e->xconfigurerequest);
 
 #ifdef SLIT
-        } else if ((slit = searchSlit(e->xconfigurerequest.window))) {
-            slit->configureRequestEvent(&e->xconfigurerequest);
+            } else if ((slit = searchSlit(e->xconfigurerequest.window))) {
+                slit->configureRequestEvent(&e->xconfigurerequest);
 #endif // SLIT
 
-        } else {
-            grab();
+            } else {
+                grab();
 
-            if (validateWindow(e->xconfigurerequest.window)) {
-                XWindowChanges xwc;
+                if (validateWindow(e->xconfigurerequest.window)) {
+                    XWindowChanges xwc;
 
-                xwc.x = e->xconfigurerequest.x;
-                xwc.y = e->xconfigurerequest.y;
-                xwc.width = e->xconfigurerequest.width;
-                xwc.height = e->xconfigurerequest.height;
-                xwc.border_width = e->xconfigurerequest.border_width;
-                xwc.sibling = e->xconfigurerequest.above;
-                xwc.stack_mode = e->xconfigurerequest.detail;
+                    xwc.x = e->xconfigurerequest.x;
+                    xwc.y = e->xconfigurerequest.y;
+                    xwc.width = e->xconfigurerequest.width;
+                    xwc.height = e->xconfigurerequest.height;
+                    xwc.border_width = e->xconfigurerequest.border_width;
+                    xwc.sibling = e->xconfigurerequest.above;
+                    xwc.stack_mode = e->xconfigurerequest.detail;
 
-                XConfigureWindow(getXDisplay(), e->xconfigurerequest.window,
-                                 e->xconfigurerequest.value_mask, &xwc);
+                    XConfigureWindow(getXDisplay(), e->xconfigurerequest.window,
+                                     e->xconfigurerequest.value_mask, &xwc);
+                }
+
+                ungrab();
             }
 
-            ungrab();
         }
-
-    }
-    break;
+        break;
     case MapRequest:
-    {
+        {
 #ifdef DEBUG
-        fprintf(stderr,
-                I18n::instance()->
-                getMessage(
-                    FBNLS::blackboxSet, FBNLS::blackboxMapRequest,
-                    "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
-                e->xmaprequest.window);
+            fprintf(stderr,
+                    I18n::instance()->
+                    getMessage(
+                               FBNLS::blackboxSet, FBNLS::blackboxMapRequest,
+                               "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
+                    e->xmaprequest.window);
 #endif // DEBUG
 		
 #ifdef SLIT
 #ifdef KDE
-        //Check and see if client is KDE dock applet.
-        //If so add to Slit
-        bool iskdedockapp = false;
-        Atom ajunk;
-        int ijunk;
-        unsigned long *data = (unsigned long *) 0, uljunk;
+            //Check and see if client is KDE dock applet.
+            //If so add to Slit
+            bool iskdedockapp = false;
+            Atom ajunk;
+            int ijunk;
+            unsigned long *data = (unsigned long *) 0, uljunk;
 
-        // Check if KDE v2.x dock applet
-        if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
-                               getKWM2DockwindowAtom(), 0l, 1l, False,
-                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
-                               &uljunk, (unsigned char **) &data) == Success) {
-					
-            if (data)
-                iskdedockapp = True;
-            XFree((char *) data);
-	
-        }
-
-        // Check if KDE v1.x dock applet
-        if (!iskdedockapp) {
+            // Check if KDE v2.x dock applet
             if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
-                                   getKWM1DockwindowAtom(), 0l, 1l, False,
-                                   getKWM1DockwindowAtom(), &ajunk, &ijunk, &uljunk,
+                                   getKWM2DockwindowAtom(), 0l, 1l, False,
+                                   XA_WINDOW, &ajunk, &ijunk, &uljunk,
                                    &uljunk, (unsigned char **) &data) == Success) {
-                iskdedockapp = (data && data[0] != 0);
+					
+                if (data)
+                    iskdedockapp = True;
                 XFree((char *) data);
+	
             }
-        }
 
-        if (iskdedockapp) {
-            XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
-            ScreenList::iterator it = screenList.begin();			
-            for (; (*it) == screenList.back(); ++it) {
-                (*it)->getSlit()->addClient(e->xmaprequest.window);
+            // Check if KDE v1.x dock applet
+            if (!iskdedockapp) {
+                if (XGetWindowProperty(getXDisplay(), e->xmaprequest.window,
+                                       getKWM1DockwindowAtom(), 0l, 1l, False,
+                                       getKWM1DockwindowAtom(), &ajunk, &ijunk, &uljunk,
+                                       &uljunk, (unsigned char **) &data) == Success) {
+                    iskdedockapp = (data && data[0] != 0);
+                    XFree((char *) data);
+                }
             }
-            return;
-        }
+
+            if (iskdedockapp) {
+                XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
+                ScreenList::iterator it = screenList.begin();			
+                for (; (*it) == screenList.back(); ++it) {
+                    (*it)->getSlit()->addClient(e->xmaprequest.window);
+                }
+                return;
+            }
 #endif //KDE
 #endif // SLIT
 			
-        FluxboxWindow *win = searchWindow(e->xmaprequest.window);
+            FluxboxWindow *win = searchWindow(e->xmaprequest.window);
 
-        if (! win) {
-            win = new FluxboxWindow(e->xmaprequest.window);
-            if (!win->isManaged()) {
-                delete win;
-                win = 0;				
-            } else {
-				// attach signals
-                attachSignals(*win);
+            if (! win) {
+                win = new FluxboxWindow(e->xmaprequest.window);
+                if (!win->isManaged()) {
+                    delete win;
+                    win = 0;				
+                } else {
+                    // attach signals
+                    attachSignals(*win);
+                }
             }
+
+            if ((win = searchWindow(e->xmaprequest.window)))
+                win->mapRequestEvent(&e->xmaprequest);
+
         }
-
-        if ((win = searchWindow(e->xmaprequest.window)))
-            win->mapRequestEvent(&e->xmaprequest);
-
-    }
-    break;
+        break;
     case MapNotify:
-    {
-        FluxboxWindow *win = searchWindow(e->xmap.window);
-        if (win != 0)
-            win->mapNotifyEvent(&e->xmap);
+        {
+            FluxboxWindow *win = searchWindow(e->xmap.window);
+            if (win != 0)
+                win->mapNotifyEvent(&e->xmap);
 
-    }
-    break;
+        }
+        break;
 	
 
     case UnmapNotify:
@@ -721,7 +721,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #endif // SLIT
 
     }
-    break;
+        break;
     case MotionNotify: {
         last_time = e->xmotion.time;
 
@@ -738,7 +738,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 				
 			
     }
-    break;
+        break;
     case PropertyNotify: {
 			
         last_time = e->xproperty.time;
@@ -751,14 +751,14 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
 			
     }
-    break;
+        break;
     case EnterNotify: {
         last_time = e->xcrossing.time;
 
         BScreen *screen = (BScreen *) 0;
         FluxboxWindow *win = (FluxboxWindow *) 0;
         Basemenu *menu = (Basemenu *) 0;
-        Toolbar *tbar = (Toolbar *) 0;
+        
         Tab *tab = (Tab *) 0;
 #ifdef		SLIT
         Slit *slit = (Slit *) 0;
@@ -791,9 +791,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
             }
         } else if ((menu = searchMenu(e->xcrossing.window)))
             menu->enterNotifyEvent(&e->xcrossing);
-        else if ((tbar = searchToolbar(e->xcrossing.window)))
+        /*  else if ((tbar = searchToolbar(e->xcrossing.window)))
             tbar->enterNotifyEvent(&e->xcrossing);
-        else if ((tab = searchTab(e->xcrossing.window))) {
+        */else if ((tab = searchTab(e->xcrossing.window))) {
             win = tab->getWindow();
             if (win->getScreen()->isSloppyFocus() && (! win->isFocused()) &&
                 (! no_focus)) {
@@ -807,62 +807,65 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
                 ungrab();
             }
-        }
-				
+        } 		
 #ifdef SLIT
         else if ((slit = searchSlit(e->xcrossing.window)))
             slit->enterNotifyEvent(&e->xcrossing);
 #endif // SLIT
-
+        else {
+            FbTk::EventManager::instance()->handleEvent(*e);
+        }
+		
 			
     }
-    break;
+        break;
     case LeaveNotify:
-    {
-        last_time = e->xcrossing.time;
+        {
+            last_time = e->xcrossing.time;
 
-        FluxboxWindow *win = (FluxboxWindow *) 0;
-        Basemenu *menu = (Basemenu *) 0;
-        Toolbar *tbar = (Toolbar *) 0;
+            FluxboxWindow *win = (FluxboxWindow *) 0;
+            Basemenu *menu = (Basemenu *) 0;
 			
 #ifdef SLIT
-        Slit *slit = (Slit *) 0;
+            Slit *slit = (Slit *) 0;
 #endif // SLIT
 
-        if ((menu = searchMenu(e->xcrossing.window)))
-            menu->leaveNotifyEvent(&e->xcrossing);
-        else if ((win = searchWindow(e->xcrossing.window)))
-            win->installColormap(False);
-        else if ((tbar = searchToolbar(e->xcrossing.window)))
-            tbar->leaveNotifyEvent(&e->xcrossing);
+            if ((menu = searchMenu(e->xcrossing.window)))
+                menu->leaveNotifyEvent(&e->xcrossing);
+            else if ((win = searchWindow(e->xcrossing.window)))
+                win->installColormap(False);
+            /*      else if ((tbar = searchToolbar(e->xcrossing.window)))
+                    tbar->leaveNotifyEvent(&e->xcrossing);
+            */
 #ifdef SLIT
-        else if ((slit = searchSlit(e->xcrossing.window)))
-            slit->leaveNotifyEvent(&e->xcrossing);
+            else if ((slit = searchSlit(e->xcrossing.window)))
+                slit->leaveNotifyEvent(&e->xcrossing);
 #endif // SLIT
+            else {
+                FbTk::EventManager::instance()->handleEvent(*e);
+            }	
 			
-			
-    }
-    break;
+        }
+        break;
     case Expose:
-    {
-        FluxboxWindow *win = (FluxboxWindow *) 0;
-        Basemenu *menu = (Basemenu *) 0;
-        Toolbar *tbar = (Toolbar *) 0;
-        Tab *tab = 0;
+        {
+            FluxboxWindow *win = (FluxboxWindow *) 0;
+            Basemenu *menu = (Basemenu *) 0;      
+            Tab *tab = 0;
 			
-        if ((win = searchWindow(e->xexpose.window)))
-            win->exposeEvent(&e->xexpose);
-        else if ((menu = searchMenu(e->xexpose.window)))
-            menu->exposeEvent(&e->xexpose);
-        else if ((tbar = searchToolbar(e->xexpose.window)))
-            tbar->exposeEvent(&e->xexpose);
-        else if ((tab = searchTab(e->xexpose.window)))
-            tab->exposeEvent(&e->xexpose);
-			
-    }
-    break;
+            if ((win = searchWindow(e->xexpose.window)))
+                win->exposeEvent(&e->xexpose);
+            else if ((menu = searchMenu(e->xexpose.window)))
+                menu->exposeEvent(&e->xexpose);
+            else if ((tab = searchTab(e->xexpose.window)))
+                tab->exposeEvent(&e->xexpose);
+            else
+                FbTk::EventManager::instance()->handleEvent(*e);
+        }
+        break;
     case KeyPress:
         handleKeyEvent(e->xkey);
+        FbTk::EventManager::instance()->handleEvent(*e); 
 	break;
     case ColormapNotify: {
         BScreen *screen = searchScreen(e->xcolormap.window);
@@ -872,7 +875,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
                                               ColormapInstalled) ? True : False);
         }
     }
-    break;
+        break;
     case FocusIn: {
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
@@ -891,17 +894,17 @@ void Fluxbox::handleEvent(XEvent * const e) {
     default: {
 
 #ifdef SHAPE
-            if (e->type == getShapeEventBase()) {
-                XShapeEvent *shape_event = (XShapeEvent *) e;
-                FluxboxWindow *win = (FluxboxWindow *) 0;
+        if (e->type == getShapeEventBase()) {
+            XShapeEvent *shape_event = (XShapeEvent *) e;
+            FluxboxWindow *win = (FluxboxWindow *) 0;
 
-                if ((win = searchWindow(e->xany.window)) ||
-                    (shape_event->kind != ShapeBounding))
-                    win->shapeEvent(shape_event);
-            }
-#endif // SHAPE
-
+            if ((win = searchWindow(e->xany.window)) ||
+                (shape_event->kind != ShapeBounding))
+                win->shapeEvent(shape_event);
         }
+#endif // SHAPE
+        FbTk::EventManager::instance()->handleEvent(*e);
+    }
     }
 }
 
@@ -911,15 +914,12 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
     {
         last_time = be.time;
 
-        FluxboxWindow *win = (FluxboxWindow *) 0;
-        Basemenu *menu = (Basemenu *) 0;
-
+        FluxboxWindow *win = 0;
+        Basemenu *menu = 0;
+        Tab *tab = 0; 
 #ifdef		SLIT
         Slit *slit = (Slit *) 0;
 #endif // SLIT
-
-        Toolbar *tbar = (Toolbar *) 0;			
-        Tab *tab = 0;
 
         if ((win = searchWindow(be.window))) {
 
@@ -930,15 +930,13 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 					
         } else if ((menu = searchMenu(be.window))) {
             menu->buttonPressEvent(&be);
-
+        }
 #ifdef	SLIT
-        } else if ((slit = searchSlit(be.window))) {
+        else if ((slit = searchSlit(be.window))) {
             slit->buttonPressEvent(&be);
+        }
 #endif // SLIT
-
-        } else if ((tbar = searchToolbar(be.window))) {
-            tbar->buttonPressEvent(&be);
-        } else if ((tab = searchTab(be.window))) {
+        else if ((tab = searchTab(be.window))) {
             tab->buttonPressEvent(&be);
         } else {
             ScreenList::iterator it = screenList.begin();
@@ -1032,15 +1030,12 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         last_time = be.time;
         FluxboxWindow *win = (FluxboxWindow *) 0;
         Basemenu *menu = (Basemenu *) 0;
-        Toolbar *tbar = (Toolbar *) 0;
         Tab *tab = 0;
 		
         if ((win = searchWindow(be.window)))
             win->buttonReleaseEvent(&be);
         else if ((menu = searchMenu(be.window)))
             menu->buttonReleaseEvent(&be);
-        else if ((tbar = searchToolbar(be.window)))
-            tbar->buttonReleaseEvent(&be);
         else if ((tab = searchTab(be.window)))
             tab->buttonReleaseEvent(&be);
     }
@@ -1151,252 +1146,251 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     switch (ke.type) {
     case KeyPress:
-    {
-        Toolbar *tbar = searchToolbar(ke.window);
-        BScreen *screen = searchScreen(ke.window);
+        {
+            BScreen *screen = searchScreen(ke.window);
 			
-        if (tbar && tbar->isEditing())
-            tbar->keyPressEvent(&ke);
-        else if (screen)	{
-#ifdef DEBUG
-            cerr<<"KeyEvent"<<endl;
-#endif
-            //find action
-            Keys::KeyAction action = key->getAction(&ke);
-#ifdef DEBUG
-            const char *actionstr = key->getActionStr(action);
-            if (actionstr)
-                cerr<<"KeyAction("<<actionstr<<")"<<endl;				
-#endif
-            if (action==Keys::LASTKEYGRAB) //if action not found end case
-                break;
+       
 
-            // what to allow if moving
-            if (focused_window && focused_window->isMoving()) {
-                int allowed = false;
-                switch (action) {
-                case Keys::WORKSPACE:
-                case Keys::SENDTOWORKSPACE:
-                case Keys::WORKSPACE1:
-                case Keys::WORKSPACE2:
-                case Keys::WORKSPACE3:
-                case Keys::WORKSPACE4:
-                case Keys::WORKSPACE5:
-                case Keys::WORKSPACE6:
-                case Keys::WORKSPACE7:
-                case Keys::WORKSPACE8:
-                case Keys::WORKSPACE9:
-                case Keys::WORKSPACE10:
-                case Keys::WORKSPACE11:
-                case Keys::WORKSPACE12:
-                case Keys::NEXTWORKSPACE:
-                case Keys::PREVWORKSPACE:
-                case Keys::LEFTWORKSPACE:
-                case Keys::RIGHTWORKSPACE:
-                    allowed = true;
+            if (screen) {
+#ifdef DEBUG
+                cerr<<"KeyEvent"<<endl;
+#endif
+                //find action
+                Keys::KeyAction action = key->getAction(&ke);
+#ifdef DEBUG
+                const char *actionstr = key->getActionStr(action);
+                if (actionstr)
+                    cerr<<"KeyAction("<<actionstr<<")"<<endl;				
+#endif
+                if (action==Keys::LASTKEYGRAB) //if action not found end case
                     break;
-                default:
-                    allowed = false;
-                }
-                if (!allowed) break;
-            }
 
-            switch (action) {					
-            case Keys::WORKSPACE:
-				// Workspace1 has id 0, hence -1
-                screen->changeWorkspaceID(key->getParam()-1);
-                break;
-            case Keys::SENDTOWORKSPACE:
-				// Workspace1 has id 0, hence -1
-                screen->sendToWorkspace(key->getParam()-1);
-                break;
-                // NOTE!!! The WORKSPACEn commands are not needed anymore
-            case Keys::WORKSPACE1:
-                screen->changeWorkspaceID(0);
-                break;
-            case Keys::WORKSPACE2:
-                screen->changeWorkspaceID(1);
-                break;
-            case Keys::WORKSPACE3:
-                screen->changeWorkspaceID(2);
-                break;
-            case Keys::WORKSPACE4:
-                screen->changeWorkspaceID(3);
-                break;
-            case Keys::WORKSPACE5:
-                screen->changeWorkspaceID(4);
-                break;
-            case Keys::WORKSPACE6:
-                screen->changeWorkspaceID(5);
-                break;
-            case Keys::WORKSPACE7:
-                screen->changeWorkspaceID(6);
-                break;
-            case Keys::WORKSPACE8:
-                screen->changeWorkspaceID(7);
-                break;
-            case Keys::WORKSPACE9:
-                screen->changeWorkspaceID(8);
-                break;
-            case Keys::WORKSPACE10:
-                screen->changeWorkspaceID(9);
-                break;
-            case Keys::WORKSPACE11:
-                screen->changeWorkspaceID(10);
-                break;
-            case Keys::WORKSPACE12:
-                screen->changeWorkspaceID(11);
-                break;
-            case Keys::NEXTWORKSPACE:
-                screen->nextWorkspace(key->getParam());
-                break;
-            case Keys::PREVWORKSPACE:
-                screen->prevWorkspace(key->getParam());
-                break;
-            case Keys::LEFTWORKSPACE:
-                screen->leftWorkspace(key->getParam());
-                break;
-            case Keys::RIGHTWORKSPACE:
-                screen->rightWorkspace(key->getParam());
-                break;
-            case Keys::KILLWINDOW: //kill the current window
-                if (focused_window) {
-                    XKillClient(screen->getBaseDisplay()->getXDisplay(),
-                                focused_window->getClientWindow());
+                // what to allow if moving
+                if (focused_window && focused_window->isMoving()) {
+                    int allowed = false;
+                    switch (action) {
+                    case Keys::WORKSPACE:
+                    case Keys::SENDTOWORKSPACE:
+                    case Keys::WORKSPACE1:
+                    case Keys::WORKSPACE2:
+                    case Keys::WORKSPACE3:
+                    case Keys::WORKSPACE4:
+                    case Keys::WORKSPACE5:
+                    case Keys::WORKSPACE6:
+                    case Keys::WORKSPACE7:
+                    case Keys::WORKSPACE8:
+                    case Keys::WORKSPACE9:
+                    case Keys::WORKSPACE10:
+                    case Keys::WORKSPACE11:
+                    case Keys::WORKSPACE12:
+                    case Keys::NEXTWORKSPACE:
+                    case Keys::PREVWORKSPACE:
+                    case Keys::LEFTWORKSPACE:
+                    case Keys::RIGHTWORKSPACE:
+                        allowed = true;
+                        break;
+                    default:
+                        allowed = false;
+                    }
+                    if (!allowed) break;
                 }
-                break;
-            case Keys::NEXTWINDOW:	//activate next window
-                screen->nextFocus(key->getParam());
-                if (focused_window && focused_window->getTab())
-                    focused_window->getTab()->raise();
-                break;
-            case Keys::PREVWINDOW:	//activate prev window
-                screen->prevFocus(key->getParam());
-                if (focused_window && focused_window->getTab())
-                    focused_window->getTab()->raise();
-                break;
-            case Keys::NEXTTAB: 
-                if (focused_window && focused_window->getTab()) {
-                    Tab *tab = focused_window->getTab();
-                    if (tab->next()) {
+
+                switch (action) {					
+                case Keys::WORKSPACE:
+                    // Workspace1 has id 0, hence -1
+                    screen->changeWorkspaceID(key->getParam()-1);
+                    break;
+                case Keys::SENDTOWORKSPACE:
+                    // Workspace1 has id 0, hence -1
+                    screen->sendToWorkspace(key->getParam()-1);
+                    break;
+                    // NOTE!!! The WORKSPACEn commands are not needed anymore
+                case Keys::WORKSPACE1:
+                    screen->changeWorkspaceID(0);
+                    break;
+                case Keys::WORKSPACE2:
+                    screen->changeWorkspaceID(1);
+                    break;
+                case Keys::WORKSPACE3:
+                    screen->changeWorkspaceID(2);
+                    break;
+                case Keys::WORKSPACE4:
+                    screen->changeWorkspaceID(3);
+                    break;
+                case Keys::WORKSPACE5:
+                    screen->changeWorkspaceID(4);
+                    break;
+                case Keys::WORKSPACE6:
+                    screen->changeWorkspaceID(5);
+                    break;
+                case Keys::WORKSPACE7:
+                    screen->changeWorkspaceID(6);
+                    break;
+                case Keys::WORKSPACE8:
+                    screen->changeWorkspaceID(7);
+                    break;
+                case Keys::WORKSPACE9:
+                    screen->changeWorkspaceID(8);
+                    break;
+                case Keys::WORKSPACE10:
+                    screen->changeWorkspaceID(9);
+                    break;
+                case Keys::WORKSPACE11:
+                    screen->changeWorkspaceID(10);
+                    break;
+                case Keys::WORKSPACE12:
+                    screen->changeWorkspaceID(11);
+                    break;
+                case Keys::NEXTWORKSPACE:
+                    screen->nextWorkspace(key->getParam());
+                    break;
+                case Keys::PREVWORKSPACE:
+                    screen->prevWorkspace(key->getParam());
+                    break;
+                case Keys::LEFTWORKSPACE:
+                    screen->leftWorkspace(key->getParam());
+                    break;
+                case Keys::RIGHTWORKSPACE:
+                    screen->rightWorkspace(key->getParam());
+                    break;
+                case Keys::KILLWINDOW: //kill the current window
+                    if (focused_window) {
+                        XKillClient(screen->getBaseDisplay()->getXDisplay(),
+                                    focused_window->getClientWindow());
+                    }
+                    break;
+                case Keys::NEXTWINDOW:	//activate next window
+                    screen->nextFocus(key->getParam());
+                    if (focused_window && focused_window->getTab())
+                        focused_window->getTab()->raise();
+                    break;
+                case Keys::PREVWINDOW:	//activate prev window
+                    screen->prevFocus(key->getParam());
+                    if (focused_window && focused_window->getTab())
+                        focused_window->getTab()->raise();
+                    break;
+                case Keys::NEXTTAB: 
+                    if (focused_window && focused_window->getTab()) {
+                        Tab *tab = focused_window->getTab();
+                        if (tab->next()) {
+                            screen->getCurrentWorkspace()->raiseWindow(
+                                                                       tab->next()->getWindow());
+                            tab->next()->getWindow()->setInputFocus();
+                        } else {
+                            screen->getCurrentWorkspace()->raiseWindow(
+                                                                       tab->first()->getWindow());
+                            tab->first()->getWindow()->setInputFocus();
+                        }	
+                    }
+                    break;						
+                case Keys::PREVTAB: 
+                    if (focused_window && focused_window->getTab()) {
+                        Tab *tab = focused_window->getTab();
+                        if (tab->prev()) {
+                            screen->getCurrentWorkspace()->raiseWindow(
+                                                                       tab->prev()->getWindow());
+                            tab->prev()->getWindow()->setInputFocus();
+                        } else {
+                            screen->getCurrentWorkspace()->raiseWindow(
+                                                                       tab->last()->getWindow());
+                            tab->last()->getWindow()->setInputFocus();
+                        }
+                    }
+                    break;
+                case Keys::FIRSTTAB:
+                    if (focused_window && focused_window->getTab()) {
+                        Tab *tab = focused_window->getTab();
                         screen->getCurrentWorkspace()->raiseWindow(
-                            tab->next()->getWindow());
-                        tab->next()->getWindow()->setInputFocus();
-                    } else {
-                        screen->getCurrentWorkspace()->raiseWindow(
-                            tab->first()->getWindow());
+                                                                   tab->first()->getWindow());
                         tab->first()->getWindow()->setInputFocus();
-                    }	
-                }
-                break;						
-            case Keys::PREVTAB: 
-                if (focused_window && focused_window->getTab()) {
-                    Tab *tab = focused_window->getTab();
-                    if (tab->prev()) {
+                    }
+                    break;
+                case Keys::LASTTAB:
+                    if (focused_window && focused_window->getTab()) {
+                        Tab *tab = focused_window->getTab();
                         screen->getCurrentWorkspace()->raiseWindow(
-                            tab->prev()->getWindow());
-                        tab->prev()->getWindow()->setInputFocus();
-                    } else {
-                        screen->getCurrentWorkspace()->raiseWindow(
-                            tab->last()->getWindow());
+                                                                   tab->last()->getWindow());
                         tab->last()->getWindow()->setInputFocus();
                     }
-                }
-                break;
-            case Keys::FIRSTTAB:
-                if (focused_window && focused_window->getTab()) {
-                    Tab *tab = focused_window->getTab();
-                    screen->getCurrentWorkspace()->raiseWindow(
-                        tab->first()->getWindow());
-                    tab->first()->getWindow()->setInputFocus();
-                }
-                break;
-            case Keys::LASTTAB:
-                if (focused_window && focused_window->getTab()) {
-                    Tab *tab = focused_window->getTab();
-                    screen->getCurrentWorkspace()->raiseWindow(
-                        tab->last()->getWindow());
-                    tab->last()->getWindow()->setInputFocus();
-                }
-                break;
-            case Keys::MOVETABPREV:
-                if (focused_window && focused_window->getTab()) {
-                    focused_window->getTab()->movePrev();
-                }
-                break;
-            case Keys::MOVETABNEXT:
-                if (focused_window && focused_window->getTab()) {
-                    focused_window->getTab()->moveNext();
-                }
-                break;
-            case Keys::EXECUTE: //execute command on keypress
-            {
+                    break;
+                case Keys::MOVETABPREV:
+                    if (focused_window && focused_window->getTab()) {
+                        focused_window->getTab()->movePrev();
+                    }
+                    break;
+                case Keys::MOVETABNEXT:
+                    if (focused_window && focused_window->getTab()) {
+                        focused_window->getTab()->moveNext();
+                    }
+                    break;
+                case Keys::EXECUTE: //execute command on keypress
+                    {
 #ifndef		__EMX__
-                char displaystring[MAXPATHLEN];
-                sprintf(displaystring, "DISPLAY=%s",
-                        DisplayString(getXDisplay()));
-                sprintf(displaystring + strlen(displaystring) - 1, "%d",
-                        screen->getScreenNumber());		
+                        char displaystring[MAXPATHLEN];
+                        sprintf(displaystring, "DISPLAY=%s",
+                                DisplayString(getXDisplay()));
+                        sprintf(displaystring + strlen(displaystring) - 1, "%d",
+                                screen->getScreenNumber());		
 #ifdef DEBUG
-                cerr<<__FILE__<<"("<<__LINE__<<"): Executing:"<<key->getExecCommand().c_str()<<endl;
+                        cerr<<__FILE__<<"("<<__LINE__<<"): Executing:"<<key->getExecCommand().c_str()<<endl;
 #endif // DEBUG
 						
-                bexec(key->getExecCommand().c_str(), displaystring);
+                        bexec(key->getExecCommand().c_str(), displaystring);
 #else
-                spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec(), NULL);
+                        spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec(), NULL);
 #endif // !__EMX__
 						
 			
-            }
-            break;
-            case Keys::ROOTMENU: //show root menu
-            {
-                ScreenList::iterator it = screenList.begin();
-                ScreenList::iterator it_end = screenList.end();
+                    }
+                    break;
+                case Keys::ROOTMENU: //show root menu
+                    {
+                        ScreenList::iterator it = screenList.begin();
+                        ScreenList::iterator it_end = screenList.end();
 
-                for (; it != it_end; ++it) {
+                        for (; it != it_end; ++it) {
 
-                    BScreen *screen = (*it);
-                    if (ke.window != screen->getRootWindow())
-                        continue;
+                            BScreen *screen = (*it);
+                            if (ke.window != screen->getRootWindow())
+                                continue;
 						
-                    //calculate placement of workspace menu
-                    //and show/hide it				
-                    int mx = ke.x_root -
-                        (screen->getRootmenu()->width() / 2);
-                    int my = ke.y_root -
-                        (screen->getRootmenu()->titleHeight() / 2);
+                            //calculate placement of workspace menu
+                            //and show/hide it				
+                            int mx = ke.x_root -
+                                (screen->getRootmenu()->width() / 2);
+                            int my = ke.y_root -
+                                (screen->getRootmenu()->titleHeight() / 2);
 
-                    if (mx < 0) mx = 0;
-                    if (my < 0) my = 0;
+                            if (mx < 0) mx = 0;
+                            if (my < 0) my = 0;
 
-                    if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
-                        mx = screen->getWidth() -
-                            screen->getRootmenu()->width() -
-                            screen->getBorderWidth();
+                            if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
+                                mx = screen->getWidth() -
+                                    screen->getRootmenu()->width() -
+                                    screen->getBorderWidth();
+                            }
+
+                            if (my + screen->getRootmenu()->height() >
+                                screen->getHeight()) {
+                                my = screen->getHeight() -
+                                    screen->getRootmenu()->height() -
+                                    screen->getBorderWidth();
+                            }
+                            screen->getRootmenu()->move(mx, my);
+
+                            if (! screen->getRootmenu()->isVisible()) {
+                                checkMenu();
+                                screen->getRootmenu()->show();
+                            }
+                        }
                     }
-
-                    if (my + screen->getRootmenu()->height() >
-                        screen->getHeight()) {
-                        my = screen->getHeight() -
-                            screen->getRootmenu()->height() -
-                            screen->getBorderWidth();
-                    }
-                    screen->getRootmenu()->move(mx, my);
-
-                    if (! screen->getRootmenu()->isVisible()) {
-                        checkMenu();
-                        screen->getRootmenu()->show();
-                    }
+                    break;
+                default: //try to see if its a window action
+                    doWindowAction(action, key->getParam());
                 }
             }
             break;
-            default: //try to see if its a window action
-                doWindowAction(action, key->getParam());
-            }
         }
-	break;
-    }
 	
     default:
 	break;
@@ -2359,19 +2353,18 @@ void Fluxbox::load_rc(BScreen *screen) {
 }
 
 void Fluxbox::loadRootCommand(BScreen *screen)	{
-    XrmDatabase database = (XrmDatabase) 0;
  
     string dbfile(getRcFilename());
 
-    database = XrmGetFileDatabase(dbfile.c_str());
-    if (!database) 
+    XrmDatabaseHelper database(dbfile.c_str());
+    if (!*database) 
         database = XrmGetFileDatabase(DEFAULT_INITFILE);
 
     XrmValue value;
     char *value_type, name_lookup[1024], class_lookup[1024];
     sprintf(name_lookup, "session.screen%d.rootCommand", screen->getScreenNumber());
     sprintf(class_lookup, "Session.Screen%d.RootCommand", screen->getScreenNumber());
-    if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {										 
         screen->saveRootCommand(value.addr==0 ? "": value.addr);
     } else
