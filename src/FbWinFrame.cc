@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.14 2003/02/23 21:32:37 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.15 2003/04/03 22:37:43 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -137,18 +137,16 @@ void FbWinFrame::shade() {
     if (!m_use_titlebar)
         return;
 
-    if (!m_shaded) {
+    // toggle shade
+    m_shaded = !m_shaded;
+    if (m_shaded) { // i.e. should be shaded now
         m_width_before_shade = m_window.width();
         m_height_before_shade = m_window.height();
         m_window.resize(m_window.width(), m_titlebar.height());
-    } else {
+    } else { // should be unshaded
         m_window.resize(m_width_before_shade, m_height_before_shade);
-        m_grip_left.clear();
-        m_grip_right.clear();
-        m_handle.clear();
+        reconfigure();
     }
-    // toggle shade
-    m_shaded = !m_shaded;
 }
 
 
@@ -434,50 +432,54 @@ void FbWinFrame::reconfigure() {
     if (m_use_titlebar)
         reconfigureTitlebar();
 
-    int client_top = 0;
-    int client_height = m_window.height();
-    if (m_use_titlebar) {
-        // only one borderwidth as titlebar is really at -borderwidth
-        int titlebar_height = m_titlebar.height() + m_titlebar.borderWidth();
-        client_top += titlebar_height;
-        client_height -= titlebar_height;
-    }
-
-    if (m_use_handle) {
-        client_height -= m_handle.height() + m_handle.borderWidth();
-    }
-
-    m_clientarea.moveResize(0, client_top,
-                            m_window.width(), client_height);
-
-    if (m_clientwin != 0) {
-        XMoveResizeWindow(FbTk::App::instance()->display(), m_clientwin,
-                          0, 0,
-                          m_clientarea.width(), m_clientarea.height());
-   }
-
-
-    if (!m_use_handle) // no need to do anything more
-        return;
-
-    // align handle and grips
-    const int grip_height = m_handle.height();
-    const int grip_width = 20; //TODO
-
-    const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
-
-    m_grip_left.moveResize(-m_handle.borderWidth(), ypos,
-                           grip_width, grip_height);
-
-    m_handle.moveResize(grip_width, ypos,
-                        m_window.width() - grip_width*2 - m_handle.borderWidth()*2, grip_height);
-
-    m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
-                            grip_width, grip_height);
+    // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
+    if (!m_shaded) {
+        int client_top = 0;
+        int client_height = m_window.height();
+        if (m_use_titlebar) {
+            // only one borderwidth as titlebar is really at -borderwidth
+            int titlebar_height = m_titlebar.height() + m_titlebar.borderWidth();
+            client_top += titlebar_height;
+            client_height -= titlebar_height;
+        }
+        
+        if (m_use_handle) {
+            client_height -= m_handle.height() + m_handle.borderWidth();
+        }
+        
+        m_clientarea.moveResize(0, client_top,
+                                m_window.width(), client_height);
+        
+        if (m_clientwin != 0) {
+            XMoveResizeWindow(FbTk::App::instance()->display(), m_clientwin,
+                              0, 0,
+                              m_clientarea.width(), m_clientarea.height());
+        }
+        
+        
+        if (!m_use_handle) // no need to do anything more
+            return;
+        
+        // align handle and grips
+        const int grip_height = m_handle.height();
+        const int grip_width = 20; //TODO
+        
+        const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
+        
+        m_grip_left.moveResize(-m_handle.borderWidth(), ypos,
+                               grip_width, grip_height);
+        
+        m_handle.moveResize(grip_width, ypos,
+                            m_window.width() - grip_width*2 - m_handle.borderWidth()*2, grip_height);
+        
+        m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
+                                grip_width, grip_height);
+    }        
 
     // render the theme
     renderButtons();
-    renderHandles();
+    if (!m_shaded)
+        renderHandles();
     redrawTitle();
     redrawTitlebar();
 }
