@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.177 2003/07/28 20:10:05 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.178 2003/08/04 18:16:22 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1122,9 +1122,9 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         WinClient *winclient = searchWindow(ce.window);
         BScreen *screen = searchScreen(ce.window);
 
-        if (winclient && screen) {
+        if (winclient || screen) {            
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                m_atomhandler[i]->checkClientMessage(ce, screen, winclient);
+                 m_atomhandler[i]->checkClientMessage(ce, screen, winclient);
             }
         }
     }
