@@ -27,7 +27,7 @@ session.opaqueMove:	False
 session.autoRaiseDelay:	250
 session.menuFile:	~/.fluxbox/menu
 session.cacheLife:	5
-session.styleFile:	@pkgdatadir@/styles/Meta
+session.styleFile:	@default_style@
 session.keyFile: ~/.fluxbox/keys
 session.colorsPerChannel:	4
 session.doubleClickInterval:	250

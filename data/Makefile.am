@@ -1,5 +1,7 @@
 # data/Makefile.am for Fluxbox - an X11 Window manager
 
+DEFAULT _STYLE = @DEFAULT_STYLE@
+
 SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init
 MAINTAINERCLEANFILES= 	Makefile.in
@@ -9,7 +11,8 @@ all-local: 		menu init
 distclean-local:
 		rm -f *\~
 init: 			init.in
-	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" $(srcdir)/init.in > init
+	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" \
+			-e "s,@default_style@,$(DEFAULT_STYLE),g" $(srcdir)/init.in > init
 
 menu: 			../util/fluxbox-generate_menu
 	env	MENUFILENAME=menu \
