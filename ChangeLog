@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/02/01:
+  * fix a problem with configure (Mathias)
+    imlib2 is now really default-off
+    configure.in
   * minor changes to ru_RU (thanx php-coder)
 *05/01/31:
   * Close #1107213, 64bit issues (thanx to  Matthieu Herrb <matthieu.herrb@laas.fr>)
@@ -66,7 +69,7 @@ Changes for 0.9.12
 *05/01/04:
   * Added apps to fluxbox-generate_menu (thanx to Uwe Weissenbacher <UweWeissenbacher@gmx.net>)
   * Added ko_KR (thanx Jo Hyunseok <ttrand at gmail dot com>)
-  * Added --with-style=/path/to/default/style (thanx php-code)
+  * Added --with-style=/path/to/default/style (thanx php-coder)
   * Updated ru_RU (thanx php-coder)
     ru_RU/Translation.m
   * Fix some initialisation states, especially window placement with no 
