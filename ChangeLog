@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/14:
+  * Bug fix in NextWindow/PrevWindow Command  (Henrik)
+    it was only executed when last event = keyevent
+    WorkspaceCmd.cc	
   * New theme items:
     * toolbar.button.size for fixed buttons in the toolbar
     * toolbar.button.borderWidth
