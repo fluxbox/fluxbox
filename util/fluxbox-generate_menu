@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.22 2002/12/29 10:37:47 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.23 2003/01/04 15:22:29 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -185,7 +185,7 @@ else
 # Kde data-dir
 # KPKGDATADIR=/opt/kde/share
 
-# MENUTITLE=Fluxbox 0.1.14
+# MENUTITLE=\`fluxbox -version|cut -d " " -f-2\`
 
 # standard url for console-browsers
 # HOMEPAGE=fluxbox.org
@@ -560,6 +560,32 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Lista workspace-uri"
                 XUTILSMENU="Utilitare X"
         ;;
+        es_ES*) # spanish locales
+                BACKGROUNDMENU="Fondos"
+		BACKGROUNDMENUTITLE="Seleccionar Fondo"
+		BROWSERMENU="Navegadores"
+		CONFIGUREMENU="Configurar"
+		EDITORMENU="Editores"
+		EXITITEM="Salir"
+		FBSETTINGSMENU="Menú fluxbox"
+		GAMESMENU="Juegos"
+		GNOMEMENUTEXT="Menús Gnome"
+		GRAPHICMENU="Gráficos"
+		KDEMENUTEXT="Menús KDE"
+		MISCMENU="Varios"
+		MULTIMEDIAMENU="Multimedia"
+		MUSICMENU="Música"
+		NETMENU="Red"
+		OFFICEMENU="Oficina"
+		RELOADITEM="Reconfigurar"
+		RESTARTITEM="Reiniciar"
+		STYLEMENUTITLE="Escoge un Estilo..."
+		SYSTEMSTYLES="Estilos del Sistema"
+		TERMINALMENU="Terminales"
+		USERSTYLES="Estilos del Usuario"
+		WORKSPACEMENU="Lista de Escritorios"
+		XUTILSMENU="Utilidades X"
+        ;;
         *)
         ;;
 esac
@@ -683,9 +709,9 @@ append_menu_end
 append_submenu "${GAMESMENU}"
     normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
-        gnotski iagno knights same-gnome xboard freecell pysol \
+        gnotski iagno knights eboard xboard freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins \
-        quake2 quake3 skoosh
+        quake2 quake3 skoosh same-gnome enigma
 append_menu_end
 
 # gnome menu
@@ -741,8 +767,9 @@ append_submenu "${FBSETTINGSMENU}"
 
         if [ "$BACKGROUNDMENUITEM" = "yes" ];then
         append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
-            for i in ${HOME}/.fluxbox/backgrounds/* ; do
-                append "[exec] (`basename "$i"`) {bsetbg -f "$i" }"
+            for i in ${HOME}/.fluxbox/backgrounds/* ${PKGDATADIR}/fluxbox/backgrounds/* ; do
+                picturename=`basename $i`
+                append "[exec] (${picturename//.???}) {bsetbg -f $i }"
             done
         append_menu_end
         fi
