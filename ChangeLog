@@ -3,6 +3,7 @@ Changes for 0.9.11
 *04/09/03:
   * Fix crash on startup on amd64 (Simon)
     - We may need to review usages of 0 as opposed to NULL
+    - Thanks to Jason Johnston (xoritor) for assistance debugging
     XmbFontImp.cc
   * Added -nearmouse to FbRun (Mathias)
     main.cc
