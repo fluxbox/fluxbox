@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.27 2002/02/06 10:17:30 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.28 2002/02/06 17:12:09 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -305,7 +305,7 @@ m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
 m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
 focused_window(0),
 masked_window(0),
-no_focus(False),
+no_focus(false),
 rc_file(rc),
 argv(m_argv), argc(m_argc), 
 key(0)
@@ -388,7 +388,7 @@ key(0)
 	XSynchronize(getXDisplay(), False);
 	XSync(getXDisplay(), False);
 
-	reconfigure_wait = reread_menu_wait = False;
+	reconfigure_wait = reread_menu_wait = false;
 
 	timer = new BTimer(this, this);
 	timer->setTimeout(0);
@@ -446,143 +446,11 @@ void Fluxbox::process_event(XEvent *e) {
 	}
 	
 	switch (e->type) {
-	case ButtonPress:
-		{
-			last_time = e->xbutton.time;
-
-			FluxboxWindow *win = (FluxboxWindow *) 0;
-			Basemenu *menu = (Basemenu *) 0;
-
-			#ifdef		SLIT
-			Slit *slit = (Slit *) 0;
-			#endif // SLIT
-
-			Toolbar *tbar = (Toolbar *) 0;			
-			Tab *tab = 0;
-
-			if ((win = searchWindow(e->xbutton.window))) {
-
-				win->buttonPressEvent(&e->xbutton);
-				
-				if (e->xbutton.button == 1)
-					win->installColormap(True);
-					
-			} else if ((menu = searchMenu(e->xbutton.window))) {
-				menu->buttonPressEvent(&e->xbutton);
-
-			#ifdef		SLIT
-			} else if ((slit = searchSlit(e->xbutton.window))) {
-				slit->buttonPressEvent(&e->xbutton);
-			#endif // SLIT
-
-			} else if ((tbar = searchToolbar(e->xbutton.window))) {
-				tbar->buttonPressEvent(&e->xbutton);
-			} else if ((tab = searchTab(e->xbutton.window))) {
-				tab->buttonPressEvent(&e->xbutton);
-			} else {
-				LinkedListIterator<BScreen> it(screenList);
-
-				for (; it.current(); it++) {
-					BScreen *screen = it.current();
-				
-
-						//if ( e->xbutton.button == 1 && 
-						//	(win = screen->getIconBar()->findWindow(e->xbutton.window)) ) {
-						//	win->deiconify();
-						
-				 if (e->xbutton.window == screen->getRootWindow()) {
-					if (e->xbutton.button == 1) {
-							if (! screen->isRootColormapInstalled())
-							screen->getImageControl()->installRootColormap();
-
-						if (screen->getWorkspacemenu()->isVisible())
-							screen->getWorkspacemenu()->hide();
-
-						if (screen->getRootmenu()->isVisible())
-							screen->getRootmenu()->hide();
-						
-					} else if (e->xbutton.button == 2) {
-						int mx = e->xbutton.x_root -
-							(screen->getWorkspacemenu()->getWidth() / 2);
-						int my = e->xbutton.y_root -
-							(screen->getWorkspacemenu()->getTitleHeight() / 2);
-	
-						if (mx < 0) mx = 0;
-						if (my < 0) my = 0;
-
-						if (mx + screen->getWorkspacemenu()->getWidth() >
-							 screen->getWidth())
-								mx = screen->getWidth() -
-						screen->getWorkspacemenu()->getWidth() -
-						screen->getBorderWidth();
-
-						if (my + screen->getWorkspacemenu()->getHeight() >
-									screen->getHeight())
-							my = screen->getHeight() -
-						screen->getWorkspacemenu()->getHeight() -
-						screen->getBorderWidth();
-
-						screen->getWorkspacemenu()->move(mx, my);
-
-						if (! screen->getWorkspacemenu()->isVisible()) {
-							screen->getWorkspacemenu()->removeParent();
-							screen->getWorkspacemenu()->show();
-						}
-					} else if (e->xbutton.button == 3) {
-						int mx = e->xbutton.x_root -
-						 (screen->getRootmenu()->getWidth() / 2);
-						int my = e->xbutton.y_root -
-						 (screen->getRootmenu()->getTitleHeight() / 2);
-
-						if (mx < 0) mx = 0;
-						if (my < 0) my = 0;
-
-						if (mx + screen->getRootmenu()->getWidth() > screen->getWidth())
-							mx = screen->getWidth() -
-						screen->getRootmenu()->getWidth() -
-						screen->getBorderWidth();
-
-						if (my + screen->getRootmenu()->getHeight() >
-							screen->getHeight())
-							my = screen->getHeight() -
-								screen->getRootmenu()->getHeight() -
-								screen->getBorderWidth();
-
-						screen->getRootmenu()->move(mx, my);
-
-						if (! screen->getRootmenu()->isVisible()) {
-							checkMenu();
-							screen->getRootmenu()->show();
-						}
-						
-					} 
-			
-				}
-			}
-		}
-
-			break;
-	}
-
 	case ButtonRelease:
-	{
-			last_time = e->xbutton.time;
-			FluxboxWindow *win = (FluxboxWindow *) 0;
-			Basemenu *menu = (Basemenu *) 0;
-			Toolbar *tbar = (Toolbar *) 0;
-			Tab *tab = 0;
-			if ((win = searchWindow(e->xbutton.window)))
-				win->buttonReleaseEvent(&e->xbutton);
-			else if ((menu = searchMenu(e->xbutton.window)))
-				menu->buttonReleaseEvent(&e->xbutton);
-			else if ((tbar = searchToolbar(e->xbutton.window)))
-				tbar->buttonReleaseEvent(&e->xbutton);
-			else if ((tab = searchTab(e->xbutton.window)))
-				tab->buttonReleaseEvent(&e->xbutton);
-			break;
-		}
-
-		case ConfigureRequest:
+	case ButtonPress:
+		handleButtonEvent(e->xbutton);
+	break;	
+	case ConfigureRequest:
 	{
 		FluxboxWindow *win = (FluxboxWindow *) 0;
 
@@ -619,9 +487,8 @@ void Fluxbox::process_event(XEvent *e) {
 			ungrab();
 		}
 
-		break;
 	}
-
+	break;
 	case MapRequest:
 	{
 		#ifdef		DEBUG
@@ -694,51 +561,48 @@ void Fluxbox::process_event(XEvent *e) {
 		}
 			
 		if ((win = searchWindow(e->xmaprequest.window)))
-					win->mapRequestEvent(&e->xmaprequest);
+			win->mapRequestEvent(&e->xmaprequest);
 
-		break;
 	}
-
+	break;
 	case MapNotify:
 	{
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): MapNotify:"<<hex<<e->xmap.window<<endl;
-		#endif
 		FluxboxWindow *win = searchWindow(e->xmap.window);
-
-		if (win)
+		XMapWindow(getXDisplay(), e->xmap.window);
+		if (win!=0)
 			win->mapNotifyEvent(&e->xmap);
 
-		break;
 	}
+	break;
+	
 
 	case UnmapNotify:
 	{
+
+		FluxboxWindow *win = (FluxboxWindow *) 0;
+
+		#ifdef SLIT
+		Slit *slit = (Slit *) 0;
+		#endif // SLIT
+
+		if ((win = searchWindow(e->xunmap.window))!=0 ) {
+			// only process windows with StructureNotify selected 
+	     	// (ignore SubstructureNotify)				
+			if (win->getClientWindow() != e->xunmap.window ||
+					win->isTransient())
+				win->unmapNotifyEvent(&e->xunmap);
+		#ifdef SLIT
+		} else if ((slit = searchSlit(e->xunmap.window))!=0) {
+			slit->removeClient(e->xunmap.window);
 			#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): UnmapNotify:"<<hex<<e->xunmap.window<<endl;
-			#endif
-			FluxboxWindow *win = (FluxboxWindow *) 0;
+			cerr<<__FILE__<<"("<<__LINE__<<"): Here"<<endl;
+			#endif 
+		#endif // SLIT
 
-			#ifdef SLIT
-			Slit *slit = (Slit *) 0;
-			#endif // SLIT
-
-			if ((win = searchWindow(e->xunmap.window))) {
-				// only process windows with StructureNotify selected 
-		     	// (ignore SubstructureNotify)
-			//    if (win->windowFor(e->xunmap.window))
-					if (win->getClientWindow()!=e->xunmap.window ||
-						win->isTransient())
-						win->unmapNotifyEvent(&e->xunmap);
-			#ifdef SLIT
-			} else if ((slit = searchSlit(e->xunmap.window))) {
-				slit->removeClient(e->xunmap.window);
-			#endif // SLIT
-
-			}
-
-			break;
 		}
+
+	}
+	break;	
 	case CreateNotify:
 		break;
 	case DestroyNotify:
@@ -760,9 +624,8 @@ void Fluxbox::process_event(XEvent *e) {
 			#endif // SLIT
 			}
 
-			break;
 		}
-
+	break;
 	case MotionNotify:
 		{
 			last_time = e->xmotion.time;
@@ -771,16 +634,16 @@ void Fluxbox::process_event(XEvent *e) {
 			Basemenu *menu = 0;
 			Tab *tab = 0;
 			
-			if ((win = searchWindow(e->xmotion.window)))
+			if ((win = searchWindow(e->xmotion.window)) !=0)
 				win->motionNotifyEvent(&e->xmotion);
-			else if ((menu = searchMenu(e->xmotion.window)))
+			else if ((menu = searchMenu(e->xmotion.window)) !=0)
 				menu->motionNotifyEvent(&e->xmotion);
-			else if ((tab = searchTab(e->xmotion.window)))
+			else if ((tab = searchTab(e->xmotion.window)) !=0)
 				tab->motionNotifyEvent(&e->xmotion);
 				
-			break;
+			
 		}
-
+	break;
 	case PropertyNotify:
 		{
 			last_time = e->xproperty.time;
@@ -791,10 +654,9 @@ void Fluxbox::process_event(XEvent *e) {
 				if (win)
 					win->propertyNotifyEvent(e->xproperty.atom);
 			}
-
-			break;
+			
 		}
-
+	break;
 	case EnterNotify:
 		{
 			last_time = e->xcrossing.time;
@@ -858,9 +720,9 @@ void Fluxbox::process_event(XEvent *e) {
 				slit->enterNotifyEvent(&e->xcrossing);
 #endif // SLIT
 
-			break;
+			
 		}
-
+	break;
 	case LeaveNotify:
 		{
 			last_time = e->xcrossing.time;
@@ -884,9 +746,9 @@ void Fluxbox::process_event(XEvent *e) {
 				slit->leaveNotifyEvent(&e->xcrossing);
 			#endif // SLIT
 			
-			break;
+			
 		}
-
+	break;
 	case Expose:
 		{
 			FluxboxWindow *win = (FluxboxWindow *) 0;
@@ -902,155 +764,23 @@ void Fluxbox::process_event(XEvent *e) {
 				tbar->exposeEvent(&e->xexpose);
 			else if ((tab = searchTab(e->xexpose.window)))
 				tab->exposeEvent(&e->xexpose);
-			break;
-		}
-
-	case KeyPress:
-		{
-			Toolbar *tbar = searchToolbar(e->xkey.window);
-			BScreen *screen = searchScreen(e->xkey.window);
 			
-			if (tbar && tbar->isEditing())
-				tbar->keyPressEvent(&e->xkey);
-			else if (screen)	{
-				#ifdef DEBUG
-				cerr<<"KeyEvent"<<endl;
-				#endif
-				//find action
-				Keys::KeyAction action = key->getAction(&e->xkey);
-				#ifdef DEBUG
-				const char *actionstr = key->getActionStr(action);
-				if (actionstr)
-					cerr<<"KeyAction("<<actionstr<<")"<<endl;				
-				#endif
-				if (action==Keys::LASTKEYGRAB) //if action not found end case
-					break;
-
-				switch (action) {					
-					case Keys::WORKSPACE1:
-						screen->changeWorkspaceID(0);
-						break;
-					case Keys::WORKSPACE2:
-						screen->changeWorkspaceID(1);
-						break;
-					case Keys::WORKSPACE3:
-						screen->changeWorkspaceID(2);
-						break;
-					case Keys::WORKSPACE4:
-						screen->changeWorkspaceID(3);
-						break;
-					case Keys::WORKSPACE5:
-						screen->changeWorkspaceID(4);
-						break;
-					case Keys::WORKSPACE6:
-						screen->changeWorkspaceID(5);
-						break;
-					case Keys::WORKSPACE7:
-						screen->changeWorkspaceID(6);
-						break;
-					case Keys::WORKSPACE8:
-						screen->changeWorkspaceID(7);
-						break;
-					case Keys::WORKSPACE9:
-						screen->changeWorkspaceID(8);
-						break;
-					case Keys::WORKSPACE10:
-						screen->changeWorkspaceID(9);
-						break;
-					case Keys::WORKSPACE11:
-						screen->changeWorkspaceID(10);
-						break;
-					case Keys::WORKSPACE12:
-						screen->changeWorkspaceID(11);
-						break;
-					case Keys::NEXTWORKSPACE:
-						screen->nextWorkspace();
-						break;
-					case Keys::PREVWORKSPACE:
-						screen->prevWorkspace();
-						break;
-					case Keys::LEFTWORKSPACE:
-						screen->leftWorkspace();
-						break;
-					case Keys::RIGHTWORKSPACE:
-						screen->rightWorkspace();
-						break;
-
-					case Keys::KILLWINDOW: //kill the current window
-						XKillClient(screen->getBaseDisplay()->getXDisplay(),
-							focused_window->getClientWindow());
-						break;
-					case Keys::NEXTWINDOW:	//activate next window
-						screen->nextFocus();
-						break;
-					case Keys::PREVWINDOW:	//activate prev window
-						screen->prevFocus();
-						break;
-					case Keys::NEXTTAB: 
-						if (focused_window && focused_window->getTab()) {
-							Tab *tab = focused_window->getTab();
-							if (tab->next()) {
-								screen->getCurrentWorkspace()->raiseWindow(
-									tab->next()->getWindow());
-								tab->next()->getWindow()->setInputFocus();
-							} else {
-								screen->getCurrentWorkspace()->raiseWindow(
-									tab->first()->getWindow());
-								tab->first()->getWindow()->setInputFocus();
-							}	
-						}
-						break;						
-					case Keys::PREVTAB: 
-						if (focused_window && focused_window->getTab()) {
-							Tab *tab = focused_window->getTab();
-							if (tab->prev()) {
-								screen->getCurrentWorkspace()->raiseWindow(
-									tab->prev()->getWindow());
-								tab->prev()->getWindow()->setInputFocus();
-							} else {
-								screen->getCurrentWorkspace()->raiseWindow(
-									tab->last()->getWindow());
-								tab->last()->getWindow()->setInputFocus();
-							}
-						}
-						break;
-					case Keys::EXECUTE: //execute command on keypress
-					{
-						#ifndef		__EMX__
-						char displaystring[MAXPATHLEN];
-						sprintf(displaystring, "DISPLAY=%s",
-								DisplayString(getXDisplay()));
-						sprintf(displaystring + strlen(displaystring) - 1, "%d",
-								screen->getScreenNumber());		
-						#ifdef DEBUG
-						cerr<<__FILE__<<"("<<__LINE__<<"): Executing:"<<key->getExecCommand().c_str()<<endl;
-						#endif						
-						
-						bexec(key->getExecCommand().c_str(), displaystring);
-						#else
-						spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec(), NULL);
-						#endif // !__EMX__
-						
-						break;
-					}
-					default: //try to see if its a window action
-						doWindowAction(action);
-				}
-			}
-			break;
 		}
-
+	break;
+	case KeyPress:
+		handleKeyEvent(e->xkey);
+	break;
 	case ColormapNotify:
-		{
-			BScreen *screen = searchScreen(e->xcolormap.window);
+	{
+		BScreen *screen = searchScreen(e->xcolormap.window);
 
-			if (screen)
-				screen->setRootColormapInstalled((e->xcolormap.state ==
-					ColormapInstalled) ? True : False);
+		if (screen)
+		screen->setRootColormapInstalled((e->xcolormap.state ==
+				ColormapInstalled) ? True : False);
 
-			break;
-		}
-
+	
+	}
+	break;
 	case FocusIn:
 	{
 		if (e->xfocus.mode == NotifyUngrab ||
@@ -1060,103 +790,15 @@ void Fluxbox::process_event(XEvent *e) {
 		FluxboxWindow *win = searchWindow(e->xfocus.window);
 		if (win && ! win->isFocused())
 			setFocusedWindow(win);
-
-		break;
+	
 	}
-
+	break;
 	case FocusOut:
-		break;
+	break;
 
 	case ClientMessage:
-		{
-			#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]="<<e->xclient.data.l[0]<<endl;
-			#endif
-
-			if (e->xclient.format == 32) {
-				if (e->xclient.message_type == getWMChangeStateAtom()) {
-					FluxboxWindow *win = searchWindow(e->xclient.window);
-					if (! win || ! win->validateClient())
-						return;
-
-					if (e->xclient.data.l[0] == IconicState)
-						win->iconify();
-					if (e->xclient.data.l[0] == NormalState)
-						win->deiconify();
-				} else if (e->xclient.message_type == getFluxboxChangeWorkspaceAtom()) {
-					BScreen *screen = searchScreen(e->xclient.window);
-
-					if (screen && e->xclient.data.l[0] >= 0 &&
-							e->xclient.data.l[0] < screen->getCount())
-						screen->changeWorkspaceID(e->xclient.data.l[0]);
-				
-				} else if (e->xclient.message_type == getFluxboxChangeWindowFocusAtom()) {
-					FluxboxWindow *win = searchWindow(e->xclient.window);
-
-					if (win && win->isVisible() && win->setInputFocus())
-						win->installColormap(True);
-				} else if (e->xclient.message_type == getFluxboxCycleWindowFocusAtom()) {
-					BScreen *screen = searchScreen(e->xclient.window);
-
-					if (screen)
-						if (! e->xclient.data.l[0])
-							screen->prevFocus();
-						else
-							screen->nextFocus();
-				} else if (e->xclient.message_type == getFluxboxChangeAttributesAtom()) {
-		
-					FluxboxWindow *win = searchWindow(e->xclient.window);
-
-					if (win && win->validateClient()) {
-						BlackboxHints net;
-						net.flags = e->xclient.data.l[0];
-						net.attrib = e->xclient.data.l[1];
-						net.workspace = e->xclient.data.l[2];
-						net.stack = e->xclient.data.l[3];
-						net.decoration = static_cast<BaseDisplay::Decor>(e->xclient.data.l[4]);
-
-						win->changeBlackboxHints(&net);
-					}
-				}
-				#ifdef GNOME
-				else if (e->xclient.message_type == getGnomeWorkspaceAtom()) {
-					#ifdef DEBUG
-					cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<e->xclient.data.l[0]<<endl;
-					#endif//!DEBUG
-					BScreen *screen = 0;					
-					FluxboxWindow *win = 0;
-					
-					if ( (win = searchWindow(e->xclient.window))!=0 &&
-							win->getScreen() && e->xclient.data.l[0] >= 0 &&
-							e->xclient.data.l[0] < win->getScreen()->getCount()) {
-
-						win->getScreen()->changeWorkspaceID(e->xclient.data.l[0]);
-						
-					} else if ((screen = searchScreen(e->xclient.window))!=0 &&
-							e->xclient.data.l[0] >= 0 &&
-							e->xclient.data.l[0] < screen->getCount()) {
-
-						screen->changeWorkspaceID(e->xclient.data.l[0]);
-					}
-
-				}
-				#endif //!GNOME
-				#ifdef NEWWMSPEC
-				else if (e->xclient.message_type == getNETWMDesktopAtom()) {
-					BScreen *screen = searchScreen(e->xclient.window);
-
-					if (screen && e->xclient.data.l[0] >= 0 &&
-							e->xclient.data.l[0] < screen->getCount())
-						screen->changeWorkspaceID(e->xclient.data.l[0]);
-				}
-				#endif //!NEWWMSPEC
-				
-			}
-				
-			break;
-		}
-
-
+		handleClientMessage(e->xclient);
+	break;
 	default:
 		{
 
@@ -1175,6 +817,357 @@ void Fluxbox::process_event(XEvent *e) {
 	}
 }
 
+void Fluxbox::handleButtonEvent(XButtonEvent &be) {
+	switch (be.type) {
+	case ButtonPress:
+	{
+		last_time = be.time;
+
+		FluxboxWindow *win = (FluxboxWindow *) 0;
+		Basemenu *menu = (Basemenu *) 0;
+
+		#ifdef		SLIT
+		Slit *slit = (Slit *) 0;
+		#endif // SLIT
+
+		Toolbar *tbar = (Toolbar *) 0;			
+		Tab *tab = 0;
+
+		if ((win = searchWindow(be.window))) {
+
+			win->buttonPressEvent(&be);
+				
+			if (be.button == 1)
+				win->installColormap(True);
+					
+		} else if ((menu = searchMenu(be.window))) {
+			menu->buttonPressEvent(&be);
+
+		#ifdef		SLIT
+		} else if ((slit = searchSlit(be.window))) {
+			slit->buttonPressEvent(&be);
+		#endif // SLIT
+
+		} else if ((tbar = searchToolbar(be.window))) {
+			tbar->buttonPressEvent(&be);
+		} else if ((tab = searchTab(be.window))) {
+			tab->buttonPressEvent(&be);
+		} else {
+			LinkedListIterator<BScreen> it(screenList);
+
+			for (; it.current(); it++) {
+
+				BScreen *screen = it.current();
+				if (be.window != screen->getRootWindow())
+					continue;
+				
+				
+				if (be.button == 1) {
+					if (! screen->isRootColormapInstalled())
+						screen->getImageControl()->installRootColormap();
+
+					if (screen->getWorkspacemenu()->isVisible())
+						screen->getWorkspacemenu()->hide();
+					if (screen->getRootmenu()->isVisible())
+						screen->getRootmenu()->hide();
+						
+				} else if (be.button == 2) {
+					int mx = be.x_root -
+						(screen->getWorkspacemenu()->getWidth() / 2);
+					int my = be.y_root -
+						(screen->getWorkspacemenu()->getTitleHeight() / 2);
+	
+					if (mx < 0) mx = 0;
+					if (my < 0) my = 0;
+
+					if (mx + screen->getWorkspacemenu()->getWidth() >
+						screen->getWidth()) {
+						mx = screen->getWidth() -
+							screen->getWorkspacemenu()->getWidth() -						
+							screen->getBorderWidth();
+					}
+
+					if (my + screen->getWorkspacemenu()->getHeight() >
+							screen->getHeight()) {
+						my = screen->getHeight() -
+							screen->getWorkspacemenu()->getHeight() -
+							screen->getBorderWidth();
+					}
+					screen->getWorkspacemenu()->move(mx, my);
+
+					if (! screen->getWorkspacemenu()->isVisible()) {
+						screen->getWorkspacemenu()->removeParent();
+						screen->getWorkspacemenu()->show();
+					}
+				} else if (be.button == 3) { 
+				//calculate placement of workspace menu
+				//and show/hide it				
+					int mx = be.x_root -
+						(screen->getRootmenu()->getWidth() / 2);
+					int my = be.y_root -
+						(screen->getRootmenu()->getTitleHeight() / 2);
+
+					if (mx < 0) mx = 0;
+					if (my < 0) my = 0;
+
+					if (mx + screen->getRootmenu()->getWidth() > screen->getWidth()) {
+						mx = screen->getWidth() -
+							screen->getRootmenu()->getWidth() -
+							screen->getBorderWidth();
+					}
+
+					if (my + screen->getRootmenu()->getHeight() >
+							screen->getHeight()) {
+						my = screen->getHeight() -
+							screen->getRootmenu()->getHeight() -
+							screen->getBorderWidth();
+					}
+					screen->getRootmenu()->move(mx, my);
+
+					if (! screen->getRootmenu()->isVisible()) {
+						checkMenu();
+						screen->getRootmenu()->show();
+					}
+				} // end button == 3
+			}
+		}
+	}
+
+	break;
+	case ButtonRelease:
+	{
+		last_time = be.time;
+		FluxboxWindow *win = (FluxboxWindow *) 0;
+		Basemenu *menu = (Basemenu *) 0;
+		Toolbar *tbar = (Toolbar *) 0;
+		Tab *tab = 0;
+		
+		if ((win = searchWindow(be.window)))
+			win->buttonReleaseEvent(&be);
+		else if ((menu = searchMenu(be.window)))
+			menu->buttonReleaseEvent(&be);
+		else if ((tbar = searchToolbar(be.window)))
+			tbar->buttonReleaseEvent(&be);
+		else if ((tab = searchTab(be.window)))
+			tab->buttonReleaseEvent(&be);
+	}
+	break;	
+	default:
+	break;
+	}
+}
+
+//------------ handleClientMessage --------
+// Handles XClientMessageEvent
+//-----------------------------------------
+void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]="<<ce.data.l[0]<<endl;
+	#endif
+
+	if (ce.format != 32)
+		return;
+	
+	if (ce.message_type == getWMChangeStateAtom()) {
+		FluxboxWindow *win = searchWindow(ce.window);
+		if (! win || ! win->validateClient())
+			return;
+
+		if (ce.data.l[0] == IconicState)
+			win->iconify();
+		if (ce.data.l[0] == NormalState)
+			win->deiconify();
+	} else if (ce.message_type == getFluxboxChangeWorkspaceAtom()) {
+		BScreen *screen = searchScreen(ce.window);
+
+		if (screen && ce.data.l[0] >= 0 &&
+				ce.data.l[0] < screen->getCount())
+			screen->changeWorkspaceID(ce.data.l[0]);
+				
+	} else if (ce.message_type == getFluxboxChangeWindowFocusAtom()) {
+		FluxboxWindow *win = searchWindow(ce.window);
+		if (win && win->isVisible() && win->setInputFocus())
+			win->installColormap(True);
+	} else if (ce.message_type == getFluxboxCycleWindowFocusAtom()) {
+		BScreen *screen = searchScreen(ce.window);
+
+		if (screen) {
+			if (! ce.data.l[0])
+				screen->prevFocus();
+			else
+				screen->nextFocus();
+		}		
+	} else if (ce.message_type == getFluxboxChangeAttributesAtom()) {
+		
+		FluxboxWindow *win = searchWindow(ce.window);
+
+		if (win && win->validateClient()) {
+			BlackboxHints net;
+			net.flags = ce.data.l[0];
+			net.attrib = ce.data.l[1];
+			net.workspace = ce.data.l[2];
+			net.stack = ce.data.l[3];
+			net.decoration = static_cast<BaseDisplay::Decor>(ce.data.l[4]);
+			win->changeBlackboxHints(&net);
+		}
+	} else {
+		bool val  = false;
+		#ifdef GNOME
+		val  = checkGnomeAtoms(ce);
+		#endif //!GNOME
+	
+		#ifdef NEWWMSPEC
+		if (!val)
+			val = checkNETWMAtoms(ce);
+		#endif //!NEWWMSPEC
+	}
+}
+//----------- handleKeyEvent ---------------
+// Handles KeyRelease and KeyPress events
+//------------------------------------------
+void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
+	switch (ke.type) {
+	case KeyPress:
+	{
+		Toolbar *tbar = searchToolbar(ke.window);
+		BScreen *screen = searchScreen(ke.window);
+			
+		if (tbar && tbar->isEditing())
+			tbar->keyPressEvent(&ke);
+		else if (screen)	{
+			#ifdef DEBUG
+			cerr<<"KeyEvent"<<endl;
+			#endif
+			//find action
+			Keys::KeyAction action = key->getAction(&ke);
+			#ifdef DEBUG
+			const char *actionstr = key->getActionStr(action);
+			if (actionstr)
+				cerr<<"KeyAction("<<actionstr<<")"<<endl;				
+			#endif
+			if (action==Keys::LASTKEYGRAB) //if action not found end case
+				break;
+
+			switch (action) {					
+			case Keys::WORKSPACE1:
+				screen->changeWorkspaceID(0);
+			break;
+			case Keys::WORKSPACE2:
+				screen->changeWorkspaceID(1);
+			break;
+			case Keys::WORKSPACE3:
+				screen->changeWorkspaceID(2);
+			break;
+			case Keys::WORKSPACE4:
+				screen->changeWorkspaceID(3);
+			break;
+			case Keys::WORKSPACE5:
+				screen->changeWorkspaceID(4);
+			break;
+			case Keys::WORKSPACE6:
+				screen->changeWorkspaceID(5);
+			break;
+			case Keys::WORKSPACE7:
+				screen->changeWorkspaceID(6);
+			break;
+			case Keys::WORKSPACE8:
+				screen->changeWorkspaceID(7);
+			break;
+			case Keys::WORKSPACE9:
+				screen->changeWorkspaceID(8);
+			break;
+			case Keys::WORKSPACE10:
+				screen->changeWorkspaceID(9);
+			break;
+			case Keys::WORKSPACE11:
+				screen->changeWorkspaceID(10);
+			break;
+			case Keys::WORKSPACE12:
+				screen->changeWorkspaceID(11);
+			break;
+			case Keys::NEXTWORKSPACE:
+				screen->nextWorkspace();
+			break;
+			case Keys::PREVWORKSPACE:
+				screen->prevWorkspace();
+			break;
+			case Keys::LEFTWORKSPACE:
+				screen->leftWorkspace();
+			break;
+			case Keys::RIGHTWORKSPACE:
+				screen->rightWorkspace();
+			break;
+			case Keys::KILLWINDOW: //kill the current window
+				XKillClient(screen->getBaseDisplay()->getXDisplay(),
+					focused_window->getClientWindow());
+			break;
+			case Keys::NEXTWINDOW:	//activate next window
+				screen->nextFocus();
+			break;
+			case Keys::PREVWINDOW:	//activate prev window
+				screen->prevFocus();
+			break;
+			case Keys::NEXTTAB: 
+				if (focused_window && focused_window->getTab()) {
+					Tab *tab = focused_window->getTab();
+					if (tab->next()) {
+						screen->getCurrentWorkspace()->raiseWindow(
+							tab->next()->getWindow());
+						tab->next()->getWindow()->setInputFocus();
+					} else {
+						screen->getCurrentWorkspace()->raiseWindow(
+							tab->first()->getWindow());
+						tab->first()->getWindow()->setInputFocus();
+					}	
+				}
+			break;						
+			case Keys::PREVTAB: 
+				if (focused_window && focused_window->getTab()) {
+					Tab *tab = focused_window->getTab();
+					if (tab->prev()) {
+						screen->getCurrentWorkspace()->raiseWindow(
+							tab->prev()->getWindow());
+						tab->prev()->getWindow()->setInputFocus();
+					} else {
+						screen->getCurrentWorkspace()->raiseWindow(
+							tab->last()->getWindow());
+						tab->last()->getWindow()->setInputFocus();
+					}
+				}
+			break;
+			case Keys::EXECUTE: //execute command on keypress
+			{
+				#ifndef		__EMX__
+				char displaystring[MAXPATHLEN];
+				sprintf(displaystring, "DISPLAY=%s",
+					DisplayString(getXDisplay()));
+				sprintf(displaystring + strlen(displaystring) - 1, "%d",
+					screen->getScreenNumber());		
+				#ifdef DEBUG
+				cerr<<__FILE__<<"("<<__LINE__<<"): Executing:"<<key->getExecCommand().c_str()<<endl;
+				#endif						
+						
+				bexec(key->getExecCommand().c_str(), displaystring);
+				#else
+				spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec(), NULL);
+				#endif // !__EMX__
+						
+			
+			}
+			break;
+			default: //try to see if its a window action
+				doWindowAction(action);
+			}
+		}
+	break;
+	}
+	
+	default:
+	break;
+	}
+	
+	
+}
 void Fluxbox::doWindowAction(Keys::KeyAction action) {
 	if (!focused_window)
 		return;
@@ -1320,6 +1313,55 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 	}
 
 }
+#ifdef GNOME
+//---------------- checkGnomeAtoms ---------------
+// Tries to find Gnome atoms in message
+// Returns true on success else false
+//---------------------------------------------
+bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
+	if (ce.message_type == getGnomeWorkspaceAtom()) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
+		#endif//!DEBUG
+		BScreen *screen = 0;
+		FluxboxWindow *win = 0;
+					
+		if ( (win = searchWindow(ce.window))!=0 && // the message sent to client window?
+				win->getScreen() && ce.data.l[0] >= 0 &&
+				ce.data.l[0] < win->getScreen()->getCount()) {
+			win->getScreen()->changeWorkspaceID(ce.data.l[0]);
+					
+		} else if ((screen = searchScreen(ce.window))!=0 && //the message sent to root window?
+				ce.data.l[0] >= 0 &&
+				ce.data.l[0] < screen->getCount()) {
+
+			screen->changeWorkspaceID(ce.data.l[0]);
+		}
+	} else 
+		return false; //no gnome atom
+
+	return true;
+}
+#endif //!GNOME
+
+#ifdef NEWWMSPEC
+//----------- checkNETWMAtoms -------------------
+// Tries to find NEWWM atom in clientmessage
+// Returns true on success else false
+//-----------------------------------------------
+bool Fluxbox::checkNETWMAtoms(XClientMessageEvent &ce) {
+	
+	if (ce.message_type == getNETWMDesktopAtom()) { //_NET_WM_DESKTOP
+		BScreen *screen = searchScreen(ce.window);
+
+		if (screen && ce.data.l[0] >= 0 &&
+			ce.data.l[0] < screen->getCount())
+			screen->changeWorkspaceID(ce.data.l[0]);
+	} else return false;
+
+	return true;
+}
+#endif //!NEWWMSPEC
 
 Bool Fluxbox::handleSignal(int sig) {
 	switch (sig) {
@@ -2148,7 +2190,7 @@ void Fluxbox::reload_rc(void) {
 
 
 void Fluxbox::reconfigure(void) {
-	reconfigure_wait = True;
+	reconfigure_wait = true;
 
 	if (! timer->isTiming()) timer->start();
 }
@@ -2301,16 +2343,16 @@ void Fluxbox::timeout(void) {
 	if (reread_menu_wait)
 		real_rereadMenu();
 
-	reconfigure_wait = reread_menu_wait = False;
+	reconfigure_wait = reread_menu_wait = false;
 }
 
 
 void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 	
-	BScreen *old_screen = (BScreen *) 0, *screen = (BScreen *) 0;
-	FluxboxWindow *old_win = (FluxboxWindow *) 0;
-	Toolbar *old_tbar = (Toolbar *) 0, *tbar = (Toolbar *) 0;
-	Workspace *old_wkspc = (Workspace *) 0, *wkspc = (Workspace *) 0;
+	BScreen *old_screen = 0, *screen = 0;
+	FluxboxWindow *old_win = 0;
+	Toolbar *old_tbar = 0, *tbar = 0;
+	Workspace *old_wkspc = 0, *wkspc = 0;
 
 	if (focused_window) {
 		old_win = focused_window;
