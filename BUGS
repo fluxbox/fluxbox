@@ -2,6 +2,8 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
+  * vertical toolbar alignment reported broken with pixmap themes
+
   * Some builds/distros seem to require all supported locales to be 
     installed to build properly (e.g. mdk, gentoo reported), this ok?
 
