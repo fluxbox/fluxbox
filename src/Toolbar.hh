@@ -22,13 +22,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.39 2003/07/19 11:55:49 rathnor Exp $
+// $Id: Toolbar.hh,v 1.40 2003/08/11 15:54:24 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
 
 #include "Timer.hh"
 #include "ToolbarTheme.hh"
+#include "ToolTheme.hh"
+
 #include "EventHandler.hh"
 #include "FbWindow.hh"
 #include "ArrowButton.hh"
@@ -42,16 +44,19 @@
 
 class BScreen;
 class Strut;
-class IconBar;
+class Container;
+class IconButton;
 class Shape;
+class ToolbarItem;
 
 namespace FbTk {
 class ImageControl;
 };
 
+typedef Container IconBar;
 ///	The toolbar.
 /// Handles iconbar, workspace name view and clock view
-class Toolbar : public FbTk::TimeoutHandler, public FbTk::EventHandler {
+class Toolbar: public FbTk::EventHandler, public FbTk::Observer {
 public:
        
     /// Toolbar placement on the screen
@@ -80,9 +85,39 @@ public:
     void disableIconBar();
     void raise();
     void lower();
+    void toggleHidden();
 
     void enableUpdates();
     void disableUpdates();
+
+
+    void moveToLayer(int layernum);
+
+    void saveOnHead(int head);
+
+    /**
+       @name eventhandlers
+    */
+    //@{
+    void buttonPressEvent(XButtonEvent &be);
+    void buttonReleaseEvent(XButtonEvent &be);
+    void enterNotifyEvent(XCrossingEvent &ce);
+    void leaveNotifyEvent(XCrossingEvent &ce);
+    void exposeEvent(XExposeEvent &ee);
+    void keyPressEvent(XKeyEvent &ke);
+    //@}
+	
+    void redrawWindowLabel(bool redraw= false);
+    void redrawWorkspaceLabel(bool redraw= false);
+    /// enter edit mode on workspace label
+    void edit();
+    void reconfigure();
+    void setPlacement(Placement where);
+    void checkClock(bool redraw = false, bool date = false);
+
+    void update(FbTk::Subject *subj);
+
+    FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
@@ -91,10 +126,6 @@ public:
 
     inline FbTk::Menu &layermenu() { return m_layermenu; }
     inline const FbTk::Menu &layermenu() const { return m_layermenu; }
-
-    void moveToLayer(int layernum);
-
-    FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
     /// are we in workspacename editing?
     inline bool isEditing() const { return m_editing; }
@@ -119,32 +150,9 @@ public:
     bool isVertical() const;
 
     inline int getOnHead() const { return *m_rc_on_head; }
-    void saveOnHead(int head);
-
-    /**
-       @name eventhandlers
-    */
-    //@{
-    void buttonPressEvent(XButtonEvent &be);
-    void buttonReleaseEvent(XButtonEvent &be);
-    void enterNotifyEvent(XCrossingEvent &ce);
-    void leaveNotifyEvent(XCrossingEvent &ce);
-    void exposeEvent(XExposeEvent &ee);
-    void keyPressEvent(XKeyEvent &ke);
-    //@}
-	
-    void redrawWindowLabel(bool redraw= false);
-    void redrawWorkspaceLabel(bool redraw= false);
-    /// enter edit mode on workspace label
-    void edit();
-    void reconfigure();
-    void setPlacement(Placement where);
-    void checkClock(bool redraw = false, bool date = false);
-
-    virtual void timeout();
-
 		
 private:
+    void updateIconbarGraphics();
     void setupMenus();
     void clearStrut();
     void updateStrut();
@@ -157,51 +165,35 @@ private:
         Frame(FbTk::EventHandler &evh, int screen_num);
         ~Frame();
 
-        Pixmap base, label, wlabel, clk, button, pbutton;
-        FbTk::FbWindow window, workspace_label, window_label, clock;
-        ArrowButton psbutton, nsbutton, pwbutton, nwbutton;
+        Pixmap base, label;
+        FbTk::FbWindow window, window_label;
 
-        int x, y, x_hidden, y_hidden, hour, minute, grab_x, grab_y;
-        unsigned int width, height, window_label_w, workspace_label_w, clock_w,
-            button_w, bevel_w, label_h;
+        int x, y, x_hidden, y_hidden, grab_x, grab_y;
+        unsigned int width, height, window_label_w, bevel_w, label_h;
     } frame;
 
-    class HideHandler : public FbTk::TimeoutHandler {
-    public:
-        Toolbar *toolbar;
-
-        virtual void timeout();
-    } hide_handler;
-
-    friend class HideHandler;
+    Pixmap m_icon_focused_pm, m_icon_unfocused_pm;
+    FbTk::Color m_icon_focused_color, m_icon_unfocused_color;
 
     BScreen &m_screen; ///< screen connection
 
-    FbTk::Timer m_clock_timer; ///< timer to update clock
     FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
     FbTk::Menu &m_toolbarmenu;
     FbTk::Menu m_placementmenu;
     LayerMenu<Toolbar> m_layermenu;
-    std::auto_ptr<IconBar> m_iconbar;
+
+    // icon stuff
+    std::auto_ptr<Container> m_iconbar;
+    typedef std::map<FluxboxWindow *, IconButton *> Icon2WinMap;
+    Icon2WinMap m_icon2winmap;
 	
     std::string m_new_workspace_name; ///< temp variable in edit workspace name mode
 
     ToolbarTheme m_theme;
 
-    //!! TODO this is just temporary
-    class ThemeListener: public FbTk::Observer {
-    public:
-        ThemeListener(Toolbar &tb):m_tb(tb) { }
-        void update(FbTk::Subject *subj) {
-            m_tb.reconfigure();
-        }
-    private:
-        Toolbar &m_tb;
-    };
-    
-    ThemeListener m_themelistener;
-
     FbTk::XLayerItem m_layeritem;
+    typedef std::list<ToolbarItem *> ItemList;
+    ItemList m_item_list;
 
     Strut *m_strut; ///< created and destroyed by BScreen
     // resources
@@ -211,6 +203,9 @@ private:
     FbTk::Resource<int> m_rc_on_head;
     FbTk::Resource<Placement> m_rc_placement;
     std::auto_ptr<Shape> m_shape;
+
+    ToolTheme m_tool_theme;
+
 };
 
 
