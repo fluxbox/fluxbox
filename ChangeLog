@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/10/06:
+  * Memory allocation improvements in TextureRender. (Henrik)
+    The texture render doesn't need to allocate red, green and blue
+    buffers if it doesn't render gradients
+    TextureRender.hh/cc
+  * Fixed gradient bug in bsetroot (Henrik)
+    bsetroot.cc
   * Fixed multiple TextButton issues (Mathias):
     - fixed some keymovement issues inside TextButtons
     - a ButtonPress into a TextButton places the Cursor to the 
