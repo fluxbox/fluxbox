@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.32 2003/10/02 16:14:41 rathnor Exp $
+// $Id: Gnome.cc,v 1.33 2004/01/19 18:36:27 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -54,12 +54,12 @@ void Gnome::initForScreen(BScreen &screen) {
                                            screen.rootWindow().window(), 0, 0, 5, 5, 0, 0, 0);
     // supported WM check
     screen.rootWindow().changeProperty(m_gnome_wm_supporting_wm_check, 
-                                       XA_CARDINAL, 32, 
+                                       XA_WINDOW, 32, 
                                        PropModeReplace, (unsigned char *) &gnome_win, 1);
 
     XChangeProperty(disp, gnome_win, 
                     m_gnome_wm_supporting_wm_check, 
-                    XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+                    XA_WINDOW, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
     // supported gnome atoms
     Atom gnomeatomlist[] = {
@@ -179,7 +179,7 @@ void Gnome::updateClientList(BScreen &screen) {
     //number of windows to show in client list
     num = win;
     screen.rootWindow().changeProperty(m_gnome_wm_win_client_list, 
-                                       XA_CARDINAL, 32,
+                                       XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
 	
     delete[] wl;
@@ -368,21 +368,24 @@ void Gnome::setState(FluxboxWindow *win, int state) {
     } else if (win->isShaded())
         win->shade();
 
-    /* TODO	
-       if (state & WIN_STATE_MAXIMIZED_VERT)
-       cerr<<"Maximize Vert"<<endl;
-       if (state & WIN_STATE_MAXIMIZED_HORIZ)
-       cerr<<"Maximize Horiz"<<endl;
-       if (state & WIN_STATE_HIDDEN)
-       cerr<<"Hidden"<<endl;
-       if (state & WIN_STATE_HID_WORKSPACE)
-       cerr<<"HID Workspace"<<endl;
-       if (state & WIN_STATE_HID_TRANSIENT)
-       cerr<<"HID Transient"<<endl;
-       if (state & WIN_STATE_FIXED_POSITION)
-       cerr<<"Fixed Position"<<endl;
-       if (state & WIN_STATE_ARRANGE_IGNORE)
-       cerr<<"Arrange Ignore"<<endl;			
+    if (state & WIN_STATE_HIDDEN)
+        win->setHidden(! win->isHidden());
+
+
+    /*   
+    if (state & WIN_STATE_MAXIMIZED_VERT)
+        cerr<<"Maximize Vert"<<endl;
+    if (state & WIN_STATE_MAXIMIZED_HORIZ)
+        cerr<<"Maximize Horiz"<<endl;
+ 
+    if (state & WIN_STATE_HID_WORKSPACE)
+        cerr<<"HID Workspace"<<endl;
+    if (state & WIN_STATE_HID_TRANSIENT)
+        cerr<<"HID Transient"<<endl;
+    if (state & WIN_STATE_FIXED_POSITION)
+        cerr<<"Fixed Position"<<endl;
+    if (state & WIN_STATE_ARRANGE_IGNORE)
+        cerr<<"Arrange Ignore"<<endl;			
     */
 }
 
