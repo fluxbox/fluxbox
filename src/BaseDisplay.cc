@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.6 2002/02/11 10:57:23 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.7 2002/03/18 15:28:25 fluxgen Exp $
 
 // use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -219,7 +219,7 @@ void bexec(const char *command, char* displaystring) {
 #endif // !__EMX__
 
 
-BaseDisplay::BaseDisplay(char *app_name, char *dpy_name):
+BaseDisplay::BaseDisplay(char *app_name, char *dpy_name):FbAtoms(0),
 m_startup(true), m_shutdown(false), 
 m_display_name(XDisplayName(dpy_name)), m_app_name(app_name),
 m_server_grabs(0)
@@ -280,6 +280,8 @@ m_server_grabs(0)
 				"as close-on-exec\n"));
 		throw static_cast<int>(2); //throw error 2
 	}
+	//initiate atoms
+	initAtoms(m_display);
 
 	number_of_screens = ScreenCount(m_display);
 
@@ -289,97 +291,6 @@ m_server_grabs(0)
 #else // !SHAPE
 	shape.extensions = False;
 #endif // SHAPE
-//---------- setup atoms
-
-	xa_wm_colormap_windows =
-		XInternAtom(m_display, "WM_COLORMAP_WINDOWS", False);
-	xa_wm_protocols = XInternAtom(m_display, "WM_PROTOCOLS", False);
-	xa_wm_state = XInternAtom(m_display, "WM_STATE", False);
-	xa_wm_change_state = XInternAtom(m_display, "WM_CHANGE_STATE", False);
-	xa_wm_delete_window = XInternAtom(m_display, "WM_DELETE_WINDOW", False);
-	xa_wm_take_focus = XInternAtom(m_display, "WM_TAKE_FOCUS", False);
-	motif_wm_hints = XInternAtom(m_display, "_MOTIF_WM_HINTS", False);
-
-	blackbox_hints = XInternAtom(m_display, "_BLACKBOX_HINTS", False);
-	blackbox_attributes = XInternAtom(m_display, "_BLACKBOX_ATTRIBUTES", False);
-	blackbox_change_attributes =
-		XInternAtom(m_display, "_BLACKBOX_CHANGE_ATTRIBUTES", False);
-
-	blackbox_structure_messages =
-		XInternAtom(m_display, "_BLACKBOX_STRUCTURE_MESSAGES", False);
-	blackbox_notify_startup =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_STARTUP", False);
-	blackbox_notify_window_add =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_WINDOW_ADD", False);
-	blackbox_notify_window_del =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_WINDOW_DEL", False);
-	blackbox_notify_current_workspace =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_CURRENT_WORKSPACE", False);
-	blackbox_notify_workspace_count =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_WORKSPACE_COUNT", False);
-	blackbox_notify_window_focus =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_WINDOW_FOCUS", False);
-	blackbox_notify_window_raise =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_WINDOW_RAISE", False);
-	blackbox_notify_window_lower =
-		XInternAtom(m_display, "_BLACKBOX_NOTIFY_WINDOW_LOWER", False);
-
-	blackbox_change_workspace =
-		XInternAtom(m_display, "_BLACKBOX_CHANGE_WORKSPACE", False);
-	blackbox_change_window_focus =
-		XInternAtom(m_display, "_BLACKBOX_CHANGE_WINDOW_FOCUS", False);
-	blackbox_cycle_window_focus =
-		XInternAtom(m_display, "_BLACKBOX_CYCLE_WINDOW_FOCUS", False);
-
-#ifdef NEWWMSPEC
-
-	net_supported = XInternAtom(m_display, "_NET_SUPPORTED", False);
-	net_client_list = XInternAtom(m_display, "_NET_CLIENT_LIST", False);
-	net_client_list_stacking = XInternAtom(m_display, "_NET_CLIENT_LIST_STACKING", False);
-	net_number_of_desktops = XInternAtom(m_display, "_NET_NUMBER_OF_DESKTOPS", False);
-	net_desktop_geometry = XInternAtom(m_display, "_NET_DESKTOP_GEOMETRY", False);
-	net_desktop_viewport = XInternAtom(m_display, "_NET_DESKTOP_VIEWPORT", False);
-	net_current_desktop = XInternAtom(m_display, "_NET_CURRENT_DESKTOP", False);
-	net_desktop_names = XInternAtom(m_display, "_NET_DESKTOP_NAMES", False);
-	net_active_window = XInternAtom(m_display, "_NET_ACTIVE_WINDOW", False);
-	net_workarea = XInternAtom(m_display, "_NET_WORKAREA", False);
-	net_supporting_wm_check = XInternAtom(m_display, "_NET_SUPPORTING_WM_CHECK", False);
-	net_virtual_roots = XInternAtom(m_display, "_NET_VIRTUAL_ROOTS", False);
-
-	net_close_window = XInternAtom(m_display, "_NET_CLOSE_WINDOW", False);
-	net_wm_moveresize = XInternAtom(m_display, "_NET_WM_MOVERESIZE", False);
-
-	net_properties = XInternAtom(m_display, "_NET_PROPERTIES", False);
-	net_wm_name = XInternAtom(m_display, "_NET_WM_NAME", False);
-	net_wm_desktop = XInternAtom(m_display, "_NET_WM_DESKTOP", False);
-	net_wm_window_type = XInternAtom(m_display, "_NET_WM_WINDOW_TYPE", False);
-	net_wm_state = XInternAtom(m_display, "_NET_WM_STATE", False);
-	net_wm_strut = XInternAtom(m_display, "_NET_WM_STRUT", False);
-	net_wm_icon_geometry = XInternAtom(m_display, "_NET_WM_ICON_GEOMETRY", False);
-	net_wm_icon = XInternAtom(m_display, "_NET_WM_ICON", False);
-	net_wm_pid = XInternAtom(m_display, "_NET_WM_PID", False);
-	net_wm_handled_icons = XInternAtom(m_display, "_NET_WM_HANDLED_ICONS", False);
-
-	net_wm_ping = XInternAtom(m_display, "_NET_WM_PING", False);
-	
-#endif // NEWWMSPEC
-
-#ifdef GNOME
-	
-	gnome_wm_win_layer = XInternAtom(m_display, "_WIN_LAYER", False);
-	gnome_wm_win_state = XInternAtom(m_display, "_WIN_STATE", False);
-	gnome_wm_win_hints = XInternAtom(m_display, "_WIN_HINTS", False);
-	gnome_wm_win_app_state = XInternAtom(m_display, "_WIN_APP_STATE", False);
-	gnome_wm_win_expanded_size = XInternAtom(m_display, "_WIN_EXPANDED_SIZE", False);
-	gnome_wm_win_icons = XInternAtom(m_display, "_WIN_ICONS", False);
-	gnome_wm_win_workspace = XInternAtom(m_display, "_WIN_WORKSPACE", False);
-	gnome_wm_win_workspace_count = XInternAtom(m_display, "_WIN_WORKSPACE_COUNT", False);
-	gnome_wm_win_workspace_names = XInternAtom(m_display, "_WIN_WORKSPACE_NAMES", False);
-	gnome_wm_win_client_list = XInternAtom(m_display, "_WIN_CLIENT_LIST", False);
-	gnome_wm_prot = XInternAtom(m_display, "_WIN_PROTOCOLS", False);
-	gnome_wm_supporting_wm_check = XInternAtom(m_display, "_WIN_SUPPORTING_WM_CHECK", False);
-	
-#endif // GNOME
 
 	cursor.session = XCreateFontCursor(m_display, XC_left_ptr);
 	cursor.move = XCreateFontCursor(m_display, XC_fleur);
