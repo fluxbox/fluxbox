@@ -382,6 +382,8 @@ FluxboxWindow::~FluxboxWindow() {
 
 void FluxboxWindow::init() {
     m_attaching_tab = 0;
+    // magic to detect if moved by hints
+    m_old_pos_x = 0;
 
     assert(m_client);
     m_client->m_win = this;
@@ -491,14 +493,10 @@ void FluxboxWindow::init() {
     }
 
     Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
-    Fluxbox::instance()->attachSignals(*this);
 
     /**************************************************/
     /* Read state above here, apply state below here. */
     /**************************************************/
-
-    // this window is managed, we are now allowed to modify actual state
-    m_initialized = true;
 
     // update transient infomation
     m_client->updateTransientInfo();
@@ -519,9 +517,15 @@ void FluxboxWindow::init() {
     }
 
 
-    applyDecorations(true);
-
     associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height);
+
+    
+    Fluxbox::instance()->attachSignals(*this);
+
+    // this window is managed, we are now allowed to modify actual state
+    m_initialized = true;
+
+    applyDecorations(true);
 
     grabButtons();
 
@@ -530,7 +534,7 @@ void FluxboxWindow::init() {
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
         m_workspace_number = screen().currentWorkspaceID();
 
-    bool place_window = true;
+    bool place_window = (m_old_pos_x == 0);
     if (fluxbox.isStartup() || m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
 
@@ -1339,6 +1343,10 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
 
 void FluxboxWindow::moveResize(int new_x, int new_y,
                                unsigned int new_width, unsigned int new_height, int gravity) {
+
+    // magic to detect if moved during initialisation
+    if (!isInitialized())
+        m_old_pos_x = 1;
 
     if (gravity != ForgetGravity) {
         frame().gravityTranslate(new_x, new_y, gravity, false);
