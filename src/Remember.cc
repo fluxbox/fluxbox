@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.39 2004/08/10 18:35:05 fluxgen Exp $
+// $Id: Remember.cc,v 1.40 2004/09/02 08:58:06 akir Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -291,8 +291,10 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             }
 
             row++;
-            if (line[0] == '#')
-                continue;  //the line is commented
+            FbTk::StringUtil::removeFirstWhitespace(line);
+            FbTk::StringUtil::removeTrailingWhitespace(line);
+            if (line.size() == 0 || line[0] == '#')
+                continue;  //the line is commented or blank
             int parse_pos = 0, err = 0;
             string str_key, str_option, str_label;
             err = FbTk::StringUtil::getStringBetween(str_key, 
@@ -333,7 +335,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 } else if (str_label == "NORMAL") {
                     l = Fluxbox::instance()->getNormalLayer();
                 } else if (str_label == "TOP") {
-                    l = Fluxbox::instance()->getNormalLayer();
+                    l = Fluxbox::instance()->getTopLayer();
                 } else if (str_label == "DOCK") {
                     l = Fluxbox::instance()->getDockLayer();
                 } else if (str_label == "ABOVEDOCK") {
