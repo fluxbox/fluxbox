@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.97 2003/01/12 17:59:20 fluxgen Exp $
+// $Id: Screen.cc,v 1.98 2003/01/12 18:21:27 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -42,7 +42,7 @@
 #include "MenuTheme.hh"
 #include "FbCommands.hh"
 #include "BoolMenuItem.hh"
-#include "IntResMenuItem.hh"
+//#include "IntResMenuItem.hh"
 #include "MacroCommand.hh"
 
 //use GNU extensions
