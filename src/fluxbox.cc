@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.67 2002/08/14 00:01:10 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.68 2002/08/14 23:03:07 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -134,7 +134,8 @@ char *basename (char *s) {
 
 	return save;
 }
-};
+
+}; // end anonymous namespace
 
 #endif // HAVE_BASENAME
 
@@ -290,7 +291,7 @@ Fluxbox::Titlebar Fluxbox::m_titlebar_left[] = {STICK};
 Fluxbox::Titlebar Fluxbox::m_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 
 Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc)
-: BaseDisplay(m_argv[0], dpy_name),
+: BaseDisplay(m_argv[0], dpy_name), FbAtoms(getXDisplay()),
 m_resourcemanager(), m_screen_rm(),
 m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
 m_rc_iconbar(m_resourcemanager, true, "session.iconbar", "Session.Iconbar"),
@@ -348,18 +349,18 @@ key(0)
 	
 	masked = None;
 	
-	#ifdef SLIT
-	#ifdef KDE
+#ifdef SLIT
+#ifdef KDE
 	//For KDE dock applets
 	kwm1_dockwindow = XInternAtom(getXDisplay(), "KWM_DOCKWINDOW", False); //KDE v1.x
 	kwm2_dockwindow = XInternAtom(getXDisplay(), "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False); //KDE v2.x
-	#endif //KDE
+#endif //KDE
 
-	#endif // SLIT
+#endif // SLIT
 
-	#ifdef HAVE_GETPID
+#ifdef HAVE_GETPID
 	fluxbox_pid = XInternAtom(getXDisplay(), "_BLACKBOX_PID", False);
-	#endif // HAVE_GETPID
+#endif // HAVE_GETPID
 
 	int i;
 	load_rc();
@@ -397,10 +398,8 @@ key(0)
 	timer.setTimeout(0);
 	timer.fireOnce(True);
 
-	//create keybindings handler and load keys file
-	char *keyfilename = StringUtil::expandFilename((*m_rc_keyfile).c_str());
-	key = new Keys(getXDisplay(), const_cast<char *>(keyfilename));
-	delete keyfilename;
+	//create keybindings handler and load keys file	
+	key = new Keys(getXDisplay(), StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
 	ungrab();
 }
@@ -1787,16 +1786,11 @@ void Fluxbox::save_rc(void) {
 	
 	char rc_string[1024];
 
-	auto_ptr<char> dbfile(getRcFilename());
-
-	// load_rc();
-	// This overwrites configs made while running, for example
-	// usage of iconbar and tabs
+	string dbfile(getRcFilename());
 	
-	
-	if (*dbfile) {
-		m_resourcemanager.save(dbfile.get(), dbfile.get());
-		m_screen_rm.save(dbfile.get(), dbfile.get());
+	if (dbfile.size() != 0) {
+		m_resourcemanager.save(dbfile.c_str(), dbfile.c_str());
+		m_screen_rm.save(dbfile.c_str(), dbfile.c_str());
 	} else
 		cerr<<"database filename is invalid!"<<endl;
 	
@@ -1942,10 +1936,10 @@ void Fluxbox::save_rc(void) {
 	
 	}
 
-	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
+	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.c_str());
 
 	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc); //merge database together
-	XrmPutFileDatabase(old_blackboxrc, dbfile.get());
+	XrmPutFileDatabase(old_blackboxrc, dbfile.c_str());
 	XrmDestroyDatabase(old_blackboxrc);
 #ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;	
@@ -1955,17 +1949,14 @@ void Fluxbox::save_rc(void) {
 //-------- getRcFilename -------------
 // Returns filename of resource file
 //------------------------------------
-char *Fluxbox::getRcFilename() {
-	char *dbfile=0;
+string Fluxbox::getRcFilename() {
  
-	if (rc_file.size() == 0) {
-		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);
-		return StringUtil::strdup(str.c_str());
+	if (rc_file.size() == 0) { // set default filename
+		string defaultfile(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);
+		return defaultfile;
+	}
 
-	} else
-		dbfile = StringUtil::strdup(rc_file.c_str());
- 
-	return dbfile;
+	return rc_file;
 }
 
 //-------- getDefaultDataFilename -------------
@@ -1979,10 +1970,11 @@ void Fluxbox::load_rc(void) {
 	XrmDatabaseHelper database;
 	
 	//get resource filename
-	auto_ptr<char> dbfile(getRcFilename());
-	if (dbfile.get()) {
-		if (!m_resourcemanager.load(dbfile.get())) {
-			cerr<<"Faild to load database:"<<dbfile.get()<<endl;
+	string dbfile(getRcFilename());
+
+	if (dbfile.size() != 0) {
+		if (!m_resourcemanager.load(dbfile.c_str())) {
+			cerr<<"Faild to load database:"<<dbfile<<endl;
 			cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
 			if (!m_resourcemanager.load(DEFAULT_INITFILE))
 				cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
@@ -1996,21 +1988,15 @@ void Fluxbox::load_rc(void) {
 	char *value_type;
 
 	if (m_rc_menufile->size()) {
-		char *tmpvar =StringUtil::expandFilename(m_rc_menufile->c_str());
-		*m_rc_menufile = (tmpvar==0 ? "" : tmpvar);
+		*m_rc_menufile = StringUtil::expandFilename(*m_rc_menufile);
 		if (!m_rc_menufile->size())
 			m_rc_menufile.setDefaultValue();
-
-		delete [] tmpvar;
 	} else
 		m_rc_menufile.setDefaultValue();
  
- 	if (m_rc_slitlistfile->size()) {
- 		char *tmpvar =StringUtil::expandFilename(m_rc_slitlistfile->c_str());
- 		*m_rc_slitlistfile = (tmpvar==0 ? "" : tmpvar);
- 		delete [] tmpvar;
- 	}
- 	if (!m_rc_slitlistfile->size()) {
+ 	if (m_rc_slitlistfile->size() != 0) {
+ 		*m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
+ 	} else {
  		string filename;
  		getDefaultDataFilename("slitlist", filename);
  		m_rc_slitlistfile.setFromString(filename.c_str());
@@ -2021,17 +2007,15 @@ void Fluxbox::load_rc(void) {
 	else if (*m_rc_colors_per_channel > 6)
 		*m_rc_colors_per_channel = 6;
 
-	if (*m_rc_stylefile=="")
+	if (m_rc_stylefile->size() == 0)
 		*m_rc_stylefile = DEFAULTSTYLE;
-	else {
-		auto_ptr<char> tmpvar(StringUtil::expandFilename(m_rc_stylefile->c_str()));
-		*m_rc_stylefile = (tmpvar.get()==0 ? "" : tmpvar.get());
-	}
+	else // expand tilde
+		*m_rc_stylefile = StringUtil::expandFilename(*m_rc_stylefile);
 
 	//load file
-	database = XrmGetFileDatabase(dbfile.get());
+	database = XrmGetFileDatabase(dbfile.c_str());
 	if (database==0) {
-		cerr<<"Fluxbox: Cant open "<<dbfile.get()<<" !"<<endl;
+		cerr<<"Fluxbox: Cant open "<<dbfile<<" !"<<endl;
 		cerr<<"Using: "<<DEFAULT_INITFILE<<endl;
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 	}
@@ -2055,10 +2039,9 @@ void Fluxbox::load_rc(void) {
 		(resource.auto_raise_delay.tv_sec * 1000);
 	resource.auto_raise_delay.tv_usec *= 1000;
 
-	{ // expand tilde
-	auto_ptr<char> tmpvar(StringUtil::expandFilename(m_rc_groupfile->c_str()));
-	*m_rc_groupfile = (tmpvar.get()==0 ? "" : tmpvar.get());
-	}
+	// expand tilde
+	*m_rc_groupfile = StringUtil::expandFilename(*m_rc_groupfile);
+
 #ifdef DEBUG
 	cerr<<__FILE__<<": Loading groups ("<<*m_rc_groupfile<<")"<<endl;
 #endif // DEBUG
@@ -2069,10 +2052,10 @@ void Fluxbox::load_rc(void) {
 
 void Fluxbox::load_rc(BScreen *screen) {
 	//get resource filename
-	auto_ptr<char> dbfile(getRcFilename());
-	if (dbfile.get()) {
-		if (!m_screen_rm.load(dbfile.get())) {
-			cerr<<"Faild to load database:"<<dbfile.get()<<endl;
+	string dbfile(getRcFilename());
+	if (dbfile.size() != 0) {
+		if (!m_screen_rm.load(dbfile.c_str())) {
+			cerr<<"Faild to load database:"<<dbfile<<endl;
 			cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
 			if (!m_screen_rm.load(DEFAULT_INITFILE))
 				cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
@@ -2084,7 +2067,7 @@ void Fluxbox::load_rc(BScreen *screen) {
 	
 	XrmDatabaseHelper database;
 
-	database = XrmGetFileDatabase(dbfile.get());
+	database = XrmGetFileDatabase(dbfile.c_str());
 	if (database==0)
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 		
@@ -2120,9 +2103,9 @@ void Fluxbox::load_rc(BScreen *screen) {
 	sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
 			&value)) {
-		#ifdef DEBUG
+#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): Workspaces="<<screen->getNumberOfWorkspaces()<<endl;
-		#endif
+#endif // DEBUG
 		char *search = StringUtil::strdup(value.addr);
 
 		int i;
@@ -2130,7 +2113,7 @@ void Fluxbox::load_rc(BScreen *screen) {
 			char *nn;
 
 			if (! i) nn = strtok(search, ",");
-			else nn = strtok(NULL, ",");
+			else nn = strtok(0, ",");
 
 			if (nn)
 				screen->addWorkspaceName(nn);	
@@ -2146,54 +2129,54 @@ void Fluxbox::load_rc(BScreen *screen) {
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
 			&value)) {
 		if (! strncasecmp(value.addr, "clicktofocus", value.size)) {
-			screen->saveAutoRaise(False);
-			screen->saveSloppyFocus(False);
-			screen->saveSemiSloppyFocus(False);
+			screen->saveAutoRaise(false);
+			screen->saveSloppyFocus(false);
+			screen->saveSemiSloppyFocus(false);
 
 		} else if (! strncasecmp(value.addr, "autoraisesloppyfocus", value.size)) {
-			screen->saveSemiSloppyFocus(False);
-			screen->saveSloppyFocus(True);
-			screen->saveAutoRaise(True);
+			screen->saveSemiSloppyFocus(false);
+			screen->saveSloppyFocus(true);
+			screen->saveAutoRaise(true);
 		} else if (! strncasecmp(value.addr, "autoraisesemisloppyfocus", value.size)) {
-			screen->saveSloppyFocus(False);
-			screen->saveSemiSloppyFocus(True);
-			screen->saveAutoRaise(True);
+			screen->saveSloppyFocus(false);
+			screen->saveSemiSloppyFocus(true);
+			screen->saveAutoRaise(true);
 
 		} else if (! strncasecmp(value.addr, "semisloppyfocus", value.size)) {
-			screen->saveSloppyFocus(False);
-			screen->saveSemiSloppyFocus(True);
-			screen->saveAutoRaise(False);
+			screen->saveSloppyFocus(false);
+			screen->saveSemiSloppyFocus(true);
+			screen->saveAutoRaise(false);
 
 		} else {
 
-			screen->saveSemiSloppyFocus(False);	
-			screen->saveSloppyFocus(True);
-			screen->saveAutoRaise(False);
+			screen->saveSemiSloppyFocus(false);	
+			screen->saveSloppyFocus(true);
+			screen->saveAutoRaise(false);
 		}
 	} else {
-		screen->saveSemiSloppyFocus(False);
-		screen->saveSloppyFocus(True); //TODO: fluxgen, shouldn't this be false?
-		screen->saveAutoRaise(False); //as click should be default, or?
+		screen->saveSemiSloppyFocus(false);
+		screen->saveSloppyFocus(true); 
+		screen->saveAutoRaise(false);
 	}
 
 	sprintf(name_lookup, "session.screen%d.windowPlacement", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-			&value))
+			&value)) {
 		if (! strncasecmp(value.addr, "RowSmartPlacement", value.size))
 			screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
 		else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
 			screen->savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
 		else
 			screen->savePlacementPolicy(BScreen::CASCADEPLACEMENT);
-	else
+	} else
 		screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
 
 #ifdef SLIT
 	sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.Slit.Placement", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-			&value))
+			&value)) {
 		if (! strncasecmp(value.addr, "TopLeft", value.size))
 			screen->saveSlitPlacement(Slit::TOPLEFT);
 		else if (! strncasecmp(value.addr, "CenterLeft", value.size))
@@ -2210,40 +2193,40 @@ void Fluxbox::load_rc(BScreen *screen) {
 			screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
 		else
 			screen->saveSlitPlacement(Slit::CENTERRIGHT);
-	else
+	} else
 		screen->saveSlitPlacement(Slit::CENTERRIGHT);
 
 	sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-			&value))
+			&value)) {
 		if (! strncasecmp(value.addr, "Horizontal", value.size))
 			screen->saveSlitDirection(Slit::HORIZONTAL);
 		else
 			screen->saveSlitDirection(Slit::VERTICAL);
-	else
+	} else
 		screen->saveSlitDirection(Slit::VERTICAL);
 
 	sprintf(name_lookup, "session.screen%d.slit.onTop", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.Slit.OnTop", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-			&value))
+			&value)) {
 		if (! strncasecmp(value.addr, "True", value.size))
 			screen->saveSlitOnTop(True);
 		else
 			screen->saveSlitOnTop(False);
-	else
+	} else
 		screen->saveSlitOnTop(False);
 
 	sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.Slit.AutoHide", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-			&value))
+			&value)) {
 		if (! strncasecmp(value.addr, "True", value.size))
 			screen->saveSlitAutoHide(True);
 		else
 			screen->saveSlitAutoHide(False);
-	else
+	} else
 		screen->saveSlitAutoHide(False);
 
 	#ifdef XINERAMA
@@ -2287,9 +2270,12 @@ void Fluxbox::load_rc(BScreen *screen) {
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
 			&value)) {
 		int clock;
-		if (sscanf(value.addr, "%d", &clock) != 1) screen->saveClock24Hour(False);
-		else if (clock == 24) screen->saveClock24Hour(True);
-		else screen->saveClock24Hour(False);
+		if (sscanf(value.addr, "%d", &clock) != 1)
+			screen->saveClock24Hour(False);
+		else if (clock == 24) 
+			screen->saveClock24Hour(True);
+		else 
+			screen->saveClock24Hour(False);
 	} else
 		screen->saveClock24Hour(False);
 #endif // HAVE_STRFTIME
@@ -2313,9 +2299,9 @@ void Fluxbox::load_rc(BScreen *screen) {
 void Fluxbox::loadRootCommand(BScreen *screen)	{
 	XrmDatabase database = (XrmDatabase) 0;
  
-	auto_ptr<char> dbfile(getRcFilename());
+	string dbfile(getRcFilename());
 
-	database = XrmGetFileDatabase(dbfile.get());
+	database = XrmGetFileDatabase(dbfile.c_str());
 	if (!database) 
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 
@@ -2331,28 +2317,29 @@ void Fluxbox::loadRootCommand(BScreen *screen)	{
 	
 }
 
-void Fluxbox::reload_rc(void) {
+void Fluxbox::reload_rc() {
 	load_rc();
 	reconfigure();
 }
 
 
-void Fluxbox::reconfigure(void) {
+void Fluxbox::reconfigure() {
 	reconfigure_wait = true;
 
-	if (! timer.isTiming()) timer.start();
+	if (! timer.isTiming()) 
+		timer.start();
 }
 
 
-void Fluxbox::real_reconfigure(void) {
+void Fluxbox::real_reconfigure() {
 
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
 
-	auto_ptr<char> dbfile(getRcFilename());
-	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
+	string dbfile(getRcFilename());
+	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.c_str());
 
 	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);
-	XrmPutFileDatabase(old_blackboxrc, dbfile.get());
+	XrmPutFileDatabase(old_blackboxrc, dbfile.c_str());
 	
 	if (old_blackboxrc)
 		XrmDestroyDatabase(old_blackboxrc);
@@ -2377,9 +2364,7 @@ void Fluxbox::real_reconfigure(void) {
 		(*sit)->reconfigure();
 	
 	//reconfigure keys
-	char *keyfilename = StringUtil::expandFilename(m_rc_keyfile->c_str());	
-	key->reconfigure(keyfilename);
-	delete keyfilename;
+	key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
 	//reconfigure tabs
 	reconfigureTabs();
