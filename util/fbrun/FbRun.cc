@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.4 2002/11/12 19:20:31 fluxgen Exp $
+// $Id: FbRun.cc,v 1.5 2002/11/13 16:43:52 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -42,7 +42,8 @@ m_display(BaseDisplay::getXDisplay()),
 m_bevel(4),
 m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
 m_end(false),
-m_current_history_item(0) {
+m_current_history_item(0),
+m_drawstart_x(0) {
 	createWindow(x, y, width + m_bevel, m_font.height());
 }
 
@@ -137,7 +138,7 @@ void FbRun::resize(size_t width, size_t height) {
 	assert(m_win);
 	XResizeWindow(m_display, m_win, width, height);
 	m_width = width;
-	m_height = height + m_bevel;
+	m_height = height;
 	setNoMaximize();
 }
 
@@ -155,7 +156,7 @@ void FbRun::redrawLabel() {
 	assert(m_win);
 
 	XClearWindow(m_display, m_win);
-	drawString(m_bevel/2, m_height - m_bevel/2,
+	drawString(m_bevel/2, m_font.ascent() + m_bevel/2,
 		m_runtext.c_str(), m_runtext.size());
 
 }
@@ -164,7 +165,18 @@ void FbRun::drawString(int x, int y,
 	const char *text, size_t len) {
 	assert(m_win);
 	assert(m_gc);
-	m_font.drawText(m_win, DefaultScreen(m_display), m_gc, text, len, x, y);
+	// check right boundary
+	// and adjust text drawing
+	size_t text_width = m_font.textWidth(text, len);
+	size_t startpos = 0;
+	if (text_width > m_width) {
+		for (; startpos < len; ++startpos) {
+			if (m_font.textWidth(text+startpos, len-startpos) < m_width)
+				break;
+		}		
+	}
+
+	m_font.drawText(m_win, DefaultScreen(m_display), m_gc, text + startpos, len-startpos, x, y);
 }
 
 
@@ -202,20 +214,23 @@ void FbRun::handleEvent(XEvent * const xev) {
 			} else if (ks == XK_Return) {
 				run(m_runtext);
 				m_runtext = ""; // clear text
-			} else if (ks == XK_BackSpace && m_runtext.size() != 0) {
-				m_runtext.erase(m_runtext.size()-1);
-				redrawLabel();
+			} else if (ks == XK_BackSpace) {
+				if (m_runtext.size() != 0) { // we can't erase what we don't have ;)
+					m_runtext.erase(m_runtext.size()-1);
+					redrawLabel();
+				}
 			} else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
 				m_runtext+=keychar[0]; // append character
 				redrawLabel(); 
 			} else if (IsCursorKey(ks)) {
+				
 				switch (ks) {
 				case XK_Up:
 					prevHistoryItem();
-					break;
+				break;
 				case XK_Down:
 					nextHistoryItem();
-					break;
+				break;
 				}
 				redrawLabel();
 			}

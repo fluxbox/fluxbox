@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.3 2002/11/12 19:20:31 fluxgen Exp $
+// $Id: FbRun.hh,v 1.4 2002/11/13 16:43:52 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -77,11 +77,12 @@ private:
 	std::string m_runtext; ///< command to execute
 	size_t m_width, m_height; ///< size of window
 	int m_bevel; ///< distance to window edge from font in pixels
-	GC m_gc;
-	bool m_end;
+	GC m_gc; ///< graphic context
+	bool m_end; ///< marks when this object is done
 	std::vector<std::string> m_history; ///< history list of commands
-	size_t m_current_history_item;
-	std::string m_history_file;
+	size_t m_current_history_item; ///< holds current position in command history
+	std::string m_history_file; ///< holds filename for command history file
+	int m_drawstart_x; ///< for scrolling if cursor is to far to the right
 };
 
 #endif // FBRUN_HH
