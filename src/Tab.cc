@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.40 2002/11/15 14:06:33 fluxgen Exp $
+// $Id: Tab.cc,v 1.41 2002/11/17 13:40:01 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -385,30 +385,31 @@ void Tab::draw(bool pressed) const {
 
 	} else {
 	*/
-	int dx=m_win->frame.bevel_w*2;
+	int dx=0;
 	Theme::WindowStyle *winstyle = m_win->getScreen()->getWindowStyle();
 	size_t dlen = m_win->getTitle().size();
-	size_t l = dlen;
-	if ( dlen > m_size_w) {
+	size_t l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
+	if ( l > m_size_w) {
 		for (; dlen >= 0; dlen--) {
-			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
-			l += (dx * 4);
+			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen) + m_win->frame.bevel_w*4;
 
 			if (l < m_size_w || dlen == 0)
 				break;
 		}
 	}
-	
+
 	switch (winstyle->tab.justify) {
 	case DrawUtil::Font::RIGHT:
-		dx += m_size_w - l;
-		break;
-
+		dx += m_size_w - l - m_win->frame.bevel_w*3;
+	break;
 	case DrawUtil::Font::CENTER:
 		dx += (m_size_w - l) / 2;
-		break;
+	break;
+	case DrawUtil::Font::LEFT:
+		dx = m_win->frame.bevel_w;
+	break;
 	default:
-		break;
+	break;
 	}	
 		
 	m_win->getScreen()->getWindowStyle()->tab.font.drawText(
