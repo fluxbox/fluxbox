@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.7 2003/12/19 17:07:53 fluxgen Exp $
+//$Id: Font.hh,v 1.8 2004/08/10 11:22:10 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -29,6 +29,8 @@
 
 #include <string>
 #include <memory>
+
+#include <iconv.h>
 
 namespace FbTk {
 
@@ -100,6 +102,8 @@ private:
     bool m_rotated; ///< wheter we're rotated or not
     float m_angle; ///< rotation angle
     bool m_shadow; ///< shadow text
+    std::string m_locale; ///< system encoding
+    iconv_t m_iconv;
 };
 
 } //end namespace FbTk
