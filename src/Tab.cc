@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.50 2003/01/09 18:32:09 fluxgen Exp $
+// $Id: Tab.cc,v 1.51 2003/01/09 22:08:27 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -189,7 +189,7 @@ void Tab::lower() {
 // TODO optimize this
 //------------------------------------------
 void Tab::loadTheme() {
-    BImageControl *image_ctrl = m_win->getScreen()->getImageControl();
+    FbTk::ImageControl *image_ctrl = m_win->getScreen()->getImageControl();
     Pixmap tmp = m_focus_pm;
     const FbTk::Texture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.3 2003/01/09 18:03:33 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.4 2003/01/09 22:01:30 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -29,7 +29,7 @@
 #include <iostream>
 using namespace std;
 
-FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, BImageControl &imgctrl, int screen_num, int x, int y,
+FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int screen_num, int x, int y,
                        unsigned int width, unsigned int height):
     m_theme(theme),
     m_imagectrl(imgctrl),
@@ -67,7 +67,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, BImageControl &imgctrl, int scree
     init();
 }
 /*
-  FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, BImageControl &imgctrl, const FbTk::FbWindow &parent, int x, int y,
+  FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, const FbTk::FbWindow &parent, int x, int y,
   unsigned int width, unsigned int height):
   m_theme(theme),
   m_imagectrl(imgctrl),

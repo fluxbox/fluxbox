@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.2 2003/01/07 01:28:16 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.3 2003/01/09 22:00:34 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -36,20 +36,21 @@
 #include <vector>
 #include <string>
 
-
 class FbWinFrameTheme;
-class BImageControl;
+namespace FbTk {
+class ImageControl;
+};
 
 /// holds a window frame with a client window (see: <a href="fluxbox_fbwinframe.png">image</a>)
 class FbWinFrame:public FbTk::EventHandler {
 public:
 
     /// create a top level window
-    FbWinFrame(FbWinFrameTheme &theme, BImageControl &imgctrl, int screen_num, int x, int y,
+    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int screen_num, int x, int y,
                unsigned int width, unsigned int height);
 
     /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
-    FbWinFrame(FbWinFrameTheme &theme, BImageControl &imgctrl, const FbTk::FbWindow &parent,
+    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, const FbTk::FbWindow &parent,
                int x, int y, 
                unsigned int width, unsigned int height);
 
@@ -170,7 +171,7 @@ private:
     void setupButton(FbTk::Button &btn);
 
     FbWinFrameTheme &m_theme; ///< theme to be used 
-    BImageControl &m_imagectrl; ///< Image control for rendering
+    FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
     /**
        @name windows
     */

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.30 2002/12/01 13:41:59 rathnor Exp $
+// $Id: Slit.cc,v 1.31 2003/01/09 22:07:49 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -413,7 +413,7 @@ void Slit::reconfigure() {
         XMapWindow(disp, frame.window);
 
     Pixmap tmp = frame.pixmap;
-    BImageControl *image_ctrl = screen()->getImageControl();
+    FbTk::ImageControl *image_ctrl = screen()->getImageControl();
     const FbTk::Texture &texture = screen()->getTheme()->getSlitTexture();
     if (texture.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.pixmap = None;

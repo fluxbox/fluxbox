@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.22 2002/12/09 19:03:13 fluxgen Exp $
+// $Id: IconBar.cc,v 1.23 2003/01/09 22:03:06 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -117,7 +117,7 @@ Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
 // with the size width * height
 //--------------------------------------
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
-    BImageControl *image_ctrl = m_screen->getImageControl();
+    FbTk::ImageControl *image_ctrl = m_screen->getImageControl();
     Pixmap tmp = m_focus_pm;
     const FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
 	
