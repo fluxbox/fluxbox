@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.6 2003/08/11 14:58:49 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.7 2003/08/12 00:25:23 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -152,15 +152,17 @@ void FbPixmap::copy(Pixmap pm) {
                  &bpp);
     // create new pixmap and copy area
     create(root, new_width, new_height, bpp);
-    // determine screen gc
+    
     Display *disp = FbTk::App::instance()->display();
-    XWindowAttributes attr;
-    XGetWindowAttributes(disp, root, &attr);
-    GC gc = DefaultGCOfScreen(attr.screen);
+
+    GC gc = XCreateGC(disp, drawable(), 0, 0);
+
     XCopyArea(disp, pm, drawable(), gc, 
               0, 0,
               width(), height(),
               0, 0);
+
+    XFreeGC(disp, gc);
 }
 
 void FbPixmap::rotate() {
