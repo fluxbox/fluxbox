@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.63 2003/02/23 16:29:26 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.64 2003/02/23 19:13:22 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -690,7 +690,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
     }
 #endif // HAVE_STRFTIME
 
-    size_t newlen = strlen(t);
+    unsigned int newlen = strlen(t);
     int dx = FbTk::doAlignment(frame.clock_w,
                                frame.bevel_w*2,
                                m_theme.justify(),
@@ -722,7 +722,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
         if (foc->getScreen() != &screen() || foc->getTitle().size() == 0)
             return;
 		
-        size_t newlen = foc->getTitle().size();
+        unsigned int newlen = foc->getTitle().size();
         int dx = FbTk::doAlignment(frame.window_label_w, frame.bevel_w*2,
                                    m_theme.justify(),
                                    m_theme.font(),
@@ -756,7 +756,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
 		
     const char *text = screen().getCurrentWorkspace()->name().c_str();
     size_t textlen = screen().getCurrentWorkspace()->name().size();
-    size_t newlen = textlen;
+    unsigned int newlen = textlen;
     int dx = FbTk::doAlignment(frame.workspace_label_w, frame.bevel_w,
                                    m_theme.justify(),
                                    m_theme.font(),
