@@ -19,14 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.3 2002/02/17 19:00:14 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.4 2002/03/22 11:51:46 fluxgen Exp $
 
 #ifndef DRAWUTIL_HH
 #define DRAWUTIL_HH
 
 #include <X11/Xlib.h>
 
-struct DrawUtil
+namespace DrawUtil
 {
 	struct Font 
 	{
@@ -38,7 +38,7 @@ struct DrawUtil
 		FontJustify justify;
 	};
 	
-static void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
+void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
 					unsigned int text_w, unsigned int size_w,
 					unsigned int bevel_w, char *text);
 
@@ -78,18 +78,18 @@ static void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
 
 		DrawUtil::XRotCharStruct	 per_char[95];
 	};
-static unsigned int XRotTextWidth(DrawUtil::XRotFontStruct *rotfont, char *str, int len);
-static void XRotDrawString(Display *dpy, DrawUtil::XRotFontStruct *rotfont, Drawable drawable,
+unsigned int XRotTextWidth(DrawUtil::XRotFontStruct *rotfont, char *str, int len);
+void XRotDrawString(Display *dpy, DrawUtil::XRotFontStruct *rotfont, Drawable drawable,
 					GC gc, int x, int y, char *str, int len);
 
-static void DrawRotString(Display *display, Window w, GC gc, DrawUtil::XRotFontStruct *font,
+void DrawRotString(Display *display, Window w, GC gc, DrawUtil::XRotFontStruct *font,
 					unsigned int align, unsigned int text_w,
 					unsigned int size_w, unsigned int size_h,
 					unsigned int bevel_w, char *text);
 					
-static DrawUtil::XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle);
-static void XRotUnloadFont(Display *dpy, DrawUtil::XRotFontStruct *rotfont);
+DrawUtil::XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle);
+void XRotUnloadFont(Display *dpy, DrawUtil::XRotFontStruct *rotfont);
 
-};
+}; //end namespace DrawUtil
 
-#endif //_DRAWUTIL_HH_
+#endif //DRAWUTIL_HH

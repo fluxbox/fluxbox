@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.cc,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: DrawUtil.cc,v 1.5 2002/03/22 11:51:46 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"
@@ -37,14 +37,16 @@
 
 using namespace std;
 
+namespace DrawUtil
+{
+
 // ----------------------------------------------------------------------
 // xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
 // ----------------------------------------------------------------------
-
 //------- XRotLoadFont -------------------
 // Load the rotated version of a given font
 //----------------------------------------
-DrawUtil::XRotFontStruct *DrawUtil::XRotLoadFont(Display *dpy, char *fontname, float angle) {
+XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle) {
 	char val;
 	XImage *I1, *I2;
 	Pixmap canvas;
@@ -252,7 +254,7 @@ DrawUtil::XRotFontStruct *DrawUtil::XRotLoadFont(Display *dpy, char *fontname, f
 // Free the resources associated with a
 // rotated font
 //----------------------------------------
-void DrawUtil::XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
+void XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
 {
 	int ichar;
 
@@ -272,7 +274,7 @@ void DrawUtil::XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
 //------- XRotTextWidth ------------------
 // Returns the width of a rotated string
 //----------------------------------------
-unsigned int DrawUtil::XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
+unsigned int XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
 {
 	int i, width = 0, ichar;
 
@@ -297,7 +299,7 @@ unsigned int DrawUtil::XRotTextWidth(XRotFontStruct *rotfont, char *str, int len
 //------- XRotDrawString -----------------
 // A front end to XRotDrawString : mimics XDrawString
 //----------------------------------------
-void DrawUtil::XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
+void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
 		    GC gc, int x, int y, char *str, int len)
 {            
 	static GC my_gc = 0;
@@ -364,7 +366,7 @@ void DrawUtil::XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable dr
 
 
 //Draw title string	
-void DrawUtil::DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font, 
+void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font, 
 					unsigned int text_w, unsigned int size_w, 
 					unsigned int bevel_w, char *text) {
 
@@ -425,7 +427,7 @@ void DrawUtil::DrawString(Display *display, Window w, GC gc, DrawUtil::Font *fon
 }
 
 
-void DrawUtil::DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
+void DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
 					unsigned int align, unsigned int text_w, 
 					unsigned int size_w, unsigned int size_h,
 					unsigned int bevel_w, char *text) {
@@ -465,3 +467,5 @@ void DrawUtil::DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *
 	XClearWindow(display, w);
 	XRotDrawString(display, font, w, gc, size_w, size_h, text, dlen);	
 }
+
+}; //end namespace DrawUtil
