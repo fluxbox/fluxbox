@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.14 2004/10/04 12:43:52 rathnor Exp $
+// $Id$
 
 #include "XmbFontImp.hh"
 
@@ -198,7 +198,7 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
 };
 namespace FbTk {
 
-XmbFontImp::XmbFontImp(const char *filename, bool utf8):m_fontset(0), m_utf8mode(utf8) {
+XmbFontImp::XmbFontImp(const char *filename, bool utf8):m_fontset(0), m_setextents(0), m_utf8mode(utf8) {
     if (filename != 0)
         load(filename);
 }
