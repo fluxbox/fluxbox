@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.22 2002/02/10 22:48:19 fluxgen Exp $
+// $Id: Screen.cc,v 1.23 2002/02/11 11:52:07 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -453,18 +453,13 @@ resource(rm, screenname, altscreenname)
 				continue;
 
 			if (attrib.map_state != IsUnmapped) {
-				FluxboxWindow *tempwin = 0;
-				try {
-					tempwin = new FluxboxWindow(children[i], this);
-				} catch (FluxboxWindow::Error err) {
-					FluxboxWindow::showError(err);
-					delete tempwin;
-					tempwin = 0;
-				} catch (...) {
-					cerr<<"FATAL: Unknown exception"<<endl;
+				
+				FluxboxWindow *win = new FluxboxWindow(children[i], this);
+				if (!win->isManaged()) {
+					delete win;
+					win = 0;
 				}
-
-				FluxboxWindow *win = fluxbox->searchWindow(children[i]);
+				
 				if (win) {
 					XMapRequestEvent mre;
 					mre.window = children[i];
