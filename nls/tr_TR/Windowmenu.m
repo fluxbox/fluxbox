@@ -18,3 +18,5 @@ $ #KillClient
 # Öldür
 $ #Close
 # Kapat
+$ #Tab
+# Tab

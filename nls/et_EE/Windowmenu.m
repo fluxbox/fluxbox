@@ -18,3 +18,5 @@ $ #KillClient
 # Killi klient
 $ #Close
 # Sulge
+$ #Tab
+# Tab

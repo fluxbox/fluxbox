@@ -20,3 +20,5 @@ $ #KillClient
 # Killa Il Client
 $ #Close
 # Chiudi
+$ #Tab
+# Tab
