@@ -1,8 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/04/22:
+  * Attach area for tabs:
+    new resource:
+    * session.tabsAttachArea: <mode>
+    where mode is:
+    Window   - dropping tabs to any part of the destination-window
+               leads to attaching to that frame (default)
+    Titlebar - dropping tabs only to the titlebar of the destination-
+               window leads to attaching to that frame
+    (Thanks Mathias Gumz)
   * FbRun: 
-    path completion and fixed so it loads apps on first tab-press (Thanks Mathias Gumz)
+    path completion and fixed so it loads apps on first tab-press 
+    (Thanks Mathias Gumz)
     FbRun.cc
 *04/04/19:
   * Moved kde dockapps from slit into the systray in toolbar (Henrik
