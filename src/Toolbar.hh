@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.12 2002/10/29 16:08:42 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.13 2002/11/15 12:04:27 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -67,7 +67,7 @@ private:
 		Placementmenu(Toolbarmenu *);
 	};
 
-	#ifdef XINERAMA
+#ifdef XINERAMA
 	class Headmenu : public Basemenu {
 	public:
 		Headmenu(Toolbarmenu *);
@@ -77,15 +77,13 @@ private:
 	protected:
 		virtual void itemSelected(int button, unsigned int index); 
 	};
-	#endif // XINERAMA
+	Headmenu *headmenu;
+	friend class Headmenu;
+#endif // XINERAMA
  
 
 	Toolbar *toolbar;
 	Placementmenu *placementmenu;
-	#ifdef XINERAMA
-	Headmenu *headmenu;
-	friend class Headmenu;
-	#endif // XINERAMA
 
 	friend class Placementmenu;
 	friend class Toolbar;
