@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.13 2002/08/11 20:44:48 fluxgen Exp $
+// $Id: Image.cc,v 1.14 2002/09/14 13:52:08 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -2309,29 +2309,6 @@ void BImageControl::removeImage(Pixmap pixmap) {
 }
 
 
-unsigned long BImageControl::color(const char *colorname,
-							unsigned char *r, unsigned char *g,
-							unsigned char *b)
-{
-	XColor color;
-	color.pixel = 0;
-
-	if (! XParseColor(basedisplay->getXDisplay(), colormap(), colorname, &color))
-		fprintf(stderr, "BImageControl::color: color parse error: \"%s\"\n",
-			colorname);
-	else if (! XAllocColor(basedisplay->getXDisplay(), colormap(), &color))
-		fprintf(stderr, "BImageControl::color: color alloc error: \"%s\"\n",
-			colorname);
-
-	if (color.red == 65535) *r = 0xff;
-	else *r = (unsigned char) (color.red / 0xff);
-	if (color.green == 65535) *g = 0xff;
-	else *g = (unsigned char) (color.green / 0xff);
-	if (color.blue == 65535) *b = 0xff;
-	else *b = (unsigned char) (color.blue / 0xff);
-
-	return color.pixel;
-}
 
 
 unsigned long BImageControl::color(const char *colorname) {
@@ -2519,29 +2496,6 @@ void BImageControl::parseTexture(FbTk::Texture *texture, const char *texture_str
 	}
 
 	delete [] ts;
-}
-
-
-void BImageControl::parseColor(FbTk::Color *col, const char *color_string) {
-	if (!col) return;
-
-	if (col->isAllocated()) {
-		unsigned long pixel = col->pixel();
-
-		XFreeColors(basedisplay->getXDisplay(), colormap(), &pixel, 1, 0);
-
-		col->setPixel(0l);
-		col->setRGB(0, 0, 0);
-		col->setAllocated(false);
-	}
-
-	if (color_string != 0) {
-		unsigned char r, g, b;
-
-		col->setPixel(color(color_string, &r, &g, &b));
-		col->setRGB(r, g, b);
-		col->setAllocated(true);
-	}
 }
 
 
