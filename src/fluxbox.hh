@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.35 2002/12/01 13:42:07 rathnor Exp $
+// $Id: fluxbox.hh,v 1.36 2002/12/03 23:55:49 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -98,8 +98,6 @@ public:
 #endif
 #endif // HAVE_GETPID
 
-    Basemenu *searchMenu(Window);
-
     FluxboxWindow *searchGroup(Window, FluxboxWindow *);
     FluxboxWindow *searchWindow(Window);
     inline FluxboxWindow *getFocusedWindow() { return focused_window; }
@@ -110,7 +108,6 @@ public:
     inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
     inline const Time &getLastTime() const { return last_time; }
 
-    Toolbar *searchToolbar(Window w);
     Tab *searchTab(Window);
 	
     /// obsolete
@@ -142,15 +139,11 @@ public:
     void saveMenuFilename(const char *);
     void saveTitlebarFilename(const char *);
     void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
-    void saveMenuSearch(Window, Basemenu *);
     void saveWindowSearch(Window, FluxboxWindow *);
-    void saveToolbarSearch(Window, Toolbar *);
     void saveTabSearch(Window, Tab *);
     void saveGroupSearch(Window, FluxboxWindow *);	
     void save_rc();
-    void removeMenuSearch(Window);
     void removeWindowSearch(Window);
-    void removeToolbarSearch(Window);
     void removeTabSearch(Window);
     void removeGroupSearch(Window);
     void restart(const char * = 0);
@@ -237,8 +230,6 @@ private:
 	
     std::map<Window, FluxboxWindow *> windowSearch;
     std::map<Window, FluxboxWindow *> groupSearch;
-    std::map<Window, Basemenu *> menuSearch;
-    std::map<Window, Toolbar *> toolbarSearch;
     typedef std::map<Window, Tab *> TabList;
     TabList tabSearch;
 	

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.85 2002/12/02 23:49:56 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.86 2002/12/03 23:58:06 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -566,12 +566,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
         return;
     }
-	
+    // try FbTk::EventHandler first
+    FbTk::EventManager::instance()->handleEvent(*e);
+
     switch (e->type) {
     case ButtonRelease:
     case ButtonPress:
         handleButtonEvent(e->xbutton);
-        FbTk::EventManager::instance()->handleEvent(*e);
 	break;	
     case ConfigureRequest:
         {
@@ -726,17 +727,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
         last_time = e->xmotion.time;
 
         FluxboxWindow *win = 0;
-        Basemenu *menu = 0;
         Tab *tab = 0;
 			
         if ((win = searchWindow(e->xmotion.window)) !=0)
             win->motionNotifyEvent(&e->xmotion);
-        else if ((menu = searchMenu(e->xmotion.window)) !=0)
-            menu->motionNotifyEvent(&e->xmotion);
         else if ((tab = searchTab(e->xmotion.window)) !=0)
             tab->motionNotifyEvent(&e->xmotion);
-				
-			
+
     }
         break;
     case PropertyNotify: {
@@ -755,13 +752,11 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case EnterNotify: {
         last_time = e->xcrossing.time;
 
-        BScreen *screen = (BScreen *) 0;
-        FluxboxWindow *win = (FluxboxWindow *) 0;
-        Basemenu *menu = (Basemenu *) 0;
-        
-        Tab *tab = (Tab *) 0;
+        BScreen *screen = 0;
+        FluxboxWindow *win = 0;
+        Tab *tab = 0;
 #ifdef		SLIT
-        Slit *slit = (Slit *) 0;
+        Slit *slit = 0;
 #endif // SLIT
 
         if (e->xcrossing.mode == NotifyGrab)
@@ -789,11 +784,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
                 ungrab();
             }
-        } else if ((menu = searchMenu(e->xcrossing.window)))
-            menu->enterNotifyEvent(&e->xcrossing);
-        /*  else if ((tbar = searchToolbar(e->xcrossing.window)))
-            tbar->enterNotifyEvent(&e->xcrossing);
-        */else if ((tab = searchTab(e->xcrossing.window))) {
+        } else if ((tab = searchTab(e->xcrossing.window))) {
             win = tab->getWindow();
             if (win->getScreen()->isSloppyFocus() && (! win->isFocused()) &&
                 (! no_focus)) {
@@ -812,10 +803,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
         else if ((slit = searchSlit(e->xcrossing.window)))
             slit->enterNotifyEvent(&e->xcrossing);
 #endif // SLIT
-        else {
-            FbTk::EventManager::instance()->handleEvent(*e);
-        }
-		
 			
     }
         break;
@@ -824,48 +811,32 @@ void Fluxbox::handleEvent(XEvent * const e) {
             last_time = e->xcrossing.time;
 
             FluxboxWindow *win = (FluxboxWindow *) 0;
-            Basemenu *menu = (Basemenu *) 0;
 			
 #ifdef SLIT
             Slit *slit = (Slit *) 0;
 #endif // SLIT
-
-            if ((menu = searchMenu(e->xcrossing.window)))
-                menu->leaveNotifyEvent(&e->xcrossing);
-            else if ((win = searchWindow(e->xcrossing.window)))
-                win->installColormap(False);
-            /*      else if ((tbar = searchToolbar(e->xcrossing.window)))
-                    tbar->leaveNotifyEvent(&e->xcrossing);
-            */
+            if ((win = searchWindow(e->xcrossing.window)))
+                win->installColormap(false);
 #ifdef SLIT
             else if ((slit = searchSlit(e->xcrossing.window)))
                 slit->leaveNotifyEvent(&e->xcrossing);
 #endif // SLIT
-            else {
-                FbTk::EventManager::instance()->handleEvent(*e);
-            }	
 			
         }
         break;
     case Expose:
         {
             FluxboxWindow *win = (FluxboxWindow *) 0;
-            Basemenu *menu = (Basemenu *) 0;      
             Tab *tab = 0;
 			
             if ((win = searchWindow(e->xexpose.window)))
                 win->exposeEvent(&e->xexpose);
-            else if ((menu = searchMenu(e->xexpose.window)))
-                menu->exposeEvent(&e->xexpose);
             else if ((tab = searchTab(e->xexpose.window)))
                 tab->exposeEvent(&e->xexpose);
-            else
-                FbTk::EventManager::instance()->handleEvent(*e);
         }
         break;
     case KeyPress:
         handleKeyEvent(e->xkey);
-        FbTk::EventManager::instance()->handleEvent(*e); 
 	break;
     case ColormapNotify: {
         BScreen *screen = searchScreen(e->xcolormap.window);
@@ -903,7 +874,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
                 win->shapeEvent(shape_event);
         }
 #endif // SHAPE
-        FbTk::EventManager::instance()->handleEvent(*e);
     }
     }
 }
@@ -915,7 +885,6 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         last_time = be.time;
 
         FluxboxWindow *win = 0;
-        Basemenu *menu = 0;
         Tab *tab = 0; 
 #ifdef		SLIT
         Slit *slit = (Slit *) 0;
@@ -927,9 +896,6 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 				
             if (be.button == 1)
                 win->installColormap(True);
-					
-        } else if ((menu = searchMenu(be.window))) {
-            menu->buttonPressEvent(&be);
         }
 #ifdef	SLIT
         else if ((slit = searchSlit(be.window))) {
@@ -1029,13 +995,10 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
     {
         last_time = be.time;
         FluxboxWindow *win = (FluxboxWindow *) 0;
-        Basemenu *menu = (Basemenu *) 0;
         Tab *tab = 0;
 		
         if ((win = searchWindow(be.window)))
             win->buttonReleaseEvent(&be);
-        else if ((menu = searchMenu(be.window)))
-            menu->buttonReleaseEvent(&be);
         else if ((tab = searchTab(be.window)))
             tab->buttonReleaseEvent(&be);
     }
@@ -1716,18 +1679,6 @@ FluxboxWindow *Fluxbox::searchGroup(Window window, FluxboxWindow *win) {
     return it == groupSearch.end() ? 0 : it->second;
 }
 
-
-Basemenu *Fluxbox::searchMenu(Window window) {
-    std::map<Window, Basemenu *>::iterator it = menuSearch.find(window);
-    return it == menuSearch.end() ? 0 : it->second;
-}
-
-
-Toolbar *Fluxbox::searchToolbar(Window window) {
-    std::map<Window, Toolbar *>::iterator it = toolbarSearch.find(window);
-    return it == toolbarSearch.end() ? 0 : it->second;
-}
-
 Tab *Fluxbox::searchTab(Window window) {
     std::map<Window, Tab *>::iterator it = tabSearch.find(window);
     return it == tabSearch.end() ? 0 : it->second;
@@ -1751,17 +1702,6 @@ void Fluxbox::saveGroupSearch(Window window, FluxboxWindow *data) {
     groupSearch[window] = data;
 }
 
-
-void Fluxbox::saveMenuSearch(Window window, Basemenu *data) {
-    menuSearch[window] = data;
-}
-
-
-void Fluxbox::saveToolbarSearch(Window window, Toolbar *data) {
-    toolbarSearch[window] = data;
-}
-
-
 void Fluxbox::saveTabSearch(Window window, Tab *data) {
     tabSearch[window] = data;
 }
@@ -1781,15 +1721,6 @@ void Fluxbox::removeWindowSearch(Window window) {
 void Fluxbox::removeGroupSearch(Window window) {
     groupSearch.erase(window);
 }
-
-void Fluxbox::removeMenuSearch(Window window) {
-    menuSearch.erase(window);
-}
-
-void Fluxbox::removeToolbarSearch(Window window) {
-    toolbarSearch.erase(window);
-}
-
 
 void Fluxbox::removeTabSearch(Window window) {
     tabSearch.erase(window);
