@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.20 2002/11/21 15:26:34 fluxgen Exp $
+//$Id: Font.cc,v 1.21 2002/11/24 05:23:36 rathnor Exp $
 
 
 #include "Font.hh"
@@ -139,14 +139,8 @@ void Font::setAntialias(bool flag) {
 bool Font::load(const char *name) {
 	if (name == 0)
 		return false;
-	bool ret_val = m_fontimp->load(name);
-	if (ret_val && name != 0) { //prevent from having a bad fontimp
-		m_fontstr = name; // if the load really succeded then set font string
-	} else {
-		m_fontstr = "";
-	}
-
-	return ret_val;
+	m_fontstr = name;
+	return m_fontimp->load(name);
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
