@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.26 2003/06/05 13:09:08 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.27 2003/06/13 21:00:18 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -890,7 +890,6 @@ void FbWinFrame::renderLabelButtons() {
 
         if (label_pm) {
             m_current_label->setBackgroundPixmap(label_pm);
-            cerr<<"label_pm = "<<hex<<label_pm<<dec<<endl;
         } else
             m_current_label->setBackgroundColor(label_color);
         m_current_label->clear();
