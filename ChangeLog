@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/03/11:
+  * fbsetbg updates: (Han)
+    * Check if Esetroot was linked with Imlib
+    * Add support for gxmessage (looks much nicer)
+    * Send all messages to xmessage/gxmessage because test -t is also true
+      when startx is used.
+    * Add compat note for $UID
   * fbsetbg: special Esetroot check and message improvements (Han)
 *04/03/08:
   * Fix focus passing when grouping (Simon)
