@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.15 2003/06/23 13:34:54 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.16 2003/06/24 10:37:39 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -321,5 +321,6 @@ void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
         return;
     m_toolbar->delAllIcons();
     initForScreen(m_screen);
+    m_toolbar->redrawWorkspaceLabel(true);
 }
 
