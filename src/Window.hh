@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.71 2003/05/11 13:36:11 fluxgen Exp $
+// $Id: Window.hh,v 1.72 2003/05/14 14:43:06 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -361,6 +361,7 @@ public:
 
 private:
     void init();
+    void shape();
 
     void grabButtons();
 	
@@ -450,7 +451,9 @@ private:
     struct _functions {
         bool resize, move, iconify, maximize, close;
     } functions;
-	
+
+    bool m_shaped; ///< if the window is shaped with a mask
+
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button

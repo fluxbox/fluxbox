@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.174 2003/05/13 14:05:00 fluxgen Exp $
+// $Id: Window.cc,v 1.175 2003/05/14 14:42:30 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -326,6 +326,27 @@ FluxboxWindow::~FluxboxWindow() {
 void FluxboxWindow::init() { 
     m_attaching_tab = 0;
     assert(m_client);
+
+    // check for shape extension and whether the window is shaped
+    m_shaped = false;
+#ifdef SHAPE
+    if (Fluxbox::instance()->haveShape()) {
+        Display *disp = FbTk::App::instance()->display();
+        int not_used;
+        unsigned int not_used2;
+        int shaped;
+        XShapeSelectInput(disp, m_client->window(), ShapeNotifyMask);
+        XShapeQueryExtents(disp, m_client->window(), 
+                           &shaped,  /// bShaped
+                           &not_used, &not_used,  // xbs, ybs
+                           &not_used2, &not_used2, // wbs, hbs
+                           &not_used, // cShaped
+                           &not_used, &not_used, // xcs, ycs
+                           &not_used2, &not_used2); // wcs, hcs
+        m_shaped = (shaped != 0 ? true : false);
+    }
+#endif // SHAPE
+
     //!! TODO init of client should be better
     // we don't want to duplicate code here and in attachClient
     m_clientlist.push_back(m_client);
@@ -334,6 +355,8 @@ void FluxboxWindow::init() {
         m_client->window()<<", frame = "<<m_frame.window().window()<<dec<<")"<<endl;
 
 #endif // DEBUG    
+
+
 
     m_frame.resize(m_client->width(), m_client->height());
     TextButton *btn =  new TextButton(m_frame.label(), 
@@ -403,7 +426,7 @@ void FluxboxWindow::init() {
     XWindowAttributes wattrib;
     if (! m_client->getAttrib(wattrib) ||
         !wattrib.screen // no screen? ??
-        || wattrib.override_redirect) { // override redirect
+        || wattrib.override_redirect) { // override redirect        
         return;
     }
 
@@ -514,7 +537,26 @@ void FluxboxWindow::init() {
     // no focus default
     setFocusFlag(false);
 
+    if (m_shaped)
+        shape();
 }
+
+/// apply shape to this window
+void FluxboxWindow::shape() {
+#ifdef SHAPE
+    if (m_shaped) {
+        Display *disp = FbTk::App::instance()->display();
+        XShapeCombineShape(disp,
+                           m_frame.window().window(), ShapeBounding,
+                           0, m_frame.clientArea().y(), // xOff, yOff
+                           m_client->window(),
+                           ShapeBounding, ShapeSet);
+        XFlush(disp);
+    }
+#endif // SHAPE
+
+}
+
 
 /// attach a client to this window and destroy old window
 void FluxboxWindow::attachClient(WinClient &client) {
@@ -1122,6 +1164,8 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
     if (send_event && ! moving) {
         sendConfigureNotify();
     }
+
+    shape();
 }	
 
 bool FluxboxWindow::setInputFocus() {
@@ -1949,7 +1993,36 @@ void FluxboxWindow::handleEvent(XEvent &event) {
             propertyNotifyEvent(event.xproperty.atom);
         }
         break;
+
+
+
     default:
+#ifdef SHAPE
+        if (Fluxbox::instance()->haveShape() && 
+            event.type == Fluxbox::instance()->shapeEventbase() + ShapeNotify) {
+            XShapeEvent *shape_event = (XShapeEvent *)&event;
+
+            if (shape_event->kind != ShapeBounding)
+                break;
+
+            if (shape_event->shaped) {
+                m_shaped = true;
+                shape();
+            } else {
+                m_shaped = false;
+                // set no shape
+                Display *disp = FbTk::App::instance()->display();
+                XShapeCombineMask(disp,
+                                  m_frame.window().window(), ShapeBounding,
+                                  0, 0,
+                                  None, ShapeSet);
+            }
+
+            XSync(FbTk::App::instance()->display(), False);
+            break;
+        }
+#endif // SHAPE
+
         break;
     }
 }
