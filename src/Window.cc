@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.51 2002/05/17 13:27:20 fluxgen Exp $
+// $Id: Window.cc,v 1.52 2002/05/17 16:35:58 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -302,13 +302,6 @@ tab(0)
 		} else
 			place_window = false;
 
-/*		if ((fluxbox->isStartup()) ||
-				(frame.x >= 0 &&
-				(signed) (frame.y + frame.y_border) >= 0 &&
-				frame.x <= (signed) screen->getWidth() &&
-				frame.y <= (signed) screen->getHeight()))
-			place_window = false; */
-			
 	}
 
 	frame.window = createToplevelWindow(frame.x, frame.y, frame.width,
@@ -320,27 +313,9 @@ tab(0)
 	frame.plate = createChildWindow(frame.window); //Create plate window
 	fluxbox->saveWindowSearch(frame.plate, this);	//save plate window
 	
-	frame.title = createChildWindow(frame.window); //create titlebar win
-	if (decorations.titlebar) {	//have titlebar decorations?		
-		fluxbox->saveWindowSearch(frame.title, this);	//save titlebar win
-		frame.label = createChildWindow(frame.title); //create label win in titlebar
-		fluxbox->saveWindowSearch(frame.label, this);	//save label win
-	}
-
-	if (decorations.handle) {	//have handle decorations ?
-		frame.handle = createChildWindow(frame.window); //create handle win
-		fluxbox->saveWindowSearch(frame.handle, this);	//save handle win
-
-		frame.left_grip = // create left handle
-			createChildWindow(frame.handle, fluxbox->getLowerLeftAngleCursor());
-		fluxbox->saveWindowSearch(frame.left_grip, this); //save left handle
-
-		frame.right_grip = // create right handle
-			createChildWindow(frame.handle, fluxbox->getLowerRightAngleCursor());
-		fluxbox->saveWindowSearch(frame.right_grip, this); //save right handle
-	}
-	
-	
+	createTitlebar();
+	createHandle();
+		
 	associateClientWindow();
 
 	grabButtons();
@@ -377,7 +352,6 @@ tab(0)
 	if (maximized && functions.maximize) {
 		int m = maximized;
 		maximized = false;
-
 		maximize(m);
 	}
 
@@ -398,9 +372,9 @@ tab(0)
 FluxboxWindow::~FluxboxWindow(void) {
 	if (screen==0) //the window wasn't created 
 		return;
-
+	
 	Fluxbox *fluxbox = Fluxbox::instance();
-
+	
 	if (moving || resizing) {
 		screen->hideGeometry();
 		XUngrabPointer(display, CurrentTime);
@@ -418,7 +392,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 		windowmenu = 0;
 	}
 
-	if (tab!=0) {
+	if (tab != 0) {
 		delete tab;	
 		tab = 0;
 	}
@@ -427,6 +401,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 		XFree(client.mwm_hint);
 		client.mwm_hint = 0;
 	}
+
 	if (client.blackbox_hint!=0) {
 		XFree(client.blackbox_hint);
 		client.blackbox_hint = 0;
@@ -445,82 +420,49 @@ FluxboxWindow::~FluxboxWindow(void) {
 		fluxbox->setFocusedWindow(client.transient_for);
 	}
 
-	if (client.window_group)
+	if (client.window_group) {
 		fluxbox->removeGroupSearch(client.window_group);
+		client.window_group = 0;
+	}
 
 	if (transient && client.transient_for)
 		client.transient_for->client.transient = client.transient;
 	if (client.transient)
 		client.transient->client.transient_for = client.transient_for;
-	
-	while ( !buttonlist.empty()) {	//destroy all buttons on titlebar
-		fluxbox->removeWindowSearch(buttonlist.back().win);	
-		XDestroyWindow(display, buttonlist.back().win);
-		buttonlist.pop_back();
-	}
-
-	if (frame.title) {
-		if (frame.ftitle)
-			image_ctrl->removeImage(frame.ftitle);
-
-		if (frame.utitle)
-			image_ctrl->removeImage(frame.utitle);
-
-		if (frame.flabel)
-			image_ctrl->removeImage(frame.flabel);
-
-		if( frame.ulabel)
-			image_ctrl->removeImage(frame.ulabel);
-
-		fluxbox->removeWindowSearch(frame.label);
-		fluxbox->removeWindowSearch(frame.title);
-		XDestroyWindow(display, frame.label);
-		XDestroyWindow(display, frame.title);
-	}
-
-	if (frame.handle) {
-		if (frame.fhandle)
-			image_ctrl->removeImage(frame.fhandle);
-
-		if (frame.uhandle)
-			image_ctrl->removeImage(frame.uhandle);
-
-		if (frame.fgrip)
-			image_ctrl->removeImage(frame.fgrip);
-
-		if (frame.ugrip)
-			image_ctrl->removeImage(frame.ugrip);
-
-		fluxbox->removeWindowSearch(frame.right_grip);
-		fluxbox->removeWindowSearch(frame.left_grip);
-		fluxbox->removeWindowSearch(frame.handle);
 		
-		XDestroyWindow(display, frame.right_grip);
-		XDestroyWindow(display, frame.left_grip);
-		XDestroyWindow(display, frame.handle);
+	destroyTitlebar();	
+
+	destroyHandle();
+
+	if (frame.fbutton) {
+		image_ctrl->removeImage(frame.fbutton);
+		frame.fbutton = 0;
 	}
 
-	if (frame.fbutton)
-		image_ctrl->removeImage(frame.fbutton);
-
-	if (frame.ubutton)
+	if (frame.ubutton) {
 		image_ctrl->removeImage(frame.ubutton);
+		frame.ubutton = 0;
+	}
 
-	if (frame.pbutton)
+	if (frame.pbutton) {
 		image_ctrl->removeImage(frame.pbutton);
+		frame.pbutton = 0;
+	}
 
 	
-	if (frame.plate) {		//NOTE 
+	if (frame.plate) {
 		fluxbox->removeWindowSearch(frame.plate);
 		XDestroyWindow(display, frame.plate);
+		frame.plate = 0;
 	}
 
 	if (frame.window) {
 		fluxbox->removeWindowSearch(frame.window);
 		XDestroyWindow(display, frame.window);
+		frame.window = 0;
 	}
 
-	if (managed) {
+	if (client.window) {
 		fluxbox->removeWindowSearch(client.window);
 		screen->removeNetizen(client.window);
 	}
@@ -3667,6 +3609,120 @@ void FluxboxWindow::updateIcon() {
 				iconbar->draw(icon, icon->getWidth());
 		}
 	}
+}
+
+void FluxboxWindow::createTitlebar() {
+
+	frame.title = createChildWindow(frame.window); //create titlebar win
+	if (decorations.titlebar) {	//have titlebar decorations?		
+		Fluxbox *fb = Fluxbox::instance();
+		fb->saveWindowSearch(frame.title, this);	//save titlebar win
+		frame.label = createChildWindow(frame.title); //create label win in titlebar
+		fb->saveWindowSearch(frame.label, this);	//save label win
+	}
+}
+
+void FluxboxWindow::destroyTitlebar() {
+	Fluxbox *fb = Fluxbox::instance();
+	
+	while ( !buttonlist.empty()) {	//destroy all buttons on titlebar
+		fb->removeWindowSearch(buttonlist.back().win);	
+		XDestroyWindow(display, buttonlist.back().win);
+		buttonlist.pop_back();
+	}
+	
+	if (frame.title) {
+		if (frame.ftitle) {
+			image_ctrl->removeImage(frame.ftitle);
+			frame.ftitle = 0;
+		}
+
+		if (frame.utitle) {
+			image_ctrl->removeImage(frame.utitle);
+			frame.utitle = 0;
+		}
+
+		if (frame.flabel) {
+			image_ctrl->removeImage(frame.flabel);
+			frame.flabel = 0;
+		}
+
+		if( frame.ulabel) {
+			image_ctrl->removeImage(frame.ulabel);
+			frame.ulabel = 0;
+		}
+
+		fb->removeWindowSearch(frame.label);
+		fb->removeWindowSearch(frame.title);
+
+		XDestroyWindow(display, frame.label);
+		frame.label = 0;
+		XDestroyWindow(display, frame.title);
+		frame.title = 0;
+	}
+
+	
+}
+
+void FluxboxWindow::createHandle() {
+
+	if (!decorations.handle)
+		return;
+		
+	Fluxbox *fluxbox = Fluxbox::instance();
+	frame.handle = createChildWindow(frame.window); //create handle win
+	fluxbox->saveWindowSearch(frame.handle, this);	//save handle win
+
+	frame.left_grip = // create left handle
+		createChildWindow(frame.handle, fluxbox->getLowerLeftAngleCursor());
+	fluxbox->saveWindowSearch(frame.left_grip, this); //save left handle
+
+	frame.right_grip = // create right handle
+		createChildWindow(frame.handle, fluxbox->getLowerRightAngleCursor());
+	fluxbox->saveWindowSearch(frame.right_grip, this); //save right handle
+	
+}
+
+void FluxboxWindow::destroyHandle() {
+	if (frame.fhandle) {
+		image_ctrl->removeImage(frame.fhandle);
+		frame.fhandle = 0;
+	}
+
+	if (frame.uhandle) {
+		image_ctrl->removeImage(frame.uhandle);
+		frame.uhandle = 0;
+	}
+
+	if (frame.fgrip) {
+		image_ctrl->removeImage(frame.fgrip);
+		frame.fgrip = 0;
+	}
+
+	if (frame.ugrip) {
+		image_ctrl->removeImage(frame.ugrip);
+		frame.ugrip = 0;
+	}
+	Fluxbox *fluxbox = Fluxbox::instance();
+
+	if (frame.right_grip != 0) {
+		fluxbox->removeWindowSearch(frame.right_grip);
+		XDestroyWindow(display, frame.right_grip);
+		frame.right_grip = 0;
+	}
+	
+	if (frame.left_grip != 0) {
+		fluxbox->removeWindowSearch(frame.left_grip);
+		XDestroyWindow(display, frame.left_grip);
+		frame.left_grip = 0;	
+	}
+	
+	if (frame.handle != 0) {
+		fluxbox->removeWindowSearch(frame.handle);
+		XDestroyWindow(display, frame.handle);
+		frame.handle = 0;
+	}
+
 }
 
 void FluxboxWindow::restore(void) {
