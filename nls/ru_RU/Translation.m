@@ -1,3 +1,4 @@
+$ codeset=KOI8-R
 
 $set 0x1 #Align
 

@@ -1,3 +1,4 @@
+$ codeset=ISO-8859-2
 
 $set 0x1 #Align
 

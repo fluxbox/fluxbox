@@ -1,3 +1,4 @@
+$ codeset=eucJP
 
 $set 0x1 #Align
 
