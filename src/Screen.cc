@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.84 2002/11/25 14:07:21 fluxgen Exp $
+// $Id: Screen.cc,v 1.85 2002/11/27 13:01:28 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -986,13 +986,13 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 #endif // SLIT
 
 	session_stack[i++] =
-		m_toolbar->getMenu()->getPlacementmenu()->windowID();
+		m_toolbar->menu().placementmenu()->windowID();
 #ifdef XINERAMA
 	if (hasXinerama()) {
 		session_stack[i++] = m_toolbar->getMenu()->getHeadmenu()->windowID();
 	}
 #endif // XINERAMA
-	session_stack[i++] = m_toolbar->getMenu()->windowID();
+	session_stack[i++] = m_toolbar->menu().windowID();
 
 	Rootmenus::iterator rit = rootmenuList.begin();
 	Rootmenus::iterator rit_end = rootmenuList.end();

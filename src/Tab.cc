@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.43 2002/11/26 16:40:57 fluxgen Exp $
+// $Id: Tab.cc,v 1.44 2002/11/27 13:03:04 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -842,7 +842,7 @@ void Tab::motionNotifyEvent(XMotionEvent *me) {
 				case Toolbar::TOPLEFT:
 				case Toolbar::TOPCENTER:
 				case Toolbar::TOPRIGHT:
-					dtty = m_win->getScreen()->getToolbar()->getExposedHeight() +
+					dtty = m_win->getScreen()->getToolbar()->exposedHeight() +
 							m_win->getScreen()->getBorderWidth();
 					dbby = m_win->getScreen()->getHeight();
 					break;
