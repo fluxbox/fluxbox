@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.9 2003/12/12 14:35:34 fluxgen Exp $
+// $Id: Container.cc,v 1.10 2003/12/21 16:12:19 rathnor Exp $
 
 #include "Container.hh"
 
@@ -200,15 +200,12 @@ void Container::repositionItems() {
     }
 
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
-        //!! TODO: check this more carefully, seems like error doesn't work with even numbers
-        /*
           if (rounding_error != 0) {
-          --rounding_error;
-          extra = 0;
+              --rounding_error;
+              extra = 1;
           } else {
-          extra = 0;
+              extra = 0;
           }
-        */
         // resize each clients including border in size
         (*it)->moveResize(next_x,
                           -borderW,
