@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.55 2002/05/30 00:46:22 fluxgen Exp $
+// $Id: Window.cc,v 1.56 2002/06/02 22:43:20 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -433,7 +433,9 @@ FluxboxWindow::~FluxboxWindow() {
 		frame.window = 0;
 	}
 
-	if (client.window) {
+	// Make sure we don't remove
+	// a slit client from the list
+	if (managed) {
 		fluxbox->removeWindowSearch(client.window);
 		screen->removeNetizen(client.window);
 	}
