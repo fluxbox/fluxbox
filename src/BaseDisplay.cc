@@ -22,9 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.7 2002/03/18 15:28:25 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.8 2002/03/18 23:41:08 fluxgen Exp $
 
-// use some GNU extensions
+// use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -35,6 +35,7 @@
 
 #include "BaseDisplay.hh"
 #include "i18n.hh"
+#include "Timer.hh"
 
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
@@ -321,8 +322,6 @@ BaseDisplay::~BaseDisplay(void) {
 void BaseDisplay::eventLoop(void) {
 	run();
 
-	int xfd = ConnectionNumber(m_display);
-
 	while ((! m_shutdown) && (! internal_error)) {
 		if (XPending(m_display)) {
 			XEvent e;
@@ -346,75 +345,7 @@ void BaseDisplay::eventLoop(void) {
 				process_event(&e);
 			}
 		} else {
-			fd_set rfds;
-			timeval now, tm, *timeout = (timeval *) 0;
-
-			FD_ZERO(&rfds);
-			FD_SET(xfd, &rfds);
-
-			if (timerList.size() > 0) {
-				gettimeofday(&now, 0);
-
-				tm.tv_sec = tm.tv_usec = 0l;
-
-				BTimer *timer = timerList.front();
-
-				tm.tv_sec = timer->getStartTime().tv_sec +
-					timer->getTimeout().tv_sec - now.tv_sec;
-				tm.tv_usec = timer->getStartTime().tv_usec +
-					timer->getTimeout().tv_usec - now.tv_usec;
-
-				while (tm.tv_usec >= 1000000) {
-					tm.tv_sec++;
-					tm.tv_usec -= 1000000;
-				}
-
-				while (tm.tv_usec < 0) {
-					if (tm.tv_sec > 0) {
-						tm.tv_sec--;
-						tm.tv_usec += 1000000;
-					} else {
-						tm.tv_usec = 0;
-						break;
-					}
-				}
-
-				timeout = &tm;
-			}
-
-			select(xfd + 1, &rfds, 0, 0, timeout);
-
-			// check for timer timeout
-			gettimeofday(&now, 0);
-
-			TimerList::iterator it = timerList.begin();
-			//must check end ...the timer might remove
-			//it self from the list (should be fixed in the future)
-			for(; it != timerList.end(); ++it) {
-	
-				tm.tv_sec = (*it)->getStartTime().tv_sec +
-					(*it)->getTimeout().tv_sec;
-				tm.tv_usec = (*it)->getStartTime().tv_usec +
-					(*it)->getTimeout().tv_usec;
-
-				if ((now.tv_sec < tm.tv_sec) ||
-						(now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec))
-					break;
-
-				(*it)->fireTimeout();
-
-				// restart the current timer so that the start time is updated
-				if (! (*it)->doOnce())
-					(*it)->start();
-				else { 
-					(*it)->stop();
-					// must do this because the stupid cyclic dep 
-					// between BaseDisplay and BTimer, the timer removes
-					// it self from the list
-					it--;
-				}
-					
-			}
+			BTimer::updateTimers(ConnectionNumber(m_display)); //handle all timers
 		}
 	}
 }
@@ -445,26 +376,7 @@ void BaseDisplay::ungrab(void) {
 }
 
 
-void BaseDisplay::addTimer(BTimer *timer) {
-	assert(timer);
 
-	TimerList::iterator it = timerList.begin();
-	TimerList::iterator it_end = timerList.end();
-	int index = 0;
-	for (; it != it_end; ++it, ++index) {
-		if (((*it)->getTimeout().tv_sec > timer->getTimeout().tv_sec) ||
-				(((*it)->getTimeout().tv_sec == timer->getTimeout().tv_sec) &&
-				((*it)->getTimeout().tv_usec >= timer->getTimeout().tv_usec))) {
-			break;
-		}
-	}
-	timerList.insert(it, timer);
-}
-
-
-void BaseDisplay::removeTimer(BTimer *timer) {
-	timerList.remove(timer);
-}
 
 
 ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
