@@ -58,3 +58,5 @@ $ #AntiAlias
 # AntiAlias
 $ #DecorateTransient
 # Decorate Transient
+$ #ClickRaises
+# Click Raises
