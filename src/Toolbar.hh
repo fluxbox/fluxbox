@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.41 2003/08/11 20:22:38 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.42 2003/08/13 09:51:22 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -137,6 +137,8 @@ public:
     inline int getOnHead() const { return *m_rc_on_head; }
 		
 private:
+    void rearrangeItems();
+
     void updateIconbarGraphics();
     void setupMenus();
     void clearStrut();
