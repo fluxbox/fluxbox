@@ -1,8 +1,8 @@
 // Screen.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Screen.hh for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.54 2002/12/02 20:05:29 fluxgen Exp $
+// $Id: Screen.hh,v 1.55 2002/12/13 20:16:17 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -51,6 +51,10 @@ class Rootmenu;
 class Netizen;
 class Slit;
 
+/// Handles screen connection
+/**
+ Create a toolbar and workspaces, handles switching between workspaces and windows
+ */
 class BScreen : public ScreenInfo {
 public:
     typedef std::vector<Workspace *> Workspaces;
@@ -84,8 +88,8 @@ public:
 	
     inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
     inline BImageControl *getImageControl() { return image_control; }
-    const Rootmenu * const getRootmenu() const { return rootmenu; }
-    Rootmenu * const getRootmenu() { return rootmenu; }
+    const Rootmenu * const getRootmenu() const { return m_rootmenu.get(); }
+    Rootmenu * const getRootmenu() { return m_rootmenu.get(); }
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
 
@@ -129,7 +133,10 @@ public:
     inline Icons &getIconList() { return iconList; }
     const Workspaces &getWorkspacesList() const { return workspacesList; }
     const WorkspaceNames &getWorkspaceNames() const { return workspaceNames; }
-
+    /**
+       @name Screen signals
+    */
+    //@{
     /// client list signal
     FbTk::Subject &clientListSig() { return m_clientlist_sig; } 
     /// workspace count signal
@@ -138,7 +145,8 @@ public:
     FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
     /// current workspace signal
     FbTk::Subject &currentWorkspaceSig() { return m_currentworkspace_sig; }
-			
+    //@}
+		
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
     inline Toolbar::Placement getToolbarPlacement() const { return *resource.toolbar_placement; }
@@ -208,10 +216,12 @@ public:
     int addWorkspace();
     int removeLastWorkspace();
     //scroll workspaces
-    void nextWorkspace(const int delta);
-    void prevWorkspace(const int delta);
-    void rightWorkspace(const int delta);
-    void leftWorkspace(const int delta);
+    void nextWorkspace() { nextWorkspace(1); }
+    void prevWorkspace() { prevWorkspace(1); }
+    void nextWorkspace(int delta);
+    void prevWorkspace(int delta);
+    void rightWorkspace(int delta);
+    void leftWorkspace(int delta);
 
     void removeWorkspaceNames();
     void updateWorkspaceNamesAtom();
@@ -230,8 +240,10 @@ public:
     void raiseWindows(const Workspace::Stack &workspace_stack);
     void reassociateGroup(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
-    void prevFocus(int = 0);
-    void nextFocus(int = 0);
+    void prevFocus() { prevFocus(0); }
+    void nextFocus() { nextFocus(0); }
+    void prevFocus(int options);
+    void nextFocus(int options);
     void raiseFocus();
     void reconfigure();	
     void rereadMenu();
@@ -298,7 +310,7 @@ private:
     Configmenu *configmenu;
     Iconmenu *m_iconmenu;
 
-    Rootmenu *rootmenu;
+    std::auto_ptr<Rootmenu> m_rootmenu;
 
     typedef std::list<Rootmenu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;
