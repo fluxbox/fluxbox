@@ -14,8 +14,6 @@
 * Finnish (Finland) translation
 * Wheel-config support
 * Separator in the menus
-* Fix "move group to..." without tab bugg.
-* 0,0-pos fix
 * More Gnome atom support 
 * Net wm atom support
 * Clean up in the global namespace
