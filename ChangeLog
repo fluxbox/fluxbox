@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/26:
+   * Fix some keybinding issues with ShadeWindow, StickWindow,
+     SendToWorkspace, NextGroup, PrevGroup (Simon)  
+     CurrentWindowCmd.cc FbCommandFactory.cc
 *03/07/25:
    * Make fbrun work properly on multiple screens (Simon)
      FbRun.hh/cc

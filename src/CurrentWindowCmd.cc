@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.1 2003/06/30 14:35:11 fluxgen Exp $
+// $Id: CurrentWindowCmd.cc,v 1.2 2003/07/26 13:44:00 rathnor Exp $
 
 #include "CurrentWindowCmd.hh"
 
@@ -42,7 +42,7 @@ void KillWindowCmd::real_execute() {
 }
 
 void SendToWorkspaceCmd::real_execute() {
-    if (m_workspace_num > 0 && m_workspace_num < window().screen().getNumberOfWorkspaces())
+    if (m_workspace_num >= 0 && m_workspace_num < window().screen().getNumberOfWorkspaces())
         window().screen().sendToWorkspace(m_workspace_num, &window());
 }
 

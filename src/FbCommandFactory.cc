@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.9 2003/07/24 03:19:02 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.10 2003/07/26 13:44:00 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -30,6 +30,7 @@
 #include "WorkspaceCmd.hh"
 #include "fluxbox.hh"
 #include "SimpleCommand.hh"
+#include "Screen.hh"
 
 // autoregister this module to command parser
 FbCommandFactory FbCommandFactory::s_autoreg;
@@ -61,7 +62,9 @@ FbCommandFactory::FbCommandFactory() {
         "lower",
         "close",
         "shade",
+        "shadewindow",
         "stick",
+        "stickwindow",
         "toggledecor",
         "sendtoworkspace",
         "killwindow",
@@ -75,6 +78,8 @@ FbCommandFactory::FbCommandFactory() {
         "workspace",
         "nextwindow",
         "prevwindow",
+        "nextgroup",
+        "prevgroup",
         "showdesktop",
         "arrangewindows",
         "rootmenu",
@@ -139,7 +144,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "toggledecor")
         return new CurrentWindowCmd(&FluxboxWindow::toggleDecoration);
     else if (command == "sendtoworkspace")
-        return new SendToWorkspaceCmd(atoi(arguments.c_str()));
+        return new SendToWorkspaceCmd(atoi(arguments.c_str()) - 1); // make 1-indexed to user
     else if (command == "killwindow")
         return new KillWindowCmd();
      else if (command == "nexttab")
@@ -168,6 +173,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new NextWindowCmd(atoi(arguments.c_str()));
     else if (command == "prevwindow")
         return new PrevWindowCmd(atoi(arguments.c_str()));
+    else if (command == "nextgroup")
+        return new NextWindowCmd(atoi(arguments.c_str()) ^ BScreen::CYCLEGROUPS);
+    else if (command == "prevgroup")
+        return new PrevWindowCmd(atoi(arguments.c_str()) ^ BScreen::CYCLEGROUPS);
     else if (command == "arrangewindows")
         return new ArrangeWindowsCmd();
     else if (command == "showdesktop")
