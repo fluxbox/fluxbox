@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.7 2004/01/02 13:27:29 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.8 2004/01/02 22:19:39 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -79,8 +79,7 @@ private:
         Search cache for a specific pixmap
         @return None if no cache was found
     */
-    Pixmap searchCache(unsigned int width, unsigned int height, unsigned long texture_type, 
-                       const FbTk::Color &color, const FbTk::Color &color_to) const;
+    Pixmap searchCache(unsigned int width, unsigned int height, const Texture &text) const;
 
     void createColorTable();
     bool m_dither;
@@ -109,24 +108,21 @@ private:
 
     typedef struct Cache {
         Pixmap pixmap;
-
+        Pixmap texture_pixmap;
         unsigned int count, width, height;
         unsigned long pixel1, pixel2, texture;
     } Cache;
 
-    struct ltCacheEntry
-    {
-        bool operator()(const Cache* s1, const Cache* s2) const
-            {
-                return 
-                    (s1->width  < s2->width  || s1->width == s2->width && 
+    struct ltCacheEntry {
+        bool operator()(const Cache* s1, const Cache* s2) const {
+            return (s1->width  < s2->width  || s1->width == s2->width && 
                     (s1->height < s2->height || s1->height == s2->height &&
                      (s1->texture < s2->texture || s1->texture == s2->texture &&
                       s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel1 &&
                       (s1->texture & FbTk::Texture::GRADIENT) &&
                        s1->pixel2 < s2->pixel2)
                         ));
-            }
+        }
     };
 
 	

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.7 2004/01/02 13:28:00 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.8 2004/01/02 22:19:39 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -150,15 +150,27 @@ ImageControl::~ImageControl() {
 
 
 Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
-                                 unsigned long texture_type,
-                                 const FbTk::Color &color, const FbTk::Color &color_to) const {
+                                 const Texture &text) const {
     
+    if (text.pixmap().drawable() != None) {
+        // do comparsion with width/height and texture_pixmap
+        CacheList::iterator it = cache.begin();
+        CacheList::iterator it_end = cache.end();
+        for (; it != it_end; ++it) {
+            if ((*it)->texture_pixmap = text.pixmap().drawable() &&
+                (*it)->width == width && (*it)->height == height)
+                return (*it)->pixmap;
+        }
+        return None;
+    }
+
     Cache tmp;
+    tmp.texture_pixmap = text.pixmap().drawable();
     tmp.width = width;
     tmp.height = height;
-    tmp.texture = texture_type;
-    tmp.pixel1 = color.pixel();
-    tmp.pixel2 = color_to.pixel();
+    tmp.texture = text.type();
+    tmp.pixel1 = text.color().pixel();
+    tmp.pixel2 = text.colorTo().pixel();
     CacheList::iterator it = cache.find(&tmp);
     if (it == cache.end()) {
         return None;
@@ -179,10 +191,10 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
         return ParentRelative;
 
     // search cache first
-    Pixmap pixmap = searchCache(width, height, texture.type(),
-                                texture.color(), texture.colorTo());
-    if (pixmap)
+    Pixmap pixmap = searchCache(width, height, texture);
+    if (pixmap) {
         return pixmap; // return cache item
+    }
 
     // render new image
     TextureRender image(*this, width, height, m_colors, m_num_colors);
@@ -194,6 +206,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
         Cache *tmp = new Cache;
 
         tmp->pixmap = pixmap;
+        tmp->texture_pixmap = texture.pixmap().drawable();
         tmp->width = width;
         tmp->height = height;
         tmp->count = 1;
