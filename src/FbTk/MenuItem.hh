@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.hh,v 1.1 2003/01/12 17:06:07 fluxgen Exp $
+// $Id: MenuItem.hh,v 1.2 2003/02/17 12:28:06 fluxgen Exp $
 
 #ifndef FBTK_MENUITEM_HH
 #define FBTK_MENUITEM_HH
@@ -60,6 +60,7 @@ public:
     { }
     virtual ~MenuItem() { }
 
+    void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
     virtual void setSelected(bool selected) { m_selected = selected; }
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
     virtual void setLabel(const char *label) { m_label = (label ? label : ""); }
