@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.61 2002/07/13 14:04:46 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.62 2002/07/14 01:00:23 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -119,6 +119,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <algorithm>
 
 using namespace std;
 
