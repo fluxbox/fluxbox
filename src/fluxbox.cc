@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.134 2003/05/10 23:07:42 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.135 2003/05/11 13:36:12 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -964,7 +964,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
             client = 0; // it's invalid now when win destroyed the client
 
             if (win == m_focused_window)
-                revertFocus(&win->getScreen());
+                revertFocus(&win->screen());
 
             // finaly destroy window if empty
             if (win->numClients() == 0) {
@@ -1383,64 +1383,64 @@ void Fluxbox::doWindowAction(int action, const int param) {
     case Keys::NUDGERIGHT:	
         m_focused_window->moveResize(
             m_focused_window->getXFrame()+param, m_focused_window->getYFrame(),
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;
     case Keys::NUDGELEFT:			
         m_focused_window->moveResize(
             m_focused_window->getXFrame()-param, m_focused_window->getYFrame(),
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;
     case Keys::NUDGEUP:
         m_focused_window->moveResize(
             m_focused_window->getXFrame(), m_focused_window->getYFrame()-param,
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;
     case Keys::NUDGEDOWN:
         m_focused_window->moveResize(
             m_focused_window->getXFrame(), m_focused_window->getYFrame()+param,
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;
         // NOTE !!! BIGNUDGExxxx is not needed, just use 10 as a parameter
     case Keys::BIGNUDGERIGHT:		
         m_focused_window->moveResize(
             m_focused_window->getXFrame()+10, m_focused_window->getYFrame(),
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;
     case Keys::BIGNUDGELEFT:				
         m_focused_window->moveResize(
             m_focused_window->getXFrame()-10, m_focused_window->getYFrame(),
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;
     case Keys::BIGNUDGEUP:								
         m_focused_window->moveResize(
             m_focused_window->getXFrame(), m_focused_window->getYFrame()-10,
-            m_focused_window->getWidth(), m_focused_window->getHeight());
+            m_focused_window->width(), m_focused_window->height());
         break;								
     case Keys::BIGNUDGEDOWN:			
         m_focused_window->moveResize(
             m_focused_window->getXFrame(), m_focused_window->getYFrame()+10,
-            m_focused_window->getWidth(), m_focused_window->getHeight());								
+            m_focused_window->width(), m_focused_window->height());								
         break;												
     case Keys::HORIZINC:
            m_focused_window->moveResize(
                 m_focused_window->getXFrame(), m_focused_window->getYFrame(),
-                m_focused_window->getWidth()+10, m_focused_window->getHeight());
+                m_focused_window->width() + 10, m_focused_window->height());
 
         break;								
     case Keys::VERTINC:
             m_focused_window->moveResize(
                 m_focused_window->getXFrame(), m_focused_window->getYFrame(),
-                m_focused_window->getWidth(), m_focused_window->getHeight()+10);
+                m_focused_window->width(), m_focused_window->height()+10);
         break;
     case Keys::HORIZDEC:				
         m_focused_window->moveResize(
                 m_focused_window->getXFrame(), m_focused_window->getYFrame(),
-                m_focused_window->getWidth()-10, m_focused_window->getHeight());
+                m_focused_window->width() - 10, m_focused_window->height());
         break;								
     case Keys::VERTDEC:
         m_focused_window->moveResize(
                 m_focused_window->getXFrame(), m_focused_window->getYFrame(),
-                m_focused_window->getWidth(), m_focused_window->getHeight()-10);
+                m_focused_window->width(), m_focused_window->height()-10);
 
         break;
     case Keys::TOGGLEDECOR:
@@ -1526,16 +1526,16 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             // if window changed to iconic state
             // add to icon list
             if (win.isIconic()) {
-                Workspace *space = win.getScreen().getWorkspace(win.getWorkspaceNumber());
+                Workspace *space = win.screen().getWorkspace(win.getWorkspaceNumber());
                 if (space != 0)
                     space->removeWindow(&win);
-                win.getScreen().addIcon(&win);
+                win.screen().addIcon(&win);
             }
 
             if (win.isStuck()) {
                 // if we're sticky then reassociate window
                 // to all workspaces
-                BScreen &scr = win.getScreen();
+                BScreen &scr = win.screen();
                 if (scr.getCurrentWorkspaceID() != win.getWorkspaceNumber()) {
                     scr.reassociateWindow(&win, 
                                           scr.getCurrentWorkspaceID(),
@@ -1554,7 +1554,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                     m_atomhandler[i]->updateWindowClose(win);
             }
             // make sure each workspace get this 
-            BScreen &scr = win.getScreen();
+            BScreen &scr = win.screen();
             scr.removeWindow(&win);
             if (m_focused_window == &win) 
                 revertFocus(&scr);
@@ -1599,7 +1599,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         WinClient &client = subj->winClient();
 
         if (client.fbwindow()) {
-            BScreen &screen = client.fbwindow()->getScreen();
+            BScreen &screen = client.fbwindow()->screen();
             screen.updateNetizenWindowDel(client.window());
             screen.removeClient(client);
         }
@@ -2315,7 +2315,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             m_focused_window = 0;
         } else {
             old_win = m_focused_window;
-            old_screen = &old_win->getScreen();
+            old_screen = &old_win->screen();
 
             old_tbar = old_screen->getToolbar();
             old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
@@ -2329,7 +2329,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
         // make sure we have a valid win pointer with a valid screen
         ScreenList::iterator winscreen = 
             std::find(m_screen_list.begin(), m_screen_list.end(),
-                      &win->getScreen());
+                      &win->screen());
         if (winscreen == m_screen_list.end()) {
             m_focused_window = 0; // the window pointer wasn't valid, mark no window focused
         } else {

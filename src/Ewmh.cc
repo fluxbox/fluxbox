@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.21 2003/05/10 22:56:48 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.22 2003/05/11 13:36:10 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -120,7 +120,7 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
         if (desktop == 0xFFFFFFFF && !win.isStuck())
             win.stick();
         else
-            win.getScreen().sendToWorkspace(desktop, &win, false);
+            win.screen().sendToWorkspace(desktop, &win, false);
 
         XFree(data);
     }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.70 2003/05/10 23:03:49 fluxgen Exp $
+// $Id: Window.hh,v 1.71 2003/05/11 13:36:11 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -282,9 +282,6 @@ public:
     inline const ClientList &clientList() const { return m_clientlist; }
     inline WinClient &winClient() { return *m_client; }
     inline const WinClient &winClient() const { return *m_client; }
-    // obsolete
-    inline const BScreen &getScreen() const { return m_screen; }
-    inline BScreen &getScreen() { return m_screen; }
 
     inline const BScreen &screen() const { return m_screen; }
     inline BScreen &screen() { return m_screen; }
@@ -316,8 +313,9 @@ public:
     int getWindowNumber() const { return m_window_number; }
     int getLayerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
-    unsigned int getWidth() const { return m_frame.width(); }
-    unsigned int getHeight() const { return m_frame.height(); }
+ 
+    unsigned int width() const { return m_frame.width(); }
+    unsigned int height() const { return m_frame.height(); }
     unsigned int getClientHeight() const;
     unsigned int getClientWidth() const;
     unsigned int getTitleHeight() const { return m_frame.titleHeight(); }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.8 2003/04/16 23:33:59 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.9 2003/05/11 13:36:11 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -205,7 +205,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
 }
 
 void ToolbarHandler::setupWindow(FluxboxWindow &win) {
-    if (&win.getScreen() != &m_screen)
+    if (&win.screen() != &m_screen)
         return;
 
     switch (m_mode) {
@@ -233,7 +233,7 @@ void ToolbarHandler::setupWindow(FluxboxWindow &win) {
 }
 
 void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
-    if (&win.getScreen() != &m_screen) 
+    if (&win.screen() != &m_screen) 
         return;
 
     // check status of window (in current workspace, etc) and remove if necessary
@@ -262,7 +262,7 @@ void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
 }
 
 void ToolbarHandler::updateState(FluxboxWindow &win) {
-    if (&win.getScreen() != &m_screen)
+    if (&win.screen() != &m_screen)
         return;
 
     // this function only relevant for icons
@@ -292,7 +292,7 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
         
 
 void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
-    if (&win.getScreen() != &m_screen) 
+    if (&win.screen() != &m_screen) 
         return;
 
     // don't care about current workspace except if in workspace mode

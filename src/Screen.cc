@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.153 2003/05/11 11:47:19 rathnor Exp $
+// $Id: Screen.cc,v 1.154 2003/05/11 13:36:10 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -981,7 +981,7 @@ void BScreen::removeClient(WinClient &client) {
         if (client.transientFor() && client.transientFor()->fbwindow())
             client.transientFor()->fbwindow()->setInputFocus();
         else
-            Fluxbox::instance()->revertFocus(&focused->getScreen());
+            Fluxbox::instance()->revertFocus(&focused->screen());
     }
 }
 
@@ -1112,7 +1112,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (id != current_workspace->workspaceID()) {
         XSync(FbTk::App::instance()->display(), True);
 
-        if (win && &win->getScreen() == this &&
+        if (win && &win->screen() == this &&
             (! win->isStuck())) {
 
             if (win->isIconic()) {
@@ -1478,7 +1478,7 @@ void BScreen::nextFocus(int opts) {
     const int num_windows = getCurrentWorkspace()->getCount();
 
     if (focused != 0) {
-        if (focused->getScreen().getScreenNumber() == 
+        if (focused->screen().getScreenNumber() == 
             getScreenNumber()) {
             have_focused = true;
             focused_window_number = focused->getWindowNumber();
@@ -1568,7 +1568,7 @@ void BScreen::prevFocus(int opts) {
     int num_windows = getCurrentWorkspace()->getCount();
 	
     if ((focused = Fluxbox::instance()->getFocusedWindow())) {
-        if (focused->getScreen().getScreenNumber() ==
+        if (focused->screen().getScreenNumber() ==
             getScreenNumber()) {
             have_focused = true;
             focused_window_number = focused->getWindowNumber();
@@ -1660,7 +1660,7 @@ void BScreen::raiseFocus() {
     Fluxbox * const fb = Fluxbox::instance();
 	
     if (fb->getFocusedWindow())
-        if (fb->getFocusedWindow()->getScreen().getScreenNumber() ==
+        if (fb->getFocusedWindow()->screen().getScreenNumber() ==
             getScreenNumber()) {
             have_focused = true;
             focused_window_number = fb->getFocusedWindow()->getWindowNumber();
@@ -1689,9 +1689,9 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
     int weight = 999999, exposure = 0; // extreme values
     int borderW = m_root_theme->borderWidth(),
         top = win.getYFrame(), 
-        bottom = win.getYFrame() + win.getHeight() + 2*borderW,
+        bottom = win.getYFrame() + win.height() + 2*borderW,
         left = win.getXFrame(),
-        right = win.getXFrame() + win.getWidth() + 2*borderW;
+        right = win.getXFrame() + win.width() + 2*borderW;
 
     Workspace::Windows &wins = getCurrentWorkspace()->getWindowList();
     Workspace::Windows::iterator it = wins.begin();
@@ -1702,9 +1702,9 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
         int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
 
         int otop = (*it)->getYFrame(), 
-            obottom = (*it)->getYFrame() + (*it)->getHeight() + 2*borderW,
+            obottom = (*it)->getYFrame() + (*it)->height() + 2*borderW,
             oleft = (*it)->getXFrame(),
-            oright = (*it)->getXFrame() + (*it)->getWidth() + 2*borderW;
+            oright = (*it)->getXFrame() + (*it)->width() + 2*borderW;
         // check if they intersect
         switch (dir) {
         case FOCUSUP:

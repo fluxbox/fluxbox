@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.60 2003/05/10 23:07:04 fluxgen Exp $
+// $Id: Workspace.cc,v 1.61 2003/05/11 13:36:12 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -81,7 +81,7 @@ public:
         if (m_client.fbwindow() == 0)
             return;
         FluxboxWindow &win = *m_client.fbwindow();
-        BScreen &scr = win.getScreen();
+        BScreen &scr = win.screen();
         // determine workspace change
         for (size_t i=0; i<scr.getCount(); i++) {
             if (scr.getWorkspace(i) == &m_space) {
@@ -499,8 +499,8 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     if (screen.getRowPlacementDirection() == BScreen::RIGHTLEFT)
         change_x = -1;
 
-    int win_w = win.getWidth() + win.getFbWindow().borderWidth()*2,
-        win_h = win.getHeight() + win.getFbWindow().borderWidth()*2;
+    int win_w = win.width() + win.getFbWindow().borderWidth()*2,
+        win_h = win.height() + win.getFbWindow().borderWidth()*2;
 
 
     int test_x, test_y, curr_x, curr_y, curr_w, curr_h;
@@ -579,9 +579,9 @@ void Workspace::placeWindow(FluxboxWindow &win) {
 
                     curr_x = window.getXFrame();
                     curr_y = window.getYFrame();
-                    curr_w = window.getWidth() + window.getFbWindow().borderWidth()*2;
+                    curr_w = window.width() + window.getFbWindow().borderWidth()*2;
                     curr_h = window.isShaded() ? window.getTitleHeight() :
-                        window.getHeight() + window.getFbWindow().borderWidth()*2;
+                        window.height() + window.getFbWindow().borderWidth()*2;
 
                     if (curr_x < test_x + win_w &&
                         curr_x + curr_w > test_x &&
@@ -634,11 +634,11 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                 for (; it != it_end && placed; ++it) {
                     curr_x = (*it)->getXFrame();
                     curr_y = (*it)->getYFrame();
-                    curr_w = (*it)->getWidth() + (*it)->getFbWindow().borderWidth()*2;
+                    curr_w = (*it)->width() + (*it)->getFbWindow().borderWidth()*2;
                     curr_h =
                         (((*it)->isShaded())
                          ? (*it)->getTitleHeight()
-                         : (*it)->getHeight()) +
+                         : (*it)->height()) +
                         (*it)->getFbWindow().borderWidth()*2;
 
 
@@ -687,5 +687,5 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         place_y = (((signed) screen.getHeight()) - win_h) / 2;
 
 
-    win.moveResize(place_x, place_y, win.getWidth(), win.getHeight());
+    win.moveResize(place_x, place_y, win.width(), win.height());
 }

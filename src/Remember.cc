@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.12 2003/05/10 22:47:55 fluxgen Exp $
+// $Id: Remember.cc,v 1.13 2003/05/11 13:36:10 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -97,7 +97,7 @@ private:
 FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
     // each fluxboxwindow has its own windowmenu
     // so we also create a remember menu just for it...
-    BScreen &screen = win.getScreen();
+    BScreen &screen = win.screen();
     FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
                                   screen.getScreenNumber(), 
                                   *screen.getImageControl(), 
@@ -465,7 +465,7 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
         app->rememberWorkspace(win->getWorkspaceNumber());
         break;
     case REM_DIMENSIONS:
-        app->rememberDimensions(win->getWidth(), win->getHeight());
+        app->rememberDimensions(win->width(), win->height());
         break;
     case REM_POSITION:
         app->rememberPosition(win->getXFrame(), win->getYFrame());
@@ -573,7 +573,7 @@ void Remember::setupWindow(FluxboxWindow &win) {
     if (app == 0) 
         return; // nothing to do
 
-    BScreen &screen = win.getScreen();
+    BScreen &screen = win.screen();
 
     if (app->workspace_remember) {
         // TODO: fix placement to initialise properly
@@ -631,7 +631,7 @@ void Remember::updateWindowClose(FluxboxWindow &win) {
     if (app->workspace_remember) 
         app->rememberWorkspace(win.getWorkspaceNumber());
     if (app->dimensions_remember)
-        app->rememberDimensions(win.getWidth(), win.getHeight());
+        app->rememberDimensions(win.width(), win.height());
     if (app->position_remember)
         app->rememberPosition(win.getXFrame(), win.getYFrame());
     if (app->shadedstate_remember)

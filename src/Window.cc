@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.168 2003/05/10 23:04:37 fluxgen Exp $
+// $Id: Window.cc,v 1.169 2003/05/11 13:36:11 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2836,8 +2836,8 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
     int top = orig_top; // orig include the borders
     int left = orig_left;
-    int right = orig_left + getWidth() + 2*borderW;
-    int bottom = orig_top + getHeight() + 2*borderW;
+    int right = orig_left + width() + 2*borderW;
+    int bottom = orig_top + height() + 2*borderW;
 
     /////////////////////////////////////
     // begin by checking the screen edges
@@ -2858,9 +2858,9 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
         snapToWindow(dx, dy, left, right, top, bottom, 
                      (*it)->getXFrame(),
-                     (*it)->getXFrame() + (*it)->getWidth()  + 2*borderW,
+                     (*it)->getXFrame() + (*it)->width()  + 2*borderW,
                      (*it)->getYFrame(),
-                     (*it)->getYFrame() + (*it)->getHeight() + 2*borderW);
+                     (*it)->getYFrame() + (*it)->height() + 2*borderW);
     }
 
     /////////////////////////////////////
