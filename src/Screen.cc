@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.106 2003/02/16 13:55:49 fluxgen Exp $
+// $Id: Screen.cc,v 1.107 2003/02/16 15:12:08 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -137,7 +137,23 @@ FbTk::Menu *createMenuFromScreen(BScreen &screen) {
                                      *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
     return menu;
 }
+
+class WindowLayerMenuItem : public FbTk::MenuItem {
+public:
+    WindowLayerMenuItem(const char *label, FluxboxWindow &win, int layernum):
+        FbTk::MenuItem(label), m_window(win), m_layernum(layernum) {
+    }
+    bool isEnabled() const { return m_window.getLayerNum() != m_layernum; }
+    void click(int button, int time) {
+        m_window.moveToLayer(m_layernum);
+    }
+
+private:
+    FluxboxWindow &m_window;
+    int m_layernum;
 };
+
+}; // End anonymous namespace
 
 //---------- resource manipulators ---------
 template<>
@@ -1107,7 +1123,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     CommandRef close_cmd(new WindowCmd(win, &FluxboxWindow::close));
     CommandRef shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
     CommandRef raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
-    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::raise));
+    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
     CommandRef stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(win, &FluxboxWindow::popupMenu));
 
@@ -1117,7 +1133,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     // get titlebar configuration
     const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
     for (char c=0; c<2; c++) {
-        for (int i=0; i< dir->size(); ++i) {
+        for (unsigned int i=0; i< dir->size(); ++i) {
             //create new buttons
             FbTk::Button *newbutton = 0;
             if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
@@ -1175,12 +1191,40 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     frame.setOnClickTitlebar(raise_cmd, 1, false, true); // on press with button 1
     frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
     frame.setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
-    frame.setOnClickTitlebar(lower_cmd, 3, false, true);  // on press with button 3
+    frame.setOnClickTitlebar(lower_cmd, 2, false, true);  // on press with button 2
     frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
     // setup menu
     FbTk::Menu &menu = win.getWindowmenu();
     menu.removeAll(); // clear old items
     menu.disableTitle(); // not titlebar
+
+    // check and setup layer menu
+    FbTk::Menu &layer_menu = win.getLayermenu();
+    // if it hasn't already been setup (no need to reset it)
+    if (layer_menu.numberOfItems() == 0) {
+        Fluxbox *fluxbox = Fluxbox::instance();
+        struct {
+            int set;
+            int base;
+            const char *default_str;
+            int layernum;
+        } layer_menuitems[]  = {
+            //TODO: nls
+            {0, 0, "Above Slit", fluxbox->getAboveSlitLayer()},
+            {0, 0, "Slit", fluxbox->getSlitLayer()},
+            {0, 0, "Top", fluxbox->getTopLayer()},
+            {0, 0, "Normal", fluxbox->getNormalLayer()},
+            {0, 0, "Bottom", fluxbox->getBottomLayer()},
+            {0, 0, "Desktop", fluxbox->getDesktopLayer()},
+        };
+        
+        for (size_t i=0; i < 6; ++i) {
+            // TODO: fetch nls string
+            layer_menu.insert(new WindowLayerMenuItem(layer_menuitems[i].default_str, 
+                                                      win, layer_menuitems[i].layernum));
+        };
+        layer_menu.update();
+    }
 
     // set new menu items
     menu.insert("Shade", shade_cmd);
@@ -1191,6 +1235,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     menu.insert("Iconify", iconify_cmd);
     menu.insert("Raise", raise_cmd);
     menu.insert("Lower", lower_cmd);
+    menu.insert("Layer...", &layer_menu);
     menu.insert("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
     menu.insert("Close", close_cmd);
 

@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/02/16:
+   * Added layer submenu to window menu + small fix (Simon)
+     Screen.cc Window.hh/cc fluxbox.hh     
 *03/02/15:
    * Added Style menu and fixed theme listeners for FbWinFrame, Menu and Toolbar (Henrik)
      ToolbarTheme.hh/cc, Toolbar.hh/cc, FbTk Menu.hh/cc, FbTk MenuTheme.hh/cc,

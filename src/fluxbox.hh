@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.40 2003/02/02 16:32:40 rathnor Exp $
+// $Id: fluxbox.hh,v 1.41 2003/02/16 15:12:08 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -114,12 +114,13 @@ public:
     inline int getNumberOfLayers() const { return *m_rc_numlayers; }
 
     // TODO there probably should be configurable
-    inline int getDesktopLayer() const { return 12; }
-    inline int getBottomLayer()  const { return 10; }
-    inline int getNormalLayer()  const { return 8; }
-    inline int getTopLayer()     const { return 2; }
-    inline int getSlitLayer()    const { return 4; }
-    inline int getMenuLayer()    const { return 0; }
+    inline int getDesktopLayer()   const { return 12; }
+    inline int getBottomLayer()    const { return 10; }
+    inline int getNormalLayer()    const { return 8; }
+    inline int getTopLayer()       const { return 6; }
+    inline int getSlitLayer()      const { return 4; }
+    inline int getAboveSlitLayer() const { return 2; }
+    inline int getMenuLayer()      const { return 0; }
 
 
     inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.45 2003/02/09 14:11:13 rathnor Exp $
+// $Id: Window.hh,v 1.46 2003/02/16 15:12:08 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -220,6 +220,9 @@ public:
 
     FbTk::Menu &getWindowmenu() { return m_windowmenu; }
     const FbTk::Menu &getWindowmenu() const { return m_windowmenu; }
+
+    FbTk::Menu &getLayermenu() { return m_layermenu; }
+    const FbTk::Menu &getLayermenu() const { return m_layermenu; }
 	
     const std::string &getTitle() const { return client.title; }
     const std::string &getIconTitle() const { return client.icon_title; }
@@ -333,7 +336,7 @@ private:
     BaseDisplay::BlackboxAttributes blackbox_attrib;
 
     Time lastButtonPressTime;
-    FbTk::Menu m_windowmenu;
+    FbTk::Menu m_windowmenu, m_layermenu;
     
     timeval lastFocusTime;
 	

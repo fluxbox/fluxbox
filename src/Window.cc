@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.115 2003/02/09 14:11:13 rathnor Exp $
+// $Id: Window.cc,v 1.116 2003/02/16 15:12:07 rathnor Exp $
 
 #include "Window.hh"
 
@@ -112,6 +112,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     display(0),
     lastButtonPressTime(0),
     m_windowmenu(menutheme, screen_num, imgctrl),
+    m_layermenu(menutheme, screen_num, imgctrl),
     old_decoration(DECOR_NORMAL),
     tab(0),
     m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100),
