@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.64 2002/08/04 15:00:50 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.65 2002/08/11 20:38:23 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -306,6 +306,7 @@ m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
 m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
 m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
 m_rc_slitlistfile(m_resourcemanager, "", "session.slitlistFile", "Session.SlitlistFile"),
+m_rc_groupfile(m_resourcemanager, "", "session.groupFile", "Session.GroupFile"),
 m_rc_titlebar_left(m_resourcemanager, TitlebarList(&m_titlebar_left[0], &m_titlebar_left[1]), "session.titlebar.left", "Session.Titlebar.Left"),
 m_rc_titlebar_right(m_resourcemanager, TitlebarList(&m_titlebar_right[0], &m_titlebar_right[3]), "session.titlebar.right", "Session.Titlebar.Right"),
 m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
@@ -584,7 +585,7 @@ void Fluxbox::process_event(XEvent *e) {
 #ifdef KDE
 		//Check and see if client is KDE dock applet.
 		//If so add to Slit
-		bool iskdedockapp = False;
+		bool iskdedockapp = false;
 		Atom ajunk;
 		int ijunk;
 		unsigned long *data = (unsigned long *) 0, uljunk;
@@ -2018,6 +2019,16 @@ void Fluxbox::load_rc(void) {
 		(resource.auto_raise_delay.tv_sec * 1000);
 	resource.auto_raise_delay.tv_usec *= 1000;
 
+	{ // expand tilde
+	auto_ptr<char> tmpvar(StringUtil::expandFilename(m_rc_groupfile->c_str()));
+	*m_rc_groupfile = (tmpvar.get()==0 ? "" : tmpvar.get());
+	}
+#ifdef DEBUG
+	cerr<<__FILE__<<": Loading groups ("<<*m_rc_groupfile<<")"<<endl;
+#endif // DEBUG
+	if (!Workspace::loadGroups(*m_rc_groupfile)) {
+		cerr<<"Faild to load groupfile: "<<*m_rc_groupfile<<endl;
+	}
 }
 
 void Fluxbox::load_rc(BScreen *screen) {
