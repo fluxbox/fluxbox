@@ -131,5 +131,4 @@ $set 19 #main
 -log <filename>\t\t\tlog uitvoer naar bestand.\n\
 -help\t\t\t\ttoon deze hulptekst.\n\n
 
-$set 13 #mainWarnDisplay
 

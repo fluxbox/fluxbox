@@ -233,5 +233,4 @@ $set 19 #main
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
 
-$set 13 #mainWarnDisplay
 

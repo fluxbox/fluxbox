@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.15 2004/09/12 14:56:18 rathnor Exp $
+// $Id: ClockTool.cc,v 1.16 2004/10/10 12:00:37 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -34,6 +34,7 @@
 #include "FbTk/ImageControl.hh"
 #include "FbTk/Menu.hh"
 #include "FbTk/MenuItem.hh"
+#include "FbTk/I18n.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -53,12 +54,13 @@ public:
     explicit ClockMenuItem::ClockMenuItem(ClockTool &tool):
         FbTk::MenuItem(""), m_tool(tool) { 
         // determine 12/24 hour format
+        _FB_USES_NLS;
         if (m_tool.timeFormat().find("%k") != std::string::npos ||
             m_tool.timeFormat().find("%H") != std::string::npos ||
             m_tool.timeFormat().find("%T") != std::string::npos)
-            setLabel("Clock: 24h");
+            setLabel( _FBTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
         else
-            setLabel("Clock: 12h");
+            setLabel( _FBTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
     }
 
     void click(int button, int time) {
@@ -66,6 +68,9 @@ public:
         size_t pos = newformat.find("%k");
         std::string newstr;
         bool clock24hour = true;
+
+        _FB_USES_NLS;
+
         if (pos != std::string::npos)
             newstr = "%l";
         else if ((pos = newformat.find("%H")) != std::string::npos)
@@ -102,9 +107,9 @@ public:
             if (m_tool.timeFormat().find("%k") != std::string::npos ||
                 m_tool.timeFormat().find("%H") != std::string::npos ||
                 m_tool.timeFormat().find("%T") != std::string::npos)
-                setLabel("Clock: 24h");
+                setLabel( _FBTEXT(Toolbar, Clock24,   "Clock: 24h",   "set Clockmode to 24h") );
             else
-                setLabel("Clock: 12h");
+                setLabel( _FBTEXT(Toolbar, Clock12,   "Clock: 12h",   "set Clockmode to 12h") );
         
         } // else some other strange format...so we don't do anything
         FbTk::MenuItem::click(button, time);
@@ -142,6 +147,8 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     // attach signals
     theme.reconfigSig().attach(this);
 
+    _FB_USES_NLS;	
+
     // setup timer to update the graphics each second
     timeval delay;
     delay.tv_sec = 1;
@@ -160,7 +167,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     item->setCommand(saverc);
     menu.insert(item);
     FbTk::RefCount<FbTk::Command> editformat_cmd(new EditClockFormatCmd());
-    menu.insert("Edit Clock Format", editformat_cmd);
+    menu.insert(_FBTEXT(Toolbar, ClockEditFormat,   "Edit Clock Format",   "edit Clock Format") , editformat_cmd);
 
 
     update(0);

@@ -131,5 +131,4 @@ $set 19 #main
 -log <filename>\t\t\tlogi przesy³am do pliku.\n\
 -help\t\t\t\twy¶wietlam tê pomoc i wychodzê.\n\n
 
-$set 13 #mainWarnDisplay
 

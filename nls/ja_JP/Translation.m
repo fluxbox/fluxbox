@@ -132,5 +132,4 @@ $set 19 #main
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\t このヘルプを表示して終了.\n\n
 
-$set 13 #mainWarnDisplay
 

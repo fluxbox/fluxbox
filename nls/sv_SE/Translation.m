@@ -131,5 +131,4 @@ $set 19 #main
 -log <filenamn>\t\t\tloggar utskriften till en fil.\n\
 -help\t\t\t\tvisa denna hjälptext och avsluta.\n\n
 
-$set 13 #mainWarnDisplay
 

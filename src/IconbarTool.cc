@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.46 2004/09/12 14:56:18 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.47 2004/10/10 12:00:37 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -286,7 +286,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
 
     // setup mode menu
     setupModeMenu(m_menu, *this);
-
+    _FB_USES_NLS;
     using namespace FbTk;
     // setup use pixmap item to reconfig iconbar and save resource on click
     MacroCommand *save_and_reconfig = new MacroCommand();   
@@ -295,7 +295,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     save_and_reconfig->add(reconfig);
     save_and_reconfig->add(save);
     RefCount<Command> s_and_reconfig(save_and_reconfig);
-    m_menu.insert(new BoolMenuItem("Show Pictures", *m_rc_use_pixmap, s_and_reconfig));
+    m_menu.insert(new BoolMenuItem(_FBTEXT(Toolbar, ShowIcons, "Show Pictures", "chooses if little icons are shown next to title in the iconbar") , 
+	                *m_rc_use_pixmap, s_and_reconfig));
     m_menu.update();
     // must be internal menu, otherwise toolbar main menu tries to delete it.
     m_menu.setInternalMenu();

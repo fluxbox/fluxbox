@@ -132,5 +132,4 @@ $set 19 #main
 -log <filename>\t\t\tzapi¹i dnevnik v datoteko.\n\
 -help\t\t\t\prika¾i ta navodila in konèaj.\n\n
 
-$set 13 #mainWarnDisplay
 

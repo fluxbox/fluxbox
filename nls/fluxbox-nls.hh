@@ -171,6 +171,10 @@ enum {
 	ToolbarPlacement = 10,
 	ToolbarToolbar = 11,
 	ToolbarWidthPercent = 12,
+	ToolbarClock24 = 13,
+	ToolbarClock12 = 14,
+	ToolbarClockEditFormat = 15,
+	ToolbarShowIcons = 16,
 
 	WindowSet = 15,
 	WindowUnnamed = 1,
@@ -210,7 +214,6 @@ enum {
 	mainLoggingTo = 10,
 	mainRCRequiresArg = 11,
 	mainUsage = 12,
-	mainWarnDisplaySet = 13,
 
 	LayerSet = 20,
 	LayerAboveDock = 1,

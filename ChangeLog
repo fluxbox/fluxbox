@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/10:
+  * Update de_DE Translation and add some missing NLS values
+    (Thanks Christian Storm)
+    - also a tiny cleanup of weird nls set
+    de_DE/Translation.m nls/fluxbox-nls.hh IconbarTool.cc ClockTool.cc
+    */Translation.m
 *04/10/08:
   * Fix some TextBox issues with some "untypeable" keys (Mathias)
     FbTk/TextBox.hh/cc FbTk/Keyutil.hh/cc

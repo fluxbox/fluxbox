@@ -129,5 +129,4 @@ $set 19 #main
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tmostra questo messaggio di aiuto ed esci.\n\n
 
-$set 13 #mainWarnDisplay
 

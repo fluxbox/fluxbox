@@ -130,5 +130,4 @@ $set 19 #main
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tvis denne hjælp og afslut.\n\n
 
-$set 13 #mainWarnDisplay
 
