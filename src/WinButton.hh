@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.hh,v 1.1 2003/01/05 22:48:54 fluxgen Exp $
+/// $Id: WinButton.hh,v 1.2 2003/03/22 11:38:24 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -31,7 +31,8 @@ class WinButton:public FbTk::Button {
 public:
     /// draw type for the button
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE};
-    WinButton(Type buttontype, const FbTk::FbWindow &parent, int x, int y, unsigned int width, unsigned int height);
+    WinButton(Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
+              unsigned int width, unsigned int height);
     /// override for drawing
     void exposeEvent(XExposeEvent &event);
     /// override for redrawing
