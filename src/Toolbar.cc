@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.96 2003/06/26 12:22:42 rathnor Exp $
+// $Id: Toolbar.cc,v 1.97 2003/07/01 12:41:44 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -274,6 +274,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
 
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
+    // listen to screen reconfigure
+    screen().reconfigureSig().attach(&m_themelistener);
 
     m_layermenu.setInternalMenu();
     m_placementmenu.setInternalMenu();
@@ -459,6 +461,8 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
+
+    theme().font().setAntialias(screen().antialias());
 
     if (doAutoHide())
         m_hide_timer.start();
