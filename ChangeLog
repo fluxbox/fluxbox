@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/05/01:
+   * Fix slit autohide triggering (Simon)
+     Slit.cc
    * Clean ups and optimising of redraw/reconfigures
      Also fixes warping in outline focus bug (Simon)
      Window.hh/cc FbWinFrame.hh/cc

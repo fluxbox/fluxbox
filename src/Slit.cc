@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.42 2003/04/25 17:27:36 fluxgen Exp $
+// $Id: Slit.cc,v 1.43 2003/05/01 15:03:36 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -761,6 +761,9 @@ void Slit::reconfigure() {
         break;
     }
 
+    if (do_auto_hide && !hidden && !timer.isTiming()) 
+        timer.start();
+
     slitmenu.reconfigure();
     updateClientmenu();
 }
@@ -1007,6 +1010,11 @@ void Slit::leaveNotifyEvent(XCrossingEvent &ev) {
     } else if (! slitmenu.isVisible()) {
         if (! timer.isTiming()) 
             timer.start();
+    } else {
+        // the menu is open, keep it firing until it closes
+        timer.fireOnce(false);
+        if (! timer.isTiming()) 
+            timer.start();
     }
 
 }
@@ -1049,6 +1057,10 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
 
 
 void Slit::timeout() {
+    if (!slitmenu.isVisible()) {
+        timer.fireOnce(true);
+    } else 
+        return;
     hidden = ! hidden; // toggle hidden state
     if (hidden)
         frame.window.move(frame.x_hidden, frame.y_hidden);
