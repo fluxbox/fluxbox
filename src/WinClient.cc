@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.2 2003/04/14 12:08:21 fluxgen Exp $
+// $Id: WinClient.cc,v 1.3 2003/04/15 12:12:29 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -27,6 +27,7 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "i18n.hh"
+#include "FbAtoms.hh"
 
 #include <iostream>
 #include <algorithm>
