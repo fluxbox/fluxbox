@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.37 2003/02/23 00:54:13 fluxgen Exp $
+// $Id: Slit.cc,v 1.38 2003/04/14 14:53:12 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -953,10 +953,6 @@ void Slit::buttonPressEvent(XButtonEvent &e) {
             slitmenu.show();
         } else
             slitmenu.hide();
-    } else if (e.button == 4) {
-        cycleClientsUp();
-    } else if (e.button == 5) {
-        cycleClientsDown();
     }
 }
 
