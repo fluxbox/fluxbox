@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.51 2003/04/27 04:28:04 rathnor Exp $
+// $Id: fluxbox.hh,v 1.52 2003/05/04 16:55:40 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -98,6 +98,8 @@ public:
     enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 
     enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+
+    inline const Bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
 
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
@@ -216,7 +218,7 @@ private:
     ResourceManager m_resourcemanager, m_screen_rm;
 	
     //--- Resources
-    Resource<bool> m_rc_tabs;
+    Resource<bool> m_rc_tabs, m_rc_ignoreborder;
     Resource<int> m_rc_colors_per_channel, m_rc_numlayers;
     Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,

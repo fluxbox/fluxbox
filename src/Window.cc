@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.157 2003/05/04 13:55:39 rathnor Exp $
+// $Id: Window.cc,v 1.158 2003/05/04 16:55:40 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2253,6 +2253,18 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     }
     bool inside_titlebar = (m_frame.titlebar() == me.window || m_frame.label() == me.window ||
                             m_frame.handle() == me.window || m_frame.window() == me.window);
+
+    if (Fluxbox::instance()->getIgnoreBorder()
+        && !(me.state & Mod1Mask) // really should check for exact matches
+        && !(isMoving() || isResizing())) {
+        int borderw = screen.rootTheme().borderWidth();
+        if (me.x_root < (m_frame.x() + borderw) ||
+            me.y_root < (m_frame.y() + borderw) ||
+            me.x_root > (m_frame.x() + (int)m_frame.width() + borderw) ||
+            me.y_root > (m_frame.y() + (int)m_frame.height() + borderw))
+            return;
+    }
+
     WinClient *client = 0;
     if (!inside_titlebar) {
         // determine if we're in titlebar
