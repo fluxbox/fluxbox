@@ -9,7 +9,7 @@ all-local: 		menu init
 distclean-local:
 		rm -f *\~
 init: 			init.in
-	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" init.in > init
+	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" $(srcdir)/init.in > init
 
 menu: 			../util/fluxbox-generate_menu
 	env	MENUFILENAME=menu \

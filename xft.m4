@@ -20,7 +20,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 # AM_PATH_XFT1([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
-AC_DEFUN(AM_PATH_XFT1,
+AC_DEFUN([AM_PATH_XFT1],
 [
 	AC_CHECK_LIB(Xft, XftFontOpen,
 		XFT_LIBS="-lXft"
@@ -30,7 +30,7 @@ AC_DEFUN(AM_PATH_XFT1,
 ])
 
 # AM_PATH_XFT2([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
-AC_DEFUN(AM_PATH_XFT2,
+AC_DEFUN([AM_PATH_XFT2],
 [
 	if test x$pkg_exec_prefix != x ; then
 	   xft_args="$xft_args --exec-prefix=$pkg_exec_prefix"
@@ -59,7 +59,7 @@ fi
 
 # AM_PATH_XFT(default-value, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 # Test for Xft, and define XFT_CFLAGS and XFT_LIBS
-AC_DEFUN(AM_PATH_XFT,
+AC_DEFUN([AM_PATH_XFT],
 [
  AC_ARG_WITH(xft-prefix,[  --with-xft-prefix=path  Prefix where Xft is installed (optional)],
             xft_prefix="$withval", xft_prefix="")
