@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.4 2004/05/03 15:38:26 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.5 2004/05/03 21:37:01 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -340,7 +340,7 @@ FbTk::Menu *MenuCreator::createMenuType(const std::string &type, int screen_num)
     } else if (type == "workspacemenu") {
         return new WorkspaceMenu(*screen);
     }
-
+    return 0;
 }
 
 bool MenuCreator::createWindowMenuItem(const std::string &type, 
