@@ -25,7 +25,7 @@
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 
-// $Id: Image.cc,v 1.10 2002/07/19 20:30:45 fluxgen Exp $
+// $Id: Image.cc,v 1.11 2002/07/22 22:33:45 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -68,6 +68,8 @@ typedef unsigned int u_int32_t;
 #ifdef HAVE_CTYPE_H
 #	include <ctype.h>
 #endif // HAVE_CTYPE_H
+
+unsigned long *BImageControl::sqrt_table = 0;
 
 static unsigned long bsqrt(unsigned long x) {
 	if (x <= 0) return 0;
@@ -261,11 +263,10 @@ Pixmap BImage::render_gradient(BTexture *texture) {
 	if (texture->getTexture() & BImage::BEVEL1) bevel1();
 	else if (texture->getTexture() & BImage::BEVEL2) bevel2();
 
-	if (inverted) invert();
+	if (inverted)
+		invert();
 
-	Pixmap pixmap = renderPixmap();
-
-	return pixmap;
+	return renderPixmap();
 
 }
 
@@ -304,7 +305,7 @@ XImage *BImage::renderXImage(void) {
 			{1, 5, 0, 4},
 			{7, 3, 6, 2} };
 
-#ifdef		ORDEREDPSEUDO
+#ifdef ORDEREDPSEUDO
 		unsigned char dither8[8][8] = { 
 			{ 0, 32,  8, 40, 2,	34, 10, 42 },
 			{ 48, 16, 56, 24, 50, 18, 58, 26 },
@@ -569,12 +570,12 @@ XImage *BImage::renderXImage(void) {
 		case PseudoColor:
 			for (y = 0, offset = 0; y < height; y++) {
 				for (x = 0; x < width; x++, offset++) {
-			r = red_table[red[offset]];
+					r = red_table[red[offset]];
 					g = green_table[green[offset]];
-		b = blue_table[blue[offset]];
+					b = blue_table[blue[offset]];
 
-		pixel = (r * cpccpc) + (g * cpc) + b;
-		*pixel_data++ = colors[pixel].pixel;
+					pixel = (r * cpccpc) + (g * cpc) + b;
+					*pixel_data++ = colors[pixel].pixel;
 				}
 
 				pixel_data = (ppixel_data += image->bytes_per_line);
@@ -1852,8 +1853,6 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 	grad_xbuffer = grad_ybuffer = (unsigned int *) 0;
 	grad_buffer_width = grad_buffer_height = 0;
 
-	sqrt_table = (unsigned long *) 0;
-
 	screen_depth = screeninfo->getDepth();
 	window = screeninfo->getRootWindow();
 	screen_number = screeninfo->getScreenNumber();
@@ -1957,15 +1956,16 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 			red_color_table[i] = green_color_table[i] = blue_color_table[i] =
 					i / bits;
 
-		for (r = 0, i = 0; r < colors_per_channel; r++)
-			for (g = 0; g < colors_per_channel; g++)
+		for (r = 0, i = 0; r < colors_per_channel; r++) {
+			for (g = 0; g < colors_per_channel; g++) {
 				for (b = 0; b < colors_per_channel; b++, i++) {
 					colors[i].red = (r * 0xffff) / (colors_per_channel - 1);
 					colors[i].green = (g * 0xffff) / (colors_per_channel - 1);
 					colors[i].blue = (b * 0xffff) / (colors_per_channel - 1);;
 					colors[i].flags = DoRed|DoGreen|DoBlue;
 				}
-
+			}
+		}
 		basedisplay->grab();
 
 		for (i = 0; i < ncolors; i++) {

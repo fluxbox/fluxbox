@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.8 2002/07/19 20:33:15 fluxgen Exp $
+// $Id: Image.hh,v 1.9 2002/07/22 22:33:45 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -177,26 +177,26 @@ public:
 	unsigned long color(const char *colorname);
 	unsigned long color(const char *, unsigned char *, unsigned char *,
 												 unsigned char *);
-	unsigned long getSqrt(unsigned int);
+	unsigned long getSqrt(unsigned int val);
 
 	Pixmap renderImage(unsigned int, unsigned int, BTexture *);
 
 	void installRootColormap();
 	void removeImage(Pixmap thepix);
 	void colorTables(unsigned char **, unsigned char **, unsigned char **,
-											int *, int *, int *, int *, int *, int *);
+			int *, int *, int *, int *, int *, int *);
 	void getXColorTable(XColor **, int *);
 	void getGradientBuffers(unsigned int, unsigned int,
-													unsigned int **, unsigned int **);
-	void setDither(Bool d) { dither = d; }
-	void setColorsPerChannel(int);
-	void parseTexture(BTexture *, char *);
-	void parseColor(BColor *, char * = 0);
+			unsigned int **, unsigned int **);
+	void setDither(bool d) { dither = d; }
+	void setColorsPerChannel(int cpc);
+	void parseTexture(BTexture *ret_texture, char *sval);
+	void parseColor(BColor *ret_color, char *sval = 0);
 
-	virtual void timeout(void);
+	virtual void timeout();
 
 private:
-	Bool dither;
+	bool dither;
 	BaseDisplay *basedisplay;
 	ScreenInfo *screeninfo;
 #ifdef		TIMEDCACHE
@@ -214,7 +214,8 @@ private:
 		blue_color_table[256];
 	unsigned int *grad_xbuffer, *grad_ybuffer, grad_buffer_width,
 		grad_buffer_height;
-	unsigned long *sqrt_table, cache_max;
+	static unsigned long *sqrt_table;
+	unsigned long cache_max;
 
 	typedef struct Cache {
 		Pixmap pixmap;
