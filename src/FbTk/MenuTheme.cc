@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.16 2004/06/07 21:02:49 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.17 2004/06/13 10:59:54 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -66,9 +66,10 @@ MenuTheme::MenuTheme(int screen_num):
     m_alpha(255),
     m_menumode(DELAY_OPEN),
     m_delayopen(0), // no delay as default
-    m_delayclose(0) // no delay as default
+    m_delayclose(0), // no delay as default
+    m_real_title_height(*m_title_height),
+    m_real_item_height(*m_item_height)
 { 
-
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
@@ -93,11 +94,13 @@ void MenuTheme::reconfigTheme() {
     if (*m_border_width > 20)
         *m_border_width = 20;
 
-    int item_height = std::max(itemHeight(), frameFont().height() + bevelWidth());
+    m_real_item_height = std::max(*m_item_height, frameFont().height() + 2*bevelWidth());
+    m_real_title_height = std::max(*m_title_height,
+                                   titleFont().height() + 2*bevelWidth());
 
-    m_bullet_pixmap->scale(item_height, item_height);
-    m_selected_pixmap->scale(item_height, item_height);
-    m_unselected_pixmap->scale(item_height, item_height);
+    m_bullet_pixmap->scale(itemHeight(), itemHeight());
+    m_selected_pixmap->scale(itemHeight(), itemHeight());
+    m_unselected_pixmap->scale(itemHeight(), itemHeight());
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);

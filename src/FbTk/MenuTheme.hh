@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.15 2004/06/13 00:33:06 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.16 2004/06/13 10:59:24 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -102,8 +102,8 @@ public:
     inline BulletType bullet() const { return *m_bullet; }
     inline FbTk::Justify bulletPos() const { return *bullet_pos; }
 
-    inline unsigned int titleHeight() const { return *m_title_height; }
-    inline unsigned int itemHeight() const { return *m_item_height; }
+    inline unsigned int titleHeight() const { return m_real_title_height; }
+    inline unsigned int itemHeight() const { return m_real_item_height; }
     inline unsigned int borderWidth() const { return *m_border_width; }
     inline unsigned int bevelWidth() const { return *m_bevel_width; }
 
@@ -141,7 +141,8 @@ private:
     MenuMode m_menumode;
     unsigned int m_delayopen; ///< in msec
     unsigned int m_delayclose; ///< in msec
-    
+    int m_real_title_height; ///< the calculated item height (from font and menu.titleHeight)
+    int m_real_item_height; ///< the calculated item height (from font and menu.itemHeight)
 };
 
 } // end namespace FbTk
