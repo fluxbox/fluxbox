@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.4 2003/04/26 12:46:18 fluxgen Exp $
+// $Id: Remember.cc,v 1.5 2003/04/26 13:14:37 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -181,7 +181,7 @@ Application* Remember::find(WinClient &winclient) {
 }
 
 Application* Remember::add(WinClient &winclient) {
-    return add(getWMClass(winclient.window));
+    return add(getWMClass(winclient.window()));
 }
 
 
