@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.217 2004/01/09 11:37:01 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.218 2004/01/10 02:58:50 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -603,7 +603,10 @@ Fluxbox::~Fluxbox() {
         delete m_atomhandler.back();
         m_atomhandler.pop_back();
     }
-
+    while (!m_screen_list.empty()) {
+        delete m_screen_list.back();
+        m_screen_list.pop_back();
+    }
 
     clearMenuFilenames();	
 }
