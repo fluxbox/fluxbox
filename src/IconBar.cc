@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.14 2002/07/23 17:11:58 fluxgen Exp $
+// $Id: IconBar.cc,v 1.15 2002/08/04 15:23:24 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -36,6 +36,26 @@ IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin)
 IconBarObj::~IconBarObj() {
 	
 }
+
+//---------- getIconWidth ------------
+// will return the width of an icon
+// window
+//------------------------------------
+unsigned int IconBarObj::width() const {
+	Window root;
+
+	unsigned int width, height;
+	unsigned int border_width, depth;	//not used
+	int x, y; //not used
+
+	Display *m_display = Fluxbox::instance()->getXDisplay();
+
+	XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
+					&width, &height, &border_width, &depth);
+
+	return width;
+}
+
 
 IconBar::IconBar(BScreen *scrn, Window parent):
 m_screen(scrn),
@@ -345,21 +365,3 @@ IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 	return 0;
 }
 
-//---------- getIconWidth ------------
-// will return the width of an icon
-// window
-//------------------------------------
-unsigned int IconBarObj::getWidth() {
-	Window root;
-
-	unsigned int width, height;
-	unsigned int border_width, depth;	//not used
-	int x, y; //not used
-
-	Display *m_display = Fluxbox::instance()->getXDisplay();
-
-	XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
-					&width, &height, &border_width, &depth);
-
-	return width;
-}
