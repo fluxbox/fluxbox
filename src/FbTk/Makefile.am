@@ -49,6 +49,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	KeyUtil.hh KeyUtil.cc \
 	MenuSeparator.hh MenuSeparator.cc \
 	MenuIcon.hh MenuIcon.cc \
+	stringstream.hh \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \
 	${xmb_SOURCE} \
