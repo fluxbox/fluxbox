@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.7 2002/03/20 11:32:03 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.8 2002/04/12 15:06:07 fluxgen Exp $
 
 #ifndef STRINGUTIL_HH
 #define STRINGUTIL_HH
@@ -40,10 +40,6 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
 
 //--------- stringtok ----------------------------------
 // Breaks a string into tokens
-// Usage check:
-// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/howto.html#3
-// Taken from an example at:
-// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/stringtok_std_h.txt
 //--------------------------------------------------
 template <typename Container>
 static void
