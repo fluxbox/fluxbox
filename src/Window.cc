@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.142 2003/04/16 14:43:04 rathnor Exp $
+// $Id: Window.cc,v 1.143 2003/04/16 22:17:46 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -175,9 +175,6 @@ public:
     explicit SetClientCmd(WinClient &client):m_client(client) {
     }
     void execute() {
-#ifdef DEBUG
-        cerr<<"SetClientCmd"<<endl;
-#endif // DEBUG
         if (m_client.m_win != 0)
             m_client.m_win->setCurrentClient(m_client);
     }
@@ -303,6 +300,8 @@ void FluxboxWindow::init() {
         m_client->window()<<", frame = "<<m_frame.window().window()<<dec<<")"<<endl;
 
 #endif // DEBUG    
+
+    m_frame.resize(m_client->width(), m_client->height());
     TextButton *btn =  new TextButton(m_frame.label(), 
                                       m_frame.theme().font(),
                                       m_client->title());
@@ -320,7 +319,7 @@ void FluxboxWindow::init() {
     btn->setOnClick(set_client_cmd);
     evm.add(*this, btn->window()); // we take care of button events for this
 
-    m_frame.reconfigure();
+    //    m_frame.reconfigure();
 
     // redirect events from frame to us
 
@@ -376,7 +375,6 @@ void FluxboxWindow::init() {
     // save old border width so we can restore it later
     m_client->old_bw = wattrib.border_width;
     m_client->x = wattrib.x; m_client->y = wattrib.y;
-
 
     Fluxbox *fluxbox = Fluxbox::instance();
 
@@ -473,8 +471,9 @@ void FluxboxWindow::init() {
     }
 
     setState(current_state);
-    //    m_frame.resizeForClient(wattrib.width, wattrib.height);
+    m_frame.resizeForClient(wattrib.width, wattrib.height);
     m_frame.reconfigure();
+    sendConfigureNotify();
     // no focus default
     setFocusFlag(false);
 
