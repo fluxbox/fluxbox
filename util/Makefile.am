@@ -7,7 +7,7 @@ bsetroot_LDADD =	../src/BaseDisplay.o ../src/Timer.o ../src/Image.o ../src/i18n.
 	../src/Color.o ../src/Texture.o ../src/StringUtil.o
 
 MAINTAINERCLEANFILES =	Makefile.in
-EXTRA_DIST=bsetbg
+EXTRA_DIST=bsetbg fluxbox-generate_menu
 
 distclean-local:
 	rm -f *\~
