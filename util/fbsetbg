@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.18 2003/09/18 12:15:17 fluxgen Exp $
+# $Id: fbsetbg,v 1.19 2003/09/20 16:03:30 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -338,7 +338,7 @@ if [ ! -r "$wallpaper" ]; then
     exit 1
 fi
 
-eval $WPSETTER $option "$wallpaper"
+$WPSETTER `eval echo $option` "$wallpaper"
 if [ $? -ne 0 ]; then
     message "Something went wrong while setting the wallpaper.
 Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
