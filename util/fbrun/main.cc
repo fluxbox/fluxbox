@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.10 2003/08/25 01:30:46 fluxgen Exp $
+// $Id: main.cc,v 1.11 2003/12/01 18:58:53 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -45,7 +45,7 @@ void showUsage(const char *progname) {
         "   -pos [x] [y]                Window position in pixels"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
-        "   -a                          Antialias"<<endl<<
+        "   -na                         Disable antialias"<<endl<<
         "   -hf [history file]          History file to load (default ~/.fluxbox/fbrun_history)"<<endl<<
         "   -help                       Show this help"<<endl<<endl<<
         "Example: fbrun -fg black -bg white -text xterm -title \"run xterm\""<<endl;
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     size_t width = 200, height = 32; // default size of window
     bool set_height = false, set_width=false; // use height/width of font by default
     bool set_pos = false; // set position
-    bool antialias = false; // antialias text
+    bool antialias = true; // antialias text
     string fontname; // font name
     string title("Run program"); // default title
     string text;         // default input text
@@ -88,8 +88,8 @@ int main(int argc, char **argv) {
             foreground = argv[++i];
         } else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
             background = argv[++i];
-        } else if (strcmp(argv[i], "-a") == 0) {
-            antialias = true;
+        } else if (strcmp(argv[i], "-na") == 0) {
+            antialias = false;
         } else if (strcmp(argv[i], "-hf") == 0 && i+1 < argc) {
             history_file = argv[++i];
         } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "-help") == 0) {
@@ -107,6 +107,8 @@ int main(int argc, char **argv) {
 		
         FbTk::App application(display_name.c_str());
         FbRun fbrun;
+
+        fbrun.setAntialias(antialias);
 
         if (fontname.size() != 0) {
             if (!fbrun.loadFont(fontname.c_str())) {
