@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.6 2003/08/29 00:58:20 fluxgen Exp $
+// $Id: Color.cc,v 1.7 2004/01/09 01:54:37 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -41,12 +41,17 @@ unsigned char maxValue(unsigned short colval) {
 namespace FbTk {
 
 Color::Color():
+    m_red(0), m_green(0), m_blue(0),
+    m_pixel(0),
     m_allocated(false),
     m_screen(0) {
 
 }
 
-Color::Color(const Color &col_copy):m_allocated(false), m_screen(0) {
+Color::Color(const Color &col_copy):
+    m_red(0), m_green(0), m_blue(0),
+    m_pixel(0),
+    m_allocated(false), m_screen(0) {
     copy(col_copy);
 }
 
@@ -58,6 +63,8 @@ Color::Color(unsigned short red, unsigned short green, unsigned short blue, int 
 }
 
 Color::Color(const char *color_string, int screen):
+    m_red(0), m_green(0), m_blue(0),
+    m_pixel(0),
     m_allocated(false),
     m_screen(screen) {
     setFromString(color_string, screen);
