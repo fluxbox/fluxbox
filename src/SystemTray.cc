@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.12 2004/06/27 21:47:16 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.13 2004/08/31 23:18:29 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -51,12 +51,20 @@ public:
     // client message is the only thing we care about
     bool checkClientMessage(const XClientMessageEvent &ce, 
                             BScreen * screen, WinClient * const winclient) {
+        // must be on the same screen
+        if ((screen && screen->screenNumber() != m_tray.window().screenNumber()) ||
+            (winclient && winclient->screenNumber() != m_tray.window().screenNumber()) )
+            return false;
         return m_tray.clientMessage(ce);
     }
 
     void initForScreen(BScreen &screen) { };
     void setupFrame(FluxboxWindow &win) { };
     void setupClient(WinClient &winclient) { 
+        // must be on the same screen
+        if (winclient.screenNumber() != m_tray.window().screenNumber())
+            return;
+            
         // we dont want a managed window
         if (winclient.fbwindow() != 0)
             return;
@@ -248,13 +256,15 @@ void SystemTray::addClient(Window win) {
     if (it != m_clients.end())
         return;
 
+    FbTk::FbWindow *traywin = new TrayWindow(win);
+    if (traywin->screenNumber() != window().screenNumber()) {
+        delete traywin;
+        return;
+    }
 #ifdef DEBUG
     cerr<<"SystemTray::"<<__FUNCTION__<<": 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
-    if (m_clients.empty())
-        show();
 
-    FbTk::FbWindow *traywin = new TrayWindow(win);
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
     FbTk::EventManager::instance()->addParent(*this, window());
@@ -262,6 +272,8 @@ void SystemTray::addClient(Window win) {
     traywin->reparent(m_window, 0, 0);
     traywin->show();
 
+    if (m_clients.empty())
+        show();
 #ifdef DEBUG
     cerr<<"number of clients = "<<m_clients.size()<<endl;
 #endif // DEBUG
