@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.6 2003/06/12 15:13:23 rathnor Exp $
+// $Id: WinClient.hh,v 1.7 2003/06/15 18:36:40 fluxgen Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -48,8 +48,13 @@ public:
     bool getAttrib(XWindowAttributes &attr) const;
     bool getWMName(XTextProperty &textprop) const;
     bool getWMIconName(XTextProperty &textprop) const;
-    const std::string getWMClassName() const; // name member of class structure
-    const std::string getWMClassClass() const; // class member of class structure
+    /// @return name member of class structure
+    const std::string &getWMClassName() const; 
+    /// @return class member of class structure
+    const std::string &getWMClassClass() const;
+    /// updates from wm class hints
+    void updateWMClassHint();
+
     inline const std::string getTitle() const { return m_title; }
     void updateTitle();
     void updateIconTitle();
@@ -116,6 +121,7 @@ private:
     std::string m_title, m_icon_title;
     WinClientSubj m_diesig;
     BScreen &m_screen;
+    std::string m_class_name, m_instance_name;
 };
 
 #endif // WINCLIENT_HH
