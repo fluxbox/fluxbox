@@ -1,0 +1,1081 @@
+#!/bin/sh
+#
+# generate_menu for Fluxbox
+#
+# Copyright (c) 2002 Han Boetes <han@mijncomputer.nl>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+# $Id: fluxbox-generate_menu.in,v 1.1 2003/11/15 19:29:18 fluxgen Exp $
+
+#
+# Portability notes:
+# To guarantee this script works on all platforms that support fluxbox
+# please keep the following restrictions in mind:
+#
+# - don't use if ! command;, use command; if [ $? -ne 0 ];
+# - don't use [ -e file ] use [ -r file ]
+# - don't use $(), use ``
+# - don't use ~, use ${HOME}
+# - don't use id -u, use whoami
+# - getopts won't work on all platforms, but the config-file can
+#   compensate for that.
+# - various software like grep/sed/perl may be not present or not
+#   the version you have. for example grep '\W' only works on gnu-grep.
+#   Keep this in mind, use bare basic defaults.
+# - Do _NOT_ suggest to use #!/bin/bash. Not everybody uses bash.
+#   Non portable features like getopts in this script can be achieved in
+#   other ways.
+
+
+WHOAMI=`whoami`
+[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
+
+# Functions
+display_usage() {
+    cat << EOF
+Usage: fluxbox-generate_menu [-kgrBh] [-t terminal] [-w url] [-b browser]
+         [-m menu-title] [-o /path] [-u /path] [-p /path] [-n /path] [-q /path]
+EOF
+}
+
+display_help() {
+    display_usage
+    cat << EOF
+
+Options:
+
+    -k  Insert a kde menu
+    -g  Add a gnome menu
+    -B  enable backgrounds menu
+    -r  Don't remove empty menu-entries; for templates
+
+    -t  Favourite terminal
+    -w  Homepage for console-browsers. Default is fluxbox.org
+    -b  Favourite browser
+    -m  Menu-title; default is "Fluxbox"
+    -o  Outputfile; default is ~/.fluxbox/menu
+    -u  user sub-menu; default is ~/.fluxbox/usermenu
+
+    -h  Display this help
+    -a  Display the authors of this script
+
+  Only for packagers:
+
+    -p  prefix; default is /usr/local
+    -n  Gnome-prefix; /opt, /usr, /usr/X11R6 and /usr/local autodetected
+    -q  KDE-prefix; idem dito
+
+
+Files:
+    ~/.fluxbux/usermenu     your own submenu which will be included in the menu
+    ~/.fluxbox/menuconfig   rc file for fluxbox-generate_menu
+
+EOF
+}
+
+display_authors() {
+    cat << EOF
+
+fluxbox-generate_menu was brought to you by:
+
+    Henrik Kinnunen:    Project leader.
+    Han Boetes:         Packaging, debugging and scripts.
+    Simon Bowden:       Cleanups and compatibility for sun.
+    Jeramy B. Smith:    Packaging assistance, gnome and kde menu system.
+    Filippo Pappalardo: Italian locales and -t option.
+    $WHOAMI:            Innocent bystander.
+
+EOF
+}
+
+# ugly code for solaris compat.
+case `uname` in
+    Linux|*BSD)
+        find_it() {
+            which $1 > /dev/null 2>&1 && shift && $*
+        }
+
+        find_it_options() {
+            which $1 > /dev/null 2>&1
+        }
+        ;;
+    *)
+        find_it() {
+            file=`which $1 2> /dev/null`
+            if [ -x "$file" ]; then
+                if [ $# -gt 1 ]; then
+                    shift
+                    $*
+                fi
+                return 0
+            else
+                return 1
+            fi
+        }
+
+        find_it_options() {
+            file=`which $1 2> /dev/null`
+            if [ -x "$file" ]; then
+                return 0
+            else
+                return 1
+            fi
+        }
+
+        ;;
+esac
+
+append() {
+    echo "      $*" >> ${MENUFILENAME}
+}
+
+append_menu() {
+    echo "$*" >> ${MENUFILENAME}
+}
+
+append_submenu() {
+    [ "${REMOVE}" ] && echo >> ${MENUFILENAME} # only an empty line in templates
+    append_menu "[submenu] ($1)"
+}
+
+append_menu_end() {
+    append_menu '[end]'
+    [ "${REMOVE}" ] && echo >> ${MENUFILENAME} # only an empty line in templates
+}
+
+menu_entry() {
+    if [ -f "$1" ]; then
+        #                   space&tab here
+        entry_name=`grep '^[	 ]*Name=' "$1" | head -1 | cut -d = -f 2`
+        entry_exec=`grep '^[	 ]*Exec=' "$1" | head -1 | cut -d = -f 2`
+        if [ -n "$entry_name" -a -n "$entry_exec" ]; then
+            append "[exec] ($entry_name) {$entry_exec}"
+        fi
+    fi
+}
+
+menu_entry_dir() {
+    for b in  "$*"/*.desktop; do
+        menu_entry "${b}"
+    done
+}
+
+menu_entry_dircheck() {
+    if [ -d "$*" ]; then
+        menu_entry_dir "$*"
+    fi
+}
+
+
+# recursively build a menu from the listed directories
+# the dirs are merged
+recurse_dir_menu () {
+    ls "$@"/ 2>/dev/null | sort | uniq | while read name; do
+        for dir in "$@"; do
+            if [ -n "$name" -a -d "$dir/$name" ]; then
+                # recurse
+                append_submenu "${name}"
+                # unfortunately, this is messy since we can't easily expand
+                # them all. Only allow for 3 atm. Add more if needed
+                recurse_dir_menu ${1:+"$1/$name"}  ${2:+"$2/$name"} ${3:+"$3/$name"}
+                append_menu_end
+                break; # found one, it'll pick up all the rest
+            fi
+            # ignore it if it is a file, since menu_entry_dir picks those up
+        done
+    done
+
+    # Make entries for current dir after all submenus
+    for dir in "$@"; do
+        menu_entry_dircheck "${dir}"
+    done
+}
+
+
+normal_find() {
+    while [ "$1" ]; do
+        find_it $1     append "[exec]   ($1) {$1}"
+        shift
+    done
+}
+
+clean_up() {
+# Some magic to clean up empty menus
+rm -f ${MENUFILENAME}.tmp
+touch ${MENUFILENAME}.tmp
+until diff -u ${MENUFILENAME} ${MENUFILENAME}.tmp > /dev/null 2>&1; do
+    [ -s ${MENUFILENAME}.tmp ] && mv ${MENUFILENAME}.tmp ${MENUFILENAME}
+    grep -v '^$' ${MENUFILENAME}|sed -e "/^\[submenu].*/{
+n
+N
+/^\[submenu].*\n\[end]/d
+}"|sed -e "/^\[submenu].*/{
+N
+/^\[submenu].*\n\[end]/d
+}" > ${MENUFILENAME}.tmp
+done
+rm -f ${MENUFILENAME}.tmp
+}
+
+# menu defaults (if translation forget to set one of them)
+BACKGROUNDMENU='Backgrounds'
+BACKGROUNDMENUTITLE='Set the Background'
+BROWSERMENU='Browsers'
+CONFIGUREMENU='Configure'
+EDITORMENU='Editors'
+EXITITEM='Exit'
+FBSETTINGSMENU='fluxbox menu'
+FILEUTILSMENU='File utils'
+GAMESMENU='Games'
+GNOMEMENUTEXT='Gnome-menus'
+GRAPHICMENU='Graphics'
+KDEMENUTEXT='KDE-menus'
+MISCMENU='Misc'
+MULTIMEDIAMENU='Multimedia'
+MUSICMENU='Audio'
+NETMENU='Net'
+OFFICEMENU='Office'
+RELOADITEM='Reload config'
+RESTARTITEM='Restart'
+STYLEMENUTITLE='Choose a style...'
+SYSTEMSTYLES='System Styles'
+TERMINALMENU='Terminals'
+USERSTYLES='User Styles'
+VIDEOMENU='Video'
+WINDOWMANAGERS='Window Managers'
+WORKSPACEMENU='Workspace List'
+XUTILSMENU='X-utils'
+
+# Check translation
+case ${LC_ALL} in
+    ru_RU*) #Russian locales
+        #BACKGROUNDMENU='Backgrounds'
+        #BACKGROUNDMENUTITLE='Set the Background'
+        #FILEUTILSMENU='File utils'
+        #OFFICEMENU='Office'
+        #SYSTEMSTYLES='Û‘…Ã…'
+        #USERSTYLES='Û‘…Ã…'
+        #WINDOWMANAGERS='WindowManagers'
+        BROWSERMENU='‚“¡’⁄≈“Ÿ'
+        CONFIGUREMENU='Ó¡”‘“œ À¡'
+        EDITORMENU='Ú≈ƒ¡À‘œ“Ÿ'
+        EXITITEM='˜Ÿ ‘…'
+        FBSETTINGSMENU='FB-Œ¡”‘“œ À…'
+        GNOMEMENUTEXT='Gnome-Õ≈Œ¿'
+        GRAPHICMENU='Á“¡∆…À¡'
+        KDEMENUTEXT='KDE-Õ≈Œ¿'
+        MISCMENU='“œﬁ≈≈'
+        MUSICMENU='˙◊’À'
+        NETMENU='Û≈‘ÿ'
+        RELOADITEM='≈“≈Œ¡”‘“œ…‘ÿ'
+        RESTARTITEM='≈“≈⁄¡–’”‘…‘ÿ'
+        STYLEMENUTITLE='˜Ÿ¬≈“…‘≈ ”‘…Ãÿ'
+        TERMINALMENU='Ù≈“Õ…Œ¡ÃŸ'
+        WORKSPACEMENU='Ú¡¬œﬁ…≈ –“œ”‘“¡Œ”‘◊¡'
+        XUTILSMENU='X-’‘…Ã…‘Ÿ'
+        ;;
+    de_DE*) # german locales
+        #WINDOWMANAGERS='Window Managers'
+        BACKGROUNDMENU='Hintergrundbilder'
+        BACKGROUNDMENUTITLE='Hintergrundbild setzen'
+        BROWSERMENU='Internet-Browser'
+        CONFIGUREMENU='Einstellungen'
+        EDITORMENU='Editoren'
+        EXITITEM='Beenden'
+        FBSETTINGSMENU='Fluxbox-Einstellungen'
+        FILEUTILSMENU='Datei-Utilities'
+        GNOMEMENUTEXT='Gnome-Menues'
+        GRAPHICMENU='Grafik'
+        KDEMENUTEXT='Kde-Menues'
+        MISCMENU='Sonstiges'
+        MUSICMENU='Musik'
+        NETMENU='Netzwerk'
+        OFFICEMENU='Bueroprogramme'
+        RELOADITEM='Konfiguration neu laden'
+        RESTARTITEM='Neustarten'
+        STYLEMENUTITLE='Einen Stil auswaehlen...'
+        SYSTEMSTYLES='Systemweite Stile'
+        TERMINALMENU='Terminals'
+        USERSTYLES='Eigene Stile'
+        WORKSPACEMENU='Arbeitsflaechenliste'
+        XUTILSMENU='X-Anwendungen'
+        ;;
+    sv_SE*) #Swedish locales
+        #BACKGROUNDMENU='Backgrounds'
+        #BACKGROUNDMENUTITLE='Set the Background'
+        #FILEUTILSMENU='File utils'
+        #OFFICEMENU='Office'
+        #SYSTEMSTYLES='Stiler'
+        #USERSTYLES='Stiler'
+        #WINDOWMANAGERS='Window Managers'
+        BROWSERMENU='Browsers'
+        CONFIGUREMENU='Konfiguration'
+        EDITORMENU='Editorer'
+        EXITITEM='Exit'
+        FBSETTINGSMENU='FB-inst‰llningar'
+        GNOMEMENUTEXT='Gnome-menyer'
+        GRAPHICMENU='Grafik'
+        KDEMENUTEXT='KDE-menyer'
+        MISCMENU='Blandat'
+        MUSICMENU='Musik'
+        NETMENU='Net'
+        RELOADITEM='Ladda om konfig'
+        RESTARTITEM='Starta om'
+        STYLEMENUTITLE='V‰lj en stil'
+        TERMINALMENU='Terminaler'
+        WORKSPACEMENU='Arbetsytor'
+        XUTILSMENU='X-program'
+        ;;
+    nl_NL*) #Nederlandse locales
+        BACKGROUNDMENU='Achtergrond'
+        BACKGROUNDMENUTITLE='Kies een achtergrond'
+        BROWSERMENU='Browsers'
+        CONFIGUREMENU='Instellingen'
+        EDITORMENU='Editors'
+        EXITITEM='Afsluiten'
+        FBSETTINGSMENU='FB-Instellingen'
+        FILEUTILSMENU='Verkenners'
+        GNOMEMENUTEXT='Gnome-menu'
+        GRAPHICMENU='Grafisch'
+        KDEMENUTEXT='KDE-menu'
+        MISCMENU='Onregelmatig'
+        MUSICMENU='Muziek'
+        NETMENU='Net'
+        OFFICEMENU='Office'
+        RELOADITEM='Vernieuw instellingen'
+        RESTARTITEM='Herstart'
+        STYLEMENUTITLE='Kies een stijl'
+        SYSTEMSTYLES='Systeem Stijlen'
+        TERMINALMENU='Terminals'
+        USERSTYLES='Gebruikers Stijlen'
+        WINDOWMANAGERS='Window Managers'
+        WORKSPACEMENU='Werkveld menu'
+        XUTILSMENU='X-utils'
+        ;;
+    fi_FI*) #Finnish locales
+        BACKGROUNDMENU='Taustat'
+        BACKGROUNDMENUTITLE='M‰‰rit‰ tausta'
+        BROWSERMENU='Selaimet'
+        CONFIGUREMENU='Konfigurointi'
+        EDITORMENU='Editorit'
+        EXITITEM='Lopeta'
+        FBSETTINGSMENU='FB:n Asetukset'
+        FILEUTILSMENU='Tiedostoapuohjelmat'
+        GNOMEMENUTEXT='Gnomen valikot'
+        GRAPHICMENU='Grafiikka'
+        KDEMENUTEXT='KDE:n valikot'
+        MISCMENU='Sekalaista'
+        MUSICMENU='Musikki'
+        NETMENU='Verkko'
+        OFFICEMENU='Toimistotyˆkalut'
+        RELOADITEM='P‰ivit‰'
+        RESTARTITEM='K‰ynnist‰ uudelleen'
+        STYLEMENUTITLE='Valitse tyyli'
+        SYSTEMSTYLES='J‰rjestelm‰n tyylit'
+        TERMINALMENU='Terminaalit'
+        USERSTYLES='K‰ytt‰j‰n tyylit'
+        WINDOWMANAGERS='Ikkunanhallintaohjelmat'
+        WORKSPACEMENU='Tyˆaluet'
+        XUTILSMENU='X-Ohjelmat'
+        ;;
+    ja_JP*) #Japanese locales
+        #BACKGROUNDMENU='Backgrounds'
+        #BACKGROUNDMENUTITLE='Set the Background'
+        #FILEUTILSMENU='File utils'
+        #OFFICEMENU='Office'
+        #SYSTEMSTYLES='•π•ø•§•Î'
+        #USERSTYLES='•π•ø•§•Î'
+        #WINDOWMANAGERS='Window Managers'
+        BROWSERMENU='•÷•È•¶•∂'
+        CONFIGUREMENU='¿ﬂƒÍ'
+        EDITORMENU='•®•«•£•ø'
+        EXITITEM='Ω™Œª'
+        FBSETTINGSMENU='Fluxbox¿ﬂƒÍ'
+        GNOMEMENUTEXT='Gnome•·•À•Â°º'
+        GRAPHICMENU='≤Ë¡¸'
+        KDEMENUTEXT='KDE•·•À•Â°º'
+        MISCMENU='§§§Ì§§§Ì'
+        MUSICMENU='≤ª≥⁄'
+        NETMENU='•Õ•√•»•Ô°º•Ø'
+        RELOADITEM='∫∆∆…§ﬂπ˛§ﬂ'
+        RESTARTITEM='∫∆µØ∆∞'
+        STYLEMENUTITLE='•π•ø•§•Î¡™¬Ú...'
+        TERMINALMENU='•ø°º•ﬂ• •Î'
+        WORKSPACEMENU='•Ô°º•Ø•π•⁄°º•π'
+        XUTILSMENU='X•Ê°º•∆•£•Í•∆•£'
+        ;;
+    fr_FR*) # french locales
+        BACKGROUNDMENU="Fond d'Ècran"
+        BACKGROUNDMENUTITLE="Changer le fond d'Ècran"
+        BROWSERMENU='Navigateurs'
+        CONFIGUREMENU='Configurer'
+        EDITORMENU='Editeurs'
+        EXITITEM='Sortir'
+        FBSETTINGSMENU='Configurer Fluxbox'
+        FILEUTILSMENU='Outils fichiers'
+        GNOMEMENUTEXT='Menus Gnome'
+        GRAPHICMENU='Graphisme'
+        KDEMENUTEXT='Menus KDE'
+        MISCMENU='Divers'
+        MUSICMENU='Musique'
+        NETMENU='RÈseau'
+        OFFICEMENU='Bureautique'
+        RELOADITEM='Recharger la configuration'
+        RESTARTITEM='RedÈmarrer Fluxbox'
+        STYLEMENUTITLE='Choisir un style...'
+        SYSTEMSTYLES='Styles Systeme'
+        TERMINALMENU='Terminaux'
+        USERSTYLES='Styles Utilisateur'
+        WINDOWMANAGERS='Gestionnaires de fenÍtres'
+        WORKSPACEMENU='Liste des bureaux'
+        XUTILSMENU='Outils X'
+        ;;
+    it_IT*) # italian locales
+        #BACKGROUNDMENU='Backgrounds'
+        #BACKGROUNDMENUTITLE='Set the Background'
+        #FILEUTILSMENU='File utils'
+        #OFFICEMENU='Office'
+        #SYSTEMSTYLES='Stile'
+        #USERSTYLES='Stile'
+        #WINDOWMANAGERS='Window Managers'
+        BROWSERMENU='Browsers'
+        CONFIGUREMENU='Configurazione'
+        EDITORMENU='Editori'
+        EXITITEM='Esci'
+        FBSETTINGSMENU='Preferenze'
+        GAMESMENU='Giochi'
+        GNOMEMENUTEXT='Gnome'
+        GRAPHICMENU='Grafica'
+        KDEMENUTEXT='KDE'
+        MISCMENU='Varie'
+        MUSICMENU='Musica'
+        NETMENU='Internet'
+        RELOADITEM='Rileggi la configurazione'
+        RESTARTITEM='Riavvia'
+        STYLEMENUTITLE='Scegli uno stile'
+        TERMINALMENU='Terminali'
+        WORKSPACEMENU='Aree di lavoro'
+        XUTILSMENU='X-utils'
+        ;;
+    ro_RO*) # Romanian locales
+        #FILEUTILSMENU='File utils'
+        #OFFICEMENU='Office'
+        #RESTARTITEM='Restart'
+        #WINDOWMANAGERS='WindowManagers'
+        BACKGROUNDMENU='Fundaluri'
+        BACKGROUNDMENUTITLE='Alege fundalul'
+        BROWSERMENU='Navigatoare'
+        CONFIGUREMENU='Configurare'
+        EDITORMENU='Editoare'
+        EXITITEM='Iesire'
+        FBSETTINGSMENU='Meniul Fluxbox'
+        GAMESMENU='Jocuri'
+        GNOMEMENUTEXT='Meniu Gnome'
+        GRAPHICMENU='Grafica'
+        KDEMENUTEXT='Meniu KDE'
+        MISCMENU='Diverse'
+        MULTIMEDIAMENU='Multimedia'
+        MUSICMENU='Muzica'
+        NETMENU='Net'
+        RELOADITEM='Reincarca configuratia'
+        STYLEMENUTITLE='Alege un stil...'
+        SYSTEMSTYLES='Stiluri sistem'
+        TERMINALMENU='Terminale'
+        USERSTYLES='Stiluri utilizator'
+        WORKSPACEMENU='Lista workspace-uri'
+        XUTILSMENU='Utilitare X'
+        ;;
+    es_ES*) # spanish locales
+        #FILEUTILSMENU='File utils'
+        #WINDOWMANAGERS='WindowManagers'
+        BACKGROUNDMENU='Fondos'
+	BACKGROUNDMENUTITLE='Seleccionar Fondo'
+	BROWSERMENU='Navegadores'
+	CONFIGUREMENU='Configurar'
+	EDITORMENU='Editores'
+	EXITITEM='Salir'
+	FBSETTINGSMENU='Men˙ fluxbox'
+	GAMESMENU='Juegos'
+	GNOMEMENUTEXT='Men˙s Gnome'
+	GRAPHICMENU='Gr·ficos'
+	KDEMENUTEXT='Men˙s KDE'
+	MISCMENU='Varios'
+	MULTIMEDIAMENU='Multimedia'
+	MUSICMENU='M˙sica'
+	NETMENU='Red'
+	OFFICEMENU='Oficina'
+	RELOADITEM='Reconfigurar'
+	RESTARTITEM='Reiniciar'
+	STYLEMENUTITLE='Escoge un Estilo...'
+	SYSTEMSTYLES='Estilos del Sistema'
+	TERMINALMENU='Terminales'
+	USERSTYLES='Estilos del Usuario'
+	WORKSPACEMENU='Lista de Escritorios'
+	XUTILSMENU='Utilidades X'
+        ;;
+    pl_PL*) # Polish locales
+        #FILEUTILSMENU='File utils'
+        #WINDOWMANAGERS='WindowManagers'
+        BACKGROUNDMENU='Tapety'
+        BACKGROUNDMENUTITLE='Ustaw tapet?'
+        BROWSERMENU='Przegl?darki'
+        CONFIGUREMENU='Konfiguracja'
+        EDITORMENU='Edytory'
+        EXITITEM='Wyj?cie'
+        FBSETTINGSMENU='Menu Fluxbox'
+        GAMESMENU='Gry'
+        GNOMEMENUTEXT='Menu Gnome'
+        GRAPHICMENU='Grafika'
+        KDEMENUTEXT='Menu KDE'
+        MISCMENU='RÛ?ne'
+        MULTIMEDIAMENU='Multimedia'
+        MUSICMENU='Muzyka'
+        NETMENU='Sie?'
+        OFFICEMENU='Aplikacje biurowe'
+        RELOADITEM='Od?wie? konfiguracj?'
+        RESTARTITEM='Restart'
+        STYLEMENUTITLE='Wybierz styl...'
+        SYSTEMSTYLES='Style systemowe'
+        TERMINALMENU='Terminale'
+        USERSTYLES='Style u?ytkownika'
+        WORKSPACEMENU='Lista pulpitÛw'
+        XUTILSMENU='Narz?dzia X'
+        ;;
+    *)
+        ;;
+esac
+
+# Set Defaults
+MENUFILENAME="${MENUFILENAME:=${HOME}/.fluxbox/menu}"
+MENUTITLE="${MENUTITLE:=Fluxbox}"
+HOMEPAGE="${HOMEPAGE:=fluxbox.org}"
+USERMENU="${USERMENU:=${HOME}/.fluxbox/usermenu}"
+
+# Read the menuconfig file if it exists or else create it.
+# But not during install time, use envvar for sun
+if [ ! "${INSTALL}" = Yes ]; then
+    if [ -r ${HOME}/.fluxbox/menuconfig ]; then
+        . ${HOME}/.fluxbox/menuconfig
+    else
+        if [ ! "$WHOAMI" = root ]; then # this is only for users.
+            if touch ${HOME}/.fluxbox/menuconfig; then
+                cat << EOF > ${HOME}/.fluxbox/menuconfig
+# This file is read by fluxbox-generate_menu.  If you don't like a
+# default you can change it here.  Don't forget to remove the # in front
+# of the line.
+
+# Your favourite terminal. Put the command in quotes if you want to use
+# options. Put a backslash in before odd chars
+# MY_TERM='Eterm --tint \#123456'
+# MY_TERM='aterm -tint $(random_color)'
+
+# Your favourite browser. You can also specify options.
+# MY_BROWSER=mozilla
+
+# Name of the outputfile
+# MENUFILENAME=${HOME}/.fluxbox/menu
+
+# MENUTITLE=\`fluxbox -version|cut -d " " -f-2\`
+
+# standard url for console-browsers
+# HOMEPAGE=fluxbox.org
+
+# location with your own menu-entries
+# USERMENU=~/.fluxbox/usermenu
+
+# Options for fbrun
+# FBRUNOPTIONS='-font 10x20 -fg grey -bg black -title run'
+
+# --- PREFIX'es
+# These are prefixes; So if fluxbox is installed in /usr/bin/fluxbox
+# your prefix is: /usr
+
+# fluxbox-generate already looks in /usr/X11R6, /usr, /usr/local and /opt so
+# there should be no need to specify them.
+#
+# PREFIX=/usr
+# GNOME_PREFIX=/opt/gnome
+# KDE_PREFIX=/opt/kde
+
+
+# Sepparate the list of background-dirs with semicolumns ':'
+# BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:/usr/local/share/fluxbox/backgrounds/:/usr/share/wallpapers"
+
+
+# --- Boolean variables.
+# Setting a variable to ``no'' won't help. Comment them out if you don't
+# want them.  Setting are overruled by the command-line options.
+
+# Include all backgrounds in your backgrounds-directory
+# BACKGROUNDMENUITEM=yes
+
+# Include kde-menus
+# KDEMENU=yes
+
+# Include gnome-menus
+# GNOMEMENU=yes
+
+# Don't cleanup the menu
+# REMOVE=no
+
+EOF
+            else
+                echo "Warning: I couldn't create ${HOME}/.fluxbox/menuconfig" >&2
+            fi
+        fi
+    fi
+fi
+
+testoption() {
+    if [ -z "$3" -o -n "`echo $3|grep '^-'`" ]; then
+        echo "Error: The option $2 requires an argument." >&2
+        exit 1
+    fi
+    case $1 in
+        ex) # executable
+            if find_it "$3"; then
+                :
+            else
+                echo "Error: The option $2 needs an executable as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        di) # directory
+            if [ -d "$3" ]; then
+                :
+            else
+                echo "Error: The option $2 needs a directory as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        fl) # file
+            if [ -r "$3" ]; then
+                :
+            else
+                echo "Error: The option $2 needs a readable file as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        sk) # skip
+            :
+            ;;
+    esac
+}
+
+# Get options.
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -B) BACKGROUNDMENUITEM=yes; shift;;
+        -k) KDEMENU=yes; shift;;
+        -g) GNOMEMENU=yes; shift;;
+        -t) MY_TERM=${2}; testoption ex $1 $2; shift 2;;
+        -b) MY_BROWSER=${2}; testoption ex $1 $2; shift 2;;
+        -o) MENUFILENAME=${2}; testoption fi $1 $2; shift 2;;
+        -p) PREFIX=${2}; testoption di $1 $2; shift 2;;
+        -n) GNOME_PREFIX=${2}; testoption di $1 $2; shift 2;;
+        -q) KDE_PREFIX=${2}; testoption di $1 $2; shift 2;;
+        -m) MENUTITLE=${2}; testoption sk $1 $2; shift 2;;
+        -w) HOMEPAGE=${2}; testoption sk $1 $2; shift 2;;
+        -u) USERMENU=${2}; testoption fl $1 $2; shift 2;;
+        -r) REMOVE=no; shift;;
+        -h) display_help ; exit 0 ;;
+        -a) display_authors ; exit 0 ;;
+        --*) echo "fluxbox-generate_menu doesn't recognize -- gnu-longopts."
+            echo 'Use fluxbox-generate_menu -h for a long help message.'
+            display_usage
+            exit 1 ;;
+        -[a-zA-Z][a-zA-Z]*)
+            # split concatenated single-letter options apart
+            FIRST="$1"; shift
+            set -- `echo "$FIRST" | sed 's/^-\(.\)\(.*\)/-\1 -\2/'` "$@"
+            ;;
+        -*)
+            echo 1>&2 "fluxbox-generate_menu: unrecognized option "\`"$1'"
+            display_usage
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+# Check defaults
+
+# Can we actually create ${MENUFILENAME}
+touch ${MENUFILENAME} 2> /dev/null
+if [ $? -ne 0 ]; then
+    echo "Fatal error: can't create or write to $MENUFILENAME" >&2
+    exit 1
+fi
+
+# backup menu
+if [ -w "${MENUFILENAME}" ]; then
+    if [ -f ${MENUFILENAME}.firstbak ]; then
+        cp ${MENUFILENAME} ${MENUFILENAME}.firstbak
+    fi
+    mv ${MENUFILENAME} ${MENUFILENAME}.bak
+fi
+
+# prefix
+PREFIX="${PREFIX:=@PREFIX@}"
+if [  -z "${PREFIX}" -o ! -d "${PREFIX}" ]; then
+    PREFIX=`which fluxbox | sed 's,/bin/fluxbox$,,'`
+fi
+
+
+# gnome prefix
+for GNOME_PREFIX in "${GNOME_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; do
+    if [ -n "${GNOME_PREFIX}" -a -d "$GNOME_PREFIX/share/gnome" ]; then
+        break;
+    fi
+done
+# Will remain $PREFIX if all else fails
+
+# kde prefix
+for KDE_PREFIX in "${KDE_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; do
+    if [ -n "${KDE_PREFIX}" -a -d "$KDE_PREFIX/share/applnk" ]; then
+        break;
+    fi
+done
+
+# directory for the backgrounds
+if [ -z "$BACKGROUND_DIRS" ]; then
+    BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:${PREFIX}/share/fluxbox/backgrounds/"
+fi
+
+# find the default terminal
+if find_it_options $MY_TERM; then
+    DEFAULT_TERM=$MY_TERM
+else
+    [ -n "$MY_TERM" ] && echo "Warning: you chose an invalid term." >&2
+    #The precise order is up for debate.
+    for term in Eterm aterm rxvt wterm xterm konsole gnome-terminal; do
+        if find_it $term; then
+            DEFAULT_TERM=$term
+            break
+        fi
+    done
+fi
+DEFAULT_TERMNAME=`echo $DEFAULT_TERM|awk '{print $1}'`
+DEFAULT_TERMNAME=`basename $DEFAULT_TERMNAME`
+
+
+# find the default browser
+if find_it_options $MY_BROWSER; then
+    DEFAULT_BROWSER=$MY_BROWSER
+else
+    [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
+    #The precise order is up for debate.
+    for browser in mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
+        if find_it $browser; then
+            DEFAULT_BROWSER=$browser
+            break
+        fi
+    done
+fi
+DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
+DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
+
+
+# a unix system without any terms. that's odd
+if [ -z "$DEFAULT_TERM" ]; then
+    cat << EOF >&2
+Warning: I can't find any terminal-emulators in your PATH.
+Please fix your PATH or specify your favourite terminal with the -t option
+EOF
+fi
+
+
+# Start of menu
+cat << EOF > ${MENUFILENAME}
+# Generated by fluxbox-generate_menu
+#
+# If you read this it means you want to edit this file manually, so here
+# are some useful tips:
+#
+# - You can add your own menu-entries to ~/.fluxbox/usermenu
+#
+# - If you miss apps please let me know and I will add them for the next
+#   release.
+#
+# - The -r option prevents removing of empty menu entries and lines which
+#   makes things much more readable.
+#
+# - To prevent any other app from overwriting your menu
+#   you can change the menu name in .fluxbox/init to:
+#     session.menuFile: /home/you/.fluxbox/my-menu
+
+EOF
+
+echo "[begin] (${MENUTITLE})" >> ${MENUFILENAME}
+
+append "[exec]    (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
+
+case "$DEFAULT_BROWSERNAME" in
+    links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
+    firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
+    konqueror) append "[exec] (konqueror) {kfmclient openProfile webbrowsing}" ;;
+    opera) append "[exec] (opera) {env QT_XFT=true opera}" ;;
+    MozillaFirebird) append "[exec] (firebird) {MozillaFirebird}" ;;
+    *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
+esac
+
+find_it fbrun           append "[exec]   (Run) {fbrun $FBRUNOPTIONS}"
+
+
+append_submenu "${TERMINALMENU}"
+    normal_find xterm gnome-terminal Eterm konsole aterm rxvt
+append_menu_end
+
+
+append_submenu "${NETMENU}"
+    append_submenu "${BROWSERMENU}"
+        normal_find mozilla-firebird MozillaFirebird galeon mozilla dillo netscape
+        find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
+        find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
+        find_it links       append "[exec]   (links) {${DEFAULT_TERM} -e links ${HOMEPAGE}}"
+        find_it w3m         append "[exec]   (w3m) {${DEFAULT_TERM} -e w3m ${HOMEPAGE}}"
+        find_it lynx        append "[exec]   (lynx) {${DEFAULT_TERM} -e lynx ${HOMEPAGE}}"
+    append_menu_end
+
+    append_submenu IM
+        normal_find gaim kopete gnomemeeting sim
+        find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
+    append_menu_end
+
+    append_submenu Mail
+        normal_find sylpheed kmail evolution
+        find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
+    append_menu_end
+
+    append_submenu IRC
+        normal_find xchat ksirc
+        find_it irssi       append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
+        find_it BitchX      append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
+          find_it bitchx    append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
+        find_it ircii       append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
+    append_menu_end
+
+    append_submenu P2P
+        normal_find gtk-gnutella lopster nicotine pyslsk xmule amule
+        find_it TekNap      append "[exec]   (TekNap) {${DEFAULT_TERM} -e TekNap}"
+    append_menu_end
+
+    append_submenu ftp
+    normal_find gftp IglooFTP-PRO
+        find_it pftp      append "[exec]   (pftp) {${DEFAULT_TERM} -e pftp}"
+        find_it ftp       append "[exec]   (ftp) {${DEFAULT_TERM} -e ftp}"
+        find_it lftp      append "[exec]   (lftp) {${DEFAULT_TERM} -e lftp}"
+        find_it yafc      append "[exec]   (yafc) {${DEFAULT_TERM} -e yafc}"
+    append_menu_end
+
+    normal_find pan
+
+append_menu_end
+
+append_submenu "${EDITORMENU}"
+    normal_find gvim
+    find_it     nano   append "[exec]   (nano)     {${DEFAULT_TERM} -e nano}"
+    find_it     vi     append "[exec]   (vi)       {${DEFAULT_TERM} -e vi}"
+    find_it     vim    append "[exec]   (vim)      {${DEFAULT_TERM} -e vim}"
+    normal_find nedit gedit xedit kword kwrite kate anjuta wings xemacs emacs
+    find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
+    find_it     xemacs append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
+append_menu_end
+
+append_submenu "${FILEUTILSMENU}"
+    normal_find konqueror gentoo krusader linuxcmd rox
+    find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
+    find_it     mc       append "[exec] (mc) {${DEFAULT_TERM} -e mc}"
+append_menu_end
+
+append_submenu "${MULTIMEDIAMENU}"
+       append_submenu "${GRAPHICMENU}"
+               normal_find gimp xv gqview showimg xpaint kpaint kiconedit \
+               ee xscreensaver-demo xlock
+               find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
+               find_it blender          append "[exec] (blender) {blender -w}"
+               find_it gears            append "[exec] (Mesa gears) {gears}"
+               find_it morph3d          append "[exec] (Mesa morph) {morph3d}"
+               find_it reflect          append "[exec] (Mesa reflect) {reflect}"
+       append_menu_end
+
+       append_submenu "${MUSICMENU}"
+               normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
+                           grecord kmidi xplaycd soundtracker grip easytag audacity \
+                           zinf rhythmbox  kaboodle
+               find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
+               find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
+               find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
+       append_menu_end
+
+
+       append_submenu "${VIDEOMENU}"
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv
+           find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
+       append_menu_end
+
+       append_submenu "${XUTILSMENU}"
+           normal_find xfontsel xman xload xfigxbiff editres viewres xclock \
+                       xmag wmagnify gkrellm vmware
+       append_menu_end
+append_menu_end
+
+
+append_submenu "${OFFICEMENU}"
+    normal_find xclock xcalc kcalc
+    find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
+        find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
+    find_it ooffice append "[exec] (Open Office) {ooffice}"
+    find_it oocalc append "[exec] (OO Calc) {oocalc}"
+    find_it oowriter append "[exec] (OO Writer) {oowriter}"
+    find_it ooimpress append "[exec] (OO Impress) {ooimpress}"
+    find_it oodraw append "[exec] (OO Draw) {oodraw}"
+    find_it oomath append "[exec] (OO Math) {oomath}"
+    find_it oopadmin append "[exec] (OO Printer Administration) {oopadmin}"
+    find_it mrproject append "[exec] (Mr.Project) {mrproject}"
+    find_it soffice append "[exec] (Star Office) {soffice}"
+
+    normal_find abiword kword wordperfect katoob acroread xpdf
+append_menu_end
+
+append_submenu "${GAMESMENU}"
+    normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
+        gnect mahjongg gnomine gnome-stones gnometris gnotravex \
+        gnotski iagno knights eboard xboard freecell pysol \
+        gtali tuxracer xpenguins xsnow xeyes xpenguins smclone openmortal \
+        quake2 quake3 skoosh same-gnome enigma xbill icebreaker
+        find_it et append "[exec] (Enemy Territory) {et}"
+append_menu_end
+
+# We'll only use this once
+ETCAPPLNK=/etc/X11/applnk
+# gnome menu
+if [ "${GNOMEMENU}" ]; then
+    append_submenu "${GNOMEMENUTEXT}"
+    recurse_dir_menu "${GNOME_PREFIX}/share/gnome/apps" "$HOME/.gnome/apps" ${ETCAPPLNK}
+    append_menu_end
+    unset ETCAPPLNK
+fi
+
+# kde submenu
+if [ -d "${KDE_PREFIX}/share/applnk/" -a "${KDEMENU}" ]; then
+    append_submenu "${KDEMENUTEXT}"
+    recurse_dir_menu "${KDE_PREFIX}/share/applnk" "$HOME/.kde/share/applnk" ${ETCAPPLNK}
+    append_menu_end
+    unset ETCAPPLNK
+fi
+
+#User menu
+if [ -r "${USERMENU}" ]; then
+    cat ${USERMENU} >> ${MENUFILENAME}
+fi
+
+append_submenu "${FBSETTINGSMENU}"
+    append "[config] (${CONFIGUREMENU})"
+
+    append_menu "[submenu] (${SYSTEMSTYLES}) {${STYLEMENUTITLE}}"
+        append "[stylesdir] (${PREFIX}/share/fluxbox/styles)"
+    append_menu_end
+
+    append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"
+        append "[stylesdir] (~/.fluxbox/styles)"
+    append_menu_end
+
+    # Backgroundmenu
+    addbackground() {
+                picturename=`basename "$1"`
+                append "[exec] (${picturename%.???}) {fbsetbg -a \"$1\" }"
+    }
+
+    if [ "$BACKGROUNDMENUITEM" = yes ]; then
+        IFS=: # set delimetor for find
+        NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2> /dev/null|wc -l`
+        if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
+            append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
+            if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
+                menucounter=1 ; counter=1
+                append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
+                find $BACKGROUND_DIRS -follow -type f|sort|while read i; do
+                    counter=`expr $counter + 1`
+                    if [ $counter -eq 30 ]; then
+                        counter=1
+                        menucounter=`expr $menucounter + 1`
+                        append_menu_end
+                        append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
+                    fi
+                    addbackground "$i"
+                done
+                append_menu_end
+            else
+                find $BACKGROUND_DIRS -follow -type f|sort|while read i; do
+                addbackground "$i"
+                done
+            fi
+            append_menu_end
+        else
+            echo "Warning: You wanted a background-menu but I couldn't find any backgrounds in:
+    $BACKGROUND_DIRS" >&2
+        fi
+    fi
+
+    append "[workspaces]   (${WORKSPACEMENU})"
+
+    append_submenu Tools
+        normal_find fluxconf fluxkeys fluxmenu
+        # if gxmessage exitst use it; else use xmessage
+        find_it gxmessage append \
+          "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
+            find_it xmessage append \
+              "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+        find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
+        find_it fbrun append "[exec] (Run) {fbrun $FBRUNOPTIONS}"
+        find_it switch append "[exec] (gtk-theme-switch) {switch}"
+        find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
+        find_it fluxbox-generate_menu append "[exec] (regenerate menu) {fluxbox-generate_menu}"
+    append_menu_end
+
+    append_submenu ${WINDOWMANAGERS}
+    #hard to properly maintain since there are so many exceptions to the rule.
+    for wm in icewm ion kde sawfish enlightenment openbox evilwm waimea xfce pekwm; do
+        find_it start${wm} append "[restart] (${wm}) {start${wm}}" ||\
+            find_it ${wm} append "[restart] (${wm}) {${wm}}"
+    done
+        find_it startgnome append "[restart] (gnome) {startgnome}" ||\
+            find_it gnome-session append "[restart] (gnome) {gnome-session}"
+
+        find_it startwindowmaker append "[restart] (windowmaker) {startwindowmaker}" ||\
+            find_it wmaker append "[restart] (windowmaker) {wmaker}"
+    append_menu_end
+    find_it xlock append "[exec] (Lock Screen) {xlock}"
+    append "[reconfig] (${RELOADITEM})"
+    append "[restart] (${RESTARTITEM})"
+    append "[exit] (${EXITITEM})"
+
+    append_menu_end
+append_menu_end
+
+# this function removes empty menu items. It can not yet  remove  nested
+# empty submenus :\
+
+if [ ! "${REMOVE}" ]; then
+    clean_up
+fi
+
+echo 'Menu successfully generated.'
+echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
