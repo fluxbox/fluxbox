@@ -327,11 +327,11 @@ void Tab::draw(bool pressed) {
 			m_win->screen->getTabPlacement() == PRight) &&
 			(!m_win->isShaded() && m_win->screen->isTabRotateVertical())) {
 
-		tabtext_w = XRotTextWidth(m_win->screen->getWindowStyle()->tab.rot_font,
+		tabtext_w = Misc::XRotTextWidth(m_win->screen->getWindowStyle()->tab.rot_font,
 						m_win->client.title, m_win->client.title_len);
 		tabtext_w += (m_win->frame.bevel_w * 4);
 
-		DrawRotString(m_display, m_tabwin, gc,
+		Misc::DrawRotString(m_display, m_tabwin, gc,
 				m_win->screen->getWindowStyle()->tab.rot_font,
 				m_win->screen->getWindowStyle()->tab.font.justify,
 				tabtext_w, m_size_w, m_size_h,
@@ -351,7 +351,7 @@ void Tab::draw(bool pressed) {
 		}
 		tabtext_w += (m_win->frame.bevel_w * 4);
 
-		DrawString(m_display, m_tabwin, gc,
+		Misc::DrawString(m_display, m_tabwin, gc,
 				&m_win->screen->getWindowStyle()->tab.font,
 				tabtext_w, m_size_w,
 				m_win->frame.bevel_w, m_win->client.title);
