@@ -949,8 +949,8 @@ if [ -w "${MENUFILENAME}" ]; then
     if [ -f ${MENUFILENAME}.firstbak ]; then
         cp ${MENUFILENAME} ${MENUFILENAME}.firstbak
     fi
-    if [ -s "${MENUFILE}" ]; then
-       mv ${MENUFILE} ${MENUFILE}.bak
+    if [ -s "${MENUFILENAME}" ]; then
+       mv ${MENUFILENAME} ${MENUFILENAME}.bak
     fi
 fi
 
