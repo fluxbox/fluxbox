@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.8 2003/06/05 12:42:31 fluxgen Exp $
+// $Id: Button.cc,v 1.9 2003/08/04 12:46:49 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -69,15 +69,15 @@ void Button::setOnClick(RefCount<Command> &cmd, int button) {
 }
 
 void Button::move(int x, int y) {
-    m_win.move(x, y);
+    window().move(x, y);
 }
 
 void Button::resize(unsigned int w, unsigned int h) {
-    m_win.resize(w, h);
+    window().resize(w, h);
 }
 
 void Button::moveResize(int x, int y, unsigned int width, unsigned int height) {
-    m_win.moveResize(x, y, width, height);
+    window().moveResize(x, y, width, height);
 }
 
 void Button::setPixmap(Pixmap pm) {
@@ -92,12 +92,14 @@ void Button::setBackgroundColor(const Color &color) {
     m_win.setBackgroundColor(color);
     m_background_color = color;
     clear();
+    window().updateTransparent();
 }
 
 void Button::setBackgroundPixmap(Pixmap pm) {
     m_win.setBackgroundPixmap(pm);
     m_background_pm = pm;
     clear();
+    window().updateTransparent();
 }
 
 void Button::show() {
@@ -113,7 +115,7 @@ void Button::buttonPressEvent(XButtonEvent &event) {
         m_win.setBackgroundPixmap(m_pressed_pm);
     m_pressed = true;    
     clear();
-    
+    window().updateTransparent();
 }
 
 void Button::buttonReleaseEvent(XButtonEvent &event) {
@@ -140,11 +142,13 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
     if (event.button > 0 && event.button <= 5 &&
         m_onclick[event.button -1].get() != 0)
         m_onclick[event.button - 1]->execute();
-   
+
+    window().updateTransparent();
 }
 
 void Button::exposeEvent(XExposeEvent &event) {
-    m_win.clear();
+    clear();
+    window().updateTransparent(event.x, event.y, event.width, event.height);
 }
 
 }; // end namespace FbTk
