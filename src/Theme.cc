@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.8 2002/01/08 00:12:51 fluxgen Exp $
+// $Id: Theme.cc,v 1.9 2002/01/08 11:37:15 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -66,7 +66,6 @@
 #include <cstdio>
 #include <cstdarg>
 #include <string>
-#include <strstream>
 #include <iostream>
 using namespace std;
 
@@ -656,16 +655,16 @@ void Theme::loadRootCommand() {
 	char *value_type;
 
 	if (m_rootcommand.size()) {
-		#ifndef         __EMX__
-		//const int display_strlen = 1024;
-		//char displaystring[display_strlen];
-		strstream displaystring; 
-		displaystring<<"DISPLAY="<<DisplayString(m_display)<<m_screennum;
-		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.str()<<endl;
-		//snprintf(displaystring, display_strlen, "DISPLAY=%s%d",
-		//DisplayString(m_display), m_screennum);
- 
-		bexec(m_rootcommand.c_str(), displaystring.str());
+		#ifndef         __EMX__		
+		char tmpstring[256]; //to hold m_screennum 
+		tmpstring[0]=0;
+		sprintf(tmpstring, "%d", m_screennum);
+		string displaystring("DISPLAY=");
+		displaystring.append(DisplayString(m_display));
+		displaystring.append(tmpstring); // append m_screennum				
+		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;
+		 
+		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
 		#else //         __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), NULL);  
 		#endif // !__EMX__     
@@ -677,15 +676,15 @@ void Theme::loadRootCommand() {
 	} else if (XrmGetResource(m_database, "rootCommand",
 										 "RootCommand", &value_type, &value)) {
 	#ifndef		__EMX__
-		//const int display_strlen = 1024;
-		//char displaystring[display_strlen];
-		strstream displaystring; 
-		displaystring<<"DISPLAY="<<DisplayString(m_display)<<m_screennum;
-		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.str()<<endl;
-		//snprintf(displaystring, display_strlen, "DISPLAY=%s%d", 
-		//	DisplayString(m_display), m_screennum);	
+		char tmpstring[256]; //to hold m_screennum
+		tmpstring[0]=0;
+		sprintf(tmpstring, "%d", m_screennum);
+		string displaystring("DISPLAY=");
+		displaystring.append(DisplayString(m_display));
+		displaystring.append(tmpstring); // append m_screennum				
+		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;		 		
 			
-		bexec(value.addr, displaystring.str());
+		bexec(value.addr, const_cast<char *>(displaystring.c_str()));
 	#else //	 __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, NULL);
 	#endif // !__EMX__
