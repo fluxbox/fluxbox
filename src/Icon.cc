@@ -55,10 +55,9 @@ void Iconmenu::itemSelected(int button, int index) {
 		if (index >= 0 && index < screen->getIconCount()) {
 			FluxboxWindow *win = screen->getIcon(index);
 
-			if (win) {
+			if (win)
 				win->deiconify();
-				win->setInputFocus();
-			}
+
 		}
 
 		if (! (screen->getWorkspacemenu()->isTorn() || isTorn()))
