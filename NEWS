@@ -1,14 +1,109 @@
-News in 0.9.8:
-    * Transparent toolbar
-      Change the toolbar alpha in the style
-      toolbar.alpha: 0-255
-      or
-      toolbar.<tool>.alpha: 0-255
-Bug fixes: 
-    * Fixed image cache problem (the memory bug)
-    * Fixed color parsing bug
-    * Fixed iconbar bug in "All Windows" mode
-    * Fixed border bug with left/right alignment in iconbar
-    * Fixed a loop issue in fluxbox-generate_menu
+News in 0.9.9:
+    * News commands:
+      * Deiconify <mode> <dest>
+        * Where mode is:
+          * last                         
+           - deiconify last iconified window
+          * lastworkspace (default)       
+           - deiconify last iconified window 
+             from current workspace
+          * all
+           - deiconify all iconified windows
+          * allworkspace
+           - deiconify all iconfiied windows 
+             from current workspace
+        * and dest is:
+          * current (default)
+           - deiconify them on current windows
+          * origin 
+           - deiconify them where they were
+          * originquiet
+           - deiconify to old workspace but dont follow
+      * SendToNextWorkspace <num>
+        * sends current window forward <num> workspaces
+      * SendToPrevWorkspace <num>
+        * sends current window backward <num> workspaces
+      * WindowMenu
+        * popups the window menu
+    * New resources:
+      * session.tabsAttachArea: <mode>
+        * where mode is:
+           * Window   
+            - dropping tabs to any part of the destination-window
+              leads to attaching to that frame (default)
+           * Titlebar 
+            - dropping tabs only to the titlebar of the destination-
+              window leads to attaching to that frame 
+      * session.screen<num>.overlay.lineWidth: <integer>
+      * session.screen<num>.overlay.lineStyle: 
+         * Valid arguments: LineSolid, LineOnOffDash
+                            LineDoubleDash
 
+      * session.screen<num>.overlay.joinStyle:
+         * Valid arguments: JoinRound, JoindMiter, JoinBevel
+
+      * session.screen<num>.overlay.capStyle:
+         * Valid arguments: CapNotLast, CapRound,
+                            CapButt, CapProjecting
+
+    * KDE dockapps docks in systray inside toolbar now
+    * Support aspect ratio hints
+    * Optional decoration on transient windows 
+    * Added ! as a comment char in keys file
+    * Improved rendering speed while changing workspace
+    * Improved checking for compiler and compiler version
+    * Improved transparent rendering speed
+    * Remember hidden state for apps
+      * You mark apps in the apps-file with
+        [Hidden] {yes}
+        With this you can configure any app to be hidden from the toolbar
+    * Exands tilde for slitlist file
+    * Using WM_CLASS instead of NAME in slitlist file
+    * Window snapping to other windows
+    * More support for Extended Window Manager Hints:
+      * _NET_WM_WINDOW_TYPE
+      * _NET_WM_WINDOW_TYPE_DOCK
+      * _NET_WM_STATE_ABOVE
+      * _NET_WM_STATE_BELOW
+      * _NET_WM_CLIENT_LIST_STACKING
+      * _NET_WM_DESKTOP_VIEWPORT
+      * _NET_WM_DESKTOP_GEOMETRY
+      * _NET_WORKAREA
+      * _NET_ACTIVE_WINDOW
+      * _NET_WM_STATE_HIDDEN
+      * _NET_WM_STATE_SKIP_TASKBAR
+    * sl_SI 
+    * Updated nl_NL locales
+    * fbrun news:
+      * cycling in tab completion
+      * completes binaries from your $PATH 
+        * if you want to use old history tab-complete, press Ctrl-tab
+      * completes path names
+      * Control-C clears the text
+      * Fixed cursor bug
+    * fluxbox-generate_menu news:
+      * Updated German locales
+      * More firefox support
+      * portability fixes
+      * improve menu reloading
+      * more menu entries
+      * French locales
+      * Portuguese locales
+Bug fixes: 
+    * Decoration bug with mwm hint + remember
+    * Drawing issues with big menus
+    * _MOTIF_WM_HINTS decoration toggle bug
+    * No-text-in-iconbar bug on restart
+    * Menu time stamp on root menu
+    * placeWindow caused spinning with screens higher than width
+      e.g. vertical xinerama 
+    * compiles in cygwin
+    * update of keys on keymap change
+    * infinite loop in fbrun
+    * window size bug in no-decor windows on start/restart
+    * The _NET_MOVERESIZE_WINDOW crash bug
+    * mplayer -vo xvid bug
+    * menu keyboard navigation bug
+    *
+    *
 See ChangeLog for more details
