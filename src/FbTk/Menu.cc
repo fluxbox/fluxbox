@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.57 2004/04/14 14:02:41 fluxgen Exp $
+// $Id: Menu.cc,v 1.58 2004/04/18 17:46:32 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -502,9 +502,24 @@ void Menu::update(int active_index) {
                 menu.frame.window()<<", "<<menu.frame.width()<<", "<<
                 menu.frame.height()<<
                 ", "<<attr.depth<<") !"<<endl;
-        }
+        } else if (menu.sublevels > 0 && menu.persub * menu.sublevels != menuitems.size()) {
 
+            // TODO: fill only that part of the menuframe with the
+            // pixmap/color, that has actually NO buttons on it
+            FbTk::GContext def_gc(menu.frame.window());
+            if (menu.frame_pixmap == 0) {
+                def_gc.setForeground(m_theme.frameTexture().color());
+                m_frame_pm.fillRectangle(def_gc.gc(),
+                                         0, 0,
+                                         width(), menu.frame_h);
        
+            } else {
+                m_frame_pm.copyArea(menu.frame_pixmap, def_gc.gc(),
+                                    0, 0,
+                                    0, 0,
+                                    width(), menu.frame_h);
+            }
+        }
     }
 
     menu.frame.setBackgroundPixmap(m_frame_pm.drawable());
