@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.29 2004/10/21 10:24:34 akir Exp $
+// $Id: FbCommands.cc,v 1.30 2004/10/21 13:05:50 akir Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -135,7 +135,12 @@ ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
 }
 
 void ExportCmd::execute() {
+// TODO: we need to analyze this a bit more
+#if defined sgi && ! defined GCC
     putenv((m_name + "=" + m_value).c_str());
+#else
+    setenv(m_name.c_str(), m_value.c_str(), 1);
+#endif
 }
 
 
