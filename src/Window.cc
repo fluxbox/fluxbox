@@ -3483,9 +3483,10 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             detachClient(*old_attached);
             // move window by relative amount of mouse movement
             // since just detached, move relative to old location
-            if (client.m_win != 0)
+            if (client.m_win != 0) {
                 client.m_win->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
-
+                client.m_win->show();
+                }
         }
 	else if(attach_to_win==this && attach_to_win->isTabable()) {
 		//reording of tabs within a frame
