@@ -40,7 +40,6 @@
 #include "Window.hh"
 #include "Windowmenu.hh"
 #include "Workspace.hh"
-#include "misc.hh"
 #include "StringUtil.hh"
 
 #ifdef		SLIT
