@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.14 2003/08/28 14:18:36 fluxgen Exp $
+// $Id: Theme.cc,v 1.15 2003/08/28 15:12:36 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -30,7 +30,7 @@
 #include "App.hh"
 #include "Image.hh"
 #include "PixmapWithMask.hh"
-
+#include "StringUtil.hh"
 
 #include <cstdio>
 #include <memory>
@@ -227,8 +227,8 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
 }
 
 bool ThemeManager::load(const std::string &filename) {
-	
-    if (!m_database.load(filename.c_str()))
+    
+    if (!m_database.load(FbTk::StringUtil::expandFilename(filename).c_str()))
         return false;
 
     //get list and go throu all the resources and load them
