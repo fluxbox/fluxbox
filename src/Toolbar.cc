@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.34 2002/10/15 17:13:24 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.35 2002/10/19 14:07:00 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -998,10 +998,23 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 		XLowerWindow(display, frame.window);
 	} else if (be->button == 3) {
 		FluxboxWindow *fluxboxwin = 0;
+		// if we clicked on a icon then show window menu
 		if ( iconbar && (fluxboxwin = iconbar->findWindow(be->window)) ) {
-			Windowmenu *wm = fluxboxwin->getWindowmenu();
-			if (wm) 
-				fluxboxwin->showMenu(be->x_root, be->y_root - wm->height());
+			const Windowmenu * const wm = fluxboxwin->getWindowmenu();
+			if (wm != 0) {
+				int menu_y = be->y_root - wm->height();
+				int menu_x = be->x_root;
+				// make sure the menu is visible
+				if (menu_y < 0) {
+					menu_y = 0;
+				}
+				if (menu_x < 0) {
+					menu_x = 0;
+				} else if (menu_x + wm->width() > screen->getWidth()) {
+					menu_x = screen->getWidth() - wm->width();
+				}
+				fluxboxwin->showMenu(menu_x, menu_y);
+			}
 		} else if (! toolbarmenu->isVisible()) {
 			int x, y;
 
