@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.6 2003/08/18 11:13:32 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.7 2003/09/08 17:52:34 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -29,6 +29,8 @@
 #include "Container.hh"
 
 #include "FbTk/Observer.hh"
+#include "FbTk/Resource.hh"
+#include "FbTk/Menu.hh"
 
 #include <X11/Xlib.h>
 
@@ -41,7 +43,12 @@ class FluxboxWindow;
 
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
-    IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScreen &screen);
+    typedef std::list<IconButton *> IconList;
+
+    enum Mode {NONE, ICONS, WORKSPACEICONS, WORKSPACE, ALLWINDOWS};
+
+    IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, 
+                BScreen &screen, FbTk::Menu &menu);
     ~IconbarTool();
 
     void move(int x, int y);
@@ -52,11 +59,17 @@ public:
     void update(FbTk::Subject *subj);
     void show();
     void hide();
+
+    void setMode(Mode mode);
+
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
 
+    Mode mode() const { return *m_rc_mode; }
+
 private:
+
     /// render single button that holds win
     void renderWindow(FluxboxWindow &win);
     /// render single button
@@ -65,8 +78,18 @@ private:
     void renderTheme();
     /// destroy all icons
     void deleteIcons();
-    /// remove a single window an render theme again
+    /// remove a single window
     void removeWindow(FluxboxWindow &win);
+    /// add a single window 
+    void addWindow(FluxboxWindow &win);
+    /// add icons to the list
+    void updateIcons();
+    /// add normal windows to the list
+    void updateWorkspace();
+    /// add all windows to the list
+    void updateAllWindows();
+    /// add a list of windows 
+    void addList(std::list<FluxboxWindow *> &winlist);
 
     BScreen &m_screen;
     Container m_icon_container;
@@ -75,8 +98,11 @@ private:
     Pixmap m_focused_pm, m_unfocused_pm;
     Pixmap m_empty_pm; ///< pixmap for empty container
 
-    typedef std::list<IconButton *> IconList;
+
     IconList m_icon_list;
+    FbTk::Resource<Mode> m_rc_mode;
+
+    FbTk::Menu m_menu;
 };
 
 #endif // ICONBARTOOL_HH
