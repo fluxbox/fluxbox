@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.27 2003/12/30 17:17:05 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.28 2004/01/21 20:22:26 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -141,20 +141,20 @@ public:
     inline Window window() const { return m_window; }
     /// @return drawable (the X window)
     inline Drawable drawable() const { return window(); }
-    int x() const { return m_x; }
-    int y() const { return m_y; }
-    unsigned int width() const { return m_width; }
-    unsigned int height() const { return m_height; }
-    unsigned int borderWidth() const { return m_border_width; }
-    int depth() const { return m_depth; }
+    inline int x() const { return m_x; }
+    inline int y() const { return m_y; }
+    inline unsigned int width() const { return m_width; }
+    inline unsigned int height() const { return m_height; }
+    inline unsigned int borderWidth() const { return m_border_width; }
+    inline int depth() const { return m_depth; }
     int screenNumber() const;
     long eventMask() const;
     /// compare X window
-    bool operator == (Window win) const { return m_window == win; }	
-    bool operator != (Window win) const { return m_window != win; }
+    inline bool operator == (Window win) const { return m_window == win; }	
+    inline bool operator != (Window win) const { return m_window != win; }
     /// compare two windows
-    bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
-    bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
+    inline bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
+    inline bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
 
 protected:
     /// creates a window with x window client (m_window = client)
