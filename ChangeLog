@@ -1,4 +1,6 @@
 Changes for 0.1.6:
+*02/01/09:
+   * Updated copyright date
 *02/01/08:
    * Made class Keys more independent (layer 2). class Keys now only
      depends on StringUtil.
@@ -6,6 +8,8 @@ Changes for 0.1.6:
      StringUtil this should make the config file less restrictive
    * Added stringtok to StringUtil
 	 * Removed Fluxbox dependency from class Theme
+   * Fixed closebutton bug
+   * Fixed memory leak in Keys
 *02/01/06:
    * Changed toolbar placement enums to uppercase letters (Claes Nästén)
    * Moved strcasestr from Theme.cc to StringUtil	 
