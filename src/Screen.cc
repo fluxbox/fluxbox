@@ -22,20 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.252 2003/12/18 21:13:52 fluxgen Exp $
+// $Id: Screen.cc,v 1.253 2003/12/19 00:34:22 fluxgen Exp $
 
 
 #include "Screen.hh"
 
 #include "I18n.hh"
 #include "fluxbox.hh"
-#include "ImageControl.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "StringUtil.hh"
 #include "Netizen.hh"
-#include "Directory.hh"
-#include "SimpleCommand.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
 #include "RootTheme.hh"
@@ -43,20 +39,24 @@
 #include "FbCommands.hh"
 #include "BoolMenuItem.hh"
 #include "IntResMenuItem.hh"
-#include "MacroCommand.hh"
-#include "XLayerItem.hh"
-#include "MultLayers.hh"
 #include "FbMenu.hh"
 #include "LayerMenu.hh"
 #include "WinClient.hh"
-#include "Subject.hh"
 #include "FbWinFrame.hh"
 #include "FbWindow.hh"
 #include "Strut.hh"
 #include "SlitTheme.hh"
 #include "CommandParser.hh"
-#include "MenuTheme.hh"
 #include "IconMenuItem.hh"
+
+#include "FbTk/Subject.hh"
+#include "FbTk/Directory.hh"
+#include "FbTk/SimpleCommand.hh"
+#include "FbTk/MultLayers.hh"
+#include "FbTk/XLayerItem.hh"
+#include "FbTk/MacroCommand.hh"
+#include "FbTk/StringUtil.hh"
+#include "FbTk/ImageControl.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -136,7 +136,7 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 class FocusModelMenuItem : public FbTk::MenuItem {
 public:
     FocusModelMenuItem(const char *label, BScreen &screen, 
-                       Fluxbox::FocusModel model, 
+                       BScreen::FocusModel model, 
                        FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_screen(screen), m_focusmodel(model) {
     }
@@ -148,11 +148,101 @@ public:
 
 private:
     BScreen &m_screen;
-    Fluxbox::FocusModel m_focusmodel;
+    BScreen::FocusModel m_focusmodel;
 };
 
 
-}; // End anonymous namespace
+} // End anonymous namespace
+
+template <>
+void FbTk::Resource<BScreen::PlacementPolicy>::setDefaultValue() {
+    *(*this) = BScreen::ROWSMARTPLACEMENT;
+}
+
+template <>
+void FbTk::Resource<BScreen::PlacementPolicy>::setFromString(const char *str) {
+    if (strcasecmp("RowSmartPlacement", str) == 0)
+        *(*this) = BScreen::ROWSMARTPLACEMENT;
+    else if (strcasecmp("", str) == 0)
+        *(*this) = BScreen::COLSMARTPLACEMENT;
+    else if (strcasecmp("UnderMousePlacement", str) == 0)
+        *(*this) = BScreen::UNDERMOUSEPLACEMENT;
+    else if (strcasecmp("CascadePlacement", str) == 0)
+        *(*this) = BScreen::CASCADEPLACEMENT;
+    else
+        setDefaultValue();
+    
+}
+
+string FbTk::Resource<BScreen::PlacementPolicy>::getString() {
+    switch (*(*this)) {
+    case BScreen::ROWSMARTPLACEMENT:
+        return "RowSmartPlacement";
+    case BScreen::COLSMARTPLACEMENT:
+        return "ColSmartPlacement";
+    case BScreen::UNDERMOUSEPLACEMENT:
+        return "UnderMousePlacement";
+    case BScreen::CASCADEPLACEMENT:
+        return "CascadePlacement";
+    }
+
+    return "RowSmartPlacement";
+}
+
+template <>
+void FbTk::Resource<BScreen::RowDirection>::setDefaultValue() {
+    *(*this) = BScreen::LEFTRIGHT;
+}
+
+template <>
+void FbTk::Resource<BScreen::RowDirection>::setFromString(const char *str) {
+    if (strcasecmp("LeftToRight", str) == 0)
+        *(*this) = BScreen::LEFTRIGHT;
+    else if (strcasecmp("RightToLeft", str) == 0)
+        *(*this) = BScreen::RIGHTLEFT;
+    else
+        setDefaultValue();
+    
+}
+
+string FbTk::Resource<BScreen::RowDirection>::getString() {
+    switch (*(*this)) {
+    case BScreen::LEFTRIGHT:
+        return "LeftToRight";
+    case BScreen::RIGHTLEFT:
+        return "RightToLeft";
+    }
+
+    return "LeftToRight";
+}
+
+
+template <>
+void FbTk::Resource<BScreen::ColumnDirection>::setDefaultValue() {
+    *(*this) = BScreen::TOPBOTTOM;
+}
+
+template <>
+void FbTk::Resource<BScreen::ColumnDirection>::setFromString(const char *str) {
+    if (strcasecmp("TopToBottom", str) == 0)
+        *(*this) = BScreen::TOPBOTTOM;
+    else if (strcasecmp("BottomToTop", str) == 0)
+        *(*this) = BScreen::BOTTOMTOP;
+    else
+        setDefaultValue();
+    
+}
+
+string FbTk::Resource<BScreen::ColumnDirection>::getString() {
+    switch (*(*this)) {
+    case BScreen::TOPBOTTOM:
+        return "TopToBottom";
+    case BScreen::BOTTOMTOP:
+        return "BottomToTop";
+    }
+
+    return "TopToBottom";
+}
 
 template <>
 void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setDefaultValue() {
@@ -180,13 +270,47 @@ void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
         setDefaultValue();
 }
 
+template<>
+std::string FbTk::Resource<BScreen::FocusModel>::
+getString() {
+    switch (m_value) {
+    case BScreen::SLOPPYFOCUS:
+        return string("SloppyFocus");
+    case BScreen::SEMISLOPPYFOCUS:
+        return string("SemiSloppyFocus");
+    case BScreen::CLICKTOFOCUS:
+        return string("ClickToFocus");
+    }
+    // default string
+    return string("ClickToFocus");
+}
+
+template<>
+void FbTk::Resource<BScreen::FocusModel>::
+setFromString(char const *strval) {
+    // auto raise options here for backwards read compatibility
+    // they are not supported for saving purposes. Nor does the "AutoRaise" 
+    // part actually do anything
+    if (strcasecmp(strval, "SloppyFocus") == 0 
+        || strcasecmp(strval, "AutoRaiseSloppyFocus") == 0) 
+        m_value = BScreen::SLOPPYFOCUS;
+    else if (strcasecmp(strval, "SemiSloppyFocus") == 0
+        || strcasecmp(strval, "AutoRaiseSemiSloppyFocus") == 0) 
+        m_value = BScreen::SEMISLOPPYFOCUS;
+    else if (strcasecmp(strval, "ClickToFocus") == 0) 
+        m_value = BScreen::CLICKTOFOCUS;
+    else
+        setDefaultValue();
+}
+
 namespace {
 
 class StyleMenuItem: public FbTk::MenuItem {
 public:
-    StyleMenuItem(const std::string &label, const std::string &filename):FbTk::MenuItem(label.c_str()), 
-                                                                         m_filename(FbTk::StringUtil::
-                                                                                    expandFilename(filename)) {
+    StyleMenuItem(const std::string &label, const std::string &filename):
+        FbTk::MenuItem(label.c_str()), 
+        m_filename(FbTk::StringUtil::
+                   expandFilename(filename)) {
         // perform shell style ~ home directory expansion
         // and insert style      
         FbTk::RefCount<FbTk::Command> 
@@ -227,9 +351,8 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
                                         const std::string &scrname, 
                                         const std::string &altscrname):
-
     image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
-    opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
+    opaque_move(rm, false, scrname + ".opaqueMove", altscrname+".OpaqueMove"),
     full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
     sloppy_window_grouping(rm, true, 
                            scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
@@ -243,15 +366,18 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     resizemode(rm, "", scrname+".resizeMode", altscrname+".ResizeMode"),
-    focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
+    focus_model(rm, CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
     menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
     menu_delay(rm, 0, scrname + ".menuDelay", altscrname+".MenuDelay"),
     menu_delay_close(rm, 0, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
-    menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode") {
+    menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
+    placement_policy(rm, ROWSMARTPLACEMENT, scrname+".windowPlacement", altscrname+".WindowPlacement"),
+    row_direction(rm, LEFTRIGHT, scrname+".rowPlacementDirection", altscrname+".RowPlacementDirection"),
+    col_direction(rm, TOPBOTTOM, scrname+".colPlacementDirection", altscrname+".ColPlacementDirection") {
 
-};
+}
 
 BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname, const string &altscreenname,
@@ -798,13 +924,6 @@ void BScreen::removeClient(WinClient &client) {
     // the client could be on icon menu so we update it
     updateIconMenu();
 
-}
-
-FluxboxWindow *BScreen::getIcon(unsigned int index) {
-    if (index < m_icon_list.size())
-        return m_icon_list[index];
-
-    return 0;
 }
 
 void BScreen::setAntialias(bool value) {
@@ -1935,21 +2054,21 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                                                ConfigmenuClickToFocus,
                                                                "Click To Focus"), 
                                               *this,
-                                              Fluxbox::CLICKTOFOCUS,
+                                              CLICKTOFOCUS,
                                               save_and_reconfigure));
 
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                                ConfigmenuSloppyFocus,
                                                                "Sloppy Focus"), 
                                               *this,
-                                              Fluxbox::SLOPPYFOCUS,
+                                              SLOPPYFOCUS,
                                               save_and_reconfigure));
 
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                                ConfigmenuSemiSloppyFocus,
                                                                "Semi Sloppy Focus"),
                                               *this,
-                                              Fluxbox::SEMISLOPPYFOCUS,
+                                              SEMISLOPPYFOCUS,
                                               save_and_reconfigure));
 
     focus_menu->insert(new BoolMenuItem(i18n->getMessage(ConfigmenuSet, 

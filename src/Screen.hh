@@ -22,19 +22,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.128 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: Screen.hh,v 1.129 2003/12/19 00:34:23 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
-#include "Resource.hh"
-#include "Subject.hh"
-#include "MultLayers.hh"
+
 #include "FbRootWindow.hh"
-#include "NotCopyable.hh"
-#include "Observer.hh"
-#include "fluxbox.hh"
 #include "MenuTheme.hh"
+
+#include "FbTk/Resource.hh"
+#include "FbTk/Subject.hh"
+#include "FbTk/MultLayers.hh"
+#include "FbTk/NotCopyable.hh"
+#include "FbTk/Observer.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -45,7 +46,9 @@
 #include <vector>
 #include <fstream>
 #include <memory>
+#include <map>
 
+class FluxboxWindow;
 class Netizen;
 class FbWinFrameTheme;
 class RootTheme;
@@ -61,7 +64,7 @@ class ImageControl;
 class XLayerItem;
 class FbWindow;
 class Subject;
-};
+}
 
 /// Handles screen connection, screen clients and workspaces
 /**
@@ -69,6 +72,14 @@ class Subject;
  */
 class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
+    enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+    enum FocusDir { FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT };
+    enum PlacementPolicy { ROWSMARTPLACEMENT, COLSMARTPLACEMENT, CASCADEPLACEMENT, UNDERMOUSEPLACEMENT};
+    enum RowDirection { LEFTRIGHT, RIGHTLEFT};
+    enum ColumnDirection { TOPBOTTOM, BOTTOMTOP};
+
+    typedef std::vector<FluxboxWindow *> Icons;
+    typedef std::list<WinClient *> FocusedWindows;
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
 
@@ -77,8 +88,8 @@ public:
             int scrn, int number_of_layers);
     ~BScreen();
 
-    inline bool isSloppyFocus() const { return (*resource.focus_model == Fluxbox::SLOPPYFOCUS); }
-    inline bool isSemiSloppyFocus() const { return (*resource.focus_model == Fluxbox::SEMISLOPPYFOCUS); }
+    inline bool isSloppyFocus() const { return (*resource.focus_model == SLOPPYFOCUS); }
+    inline bool isSemiSloppyFocus() const { return (*resource.focus_model == SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
     inline bool isScreenManaged() const { return managed; }
     inline bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
@@ -95,12 +106,12 @@ public:
     inline bool antialias() const { return *resource.antialias; }
 
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
-    const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
-    FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
+    const FbTk::Menu &getRootmenu() const { return *m_rootmenu.get(); }
+    FbTk::Menu &getRootmenu() { return *m_rootmenu.get(); }
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline const std::string &getResizeMode()  const { return *resource.resizemode; }
-    inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
+    inline FocusModel getFocusModel() const { return *resource.focus_model; }
 
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
@@ -109,8 +120,8 @@ public:
     inline Workspace *currentWorkspace() { return m_current_workspace; }
     inline const Workspace *currentWorkspace() const { return m_current_workspace; }
 
-    const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
-    FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
+    const FbTk::Menu &getWorkspacemenu() const { return *workspacemenu.get(); }
+    FbTk::Menu &getWorkspacemenu() { return *workspacemenu.get(); }
 
 
 
@@ -127,8 +138,6 @@ public:
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }
     inline unsigned int screenNumber() const { return rootWindow().screenNumber(); }
-    typedef std::vector<FluxboxWindow *> Icons;
-    typedef std::list<WinClient *> FocusedWindows;
 
     /// @return number of workspaces
     inline unsigned int getCount() const { return m_workspaces_list.size(); }
@@ -168,39 +177,22 @@ public:
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 
-    inline int getPlacementPolicy() const { return resource.placement_policy; }
+    inline PlacementPolicy getPlacementPolicy() const { return *resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
-    inline int getRowPlacementDirection() const { return resource.row_direction; }
-    inline int getColPlacementDirection() const { return resource.col_direction; }
+    inline RowDirection getRowPlacementDirection() const { return *resource.row_direction; }
+    inline ColumnDirection getColPlacementDirection() const { return *resource.col_direction; }
 
     inline void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
     inline void saveResizeMode(std::string resizem) { *resource.resizemode = resizem; }
-    inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
+    inline void saveFocusModel(FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
-
-    inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
-    inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
-    inline void saveColPlacementDirection(int d) { resource.col_direction = d;  }
     inline void saveEdgeSnapThreshold(int t) { resource.edge_snap_threshold = t;  }
     inline void saveImageDither(bool d) { resource.image_dither = d;  }
 
-    inline void saveOpaqueMove(bool o) { resource.opaque_move = o;  }
-    inline void saveFullMax(bool f) { resource.full_max = f;  }
-    inline void saveFocusNew(bool f) { resource.focus_new = f;  }
-    inline void saveFocusLast(bool f) { resource.focus_last = f;  }
-    inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
-    inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
-    inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
+
 
     void setAntialias(bool value);
-	
-    inline const char *getStrftimeFormat() { return resource.strftime_format.c_str(); }
-
-    inline int getDateFormat() { return resource.date_format; }
-    inline void saveDateFormat(int f) { resource.date_format = f; }
-    inline bool isClock24Hour() { return resource.clock24hour; }
-    inline void saveClock24Hour(bool c) { resource.clock24hour = c; }
 
     inline FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
     inline const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
@@ -213,7 +205,6 @@ public:
     FbRootWindow &rootWindow() { return m_root_window; }
     const FbRootWindow &rootWindow() const { return m_root_window; }
 
-    FluxboxWindow *getIcon(unsigned int index);
     FbTk::MultLayers &layerManager() { return m_layermanager; }
     const FbTk::MultLayers &layerManager() const { return m_layermanager; }
     FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
@@ -255,7 +246,7 @@ public:
     void raiseFocus();
     void setFocusedWindow(WinClient &winclient);
 
-    enum FocusDir { FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT };
+
     void dirFocus(FluxboxWindow &win, FocusDir dir);
 
     void reconfigure();	
@@ -334,8 +325,7 @@ public:
     bool isShuttingdown() const { return m_shutdown; }
 
 
-    enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
-           UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
+
 
     // prevFocus/nextFocus option bits
     enum { CYCLEGROUPS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
@@ -428,18 +418,13 @@ private:
             antialias, auto_raise, click_raises;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<std::string> resizemode;
-        FbTk::Resource<Fluxbox::FocusModel> focus_model;
+        FbTk::Resource<FocusModel> focus_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, menu_alpha, menu_delay, menu_delay_close;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
-
-        int placement_policy, row_direction, col_direction;
-
-        std::string strftime_format;
-
-        bool clock24hour;
-        int date_format;
-
+        FbTk::Resource<PlacementPolicy> placement_policy;
+        FbTk::Resource<RowDirection> row_direction;
+        FbTk::Resource<ColumnDirection> col_direction;
 
     } resource;
 
