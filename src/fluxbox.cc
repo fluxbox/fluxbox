@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.144 2003/05/13 11:43:44 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.145 2003/05/13 14:05:58 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -529,11 +529,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
             m_atomhandler[atomh]->initForScreen(*screen);
         }
-
-		
     }
 
-    I18n *i18n = I18n::instance();
     if (m_screen_list.size() == 0) {
         //!! TODO: NLS
         throw string("Couldn't find screens to manage.\n"
@@ -766,7 +763,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
         if (! win) {
             //!!! TODO
             BScreen *scr = searchScreen(e->xmaprequest.parent);
-            cerr<<"screen = "<<scr<<endl;
             if (scr != 0)
                 win = scr->createWindow(e->xmaprequest.window);
             else
