@@ -22,19 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.26 2002/08/04 15:12:51 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.27 2002/08/12 03:25:55 fluxgen Exp $
 
 #include "Toolbar.hh"
-
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
 #include "fluxbox.hh"
@@ -46,26 +36,31 @@
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
 
+// use GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#ifdef		HAVE_CONFIG_H
+#	include "../config.h"
+#endif // HAVE_CONFIG_H
+
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 
-#ifdef		STDC_HEADERS
-#	include <string.h>
-#endif // STDC_HEADERS
 
-#ifdef		HAVE_STDIO_H
-#	include <stdio.h>
-#endif // HAVE_STDIO_H
+#include <cstring>
+#include <cstdio>
 
-#ifdef		TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
+#ifdef TIME_WITH_SYS_TIME
+#include <sys/time.h>
+#include <time.h>
 #else // !TIME_WITH_SYS_TIME
-# ifdef		HAVE_SYS_TIME_H
-#	include <sys/time.h>
-# else // !HAVE_SYS_TIME_H
-#	include <time.h>
-# endif // HAVE_SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else // !HAVE_SYS_TIME_H
+#include <time.h>
+#endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
 #include <iostream>
@@ -1031,7 +1026,11 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 	} else if (be->button == 2 && (! on_top)) {
 		XLowerWindow(display, frame.window);
 	} else if (be->button == 3) {
-		if (! toolbarmenu->isVisible()) {
+		FluxboxWindow *fluxboxwin = 0;
+		if ( iconbar && (fluxboxwin = iconbar->findWindow(be->window)) ) {
+			Windowmenu *wm = fluxboxwin->getWindowmenu();
+			fluxboxwin->showMenu(be->x_root, be->y_root - wm->height());
+		} else if (! toolbarmenu->isVisible()) {
 			int x, y;
 
 			x = be->x_root - (toolbarmenu->width() / 2);
@@ -1173,13 +1172,14 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			//save workspace names
 			Fluxbox::instance()->save_rc();
 
-		} else if (! (ks == XK_Shift_L || ks == XK_Shift_R ||
+		} else if (! IsModifierKey(ks)) {/* ks == XK_Shift_L || ks == XK_Shift_R ||
 			ks == XK_Control_L || ks == XK_Control_R ||
 			ks == XK_Caps_Lock || ks == XK_Shift_Lock ||
 			ks == XK_Meta_L || ks == XK_Meta_R ||
 			ks == XK_Alt_L || ks == XK_Alt_R ||
 			ks == XK_Super_L || ks == XK_Super_R ||
 			ks == XK_Hyper_L || ks == XK_Hyper_R)) {
+			*/
 
 			if (ks == XK_BackSpace && new_workspace_name.size())
 				new_workspace_name.erase(new_workspace_name.size()-1);
@@ -1196,26 +1196,26 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 				XmbTextExtents(screen->getToolbarStyle()->font.set,
 					new_workspace_name.c_str(), l, &ink, &logical);
 				tw = logical.width;
-			} else
+			} else {
 				tw = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
 					new_workspace_name.c_str(), l);
-			
+			}
 				x = (frame.workspace_label_w - tw) / 2;
 
 			if (x < (signed) frame.bevel_w) x = frame.bevel_w;
 
-			if (i18n->multibyte())
+			if (i18n->multibyte()) {
 				XmbDrawString(display, frame.workspace_label,
 					screen->getWindowStyle()->font.set,
 					screen->getWindowStyle()->l_text_focus_gc, x, 1 -
 					screen->getWindowStyle()->font.set_extents->max_ink_extent.y,
 					new_workspace_name.c_str(), l);
-			else
+			} else {
 				XDrawString(display, frame.workspace_label,
 					screen->getWindowStyle()->l_text_focus_gc, x,
 					screen->getToolbarStyle()->font.fontstruct->ascent + 1,
 					new_workspace_name.c_str(), l);
-			
+			}
 			XDrawRectangle(display, frame.workspace_label,
 				screen->getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
 				frame.label_h - 1);
@@ -1308,7 +1308,8 @@ Toolbarmenu::~Toolbarmenu() {
 void Toolbarmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
-		if (! item) return;
+		if (item == 0)
+			return;
 
 		switch (item->function()) {
 		case 1:  {// always on top
@@ -1330,9 +1331,9 @@ void Toolbarmenu::itemSelected(int button, unsigned int index) {
 			screen()->saveToolbarAutoHide(toolbar->do_auto_hide);
 			setItemSelected(2, change);
 
-			#ifdef		SLIT
-				toolbar->screen->getSlit()->reposition();
-			#endif // SLIT
+#ifdef SLIT
+			toolbar->screen->getSlit()->reposition();
+#endif // SLIT
 			Fluxbox::instance()->save_rc();
 		break;
 		}
