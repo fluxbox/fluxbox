@@ -1458,7 +1458,6 @@ bool FluxboxWindow::setInputFocus() {
         m_client->sendFocus();
 
         app->sync(false);
-        app->sync(false);
 
         ret = true;
     } else {
@@ -2479,6 +2478,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
 #endif // DEBUG
+
     restore(client, false);
 
 }
