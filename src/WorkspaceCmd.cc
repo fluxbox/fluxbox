@@ -20,14 +20,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.3 2003/07/19 13:51:24 rathnor Exp $
+// $Id: WorkspaceCmd.cc,v 1.4 2003/09/06 14:05:32 fluxgen Exp $
 
 #include "WorkspaceCmd.hh"
+
 #include "Workspace.hh"
 #include "Window.hh"
 #include "Screen.hh"
 #include "fluxbox.hh"
-#include "Keys.hh"
+
+#include "FbTk/KeyUtil.hh"
+
 #include <algorithm>
 #include <functional>
 
@@ -38,7 +41,7 @@ void NextWindowCmd::execute() {
         Fluxbox *fb = Fluxbox::instance();
         // special case for commands from key events
         if (fb->lastEvent().type == KeyPress) {
-            unsigned int mods = Keys::cleanMods(fb->lastEvent().xkey.state);
+            unsigned int mods = FbTk::KeyUtil::cleanMods(fb->lastEvent().xkey.state);
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
                 screen->nextFocus(m_option | BScreen::CYCLELINEAR);
             else {
@@ -59,7 +62,7 @@ void PrevWindowCmd::execute() {
         Fluxbox *fb = Fluxbox::instance();
         // special case for commands from key events
         if (fb->lastEvent().type == KeyPress) {
-            unsigned int mods = Keys::cleanMods(fb->lastEvent().xkey.state);
+            unsigned int mods = FbTk::KeyUtil::cleanMods(fb->lastEvent().xkey.state);
             if (mods == 0) // can't stacked cycle unless there is a mod to grab
                 screen->prevFocus(m_option | BScreen::CYCLELINEAR);
             else {
