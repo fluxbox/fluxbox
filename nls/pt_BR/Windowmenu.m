@@ -2,6 +2,8 @@ $set 10 #Windowmenu
 
 $ #SendTo
 # Enviar Para ...
+$ #SendGroupTo
+# Enviar Grupo Para ...
 $ #Shade
 # Encolher
 $ #Iconify
@@ -15,7 +17,7 @@ $ #Lower
 $ #Stick
 # Sempre Visivel
 $ #KillClient
-# Kill Cliente
+# Matar Cliente
 $ #Close
 # Fechar
 $ #Tab
