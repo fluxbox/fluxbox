@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.10:
+*02/06/03:
+   * Fixed slit client bug 
+*02/06/01:
+   * Updated nl_NL locales in fluxbox-generate_menu (THanks Han Boetes)
 *02/05/31:
    * Added ru_RU locales to fluxbox-generate_menu (Thanks Anton Denisov)
 *02/05/29:
