@@ -1,4 +1,7 @@
 (Format: Year/Month/Day)
+*04/01/17:
+  * Enter nls/pl_PL into configure.in and add a Makefile.am to pl_PL.
+  * Add nls/sl_SI (thanks Ale¨ Jagodnik)
 Changes for 0.9.9:
 *04/01/16:
   * Updated nl_NL locales (Han)
