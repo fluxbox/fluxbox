@@ -1,5 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/22:
+  * Added new ressources: (Mathias + SemiFollow from Erik Postma,thanx)
+    - session.*.iconbar.wheelMode: <mode>
+        On     - enable mousewheeling on the iconbuttons
+        Off    - disables mousewheeling on the iconbuttons
+        Screen - uses the settings of desktopWheeling
+
+    session.*.iconbar.deiconifyMode: <mode>
+
+      Current    - deiconifies the window on current workspace
+      Follow     - deiconifies the window on the workspace it
+                   was iconified from and jumps to that workspace
+      SemiFollow - acts as 'Current' for windows that were actually
+                   iconified, and as 'follow' for the others
+    IconButton.cc/hh IconbarTool.cc/hh
 *04/10/21:
   * A few fixes to compile fluxbox with icc and mipspro(irix) (Mathias)
     still some open issues with mipspro but to solve them i need
