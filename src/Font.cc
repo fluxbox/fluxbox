@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.3 2002/03/27 15:37:19 fluxgen Exp $
+//$Id: Font.cc,v 1.4 2002/03/27 18:47:44 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -98,7 +98,7 @@ bool Font::loadFromDatabase(XrmDatabase &database, const char *rname, const char
 	
 	if (XrmGetResource(database, rname, rclass, &value_type, &value)) {
 		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): Load font:"<<value.addr<<endl;
+		std::cerr<<__FILE__<<"("<<__LINE__<<"): Load font:"<<value.addr<<std::endl;
 		#endif
 		return load(value.addr);		
 	}
