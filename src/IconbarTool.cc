@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.11 2003/09/10 11:17:53 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.12 2003/09/15 20:19:36 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -194,7 +194,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     screen.currentWorkspaceSig().attach(this);
 
     update(0);
-
 }
 
 IconbarTool::~IconbarTool() {
@@ -287,7 +286,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
         return;
 
     if (mode() == NONE) {
-        if (typeid(*subj) == typeid(FbTk::Theme))
+        if (subj != 0 && typeid(*subj) == typeid(IconbarTheme))
             renderTheme();
                 
         return;
