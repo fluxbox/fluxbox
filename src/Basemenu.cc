@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.6 2002/01/11 09:26:33 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.7 2002/01/26 11:22:06 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -118,15 +118,15 @@ Basemenu::Basemenu(BScreen *scrn) {
 	
 	//set attributes for menu window
 	unsigned long attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
-					CWColormap | CWOverrideRedirect | CWEventMask;
+		CWColormap | CWOverrideRedirect | CWEventMask;
 	XSetWindowAttributes attrib;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-			screen->getBorderColor()->getPixel();
+		screen->getBorderColor()->getPixel();
 	attrib.colormap = screen->getColormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
-			ButtonMotionMask | ExposureMask;
+		ButtonMotionMask | ExposureMask;
 
 	//create menu window
 	menu.window =
@@ -245,9 +245,10 @@ int Basemenu::remove(int index) {
 			Basemenu *tmp = (Basemenu *) item->submenu();
 
 			if (! tmp->internal_menu) {
-	delete tmp;
+				delete tmp;
 			} else
-	tmp->internal_hide();
+		
+			tmp->internal_hide();
 		}
 
 		if (item->label())
@@ -275,7 +276,7 @@ void Basemenu::update(void) {
 		menu.item_h = screen->getMenuStyle()->framefont.set_extents->max_ink_extent.height +
 			menu.bevel_w;
 		menu.title_h =	screen->getMenuStyle()->titlefont.set_extents->max_ink_extent.height +
-				(menu.bevel_w * 2);
+			(menu.bevel_w * 2);
 	} else {
 		menu.item_h = screen->getMenuStyle()->framefont.fontstruct->ascent +
 			screen->getMenuStyle()->framefont.fontstruct->descent +
@@ -314,7 +315,7 @@ void Basemenu::update(void) {
 		BasemenuItem *itmp = it.current();
 
 		const char *s = ((itmp->u && *itmp->u) ? *itmp->u :
-				 ((itmp->l) ? itmp->l : (const char *) 0));
+			((itmp->l) ? itmp->l : (const char *) 0));
 		int l = strlen(s);
 
 		if (i18n->multibyte()) {
