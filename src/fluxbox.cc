@@ -22,10 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.23 2002/01/20 02:19:16 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.24 2002/01/21 02:04:23 fluxgen Exp $
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//Use some GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -41,7 +40,7 @@
 #include "Rootmenu.hh"
 #include "Screen.hh"
 
-#ifdef		SLIT
+#ifdef SLIT
 #include "Slit.hh"
 #endif // SLIT
 
@@ -153,7 +152,7 @@ static Bool queueScanner(Display *, XEvent *e, char *args) {
 		((scanargs *) args)->leave = True;
 		((scanargs *) args)->inferior = (e->xcrossing.detail == NotifyInferior);
 	} else if ((e->type == EnterNotify) &&
-						 (e->xcrossing.mode == NotifyUngrab))
+			(e->xcrossing.mode == NotifyUngrab))
 		((scanargs *) args)->enter = True;
 
 	return False;
@@ -858,11 +857,10 @@ void Fluxbox::process_event(XEvent *e) {
 			FluxboxWindow *win = (FluxboxWindow *) 0;
 			Basemenu *menu = (Basemenu *) 0;
 			Toolbar *tbar = (Toolbar *) 0;
-		//	Tab *tab = 0;
 			
-#ifdef		SLIT
+			#ifdef SLIT
 			Slit *slit = (Slit *) 0;
-#endif // SLIT
+			#endif // SLIT
 
 			if ((menu = searchMenu(e->xcrossing.window)))
 				menu->leaveNotifyEvent(&e->xcrossing);
@@ -870,12 +868,10 @@ void Fluxbox::process_event(XEvent *e) {
 				win->installColormap(False);
 			else if ((tbar = searchToolbar(e->xcrossing.window)))
 				tbar->leaveNotifyEvent(&e->xcrossing);
-		//	else if ((tab = searchTab(e->xcrossing.window)))
-		//		tab->leaveNotifyEvent(&e->xcrossing);
-#ifdef		SLIT
+			#ifdef SLIT
 			else if ((slit = searchSlit(e->xcrossing.window)))
 				slit->leaveNotifyEvent(&e->xcrossing);
-#endif // SLIT
+			#endif // SLIT
 			
 			break;
 		}
@@ -1594,6 +1590,9 @@ void Fluxbox::shutdown(void) {
 //saves resources
 //----------------------
 void Fluxbox::save_rc(void) {
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): Saving resources --------------"<<endl;
+	#endif
 	
 	XrmDatabase new_blackboxrc = 0;
 	
@@ -1604,15 +1603,10 @@ void Fluxbox::save_rc(void) {
 	// load_rc();
 	// This overwrites configs made while running, for example
 	// usage of iconbar and tabs
-	#ifndef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): Here"<<endl;
-	#endif
+	
 	
 	if (*dbfile) {
 		m_resourcemanager.save(dbfile.get(), dbfile.get());
-		#ifdef DEBUG
-		cerr<<"Saving resource"<<endl;
-		#endif
 		m_screen_rm.save(dbfile.get(), dbfile.get());
 	} else
 		cerr<<"database filename is invalid!"<<endl;
@@ -1628,13 +1622,15 @@ void Fluxbox::save_rc(void) {
 	XrmPutLineResource(&new_blackboxrc, rc_string);
 
 	LinkedListIterator<BScreen> it(screenList);
-	
+
+	//Save screen resources
+
 	for (; it.current(); it++) {
 		BScreen *screen = it.current();
 		int screen_number = screen->getScreenNumber();
 
 #ifdef		SLIT
-		char *slit_placement = (char *) 0;
+		string slit_placement;
 
 		switch (screen->getSlitPlacement()) {
 		case Slit::TOPLEFT: slit_placement = "TopLeft"; break;
@@ -1648,30 +1644,22 @@ void Fluxbox::save_rc(void) {
 		}
 
 		sprintf(rc_string, "session.screen%d.slit.placement: %s", screen_number,
-				slit_placement);
+			slit_placement.c_str());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.slit.direction: %s", screen_number,
-						((screen->getSlitDirection() == Slit::HORIZONTAL) ? "Horizontal" :
-																	"Vertical"));
+			((screen->getSlitDirection() == Slit::HORIZONTAL) ? "Horizontal" :
+			"Vertical"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.slit.onTop: %s", screen_number,
-						((screen->getSlit()->isOnTop()) ? "True" : "False"));
+			((screen->getSlit()->isOnTop()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.slit.autoHide: %s", screen_number,
-						((screen->getSlit()->doAutoHide()) ? "True" : "False"));
+			((screen->getSlit()->doAutoHide()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 #endif // SLIT
-
-		sprintf(rc_string, "session.screen%d.focusNewWindows: %s", screen_number,
-			((screen->doFocusNew()) ? "True" : "False"));
-		XrmPutLineResource(&new_blackboxrc, rc_string);
-
-		sprintf(rc_string, "session.screen%d.focusLastWindow: %s", screen_number,
-			((screen->doFocusLast()) ? "True" : "False"));
-		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
 			((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
@@ -1680,10 +1668,10 @@ void Fluxbox::save_rc(void) {
 
 		sprintf(rc_string, "session.screen%d.colPlacementDirection: %s", screen_number,
 			((screen->getColPlacementDirection() == BScreen::TOPBOTTOM) ?
-				"TopToBottom" : "BottomToTop"));
+			"TopToBottom" : "BottomToTop"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		std::string placement;
+		string placement;
 		
 		switch (screen->getPlacementPolicy()) {
 		case BScreen::CASCADEPLACEMENT:
@@ -1699,11 +1687,12 @@ void Fluxbox::save_rc(void) {
 			placement = "RowSmartPlacement";
 			break;
 		}
-		sprintf(rc_string, "session.screen%d.windowPlacement:	%s", screen_number,
-					placement.c_str());
+		
+		sprintf(rc_string, "session.screen%d.windowPlacement: %s", screen_number,
+			placement.c_str());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		char *focus_mode = 0;
+		std::string focus_mode;
 		if (screen->isSloppyFocus() && screen->doAutoRaise())
 			focus_mode = "AutoRaiseSloppyFocus";
 		else if (screen->isSloppyFocus())
@@ -1716,12 +1705,10 @@ void Fluxbox::save_rc(void) {
 			focus_mode = "ClickToFocus";
 
 		sprintf(rc_string, "session.screen%d.focusModel: %s", screen_number,
-			focus_mode);
-
+			focus_mode.c_str());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
-		load_rc(screen);
-
+//		load_rc(screen);
 		// these are static, but may not be saved in the users resource file,
 		// writing these resources will allow the user to edit them at a later
 		// time... but loading the defaults before saving allows us to rewrite the
@@ -1742,15 +1729,10 @@ void Fluxbox::save_rc(void) {
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 #endif // HAVE_STRFTIME
 
-		sprintf(rc_string, "session.screen%d.edgeSnapThreshold: %d", screen_number,
-			screen->getEdgeSnapThreshold());
-		XrmPutLineResource(&new_blackboxrc, rc_string);
-
 		// write out the users workspace names
-
 		sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
 		string workspaces_string(rc_string);
-		#ifndef DEBUG
+		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): workspaces="<<screen->getCount()<<endl;
 		#endif
 		for (int workspace=0; workspace < screen->getCount(); workspace++) {
@@ -1760,7 +1742,7 @@ void Fluxbox::save_rc(void) {
 				workspaces_string.append("Null");
 			workspaces_string.append(", ");
 		}
-	
+
 		XrmPutLineResource(&new_blackboxrc, workspaces_string.c_str());
 	
 	}
@@ -1770,7 +1752,9 @@ void Fluxbox::save_rc(void) {
 	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc); //merge database together
 	XrmPutFileDatabase(old_blackboxrc, dbfile.get());
 	XrmDestroyDatabase(old_blackboxrc);
-
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;	
+	#endif
 }
 
 //-------- getRcFilename -------------
@@ -1864,7 +1848,9 @@ void Fluxbox::load_rc(void) {
 }
 
 void Fluxbox::load_rc(BScreen *screen) {
-	
+	#ifdef DEBUG
+	cerr<<"Loading BScreen(this="<<screen<<") num="<<screen->getScreenNumber()<<"------------"<<endl;
+	#endif
 	//get resource filename
 	auto_ptr<char> dbfile(getRcFilename());
 	#ifdef DEBUG
@@ -1892,28 +1878,6 @@ void Fluxbox::load_rc(BScreen *screen) {
 	char *value_type, name_lookup[1024], class_lookup[1024];
 	int screen_number = screen->getScreenNumber();
 
-	sprintf(name_lookup, "session.screen%d.focusNewWindows", screen_number);
-	sprintf(class_lookup, "Session.Screen%d.FocusNewWindows", screen_number);
-	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-										 &value)) {
-		if (! strncasecmp(value.addr, "true", value.size))
-			screen->saveFocusNew(True);
-		else
-			screen->saveFocusNew(False);
-	} else
-		screen->saveFocusNew(False);
-
-	sprintf(name_lookup, "session.screen%d.focusLastWindow", screen_number);
-	sprintf(class_lookup, "Session.Screen%d.focusLastWindow", screen_number);
-	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-				 &value)) {
-		if (! strncasecmp(value.addr, "true", value.size))
-			screen->saveFocusLast(True);
-		else
-			screen->saveFocusLast(False);
-	} else
-		screen->saveFocusLast(False);
-
 	sprintf(name_lookup, "session.screen%d.rowPlacementDirection", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.RowPlacementDirection", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
@@ -1928,7 +1892,7 @@ void Fluxbox::load_rc(BScreen *screen) {
 	sprintf(name_lookup, "session.screen%d.colPlacementDirection", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.ColPlacementDirection", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-				 &value)) {
+			&value)) {
 		if (! strncasecmp(value.addr, "bottomtotop", value.size))
 			screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
 		else
@@ -1936,17 +1900,15 @@ void Fluxbox::load_rc(BScreen *screen) {
 	} else
 		screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
 
-	//check size on toolbarwidth percent	
-	if (screen->getToolbarWidthPercent() <= 0 || 
-			screen->getToolbarWidthPercent() > 100)
-		screen->saveToolbarWidthPercent(66);
-
 	screen->removeWorkspaceNames();
 
 	sprintf(name_lookup, "session.screen%d.workspaceNames", screen_number);
 	sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
 	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-				 &value)) {
+			&value)) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): Workspaces="<<screen->getNumberOfWorkspaces()<<endl;
+		#endif
 		char *search = StringUtil::strdup(value.addr);
 
 		int i;
@@ -2104,6 +2066,11 @@ void Fluxbox::load_rc(BScreen *screen) {
 		screen->saveClock24Hour(False);
 #endif // HAVE_STRFTIME
 
+	//check size on toolbarwidth percent	
+	if (screen->getToolbarWidthPercent() <= 0 || 
+			screen->getToolbarWidthPercent() > 100)
+		screen->saveToolbarWidthPercent(66);
+
 	if (screen->getTabWidth()>512)
 		screen->saveTabWidth(512);
 	else if (screen->getTabWidth()<0)
@@ -2113,7 +2080,9 @@ void Fluxbox::load_rc(BScreen *screen) {
 		screen->saveTabHeight(512);
 	else if (screen->getTabHeight()<0)
 		screen->saveTabHeight(5);
-
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"---------------------- LOADING DONE"<<endl;
+	#endif
 }
 
 void Fluxbox::loadRootCommand(BScreen *screen)	{
