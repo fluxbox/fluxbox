@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.6 2003/04/15 13:38:57 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.7 2003/04/16 13:30:55 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -101,7 +101,9 @@ ToolbarHandler::ToolbarHandler(BScreen &screen, ToolbarMode mode)
 }
 
 void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
-    if (mode < 0 || mode >= LASTMODE || (mode == m_mode && initialise)) return;
+    if (mode < 0 || mode >= LASTMODE || (mode == m_mode && initialise)) 
+        return;
+
     if (mode == OFF) {
         m_mode = mode;
         m_toolbarmenu.removeAll();
@@ -109,14 +111,15 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
         m_toolbarmenu.insert("Mode...", &m_modemenu);
         m_toolbar.reset(0);
         m_toolbarmenu.update();
+
         return;
     } else if (!m_toolbar.get()) {
         m_toolbarmenu.removeAll();
 
-        m_toolbarmenu.insert("Mode...", &m_modemenu);
         m_toolbar.reset(new Toolbar(m_screen, 
                                     *m_screen.layerManager().getLayer(m_screen.getToolbarLayerNum()), m_toolbarmenu));
-
+        m_toolbarmenu.insert("Mode...", &m_modemenu);   
+        m_toolbarmenu.update();
     }
     
 
