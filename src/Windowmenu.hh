@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   WINDOWMENU_HH
-#define   WINDOWMENU_HH
+#ifndef	 WINDOWMENU_HH
+#define	 WINDOWMENU_HH
 
 // forward declaration
 class Windowmenu;
@@ -35,24 +35,24 @@ class Toolbar;
 
 class Windowmenu : public Basemenu {
 private:
-  FluxboxWindow *window;
-  BScreen *screen;
+	FluxboxWindow *window;
+	BScreen *screen;
 
  
 	class SendtoWorkspacemenu : public Basemenu {
-  private:
-    Windowmenu *windowmenu;
+	private:
+		Windowmenu *windowmenu;
 
-  protected:
-    virtual void itemSelected(int, int);
+	protected:
+		virtual void itemSelected(int, int);
 
-  public:
-    SendtoWorkspacemenu(Windowmenu *);
+	public:
+		SendtoWorkspacemenu(Windowmenu *);
 		inline Windowmenu *getWindowMenu() const { return windowmenu; }
-    void update(void);
+		void update(void);
 
-    virtual void show(void);
-  };
+		virtual void show(void);
+	};
  	
 	class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
 	protected:	
@@ -62,26 +62,26 @@ private:
 				
 	};
 	
-  SendtoWorkspacemenu *sendToMenu;
+	SendtoWorkspacemenu *sendToMenu;
 	SendGroupToWorkspacemenu *sendGroupToMenu;
 	
-  friend class SendtoWorkspacemenu;
+	friend class SendtoWorkspacemenu;
 	friend class SendGroupToWorkspacemenu;
 
 protected:
-  virtual void itemSelected(int, int);
+	virtual void itemSelected(int, int);
 
 
 public:
-  Windowmenu(FluxboxWindow *);
-  virtual ~Windowmenu(void);
+	Windowmenu(FluxboxWindow *);
+	virtual ~Windowmenu(void);
 
-  inline Basemenu *getSendToMenu(void) { return static_cast<Basemenu *>(sendToMenu); }
+	inline Basemenu *getSendToMenu(void) { return static_cast<Basemenu *>(sendToMenu); }
 	inline Basemenu *getSendGroupToMenu(void) { return static_cast<Basemenu *>(sendGroupToMenu); }
-  void reconfigure(void);
-  void setClosable(void);
+	void reconfigure(void);
+	void setClosable(void);
 
-  virtual void show(void);
+	virtual void show(void);
 };
 
 
