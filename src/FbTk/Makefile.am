@@ -1,6 +1,6 @@
 noinst_LIBRARIES = libFbTk.a
 
-AM_CPPFLAGS=-Wall @CPPFLAGS@
+AM_CPPFLAGS=@CPPFLAGS@
 
 if XFT
 xft_SOURCE= XftFontImp.hh XftFontImp.cc
