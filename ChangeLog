@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/01/31:
+  * Added cs_CZ (thanx to Radek Kubicek)
 *05/01/29:
   * Added icon-support for fbgm (thanx to Dung N. Lam)
     new options:
