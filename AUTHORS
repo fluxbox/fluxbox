@@ -34,7 +34,8 @@ Contributors:
       - Packaging assistance, gnome and kde menu system.
     Simon Bowden
 	  - Window moving across workspaces in outlined mode and bugfixes.
-
+	Artis Trops <hornet at navigator.lv >
+	  - Latvian Localisation
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 
