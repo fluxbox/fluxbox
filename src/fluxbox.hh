@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.11 2002/02/20 23:12:46 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.12 2002/02/26 22:42:58 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -205,6 +205,7 @@ public:
 	typedef std::vector<Fluxbox::Titlebar> TitlebarList;
 		
 private:
+	void setupConfigFiles();
 	void handleButtonEvent(XButtonEvent &be);
 	void handleUnmapNotify(XUnmapEvent &ue);
 	void handleClientMessage(XClientMessageEvent &ce);
