@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.138 2003/05/11 22:19:17 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.139 2003/05/11 23:44:09 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -2382,9 +2382,9 @@ void Fluxbox::revertFocus(BScreen &screen) {
     // Fluxbox::FocusModel = sloppy, click, whatever
     WinClient *next_focus = screen.getLastFocusedWindow(screen.getCurrentWorkspaceID());
 
-    if (next_focus && next_focus->fbwindow()) {
-        setFocusedWindow(next_focus->fbwindow());
-    } else {
+    // if setting focus fails, or isn't possible, fallback correctly
+    if (!(next_focus && next_focus->fbwindow() &&
+          next_focus->fbwindow()->setCurrentClient(*next_focus, true))) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
         switch (screen.getFocusModel()) {
         case SLOPPYFOCUS:

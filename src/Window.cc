@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.171 2003/05/11 17:14:41 fluxgen Exp $
+// $Id: Window.cc,v 1.172 2003/05/11 23:44:08 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1249,8 +1249,10 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     if (iconic || reassoc) {
         screen().reassociateWindow(this, screen().getCurrentWorkspace()->workspaceID(), false);
-    } else if (moving || m_workspace_number != screen().getCurrentWorkspace()->workspaceID())
+    } else if (moving || m_workspace_number != screen().getCurrentWorkspace()->workspaceID()) {
+        oplock = false;
         return;
+    }
 
     bool was_iconic = iconic;
 
@@ -1264,7 +1266,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
         (*client_it)->show();
         (*client_it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
     }
-    
+
     m_frame.show();
 
     if (was_iconic && screen().doFocusNew())
@@ -2622,7 +2624,6 @@ void FluxboxWindow::applyDecorations() {
     else
         m_frame.hideHandle();
 
-    m_frame.show();
     // is reconfigure needed here?
 }
 

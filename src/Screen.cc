@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.156 2003/05/11 17:11:59 fluxgen Exp $
+// $Id: Screen.cc,v 1.157 2003/05/11 23:44:08 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1270,7 +1270,10 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     } else {
         // always put on end of focused list, if it gets focused it'll get pushed up
         // there is only the one win client at this stage
-        focused_list.push_back(&win->winClient());
+        if (doFocusNew())
+            focused_list.push_front(&win->winClient());
+        else
+            focused_list.push_back(&win->winClient());
 
         //TODO: is next line needed?
         Fluxbox::instance()->saveWindowSearch(client, win);
