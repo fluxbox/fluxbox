@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.13 2002/11/15 12:04:27 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.14 2002/11/27 12:20:23 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -31,6 +31,7 @@
 #include "Timer.hh"
 #include "IconBar.hh"
 
+#include <memory>
 
 class Toolbar;
 
@@ -40,14 +41,13 @@ class Toolbar;
 */
 class Toolbarmenu:public Basemenu {
 public:
-	explicit Toolbarmenu(Toolbar *tb);
+	explicit Toolbarmenu(Toolbar &tb);
 	~Toolbarmenu();
-	#ifdef XINERAMA
-	inline Basemenu *getHeadmenu() { return headmenu; }
-	#endif // XINERAMA
 
-	inline Basemenu *getPlacementmenu() { return placementmenu; }
-	inline const Basemenu *getPlacementmenu() const { return placementmenu; }
+	inline const Basemenu *headmenu() const { return m_headmenu.get(); }
+
+	inline Basemenu *placementmenu() { return &m_placementmenu; }
+	inline const Basemenu *placementmenu() const { return &m_placementmenu; }
 
 	void reconfigure();
 
@@ -57,35 +57,31 @@ protected:
 
 private:
 	class Placementmenu : public Basemenu {
-	private:
-		Toolbarmenu *toolbarmenu;
-
+	public:
+		Placementmenu(Toolbarmenu &tm);
 	protected:
 		virtual void itemSelected(int button, unsigned int index);
-
-	public:
-		Placementmenu(Toolbarmenu *);
+	private:
+		Toolbarmenu &m_toolbarmenu;
 	};
+	friend class Placementmenu;
 
-#ifdef XINERAMA
 	class Headmenu : public Basemenu {
 	public:
-		Headmenu(Toolbarmenu *);
-	private:
-		Toolbarmenu *toolbarmenu;
-
+		Headmenu(Toolbarmenu &tm);
 	protected:
 		virtual void itemSelected(int button, unsigned int index); 
+	private:
+		Toolbarmenu &m_toolbarmenu;
 	};
-	Headmenu *headmenu;
+	std::auto_ptr<Headmenu> m_headmenu;
 	friend class Headmenu;
-#endif // XINERAMA
  
 
-	Toolbar *toolbar;
-	Placementmenu *placementmenu;
+	Toolbar &m_toolbar;
+	Placementmenu m_placementmenu;
 
-	friend class Placementmenu;
+	
 	friend class Toolbar;
 
 };
@@ -109,11 +105,7 @@ public:
 	/// remove icon from iconbar
 	void delIcon(FluxboxWindow *w);
 	
-	inline Toolbarmenu *getMenu() { return toolbarmenu; }
-	inline const Toolbarmenu *getMenu() const { return toolbarmenu; }
-
-	//inline Window getWindowLabel(void) { return frame.window_label; }
-	
+	inline const Toolbarmenu &menu() const { return m_toolbarmenu; }
 	/// are we in workspacename editing?
 	inline bool isEditing() const { return editing; }
 	/// always on top?
@@ -122,17 +114,17 @@ public:
 	inline bool isHidden() const { return hidden; }
 	/// do we auto hide the toolbar?
 	inline bool doAutoHide() const { return do_auto_hide; }
-	/**
-		@return X window of the toolbar
-	*/
+	///	@return X window of the toolbar
 	inline Window getWindowID() const { return frame.window; }
-
+	inline BScreen *screen() { return m_screen; }
+	inline const BScreen *screen() const { return m_screen; }
 	inline unsigned int width() const { return frame.width; }
 	inline unsigned int height() const { return frame.height; }
-	inline unsigned int getExposedHeight() const { return ((do_auto_hide) ? frame.bevel_w : frame.height); }
+	inline unsigned int exposedHeight() const { return ((do_auto_hide) ? frame.bevel_w : frame.height); }
 	inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
 	inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
-	inline const IconBar *iconBar()  const { return iconbar; }
+	/// @return pointer to iconbar if it got one, else 0
+	inline const IconBar *iconBar()  const { return m_iconbar.get(); }
 	/**
 		@name eventhandlers
 	*/
@@ -155,11 +147,7 @@ public:
 	void edit();
 	void reconfigure();
 
-#ifdef HAVE_STRFTIME
-	void checkClock(bool redraw = false);
-#else // HAVE_STRFTIME
 	void checkClock(bool redraw = false, bool date = false);
-#endif // HAVE_STRFTIME
 
 	virtual void timeout();
 
@@ -189,20 +177,20 @@ private:
 		virtual void timeout();
 	} hide_handler;
 
-	BScreen *screen;
+	BScreen *m_screen;
 	BImageControl *image_ctrl; 
-	BTimer clock_timer, hide_timer;
-	Toolbarmenu *toolbarmenu;
-	IconBar *iconbar;
+	BTimer clock_timer; ///< timer to update clock
+	BTimer hide_timer; ///< timer to for auto hide toolbar
+	Toolbarmenu m_toolbarmenu;
+	std::auto_ptr<IconBar> m_iconbar;
 	
 	std::string new_workspace_name; ///< temp variable in edit workspace name mode
 
 	friend class HideHandler;
 	friend class Toolbarmenu;
 	friend class Toolbarmenu::Placementmenu;
-	#ifdef XINERAMA
+
 	friend class Toolbarmenu::Headmenu;
-	#endif // XINERAMA
 };
 
 
