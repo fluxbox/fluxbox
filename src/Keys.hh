@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.15 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Keys.hh,v 1.16 2002/11/13 14:35:01 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -165,12 +165,16 @@ private:
 	/// debug function
 	void showKeyTree(t_key *key, unsigned int w=0);
 #endif //DEBUG
+	/// determine key modifier maps for caps-, num- and scrolllock
+	void determineModmap();
 
 	struct t_actionstr{
 		const char *string;
 		KeyAction action;
-	};	
-	
+	};
+
+	int m_capslock_mod, m_numlock_mod, m_scrolllock_mod; ///< modifiers
+		
 	static t_actionstr m_actionlist[];
 	
 	std::vector<t_key *> m_keylist;	

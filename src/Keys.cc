@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.19 2002/08/28 20:25:15 fluxgen Exp $
+//$Id: Keys.cc,v 1.20 2002/11/13 14:34:24 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -126,9 +126,13 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 	};	
 
 Keys::Keys(Display *display, const char *filename):
+m_capslock_mod(0),
+m_numlock_mod(0),
+m_scrolllock_mod(0),
 m_abortkey(0),
 m_display(display)
 {
+	determineModmap();
 	assert(display);
 	if (filename != 0)
 		load(filename);
@@ -363,35 +367,35 @@ void Keys::grabKey(unsigned int key, unsigned int mod) {
 		// Grab with numlock, capslock and scrlock	
 
 		//numlock	
-		XGrabKey(m_display, key, mod|Mod2Mask,
+		XGrabKey(m_display, key, mod|m_numlock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);		
 		//scrolllock
-		XGrabKey(m_display, key, mod|Mod5Mask,
+		XGrabKey(m_display, key, mod|m_scrolllock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);	
 		//capslock
-		XGrabKey(m_display, key, mod|LockMask,
+		XGrabKey(m_display, key, mod|m_capslock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);
 	
 		//capslock+numlock
-		XGrabKey(m_display, key, mod|LockMask|Mod2Mask,
+		XGrabKey(m_display, key, mod|m_capslock_mod|m_numlock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);
 
 		//capslock+scrolllock
-		XGrabKey(m_display, key, mod|LockMask|Mod5Mask,
+		XGrabKey(m_display, key, mod|m_capslock_mod|m_scrolllock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);						
 	
 		//capslock+numlock+scrolllock
-		XGrabKey(m_display, key, mod|Mod2Mask|Mod5Mask|LockMask,
+		XGrabKey(m_display, key, mod|m_capslock_mod|m_scrolllock_mod|m_numlock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);						
 
 		//numlock+scrollLock
-		XGrabKey(m_display, key, mod|Mod2Mask|Mod5Mask,
+		XGrabKey(m_display, key, mod|m_numlock_mod|m_scrolllock_mod,
 			root, True,
 			GrabModeAsync, GrabModeAsync);
 	
@@ -627,4 +631,44 @@ Keys::t_key::~t_key() {
 			keylist.pop_back();
 		}
 	}
+}
+
+void Keys::determineModmap() {
+	// mask to use for modifier
+	int mods[] = {
+		ShiftMask,
+		LockMask,
+		ControlMask,
+		Mod1Mask,
+		Mod2Mask,
+		Mod3Mask,
+		Mod4Mask,
+		Mod5Mask,
+		0
+	};
+	
+	XModifierKeymap *map = XGetModifierMapping(m_display);
+	// find modifiers and set them
+	for (int i=0, realkey=0; i<8; ++i) {
+		for (int key=0; key<map->max_keypermod; ++key, ++realkey) {
+
+			if (map->modifiermap[realkey] == 0)
+				continue;
+
+			KeySym ks = XKeycodeToKeysym(m_display, map->modifiermap[realkey], 0);
+
+			switch (ks) {
+			case XK_Caps_Lock:
+				m_capslock_mod = mods[i];
+			break;
+			case XK_Scroll_Lock:
+				m_scrolllock_mod = mods[i];
+			break;
+			case XK_Num_Lock:
+				m_numlock_mod = mods[i];
+			break;
+			}
+		}
+	}
+	XFreeModifiermap(map);
 }
