@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.8 2002/08/18 09:47:03 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.9 2002/09/15 13:08:05 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -214,7 +214,8 @@ void bsetroot::solid() {
 		GC gc;
 		XGCValues gcv;
 
-    img_ctrl[screen]->parseColor(&c, fore);
+    c.setFromString(fore, screen);
+
     if (! c.isAllocated())
 				c.setPixel(BlackPixel(getXDisplay(), screen));
 
@@ -284,8 +285,8 @@ void bsetroot::modula(int x, int y) {
 			getScreenInfo(screen)->getRootWindow(), 16, 16,
 			getScreenInfo(screen)->getDepth());
 
-		img_ctrl[screen]->parseColor(&f, fore);
-		img_ctrl[screen]->parseColor(&b, back);
+		f.setFromString(fore, screen);
+		b.setFromString(back, screen);
 
 		if (! f.isAllocated())
 			f.setPixel(WhitePixel(getXDisplay(), screen));
@@ -342,10 +343,10 @@ void bsetroot::gradient(void) {
 		GC gc;
 		XGCValues gcv;
 
-		img_ctrl[screen]->parseTexture(&texture, grad);
-		img_ctrl[screen]->parseColor(&texture.color(), fore);
-		img_ctrl[screen]->parseColor(&texture.colorTo(), back);
-
+		texture.setFromString(grad);
+		texture.color().setFromString(fore, screen);
+		texture.colorTo().setFromString(back, screen);
+		
 		if (! texture.color().isAllocated())
 			texture.color().setPixel(WhitePixel(getXDisplay(), screen));
 		if (! texture.colorTo().isAllocated())
