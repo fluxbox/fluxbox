@@ -69,10 +69,10 @@ void Netizen::sendWindowFocus(Window w) {
 }
 
 
-void Netizen::sendWindowAdd(Window w, unsigned long p) {
+void Netizen::sendWindowAdd(Window w, unsigned long wkspc) {
     event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWindowAddAtom();
     event.xclient.data.l[1] = w;
-    event.xclient.data.l[2] = p;
+    event.xclient.data.l[2] = wkspc;
 
     XSendEvent(m_display, window, False, NoEventMask, &event);
 

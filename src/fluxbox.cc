@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.112 2003/04/16 10:49:59 rathnor Exp $
+// $Id: fluxbox.cc,v 1.113 2003/04/16 14:43:06 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -685,9 +685,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
                 cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
         }
         // handled in FluxboxWindow::handleEvent
-        if (win) 
+        
+        if (win)
             win->mapRequestEvent(e->xmaprequest);
-			
     }
         break;
     case MapNotify: {

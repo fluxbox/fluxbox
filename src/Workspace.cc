@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.52 2003/04/15 12:20:27 fluxgen Exp $
+// $Id: Workspace.cc,v 1.53 2003/04/16 14:43:06 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -194,9 +194,14 @@ int Workspace::addWindow(FluxboxWindow &w, bool place) {
     m_windowlist.push_back(&w);
     updateClientmenu();
 
-	
-    if (!w.isStuck()) 
-        screen.updateNetizenWindowAdd(w.getClientWindow(), m_id);
+    if (!w.isStuck()) {
+        FluxboxWindow::ClientList::iterator client_it = 
+            w.clientList().begin();
+        FluxboxWindow::ClientList::iterator client_it_end = 
+            w.clientList().end();
+        for (; client_it != client_it_end; ++client_it)
+            screen.updateNetizenWindowAdd((*client_it)->window(), m_id);
+    }
 
     return w.getWindowNumber();
 }
@@ -273,6 +278,15 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
     if (lastfocus == w || m_windowlist.empty())
         lastfocus = 0;
+
+    if (!w->isStuck()) {
+        FluxboxWindow::ClientList::iterator client_it = 
+            w->clientList().begin();
+        FluxboxWindow::ClientList::iterator client_it_end = 
+            w->clientList().end();
+        for (; client_it != client_it_end; ++client_it)
+            screen.updateNetizenWindowDel((*client_it)->window());
+    }
 
     return m_windowlist.size();
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.124 2003/04/16 00:37:19 fluxgen Exp $
+// $Id: Screen.cc,v 1.125 2003/04/16 14:43:01 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -934,7 +934,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
         if (focused && focused->isMoving()) {
             if (doOpaqueMove())
-                reassociateGroup(focused, id, true);
+                reassociateWindow(focused, id, true);
             // don't reassociate if not opaque moving
             focused->pauseMoving();
         }
@@ -945,7 +945,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         Workspace::Windows::iterator it = wins.begin();
         for (; it != wins.end(); ++it) {
             if ((*it)->isStuck()) {
-                reassociateGroup(*it, id, true);
+                reassociateWindow(*it, id, true);
             }
         }
 
@@ -1321,11 +1321,6 @@ string BScreen::getNameOfWorkspace(unsigned int workspace) const {
     } else {
         return "";
     }
-}
-
-void BScreen::reassociateGroup(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
-    //!! TODO
-    cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO!"<<endl;
 }
 
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {

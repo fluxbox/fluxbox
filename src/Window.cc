@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.141 2003/04/16 13:43:50 rathnor Exp $
+// $Id: Window.cc,v 1.142 2003/04/16 14:43:04 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2598,7 +2598,7 @@ void FluxboxWindow::stopMoving() {
                        frame().height() + 2*frame().window().borderWidth());
         moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
         if (workspace_number != getScreen().getCurrentWorkspaceID()) {
-            screen.reassociateGroup(this, getScreen().getCurrentWorkspaceID(), true);
+            screen.reassociateWindow(this, getScreen().getCurrentWorkspaceID(), true);
             m_frame.show();
         }
         fluxbox->ungrab();

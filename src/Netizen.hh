@@ -38,7 +38,7 @@ public:
     void sendCurrentWorkspace();
 
     void sendWindowFocus(Window w);
-    void sendWindowAdd(Window w, unsigned long p);
+    void sendWindowAdd(Window w, unsigned long wkspc);
     void sendWindowDel(Window w);
     void sendWindowRaise(Window w);
     void sendWindowLower(Window w);

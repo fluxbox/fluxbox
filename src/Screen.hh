@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.78 2003/04/16 13:43:42 rathnor Exp $
+// $Id: Screen.hh,v 1.79 2003/04/16 14:43:02 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -269,7 +269,6 @@ public:
     std::string getNameOfWorkspace(unsigned int workspace) const;
     void changeWorkspaceID(unsigned int);
     void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
-    void reassociateGroup(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
     void prevFocus() { prevFocus(0); }
     void nextFocus() { nextFocus(0); }
