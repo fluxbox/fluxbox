@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.7 2003/08/19 21:25:26 fluxgen Exp $
+// $Id: Theme.hh,v 1.8 2003/08/28 14:19:27 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -151,6 +151,7 @@ ThemeItem<T>::ThemeItem(FbTk::Theme &tm,
     ThemeItem_base(name, altname),
     m_tm(tm) {
     tm.add(*this);
+    setDefaultValue();
 }
 
 template <typename T>
