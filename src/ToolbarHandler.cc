@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.16 2003/06/24 10:37:39 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.17 2003/06/24 16:27:18 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -41,6 +41,58 @@
 #include "IntResMenuItem.hh"
 #include "BoolMenuItem.hh"
 
+#include <string>
+
+using namespace std;
+
+template<>
+void FbTk::Resource<ToolbarHandler::ToolbarMode>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "Off") == 0) 
+        m_value = ToolbarHandler::OFF;
+    else if (strcasecmp(strval, "None") == 0) 
+        m_value = ToolbarHandler::NONE;
+    else if (strcasecmp(strval, "Icons") == 0) 
+        m_value = ToolbarHandler::ICONS;
+    else if (strcasecmp(strval, "WorkspaceIcons") == 0) 
+        m_value = ToolbarHandler::WORKSPACEICONS;
+    else if (strcasecmp(strval, "Workspace") == 0) 
+        m_value = ToolbarHandler::WORKSPACE;
+    else if (strcasecmp(strval, "AllWindows") == 0) 
+        m_value = ToolbarHandler::ALLWINDOWS;
+    else
+        setDefaultValue();
+}
+
+
+template<>
+string FbTk::Resource<ToolbarHandler::ToolbarMode>::
+getString() {
+    switch (m_value) {
+    case ToolbarHandler::OFF:
+        return string("Off");
+        break;
+    case ToolbarHandler::NONE:
+        return string("None");
+        break;
+    case ToolbarHandler::LASTMODE:
+    case ToolbarHandler::ICONS:
+        return string("Icons");
+        break;
+    case ToolbarHandler::WORKSPACEICONS:
+        return string("WorkspaceIcons");
+        break;
+    case ToolbarHandler::WORKSPACE:
+        return string("Workspace");
+        break;
+    case ToolbarHandler::ALLWINDOWS:
+        return string("AllWindows");
+        break;
+    }
+    // default string
+    return string("Icons");
+}
+
 namespace {
 
 class ToolbarModeMenuItem : public FbTk::MenuItem {
@@ -50,7 +102,7 @@ public:
                         FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
     }
-    bool isEnabled() const { return m_handler.getMode() != m_mode; }
+    bool isEnabled() const { return m_handler.mode() != m_mode; }
     void click(int button, int time) {
         m_handler.setMode(m_mode);
         FbTk::MenuItem::click(button, time);
@@ -88,26 +140,29 @@ void setupModeMenu(FbTk::Menu &menu, ToolbarHandler &handler) {
                 
 }; // end anonymous namespace
 
-ToolbarHandler::ToolbarHandler(BScreen &screen, ToolbarMode mode) 
-    : m_screen(screen), m_mode(mode), m_toolbar(0), m_current_workspace(0),
+ToolbarHandler::ToolbarHandler(BScreen &screen) 
+    : m_screen(screen), 
+      m_rc_mode(screen.resourceManager(), ToolbarHandler::ICONS,
+                screen.name() + ".toolbar.mode", screen.altName() + ".Toolbar.Mode"), 
+      m_toolbar(0),
+      m_current_workspace(0),
       m_modemenu(*screen.menuTheme(),
                  screen.screenNumber(), screen.imageControl()),
       m_toolbarmenu(*screen.menuTheme(),
-                 screen.screenNumber(), screen.imageControl())
-{
+                    screen.screenNumber(), screen.imageControl()) {
     m_modemenu.setInternalMenu();
     m_toolbarmenu.setInternalMenu();
     setupModeMenu(m_modemenu, *this);
-    setMode(mode, false); // the atomhandler part will initialise it shortly
+    setMode(*m_rc_mode, false); // the atomhandler part will initialise it shortly
 }
 
-void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
-    if (mode < 0 || mode >= LASTMODE || (mode == m_mode && initialise)) 
+void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
+    if (newmode < 0 || newmode >= LASTMODE || (newmode == mode() && initialise)) 
         return;
 
-    m_screen.saveToolbarMode(mode);
-    if (mode == OFF) {
-        m_mode = mode;
+    *m_rc_mode = newmode;
+    
+    if (newmode == OFF) {
         m_toolbarmenu.removeAll();
         //TODO: nls
         m_toolbarmenu.insert("Mode...", &m_modemenu);
@@ -127,7 +182,7 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
     }
     
 
-    if (mode == NONE) {
+    if (newmode == NONE) {
         // disableIconBar will clean up
         m_toolbar->disableIconBar();
     } else {
@@ -136,8 +191,7 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
         m_toolbar->enableIconBar();
         m_toolbar->delAllIcons();
     }
-    // reset Toolbar, and reload it (initForScreen)
-    m_mode = mode;
+
     if (initialise)
         initForScreen(m_screen);
 }
@@ -145,7 +199,7 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
 void ToolbarHandler::initForScreen(BScreen &screen) {
     if (&m_screen != &screen) 
         return;
-    switch (m_mode) {
+    switch (mode()) {
     case OFF:
         break;
     case NONE:
@@ -207,7 +261,7 @@ void ToolbarHandler::setupWindow(FluxboxWindow &win) {
     if (&win.screen() != &m_screen)
         return;
 
-    switch (m_mode) {
+    switch (mode()) {
     case OFF:
     case NONE:
         break;
@@ -236,7 +290,7 @@ void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
         return;
 
     // check status of window (in current workspace, etc) and remove if necessary
-    switch (m_mode) {
+    switch (mode()) {
     case OFF:
     case NONE:
         break;
@@ -265,7 +319,7 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
         return;
 
     // this function only relevant for icons
-    switch (m_mode) {
+    switch (mode()) {
     case OFF:
     case NONE:
     case WORKSPACE:
@@ -296,7 +350,9 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
         return;
 
     // don't care about current workspace except if in workspace mode
-    if (!(m_mode == WORKSPACE || (m_mode == WORKSPACEICONS && win.isIconic()))) return;
+    if (!(mode() == WORKSPACE || 
+          (mode() == WORKSPACEICONS && win.isIconic()))) 
+        return;
     
     if (win.workspaceNumber() == m_current_workspace) {
         //!! TODO
@@ -317,7 +373,7 @@ void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
         return;
     // if only displaying current workspace, update list
     // otherwise ignore it
-    if (m_mode != WORKSPACE && m_mode != WORKSPACEICONS)
+    if (mode() != WORKSPACE && mode() != WORKSPACEICONS)
         return;
     m_toolbar->delAllIcons();
     initForScreen(m_screen);

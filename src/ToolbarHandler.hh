@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.3 2003/06/18 13:35:36 fluxgen Exp $
+// $Id: ToolbarHandler.hh,v 1.4 2003/06/24 16:27:18 fluxgen Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -28,6 +28,7 @@
 #include "AtomHandler.hh"
 #include "Menu.hh"
 #include "Toolbar.hh"
+#include "Resource.hh"
 
 class BScreen;
 class FluxboxWindow;
@@ -44,14 +45,14 @@ public:
         LASTMODE
     };
 
-    ToolbarHandler(BScreen &screen, ToolbarMode mode);
+    explicit ToolbarHandler(BScreen &screen);
     ~ToolbarHandler() { }
 
     void setMode(ToolbarMode mode, bool initialise = true);
-    ToolbarMode getMode() { return m_mode; };
+    ToolbarMode mode() const { return *m_rc_mode; };
 
-    inline const Toolbar *getToolbar() const { return m_toolbar.get(); }
-    inline Toolbar *getToolbar() { return m_toolbar.get(); }
+    inline const Toolbar *toolbar() const { return m_toolbar.get(); }
+    inline Toolbar *toolbar() { return m_toolbar.get(); }
   
 
     void initForScreen(BScreen &screen);
@@ -84,7 +85,7 @@ public:
 
 private:
     BScreen &m_screen;
-    ToolbarMode m_mode;
+    FbTk::Resource<ToolbarMode> m_rc_mode;
     std::auto_ptr<Toolbar> m_toolbar;
     unsigned int m_current_workspace;
 
