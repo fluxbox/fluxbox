@@ -79,7 +79,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Shade"),
-	 BScreen::WindowShade);
+	 BScreen::WINDOWSHADE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuIconify,
@@ -87,7 +87,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Iconify"),
-	 BScreen::WindowIconify);
+	 BScreen::WINDOWICONIFY);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuMaximize,
@@ -95,7 +95,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Maximize"),
-	 BScreen::WindowMaximize);
+	 BScreen::WINDOWMAXIMIZE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuRaise,
@@ -103,7 +103,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Raise"),
-	 BScreen::WindowRaise);
+	 BScreen::WINDOWRAISE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuLower,
@@ -111,7 +111,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Lower"),
-	 BScreen::WindowLower);
+	 BScreen::WINDOWLOWER);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuStick,
@@ -119,7 +119,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Stick"),
-	 BScreen::WindowStick);
+	 BScreen::WINDOWSTICK);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuKillClient,
@@ -127,7 +127,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Kill Client"),
-	 BScreen::WindowKill);
+	 BScreen::WINDOWKILL);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuClose,
@@ -135,18 +135,24 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Close"),
-	 BScreen::WindowClose);
+	 BScreen::WINDOWCLOSE);
+  insert(i18n->getMessage(
+#ifdef    NLS
+			  WindowmenuSet, WindowmenuTab,
+#else // !NLS
+			  0, 0,
+#endif // NLS
+			  "Tab"),
+	 BScreen::WINDOWTAB);
 
-	//TODO: nls
-  insert("Tab", BScreen::WindowTab);
-	 
   update();
 
-  setItemEnabled(1, window->hasTitlebar());
-  setItemEnabled(2, window->isIconifiable());
-  setItemEnabled(3, window->isMaximizable());
-  setItemEnabled(8, window->isClosable());
-	setItemEnabled(9, window->hasTab());
+  setItemEnabled(2, window->hasTitlebar());
+  setItemEnabled(3, window->isIconifiable());
+  setItemEnabled(4, window->isMaximizable());
+  setItemEnabled(9, window->isClosable());
+  setItemEnabled(10, window->hasTab());
+
 }
 
 
@@ -157,9 +163,9 @@ Windowmenu::~Windowmenu(void) {
 
 
 void Windowmenu::show(void) {
-  if (isItemEnabled(1)) setItemSelected(1, window->isShaded());
-  if (isItemEnabled(3)) setItemSelected(3, window->isMaximized());
-  if (isItemEnabled(6)) setItemSelected(6, window->isStuck());
+  if (isItemEnabled(2)) setItemSelected(2, window->isShaded());
+  if (isItemEnabled(4)) setItemSelected(4, window->isMaximized());
+  if (isItemEnabled(7)) setItemSelected(7, window->isStuck());
 
   Basemenu::show();
 }
@@ -169,49 +175,50 @@ void Windowmenu::itemSelected(int button, int index) {
   BasemenuItem *item = find(index);
 
   switch (item->function()) {
-  case BScreen::WindowShade:
+  case BScreen::WINDOWSHADE:
     hide();
-		if (window->getTab())
-			window->getTab()->shade();
+
     window->shade();
+		if (window->hasTab())
+			window->getTab()->shade();
     break;
 
-  case BScreen::WindowIconify:
+  case BScreen::WINDOWICONIFY:
     hide();
     window->iconify();
     break;
 
-  case BScreen::WindowMaximize:
+  case BScreen::WINDOWMAXIMIZE:
     hide();
     window->maximize((unsigned int) button);
     break;
 
-  case BScreen::WindowClose:
+  case BScreen::WINDOWCLOSE:
     hide();
     window->close();
     break;
 
-  case BScreen::WindowRaise:
+  case BScreen::WINDOWRAISE:
     hide();
     screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
     break;
 
-  case BScreen::WindowLower:
+  case BScreen::WINDOWLOWER:
     hide();
     screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
     break;
 
-  case BScreen::WindowStick:
+  case BScreen::WINDOWSTICK:
     hide();
     window->stick();
     break;
 
-  case BScreen::WindowKill:
+  case BScreen::WINDOWKILL:
     hide();
     XKillClient(screen->getBaseDisplay()->getXDisplay(),
                 window->getClientWindow());
     break;
-	case BScreen::WindowTab:
+	case BScreen::WINDOWTAB:
 		hide();
 		window->setTab(!window->hasTab());
 		break;

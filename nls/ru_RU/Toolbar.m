@@ -15,8 +15,8 @@ $ #NoStrftimeTimeFormatP
 $ #NoStrftimeTimeFormatA
 # дп
 $ #ToolbarTitle
-# Тулбар
+# Панель инструментов
 $ #EditWkspcName
 # Редактировать имя текущего рабочего стола
 $ #ToolbarPlacement
-# Местоположение тулбара
+# Расположение панели инструментов

@@ -1,5 +1,5 @@
-// IconBar.cc 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// IconBar.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,21 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: IconBar.cc,v 1.7 2002/01/09 14:11:20 fluxgen Exp $
+
 #include "IconBar.hh"
 #include "i18n.hh"
 
-IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin) {
-	m_iconwin = iconwin;
-	m_fluxboxwin = fluxboxwin;	
+IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin)
+{
+m_fluxboxwin = fluxboxwin;
+m_iconwin = iconwin;
 }
 
 IconBarObj::~IconBarObj() {
 	
 }
 
-IconBar::IconBar(BScreen *scrn, Window parent) {
-	m_parent = parent;
-	m_screen = scrn;
+IconBar::IconBar(BScreen *scrn, Window parent):
+m_screen(scrn),
+m_parent(parent)
+{
 	m_iconlist = new IconList;	
 	m_display = scrn->getBaseDisplay()->getXDisplay();
 }
@@ -90,10 +94,10 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 	Pixmap tmp = m_focus_pm;
   BTexture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
 	
-  if (texture->getTexture() & BImage_ParentRelative ) {
+  if (texture->getTexture() & BImage::PARENTRELATIVE ) {
 	
 		BTexture *pt = &(m_screen->getWindowStyle()->tab.t_focus);
-		if (pt->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   	  m_focus_pm = None;
 	    m_focus_pixel = pt->getColor()->getPixel();
   	} else
@@ -102,7 +106,7 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 		
 	} else {
 	
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   	  m_focus_pm = None;
 	    m_focus_pixel = texture->getColor()->getPixel();
   	} else
@@ -150,14 +154,14 @@ void IconBar::exposeEvent(XExposeEvent *ee) {
 	}	
 
 	if (obj) {
-				
+
 		Window root;
 		unsigned int width, height;
 		unsigned int border_width, depth;	//not used
 		int x, y;
 		XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
 					&border_width, &depth);
-	
+
 		//max width on every icon
 		unsigned int icon_width = width / m_iconlist->count();
 	
@@ -188,7 +192,7 @@ void IconBar::repositionIcons(void) {
 	
 	//load right size of theme
 	loadTheme(icon_width, height);
-	
+
 	IconListIterator it(m_iconlist);	
 
 	for (x = 0; it.current(); it++, x+=icon_width) {
@@ -269,20 +273,19 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		if (l < width)
 			break;
 	}
-	
-	
+
 	switch (m_screen->getWindowStyle()->tab.font.justify) {
-	case FFont::Right:
+	case DrawUtil::Font::RIGHT:
 		dx += width - l;
 		break;
-	case FFont::Center:
+	case DrawUtil::Font::CENTER:
 		dx += (width - l) / 2;
 		break;
 	default:
 		break;
 	}
 
-	//Draw title to m_tabwin
+	//Draw title to m_iconwin
 
 	XClearWindow(m_display, iconwin);		
 	
@@ -326,6 +329,7 @@ FluxboxWindow *IconBar::findWindow(Window w) {
 // returns pointer to IconBarObj on success else 
 // 0 on failure
 //------------------------------------
+
 IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 
 	IconListIterator it(m_iconlist);	
@@ -338,4 +342,23 @@ IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 	}
 	
 	return 0;
+}
+
+//---------- getIconWidth ------------
+// will return the width of an icon
+// window
+//------------------------------------
+unsigned int IconBarObj::getWidth() {
+	Window root;
+
+	unsigned int width, height;
+	unsigned int border_width, depth;	//not used
+	int x, y; //not used
+
+	Display *m_display = Fluxbox::instance()->getXDisplay();
+
+	XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
+					&width, &height, &border_width, &depth);
+
+	return width;
 }

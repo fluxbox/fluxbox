@@ -1,6 +1,6 @@
-// Window.cc for fluxbox
-// Copyright (c) 2001	Henrik Kinnunen (fluxgen@linuxmail.org)
-
+// Window.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002	Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Window.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -22,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Window.cc,v 1.18 2002/01/11 10:04:32 fluxgen Exp $
+
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 #ifndef	 _GNU_SOURCE
@@ -40,7 +42,7 @@
 #include "Window.hh"
 #include "Windowmenu.hh"
 #include "Workspace.hh"
-
+#include "StringUtil.hh"
 
 #ifdef		SLIT
 #	include "Slit.hh"
@@ -59,8 +61,8 @@
 #	endif // HAVE_STDIO_H
 #endif // DEBUG
 
-#include "misc.hh"
 
+#include <iostream>
 using namespace std;
 
 FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
@@ -105,22 +107,22 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	for (char c=0; c<2; c++) {
 		for (unsigned int i=0; i<dir.size(); i++) {
 			switch (dir[i]) {
-				case Fluxbox::Shade:
+				case Fluxbox::SHADE:
 					decorations.shade = true;
 					break;
-				case Fluxbox::Maximize:
+				case Fluxbox::MAXIMIZE:
 					decorations.maximize = true;	
 					break;
-				case Fluxbox::Minimize:
+				case Fluxbox::MINIMIZE:
 					decorations.iconify = true;			
 				break;
-				case Fluxbox::Stick:
+				case Fluxbox::STICK:
 					decorations.sticky = true;
 					break;
-				case Fluxbox::Close:
+				case Fluxbox::CLOSE:
 					decorations.close = true;
 					break;
-				case Fluxbox::Menu:
+				case Fluxbox::MENU:
 					decorations.menu = true;
 					break;
 				default:
@@ -143,7 +145,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	client.title_len = 0;
 	client.icon_title = 0;
 	client.mwm_hint = (MwmHints *) 0;
-	client.blackbox_hint = (BlackboxHints *) 0;
+	client.blackbox_hint = 0;
 
 	windowmenu = 0;
 	lastButtonPressTime = 0;
@@ -291,12 +293,41 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 			client.normal_hint_flags & (PPosition|USPosition)) {
 		setGravityOffsets();
 
-		if ((fluxbox->isStartup()) ||
+		if (! fluxbox->isStartup()) { // is going to be used when position
+			if (decorations.tab) {			// window is cleanly fixed 
+				int real_x = frame.x;
+				int real_y = frame.y;
+
+				if (screen->getTabPlacement() == Tab::PTOP)
+					real_y -= screen->getTabHeight();
+
+				else if (screen->getTabPlacement() == Tab::PLEFT) {
+					if (screen->isTabRotateVertical())
+						real_x -= screen->getTabHeight();
+					else
+						real_x -= screen->getTabWidth();
+				}
+
+				if (real_x >= 0 && 
+						real_y + frame.y_border >= 0 &&
+						real_x <= (signed) screen->getWidth() &&
+						real_y <= (signed) screen->getHeight())
+					place_window = false;
+
+			} else if (frame.x >= 0 && // non tab
+					(signed) (frame.y + frame.y_border) >= 0 &&
+					frame.x <= (signed) screen->getWidth() &&
+					frame.y <= (signed) screen->getHeight())
+				place_window = false;
+		} else
+			place_window = false;
+
+/*		if ((fluxbox->isStartup()) ||
 				(frame.x >= 0 &&
 				(signed) (frame.y + frame.y_border) >= 0 &&
 				frame.x <= (signed) screen->getWidth() &&
 				frame.y <= (signed) screen->getHeight()))
-			place_window = false;
+			place_window = false; */
 			
 	}
 
@@ -331,15 +362,13 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 
 	associateClientWindow();
 
-	if (! (screen->isSloppyFocus() || screen->isSemiSloppyFocus())) {
-		XGrabButton(display, Button1, AnyModifier, 
-				frame.plate, True, ButtonPressMask,
-				GrabModeSync, GrabModeSync, None, None);		
-		XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
+
+	XGrabButton(display, Button1, AnyModifier, 
+			frame.plate, True, ButtonPressMask,
+			GrabModeSync, GrabModeSync, None, None);		
+	XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
 		
-	} else 
-		XUngrabButton(display, Button1, AnyModifier, frame.plate);
-	
+
 	XGrabButton(display, Button1, Mod1Mask, frame.window, True,
 				ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
 				GrabModeAsync, None, fluxbox->getMoveCursor());
@@ -395,25 +424,18 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	}
 
 	setFocusFlag(false);
-/*
-#ifdef GNOME
-	//tell the creator of this window that we are a gnome compilant windowmanager
-	{
-	XChangeProperty(display, screen->getRootWindow(),
-			screen->getBaseDisplay()->getGnomeSupportingWMCheckAtom(),
-			XA_CARDINAL, 32,
-      PropModeReplace, (unsigned char *)&client.window, 1);	
-  XChangeProperty(display, client.window, 
-			screen->getBaseDisplay()->getGnomeSupportingWMCheckAtom(),
-			XA_CARDINAL, 32, PropModeReplace,
-		 	(unsigned char *)&client.window, 1);
-	}
-#endif
-*/
+
 	fluxbox->ungrab();
 	#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
 	#endif
+	//TODO move this
+	#ifdef GNOME		
+  int val = workspace_number; 
+  XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
+                  PropModeReplace, (unsigned char *)&val, 1);
+	#endif
+
 }
 
 
@@ -447,6 +469,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 
 	if (tab)
 		delete tab;	
+	tab = 0;
 	
 	if (client.mwm_hint)
 		XFree(client.mwm_hint);
@@ -643,22 +666,22 @@ void FluxboxWindow::associateClientWindow(void) {
 #endif // SHAPE
 	//create the buttons
 	if (decorations.iconify) 
-		createButton(Fluxbox::Minimize, FluxboxWindow::iconifyPressed_cb, FluxboxWindow::iconifyButton_cb, FluxboxWindow::iconifyDraw_cb);			
+		createButton(Fluxbox::MINIMIZE, FluxboxWindow::iconifyPressed_cb, FluxboxWindow::iconifyButton_cb, FluxboxWindow::iconifyDraw_cb);			
 	if (decorations.maximize)
-		createButton(Fluxbox::Maximize, FluxboxWindow::maximizePressed_cb, FluxboxWindow::maximizeButton_cb, 
+		createButton(Fluxbox::MAXIMIZE, FluxboxWindow::maximizePressed_cb, FluxboxWindow::maximizeButton_cb, 
 				FluxboxWindow::maximizeDraw_cb);
 	if (decorations.close) 
-		createButton(Fluxbox::Close, FluxboxWindow::closePressed_cb, 
+		createButton(Fluxbox::CLOSE, FluxboxWindow::closePressed_cb, 
 				FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);		
 	if (decorations.sticky)
-		createButton(Fluxbox::Stick, FluxboxWindow::stickyPressed_cb, 
+		createButton(Fluxbox::STICK, FluxboxWindow::stickyPressed_cb, 
 				FluxboxWindow::stickyButton_cb, FluxboxWindow::stickyDraw_cb);
 
 	if (decorations.menu)//TODO
-		createButton(Fluxbox::Menu, 0, 0, 0);
+		createButton(Fluxbox::MENU, 0, 0, 0);
 
 	if (decorations.shade)
-		createButton(Fluxbox::Shade, 0, FluxboxWindow::shadeButton_cb, FluxboxWindow::shadeDraw_cb);
+		createButton(Fluxbox::SHADE, 0, FluxboxWindow::shadeButton_cb, FluxboxWindow::shadeDraw_cb);
 
 	if (frame.ubutton) {
 		for (unsigned int i=0; i<buttonlist.size(); i++)
@@ -678,7 +701,7 @@ void FluxboxWindow::decorate(void) {
 
 	Pixmap tmp = frame.fbutton;
 	BTexture *texture = &(screen->getWindowStyle()->b_focus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.fbutton = None;
 		frame.fbutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -688,7 +711,7 @@ void FluxboxWindow::decorate(void) {
 
 	tmp = frame.ubutton;
 	texture = &(screen->getWindowStyle()->b_unfocus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.ubutton = None;
 		frame.ubutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -698,7 +721,7 @@ void FluxboxWindow::decorate(void) {
 
 	tmp = frame.pbutton;
 	texture = &(screen->getWindowStyle()->b_pressed);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pbutton = None;
 		frame.pbutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -709,7 +732,7 @@ void FluxboxWindow::decorate(void) {
 	if (decorations.titlebar) {
 		tmp = frame.ftitle;
 		texture = &(screen->getWindowStyle()->t_focus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.ftitle = None;
 			frame.ftitle_pixel = texture->getColor()->getPixel();
 		} else
@@ -721,7 +744,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.utitle;
 		texture = &(screen->getWindowStyle()->t_unfocus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.utitle = None;
 			frame.utitle_pixel = texture->getColor()->getPixel();
 		} else
@@ -744,7 +767,7 @@ void FluxboxWindow::decorate(void) {
 	if (decorations.handle) {
 		tmp = frame.fhandle;
 		texture = &(screen->getWindowStyle()->h_focus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.fhandle = None;
 			frame.fhandle_pixel = texture->getColor()->getPixel();
 		} else
@@ -754,7 +777,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.uhandle;
 		texture = &(screen->getWindowStyle()->h_unfocus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.uhandle = None;
 			frame.uhandle_pixel = texture->getColor()->getPixel();
 		} else
@@ -765,7 +788,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.fgrip;
 		texture = &(screen->getWindowStyle()->g_focus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.fgrip = None;
 			frame.fgrip_pixel = texture->getColor()->getPixel();
 		} else
@@ -776,7 +799,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.ugrip;
 		texture = &(screen->getWindowStyle()->g_unfocus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.ugrip = None;
 			frame.ugrip_pixel = texture->getColor()->getPixel();
 		} else
@@ -800,7 +823,7 @@ void FluxboxWindow::decorate(void) {
 void FluxboxWindow::decorateLabel(void) {
 	Pixmap tmp = frame.flabel;
 	BTexture *texture = &(screen->getWindowStyle()->l_focus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.flabel = None;
 		frame.flabel_pixel = texture->getColor()->getPixel();		
 	} else
@@ -810,7 +833,7 @@ void FluxboxWindow::decorateLabel(void) {
 
 	tmp = frame.ulabel;
 	texture = &(screen->getWindowStyle()->l_unfocus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.ulabel = None;
 		frame.ulabel_pixel = texture->getColor()->getPixel();
 	} else
@@ -1172,17 +1195,17 @@ void FluxboxWindow::getWMName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 							&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.title = bstrdup(*list);
+					client.title = StringUtil::strdup(*list);
 					XFreeStringList(list);
 				} else
-					client.title = bstrdup((char *) text_prop.value);
+					client.title = StringUtil::strdup((char *) text_prop.value);
 					
 			} else
-				client.title = bstrdup((char *) text_prop.value);
+				client.title = StringUtil::strdup((char *) text_prop.value);
 
 			XFree((char *) text_prop.value);
 		} else
-			client.title = bstrdup(i18n->getMessage(
+			client.title = StringUtil::strdup(i18n->getMessage(
 #ifdef		NLS
 									WindowSet, WindowUnnamed,
 #else // !NLS
@@ -1190,7 +1213,7 @@ void FluxboxWindow::getWMName(void) {
 #endif //
 									"Unnamed"));
 	} else {
-		client.title = bstrdup(i18n->getMessage(
+		client.title = StringUtil::strdup(i18n->getMessage(
 #ifdef		NLS
 							WindowSet, WindowUnnamed,
 #else // !NLS
@@ -1234,18 +1257,18 @@ void FluxboxWindow::getWMIconName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 						&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.icon_title = bstrdup(*list);
+					client.icon_title = StringUtil::strdup(*list);
 					XFreeStringList(list);
 				} else
-					client.icon_title = bstrdup((char *) text_prop.value);
+					client.icon_title = StringUtil::strdup((char *) text_prop.value);
 			} else
-				client.icon_title = bstrdup((char *) text_prop.value);
+				client.icon_title = StringUtil::strdup((char *) text_prop.value);
 
 			XFree((char *) text_prop.value);
 		} else
-				client.icon_title = bstrdup(client.title);
+				client.icon_title = StringUtil::strdup(client.title);
 	} else
-		client.icon_title = bstrdup(client.title);
+		client.icon_title = StringUtil::strdup(client.title);
 }
 
 
@@ -1274,7 +1297,7 @@ void FluxboxWindow::getWMHints(void) {
 	if (! wmhint) {
 		visible = true;
 		iconic = false;
-		focus_mode = F_Passive;
+		focus_mode = F_PASSIVE;
 		client.window_group = None;
 		client.initial_state = NormalState;
 	} else {
@@ -1282,17 +1305,17 @@ void FluxboxWindow::getWMHints(void) {
 		if (wmhint->flags & InputHint) {
 			if (wmhint->input == true) {
 				if (send_focus_message)
-					focus_mode = F_LocallyActive;
+					focus_mode = F_LOCALLYACTIVE;
 				else
-					focus_mode = F_Passive;
+					focus_mode = F_PASSIVE;
 			} else {
 				if (send_focus_message)
-					focus_mode = F_GloballyActive;
+					focus_mode = F_GLOBALLYACTIVE;
 				else
-					focus_mode = F_NoInput;
+					focus_mode = F_NOINPUT;
 			}
 		} else
-			focus_mode = F_Passive;
+			focus_mode = F_PASSIVE;
 
 		if (wmhint->flags & StateHint)
 			client.initial_state = wmhint->initial_state;
@@ -1376,11 +1399,11 @@ void FluxboxWindow::getMWMHints(void) {
 	unsigned long num, len;
 	Fluxbox *fluxbox = Fluxbox::instance();
 	if (XGetWindowProperty(display, client.window,
-												 fluxbox->getMotifWMHintsAtom(), 0,
-												 PropMwmHintsElements, false,
-												 fluxbox->getMotifWMHintsAtom(), &atom_return,
-												 &format, &num, &len,
-												 (unsigned char **) &client.mwm_hint) == Success &&
+			fluxbox->getMotifWMHintsAtom(), 0,
+			PropMwmHintsElements, false,
+			fluxbox->getMotifWMHintsAtom(), &atom_return,
+			 &format, &num, &len,
+			(unsigned char **) &client.mwm_hint) == Success &&
 			client.mwm_hint)
 		if (num == PropMwmHintsElements) {
 			if (client.mwm_hint->flags & MwmHintsDecorations)
@@ -1391,14 +1414,14 @@ void FluxboxWindow::getMWMHints(void) {
 				else {
 					decorations.titlebar = decorations.handle = decorations.border =
 						decorations.iconify = decorations.maximize =
-						decorations.close = decorations.menu = false;
+						decorations.close = decorations.menu = decorations.tab = false;
 
 					if (client.mwm_hint->decorations & MwmDecorBorder)
 						decorations.border = true;
 					if (client.mwm_hint->decorations & MwmDecorHandle)
 						decorations.handle = true;
 					if (client.mwm_hint->decorations & MwmDecorTitle)
-						decorations.titlebar = true;
+						decorations.titlebar = decorations.tab = true; //only tab on windows with titlebar
 					if (client.mwm_hint->decorations & MwmDecorMenu)
 						decorations.menu = true;
 					if (client.mwm_hint->decorations & MwmDecorIconify)
@@ -1408,10 +1431,10 @@ void FluxboxWindow::getMWMHints(void) {
 				}
 
 			if (client.mwm_hint->flags & MwmHintsFunctions)
-				if (client.mwm_hint->functions & MwmFuncAll)
+				if (client.mwm_hint->functions & MwmFuncAll) {
 					functions.resize = functions.move = functions.iconify =
 						functions.maximize = functions.close = true;
-				else {
+				} else {
 					functions.resize = functions.move = functions.iconify =
 						functions.maximize = functions.close = false;
 
@@ -1444,38 +1467,38 @@ void FluxboxWindow::getBlackboxHints(void) {
 												 (unsigned char **) &client.blackbox_hint) == Success &&
 			client.blackbox_hint)
 		if (num == PropBlackboxHintsElements) {
-			if (client.blackbox_hint->flags & AttribShaded)
-				shaded = (client.blackbox_hint->attrib & AttribShaded);
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_SHADED)
+				shaded = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_SHADED);
 
-			if ((client.blackbox_hint->flags & AttribMaxHoriz) &&
-					(client.blackbox_hint->flags & AttribMaxVert))
+			if ((client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
+					(client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT))
 				maximized = ((client.blackbox_hint->attrib &
-											(AttribMaxHoriz | AttribMaxVert)) ?	1 : 0);
-			else if (client.blackbox_hint->flags & AttribMaxVert)
-				maximized = ((client.blackbox_hint->attrib & AttribMaxVert) ? 2 : 0);
-			else if (client.blackbox_hint->flags & AttribMaxHoriz)
-				maximized = ((client.blackbox_hint->attrib & AttribMaxHoriz) ? 3 : 0);
+											(BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?	1 : 0);
+			else if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT)
+				maximized = ((client.blackbox_hint->attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+			else if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ)
+				maximized = ((client.blackbox_hint->attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 
-			if (client.blackbox_hint->flags & AttribOmnipresent)
-				stuck = (client.blackbox_hint->attrib & AttribOmnipresent);
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_OMNIPRESENT)
+				stuck = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_OMNIPRESENT);
 
-			if (client.blackbox_hint->flags & AttribWorkspace)
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_WORKSPACE)
 				workspace_number = client.blackbox_hint->workspace;
 
 
-			if (client.blackbox_hint->flags & AttribDecoration) {
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
 				switch (client.blackbox_hint->decoration) {
-				case DecorNone:
+				case BaseDisplay::DECOR_NONE:
 					decorations.titlebar = decorations.border = decorations.handle =
 						decorations.iconify = decorations.maximize =
-						decorations.menu = false;
+						decorations.menu = decorations.tab = false; //tab is also a decor
 					functions.resize = functions.move = functions.iconify =
 						functions.maximize = false;
 
 					break;
 
 				default:
-				case DecorNormal:
+				case BaseDisplay::DECOR_NORMAL:
 					decorations.titlebar = decorations.border = decorations.handle =
 						decorations.iconify = decorations.maximize =
 						decorations.menu = true;
@@ -1484,7 +1507,7 @@ void FluxboxWindow::getBlackboxHints(void) {
 
 					break;
 
-				case DecorTiny:
+				case BaseDisplay::DECOR_TINY:
 					decorations.titlebar = decorations.iconify = decorations.menu =
 						functions.move = functions.iconify = true;
 					decorations.border = decorations.handle = decorations.maximize =
@@ -1492,7 +1515,7 @@ void FluxboxWindow::getBlackboxHints(void) {
 
 					break;
 
-				case DecorTool:
+				case BaseDisplay::DECOR_TOOL:
 					decorations.titlebar = decorations.menu = functions.move = true;
 					decorations.iconify = decorations.border = decorations.handle =
 						decorations.maximize = functions.resize = functions.maximize =
@@ -1627,7 +1650,7 @@ bool FluxboxWindow::setInputFocus(void) {
 		ret = client.transient->setInputFocus();
 	else {
 		if (! focused) {
-			if (focus_mode == F_LocallyActive || focus_mode == F_Passive)
+			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE)
 				XSetInputFocus(display, client.window,
 											RevertToPointerRoot, CurrentTime);
 			else
@@ -1671,6 +1694,9 @@ void FluxboxWindow::setTab(bool flag) {
 	if (flag) {
 		if (!tab)
 			tab = new Tab(this, 0, 0);
+		tab->focus(); // draws the tab with correct texture
+		tab->setPosition(); // set tab windows position
+
 	} else if (tab) {
 		delete tab;
 		tab = 0;		
@@ -1766,8 +1792,9 @@ void FluxboxWindow::close(void) {
 void FluxboxWindow::withdraw(void) {
 	visible = false;
 	iconic = false;
-
-	setState(WithdrawnState);
+//
+// setState(WithdrawnState);
+//
 	XUnmapWindow(display, frame.window);
 
 	XSelectInput(display, client.window, NoEventMask);
@@ -1786,19 +1813,69 @@ void FluxboxWindow::withdraw(void) {
 void FluxboxWindow::maximize(unsigned int button) {
 	if (! maximized) {
 		int dx, dy;
-		unsigned int dw, dh;
+		unsigned int dw, dh, slitModL = 0, slitModR = 0, slitModT = 0, slitModB = 0;
+#ifdef	SLIT
+		Slit* mSlt = screen->getSlit();
 
+		if(screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->getWidth() > 1))
+		{
+			switch(screen->getSlitDirection())
+			{
+			case Slit::VERTICAL:
+				switch(screen->getSlitPlacement())
+				{
+				case Slit::TOPRIGHT:
+				case Slit::CENTERRIGHT:
+				case Slit::BOTTOMRIGHT:
+					slitModR = mSlt->getWidth() + screen->getBevelWidth();
+					break;
+				default:
+					slitModL = mSlt->getWidth() + screen->getBevelWidth();
+					break;
+				}
+			break;
+			case Slit::HORIZONTAL:
+				switch(screen->getSlitPlacement())
+				{
+				case Slit::TOPLEFT:
+				case Slit::TOPCENTER:
+				case Slit::TOPRIGHT:
+					slitModT = mSlt->getHeight() + screen->getBevelWidth();
+					switch (screen->getToolbarPlacement()) {
+					case Toolbar::TOPLEFT:
+					case Toolbar::TOPCENTER:
+					case Toolbar::TOPRIGHT:
+						slitModT -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
+						break;
+					}				
+					break;
+				default:
+					slitModB = mSlt->getHeight() + screen->getBevelWidth();
+					switch (screen->getToolbarPlacement()) {
+					case Toolbar::BOTTOMLEFT:
+					case Toolbar::BOTTOMCENTER:
+					case Toolbar::BOTTOMRIGHT:
+						slitModB -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
+						break;
+					}	
+					break;
+				}	
+				break;
+			}
+		}		
+#endif // SLIT
+	
 		blackbox_attrib.premax_x = frame.x;
 		blackbox_attrib.premax_y = frame.y;
 		blackbox_attrib.premax_w = frame.width;
 		blackbox_attrib.premax_h = frame.height;
 
-		dw = screen->getWidth();
+		dw = screen->getWidth() - slitModL - slitModR;
 		dw -= screen->getBorderWidth2x();
 		dw -= frame.mwm_border_w * 2;
 		dw -= client.base_width;
 
-		dh = screen->getHeight();
+		dh = screen->getHeight() - slitModT - slitModB;
 		dh -= screen->getBorderWidth2x();
 		dh -= frame.mwm_border_w * 2;
 		dh -= ((frame.handle_h + screen->getBorderWidth()) * decorations.handle);
@@ -1807,7 +1884,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		if (! screen->doFullMax())
 			dh -= screen->getToolbar()->getExposedHeight() +
-						screen->getBorderWidth();
+						screen->getBorderWidth2x();
 
 		if (dw < client.min_width) dw = client.min_width;
 		if (dh < client.min_height) dh = client.min_height;
@@ -1825,51 +1902,51 @@ void FluxboxWindow::maximize(unsigned int button) {
 		dh += (frame.handle_h + screen->getBorderWidth());
 		dh += frame.mwm_border_w * 2;
 
-		dx = ((screen->getWidth() - dw) / 2) - screen->getBorderWidth();
+		dx = ((screen->getWidth()+ slitModL - slitModR - dw) / 2) - screen->getBorderWidth();
 
 		if (screen->doFullMax()) {
 			dy = ((screen->getHeight() - dh) / 2) - screen->getBorderWidth();
 		} else {
-			dy = (((screen->getHeight() - screen->getToolbar()->getExposedHeight())
-			 - dh) / 2) - screen->getBorderWidth();
+			dy = (((screen->getHeight() + slitModT - slitModB - (screen->getToolbar()->getExposedHeight()))
+			 - dh) / 2) - screen->getBorderWidth2x();
 
 			switch (screen->getToolbarPlacement()) {
-			case Toolbar::TopLeft:
-			case Toolbar::TopCenter:
-			case Toolbar::TopRight:
+			case Toolbar::TOPLEFT:
+			case Toolbar::TOPCENTER:
+			case Toolbar::TOPRIGHT:
 				dy += screen->getToolbar()->getExposedHeight() +
-						screen->getBorderWidth();
+						screen->getBorderWidth2x();
 				break;
 			}
 		}
 
-		if (decorations.tab && Fluxbox::instance()->useTabs()) { // Want to se the tabs
+		if (hasTab()) {
 			switch(screen->getTabPlacement()) {			
-			case Tab::PTop:
-				dy += Fluxbox::instance()->getTabHeight(); 
-				dh -= Fluxbox::instance()->getTabHeight() + screen->getBorderWidth();
+			case Tab::PTOP:
+				dy += screen->getTabHeight(); 
+				dh -= screen->getTabHeight();
 				break;
-			case Tab::PLeft:
+			case Tab::PLEFT:
 				if (screen->isTabRotateVertical()) {
-					dx += Fluxbox::instance()->getTabHeight();
-					dw -= Fluxbox::instance()->getTabHeight();
+					dx += screen->getTabHeight();
+					dw -= screen->getTabHeight();
 				} else {
-					dx += Fluxbox::instance()->getTabWidth();
-					dw -= Fluxbox::instance()->getTabWidth();
+					dx += screen->getTabWidth();
+					dw -= screen->getTabWidth();
 				}	
 				break;
-			case Tab::PRight:
+			case Tab::PRIGHT:
 				if (screen->isTabRotateVertical())
-					dw -= Fluxbox::instance()->getTabHeight();
+					dw -= screen->getTabHeight();
 				else
-					dw -= Fluxbox::instance()->getTabWidth();	
+					dw -= screen->getTabWidth();	
 				break;
-			case Tab::PBottom:
-				dh -= Fluxbox::instance()->getTabHeight() + screen->getBorderWidth();
+			case Tab::PBOTTOM:
+				dh -= screen->getTabHeight();
 				break;
 			default:
-				dy += Fluxbox::instance()->getTabHeight();
-				dh -= Fluxbox::instance()->getTabHeight() + screen->getBorderWidth();
+				dy += screen->getTabHeight();
+				dh -= screen->getTabHeight();
 				break;
 			}
 		}
@@ -1884,27 +1961,27 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		switch(button) {
 		case 1:
-			blackbox_attrib.flags |= AttribMaxHoriz | AttribMaxVert;
-			blackbox_attrib.attrib |= AttribMaxHoriz | AttribMaxVert;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT;
 
 			break;
 
 		case 2:
-			blackbox_attrib.flags |= AttribMaxVert;
-			blackbox_attrib.attrib |= AttribMaxVert;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_MAXVERT;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_MAXVERT;
 
 			break;
 
 		case 3:
-			blackbox_attrib.flags |= AttribMaxHoriz;
-			blackbox_attrib.attrib |= AttribMaxHoriz;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_MAXHORIZ;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_MAXHORIZ;
 
 			break;
 		}
 
 		if (shaded) {
-			blackbox_attrib.flags ^= AttribShaded;
-			blackbox_attrib.attrib ^= AttribShaded;
+			blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
+			blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
 			shaded = false;
 		}
 
@@ -1918,8 +1995,8 @@ void FluxboxWindow::maximize(unsigned int button) {
 	} else {
 		maximized = false;
 
-		blackbox_attrib.flags &= ! (AttribMaxHoriz | AttribMaxVert);
-		blackbox_attrib.attrib &= ! (AttribMaxHoriz | AttribMaxVert);
+		blackbox_attrib.flags &= ! (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT);
+		blackbox_attrib.attrib &= ! (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT);
 
 		configure(blackbox_attrib.premax_x, blackbox_attrib.premax_y,
 				blackbox_attrib.premax_w, blackbox_attrib.premax_h);
@@ -1938,7 +2015,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 void FluxboxWindow::setWorkspace(int n) {
 	workspace_number = n;
 
-	blackbox_attrib.flags |= AttribWorkspace;
+	blackbox_attrib.flags |= BaseDisplay::ATTRIB_WORKSPACE;
 	blackbox_attrib.workspace = workspace_number;
 }
 
@@ -1948,15 +2025,15 @@ void FluxboxWindow::shade(void) {
 		if (shaded) {
 			XResizeWindow(display, frame.window, frame.width, frame.height);
 			shaded = false;
-			blackbox_attrib.flags ^= AttribShaded;
-			blackbox_attrib.attrib ^= AttribShaded;
+			blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
+			blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
 
 			setState(NormalState);
 		} else {
 			XResizeWindow(display, frame.window, frame.width, frame.title_h);
 			shaded = true;
-			blackbox_attrib.flags |= AttribShaded;
-			blackbox_attrib.attrib |= AttribShaded;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_SHADED;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_SHADED;
 
 			setState(IconicState);
 		}
@@ -1968,8 +2045,8 @@ void FluxboxWindow::stick(void) {
 	if (tab) //if it got a tab then do tab's stick on all of the objects in the list
 		tab->stick(); //this window will stick too.
 	else if (stuck) {
-		blackbox_attrib.flags ^= AttribOmnipresent;
-		blackbox_attrib.attrib ^= AttribOmnipresent;
+		blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
+		blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 
 		stuck = false;
 
@@ -1980,8 +2057,8 @@ void FluxboxWindow::stick(void) {
 	} else {
 		stuck = true;
 
-		blackbox_attrib.flags |= AttribOmnipresent;
-		blackbox_attrib.attrib |= AttribOmnipresent;
+		blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
+		blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 
 	}
 	
@@ -2200,7 +2277,7 @@ void FluxboxWindow::restoreAttributes(void) {
 	unsigned long ulfoo, nitems;
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
-	BlackboxAttributes *net;
+	BaseDisplay::BlackboxAttributes *net;
 	if (XGetWindowProperty(display, client.window,
 			 fluxbox->getFluxboxAttributesAtom(), 0l,
 			 PropBlackboxAttributesElements, false,
@@ -2220,8 +2297,8 @@ void FluxboxWindow::restoreAttributes(void) {
 	} else
 		return;
 
-	if (blackbox_attrib.flags & AttribShaded &&
-			blackbox_attrib.attrib & AttribShaded) {
+	if (blackbox_attrib.flags & BaseDisplay::ATTRIB_SHADED &&
+			blackbox_attrib.attrib & BaseDisplay::ATTRIB_SHADED) {
 		int save_state =
 			((current_state == IconicState) ? NormalState : current_state);
 
@@ -2241,29 +2318,29 @@ void FluxboxWindow::restoreAttributes(void) {
 	} else if (current_state == WithdrawnState)
 		current_state = NormalState;
 
-	if (blackbox_attrib.flags & AttribOmnipresent &&
-			blackbox_attrib.attrib & AttribOmnipresent) {
+	if (blackbox_attrib.flags & BaseDisplay::ATTRIB_OMNIPRESENT &&
+			blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) {
 		stuck = false;
 		stick();
 
 		current_state = NormalState;
 	}
 
-	if ((blackbox_attrib.flags & AttribMaxHoriz) ||
-			(blackbox_attrib.flags & AttribMaxVert)) {
+	if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) ||
+			(blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)) {
 		int x = blackbox_attrib.premax_x, y = blackbox_attrib.premax_y;
 		unsigned int w = blackbox_attrib.premax_w, h = blackbox_attrib.premax_h;
 		maximized = false;
 
 		int m;
-		if ((blackbox_attrib.flags & AttribMaxHoriz) &&
-				(blackbox_attrib.flags & AttribMaxVert))
-			m = ((blackbox_attrib.attrib & (AttribMaxHoriz | AttribMaxVert)) ?
+		if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
+				(blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT))
+			m = ((blackbox_attrib.attrib & (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?
 					 1 : 0);
-		else if (blackbox_attrib.flags & AttribMaxVert)
-			m = ((blackbox_attrib.attrib & AttribMaxVert) ? 2 : 0);
-		else if (blackbox_attrib.flags & AttribMaxHoriz)
-			m = ((blackbox_attrib.attrib & AttribMaxHoriz) ? 3 : 0);
+		else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)
+			m = ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+		else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ)
+			m = ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 		else
 			m = 0;
 
@@ -2333,13 +2410,11 @@ void FluxboxWindow::redrawLabel(void) {
 	
 	GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
 			 screen->getWindowStyle()->l_text_unfocus_gc);
-	
-	DrawString(display, frame.label, gc,
+
+	DrawUtil::DrawString(display, frame.label, gc,
 			&screen->getWindowStyle()->font, 
 			client.title_text_w, frame.label_w,
 			frame.bevel_w, client.title);
-	
-
 }
 
 
@@ -2555,8 +2630,27 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		if (decorations.titlebar)
 			redrawLabel();
 
+		if (hasTab()) // update tab
+			getTab()->draw(false);
+
 		if (! iconic)
 			screen->getWorkspace(workspace_number)->update();
+		else if (Fluxbox::instance()->useIconBar()) {
+			IconBar *iconbar = 0;
+			IconBarObj *icon = 0;
+			if ((iconbar = screen->getToolbar()->getIconBar()) != 0) {
+				if ((icon = iconbar->findIcon(this)) != 0)
+					iconbar->draw(icon, icon->getWidth());
+#ifdef DEBUG
+				else
+					cerr<<__FILE__<<"("<<__LINE__<<"): can't find icon!"<<endl;
+#endif //DEBUG	
+			}
+#ifdef DEBUG
+			else
+				cerr<<__FILE__<<"("<<__LINE__<<"): can't find iconbar!"<<endl;
+#endif //DEBUG
+		}
 
 		break;
 
@@ -2589,7 +2683,16 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 	default:
 		if (atom == fluxbox->getWMProtocolsAtom()) {
 			getWMProtocols();
-	
+
+			if (decorations.close && !findTitleButton(Fluxbox::CLOSE)) {	
+				createButton(Fluxbox::CLOSE, FluxboxWindow::closePressed_cb, 
+					FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);
+
+				if (decorations.titlebar)
+					positionButtons(true);
+				if (windowmenu)
+					windowmenu->reconfigure();
+			}
 		}
 
 		break;
@@ -2677,8 +2780,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 	
 	if (! validateClient())	
 		return;
-
-		
+	
 	if (be->button == 1 || (be->button == 3 && be->state == Mod1Mask)) {
 		if ((! focused) && (! screen->isSloppyFocus()))	 //check focus
 			setInputFocus(); 
@@ -2703,6 +2805,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			XAllowEvents(display, ReplayPointer, be->time);
 			
 		} else {
+		
 			if (frame.title == be->window || frame.label == be->window) {
 				if (((be->time - lastButtonPressTime) <=
 			 		fluxbox->getDoubleClickInterval()) ||
@@ -2712,23 +2815,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 					if (tab) //shade windows in the tablist too
 						tab->shade();
 				} else
-					lastButtonPressTime = be->time;
+					lastButtonPressTime = be->time;			
 			}
 			
-			/*
-			if (be->window == frame.title)
-				fprintf(stderr, "title\n");
-			else if (be->window == frame.label)
-				fprintf(stderr, "label\n");
-			else if (be->window == frame.plate)
-				fprintf(stderr, "plate\n");
-			else if (be->window == frame.handle)
-				fprintf(stderr, "handle\n");
-			else if (be->window == frame.window)
-				fprintf(stderr, "window\n");
-			else
-					fprintf(stderr, "unknown window\n");					
-			*/
 			
 			frame.grab_x = be->x_root - frame.x - screen->getBorderWidth();
 			frame.grab_y = be->y_root - frame.y - screen->getBorderWidth();
@@ -2738,15 +2827,16 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			//raise tab first if there is any
 			if (tab)
 				tab->raise();
+		
 			screen->getWorkspace(workspace_number)->raiseWindow(this);
 		}
-	/*} else if (be->button == 2 && (be->window != frame.iconify_button) &&
-													(be->window != frame.close_button)) {
+	} else if (be->button == 2 && be->window == frame.label) {
 		screen->getWorkspace(workspace_number)->lowerWindow(this);
-	*/		
+
 	} else if (windowmenu && be->button == 3 &&
-				(frame.title == be->window || frame.label == be->window ||
-				frame.handle == be->window || frame.window == be->window)) {
+			(frame.title == be->window || frame.label == be->window ||
+			frame.handle == be->window)) {
+
 		int mx = 0, my = 0;
 
 		if (frame.title == be->window || frame.label == be->window) {
@@ -2877,7 +2967,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 	Fluxbox *fluxbox = Fluxbox::instance();
 	if ((me->state & Button1Mask) && functions.move &&
 			(frame.title == me->window || frame.label == me->window ||
-			 frame.handle == me->window || frame.window == me->window)) {
+			 frame.handle == me->window || frame.window == me->window) && !resizing) {
 			 
 		if (! moving) {
 			XGrabPointer(display, me->window, False, Button1MotionMask |
@@ -2922,9 +3012,9 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 				int dtty, dbby, dty, dby;
 				switch (screen->getToolbarPlacement()) {
-				case Toolbar::TopLeft:
-				case Toolbar::TopCenter:
-				case Toolbar::TopRight:
+				case Toolbar::TOPLEFT:
+				case Toolbar::TOPCENTER:
+				case Toolbar::TOPRIGHT:
 					dtty = screen->getToolbar()->getExposedHeight() +
 							screen->getBorderWidth();
 					dbby = screen->getHeight();
@@ -3108,37 +3198,37 @@ void FluxboxWindow::timeout(void) {
 }
 
 
-void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
-	if ((net->flags & AttribShaded) &&
-			((blackbox_attrib.attrib & AttribShaded) !=
-			(net->attrib & AttribShaded)))
+void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
+	if ((net->flags & BaseDisplay::ATTRIB_SHADED) &&
+			((blackbox_attrib.attrib & BaseDisplay::ATTRIB_SHADED) !=
+			(net->attrib & BaseDisplay::ATTRIB_SHADED)))
 		shade();
 
-	if ((net->flags & (AttribMaxVert | AttribMaxHoriz)) &&
-			((blackbox_attrib.attrib & (AttribMaxVert | AttribMaxHoriz)) !=
-				(net->attrib & (AttribMaxVert | AttribMaxHoriz)))) {
+	if ((net->flags & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)) &&
+			((blackbox_attrib.attrib & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)) !=
+				(net->attrib & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)))) {
 		if (maximized) {
 			maximize(0);
 		} else {
 			int m = 0;
 
-			if ((net->flags & AttribMaxHoriz) && (net->flags & AttribMaxVert))
-				m = ((net->attrib & (AttribMaxHoriz | AttribMaxVert)) ?	1 : 0);
-			else if (net->flags & AttribMaxVert)
-				m = ((net->attrib & AttribMaxVert) ? 2 : 0);
-			else if (net->flags & AttribMaxHoriz)
-				m = ((net->attrib & AttribMaxHoriz) ? 3 : 0);
+			if ((net->flags & BaseDisplay::ATTRIB_MAXHORIZ) && (net->flags & BaseDisplay::ATTRIB_MAXVERT))
+				m = ((net->attrib & (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?	1 : 0);
+			else if (net->flags & BaseDisplay::ATTRIB_MAXVERT)
+				m = ((net->attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+			else if (net->flags & BaseDisplay::ATTRIB_MAXHORIZ)
+				m = ((net->attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 
 			maximize(m);
 		}
 	}
 
-	if ((net->flags & AttribOmnipresent) &&
-			((blackbox_attrib.attrib & AttribOmnipresent) !=
-			(net->attrib & AttribOmnipresent)))
+	if ((net->flags & BaseDisplay::ATTRIB_OMNIPRESENT) &&
+			((blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) !=
+			(net->attrib & BaseDisplay::ATTRIB_OMNIPRESENT)))
 		stick();
 
-	if ((net->flags & AttribWorkspace) &&
+	if ((net->flags & BaseDisplay::ATTRIB_WORKSPACE) &&
 			(workspace_number != (signed) net->workspace)) {
 		screen->reassociateWindow(this, net->workspace, true);
 
@@ -3148,19 +3238,19 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 			deiconify();
 	}
 
-	if (net->flags & AttribDecoration) {
+	if (net->flags & BaseDisplay::ATTRIB_DECORATION) {
 		switch (net->decoration) {
-		case DecorNone:
+		case BaseDisplay::DECOR_NONE:
 			decorations.titlebar = decorations.border = decorations.handle =
 				decorations.iconify = decorations.maximize =
-				decorations.menu = false;
+				decorations.menu = decorations.tab = false; //tab is also a decor
 			functions.resize = functions.move = functions.iconify =
 				functions.maximize = false;
 
 			break;
 
 		default:
-		case DecorNormal:
+		case BaseDisplay::DECOR_NORMAL:
 			decorations.titlebar = decorations.border = decorations.handle =
 				decorations.iconify = decorations.maximize =
 				decorations.menu = true;
@@ -3169,7 +3259,7 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 
 			break;
 
-		case DecorTiny:
+		case BaseDisplay::DECOR_TINY:
 			decorations.titlebar = decorations.iconify = decorations.menu =
 				functions.move = functions.iconify = true;
 			decorations.border = decorations.handle = decorations.maximize =
@@ -3177,7 +3267,7 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 
 			break;
 
-		case DecorTool:
+		case BaseDisplay::DECOR_TOOL:
 			decorations.titlebar = decorations.menu = functions.move = true;
 			decorations.iconify = decorations.border = decorations.handle =
 				decorations.maximize = functions.resize = functions.maximize =

@@ -1,5 +1,5 @@
-// IconBar.hh
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// IconBar.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -18,14 +18,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: IconBar.hh,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
+
 #ifndef _ICONBAR_HH_
 #define _ICONBAR_HH_
 
 #include <vector>
 #include "Window.hh"
 #include "LinkedList.hh"
-
-class Fluxbox;
 
 class IconBarObj
 {
@@ -34,31 +35,35 @@ public:
 	~IconBarObj();
 	inline Window getIconWin(void) { return m_iconwin; }
 	inline FluxboxWindow *getFluxboxWin(void)  { return m_fluxboxwin; }
+	unsigned int getWidth(void);
 private:
-	Window m_iconwin;
 	FluxboxWindow *m_fluxboxwin;
+	Window m_iconwin;
 };
-
-typedef LinkedList<IconBarObj> IconList;
-typedef LinkedListIterator<IconBarObj> IconListIterator;
 
 class IconBar
 {
 public:
 	IconBar(BScreen *scrn, Window parent);
 	~IconBar();
-	void draw();
+	void draw(); //TODO
 	void reconfigure();
 	Window addIcon(FluxboxWindow *fluxboxwin);
 	Window delIcon(FluxboxWindow *fluxboxwin);
 	void buttonPressEvent(XButtonEvent *be);	
 	FluxboxWindow *findWindow(Window w);
+	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
 	void exposeEvent(XExposeEvent *ee);
-private:
+
 	void draw(IconBarObj *obj, int width);
+private:
+	typedef LinkedList<IconBarObj> IconList;
+	typedef LinkedListIterator<IconBarObj> IconListIterator;
+
+//	void draw(IconBarObj *obj, int width);
 	void loadTheme(unsigned int width, unsigned int height);
 	void decorate(Window win);
-	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
+//	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
 	void repositionIcons(void);
 	Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
 	BScreen *m_screen;

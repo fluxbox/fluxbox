@@ -18,3 +18,5 @@ $ #KillClient
 # Matar al cliente
 $ #Close
 # Cerrar
+$ #Tab
+# Tab

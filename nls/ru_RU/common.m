@@ -16,43 +16,43 @@ $ #AlwaysOnTop
 # Всегда наверху
 
 $ #PlacementTitle
-# Местоположение
+# Расположение
 $ #PlacementTopLeft
-# Слева вверху
+# Вверху слева
 $ #PlacementCenterLeft
 # Слева по центру
 $ #PlacementBottomLeft
-# Слева внизу
+# Внизу слева
 $ #PlacementTopCenter
-# Сверху по центру
+# Вверху по центру
 $ #PlacementBottomCenter
-# Снизу по центру
+# Внизу по центру
 $ #PlacementTopRight
-# Справа сверху
+# Вверху справа
 $ #PlacementCenterRight
-# Справа по центру
+# Слева по центру
 $ #PlacementBottomRight
-# Справа внизу
+# Внизу справа
 $ #PlacementLeftTop
-# Left Top
+# Слева вверху
 $ #PlacementLeftCenter
-# Left Center
+# Слева по центру
 $ #PlacementLeftBottom
-# Left Bottom
+# Слева внизу
 $ #PlacementRightTop
-# Right Top
+# Справа вверху
 $ #PlacementRightCenter
-# Right Center
+# Справа по центру
 $ #PlacementRightBottom
-# Right Bottom
+# Справа внизу
 $ #PlacementTopRelative
-# Top Relative
+# Вверху по размеру окна
 $ #PlacementBottomRelative
-# Bottom Relative
+# Внизу по размеру окна
 $ #PlacementLeftRelative
-# Left Relative
+# Слева по размеру окна
 $ #PlacementRightRelative
-# Right Relative
+# Справа по размеру окна
 
 $ #AutoHide
-# Auto hide
+# Автоскрытие

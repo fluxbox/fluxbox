@@ -1,3 +1,6 @@
+// BaseDisplay.cc for Fluxbox Window manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // BaseDisplay.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,9 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//
-// Changes for Fluxbox made by Henrik Kinnunen (fluxgen@linuxmail.org)
-//
+// $Id: BaseDisplay.cc,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -218,14 +219,6 @@ void bexec(const char *command, char* displaystring) {
 #endif // !__EMX__
 
 
-char *bstrdup(const char *s) {
-  int l = strlen(s) + 1;
-  char *n = new char[l];
-  strncpy(n, s, l);
-  return n;
-}
-
-
 BaseDisplay::BaseDisplay(char *app_name, char *dpy_name) {
 	application_name = app_name;
 
@@ -372,7 +365,7 @@ BaseDisplay::BaseDisplay(char *app_name, char *dpy_name) {
 #endif // NEWWMSPEC
 
 #ifdef GNOME
-	/*
+	
 	gnome_wm_win_layer = XInternAtom(display, "_WIN_LAYER", False);
 	gnome_wm_win_state = XInternAtom(display, "_WIN_STATE", False);
 	gnome_wm_win_hints = XInternAtom(display, "_WIN_HINTS", False);
@@ -385,7 +378,7 @@ BaseDisplay::BaseDisplay(char *app_name, char *dpy_name) {
 	gnome_wm_win_client_list = XInternAtom(display, "_WIN_CLIENT_LIST", False);
 	gnome_wm_prot = XInternAtom(display, "_WIN_PROTOCOLS", False);
 	gnome_wm_supporting_wm_check = XInternAtom(display, "_WIN_SUPPORTING_WM_CHECK", False);
-	*/
+	
 #endif // GNOME
 
 	cursor.session = XCreateFontCursor(display, XC_left_ptr);

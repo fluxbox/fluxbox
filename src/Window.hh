@@ -1,3 +1,6 @@
+// Window.hh for Fluxbox Window Manager
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org) 
+//
 // Window.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,9 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//
-//Changes for Fluxbox made by Henrik Kinnunen (fluxgen@linuxmail.org)
-// See LICENSE for copyright and license
+// $Id: Window.hh,v 1.4 2002/01/11 10:40:59 fluxgen Exp $
 
 #ifndef   _WINDOW_HH_
 #define   _WINDOW_HH_
@@ -150,7 +151,7 @@ public:
   void restore(void);
   void configure(int dx, int dy, unsigned int dw, unsigned int dh);
   void setWorkspace(int n);
-  void changeBlackboxHints(BlackboxHints *);
+  void changeBlackboxHints(BaseDisplay::BlackboxHints *);
   void restoreAttributes(void);
 
   void buttonPressEvent(XButtonEvent *);
@@ -178,14 +179,13 @@ public:
 
 private:
   BImageControl *image_ctrl;
-	//Fluxbox *fluxbox;
 	
   bool moving, resizing, shaded, maximized, visible, iconic, transient,
     focused, stuck, modal, send_focus_message, managed;
   BScreen *screen;
   BTimer *timer;
   Display *display;
-  BlackboxAttributes blackbox_attrib;
+  BaseDisplay::BlackboxAttributes blackbox_attrib;
 
   Time lastButtonPressTime;
   Windowmenu *windowmenu;
@@ -207,7 +207,7 @@ private:
 		unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
 		MwmHints *mwm_hint;
-		BlackboxHints *blackbox_hint;
+		BaseDisplay::BlackboxHints *blackbox_hint;
 	} client;
 
 	struct _decorations {
@@ -221,9 +221,8 @@ private:
   
 	bool usetab;
 	Tab *tab;
-	//Tab is also a friend
-	friend class Tab;	
-
+	friend class Tab;
+	
 	typedef void (*ButtonDrawProc)(FluxboxWindow *, Window, bool);
 	typedef void (*ButtonEventProc)(FluxboxWindow *, XButtonEvent *);
 
@@ -258,7 +257,7 @@ private:
       bevel_w, resize_w, resize_h, snap_w, snap_h;
   } frame;
 
-  enum { F_NoInput = 0, F_Passive, F_LocallyActive, F_GloballyActive };
+  enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
   void createButton(int type, ButtonEventProc, ButtonEventProc, ButtonDrawProc);
 	Window findTitleButton(int type);

@@ -18,3 +18,5 @@ $ #KillClient
 # Dræb klient
 $ #Close
 # Luk
+$ #Tab
+# Tab

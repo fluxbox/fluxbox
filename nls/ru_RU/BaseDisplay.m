@@ -9,7 +9,7 @@ $ #ShuttingDown
 $ #Aborting
 # Отмена... создается дамп core\n
 $ #XConnectFail
-# BaseDisplay::BaseDisplay: соединение с X сервером провалено.\n
+# BaseDisplay::BaseDisplay: неудачное соединение с X сервером.\n
 $ #CloseOnExecFail
 # BaseDisplay::BaseDisplay: нет возможности пометить активный дисплей как "закрытый-на-исполнение"\n
 $ #BadWindowRemove

@@ -1,11 +1,104 @@
+Changes for 0.1.6:
+*01/01/11:
+   * Fixed so it compiles with cygwin (Thanks Eric Nicolas)
+*02/01/10:
+   * Fixed {VERT,HORIZ}{INC,DEC} keybindings so that tabs will
+     resize/reposition. (Claes Nästén)
+   * Updated documentation (Thanks Rando Christensen)
+   * All enums are now changed to uppercase letters. (Claes Nästén)
+   * Now tabs won't appear on some apps where they shouldn't,
+     for example bbpager and mplayer. (Claes Nästén) 
+   * Fixed rootCommand to screen, so we can have
+     different rootcommands on the different screens
+   * Fixed so we can disable lines in the keyfile with a #
+   * Fixed raise with mouse click while sloppy window focus
+*02/01/09:
+   * Updated copyright date
+   * Updated generate_menu (Thanks zyrnix)
+   * Fixed Withdraw state
+   * Clean up in old gnome atom code
+*02/01/08:
+   * Made class Keys more independent (layer 2). class Keys now only
+     depends on StringUtil.
+   * Replaced the old strtok in Keys with a new stringtok from 
+     StringUtil this should make the config file less restrictive
+   * Added stringtok to StringUtil
+   * Removed Fluxbox dependency from class Theme
+   * Fixed closebutton bug
+   * Fixed memory leak in Keys
+*02/01/06:
+   * Changed toolbar placement enums to uppercase letters (Claes Nästén)
+   * Moved strcasestr from Theme.cc to StringUtil 
+   * Created StringUtil and DrawUtil and moved all functions from Misc to them   
+*02/01/05:
+   * Changed placement/alignment enums to uppercase letters (Claes Nästén)
+   * Fixed tab/iconbar resource bug (Claes Nästén)
+   * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay)
+   * Fixed stickytoggle bug in Windowmenu (Thanks Chris Elston)
+   * Fixed shade bug in Windowmenu 
+   * Fixed error in nls/it_IT/Makefile.am
+   * Updated french translation (Thanks Fabien Devaux)
+   * Fixed focus Configmenu bug 
+*02/01/04:
+   * Fixed keybinding bug (Thanks Devaux Fabien)
+*02/01/01:
+   * Updated the man page (Thanks Matthew Hawkins)
+   * Fixed windowmenu bug when resizing with num/caps/scrollock on (Thanks Devaux Fabien)
+   * Restored lower window with mouse feature 
+*01/12/29:
+   * Fixed slit:onTop with toolbar:onTop bug 
+   * Changed Keygrabbing constants to uppercase
+   * Changed Texture constants to uppercase and moved them into class BImage
+     to clean up the global namespace
+*01/12/27:
+   * Fixed grabVertMax and grabHorizMax + 1 pixel maximise bug. (Claes Nästén)
+   * Now relative and vertical tabs gets textures rendered ok, still
+    interlaced and gradients aren't rendered in right direction. (Claes Nästén)
+*01/12/26:
+   * Fixed tab and iconbar uppdating so that tab and iconbar labels will have
+    the right text. (Claes Nästén)
+*01/12/23:
+   * Fixed a bug in Tab::buttonReleaseEvent and added sloppyWindowGrouping
+     wich lets you release windows tabs on other windows and not only other
+     tabs to group them (Claes Nästén)
+*01/12/19:
+   * Moved some structs from file scope of BaseDisplay.hh in to class BaseDisplay
+   * Fixed redraw bug when changing workspace
+*01/12/17:
+   * Fixed errorchecking in Misc::DrawString and Misc::DrawRotString (me)
+   * Fixed tabcycling (Thanks Mike Walker)
+   * Moved expandFilename from class Fluxbox to class Misc (me)
+*01/12/14
+   * Moved Tab width and height functions to screen, new syntax is
+      session.screenX.tab.width (Claes Nästén) 
+*01/12/13:
+   * Moved all free functions in misc.cc/.hh into a class Misc  
+   * Moved struct FFont from Theme.hh to class Misc so the
+     cyclic dep between class Theme and class Misc is removed. 
+   * Updated Screen.hh to return reference instead of pointer in  
+     get*Style  
+   * Updated Window.cc, Toolbar.cc, Tab.cc to the new DrawString 
+     functions in class Misc 
+   * Moved and renamed bstrdup from BaseDisplay.hh/.cc to class Misc
+*01/12/12:
+   * Updated russian translation (Thanks Sergey Volozhanin)
+   * Updated man-page (Thanks Matthew Hawkins)
+*01/12/11:
+   * Fixed alt+resize and pressing button1 bug (me)
+   * Cleaned Tab::insert up and fix a bug in it. (Claes Nästén) 
+ *01/12/10
+   * Added NLS for Windowmenu Tab toggle (Claes Nästén)
+   * Fixed Tab toggle texture / positioning "bug" (Claes Nästén)
+ 
 Changes for 0.1.5:
+
 *01/12/09
    * Added execCommand to keybindings
-	 * Added new theme qnx-photon
+   * Added new theme qnx-photon
    * Fixed util/Makefile.am
-   * Buggfix in Tab::insert
+   * Bugfix in Tab::insert
 *01/12/08:
-   * Fixed "Move Group to..."-bugg  (me)
+   * Fixed "Move Group to..."-bug  (me)
    * Updated AUTHORS (me)
    * Fixed ungrabbing keys in Keys::load (me)
    * Added rootCommand override (Joel Carlbark)
@@ -29,12 +122,12 @@ Changes for 0.1.5:
    * Fixed chained keybinding so we can do "emacs-keybindingstyle" (me)
 *01/11/30:
    * Fixed position code for tabs (me)
-   * Fixed tabconfigmenu bugg (me)
+   * Fixed tabconfigmenu bug (me)
    * Added new keybinding code (me)
    * Removed old bbkeys code (me)
 *01/11/29:
    * applied Tab position patch (Claes Nästén)
-   * Fixed transient_for-bugg, Fluxbox::~FluxboxWindow (me)
+   * Fixed transient_for-bug, Fluxbox::~FluxboxWindow (me)
      client.transient_for didn't got focus and caused the (me)
      Fluxbox::focused_window to be a badpointer since 
      the focused_window was pointing to an already destroyed
@@ -70,7 +163,7 @@ Changes for 0.1.5:
 *01/11/11:
    * Theme.cc/.hh added to source, handles all theme loading (me)
 *01/11/09:
-   * Fixed bugg in Fluxbox::getRcFilename() (me)
+   * Fixed bug in Fluxbox::getRcFilename() (me)
 *01/11/07: 
    * Removed a not working wheelscroll on rootwindow in fluxbox.cc (me)
    * Moved wheelscroll in Toolbar.cc from pressEvent to releaseEvent (me)
@@ -84,6 +177,7 @@ Changes for 0.1.5:
    * Fixed so it compiles with gcc 3.0.x (me)
 
 Changes for 0.1.4:
+
 *01/11/03: Added new theme: Carbondioxide by skypher
 *01/11/03: Fixed bsetbg in utils/Makefile.am 
 *01/11/02: Clean up
@@ -100,10 +194,10 @@ Changes for 0.1.4:
 *01/10/31: Fixed default color/texture for tab to be the same as titlebar
            if the theme is a blackbox theme.
 *01/10/29: Added KDE support (thanks Dan Williams for the blackbox patch)
-*01/10/29: Fixed reconfigure-bugg for tabs
+*01/10/29: Fixed reconfigure-bug for tabs
 *01/10/28: Added "Use Tabs" in configure menu
 *01/10/28: Added theme support for tabs
-*01/10/28: Fixed the move bugg when moving a tablist
+*01/10/28: Fixed the move bug when moving a tablist
 
 Changes for 0.1.3:
 
@@ -158,7 +252,7 @@ Changes for Fluxbox 0.1.2:
 * Window.cc: FluxboxWindow::FluxboxWindow
   Changed event_mask for XGrabButton frame.plate from 0 to AnyModifier
   and ungrabs Mod1-3.
-  This should fix the focus "bugg" when num lock, caps lock or scroll lock 
+  This should fix the focus "bug" when num lock, caps lock or scroll lock 
   are pressed.
 
 * fluxbox.cc: Fluxbox::process_event

@@ -1,6 +1,6 @@
-// fluxbox.hh for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
-
+// fluxbox.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // blackbox.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-
+// $Id: fluxbox.hh,v 1.6 2002/01/11 09:18:58 fluxgen Exp $
 
 #ifndef	 _FLUXBOX_HH_
 #define	 _FLUXBOX_HH_
@@ -94,7 +94,6 @@ public:
 	static Fluxbox *instance(int m_argc=0, char **m_argv=0, char *dpy_name=0, char *rc=0);
 	
 	inline bool useTabs() const { return resource.tabs; }
-//	inline TabType &getTabType() { return resource.tabtype; }
 	inline bool useIconBar() const { return resource.iconbar; }
 	inline void saveTabs(bool value) { resource.tabs = value; }
 	inline void saveIconBar(bool value) { resource.iconbar = value; }
@@ -123,14 +122,13 @@ public:
 	Toolbar *searchToolbar(Window);
 	Tab *searchTab(Window);
 	
-	enum Titlebar{Shade=0, Minimize, Maximize, Close, Stick, Menu, Empty};		
+	enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 	
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return titlebar.right; }
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return titlebar.left; }
 	inline const char *getStyleFilename(void) const
 		{ return resource.style_file; }
-	inline const char *getRootCommand() const 
-		{ return resource.root_cmd; }
+
 	inline const char *getMenuFilename(void) const
 		{ return resource.menu_file; }
 
@@ -144,9 +142,6 @@ public:
 		{ return resource.cache_life; }
 	inline const unsigned long &getCacheMax(void) const
 		{ return resource.cache_max; }
-	inline const unsigned int &getTabWidth(void) const { return resource.tabwidth; }
-	inline const unsigned int &getTabHeight(void) const { return resource.tabheight; }
-
 
 	inline void maskWindowEvents(Window w, FluxboxWindow *bw)
 		{ masked = w; masked_window = bw; }
@@ -155,6 +150,7 @@ public:
 	void setFocusedWindow(FluxboxWindow *w);
 	void shutdown(void);
 	void load_rc(BScreen *);
+	void loadRootCommand(BScreen *);
 	void loadTitlebar();
 	void saveStyleFilename(const char *);
 	void saveMenuFilename(const char *);
@@ -188,7 +184,7 @@ public:
 
 #ifndef	 HAVE_STRFTIME
 
-	enum { B_AmericanDate = 1, B_EuropeanDate };
+	enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 #endif // HAVE_STRFTIME
 	
 	template <class Z>
@@ -215,13 +211,11 @@ private:
 	struct resource {
 		Time double_click_interval;
 
-		char *menu_file, *style_file, *titlebar_file, *keys_file, *root_cmd;
+		char *menu_file, *style_file, *titlebar_file, *keys_file;
 		int colors_per_channel;
 		timeval auto_raise_delay;
 		unsigned long cache_life, cache_max;
 		bool tabs, iconbar;
-		//TabType tabtype;
-		unsigned int tabwidth, tabheight;
 	} resource;
 	
 	struct titlebar_t {
@@ -268,7 +262,6 @@ private:
 	char *rc_file, **argv;
 	int argc;
 	Keys *key;
-	char *expandFilename(char *filename);
 	void doWindowAction(Keys::KeyAction action);
 protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);

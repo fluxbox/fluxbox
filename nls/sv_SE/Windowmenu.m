@@ -20,3 +20,5 @@ $ #KillClient
 # Döda klient
 $ #Close
 # Stäng
+$ #Tab
+# Flik

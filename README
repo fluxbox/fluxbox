@@ -1,4 +1,5 @@
-Fluxbox builds on Blackbox source but has different goals.
+Fluxbox builds on Blackbox 0.61.1 source but has different goals.
+Read NEWS to see whats new in this release.
 For copyright see COPYING
 
 Compile and Install:
@@ -8,8 +9,10 @@ Compile and Install:
 and then as root
 # make install
 
-for KDE slitsupport: 
- ./configure --enable-kde
+for KDE slitsupport: (Allows kde tray icons to be placed in the fluxbox slit)
+   ./configure --enable-kde
+	 
+For more information and FAQ go to http://fluxbox.sourceforge.net
 
 To disable tabs and/or iconbar just  change it in configure menu.
 
@@ -21,15 +24,33 @@ in the file init.
 
 You can use your old blackbox configuration file too. Just copy
 .blackboxrc to ~/.fluxbox/init . The same goes for menu file.
-The bbkeys config file can be selected in the file init:
-session.keyFile: <filename here>
 You can also use the Blackbox themes in Fluxbox.
 If there isn't any format for the tab in the theme then
 the tab will have the same theme as the titlebar.
 
+The keys config file can be selected in the file init:
+session.keyFile: <filename here>
+The keys file is no longer compatible with bbkeys. There's a convertkeys
+script at http://fluxbox.sourceforge.net/ that will convert the bbkeys
+format to the fluxbox format.
+ 
+ 
+A few extra notes:
+ - To disable tabs and/or iconbar just change it in configure menu.
+ - To work with tabs, use the third mouse button to drag a tab to another tab.
+   This will group the two windows together.
+ - With 'Sloppy Window Grouping' turned on (in your configure menu), you can
+   drop the tabs anywhere on the target window to group windows together.
+ - The 'Maximize Slit Stop' option means that maximized windows will stop at
+   the outside border of the slit, keeping the slit in full view.
+ - In the init file, the session.screen0.rootCommand: option will override
+   the rootCommand option in a theme- keeping your background the same, no
+   matter what the theme says it should be.
+ 
 Thanks:
 Blackbox team
-#linux.se@dalnet, #linux.se@openproject.net
+aleczapka, skarin, Perc, xfs, skypher and skywarper for buggtesting
 skypher of openprojects for buggtesting and providing fluxbox with themes: 
 Clean CleanColor Makro, Carbondioxide and MerleyKay.
-skarin, Perc, xfs, skypher and skywarper for buggtesting
+People at #fluxbox@openprojects.net
+And for the people who send bugfixes/patches

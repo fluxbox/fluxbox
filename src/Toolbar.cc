@@ -63,7 +63,6 @@
 #endif // TIME_WITH_SYS_TIME
 
 #include <iostream>
-#include "misc.hh"
 
 using namespace std;
 
@@ -227,7 +226,7 @@ void Toolbar::reconfigure(void) {
 	frame.height += (frame.bevel_w * 2);
 	
 	switch (screen->getToolbarPlacement()) {
-	case TopLeft:
+	case TOPLEFT:
 		frame.x = 0;
 		frame.y = 0;
 		frame.x_hidden = 0;
@@ -235,7 +234,7 @@ void Toolbar::reconfigure(void) {
 										 - frame.height;
 		break;
 
-	case BottomLeft:
+	case BOTTOMLEFT:
 		frame.x = 0;
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = 0;
@@ -243,7 +242,7 @@ void Toolbar::reconfigure(void) {
 										 - screen->getBorderWidth();
 		break;
 
-	case TopCenter:
+	case TOPCENTER:
 		frame.x = (screen->getWidth() - frame.width) / 2;
 		frame.y = 0;
 		frame.x_hidden = frame.x;
@@ -251,7 +250,7 @@ void Toolbar::reconfigure(void) {
 										 - frame.height;
 		break;
 
-	case BottomCenter:
+	case BOTTOMCENTER:
 	default:
 		frame.x = (screen->getWidth() - frame.width) / 2;
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
@@ -260,7 +259,7 @@ void Toolbar::reconfigure(void) {
 										 - screen->getBorderWidth();
 		break;
 
-	case TopRight:
+	case TOPRIGHT:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = 0;
 		frame.x_hidden = frame.x;
@@ -268,7 +267,7 @@ void Toolbar::reconfigure(void) {
 										 - frame.height;
 		break;
 
-	case BottomRight:
+	case BOTTOMRIGHT:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = frame.x;
@@ -356,42 +355,42 @@ void Toolbar::reconfigure(void) {
 
 	frame.window_label_w =
 		(frame.width - (frame.clock_w + (frame.button_w * 4) +
-										frame.workspace_label_w + (frame.bevel_w * 8) + 6));
+		frame.workspace_label_w + (frame.bevel_w * 8) + 6));
 
 	if (hidden)
 		XMoveResizeWindow(display, frame.window, frame.x_hidden, frame.y_hidden,
-					frame.width, frame.height);
+			frame.width, frame.height);
 	else
 		XMoveResizeWindow(display, frame.window, frame.x, frame.y,
-					frame.width, frame.height);
+			frame.width, frame.height);
 
 	XMoveResizeWindow(display, frame.workspace_label, frame.bevel_w,
-				frame.bevel_w, frame.workspace_label_w,
-										frame.label_h);
+		frame.bevel_w, frame.workspace_label_w,
+		frame.label_h);
 	XMoveResizeWindow(display, frame.psbutton, (frame.bevel_w * 2) +
-										frame.workspace_label_w + 1, frame.bevel_w + 1,
-										frame.button_w, frame.button_w);
+		frame.workspace_label_w + 1, frame.bevel_w + 1,
+		frame.button_w, frame.button_w);
 	XMoveResizeWindow(display ,frame.nsbutton, (frame.bevel_w * 3) +
-										frame.workspace_label_w + frame.button_w + 2,
-										frame.bevel_w + 1, frame.button_w, frame.button_w);
+		frame.workspace_label_w + frame.button_w + 2,
+		frame.bevel_w + 1, frame.button_w, frame.button_w);
 	XMoveResizeWindow(display, frame.window_label, (frame.bevel_w * 4) +
-										(frame.button_w * 2) + frame.workspace_label_w + 3,
-				frame.bevel_w, frame.window_label_w, frame.label_h);
+		(frame.button_w * 2) + frame.workspace_label_w + 3,
+		frame.bevel_w, frame.window_label_w, frame.label_h);
 	XMoveResizeWindow(display, frame.pwbutton, (frame.bevel_w * 5) +
-										(frame.button_w * 2) + frame.workspace_label_w +
-										frame.window_label_w + 4, frame.bevel_w + 1,
-										frame.button_w, frame.button_w);
+		(frame.button_w * 2) + frame.workspace_label_w +
+		frame.window_label_w + 4, frame.bevel_w + 1,
+		frame.button_w, frame.button_w);
 	XMoveResizeWindow(display, frame.nwbutton, (frame.bevel_w * 6) +
-										(frame.button_w * 3) + frame.workspace_label_w +
-										frame.window_label_w + 5, frame.bevel_w + 1,
-										frame.button_w, frame.button_w);
+		(frame.button_w * 3) + frame.workspace_label_w +
+		frame.window_label_w + 5, frame.bevel_w + 1,
+		frame.button_w, frame.button_w);
 	XMoveResizeWindow(display, frame.clock, frame.width - frame.clock_w -
-				frame.bevel_w, frame.bevel_w, frame.clock_w,
-				frame.label_h);
+		frame.bevel_w, frame.bevel_w, frame.clock_w,
+		frame.label_h);
 
 	Pixmap tmp = frame.base;
 	BTexture *texture = &(screen->getToolbarStyle()->toolbar);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.base = None;
 		XSetWindowBackground(display, frame.window,
 			 texture->getColor()->getPixel());
@@ -404,7 +403,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.label;
 	texture = &(screen->getToolbarStyle()->window);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.label = None;
 		XSetWindowBackground(display, frame.window_label,
 			 texture->getColor()->getPixel());
@@ -417,7 +416,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.wlabel;
 	texture = &(screen->getToolbarStyle()->label);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.wlabel = None;
 		XSetWindowBackground(display, frame.workspace_label,
 			 texture->getColor()->getPixel());
@@ -430,7 +429,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.clk;
 	texture = &(screen->getToolbarStyle()->clock);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.clk = None;
 		XSetWindowBackground(display, frame.clock,
 			 texture->getColor()->getPixel());
@@ -443,7 +442,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.button;
 	texture = &(screen->getToolbarStyle()->button);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.button = None;
 
 		frame.button_pixel = texture->getColor()->getPixel();
@@ -464,7 +463,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.pbutton;
 	texture = &(screen->getToolbarStyle()->pressed);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pbutton = None;
 		frame.pbutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -645,14 +644,14 @@ void Toolbar::checkClock(Bool redraw, Bool date) {
 		}
 
 		switch (screen->getToolbarStyle()->font.justify) {
-		case FFont::Right:
+		case DrawUtil::Font::RIGHT:
 			dx += frame.clock_w - l;
 			break;
 
-		case FFont::Center:
+		case DrawUtil::Font::CENTER:
 			dx += (frame.clock_w - l) / 2;
 			break;
-		default:
+		default: //LEFT
 			break;
 		}
 
@@ -711,11 +710,11 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 			}
 		}
 		switch (screen->getToolbarStyle()->font.justify) {
-		case FFont::Right:
+		case DrawUtil::Font::RIGHT:
 			dx += frame.window_label_w - l;
 			break;
 
-		case FFont::Center:
+		case DrawUtil::Font::CENTER:
 			dx += (frame.window_label_w - l) / 2;
 			break;
 		default:
@@ -789,11 +788,11 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 		}
 		
 		switch (screen->getToolbarStyle()->font.justify) {
-		case FFont::Right:
+		case DrawUtil::Font::RIGHT:
 			dx += frame.workspace_label_w - l;
 			break;
 
-		case FFont::Center:
+		case DrawUtil::Font::CENTER:
 			dx += (frame.workspace_label_w - l) / 2;
 			break;
 		default:
@@ -1349,7 +1348,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Top Left"),
-				Toolbar::TopLeft);
+				Toolbar::TOPLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomLeft,
@@ -1357,7 +1356,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Bottom Left"),
-				Toolbar::BottomLeft);
+				Toolbar::BOTTOMLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopCenter,
@@ -1365,7 +1364,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Top Center"),
-				Toolbar::TopCenter);
+				Toolbar::TOPCENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomCenter,
@@ -1373,7 +1372,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Bottom Center"),
-				Toolbar::BottomCenter);
+				Toolbar::BOTTOMCENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopRight,
@@ -1381,7 +1380,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Top Right"),
-				Toolbar::TopRight);
+				Toolbar::TOPRIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomRight,
@@ -1389,7 +1388,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Bottom Right"),
-	Toolbar::BottomRight);
+	Toolbar::BOTTOMRIGHT);
 
 	update();
 }

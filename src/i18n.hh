@@ -1,3 +1,6 @@
+// i18n.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // i18n.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,8 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   __i18n_h
-#define   __i18n_h
+// $Id: i18n.hh,v 1.4 2002/01/11 11:54:48 fluxgen Exp $
+
+#ifndef   _I18N_HH_
+#define   _I18N_HH_
 
 #ifdef    NLS
 #  include "../nls/blackbox-nls.hh"
@@ -37,6 +42,9 @@ extern "C" {
 }
 #endif // HAVE_NL_TYPES_H
 
+#ifdef __CYGWIN32__
+#  include "nl_types_cygnus.h"
+#endif
 
 class I18n {
 private:

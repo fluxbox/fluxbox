@@ -34,25 +34,25 @@ $ #PlacementCenterRight
 $ #PlacementBottomRight
 # En bas à droite
 $ #PlacementLeftTop
-# Left Top
+# A gauche en Haut
 $ #PlacementLeftCenter
-# Left Center
+# A gauche au centre
 $ #PlacementLeftBottom
-# Left Bottom
+# A gauche en bas
 $ #PlacementRightTop
-# Right Top
+# A droite en haut
 $ #PlacementRightCenter
-# Right Center
+# A droite au centre
 $ #PlacementRightBottom
-# Right Bottom
+# A droite en bas
 $ #PlacementTopRelative
-# Top Relative
+# En haut (relatif)
 $ #PlacementBottomRelative
-# Bottom Relative
+# En bas (relatif)
 $ #PlacementLeftRelative
-# Left Relative
+# A gauche (relatif)
 $ #PlacementRightRelative
-# Right Relative
+# A droite (relatif)
 
 $ #AutoHide
-# Auto hide
+# Masquer automatiquement

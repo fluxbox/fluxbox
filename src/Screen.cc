@@ -1,3 +1,6 @@
+// Screen.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Screen.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $id$
+
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 #ifndef	 _GNU_SOURCE
@@ -38,6 +43,7 @@
 #include "Icon.hh"
 #include "Image.hh"
 #include "Screen.hh"
+#include "StringUtil.hh"
 
 #ifdef		SLIT
 #include "Slit.hh"
@@ -119,7 +125,9 @@ static int dcmp(const void *one, const void *two) {
 	return (strcmp((*(char **) one), (*(char **) two)));
 }
 
-BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
+BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn),
+rootcommand("")
+{
 	theme = 0;
 	fluxbox = b;
 
@@ -185,8 +193,9 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 	fluxbox->load_rc(this);
 
 	image_control->setDither(resource.image_dither);
-	theme = new Theme(getBaseDisplay()->getXDisplay(), getColormap(), getScreenNumber(), 
-			image_control, fluxbox->getStyleFilename());
+	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
+			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
+
 #ifdef GNOME
 	/* create the GNOME window */
   Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
@@ -196,14 +205,17 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
   XChangeProperty(getBaseDisplay()->getXDisplay(),
 			getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 			XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+
   XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
 		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 	 
+	Atom gnomeatomlist[1] = {getBaseDisplay()->getGnomeWorkspaceAtom()};
+
   XChangeProperty(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), getBaseDisplay()->getGnomeProtAtom(),
 		XA_ATOM, 32, PropModeReplace,
-		(unsigned char *)getBaseDisplay()->getGnomeListAtoms(), 10);			
+		(unsigned char *)gnomeatomlist, 1);
 #endif 
 
 
@@ -218,15 +230,15 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 
 	if (i18n->multibyte()) {
 		XRectangle ink, logical;
-		XmbTextExtents(theme->getWindowStyle()->font.set, s, l, &ink, &logical);
+		XmbTextExtents(theme->getWindowStyle().font.set, s, l, &ink, &logical);
 		geom_w = logical.width;
 
-		geom_h = theme->getWindowStyle()->font.set_extents->max_ink_extent.height;
+		geom_h = theme->getWindowStyle().font.set_extents->max_ink_extent.height;
 	} else {
-		geom_h = theme->getWindowStyle()->font.fontstruct->ascent +
-			 theme->getWindowStyle()->font.fontstruct->descent;
+		geom_h = theme->getWindowStyle().font.fontstruct->ascent +
+			 theme->getWindowStyle().font.fontstruct->descent;
 
-		geom_w = XTextWidth(theme->getWindowStyle()->font.fontstruct, s, l);
+		geom_w = XTextWidth(theme->getWindowStyle().font.fontstruct, s, l);
 	}
 
 	geom_w += getBevelWidth()*2;
@@ -244,27 +256,27 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 									InputOutput, getVisual(), mask, &attrib);
 	geom_visible = False;
 
-	if (theme->getWindowStyle()->l_focus.getTexture() & BImage_ParentRelative) {
-		if (theme->getWindowStyle()->t_focus.getTexture() ==
-			(BImage_Flat | BImage_Solid)) {
+	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
+		if (theme->getWindowStyle().t_focus.getTexture() ==
+			(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				 theme->getWindowStyle()->t_focus.getColor()->getPixel());
+				 theme->getWindowStyle().t_focus.getColor()->getPixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-								 &theme->getWindowStyle()->t_focus);
+								 &theme->getWindowStyle().t_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				 geom_window, geom_pixmap);
 		}
 	} else {
-		if (theme->getWindowStyle()->l_focus.getTexture() ==
-				(BImage_Flat | BImage_Solid)) {
+		if (theme->getWindowStyle().l_focus.getTexture() ==
+				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				 theme->getWindowStyle()->l_focus.getColor()->getPixel());
+				 theme->getWindowStyle().l_focus.getColor()->getPixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-								 &theme->getWindowStyle()->l_focus);
+								 &theme->getWindowStyle().l_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				 geom_window, geom_pixmap);
 		}
@@ -422,11 +434,15 @@ BScreen::~BScreen(void) {
 	delete iconList;
 	delete netizenList;
 	delete theme;
-	theme = 0;
 
 }
 
 void BScreen::reconfigure(void) {
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
+	#endif
+	Fluxbox::instance()->loadRootCommand(this);
+	theme->setRootCommand(getRootCommand());
 
 	theme->load(fluxbox->getStyleFilename());
 	theme->reconfigure();
@@ -443,42 +459,42 @@ void BScreen::reconfigure(void) {
 
 	if (i18n->multibyte()) {
 		XRectangle ink, logical;
-		XmbTextExtents(theme->getWindowStyle()->font.set, s, l, &ink, &logical);
+		XmbTextExtents(theme->getWindowStyle().font.set, s, l, &ink, &logical);
 		geom_w = logical.width;
 
-		geom_h = theme->getWindowStyle()->font.set_extents->max_ink_extent.height;
+		geom_h = theme->getWindowStyle().font.set_extents->max_ink_extent.height;
 	} else {
-		geom_w = XTextWidth(theme->getWindowStyle()->font.fontstruct, s, l);
+		geom_w = XTextWidth(theme->getWindowStyle().font.fontstruct, s, l);
 
-		geom_h = theme->getWindowStyle()->font.fontstruct->ascent +
-			theme->getWindowStyle()->font.fontstruct->descent; 
+		geom_h = theme->getWindowStyle().font.fontstruct->ascent +
+			theme->getWindowStyle().font.fontstruct->descent; 
 	}
 
 	geom_w += getBevelWidth()*2;
 	geom_h += getBevelWidth()*2;
 
 	Pixmap tmp = geom_pixmap;
-	if (theme->getWindowStyle()->l_focus.getTexture() & BImage_ParentRelative) {
-		if (theme->getWindowStyle()->t_focus.getTexture() ==
-				(BImage_Flat | BImage_Solid)) {
+	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
+		if (theme->getWindowStyle().t_focus.getTexture() ==
+				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				theme->getWindowStyle()->t_focus.getColor()->getPixel());
+				theme->getWindowStyle().t_focus.getColor()->getPixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-				&theme->getWindowStyle()->t_focus);
+				&theme->getWindowStyle().t_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				geom_window, geom_pixmap);
 		}
 	} else {
-		if (theme->getWindowStyle()->l_focus.getTexture() ==
-				(BImage_Flat | BImage_Solid)) {
+		if (theme->getWindowStyle().l_focus.getTexture() ==
+				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				theme->getWindowStyle()->l_focus.getColor()->getPixel());
+				theme->getWindowStyle().l_focus.getColor()->getPixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-				&theme->getWindowStyle()->l_focus);
+				&theme->getWindowStyle().l_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				geom_window, geom_pixmap);
 		}
@@ -649,6 +665,8 @@ void BScreen::changeWorkspaceID(int id) {
 		return;
 	
 	if (id != current_workspace->getWorkspaceID()) {
+		XSync(fluxbox->getXDisplay(), True);
+		
 		current_workspace->hideAll();
 
 		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2,
@@ -671,13 +689,10 @@ void BScreen::changeWorkspaceID(int id) {
 
 		current_workspace->showAll();
 
-		if (resource.focus_last && current_workspace->getLastFocusedWindow()) {
-			XSync(fluxbox->getXDisplay(), False);
-			current_workspace->getLastFocusedWindow()->setInputFocus();
-		}
+		if (resource.focus_last && current_workspace->getLastFocusedWindow())
+			current_workspace->getLastFocusedWindow()->setInputFocus();		
+			
 	}
-	
-
 
 	updateNetizenCurrentWorkspace();
 }
@@ -776,53 +791,53 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 
 
 void BScreen::raiseWindows(Window *workspace_stack, int num) {
-	Window *session_stack = new
-		Window[(num + workspacesList->count() + rootmenuList->count() + 13)];
-	int i = 0, k = num;
+	Window session_stack[(num + workspacesList->count() + rootmenuList->count() + 13)];
+	int i = 0;
 
 	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->getWindowID());
-	*(session_stack + i++) = iconmenu->getWindowID();
+	session_stack[i++] = iconmenu->getWindowID();
 
 	LinkedListIterator<Workspace> wit(workspacesList);
 	for (; wit.current(); wit++)
-		*(session_stack + i++) = wit.current()->getMenu()->getWindowID();
+		session_stack[i++] = wit.current()->getMenu()->getWindowID();
 
-	*(session_stack + i++) = workspacemenu->getWindowID();
+	session_stack[i++] = workspacemenu->getWindowID();
 
-	*(session_stack + i++) = configmenu->getFocusmenu()->getWindowID();
-	*(session_stack + i++) = configmenu->getPlacementmenu()->getWindowID();
-	*(session_stack + i++) = configmenu->getTabmenu()->getWindowID();
-	*(session_stack + i++) = configmenu->getWindowID();
+	session_stack[i++] = configmenu->getFocusmenu()->getWindowID();
+	session_stack[i++] = configmenu->getPlacementmenu()->getWindowID();
+	session_stack[i++] = configmenu->getTabmenu()->getWindowID();
+	session_stack[i++] = configmenu->getWindowID();
 
 #ifdef		SLIT
-	*(session_stack + i++) = slit->getMenu()->getDirectionmenu()->getWindowID();
-	*(session_stack + i++) = slit->getMenu()->getPlacementmenu()->getWindowID();
-	*(session_stack + i++) = slit->getMenu()->getWindowID();
+	session_stack[i++] = slit->getMenu()->getDirectionmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu()->getPlacementmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu()->getWindowID();
 #endif // SLIT
 
-	*(session_stack + i++) =
+	session_stack[i++] =
 		toolbar->getMenu()->getPlacementmenu()->getWindowID();
-	*(session_stack + i++) = toolbar->getMenu()->getWindowID();
+	session_stack[i++] = toolbar->getMenu()->getWindowID();
 
 	LinkedListIterator<Rootmenu> rit(rootmenuList);
 	for (; rit.current(); rit++)
-		*(session_stack + i++) = rit.current()->getWindowID();
-	*(session_stack + i++) = rootmenu->getWindowID();
+		session_stack[i++] = rit.current()->getWindowID();
+	session_stack[i++] = rootmenu->getWindowID();
 
 	if (toolbar->isOnTop())
-		*(session_stack + i++) = toolbar->getWindowID();
+		session_stack[i++] = toolbar->getWindowID();
 
 #ifdef		SLIT
 	if (slit->isOnTop())
-		*(session_stack + i++) = slit->getWindowID();
+		session_stack[i++] = slit->getWindowID();
 #endif // SLIT
-
+	
+	int k=num;
 	while (k--)
-		*(session_stack + i++) = *(workspace_stack + k);
+		session_stack[i++] = *(workspace_stack + k);
 
 	XRestackWindows(getBaseDisplay()->getXDisplay(), session_stack, i);
 
-	delete [] session_stack;
+//	delete session_stack;
 }
 
 
@@ -831,13 +846,13 @@ void BScreen::saveStrftimeFormat(char *format) {
 	if (resource.strftime_format)
 		delete [] resource.strftime_format;
 
-	resource.strftime_format = bstrdup(format);
+	resource.strftime_format = StringUtil::strdup(format);
 }
 #endif // HAVE_STRFTIME
 
 
 void BScreen::addWorkspaceName(char *name) {
-	workspaceNames->insert(bstrdup(name));
+	workspaceNames->insert(StringUtil::strdup(name));
 	
 }
 
@@ -847,7 +862,7 @@ void BScreen::getNameOfWorkspace(int id, char **name) {
 		char *wkspc_name = workspaceNames->find(id);
 
 		if (wkspc_name)
-			*name = bstrdup(wkspc_name);
+			*name = StringUtil::strdup(wkspc_name);
 	} else
 		*name = 0;
 }
@@ -1041,7 +1056,7 @@ void BScreen::InitMenu(void) {
 						0, 0,
 #endif // NLS
 						"xterm"),
-						BScreen::Execute,
+						BScreen::EXECUTE,
 						i18n->getMessage(
 #ifdef		NLS
 							ScreenSet, Screenxterm,
@@ -1056,7 +1071,7 @@ void BScreen::InitMenu(void) {
 						0, 0,
 #endif // NLS
 						"Restart"),
-					BScreen::Restart);
+					BScreen::RESTART);
 		rootmenu->insert(i18n->getMessage(
 #ifdef		NLS
 						ScreenSet, ScreenExit,
@@ -1064,7 +1079,7 @@ void BScreen::InitMenu(void) {
 						0, 0,
 #endif // NLS
 						"Exit"),
-				BScreen::Exit);
+				BScreen::EXIT);
 	} else
 		fluxbox->saveMenuFilename(fluxbox->getMenuFilename());
 }
@@ -1167,7 +1182,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 					continue;
 				}
 
-				menu->insert(label, BScreen::Execute, command);		
+				menu->insert(label, BScreen::EXECUTE, command);		
 				break;
 
 			case 442: // exit
@@ -1184,7 +1199,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 				continue;
 				}
 
-				menu->insert(label, BScreen::Exit);
+				menu->insert(label, BScreen::EXIT);
 				break;
 	
 			case 561: // style
@@ -1224,7 +1239,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 					*(style + command_length) = '\0';
 				}
 
-				menu->insert(label, BScreen::SetStyle, style);
+				menu->insert(label, BScreen::SETSTYLE, style);
 			}
 
 			break;
@@ -1366,9 +1381,9 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 			}
 
 			if (*command)
-				menu->insert(label, BScreen::RestartOther, command);
+				menu->insert(label, BScreen::RESTARTOTHER, command);
 			else
-				menu->insert(label, BScreen::Restart);
+				menu->insert(label, BScreen::RESTART);
 		}
 
 		break;
@@ -1389,7 +1404,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 				continue;
 			}
 
-			menu->insert(label, BScreen::Reconfigure);
+			menu->insert(label, BScreen::RECONFIGURE);
 		}
 
 		break;
@@ -1460,7 +1475,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 								char **ls = new char* [entries];
 								int index = 0;
 								while ((p = readdir(d)))
-									ls[index++] = bstrdup(p->d_name);
+									ls[index++] = StringUtil::strdup(p->d_name);
 
 								qsort(ls, entries, sizeof(char *), dcmp);
 
@@ -1474,7 +1489,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 									strncpy(style + slen + 1, ls[n], nlen + 1);
 
 									if ((! stat(style, &statbuf)) && S_ISREG(statbuf.st_mode))
-										stylesmenu->insert(ls[n], BScreen::SetStyle, style);
+										stylesmenu->insert(ls[n], BScreen::SETSTYLE, style);
 
 									delete [] ls[n];
 								}
@@ -1596,15 +1611,15 @@ void BScreen::showPosition(int x, int y) {
 
 	if (I18n::instance()->multibyte()) 
 		XmbDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-			theme->getWindowStyle()->font.set, theme->getWindowStyle()->l_text_focus_gc,
+			theme->getWindowStyle().font.set, theme->getWindowStyle().l_text_focus_gc,
 			theme->getBevelWidth(), theme->getBevelWidth() -
-			theme->getWindowStyle()->font.set_extents->max_ink_extent.y,
+			theme->getWindowStyle().font.set_extents->max_ink_extent.y,
 			label, strlen(label));
 	else
 		XDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-			theme->getWindowStyle()->l_text_focus_gc,
+			theme->getWindowStyle().l_text_focus_gc,
 			theme->getBevelWidth(),
-			theme->getWindowStyle()->font.fontstruct->ascent +
+			theme->getWindowStyle().font.fontstruct->ascent +
 			theme->getBevelWidth(), label, strlen(label));
 	
 }
@@ -1636,15 +1651,15 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 
 	if (I18n::instance()->multibyte())
 		XmbDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-			theme->getWindowStyle()->font.set, theme->getWindowStyle()->l_text_focus_gc,
+			theme->getWindowStyle().font.set, theme->getWindowStyle().l_text_focus_gc,
 			theme->getBevelWidth(), theme->getBevelWidth() -
-			theme->getWindowStyle()->font.set_extents->max_ink_extent.y,
+			theme->getWindowStyle().font.set_extents->max_ink_extent.y,
 			label, strlen(label));
 	else
 		XDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-		theme->getWindowStyle()->l_text_focus_gc,
+		theme->getWindowStyle().l_text_focus_gc,
 		theme->getBevelWidth(),
-		theme->getWindowStyle()->font.fontstruct->ascent +
+		theme->getWindowStyle().font.fontstruct->ascent +
 		theme->getBevelWidth(), label, strlen(label));
 }
 

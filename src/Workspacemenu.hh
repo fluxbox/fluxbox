@@ -24,7 +24,6 @@
 
 // forward declaration
 class Workspacemenu;
-
 class Toolbar;
 
 #include "Basemenu.hh"

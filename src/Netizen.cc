@@ -52,22 +52,6 @@ Netizen::Netizen(BScreen *scr, Window win) {
 
 void Netizen::sendWorkspaceCount(void) {
  
-  #ifdef GNOME
-/*	long val = screen->getCount();
-	XChangeProperty(basedisplay->getXDisplay(), screen->getRootWindow(),
-			basedisplay->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *)&val, 1);*/
-	printf("UPDATE!\n");
-	unsigned long data=(unsigned long) screen->getCount();
-  Atom                atom_set;
-  // CARD32              val;
-  
-  atom_set = XInternAtom(basedisplay->getXDisplay(), "_WIN_WORKSPACE_COUNT", False);
-  // val = mode.numdesktops;
-  XChangeProperty(basedisplay->getXDisplay(), window, atom_set, 
-		 XA_CARDINAL, 32, PropModeReplace,(unsigned char *)&data, 1);
-	#endif //GNOME
-	
 	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyWorkspaceCountAtom();
   event.xclient.data.l[1] = screen->getCount();
 
@@ -78,15 +62,6 @@ void Netizen::sendWorkspaceCount(void) {
 
 
 void Netizen::sendCurrentWorkspace(void) {
-	#ifdef GNOME
-	//update atom	to workspace
-	long val;
-  val = screen->getCurrentWorkspaceID();
-  XChangeProperty(basedisplay->getXDisplay(), screen->getRootWindow(), 
-				basedisplay->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
-         PropModeReplace, (unsigned char *)&val, 1);
-
-	#endif
 
 	event.xclient.data.l[0] = basedisplay->getFluxboxNotifyCurrentWorkspaceAtom();
 	event.xclient.data.l[1] = screen->getCurrentWorkspaceID();

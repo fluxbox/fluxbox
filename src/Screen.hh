@@ -1,5 +1,5 @@
-// Screen.hh for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Screen.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
 // Screen.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,26 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Screen.hh,v 1.9 2002/01/11 10:20:00 fluxgen Exp $
 
+#ifndef	 _SCREEN_HH_
+#define	 _SCREEN_HH_
 
-#ifndef	 __Screen_hh
-#define	 __Screen_hh
-
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
-
-#ifdef		TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h>
-#else // !TIME_WITH_SYS_TIME
-#	ifdef		HAVE_SYS_TIME_H
-#		include <sys/time.h>
-#	else // !HAVE_SYS_TIME_H
-#		include <time.h>
-#	endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
-
-#include <stdio.h>
 
 #include "Theme.hh"
 
@@ -82,6 +67,24 @@ class BScreen;
 #	include "Slit.hh"
 #endif // SLIT
 
+
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
+
+#ifdef		TIME_WITH_SYS_TIME
+#	include <sys/time.h>
+#	include <time.h>
+#else // !TIME_WITH_SYS_TIME
+#	ifdef		HAVE_SYS_TIME_H
+#		include <sys/time.h>
+#	else // !HAVE_SYS_TIME_H
+#		include <time.h>
+#	endif // HAVE_SYS_TIME_H
+#endif // TIME_WITH_SYS_TIME
+
+#include <stdio.h>
+#include <string>
+
 class BScreen : public ScreenInfo {
 public:
 	BScreen(Fluxbox *, int);
@@ -100,11 +103,14 @@ public:
 	inline const Bool &isScreenManaged(void) const { return managed; }
 	inline const Bool &isTabRotateVertical(void) const
 	{ return resource.tab_rotate_vertical; }
+	inline const Bool &isSloppyWindowGrouping(void) const
+	{ return resource.sloppy_window_grouping; }
 	inline const Bool &doAutoRaise(void) const { return resource.auto_raise; }
 	inline const Bool &doImageDither(void) const
 	{ return resource.image_dither; }
 	inline const Bool &doOrderedDither(void) const
 	{ return resource.ordered_dither; }
+	inline const Bool &doMaxOverSlit(void) const { return resource.max_over_slit; }
 	inline const Bool &doOpaqueMove(void) const { return resource.opaque_move; }
 	inline const Bool &doFullMax(void) const { return resource.full_max; }
 	inline const Bool &doFocusNew(void) const { return resource.focus_new; }
@@ -115,7 +121,7 @@ public:
 	inline const BColor *getBorderColor(void) { return &theme->getBorderColor(); }
 	inline BImageControl *getImageControl(void) { return image_control; }
 	inline Rootmenu *getRootmenu(void) { return rootmenu; }
-
+	inline std::string &getRootCommand(void) { return rootcommand; }
 #ifdef	 SLIT
 	inline const Bool &isSlitOnTop(void) const { return resource.slit_on_top; }
 	inline const Bool &doSlitAutoHide(void) const
@@ -138,13 +144,13 @@ public:
 
 	inline Workspacemenu *getWorkspacemenu(void) { return workspacemenu; }
 
-	inline const unsigned int &getHandleWidth(void) const
+	inline const unsigned int getHandleWidth(void) const
 	{ return theme->getHandleWidth(); }
-	inline const unsigned int &getBevelWidth(void) const
+	inline const unsigned int getBevelWidth(void) const
 	{ return theme->getBevelWidth(); }
-	inline const unsigned int &getFrameWidth(void) const
+	inline const unsigned int getFrameWidth(void) const
 	{ return theme->getFrameWidth(); }
-	inline const unsigned int &getBorderWidth(void) const
+	inline const unsigned int getBorderWidth(void) const
 	{ return theme->getBorderWidth(); }
 	inline const unsigned int getBorderWidth2x(void) const
 	{ return theme->getBorderWidth()*2; }
@@ -168,12 +174,17 @@ public:
 	{ return resource.row_direction; }
 	inline const int &getColPlacementDirection(void) const
 	{ return resource.col_direction; }
+	inline const unsigned int &getTabWidth(void) const
+	{ return resource.tab_width; }
+	inline const unsigned int &getTabHeight(void) const
+	{ return resource.tab_height; }
 	inline const int getTabPlacement(void)
 	{ return resource.tab_placement; }
 	inline const int getTabAlignment(void)
 	{ return resource.tab_alignment; }
 
 	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r; }
+	inline void saveRootCommand(std::string rootcmd) { rootcommand = rootcmd; }
 	inline void saveSloppyFocus(Bool s) { resource.sloppy_focus = s; }
 	inline void saveSemiSloppyFocus(Bool s) { resource.semi_sloppy_focus = s; }
 	inline void saveAutoRaise(Bool a) { resource.auto_raise = a; }
@@ -189,14 +200,19 @@ public:
 	inline void saveEdgeSnapThreshold(int t)
 	{ resource.edge_snap_threshold = t; }
 	inline void saveImageDither(Bool d) { resource.image_dither = d; }
+	inline void saveMaxOverSlit(Bool m) { resource.max_over_slit = m; }
 	inline void saveOpaqueMove(Bool o) { resource.opaque_move = o; }
 	inline void saveFullMax(Bool f) { resource.full_max = f; }
 	inline void saveFocusNew(Bool f) { resource.focus_new = f; }
 	inline void saveFocusLast(Bool f) { resource.focus_last = f; }
+	inline void saveTabWidth(unsigned int w) { resource.tab_width = w; }
+	inline void saveTabHeight(unsigned int h) { resource.tab_height = h; }
 	inline void saveTabPlacement(unsigned int p) { resource.tab_placement = p; }
 	inline void saveTabAlignment(unsigned int a) { resource.tab_alignment = a; }
 	inline void saveTabRotateVertical(Bool r)
 	{ resource.tab_rotate_vertical = r; }
+	inline void saveSloppyWindowGrouping(Bool s)
+	{ resource.sloppy_window_grouping = s; }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
@@ -211,9 +227,9 @@ public:
 	inline void saveClock24Hour(Bool c) { resource.clock24hour = c; }
 #endif // HAVE_STRFTIME
 
-	inline WindowStyle *getWindowStyle(void) { return theme->getWindowStyle(); } 
-	inline MenuStyle *getMenuStyle(void) { return theme->getMenuStyle(); } 
-	inline ToolbarStyle *getToolbarStyle(void) { return theme->getToolbarStyle(); } 
+	inline Theme::WindowStyle *getWindowStyle(void) { return &theme->getWindowStyle(); } 
+	inline Theme::MenuStyle *getMenuStyle(void) { return &theme->getMenuStyle(); } 
+	inline Theme::ToolbarStyle *getToolbarStyle(void) { return &theme->getToolbarStyle(); } 
 
 	FluxboxWindow *getIcon(int);
 
@@ -254,16 +270,17 @@ public:
 	void updateNetizenWindowRaise(Window);
 	void updateNetizenWindowLower(Window);
 
-	enum { RowSmartPlacement = 1, ColSmartPlacement, CascadePlacement, LeftRight,
-				 RightLeft, TopBottom, BottomTop };
-	enum { LeftJustify = 1, RightJustify, CenterJustify };
-	enum { RoundBullet = 1, TriangleBullet, SquareBullet, NoBullet };
-	enum { Restart = 1, RestartOther, Exit, Shutdown, Execute, Reconfigure,
-				 WindowShade, WindowIconify, WindowMaximize, WindowClose, WindowRaise,
-				 WindowLower, WindowStick, WindowKill, SetStyle, WindowTab};
+	enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT, LEFTRIGHT,
+				 RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
+	enum { LEFTJUSTIFY = 1, RIGHTJUSTIFY, CENTERJUSTIFY };
+	enum { ROUNDBULLET = 1, TRIANGELBULLET, SQUAERBULLET, NOBULLET };
+	enum { RESTART = 1, RESTARTOTHER, EXIT, SHUTDOWN, EXECUTE, RECONFIGURE,
+				 WINDOWSHADE, WINDOWICONIFY, WINDOWMAXIMIZE, WINDOWCLOSE, WINDOWRAISE,
+				 WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
 
 private:
 	Theme *theme;
+	std::string rootcommand;
 	
 	Bool root_colormap_installed, managed, geom_visible;
 	GC opGC;
@@ -296,28 +313,22 @@ private:
 	LinkedList<Workspace> *workspacesList;
 
 	struct resource {
-//		WindowStyle wstyle;
-//		ToolbarStyle tstyle;
-//		MenuStyle mstyle;
 
 		Bool toolbar_on_top, toolbar_auto_hide, sloppy_focus, auto_raise,
 			auto_edge_balance, image_dither, ordered_dither, opaque_move, full_max,
-			focus_new, focus_last, tab_rotate_vertical, semi_sloppy_focus;
-//		BColor border_color;
-//		XrmDatabase stylerc;
+			focus_new, focus_last, max_over_slit, tab_rotate_vertical, semi_sloppy_focus,
+			sloppy_window_grouping;
 
 		int workspaces, toolbar_placement, toolbar_width_percent, placement_policy,
 			edge_snap_threshold, row_direction, col_direction;
 
-		unsigned int tab_placement, tab_alignment;
+		unsigned int tab_placement, tab_alignment, tab_width, tab_height;
 
 #ifdef		SLIT
 		Bool slit_on_top, slit_auto_hide;
 		int slit_placement, slit_direction;
 #endif // SLIT
 
-	//	unsigned int handle_width, frame_width,
-	//		border_width, border_width_2x;
 
 #ifdef		HAVE_STRFTIME
 		char *strftime_format;
@@ -346,4 +357,4 @@ protected:
 };
 
 
-#endif // __Screen_hh
+#endif // _SCREEN_HH_

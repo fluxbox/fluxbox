@@ -34,6 +34,8 @@
 #define ConfigmenuTabPlacement 0x15
 #define ConfigmenuTabRotateVertical 0x16
 #define ConfigmenuSemiSloppyFocus 0x17
+#define ConfigmenuMaxOverSlit 0x18
+#define ConfigmenuSloppyWindowGrouping 0x18
 
 #define IconSet 0x4
 #define IconIcons 0x1
@@ -114,6 +116,7 @@
 #define WindowmenuStick 0x8
 #define WindowmenuKillClient 0x9
 #define WindowmenuClose 0xa
+#define WindowmenuTab 0xb
 
 #define WorkspaceSet 0xb
 #define WorkspaceDefaultNameFormat 0x1

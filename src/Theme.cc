@@ -1,5 +1,5 @@
 // Theme.cc for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -41,6 +41,8 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
+// $Id: Theme.cc,v 1.14 2002/01/11 10:43:55 fluxgen Exp $
+
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -49,46 +51,32 @@
 #	include "config.h"
 #endif //HAVE_CONFIG_H_
 
+#include "Theme.hh"
+
+#include "i18n.hh"
+#include "Basemenu.hh"
+#include "StringUtil.hh"
+
+#include <X11/Xresource.h>
+
 #ifdef		HAVE_CTYPE_H
 #	include <ctype.h>
 #endif // HAVE_CTYPE_H
 
-#include "Theme.hh"
-#include "i18n.hh"
-#include "Basemenu.hh"
-#include "fluxbox.hh"
+#include <cstdio>
+#include <cstdarg>
+#include <string>
+#include <iostream>
+using namespace std;
 
-#include <X11/Xresource.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-
-#ifndef	 FONT_ELEMENT_SIZE
-#	define	 FONT_ELEMENT_SIZE 50
-#endif // FONT_ELEMENT_SIZE
-
-#ifndef HAVE_STRCASESTR 
-
-const char * strcasestr(const char *str, const char *ptn) {
-	const char *s2, *p2;
-	for( ; *str; str++) {
-		for(s2=str,p2=ptn; ; s2++,p2++) {
-			if (!*p2) return str;
-			if (toupper(*s2) != toupper(*p2)) break;
-		}
-	}
-	return NULL;
-}
-
-#endif
-
-Theme::Theme(Display *display, Colormap colormap, int screennum, BImageControl *ic, const char *filename) {
-
-	Window rootwindow = DefaultRootWindow(display);
-	m_screennum = screennum;
-	m_display = display;
-	m_imagecontrol = ic;
-	m_colormap = colormap;
+Theme::Theme(Display *display, Window rootwindow, Colormap colormap, 
+	int screennum, BImageControl *ic, const char *filename, const char *rootcommand):
+m_imagecontrol(ic),
+m_display(display),
+m_colormap(colormap),
+m_screennum(screennum),
+m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointer to std::string	
+{
 	//default settings	
 	m_menustyle.titlefont.set = m_menustyle.framefont.set = m_toolbarstyle.font.set =
 		m_windowstyle.font.set = m_windowstyle.tab.font.set =  0;
@@ -271,7 +259,7 @@ void Theme::freeTabStyle() {
 		XFreeFont(m_display, m_windowstyle.tab.font.fontstruct);
 
 	if (m_windowstyle.tab.rot_font)
-		XRotUnloadFont(m_display, m_windowstyle.tab.rot_font);
+		DrawUtil::XRotUnloadFont(m_display, m_windowstyle.tab.rot_font);
 
 	
 	XFreeGC(m_display, m_windowstyle.tab.l_text_focus_gc);
@@ -300,7 +288,7 @@ void Theme::freeToolbarStyle() {
 //---------- load ------------
 // Loads a theme from a file
 //----------------------------
-void Theme::load(const char *filename) {
+void Theme::load(const char *filename){
 	m_database = XrmGetFileDatabase(filename);
 	if (!m_database)
 		m_database = XrmGetFileDatabase(DEFAULTSTYLE);
@@ -346,53 +334,53 @@ void Theme::loadMenuStyle() {
 				 "Menu.Title.Justify", &value_type, &value)) {
 				 
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_menustyle.titlefont.justify = FFont::Right;
+			m_menustyle.titlefont.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_menustyle.titlefont.justify = FFont::Center;
+			m_menustyle.titlefont.justify = DrawUtil::Font::CENTER;
 		else
-			m_menustyle.titlefont.justify = FFont::Left;
+			m_menustyle.titlefont.justify = DrawUtil::Font::LEFT;
 			
 	} else
-		m_menustyle.titlefont.justify = FFont::Left;
+		m_menustyle.titlefont.justify = DrawUtil::Font::LEFT;
 
 	if (XrmGetResource(m_database, "menu.frame.justify",
 				 "Menu.Frame.Justify", &value_type, &value)) {
 		
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_menustyle.framefont.justify = FFont::Right;
+			m_menustyle.framefont.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_menustyle.framefont.justify = FFont::Center;
+			m_menustyle.framefont.justify = DrawUtil::Font::CENTER;
 		else
-			m_menustyle.framefont.justify = FFont::Left;
+			m_menustyle.framefont.justify = DrawUtil::Font::LEFT;
 			
 	} else
-		m_menustyle.framefont.justify = FFont::Left;
+		m_menustyle.framefont.justify = DrawUtil::Font::LEFT;
 
 	if (XrmGetResource(m_database, "menu.bullet", "Menu.Bullet",
 										 &value_type, &value)) {
 		
 		if (! strncasecmp(value.addr, "empty", value.size))
-			m_menustyle.bullet = Basemenu::Empty;
+			m_menustyle.bullet = Basemenu::EMPTY;
 		else if (! strncasecmp(value.addr, "square", value.size))
-			m_menustyle.bullet = Basemenu::Square;
+			m_menustyle.bullet = Basemenu::SQUARE;
 		else if (! strncasecmp(value.addr, "diamond", value.size))
-			m_menustyle.bullet = Basemenu::Diamond;
+			m_menustyle.bullet = Basemenu::DIAMOND;
 		else
-			m_menustyle.bullet = Basemenu::Triangle;
+			m_menustyle.bullet = Basemenu::TRIANGLE;
 			
 	} else
-		m_menustyle.bullet = Basemenu::Triangle;
+		m_menustyle.bullet = Basemenu::TRIANGLE;
 
 	if (XrmGetResource(m_database, "menu.bullet.position",
 										 "Menu.Bullet.Position", &value_type, &value)) {
 
 		if (! strncasecmp(value.addr, "right", value.size))
-			m_menustyle.bullet_pos = Basemenu::Right;
+			m_menustyle.bullet_pos = Basemenu::RIGHT;
 		else
-			m_menustyle.bullet_pos = Basemenu::Left;
+			m_menustyle.bullet_pos = Basemenu::LEFT;
 			
 	} else
-		m_menustyle.bullet_pos = Basemenu::Left;
+		m_menustyle.bullet_pos = Basemenu::LEFT;
 
 	//---------- font
 
@@ -423,8 +411,7 @@ void Theme::loadWindowStyle() {
 	
 	readDatabaseTexture("window.title.focus", "Window.Title.Focus",
 					&m_windowstyle.t_focus,
-					WhitePixel(m_display,
-				 m_screennum));
+					WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("window.title.unfocus", "Window.Title.Unfocus",
 					&m_windowstyle.t_unfocus,
 					BlackPixel(m_display, m_screennum));
@@ -502,18 +489,18 @@ void Theme::loadWindowStyle() {
 	if (XrmGetResource(m_database, "window.justify", "Window.Justify",
 				 &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_windowstyle.font.justify = FFont::Right;
+			m_windowstyle.font.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_windowstyle.font.justify = FFont::Center;
+			m_windowstyle.font.justify = DrawUtil::Font::CENTER;
 		else
-			m_windowstyle.font.justify = FFont::Left;
+			m_windowstyle.font.justify = DrawUtil::Font::LEFT;
 	} else
-		m_windowstyle.font.justify = FFont::Left;
+		m_windowstyle.font.justify = DrawUtil::Font::LEFT;
 		
 }
 
 void Theme::loadTabStyle() {
-	
+
 	if (!readDatabaseTexture("window.tab.title.focus", "Window.Tab.Title.Focus",
 					&m_windowstyle.tab.t_focus,
 					WhitePixel(m_display, m_screennum)))
@@ -533,7 +520,6 @@ void Theme::loadTabStyle() {
 					&m_windowstyle.tab.l_unfocus,
 					BlackPixel(m_display, m_screennum)))
 		m_windowstyle.tab.l_unfocus = m_windowstyle.l_unfocus;
-		
 
 	if (!readDatabaseColor("window.tab.label.focus.textColor",
 				"Window.Tab.Label.Focus.TextColor",
@@ -550,11 +536,10 @@ void Theme::loadTabStyle() {
 	readDatabaseColor("window.tab.borderColor", "Window.Tab.BorderColor", 
 			&m_windowstyle.tab.border_color,	
 				BlackPixel(m_display, m_screennum));
-	
-	
+
 	XrmValue value;
 	char *value_type;
-	
+
 	if (XrmGetResource(m_database, "window.tab.borderWidth", "Window.Tab.BorderWidth",
 										 &value_type, &value)) {
 		if (sscanf(value.addr, "%u", &m_windowstyle.tab.border_width) != 1)
@@ -579,26 +564,24 @@ void Theme::loadTabStyle() {
 	}
 	
 	//--------- rotated font for left and right tabs
-
 	// TODO: add extra checking
 	if (XrmGetResource(m_database, "window.tab.font", "Window.Tab.Font",
 			&value_type, &value)) {		
-		if (! (m_windowstyle.tab.rot_font = XRotLoadFont(m_display, value.addr, 90.0)) )
-			m_windowstyle.tab.rot_font = XRotLoadFont(m_display, "fixed", 90);
+		if (! (m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, value.addr, 90.0)) )
+			m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, "fixed", 90);
 	} else
-		m_windowstyle.tab.rot_font = XRotLoadFont(m_display, "fixed", 90);
-
+		m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, "fixed", 90);
 
 	if (XrmGetResource(m_database, "window.tab.justify", "Window.Tab.Justify",
 			 &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_windowstyle.tab.font.justify = FFont::Right;
+			m_windowstyle.tab.font.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_windowstyle.tab.font.justify = FFont::Center;
+			m_windowstyle.tab.font.justify = DrawUtil::Font::CENTER;
 		else
-			m_windowstyle.tab.font.justify = FFont::Left;
+			m_windowstyle.tab.font.justify = DrawUtil::Font::LEFT;
 	} else
-		m_windowstyle.tab.font.justify = FFont::Left;
+		m_windowstyle.tab.font.justify = DrawUtil::Font::LEFT;
 		
 }
 
@@ -655,52 +638,60 @@ void Theme::loadToolbarStyle() {
 	if (XrmGetResource(m_database, "toolbar.justify",
 				 "Toolbar.Justify", &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_toolbarstyle.font.justify = FFont::Right;
+			m_toolbarstyle.font.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_toolbarstyle.font.justify = FFont::Center;
+			m_toolbarstyle.font.justify = DrawUtil::Font::CENTER;
 		else
-			m_toolbarstyle.font.justify = FFont::Left;
+			m_toolbarstyle.font.justify = DrawUtil::Font::LEFT;
 	} else
-		m_toolbarstyle.font.justify = FFont::Left;
+		m_toolbarstyle.font.justify = DrawUtil::Font::LEFT;
 
 }
 
 void Theme::loadRootCommand() {
 	XrmValue value;
 	char *value_type;
- Fluxbox *fb=Fluxbox::instance();
-// printf("getting root command from fb->getRootCommand()");
- const char *root_cmd=fb->getRootCommand();
-// printf("root kommandot: %s\n", root_cmd);
-	if (root_cmd) {
-		#ifndef         __EMX__
-		const int display_strlen = 1024;
-		char displaystring[display_strlen];
-		snprintf(displaystring, display_strlen, "DISPLAY=%s%d",
-		DisplayString(m_display), m_screennum);
- 
-		bexec(root_cmd, displaystring);
+	#ifdef DEBUG
+	cerr<<"rootcommand.size()="<<m_rootcommand.size()<<endl;
+	cerr<<"rootcommand="<<m_rootcommand<<endl;
+	#endif
+	
+	if (m_rootcommand.size()) {
+		#ifndef         __EMX__		
+		char tmpstring[256]; //to hold m_screennum 
+		tmpstring[0]=0;
+		sprintf(tmpstring, "%d", m_screennum);
+		string displaystring("DISPLAY=");
+		displaystring.append(DisplayString(m_display));
+		displaystring.append(tmpstring); // append m_screennum				
+		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;
+		 
+		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
+
 		#else //         __EMX__
-		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", root_cmd, NULL);  
+		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), NULL);  
 		#endif // !__EMX__     
 		
 		#ifdef DEBUG
-    fprintf(stderr, "rootcommand:%s\n", root_cmd);
-  	#endif //!DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): Rootcommand: "<<m_rootcommand<<endl;
+		#endif //!DEBUG
 	
 	} else if (XrmGetResource(m_database, "rootCommand",
 										 "RootCommand", &value_type, &value)) {
-#ifndef		__EMX__
-		const int display_strlen = 1024;
-		char displaystring[display_strlen];
-		
-		snprintf(displaystring, display_strlen, "DISPLAY=%s%d", 
-			DisplayString(m_display), m_screennum);	
-			
-		bexec(value.addr, displaystring);
-#else //	 __EMX__
+	#ifndef		__EMX__
+		char tmpstring[256]; //to hold m_screennum
+		tmpstring[0]=0;
+		sprintf(tmpstring, "%d", m_screennum);
+		string displaystring("DISPLAY=");
+		displaystring.append(DisplayString(m_display));
+		displaystring.append(tmpstring); // append m_screennum				
+		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;		 		
+
+		bexec(value.addr, const_cast<char *>(displaystring.c_str()));
+	#else //	 __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, NULL);
-#endif // !__EMX__
+	#endif // !__EMX__
+
 	#ifdef DEBUG
 		fprintf(stderr, "rootcommand:%s\n", value.addr); 
 	#endif 	
@@ -767,9 +758,9 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 				 &value))
 		m_imagecontrol->parseTexture(texture, value.addr);
 	else
-		texture->setTexture(BImage_Solid | BImage_Flat);
+		texture->setTexture(BImage::SOLID | BImage::FLAT);
 
-	if (texture->getTexture() & BImage_Solid) {
+	if (texture->getTexture() & BImage::SOLID) {
 		int clen = strlen(rclass) + 32, nlen = strlen(rname) + 32;
 
 		char *colorclass = new char[clen], *colorname = new char[nlen];
@@ -793,7 +784,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		delete [] colorname;
 
 		if ((! texture->getColor()->isAllocated()) ||
-				(texture->getTexture() & BImage_Flat))
+				(texture->getTexture() & BImage::FLAT))
 			return retval;
 
 		XColor xcol;
@@ -830,7 +821,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 			xcol.pixel = 0;
 
 		texture->getLoColor()->setPixel(xcol.pixel);
-	} else if (texture->getTexture() & BImage_Gradient) {
+	} else if (texture->getTexture() & BImage::GRADIENT) {
 		int clen = strlen(rclass) + 10, nlen = strlen(rname) + 10;
 
 		char *colorclass = new char[clen], *colorname = new char[nlen],
@@ -973,7 +964,6 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 
 void Theme::reconfigure() {
 
-	//Window rootwindow = DefaultRootWindow(m_display);
 	XGCValues gcv;
 	unsigned long gc_value_mask = GCForeground;
 	if (! I18n::instance()->multibyte())
@@ -1069,6 +1059,7 @@ void Theme::reconfigure() {
 
 XFontSet Theme::createFontSet(char *fontname) {
 	XFontSet fs;
+	const int FONT_ELEMENT_SIZE=50;
 	char **missing, *def = "-";
 	int nmissing, pixel_size = 0, buf_size = 0;
 	char weight[FONT_ELEMENT_SIZE], slant[FONT_ELEMENT_SIZE];
@@ -1167,7 +1158,7 @@ const char *Theme::getFontElement(const char *pattern, char *buf, int bufsiz, ..
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
 	while((v = va_arg(va, char *)) != NULL) {
-		p = strcasestr(pattern, v);
+		p = StringUtil::strcasestr(pattern, v);
 		if (p) {
 			strncpy(buf, p+1, bufsiz-2);
 			p2 = strchr(buf, '-');

@@ -1,7 +1,8 @@
 .\"
-.\" Man page for Blackbox
+.\" Man page for Fluxbox
 .\"
 .\" Copyright (c) 2000 by Wilbert Berendsen <wbsoft@xs4all.nl>
+.\" Copyright (c) 2001 by Matthew Hawkins <matt@mh.dropbear.id.au>
 .\"
 .\" This manual page may be freely distributed and modified.
 .\" Parts of the text are taken from website and several README's
@@ -17,6 +18,10 @@
 .\"
 .\" Changed to fluxbox  by Henrik Kinnunen (fluxgen@linuxmail.org)
 .\"
+.\" Updated for fluxbox 0.1.5 by Matthew Hawkins <matt@mh.dropbear.id.au>
+.\"
+.\" Updated for version 0.1.6 by Rando Christensen <eyez@babblica.net>
+.\"
 .\" ..define sort of <blockquote><pre> macro
 .de EX
 .ne 5
@@ -31,52 +36,43 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH blackbox 1 "October 4th, 2000" "0.61.1"
+.TH fluxbox 1 "December 10th, 2001" "0.5.1"
 .SH NAME
-blackbox \- a window manager for X11
+fluxbox \- a window manager for X11
 .SH SYNOPSIS
-.BR blackbox " \-help | \-version"
+.BR fluxbox " \-help | \-version"
 .br
-.B blackbox 
+.B fluxbox 
 .RI "[ \-rc" " rcfile " "] [ \-display" " display " ]
 .SH DESCRIPTION
 .\"
 .\" Phirst Phew ParagraPhs taken from blackbox.alug.org
 .\"
-Blackbox is yet another addition to the list of window managers for the Open
+Fluxbox is yet another addition to the list of window managers for the Open
 Group's X Window System, Version 11 Release 6 and above.
-Blackbox is built with C++, sharing no common code with any other window
-manager (even though the graphics implementation is similar to that of Window
-Maker).
-.PP
-From the time the first line of code was written, Blackbox has evolved around
-one premise, minimalism.
-It's not meant to be Eye Candy, nor the most Featureful, nor the most Adorned
-for modelling the Widely acclaimed NeXT interface.
-It is just meant to be
+Fluxbox is built with C++, based on the sources of Blackbox 0.61.0.
 .BR fast .
 .PP
-Blackbox provides configurable window decorations, a root menu to launch
+Fluxbox provides configurable window decorations, a root menu to launch
 applications and a toolbar that shows the current workspace name, the focused
 application name and the current time.
 There is also a workspace menu to add or remove workspaces. The `slit' can be
 used to dock small applications, e.g. most of the bbtools can use the slit.
 .PP
-Blackbox features a special kind of icon handling: When you minimize a window,
-no icon appears; instead you can view all minimized applications in the `Icons'
-submenu of the workspace menu.
-Your desktop will never get cluttered with icons. As an alternative to icons
-shaded windows are provided: A double click on the titlebar of a window will
-shade it (i.e. the window will disappear, only the titlebar stays visible.)
+Fluxbox will iconify windows to the toolbar, in addition to adding the window
+to the `Icons' submenu of the workspace menu.  One click and they reappear.
+A double-click on the titlebar of a window will shade it (i.e. the window will
+disappear, only the titlebar stays visible.)
 .PP
-Blackbox uses its own graphics class to render its images on the fly.
+Fluxbox uses its own graphics class to render its images on the fly.
 By using style files, you can determine at a great level how your desktop looks
-like.
-Currently KDE WM hints are not supported, but Blackbox is already prepared to
+like.  Fluxbox styles are compatible with those of Blackbox, so users migrating
+can still use their current favourite themes.
+Currently KDE WM hints are not supported, but Fluxbox is already prepared to
 support the new window manager specification that is now being developed for
 both Gnome and KDE2.0.
 .SH OPTIONS
-Blackbox supports the following commandline options:
+Fluxbox supports the following commandline options:
 .TP
 .B \-help
 Display command line options and compiled-in features, then exit.
@@ -86,37 +82,37 @@ Display version info and exit.
 .TP
 .BI \-rc \ rcfile
 Use another rcfile than the default
-.IR  "~/.blackboxrc" .
+.IR  "~/.fluxbox/init" .
 .TP
 .BI \-display \ display
-Start Blackbox on the specified display.
-Programs started by Blackbox will have the
+Start Fluxbox on the specified display.
+Programs started by Fluxbox will have the
 .B DISPLAY
 environment variable set to this value, too.
-.SH RUNNING BLACKBOX
+.SH RUNNING FLUXBOX
 This program is usually started by the user's startup script, most times called
 .IR ~/.xinitrc .
-To run blackbox, modify the script by adding
+To run fluxbox, modify the script by adding
 .EX 0
-exec blackbox
+exec fluxbox
 .EE
 as the last executed command of the script.
-When Blackbox terminates, the X session will terminate too.
+When Fluxbox terminates, the X session will terminate too.
 .PP
-When started, Blackbox will try to find a default menufile in
+When started, Fluxbox will try to find a default menufile in
 .IR @pkgdatadir@/menu .
 You can provide a system-wide menu for your users here.
 .PP
-On exit or restart, Blackbox will save user defaults in the file
-.I ~/.blackboxrc
+On exit or restart, Fluxbox will save user defaults in the file
+.I ~/.fluxbox/init
 in the user's home directory.
 Some resources in this file can be edited by hand.
-.SH USING BLACKBOX
-From version 0.60.x, Blackbox does no keyboard handling by itself; instead it
-relies on an external program
+.SH USING FLUXBOX
+Fluxbox includes keyboard handling.  0.1.4 integrated
 .IR bbkeys (1)
-for this.
-So in this section we will discuss all mouse commands.
+however from version 0.1.5 the whole keyboard handling code was rewritten
+from scratch. You can get a script to convert your bbkeys file into fluxbox
+format at the fluxbox webpage, http://fluxbox.sourceforge.net/.
 .SS Root window (background):
 Right click (button 3) will pop up the root menu.
 With this you can launch your applications.
@@ -141,9 +137,6 @@ press Enter).
 Also you can choose the toolbar's position, whether or not it
 should be always on top (i.e. it cannot be obscured by other windows),
 and whether it should hide itself when the mouse moves away.
-.PP
-Note: In Blackbox versions below 0.60.0, a right click on the toolbar
-immediately enters workspace name edit mode.
 .SS Window Titlebar and Borders:
 A left click on any place of the window's border, will raise it.
 Dragging then moves the window.
@@ -155,8 +148,12 @@ containing these commands:
 .TP
 .B Send To...
 Send window to another workspace.
-When you select the workspace with the middle button, Blackbox will
+When you select the workspace with the middle button, Fluxbox will
 send you along with the application to the selected workspace
+.TP
+.B Send Group To...
+Sends a window, along with all windows currently grouped with it, to 
+another workspace. Follows the same rules as Send To...
 .TP
 .B Shade
 Shade the window (display titlebar only)
@@ -164,6 +161,7 @@ Shade the window (display titlebar only)
 .B Iconify
 Iconify window.
 The `icon' can be found in the `Icons' submenu of the workspace menu
+as well as in the toolbar.
 .TP
 .B Maximize
 (Un)Maximize window.
@@ -190,12 +188,22 @@ When you doubleclick on the titlebar of a window, it will `shade', so
 that only the titlebar stays visible.
 Another double click will redisplay the window contents.
 .SS Window Buttons:
-The button at the left upper corner of a window is the Minimize button.
-Clicking with any button causes the window to be iconified.
-The rightmost button (with the X) closes the application.
-The other button on the right (if present) maximizes the window in three ways:
+In fluxbox, the window button's configuration is controlled by your 
+.I ~/.fluxbox/titlebar
+file, which specifies which buttons to put on the right of left side of
+the title bar. The default is:
+.EX 0
+Right: minimize maximize close
+Left: sticky
+.EE
+Clicking the minimize button with any button causes the window to be iconified.
+Clicking the close button with any button closes the application.
+The maximize button (if present) maximizes the window in three ways:
 Button 1 causes full screen maximization, button 2 maximizes the window only
 vertically, and button 3 only horizontally.
+The Sticky button sets has the same meaning as the 
+.I (Un)Stick window
+menu option.
 .SS Any menu:
 Clicking button 3 in a menu will popdown the menu.
 Clicking button 1 on the titlebar of any (sub)menu and then dragging it somewhere
@@ -213,20 +221,20 @@ A default menu file is installed in
 Of course this system-wide menu can be customized for all users at once.
 But it is also possible to create a personal menu.
 It is a convention to create a directory
-.IR "~/.blackbox/" " (or " "~/blackbox/" ")"
+.IR "~/.fluxbox/" " (or " "~/fluxbox/" ")"
 in your home directory, and to create a menu file, e.g.
 .I menu
 in this directory, or copy the system-wide menu file to this location.
-Next, we have to tell Blackbox to load our menu file instead of the default.
+Next, we have to tell Fluxbox to load our menu file instead of the default.
 This is accomplished by adding (or changing) a resource value in the
-.I ~/.blackboxrc
+.I ~/.fluxbox/init
 file e.g.:
 .EX
-session.menuFile:       ~/.blackbox/menu
+session.menuFile:       ~/.fluxbox/menu
 .EE
-For this change to take effect, Blackbox has to be restarted.
+For this change to take effect, Fluxbox has to be restarted.
 Be sure that your menu is usable, then choose `Restart' from the default
-Blackbox root menu.
+Fluxbox root menu.
 .SS Menu syntax
 The menu syntax is very simple and very effective.
 There are upto three fields in a menu line.
@@ -237,23 +245,23 @@ They are of the form:
 The supported tags are as follows:
 .TP
 .B [begin] (label for root menu)
-This tells Blackbox to start parsing the menu file.
-This tag is required for Blackbox to parse your menu file.
+This tells Fluxbox to start parsing the menu file.
+This tag is required for Fluxbox to parse your menu file.
 If it cannot find it, the system default menu is used instead.
 .TP
 .B [end]
-This tells Blackbox that it is at the end of a menu.
+This tells Fluxbox that it is at the end of a menu.
 This can either be a submenu or the main root menu.
 There must be at least one of these tags in your menu to correspond to the
 required [begin] tag.
 .TP
 .B [exec] (label for command) {shell command}
 Inserts a command item into the menu.
-When you select the menu item from the menu, Blackbox runs `shell command.'
+When you select the menu item from the menu, Fluxbox runs `shell command.'
 .TP
 .B [exit] (label for exit)
-Inserts an item that shuts down and exits Blackbox.
-Any open windows are reparented to the root window before Blackbox exits.
+Inserts an item that shuts down and exits Fluxbox.
+Any open windows are reparented to the root window before Fluxbox exits.
 .TP
 .B [include] (filename)
 Parses the file specified by
@@ -263,10 +271,10 @@ current menu. The filename can be the full path to a file or it can begin with
 .IR ~/ ,
 which will be expanded into your home directory (e.g.
 .EX
-[include] (~/blackbox/stylesmenu)
+[include] (~/fluxbox/stylesmenu)
 .EE
 will include
-.I /home/bhughes/blackbox/stylesmenu
+.I /home/fluxgen/fluxbox/stylesmenu
 in my menu).
 .TP
 .B [nop] (label - optional)
@@ -278,7 +286,7 @@ does accept a label, but it is not required, and a blank item will be used
 if none is supplied.
 .TP 
 .B [style] (label) {filename}
-This tells Blackbox to insert an item that, when selected, reads style file
+This tells Fluxbox to insert an item that, when selected, reads style file
 named
 .I filename
 and apply the new textures, colors and fonts to the current
@@ -304,7 +312,7 @@ command does.
 commands make it possible to install style files without editing your menu file.
 .TP
 .B [submenu] (label) {title for menu - optional}
-This tells Blackbox to create and parse a new menu.
+This tells Fluxbox to create and parse a new menu.
 This menu is inserted as a submenu into the parent menu.
 These menus are parsed recursively, so there is no limit to the number of levels
 or nested submenus you can have.
@@ -318,27 +326,27 @@ tag is required to end the submenu.
 When selected, this item rereads the current style and menu files and
 apply any changes.
 This is useful for creating a new style or theme, as you don't have to
-constantly restart Blackbox every time you save your style.
-However, Blackbox automagically rereads the menu whenever it changes.
+constantly restart Fluxbox every time you save your style.
+However, Fluxbox automagically rereads the menu whenever it changes.
 .TP
 .B [restart] (label) {shell command - optional}
-This tells Blackbox to restart.
+This tells Fluxbox to restart.
 If `shell command' is supplied, it shuts down and runs the command (which is
 commonly the name of another window manager).
-If the command is omitted, Blackbox restarts itself.
+If the command is omitted, Fluxbox restarts itself.
 .TP
 .B [config] (label)
-Inserts a Blackbox native submenu item, containing numerous configuration
+Inserts a Fluxbox native submenu item, containing numerous configuration
 options concerning window placement, focus style, window moving style etc.
 .TP
 .B [workspaces] (label)
-This tells Blackbox to insert a link to the workspaces menu directly
+This tells Fluxbox to insert a link to the workspaces menu directly
 into your menu.
 This is handy for those users who can't access the
 workspace menu directly (e.g. if you don't have a 3 button mouse, it's
 rather hard to middle click to show the workspace menu).
 .PP
-Any line that starts with a `#' is considered a comment and ignored by Blackbox.
+Any line that starts with a `#' is considered a comment and ignored by Fluxbox.
 Also, in the labels/commands/filenames fields,
 you can escape any character like so:
 .EX
@@ -350,21 +358,26 @@ Now let's put together some things.
 Here is a short example of a menu file:
 .PP
 .nf
-# Blackbox menu file
-[begin] (Blackbox 0.60.3)
+# Fluxbox menu file
+[begin] (Fluxbox 0.5.1)
   [exec] (rxvt) {rxvt -ls}
   [exec] (netscape) {netscape -install}
   [exec] (The GIMP) {gimp}
   [exec] (XV) {xv}
-  [submenu] (pine)
-    [exec] (inbox) {rxvt -name pine -e pine -i}
-    [exec] (new message) {rxvt -name pine -e pine ""}
+  [exec] (Vim) {rxvt -geometry 132x60 -name VIM -e screen vim}
+  [exec] (Mutt) {rxvt -name mutt -e mutt}
+  [submenu] (mozilla)
+    [exec] (browser) {mozilla -browser}
+    [exec] (news) {mozilla -news}
+    [exec] (mail) {mozilla -mail}
+    [exec] (edit) {mozilla -edit}
+    [exec] (compose) {mozilla -compose}
   [end]
   [submenu] (Window Manager)
-    [exec] (Edit Menus) {nedit .blackbox/Menu}
+    [exec] (Edit Menus) {nedit ~/.fluxbox/menu}
     [submenu] (Style) {Which Style?}
-      [stylesdir] (~/.blackbox/styles)
-      [stylesmenu] (Blackbox Styles) {@pkgdatadir@/styles}
+      [stylesdir] (~/.fluxbox/styles)
+      [stylesmenu] (Fluxbox Styles) {@pkgdatadir@/styles}
     [end]
     [config] (Config Options)
     [reconfig] (Reconfigure)
@@ -375,15 +388,15 @@ Here is a short example of a menu file:
 # end of menu file
 .fi
 .SH STYLES
-Blackbox enables you to use specialized files that contain
+Fluxbox enables you to use specialized files that contain
 .IR X (1)
 resources to specify colors, textures and fonts, and thus
 the overall look of your window borders, menus and the toolbar.
 .PP
-The default installation of Blackbox provides some of these style files.
+The default installation of Fluxbox provides some of these style files.
 Usually they are put in
 .IR @pkgdatadir@/styles .
-You can study or edit these files to grasp how the Blackbox style mechanism
+You can study or edit these files to grasp how the Fluxbox style mechanism
 works.
 You can use the
 .BR [style] ", " [stylesdir] " and " [stylesmenu]
@@ -391,7 +404,7 @@ menu commands in your menu file to be able to select and change between styles
 on the fly.
 .PP
 But you can also create a directory named
-.I ~/.blackbox/styles
+.I ~/.fluxbox/styles
 in your homedirectory and put your own style files here.
 Of course you may choose any name for this directory, but many downloadable
 themes will rely on the name
@@ -408,7 +421,7 @@ Keys may also contain a star (`*') to serve as a wildcard, which means that one
 line of typed text will match several keys.
 This is useful for styles that are based on one or two colors.
 .PP
-Blackbox allows you to configure it's three main components: the toolbar, the
+Fluxbox allows you to configure it's three main components: the toolbar, the
 menus and the window decorations.
 .PP
 The little window that shows the x-y position while dragging windows, borrows
@@ -437,7 +450,7 @@ you set the font resource for all keys to this font name all at once.
 (For information about the fonts installed on your system, you can use a program like
 .IR xfontsel "(1), " gtkfontsel ", or " xlsfonts "(1).)"
 .PP
-Now, what makes Blackbox just so spectacular, is its ability to render textures
+Now, what makes Fluxbox just so spectacular, is its ability to render textures
 on the fly.
 Texture descriptions are specified directly to the key that they
 should apply to, e.g.:
@@ -454,7 +467,7 @@ A texture description consists of up to five fields, which are as follows:
 gives the component either a flat, raised or sunken appearance.
 .TP
 .B Gradient / Solid
-tells Blackbox to draw either a solid color or a gradiented texture.
+tells Fluxbox to draw either a solid color or a gradiented texture.
 .TP
 .B Horizontal / Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic / Rectangle / Pyramid
 Select one of these texture types. They only work when also
@@ -462,12 +475,12 @@ Select one of these texture types. They only work when also
 is specified!
 .TP
 .B Interlaced
-tells Blackbox to interlace the texture (darken every other line).
-This option is most commonly used with gradiented textures, but from Blackbox
+tells Fluxbox to interlace the texture (darken every other line).
+This option is most commonly used with gradiented textures, but from Fluxbox
 version 0.60.3 on, it also works in solid textures.
 .TP
 .B Bevel1 / Bevel2
-tells Blackbox which type of bevel to use.
+tells Fluxbox which type of bevel to use.
 Bevel1 is the default bevel.
 The shading is placed on the edge of the image.
 Bevel2 is an alternative.
@@ -491,7 +504,7 @@ resource is used to find the interlacing color.
 Well, here is the complete component list, also all components together with
 which kind of value they can contain.
 Comments are preceded with an exclamation sign (!), which is also used for
-comments in Blackbox style c.q. X resource files.
+comments in Fluxbox style c.q. X resource files.
 .PP
 .ta \w'window.button.unfocus.picColor:\ 'u 
 .nf
@@ -628,6 +641,19 @@ window.button.pressed.colorTo:	Color
 window.frame.focusColor:	Color
 window.frame.unfocusColor:	Color
 
+! Tab settings
+! if these are unset, some reasonable defaults will be picked.
+window.tab.justify:                     Right
+window.tab.label.unfocus:               Texture
+window.tab.label.unfocus.color:         Color
+window.tab.label.unfocus.textColor:     Color
+window.tab.label.focus:                 Texture
+window.tab.label.focus.color:           Color
+window.tab.label.focus.textColor:       Color
+window.tab.borderWidth:                 1
+window.tab.borderColor:                 Color
+window.tab.font:                        fixed
+
 ! Font and justification for window labels
 window.font:	Font
 window.justify:	\fIcenter\fR, \fIleft\fR, or \fIright\fR
@@ -641,7 +667,7 @@ borderColor:	Color
 bevelWidth:	a number of pixels > 0
 handleWidth:	a number of pixels > 0
 
-! Width of the window frame (from version 0.61 on)
+! Width of the window frame
 ! When not specified, frameWidth defaults to the value of bevelWidth
 frameWidth:	a number of pixels >= 0
 
@@ -668,8 +694,98 @@ can easily set lots of keys with a single command, e.g.
 *font:	lucidasans-10
 .EE
 This sets already nice defaults for many components.
+.SH KEYS FILE
+Fluxbox 0.1.5 has new keybinding code, and you can customise it through the
+.IR ~/.fluxbox/keys
+file.  The file takes the format of :
+.EX
+<modifier> <key> [...] :<operation>
+.EE
+In the example below, Mod1 is the 'Alt' key on the PC keyboard and Mod4 is
+one of the three extra keys on a pc104 branded with a sickening corporate logo.
+.EX
+# Fluxbox keys file.
+# Any line starting with a # is a comment.
+Mod1 Tab :NextWindow 
+Mod1 F1 :Workspace1 
+Mod1 F2 :Workspace2 
+Mod1 F3 :Workspace3 
+Mod1 F4 :Workspace4 
+Mod1 F5 :Workspace5 
+Mod1 F6 :Workspace6 
+Mod1 F7 :Workspace7 
+Mod1 F8 :Workspace8 
+Mod1 F9 :Workspace9 
+Mod1 F10 :Workspace10 
+Mod1 F11 :Workspace11 
+Mod1 F12 :Workspace12 
+Mod4 b :PrevWorkspace 
+Mod4 c :Minimize 
+Mod4 r :ExecCommand rxvt 
+Mod4 v :NextWorkspace 
+Mod4 x :Close 
+Control n Mod1 n :NextTab
+.EE
+As you can see from the last line, keybinds can be chained in a fashion similar
+to emacs keybindings.
+Here is a list of possible Operations:
+.EX
+Minimize
+Raise
+Lower
+Close
+Workspace1
+Workspace2
+Workspace3
+Workspace4
+Workspace5
+Workspace6
+Workspace7
+Workspace8
+Workspace9
+Workspace10
+Workspace11
+Workspace12
+NextWorkspace
+PrevWorkspace
+LeftWorkspace
+RightWorkspace
+KillWindow
+NextWindow
+PrevWindow
+NextTab
+PrevTab
+ShadeWindow
+MaximizeWindow
+StickWindow
+ExecCommand
+MaximizeVertical
+MaximizeHorizontal
+NudgeRight
+NudgeLeft
+NudgeUp
+NudgeDown
+BigNudgeRight
+BigNudgeLeft
+BigNudgeUp
+BigNudgeDown
+HorizontalIncrement
+VerticalIncrement
+HorizontalDecrement
+VerticalDecrement
+ToggleDecor
+.EE
+.SH TITLEBAR FILE
+Fluxbox lets you customise the button layout on the window titlebar.  This is
+done by modifying the
+.IR ~/.fluxbox/titlebar
+file.
+.EX
+Right: minimize maximize close
+Left: sticky
+.EE
 .SH THE SLIT
-The slit is a special Blackbox window frame that can contain dockable
+The slit is a special Fluxbox window frame that can contain dockable
 applications, e.g. the `bbtools.'
 When applications are run in the slit they have no window borders of their own;
 instead they are framed in the slit, and they are always visible in the current
@@ -687,21 +803,64 @@ For example, you could put in your
 .EX
 bbmail -w &
 bbpager -w &
-exec blackbox
+exec fluxbox
 .EE
 Of course to use the slit you must have slit support compiled in.
+.SH CONFIGURATION MENU
+Fluxbox has a few options that are configured by a configure menu.
+Most are self-explanatory, but here are a few notes:
+.TP
+.B Tab Placement
+The Tabs can be placed almost anywhere on a window. Again, these are
+mostly self-explanatory. however, using the
+.I Relative
+options will make the total width of all tabs be equal to the total width
+of the window. The 
+.I Rotate Vertical Tabs
+option makes tabs that are placed on the Right or left side of the window 
+be turned on their sides.
+.TP
+.B Sloppy Window Grouping
+This option allows you to drop a tab anywhere on the target window to group it,
+instead of only on the target window's tab.
+.TP
+.B Maximize Slit Stop
+This option makes maximizing windows stop at the slit border, so that your 
+slit stays visible at all times.
 .SH RESOURCE FILE
 Usually the
-.I ~/.blackboxrc
-resource file is created and maintained bij Blackbox itself.
+.I ~/.fluxbox/init
+resource file is created and maintained by Fluxbox itself.
 All options from the
 .B [config]
-menu (from 0.60.x on), the last selected style file, your workspace names and
+menu, the last selected style file, your workspace names and
 so on are saved into this file.
 However, there are some resources in it you might want to edit yourself:
 .TP
 .B session.menuFile:
-This tells Blackbox where to look for its menu file.
+This tells Fluxbox where to look for its menu file.
+.EX
+session.menuFile: /home/myself/.fluxbox/menu
+.EE
+.TP
+.B session.titlebarFile:
+This tells Fluxbox where to find the file describing the layout of buttons
+on each windows' titlebar.
+.EX
+session.titlebarFile: /home/myself/.fluxbox/titlebar
+.EE
+.TP
+.B session.keyFile:
+This tells Fluxbox where to find the file describing the keybindings.
+.EX
+session.keyFile: /home/myself/.fluxbox/keys
+.EE
+.TP
+.B session.styleFile:
+This tells Fluxbox where to find the style (theme) file for this session.
+.EX
+session.styleFile: @pkgdatadir@/styles/Flux
+.EE
 .TP
 .B session.screen0.toolbar.widthPercent:
 This determines the amount (in %) of space the toolbar will take.
@@ -716,6 +875,11 @@ format is used.
 The default value is:
 .IR "%I:%M %p" .
 .TP
+.B session.screen0.rootCommand:
+This overrides the style's rootCommand. When this value is set, it will keep
+your background the same, regardless of what any style would like your 
+background to be.
+.TP
 .B session.autoRaiseDelay:
 Adjusts the delay (in ms) before focused windows will raise when using the
 Autoraise option.
@@ -723,80 +887,174 @@ The default value is:
 .IR 250 .
 .TP
 .B session.doubleClickInterval:
-Adjust the delay (in ms) between mouse clicks for Blackbox to consider a double click.
+Adjust the delay (in ms) between mouse clicks for Fluxbox to consider a double click.
 Default value is:
 .IR 250 .
 .TP
 .B session.screen0.edgeSnapThreshold:
-When moving a window across your screen, Blackbox is able to have it `snap' to
+When moving a window across your screen, Fluxbox is able to have it `snap' to
 the edges of the screen for easy placement.
-This variable tells Blackbox the distance (in pixels) at which the window will
+This variable tells Fluxbox the distance (in pixels) at which the window will
 jump to the egde.
 Default value is:
 .IR 0 .
 .TP
 .B session.cacheMax:
-This tells Blackbox how much memory (in Kb) it may use to store cached pixmaps on
+This tells Fluxbox how much memory (in Kb) it may use to store cached pixmaps on
 the X server.
 If your machine runs short of memory, you may lower this value.
 Default value is
 .IR 200 .
 .TP
 .B session.cacheLife:
-This tells Blackbox how long (in minutes) unused pixmaps may stay in the X
+This tells Fluxbox how long (in minutes) unused pixmaps may stay in the X
 server's memory.
 Default value is
 .IR 5 .
 .TP
+.B session.opaqueMove:
+When moving a window, setting this to
+.IR True
+will draw the window contents as it moves (nasty on slow systems), if 
+.IR False
+it will only draw an outline of the window border.
+.TP
+.B session.imageDither:
+.IR True
+or
+.IR False
+to, respectively, enable or disable dithering of images.  Only necessary
+on systems with small colour depths (8bpp or less)
+.TP
 .B session.colorsPerChannel:
-This tells Blackbox how many colors to take from the X server on pseudocolor
+This tells Fluxbox how many colors to take from the X server on pseudocolor
 displays.  A channel would be red, green, or blue.
-Blackbox will allocate this variable ^ 3 colors and make them always available.
+Fluxbox will allocate this variable ^ 3 colors and make them always available.
 Value must be between 2 and 6.
-When you run Blackbox on an 8-bit display, you must set this resource to 4.
+When you run Fluxbox on an 8-bit display, you must set this resource to 4.
 Default value is
 .IR 4.
+.TP
+.B session.iconbar:
+.IR True
+or
+.IR False
+to enable or disable Fluxbox using the toolbar to display iconified windows.
+.TP
+.B session.tabs:
+.IR True
+or
+.IR False
+to enable/disable Fluxbox's PWM-like window tabs.  Tabs let you group windows
+together, they will take up identical desktop space (windows smaller or larger
+than the existing group size get resized automatically) and can be moved as a
+group around the desktop or to a different workspace.
+Default value is
+.IR True .
+.TP
+.B session.screen0.tab.placement:
+Tells Fluxbox where to put the tab on the window.  This can be customised 
+through Fluxbox's Configuration/Tab Placement menu.  Values are
+.IR Top
+.IR Bottom
+.IR Left
+.IR Right
+.TP
+.B session.screen0.tab.alignment:
+Tells Fluxbox how to align tabs to the window.  Values are
+.IR Top
+.IR Bottom
+.IR Left
+.IR Right
+.IR Center
+.IR Relative
+This should also be done via the Configuration/Tab Placement menu.
+.TP
+.B session.screen0.tab.rotatevertical:
+If True, will rotate text on the tab so it is readable on vertically-
+placed tabs.  Once again, use the Configuration/Tab Placement menu.
+.TP
+.B session.screen0.tab.width:
+Width of window tabs in pixels.
+.TP
+.B session.screen0.tab.height:
+Height of window tabs in pixels.
 .PP
-When running Blackbox in a multiple desktop environment the
+When running Fluxbox in a multiple desktop environment the
 .B screen0
 key can also be
 .B screen1, 2
-etc. for any appropriate desktop.
+etc. for any appropriate desktop, and you can customise the behaviour of
+Fluxbox on each desktop accordingly.  A favourite of the man page author
+with a dual-head Matrox G450 was to autohide the slit and toolbar on
+screen0 and set it alwaysontop and not autohidden on screen1, with a 
+larger date format on screen1
+.EX
+session.screen0.toolbar.onTop: False
+session.screen0.toolbar.autoHide: True
+session.screen0.toolbar.placement: BottomCenter
+session.screen0.toolbar.widthPercent: 42
+session.screen0.slit.onTop: False
+session.screen0.slit.autoHide: True
+session.screen0.slit.placement: TopLeft
+session.screen0.slit.direction: Vertical
+session.screen0.strftimeFormat: %I:%M %p
+session.screen1.toolbar.onTop: True
+session.screen1.toolbar.autoHide: False
+session.screen1.toolbar.placement: BottomCenter
+session.screen1.toolbar.widthPercent: 69
+session.screen1.slit.onTop: True
+session.screen1.slit.autoHide: False
+session.screen1.slit.placement: CenterRight
+session.screen1.slit.direction: Vertical
+session.screen1.strftimeFormat: %a %d %R [%s]
+.EE
+This way the main workspace (screen0) has the maximum amount of space available
+and the secondary workspace could show the time and run some withrawn apps like
+gkrellm in the slit, always visible yet out of the way of real work.
 .SH ENVIRONMENT
 .TP
 .B HOME
-Blackbox uses
+Fluxbox uses
 .RB $ HOME
 to find its
-.I .blackboxrc
+.I .fluxbox/init
 file, and to resolve stylefile and \-directory names.
 .TP
 .B DISPLAY
-When no other display was given on the command line, Blackbox will start on the
+When no other display was given on the command line, Fluxbox will start on the
 display specified by this variable.
 .SH AUTHOR and CREDITS
-All of the code is written and maintained by Brad Hughes
+Blackbox was written and maintained by Brad Hughes
 .nh \" hyphenation off
-(blackbox@alug.org)
+<blackbox@alug.org>
 .hy \" on again
 and Jeff Raven
 .nh
-(jraven@psu.edu),
+<jraven@psu.edu>,
+.hy
+Fluxbox is written and maintained by Henrik Kinnunen
+.nh
+<fluxgen@linuxmail.org>
 .hy
 with contributions and patches merged from
 many individuals around the world.
 .PP
-The Official Blackbox website:
+The Official Fluxbox website:
 .nh
-.B http://blackbox.alug.org/
+.B http://fluxbox.sf.net/
 .hy
 .br
-Many themes and other contributions:
+Many compatible themes:
 .nh
-.B http://bb.themes.org/
+.B http://www.themes.org/themes/blackbox/
 .hy
 .PP
-This manpage was put together by Wilbert Berendsen
+This manpage was put together by Matthew Hawkins
+.nh
+<matt@mh.dropbear.id.au>
+.hy
+from the original Blackbox man page by Wilbert Berendsen
 .nh
 (wbsoft@xs4all.nl).
 .hy

@@ -1,5 +1,5 @@
-// Tab.hh for Fluxbox
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Tab.hh for Fluxbox Window Manager
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -18,6 +18,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: Tab.hh,v 1.6 2002/01/11 09:44:35 fluxgen Exp $
 
 #ifndef _TAB_HH_
 #define _TAB_HH_
@@ -42,6 +44,9 @@ public:
 	void draw(bool pressed);
 	inline Tab *next() const { return m_next; }
 	inline Tab *prev() const { return m_prev; }
+	inline Tab *last() { return getLast(this); }
+	inline Tab *first() { return getFirst(this); }
+	
 	inline FluxboxWindow *getWindow() const { return m_win; }
 	inline unsigned int getTabWidth() const { return m_size_w; } 
 	inline unsigned int getTabHeight() const { return m_size_h; }
@@ -62,10 +67,11 @@ public:
 	void exposeEvent(XExposeEvent *ee);	
 	void motionNotifyEvent(XMotionEvent *me);
 	static Tab *getFirst(Tab *current);
+	static Tab *getLast(Tab *current);
 	void disconnect();
 	
-	enum { PTop = 0, PBottom = 5, PLeft = 10, PRight = 15, pnone = 20};
-	enum { ALeft = 0, ACenter, ARight, ARelative, anone };
+	enum { PTOP = 0, PBOTTOM = 5, PLEFT = 10, PRIGHT = 15, PNONE = 20};
+	enum { ALEFT = 0, ACENTER, ARIGHT, ARELATIVE, ANONE };
 
 	static const char *getTabPlacementString(int placement);
 	static int getTabPlacementNum(const char *string);
@@ -89,6 +95,7 @@ private:
 	static const int m_max_tabs; 
 	bool m_focus, m_moving;  // moving and focus 
 	void createTabWindow(); // creates the X win of tab
+	void loadTheme(); // loads the textures with right width and height
 	void setTabWidth(unsigned int w);
 	void setTabHeight(unsigned int h);
 	unsigned int calcRelativeWidth();

@@ -10,7 +10,7 @@ all-local: blackbox.cat
 install-data-local: blackbox.cat
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/it_IT"; \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/da_DK; \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/it_IT; \
 		$(INSTALL_DATA) blackbox.cat $(DESTDIR)$(pkgdatadir)/nls/it_IT; \
 	fi
 uninstall-local:

@@ -1,4 +1,7 @@
-// Basemenu.cc for fluxbox - an X11 Window manager
+// Basemenu.cc for Fluxbox Window manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
+// Basemenu.cc for blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Basemenu.cc,v 1.6 2002/01/11 09:26:33 fluxgen Exp $
+
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 #ifndef	 _GNU_SOURCE
@@ -33,6 +38,7 @@
 #include "fluxbox.hh"
 #include "Basemenu.hh"
 #include "Screen.hh"
+#include "StringUtil.hh"
 
 #ifdef		HAVE_STDIO_H
 #	include <stdio.h>
@@ -52,7 +58,7 @@ Basemenu::Basemenu(BScreen *scrn) {
 	image_ctrl = screen->getImageControl();
 	display = fluxbox->getXDisplay();
 	parent = (Basemenu *) 0;
-	alignment = AlignDontCare;
+	alignment = ALIGNDONTCARE;
 
 	title_vis =
 		movable =
@@ -197,8 +203,8 @@ Basemenu::~Basemenu(void) {
 int Basemenu::insert(const char *l, int function, const char *e, int pos) {
 	char *label = 0, *exec = 0;
 
-	if (l) label = bstrdup(l);
-	if (e) exec = bstrdup(e);
+	if (l) label = StringUtil::strdup(l);
+	if (e) exec = StringUtil::strdup(e);
 
 	BasemenuItem *item = new BasemenuItem(label, function, exec);
 	menuitems->insert(item, pos);
@@ -210,7 +216,7 @@ int Basemenu::insert(const char *l, int function, const char *e, int pos) {
 int Basemenu::insert(const char *l, Basemenu *submenu, int pos) {
 	char *label = 0;
 
-	if (l) label = bstrdup(l);
+	if (l) label = StringUtil::strdup(l);
 
 	BasemenuItem *item = new BasemenuItem(label, submenu);
 	menuitems->insert(item, pos);
@@ -354,7 +360,7 @@ void Basemenu::update(void) {
 	if (title_vis) {
 		tmp = menu.title_pixmap;
 		texture = &(screen->getMenuStyle()->title);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			menu.title_pixmap = None;
 			XSetWindowBackground(display, menu.title,
 				 texture->getColor()->getPixel());
@@ -369,7 +375,7 @@ void Basemenu::update(void) {
 
 	tmp = menu.frame_pixmap;
 	texture = &(screen->getMenuStyle()->frame);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		menu.frame_pixmap = None;
 		XSetWindowBackground(display, menu.frame,
 			 texture->getColor()->getPixel());
@@ -382,7 +388,7 @@ void Basemenu::update(void) {
 
 	tmp = menu.hilite_pixmap;
 	texture = &(screen->getMenuStyle()->hilite);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid))
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID))
 		menu.hilite_pixmap = None;
 	else
 		menu.hilite_pixmap =
@@ -390,7 +396,7 @@ void Basemenu::update(void) {
 	if (tmp) image_ctrl->removeImage(tmp);
 
 	tmp = menu.sel_pixmap;
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid))
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID))
 		menu.sel_pixmap = None;
 	else {
 		int hw = menu.item_h / 2;
@@ -507,11 +513,11 @@ void Basemenu::redrawTitle(void) {
 	l +=	(menu.bevel_w * 2);
 
 	switch (screen->getMenuStyle()->titlefont.justify) {
-	case FFont::Right:
+	case DrawUtil::Font::RIGHT:
 		dx += menu.width - l;
 		break;
 
-	case FFont::Center:
+	case DrawUtil::Font::CENTER:
 		dx += (menu.width - l) / 2;
 		break;
 	default:
@@ -550,7 +556,7 @@ void Basemenu::drawSubmenu(int index) {
 			x = menu.x +
 				((menu.item_w * (sbl + 1)) + screen->getBorderWidth()), y;
 		
-			if (alignment == AlignTop) {
+			if (alignment == ALIGNTOP) {
 				y = (((shifted) ? menu.y_shift : menu.y) +
 				 ((title_vis) ? menu.title_h + screen->getBorderWidth() : 0) -
 				 ((item->submenu()->title_vis) ?
@@ -563,7 +569,7 @@ void Basemenu::drawSubmenu(int index) {
 					item->submenu()->menu.title_h + screen->getBorderWidth() : 0));
 			}
 			
-			if (alignment == AlignBottom &&
+			if (alignment == ALIGNBOTTOM &&
 					(y + item->submenu()->menu.height) > ((shifted) ? menu.y_shift :
 					menu.y) + menu.height) {
 				y = (((shifted) ? menu.y_shift : menu.y) +
@@ -644,11 +650,11 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 		}
 		
 		switch(screen->getMenuStyle()->framefont.justify) {
-		case FFont::Left:
+		case DrawUtil::Font::LEFT:
 			text_x = item_x + menu.bevel_w + menu.item_h + 1;
 			break;
 			
-		case FFont::Right:
+		case DrawUtil::Font::RIGHT:
 			text_x = item_x + menu.item_w - (menu.item_h + menu.bevel_w + text_w);
 			break;			
 		default: //center
@@ -669,7 +675,7 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 	
 	sel_x = item_x;
 	
-	if (screen->getMenuStyle()->bullet_pos == Right)
+	if (screen->getMenuStyle()->bullet_pos == RIGHT)
 		sel_x += (menu.item_w - menu.item_h - menu.bevel_w);
 	
 	sel_x += quarter_w;
@@ -738,14 +744,14 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 
 	if (dosel && item->submenu()) {
 		switch (screen->getMenuStyle()->bullet) {
-		case Square:
+		case SQUARE:
 			XDrawRectangle(display, menu.frame, gc, sel_x, sel_y, half_w, half_w);
 			break;
 
-		case Triangle:
+		case TRIANGLE:
 			XPoint tri[3];
 
-			if (screen->getMenuStyle()->bullet_pos == Right) {
+			if (screen->getMenuStyle()->bullet_pos == RIGHT) {
 				tri[0].x = sel_x + quarter_w - 2;
 				tri[0].y = sel_y + quarter_w - 2;
 				tri[1].x = 4;
@@ -765,7 +771,7 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 						CoordModePrevious);
 			break;
 			
-		case Diamond:
+		case DIAMOND:
 			XPoint dia[4];
 
 			dia[0].x = sel_x + quarter_w - 3;
@@ -789,7 +795,7 @@ void Basemenu::setLabel(const char *l) {
 	if (menu.label)
 		delete [] menu.label;
 
-	if (l) menu.label = bstrdup(l);
+	if (l) menu.label = StringUtil::strdup(l);
 	else menu.label = 0;
 }
 

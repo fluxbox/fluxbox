@@ -65,7 +65,7 @@ void Rootmenu::itemSelected(int button, int index) {
 
 		if (item->function()) {
 			switch (item->function()) {
-			case BScreen::Execute:
+			case BScreen::EXECUTE:
 				if (item->exec()) {
 					#ifndef    __EMX__
 					char displaystring[MAXPATHLEN];
@@ -81,33 +81,33 @@ void Rootmenu::itemSelected(int button, int index) {
 				}
 				break;
 
-			case BScreen::Restart:
+			case BScreen::RESTART:
 				fluxbox->restart();
 				break;
 
-			case BScreen::RestartOther:
+			case BScreen::RESTARTOTHER:
 				if (item->exec())
 					fluxbox->restart(item->exec());
 				break;
 
-			case BScreen::Exit:
+			case BScreen::EXIT:
 				fluxbox->shutdown();
 				break;
 
-			case BScreen::SetStyle:
+			case BScreen::SETSTYLE:
 				if (item->exec()) {
 					fluxbox->saveStyleFilename(item->exec());
 					fluxbox->reconfigureTabs(); //TODO
 				}
 
-			case BScreen::Reconfigure:
+			case BScreen::RECONFIGURE:
 				fluxbox->reconfigure();
 				return;
 			}
 
 			if (! (screen->getRootmenu()->isTorn() || isTorn()) &&
-					item->function() != BScreen::Reconfigure &&
-					item->function() != BScreen::SetStyle)
+					item->function() != BScreen::RECONFIGURE &&
+					item->function() != BScreen::SETSTYLE)
 				hide();
 		}
 	}

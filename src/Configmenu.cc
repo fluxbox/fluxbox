@@ -1,3 +1,6 @@
+// Configmenu.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Configmenu.cc for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Configmenu.cc,v 1.9 2002/01/11 09:20:42 fluxgen Exp $
+
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 #ifndef	 _GNU_SOURCE
@@ -34,9 +39,8 @@
 #include "Toolbar.hh"
 #include "Window.hh"
 
-#define CMENU_USE_TABS	8
-#define CMENU_USE_ICONS	9
-#define CMENU_TAB_ROTATE 21
+enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP, CMENU_TAB_ROTATE=21};
+
 
 Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	screen = scr;
@@ -113,6 +117,14 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 				0, 0,
 #endif // NLS
 				"Focus Last Window on Workspace"), 5);
+	insert(i18n->getMessage(
+#ifdef		NLS
+				ConfigmenuSet, ConfigmenuMaxOverSlit,
+#else // !NLS
+				0, 0,
+#endif // NLS
+				"Maxmize Over Slit"), 6);
+
 
     insert(i18n->getMessage(
 #ifdef   NLS
@@ -128,10 +140,16 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
        0, 0,
 #endif // NLS
        "Use Icons"), CMENU_USE_ICONS);
-
-
+ insert(i18n->getMessage(
+#ifdef   NLS
+       ConfigmenuSet, ConfigmenuSloppyWindowGrouping,
+#else // !NLS
+       0, 0,
+#endif // NLS
+       "Sloppy Window Grouping"), CMENU_SLOPPY_WIN_GROUP);
 
 	update();
+	setItemSelected(8, screen->doMaxOverSlit());
 
 	setItemSelected(3, screen->getImageControl()->doDither());
 	setItemSelected(4, screen->doOpaqueMove());
@@ -140,6 +158,7 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	setItemSelected(7, screen->doFocusLast());
 	setItemSelected(CMENU_USE_TABS, Fluxbox::instance()->useTabs());
 	setItemSelected(CMENU_USE_ICONS, Fluxbox::instance()->useIconBar());
+	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen->isSloppyWindowGrouping());
 }
 
 
@@ -180,6 +199,12 @@ void Configmenu::itemSelected(int button, int index) {
 			case 4:  // focus new windows
 				screen->saveFocusNew((! screen->doFocusNew()));
 
+				
+			case 6: // maximize over slit
+				screen->saveMaxOverSlit((! screen->doMaxOverSlit()));
+				setItemSelected(index, screen->doMaxOverSlit());
+				break;	
+			
 				setItemSelected(index, screen->doFocusNew());
 				break;
 
@@ -203,6 +228,14 @@ void Configmenu::itemSelected(int button, int index) {
 					screen->reconfigure();
 				}
 				break;
+			case CMENU_SLOPPY_WIN_GROUP:
+				{
+					screen->saveSloppyWindowGrouping(!screen->isSloppyWindowGrouping());
+					setItemSelected(index, screen->isSloppyWindowGrouping());
+					screen->reconfigure();
+				}
+				break;
+
 			}
 		}
 }
@@ -256,7 +289,7 @@ Configmenu::Focusmenu::Focusmenu(Configmenu *cm) : Basemenu(cm->screen) {
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Auto Raise"), 3);
+				"Auto Raise"), 4);
 
 	update();
 
@@ -349,70 +382,70 @@ Configmenu::Placementmenu::Placementmenu(Configmenu *cm) : Basemenu(cm->screen) 
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Smart Placement (Rows)"), BScreen::RowSmartPlacement);
+				"Smart Placement (Rows)"), BScreen::ROWSMARTPLACEMENT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuSmartCols,
 #else // !NLS
 				0, 0,
 #endif // NLS
-			"Smart Placement (Columns)"), BScreen::ColSmartPlacement);
+			"Smart Placement (Columns)"), BScreen::COLSMARTPLACEMENT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuCascade,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Cascade Placement"), BScreen::CascadePlacement);
+				"Cascade Placement"), BScreen::CASCADEPLACEMENT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuLeftRight,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Left to Right"), BScreen::LeftRight);
+				"Left to Right"), BScreen::LEFTRIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuRightLeft,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Right to Left"), BScreen::RightLeft);
+				"Right to Left"), BScreen::RIGHTLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuTopBottom,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Top to Bottom"), BScreen::TopBottom);
+				"Top to Bottom"), BScreen::TOPBOTTOM);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuBottomTop,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Bottom to Top"), BScreen::BottomTop);
+				"Bottom to Top"), BScreen::BOTTOMTOP);
 
 	update();
 
 	switch (configmenu->screen->getPlacementPolicy()) {
-	case BScreen::RowSmartPlacement:
+	case BScreen::ROWSMARTPLACEMENT:
 		setItemSelected(0, True);
 		break;
 
-	case BScreen::ColSmartPlacement:
+	case BScreen::COLSMARTPLACEMENT:
 		setItemSelected(1, True);
 		break;
 
-	case BScreen::CascadePlacement:
+	case BScreen::CASCADEPLACEMENT:
 		setItemSelected(2, True);
 		break;
 	}
 
 	Bool rl = (configmenu->screen->getRowPlacementDirection() ==
-				BScreen::LeftRight),
+				BScreen::LEFTRIGHT),
 				tb = (configmenu->screen->getColPlacementDirection() ==
-				BScreen::TopBottom);
+				BScreen::TOPBOTTOM);
 
 	setItemSelected(3, rl);
 	setItemSelected(4, ! rl);
@@ -428,7 +461,7 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 
 		if (item->function()) {
 			switch (item->function()) {
-			case BScreen::RowSmartPlacement:
+			case BScreen::ROWSMARTPLACEMENT:
 				configmenu->screen->savePlacementPolicy(item->function());
 
 				setItemSelected(0, True);
@@ -437,7 +470,7 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 				
 				break;
 
-			case BScreen::ColSmartPlacement:
+			case BScreen::COLSMARTPLACEMENT:
 				configmenu->screen->savePlacementPolicy(item->function());
 
 				setItemSelected(0, False);
@@ -446,7 +479,7 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 
 				break;
 
-			case BScreen::CascadePlacement:
+			case BScreen::CASCADEPLACEMENT:
 				configmenu->screen->savePlacementPolicy(item->function());
 
 				setItemSelected(0, False);
@@ -455,32 +488,32 @@ void Configmenu::Placementmenu::itemSelected(int button, int index) {
 
 				break;
 
-			case BScreen::LeftRight:
-				configmenu->screen->saveRowPlacementDirection(BScreen::LeftRight);
+			case BScreen::LEFTRIGHT:
+				configmenu->screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
 
 				setItemSelected(3, True);
 				setItemSelected(4, False);
 
 				break;
 
-			case BScreen::RightLeft:
-				configmenu->screen->saveRowPlacementDirection(BScreen::RightLeft);
+			case BScreen::RIGHTLEFT:
+				configmenu->screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
 
 				setItemSelected(3, False);
 				setItemSelected(4, True);
 
 	break;
 
-			case BScreen::TopBottom:
-	configmenu->screen->saveColPlacementDirection(BScreen::TopBottom);
+			case BScreen::TOPBOTTOM:
+	configmenu->screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
 
 	setItemSelected(5, True);
 	setItemSelected(6, False);
 
 	break;
 
-			case BScreen::BottomTop:
-	configmenu->screen->saveColPlacementDirection(BScreen::BottomTop);
+			case BScreen::BOTTOMTOP:
+	configmenu->screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
 
 	setItemSelected(5, False);
 	setItemSelected(6, True);
@@ -510,112 +543,112 @@ Configmenu::Tabmenu::Tabmenu(Configmenu *cm) : Basemenu(cm->screen) {
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Top Left"), Tab::PTop + Tab::ALeft);
+				"Top Left"), Tab::PTOP + Tab::ALEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopCenter,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Top Center"), Tab::PTop + Tab::ACenter);
+				"Top Center"), Tab::PTOP + Tab::ACENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopRight,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Top Right"), Tab::PTop + Tab::ARight);
+				"Top Right"), Tab::PTOP + Tab::ARIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopRelative,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Top Relative"), Tab::PTop + Tab::ARelative);
+				"Top Relative"), Tab::PTOP + Tab::ARELATIVE);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomLeft,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Bottom Left"), Tab::PBottom + Tab::ALeft);
+				"Bottom Left"), Tab::PBOTTOM + Tab::ALEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomCenter,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Bottom Center"), Tab::PBottom + Tab::ACenter);
+				"Bottom Center"), Tab::PBOTTOM + Tab::ACENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomRight,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Bottom Right"), Tab::PBottom + Tab::ARight);
+				"Bottom Right"), Tab::PBOTTOM + Tab::ARIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomRelative,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Bottom Relative"), Tab::PBottom + Tab::ARelative);
+				"Bottom Relative"), Tab::PBOTTOM + Tab::ARELATIVE);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementLeftTop,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Left Top"), Tab::PLeft + Tab::ARight);
+				"Left Top"), Tab::PLEFT + Tab::ARIGHT);
 	insert(i18n->getMessage(
 #ifdef	NLS
 				CommonSet, CommonPlacementLeftCenter,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Left Center"), Tab::PLeft + Tab::ACenter);
+				"Left Center"), Tab::PLEFT + Tab::ACENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementLeftBottom,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Left Bottom"), Tab::PLeft + Tab::ALeft);
+				"Left Bottom"), Tab::PLEFT + Tab::ALEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementLeftRelative,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Left Relative"), Tab::PLeft + Tab::ARelative);
+				"Left Relative"), Tab::PLEFT + Tab::ARELATIVE);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementRightTop,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Right Top"), Tab::PRight + Tab::ARight);
+				"Right Top"), Tab::PRIGHT + Tab::ARIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementRightCenter,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Right Center"), Tab::PRight + Tab::ACenter);
+				"Right Center"), Tab::PRIGHT + Tab::ACENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementRightBottom,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Right Bottom"), Tab::PRight + Tab::ALeft);
+				"Right Bottom"), Tab::PRIGHT + Tab::ALEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementRightRelative,
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Right Relative"), Tab::PRight + Tab::ARelative);
+				"Right Relative"), Tab::PRIGHT + Tab::ARELATIVE);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				ConfigmenuSet, ConfigmenuTabRotateVertical,
@@ -634,127 +667,127 @@ void Configmenu::Tabmenu::itemSelected(int button, int index) {
 		BasemenuItem *item = find(index);
 		
 		switch (item->function()) {
-			case (Tab::PTop + Tab::ALeft):
-				configmenu->screen->saveTabPlacement(Tab::PTop);
-				configmenu->screen->saveTabAlignment(Tab::ALeft);
+			case (Tab::PTOP + Tab::ALEFT):
+				configmenu->screen->saveTabPlacement(Tab::PTOP);
+				configmenu->screen->saveTabAlignment(Tab::ALEFT);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PTop + Tab::ACenter):
-				configmenu->screen->saveTabPlacement(Tab::PTop);
-				configmenu->screen->saveTabAlignment(Tab::ACenter);
+			case (Tab::PTOP + Tab::ACENTER):
+				configmenu->screen->saveTabPlacement(Tab::PTOP);
+				configmenu->screen->saveTabAlignment(Tab::ACENTER);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PTop + Tab::ARight):
-				configmenu->screen->saveTabPlacement(Tab::PTop);
-				configmenu->screen->saveTabAlignment(Tab::ARight);
+			case (Tab::PTOP + Tab::ARIGHT):
+				configmenu->screen->saveTabPlacement(Tab::PTOP);
+				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PTop + Tab::ARelative):
-				configmenu->screen->saveTabPlacement(Tab::PTop);
-				configmenu->screen->saveTabAlignment(Tab::ARelative);
+			case (Tab::PTOP + Tab::ARELATIVE):
+				configmenu->screen->saveTabPlacement(Tab::PTOP);
+				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PBottom + Tab::ALeft):
-				configmenu->screen->saveTabPlacement(Tab::PBottom);
-				configmenu->screen->saveTabAlignment(Tab::ALeft);
+			case (Tab::PBOTTOM + Tab::ALEFT):
+				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
+				configmenu->screen->saveTabAlignment(Tab::ALEFT);
 
 				configmenu->screen->reconfigure();
 
 				break;
-			case (Tab::PBottom + Tab::ACenter):
-				configmenu->screen->saveTabPlacement(Tab::PBottom);
-				configmenu->screen->saveTabAlignment(Tab::ACenter);
-
-				configmenu->screen->reconfigure();
-
-				break;
-
-			case (Tab::PBottom + Tab::ARight):
-				configmenu->screen->saveTabPlacement(Tab::PBottom);
-				configmenu->screen->saveTabAlignment(Tab::ARight);
+			case (Tab::PBOTTOM + Tab::ACENTER):
+				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
+				configmenu->screen->saveTabAlignment(Tab::ACENTER);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PBottom + Tab::ARelative):
-				configmenu->screen->saveTabPlacement(Tab::PBottom);
-				configmenu->screen->saveTabAlignment(Tab::ARelative);
+			case (Tab::PBOTTOM + Tab::ARIGHT):
+				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
+				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PLeft + Tab::ARight):
-				configmenu->screen->saveTabPlacement(Tab::PLeft);
-				configmenu->screen->saveTabAlignment(Tab::ARight);
+			case (Tab::PBOTTOM + Tab::ARELATIVE):
+				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
+				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PLeft + Tab::ACenter):
-				configmenu->screen->saveTabPlacement(Tab::PLeft);
-				configmenu->screen->saveTabAlignment(Tab::ACenter);
+			case (Tab::PLEFT + Tab::ARIGHT):
+				configmenu->screen->saveTabPlacement(Tab::PLEFT);
+				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PLeft + Tab::ALeft):
-				configmenu->screen->saveTabPlacement(Tab::PLeft);
-				configmenu->screen->saveTabAlignment(Tab::ALeft);
+			case (Tab::PLEFT + Tab::ACENTER):
+				configmenu->screen->saveTabPlacement(Tab::PLEFT);
+				configmenu->screen->saveTabAlignment(Tab::ACENTER);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PLeft + Tab::ARelative):
-				configmenu->screen->saveTabPlacement(Tab::PLeft);
-				configmenu->screen->saveTabAlignment(Tab::ARelative);
+			case (Tab::PLEFT + Tab::ALEFT):
+				configmenu->screen->saveTabPlacement(Tab::PLEFT);
+				configmenu->screen->saveTabAlignment(Tab::ALEFT);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PRight + Tab::ARight):
-				configmenu->screen->saveTabPlacement(Tab::PRight);
-				configmenu->screen->saveTabAlignment(Tab::ARight);
-
-				configmenu->screen->reconfigure();
-
-				break;
-			case (Tab::PRight + Tab::ACenter):
-				configmenu->screen->saveTabPlacement(Tab::PRight);
-				configmenu->screen->saveTabAlignment(Tab::ACenter);
+			case (Tab::PLEFT + Tab::ARELATIVE):
+				configmenu->screen->saveTabPlacement(Tab::PLEFT);
+				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PRight + Tab::ALeft):
-				configmenu->screen->saveTabPlacement(Tab::PRight);
-				configmenu->screen->saveTabAlignment(Tab::ALeft);
+			case (Tab::PRIGHT + Tab::ARIGHT):
+				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
+				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
+
+				configmenu->screen->reconfigure();
+
+				break;
+			case (Tab::PRIGHT + Tab::ACENTER):
+				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
+				configmenu->screen->saveTabAlignment(Tab::ACENTER);
 
 				configmenu->screen->reconfigure();
 
 				break;
 
-			case (Tab::PRight + Tab::ARelative):
-				configmenu->screen->saveTabPlacement(Tab::PRight);
-				configmenu->screen->saveTabAlignment(Tab::ARelative);
+			case (Tab::PRIGHT + Tab::ALEFT):
+				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
+				configmenu->screen->saveTabAlignment(Tab::ALEFT);
+
+				configmenu->screen->reconfigure();
+
+				break;
+
+			case (Tab::PRIGHT + Tab::ARELATIVE):
+				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
+				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
 
 				configmenu->screen->reconfigure();
 
@@ -774,41 +807,41 @@ void Configmenu::Tabmenu::itemSelected(int button, int index) {
 }
 
 void Configmenu::Tabmenu::setSelected(void) {
-	setItemSelected(0, (configmenu->screen->getTabPlacement() == Tab::PTop &&
-						configmenu->screen->getTabAlignment() == Tab::ALeft));
-	setItemSelected(1, (configmenu->screen->getTabPlacement() == Tab::PTop &&
-						configmenu->screen->getTabAlignment() == Tab::ACenter));
-	setItemSelected(2, (configmenu->screen->getTabPlacement() == Tab::PTop &&
-						configmenu->screen->getTabAlignment() == Tab::ARight));
-	setItemSelected(3, (configmenu->screen->getTabPlacement() == Tab::PTop &&
-						configmenu->screen->getTabAlignment() == Tab::ARelative));
-	setItemSelected(4, (configmenu->screen->getTabPlacement() == Tab::PBottom &&
-						configmenu->screen->getTabAlignment() == Tab::ALeft));
-	setItemSelected(5, (configmenu->screen->getTabPlacement() == Tab::PBottom &&
-						configmenu->screen->getTabAlignment() == Tab::ACenter));
-	setItemSelected(6, (configmenu->screen->getTabPlacement() == Tab::PBottom &&
-						configmenu->screen->getTabAlignment() == Tab::ARight));
-	setItemSelected(7, (configmenu->screen->getTabPlacement() == Tab::PBottom &&
-						configmenu->screen->getTabAlignment() == Tab::ARelative));
-	setItemSelected(8, (configmenu->screen->getTabPlacement() == Tab::PLeft &&
-						configmenu->screen->getTabAlignment() == Tab::ARight));
-	setItemSelected(9, (configmenu->screen->getTabPlacement() == Tab::PLeft &&
-						configmenu->screen->getTabAlignment() == Tab::ACenter));
-	setItemSelected(10, (configmenu->screen->getTabPlacement() == Tab::PLeft &&
-						configmenu->screen->getTabAlignment() == Tab::ALeft));
-	setItemSelected(11, (configmenu->screen->getTabPlacement() == Tab::PLeft &&
-						configmenu->screen->getTabAlignment() == Tab::ARelative));
-	setItemSelected(12, (configmenu->screen->getTabPlacement() == Tab::PRight &&
-						configmenu->screen->getTabAlignment() == Tab::ARight));
-	setItemSelected(13, (configmenu->screen->getTabPlacement() == Tab::PRight &&
-						configmenu->screen->getTabAlignment() == Tab::ACenter));
-	setItemSelected(14, (configmenu->screen->getTabPlacement() == Tab::PRight &&
-						configmenu->screen->getTabAlignment() == Tab::ALeft));
-	setItemSelected(15, (configmenu->screen->getTabPlacement() == Tab::PRight &&
-						configmenu->screen->getTabAlignment() == Tab::ARelative));
-	setItemEnabled(16, (configmenu->screen->getTabPlacement() == Tab::PLeft ||
-						configmenu->screen->getTabPlacement() == Tab::PRight));
+	setItemSelected(0, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
+						configmenu->screen->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(1, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
+						configmenu->screen->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(2, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
+						configmenu->screen->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(3, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
+						configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
+	setItemSelected(4, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
+						configmenu->screen->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(5, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
+						configmenu->screen->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(6, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
+						configmenu->screen->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(7, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
+						configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
+	setItemSelected(8, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
+						configmenu->screen->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(9, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
+						configmenu->screen->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(10, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
+						configmenu->screen->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(11, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
+						configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
+	setItemSelected(12, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
+						configmenu->screen->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(13, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
+						configmenu->screen->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(14, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
+						configmenu->screen->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(15, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
+						configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
+	setItemEnabled(16, (configmenu->screen->getTabPlacement() == Tab::PLEFT ||
+						configmenu->screen->getTabPlacement() == Tab::PRIGHT));
 	setItemSelected(16, (configmenu->screen->isTabRotateVertical() &&
-						(configmenu->screen->getTabPlacement() == Tab::PLeft ||
-						configmenu->screen->getTabPlacement() == Tab::PRight))); 
+						(configmenu->screen->getTabPlacement() == Tab::PLEFT ||
+						configmenu->screen->getTabPlacement() == Tab::PRIGHT))); 
 }

@@ -1,3 +1,6 @@
+// Basemenu.hh for Fluxbox Window manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Basemenu.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,8 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   __Basemenu_hh
-#define   __Basemenu_hh
+// $Id: Basemenu.hh,v 1.4 2002/01/11 09:24:46 fluxgen Exp $
+
+#ifndef   _BASEMENU_HH_
+#define   _BASEMENU_HH_
 
 #include <X11/Xlib.h>
 
@@ -128,9 +133,10 @@ public:
   virtual void show(void);
   virtual void hide(void);
 
-  enum { AlignDontCare = 1, AlignTop, AlignBottom };
-  enum { Right = 1, Left };
-  enum { Empty = 0, Square, Triangle, Diamond };
+  enum { ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
+  enum { RIGHT = 1, LEFT };
+  enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
+
 };
 
 
@@ -141,10 +147,6 @@ private:
   int f, enabled, selected;
 
   friend class Basemenu;
-
-
-protected:
-
 
 public:
   BasemenuItem(const char *lp, int fp, const char *ep = (const char *) 0) {
@@ -189,4 +191,4 @@ public:
 };
 
 
-#endif // __Basemenu_hh
+#endif // _BASEMENU_HH_

@@ -1,3 +1,6 @@
+// BaseDisplay.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // BaseDisplay.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: BaseDisplay.hh,v 1.6 2002/01/10 12:52:51 fluxgen Exp $
+
 #ifndef   _BASEDISPLAY_HH_
 #define   _BASEDISPLAY_HH_
 
@@ -32,32 +37,6 @@ class ScreenInfo;
 #include "LinkedList.hh"
 #include "Timer.hh"
 
-#define AttribShaded      (1l << 0)
-#define AttribMaxHoriz    (1l << 1)
-#define AttribMaxVert     (1l << 2)
-#define AttribOmnipresent (1l << 3)
-#define AttribWorkspace   (1l << 4)
-#define AttribStack       (1l << 5)
-#define AttribDecoration  (1l << 6)
-
-#define StackTop          (0)
-#define StackNormal       (1)
-#define StackBottom       (2)
-
-#define DecorNone         (0)
-#define DecorNormal       (1)
-#define DecorTiny         (2)
-#define DecorTool         (3)
-
-typedef struct _blackbox_hints {
-  unsigned long flags, attrib, workspace, stack, decoration;
-} BlackboxHints;
-
-typedef struct _blackbox_attributes {
-  unsigned long flags, attrib, workspace, stack;
-  int premax_x, premax_y;
-  unsigned int premax_w, premax_h;
-} BlackboxAttributes;
 
 #define PropBlackboxHintsElements      (5)
 #define PropBlackboxAttributesElements (8)
@@ -66,7 +45,6 @@ typedef struct _blackbox_attributes {
 void bexec(const char *, char *);
 #endif // !__EMX__
 
-char *bstrdup(const char *);
 template <typename Z> inline Z min(Z a, Z b) { return ((a < b) ? a : b); }
 template <typename Z> inline Z max(Z a, Z b) { return ((a > b) ? a : b); }
 
@@ -75,9 +53,32 @@ class BaseDisplay {
 public:
   BaseDisplay(char *, char * = 0);
   virtual ~BaseDisplay(void);
+	
+	enum Attrib {
+		ATTRIB_SHADED = 0x01,
+		ATTRIB_MAXHORIZ = 0x02,
+		ATTRIB_MAXVERT = 0x04,
+		ATTRIB_OMNIPRESENT = 0x08,
+		ATTRIB_WORKSPACE = 0x10,
+		ATTRIB_STACK = 0x20,		
+		ATTRIB_DECORATION = 0x40
+		};
+	enum Decor {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
+	enum Stack {STACK_TOP=0, STACK_NORMAL, STACK_BOTTOM};
+	
+	typedef struct _blackbox_hints {
+  	unsigned long flags, attrib, workspace, stack;
+		Decor decoration;
+	} BlackboxHints;
+
+	typedef struct _blackbox_attributes {
+  	unsigned long flags, attrib, workspace, stack;
+	  int premax_x, premax_y;
+  	unsigned int premax_w, premax_h;
+	} BlackboxAttributes;
 
 #ifdef GNOME
-	inline Atom *getGnomeListAtoms() { return gnome_atom_list; }
+//	inline Atom *getGnomeListAtoms() { return gnome_atom_list; }
 	inline Atom &getGnomeProtAtom() { return gnome_wm_prot; }
 	inline Atom &getGnomeClientListAtom() { return gnome_wm_win_client_list; }
 	inline Atom &getGnomeSupportingWMCheckAtom() { return gnome_wm_supporting_wm_check; }
@@ -307,14 +308,14 @@ private:
 #endif // NEWWMSPEC
 
 #ifdef GNOME
-	union {
+//	union {
 		Atom gnome_wm_win_layer, gnome_wm_win_state, gnome_wm_win_hints,
 			gnome_wm_win_app_state, gnome_wm_win_expanded_size,
 			gnome_wm_win_icons, gnome_wm_win_workspace,
 			gnome_wm_win_workspace_count,	gnome_wm_win_workspace_names,
 			gnome_wm_win_client_list;
-		Atom gnome_atom_list[10];	
-	};	
+//		Atom gnome_atom_list[10];	
+//	};	
 	Atom gnome_wm_prot;
 	Atom gnome_wm_supporting_wm_check;	
 #endif // GNOME
