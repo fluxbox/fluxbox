@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.2 2002/10/16 23:31:10 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.3 2002/10/24 11:40:36 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
@@ -34,6 +34,11 @@
 #include <locale.h>
 #endif // HAVE_SETLOCALE
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#include <cstdio>
 #include <cstdarg>
 #include <iostream>
 using namespace std;
