@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.1 2003/01/05 22:14:10 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.2 2003/01/07 01:28:16 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -30,14 +30,17 @@
 #include "Font.hh"
 #include "Text.hh"
 #include "FbWinFrameTheme.hh"
+#include "RefCount.hh"
+#include "Command.hh"
 
 #include <vector>
 #include <string>
 
+
 class FbWinFrameTheme;
 class BImageControl;
 
-/// holds a window frame with a client window
+/// holds a window frame with a client window (see: <a href="fluxbox_fbwinframe.png">image</a>)
 class FbWinFrame:public FbTk::EventHandler {
 public:
 
@@ -53,6 +56,10 @@ public:
     /// destroy frame
     ~FbWinFrame();
 
+    /// setup actions for titlebar
+    bool setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &cmd, int button_num,
+                            bool double_click=false, bool pressed=false);
+
     void hide();
     void show();
     /// shade frame (ie resize to titlebar size)
@@ -66,6 +73,7 @@ public:
     void setTitle(const std::string &title);
     /// set focus/unfocus style
     void setFocus(bool newvalue);
+    void setDoubleClickTime(unsigned int time);
     void setBevel(int bevel);
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
@@ -88,12 +96,15 @@ public:
     void showTitlebar();
     void hideHandle();
     void showHandle();
+    void hideAllDecorations();
+    void showAllDecorations();
 
     /**
        @name Event handlers
     */
     //@{
     void buttonPressEvent(XButtonEvent &event);
+    void buttonReleaseEvent(XButtonEvent &event);
     void exposeEvent(XExposeEvent &event);
     void configureNotifyEvent(XConfigureEvent &event);
     void handleEvent(XEvent &event);
@@ -128,7 +139,9 @@ public:
     inline FbTk::FbWindow &gripRight() { return m_grip_right; }
     inline bool focused() const { return m_focused; }
     inline bool isShaded() const { return m_shaded; }
+    /// @return titlebar height
     unsigned int titleHeight() const;
+    /// @return size of button
     unsigned int buttonHeight() const;
 
     //@}
@@ -178,8 +191,9 @@ private:
     std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
-    bool m_use_handles; ///< if we should use handles
+    bool m_use_handle; ///< if we should use handle
     bool m_focused; ///< focused/unfocused mode
+
     /**
        @name pixmaps and colors for rendering
     */
@@ -215,7 +229,13 @@ private:
     unsigned int m_width_before_shade,  ///< width before shade, so we can restore it when we unshade
         m_height_before_shade; ///< height before shade, so we can restore it when we unshade
     bool m_shaded; ///< wheter we're shaded or not
-
+    unsigned int m_double_click_time; ///< the time period that's considerd to be a double click
+    struct MouseButtonAction {
+        FbTk::RefCount<FbTk::Command> click; ///< what to do when we release mouse button
+        FbTk::RefCount<FbTk::Command> click_pressed; ///< what to do when we press mouse button
+        FbTk::RefCount<FbTk::Command> double_click; ///< what to do when we double click
+    };
+    MouseButtonAction m_commands[5]; ///< hardcoded to five ...TODO, change this
 };
 
 #endif // FBWINFRAME_HH

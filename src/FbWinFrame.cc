@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.1 2003/01/05 22:14:10 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.2 2003/01/07 01:30:57 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -62,7 +62,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, BImageControl &imgctrl, int scree
     m_clientwin(0),
     m_bevel(1),
     m_use_titlebar(true), 
-    m_use_handles(true),
+    m_use_handle(true),
     m_button_pm(0) {
     init();
 }
@@ -94,6 +94,23 @@ FbWinFrame::~FbWinFrame() {
     removeEventHandler();
     removeAllButtons();
 
+}
+
+bool FbWinFrame::setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &ref, int mousebutton_num, 
+                            bool double_click, bool pressed) {
+    // find mousebutton_num
+    if (mousebutton_num < 1 || mousebutton_num > 5)
+        return false;
+    if (double_click)
+        m_commands[mousebutton_num - 1].double_click = ref;
+    else {
+        if (pressed)
+            m_commands[mousebutton_num - 1].click_pressed = ref;
+        else
+            m_commands[mousebutton_num - 1].click = ref;
+    }
+
+    return true;
 }
 
 void FbWinFrame::hide() {
@@ -146,6 +163,10 @@ void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
     // total height for frame without client
     unsigned int total_height = m_handle.height() + m_titlebar.height();
     // resize frame height with total height + specified height
+    if (!m_use_titlebar)
+        total_height -= m_titlebar.height();
+    if (!m_use_handle)
+        total_height -= m_handle.height();
     resize(width, total_height + height);
 }
 
@@ -165,6 +186,10 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     m_focused = newvalue;
     reconfigure(); // reconfigure rendering for new focus value
+}
+
+void FbWinFrame::setDoubleClickTime(unsigned int time) {
+    m_double_click_time = time;
 }
 
 void FbWinFrame::setBevel(int bevel) {
@@ -238,18 +263,41 @@ void FbWinFrame::removeClient() {
 
 void FbWinFrame::hideTitlebar() {
     m_titlebar.hide();
+    m_use_titlebar = false;
 }
 
 void FbWinFrame::showTitlebar() {
     m_titlebar.show();
+    m_use_titlebar = true;
 }
 
 void FbWinFrame::hideHandle() {
     m_handle.hide();
+    m_grip_left.hide();
+    m_grip_right.hide();
+    m_use_handle = false;
 }
 
 void FbWinFrame::showHandle() {
     m_handle.show();
+    m_grip_left.show();
+    m_grip_right.show();
+    m_use_handle = true;
+}
+
+void FbWinFrame::hideAllDecorations() {
+    hideHandle();
+    hideTitlebar();
+    resizeForClient(m_clientarea.width(), m_clientarea.height() - m_window.borderWidth());
+    reconfigure();
+}
+
+void FbWinFrame::showAllDecorations() {
+    if (!m_use_handle)
+        showHandle();
+    if (!m_use_titlebar)
+        showTitlebar();
+    resizeForClient(m_clientarea.width(), m_clientarea.height() - m_window.borderWidth());
 }
 
 /**
@@ -282,7 +330,37 @@ void FbWinFrame::removeEventHandler() {
 }
 
 void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
-    m_window.raise();
+    if (event.window != m_titlebar.window() &&
+        event.window != m_label.window())
+        return;
+
+    if (event.button > 5 || event.button < 1)
+        return;
+
+    if (*m_commands[event.button - 1].click_pressed) {
+        cerr<<"Pressed event button = "<<event.button<<endl;
+        m_commands[event.button - 1].click_pressed->execute();
+    }
+}
+
+void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
+    if (event.window != m_titlebar.window() &&
+        event.window != m_label.window())
+        return;
+
+    if (event.button < 1 || event.button > 5)
+        return;
+
+    static int last_release_time = 0;
+    bool double_click = (event.time - last_release_time <= m_double_click_time);
+    last_release_time = event.time;
+    int real_button = event.button - 1;
+    
+    if (double_click && *m_commands[real_button].double_click)
+        m_commands[real_button].double_click->execute();
+    else if (*m_commands[real_button].click)
+        m_commands[real_button].click->execute();
+
 }
 
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
@@ -305,17 +383,31 @@ void FbWinFrame::reconfigure() {
     m_window.clear();
 	
     // align titlebar and render it
-    reconfigureTitlebar();
+    if (m_use_titlebar)
+        reconfigureTitlebar();
+    // setup client area size/pos
+    int next_y =  m_titlebar.height() + 2*m_titlebar.borderWidth();
+    unsigned int client_height = m_window.height() - m_titlebar.height() - m_handle.height();
 
-    m_clientarea.moveResize(0, m_titlebar.height() + 2*m_titlebar.borderWidth(),
-                            m_window.width(), 
-                            m_window.height() - m_titlebar.height() - m_handle.height());
+    if (!m_use_titlebar) {
+        next_y = 0;
+        if (!m_use_handle)
+            client_height = m_window.height();
+        else
+            client_height = m_window.height() - m_handle.height();
+    }
+
+    m_clientarea.moveResize(0, next_y,
+                            m_window.width(), client_height);
 
     if (m_clientwin != 0) {
         XMoveResizeWindow(FbTk::App::instance()->display(), m_clientwin,
                           0, 0,
                           m_clientarea.width(), m_clientarea.height());
     }
+
+    if (!m_use_handle) // no need to do anything more
+        return;
 
     // align handle and grips
     const int grip_height = m_handle.height();
@@ -336,7 +428,6 @@ void FbWinFrame::reconfigure() {
     // render the theme
     renderButtons();
     renderHandles();
-
 }
 
 unsigned int FbWinFrame::titleHeight() const {
@@ -476,7 +567,7 @@ void FbWinFrame::renderTitlebar() {
 
 
 void FbWinFrame::renderHandles() {
-    if (!m_use_handles)
+    if (!m_use_handle)
         return;
     render(m_theme.handleFocusTexture(), m_handle_focused_color, 
            m_handle_focused_pm,
@@ -559,7 +650,7 @@ void FbWinFrame::init() {
     m_title_focused_pm = m_title_unfocused_pm = 0;
     m_label_focused_pm = m_label_unfocused_pm = 0;
     m_button_unfocused_pm = m_button_pressed_pm = 0;
-    
+    m_double_click_time = 200;
     m_button_pm = 0;
     m_button_size = 26;
     m_handle_focused_pm = 
@@ -567,12 +658,10 @@ void FbWinFrame::init() {
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
 
     m_shaded = false;
-
     m_label.show();
-    m_titlebar.show();
-    m_handle.show();
-    m_grip_right.show();
-    m_grip_left.show();
+
+      showHandle();
+    showTitlebar();
     // note: we don't show clientarea yet
 
     setEventHandler(*this);
