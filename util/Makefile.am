@@ -1,5 +1,5 @@
 # util/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
-SUBDIRS = fbrun
+SUBDIRS = 
 bin_SCRIPTS = bsetbg fluxbox-generate_menu
 bin_PROGRAMS =		bsetroot
 bsetroot_SOURCES =	bsetroot.cc bsetroot.hh
