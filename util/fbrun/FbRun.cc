@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.29 2004/04/21 14:58:44 rathnor Exp $
+// $Id: FbRun.cc,v 1.30 2004/04/22 21:01:58 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -99,38 +99,6 @@ FbRun::FbRun(int x, int y, size_t width):
         XSetWMHints(m_display, window(), &wmhints);
     }
 
-    string path= getenv("PATH");
-    unsigned int l;
-    unsigned int r;
-    FbTk::Directory dir;
-
-    for(l= 0, r= 0; r < path.size(); r++) {
-        if ((path[r]==':' || r == path.size() - 1) && r - l > 0) {
-
-            string filename;
-            string fncomplete;
-            dir.open(path.substr(l, r - l).c_str());
-            int n= dir.entries();
-            if (n >= 0) {
-                while(n--) {
-                    filename= dir.readFilename();
-                    fncomplete= dir.name() + "/" + filename;
-                    if (dir.isRegularFile(fncomplete) && 
-                        dir.isExecutable(fncomplete)) {
-                        m_apps.push_back(filename);
-                    }
-                }
-            }
-            l= r + 1;
-            dir.close();
-        }
-    }
-
-    sort(m_apps.begin(), m_apps.end());
-    unique(m_apps.begin(), m_apps.end());
-
-    if (!m_apps.empty())
-        m_current_apps_item= 1;
 }
 
 
@@ -374,22 +342,103 @@ void FbRun::tabCompleteHistory() {
 }
 
 void FbRun::tabCompleteApps() {
-    if ( m_current_apps_item == 0 || m_apps.empty() ) {
+  
+    static bool first_run= true;
+    static string saved_prefix= "";
+    string prefix= text().substr(0, cursorPosition());
+    FbTk::Directory dir;
+
+    bool add_dirs= false;
+    bool changed_prefix= false;
+
+    // (re)build m_apps-container
+    if (first_run || saved_prefix != prefix) {
+        first_run= false;
+        
+        string path;
+        
+        if(!prefix.empty() && prefix[0] =='/') {
+            size_t rseparator= prefix.find_last_of("/");
+            path= prefix.substr(0, rseparator + 1) +  ":";
+            add_dirs= true;
+        } else
+            path= getenv("PATH");
+
+        m_apps.clear();
+        
+        unsigned int l;
+        unsigned int r;
+
+        for(l= 0, r= 0; r < path.size(); r++) {
+            if ((path[r]==':' || r == path.size() - 1) && r - l > 0) {
+                string filename;
+                string fncomplete;
+                dir.open(path.substr(l, r - l).c_str());
+                int n= dir.entries();
+                if (n >= 0) {
+                    while(n--) {
+                        filename= dir.readFilename();
+                        fncomplete= dir.name() + 
+                                    (*dir.name().rbegin() != '/' ? "/" : "") + 
+                                    filename;
+
+                        // directories in dirmode ?
+                        if (add_dirs && dir.isDirectory(fncomplete) &&
+                            filename != ".." && filename != ".") {
+                            m_apps.push_back(fncomplete); 
+                        // executables in dirmode ?
+                        } else if (add_dirs && dir.isRegularFile(fncomplete) && 
+                                   dir.isExecutable(fncomplete) && 
+                                   (prefix == "" || 
+                                    fncomplete.substr(0, prefix.size()) == prefix)) {
+                            m_apps.push_back(fncomplete);
+                        // executables in $PATH ?
+                        } else if (dir.isRegularFile(fncomplete) && 
+                                   dir.isExecutable(fncomplete) && 
+                                   (prefix == "" || 
+                                    filename.substr(0, prefix.size()) == prefix)) {
+                            m_apps.push_back(filename);
+                        } 
+                    }
+                }
+                l= r + 1;
+                dir.close();
+            }
+        }
+        sort(m_apps.begin(), m_apps.end());
+        unique(m_apps.begin(), m_apps.end());
+
+        saved_prefix= prefix;
+        changed_prefix= true;
+        m_current_apps_item= 0;
+    }
+
+    if (m_apps.empty() ) {
       XBell(m_display, 0);
     } else {
-        size_t apps_item = m_current_apps_item + 1;
-        string prefix = text().substr(0, cursorPosition());
-        while (apps_item != m_current_apps_item) {
-            if (apps_item > m_apps.size() )
-                apps_item = 1;
-            if (m_apps[apps_item - 1].find(prefix) == 0) {
+        size_t apps_item = m_current_apps_item + (changed_prefix ? 0 : 1);
+        bool loop= false;
+
+        while (true) {
+            if (apps_item >= m_apps.size() ) {
+                loop = true;
+                apps_item = 0;
+            }
+
+            if ((!changed_prefix || loop) && apps_item == m_current_apps_item) {
+                break;
+            }
+            if (m_apps[apps_item].find(prefix) == 0) {
                 m_current_apps_item = apps_item;
-                setText(m_apps[m_current_apps_item - 1]);
+                if (FbTk::Directory::isDirectory(m_apps[m_current_apps_item]))
+                    setText(m_apps[m_current_apps_item] +  "/");
+                else
+                    setText(m_apps[m_current_apps_item]);
                 break;
             }
             apps_item++;
         }
-        if (apps_item == m_current_apps_item) 
+        if (!changed_prefix && apps_item == m_current_apps_item) 
             XBell(m_display, 0);
     }
 }
