@@ -40,7 +40,7 @@ Changes for 0.1.9:
      add them in every Makefile.am-file.
    * Updated src/Makefile.am and util/Makefile.am (see above) 
 *02/05/03:
-   * Fixed so settins for tool bar saves when you change them i the menu
+   * Fixed so settings for tool bar saves when you change them i the menu
      in Toolbar.cc
 *02/05/02:
    * Added FirstTab, LastTab, MoveTabPrev and MoveTabNext keybindings (Thanks Phil Dier)
