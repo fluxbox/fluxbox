@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.12 2004/10/06 09:30:54 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.13 2004/10/06 19:19:43 akir Exp $
 
 #include "TextureRender.hh"
 
@@ -99,6 +99,8 @@ Pixmap TextureRender::render(const FbTk::Texture &texture) {
 
 void TextureRender::allocateColorTables() {
     red = new(nothrow) unsigned char[width * height];
+
+    _FB_USES_NLS;
     if (red == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
