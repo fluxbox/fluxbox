@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.39 2002/11/12 22:57:03 fluxgen Exp $
+// $Id: Tab.cc,v 1.40 2002/11/15 14:06:33 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -119,8 +119,9 @@ void Tab::createTabWindow() {
 	Fluxbox::instance()->saveTabSearch(m_tabwin, this);	
 
 	XMapSubwindows(m_display, m_tabwin);
-
-	XMapWindow(m_display, m_tabwin);
+	// don't show if the window is iconified
+	if (!m_win->isIconic())
+		XMapWindow(m_display, m_tabwin);
 
 	decorate();
 }
