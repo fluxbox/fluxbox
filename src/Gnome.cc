@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.18 2003/04/25 11:15:01 fluxgen Exp $
+// $Id: Gnome.cc,v 1.19 2003/05/08 02:50:38 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -249,7 +249,8 @@ void Gnome::updateState(FluxboxWindow &win) {
 
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
-    int layernum = win.getLayerNum();
+    // our layers are in the opposite direction to GNOME
+    int layernum = Fluxbox::instance()->getDesktopLayer() - win.getLayerNum();
     XChangeProperty(FbTk::App::instance()->display(), win.getClientWindow(), 
                     m_gnome_wm_win_layer,
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&layernum, 1);
