@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.4 2002/01/07 23:44:09 fluxgen Exp $
+//$Id: Keys.cc,v 1.5 2002/01/08 12:13:25 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -71,6 +71,7 @@
 #include <fstream>
 #include <vector>
 #include <cassert>
+#include <memory>
 
 using namespace std;
 
@@ -266,7 +267,7 @@ bool Keys::load(char *filename) {
 					last_key->action = m_actionlist[i].action;
 					if (last_key->action == Keys::EXECUTE)
 						last_key->execcommand = 
-							static_cast<char *>(strcasestr(linebuffer.get(), getActionStr(Keys::EXECUTE))+
+							const_cast<char *>(StringUtil::strcasestr(linebuffer.get(), getActionStr(Keys::EXECUTE))+
 							strlen(getActionStr(Keys::EXECUTE)));
 
 					//add the keychain to list										
@@ -277,8 +278,8 @@ bool Keys::load(char *filename) {
 				  if (m_actionlist[i].action == Keys::EXECUTE) {
 						
 						cerr<<"line:"<<line<<endl;
-						cerr<<"buffer:"<<static_cast<char *>(strcasestr(linebuffer.get(), getActionStr(Keys::EXECUTE))+
-							strlen(getActionStr(Keys::EXECUTE)))<<endl;
+						cerr<<"buffer:"<<const_cast<char *>(StringUtil::strcasestr(linebuffer.get(), 
+							getActionStr(Keys::EXECUTE)) + strlen(getActionStr(Keys::EXECUTE)))<<endl;
 						cerr<<"command:"<<last_key->execcommand<<endl;
 		
 					}
@@ -305,7 +306,7 @@ bool Keys::load(char *filename) {
 	}
 	
 	#ifdef DEBUG
-	showTree();
+	showTree(); //who keybinding tree
 	#endif
 	return true;
 }
