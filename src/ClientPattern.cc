@@ -25,8 +25,10 @@
 #include "ClientPattern.hh"
 #include "RegExp.hh"
 #include "WinClient.hh"
+
 #include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
+#include "FbTk/stringstream.hh"
 
 // use GNU extensions
 #ifndef _GNU_SOURCE
@@ -46,20 +48,6 @@
 
 // needed as well for index on some systems (e.g. solaris)
 #include <strings.h> 
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef HAVE_SSTREAM
-#include <sstream>
-#define FB_istringstream istringstream
-#elif HAVE_STRSTREAM 
-#include <strstream>
-#define FB_istringstream istrstream
-#else
-#error "You dont have sstream or strstream headers!"
-#endif // HAVE_STRSTREAM
 
 
 using namespace std;
@@ -141,7 +129,7 @@ ClientPattern::ClientPattern(const char *str):
                                              str+pos,
                                              '{', '}');
         if (err > 0) {
-            FB_istringstream iss(number.c_str());
+            FbTk_istringstream iss(number.c_str());
             iss >> m_matchlimit;
             pos+=err;
         }
