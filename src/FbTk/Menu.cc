@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.30 2003/07/20 08:12:36 rathnor Exp $
+// $Id: Menu.cc,v 1.31 2003/07/20 10:41:56 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -384,7 +384,7 @@ void Menu::enableTitle() {
     setTitleVisibility(true);
 }
 
-void Menu::update() {
+void Menu::update(int active_index) {
 
     if (menu.bevel_w > 10) // clamp to "normal" size
         menu.bevel_w = 10;
@@ -539,10 +539,10 @@ void Menu::update() {
     if (m_need_update) {
         for (unsigned int i = 0; visible && i < menuitems.size(); i++) {
             if (i == (unsigned int)which_sub) {
-                drawItem(i, true, false, false);
+                drawItem(i, true, true, false);
                 drawSubmenu(i);
             } else
-                drawItem(i, false, false, false);
+                drawItem(i, (i == active_index), true, false);
         }
 
         if (m_parent && visible)
@@ -978,7 +978,6 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     
 }
 
-
 void Menu::setLabel(const char *labelstr) {
     //make sure we don't send 0 to std::string
     menu.label = (labelstr ? labelstr : "");
@@ -1095,16 +1094,16 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             p = (which_sbl * menu.persub) + which_press;
 
         if (w < static_cast<int>(menuitems.size()) && w >= 0) {
-            drawItem(p, (p == which_sub), true, true);
-
             if (p == w && isItemEnabled(w)) {
                 if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
                     re.y > iy && re.y < (signed) (iy + menu.item_h)) {
                     menuitems[w]->click(re.button, re.time);
                     itemSelected(re.button, w);
-                    
-                    update(); // update any changed item
+                    m_need_update = true;
+                    update(w); // update any changed item
                 }
+            } else {
+                drawItem(p, isItemEnabled(p) && (p == which_sub), true, true);
             }
         } else
             drawItem(p, false, true, true);
@@ -1147,12 +1146,15 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                 int p = which_sbl * menu.persub + which_press;
                 MenuItem *item = menuitems[p];
 
-                drawItem(p, false, true, true);
-                if (item->submenu()) {
-                    if (item->submenu()->isVisible() &&
-                        (! item->submenu()->isTorn())) {
-                        item->submenu()->internal_hide();
-                        which_sub = -1;
+                // don't redraw disabled items on enter/leave
+                if (item->isEnabled()) {
+                    drawItem(p, false, true, true);
+                    if (item->submenu()) {
+                        if (item->submenu()->isVisible() &&
+                            (! item->submenu()->isTorn())) {
+                            item->submenu()->internal_hide();
+                            which_sub = -1;
+                        }
                     }
                 }
             }
@@ -1165,7 +1167,8 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             if (itmp->submenu())
                 drawSubmenu(w);
             else
-                drawItem(w, itmp->isEnabled(), true, true);
+                if (itmp->isEnabled())
+                    drawItem(w, true, true, true);
         }
     }
 }
@@ -1305,6 +1308,7 @@ void Menu::keyPressEvent(XKeyEvent &event) {
         if (which_press >= 0 && which_press < menuitems.size()) {
             menuitems[which_press]->click(1, event.time);
             itemSelected(1, which_press);
+            m_need_update = true;
             update();
         }
         break;

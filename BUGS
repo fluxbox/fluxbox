@@ -35,9 +35,6 @@ BUGS:
     turn off remember functionality when restarting (only use it for
     first instance).
 
-  * If you toggle a setting in the configuration-menu the notch does not
-    indicate the change until you point to another option.
-
 Other TODO:
 
 FAQ items for:
@@ -76,6 +73,10 @@ Fixed bugs (or not-our-fault bugs):
     to add a signal for menu reconfigures (Screen::setupWindowActions)
     => Fixed, added "ExtraMenus" for windows that get added whenever it
        is rebuilt.
+
+  * If you toggle a setting in the configuration-menu the notch does not
+    indicate the change until you point to another option.
+    => Fixed
 
 ------------------------------
 Core dumps and notes

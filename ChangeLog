@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/20:
+   * Fix menu [re]drawing, particularly when selecting options (Simon)
+     Menu.hh/cc
    * Fix disappearing Remember menu, plus titles of sub-window menus
      -> can now use addExtraMenus for windows in extensions (Simon)
      Menu.hh/cc Window.hh/cc Screen.hh/cc Remember.cc
