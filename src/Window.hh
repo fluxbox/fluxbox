@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.28 2002/08/16 10:44:17 fluxgen Exp $
+// $Id: Window.hh,v 1.29 2002/08/30 14:06:40 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -202,6 +202,8 @@ public:
 	void changeBlackboxHints(BaseDisplay::BlackboxHints *bh);
 	void restoreAttributes();
 	void showMenu(int mx, int my);	
+	void pauseMoving();
+	void resumeMoving();
 
 	void buttonPressEvent(XButtonEvent *be);
 	void buttonReleaseEvent(XButtonEvent *be);
@@ -324,10 +326,10 @@ private:
 		right_grip, left_grip;
 
 		int x, y, resize_x, resize_y, move_x, move_y, grab_x, grab_y,
-			y_border, y_handle;
+			y_border, y_handle, save_x, save_y;
 		unsigned int width, height, title_h, label_w, label_h, handle_h,
 			button_w, button_h, grip_w, grip_h, mwm_border_w, border_h,
-			bevel_w, resize_w, resize_h, snap_w, snap_h;
+			bevel_w, resize_w, resize_h, snap_w, snap_h, move_ws;
 	} frame;
 
 	enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };

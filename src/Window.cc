@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.72 2002/08/30 13:08:35 fluxgen Exp $
+// $Id: Window.cc,v 1.73 2002/08/30 14:06:40 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3258,6 +3258,35 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 				else if (dby > 0 && dby < screen->getEdgeSnapThreshold())
 					dy = dbby - frame.snap_h;
 			}
+			// Warp to next or previous workspace?
+			if (screen->isWorkspaceWarping()) {
+				int cur_id = screen->getCurrentWorkspaceID();
+				int new_id = cur_id;
+				const int warpPad = screen->getEdgeSnapThreshold();
+				if (me->x_root >= int(screen->getWidth()) - warpPad - 1 &&
+						frame.x < int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
+					//warp right
+					new_id = (cur_id + 1) % screen->getCount();
+					dx = -me->x_root;
+				} else if (me->x_root <= warpPad &&
+						frame.x > int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
+					//warp left
+					new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
+					dx = screen->getWidth() - me->x_root;
+				}
+				if (new_id != cur_id) {
+					XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
+
+					screen->changeWorkspaceID(new_id);
+
+					if (!screen->doOpaqueMove()) {
+						dx += frame.move_x; // for rectangle in correct position
+					} else {
+						dx += frame.x; // for window in correct position
+					}
+				}
+			}
+
 
 			if (! screen->doOpaqueMove()) {
 				XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
@@ -3270,47 +3299,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 					 frame.move_x, frame.move_y, frame.resize_w,
 					 frame.resize_h);
 			} else {
-				// Warp to next or previous workspace?
-				if (screen->isWorkspaceWarping()) {
-					int cur_id = screen->getCurrentWorkspaceID();
-					int new_id = cur_id;
-					const int warpPad = screen->getEdgeSnapThreshold();
-					if (me->x_root >= int(screen->getWidth()) - warpPad - 1 &&
-							frame.x < int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
-						//warp right
-						new_id = (cur_id + 1) % screen->getCount();
-						dx = -me->x_root;
-					} else if (me->x_root <= warpPad &&
-							frame.x > int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
-						//warp left
-						new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
-						dx = screen->getWidth() - me->x_root;
-					}
-					if (new_id != cur_id) {
-						frame.x += dx;
-						XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
-						screen->reassociateWindow(this, new_id, true);
-						
-						//if the window has a tab and is in a group
-						//reassociate those windows too 
-						if (hasTab() && (getTab()->next() || getTab()->prev())) {
-							Tab *tab_it = getTab()->first();
-							for (; tab_it; tab_it = tab_it->next()) {
-								screen->reassociateWindow(tab_it->getWindow(), new_id, true);
-							}
-						}
-						screen->changeWorkspaceID(new_id);
-						setInputFocus();
-						screen->raiseFocus();
-					}
-				}
-
 				configure(dx, dy, frame.width, frame.height);
 			}
 
 			if (screen->doShowWindowPos())
 				screen->showPosition(dx, dy);
-		}
+		} // end if moving
 	} else if (functions.resize &&
 			(((me->state & Button1Mask) && (me->window == frame.right_grip ||
 			 me->window == frame.left_grip)) ||
@@ -3484,6 +3478,7 @@ void FluxboxWindow::startMoving(Window win) {
 
 		frame.move_x = frame.x;
 		frame.move_y = frame.y;
+		frame.move_ws = screen->getCurrentWorkspaceID();
 		frame.resize_w = frame.width + screen->getBorderWidth2x();
 		frame.resize_h = ((shaded) ? frame.title_h : frame.height) +
 			screen->getBorderWidth2x();
@@ -3518,6 +3513,56 @@ void FluxboxWindow::stopMoving() {
 	
 	XSync(display, False); //make sure the redraw is made before we continue
 }
+
+void FluxboxWindow::pauseMoving() {
+	screen->hideGeometry(); // otherwise our window gets raised above it
+	if (screen->doOpaqueMove()) {
+		return;
+	}
+
+	// remove old rectangle
+	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+			frame.move_x, frame.move_y, frame.resize_w, frame.resize_h);
+
+	Fluxbox::instance()->ungrab();
+	if (workspace_number != frame.move_ws) {
+		// get it out of view
+		frame.save_x = frame.x;
+		frame.save_y = frame.y;
+		frame.x = screen->getWidth()/2;
+		frame.y = screen->getHeight()+screen->getTabHeight()+10; // +10 to be safe
+		configure(frame.x, frame.y, frame.width, frame.height);
+	}
+}
+
+
+void FluxboxWindow::resumeMoving() {
+	if (screen->doOpaqueMove()) {
+		setInputFocus();
+		screen->raiseFocus();
+		if (screen->doShowWindowPos())
+			screen->showPosition(frame.x, frame.y);
+		return;
+	}
+
+	if (workspace_number != frame.move_ws) {
+		frame.x = frame.save_x;
+		frame.y = frame.save_y;
+	} else {
+		// back on home workspace, display window
+		configure(frame.x, frame.y, frame.width, frame.height);
+	}
+	Fluxbox::instance()->grab();
+	setInputFocus();
+	screen->raiseFocus();
+	if (screen->doShowWindowPos())
+		screen->showPosition(frame.move_x, frame.move_y);
+	XSync(display,false);
+	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+		frame.move_x, frame.move_y, frame.resize_w,
+		frame.resize_h);
+}
+
 
 void FluxboxWindow::startResizing(XMotionEvent *me, bool left) {
 	resizing = true;
