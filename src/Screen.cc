@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.217 2003/08/12 01:03:25 fluxgen Exp $
+// $Id: Screen.cc,v 1.218 2003/08/12 12:21:42 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -302,7 +302,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_altname(altscreenname),
     m_resource_manager(rm),
     m_available_workspace_area(new Strut(0, 0, 0, 0)),
-    m_xinerama_headinfo(0) {
+    m_xinerama_headinfo(0),
+    m_shutdown(false) {
 
     Display *disp = FbTk::App::instance()->display();
 
@@ -2099,7 +2100,7 @@ void BScreen::shutdown() {
     Display *disp = FbTk::App::instance()->display();
     rootWindow().setEventMask(NoEventMask);
     XSync(disp, False);
-
+    m_shutdown = true;
     for_each(m_workspaces_list.begin(),
              m_workspaces_list.end(),
              mem_fun(&Workspace::shutdown));

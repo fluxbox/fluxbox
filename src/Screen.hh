@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.120 2003/08/12 00:27:13 fluxgen Exp $
+// $Id: Screen.hh,v 1.121 2003/08/12 12:20:48 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -318,6 +318,7 @@ public:
     void addConfigMenu(const char *label, FbTk::Menu &menu);
     void removeConfigMenu(FbTk::Menu &menu);
 
+    bool isShuttingdown() const { return m_shutdown; }
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
            UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
 
@@ -445,6 +446,7 @@ private:
     } *m_xinerama_headinfo;
 
     std::list<Strut *> m_strutlist;
+    bool m_shutdown;
 };
 
 
