@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.7 2003/05/07 11:35:22 fluxgen Exp $
+// $Id: Button.cc,v 1.8 2003/06/05 12:42:31 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -109,7 +109,8 @@ void Button::hide() {
 }
 
 void Button::buttonPressEvent(XButtonEvent &event) {
-    m_win.setBackgroundPixmap(m_pressed_pm);
+    if (m_pressed_pm != 0)
+        m_win.setBackgroundPixmap(m_pressed_pm);
     m_pressed = true;    
     clear();
     
