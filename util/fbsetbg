@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.26 2003/12/28 23:59:57 fluxgen Exp $
+# $Id: fbsetbg,v 1.27 2004/01/03 01:23:59 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -453,8 +453,10 @@ if [ "$option" = random ]; then
     fi
     if [ -d "$wallpaperdir" ]; then
         number_of_wallpapers=`ls $wallpaperdir|wc -l`
+        if find_it random_number; then
+            randomnumber=$(random_number)
         # some shells don't support $RANDOM
-        if [ -z $RANDOM ]; then
+        elif [ -z $RANDOM ]; then
             randomnumber=`(echo $$ ;time ps; w ; date )2>&1 | cksum | cut -f1 -d' '`
         else
             randomnumber=$RANDOM
