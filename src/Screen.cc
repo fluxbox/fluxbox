@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.107 2003/02/16 15:12:08 rathnor Exp $
+// $Id: Screen.cc,v 1.108 2003/02/16 16:45:23 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -287,6 +287,13 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
     RefCount<Command> remove_last(new RemoveLastWorkspaceCmd(scr));
     menu.insert("New Workspace", new_workspace);
     menu.insert("Remove Last", remove_last);
+    // for each workspace add workspace name and it's menu to our workspace menu
+    for (size_t workspace = 0; workspace < scr.getCount(); ++workspace) {
+        Workspace *wkspc = scr.getWorkspace(workspace);
+        menu.insert(wkspc->name().c_str(), &wkspc->menu());
+    }
+
+    // update graphics
     menu.update();
 }
 
@@ -484,14 +491,14 @@ BScreen::BScreen(ResourceManager &rm,
     Workspace *wkspc = (Workspace *) 0;
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
-            wkspc = new Workspace(this, m_layermanager, workspacesList.size());
+            wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
             workspacesList.push_back(wkspc);
-            workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
+            //            workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
         }
     } else {
-        wkspc = new Workspace(this, m_layermanager, workspacesList.size());
+        wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
         workspacesList.push_back(wkspc);
-        workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
+        //        workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
     }
 
     current_workspace = workspacesList.front();
@@ -703,13 +710,10 @@ void BScreen::reconfigure() {
     workspacemenu->reconfigure();
     m_configmenu->reconfigure();
 	
-    {
-        //int remember_sub = m_rootmenu->currentSubmenu();
-        initMenu();
-        raiseWindows(Workspace::Stack());
-        m_rootmenu->reconfigure();		
-        //m_rootmenu->drawSubmenu(remember_sub);
-    }
+    initMenu();
+    raiseWindows(Workspace::Stack());
+    m_rootmenu->reconfigure();		
+
 
     //    m_toolbar->setPlacement(*resource.toolbar_placement);
     m_toolbar->reconfigure();
@@ -816,7 +820,7 @@ void BScreen::setAntialias(bool value) {
 }
 
 int BScreen::addWorkspace() {
-    Workspace *wkspc = new Workspace(this, m_layermanager, workspacesList.size());
+    Workspace *wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
     workspacesList.push_back(wkspc);
     addWorkspaceName(wkspc->name().c_str()); // update names
     //add workspace to workspacemenu
@@ -954,8 +958,8 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
                 win->setInputFocus();
             }
 #ifdef DEBUG
-            cerr<<"Sending to id = "<<id<<endl;
-            cerr<<"win->workspaceId="<<win->getWorkspaceNumber()<<endl;
+            cerr<<__FILE__<<": Sending to id = "<<id<<endl;
+            cerr<<__FILE__<<": win->workspaceId="<<win->getWorkspaceNumber()<<endl;
 #endif //DEBUG
 
         }
@@ -1123,7 +1127,8 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     CommandRef close_cmd(new WindowCmd(win, &FluxboxWindow::close));
     CommandRef shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
     CommandRef raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
-    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
+    CommandRef raise_and_focus_cmd(new WindowCmd(win, &FluxboxWindow::raiseAndFocus));
+    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::raise));
     CommandRef stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(win, &FluxboxWindow::popupMenu));
 
@@ -1133,7 +1138,8 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     // get titlebar configuration
     const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
     for (char c=0; c<2; c++) {
-        for (unsigned int i=0; i< dir->size(); ++i) {
+
+        for (size_t i=0; i< dir->size(); ++i) {
             //create new buttons
             FbTk::Button *newbutton = 0;
             if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
@@ -1155,7 +1161,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 newbutton->setOnClick(maximize_vert_cmd, 2);
 
 #ifdef DEBUG
-                cerr<<__FILE__<<":Creating maximize button"<<endl;
+                cerr<<__FILE__<<": Creating maximize button"<<endl;
 #endif // DEBUG
             } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
                 newbutton = new WinButton(WinButton::CLOSE, 
@@ -1188,7 +1194,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     } // end for c
 
     // setup titlebar
-    frame.setOnClickTitlebar(raise_cmd, 1, false, true); // on press with button 1
+    frame.setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
     frame.setOnClickTitlebar(shade_cmd, 1, true); // doubleclick with button 1
     frame.setOnClickTitlebar(show_menu_cmd, 3); // on release with button 3
     frame.setOnClickTitlebar(lower_cmd, 2, false, true);  // on press with button 2
