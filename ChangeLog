@@ -1,10 +1,22 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/07/23:
+   * Fixed "send to..." bug (Thanks Bradley C Bailey)
+   * Moved BTexture from Image.hh to FbTk::Texture in Texture.hh
+   * Moved BColor from Image.hh to FbTk::Color in Color.hh
+   * Slit theme, you can now have theme on the slit:
+      slit: <texture option>
+	  slit.color: <color value>
+	  slit.colorTo: <color value>     
+	 If slit isn't present in the theme the slit will fall back to
+	 Toolbar theme.
+
 *02/07/19:
    * Fixed slitlist bug
      Slit wasn't reading the entire line from slitlist.
    * Added ja_JP to fluxbox-generate_menu script (Thanks Junichiro Kita)
    * Updated nls/ja_JP/ (Thanks Junichiro Kita)
+   * Changed some function names
 --------------------------------------------------------------------
 
 Changes for 0.1.10:
