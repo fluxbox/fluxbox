@@ -43,6 +43,7 @@ public:
 	} Font;
 	
 static char *strdup(const char *);
+static char *expandFilename(const char *filename);
 
 static void DrawString(Display *display, Window w, GC gc, Misc::Font *font,
 					unsigned int text_w, unsigned int size_w,

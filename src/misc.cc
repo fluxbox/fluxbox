@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <X11/Xutil.h>
+
 using namespace std;
 
 //------- strdup ------------------------
@@ -39,6 +40,22 @@ char *Misc::strdup(const char *s) {
   return n;
 }
 
+//------------- expandFilename ----------------------
+// if ~ then expand it to home of user
+// returns expanded filename 
+// (note: the function creates new memory for the string)
+//---------------------------------------------------
+char *Misc::expandFilename(const char *filename) {
+  char retval[strlen(filename)+strlen(getenv("HOME"))+2]; //2 extra byte just to be safe
+  retval[0]=0; //mark end
+  if (filename[0]=='~') {
+    strcat(retval, getenv("HOME"));
+    strcat(retval, &filename[1]);
+  } else
+    return Misc::strdup(filename);	//return unmodified value
+  
+  return Misc::strdup(retval);	//return modified value
+}
 
 // ----------------------------------------------------------------------
 // xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
