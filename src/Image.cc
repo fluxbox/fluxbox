@@ -22,7 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.17 2002/11/14 10:12:42 fluxgen Exp $
+// $Id: Image.cc,v 1.18 2002/11/24 20:54:29 fluxgen Exp $
+
+#include "Image.hh"
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -30,40 +32,23 @@
 #endif // _GNU_SOURCE
 
 #ifdef	HAVE_CONFIG_H
-#	include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
 #include "BaseDisplay.hh"
-#include "Image.hh"
 
-#ifdef		HAVE_SYS_TYPES_H
-#	include <sys/types.h>
+#ifdef	HAVE_SYS_TYPES_H
+#include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H
 
-#ifndef u_int32_t
-#	ifdef uint_32_t
-typedef uint32_t u_int32_t;
-#	else
-#		ifdef __uint32_t
-typedef __uint32_t u_int32_t;
-#		else
-typedef unsigned int u_int32_t;
-#		endif
-#	endif
-#endif
 
-#ifdef STDC_HEADERS
-#	include <stdlib.h>
-#	include <string.h>
-#endif // STDC_HEADERS
-
-#ifdef HAVE_STDIO_H
-#	include <stdio.h>
-#endif // HAVE_STDIO_H
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
 
 #ifdef HAVE_CTYPE_H
-#	include <ctype.h>
+#include <ctype.h>
 #endif // HAVE_CTYPE_H
 
 #include <iostream>
@@ -136,7 +121,8 @@ Pixmap BImage::render(const FbTk::Texture *texture) {
 
 
 Pixmap BImage::renderSolid(const FbTk::Texture *texture) {
-	Pixmap pixmap = XCreatePixmap(control->baseDisplay()->getXDisplay(),
+	Display *disp = BaseDisplay::getXDisplay();
+	Pixmap pixmap = XCreatePixmap(disp,
 		control->drawable(), width,
 		height, control->depth());
 	if (pixmap == None) {
@@ -152,86 +138,84 @@ Pixmap BImage::renderSolid(const FbTk::Texture *texture) {
 
 	gcv.foreground = texture->color().pixel();
 	gcv.fill_style = FillSolid;
-	gc = XCreateGC(control->baseDisplay()->getXDisplay(), pixmap,
+	gc = XCreateGC(disp, pixmap,
 		GCForeground | GCFillStyle, &gcv);
 
 	gcv.foreground = texture->hiColor().pixel();
-	hgc = XCreateGC(control->baseDisplay()->getXDisplay(), pixmap,
+	hgc = XCreateGC(disp, pixmap,
 		GCForeground, &gcv);
 
 	gcv.foreground = texture->loColor().pixel();
-	lgc = XCreateGC(control->baseDisplay()->getXDisplay(), pixmap,
+	lgc = XCreateGC(disp, pixmap,
 			GCForeground, &gcv);
 
-	XFillRectangle(control->baseDisplay()->getXDisplay(), pixmap, gc, 0, 0,
+	XFillRectangle(BaseDisplay::getXDisplay(), pixmap, gc, 0, 0,
 		width, height);
 
 	using namespace FbTk;
-#ifdef INTERLACE
+
 	if (texture->type() & Texture::INTERLACED) {
 		gcv.foreground = texture->colorTo().pixel();
-		GC igc = XCreateGC(control->baseDisplay()->getXDisplay(), pixmap,
+		GC igc = XCreateGC(disp, pixmap,
 			GCForeground, &gcv);
 
 		register unsigned int i = 0;
 		for (; i < height; i += 2)
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, igc,
+			XDrawLine(disp, pixmap, igc,
 				0, i, width, i);
 
-		XFreeGC(control->baseDisplay()->getXDisplay(), igc);
+		XFreeGC(disp, igc);
 	}
-#endif // INTERLACE
-
 
 	if (texture->type() & Texture::BEVEL1) {
 		if (texture->type() & Texture::RAISED) {
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+			XDrawLine(disp, pixmap, lgc,
 								0, height - 1, width - 1, height - 1);
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+			XDrawLine(disp, pixmap, lgc,
 							width - 1, height - 1, width - 1, 0);
 
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+			XDrawLine(disp, pixmap, hgc,
 								0, 0, width - 1, 0);
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+			XDrawLine(disp, pixmap, hgc,
 								0, height - 1, 0, 0);
 		} else if (texture->type() & Texture::SUNKEN) {
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+			XDrawLine(disp, pixmap, hgc,
 								0, height - 1, width - 1, height - 1);
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+			XDrawLine(disp, pixmap, hgc,
 								width - 1, height - 1, width - 1, 0);
 
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+			XDrawLine(disp, pixmap, lgc,
 								0, 0, width - 1, 0);
-			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+			XDrawLine(disp, pixmap, lgc,
 								0, height - 1, 0, 0);
 		}
 	} else if (texture->type() & Texture::BEVEL2) {
 			if (texture->type() & Texture::RAISED) {
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+				XDrawLine(disp, pixmap, lgc,
 							1, height - 3, width - 3, height - 3);
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+				XDrawLine(disp, pixmap, lgc,
 							width - 3, height - 3, width - 3, 1);
 
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+				XDrawLine(disp, pixmap, hgc,
 							1, 1, width - 3, 1);
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+				XDrawLine(disp, pixmap, hgc,
 							1, height - 3, 1, 1);
 			} else if (texture->type() & Texture::SUNKEN) {
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+				XDrawLine(disp, pixmap, hgc,
 							1, height - 3, width - 3, height - 3);
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
+				XDrawLine(disp, pixmap, hgc,
 							width - 3, height - 3, width - 3, 1);
 
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+				XDrawLine(disp, pixmap, lgc,
 							1, 1, width - 3, 1);
-				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
+				XDrawLine(disp, pixmap, lgc,
 							1, height - 3, 1, 1);
 		}
 	}
 
-	XFreeGC(control->baseDisplay()->getXDisplay(), gc);
-	XFreeGC(control->baseDisplay()->getXDisplay(), hgc);
-	XFreeGC(control->baseDisplay()->getXDisplay(), lgc);
+	XFreeGC(disp, gc);
+	XFreeGC(disp, hgc);
+	XFreeGC(disp, lgc);
 
 	return pixmap;
 }
@@ -243,9 +227,7 @@ Pixmap BImage::renderGradient(const FbTk::Texture *texture) {
 
 	using namespace FbTk;
 
-#ifdef INTERLACE
 	interlaced = texture->type() & Texture::INTERLACED;
-#endif // INTERLACE
 
 	if (texture->type() & Texture::SUNKEN) {
 		from = &(texture->colorTo());
@@ -296,7 +278,7 @@ Pixmap BImage::renderGradient(const FbTk::Texture *texture) {
 XImage *BImage::renderXImage() {
 	I18n *i18n = I18n::instance();
 	XImage *image =
-		XCreateImage(control->baseDisplay()->getXDisplay(),
+		XCreateImage(BaseDisplay::getXDisplay(),
 			 control->visual(), control->depth(), ZPixmap, 0, 0,
 			 width, height, 32, 0);
 
@@ -697,9 +679,10 @@ XImage *BImage::renderXImage() {
 
 
 Pixmap BImage::renderPixmap() {
+	Display *disp = BaseDisplay::getXDisplay();
 	I18n *i18n = I18n::instance();
 	Pixmap pixmap =
-		XCreatePixmap(control->baseDisplay()->getXDisplay(),
+		XCreatePixmap(disp,
 				control->drawable(), width, height, control->depth());
 
 	if (pixmap == None) {
@@ -713,16 +696,16 @@ Pixmap BImage::renderPixmap() {
 	XImage *image = renderXImage();
 
 	if (! image) {
-		XFreePixmap(control->baseDisplay()->getXDisplay(), pixmap);
+		XFreePixmap(disp, pixmap);
 		return None;
 	} else if (! image->data) {
 		XDestroyImage(image);
-		XFreePixmap(control->baseDisplay()->getXDisplay(), pixmap);
+		XFreePixmap(disp, pixmap);
 		return None;
 	}
 
-	XPutImage(control->baseDisplay()->getXDisplay(), pixmap,
-			DefaultGC(control->baseDisplay()->getXDisplay(),
+	XPutImage(disp, pixmap,
+			DefaultGC(disp,
 					control->getScreenInfo()->getScreenNumber()),
 						image, 0, 0, 0, 0, width, height);
 
@@ -1023,9 +1006,9 @@ void BImage::dgradient() {
 
 	// Combine tables to create gradient
 
-#ifdef		INTERLACE
+
 	if (! interlaced) {
-#endif // INTERLACE
+
 
 		// normal dgradient
 		for (yt = ytable, y = 0; y < height; y++, yt += 3) {
@@ -1036,7 +1019,6 @@ void BImage::dgradient() {
 			}
 		}
 
-#ifdef		INTERLACE
 	} else {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1077,7 +1059,7 @@ void BImage::dgradient() {
 			}
 		}
 	}
-#endif // INTERLACE
+
 
 }
 
@@ -1099,7 +1081,6 @@ void BImage::hgradient() {
 	dgx /= width;
 	dbx /= width;
 
-#ifdef		INTERLACE
 	if (interlaced && height > 2) {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1155,7 +1136,6 @@ void BImage::hgradient() {
 			memcpy(pb, (blue + offset), width);
 		}
 	} else {
-#endif // INTERLACE
 
 		// normal hgradient
 		for (x = 0; x < width; x++) {
@@ -1174,9 +1154,7 @@ void BImage::hgradient() {
 			memcpy(pb, blue, width);
 		}
 
-#ifdef		INTERLACE
 	}
-#endif // INTERLACE
 
 }
 
@@ -1198,7 +1176,6 @@ void BImage::vgradient() {
 	dgy /= height;
 	dby /= height;
 
-#ifdef		INTERLACE
 	if (interlaced) {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1241,7 +1218,6 @@ void BImage::vgradient() {
 			yb += dby;
 		}
 	} else {
-#endif // INTERLACE
 
 		// normal vgradient
 		for (y = 0; y < height; y++, pr += width, pg += width, pb += width) {
@@ -1253,10 +1229,8 @@ void BImage::vgradient() {
 			yg += dgy;
 			yb += dby;
 		}
-
-#ifdef		INTERLACE
 	}
-#endif // INTERLACE
+
 
 }
 
@@ -1319,9 +1293,8 @@ void BImage::pgradient() {
 
 	// Combine tables to create gradient
 
-#ifdef		INTERLACE
+
 	if (! interlaced) {
-#endif // INTERLACE
 
 		// normal pgradient
 		for (yt = ytable, y = 0; y < height; y++, yt += 3) {
@@ -1332,7 +1305,6 @@ void BImage::pgradient() {
 			}
 		}
 
-#ifdef		INTERLACE
 	} else {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1373,7 +1345,6 @@ void BImage::pgradient() {
 			}
 		}
 	}
-#endif // INTERLACE
 
 }
 
@@ -1435,9 +1406,8 @@ void BImage::rgradient() {
 
 	// Combine tables to create gradient
 
-#ifdef		INTERLACE
+
 	if (! interlaced) {
-#endif // INTERLACE
 
 		// normal rgradient
 		for (yt = ytable, y = 0; y < height; y++, yt += 3) {
@@ -1448,7 +1418,6 @@ void BImage::rgradient() {
 			}
 		}
 
-#ifdef		INTERLACE
 	} else {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1489,7 +1458,6 @@ void BImage::rgradient() {
 			}
 		}
 	}
-#endif // INTERLACE
 
 }
 
@@ -1552,11 +1520,7 @@ void BImage::egradient() {
 	}
 
 	// Combine tables to create gradient
-
-#ifdef		INTERLACE
 	if (! interlaced) {
-#endif // INTERLACE
-
 		// normal egradient
 		for (yt = ytable, y = 0; y < height; y++, yt += 3) {
 			for (xt = xtable, x = 0; x < width; x++) {
@@ -1569,7 +1533,6 @@ void BImage::egradient() {
 			}
 		}
 
-#ifdef		INTERLACE
 	} else {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1616,7 +1579,6 @@ void BImage::egradient() {
 			}
 		}
 	}
-#endif // INTERLACE
 
 }
 
@@ -1679,10 +1641,7 @@ void BImage::pcgradient() {
 	}
 
 	// Combine tables to create gradient
-
-#ifdef		INTERLACE
 	if (! interlaced) {
-#endif // INTERLACE
 
 		// normal pcgradient
 		for (yt = ytable, y = 0; y < height; y++, yt += 3) {
@@ -1693,7 +1652,6 @@ void BImage::pcgradient() {
 			}
 		}
 
-#ifdef		INTERLACE
 	} else {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1734,7 +1692,6 @@ void BImage::pcgradient() {
 			}
 		}
 	}
-#endif // INTERLACE
 
 }
 
@@ -1789,10 +1746,7 @@ void BImage::cdgradient() {
 
 	// Combine tables to create gradient
 
-#ifdef		INTERLACE
 	if (! interlaced) {
-#endif // INTERLACE
-
 		// normal cdgradient
 		for (yt = ytable, y = 0; y < height; y++, yt += 3) {
 			for (xt = xtable, x = 0; x < width; x++) {
@@ -1802,7 +1756,6 @@ void BImage::cdgradient() {
 			}
 		}
 
-#ifdef		INTERLACE
 	} else {
 		// faked interlacing effect
 		unsigned char channel, channel2;
@@ -1843,29 +1796,24 @@ void BImage::cdgradient() {
 			}
 		}
 	}
-#endif // INTERLACE
 
 }
 
 
-BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
-		int _cpc, unsigned long cache_timeout,
-	unsigned long cmax)
-#ifdef TIMEDCACHE
-: timer(this)
-#endif //TIMEDCACHE
-{
+BImageControl::BImageControl(const ScreenInfo *scrn, bool dither,
+		int _cpc, unsigned long cache_timeout, unsigned long cmax):
+m_timer(this) {
 	I18n *i18n = I18n::instance();
-	basedisplay = dpy;
+	Display *disp = BaseDisplay::instance()->getXDisplay();
 	screeninfo = scrn;
-	setDither(_dither);
+	setDither(dither);
 	setColorsPerChannel(_cpc);
 
 	cache_max = cmax;
 #ifdef TIMEDCACHE
 	if (cache_timeout) {
-		timer.setTimeout(cache_timeout);
-		timer.start();
+		m_timer.setTimeout(cache_timeout);
+		m_timer.start();
 	}
 #endif // TIMEDCACHE
 
@@ -1880,8 +1828,7 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 	screen_number = screeninfo->getScreenNumber();
 
 	int count;
-	XPixmapFormatValues *pmv = XListPixmapFormats(basedisplay->getXDisplay(),
-		&count);
+	XPixmapFormatValues *pmv = XListPixmapFormats(disp, &count);
 	m_colormap = screeninfo->colormap();
 
 	if (pmv) {
@@ -1899,13 +1846,12 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 	if (bits_per_pixel == 0)
 		bits_per_pixel = screen_depth;
 	if (bits_per_pixel >= 24)
-		setDither(False);
+		setDither(false);
 
 	red_offset = green_offset = blue_offset = 0;
 
 	switch (visual()->c_class) {
-	case TrueColor:
-	{
+	case TrueColor: {
 		int i;
 
 		// compute color tables
@@ -1931,8 +1877,8 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 	break;
 
 	case PseudoColor:
-	case StaticColor:
-	{
+	case StaticColor: {
+
 		ncolors = colors_per_channel * colors_per_channel * colors_per_channel;
 
 		if (ncolors > (1 << screen_depth)) {
@@ -1966,7 +1912,7 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 
 		int i = 0, ii, p, r, g, b,
 
-#ifdef		ORDEREDPSEUDO
+#ifdef ORDEREDPSEUDO
 		bits = 256 / colors_per_channel;
 #else // !ORDEREDPSEUDO
 		bits = 255 / (colors_per_channel - 1);
@@ -1988,10 +1934,9 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 				}
 			}
 		}
-		basedisplay->grab();
-
+		
 		for (i = 0; i < ncolors; i++) {
-			if (! XAllocColor(basedisplay->getXDisplay(), colormap(), &colors[i])) {
+			if (! XAllocColor(disp, colormap(), &colors[i])) {
 				fprintf(stderr,
 				i18n->getMessage(
 					FBNLS::ImageSet, FBNLS::ImageColorAllocFail,
@@ -2002,15 +1947,13 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 				colors[i].flags = DoRed|DoGreen|DoBlue;
 		}
 		
-		basedisplay->ungrab();
-
 		XColor icolors[256];
 		int incolors = (((1 << screen_depth) > 256) ? 256 : (1 << screen_depth));
 
 		for (i = 0; i < incolors; i++)
 			icolors[i].pixel = i;
 
-		XQueryColors(basedisplay->getXDisplay(), colormap(), icolors, incolors);
+		XQueryColors(disp, colormap(), icolors, incolors);
 		for (i = 0; i < ncolors; i++) {
 			if (! colors[i].flags) {
 				unsigned long chk = 0xffffffff, pixel, close = 0;
@@ -2032,11 +1975,11 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 						colors[i].green = icolors[close].green;
 						colors[i].blue = icolors[close].blue;
 
-						if (XAllocColor(basedisplay->getXDisplay(), colormap(),
+						if (XAllocColor(disp, colormap(),
 								&colors[i])) {
 							colors[i].flags = DoRed|DoGreen|DoBlue;
 							break;
-							}
+						}
 					}
 				}
 			}
@@ -2092,14 +2035,13 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 			red_color_table[i] = green_color_table[i] = blue_color_table[i] =
 				i / bits;
 
-		basedisplay->grab();
 		for (i = 0; i < ncolors; i++) {
 			colors[i].red = (i * 0xffff) / (colors_per_channel - 1);
 			colors[i].green = (i * 0xffff) / (colors_per_channel - 1);
 			colors[i].blue = (i * 0xffff) / (colors_per_channel - 1);;
 			colors[i].flags = DoRed|DoGreen|DoBlue;
 
-			if (! XAllocColor(basedisplay->getXDisplay(), colormap(),
+			if (! XAllocColor(disp, colormap(),
 					&colors[i])) {
 				fprintf(stderr,
 					i18n->
@@ -2112,7 +2054,6 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 				colors[i].flags = DoRed|DoGreen|DoBlue;
 		}
 
-		basedisplay->ungrab();
 
 		XColor icolors[256];
 		int incolors = (((1 << screen_depth) > 256) ? 256 :
@@ -2121,7 +2062,7 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 		for (i = 0; i < incolors; i++)
 			icolors[i].pixel = i;
 
-		XQueryColors(basedisplay->getXDisplay(), colormap(), icolors, incolors);
+		XQueryColors(disp, colormap(), icolors, incolors);
 		for (i = 0; i < ncolors; i++) {
 			if (! colors[i].flags) {
 				unsigned long chk = 0xffffffff, pixel, close = 0;
@@ -2143,7 +2084,7 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, bool _dither,
 						colors[i].green = icolors[close].green;
 						colors[i].blue = icolors[close].blue;
 
-						if (XAllocColor(basedisplay->getXDisplay(), colormap(),
+						if (XAllocColor(disp, colormap(),
 								&colors[i])) {
 							colors[i].flags = DoRed|DoGreen|DoBlue;
 							break;
@@ -2188,7 +2129,7 @@ BImageControl::~BImageControl() {
 		for (int color = 0; color < ncolors; color++)
 			*(pixels + color) = (*(colors + color)).pixel;
 
-		XFreeColors(basedisplay->getXDisplay(), colormap(), pixels, ncolors, 0);
+		XFreeColors(BaseDisplay::getXDisplay(), colormap(), pixels, ncolors, 0);
 
 		delete [] colors;
 	}
@@ -2204,7 +2145,7 @@ BImageControl::~BImageControl() {
 		CacheList::iterator it = cache.begin();
 		CacheList::iterator it_end = cache.end();
 		for (; it != it_end; ++it) {
-			XFreePixmap(basedisplay->getXDisplay(), (*it)->pixmap);
+			XFreePixmap(BaseDisplay::getXDisplay(), (*it)->pixmap);
 			delete (*it);
 		}
 
@@ -2269,13 +2210,12 @@ Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
 		cache.push_back(tmp);
 
 		if ((unsigned) cache.size() > cache_max) {
-#ifdef		DEBUG
-			fprintf(stderr,
-				I18n::instance()->
+#ifdef DEBUG
+			cerr<<I18n::instance()->
 					getMessage(
-					 FBNLS::ImageSet, FBNLS::ImagePixmapCacheLarge,
-					 "BImageControl::renderImage: cache is large, "
-					 "forcing cleanout\n"));
+						FBNLS::ImageSet, FBNLS::ImagePixmapCacheLarge,
+						"BImageControl::renderImage: cache is large, "
+						"forcing cleanout\n")<<endl;
 #endif // DEBUG
 			timeout();
 		}
@@ -2298,7 +2238,7 @@ void BImageControl::removeImage(Pixmap pixmap) {
 			if ((*it)->count) {
 				(*it)->count--;
 
-#ifdef		TIMEDCACHE
+#ifdef TIMEDCACHE
 				timeout();
 #else // !TIMEDCACHE
 				if (! (*it)->count) timeout();
@@ -2366,26 +2306,27 @@ void BImageControl::getGradientBuffers(unsigned int w,
 }
 
 
-void BImageControl::installRootColormap(void) {
-	basedisplay->grab();
+void BImageControl::installRootColormap() {
+	BaseDisplay::instance()->grab();
 
 	Bool install = True;
 	int i = 0, ncmap = 0;
 	Colormap *cmaps =
-		XListInstalledColormaps(basedisplay->getXDisplay(), window, &ncmap);
+		XListInstalledColormaps(BaseDisplay::getXDisplay(), window, &ncmap);
 
 	if (cmaps) {
-		for (i = 0; i < ncmap; i++)
+		for (i = 0; i < ncmap; i++) {
 			if (*(cmaps + i) == colormap())
-	install = False;
-
+				install = False;
+		}
+		
 		if (install)
-			XInstallColormap(basedisplay->getXDisplay(), colormap());
+			XInstallColormap(BaseDisplay::getXDisplay(), colormap());
 
 		XFree(cmaps);
 	}
 
-	basedisplay->ungrab();
+	BaseDisplay::instance()->ungrab();
 }
 
 
@@ -2418,7 +2359,7 @@ void BImageControl::timeout() {
 		Cache *tmp = (*it);
 
 		if (tmp->count <= 0) {
-			XFreePixmap(basedisplay->getXDisplay(), tmp->pixmap);
+			XFreePixmap(BaseDisplay::getXDisplay(), tmp->pixmap);
 			it = cache.erase(it);
 			delete tmp;
 			if (it == it_end) break;
