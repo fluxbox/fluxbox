@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/18:
+  * Fix possible segfault when new text in TextBox is
+    smaller than the old one (Mathias)
+    FbTk/TextBox.cc
   * Some reordering/renaming of functions/files (Mathias)
     FbTk/Directory.cc/hh -> FbTk/FileUtil.cc/hh
     FbTk/Makefile.am FbTk/Theme.cc MenuCreator.cc fluxbox.cc
