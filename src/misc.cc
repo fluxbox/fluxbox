@@ -366,15 +366,19 @@ void Misc::XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawab
 }
 
 
+//Draw title string	
 void Misc::DrawString(Display *display, Window w, GC gc, Misc::Font *font, 
 					unsigned int text_w, unsigned int size_w, 
 					unsigned int bevel_w, char *text) {
-//Draw title string	
 
+	if (!text || text_w<1 || size_w < 1 || !font || !display)
+		return;
+		
 	unsigned int l = text_w;
 	int dlen=strlen(text);
 	int dx=bevel_w*2;
 	
+		
 	if (text_w > size_w) {
 		for (; dlen >= 0; dlen--) {
 			if (I18n::instance()->multibyte()) {
@@ -426,6 +430,9 @@ void Misc::DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font
 					unsigned int size_w, unsigned int size_h,
 					unsigned int bevel_w, char *text) {
 
+	if (!text || text_w<1 || size_w < 1 || !font || !display)
+		return;
+		
 	unsigned int l = text_w;
 	int dlen = strlen(text);
 	int dx = bevel_w * 2;
