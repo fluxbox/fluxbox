@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.4 2003/06/30 21:51:47 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.5 2003/06/30 22:21:33 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -40,7 +40,7 @@ FbCommandFactory::FbCommandFactory() {
     const char commands[][25] = {
         "setstyle",
         "saverc",
-        "reconfigure"
+        "reconfigure",
         "execcommand",
         "exec",
         "execute",
