@@ -1,5 +1,5 @@
 // Keys.cc for Fluxbox - an X11 Window manager
-// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.29 2003/06/08 14:54:05 rathnor Exp $
+//$Id: Keys.cc,v 1.30 2003/06/10 12:18:26 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -295,6 +295,7 @@ bool Keys::load(const char *filename) {
                     }
 					
                     last_key->action = m_actionlist[i].action;
+
                     switch(last_key->action) {
                     case Keys::RESTART:
                     case Keys::EXECUTE: {
