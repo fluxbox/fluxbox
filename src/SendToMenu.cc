@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.cc,v 1.2 2003/11/27 22:01:11 fluxgen Exp $
+// $Id: SendToMenu.cc,v 1.3 2003/11/28 13:39:41 fluxgen Exp $
 
 #include "SendToMenu.hh"
 
@@ -49,15 +49,32 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
            win.screen().imageControl(), 
            *win.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_win(win) {
-
+    // listen to:
+    // workspace count signal
+    // workspace names signal
+    // current workspace signal
     win.screen().workspaceCountSig().attach(this);
     win.screen().workspaceNamesSig().attach(this);
+    win.screen().currentWorkspaceSig().attach(this);
 
     disableTitle();
+    // build menu
     update(0);
 }
 
 void SendToMenu::update(FbTk::Subject *subj) {
+    // if workspace changed we enable all workspaces except the current one
+    if (subj != 0 && subj == &(m_win.screen().currentWorkspaceSig())) {
+        // enabled all workspaces
+        const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
+        for (size_t i = 0; i < wlist.size(); ++i)
+            setItemEnabled(i, true);
+        // disable current workspace
+        setItemEnabled(m_win.screen().currentWorkspaceID(), false);
+        // we're done
+        return;
+    }
+
     // rebuild menu
 
     removeAll();
