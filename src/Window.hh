@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.16 2002/04/04 13:19:10 fluxgen Exp $
+// $Id: Window.hh,v 1.17 2002/04/04 14:23:30 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -117,6 +117,9 @@ public:
 		LAYER_TOP    = 0x08
 	};
 
+	enum Decoration {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
+
+	
 	FluxboxWindow(Window, BScreen * = 0);
 	virtual ~FluxboxWindow(void);
 
@@ -197,6 +200,9 @@ public:
 	void propertyNotifyEvent(Atom);
 	void exposeEvent(XExposeEvent *);
 	void configureRequestEvent(XConfigureRequestEvent *);
+	
+	void setDecoration(Decoration decoration);
+	void toggleDecoration();
 
 	static void showError(FluxboxWindow::Error error);
 	
@@ -235,6 +241,7 @@ private:
 	unsigned int workspace_number;
 	unsigned long current_state;
 	WinLayer m_layer;
+	Decoration old_decoration;
 
 	struct _client {
 		FluxboxWindow *transient_for, // which window are we a transient for?
@@ -256,7 +263,7 @@ private:
 
 	struct _decorations {
 		bool titlebar, handle, border, iconify,
-				maximize, close, menu, sticky, shade, tab;
+			maximize, close, menu, sticky, shade, tab;
 	} decorations;
 
 	struct _functions {
@@ -309,7 +316,9 @@ private:
 	void startMoving(Window win);
 	void stopMoving();
 	void startResizing(XMotionEvent *me, bool left); 
-	void stopResizing(Window win=0);	
+	void stopResizing(Window win=0);
+	
+	
 	#ifdef GNOME
 	
 	void updateGnomeAtoms();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.38 2002/04/04 13:19:10 fluxgen Exp $
+// $Id: Window.cc,v 1.39 2002/04/04 14:23:30 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1689,12 +1689,13 @@ void FluxboxWindow::getBlackboxHints(void) {
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
 	if (XGetWindowProperty(display, client.window,
-												 fluxbox->getFluxboxHintsAtom(), 0,
-												 PropBlackboxHintsElements, false,
-												 fluxbox->getFluxboxHintsAtom(), &atom_return,
-												 &format, &num, &len,
-												 (unsigned char **) &client.blackbox_hint) == Success &&
-			client.blackbox_hint)
+			fluxbox->getFluxboxHintsAtom(), 0,
+			PropBlackboxHintsElements, False,
+			fluxbox->getFluxboxHintsAtom(), &atom_return,
+			 &format, &num, &len,
+			(unsigned char **) &client.blackbox_hint) == Success &&
+			client.blackbox_hint) {
+
 		if (num == PropBlackboxHintsElements) {
 			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_SHADED)
 				shaded = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_SHADED);
@@ -1716,46 +1717,11 @@ void FluxboxWindow::getBlackboxHints(void) {
 
 
 			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
-				switch (client.blackbox_hint->decoration) {
-				case BaseDisplay::DECOR_NONE:
-					decorations.titlebar = decorations.border = decorations.handle =
-						decorations.iconify = decorations.maximize =
-						decorations.menu = decorations.tab = false; //tab is also a decor
-					functions.resize = functions.move = functions.iconify =
-						functions.maximize = false;
-
-					break;
-
-				default:
-				case BaseDisplay::DECOR_NORMAL:
-					decorations.titlebar = decorations.border = decorations.handle =
-						decorations.iconify = decorations.maximize =
-						decorations.menu = true;
-					functions.resize = functions.move = functions.iconify =
-						functions.maximize = true;
-
-					break;
-
-				case BaseDisplay::DECOR_TINY:
-					decorations.titlebar = decorations.iconify = decorations.menu =
-						functions.move = functions.iconify = true;
-					decorations.border = decorations.handle = decorations.maximize =
-						functions.resize = functions.maximize = false;
-
-					break;
-
-				case BaseDisplay::DECOR_TOOL:
-					decorations.titlebar = decorations.menu = functions.move = true;
-					decorations.iconify = decorations.border = decorations.handle =
-						decorations.maximize = functions.resize = functions.maximize =
-						functions.iconify = false;
-
-					break;
-				}
-
-				reconfigure();
+				old_decoration = static_cast<Decoration>(client.blackbox_hint->decoration);
+				setDecoration(old_decoration);
 			}
 		}
+	}
 }
 
 
@@ -3466,6 +3432,61 @@ void FluxboxWindow::shapeEvent(XShapeEvent *) {
 #endif // SHAPE
 
 
+void FluxboxWindow::setDecoration(Decoration decoration) {
+
+	switch (decoration) {
+	case DECOR_NONE:
+		decorations.titlebar = decorations.border = decorations.handle =
+		decorations.iconify = decorations.maximize =
+			decorations.menu = decorations.tab = false; //tab is also a decor
+		functions.resize = functions.move = functions.iconify =
+			functions.maximize = false;
+	break;
+
+	default:
+	case DECOR_NORMAL:
+		decorations.titlebar = decorations.border = decorations.handle =
+		decorations.iconify = decorations.maximize =
+			decorations.menu = true;
+		functions.resize = functions.move = functions.iconify =
+			functions.maximize = true;
+		XMapSubwindows(display, frame.window);
+		XMapWindow(display, frame.window);
+
+	break;
+
+	case DECOR_TINY:
+		decorations.titlebar = decorations.iconify = decorations.menu =
+			functions.move = functions.iconify = true;
+		decorations.border = decorations.handle = decorations.maximize =
+			functions.resize = functions.maximize = false;
+		XMapSubwindows(display, frame.window);
+		XMapWindow(display, frame.window);
+	break;
+
+	case DECOR_TOOL:
+		decorations.titlebar = decorations.menu = functions.move = true;
+			decorations.iconify = decorations.border = decorations.handle =
+			decorations.maximize = functions.resize = functions.maximize =
+			functions.iconify = false;
+		decorate();
+	break;
+	}
+
+	reconfigure();
+
+}
+
+void FluxboxWindow::toggleDecoration() {
+	static bool decor = false;
+	if (!decor) {
+		setDecoration(DECOR_NONE); 
+		decor = true;
+	} else {
+		setDecoration(old_decoration);
+		decor = false;
+	}
+}
 bool FluxboxWindow::validateClient(void) {
 	XSync(display, false);
 
@@ -3586,6 +3607,7 @@ void FluxboxWindow::stopResizing(Window win) {
 	XUngrabPointer(display, CurrentTime);
 }
 
+
 void FluxboxWindow::restore(void) {
 	XChangeSaveSet(display, client.window, SetModeDelete);
 	XSelectInput(display, client.window, NoEventMask);
@@ -3652,45 +3674,10 @@ void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
 	}
 
 	if (net->flags & BaseDisplay::ATTRIB_DECORATION) {
-		switch (net->decoration) {
-		case BaseDisplay::DECOR_NONE:
-			decorations.titlebar = decorations.border = decorations.handle =
-				decorations.iconify = decorations.maximize =
-				decorations.menu = decorations.tab = false; //tab is also a decor
-			functions.resize = functions.move = functions.iconify =
-				functions.maximize = false;
-
-			break;
-
-		default:
-		case BaseDisplay::DECOR_NORMAL:
-			decorations.titlebar = decorations.border = decorations.handle =
-				decorations.iconify = decorations.maximize =
-				decorations.menu = true;
-			functions.resize = functions.move = functions.iconify =
-				functions.maximize = true;
-
-			break;
-
-		case BaseDisplay::DECOR_TINY:
-			decorations.titlebar = decorations.iconify = decorations.menu =
-				functions.move = functions.iconify = true;
-			decorations.border = decorations.handle = decorations.maximize =
-				functions.resize = functions.maximize = false;
-
-			break;
-
-		case BaseDisplay::DECOR_TOOL:
-			decorations.titlebar = decorations.menu = functions.move = true;
-			decorations.iconify = decorations.border = decorations.handle =
-				decorations.maximize = functions.resize = functions.maximize =
-				functions.iconify = false;
-
-			break;
-		}
-
-		reconfigure();
+		old_decoration = static_cast<Decoration>(net->decoration);
+		setDecoration(old_decoration);
 	}
+
 }
 
 
