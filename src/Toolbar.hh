@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.22 2003/02/15 02:00:29 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.23 2003/02/16 00:08:29 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -61,7 +61,7 @@ public:
     };
 
     /// create a toolbar on the screen with specific width
-    explicit Toolbar(BScreen *screen, size_t width = 200);
+    explicit Toolbar(BScreen &screen, size_t width = 200);
     /// destructor
     virtual ~Toolbar();
 
@@ -83,8 +83,8 @@ public:
     inline bool doAutoHide() const { return do_auto_hide; }
     ///	@return X window of the toolbar
     inline Window getWindowID() const { return frame.window.window(); }
-    inline BScreen *screen() { return m_screen; }
-    inline const BScreen *screen() const { return m_screen; }
+    inline BScreen &screen() { return m_screen; }
+    inline const BScreen &screen() const { return m_screen; }
     inline unsigned int width() const { return frame.width; }
     inline unsigned int height() const { return frame.height; }
     inline unsigned int exposedHeight() const { return ((do_auto_hide) ? frame.bevel_w : frame.height); }
@@ -147,7 +147,7 @@ private:
     } hide_handler;
     friend class HideHandler;
 
-    BScreen *m_screen;
+    BScreen &m_screen;
     FbTk::ImageControl &image_ctrl; 
     FbTk::Timer clock_timer; ///< timer to update clock
     FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
