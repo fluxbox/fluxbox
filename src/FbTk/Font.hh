@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.4 2003/04/14 12:07:03 fluxgen Exp $
+//$Id: Font.hh,v 1.5 2003/11/28 23:27:29 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -47,7 +47,7 @@ public:
         @return true on success, else false and it'll fall back on the last
         loaded font
     */
-    bool load(const char *name);
+    bool load(const std::string &name);
 
     /// @return true if multibyte is enabled, else false
     static bool multibyte() { return m_multibyte; }
@@ -97,6 +97,7 @@ private:
     bool m_antialias; ///< is font antialias
     bool m_rotated; ///< wheter we're rotated or not
     float m_angle; ///< rotation angle
+    bool m_shadow; ///< shadow text
 };
 
 }; //end namespace FbTk

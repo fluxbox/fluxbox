@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.4 2003/01/05 23:00:19 fluxgen Exp $
+//$Id: Font.cc,v 1.5 2003/11/28 23:27:29 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -41,6 +41,8 @@
 
 // standard font system
 #include "XFontImp.hh"
+
+#include "GContext.hh"
 
 //use gnu extensions
 #ifndef _GNU_SOURCE
@@ -68,7 +70,7 @@ bool Font::m_utf8mode = false;
 
 Font::Font(const char *name, bool antialias):
     m_fontimp(0),
-    m_antialias(false), m_rotated(false) {
+    m_antialias(false), m_rotated(false), m_shadow(false) {
 	
     // MB_CUR_MAX returns the size of a char in the current locale
     if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
@@ -135,11 +137,20 @@ void Font::setAntialias(bool flag) {
     m_antialias = flag;
 }
 
-bool Font::load(const char *name) {
-    if (name == 0)
+bool Font::load(const std::string &name) {
+    if (name.size() == 0)
         return false;
+
+    // find font option "shadow"
+    m_shadow = false;
+    size_t start_pos = name.find_first_of(":");
+    if (start_pos != std::string::npos) {
+        if (name.find_first_of("shadow", start_pos) != std::string::npos)
+            m_shadow = true;
+    }
+
     m_fontstr = name;
-    return m_fontimp->load(name);
+    return m_fontimp->load(name.c_str());
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
@@ -157,10 +168,24 @@ int Font::ascent() const {
 int Font::descent() const { 
     return m_fontimp->descent();
 }
-void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, 
+void Font::drawText(Drawable w, int screen, GC gc,
+                    const char *text, size_t len, int x, int y, 
                     bool rotate) const {
     if (text == 0 || len == 0)
         return;
+
+    // so we don't end up in a loop with m_shadow
+    static bool first_run = true; 
+
+    // draw shadow first
+    if (first_run && m_shadow) {
+        FbTk::GContext shadow_gc(w);
+        shadow_gc.setForeground(FbTk::Color("black", screen));
+        first_run = false; // so we don't end up in a loop
+        drawText(w, screen, shadow_gc.gc(), text, len, x + 1, y + 1);
+        first_run = true;
+    }
+
     if (!rotate && isRotated()) {
         // if this was called with request to not rotated the text
         // we just forward it to the implementation that handles rotation
@@ -170,6 +195,7 @@ void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len,
         try {
             XFontImp *font = dynamic_cast<XFontImp *>(m_fontimp.get());
             font->setRotate(false); // disable rotation temporarly
+
             font->drawText(w, screen, gc, text, len, x, y);
             font->setRotate(true); // enable rotation
         } catch (std::bad_cast &bc) {
@@ -179,6 +205,8 @@ void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len,
 
     } else
         m_fontimp->drawText(w, screen, gc, text, len, x, y);		
+
+
 }	
 
 void Font::rotate(float angle) {
