@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.17 2004/01/21 14:13:32 fluxgen Exp $
+// $Id: IconButton.cc,v 1.18 2004/02/18 10:16:23 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -69,10 +69,11 @@ class FocusCommand: public FbTk::Command {
 public:
     explicit FocusCommand(FluxboxWindow &win):m_win(win) { }
     void execute() {
-       if(m_win.isIconic() || !m_win.isFocused())
-         m_win.raiseAndFocus();
-       else
-         m_win.iconify();
+        if(m_win.isIconic() || !m_win.isFocused()) {
+            m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+            m_win.raiseAndFocus();
+       } else
+           m_win.iconify();
     }
 private:
     FluxboxWindow &m_win;
