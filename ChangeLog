@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*02/12/02:
+   * Re-indented src tree from tab-indent to spaces (emacs offset 4) (Simon)
+     src/**/*.{cc,hh}
+*02/11/30:
+   * Fixed bug [ 642203 ] configure / make problem, solaris sparc
+     plus more compatibility issues with old tools/shells (Simon/Han)
+     fluxbox-generate_menu
 *02/11/25:
    * Fixed vertical tabs for XFontImp
      XFontImp.cc/hh, Font.hh/cc, Tab.cc, Screen.cc, DrawUtil.cc/hh
