@@ -19,14 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: IconBar.hh,v 1.5 2002/02/04 22:43:15 fluxgen Exp $
 
 #ifndef _ICONBAR_HH_
 #define _ICONBAR_HH_
 
 #include <vector>
 #include "Window.hh"
-#include "LinkedList.hh"
+
+#include <list>
 
 class IconBarObj
 {
@@ -57,8 +58,7 @@ public:
 
 	void draw(IconBarObj *obj, int width);
 private:
-	typedef LinkedList<IconBarObj> IconList;
-	typedef LinkedListIterator<IconBarObj> IconListIterator;
+	typedef std::list<IconBarObj *> IconList;
 
 //	void draw(IconBarObj *obj, int width);
 	void loadTheme(unsigned int width, unsigned int height);
@@ -69,7 +69,7 @@ private:
 	BScreen *m_screen;
 	Display *m_display;
 	Window m_parent;
-	IconList *m_iconlist;	
+	IconList m_iconlist;	
 	Pixmap m_focus_pm;
 	unsigned long m_focus_pixel;
 };
