@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.cc,v 1.1 2003/04/28 22:30:34 fluxgen Exp $
+// $Id: WinButtonTheme.cc,v 1.2 2003/04/28 22:33:19 fluxgen Exp $
 
 #include "WinButtonTheme.hh"
 
@@ -60,8 +60,7 @@ setFromString(const char *str) {
         Display *dpy = FbTk::App::instance()->display();
         Pixmap pm = 0, mask = 0;
         int retvalue = XpmReadFileToPixmap(dpy,
-                                           //!! TODO need the right root window
-                                           RootWindow(dpy, 0), 
+                                           RootWindow(dpy, m_tm.screenNum()), 
                                            const_cast<char *>(str),
                                            &pm,
                                            &mask, &xpm_attr);
