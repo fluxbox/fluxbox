@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.60 2002/08/04 15:48:13 fluxgen Exp $
+// $Id: Screen.cc,v 1.61 2002/08/11 22:28:18 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1081,14 +1081,13 @@ void BScreen::addWorkspaceName(const char *name) {
 }
 
 
-void BScreen::getNameOfWorkspace(unsigned int workspace, char **name) {
+string BScreen::getNameOfWorkspace(unsigned int workspace) const {
 	if (workspace < workspaceNames.size()) {
-		const char *wkspc_name = workspaceNames[workspace].c_str();
+		return workspaceNames[workspace];
+	} else {
+		return "";
+	}
 
-		if (wkspc_name)
-			*name = StringUtil::strdup(wkspc_name);
-	} else
-		*name = 0;
 }
 
 
