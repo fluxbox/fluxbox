@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.18 2003/06/26 12:22:42 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.19 2003/07/01 12:40:56 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -382,14 +382,12 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
 void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
     if (&screen != &m_screen)
         return;
-    // if only displaying current workspace, update list
-    // otherwise ignore it
-    if (mode() != WORKSPACE && mode() != WORKSPACEICONS)
-        return;
+
+    m_toolbar->redrawWorkspaceLabel(true);
     m_toolbar->disableUpdates();
     m_toolbar->delAllIcons(true);
     initForScreen(m_screen);
     m_toolbar->enableUpdates();
-    m_toolbar->redrawWorkspaceLabel(true);
+
 }
 
