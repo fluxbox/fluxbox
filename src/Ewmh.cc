@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.17 2003/04/15 12:22:06 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.18 2003/04/25 11:14:11 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -27,6 +27,7 @@
 #include "Window.hh"
 #include "fluxbox.hh"
 #include "WinClient.hh"
+#include "Workspace.hh"
 
 #include <iostream>
 #include <algorithm>

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.17 2003/04/15 12:22:52 fluxgen Exp $
+// $Id: Gnome.cc,v 1.18 2003/04/25 11:15:01 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -27,6 +27,7 @@
 #include "Window.hh"
 #include "Screen.hh"
 #include "WinClient.hh"
+#include "Workspace.hh"
 
 #include <iostream>
 #include <new>
