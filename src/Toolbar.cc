@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.73 2003/04/23 00:17:51 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.74 2003/04/25 11:19:45 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -39,6 +39,7 @@
 #include "SimpleCommand.hh"
 #include "IntResMenuItem.hh"
 #include "MacroCommand.hh"
+#include "RootTheme.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -401,7 +402,7 @@ void Toolbar::reconfigure() {
     if (m_iconbar.get())
         m_iconbar->setVertical(vertical);
 
-    frame.bevel_w = screen().getBevelWidth();
+    frame.bevel_w = screen().rootTheme().bevelWidth();
 
     // recallibrate size
     setPlacement(m_place);
@@ -639,8 +640,8 @@ void Toolbar::reconfigure() {
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
-    frame.window.setBorderColor(*screen().getBorderColor());
-    frame.window.setBorderWidth(screen().getBorderWidth());
+    frame.window.setBorderColor(screen().rootTheme().borderColor());
+    frame.window.setBorderWidth(screen().rootTheme().borderWidth());
 
     frame.window.clear();
 
@@ -844,7 +845,7 @@ void Toolbar::edit() {
         fluxbox->getFocusedWindow()->setFocusFlag(false);
 
     XDrawRectangle(display, frame.workspace_label.window(),
-                   screen().getWindowStyle()->l_text_focus_gc,
+                   screen().winFrameTheme().labelTextFocusGC(),
                    frame.workspace_label_w / 2, 0, 1,
                    frame.label_h - 1);
 }
@@ -1030,15 +1031,15 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
             x = tmp;
         }
 
-        m_theme.font().drawText(
-                                frame.workspace_label.window(),
+        m_theme.font().drawText(frame.workspace_label.window(),
                                 screen().getScreenNumber(),
-                                screen().getWindowStyle()->l_text_focus_gc,
+                                screen().winFrameTheme().labelTextFocusGC(),
                                 new_workspace_name.c_str(), l,
                                 x, dy);
 
         XDrawRectangle(display, frame.workspace_label.window(),
-                       screen().getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
+                       screen().winFrameTheme().labelTextFocusGC(),
+                       x + tw, 0, 1,
                        frame.label_h - 1);
     }		
 }
@@ -1094,15 +1095,17 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y;
         frame.x_hidden = head_x;
         frame.y_hidden = head_y +
-            screen().getBevelWidth() - screen().getBorderWidth() - frame.height;
+            screen().rootTheme().bevelWidth() - 
+            screen().rootTheme().borderWidth() - frame.height;
         break;
 
     case BOTTOMLEFT:
         frame.x = head_x;
-        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
+        frame.y = head_y + head_h - frame.height - 
+            screen().rootTheme().borderWidth()*2;
         frame.x_hidden = head_x;
-        frame.y_hidden = head_y + head_h - screen().getBevelWidth() - 
-            screen().getBorderWidth();
+        frame.y_hidden = head_y + head_h - screen().rootTheme().bevelWidth() - 
+            screen().rootTheme().borderWidth();
         break;
 
     case TOPCENTER:
@@ -1110,70 +1113,73 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.y = head_y;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y +
-            screen().getBevelWidth() - screen().getBorderWidth() - frame.height;
+            screen().rootTheme().bevelWidth() - 
+            screen().rootTheme().borderWidth() - frame.height;
         break;
     case TOPRIGHT:
-        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
         break;
 
     case BOTTOMRIGHT:
-        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
-        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - 
+            screen().rootTheme().borderWidth()*2;
+        frame.y = head_y + head_h - frame.height - 
+            screen().rootTheme().borderWidth()*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - screen().getBevelWidth() - 
-            screen().getBorderWidth();
+        frame.y_hidden = head_y + head_h - screen().rootTheme().bevelWidth() - 
+            screen().rootTheme().borderWidth();
         break;
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
     default:
         frame.x = head_x + (head_w - frame.width) / 2;
-        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
+        frame.y = head_y + head_h - frame.height - screen().rootTheme().borderWidth()*2;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + head_h - screen().getBevelWidth() - 
-            screen().getBorderWidth();
+        frame.y_hidden = head_y + head_h - screen().rootTheme().bevelWidth() - 
+            screen().rootTheme().borderWidth();
         break;
     case LEFTCENTER:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height)/2;
         frame.x_hidden = frame.x - frame.width + 
-            screen().getBevelWidth() + screen().getBorderWidth();
+            screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case LEFTTOP:
         frame.x = head_x;
         frame.y = head_y;
         frame.x_hidden = frame.x - frame.width + 
-            screen().getBevelWidth() + screen().getBorderWidth();
+            screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case LEFTBOTTOM:
         frame.x = head_x;
         frame.y = head_y + head_h - frame.height;
         frame.x_hidden = frame.x - frame.width + 
-            screen().getBevelWidth() + screen().getBorderWidth();
+            screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTCENTER:
         frame.x = head_x + head_w - frame.width;
         frame.y = head_y + (head_h - frame.height)/2;
         frame.x_hidden = frame.x + frame.width - 
-            screen().getBevelWidth() - screen().getBorderWidth();
+            screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTTOP:
         frame.x = head_x + head_w - frame.width;
         frame.y = head_y;
         frame.x_hidden = frame.x + frame.width - 
-            screen().getBevelWidth() - screen().getBorderWidth();
+            screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTBOTTOM:
         frame.x = head_x + head_w - frame.width;
         frame.y = head_y + head_h - frame.height;
         frame.x_hidden = frame.x + frame.width - 
-            screen().getBevelWidth() - screen().getBorderWidth();
+            screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     }
