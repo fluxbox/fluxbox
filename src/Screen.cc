@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.209 2003/07/28 16:29:24 rathnor Exp $
+// $Id: Screen.cc,v 1.210 2003/07/28 18:28:03 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -56,6 +56,7 @@
 #include "SlitTheme.hh"
 #include "CommandParser.hh"
 #include "MenuTheme.hh"
+#include "IconMenuItem.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -234,6 +235,7 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
     menu.setLabel("Workspace");
     RefCount<Command> new_workspace(new AddWorkspaceCmd(scr));
     RefCount<Command> remove_last(new RemoveLastWorkspaceCmd(scr));
+    //!! TODO: NLS
     menu.insert("New Workspace", new_workspace);
     menu.insert("Remove Last", remove_last);
     // for each workspace add workspace name and it's menu to our workspace menu
@@ -385,6 +387,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     workspacemenu.reset(createMenuFromScreen(*this));
     workspacemenu->setInternalMenu();
+    //!! TODO: NLS
+    m_iconmenu.reset(createMenuFromScreen(*this, "Icons"));
+    m_iconmenu->setInternalMenu();
 
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
@@ -401,6 +406,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     setupWorkspacemenu(*this, *workspacemenu);
+    //!! TODO: NLS
+    workspacemenu->insert("Icons", m_iconmenu.get());
+    workspacemenu->update();
 
     m_current_workspace = m_workspaces_list.front();
 
@@ -713,6 +721,7 @@ void BScreen::addIcon(FluxboxWindow *w) {
     if (! w) return;
 
     m_icon_list.push_back(w);
+    updateIconMenu();
 }
 
 
@@ -726,6 +735,21 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (erase_it != m_icon_list.end())
         m_icon_list.erase(erase_it);
 
+    updateIconMenu();
+}
+
+
+void BScreen::updateIconMenu() {
+    m_iconmenu->removeAll();
+    Icons::iterator it = m_icon_list.begin();
+    Icons::iterator it_end = m_icon_list.end();
+    for (; it != it_end; ++it) {
+        FluxboxWindow::ClientList::iterator client_it = (*it)->clientList().begin();
+        FluxboxWindow::ClientList::iterator client_it_end = (*it)->clientList().end();
+        for (; client_it != client_it_end; ++client_it)
+            m_iconmenu->insert(new IconMenuItem(**client_it));
+    }
+    m_iconmenu->update();
 }
 
 void BScreen::removeWindow(FluxboxWindow *win) {
@@ -737,6 +761,7 @@ void BScreen::removeWindow(FluxboxWindow *win) {
 
 
 void BScreen::removeClient(WinClient &client) {
+
     WinClient *cyc = *cycling_window;
     WinClient *focused = Fluxbox::instance()->getFocusedWindow();
     focused_list.remove(&client);
@@ -750,7 +775,7 @@ void BScreen::removeClient(WinClient &client) {
         else
             Fluxbox::instance()->revertFocus(focused->screen());
     }
-    // update client lists
+    // update client lists on all workspaces
     for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
              mem_fun(&Workspace::updateClientmenu));
 
@@ -764,6 +789,8 @@ void BScreen::removeClient(WinClient &client) {
             break;
         }
     }
+    // the client could be on icon menu so we update it
+    updateIconMenu();
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {

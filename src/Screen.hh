@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.117 2003/07/28 15:06:34 rathnor Exp $
+// $Id: Screen.hh,v 1.118 2003/07/28 18:28:03 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -344,6 +344,7 @@ private:
     bool doSkipWindow(const WinClient &winclient, int options);
 
     void renderGeomWindow();
+    void updateIconMenu();
 
     ScreenSubject 
     m_clientlist_sig,  ///< client signal
@@ -385,6 +386,7 @@ private:
 
     Workspace *m_current_workspace;
     std::auto_ptr<FbTk::Menu> workspacemenu;
+    std::auto_ptr<FbTk::Menu> m_iconmenu;
 
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
