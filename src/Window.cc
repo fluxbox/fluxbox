@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.256 2003/12/21 16:23:19 fluxgen Exp $
+// $Id: Window.cc,v 1.257 2003/12/21 23:23:03 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1198,8 +1198,18 @@ bool FluxboxWindow::setInputFocus(long ignore_event) {
 
     if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
         m_client->getFocusMode() == WinClient::F_PASSIVE) {
+
         m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
-        m_client->sendFocus(); 
+
+        FbTk::App *app = FbTk::App::instance();
+
+        XFlush(app->display());
+
+        m_client->sendFocus();
+
+        app->sync(false);
+        app->sync(false);
+
         ret = true;
     } else {
         ret = m_client->sendFocus(); 
