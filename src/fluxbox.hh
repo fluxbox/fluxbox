@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.55 2003/05/11 15:35:24 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.56 2003/05/11 22:18:33 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -268,6 +268,8 @@ private:
     bool m_starting;
     bool m_shutdown;
     int m_server_grabs;
+    const char *m_RC_PATH;
+    const char *m_RC_INIT_FILE;
 };
 
 

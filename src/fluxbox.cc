@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.137 2003/05/11 17:11:59 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.138 2003/05/11 22:19:17 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -96,24 +96,24 @@
 #include <sys/select.h>
 #endif // HAVE_SYS_SELECT_H
 
-#ifdef		HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #include <sys/types.h>
 #include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
-#ifdef		TIME_WITH_SYS_TIME
+#ifdef  TIME_WITH_SYS_TIME
 #include <sys/time.h>
 #include <time.h>
 #else // !TIME_WITH_SYS_TIME
-#ifdef		HAVE_SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #else // !HAVE_SYS_TIME_H
 #include <time.h>
 #endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-#ifdef		HAVE_LIBGEN_H
-#	include <libgen.h>
+#ifdef HAVE_LIBGEN_H
+#include <libgen.h>
 #endif // HAVE_LIBGEN_H
 
 #include <sys/wait.h>
@@ -144,9 +144,6 @@ char *basename (char *s) {
 }; // end anonymous namespace
 
 #endif // HAVE_BASENAME
-
-#define RC_PATH "fluxbox"
-#define RC_INIT_FILE "init"
 
 //-----------------------------------------------------------------
 //---- accessors for int, bool, and some enums with Resource ------
@@ -412,7 +409,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_argv(argv), m_argc(argc),
       m_starting(true),
       m_shutdown(false),
-      m_server_grabs(0) {
+      m_server_grabs(0),
+      m_RC_PATH("fluxbox"),
+      m_RC_INIT_FILE("init") {
       
 
     if (s_singleton != 0) {
@@ -595,11 +594,11 @@ void Fluxbox::setupConfigFiles() {
 
     bool create_init = false, create_keys = false, create_menu = false;
 
-    string dirname = getenv("HOME")+string("/.")+string(RC_PATH) + "/";
+    string dirname = getenv("HOME")+string("/.")+string(m_RC_PATH) + "/";
     string init_file, keys_file, menu_file, slitlist_file;
-    init_file = dirname+RC_INIT_FILE;
-    keys_file = dirname+"keys";
-    menu_file = dirname+"menu";
+    init_file = dirname + m_RC_INIT_FILE;
+    keys_file = dirname + "keys";
+    menu_file = dirname + "menu";
 
     struct stat buf;
 
@@ -1851,7 +1850,7 @@ void Fluxbox::save_rc() {
 string Fluxbox::getRcFilename() {
  
     if (m_rc_file.size() == 0) { // set default filename
-        string defaultfile(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);
+        string defaultfile(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + m_RC_INIT_FILE);
         return defaultfile;
     }
 
@@ -1860,7 +1859,7 @@ string Fluxbox::getRcFilename() {
 
 /// Provides default filename of data file
 void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
-    filename = string(getenv("HOME")+string("/.")+RC_PATH+string("/")+name);
+    filename = string(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + name);
 }
 
 /// loads resources
