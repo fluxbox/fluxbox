@@ -1,5 +1,6 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/25:
   * Fixed whitespace in filenames for pixmaps (Henrik)
     StringUtil.hh/cc, ThemeItems.hh
   * Added MoveTo/ResizeTo commands (Thanks sylvinus)
