@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.15 2003/05/10 13:26:37 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.16 2003/05/10 23:11:33 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -71,7 +71,8 @@ FbWindow::FbWindow(const FbWindow &parent,
 
 FbWindow::FbWindow(Window client):m_parent(0), m_window(0),
                                   m_destroy(false) { // don't destroy this window
-    *this = client;
+
+    setNew(client);
 }
 
 FbWindow::~FbWindow() {
@@ -114,6 +115,11 @@ void FbWindow::clear() {
 }
 
 FbWindow &FbWindow::operator = (Window win) {
+    setNew(win);	
+    return *this;
+}
+
+void FbWindow::setNew(Window win) {
     if (m_window != 0 && m_destroy)
         XDestroyWindow(s_display, m_window);
     m_window = win;
@@ -127,8 +133,7 @@ FbWindow &FbWindow::operator = (Window win) {
                                  &attr) != 0 && attr.screen != 0) {
             m_screen_num = XScreenNumberOfScreen(attr.screen);
         }
-    }	
-    return *this;
+    }
 }
 
 void FbWindow::show() {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.13 2003/05/10 13:24:59 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.14 2003/05/10 23:11:08 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -110,6 +110,9 @@ protected:
     explicit FbWindow(Window client);
 
 private:
+    // sets new window and destroys old
+    void setNew(Window win);
+
     void updateGeometry();
     void create(Window parent, int x, int y, unsigned int width, unsigned int height,
                 long eventmask, 
