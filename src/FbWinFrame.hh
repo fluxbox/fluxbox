@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.18 2003/09/12 22:49:14 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.19 2003/09/12 23:38:50 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -86,7 +86,7 @@ public:
     /// set focus/unfocus style
     void setFocus(bool newvalue);
     void setDoubleClickTime(unsigned int time);
-    void setBevel(int bevel);
+
     /// add a button to the left of the label
     void addLeftButton(FbTk::Button *btn);
     /// add a button to the right of the label

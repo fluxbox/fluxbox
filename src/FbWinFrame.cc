@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.49 2003/09/12 22:49:14 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.50 2003/09/12 23:38:50 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -236,10 +236,6 @@ void FbWinFrame::setFocus(bool newvalue) {
 
 void FbWinFrame::setDoubleClickTime(unsigned int time) {
     m_double_click_time = time;
-}
-
-void FbWinFrame::setBevel(int bevel) {
-    m_bevel = bevel;
 }
 
 void FbWinFrame::addLeftButton(FbTk::Button *btn) {
@@ -595,6 +591,15 @@ void FbWinFrame::configureNotifyEvent(XConfigureEvent &event) {
 void FbWinFrame::reconfigure() {
     if (m_labelbuttons.size() == 0)
         return;
+
+    m_bevel = theme().bevelWidth();
+
+    handle().resize(handle().width(), 
+                    theme().handleWidth());
+    gripLeft().resize(buttonHeight(), 
+                      theme().handleWidth());
+    gripRight().resize(gripLeft().width(), 
+                       gripLeft().height());
 
     // align titlebar and render it
     if (m_use_titlebar)
@@ -1107,21 +1112,21 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
 
 void FbWinFrame::updateTransparent() {
     redrawTitlebar();
-    /*
-      ButtonList::iterator button_it = m_buttons_left.begin();
-      ButtonList::iterator button_it_end = m_buttons_left.begin();
-      for (; button_it != button_it_end; ++button_it) {
-      (*button_it)->clear();
-      (*button_it)->updateTransparent();
-      }
+    
+    ButtonList::iterator button_it = m_buttons_left.begin();
+    ButtonList::iterator button_it_end = m_buttons_left.begin();
+    for (; button_it != button_it_end; ++button_it) {
+        (*button_it)->clear();
+        (*button_it)->updateTransparent();
+    }
 
-      button_it = m_buttons_right.begin();
-      button_it_end = m_buttons_right.end();
-      for (; button_it != button_it_end; ++button_it) {
-      (*button_it)->clear();
-      (*button_it)->updateTransparent();
-      }
-    */
+    button_it = m_buttons_right.begin();
+    button_it_end = m_buttons_right.end();
+    for (; button_it != button_it_end; ++button_it) {
+        (*button_it)->clear();
+        (*button_it)->updateTransparent();
+    }
+
     m_grip_left.updateTransparent();
     m_grip_right.updateTransparent();
     m_handle.updateTransparent();
