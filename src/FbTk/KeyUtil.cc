@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.8 2004/09/01 00:08:14 akir Exp $
+// $Id: KeyUtil.cc,v 1.9 2004/10/08 11:49:55 akir Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
@@ -58,7 +58,7 @@ void KeyUtil::loadModmap() {
 
     m_modmap = XGetModifierMapping(App::instance()->display());
     // mask to use for modifier
-    int mods[] = {
+    static const int mods[] = {
         ShiftMask,
         LockMask,
         ControlMask,
