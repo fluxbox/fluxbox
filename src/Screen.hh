@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.107 2003/06/20 01:28:16 fluxgen Exp $
+// $Id: Screen.hh,v 1.108 2003/06/23 12:57:36 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -76,8 +76,6 @@ public:
             int scrn, int number_of_layers);
     ~BScreen();
 
-    inline bool &doToolbarAutoHide() { return *resource.toolbar_auto_hide; }
-    inline Toolbar::Placement toolbarPlacement() const { return *resource.toolbar_placement; }
     inline bool isSloppyFocus() const { return (*resource.focus_model == Fluxbox::SLOPPYFOCUS); }
     inline bool isSemiSloppyFocus() const { return (*resource.focus_model == Fluxbox::SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
@@ -163,31 +161,19 @@ public:
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 
-    inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
-
-    inline int getToolbarWidthPercent() const { return *resource.toolbar_width_percent; }
-    inline FbTk::Resource<int> &getToolbarWidthPercentResource() { return resource.toolbar_width_percent; }
-    inline const FbTk::Resource<int> &getToolbarWidthPercentResource() const { return resource.toolbar_width_percent; }
     inline ToolbarHandler::ToolbarMode toolbarMode() const { return *resource.toolbar_mode; }
     inline int getPlacementPolicy() const { return resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
     inline int getRowPlacementDirection() const { return resource.row_direction; }
     inline int getColPlacementDirection() const { return resource.col_direction; }
 
-    inline int getToolbarLayerNum() const { return (*resource.toolbar_layernum).getNum(); }
-
-
     inline void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
     inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
-    inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
-    inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
+
     inline void saveToolbarMode(ToolbarHandler::ToolbarMode m) { *resource.toolbar_mode = m; }
-    inline void saveToolbarPlacement(Toolbar::Placement place) { *resource.toolbar_placement = place; }
-    inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
-    inline void saveToolbarLayer(Fluxbox::Layer layer) { *resource.toolbar_layernum = layer; }
 
     inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
     inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
@@ -410,8 +396,7 @@ private:
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
 
-        FbTk::Resource<bool> toolbar_auto_hide,
-            image_dither, opaque_move, full_max,
+        FbTk::Resource<bool> image_dither, opaque_move, full_max,
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
@@ -419,14 +404,12 @@ private:
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<Fluxbox::FocusModel> focus_model;
         bool ordered_dither;
-        FbTk::Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold, 
-            menu_alpha;
-        FbTk::Resource<Fluxbox::Layer> toolbar_layernum;
+        FbTk::Resource<int> workspaces, edge_snap_threshold, menu_alpha;
+
         int placement_policy, row_direction, col_direction;
 
         FbTk::Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
-        FbTk::Resource<int> toolbar_on_head;
-        FbTk::Resource<Toolbar::Placement> toolbar_placement;
+
 
         std::string strftime_format;
 
