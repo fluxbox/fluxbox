@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.209 2003/12/19 03:58:36 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.210 2003/12/19 13:37:28 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -409,7 +409,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_focus_revert_screen(0)
 {
       
-
+    
     if (s_singleton != 0)
         throw string("Fatal! There can only one instance of fluxbox class.");
 
@@ -438,6 +438,19 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     sigh.registerHandler(SIGHUP, this);
     sigh.registerHandler(SIGUSR1, this);	
     sigh.registerHandler(SIGUSR2, this);
+    //
+    // setup timer
+    // This timer is used to we can issue a safe reconfig command.
+    // Because when the command is executed we shouldn't do reconfig directly
+    // because it could affect ongoing menu stuff so we need to reconfig in
+    // the next event "round".
+    FbTk::RefCount<FbTk::Command> reconfig_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
+    timeval to;
+    to.tv_sec = 0;
+    to.tv_usec = 1;
+    m_reconfig_timer.setTimeout(to);
+    m_reconfig_timer.setCommand(reconfig_cmd);
+    m_reconfig_timer.fireOnce(true);
 
     Display *disp = FbTk::App::instance()->display();
 
@@ -931,9 +944,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-        } else if (winclient && winclient == m_focused_window) {
-            setFocusedWindow(0);
-        }
+        } else if (winclient && winclient == m_focused_window)
+             setFocusedWindow(0);
     }
 	break;
     case ClientMessage:
@@ -1749,8 +1761,7 @@ void Fluxbox::reload_rc() {
 
 void Fluxbox::reconfigure() {
     m_reconfigure_wait = true;
-
-    timed_reconfigure();
+    m_reconfig_timer.start();
 }
 
 
@@ -1802,8 +1813,7 @@ void Fluxbox::checkMenu() {
 
 void Fluxbox::rereadMenu() {
     m_reread_menu_wait = true;
-
-    timed_reconfigure();
+    m_reconfig_timer.start();
 }
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.76 2003/12/19 00:35:08 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.77 2003/12/19 13:36:21 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -300,6 +300,8 @@ private:
     char **m_argv;
     int m_argc;
     XEvent m_last_event;
+
+    FbTk::Timer m_reconfig_timer; ///< when we execute reconfig command we must wait at least to next event round
 
     std::auto_ptr<Keys> m_key;
 
