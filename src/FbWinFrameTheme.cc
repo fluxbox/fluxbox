@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.3 2003/02/23 01:02:52 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.4 2003/06/11 14:52:45 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
+
+#include <X11/cursorfont.h>
 
 #include <iostream>
 
@@ -62,6 +64,11 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_label_text_unfocus_gc = XCreateGC(disp, rootwin, 0, 0);
     m_button_pic_focus_gc = XCreateGC(disp, rootwin, 0, 0);
     m_button_pic_unfocus_gc = XCreateGC(disp, rootwin, 0, 0);
+    // create cursors
+    m_cursor_move = XCreateFontCursor(disp, XC_fleur);
+    m_cursor_lower_left_angle = XCreateFontCursor(disp, XC_ll_angle);
+    m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_lr_angle);
+
 }
 
 FbWinFrameTheme::~FbWinFrameTheme() {
