@@ -32,16 +32,6 @@
 #  include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xresource.h>
-#include <X11/Xatom.h>
-#include <X11/keysym.h>
-
-#ifdef    SHAPE
-#include <X11/extensions/shape.h>
-#endif // SHAPE
-
 #include "i18n.hh"
 #include "fluxbox.hh"
 #include "Basemenu.hh"
@@ -57,6 +47,18 @@
 #include "Window.hh"
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
+#include "StringUtil.hh"
+
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xresource.h>
+#include <X11/Xatom.h>
+#include <X11/keysym.h>
+
+#ifdef    SHAPE
+#include <X11/extensions/shape.h>
+#endif // SHAPE
+
 
 #ifdef    HAVE_STDIO_H
 #  include <stdio.h>
@@ -1699,7 +1701,7 @@ char *Fluxbox::getRcFilename() {
 		snprintf(dbfile, dbfile_size, "%s/.%s/%s", homedir, RC_PATH, RC_INIT_FILE);
 	
 	} else
-		dbfile = Misc::strdup(rc_file);
+		dbfile = StringUtil::strdup(rc_file);
  
 	return dbfile;
 }
@@ -1731,9 +1733,9 @@ void Fluxbox::load_rc(void) {
 	if (XrmGetResource(database, "session.menuFile", "Session.MenuFile",
 				&value_type, &value)) {
     
-		resource.menu_file = Misc::expandFilename(value.addr); // expand ~ to $HOME
+		resource.menu_file = StringUtil::expandFilename(value.addr); // expand ~ to $HOME
 	} else
-		resource.menu_file = Misc::strdup(DEFAULTMENU);
+		resource.menu_file = StringUtil::strdup(DEFAULTMENU);
 
 	if (resource.titlebar_file) {
 		delete resource.titlebar_file;
@@ -1743,9 +1745,9 @@ void Fluxbox::load_rc(void) {
 	//get titlebar filename
 	if (XrmGetResource(database, "session.titlebarFile", "Session.TitlebarFile",
 				&value_type, &value)) {
-		resource.titlebar_file = Misc::expandFilename(value.addr); //expand ~ to home 
+		resource.titlebar_file = StringUtil::expandFilename(value.addr); //expand ~ to home 
 	} else 
-		resource.titlebar_file = Misc::strdup(DEFAULTTITLEBAR);
+		resource.titlebar_file = StringUtil::strdup(DEFAULTTITLEBAR);
 	
 	//if already allocated memory for keys_file destroy it
 	if (resource.keys_file) {
@@ -1756,9 +1758,9 @@ void Fluxbox::load_rc(void) {
 	//get keys filename
 	if (XrmGetResource(database, "session.keyFile", "Session.keyFile",
 				&value_type, &value)) {
-		resource.keys_file = Misc::expandFilename(value.addr); //expand ~ to home		
+		resource.keys_file = StringUtil::expandFilename(value.addr); //expand ~ to home		
 	} else 
-		resource.keys_file = Misc::strdup(DEFAULTKEYSFILE);
+		resource.keys_file = StringUtil::strdup(DEFAULTKEYSFILE);
 		
 	
 	if (XrmGetResource(database, "session.iconbar", "Session.Iconbar",
@@ -1797,9 +1799,9 @@ void Fluxbox::load_rc(void) {
 
 	if (XrmGetResource(database, "session.styleFile", "Session.StyleFile",
 				&value_type, &value))
-		resource.style_file = Misc::expandFilename(value.addr);
+		resource.style_file = StringUtil::expandFilename(value.addr);
 	else
-		resource.style_file = Misc::strdup(DEFAULTSTYLE);
+		resource.style_file = StringUtil::strdup(DEFAULTSTYLE);
 
 	if (resource.root_cmd) {
 		delete [] resource.root_cmd;
@@ -1807,7 +1809,7 @@ void Fluxbox::load_rc(void) {
 	}
 
 	if (XrmGetResource(database, "session.rootCommand", "Session.RootCommand", &value_type, &value))
-		resource.root_cmd = Misc::expandFilename(value.addr);
+		resource.root_cmd = StringUtil::expandFilename(value.addr);
 	else
 		resource.root_cmd = 0;
 
@@ -2058,7 +2060,7 @@ void Fluxbox::load_rc(BScreen *screen) {
   sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
 		     &value)) {
-    char *search = Misc::strdup(value.addr);
+    char *search = StringUtil::strdup(value.addr);
 
     int i;
     for (i = 0; i < screen->getNumberOfWorkspaces(); i++) {
@@ -2504,7 +2506,7 @@ void Fluxbox::saveStyleFilename(const char *filename) {
   if (resource.style_file)
     delete [] resource.style_file;
 
-  resource.style_file = Misc::strdup(filename);
+  resource.style_file = StringUtil::strdup(filename);
 }
 
 
@@ -2521,7 +2523,7 @@ void Fluxbox::saveMenuFilename(const char *filename) {
     if (! stat(filename, &buf)) {
       MenuTimestamp *ts = new MenuTimestamp;
 
-      ts->filename = Misc::strdup(filename);
+      ts->filename = StringUtil::strdup(filename);
       ts->timestamp = buf.st_ctime;
 
       menuTimestamps->insert(ts);

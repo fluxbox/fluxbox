@@ -20,14 +20,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "Tab.hh"
-#include <iostream>
+
 #ifdef HAVE_CONFIG_H
 #  include "../config.h"
 #endif // HAVE_CONFIG_H
+
 #include "i18n.hh"
+#include "DrawUtil.hh"
 
-#include "misc.hh"
-
+#include <iostream>
 using namespace std;
 
 bool Tab::m_stoptabs = false;
@@ -333,11 +334,11 @@ void Tab::draw(bool pressed) {
 			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
 			(!m_win->isShaded() && m_win->getScreen()->isTabRotateVertical())) {
 
-		tabtext_w = Misc::XRotTextWidth(m_win->getScreen()->getWindowStyle()->tab.rot_font,
+		tabtext_w = DrawUtil::XRotTextWidth(m_win->getScreen()->getWindowStyle()->tab.rot_font,
 						m_win->client.title, m_win->client.title_len);
 		tabtext_w += (m_win->frame.bevel_w * 4);
 
-		Misc::DrawRotString(m_display, m_tabwin, gc,
+		DrawUtil::DrawRotString(m_display, m_tabwin, gc,
 				m_win->getScreen()->getWindowStyle()->tab.rot_font,
 				m_win->getScreen()->getWindowStyle()->tab.font.justify,
 				tabtext_w, m_size_w, m_size_h,
@@ -357,7 +358,7 @@ void Tab::draw(bool pressed) {
 		}
 		tabtext_w += (m_win->frame.bevel_w * 4);
 
-		Misc::DrawString(m_display, m_tabwin, gc,
+		DrawUtil::DrawString(m_display, m_tabwin, gc,
 				&m_win->getScreen()->getWindowStyle()->tab.font,
 				tabtext_w, m_size_w,
 				m_win->frame.bevel_w, m_win->client.title);

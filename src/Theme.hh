@@ -50,8 +50,8 @@
 #include "Image.hh"
 #endif //_IMAGE_HH_
 
-#ifndef _MISC_HH_
-#include "misc.hh"
+#ifndef _DRAWUTIL_HH_
+#include "DrawUtil.hh"
 #endif //_MISC_HH_
 
 #include <X11/Xlib.h>
@@ -70,7 +70,7 @@ public:
 		BColor t_text, f_text, h_text, d_text;
 		BTexture title, frame, hilite;
 		GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-		Misc::Font titlefont, framefont;
+		DrawUtil::Font titlefont, framefont;
 		int bullet, bullet_pos;
 	} MenuStyle;
 	
@@ -79,7 +79,7 @@ public:
 		BTexture l_focus, l_unfocus,
 			t_focus, t_unfocus;	
 		GC l_text_focus_gc, l_text_unfocus_gc;
-		Misc::Font font;
+		DrawUtil::Font font;
 		BColor l_text_focus, l_text_unfocus;
 	} LabelStyle;
 
@@ -95,7 +95,7 @@ public:
 			BColor border_color;
 			unsigned int border_width;
 			unsigned int border_width_2x;
-			Misc::XRotFontStruct *rot_font;
+			DrawUtil::XRotFontStruct *rot_font;
 		} tab;
 	
 	} WindowStyle;
@@ -105,7 +105,7 @@ public:
 		BColor l_text, w_text, c_text, b_pic;
 		BTexture toolbar, label, window, button, pressed, clock;
 		GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
-		Misc::Font font;
+		DrawUtil::Font font;
 
 	} ToolbarStyle;
 	

@@ -41,6 +41,7 @@
 #include "Windowmenu.hh"
 #include "Workspace.hh"
 #include "misc.hh"
+#include "StringUtil.hh"
 
 #ifdef		SLIT
 #	include "Slit.hh"
@@ -1201,17 +1202,17 @@ void FluxboxWindow::getWMName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 							&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.title = Misc::strdup(*list);
+					client.title = StringUtil::strdup(*list);
 					XFreeStringList(list);
 				} else
-					client.title = Misc::strdup((char *) text_prop.value);
+					client.title = StringUtil::strdup((char *) text_prop.value);
 					
 			} else
-				client.title = Misc::strdup((char *) text_prop.value);
+				client.title = StringUtil::strdup((char *) text_prop.value);
 
 			XFree((char *) text_prop.value);
 		} else
-			client.title = Misc::strdup(i18n->getMessage(
+			client.title = StringUtil::strdup(i18n->getMessage(
 #ifdef		NLS
 									WindowSet, WindowUnnamed,
 #else // !NLS
@@ -1219,7 +1220,7 @@ void FluxboxWindow::getWMName(void) {
 #endif //
 									"Unnamed"));
 	} else {
-		client.title = Misc::strdup(i18n->getMessage(
+		client.title = StringUtil::strdup(i18n->getMessage(
 #ifdef		NLS
 							WindowSet, WindowUnnamed,
 #else // !NLS
@@ -1263,18 +1264,18 @@ void FluxboxWindow::getWMIconName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 						&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.icon_title = Misc::strdup(*list);
+					client.icon_title = StringUtil::strdup(*list);
 					XFreeStringList(list);
 				} else
-					client.icon_title = Misc::strdup((char *) text_prop.value);
+					client.icon_title = StringUtil::strdup((char *) text_prop.value);
 			} else
-				client.icon_title = Misc::strdup((char *) text_prop.value);
+				client.icon_title = StringUtil::strdup((char *) text_prop.value);
 
 			XFree((char *) text_prop.value);
 		} else
-				client.icon_title = Misc::strdup(client.title);
+				client.icon_title = StringUtil::strdup(client.title);
 	} else
-		client.icon_title = Misc::strdup(client.title);
+		client.icon_title = StringUtil::strdup(client.title);
 }
 
 
@@ -2416,7 +2417,7 @@ void FluxboxWindow::redrawLabel(void) {
 	GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
 			 screen->getWindowStyle()->l_text_unfocus_gc);
 
-	Misc::DrawString(display, frame.label, gc,
+	DrawUtil::DrawString(display, frame.label, gc,
 			&screen->getWindowStyle()->font, 
 			client.title_text_w, frame.label_w,
 			frame.bevel_w, client.title);

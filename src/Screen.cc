@@ -39,6 +39,7 @@
 #include "Icon.hh"
 #include "Image.hh"
 #include "Screen.hh"
+#include "StringUtil.hh"
 
 #ifdef		SLIT
 #include "Slit.hh"
@@ -831,13 +832,13 @@ void BScreen::saveStrftimeFormat(char *format) {
 	if (resource.strftime_format)
 		delete [] resource.strftime_format;
 
-	resource.strftime_format = Misc::strdup(format);
+	resource.strftime_format = StringUtil::strdup(format);
 }
 #endif // HAVE_STRFTIME
 
 
 void BScreen::addWorkspaceName(char *name) {
-	workspaceNames->insert(Misc::strdup(name));
+	workspaceNames->insert(StringUtil::strdup(name));
 	
 }
 
@@ -847,7 +848,7 @@ void BScreen::getNameOfWorkspace(int id, char **name) {
 		char *wkspc_name = workspaceNames->find(id);
 
 		if (wkspc_name)
-			*name = Misc::strdup(wkspc_name);
+			*name = StringUtil::strdup(wkspc_name);
 	} else
 		*name = 0;
 }
@@ -1460,7 +1461,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 								char **ls = new char* [entries];
 								int index = 0;
 								while ((p = readdir(d)))
-									ls[index++] = Misc::strdup(p->d_name);
+									ls[index++] = StringUtil::strdup(p->d_name);
 
 								qsort(ls, entries, sizeof(char *), dcmp);
 

@@ -63,7 +63,6 @@
 #endif // TIME_WITH_SYS_TIME
 
 #include <iostream>
-#include "misc.hh"
 
 using namespace std;
 
@@ -645,11 +644,11 @@ void Toolbar::checkClock(Bool redraw, Bool date) {
 		}
 
 		switch (screen->getToolbarStyle()->font.justify) {
-		case Misc::Font::RIGHT:
+		case DrawUtil::Font::RIGHT:
 			dx += frame.clock_w - l;
 			break;
 
-		case Misc::Font::CENTER:
+		case DrawUtil::Font::CENTER:
 			dx += (frame.clock_w - l) / 2;
 			break;
 		default: //LEFT
@@ -711,11 +710,11 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 			}
 		}
 		switch (screen->getToolbarStyle()->font.justify) {
-		case Misc::Font::RIGHT:
+		case DrawUtil::Font::RIGHT:
 			dx += frame.window_label_w - l;
 			break;
 
-		case Misc::Font::CENTER:
+		case DrawUtil::Font::CENTER:
 			dx += (frame.window_label_w - l) / 2;
 			break;
 		default:
@@ -789,11 +788,11 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 		}
 		
 		switch (screen->getToolbarStyle()->font.justify) {
-		case Misc::Font::RIGHT:
+		case DrawUtil::Font::RIGHT:
 			dx += frame.workspace_label_w - l;
 			break;
 
-		case Misc::Font::CENTER:
+		case DrawUtil::Font::CENTER:
 			dx += (frame.workspace_label_w - l) / 2;
 			break;
 		default:

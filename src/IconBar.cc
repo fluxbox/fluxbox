@@ -273,10 +273,10 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	}
 
 	switch (m_screen->getWindowStyle()->tab.font.justify) {
-	case Misc::Font::RIGHT:
+	case DrawUtil::Font::RIGHT:
 		dx += width - l;
 		break;
-	case Misc::Font::CENTER:
+	case DrawUtil::Font::CENTER:
 		dx += (width - l) / 2;
 		break;
 	default:

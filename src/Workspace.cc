@@ -40,6 +40,7 @@
 #include "Window.hh"
 #include "Workspace.hh"
 #include "Windowmenu.hh"
+#include "StringUtil.hh"
 
 #ifdef		HAVE_STDIO_H
 #	include <stdio.h>
@@ -48,10 +49,6 @@
 #ifdef		STDC_HEADERS
 #	include <string.h>
 #endif // STDC_HEADERS
-
-#define MIN(x,y) ((x < y) ? x : y)
-#define MAX(x,y) ((x > y) ? x : y)
-
 
 Workspace::Workspace(BScreen *scrn, int i) {
 	screen = scrn;
@@ -309,7 +306,7 @@ void Workspace::setName(char *new_name) {
 		delete [] name;
 
 	if (new_name) {
-		name = Misc::strdup(new_name);
+		name = StringUtil::strdup(new_name);
 	} else {
 		name = new char[128];
 		sprintf(name, I18n::instance()->
