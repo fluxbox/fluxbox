@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.4 2003/07/10 12:00:09 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.5 2003/07/10 13:48:35 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -75,6 +75,7 @@ public:
 
     inline int borderWidth() const { return *m_border_width; }
     inline int bevelWidth() const { return *m_bevel_width; }    
+    inline int buttonBorderWidth() const { return *m_button_border_width; }
     inline bool shape() const { return *m_shape; }
 
     void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
@@ -89,7 +90,7 @@ private:
     FbTk::ThemeItem<FbTk::Font> m_font;
     FbTk::ThemeItem<FbTk::Justify> m_justify;
 
-    FbTk::ThemeItem<int> m_border_width, m_bevel_width;
+    FbTk::ThemeItem<int> m_border_width, m_bevel_width, m_button_border_width;
     FbTk::ThemeItem<bool> m_shape;
 
     // graphic context

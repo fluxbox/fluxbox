@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.4 2003/07/10 12:00:09 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.5 2003/07/10 13:48:35 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -67,7 +67,8 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_justify(*this, "toolbar.justify", "Toolbar.Justify"),
     m_border_width(*this, "toolbar.borderWidth", "Toolbar.BorderWidth"),
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
-    m_shape(*this, "toolbar.shape", "Toolbar.Shape"),
+    m_button_border_width(*this, "toolbar.button.borderWidth", "Toolbar.Button.BorderWidth"),
+    m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),    
     m_display(FbTk::App::instance()->display()) {
 
     Window rootwindow = RootWindow(m_display, screen_num);

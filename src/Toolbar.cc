@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.98 2003/07/10 11:48:14 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.99 2003/07/10 13:46:47 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -547,6 +547,11 @@ void Toolbar::reconfigure() {
         frame.workspace_label_w = frame.clock_w;
     else if (frame.workspace_label_w > frame.clock_w)
         frame.clock_w = frame.workspace_label_w;
+
+    frame.psbutton.window().setBorderWidth(theme().buttonBorderWidth());
+    frame.nsbutton.window().setBorderWidth(theme().buttonBorderWidth());
+    frame.pwbutton.window().setBorderWidth(theme().buttonBorderWidth());
+    frame.nwbutton.window().setBorderWidth(theme().buttonBorderWidth());
 
     // Right, let's break this one down....
     // full width, minus clock, workspace label and the 4 arrow buttons.
