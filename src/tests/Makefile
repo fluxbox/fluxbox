@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS= -I.. -DDEBUG -Wall -g -O2
+CXXFLAGS= -I.. -DDEBUG -DUSE_XFT -Wall -g -O2
 LIBS=
 XFLAGS= -I/usr/X11R6/include
 XLIBS= -L/usr/X11R6/lib -lX11 -lXft
