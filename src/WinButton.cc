@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.1 2003/01/05 22:48:54 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.2 2003/02/23 01:06:23 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -57,18 +57,18 @@ void WinButton::drawType() {
                        2, height() - 5, width() - 5, 2);
         break;
     case STICK:
-        //        if (m_stuck) {
+        /*        if (m_stuck) {
+                  XFillRectangle(disp, window().window(), 
+                  gc(),
+                  width()/2 - width()/4, height()/2 - height()/4,
+                  width()/2, height()/2);
+                  } else {            */
         XFillRectangle(disp, window().window(), 
                        gc(),
-                       width()/2 - width()/4, height()/2 - height()/4,
-                       width()/2, height()/2);
-        /*                  } else {            
-          XFillRectangle(disp, window().window(), 
-          gc(),
-          width()/2, height()/2,
-          width()/5, height()/5);
-          }
-        */
+                       width()/2, height()/2,
+                       width()/5, height()/5);
+        //    }
+
         break;
     case CLOSE:    
         XDrawLine(disp, window().window(),
