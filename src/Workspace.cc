@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.9 2002/02/09 16:41:53 fluxgen Exp $
+// $Id: Workspace.cc,v 1.10 2002/02/10 19:05:12 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -55,6 +55,8 @@
 #include <X11/Xatom.h>
 
 #include <algorithm>
+#include <iostream>
+using namespace std;
 
 Workspace::Workspace(BScreen *scrn, int i):
 screen(scrn),
@@ -332,12 +334,12 @@ void Workspace::setName(char *new_name) {
 
 
 void Workspace::shutdown(void) {
-	Windows::iterator it = windowList.begin();
-	Windows::iterator it_end= windowList.end();
-	for (; it != it_end; ++it) {
-		(*it)->restore();
-		delete (*it);
+
+	while (!windowList.empty()) {
+		windowList.back()->restore();
+		delete windowList.back(); //delete window (the window removes it self from windowList)
 	}
+	
 }
 
 
