@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.6 2003/08/13 09:24:33 fluxgen Exp $
+// $Id: Theme.hh,v 1.7 2003/08/19 21:25:26 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -80,6 +80,8 @@ public:
     inline T *operator->() { return &m_value; }
     inline const T *operator->() const { return &m_value; }
     /**@}*/
+
+    FbTk::Theme &theme() { return m_tm; }
 private:
 
     T m_value;
@@ -102,6 +104,7 @@ public:
     /// remove ThemeItem
     template <typename T>
     void remove(ThemeItem<T> &item);
+    virtual bool fallback(ThemeItem_base &base) { return false; }
     FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
 private:
     const int m_screen_num;
@@ -121,7 +124,8 @@ public:
     bool load(const std::string &filename);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
-    void loadItem(ThemeItem_base &resource);
+    bool loadItem(ThemeItem_base &resource);
+    bool loadItem(ThemeItem_base &resource, const std::string &name, const std::string &altname);
 private:
     ThemeManager();
     ~ThemeManager() { }

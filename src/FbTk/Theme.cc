@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.11 2003/08/13 09:24:02 fluxgen Exp $
+// $Id: Theme.cc,v 1.12 2003/08/19 21:25:26 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -245,24 +245,35 @@ void ThemeManager::loadTheme(Theme &tm) {
     std::list<ThemeItem_base *>::iterator i_end = tm.itemList().end();
     for (; i != i_end; ++i) {
         ThemeItem_base *resource = *i;
-        loadItem(*resource);
+        if (!loadItem(*resource)) {
+            // try fallback resource in theme
+            if (!tm.fallback(*resource)) {
+                cerr<<"Failed to read theme item: "<<resource->name()<<endl;
+                cerr<<"Setting default value"<<endl;
+                resource->setDefaultValue();                
+            }
+        }
     }
     // send reconfiguration signal to theme and listeners
 }
 
-void ThemeManager::loadItem(ThemeItem_base &resource) {
+bool ThemeManager::loadItem(ThemeItem_base &resource) {
+    return loadItem(resource, resource.name(), resource.altName());
+}
+
+/// handles resource item loading with specific name/altname
+bool ThemeManager::loadItem(ThemeItem_base &resource, const std::string &name, const std::string &alt_name) {
     XrmValue value;
     char *value_type;
 
-    if (XrmGetResource(*m_database, resource.name().c_str(),
-                       resource.altName().c_str(), &value_type, &value)) {
+    if (XrmGetResource(*m_database, name.c_str(),
+                       alt_name.c_str(), &value_type, &value)) {
         resource.setFromString(value.addr);
         resource.load(); // load additional stuff by the ThemeItem
-    } else {
-        cerr<<"Failed to read theme item: "<<resource.name()<<endl;
-        cerr<<"Setting default value"<<endl;
-        resource.setDefaultValue();
-    }
+    } else
+        return false;
+
+    return true;
 }
 
 std::string ThemeManager::resourceValue(const std::string &name, const std::string &altname) {
