@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.172 2003/07/20 18:05:39 rathnor Exp $
+// $Id: fluxbox.cc,v 1.173 2003/07/21 15:26:57 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1085,9 +1085,8 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 				
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
         FluxboxWindow *win = searchWindow(ce.window);
-        if (win && win->isVisible() && win->setInputFocus()) {
-            win->installColormap(true);
-        }
+        if (win && win->isVisible())
+            win->setInputFocus();
     } else if (ce.message_type == m_fbatoms->getFluxboxCycleWindowFocusAtom()) {
         BScreen *screen = searchScreen(ce.window);
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.18 2003/07/20 18:05:39 rathnor Exp $
+// $Id: WinClient.cc,v 1.19 2003/07/21 15:26:56 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -138,9 +138,9 @@ void WinClient::updateRect(int x, int y,
 
 }
 
-void WinClient::sendFocus() {
+bool WinClient::sendFocus() {
     if (!send_focus_message)
-        return;
+        return false;
 
     Display *disp = FbTk::App::instance()->display();
     // setup focus msg
@@ -157,6 +157,7 @@ void WinClient::sendFocus() {
     ce.xclient.data.l[4] = 0l;
     // send focus msg
     XSendEvent(disp, window(), false, NoEventMask, &ce);
+    return true;
 }
 
 void WinClient::sendClose() {

@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/21:
+   * Really fix focus stuff. Should be properly standards compliant now (I 
+     hope). This also fixes a crash introduced yesterday.   (Simon)
+     WinClient.hh/cc Window.cc fluxbox.cc
 *03/07/20:
    * Fix aspects of focus and raising, including transients (Simon)
      - fixes focus toggling with transients and sloppy focus

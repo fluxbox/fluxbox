@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.9 2003/07/20 18:05:39 rathnor Exp $
+// $Id: WinClient.hh,v 1.10 2003/07/21 15:26:56 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -42,7 +42,8 @@ public:
 
     ~WinClient();
     void updateRect(int x, int y, unsigned int width, unsigned int height);
-    void sendFocus();
+    bool sendFocus(); // returns whether we sent a message or not 
+                      // i.e. whether we assume the focus will get taken
     void sendClose();
     void reparent(Window win, int x, int y);
     bool getAttrib(XWindowAttributes &attr) const;

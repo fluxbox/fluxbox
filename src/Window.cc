@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.207 2003/07/20 18:05:39 rathnor Exp $
+// $Id: Window.cc,v 1.208 2003/07/21 15:26:56 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1097,9 +1097,13 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
     shape();
 }	
 
+// returns whether the focus was "set" to this window
+// it doesn't guarantee that it has focus, but says that we have
+// tried. A FocusqIn event should eventually arrive for that
+// window if it actually got the focus, then setFocusedFlag is called,
+// which updates all the graphics etc
 bool FluxboxWindow::setInputFocus() {
 
-    //TODO hint skip focus
     if (((signed) (frame().x() + frame().width())) < 0) {
         if (((signed) (frame().y() + frame().height())) < 0) {
             moveResize(frame().window().borderWidth(), frame().window().borderWidth(),
@@ -1137,18 +1141,16 @@ bool FluxboxWindow::setInputFocus() {
                 return (*it)->fbwindow()->setCurrentClient(**it, true);
         }
     } 
+
     if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
         m_client->getFocusMode() == WinClient::F_PASSIVE) {
         m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
+        // this may or may not send, but we've setInputFocus already, so return true
+        m_client->sendFocus(); 
+        return true;
     } else {
-        return false;
+        return m_client->sendFocus(); // checks if it should send or not
     }
-
-    if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
-        && screen().doAutoRaise())
-        m_timer.start();
-
-    return true;
 }
 
 void FluxboxWindow::hide() {
@@ -1581,28 +1583,36 @@ void FluxboxWindow::moveToLayer(int layernum) {
 }
 
 
-
+// window has actually RECEIVED focus (got a FocusIn event)
+// so now we make it a focused frame etc
 void FluxboxWindow::setFocusFlag(bool focus) {
     focused = focus;
 
     // Record focus timestamp for window cycling enhancements
-    if (focused)
+    if (focused) {
         gettimeofday(&m_last_focus_time, 0);
+        screen().setFocusedWindow(*m_client);
+    }
 
-    screen().setFocusedWindow(*m_client);
-    m_client->sendFocus();
+    installColormap(focus);
     frame().setFocus(focus);
 
-    if (!focused && (screen().isSloppyFocus() || screen().isSemiSloppyFocus()) &&
-        screen().doAutoRaise())
-        m_timer.stop();
+    if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
+        && screen().doAutoRaise())
+        if (focused)
+            m_timer.start();
+        else 
+            m_timer.stop();
 }
 
 
 void FluxboxWindow::installColormap(bool install) {
+    if (m_client == 0) return;
+
     Fluxbox *fluxbox = Fluxbox::instance();
     fluxbox->grab();
-    if (! validateClient()) return;
+    if (! validateClient())
+        return;
 
     int i = 0, ncmap = 0;
     Colormap *cmaps = XListInstalledColormaps(display, m_client->window(), &ncmap);
@@ -2567,17 +2577,21 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);   
             
             // if client is set, use setCurrent client, otherwise just setInputFocus
-            if ((!sa.leave || sa.inferior) && 
-                ((client && setCurrentClient(*client, true)) || setInputFocus())) {
-                installColormap(True);
+            if ((!sa.leave || sa.inferior)) {
+                if (client)
+                    setCurrentClient(*client, true);
+                else
+                    setInputFocus();
             }
+
         }        
     }
 }
 
 void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) { 
-    if (ev.window == frame().window())
-        installColormap(false);
+    // I hope commenting this out is right - simon 21jul2003
+    //if (ev.window == frame().window())
+    //installColormap(false);
 }
 
 // TODO: functions should not be affected by decoration
@@ -2728,11 +2742,11 @@ bool FluxboxWindow::validateClient() {
     XSync(display, false);
 
     XEvent e;
-    if (XCheckTypedWindowEvent(display, m_client->window(), DestroyNotify, &e) ||
-        XCheckTypedWindowEvent(display, m_client->window(), UnmapNotify, &e)) {
-        XPutBackEvent(display, &e);
+    if (!m_client || 
+        ( XCheckTypedWindowEvent(display, m_client->window(), DestroyNotify, &e) ||
+          XCheckTypedWindowEvent(display, m_client->window(), UnmapNotify, &e)) 
+        && XPutBackEvent(display, &e)) {
         Fluxbox::instance()->ungrab();
-
         return false;
     }
 
@@ -3040,6 +3054,8 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 
     if (remap)
         client->show();
+
+    installColormap(false);
 
     delete client;
 
