@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IntResMenuItem.cc,v 1.5 2004/10/21 10:40:37 akir Exp $
+// $Id$
 
 #include "IntResMenuItem.hh"
 #include "PixmapWithMask.hh"

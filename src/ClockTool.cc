@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.16 2004/10/10 12:00:37 rathnor Exp $
+// $Id$
 
 #include "ClockTool.hh"
 

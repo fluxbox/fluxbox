@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.19 2004/09/12 14:56:18 rathnor Exp $
+// $Id$
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"

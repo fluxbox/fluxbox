@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.cc,v 1.8 2004/03/22 21:01:42 fluxgen Exp $
+// $Id$
 
 #include "RootTheme.hh"
 

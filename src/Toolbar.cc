@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.156 2004/10/21 10:36:57 akir Exp $
+// $Id$
 
 #include "Toolbar.hh"
 

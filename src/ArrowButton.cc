@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.11 2004/10/21 16:49:19 akir Exp $
+// $Id$
 
 #include "ArrowButton.hh"
 #include "ButtonTheme.hh"

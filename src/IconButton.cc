@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.23 2004/10/22 00:35:28 akir Exp $
+// $Id$
 
 #include "IconButton.hh"
 #include "IconbarTool.hh"

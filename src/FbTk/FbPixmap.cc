@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.17 2004/09/24 06:23:17 rathnor Exp $
+// $Id$
 
 #include "FbPixmap.hh"
 #include "App.hh"

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.cc,v 1.7 2004/08/29 08:33:12 rathnor Exp $
+// $Id$
 
 #include "TextTheme.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.cc,v 1.7 2003/08/25 16:51:16 fluxgen Exp $
+// $Id$
 
 #include "WinButtonTheme.hh"
 

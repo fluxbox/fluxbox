@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.10 2004/09/11 22:58:20 fluxgen Exp $
+// $Id$
 
 #include "XFontImp.hh"
 #include "App.hh"

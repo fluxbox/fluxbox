@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageXPM.cc,v 1.1 2003/08/22 21:25:14 fluxgen Exp $
+// $Id$
 
 #include "ImageXPM.hh"
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarItem.cc,v 1.1 2003/08/11 15:44:12 fluxgen Exp $
+// $Id$
 
 #include "ToolbarItem.hh"
 

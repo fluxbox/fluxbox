@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.306 2004/11/07 09:30:59 akir Exp $
+// $Id$
 
 #include "Window.hh"
 

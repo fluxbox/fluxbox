@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.16 2004/02/20 09:05:38 fluxgen Exp $
+// $Id$
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 

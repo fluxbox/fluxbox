@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.20 2004/05/14 13:44:31 rathnor Exp $
+/// $Id$
 
 #include "WinButton.hh"
 #include "App.hh"

@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.31 2004/06/17 16:12:20 rathnor Exp $
+# $Id$
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.cc,v 1.4 2003/05/13 11:41:29 fluxgen Exp $
+// $Id$
 
 #include "SignalHandler.hh"
 

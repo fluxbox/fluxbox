@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.9 2004/10/08 11:49:55 akir Exp $
+// $Id$
 
 #include "KeyUtil.hh"
 #include "App.hh"

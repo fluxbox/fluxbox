@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.42 2004/08/31 15:26:38 rathnor Exp $
+// $Id$
 
 #include "WinClient.hh"
 

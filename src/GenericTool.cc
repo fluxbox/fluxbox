@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GenericTool.cc,v 1.4 2004/09/12 14:56:18 rathnor Exp $
+// $Id$
 
 #include "GenericTool.hh"
 #include "FbTk/FbWindow.hh"

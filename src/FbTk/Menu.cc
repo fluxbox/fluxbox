@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.86 2004/09/29 09:58:11 akir Exp $
+// $Id$
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE

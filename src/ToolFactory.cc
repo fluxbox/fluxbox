@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.9 2004/09/12 14:56:19 rathnor Exp $
+// $Id$
 
 #include "ToolFactory.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MacroCommand.cc,v 1.2 2003/09/29 14:00:46 fluxgen Exp $
+// $Id$
 
 #include "MacroCommand.hh"
 

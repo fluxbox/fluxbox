@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StyleMenuItem.cc,v 1.2 2004/05/03 21:37:38 fluxgen Exp $
+// $Id$
 
 #include "StyleMenuItem.hh"
 

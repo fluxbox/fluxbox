@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.15 2004/06/16 15:38:19 rathnor Exp $
+// $Id$
 
 #include "Container.hh"
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.36 2004/10/06 11:40:28 akir Exp $
+// $Id$
 
 #include "FbCommandFactory.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.30 2004/10/21 13:05:50 akir Exp $
+// $Id$
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"

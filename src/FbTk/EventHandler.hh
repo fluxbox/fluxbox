@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventHandler.hh,v 1.6 2003/12/16 17:06:49 fluxgen Exp $
+// $Id$
 
 /// @file holds EventHandler interface for X events
 

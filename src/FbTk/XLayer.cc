@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.10 2004/09/10 04:03:58 rathnor Exp $
+// $Id$
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"

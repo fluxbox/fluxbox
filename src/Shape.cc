@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.13 2004/08/31 15:26:38 rathnor Exp $
+// $Id$
 
 #include "Shape.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.cc,v 1.1 2004/10/21 16:44:06 akir Exp $
+// $Id$
 
 /// @file implements common theme items
 

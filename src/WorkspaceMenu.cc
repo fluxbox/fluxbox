@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceMenu.cc,v 1.5 2004/09/06 21:12:10 akir Exp $
+// $Id$
 
 #include "WorkspaceMenu.hh"
 

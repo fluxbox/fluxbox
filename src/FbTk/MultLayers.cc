@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.cc,v 1.8 2004/01/08 22:04:04 fluxgen Exp $
+// $Id$
 
 #include "MultLayers.hh"
 #include "XLayer.hh"

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.18 2004/02/27 13:24:21 fluxgen Exp $
+// $Id$
 
 #include "Button.hh"
 

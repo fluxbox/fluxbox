@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Observer.cc,v 1.1 2003/02/15 01:21:40 fluxgen Exp $
+// $Id$
 
 #include "Observer.hh"
 #include "Subject.hh"

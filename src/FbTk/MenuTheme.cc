@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.20 2004/08/31 15:26:39 rathnor Exp $
+// $Id$
 
 #include "MenuTheme.hh"
 

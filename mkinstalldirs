@@ -4,7 +4,7 @@
 # Created: 1993-05-16
 # Public domain
 
-# $Id: mkinstalldirs,v 1.1 2001/12/11 20:47:26 fluxgen Exp $
+# $Id$
 
 errstatus=0
 

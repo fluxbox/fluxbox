@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.cc,v 1.7 2003/12/18 18:03:21 fluxgen Exp $
+// $Id$
 
 #include "SendToMenu.hh"
 

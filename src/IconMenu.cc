@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconMenu.cc,v 1.3 2004/06/07 21:42:05 fluxgen Exp $
+// $Id$
 
 #include "IconMenu.hh"
 

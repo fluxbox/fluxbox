@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Text.cc,v 1.3 2004/04/26 15:04:37 rathnor Exp $
+// $Id$
 
 #include "Text.hh"
 

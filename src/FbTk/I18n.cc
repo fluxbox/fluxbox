@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.4 2004/10/07 09:52:28 akir Exp $
+// $Id$
 
 /* Note:
  * A good reference for the older non-gettext style I18n

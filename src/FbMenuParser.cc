@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenuParser.cc,v 1.3 2004/10/21 10:49:20 akir Exp $
+// $Id$
 
 #include "FbMenuParser.hh"
 

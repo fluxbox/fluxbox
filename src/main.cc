@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.33 2004/10/18 01:26:54 akir Exp $
+// $Id$
 
 #include "fluxbox.hh"
 #include "version.h"

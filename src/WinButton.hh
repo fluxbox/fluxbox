@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.hh,v 1.5 2004/01/10 00:37:35 rathnor Exp $
+/// $Id$
 
 #include "Button.hh"
 #include "Observer.hh"

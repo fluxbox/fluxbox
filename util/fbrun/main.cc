@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.14 2004/09/12 10:01:46 akir Exp $
+// $Id$
 
 #include "FbRun.hh"
 #include "App.hh"

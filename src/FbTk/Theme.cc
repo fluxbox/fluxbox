@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.30 2004/10/21 16:45:30 akir Exp $
+// $Id$
 
 #include "Theme.hh"
 

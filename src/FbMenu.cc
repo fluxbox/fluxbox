@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenu.cc,v 1.3 2004/04/18 18:53:55 fluxgen Exp $
+// $Id$
 
 
 #include "FbMenu.hh"

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.14 2004/09/10 07:15:23 akir Exp $
+// $Id$
 
 #include "EventManager.hh"
 #include "FbWindow.hh"

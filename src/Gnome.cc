@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.37 2004/08/11 13:16:10 fluxgen Exp $
+// $Id$
 
 #include "Gnome.hh"
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xutil.cc,v 1.5 2004/06/07 11:46:04 rathnor Exp $
+// $Id$
 
 #include "Xutil.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRootWindow.cc,v 1.4 2004/10/21 10:21:03 akir Exp $
+// $Id$
 
 #include "FbRootWindow.hh"
 #include "App.hh"

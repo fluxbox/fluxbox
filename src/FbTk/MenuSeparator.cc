@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuSeparator.cc,v 1.1 2004/06/07 21:05:16 fluxgen Exp $
+// $Id$
 
 #include "MenuSeparator.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.15 2004/10/08 11:52:33 akir Exp $
+// $Id$
 
 #include "TextBox.hh"
 #include "Font.hh"

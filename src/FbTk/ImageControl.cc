@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.16 2004/09/10 16:41:30 akir Exp $
+// $Id$
 
 #include "ImageControl.hh"
 

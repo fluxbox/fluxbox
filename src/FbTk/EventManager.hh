@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.9 2004/05/04 14:33:38 rathnor Exp $
+// $Id$
 
 #include "EventHandler.hh"
 #include <map>

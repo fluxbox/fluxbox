@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: template.cc,v 1.1 2004/03/01 10:49:43 fluxgen Exp $
+// $Id$
 
 /*
  * Use this file as a template for new test applications

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.11 2004/08/25 17:16:40 rathnor Exp $
+// $Id$
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"

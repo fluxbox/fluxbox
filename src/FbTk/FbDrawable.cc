@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.cc,v 1.4 2004/09/11 22:58:20 fluxgen Exp $
+// $Id$
 
 #include "FbDrawable.hh"
 

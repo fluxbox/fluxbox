@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.16 2004/10/21 10:38:25 akir Exp $
+// $Id$
 
 #include "SystemTray.hh"
 

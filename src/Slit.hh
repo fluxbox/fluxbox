@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.43 2004/09/12 14:56:19 rathnor Exp $
+/// $Id$
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH

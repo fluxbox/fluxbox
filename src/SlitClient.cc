@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitClient.cc,v 1.3 2004/01/31 11:39:32 rathnor Exp $
+// $Id$
 
 #include "SlitClient.hh"
 

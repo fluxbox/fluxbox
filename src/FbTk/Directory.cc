@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.cc,v 1.4 2004/04/26 10:17:09 fluxgen Exp $
+// $Id$
 
 #include "Directory.hh"
 

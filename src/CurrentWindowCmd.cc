@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.9 2004/02/20 19:40:31 fluxgen Exp $
+// $Id$
 
 #include "CurrentWindowCmd.hh"
 

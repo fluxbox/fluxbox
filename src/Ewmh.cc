@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.53 2004/10/21 10:57:38 akir Exp $
+// $Id$
 
 #include "Ewmh.hh"
 

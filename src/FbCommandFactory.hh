@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.hh,v 1.1 2003/06/30 14:49:23 fluxgen Exp $
+// $Id$
 
 #include "CommandParser.hh"
 

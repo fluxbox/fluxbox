@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.22 2004/10/31 23:04:30 akir Exp $
+//$Id$
 
 
 #include "StringUtil.hh"

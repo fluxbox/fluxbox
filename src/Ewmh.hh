@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.18 2004/06/20 04:49:32 rathnor Exp $
+// $Id$
 
 #include "AtomHandler.hh"
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.7 2004/08/31 15:26:39 rathnor Exp $
+// $Id$
 
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"

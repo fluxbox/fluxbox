@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultiButtonMenuItem.cc,v 1.3 2004/06/10 11:41:15 fluxgen Exp $
+// $Id$
 
 #include "MultiButtonMenuItem.hh"
 #include "PixmapWithMask.hh"

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.16 2004/04/26 15:04:37 rathnor Exp $
+// $Id$
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme

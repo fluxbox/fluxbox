@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.17 2004/10/04 15:37:58 rathnor Exp $
+// $Id$
 
 #include "MenuCreator.hh"
 

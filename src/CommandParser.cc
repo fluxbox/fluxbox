@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandParser.cc,v 1.4 2003/08/11 13:47:51 fluxgen Exp $
+// $Id$
 
 #include "CommandParser.hh"
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.cc,v 1.6 2004/10/21 10:46:21 akir Exp $
+// $Id$
 
 #include "CommandDialog.hh"
 

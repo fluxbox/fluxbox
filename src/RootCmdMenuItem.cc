@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootCmdMenuItem.cc,v 1.1 2004/08/29 21:11:24 akir Exp $
+// $Id$
 
 #include "RootCmdMenuItem.hh"
 

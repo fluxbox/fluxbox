@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.10 2004/08/31 15:26:39 rathnor Exp $
+// $Id$
 
 #include "App.hh"
 #include "Texture.hh"

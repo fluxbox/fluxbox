@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.44 2004/11/09 11:28:55 akir Exp $
+// $Id$
 
 #include "Remember.hh"
 #include "ClientPattern.hh"

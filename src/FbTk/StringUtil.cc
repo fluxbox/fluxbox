@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.13 2004/09/10 16:04:16 akir Exp $
+// $Id$
 
 #include "StringUtil.hh"
 

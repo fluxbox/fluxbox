@@ -1,5 +1,5 @@
 #!/bin/sh
-# $Id: startfluxbox.in,v 1.3 2003/12/06 16:29:21 fluxgen Exp $
+# $Id$
 if [ -x ~/.fluxbox/startup ]; then
     exec ~/.fluxbox/startup
 elif [ -r ~/.fluxbox/startup ]; then

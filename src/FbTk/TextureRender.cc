@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.15 2004/10/25 22:57:32 akir Exp $
+// $Id$
 
 #include "TextureRender.hh"
 

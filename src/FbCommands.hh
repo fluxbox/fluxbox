@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.21 2004/10/21 10:23:58 akir Exp $
+// $Id$
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
