@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.25 2003/09/21 12:49:47 rathnor Exp $
+// $Id: WinClient.cc,v 1.26 2003/09/21 13:24:27 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -55,7 +55,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_modal(0),
                      send_focus_message(false),
                      send_close_message(false),
-                     closable(true),
                      m_win_gravity(0),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
