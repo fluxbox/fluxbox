@@ -19,38 +19,27 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitTheme.hh,v 1.3 2003/08/24 23:21:58 fluxgen Exp $
+// $Id: SlitTheme.hh,v 1.4 2003/08/29 10:34:41 fluxgen Exp $
 
 #ifndef SLITTHEME_HH
 #define SLITTHEME_HH
 
-#include "Theme.hh"
-#include "Slit.hh"
+#include "FbTk/Theme.hh"
+#include "FbTk/Texture.hh"
+#include "FbTk/Color.hh"
 
 class SlitTheme:public FbTk::Theme {
 public:
-    explicit SlitTheme(Slit &slit):FbTk::Theme(slit.screen().screenNumber()), 
-                                   m_slit(slit),
-                                   m_texture(*this, "slit", "Slit"),
-                                   m_border_width(*this, "slit.borderWidth", "Slit.borderWidth"),
-                                   m_bevel_width(*this, "slit.bevelWidth", "slit.bevelWidth"),
-                                   m_border_color(*this, "slit.borderColor", "Slit.BorderColor") { 
-        m_texture.setDefaultValue();
-        m_border_width.setDefaultValue();
-        m_bevel_width.setDefaultValue();
-        m_border_color.setDefaultValue();
-        // default texture type
-        m_texture->setType(FbTk::Texture::SOLID);
-    }
-    void reconfigTheme() {
-        m_slit.reconfigure();
-    }
+    explicit SlitTheme(int screen_num);
+
+    void reconfigTheme();
+    bool fallback(FbTk::ThemeItem_base &item);
+
     const FbTk::Texture &texture() const { return *m_texture; }
     const FbTk::Color &borderColor() const { return *m_border_color; }
     int borderWidth() const { return *m_border_width; }
     int bevelWidth() const { return *m_bevel_width; }
 private:
-    Slit &m_slit;
     FbTk::ThemeItem<FbTk::Texture> m_texture;
     FbTk::ThemeItem<int> m_border_width, m_bevel_width;
     FbTk::ThemeItem<FbTk::Color> m_border_color;
