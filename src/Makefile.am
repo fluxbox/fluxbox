@@ -48,8 +48,7 @@ gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc BaseDisplay.hh \
-	Basemenu.hh Basemenu.cc \
-	Clientmenu.cc Clientmenu.hh Configmenu.cc Configmenu.hh \
+	BoolMenuItem.hh \
 	DirHelper.hh DirHelper.cc DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
@@ -63,8 +62,8 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc Ba
 	Tab.hh Tab.cc Theme.hh Theme.cc \
 	Toolbar.cc Toolbar.hh \
 	ToolbarTheme.hh ToolbarTheme.cc Observer.cc Observer.hh \
-	WinButton.hh WinButton.cc Window.cc Window.hh Windowmenu.cc Windowmenu.hh \
-	Workspace.cc Workspace.hh Workspacemenu.cc Workspacemenu.hh \
+	WinButton.hh WinButton.cc Window.cc Window.hh \
+	Workspace.cc Workspace.hh \
 	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc
 
 LDADD=FbTk/libFbTk.a
