@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.79 2004/09/12 14:56:18 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.80 2004/10/10 16:12:48 akir Exp $
 
 #include "FbWinFrame.hh"
 
@@ -32,6 +32,7 @@
 #include "FbTk/Transparent.hh"
 #include "CompareWindow.hh"
 #include "FbWinFrameTheme.hh"
+#include "fluxbox.hh"
 
 #ifdef SHAPE
 #include "Shape.hh"
@@ -296,7 +297,8 @@ void FbWinFrame::addLabelButton(FbTk::TextButton &btn) {
     
     if (found_it != m_labelbuttons.end())
         return;
-    
+   
+    btn.setTextPadding(Fluxbox::instance()->getTabsPadding());
     m_labelbuttons.push_back(&btn);
 
     if (currentLabel() == 0)
@@ -754,28 +756,60 @@ void FbWinFrame::redrawTitle() {
     if (m_labelbuttons.empty())
         return;
 
-    int button_width = label().width()/m_labelbuttons.size();
-    int rounding_error = label().width() - m_labelbuttons.size()*button_width;
+    int focus_button_min_percent = Fluxbox::instance()->getFocusedTabMinWidth();
+    int button_count = m_labelbuttons.size();
+    int label_width = label().width();
+
+    /* force sane value */
+    if (focus_button_min_percent > 90) 
+        focus_button_min_percent = 90;
+    if (focus_button_min_percent < 1) 
+        focus_button_min_percent = 1;
+
+    int focus_button_width, unfocus_button_width;
+    if (100 < (focus_button_min_percent * button_count)) {
+        focus_button_width = label_width * focus_button_min_percent / 100;
+        if (button_count > 1) {
+            unfocus_button_width = label_width *
+                (100 - focus_button_min_percent) / (100 * (button_count - 1));
+        } else {
+            /* should never happen */
+            unfocus_button_width = 0;
+        }
+    } else {
+        focus_button_width = label_width / button_count;
+        unfocus_button_width = focus_button_width;
+    }
+
+    int rounding_error = label_width - focus_button_width -
+        ((button_count - 1) * unfocus_button_width);
+
     //!! TODO: bevel
     //int border_width = m_labelbuttons.front()->window().borderWidth();
     int border_width =  m_labelbuttons.empty() ? 0 : m_labelbuttons.front()->borderWidth();
 
     LabelList::iterator btn_it = m_labelbuttons.begin();
     LabelList::iterator btn_it_end = m_labelbuttons.end();
-    int extra = 0;
+    int extra = 0, dx = 0;
     for (unsigned int last_x = 0;
          btn_it != btn_it_end; 
-         ++btn_it, last_x += button_width + border_width + extra) {
-        // since we add border width pixel we should remove
-        // the same size for inside width so we can fit all buttons into label
+         ++btn_it, last_x += dx) {
+
         if (rounding_error != 0) {
             extra = 1;
             --rounding_error;
         } else
             extra = 0;
 
+        if (currentLabel() == *btn_it) {
+            dx = focus_button_width;
+        } else {
+            dx = unfocus_button_width;
+        }
+        dx += border_width + extra;
+
         (*btn_it)->moveResize(last_x - border_width, - border_width,
-                              button_width + extra, 
+                              dx - border_width, 
                               label().height() + border_width);
 
 
