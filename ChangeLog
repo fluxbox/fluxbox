@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/06/20:
+  * Clean out old nls stuff. Move in those strings that 
+    are still in the new names, new Makefiles, etc (Simon)
+    - need to get script to help people translate
+    nls/*/Makefile.am nls/*/Translation.m  -nls/*/*.m    
   * Fix various systray issues (Simon)
     SystemTray.cc Toolbar.cc ToolbarItem.hh
   * Support _NET_WM_WINDOW_TYPE_DESKTOP (Simon)
