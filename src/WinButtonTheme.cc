@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.cc,v 1.3 2003/05/06 23:56:46 fluxgen Exp $
+// $Id: WinButtonTheme.cc,v 1.4 2003/08/22 14:48:10 fluxgen Exp $
 
 #include "WinButtonTheme.hh"
 
-#include "App.hh"
+#include "FbTk/App.hh"
+#include "FbWinFrameTheme.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -44,8 +45,6 @@ setDefaultValue() {
     // create empty pixmap
     (*this)->pixmap = FbTk::FbPixmap(); // pixmap
     (*this)->mask = FbTk::FbPixmap(); // mask
-    (*this)->pixmap_scaled = FbTk::FbPixmap();
-    (*this)->mask_scaled = FbTk::FbPixmap();
 }
 
 template <>
@@ -77,7 +76,7 @@ setFromString(const char *str) {
     } 
 }
 
-WinButtonTheme::WinButtonTheme(int screen_num):
+WinButtonTheme::WinButtonTheme(int screen_num, const FbWinFrameTheme &frame_theme):
     FbTk::Theme(screen_num),
     m_close_pm(*this, "window.close.pixmap", "Window.Close.Pixmap"),
     m_close_unfocus_pm(*this, "window.close.unfocus.pixmap", "Window.Close.Unfocus.Pixmap"),
@@ -95,7 +94,8 @@ WinButtonTheme::WinButtonTheme(int screen_num):
     m_stick_unfocus_pm(*this, "window.stick.unfocus.pixmap", "Window.Stick.Unfocus.Pixmap"),
     m_stick_pressed_pm(*this, "window.stick.pressed.pixmap", "Window.Stick.Pressed.Pixmap"),
     m_stuck_pm(*this, "window.stuck.pixmap", "Window.Stuck.Pixmap"),
-    m_stuck_unfocus_pm(*this, "window.stuck.unfocus.pixmap", "Window.Stuck.Unfocus.Pixmap") {
+    m_stuck_unfocus_pm(*this, "window.stuck.unfocus.pixmap", "Window.Stuck.Unfocus.Pixmap"),
+    m_frame_theme(frame_theme) {
 
 }
 
@@ -104,6 +104,38 @@ WinButtonTheme::~WinButtonTheme() {
 }
 
 void WinButtonTheme::reconfigTheme() {
-    reconfigSig().notify();
+    // rescale the pixmaps to match frame theme height
+
+    unsigned int size = m_frame_theme.titleHeight();
+    if (m_frame_theme.titleHeight() == 0) {
+        // calculate height from font and border width to scale pixmaps
+        const int bevel = 1;
+        size = m_frame_theme.font().height() + bevel*2 + 2;
+
+    } // else  use specified height to scale pixmaps
+
+    // scale all pixmaps
+    m_close_pm->scale(size, size);
+    m_close_unfocus_pm->scale(size, size);
+    m_close_pressed_pm->scale(size, size);
+        
+    m_maximize_pm->scale(size, size);
+    m_maximize_unfocus_pm->scale(size, size);
+    m_maximize_pressed_pm->scale(size, size);
+
+    m_iconify_pm->scale(size, size);
+    m_iconify_unfocus_pm->scale(size, size);
+    m_iconify_pressed_pm->scale(size, size);
+
+    m_shade_pm->scale(size, size);
+    m_shade_unfocus_pm->scale(size, size);
+    m_shade_pressed_pm->scale(size, size);
+
+    m_stick_pm->scale(size, size);
+    m_stick_unfocus_pm->scale(size, size);
+    m_stick_pressed_pm->scale(size, size);
+
+    m_stuck_pm->scale(size, size);
+    m_stuck_unfocus_pm->scale(size, size);
 }
 

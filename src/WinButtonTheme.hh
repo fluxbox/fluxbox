@@ -19,25 +19,30 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinButtonTheme.hh,v 1.2 2003/05/06 23:52:55 fluxgen Exp $
+// $Id: WinButtonTheme.hh,v 1.3 2003/08/22 14:48:10 fluxgen Exp $
 
 #ifndef WINBUTTONTHEME_HH
 #define WINBUTTONTHEME_HH
 
 #include "Theme.hh"
-#include "Subject.hh"
 #include "FbPixmap.hh"
+
+class FbWinFrameTheme;
 
 class WinButtonTheme: public FbTk::Theme {
 public:
+    /// holds pixmap and a mask
     struct PixmapWithMask {
+        /// scale both pixmap and mask to specified size
+        void scale(unsigned int width, unsigned int height) {
+            pixmap.scale(width, height);
+            mask.scale(width, height);
+        }
         FbTk::FbPixmap pixmap;
-        FbTk::FbPixmap pixmap_scaled;
         FbTk::FbPixmap mask;
-        FbTk::FbPixmap mask_scaled;
     };
 
-    explicit WinButtonTheme(int screen_num);
+    WinButtonTheme(int screen_num, const FbWinFrameTheme &frame_theme);
     ~WinButtonTheme();
 
     void reconfigTheme();
@@ -74,9 +79,8 @@ public:
     inline PixmapWithMask &shadeUnfocusPixmap() { return *m_shade_unfocus_pm; }
     inline const PixmapWithMask &shadePressedPixmap() const { return *m_shade_pressed_pm; }
     inline PixmapWithMask &shadePressedPixmap() { return *m_shade_pressed_pm; }
-    FbTk::Subject &reconfigSig() { return m_reconf_sig; }
+
 private:
-    FbTk::Subject m_reconf_sig;
 
     FbTk::ThemeItem<PixmapWithMask> m_close_pm, m_close_unfocus_pm, m_close_pressed_pm;
     FbTk::ThemeItem<PixmapWithMask> m_maximize_pm, m_maximize_unfocus_pm, m_maximize_pressed_pm;
@@ -84,6 +88,8 @@ private:
     FbTk::ThemeItem<PixmapWithMask> m_shade_pm, m_shade_unfocus_pm, m_shade_pressed_pm;
     FbTk::ThemeItem<PixmapWithMask> m_stick_pm, m_stick_unfocus_pm, m_stick_pressed_pm;    
     FbTk::ThemeItem<PixmapWithMask> m_stuck_pm, m_stuck_unfocus_pm; 
+
+    const FbWinFrameTheme &m_frame_theme;
 };
 
 #endif // WINBUTTONTHEME_HH
