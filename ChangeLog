@@ -3,6 +3,9 @@ Changes for 0.9.10:
 *04/08/29:
   * Added [wallpapers|wallpapermenu|rootcommands] to possible
     menuitems (Mathias)
+       [wallpapers] (directory) {rootcommand}
+    creates a submenu in the menu to click on the wallpaper one
+    wants. default rootcommand is fbsetbg
     MenuCreator.cc RootCmdMenuItem.cc RootCmdMenuItem.hh
   * Fix cycling using keys in menus (didn't wrap upwards) (Simon)
     FbTk/Menu.cc
