@@ -38,7 +38,7 @@ class Slitmenu;
 
 class Slitmenu : public Basemenu {
 public:
-	explicit Slitmenu(Slit *);
+	explicit Slitmenu(Slit &theslist);
 	virtual ~Slitmenu(void);
 
 	inline Basemenu *getDirectionmenu(void) { return directionmenu; }
@@ -90,7 +90,7 @@ private:
 #ifdef XINERAMA
 	Headmenu *headmenu;
 #endif // XINERAMA
-	Slit *slit;
+	Slit &slit;
 
 	friend class Directionmenu;
 	friend class Placementmenu;
