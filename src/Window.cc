@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.294 2004/08/10 12:05:47 fluxgen Exp $
+// $Id: Window.cc,v 1.295 2004/08/10 19:18:48 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -575,7 +575,10 @@ void FluxboxWindow::init() {
 
     if (m_shaped)
         shape();
-     FbTk::App::instance()->sync(false);
+
+    setupWindow();
+
+    FbTk::App::instance()->sync(false);
 }
 
 /// apply shape to this window
@@ -3410,7 +3413,7 @@ void FluxboxWindow::addExtraMenu(const char *label, FbTk::Menu *menu) {
     menu->disableTitle();
     m_extramenus.push_back(std::make_pair(label, menu));
 
-    setupWindow();
+    setupMenu();
 }
 
 void FluxboxWindow::removeExtraMenu(FbTk::Menu *menu) {
@@ -3422,7 +3425,7 @@ void FluxboxWindow::removeExtraMenu(FbTk::Menu *menu) {
             break;
         }
     }
-    setupWindow();
+    setupMenu();
 }    
 
 void FluxboxWindow::close() {
@@ -3524,6 +3527,10 @@ void FluxboxWindow::setupWindow() {
 
     // end setup frame
 
+    setupMenu();
+}
+
+void FluxboxWindow::setupMenu() {
     // setup menu
 
     menu().removeAll(); // clear old items

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.117 2004/08/10 12:05:47 fluxgen Exp $
+// $Id: Window.hh,v 1.118 2004/08/10 19:18:47 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -384,6 +384,7 @@ private:
     static const int PropBlackboxAttributesElements = 8;
 
     void setupWindow();
+    void setupMenu();
 
     void init();
     /// applies a shape mask to the window if it has one
