@@ -21,12 +21,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RegExp.hh,v 1.1 2003/06/12 15:12:19 rathnor Exp $
+// $Id: RegExp.hh,v 1.2 2003/06/13 11:43:46 fluxgen Exp $
 
 #ifndef REGEXP_HH
 #define REGEXP_HH
 
+#include "NotCopyable.hh"
+
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif // HAVE_CONFIG_H
 
 #include <string>
 
@@ -41,18 +45,14 @@
 
 class WinClient;
 
-class RegExp {
+class RegExp:private FbTk::NotCopyable {
 public:
     RegExp(const std::string &str, bool full_match = true);
     ~RegExp();
 
-    bool match(const std::string &str);
+    bool match(const std::string &str) const;
 
-#ifdef USE_REGEXP
-    inline bool error() { return m_regex == 0; }
-#else // notdef USE_REGEXP
-    inline bool error() { return m_str == ""; }
-#endif // USE_REGEXP
+    bool error() const;
 
 private:
 #ifdef USE_REGEXP

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RegExp.cc,v 1.1 2003/06/12 15:12:19 rathnor Exp $
+// $Id: RegExp.cc,v 1.2 2003/06/13 11:43:46 fluxgen Exp $
 
 #include "RegExp.hh"
 
@@ -81,10 +81,10 @@ RegExp::~RegExp() {
 #endif // USE_REGEXP
 }
 
-bool RegExp::match(const std::string &str) {
+bool RegExp::match(const std::string &str) const {
 #ifdef USE_REGEXP
     if (m_regex)
-        return (regexec(m_regex, str.c_str(), 0, 0, 0) == 0);
+        return regexec(m_regex, str.c_str(), 0, 0, 0) == 0;
     else
         return false;
 #else // notdef USE_REGEXP
@@ -92,3 +92,11 @@ bool RegExp::match(const std::string &str) {
 #endif // USE_REGEXP
 }
 
+
+bool RegExp::error() const {
+#ifdef USE_REGEXP
+    return m_regex == 0; 
+#else
+    return return m_str == "";
+#endif // USE_REGEXP
+}
