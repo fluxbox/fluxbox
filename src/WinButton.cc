@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.18 2004/02/27 12:29:13 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.19 2004/02/27 13:25:18 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -44,8 +44,6 @@ void WinButton::exposeEvent(XExposeEvent &event) {
 
 void WinButton::buttonReleaseEvent(XButtonEvent &event) {
     FbTk::Button::buttonReleaseEvent(event);
-    clear();
-    updateTransparent();
 }
 
 // clear is used to force this to clear the window (e.g. called from clear())
