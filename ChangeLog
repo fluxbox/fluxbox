@@ -1,6 +1,20 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/03/22:
+  * Added screen resources to define line style for resize/move (Thanks Mathias Gumz)
+    session.screen<num>.overlay.lineWidth: <integer>
+    session.screen<num>.overlay.lineStyle: <valid arguments: 
+                                            LineSolid, LineOnOffDash
+                                            LineDoubleDash
+                                            >
+    session.screen<num>.overlay.joinStyle: <valid arguments: 
+                                            JoinRound, JoindMiter,
+                                            JoinBevel
+                                            >
+    session.screen<num>.overlay.capStyle: <valid arguments: 
+                                           CapNotLast, CapRound,
+                                           CapButt, CapProjecting>
+
   * Fixed no-text-in-iconbar-bug on restart (Thanks Mathias Gumz)
     IconbarTool.cc
 *04/03/21:
