@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.38 2003/06/22 12:50:03 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.39 2003/07/03 13:05:38 fluxgen Exp $
 
 #
 # Portability notes:
@@ -305,32 +305,32 @@ case ${LC_ALL} in
         TERMINALMENU='Terminals'
         USERSTYLES='Gebruikers Stylen'
         WINDOWMANAGERS='Window Managers'
-        WORKSPACEMENU='Werkveld Lijst'
+        WORKSPACEMENU='Werkveld menu'
         XUTILSMENU='X-utils'
         ;;
     fi_FI*) #Finnish locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #SYSTEMSTYLES='Tyylit'
-        #USERSTYLES='Tyylit'
-        #WINDOWMANAGERS='Window Managers'
+        BACKGROUNDMENU='Taustat'
+        BACKGROUNDMENUTITLE='Määritä tausta'
         BROWSERMENU='Selaimet'
         CONFIGUREMENU='Konfigurointi'
         EDITORMENU='Editorit'
         EXITITEM='Lopeta'
         FBSETTINGSMENU='FB:n Asetukset'
+        FILEUTILSMENU='Tiedostoapuohjelmat'
         GNOMEMENUTEXT='Gnomen valikot'
         GRAPHICMENU='Grafiikka'
         KDEMENUTEXT='KDE:n valikot'
         MISCMENU='Sekalaista'
         MUSICMENU='Musikki'
         NETMENU='Verkko'
+        OFFICEMENU='Toimistotyökalut'
         RELOADITEM='Päivitä'
         RESTARTITEM='Käynnistä uudelleen'
         STYLEMENUTITLE='Valitse tyyli'
+        SYSTEMSTYLES='Järjestelmän tyylit'
         TERMINALMENU='Terminaalit'
+        USERSTYLES='Käyttäjän tyylit'
+        WINDOWMANAGERS='Ikkunanhallintaohjelmat'
         WORKSPACEMENU='Työaluet'
         XUTILSMENU='X-Ohjelmat'
         ;;
@@ -700,7 +700,7 @@ cat << EOF > ${FILENAME}
 # - If you miss apps please let me know and I will add them for the next
 #   release.
 #
-# - The -r option prevents removing of empty menu entries and lines which 
+# - The -r option prevents removing of empty menu entries and lines which
 #   makes things much more readable.
 #
 # - To prevent any other app from overwriting your menu
