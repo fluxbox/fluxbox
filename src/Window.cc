@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.274 2004/03/30 14:31:30 fluxgen Exp $
+// $Id: Window.cc,v 1.275 2004/03/31 10:28:08 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1045,11 +1045,10 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
                 decorations.border = true;
             if (hint->decorations & MwmDecorHandle)
                 decorations.handle = true;
-            if (hint->decorations & MwmDecorTitle) {                
+            if (hint->decorations & MwmDecorTitle) {
                 //only tab on windows with titlebar
                 decorations.titlebar = decorations.tab = true;
             }
-            
             if (hint->decorations & MwmDecorMenu)
                 decorations.menu = true;
             if (hint->decorations & MwmDecorIconify)
@@ -2241,6 +2240,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         } else if (atom == fbatoms->getMWMHintsAtom()) {
             client.updateMWMHints();
             updateMWMHintsFromClient(client);
+            applyDecorations(); // update decorations (if they changed)
         } else if (atom == fbatoms->getFluxboxHintsAtom()) {
             client.updateBlackboxHints();
             updateBlackboxHintsFromClient(client);
@@ -3115,8 +3115,6 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 #ifdef DEBUG
         cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client->window()<<dec<<" to root"<<endl;
 #endif // DEBUG
-        if (!remap)
-            client->hide();
         // reparent to root window
         client->reparent(screen().rootWindow().window(), frame().x(), frame().y());        
     }
