@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/04:
+  * Added new clock format menu item (Henrik)
+    It'll toggle the clock in 24/12 format
+    ClockTool.cc/hh, ToolFactory.cc
+  * Changed XSync to FbTk::App::sync (Henrik)
+    fluxbox.cc, Keys.cc, App.hh/cc, Window.cc, Screen.cc
 *03/12/03:
   * window menu inside clientmenu inside workspacemenu (Henrik)
     Workspace.cc
