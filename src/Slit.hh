@@ -30,8 +30,8 @@ class Slit;
 class Slitmenu;
 
 #include "Basemenu.hh"
-#include "LinkedList.hh"
 
+#include <list>
 
 class Slitmenu : public Basemenu {
 private: 
@@ -100,7 +100,9 @@ private:
   BScreen *screen;
   BTimer *timer;
 
-  LinkedList<SlitClient> *clientList;
+  typedef std::list<SlitClient *> SlitClients;
+
+  SlitClients clientList;
   Slitmenu *slitmenu;
 
   struct frame {
@@ -137,8 +139,8 @@ public:
   inline const unsigned int &getHeight(void) const { return frame.height; }
 
   void addClient(Window);
-  void removeClient(SlitClient *, Bool = True);
-  void removeClient(Window, Bool = True);
+  void removeClient(SlitClient *, bool = true);
+  void removeClient(Window, bool = true);
   void reconfigure(void);
   void reposition(void);
   void shutdown(void);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.4 2002/01/11 09:24:46 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.5 2002/02/04 22:33:09 fluxgen Exp $
 
 #ifndef   _BASEMENU_HH_
 #define   _BASEMENU_HH_
@@ -37,12 +37,12 @@ class Fluxbox;
 class BImageControl;
 class BScreen;
 
-#include "LinkedList.hh"
-
+#include <vector>
 
 class Basemenu {
 private:
-  LinkedList<BasemenuItem> *menuitems;
+	typedef std::vector<BasemenuItem *> Menuitems;
+	Menuitems menuitems;
   Fluxbox *fluxbox;
   Basemenu *parent;
   BImageControl *image_ctrl;
@@ -66,7 +66,7 @@ private:
 
 
 protected:
-  inline BasemenuItem *find(int index) { return menuitems->find(index); }
+  inline BasemenuItem *find(int index) { return menuitems[index]; }
   inline void setTitleVisibility(Bool b) { title_vis = b; }
   inline void setMovable(Bool b) { movable = b; }
   inline void setHideTree(Bool h) { hide_tree = h; }
@@ -99,7 +99,7 @@ public:
 
   inline const int &getX(void) const { return menu.x; }
   inline const int &getY(void) const { return menu.y; }
-  inline int getCount(void) { return menuitems->count(); }
+  inline int getCount(void) { return menuitems.size(); }
   inline const int &getCurrentSubmenu(void) const { return which_sub; }
 
   inline const unsigned int &getWidth(void) const { return menu.width; }
