@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.13 2002/04/08 22:23:41 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.14 2002/05/17 11:55:41 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -322,7 +322,7 @@ void BaseDisplay::eventLoop(void) {
 }
 
 
-const bool BaseDisplay::validateWindow(Window window) {
+bool BaseDisplay::validateWindow(Window window) {
 	XEvent event;
 	if (XCheckTypedWindowEvent(m_display, window, DestroyNotify, &event)) {
 		XPutBackEvent(m_display, &event);

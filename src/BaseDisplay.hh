@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.20 2002/05/17 10:51:48 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.21 2002/05/17 11:55:31 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -99,7 +99,7 @@ public:
 	inline void shutdown(void) { m_shutdown = true; }
 	inline void run(void) { m_startup = m_shutdown = false; }
 
-	const bool validateWindow(Window);
+	bool validateWindow(Window);
 
 	void grab(void);
 	void ungrab(void);

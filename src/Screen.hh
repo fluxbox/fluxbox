@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.34 2002/05/17 11:02:30 fluxgen Exp $
+// $Id: Screen.hh,v 1.35 2002/05/17 11:55:02 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -131,7 +131,7 @@ public:
 	inline Icons &getIconList(void) { return iconList; }
 
 	inline int getNumberOfWorkspaces(void) { return *resource.workspaces; }
-	inline const Toolbar::Placement getToolbarPlacement(void) { return *resource.toolbar_placement; }
+	inline Toolbar::Placement getToolbarPlacement(void) { return *resource.toolbar_placement; }
 #ifdef XINERAMA
 	inline int getToolbarOnHead(void) { return *resource.toolbar_on_head; }
 #endif // XINERAMA
