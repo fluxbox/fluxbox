@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.26 2002/08/17 22:10:03 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.27 2002/08/30 12:58:08 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -92,7 +92,7 @@ public:
 	inline bool isStartup() const { return m_startup; }
 
 	
-	inline Display *getXDisplay() { return m_display; }
+	static Display *getXDisplay() { return s_display; }
 
 	inline const char *getXDisplayName() const	{ return m_display_name; }
 	inline const char *getApplicationName() const { return m_app_name; }
@@ -128,7 +128,7 @@ private:
 	} shape;	
 
 	bool m_startup, m_shutdown;
-	Display *m_display;
+	static Display *s_display;
 
     typedef std::vector<ScreenInfo *> ScreenInfoList;
     ScreenInfoList screenInfoList;    
