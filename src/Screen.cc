@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.219 2003/08/13 16:53:13 fluxgen Exp $
+// $Id: Screen.cc,v 1.220 2003/08/17 13:21:32 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2047,54 +2047,37 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
     string stylesdir(FbTk::StringUtil::expandFilename(directory ? directory : ""));
 
     I18n *i18n = I18n::instance();						
-    struct stat statbuf;
+        
+    if (!FbTk::Directory::isDirectory(stylesdir)) {
+        //!! TODO: NLS
+        cerr<<"Error creating style menu! Stylesdir: "<<stylesdir<<" does not exist or is not a directory!"<<endl;
+        return;
+    }
+        
 
-    if (! stat(stylesdir.c_str(), &statbuf)) {
-        if (S_ISDIR(statbuf.st_mode)) { // is a directory?
+    FbTk::Directory dir(stylesdir.c_str());
 
-            FbTk::Directory dir(stylesdir.c_str());
+    // create a vector of all the filenames in the directory
+    // add sort it
+    std::vector<std::string> filelist(dir.entries());
+    for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
+        filelist[file_index] = dir.readFilename();
 
-            // create a vector of all the filenames in the directory
-            // add sort it
-            std::vector<std::string> filelist(dir.entries());
-            for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
-                filelist[file_index] = dir.readFilename();
+    std::sort(filelist.begin(), filelist.end(), less<string>());
 
-            std::sort(filelist.begin(), filelist.end(), less<string>());
+    int slen = stylesdir.size();
+    // for each file in directory add filename and path to menu
+    for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
+        std::string style(stylesdir + '/' + filelist[file_index])
 
-            int slen = stylesdir.size();
-            // for each file in directory add filename and path to menu
-            for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
-                int nlen = filelist[file_index].size();
-                char style[MAXPATHLEN + 1];
-
-                strncpy(style, stylesdir.c_str(), slen);
-                *(style + slen) = '/';
-                strncpy(style + slen + 1, filelist[file_index].c_str(), nlen + 1);
-
-                if ( !stat(style, &statbuf) && S_ISREG(statbuf.st_mode)) {
-                    FbTk::MenuItem *item = new StyleMenuItem(filelist[file_index], style);
-                    menu.insert(item);
-                }
-            } 
-            // update menu graphics
-            menu.update();
-            Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
-        } else { // no directory
-            fprintf(stderr,
-                    i18n->
-                    getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNotDir,
-                               "BScreen::parseMenuFile:"
-                               " [stylesdir/stylesmenu] error, %s is not a"
-                               " directory\n"), stylesdir.c_str());
-        } // end of directory check
-    } else { // stat failed
-        fprintf(stderr,
-		i18n->
-		getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNoExist,		
-                           "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-                           " error, %s does not exist\n"), stylesdir.c_str());
-    } // end of stat
+        if (FbTk::Directory::isRegularFile(style)) {
+            FbTk::MenuItem *item = new StyleMenuItem(filelist[file_index], style);
+            menu.insert(item);
+        }
+    } 
+    // update menu graphics
+    menu.update();
+    Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
    
 }
 
