@@ -4,6 +4,8 @@ Changes for 0.9.9:
   * Fixed minor bug in ResourceManager (Henrik)
     Resource.cc
   * Support for:                   (Henrik)
+    _NET_WM_STATE_ABOVE
+    _NET_WM_STATE_BELOW
     _NET_WM_CLIENT_LIST_STACKING
     _NET_WM_DESKTOP_VIEWPORT
     _NET_WM_DESKTOP_GEOMETRY
