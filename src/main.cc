@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.10 2002/12/02 22:02:35 fluxgen Exp $
+// $Id: main.cc,v 1.11 2002/12/03 01:46:28 fluxgen Exp $
 
 
 
@@ -195,12 +195,12 @@ int main(int argc, char **argv) {
     _chdir2(getenv("X11ROOT"));
 #endif // __EMX__
     Fluxbox *fluxbox=0;
-    int exitcode=EXIT_SUCCESS;
+    int exitcode=EXIT_FAILURE;
     try {
 		
         fluxbox = new Fluxbox(argc, argv, session_display, rc_file);
         fluxbox->eventLoop();
-		
+	exitcode = EXIT_SUCCESS;
     } catch (std::out_of_range &oor) {
         cerr<<"Fluxbox: Out of range: "<<oor.what()<<endl;
     } catch (std::logic_error &le) {
@@ -222,5 +222,5 @@ int main(int argc, char **argv) {
 	
     if (fluxbox)
         delete fluxbox;
-    exit(exitcode);
+    return exitcode;
 }
