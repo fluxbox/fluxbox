@@ -22,13 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.33 2003/06/18 13:50:40 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.34 2003/06/22 19:38:38 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
 
 #include "Timer.hh"
-#include "IconBar.hh"
 #include "ToolbarTheme.hh"
 #include "EventHandler.hh"
 #include "FbWindow.hh"
@@ -37,12 +36,12 @@
 #include "XLayer.hh"
 #include "XLayerItem.hh"
 #include "LayerMenu.hh"
-#include "fluxbox.hh"
 
 #include <memory>
 
 class BScreen;
 class Strut;
+class IconBar;
 
 namespace FbTk {
 class ImageControl;

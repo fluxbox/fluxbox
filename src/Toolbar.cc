@@ -22,10 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.91 2003/06/18 13:50:40 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.92 2003/06/22 19:39:47 fluxgen Exp $
 
 #include "Toolbar.hh"
 
+#include "IconBar.hh"
 #include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
@@ -360,11 +361,15 @@ void Toolbar::clearStrut() {
 }
 
 void Toolbar::updateStrut() {
+    bool had_strut = m_strut ? true : false;
     clearStrut();
     // we should request space if we're in autohide mode or
     // if the user dont want to request space for toolbar.
-    if (doAutoHide())
+    if (doAutoHide()) {
+        if (had_strut)
+            screen().updateAvailableWorkspaceArea();            
         return;
+    }
 
     // request area on screen
     int top = 0, bottom = 0, left = 0, right = 0;
@@ -497,13 +502,11 @@ void Toolbar::reconfigure() {
     I18n *i18n = I18n::instance();
     frame.clock_w = m_theme.font().textWidth(
                                              i18n->
-                                             getMessage(
-                                                        FBNLS::ToolbarSet, 
+                                             getMessage(FBNLS::ToolbarSet, 
                                                         FBNLS::ToolbarNoStrftimeLength,
                                                         "00:00000"),
                                              strlen(i18n->
-                                                    getMessage(
-                                                               FBNLS::ToolbarSet, 
+                                                    getMessage(FBNLS::ToolbarSet, 
                                                                FBNLS::ToolbarNoStrftimeLength,
                                                                "00:00000"))) + (frame.bevel_w * 4);
 	
@@ -617,6 +620,7 @@ void Toolbar::reconfigure() {
 
     frame.nwbutton.moveResize(next_x, next_y,
                               frame.button_w, frame.button_w);
+
     size_t clock_w = frame.width - next_x - frame.nwbutton.width() - 1;
     size_t clock_h = frame.height;
     if (vertical) {
@@ -758,20 +762,17 @@ void Toolbar::checkClock(bool redraw, bool date) {
     time_t tmp = 0;
     struct tm *tt = 0;
 
-    if ((tmp = time(NULL)) != -1) {
-        if (! (tt = localtime(&tmp))) {
-            cerr<<__FILE__<<"("<<__LINE__<<"): ! localtime(&tmp)"<<endl;
+    if ((tmp = time(0)) != -1) {
+        if (! (tt = localtime(&tmp)))
             return;
-        }
+
         if (tt->tm_min != frame.minute || tt->tm_hour != frame.hour) {
             frame.hour = tt->tm_hour;
             frame.minute = tt->tm_min;
             frame.clock.clear();
             redraw = true;
         }
-    } else
-        cerr<<__FILE__<<"("<<__LINE__<<"): time(null)<0"<<endl;
-	
+    }
 
     if (!redraw)
         return;
@@ -788,15 +789,13 @@ void Toolbar::checkClock(bool redraw, bool date) {
         // format the date... with special consideration for y2k ;)
         if (screen().getDateFormat() == Fluxbox::B_EUROPEANDATE) {
             sprintf(t,
-                    i18n->getMessage(
-                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeDateFormatEu,
+                    i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeDateFormatEu,
                                      "%02d.%02d.%02d"),
                     tt->tm_mday, tt->tm_mon + 1,
                     (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
         } else {
             sprintf(t,
-                    i18n->getMessage(
-                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeDateFormat,
+                    i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeDateFormat,
                                      "%02d/%02d/%02d"),
                     tt->tm_mon + 1, tt->tm_mday,
                     (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
@@ -804,23 +803,19 @@ void Toolbar::checkClock(bool redraw, bool date) {
     } else {
         if (screen().isClock24Hour()) {
             sprintf(t,
-                    i18n->getMessage(
-                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormat24,
+                    i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormat24,
                                      "	%02d:%02d "),
                     frame.hour, frame.minute);
         } else {
             sprintf(t,
-                    i18n->getMessage(
-                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormat12,
+                    i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormat12,
                                      "%02d:%02d %sm"),
                     ((frame.hour > 12) ? frame.hour - 12 :
                      ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
                     ((frame.hour >= 12) ?
-                     i18n->getMessage(
-                                      FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormatP,
+                     i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormatP,
                                       "p") :
-                     i18n->getMessage(
-                                      FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormatA,
+                     i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormatA,
                                       "a")));
         }
     }
@@ -839,8 +834,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
         dx = tmp;
     }		
     frame.clock.clear();
-    m_theme.font().drawText(
-                            frame.clock.window(),
+    m_theme.font().drawText(frame.clock.window(),
                             screen().screenNumber(),
                             m_theme.clockTextGC(),
                             t, newlen,
@@ -935,10 +929,9 @@ void Toolbar::edit() {
     if (fluxbox->getFocusedWindow())	//disable focus on current focused window
         fluxbox->getFocusedWindow()->setFocusFlag(false);
 
-    XDrawRectangle(display, frame.workspace_label.window(),
-                   screen().winFrameTheme().labelTextFocusGC(),
-                   frame.workspace_label_w / 2, 0, 1,
-                   frame.label_h - 1);
+    frame.workspace_label.drawRectangle(screen().winFrameTheme().labelTextFocusGC(),
+                                        frame.workspace_label_w / 2, 0, 1,
+                                        frame.label_h - 1);
 }
 
 
@@ -1128,10 +1121,9 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
                                 new_workspace_name.c_str(), l,
                                 x, dy);
 
-        XDrawRectangle(display, frame.workspace_label.window(),
-                       screen().winFrameTheme().labelTextFocusGC(),
-                       x + tw, 0, 1,
-                       frame.label_h - 1);
+        frame.workspace_label.drawRectangle(screen().winFrameTheme().labelTextFocusGC(),
+                                            x + tw, 0, 1,
+                                            frame.label_h - 1);
     }		
 }
 
