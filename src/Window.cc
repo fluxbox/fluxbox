@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.300 2004/09/30 18:45:26 akir Exp $
+// $Id: Window.cc,v 1.301 2004/10/04 15:37:58 rathnor Exp $
 
 #include "Window.hh"
 
@@ -3583,7 +3583,7 @@ void FluxboxWindow::setupMenu() {
     menu().disableTitle(); // not titlebar
     
     if (screen().windowMenuFilename().empty() ||
-        ! MenuCreator::createFromFile(screen().windowMenuFilename(), menu(), *this))
+        ! MenuCreator::createFromFile(screen().windowMenuFilename(), menu(), *this, true))
         
     {
         MenuCreator::createWindowMenuItem("shade", "", menu(), *this);

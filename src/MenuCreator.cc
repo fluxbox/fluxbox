@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.16 2004/09/16 14:08:46 rathnor Exp $
+// $Id: MenuCreator.cc,v 1.17 2004/10/04 15:37:58 rathnor Exp $
 
 #include "MenuCreator.hh"
 
@@ -244,14 +244,14 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
                 if (FbTk::Directory::isRegularFile(thisfile) &&
                         (filelist[file_index][0] != '.') &&
                         (thisfile[thisfile.length() - 1] != '~')) {
-                    MenuCreator::createFromFile(thisfile, menu);
+                    MenuCreator::createFromFile(thisfile, menu, false);
                     Fluxbox::instance()->saveMenuFilename(thisfile.c_str());
                 }
             }
 
         } else {
             // inject this file into the current menu
-            MenuCreator::createFromFile(newfile, menu);
+            MenuCreator::createFromFile(newfile, menu, false);
             Fluxbox::instance()->saveMenuFilename(newfile.c_str());
         }
 
@@ -379,7 +379,7 @@ bool getStart(FbMenuParser &parser, std::string &label) {
     return true;
 }
 
-FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_number) {
+FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_number, bool require_begin) {
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
@@ -388,7 +388,7 @@ FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_
     Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
 
     std::string label;
-    if (!getStart(parser, label))
+    if (require_begin && !getStart(parser, label))
         return 0;
     
     FbTk::Menu *menu = createMenu(label, screen_number);
@@ -399,8 +399,8 @@ FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_
 }
 
 
-bool MenuCreator::createFromFile(const std::string &filename, 
-                                 FbTk::Menu &inject_into) {
+bool MenuCreator::createFromFile(const std::string &filename,
+                                 FbTk::Menu &inject_into, bool require_begin) {
 
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
@@ -408,7 +408,7 @@ bool MenuCreator::createFromFile(const std::string &filename,
         return false;
 
     std::string label;
-    if (!getStart(parser, label))
+    if (require_begin && !getStart(parser, label))
         return false;
 
     parseMenu(parser, inject_into);
@@ -418,7 +418,7 @@ bool MenuCreator::createFromFile(const std::string &filename,
 
 bool MenuCreator::createFromFile(const std::string &filename, 
                                  FbTk::Menu &inject_into, 
-                                 FluxboxWindow &win) {
+                                 FluxboxWindow &win, bool require_begin) {
     std::string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
@@ -426,7 +426,7 @@ bool MenuCreator::createFromFile(const std::string &filename,
 
     std::string label;
 
-    if (!getStart(parser, label))
+    if (require_begin && !getStart(parser, label))
         return false;
 
     parseWindowMenu(parser, inject_into, win);

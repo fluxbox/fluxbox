@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.293 2004/09/16 10:10:36 fluxgen Exp $
+// $Id: Screen.cc,v 1.294 2004/10/04 15:37:58 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1670,7 +1670,7 @@ void BScreen::initMenu() {
     Fluxbox * const fb = Fluxbox::instance();
     if (fb->getMenuFilename().size() > 0) {
         m_rootmenu.reset(MenuCreator::createFromFile(fb->getMenuFilename(),
-                                                     screenNumber()));
+                                                     screenNumber(), true));
 
     }
 

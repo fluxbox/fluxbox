@@ -36,9 +36,10 @@ public:
     static FbTk::Menu *createMenu(const std::string &label, int screen_num);
     static FbTk::Menu *createFromFile(const std::string &filename, int screen_num);
     static FbTk::Menu *createMenuType(const std::string &label, int screen_num);
-    static bool createFromFile(const std::string &filename, FbTk::Menu &inject_into);
+    static bool createFromFile(const std::string &filename, FbTk::Menu &inject_into,
+                               bool require_begin);
     static bool createFromFile(const std::string &filename, FbTk::Menu &inject_into, 
-                               FluxboxWindow &win);
+                               FluxboxWindow &win, bool require_begin);
     static bool createWindowMenuItem(const std::string &type, const std::string &label, 
                                      FbTk::Menu &inject_into, FluxboxWindow &win);
 };
