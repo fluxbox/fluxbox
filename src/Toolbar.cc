@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.38 2002/11/14 11:38:38 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.39 2002/11/15 12:05:04 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -1051,13 +1051,13 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 
 			new_workspace_name.erase(); //erase temporary workspace name
 			
-			screen->getCurrentWorkspace()->menu()->hide();
+			screen->getCurrentWorkspace()->menu().hide();
 			screen->getWorkspacemenu()->
 				remove(screen->getCurrentWorkspace()->workspaceID() + 2);
 			screen->getWorkspacemenu()->
 				insert(screen->getCurrentWorkspace()->name().c_str(),
-			screen->getCurrentWorkspace()->menu(),
-			screen->getCurrentWorkspace()->workspaceID() + 2);
+					&screen->getCurrentWorkspace()->menu(),
+					screen->getCurrentWorkspace()->workspaceID() + 2);
 			screen->getWorkspacemenu()->update();
 
 			reconfigure();
