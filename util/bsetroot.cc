@@ -18,11 +18,11 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.18 2003/05/19 09:40:14 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.19 2003/06/13 10:56:58 fluxgen Exp $
 
 #include "bsetroot.hh"
 
-#include "../src/i18n.hh"
+#include "../src/I18n.hh"
 #include "../src/FbTk/ImageControl.hh"
 #include "../src/FbRootWindow.hh"
 
