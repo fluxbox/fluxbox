@@ -53,36 +53,36 @@
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
 
-#ifdef		STDC_HEADERS
+#ifdef STDC_HEADERS
 #	include <sys/types.h>
 #endif // STDC_HEADERS
 
-#ifdef		HAVE_CTYPE_H
+#ifdef HAVE_CTYPE_H
 #	include <ctype.h>
 #endif // HAVE_CTYPE_H
 
-#ifdef		HAVE_DIRENT_H
+#ifdef HAVE_DIRENT_H
 #	include <dirent.h>
 #endif // HAVE_DIRENT_H
 
-#ifdef		HAVE_LOCALE_H
+#ifdef HAVE_LOCALE_H
 #	include <locale.h>
 #endif // HAVE_LOCALE_H
 
-#ifdef		HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #	include <sys/types.h>
 #	include <unistd.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef		HAVE_SYS_STAT_H
+#ifdef HAVE_SYS_STAT_H
 #	include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
-#ifdef		HAVE_STDARG_H
+#ifdef HAVE_STDARG_H
 #	include <stdarg.h>
 #endif // HAVE_STDARG_H
 
-#ifndef	 MAXPATHLEN
+#ifndef  MAXPATHLEN
 #define	 MAXPATHLEN 255
 #endif // MAXPATHLEN
 
@@ -230,7 +230,7 @@ resource(rm, screenname, altscreenname)
 
 	event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
-		ButtonPressMask | ButtonReleaseMask;
+		ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
 
 	XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), event_mask);
@@ -294,6 +294,7 @@ resource(rm, screenname, altscreenname)
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
 	#ifdef GNOME
+
 	/* create the GNOME window */
 	Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
@@ -307,14 +308,30 @@ resource(rm, screenname, altscreenname)
 		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 	 
-	Atom gnomeatomlist[1] = {getBaseDisplay()->getGnomeWorkspaceAtom()};
+	Atom gnomeatomlist[] = {
+		getBaseDisplay()->getGnomeWorkspaceAtom(),
+		getBaseDisplay()->getGnomeWorkspaceCountAtom(),
+		getBaseDisplay()->getGnomeStateAtom()
+	};
 
-	XChangeProperty(getBaseDisplay()->getXDisplay(),
-		getRootWindow(), getBaseDisplay()->getGnomeProtAtom(),
-		XA_ATOM, 32, PropModeReplace,
-		(unsigned char *)gnomeatomlist, 1);
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(), 
+		getBaseDisplay()->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
+		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
+
 	#endif 
 
+	#ifdef NEWWMSPEC
+	Atom netwmsupported[] = {
+//		getBaseDisplay()->getNETWMStateAtom(),
+		getBaseDisplay()->getNETNumberOfDesktopsAtom(),
+		getBaseDisplay()->getNETCurrentDesktopAtom(),
+		getBaseDisplay()->getNETSupportingWMCheckAtom(),		
+	};	
+
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
+		getBaseDisplay()->getNETSupportedAtom(), XA_ATOM, 32, PropModeReplace,
+		(unsigned char *)netwmsupported, (sizeof netwmsupported)/sizeof netwmsupported[0]);
+	#endif //!NEWWMSPEC
 
 	const char *s =	i18n->getMessage(
 	#ifdef		NLS
@@ -350,8 +367,8 @@ resource(rm, screenname, altscreenname)
 
 	geom_window =
 		XCreateWindow(getBaseDisplay()->getXDisplay(), getRootWindow(),
-									0, 0, geom_w, geom_h, theme->getBorderWidth(), getDepth(),
-									InputOutput, getVisual(), mask, &attrib);
+			0, 0, geom_w, geom_h, theme->getBorderWidth(), getDepth(),
+			InputOutput, getVisual(), mask, &attrib);
 	geom_visible = False;
 
 	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
@@ -362,7 +379,7 @@ resource(rm, screenname, altscreenname)
 				 theme->getWindowStyle().t_focus.getColor()->getPixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-								 &theme->getWindowStyle().t_focus);
+				 &theme->getWindowStyle().t_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				 geom_window, geom_pixmap);
 		}
@@ -374,7 +391,7 @@ resource(rm, screenname, altscreenname)
 				 theme->getWindowStyle().l_focus.getColor()->getPixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
-								 &theme->getWindowStyle().l_focus);
+				 &theme->getWindowStyle().l_focus);
 			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
 				 geom_window, geom_pixmap);
 		}
@@ -398,13 +415,13 @@ resource(rm, screenname, altscreenname)
 	}
 
 	workspacemenu->insert(i18n->
-			getMessage(
-#ifdef		NLS
-					 IconSet, IconIcons,
-#else // !NLS
-					 0, 0,
-#endif // NLS
-					 "Icons"),
+		getMessage(
+		#ifdef NLS
+			 IconSet, IconIcons,
+		#else // !NLS
+			 0, 0,
+		#endif // NLS
+			 "Icons"),
 			iconmenu);
 	workspacemenu->update();
 
@@ -413,9 +430,9 @@ resource(rm, screenname, altscreenname)
 
 	toolbar = new Toolbar(this);
 
-#ifdef		SLIT
+	#ifdef SLIT
 	slit = new Slit(this);
-#endif // SLIT
+	#endif // SLIT
 
 	InitMenu();
 
@@ -423,7 +440,8 @@ resource(rm, screenname, altscreenname)
 	rootmenu->update();
 
 	changeWorkspaceID(0);
-
+	updateNetizenWorkspaceCount();
+	
 	int i;
 	unsigned int nchild;
 	Window r, p, *children;
@@ -432,21 +450,21 @@ resource(rm, screenname, altscreenname)
 
 	// preen the window list of all icon windows... for better dockapp support
 	for (i = 0; i < (int) nchild; i++) {
+		
 		if (children[i] == None) continue;
 
 		XWMHints *wmhints = XGetWMHints(getBaseDisplay()->getXDisplay(),
-						children[i]);
+			children[i]);
 
 		if (wmhints) {
 			if ((wmhints->flags & IconWindowHint) &&
-		(wmhints->icon_window != children[i]))
-				for (int j = 0; j < (int) nchild; j++)
+					(wmhints->icon_window != children[i]))
+				for (int j = 0; j < (int) nchild; j++) {
 					if (children[j] == wmhints->icon_window) {
 						children[j] = None;
-
 						break;
 					}
-
+				}
 			XFree(wmhints);
 		}
 	}
@@ -840,9 +858,29 @@ void BScreen::removeNetizen(Window w) {
 
 
 void BScreen::updateNetizenCurrentWorkspace(void) {
+	#ifdef NEWWMSPEC
+	//update _NET_WM_CURRENT_DESKTOP
+	int workspace = getCurrentWorkspaceID();
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
+		getBaseDisplay()->getNETCurrentDesktopAtom(), XA_CARDINAL, 32, PropModeReplace,
+			(unsigned char *)&workspace, 1);
+	#endif
+	#ifdef GNOME
+	//update _WIN_WORKSPACE
+	int gnome_workspace = getCurrentWorkspaceID();
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
+		getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32, PropModeReplace,
+			(unsigned char *)&gnome_workspace, 1);
+	#endif
+	
 	LinkedListIterator<Netizen> it(netizenList);
 	for (; it.current(); it++)
 		it.current()->sendCurrentWorkspace();
+	
+
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): Update Current Workspace"<<endl;
+	#endif
 }
 
 
@@ -850,6 +888,27 @@ void BScreen::updateNetizenWorkspaceCount(void) {
 	LinkedListIterator<Netizen> it(netizenList);
 	for (; it.current(); it++)
 		it.current()->sendWorkspaceCount();
+
+	#ifdef NEWWMSPEC
+	//update _NET_WM_NUMBER_OF_DESKTOPS
+	int numworkspaces = getCount()-1;
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
+		getBaseDisplay()->getNETNumberOfDesktopsAtom(), XA_CARDINAL, 32, PropModeReplace,
+			(unsigned char *)&numworkspaces, 1);
+	#endif
+	
+	#ifdef GNOME 
+	{
+	int numworkspaces = getCount();
+	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
+		getBaseDisplay()->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32, PropModeReplace,
+			(unsigned char *)&numworkspaces, 1);
+	}
+	#endif
+	
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): Update Workspace Count"<<endl;
+	#endif
 }
 
 
