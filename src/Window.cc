@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.176 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Window.cc,v 1.177 2003/05/15 12:00:46 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -236,16 +236,16 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_screen(scr),
     m_timer(this),
     display(0),
-    m_windowmenu(menutheme, scr.getScreenNumber(), *scr.getImageControl()),
+    m_windowmenu(menutheme, scr.screenNumber(), *scr.getImageControl()),
     m_layermenu(new LayerMenu<FluxboxWindow>(menutheme, 
-                                             scr.getScreenNumber(),
+                                             scr.screenNumber(),
                                              *scr.getImageControl(), 
                                              *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                              this,
                                              false)),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
-    m_frame(new FbWinFrame(tm, *scr.getImageControl(), scr.getScreenNumber(), 0, 0, 100, 100)),
+    m_frame(new FbWinFrame(tm, *scr.getImageControl(), scr.screenNumber(), 0, 0, 100, 100)),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {
@@ -269,16 +269,16 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
     m_screen(scr),
     m_timer(this),
     display(0),
-    m_windowmenu(menutheme, scr.getScreenNumber(), *scr.getImageControl()),
+    m_windowmenu(menutheme, scr.screenNumber(), *scr.getImageControl()),
     m_layermenu(new LayerMenu<FluxboxWindow>(menutheme, 
-                                             scr.getScreenNumber(), 
+                                             scr.screenNumber(), 
                                              *scr.getImageControl(),
                                              *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                              this,
                                              false)),
     m_old_decoration(DECOR_NORMAL),
     m_client(new WinClient(w, *this)),
-    m_frame(new FbWinFrame(tm, *scr.getImageControl(), scr.getScreenNumber(), 0, 0, 100, 100)),
+    m_frame(new FbWinFrame(tm, *scr.getImageControl(), scr.screenNumber(), 0, 0, 100, 100)),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {
@@ -484,8 +484,8 @@ void FluxboxWindow::init() {
 
             if (real_x >= 0 && 
                 real_y + frame().y() >= 0 &&
-                real_x <= (signed) screen().getWidth() &&
-                real_y <= (signed) screen().getHeight())
+                real_x <= (signed) screen().width() &&
+                real_y <= (signed) screen().height())
                 place_window = false;
 
         } else
@@ -500,7 +500,7 @@ void FluxboxWindow::init() {
     positionWindows();
 
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
-        m_workspace_number = screen().getCurrentWorkspaceID();
+        m_workspace_number = screen().currentWorkspaceID();
 
     restoreAttributes();
 
@@ -1180,23 +1180,23 @@ bool FluxboxWindow::setInputFocus() {
         if (((signed) (frame().y() + frame().height())) < 0) {
             moveResize(screen().rootTheme().borderWidth(), screen().rootTheme().borderWidth(),
                        frame().width(), frame().height());
-        } else if (frame().y() > (signed) screen().getHeight()) {
-            moveResize(screen().rootTheme().borderWidth(), screen().getHeight() - frame().height(),
+        } else if (frame().y() > (signed) screen().height()) {
+            moveResize(screen().rootTheme().borderWidth(), screen().height() - frame().height(),
                        frame().width(), frame().height());
         } else {
             moveResize(screen().rootTheme().borderWidth(), frame().y() + screen().rootTheme().borderWidth(),
                        frame().width(), frame().height());
         }
-    } else if (frame().x() > (signed) screen().getWidth()) {
+    } else if (frame().x() > (signed) screen().width()) {
         if (((signed) (frame().y() + frame().height())) < 0) {
-            moveResize(screen().getWidth() - frame().width(), screen().rootTheme().borderWidth(),
+            moveResize(screen().width() - frame().width(), screen().rootTheme().borderWidth(),
                        frame().width(), frame().height());
-        } else if (frame().y() > (signed) screen().getHeight()) {
-            moveResize(screen().getWidth() - frame().width(),
-                       screen().getHeight() - frame().height(), 
+        } else if (frame().y() > (signed) screen().height()) {
+            moveResize(screen().width() - frame().width(),
+                       screen().height() - frame().height(), 
                        frame().width(), frame().height());
         } else {
-            moveResize(screen().getWidth() - frame().width(),
+            moveResize(screen().width() - frame().width(),
                        frame().y() + screen().rootTheme().borderWidth(), 
                        frame().width(), frame().height());
         }
@@ -1299,8 +1299,8 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     oplock = true;
 
     if (iconic || reassoc) {
-        screen().reassociateWindow(this, screen().getCurrentWorkspace()->workspaceID(), false);
-    } else if (moving || m_workspace_number != screen().getCurrentWorkspace()->workspaceID()) {
+        screen().reassociateWindow(this, screen().currentWorkspace()->workspaceID(), false);
+    } else if (moving || m_workspace_number != screen().currentWorkspace()->workspaceID()) {
         oplock = false;
         return;
     }
@@ -1384,12 +1384,12 @@ void FluxboxWindow::maximize() {
         m_old_height = frame().height();
         m_old_pos_x = frame().x();
         m_old_pos_y = frame().y();
-        unsigned int left_x = screen().getMaxLeft();
-        unsigned int max_width = screen().getMaxRight();
-        unsigned int max_top = screen().getMaxTop();
+        unsigned int left_x = screen().maxLeft();
+        unsigned int max_width = screen().maxRight();
+        unsigned int max_top = screen().maxTop();
         moveResize(left_x, max_top, 
                    max_width - left_x, 
-                   screen().getMaxBottom() - max_top - frame().window().borderWidth());
+                   screen().maxBottom() - max_top - frame().window().borderWidth());
     } else { // demaximize, restore to old values
         moveResize(m_old_pos_x, m_old_pos_y,
                    m_old_width, m_old_height);
@@ -1399,8 +1399,8 @@ void FluxboxWindow::maximize() {
 }
 
 void FluxboxWindow::maximizeHorizontal() {
-    unsigned int left_x = screen().getMaxLeft();
-    unsigned int max_width = screen().getMaxRight();
+    unsigned int left_x = screen().maxLeft();
+    unsigned int max_width = screen().maxRight();
     moveResize(left_x, frame().y(), 
                max_width - left_x, frame().height() - frame().window().borderWidth());
 
@@ -1410,10 +1410,10 @@ void FluxboxWindow::maximizeHorizontal() {
  Maximize window horizontal
  */
 void FluxboxWindow::maximizeVertical() {
-    unsigned int max_top = screen().getMaxTop();
+    unsigned int max_top = screen().maxTop();
     moveResize(frame().x(), max_top,
                frame().width() - frame().window().borderWidth(), 
-               screen().getMaxBottom() - max_top);
+               screen().maxBottom() - max_top);
 }
 
 
@@ -1862,7 +1862,7 @@ void FluxboxWindow::restoreAttributes() {
         m_current_state = save_state;
     }
 
-    if (( m_blackbox_attrib.workspace != screen().getCurrentWorkspaceID()) &&
+    if (( m_blackbox_attrib.workspace != screen().currentWorkspaceID()) &&
         ( m_blackbox_attrib.workspace < screen().getCount())) {
         m_workspace_number = m_blackbox_attrib.workspace;
 
@@ -2434,12 +2434,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             m_last_resize_y = me.y_root;
 
             if (moved_x && screen().isWorkspaceWarping()) {
-                unsigned int cur_id = screen().getCurrentWorkspaceID();
+                unsigned int cur_id = screen().currentWorkspaceID();
                 unsigned int new_id = cur_id;
                 const int warpPad = screen().getEdgeSnapThreshold();
                 // 1) if we're inside the border threshold
                 // 2) if we moved in the right direction
-                if (me.x_root >= int(screen().getWidth()) - warpPad - 1 &&
+                if (me.x_root >= int(screen().width()) - warpPad - 1 &&
                     moved_x > 0) {
                     //warp right
                     new_id = (cur_id + 1) % screen().getCount();
@@ -2448,7 +2448,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                            moved_x < 0) {
                     //warp left
                     new_id = (cur_id + screen().getCount() - 1) % screen().getCount();
-                    dx = screen().getWidth() - me.x_root-1; // move mouse to screen width - 1
+                    dx = screen().width() - me.x_root-1; // move mouse to screen width - 1
                 }
                 if (new_id != cur_id) {
                     XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
@@ -2559,12 +2559,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             dy -= screen().rootTheme().borderWidth();
 
             if (screen().getEdgeSnapThreshold()) {
-                int drx = screen().getWidth() - (dx + 1);
+                int drx = screen().width() - (dx + 1);
 
                 if (dx > 0 && dx < drx && dx < screen().getEdgeSnapThreshold()) 
                     dx = 0;
                 else if (drx > 0 && drx < screen().getEdgeSnapThreshold())
-                    dx = screen().getWidth() - 1;
+                    dx = screen().width() - 1;
 
                 int dty, dby;
 		
@@ -2821,8 +2821,8 @@ void FluxboxWindow::stopMoving() {
                                frame().width() + 2*frame().window().borderWidth()-1,
                                frame().height() + 2*frame().window().borderWidth()-1);
         moveResize(m_last_move_x, m_last_move_y, frame().width(), frame().height());
-        if (m_workspace_number != screen().getCurrentWorkspaceID()) {
-            screen().reassociateWindow(this, screen().getCurrentWorkspaceID(), true);
+        if (m_workspace_number != screen().currentWorkspaceID()) {
+            screen().reassociateWindow(this, screen().currentWorkspaceID(), true);
             frame().show();
         }
         fluxbox->ungrab();
@@ -2853,7 +2853,7 @@ void FluxboxWindow::resumeMoving() {
         return;
     }
     
-    if (m_workspace_number == screen().getCurrentWorkspaceID()) {
+    if (m_workspace_number == screen().currentWorkspaceID()) {
         frame().show();
     }
     XSync(display,false);
@@ -2930,13 +2930,13 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     /////////////////////////////////////
     // begin by checking the screen edges
 
-    snapToWindow(dx, dy, left, right, top, bottom, 0, screen().getWidth(), 0, screen().getHeight());
+    snapToWindow(dx, dy, left, right, top, bottom, 0, screen().width(), 0, screen().height());
     
     /////////////////////////////////////
     // now check window edges
 
     Workspace::Windows &wins = 
-        screen().getCurrentWorkspace()->windowList();
+        screen().currentWorkspace()->windowList();
 
     Workspace::Windows::iterator it = wins.begin();
     Workspace::Windows::iterator it_end = wins.end();
@@ -2950,26 +2950,6 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
                      (*it)->y(),
                      (*it)->y() + (*it)->height() + 2*borderW);
     }
-
-    /////////////////////////////////////
-    // now the toolbar
-
-    Toolbar *tbar = screen().getToolbar();
-    if (tbar)
-        snapToWindow(dx, dy, left, right, top, bottom, 
-                     tbar->x(), tbar->x() + tbar->width() + 2*borderW,
-                     tbar->y(), tbar->y() + tbar->height() + 2*borderW);
-
-    /////////////////////////////////////
-    // and the slit
-
-#ifdef SLIT
-    Slit *slit = screen().getSlit();
-    if (slit) 
-        snapToWindow(dx, dy, left, right, top, bottom, 
-                     slit->x(), slit->x() + slit->width() + 2*borderW,
-                     slit->y(), slit->y() + slit->height() + 2*borderW);
-#endif // SLIT
 
     // commit
     if (dx <= screen().getEdgeSnapThreshold()) 
@@ -3066,10 +3046,11 @@ void FluxboxWindow::attachTo(int x, int y) {
 
 //finds and redraw the icon label
 void FluxboxWindow::updateIcon() {
-    if (screen().getToolbar()) {
+    //!! TODO we shouldn't know about the toolbar in fluxboxwindow!
+    if (screen().toolbar()) {
         const IconBar *iconbar = 0;
         const IconBarObj *icon = 0;
-        if ((iconbar = screen().getToolbar()->iconBar()) != 0) {
+        if ((iconbar = screen().toolbar()->iconBar()) != 0) {
             if ((icon = iconbar->findIcon(this)) != 0)
                 iconbar->draw(icon, icon->width());
         }
@@ -3216,7 +3197,7 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
 
         screen().reassociateWindow(this, net.workspace, true);
 
-        if (screen().getCurrentWorkspaceID() != net.workspace)
+        if (screen().currentWorkspaceID() != net.workspace)
             withdraw();
         else 
             deiconify();

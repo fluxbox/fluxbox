@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.14 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Remember.cc,v 1.15 2003/05/15 12:00:43 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -99,7 +99,7 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
     // so we also create a remember menu just for it...
     BScreen &screen = win.screen();
     FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
-                                  screen.getScreenNumber(), 
+                                  screen.screenNumber(), 
                                   *screen.getImageControl(), 
                                   *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
     menu->disableTitle();

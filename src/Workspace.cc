@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.64 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Workspace.cc,v 1.65 2003/05/15 12:00:46 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -115,7 +115,7 @@ Workspace::GroupList Workspace::m_groups;
 Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int i):
     m_screen(scrn),
     m_lastfocus(0),
-    m_clientmenu(*scrn.menuTheme(), scrn.getScreenNumber(), *scrn.getImageControl()),
+    m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), *scrn.getImageControl()),
     m_layermanager(layermanager),
     m_name(""),
     m_id(i),
@@ -401,7 +401,7 @@ void Workspace::update() {
 
 
 bool Workspace::isCurrent() const{
-    return (m_id == screen().getCurrentWorkspaceID());
+    return (m_id == screen().currentWorkspaceID());
 }
 
 
@@ -440,7 +440,7 @@ void Workspace::setName(const std::string &name) {
 */
 void Workspace::shutdown() {
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): scr "<<screen().getScreenNumber()<<", ws "<<
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): scr "<<screen().screenNumber()<<", ws "<<
         m_id<<", windowlist:"<<endl;
     copy(m_windowlist.begin(), m_windowlist.end(),
          ostream_iterator<FluxboxWindow *>(cerr, " \n"));
@@ -507,10 +507,10 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         test_x = root_x - (win_w / 2);
         test_y = root_y - (win_h / 2);
 
-        min_x = (int) screen().getMaxLeft();
-        min_y = (int) screen().getMaxTop();
-        max_x = (int) screen().getMaxRight() - win_w;
-        max_y = (int) screen().getMaxBottom() - win_h;
+        min_x = (int) screen().maxLeft();
+        min_y = (int) screen().maxTop();
+        max_x = (int) screen().maxRight() - win_w;
+        max_y = (int) screen().maxBottom() - win_h;
 
         // keep the window inside the screen
 
@@ -539,21 +539,21 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         test_y = 0;
 
         if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
-            test_y = screen().getHeight() - win_h - test_y;
+            test_y = screen().height() - win_h - test_y;
 
 
         while (((screen().getColPlacementDirection() == BScreen::BOTTOMTOP) ?
-                test_y > 0 : test_y + win_h < (signed) screen().getHeight()) && 
+                test_y > 0 : test_y + win_h < (signed) screen().height()) && 
                ! placed) {
 
             test_x = 0;
 
             if (screen().getRowPlacementDirection() == BScreen::RIGHTLEFT)
-                test_x = screen().getWidth() - win_w - test_x;
+                test_x = screen().width() - win_w - test_x;
 
 
             while (((screen().getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-                    test_x > 0 : test_x + win_w < (signed) screen().getWidth()) && ! placed) {
+                    test_x > 0 : test_x + win_w < (signed) screen().width()) && ! placed) {
 
                 placed = true;
 
@@ -599,19 +599,19 @@ void Workspace::placeWindow(FluxboxWindow &win) {
 
         if (screen().getRowPlacementDirection() == BScreen::RIGHTLEFT)
 
-            test_x = screen().getWidth() - win_w - test_x;
+            test_x = screen().width() - win_w - test_x;
 
 
         while (((screen().getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-                test_x > 0 : test_x + win_w < (signed) screen().getWidth()) && 
+                test_x > 0 : test_x + win_w < (signed) screen().width()) && 
                !placed) {
 
             test_y = 0;
             if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
-                test_y = screen().getHeight() - win_h - test_y;
+                test_y = screen().height() - win_h - test_y;
 
             while (((screen().getColPlacementDirection() == BScreen::BOTTOMTOP) ?
-                    test_y > 0 : test_y + win_h < (signed) screen().getHeight()) && 
+                    test_y > 0 : test_y + win_h < (signed) screen().height()) && 
                    !placed) {
                 placed = True;
 
@@ -656,8 +656,8 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     // cascade placement or smart placement failed
     if (! placed) {
 
-        if (((unsigned) m_cascade_x > (screen().getWidth() / 2)) ||
-            ((unsigned) m_cascade_y > (screen().getHeight() / 2)))
+        if (((unsigned) m_cascade_x > (screen().width() / 2)) ||
+            ((unsigned) m_cascade_y > (screen().height() / 2)))
             m_cascade_x = m_cascade_y = 32;
 
         place_x = m_cascade_x;
@@ -667,10 +667,10 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         m_cascade_y += win.titleHeight();
     }
 
-    if (place_x + win_w > (signed) screen().getWidth())
-        place_x = (((signed) screen().getWidth()) - win_w) / 2;
-    if (place_y + win_h > (signed) screen().getHeight())
-        place_y = (((signed) screen().getHeight()) - win_h) / 2;
+    if (place_x + win_w > (signed) screen().width())
+        place_x = (((signed) screen().width()) - win_w) / 2;
+    if (place_y + win_h > (signed) screen().height())
+        place_y = (((signed) screen().height()) - win_h) / 2;
 
 
     win.moveResize(place_x, place_y, win.width(), win.height());

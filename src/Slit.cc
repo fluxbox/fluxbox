@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.52 2003/05/13 21:09:43 fluxgen Exp $
+// $Id: Slit.cc,v 1.53 2003/05/15 12:00:45 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -245,7 +245,7 @@ private:
 
 class SlitTheme:public FbTk::Theme {
 public:
-    explicit SlitTheme(Slit &slit):FbTk::Theme(slit.screen().getScreenNumber()), 
+    explicit SlitTheme(Slit &slit):FbTk::Theme(slit.screen().screenNumber()), 
                           m_slit(slit),
                           m_texture(*this, "slit", "Slit") { 
         // default texture type
@@ -263,19 +263,19 @@ private:
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_screen(scr), m_timer(this), 
       m_slitmenu(*scr.menuTheme(), 
-                 scr.getScreenNumber(), 
+                 scr.screenNumber(), 
                  *scr.getImageControl(),
                  *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_placement_menu(*scr.menuTheme(),
-                       scr.getScreenNumber(),
+                       scr.screenNumber(),
                        *scr.getImageControl(),
                        *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_clientlist_menu(*scr.menuTheme(),
-                        scr.getScreenNumber(),
+                        scr.screenNumber(),
                         *scr.getImageControl(),
                         *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
       m_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
-                                           scr.getScreenNumber(),
+                                           scr.screenNumber(),
                                            *scr.getImageControl(),
                                            *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                            this,
@@ -322,7 +322,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     FbTk::EventManager::instance()->add(*this, frame.window);
     m_transp.reset(new FbTk::Transparent(screen().rootPixmap(), frame.window.drawable(), 
                                          *screen().slitAlphaResource(), 
-                                         screen().getScreenNumber()));
+                                         screen().screenNumber()));
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
 
@@ -387,8 +387,8 @@ void Slit::addClient(Window w) {
     if (wmhints != 0) {
         if ((wmhints->flags & IconWindowHint) &&
             (wmhints->icon_window != None)) {
-            XMoveWindow(disp, client->client_window, screen().getWidth() + 10,
-                        screen().getHeight() + 10);
+            XMoveWindow(disp, client->client_window, screen().width() + 10,
+                        screen().height() + 10);
             XMapWindow(disp, client->client_window);				
             client->icon_window = wmhints->icon_window;
             client->window = client->icon_window;
@@ -790,8 +790,8 @@ void Slit::reposition() {
         head_w,
         head_h;
 
-    head_w = screen().getWidth();
-    head_h = screen().getHeight();
+    head_w = screen().width();
+    head_h = screen().height();
     int border_width = screen().rootTheme().borderWidth();
     int bevel_width = screen().rootTheme().bevelWidth();
 
@@ -985,13 +985,13 @@ void Slit::buttonPressEvent(XButtonEvent &e) {
 
             if (x < 0)
                 x = 0;
-            else if (x + m_slitmenu.width() > screen().getWidth())
-                x = screen().getWidth() - m_slitmenu.width();
+            else if (x + m_slitmenu.width() > screen().width())
+                x = screen().width() - m_slitmenu.width();
 
             if (y < 0)
                 y = 0;
-            else if (y + m_slitmenu.height() > screen().getHeight())
-                y = screen().getHeight() - m_slitmenu.height();
+            else if (y + m_slitmenu.height() > screen().height())
+                y = screen().height() - m_slitmenu.height();
 
             m_slitmenu.move(x, y);
             m_slitmenu.show();
@@ -1077,7 +1077,7 @@ void Slit::clearWindow() {
     frame.window.clear();
     if (frame.pixmap != 0) {
         if (screen().rootPixmap() != m_transp->source())
-            m_transp->setSource(screen().rootPixmap(), screen().getScreenNumber());
+            m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
 
         m_transp->render(frame.window.x(), frame.window.y(),
                          0, 0,

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.11 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.12 2003/05/15 12:00:45 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -91,9 +91,9 @@ void setupModeMenu(FbTk::Menu &menu, ToolbarHandler &handler) {
 ToolbarHandler::ToolbarHandler(BScreen &screen, ToolbarMode mode) 
     : m_screen(screen), m_mode(mode), m_toolbar(0), m_current_workspace(0),
       m_modemenu(*screen.menuTheme(),
-                 screen.getScreenNumber(), *screen.getImageControl()),
+                 screen.screenNumber(), *screen.getImageControl()),
       m_toolbarmenu(*screen.menuTheme(),
-                 screen.getScreenNumber(), *screen.getImageControl())
+                 screen.screenNumber(), *screen.getImageControl())
 {
     m_modemenu.setInternalMenu();
     setupModeMenu(m_modemenu, *this);
@@ -147,8 +147,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         break;
     case NONE:
         break;
-    case ALLWINDOWS:
-    {
+    case ALLWINDOWS: {
         BScreen::Workspaces::const_iterator workspace_it = m_screen.getWorkspacesList().begin();
         BScreen::Workspaces::const_iterator workspace_it_end = m_screen.getWorkspacesList().end();
         for (; workspace_it != workspace_it_end; ++workspace_it) {
@@ -168,8 +167,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
     }
     // fall through and add icons
     case LASTMODE:
-    case ICONS: 
-    {
+    case ICONS: {
         BScreen::Icons &iconlist = m_screen.getIconList();
         BScreen::Icons::iterator iconit = iconlist.begin();
         BScreen::Icons::iterator iconit_end = iconlist.end();
@@ -178,9 +176,8 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         }
     }
     break;
-    case WORKSPACE:
-    {
-        Workspace::Windows &wins = m_screen.getCurrentWorkspace()->windowList();
+    case WORKSPACE: {
+        Workspace::Windows &wins = m_screen.currentWorkspace()->windowList();
         Workspace::Windows::iterator wit = wins.begin();
         Workspace::Windows::iterator wit_end = wins.end();
         for (; wit != wit_end; ++wit) {
@@ -188,9 +185,8 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         }
     }
     // fall through and add icons for this workspace
-    case WORKSPACEICONS:
-    {
-        m_current_workspace = m_screen.getCurrentWorkspaceID();
+    case WORKSPACEICONS: {
+        m_current_workspace = m_screen.currentWorkspaceID();
         
         BScreen::Icons &wiconlist = m_screen.getIconList();
         BScreen::Icons::iterator iconit = wiconlist.begin();
@@ -273,7 +269,8 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
     case ALLWINDOWS:
         break;
     case WORKSPACEICONS:
-        if (win.workspaceNumber() != m_current_workspace) break;
+        if (win.workspaceNumber() != m_current_workspace)
+            break;
         // else fall through and do the same as icons (knowing it is the right ws)
     case LASTMODE:
     case ICONS:
@@ -313,10 +310,12 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
 }
 
 void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
-    if (&screen != &m_screen) return;
+    if (&screen != &m_screen)
+        return;
     // if only displaying current workspace, update list
     // otherwise ignore it
-    if (m_mode != WORKSPACE && m_mode != WORKSPACEICONS) return;
+    if (m_mode != WORKSPACE && m_mode != WORKSPACEICONS)
+        return;
     m_toolbar->delAllIcons();
     initForScreen(m_screen);
 }

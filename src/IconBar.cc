@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.34 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: IconBar.cc,v 1.35 2003/05/15 12:00:43 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -191,7 +191,7 @@ void IconBar::decorate(Window win) {
     //!! TODO iconbar border width style
     XSetWindowBorderWidth(m_display, win, 1);
     XSetWindowBorder(m_display, win, BlackPixel(FbTk::App::instance()->display(),
-                                                screen().getScreenNumber())); 
+                                                screen().screenNumber())); 
     if (m_focus_pm)
         XSetWindowBackgroundPixmap(m_display, win, m_focus_pm);
     else
@@ -294,7 +294,7 @@ Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
     attrib.background_pixmap = None;
     attrib.background_pixel = attrib.border_pixel =
         BlackPixel(m_display,
-                   screen().getScreenNumber());
+                   screen().screenNumber());
     //        fluxboxwin->screen().getWindowStyle()->tab.border_color.pixel();
     attrib.colormap = fluxboxwin->screen().rootWindow().colormap();
     attrib.override_redirect = True;
@@ -347,7 +347,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
 
     m_font.drawText(
         iconwin,
-        screen().getScreenNumber(),
+        screen().screenNumber(),
         screen().winFrameTheme().labelTextFocusGC(),
         fluxboxwin->iconTitle().c_str(), newlen,
         dx, dy,	m_vertical);

@@ -57,7 +57,7 @@ void Netizen::sendWorkspaceCount() {
 void Netizen::sendCurrentWorkspace() {
 
     event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyCurrentWorkspaceAtom();
-    event.xclient.data.l[1] = m_screen.getCurrentWorkspaceID();
+    event.xclient.data.l[1] = m_screen.currentWorkspaceID();
 
     XSendEvent(m_display, window(), False, NoEventMask, &event);
 }

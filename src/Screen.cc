@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.166 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Screen.cc,v 1.167 2003/05/15 12:00:44 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -140,9 +140,9 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 
 FbTk::Menu *createMenuFromScreen(BScreen &screen) {
     FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
-                                       screen.getScreenNumber(), 
-                                       *screen.getImageControl(), 
-                                     *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
+                                  screen.screenNumber(), 
+                                  *screen.getImageControl(), 
+                                  *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
     return menu;
 }
 
@@ -541,7 +541,7 @@ BScreen::BScreen(ResourceManager &rm,
                        FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
                        "BScreen::BScreen: managing screen %d "
                        "using visual 0x%lx, depth %d\n"),
-            getScreenNumber(), XVisualIDFromVisual(rootWindow().visual()),
+            screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
 
     Fluxbox * const fluxbox = Fluxbox::instance();
@@ -653,10 +653,10 @@ BScreen::BScreen(ResourceManager &rm,
 
     workspacemenu->setItemSelected(2, true);
 
-    if (getToolbar()) {
-        getToolbar()->setPlacement(*resource.toolbar_placement);
-        getToolbar()->theme().font().setAntialias(*resource.antialias);
-        getToolbar()->reconfigure();
+    if (toolbar()) {
+        toolbar()->setPlacement(*resource.toolbar_placement);
+        toolbar()->theme().font().setAntialias(*resource.antialias);
+        toolbar()->reconfigure();
     }
 
     initMenu(); // create and initiate rootmenu
@@ -723,8 +723,8 @@ BScreen::BScreen(ResourceManager &rm,
         }
     }
 
-    if (! isSloppyFocus() && getToolbar() != 0) {
-        XSetInputFocus(disp, getToolbar()->window().window(),
+    if (! isSloppyFocus() && toolbar() != 0) {
+        XSetInputFocus(disp, toolbar()->window().window(),
                        RevertToParent, CurrentTime);
     }
 
@@ -777,7 +777,7 @@ FbTk::Menu &BScreen::getToolbarModemenu() {
     return m_toolbarhandler->getModeMenu();
 }
 
-unsigned int BScreen::getCurrentWorkspaceID() const { 
+unsigned int BScreen::currentWorkspaceID() const { 
     return current_workspace->workspaceID(); 
 }
 
@@ -805,22 +805,22 @@ Pixmap BScreen::rootPixmap() const {
 }
     
 /// TODO
-unsigned int BScreen::getMaxLeft() const {
+unsigned int BScreen::maxLeft() const {
     return 0;
 }
 
 ///!! TODO
-unsigned int BScreen::getMaxRight() const {
-    return getWidth();
+unsigned int BScreen::maxRight() const {
+    return width();
 }
 
 ///!! TODO
-unsigned int BScreen::getMaxTop() const {
+unsigned int BScreen::maxTop() const {
     return 0;
 }
 ///!! TODO
-unsigned int BScreen::getMaxBottom() const {
-    return getHeight();
+unsigned int BScreen::maxBottom() const {
+    return height();
 }
 
 void BScreen::reconfigure() {
@@ -834,8 +834,8 @@ void BScreen::reconfigure() {
     winFrameTheme().font().setAntialias(*resource.antialias);
     m_menutheme->titleFont().setAntialias(*resource.antialias);
     m_menutheme->frameFont().setAntialias(*resource.antialias);
-    if (getToolbar() && getToolbar()->theme().font().isAntialias() != *resource.antialias)
-        getToolbar()->theme().font().setAntialias(*resource.antialias);
+    if (toolbar() && toolbar()->theme().font().isAntialias() != *resource.antialias)
+        toolbar()->theme().font().setAntialias(*resource.antialias);
 
     // load theme
     std::string theme_filename(Fluxbox::instance()->getStyleFilename());
@@ -930,9 +930,9 @@ void BScreen::reconfigure() {
         }
     }
 
-    if (getToolbar()) {
-        getToolbar()->setPlacement(*resource.toolbar_placement);
-        getToolbar()->reconfigure();
+    if (toolbar()) {
+        toolbar()->setPlacement(*resource.toolbar_placement);
+        toolbar()->reconfigure();
     }
 
 #ifdef SLIT    
@@ -1054,8 +1054,8 @@ int BScreen::addWorkspace() {
 		
     workspacemenu->update();
     saveWorkspaces(workspacesList.size());
-    if (getToolbar() != 0)
-        getToolbar()->reconfigure();
+    if (toolbar() != 0)
+        toolbar()->reconfigure();
     
     updateNetizenWorkspaceCount();	
 	
@@ -1083,8 +1083,8 @@ int BScreen::removeLastWorkspace() {
     workspacesList.pop_back();		
     delete wkspc;
 
-    if (getToolbar() != 0)
-        getToolbar()->reconfigure();
+    if (toolbar() != 0)
+        toolbar()->reconfigure();
 
     updateNetizenWorkspaceCount();
     saveWorkspaces(workspacesList.size());
@@ -1112,7 +1112,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     }
 
     // reassociate all windows that are stuck to the new workspace
-    Workspace *wksp = getCurrentWorkspace();
+    Workspace *wksp = currentWorkspace();
     Workspace::Windows wins = wksp->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
@@ -1129,8 +1129,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     current_workspace = getWorkspace(id);
 
     workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
-    if (getToolbar() != 0)
-        getToolbar()->redrawWorkspaceLabel(true);
+    if (toolbar() != 0)
+        toolbar()->redrawWorkspaceLabel(true);
 
     current_workspace->showAll();
 
@@ -1306,7 +1306,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
  
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
-        getSlit()->addClient(win->clientWindow());
+        slit()->addClient(win->clientWindow());
 #endif // SLIT
 
     if (!win->isManaged()) {
@@ -1325,7 +1325,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         setupWindowActions(*win);
         Fluxbox::instance()->attachSignals(*win);
     }
-    if (win->workspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
+    if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
         win->show();
     }
     XSync(FbTk::App::instance()->display(), False);
@@ -1338,7 +1338,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
-        getSlit()->addClient(win->clientWindow());
+        slit()->addClient(win->clientWindow());
 #endif // SLIT
     if (!win->isManaged()) {
         delete win;
@@ -1350,7 +1350,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     Fluxbox::instance()->saveWindowSearch(client.window(), win);
     setupWindowActions(*win);
     Fluxbox::instance()->attachSignals(*win);
-    if (win->workspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
+    if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
         win->show();      
     }
     return win;
@@ -1527,11 +1527,10 @@ void BScreen::nextFocus(int opts) {
     bool have_focused = false;
     int focused_window_number = -1;
     FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
-    const int num_windows = getCurrentWorkspace()->numberOfWindows();
+    const int num_windows = currentWorkspace()->numberOfWindows();
 
     if (focused != 0) {
-        if (focused->screen().getScreenNumber() == 
-            getScreenNumber()) {
+        if (focused->screen().screenNumber() == screenNumber()) {
             have_focused = true;
             focused_window_number = focused->windowNumber();
         }
@@ -1565,7 +1564,7 @@ void BScreen::nextFocus(int opts) {
                 FluxboxWindow *fbwin = (*it)->m_win;
                 if (fbwin && !fbwin->isIconic() &&
                     (fbwin->isStuck() 
-                     || fbwin->workspaceNumber() == getCurrentWorkspaceID())) {
+                     || fbwin->workspaceNumber() == currentWorkspaceID())) {
                     // either on this workspace, or stuck
 
                     // keep track of the originally selected window in a set
@@ -1586,7 +1585,7 @@ void BScreen::nextFocus(int opts) {
             }
             cycling_window = it;
         } else { // not stacked cycling
-            Workspace *wksp = getCurrentWorkspace();
+            Workspace *wksp = currentWorkspace();
             Workspace::Windows &wins = wksp->windowList();
             Workspace::Windows::iterator it = wins.begin();
             
@@ -1617,11 +1616,10 @@ void BScreen::prevFocus(int opts) {
     bool have_focused = false;
     int focused_window_number = -1;
     FluxboxWindow *focused;
-    int num_windows = getCurrentWorkspace()->numberOfWindows();
+    int num_windows = currentWorkspace()->numberOfWindows();
 	
     if ((focused = Fluxbox::instance()->getFocusedWindow())) {
-        if (focused->screen().getScreenNumber() ==
-            getScreenNumber()) {
+        if (focused->screen().screenNumber() == screenNumber()) {
             have_focused = true;
             focused_window_number = focused->windowNumber();
         }
@@ -1656,7 +1654,7 @@ void BScreen::prevFocus(int opts) {
                 FluxboxWindow *fbwin = (*it)->m_win;
                 if (fbwin && !fbwin->isIconic() &&
                     (fbwin->isStuck() 
-                     || fbwin->workspaceNumber() == getCurrentWorkspaceID())) {
+                     || fbwin->workspaceNumber() == currentWorkspaceID())) {
                     // either on this workspace, or stuck
 
                     // keep track of the originally selected window in a set
@@ -1679,7 +1677,7 @@ void BScreen::prevFocus(int opts) {
             cycling_window = it;
         } else { // not stacked cycling
             
-            Workspace *wksp = getCurrentWorkspace();
+            Workspace *wksp = currentWorkspace();
             Workspace::Windows &wins = wksp->windowList();
             Workspace::Windows::iterator it = wins.begin();
             
@@ -1712,13 +1710,12 @@ void BScreen::raiseFocus() {
     Fluxbox * const fb = Fluxbox::instance();
 	
     if (fb->getFocusedWindow())
-        if (fb->getFocusedWindow()->screen().getScreenNumber() ==
-            getScreenNumber()) {
+        if (fb->getFocusedWindow()->screen().screenNumber() == screenNumber()) {
             have_focused = true;
             focused_window_number = fb->getFocusedWindow()->windowNumber();
         }
 
-    if ((getCurrentWorkspace()->numberOfWindows() > 1) && have_focused)
+    if ((currentWorkspace()->numberOfWindows() > 1) && have_focused)
         fb->getFocusedWindow()->raise();
 }
 
@@ -1745,7 +1742,7 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
         left = win.x(),
         right = win.x() + win.width() + 2*borderW;
 
-    Workspace::Windows &wins = getCurrentWorkspace()->windowList();
+    Workspace::Windows &wins = currentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
         if ((*it) == &win) continue; // skip self
@@ -1883,7 +1880,7 @@ void BScreen::initMenu() {
     if (defaultMenu) {
         FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
         FbTk::RefCount<FbTk::Command> exit_fb(new FbCommands::ExitFluxboxCmd());
-        FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm", getScreenNumber()));
+        FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm", screenNumber()));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert(i18n->getMessage(
                                             FBNLS::ScreenSet, FBNLS::Screenxterm,
@@ -1955,7 +1952,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                                  "no menu label and/or command defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd, getScreenNumber()));
+                        FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd, screenNumber()));
                         FbTk::MacroCommand *exec_and_hide = new FbTk::MacroCommand();
                         exec_and_hide->add(hide_menu);
                         exec_and_hide->add(exec_cmd);
@@ -2192,9 +2189,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                  "Focus Model"), 
                 focus_menu);
 #ifdef SLIT
-    if (getSlit() != 0) {
-        getSlit()->menu().setInternalMenu();
-        menu.insert("Slit", &getSlit()->menu());
+    if (slit() != 0) {
+        slit()->menu().setInternalMenu();
+        menu.insert("Slit", &slit()->menu());
     }
 #endif // SLIT
     menu.insert(i18n->getMessage(
@@ -2346,8 +2343,8 @@ void BScreen::showPosition(int x, int y) {
                                getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, 
                                geom_w, geom_h);
 #else // !XINERMA
-        geom_window.moveResize((getWidth() - geom_w) / 2,
-                               (getHeight() - geom_h) / 2, geom_w, geom_h);
+        geom_window.moveResize((width() - geom_w) / 2,
+                               (height() - geom_h) / 2, geom_w, geom_h);
 #endif // XINERAMA
 
         geom_window.show();
@@ -2358,20 +2355,18 @@ void BScreen::showPosition(int x, int y) {
     char label[256];
 	
     sprintf(label,
-             I18n::instance()->getMessage(
-                                          FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
+             I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
                                           "X: %4d x Y: %4d"), x, y);
 
     geom_window.clear();
 
-    winFrameTheme().font().drawText(
-                                  geom_window.window(),
-                                  getScreenNumber(),
-                                  winFrameTheme().labelTextFocusGC(),
-                                  label, strlen(label),
-                                  m_root_theme->bevelWidth(), 
-                                  m_root_theme->bevelWidth() + 
-                                  winFrameTheme().font().ascent());
+    winFrameTheme().font().drawText(geom_window.window(),
+                                    screenNumber(),
+                                    winFrameTheme().labelTextFocusGC(),
+                                    label, strlen(label),
+                                    m_root_theme->bevelWidth(), 
+                                    m_root_theme->bevelWidth() + 
+                                    winFrameTheme().font().ascent());
 		
 }
 
@@ -2385,8 +2380,8 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
                                getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, 
                                geom_w, geom_h);
 #else // !XINERMA
-        geom_window.moveResize((getWidth() - geom_w) / 2,
-                               (getHeight() - geom_h) / 2, geom_w, geom_h);
+        geom_window.moveResize((width() - geom_w) / 2,
+                               (height() - geom_h) / 2, geom_w, geom_h);
 #endif // XINERAMA
         geom_window.show();
         geom_window.raise();
@@ -2405,12 +2400,12 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 
     //TODO: geom window again?! repeated
     winFrameTheme().font().drawText(geom_window.window(),
-                                  getScreenNumber(),
-                                  winFrameTheme().labelTextFocusGC(),
-                                  label, strlen(label),
-                                  m_root_theme->bevelWidth(), 
-                                  m_root_theme->bevelWidth() + 
-                                  winFrameTheme().font().ascent());	
+                                    screenNumber(),
+                                    winFrameTheme().labelTextFocusGC(),
+                                    label, strlen(label),
+                                    m_root_theme->bevelWidth(), 
+                                    m_root_theme->bevelWidth() + 
+                                    winFrameTheme().font().ascent());	
 }
 
 
@@ -2430,30 +2425,30 @@ void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
  Goes to the workspace "right" of the current
 */
 void BScreen::nextWorkspace(const int delta) {
-    changeWorkspaceID( (getCurrentWorkspaceID() + delta) % getCount());
+    changeWorkspaceID( (currentWorkspaceID() + delta) % getCount());
 }
 
 /**
  Goes to the workspace "left" of the current
 */
 void BScreen::prevWorkspace(const int delta) {
-    changeWorkspaceID( (getCurrentWorkspaceID() - delta + getCount()) % getCount());
+    changeWorkspaceID( (currentWorkspaceID() - delta + getCount()) % getCount());
 }
 
 /**
  Goes to the workspace "right" of the current
 */
 void BScreen::rightWorkspace(const int delta) {
-    if (getCurrentWorkspaceID()+delta < getCount())
-        changeWorkspaceID(getCurrentWorkspaceID()+delta);
+    if (currentWorkspaceID()+delta < getCount())
+        changeWorkspaceID(currentWorkspaceID()+delta);
 }
 
 /**
  Goes to the workspace "left" of the current
 */
 void BScreen::leftWorkspace(const int delta) {
-    if (getCurrentWorkspaceID() >= static_cast<unsigned int>(delta))
-        changeWorkspaceID(getCurrentWorkspaceID()-delta);
+    if (currentWorkspaceID() >= static_cast<unsigned int>(delta))
+        changeWorkspaceID(currentWorkspaceID()-delta);
 }
 
 /**
@@ -2521,11 +2516,11 @@ void BScreen::updateSize() {
     // reset background
     m_root_theme->reconfigTheme();
 
-    if (getToolbar())
-        getToolbar()->reconfigure();
+    if (toolbar())
+        toolbar()->reconfigure();
 
-    if (getSlit())
-        getSlit()->reconfigure();
+    if (slit())
+        slit()->reconfigure();
 
     //!! TODO: should we re-maximize the maximized windows?
     

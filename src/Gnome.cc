@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.23 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Gnome.cc,v 1.24 2003/05/15 12:00:42 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -205,7 +205,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
 }
 
 void Gnome::updateCurrentWorkspace(BScreen &screen) {
-    int workspace = screen.getCurrentWorkspaceID();
+    int workspace = screen.currentWorkspaceID();
     XChangeProperty(FbTk::App::instance()->display(), 
                     screen.rootWindow().window(),
                     m_gnome_wm_win_workspace, XA_CARDINAL, 32, PropModeReplace,

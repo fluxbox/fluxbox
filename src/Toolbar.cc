@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.81 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.82 2003/05/15 12:00:45 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -250,20 +250,20 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     editing(false),
     hidden(scrn.doToolbarAutoHide()), 
     do_auto_hide(scrn.doToolbarAutoHide()),
-    frame(*this, scrn.getScreenNumber()),
+    frame(*this, scrn.screenNumber()),
     m_screen(scrn),
     m_clock_timer(this), // get the clock updating every minute
     m_hide_timer(&hide_handler),
     m_toolbarmenu(menu),
     m_placementmenu(*scrn.menuTheme(),
-                    scrn.getScreenNumber(), *scrn.getImageControl()),
+                    scrn.screenNumber(), *scrn.getImageControl()),
     m_layermenu(*scrn.menuTheme(), 
-                scrn.getScreenNumber(), 
+                scrn.screenNumber(), 
                 *scrn.getImageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                 this,
                 true),
-    m_theme(scrn.getScreenNumber()),
+    m_theme(scrn.screenNumber()),
     m_place(BOTTOMCENTER),
     m_themelistener(*this),
     m_layeritem(frame.window, layer) {
@@ -778,7 +778,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
     frame.clock.clear();
     m_theme.font().drawText(
                             frame.clock.window(),
-                            screen().getScreenNumber(),
+                            screen().screenNumber(),
                             m_theme.clockTextGC(),
                             t, newlen,
                             dx, dy);
@@ -813,7 +813,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
     
         m_theme.font().drawText(
                                 frame.window_label.window(),
-                                screen().getScreenNumber(),
+                                screen().screenNumber(),
                                 m_theme.windowTextGC(),
                                 foc->title().c_str(), newlen,
                                 dx, dy);
@@ -823,14 +823,14 @@ void Toolbar::redrawWindowLabel(bool redraw) {
  
  
 void Toolbar::redrawWorkspaceLabel(bool redraw) {
-    if (screen().getCurrentWorkspace()->name().size()==0)
+    if (screen().currentWorkspace()->name().size()==0)
         return;
 		
     if (redraw)
         frame.workspace_label.clear();
 		
-    const char *text = screen().getCurrentWorkspace()->name().c_str();
-    size_t textlen = screen().getCurrentWorkspace()->name().size();
+    const char *text = screen().currentWorkspace()->name().c_str();
+    size_t textlen = screen().currentWorkspace()->name().size();
     unsigned int newlen = textlen;
     int dx = FbTk::doAlignment(frame.workspace_label_w, frame.bevel_w,
                                m_theme.justify(),
@@ -844,7 +844,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
     }
     m_theme.font().drawText(
                             frame.workspace_label.window(),
-                            screen().getScreenNumber(),
+                            screen().screenNumber(),
                             m_theme.labelTextGC(),
                             text, newlen,
                             dx, dy);
@@ -906,8 +906,8 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
             }
             if (menu_x < 0) {
                 menu_x = 0;
-            } else if (menu_x + wm.width() > screen().getWidth()) {
-                menu_x = screen().getWidth() - wm.width();
+            } else if (menu_x + wm.width() > screen().width()) {
+                menu_x = screen().width() - wm.width();
             }
             fluxboxwin->showMenu(menu_x, menu_y);
 
@@ -919,13 +919,13 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
 
             if (x < 0)
                 x = 0;
-            else if (x + m_toolbarmenu.width() > screen().getWidth())
-                x = screen().getWidth() - m_toolbarmenu.width();
+            else if (x + m_toolbarmenu.width() > screen().width())
+                x = screen().width() - m_toolbarmenu.width();
 
             if (y < 0)
                 y = 0;
-            else if (y + m_toolbarmenu.height() > screen().getHeight())
-                y = screen().getHeight() - m_toolbarmenu.height();
+            else if (y + m_toolbarmenu.height() > screen().height())
+                y = screen().height() - m_toolbarmenu.height();
 
             m_toolbarmenu.move(x, y);
             m_toolbarmenu.show();
@@ -949,13 +949,13 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
             int newy = menu->y(); // new y position of menu
             if (menu->x() < 0)
                 newx = 0;
-            else if (menu->x() + menu->width() > screen().getWidth())
-                newx = screen().getWidth() - menu->width();
+            else if (menu->x() + menu->width() > screen().width())
+                newx = screen().width() - menu->width();
 			
             if (menu->y() < 0)
                 newy = 0;
-            else if (menu->y() + menu->height() > screen().getHeight())
-                newy = screen().getHeight() - menu->height();
+            else if (menu->y() + menu->height() > screen().height())
+                newy = screen().height() - menu->height();
             // move and show menu
             menu->move(newx, newy);
             menu->show();
@@ -1029,7 +1029,7 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
             XSetInputFocus(display, PointerRoot, None, CurrentTime);
 			
         if (ks == XK_Return)	//change workspace name if keypress = Return
-            screen().getCurrentWorkspace()->setName(new_workspace_name.c_str());
+            screen().currentWorkspace()->setName(new_workspace_name.c_str());
 
         new_workspace_name.erase(); //erase temporary workspace name
         reconfigure();
@@ -1060,7 +1060,7 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
         }
 
         m_theme.font().drawText(frame.workspace_label.window(),
-                                screen().getScreenNumber(),
+                                screen().screenNumber(),
                                 screen().winFrameTheme().labelTextFocusGC(),
                                 new_workspace_name.c_str(), l,
                                 x, dy);
@@ -1091,8 +1091,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     m_place = where;
 
-    head_w = screen().getWidth();
-    head_h = screen().getHeight();
+    head_w = screen().width();
+    head_h = screen().height();
 
     frame.width = head_w * screen().getToolbarWidthPercent() / 100;
     frame.height = m_theme.font().height();

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.24 2003/05/15 11:17:26 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.25 2003/05/15 12:00:42 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -223,7 +223,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 }
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
-    size_t workspace = screen.getCurrentWorkspaceID();
+    size_t workspace = screen.currentWorkspaceID();
     XChangeProperty(FbTk::App::instance()->display(), 
                     screen.rootWindow().window(),
                     m_net_current_desktop, XA_CARDINAL, 32, PropModeReplace,

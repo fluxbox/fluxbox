@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.148 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.149 2003/05/15 12:00:46 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -523,7 +523,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_RANDR
 
         m_screen_list.push_back(screen);        
-        m_atomhandler.push_back(&screen->getToolbarHandler());
+        m_atomhandler.push_back(&screen->toolbarHandler());
         
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
@@ -919,15 +919,15 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (my < 0) my = 0;
 
             if (mx + screen->getWorkspacemenu()->width() >
-                screen->getWidth()) {
-                mx = screen->getWidth() -
+                screen->width()) {
+                mx = screen->width() -
                     screen->getWorkspacemenu()->width() -
                     screen->getWorkspacemenu()->fbwindow().borderWidth();
             }
 
             if (my + screen->getWorkspacemenu()->height() >
-                screen->getHeight()) {
-                my = screen->getHeight() -
+                screen->height()) {
+                my = screen->height() -
                     screen->getWorkspacemenu()->height() -
                     screen->getWorkspacemenu()->fbwindow().borderWidth();
             }
@@ -948,15 +948,15 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (mx < 0) mx = 0;
             if (my < 0) my = 0;
 
-            if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
-                mx = screen->getWidth() -
+            if (mx + screen->getRootmenu()->width() > screen->width()) {
+                mx = screen->width() -
                     screen->getRootmenu()->width() -
                     screen->getRootmenu()->fbwindow().borderWidth();
             }
 
             if (my + screen->getRootmenu()->height() >
-                screen->getHeight()) {
-                my = screen->getHeight() -
+                screen->height()) {
+                my = screen->height() -
                     screen->getRootmenu()->height() -
                     screen->getRootmenu()->fbwindow().borderWidth();
             }
@@ -1274,7 +1274,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         case Keys::ATTACHLAST:
             //!! just attach last window to focused window
             if (m_focused_window) {
-                Workspace *space = keyscreen->getCurrentWorkspace();
+                Workspace *space = keyscreen->currentWorkspace();
                 Workspace::Windows &wins = space->windowList();
                 if (wins.size() == 1)
                     break;
@@ -1283,7 +1283,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                 for (; it != fwins.end(); ++it) {
                     if ((*it)->fbwindow() != m_focused_window &&
                         (*it)->fbwindow()->workspaceNumber() == 
-                        keyscreen->getCurrentWorkspaceID()) {
+                        keyscreen->currentWorkspaceID()) {
                         m_focused_window->attachClient(**it);
                         break;
                     }
@@ -1296,7 +1296,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             }
             break;
         case Keys::EXECUTE: { //execute command on keypress
-            FbCommands::ExecuteCmd cmd(m_key->getExecCommand(), mousescreen->getScreenNumber());
+            FbCommands::ExecuteCmd cmd(m_key->getExecCommand(), mousescreen->screenNumber());
             cmd.execute();			
         } break;
         case Keys::QUIT:
@@ -1314,15 +1314,15 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             if (mx < 0) mx = 0;
             if (my < 0) my = 0;
 
-            if (mx + mousescreen->getRootmenu()->width() > mousescreen->getWidth()) {
-                mx = mousescreen->getWidth() -
+            if (mx + mousescreen->getRootmenu()->width() > mousescreen->width()) {
+                mx = mousescreen->width() -
                     mousescreen->getRootmenu()->width() -
                     mousescreen->getRootmenu()->fbwindow().borderWidth();
             }
 
             if (my + mousescreen->getRootmenu()->height() >
-                mousescreen->getHeight()) {
-                my = mousescreen->getHeight() -
+                mousescreen->height()) {
+                my = mousescreen->height() -
                     mousescreen->getRootmenu()->height() -
                     mousescreen->getRootmenu()->fbwindow().borderWidth();
             }
@@ -1571,9 +1571,9 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                 // if we're sticky then reassociate window
                 // to all workspaces
                 BScreen &scr = win.screen();
-                if (scr.getCurrentWorkspaceID() != win.workspaceNumber()) {
+                if (scr.currentWorkspaceID() != win.workspaceNumber()) {
                     scr.reassociateWindow(&win, 
-                                          scr.getCurrentWorkspaceID(),
+                                          scr.currentWorkspaceID(),
                                           true);
                 }
             }
@@ -1785,7 +1785,7 @@ void Fluxbox::save_rc() {
 
     for (; it != it_end; ++it) {
         BScreen *screen = *it;
-        int screen_number = screen->getScreenNumber();
+        int screen_number = screen->screenNumber();
   
         /*
 #ifdef SLIT
@@ -2003,7 +2003,7 @@ void Fluxbox::load_rc(BScreen &screen) {
 		
     XrmValue value;
     char *value_type, name_lookup[1024], class_lookup[1024];
-    int screen_number = screen.getScreenNumber();
+    int screen_number = screen.screenNumber();
 
     sprintf(name_lookup, "session.screen%d.rowPlacementDirection", screen_number);
     sprintf(class_lookup, "Session.Screen%d.RowPlacementDirection", screen_number);
@@ -2185,8 +2185,8 @@ void Fluxbox::loadRootCommand(BScreen &screen)	{
 
     XrmValue value;
     char *value_type, name_lookup[1024], class_lookup[1024];
-    sprintf(name_lookup, "session.screen%d.rootCommand", screen.getScreenNumber());
-    sprintf(class_lookup, "Session.Screen%d.RootCommand", screen.getScreenNumber());
+    sprintf(name_lookup, "session.screen%d.rootCommand", screen.screenNumber());
+    sprintf(class_lookup, "Session.Screen%d.RootCommand", screen.screenNumber());
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {										 
         screen.saveRootCommand(value.addr==0 ? "": value.addr);
@@ -2368,7 +2368,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             old_win = m_focused_window;
             old_screen = &old_win->screen();
 
-            old_tbar = old_screen->getToolbar();
+            old_tbar = old_screen->toolbar();
             old_wkspc = old_screen->getWorkspace(old_win->workspaceNumber());
 
             old_win->setFocusFlag(false);
@@ -2385,7 +2385,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             m_focused_window = 0; // the window pointer wasn't valid, mark no window focused
         } else {
             screen = *winscreen;
-            tbar = screen->getToolbar();
+            tbar = screen->toolbar();
             wkspc = screen->getWorkspace(win->workspaceNumber());		
             m_focused_window = win;     // update focused window
             win->setFocusFlag(true); // set focus flag
@@ -2419,7 +2419,7 @@ void Fluxbox::revertFocus(BScreen &screen) {
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
     // Fluxbox::FocusModel = sloppy, click, whatever
-    WinClient *next_focus = screen.getLastFocusedWindow(screen.getCurrentWorkspaceID());
+    WinClient *next_focus = screen.getLastFocusedWindow(screen.currentWorkspaceID());
 
     // if setting focus fails, or isn't possible, fallback correctly
     if (!(next_focus && next_focus->fbwindow() &&

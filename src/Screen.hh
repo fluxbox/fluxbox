@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.96 2003/05/13 21:12:17 fluxgen Exp $
+// $Id: Screen.hh,v 1.97 2003/05/15 12:00:44 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -106,8 +106,8 @@ public:
     inline bool &doSlitAutoHide() { return *resource.slit_auto_hide; }
     inline const bool &doSlitAutoHide() const { return *resource.slit_auto_hide; }
 
-    inline Slit *getSlit() { return m_slit.get(); }
-    inline const Slit *getSlit() const { return m_slit.get(); }
+    inline Slit *slit() { return m_slit.get(); }
+    inline const Slit *slit() const { return m_slit.get(); }
 
     inline Slit::Placement getSlitPlacement() const { return *resource.slit_placement; }
     inline Slit::Direction getSlitDirection() const { return *resource.slit_direction; }
@@ -119,31 +119,31 @@ public:
     inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
     inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 
-    inline const Toolbar *getToolbar() const { return m_toolbarhandler->getToolbar(); }
-    inline Toolbar *getToolbar() { return m_toolbarhandler->getToolbar(); }
+    inline const Toolbar *toolbar() const { return m_toolbarhandler->getToolbar(); }
+    inline Toolbar *toolbar() { return m_toolbarhandler->getToolbar(); }
 
-    inline const ToolbarHandler &getToolbarHandler() const { return *m_toolbarhandler; }
-    inline ToolbarHandler &getToolbarHandler() { return *m_toolbarhandler; }
+    inline const ToolbarHandler &toolbarHandler() const { return *m_toolbarhandler; }
+    inline ToolbarHandler &toolbarHandler() { return *m_toolbarhandler; }
 
     inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
-    inline Workspace *getCurrentWorkspace() { return current_workspace; }
+    inline Workspace *currentWorkspace() { return current_workspace; }
 
     const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
 
-    unsigned int getCurrentWorkspaceID() const;
+    unsigned int currentWorkspaceID() const;
     Pixmap rootPixmap() const;
     /*
       maximum screen surface
     */
-    unsigned int getMaxLeft() const;
-    unsigned int getMaxRight() const;
-    unsigned int getMaxTop() const;
-    unsigned int getMaxBottom() const;
+    unsigned int maxLeft() const;
+    unsigned int maxRight() const;
+    unsigned int maxTop() const;
+    unsigned int maxBottom() const;
 
-    inline unsigned int getWidth() const { return rootWindow().width(); }
-    inline unsigned int getHeight() const { return rootWindow().height(); }
-    inline unsigned int getScreenNumber() const { return rootWindow().screenNumber(); }
+    inline unsigned int width() const { return rootWindow().width(); }
+    inline unsigned int height() const { return rootWindow().height(); }
+    inline unsigned int screenNumber() const { return rootWindow().screenNumber(); }
     typedef std::vector<FluxboxWindow *> Icons;
     typedef std::list<WinClient *> FocusedWindows;
 
