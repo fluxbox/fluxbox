@@ -201,11 +201,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
       m_rc_update_delay_time(m_resourcemanager, 0, "session.updateDelayTime", "Session.UpdateDelayTime"),
-      m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
+      m_rc_stylefile(m_resourcemanager, DEFAULTSTYLE, "session.styleFile", "Session.StyleFile"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
-      m_rc_slitlistfile(m_resourcemanager, "", "session.slitlistFile", "Session.SlitlistFile"),
-      m_rc_groupfile(m_resourcemanager, "", "session.groupFile", "Session.GroupFile"),
+      m_rc_slitlistfile(m_resourcemanager, "~/.fluxbox/slitlist", "session.slitlistFile", "Session.SlitlistFile"),
+      m_rc_groupfile(m_resourcemanager, "~/.fluxbox/groups", "session.groupFile", "Session.GroupFile"),
       m_rc_appsfile(m_resourcemanager, "~/.fluxbox/apps", "session.appsFile", "Session.AppsFile"),
       m_rc_titlebar_left(m_resourcemanager, 
                          TitlebarList(&s_titlebar_left[0], &s_titlebar_left[1]), 
@@ -1489,7 +1489,9 @@ void Fluxbox::load_rc() {
         *m_rc_stylefile = DEFAULTSTYLE;
 
     if (!Workspace::loadGroups(*m_rc_groupfile)) {
+#ifdef DEBUG
         cerr<<_FBTEXT(Fluxbox, CantLoadGroupFile, "Failed to load groupfile", "Couldn't load the groupfile")<<": "<<*m_rc_groupfile<<endl;
+#endif // DEBUG
     }
 }
 
