@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/10:
+   * Fixed minor bug in IconbarTool (Henrik)
+     IconbarTool.hh/cc
+   * Added update timer for transparency in FbWinFrame (Henrik)
+     Updates the transparency 1 usec after each move,
+     this speeds up moving in opaque mode
+     * new resource item
+        session.updateDelayTime: <micro sec>
+     This delay decides when the transparency should update when you're moving
+     FbWinFrame.hh/cc
 *03/09/08:
    * Fixed numlock and scrlock bug in FbTk TextBox (Henrik)
      This will fix workspace edit window input when having
