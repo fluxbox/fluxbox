@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.58 2003/05/24 13:13:22 rathnor Exp $
+// $Id: Slit.cc,v 1.59 2003/06/05 11:30:06 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -261,6 +261,9 @@ private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
 };
 
+unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask | 
+                                 EnterWindowMask | LeaveWindowMask | ExposureMask;
+
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_screen(scr), m_timer(this), 
       m_slitmenu(*scr.menuTheme(), 
@@ -308,8 +311,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
         screen().rootTheme().borderColor().pixel();
     attrib.colormap = screen().rootWindow().colormap();
     attrib.override_redirect = True;
-    attrib.event_mask = SubstructureRedirectMask | ButtonPressMask |
-        EnterWindowMask | LeaveWindowMask | ExposureMask;
+    attrib.event_mask = s_eventmask;
 
     frame.x = frame.y = 0;
     frame.width = frame.height = 1;
@@ -335,9 +337,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     reconfigure();
 }
 
-unsigned int Slit::s_eventmask = StructureNotifyMask | SubstructureNotifyMask |
-                                 SubstructureRedirectMask | ButtonPressMask |
-                                 EnterWindowMask | LeaveWindowMask | ExposureMask;
+
 Slit::~Slit() {
     if (frame.pixmap != 0)
         screen().imageControl().removeImage(frame.pixmap);
@@ -459,16 +459,16 @@ void Slit::addClient(Window w) {
     // disable events to frame.window
     frame.window.setEventMask(NoEventMask);
     client->disableEvents();
+    
 
     XReparentWindow(disp, client->window, frame.window.window(), 0, 0);
     XMapRaised(disp, client->window);
     XChangeSaveSet(disp, client->window, SetModeInsert);
-
     // reactivate events for frame.window
     frame.window.setEventMask(s_eventmask);
-
     // setup event for slit client window
     client->enableEvents();
+    
     // flush events
     XFlush(disp);
 
@@ -543,6 +543,11 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
 
 
 void Slit::removeClient(Window w, bool remap) {
+#ifdef DEBUG
+    cerr<<"Slit::removeClient(Window w = 0x"<<hex<<w<<dec<<", remap = "<<remap<<")"<<endl;
+#endif // DEBUG
+    if (w == frame.window)
+        return;
 
     bool reconf = false;
 
@@ -575,6 +580,7 @@ void Slit::reconfigure() {
     // actually correspond to mapped windows.
     int num_windows = 0;
     const int bevel_width = screen().rootTheme().bevelWidth();
+
     switch (direction()) {
     case VERTICAL: {
         SlitClients::iterator it = m_client_list.begin();
@@ -591,16 +597,6 @@ void Slit::reconfigure() {
         }
     }
 
-        if (frame.width < 1)
-            frame.width = 1;
-        else
-            frame.width += (bevel_width * 2);
-
-        if (frame.height < 1)
-            frame.height = 1;
-        else
-            frame.height += bevel_width;
-
         break;
 
     case HORIZONTAL: {
@@ -616,21 +612,20 @@ void Slit::reconfigure() {
                     frame.height = (*it)->height;
             }
         }
-        break;
+     
     }
-
-        if (frame.width < 1)
-            frame.width = 1;
-        else
-            frame.width += bevel_width;
-
-        if (frame.height < 1)
-            frame.height = 1;
-        else
-            frame.height += bevel_width*2;
-
         break;
-    }
+    } // end switch
+
+    if (frame.width < 1)
+        frame.width = 1;
+    else
+        frame.width += bevel_width;
+
+    if (frame.height < 1)
+        frame.height = 1;
+    else
+        frame.height += bevel_width*2;
 
     reposition();
     Display *disp = FbTk::App::instance()->display();
@@ -942,7 +937,7 @@ void Slit::handleEvent(XEvent &event) {
     } else if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window, false);
     } else if (event.type == UnmapNotify) {        
-        removeClient(event.xany.window);
+       removeClient(event.xunmap.window);
     } else if (event.type == MapRequest) {
 #ifdef KDE
         //Check and see if client is KDE dock applet.
