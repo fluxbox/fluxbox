@@ -100,7 +100,6 @@ private:
     FluxboxWindow *m_lastfocus;
     FbTk::Menu m_clientmenu;
 
-    typedef std::list<FluxboxWindow *> WindowStack;
     typedef std::vector<std::string> Group;
     typedef std::vector<Group> GroupList;
 	
