@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.18 2002/02/17 18:54:58 fluxgen Exp $
+// $Id: Screen.hh,v 1.19 2002/02/20 22:41:13 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -165,15 +165,15 @@ public:
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
 	
-#ifdef		HAVE_STRFTIME
+	#ifdef HAVE_STRFTIME
 	inline char *getStrftimeFormat(void) { return resource.strftime_format; }
 	void saveStrftimeFormat(char *);
-#else // !HAVE_STRFTIME
+	#else // !HAVE_STRFTIME
 	inline int getDateFormat(void) { return resource.date_format; }
 	inline void saveDateFormat(int f) { resource.date_format = f; }
 	inline Bool isClock24Hour(void) { return resource.clock24hour; }
 	inline void saveClock24Hour(Bool c) { resource.clock24hour = c; }
-#endif // HAVE_STRFTIME
+	#endif // HAVE_STRFTIME
 
 	inline Theme::WindowStyle *getWindowStyle(void) { return &theme->getWindowStyle(); } 
 	inline Theme::MenuStyle *getMenuStyle(void) { return &theme->getMenuStyle(); } 
@@ -231,6 +231,7 @@ public:
 private:
 	#ifdef GNOME
 	void initGnomeAtoms();
+	void updateGnomeClientList();
 	Window gnome_win;
 	#endif
 	Theme *theme;
@@ -291,19 +292,18 @@ private:
 		Resource<Toolbar::Placement> toolbar_placement;
 
 
-#ifdef		SLIT
+		#ifdef SLIT
 		Bool slit_on_top, slit_auto_hide;
 		int slit_placement, slit_direction;
-#endif // SLIT
+		#endif // SLIT
 
 
-#ifdef		HAVE_STRFTIME
+		#ifdef	HAVE_STRFTIME
 		char *strftime_format;
-#else // !HAVE_STRFTIME
+		#else // !HAVE_STRFTIME
 		Bool clock24hour;
 		int date_format;
-#endif // HAVE_STRFTIME
-
+		#endif // HAVE_STRFTIME
 
 	} resource;
 

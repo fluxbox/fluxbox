@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.25 2002/02/17 19:19:05 fluxgen Exp $
+// $Id: Screen.cc,v 1.26 2002/02/20 22:40:19 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -702,6 +702,7 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
 void BScreen::removeIcon(FluxboxWindow *w) {
 	if (! w) return;
+	
 	{
     Icons::iterator it = iconList.begin();
 	Icons::iterator it_end = iconList.end();
@@ -712,8 +713,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 		}
 	}
 	}
-	//std::remove(iconList.begin(), iconList.end(), w);
-	
+		
 	iconmenu->remove(w->getWindowNumber());
 	iconmenu->update();
 	toolbar->delIcon(w);
@@ -925,7 +925,10 @@ void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
 	for (; it != it_end; ++it) {
 		(*it)->sendWindowAdd(w, p);
 	}
-
+	#ifdef GNOME
+	updateGnomeClientList();
+	#endif
+	
 }
 
 
@@ -935,7 +938,9 @@ void BScreen::updateNetizenWindowDel(Window w) {
 	for (; it != it_end; ++it) {
 		(*it)->sendWindowDel(w);
 	}
-
+	#ifdef GNOME
+	updateGnomeClientList();
+	#endif
 }
 
 
@@ -967,7 +972,7 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 
 
 void BScreen::raiseWindows(Window *workspace_stack, int num) {
-	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 13)];
+	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 30)];
 	int i = 0;
 
 	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->getWindowID());
@@ -1761,7 +1766,8 @@ void BScreen::initGnomeAtoms(void) {
 		getBaseDisplay()->getGnomeWorkspaceCountAtom(),
 		getBaseDisplay()->getGnomeStateAtom(),
 		getBaseDisplay()->getGnomeWorkspaceNamesAtom(),
-		getBaseDisplay()->getGnomeHintsAtom()
+		getBaseDisplay()->getGnomeHintsAtom(),
+		getBaseDisplay()->getGnomeClientListAtom(),
 	};
 
 	//list atoms that we support
@@ -1770,4 +1776,28 @@ void BScreen::initGnomeAtoms(void) {
 		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
 
 }
+
+void BScreen::updateGnomeClientList() {
+	int num = getCurrentWorkspace()->getWindowList().size();
+	Window *wl = new Window[num];
+	// Fill in array of window ID's
+	Workspace::Windows::iterator it = getCurrentWorkspace()->getWindowList().begin();
+	Workspace::Windows::iterator it_end = getCurrentWorkspace()->getWindowList().end();
+	int win=0;
+	for (; it != it_end; ++it) {
+		//check if the window don't want to be visible in the list
+		if (! ( (*it)->getGnomeHints() & FluxboxWindow::WIN_STATE_HIDDEN) ) {
+			wl[win++] = (*it)->getClientWindow();
+		}
+	}
+	
+	num = win;
+	XChangeProperty(getBaseDisplay()->getXDisplay(), 
+		getRootWindow(), getBaseDisplay()->getGnomeClientListAtom(), XA_CARDINAL, 32,
+		PropModeReplace, (unsigned char *)wl, num);
+	
+	if (wl)
+		delete wl;
+}
+
 #endif //!GNOME
