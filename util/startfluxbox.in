@@ -1,15 +1,41 @@
 #!/bin/sh
 # $Id$
-if [ -x ~/.fluxbox/startup ]; then
-    exec ~/.fluxbox/startup
-elif [ -r ~/.fluxbox/startup ]; then
-    exec sh ~/.fluxbox/startup
+
+command="`basename \"$0\"`"
+startup="~/.fluxbox/startup"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -c|--config)
+            if [ $# -lt 2 ]; then
+                echo "$command:error, missing argument"
+                exit 1
+            fi
+            shift
+            startup=$1
+        ;;
+        -h|--help) cat <<EOF
+Usage: $command [-h] [-c startupfile]
+EOF
+        exit
+        ;;
+    esac
+    shift
+done
+
+exit 0
+
+
+if [ -x "$startup" ]; then
+    exec "$startup"
+elif [ -r "$startup" ]; then
+    exec sh "$startup"
 else
     if [ ! -d ~/.fluxbox ]; then
 	mkdir -p ~/.fluxbox/{backgrounds,styles,pixmaps}
     fi
-    if [ ! -r ~/.fluxbox/startup ]; then
-        cat << EOF > ~/.fluxbox/startup
+    if [ ! -r "$startup" ]; then
+        cat << EOF > "$startup"
 # fluxbox startup-script:
 #
 # Lines starting with a '#' are ignored.
@@ -61,6 +87,6 @@ exec @pkgbindir@/fluxbox
 # exec @pkgbindir@/fluxbox -log ~/.fluxbox/log
 EOF
     fi
-    chmod 755 ~/.fluxbox/startup
-    exec ~/.fluxbox/startup
+    chmod 755 "$startup"
+    exec "$startup"
 fi
