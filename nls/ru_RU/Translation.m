@@ -126,8 +126,8 @@ $set 19 #main
 -display <string>\t\tиспользовать заданный дисплей.\n\
 -rc <string>\t\t\tиспользовать альтернативный файл ресурсов.\n\
 -version\t\t\tвывести номер версии и выйти.\n\
--info\t\t\t\tdisplay some useful information.\n\
--log <filename>\t\t\tlog output to file.\n\
+-info\t\t\t\tвывести некоторую полезную информацию и выйти.\n\
+-log <filename>\t\t\tжурналировать вывод в указанный файл.\n\
 -help\t\t\t\tвывести эту подсказку и выйти.\n\n
 
 
