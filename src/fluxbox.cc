@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.118 2003/04/25 16:00:03 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.119 2003/04/26 05:42:36 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -59,7 +59,10 @@
 #endif // USE_GNOME
 #ifdef USE_NEWWMSPEC
 #include "Ewmh.hh"
-#endif //USE_NEWWMSPEC
+#endif // USE_NEWWMSPEC
+#ifdef REMEMBER
+#include "Remember.hh"
+#endif // REMEMBER
 
 // X headers
 #include <X11/Xlib.h>
@@ -421,6 +424,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #ifdef USE_NEWWMSPEC
     addAtomHandler(new Ewmh()); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
+#ifdef REMEMBER
+    m_atomhandler.push_back(new Remember()); // for remembering window attribs
+#endif // REMEMBER
 
     grab();
 	
@@ -1514,7 +1520,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         //!! TODO
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO: signal stuff for client death!!"<<endl;
-#endif // DEBUG        
+#endif // DEBUG
     }
 }
 
@@ -1660,43 +1666,16 @@ void Fluxbox::save_rc() {
     for (; it != it_end; ++it) {
         BScreen *screen = *it;
         int screen_number = screen->getScreenNumber();
-        
-/*
-#ifdef SLIT
-        string slit_placement;
-
-        switch (screen->getSlitPlacement()) {
-        case Slit::TOPLEFT: slit_placement = "TopLeft"; break;
-        case Slit::CENTERLEFT: slit_placement = "CenterLeft"; break;
-        case Slit::BOTTOMLEFT: slit_placement = "BottomLeft"; break;
-        case Slit::TOPCENTER: slit_placement = "TopCenter"; break;
-        case Slit::BOTTOMCENTER: slit_placement = "BottomCenter"; break;
-        case Slit::TOPRIGHT: slit_placement = "TopRight"; break;
-        case Slit::BOTTOMRIGHT: slit_placement = "BottomRight"; break;
-        case Slit::CENTERRIGHT: default: slit_placement = "CenterRight"; break;
-        }
-
-        sprintf(rc_string, "session.screen%d.slit.placement: %s", screen_number,
-                slit_placement.c_str());
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-
-        sprintf(rc_string, "session.screen%d.slit.direction: %s", screen_number,
-                ((screen->getSlitDirection() == Slit::HORIZONTAL) ? "Horizontal" :
-                 "Vertical"));
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-
-        sprintf(rc_string, "session.screen%d.slit.autoHide: %s", screen_number,
-                ((screen->getSlit()->doAutoHide()) ? "True" : "False"));
-        XrmPutLineResource(&new_blackboxrc, rc_string);
+  
         /*
-          #ifdef XINERAMA
-          sprintf(rc_string, "session.screen%d.slit.onHead: %d", screen_number,
-          screen->getSlitOnHead());
-          XrmPutLineResource(&new_blackboxrc, rc_string);
-          #endif // XINERAMA
-*//*
+#ifdef SLIT
+ #ifdef XINERAMA
+        sprintf(rc_string, "session.screen%d.slit.onHead: %d", screen_number,
+                screen->getSlitOnHead());
+        XrmPutLineResource(&new_blackboxrc, rc_string);
+ #endif // XINERAMA
 #endif // SLIT
-  */      
+        */      
         sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
                 ((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
                  "LeftToRight" : "RightToLeft"));

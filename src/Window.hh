@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.61 2003/04/25 11:27:13 rathnor Exp $
+// $Id: Window.hh,v 1.62 2003/04/26 05:42:36 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -204,6 +204,24 @@ public:
     void setDecoration(Decoration decoration);
     void toggleDecoration();
 	
+    enum DecorationMask {
+        DECORM_TITLEBAR = (1<<0),
+        DECORM_HANDLE   = (1<<1),
+        DECORM_BORDER   = (1<<2),
+        DECORM_ICONIFY  = (1<<3),
+        DECORM_MAXIMIZE = (1<<4),
+        DECORM_CLOSE    = (1<<5),
+        DECORM_MENU     = (1<<6),
+        DECORM_STICKY   = (1<<7),
+        DECORM_SHADE    = (1<<8),
+        DECORM_TAB      = (1<<9),
+        DECORM_ENABLED  = (1<<10),
+        DECORM_LAST     = (1<<11) // useful for getting "All"
+    };
+
+    unsigned int getDecorationMask() const;
+    void setDecorationMask(unsigned int mask);
+
 #ifdef SHAPE
     void shapeEvent(XShapeEvent *event);
 #endif // SHAPE

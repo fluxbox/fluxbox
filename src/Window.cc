@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.148 2003/04/25 16:11:00 fluxgen Exp $
+// $Id: Window.cc,v 1.149 2003/04/26 05:42:35 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2554,6 +2554,47 @@ void FluxboxWindow::toggleDecoration() {
         }
         decorations.enabled = true;
     }
+}
+
+unsigned int FluxboxWindow::getDecorationMask() const {
+    unsigned int ret = 0;
+    if (decorations.titlebar)
+        ret |= DECORM_TITLEBAR;
+    if (decorations.handle)
+        ret |= DECORM_HANDLE;
+    if (decorations.border)
+        ret |= DECORM_BORDER;
+    if (decorations.iconify)
+        ret |= DECORM_ICONIFY;
+    if (decorations.maximize)
+        ret |= DECORM_MAXIMIZE;
+    if (decorations.close)
+        ret |= DECORM_CLOSE;
+    if (decorations.menu)
+        ret |= DECORM_MENU;
+    if (decorations.sticky)
+        ret |= DECORM_STICKY;
+    if (decorations.shade)
+        ret |= DECORM_SHADE;
+    if (decorations.tab)
+        ret |= DECORM_TAB;
+    if (decorations.enabled)
+        ret |= DECORM_ENABLED;
+    return ret;
+}
+
+void FluxboxWindow::setDecorationMask(unsigned int mask) {
+    decorations.titlebar = mask & DECORM_TITLEBAR;
+    decorations.handle   = mask & DECORM_HANDLE;
+    decorations.border   = mask & DECORM_BORDER;
+    decorations.iconify  = mask & DECORM_ICONIFY;
+    decorations.maximize = mask & DECORM_MAXIMIZE;
+    decorations.close    = mask & DECORM_CLOSE;
+    decorations.menu     = mask & DECORM_MENU;
+    decorations.sticky   = mask & DECORM_STICKY;
+    decorations.shade    = mask & DECORM_SHADE;
+    decorations.tab      = mask & DECORM_TAB;
+    decorations.enabled  = mask & DECORM_ENABLED;
 }
 
 bool FluxboxWindow::validateClient() {

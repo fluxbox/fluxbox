@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
+*03/04/26:
+   * Add remember patch integration code (Simon)
+     - note: does not include "startup" menu
+     - save on close disabled atm, due to other issues...
+     - enabled in configure by default, disable with --disable-remember
+     Makefile.am Remember.hh/cc Screen.cc Window.hh/cc fluxbox.cc
 *03/04/25:
    * Fix small gcc 3.3 build issue (Simon)
      Window.hh/cc

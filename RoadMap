@@ -99,7 +99,7 @@ Bugfixes/lower priority:
 Release:      0.9.2
 Approx Date:  5 May, 2003
 Major Features:
- - Integration of Remember patch        (Simon)
+ + Integration of Remember patch        (Simon)
  * Transparency                         (Henrik)
 Minor Features:
  - more keybinding actions              (Both)
