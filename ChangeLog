@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/08/29:
+   * Fixed iconbar and workspace theme for old themes (Henrik)
+     IconbarTheme.hh/cc, ToolTheme.hh/ToolTheme.cc, WorkspaceNameTheme.hh
+   * Added -verbose argument to fluxbox (Henrik)
+     This will enable theme warnings
+     main.cc, Theme.hh/cc
 *03/08/28:
    * Fixed so ThemeManager::load expands ~  (Henrik)
      Theme.cc
