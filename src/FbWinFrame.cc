@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.33 2003/08/04 12:47:36 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.34 2003/08/11 15:03:11 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -385,9 +385,6 @@ void FbWinFrame::hideTitlebar() {
     // only take away one borderwidth (as the other border is still the "top" border)
     m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
                     m_titlebar.borderWidth());
-#ifdef DEBUG
-    cerr<<__FILE__<<": Hide Titlebar"<<endl;
-#endif // DEBUG
 }
 
 void FbWinFrame::showTitlebar() {
@@ -401,9 +398,6 @@ void FbWinFrame::showTitlebar() {
     m_window.resize(m_window.width(), m_window.height() + m_titlebar.height() +
                     m_titlebar.borderWidth());
 
-#ifdef DEBUG
-    cerr<<__FILE__<<": Show Titlebar"<<endl;
-#endif // DEBUG
 }
 
 void FbWinFrame::hideHandle() {
