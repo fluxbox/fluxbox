@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.13 2003/12/09 08:48:08 rathnor Exp $
+// $Id: FbWinFrameTheme.hh,v 1.14 2004/01/02 13:05:19 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -46,7 +46,7 @@ public:
     const FbTk::Texture &labelFocusTexture() const { return *m_label_focus; }
     const FbTk::Texture &labelUnfocusTexture() const { return *m_label_unfocus; }
     const FbTk::Texture &labelActiveTexture() const { return *m_label_active; }
-
+    const FbTk::ThemeItem<FbTk::Texture> &label() const { return m_label_unfocus; }
     const FbTk::Texture &titleFocusTexture() const { return *m_title_focus; }
     const FbTk::Texture &titleUnfocusTexture() const { return *m_title_unfocus; }
 
@@ -88,9 +88,6 @@ public:
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
 
-    void addListener(FbTk::Observer &obs) { m_theme_change.attach(&obs); }
-    void removeListener(FbTk::Observer &obs) { m_theme_change.detach(&obs); }
-
     inline Cursor moveCursor() const { return m_cursor_move; }
     inline Cursor lowerLeftAngleCursor() const { return m_cursor_lower_left_angle; }
     inline Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
@@ -125,8 +122,6 @@ private:
 
     FbTk::GContext m_label_text_focus_gc, m_label_text_unfocus_gc, m_label_text_active_gc;
     FbTk::GContext m_button_pic_focus_gc, m_button_pic_unfocus_gc;
-
-    FbTk::Subject m_theme_change;
 
     Cursor m_cursor_move;
     Cursor m_cursor_lower_left_angle;
