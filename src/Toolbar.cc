@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.107 2003/08/13 09:50:45 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.108 2003/08/13 15:28:24 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -269,10 +269,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_clock_theme.setAntialias(screen().antialias());
     m_iconbar_theme.setAntialias(screen().antialias());
     m_workspace_theme.setAntialias(screen().antialias());
-    // signal a change 
-    m_clock_theme.reconfigSig().notify();
-    m_workspace_theme.reconfigSig().notify();
-    m_iconbar_theme.reconfigSig().notify();
 
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
@@ -396,8 +392,8 @@ void Toolbar::reconfigure() {
 
 
 
-    frame.window.setBorderColor(theme().borderColor());
-    frame.window.setBorderWidth(theme().borderWidth());
+    frame.window.setBorderColor(theme().border().color());
+    frame.window.setBorderWidth(theme().border().width());
     frame.window.clear();
     
     if (theme().shape() && m_shape.get())
@@ -410,6 +406,7 @@ void Toolbar::reconfigure() {
     // we're done with all resizing and stuff now we can request a new 
     // area to be reserved on screen
     updateStrut();
+
 }
 
 
@@ -499,8 +496,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     *m_rc_placement = where;
     int head_x = 0,
         head_y = 0,
-        head_w,
-        head_h;
+        head_w = screen().width(),
+        head_h = screen().height();
 
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
@@ -509,13 +506,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_y = screen().getHeadY(head);
         head_w = screen().getHeadWidth(head);
         head_h = screen().getHeadHeight(head);
-    } else 
-#endif // XINERAMA
-    {
-        head_w = screen().width();
-        head_h = screen().height();
     }
-
+#endif // XINERAMA
 
     frame.width = head_w * (*m_rc_width_percent) / 100;
     //!! TODO: change this 
@@ -539,7 +531,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     frame.height += (frame.bevel_w * 2);
 
     int bevel_width = theme().bevelWidth();
-    int border_width = theme().borderWidth();
+    int border_width = theme().border().width();
 
     // should we flipp sizes?
     if (isVertical()) {
