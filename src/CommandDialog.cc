@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.cc,v 1.1 2003/12/19 03:53:21 fluxgen Exp $
+// $Id: CommandDialog.cc,v 1.2 2003/12/19 18:16:01 fluxgen Exp $
 
 #include "CommandDialog.hh"
 
@@ -41,15 +41,12 @@
 #include <memory>
 using namespace std;
 
-//!!
-//!! TODO: Fix so it uses the same font as in the theme
-//!!
 CommandDialog::CommandDialog(BScreen &screen, const std::string &title):
     FbWindow(screen.rootWindow().screenNumber(),
-             0, 0, 1, 1, 0),
+             0, 0, 200, 1, ExposureMask),
     m_font("fixed"),
     m_textbox(*this, m_font, ""),
-    m_label(*this, m_font, title),    
+    m_label(*this, screen.winFrameTheme().font(), title),    
     m_gc(m_textbox),
     m_screen(screen),
     m_move_x(0),
@@ -58,12 +55,13 @@ CommandDialog::CommandDialog(BScreen &screen, const std::string &title):
     init();
 
 }
+
 CommandDialog::CommandDialog(BScreen &screen, const std::string &title, const std::string &precommand):
     FbWindow(screen.rootWindow().screenNumber(),
-             0, 0, 1, 1, 0),
+             0, 0, 200, 1, ExposureMask),
     m_font("fixed"),
     m_textbox(*this, m_font, ""),
-    m_label(*this, m_font, title),    
+    m_label(*this, screen.winFrameTheme().font(), title),    
     m_gc(m_textbox),
     m_screen(screen),
     m_move_x(0),
@@ -88,8 +86,17 @@ void CommandDialog::setText(const std::string &text) {
 void CommandDialog::show() {
     FbTk::FbWindow::show();
     m_textbox.setInputFocus();
-    m_textbox.clear();
     m_label.clear();
+    // resize to correct width, which should be the width of label text
+    // no need to truncate label text in this dialog
+    // but if label text size < 200 we set 200
+    if (m_label.textWidth() < 200)
+        return;
+    else {
+        resize(m_label.textWidth(), height());
+        updateSizes();
+        render();
+    }
 }
 
 void CommandDialog::hide() {
@@ -100,6 +107,11 @@ void CommandDialog::hide() {
         Fluxbox::instance()->getFocusedWindow()->fbwindow())
         Fluxbox::instance()->getFocusedWindow()->fbwindow()->setInputFocus();
 
+}
+
+void CommandDialog::exposeEvent(XExposeEvent &event) {
+    if (event.window == window())
+        clearArea(event.x, event.y, event.width, event.height);
 }
 
 void CommandDialog::buttonPressEvent(XButtonEvent &event) {
@@ -131,11 +143,16 @@ void CommandDialog::keyPressEvent(XKeyEvent &event) {
     XLookupString(&event, keychar, 1, &ks, 0);
 
     if (ks == XK_Return) {
+        hide(); // hide and return focus to a FluxboxWindow
         // create command from line
         std::auto_ptr<FbTk::Command> cmd(CommandParser::instance().
             parseLine(m_precommand + m_textbox.text()));
         if (cmd.get())
             cmd->execute();
+        // post execute 
+        if (*m_postcommand != 0)
+            m_postcommand->execute();
+
         delete this; // end this
     } else if (ks == XK_Escape)
         delete this; // end this
@@ -159,32 +176,40 @@ void CommandDialog::render() {
 
 void CommandDialog::init() {
 
-    m_label.moveResize(0, 0,
-                       200, m_font.height() + 2);
+
+    // setup label
     // we listen to motion notify too
     m_label.setEventMask(m_label.eventMask() | ButtonPressMask | ButtonMotionMask); 
-
     m_label.setGC(m_screen.winFrameTheme().labelTextFocusGC());
-    render();
     m_label.show();
 
-    m_textbox.setBackgroundColor(FbTk::Color("white", m_textbox.screenNumber()));
-
+    // setup text box
+    FbTk::Color white("white", m_textbox.screenNumber());
+    m_textbox.setBackgroundColor(white);
     FbTk::Color black("black", m_textbox.screenNumber());
     m_gc.setForeground(black);
-
     m_textbox.setGC(m_gc.gc());
-
-    m_textbox.moveResize(0, m_label.height(),
-                         200, m_font.height() + 2);    
     m_textbox.show();
 
-    resize(200, m_textbox.height() + m_label.height());
-
-
+    // setup this window
+    setBorderWidth(1);
+    setBackgroundColor(white);
     // move to center of the screen
     move((m_screen.width() - width())/2, (m_screen.height() - height())/2);
 
+    updateSizes();
+    resize(width(), m_textbox.height() + m_label.height());
+
+    render();
+
     // we need ConfigureNotify from children
     FbTk::EventManager::instance()->addParent(*this, *this);
+}
+
+void CommandDialog::updateSizes() {
+    m_label.moveResize(0, 0,
+                       width(), m_font.height() + 2);
+    
+    m_textbox.moveResize(2, m_label.height(),
+                         width() - 4, m_font.height() + 2);    
 }
