@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.34 2003/12/21 13:31:12 fluxgen Exp $
+// $Id: WinClient.cc,v 1.35 2003/12/21 13:57:38 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -412,14 +412,8 @@ void WinClient::updateWMHints() {
                 else
                     m_focus_mode = F_NOINPUT;
             }
-        } else { // not present => assuming False. 
-            // note that mozilla has no value, and has send_focus
-            // and requires globally active
-            if (send_focus_message)
-                m_focus_mode = F_GLOBALLYACTIVE;
-            else // lots of apps have no hint, but need focus
-                m_focus_mode = F_PASSIVE; 
-        }
+        } else // InputHint not present: ignoring send_focus_message and assuming F_PASSIVE
+            m_focus_mode = F_PASSIVE; 
 
         if (wmhint->flags & StateHint)
             initial_state = wmhint->initial_state;
