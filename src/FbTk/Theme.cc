@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.17 2003/08/28 23:06:27 fluxgen Exp $
+// $Id: Theme.cc,v 1.18 2003/09/10 21:22:25 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -100,18 +100,6 @@ template <>
 void ThemeItem<FbTk::Font>::load() {
 }
 
-template <>
-void ThemeItem<FbTk::Texture>::setDefaultValue() {
-    m_value.setType(FbTk::Texture::FLAT | FbTk::Texture::SOLID);
-}
-
-template <>
-void ThemeItem<FbTk::Texture>::setFromString(const char *str) {
-    m_value.setFromString(str);
-    if (m_value.type() == 0) // failed to set value
-        setDefaultValue();
-}
-
 
 template <>
 void ThemeItem<FbTk::Texture>::load() {
@@ -139,6 +127,20 @@ void ThemeItem<FbTk::Texture>::load() {
     } else
         m_value.pixmap() = pm->pixmap().release();
 }
+
+template <>
+void ThemeItem<FbTk::Texture>::setDefaultValue() {
+    m_value.setType(FbTk::Texture::FLAT | FbTk::Texture::SOLID);
+    load(); // one might forget to add line something:  so we try to load something.*:  too
+}
+
+template <>
+void ThemeItem<FbTk::Texture>::setFromString(const char *str) {
+    m_value.setFromString(str);
+    if (m_value.type() == 0) // failed to set value
+        setDefaultValue();
+}
+
 
 
 // not used
