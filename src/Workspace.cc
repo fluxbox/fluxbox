@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.51 2003/04/14 14:59:15 fluxgen Exp $
+// $Id: Workspace.cc,v 1.52 2003/04/15 12:20:27 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -496,15 +496,10 @@ void Workspace::updateClientmenu() {
             (*win_it)->clientList().begin();
         FluxboxWindow::ClientList::iterator client_it_end = 
             (*win_it)->clientList().end();
-        for (; client_it != client_it_end; ++client_it) {
-            /*  FbTk::RefCount<FbTk::Command> 
-                raise_and_focus(new RaiseFocusAndSetWorkspace(*this, 
-                                                              *(*client_it)));
-                                                              */
+        for (; client_it != client_it_end; ++client_it)
             m_clientmenu.insert(new ClientMenuItem(*(*client_it), *this));
-        }
     }
-    
+
     m_clientmenu.update();
 }
 

@@ -22,16 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.48 2003/04/15 00:50:25 rathnor Exp $
+// $Id: fluxbox.hh,v 1.49 2003/04/15 12:11:10 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
 
 #include "Resource.hh"
-#include "Keys.hh"
 #include "BaseDisplay.hh"
 #include "Timer.hh"
-#include "Toolbar.hh"
 #include "Observer.hh"
 
 #ifdef HAVE_CONFIG_H
@@ -39,7 +37,6 @@
 #endif // HAVE_CONFIG_H
 
 #include "SignalHandler.hh"
-#include "FbAtoms.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -65,6 +62,9 @@
 
 class AtomHandler;
 class FluxboxWindow;
+class Keys;
+class BScreen;
+class FbAtoms;
 
 /**
 	main class for the window manager.
@@ -72,7 +72,6 @@ class FluxboxWindow;
 */
 class Fluxbox : public BaseDisplay, public FbTk::TimeoutHandler, 
                 public FbTk::SignalEventHandler,
-                public FbAtoms,
                 public FbTk::Observer {
 public:
     Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
@@ -80,11 +79,10 @@ public:
 	
     static Fluxbox *instance() { return singleton; }
 	
-    inline bool useIconBar() { return *m_rc_iconbar; }
+    inline bool useIconBar() const { return *m_rc_iconbar; }
     inline void saveIconBar(bool value) { m_rc_iconbar = value; }
-#ifdef HAVE_GETPID
+
     inline Atom getFluxboxPidAtom() const { return fluxbox_pid; }
-#endif // HAVE_GETPID
 
     FluxboxWindow *searchGroup(Window, FluxboxWindow *);
     FluxboxWindow *searchWindow(Window);
@@ -101,8 +99,8 @@ public:
 
     enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
 
-    inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
-    inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
+    inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
+    inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
     inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
 
     inline const char *getMenuFilename() const { return m_rc_menufile->c_str(); }
@@ -113,8 +111,8 @@ public:
     // class to store layer numbers (special Resource type)
     class Layer {
     public:
-        Layer(int i) : m_num(i) {};
-        const int getNum() const { return m_num; }
+        explicit Layer(int i) : m_num(i) {};
+        inline int getNum() const { return m_num; }
 
         Layer &operator=(int num) { m_num = num; return *this; }
         
@@ -139,25 +137,25 @@ public:
 
     inline void maskWindowEvents(Window w, FluxboxWindow *bw)
         { masked = w; masked_window = bw; }
-    inline void setNoFocus(Bool f) { no_focus = f; }
+    inline void setNoFocus(bool f) { no_focus = f; }
 
     void watchKeyRelease(BScreen *screen, unsigned int mods);
 
     void setFocusedWindow(FluxboxWindow *w);
     void shutdown();
-    void load_rc(BScreen *);
-    void loadRootCommand(BScreen *);
+    void load_rc(BScreen &scr);
+    void loadRootCommand(BScreen &scr);
     void loadTitlebar();
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
     void saveMenuFilename(const char *);
     void saveTitlebarFilename(const char *);
     void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
-    void saveWindowSearch(Window, FluxboxWindow *);
-    void saveGroupSearch(Window, FluxboxWindow *);	
+    void saveWindowSearch(Window win, FluxboxWindow *fbwin);
+    void saveGroupSearch(Window win, FluxboxWindow *fbwin);	
     void save_rc();
-    void removeWindowSearch(Window);
-    void removeGroupSearch(Window);
-    void restart(const char * = 0);
+    void removeWindowSearch(Window win);
+    void removeGroupSearch(Window win);
+    void restart(const char *command = 0);
     void reconfigure();
     void rereadMenu();
     void checkMenu();
@@ -211,8 +209,11 @@ private:
     void handleUnmapNotify(XUnmapEvent &ue);
     void handleClientMessage(XClientMessageEvent &ce);
     void handleKeyEvent(XKeyEvent &ke);	
-    void doWindowAction(Keys::KeyAction action, const int param);
+    void doWindowAction(int action, const int param);
+    void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
     
+    std::auto_ptr<FbAtoms> m_fbatoms;
+
     ResourceManager m_resourcemanager, m_screen_rm;
 	
     //--- Resources
@@ -226,7 +227,6 @@ private:
     Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
     Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
 
-    void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 	
     std::map<Window, FluxboxWindow *> windowSearch;
     std::map<Window, FluxboxWindow *> groupSearch;
@@ -241,9 +241,7 @@ private:
     BScreen *watching_screen;
     unsigned int watch_keyrelease;
 
-#ifdef HAVE_GETPID
     Atom fluxbox_pid;
-#endif // HAVE_GETPID
 
     bool no_focus, reconfigure_wait, reread_menu_wait;
     Time last_time;
@@ -258,6 +256,7 @@ private:
 	
     static Fluxbox *singleton;
     std::vector<AtomHandler *> m_atomhandler;
+
 };
 
 

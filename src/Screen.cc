@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.120 2003/04/15 00:50:24 rathnor Exp $
+// $Id: Screen.cc,v 1.121 2003/04/15 12:14:53 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -377,7 +377,8 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
     full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
-    sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
+    sloppy_window_grouping(rm, true, 
+                           scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
     desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
     show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
@@ -388,13 +389,17 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
-    toolbar_width_percent(rm, 65, scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
+    toolbar_width_percent(rm, 65, 
+                          scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
-    slit_layernum(rm, Fluxbox::instance()->getDockLayer(), scrname+".slit.layer", altscrname+".Slit.Layer"),
-    toolbar_layernum(rm, Fluxbox::instance()->getDesktopLayer(), scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
+    slit_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
+                  scrname+".slit.layer", altscrname+".Slit.Layer"),
+    toolbar_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
+                     scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
     toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
-    toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
+    toolbar_placement(rm, Toolbar::BOTTOMCENTER, 
+                      scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
 
 };
@@ -460,7 +465,7 @@ BScreen::BScreen(ResourceManager &rm,
     image_control->installRootColormap();
     root_colormap_installed = true;
 
-    fluxbox->load_rc(this);
+    fluxbox->load_rc(*this);
 
     image_control->setDither(*resource.image_dither);
     theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
@@ -698,7 +703,7 @@ void BScreen::reconfigure() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
 #endif // DEBUG
-    Fluxbox::instance()->loadRootCommand(this);
+    Fluxbox::instance()->loadRootCommand(*this);
     theme->setRootCommand(getRootCommand());
     const string &filename = Fluxbox::instance()->getStyleFilename();
     theme->load(filename.c_str()); // old theme engine

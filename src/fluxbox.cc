@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.108 2003/04/15 08:54:40 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.109 2003/04/15 12:11:54 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -39,6 +39,8 @@
 #include "EventManager.hh"
 #include "FbCommands.hh"
 #include "WinClient.hh"
+#include "Keys.hh"
+#include "FbAtoms.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -356,7 +358,8 @@ Fluxbox::Titlebar Fluxbox::m_titlebar_left[] = {STICK};
 Fluxbox::Titlebar Fluxbox::m_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 
 Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc)
-    : BaseDisplay(m_argv[0], dpy_name), FbAtoms(getXDisplay()),
+    : BaseDisplay(m_argv[0], dpy_name),
+      m_fbatoms(new FbAtoms()),
       m_resourcemanager(), m_screen_rm(),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
       m_rc_iconbar(m_resourcemanager, true, "session.iconbar", "Session.Iconbar"),
@@ -970,7 +973,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
     if (ce.format != 32)
         return;
 	
-    if (ce.message_type == getWMChangeStateAtom()) {
+    if (ce.message_type == m_fbatoms->getWMChangeStateAtom()) {
         FluxboxWindow *win = searchWindow(ce.window);
         if (! win || ! win->validateClient())
             return;
@@ -979,18 +982,18 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             win->iconify();
         if (ce.data.l[0] == NormalState)
             win->deiconify();
-    } else if (ce.message_type == getFluxboxChangeWorkspaceAtom()) {
+    } else if (ce.message_type == m_fbatoms->getFluxboxChangeWorkspaceAtom()) {
         BScreen *screen = searchScreen(ce.window);
 
         if (screen && ce.data.l[0] >= 0 &&
             ce.data.l[0] < (signed)screen->getCount())
             screen->changeWorkspaceID(ce.data.l[0]);
 				
-    } else if (ce.message_type == getFluxboxChangeWindowFocusAtom()) {
+    } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
         FluxboxWindow *win = searchWindow(ce.window);
         if (win && win->isVisible() && win->setInputFocus())
             win->installColormap(True);
-    } else if (ce.message_type == getFluxboxCycleWindowFocusAtom()) {
+    } else if (ce.message_type == m_fbatoms->getFluxboxCycleWindowFocusAtom()) {
         BScreen *screen = searchScreen(ce.window);
 
         if (screen) {
@@ -999,7 +1002,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             else
                 screen->nextFocus();
         }		
-    } else if (ce.message_type == getFluxboxChangeAttributesAtom()) {
+    } else if (ce.message_type == m_fbatoms->getFluxboxChangeAttributesAtom()) {
 		
         FluxboxWindow *win = searchWindow(ce.window);
 
@@ -1290,7 +1293,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 	
 	
 }
-void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
+void Fluxbox::doWindowAction(int action, const int param) {
     if (!focused_window)
         return;
 
@@ -1913,7 +1916,7 @@ void Fluxbox::load_rc() {
     }
 }
 
-void Fluxbox::load_rc(BScreen *screen) {
+void Fluxbox::load_rc(BScreen &screen) {
     //get resource filename
     string dbfile(getRcFilename());
     if (dbfile.size() != 0) {
@@ -1936,50 +1939,51 @@ void Fluxbox::load_rc(BScreen *screen) {
 		
     XrmValue value;
     char *value_type, name_lookup[1024], class_lookup[1024];
-    int screen_number = screen->getScreenNumber();
+    int screen_number = screen.getScreenNumber();
 
     sprintf(name_lookup, "session.screen%d.rowPlacementDirection", screen_number);
     sprintf(class_lookup, "Session.Screen%d.RowPlacementDirection", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (! strncasecmp(value.addr, "righttoleft", value.size))
-            screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
+            screen.saveRowPlacementDirection(BScreen::RIGHTLEFT);
         else	
-            screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
+            screen.saveRowPlacementDirection(BScreen::LEFTRIGHT);
     } else
-        screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
+        screen.saveRowPlacementDirection(BScreen::LEFTRIGHT);
 
     sprintf(name_lookup, "session.screen%d.colPlacementDirection", screen_number);
     sprintf(class_lookup, "Session.Screen%d.ColPlacementDirection", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (! strncasecmp(value.addr, "bottomtotop", value.size))
-            screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
+            screen.saveColPlacementDirection(BScreen::BOTTOMTOP);
         else
-            screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
+            screen.saveColPlacementDirection(BScreen::TOPBOTTOM);
     } else
-        screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
+        screen.saveColPlacementDirection(BScreen::TOPBOTTOM);
 
-    screen->removeWorkspaceNames();
+    screen.removeWorkspaceNames();
 
     sprintf(name_lookup, "session.screen%d.workspaceNames", screen_number);
     sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
 #ifdef DEBUG
-        cerr<<__FILE__<<"("<<__LINE__<<"): Workspaces="<<screen->getNumberOfWorkspaces()<<endl;
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): Workspaces="<<
+            screen.getNumberOfWorkspaces()<<endl;
 #endif // DEBUG
         char *search = StringUtil::strdup(value.addr);
 
         int i;
-        for (i = 0; i < screen->getNumberOfWorkspaces(); i++) {
+        for (i = 0; i < screen.getNumberOfWorkspaces(); i++) {
             char *nn;
 
             if (! i) nn = strtok(search, ",");
             else nn = strtok(0, ",");
 
             if (nn)
-                screen->addWorkspaceName(nn);	
+                screen.addWorkspaceName(nn);	
             else break;
 			
         }
@@ -1992,13 +1996,13 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (! strncasecmp(value.addr, "RowSmartPlacement", value.size))
-            screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
+            screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
         else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
-            screen->savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
+            screen.savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
         else
-            screen->savePlacementPolicy(BScreen::CASCADEPLACEMENT);
+            screen.savePlacementPolicy(BScreen::CASCADEPLACEMENT);
     } else
-        screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
+        screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
     
 #ifdef SLIT
     sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
@@ -2006,34 +2010,34 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (! strncasecmp(value.addr, "TopLeft", value.size))
-            screen->saveSlitPlacement(Slit::TOPLEFT);
+            screen.saveSlitPlacement(Slit::TOPLEFT);
         else if (! strncasecmp(value.addr, "CenterLeft", value.size))
-            screen->saveSlitPlacement(Slit::CENTERLEFT);
+            screen.saveSlitPlacement(Slit::CENTERLEFT);
         else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-            screen->saveSlitPlacement(Slit::BOTTOMLEFT);
+            screen.saveSlitPlacement(Slit::BOTTOMLEFT);
         else if (! strncasecmp(value.addr, "TopCenter", value.size))
-            screen->saveSlitPlacement(Slit::TOPCENTER);
+            screen.saveSlitPlacement(Slit::TOPCENTER);
         else if (! strncasecmp(value.addr, "BottomCenter", value.size))
-            screen->saveSlitPlacement(Slit::BOTTOMCENTER);
+            screen.saveSlitPlacement(Slit::BOTTOMCENTER);
         else if (! strncasecmp(value.addr, "TopRight", value.size))
-            screen->saveSlitPlacement(Slit::TOPRIGHT);
+            screen.saveSlitPlacement(Slit::TOPRIGHT);
         else if (! strncasecmp(value.addr, "BottomRight", value.size))
-            screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
+            screen.saveSlitPlacement(Slit::BOTTOMRIGHT);
         else
-            screen->saveSlitPlacement(Slit::CENTERRIGHT);
+            screen.saveSlitPlacement(Slit::CENTERRIGHT);
     } else
-        screen->saveSlitPlacement(Slit::CENTERRIGHT);
+        screen.saveSlitPlacement(Slit::CENTERRIGHT);
 
     sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
     sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (! strncasecmp(value.addr, "Horizontal", value.size))
-            screen->saveSlitDirection(Slit::HORIZONTAL);
+            screen.saveSlitDirection(Slit::HORIZONTAL);
         else
-            screen->saveSlitDirection(Slit::VERTICAL);
+            screen.saveSlitDirection(Slit::VERTICAL);
     } else
-        screen->saveSlitDirection(Slit::VERTICAL);
+        screen.saveSlitDirection(Slit::VERTICAL);
 
 
     sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
@@ -2041,11 +2045,11 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (! strncasecmp(value.addr, "True", value.size))
-            screen->saveSlitAutoHide(True);
+            screen.saveSlitAutoHide(true);
         else
-            screen->saveSlitAutoHide(False);
+            screen.saveSlitAutoHide(false);
     } else
-        screen->saveSlitAutoHide(False);
+        screen.saveSlitAutoHide(false);
     /*
       #ifdef XINERAMA
       int tmp_head;
@@ -2067,9 +2071,9 @@ void Fluxbox::load_rc(BScreen *screen) {
     sprintf(class_lookup, "Session.Screen%d.StrftimeFormat", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value))
-        screen->saveStrftimeFormat(value.addr);
+        screen.saveStrftimeFormat(value.addr);
     else
-        screen->saveStrftimeFormat("%I:%M %p");
+        screen.saveStrftimeFormat("%I:%M %p");
 #else //	HAVE_STRFTIME
 
     sprintf(name_lookup, "session.screen%d.dateFormat", screen_number);
@@ -2077,11 +2081,11 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (strncasecmp(value.addr, "european", value.size))
-            screen->saveDateFormat(B_AMERICANDATE);
+            screen.saveDateFormat(B_AMERICANDATE);
         else
-            screen->saveDateFormat(B_EUROPEANDATE);
+            screen.saveDateFormat(B_EUROPEANDATE);
     } else
-        screen->saveDateFormat(B_AMERICANDATE);
+        screen.saveDateFormat(B_AMERICANDATE);
 
     sprintf(name_lookup, "session.screen%d.clockFormat", screen_number);
     sprintf(class_lookup, "Session.Screen%d.ClockFormat", screen_number);
@@ -2089,23 +2093,23 @@ void Fluxbox::load_rc(BScreen *screen) {
                        &value)) {
         int clock;
         if (sscanf(value.addr, "%d", &clock) != 1)
-            screen->saveClock24Hour(False);
+            screen.saveClock24Hour(False);
         else if (clock == 24) 
-            screen->saveClock24Hour(True);
+            screen.saveClock24Hour(True);
         else 
-            screen->saveClock24Hour(False);
+            screen.saveClock24Hour(False);
     } else
-        screen->saveClock24Hour(False);
+        screen.saveClock24Hour(False);
 #endif // HAVE_STRFTIME
 
     //check size on toolbarwidth percent	
-    if (screen->getToolbarWidthPercent() <= 0 || 
-        screen->getToolbarWidthPercent() > 100)
-        screen->saveToolbarWidthPercent(66);
+    if (screen.getToolbarWidthPercent() <= 0 || 
+        screen.getToolbarWidthPercent() > 100)
+        screen.saveToolbarWidthPercent(66);
 
 }
 
-void Fluxbox::loadRootCommand(BScreen *screen)	{
+void Fluxbox::loadRootCommand(BScreen &screen)	{
  
     string dbfile(getRcFilename());
 
@@ -2115,13 +2119,13 @@ void Fluxbox::loadRootCommand(BScreen *screen)	{
 
     XrmValue value;
     char *value_type, name_lookup[1024], class_lookup[1024];
-    sprintf(name_lookup, "session.screen%d.rootCommand", screen->getScreenNumber());
-    sprintf(class_lookup, "Session.Screen%d.RootCommand", screen->getScreenNumber());
+    sprintf(name_lookup, "session.screen%d.rootCommand", screen.getScreenNumber());
+    sprintf(class_lookup, "Session.Screen%d.RootCommand", screen.getScreenNumber());
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {										 
-        screen->saveRootCommand(value.addr==0 ? "": value.addr);
+        screen.saveRootCommand(value.addr==0 ? "": value.addr);
     } else
-        screen->saveRootCommand("");		
+        screen.saveRootCommand("");		
 	
 }
 

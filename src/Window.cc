@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.132 2003/04/15 00:50:25 rathnor Exp $
+// $Id: Window.cc,v 1.133 2003/04/15 12:18:37 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -34,9 +34,9 @@
 #include "Netizen.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
-
 #include "TextButton.hh"
 #include "EventManager.hh"
+#include "FbAtoms.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -279,11 +279,12 @@ void FluxboxWindow::init() {
     // we don't want to duplicate code here and in attachClient
     m_clientlist.push_back(m_client);
 #ifdef DEBUG
-    cerr<<"FluxboxWindow::init(this="<<this<<")"<<endl;
+    cerr<<__FILE__<<": FluxboxWindow::init(this="<<this<<", client="<<hex<<m_client->window()<<dec<<")"<<endl;
 #endif // DEBUG
     TextButton *btn =  new TextButton(m_frame.label(), 
                                       m_frame.theme().font(),
                                       m_client->title());
+    btn->setJustify(m_frame.theme().justify());
     m_labelbuttons[m_client] = btn;
     m_frame.addLabelButton(*btn);
     btn->show();
@@ -464,10 +465,6 @@ void FluxboxWindow::attachClient(WinClient &client) {
     if (client.m_win == this)
         return;
 
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
-    cerr<<"attach client window = "<<hex<<client.window()<<dec<<endl;
-#endif // DEBUG    
     // reparent client win to this frame 
     m_frame.setClientWindow(client);
 
@@ -483,26 +480,31 @@ void FluxboxWindow::attachClient(WinClient &client) {
             // reparent window to this
             m_frame.setClientWindow(*(*client_it));           
             (*client_it)->m_win = this;
-            // create a labelbutton for this client and associate it with the pointer
+            // create a labelbutton for this client and 
+            // associate it with the pointer
             TextButton *btn = new TextButton(m_frame.label(), 
                                              m_frame.theme().font(),
                                              (*client_it)->title());
+            btn->setJustify(m_frame.theme().justify());
             m_labelbuttons[(*client_it)] = btn;
             m_frame.addLabelButton(*btn);
             btn->show();
             FbTk::EventManager &evm = *FbTk::EventManager::instance();
             // we need motion notify so we mask it
-            btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
-                                       ButtonMotionMask);
+            btn->window().setEventMask(ExposureMask | ButtonPressMask | 
+                                       ButtonReleaseMask | ButtonMotionMask);
 
 
-            FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*(*client_it)));
+            FbTk::RefCount<FbTk::Command> 
+                set_client_cmd(new SetClientCmd(*(*client_it)));
             btn->setOnClick(set_client_cmd);
             evm.add(*this, btn->window()); // we take care of button events for this
 
             // update transients in client to have this as transient_for
-            WinClient::TransientList::iterator trans_it = (*client_it)->transientList().begin();
-            WinClient::TransientList::iterator trans_it_end = (*client_it)->transientList().end();
+            WinClient::TransientList::iterator trans_it = 
+                (*client_it)->transientList().begin();
+            WinClient::TransientList::iterator trans_it_end = 
+                (*client_it)->transientList().end();
             for (; trans_it != trans_it_end; ++trans_it) {
                 (*trans_it)->m_client->transient_for = this;
             }
@@ -525,8 +527,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
         btn->show();
         FbTk::EventManager &evm = *FbTk::EventManager::instance();
         // we need motion notify so we mask it
-        btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
-                                   ButtonMotionMask);
+        btn->window().setEventMask(ExposureMask | ButtonPressMask | 
+                                   ButtonReleaseMask | ButtonMotionMask);
 
 
         FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(client));
@@ -535,8 +537,10 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
         client.m_win = this;    
         // update transients in client to have this as transient_for
-        WinClient::TransientList::iterator trans_it = client.transientList().begin();
-        WinClient::TransientList::iterator trans_it_end = client.transientList().end();
+        WinClient::TransientList::iterator trans_it = 
+            client.transientList().begin();
+        WinClient::TransientList::iterator trans_it_end = 
+            client.transientList().end();
         for (; trans_it != trans_it_end; ++trans_it) {
             (*trans_it)->m_client->transient_for = this;
         }
@@ -545,19 +549,11 @@ void FluxboxWindow::attachClient(WinClient &client) {
     }
 
     m_frame.reconfigure();
-#ifdef DEBUG
-    XSync(display, False); // so we see error/warnings in time
-    cerr<<"destroyed old window "<<client.window()<<endl;
-#endif // DEBUG
 
     // keep the current window on top
     m_client->raise();
 
-#ifdef DEBUG
-    XSync(display, False); // so we see error/warnings in time
-    cerr<<__FILE__<<"("<<__FUNCTION__<<") clientlist size: "<<m_clientlist.size()<<endl;
-    cerr<<endl<<endl<<endl;
-#endif // DEBUG
+
 
 }
 
@@ -567,12 +563,6 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     if (client.m_win != this || numClients() <= 1)
         return false;
     
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"] client to detach: "<<
-        hex<<client.window()<<dec<<endl;
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): number of clients = "<<numClients()<<endl;
-#endif // DEBUG
-
     removeClient(client);
 
     client.m_win = screen.createWindow(client);
@@ -634,11 +624,15 @@ WinClient *FluxboxWindow::findClient(Window win) {
 
 /// raise and focus next client
 void FluxboxWindow::nextClient() {
-    if (numClients() == 1)
+    if (numClients() <= 1)
         return;
 
     ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
-    assert(it != m_clientlist.end());
+    if (it == m_clientlist.end()) {
+        m_client = m_clientlist.front();
+        return;
+    }
+
     it++;
     if (it == m_clientlist.end())
         m_client = m_clientlist.front();
@@ -649,12 +643,14 @@ void FluxboxWindow::nextClient() {
 }
 
 void FluxboxWindow::prevClient() {
-    if (numClients() == 1)
+    if (numClients() <= 1)
         return;
 
     ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
-    assert(it != m_clientlist.end());
-
+    if (it == m_clientlist.end()) {
+        m_client = m_clientlist.front();
+        return;
+    }
     if (it == m_clientlist.begin())
         m_client = m_clientlist.back();
     else
@@ -909,11 +905,11 @@ void FluxboxWindow::getMWMHints() {
     int format;
     Atom atom_return;
     unsigned long num, len;
-    Fluxbox *fluxbox = Fluxbox::instance();
+    Atom  motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
     if (!XGetWindowProperty(display, m_client->window(),
-                            fluxbox->getMotifWMHintsAtom(), 0,
+                            motif_wm_hints, 0,
                             PropMwmHintsElements, false,
-                            fluxbox->getMotifWMHintsAtom(), &atom_return,
+                            motif_wm_hints, &atom_return,
                             &format, &num, &len,
                             (unsigned char **) &m_client->mwm_hint) == Success &&
         m_client->mwm_hint) {
@@ -1550,7 +1546,7 @@ void FluxboxWindow::installColormap(bool install) {
     Colormap *cmaps = XListInstalledColormaps(display, m_client->window(), &ncmap);
     XWindowAttributes wattrib;
     if (cmaps) { //!!
-        if (m_client->getAttrib(wattrib)) { //XGetWindowAttributes(display, m_client->window, &wattrib)) {
+        if (m_client->getAttrib(wattrib)) {
             if (install) {
                 // install the window's colormap
                 for (i = 0; i < ncmap; i++) {
@@ -1613,9 +1609,8 @@ bool FluxboxWindow::getState() {
     bool ret = false;
     int foo;
     unsigned long *state, ulfoo, nitems;
-    Fluxbox *fluxbox = Fluxbox::instance();
-    if ((XGetWindowProperty(display, m_client->window(), fluxbox->getWMStateAtom(),
-                            0l, 2l, false, fluxbox->getWMStateAtom(),
+    if ((XGetWindowProperty(display, m_client->window(), FbAtoms::instance()->getWMStateAtom(),
+                            0l, 2l, false, FbAtoms::instance()->getWMStateAtom(),
                             &atom_return, &foo, &nitems, &ulfoo,
                             (unsigned char **) &state) != Success) ||
         (! state)) {
@@ -1713,13 +1708,13 @@ void FluxboxWindow::restoreAttributes() {
     Atom atom_return;
     int foo;
     unsigned long ulfoo, nitems;
-    Fluxbox *fluxbox = Fluxbox::instance();
+    FbAtoms *fbatoms = FbAtoms::instance();
 	
     BaseDisplay::BlackboxAttributes *net;
     if (XGetWindowProperty(display, m_client->window(),
-                           fluxbox->getFluxboxAttributesAtom(), 0l,
+                           fbatoms->getFluxboxAttributesAtom(), 0l,
                            PropBlackboxAttributesElements, false,
-                           fluxbox->getFluxboxAttributesAtom(), &atom_return, &foo,
+                           fbatoms->getFluxboxAttributesAtom(), &atom_return, &foo,
                            &nitems, &ulfoo, (unsigned char **) &net) ==
         Success && net && nitems == PropBlackboxAttributesElements) {
         blackbox_attrib.flags = net->flags;
@@ -1949,7 +1944,11 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
-    if (ne.window == m_client->window() && !ne.override_redirect && visible) {
+    WinClient *client = findClient(ne.window);
+    if (client == 0)
+        return;
+
+    if (!ne.override_redirect && visible) {
         Fluxbox *fluxbox = Fluxbox::instance();
         fluxbox->grab();
         if (! validateClient())
@@ -1990,6 +1989,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 	
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
 #endif // DEBUG
     
     restore(client, false);
@@ -2107,7 +2107,8 @@ void FluxboxWindow::exposeEvent(XExposeEvent &ee) {
 
 
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
-    if (cr.window != m_client->window())
+    WinClient *client = findClient(cr.window);
+    if (client == 0)
         return;
 
     int cx = m_frame.x(), cy = m_frame.y();
@@ -2116,7 +2117,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
                                m_frame.titlebar().height() + frame().titlebar().borderWidth() 
                                : 0);
     if (cr.value_mask & CWBorderWidth)
-        m_client->old_bw = cr.border_width;
+        client->old_bw = cr.border_width;
 
     if (cr.value_mask & CWX)
         cx = cr.x;
@@ -2638,8 +2639,13 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 
     delete client;
 
-    if (numClients() == 0)
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
+#endif // DEBUG
+    if (numClients() == 0) {
+
         m_frame.hide();
+    }
 
 }
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.16 2003/04/15 00:17:59 fluxgen Exp $
+// $Id: Gnome.cc,v 1.17 2003/04/15 12:22:52 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -126,6 +126,7 @@ void Gnome::setupWindow(FluxboxWindow &win) {
 void Gnome::updateClientList(BScreen &screen) {
     size_t num=0;
 
+    // count window clients in each workspace
     BScreen::Workspaces::const_iterator workspace_it = 
         screen.getWorkspacesList().begin();
     BScreen::Workspaces::const_iterator workspace_it_end = 
@@ -138,14 +139,14 @@ void Gnome::updateClientList(BScreen &screen) {
         for (; win_it != win_it_end; ++win_it)
             num += (*win_it)->numClients();
     }
-    //int num = getCurrentWorkspace()->getWindowList().size();
 	
     Window *wl = new (nothrow) Window[num];
     if (wl == 0) {
         cerr<<"Fatal: Out of memory, can't allocate for gnome client list"<<endl;
         return;
     }
-    //start the iterator from begining
+
+    //add client windows to buffer
     workspace_it = screen.getWorkspacesList().begin();
     int win=0;
     for (; workspace_it != workspace_it_end; ++workspace_it) {
