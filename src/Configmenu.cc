@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.17 2002/10/15 09:49:51 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.18 2002/10/15 10:57:28 fluxgen Exp $
 
 #include "Configmenu.hh"
 
@@ -33,7 +33,7 @@
 #include "Tab.hh"
 
 enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP,
-	CMENU_DESKTOP_WHEELING, CMENU_WORKSPACE_WARPING, CMENU_TAB_ROTATE=21};
+	CMENU_DESKTOP_WHEELING, CMENU_WORKSPACE_WARPING, CMENU_ANTIALIAS, CMENU_TAB_ROTATE=21};
 
 
 Configmenu::Configmenu(BScreen *scr) : Basemenu(scr),
@@ -92,6 +92,8 @@ m_tabmenu(scr) {
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuDesktopWheeling,
 		"Desktop MouseWheel Switching"), CMENU_DESKTOP_WHEELING);
+	//TODO: really need i18n for this?
+	insert("Antialias", CMENU_ANTIALIAS);
 
 	update();
 	setItemSelected(8, screen()->doMaxOverSlit());
@@ -106,6 +108,7 @@ m_tabmenu(scr) {
 	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen()->isSloppyWindowGrouping());
 	setItemSelected(CMENU_WORKSPACE_WARPING, screen()->isWorkspaceWarping());
 	setItemSelected(CMENU_DESKTOP_WHEELING, screen()->isDesktopWheeling());
+	setItemSelected(CMENU_ANTIALIAS, screen()->antialias());
 }
 
 
@@ -194,7 +197,11 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 					screen()->reconfigure();
 				}
 				break;
-
+			case CMENU_ANTIALIAS:
+				// Note: no need to reconfigure here, screen reconfigures if antialias changes
+				screen()->setAntialias(!screen()->antialias());
+				setItemSelected(index, screen()->antialias());
+				break;				
 			}
 			//save resources
 			Fluxbox::instance()->save_rc();

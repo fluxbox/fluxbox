@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.29 2002/10/13 22:32:49 fluxgen Exp $
+// $Id: Theme.cc,v 1.30 2002/10/15 10:53:01 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -916,7 +916,7 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 	}
 }
 
-void Theme::reconfigure() {
+void Theme::reconfigure(bool antialias) {
 
 	XGCValues gcv;
 	unsigned long gc_value_mask = GCForeground;
@@ -966,14 +966,15 @@ void Theme::reconfigure() {
 		GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.t_text.pixel();
-//	if (m_menustyle.titlefont.fontStruct())
-//		gcv.font = m_menustyle.titlefont.fontStruct()->fid;
+	if (m_menustyle.titlefont.isAntialias() != antialias)
+		m_menustyle.titlefont.setAntialias(antialias);
+
 	XChangeGC(m_display, m_menustyle.t_text_gc,
 		gc_value_mask, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.pixel();	
-//	if (m_menustyle.framefont.fontStruct())
-//		gcv.font = m_menustyle.framefont.fontStruct()->fid;
+	if (m_menustyle.framefont.isAntialias() != antialias)
+		m_menustyle.framefont.setAntialias(antialias);
 		
 	XChangeGC(m_display, m_menustyle.f_text_gc,
 		gc_value_mask, &gcv);
