@@ -1,4 +1,9 @@
 TODO for Fluxbox 0.2.0
+Screen.cc {
+	fix toupper for str_key in in Menu loading
+	nls for "error on row" in Menu loading ??
+}
+* 
 * Remove the cylic dep between class Tab and class Window
 * Fix "no font" crash
 * Remove cyclic dep on Basemenu with class Fluxbox
@@ -10,12 +15,9 @@ TODO for Fluxbox 0.2.0
 
 * Fix so toolbar dont hide if its autohide and
 	you are in "change workspace mode"
-
-* grabKillWindow to keygrabber grabCloseWindow
-
-* Fix snapping for {VERT,HORIZ}{INC,DEC} keybindings when resising for example
-  xterms.
-* grabRootmenu
+* the BadAccess error in Theme
+* Finska översättning
+* keybinding for ROOTMENU
 * wheel-config support
 * separator in the menus
 (* restructure BImageControl::parseTexture)
@@ -30,8 +32,4 @@ TODO for Fluxbox 0.2.0
   regular)- Add "system menu" for minimized apps in the toolbar.
   (Close, Kill, Send to, etc) )
 	
-*  HUP the window manager, so it re-reads the
-          .fluxbox/init - rather than having to kill the window manager to change those
-          settings (like the key map)
-
 * "Iconify group" in Windowmenu

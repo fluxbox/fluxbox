@@ -1,10 +1,28 @@
 Changes for 0.1.7:
+*02/01/27:
+   * Clean up in menu loading
+   * Moved from old C style file reading to c++ istream
+     in menu loading
+   * Fixed small bug in StringUtil::expandFilename (Thanks Mauro Persano)
+*02/01/26:
+   * Fixed BadWindow error from ~FluxboxWindow (frame.handle was destroyed before the children)
+   * Fixed indentation in BaseDisplay.hh/.cc and changed some variables
+   * Updated Russian translation (Thanks Anton Denisov)
+   * Clean up in Tab code (Thanks Jesper Louis Andersen)
+*02/01/20:
+   * Fixed std::string for Toolbar workspace name change.
+   * Added getStringBetween to StringUtil
+*02/01/19:
+   * Fixed some screen resources to Resource<T>
+   * Updated init.in
+   * Created GrabGuard for BaseDisplay
 *02/01/18:
-   * Fixed bsetroot, now Eterm's, XChat's and similiar will be able to use
-     bsetroots background images. (Claes Nästén)
+   * Fixed bsetroot, now Eterm's, XChat's and similar will be able to use
+     bsetroot's background images. (Claes Nästén)
    * Fixed ResourceManager 
    * Changed resources to Resource<T> in class Fluxbox
-   * Added Resource.hh/.cc, XrmDatabaseHelper.hh, NotCopyable.hh
+   * Added Resource.hh/.cc, XrmDatabaseHelper.hh, 
+     NotCopyable.hh
 *02/01/16:
    * Fixed indent in Window.hh
 *02/01/15:
