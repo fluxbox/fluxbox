@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.129 2003/04/20 13:46:18 fluxgen Exp $
+// $Id: Screen.cc,v 1.130 2003/04/21 07:01:03 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -652,9 +652,6 @@ BScreen::BScreen(ResourceManager &rm,
 
     m_toolbarhandler = new ToolbarHandler(*this, getToolbarMode());
 
-    if (getToolbar()) 
-        getToolbar()->setPlacement(*resource.toolbar_placement);
-
     setupWorkspacemenu(*this, *workspacemenu);
 
     m_configmenu.reset(createMenuFromScreen(*this));
@@ -663,8 +660,11 @@ BScreen::BScreen(ResourceManager &rm,
 
     workspacemenu->setItemSelected(2, true);
 
-    if (getToolbar() != 0)
+    if (getToolbar()) {
+        getToolbar()->setPlacement(*resource.toolbar_placement);
+        getToolbar()->theme().font().setAntialias(*resource.antialias);
         getToolbar()->reconfigure();
+    }
 
     initMenu(); // create and initiate rootmenu
 
@@ -821,9 +821,6 @@ void BScreen::reconfigure() {
 
     FbTk::ThemeManager::instance().load(filename.c_str()); // new theme engine
 
-    if (getToolbar())
-        getToolbar()->theme().font().setAntialias(*resource.antialias);
-
     theme->reconfigure(*resource.antialias);
     
     I18n *i18n = I18n::instance();
@@ -876,12 +873,13 @@ void BScreen::reconfigure() {
     m_rootmenu->reconfigure();		
 
 
-    //    m_toolbar->setPlacement(*resource.toolbar_placement);
-    if (getToolbar() != 0) {
-        getToolbar()->reconfigure();
+    if (getToolbar()) {
+        getToolbar()->setPlacement(*resource.toolbar_placement);
         if (getToolbar()->theme().font().isAntialias() != *resource.antialias)
             getToolbar()->theme().font().setAntialias(*resource.antialias);
+        getToolbar()->reconfigure();
     }
+
 #ifdef SLIT    
     if (m_slit.get()) {
         m_slit->setPlacement(static_cast<Slit::Placement>(getSlitPlacement()));
