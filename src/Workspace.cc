@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.72 2003/06/13 20:50:49 fluxgen Exp $
+// $Id: Workspace.cc,v 1.73 2003/06/15 19:34:34 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -331,7 +331,7 @@ class FindInGroup {
 public:
     FindInGroup(const FluxboxWindow &w):m_w(w) { }
     bool operator ()(const string &name) {
-        return (name == m_w.instanceName());
+        return (name == m_w.winClient().getWMClassName());
     }
 private:
     const FluxboxWindow &m_w;
@@ -341,9 +341,10 @@ private:
 
 //Note: this function doesn't check if the window is groupable
 bool Workspace::checkGrouping(FluxboxWindow &win) {
+    if (win.numClients() == 0)
+        return false;
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): Checking grouping. ("<<win.instanceName()<<"/"<<
-        win.className()<<")"<<endl;	
+    cerr<<__FILE__<<"("<<__LINE__<<"): Checking grouping. ("<<win.title()<<")"<<endl;
 #endif // DEBUG
     if (!win.isGroupable()) { // make sure this window can hold a tab
 #ifdef DEBUG
@@ -351,6 +352,8 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 #endif // DEBUG
         return false;
     }
+
+    string instance_name = win.winClient().getWMClassName();
 
     // go throu every group and search for matching win instancename
     GroupList::iterator g(m_groups.begin());
@@ -360,7 +363,7 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
         Group::iterator name_end((*g).end());
         for (; name != name_end; ++name) {
 
-            if ((*name) != win.instanceName())
+            if ((*name) != instance_name)
                 continue;
 
             // find a window with the specific name
@@ -368,7 +371,7 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
             Windows::iterator wit_end(m_windowlist.end());
             for (; wit != wit_end; ++wit) {
 #ifdef DEBUG
-                cerr<<__FILE__<<" check group with : "<<(*wit)->instanceName()<<endl;
+                cerr<<__FILE__<<" check group with : "<<(*wit)->winClient().getWMClassName()<<endl;
 #endif // DEBUG
                 if (find_if((*g).begin(), 
                             (*g).end(), 
@@ -381,7 +384,9 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 #endif // DEBUG
                     (*wit)->attachClient(win.winClient());
                     return true; // grouping done
+                
                 }
+                
             }
 
         }
