@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarItem.hh,v 1.1 2003/08/11 15:44:12 fluxgen Exp $
+// $Id: ToolbarItem.hh,v 1.2 2003/08/13 09:36:12 fluxgen Exp $
 
 #ifndef TOOLBARITEM_HH
 #define TOOLBARITEM_HH
@@ -46,6 +46,7 @@ public:
     virtual void hide() = 0;
     virtual unsigned int width() const = 0;
     virtual unsigned int height() const = 0;
+    virtual unsigned int borderWidth() const = 0;
 
     void setType(Type type) { m_type = type; }
     Type type() const { return m_type; }
