@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.18 2002/01/11 10:04:32 fluxgen Exp $
+// $Id: Window.cc,v 1.19 2002/01/11 17:01:31 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1817,7 +1817,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 #ifdef	SLIT
 		Slit* mSlt = screen->getSlit();
 
-		if(screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->getWidth() > 1))
+		if(!screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->getWidth() > 1))
 		{
 			switch(screen->getSlitDirection())
 			{
