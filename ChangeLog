@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/11/27:
+  * Added new option on Iconbar mode menu: "Use Pixmap" (Henrik)
+    Toggle this to show/hide pixmap of windows
+    new resource item:
+    session.screen<num>.iconbar.usePixmap: <boolean>
+  * Changed Maximize menu item in Window menu to a multi button item (Henrik)
+    Button1: Maximize Normal
+    Button2: Maximize Vertical
+    Button3: Maximize Horizontal
+    MultiButtonMenuItem.hh/cc, Window.cc
 *03/11/23:
   * Some util/ updates from Han
     .cvsignore fbsetbg fluxbox_generate_menu.in
@@ -11,6 +21,8 @@ Changes for 0.9.7:
     Window.cc IconButton.cc
   * Fix win menu hide straight after show when right click icon (Simon)
     Menu.cc
+
+-------------------------------------------------------------------------
 Changes for 0.9.6:
 *03/11/16:
   * Fixed sstream and strstream header check (Henrik)
