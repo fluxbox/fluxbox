@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.23 2003/04/25 10:45:02 fluxgen Exp $
+/// $Id: Slit.hh,v 1.24 2003/04/25 16:55:39 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -32,7 +32,6 @@
 #include "Timer.hh"
 #include "XLayerItem.hh"
 #include "LayerMenu.hh"
-#include "fluxbox.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -54,12 +53,11 @@ public:
     */
     enum Direction { VERTICAL = 1, HORIZONTAL };
     /**
-       Screen placement
+       Placement on screen
     */
     enum Placement { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
            TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
-
-    explicit Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
+    Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
     inline bool isHidden() const { return hidden; }
@@ -68,7 +66,7 @@ public:
     inline Placement placement() const { return m_placement; }
     FbTk::Menu &menu() { return slitmenu; }
 
-    inline Window getWindowID() const { return frame.window.window(); }
+    inline const FbTk::FbWindow &window() const { return frame.window; }
 
     inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
     inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
@@ -80,7 +78,7 @@ public:
     void setPlacement(Placement place);
     void setAutoHide(bool val);
     void addClient(Window clientwin);
-    void removeClient(Window clientwin, bool = true);
+    void removeClient(Window clientwin, bool remap = true);
     void reconfigure();
     void reposition();
     void shutdown();
@@ -128,8 +126,7 @@ private:
 
     SlitClients clientList;
     FbTk::Menu slitmenu, placement_menu, clientlist_menu;
-    std::auto_ptr<LayerMenu<Slit> > slit_layermenu;
-    std::string clientListPath;
+    std::auto_ptr<LayerMenu<Slit> > m_slit_layermenu;
     std::string m_filename;
 
     struct frame {
