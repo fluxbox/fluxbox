@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.38 2002/11/12 16:13:24 rathnor Exp $
+// $Id: Tab.cc,v 1.39 2002/11/12 22:57:03 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -358,6 +358,10 @@ void Tab::shade() {
 // TODO: the "draw in pressed mode" 
 //-----------------------------------
 void Tab::draw(bool pressed) const {	
+	XClearWindow(m_display, m_tabwin);
+	
+	if (m_win->getTitle().size() == 0) // we don't have anything to draw
+		return;
 
 	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
 		m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
@@ -404,9 +408,7 @@ void Tab::draw(bool pressed) const {
 		break;
 	default:
 		break;
-	}
-
-	XClearWindow(m_display, m_tabwin);
+	}	
 		
 	m_win->getScreen()->getWindowStyle()->tab.font.drawText(
 		m_tabwin,
