@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.138 2003/04/26 18:27:01 fluxgen Exp $
+// $Id: Screen.cc,v 1.139 2003/04/27 14:36:03 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -500,6 +500,7 @@ BScreen::BScreen(ResourceManager &rm,
                              m_currentworkspace_sig(*this), // current workspace signal
                              m_layermanager(num_layers),
                              cycling_focus(false),
+                             cycling_last(0),
                              m_windowtheme(new FbWinFrameTheme(scrn)), 
                              m_menutheme(new FbTk::MenuTheme(scrn)),
                              resource(rm, screenname, altscreenname),
@@ -1474,6 +1475,7 @@ void BScreen::nextFocus(int opts) {
             if (!cycling_focus) {
                 cycling_focus = True;
                 cycling_window = focused_list.begin();
+                cycling_last = 0;
             } else {
                 // already cycling, so restack to put windows back in their proper order
                 m_layermanager.restack();
@@ -1498,7 +1500,18 @@ void BScreen::nextFocus(int opts) {
                     (fbwin->isStuck() 
                      || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
                     // either on this workspace, or stuck
-                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) ) {
+
+                    // keep track of the originally selected window in a set
+                    WinClient &last_client = fbwin->winClient();
+
+                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setCurrentClient(**it)) ) {
+                        // moved onto a new fbwin
+                        if (!cycling_last || cycling_last->fbwindow() != fbwin) {
+                            if (cycling_last)
+                                // set back to orig current Client in that fbwin
+                                cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
+                            cycling_last = &last_client;
+                        }
                         fbwin->tempRaise();
                         break;
                     }
@@ -1552,6 +1565,7 @@ void BScreen::prevFocus(int opts) {
             if (!cycling_focus) {
                 cycling_focus = True;
                 cycling_window = focused_list.end();
+                cycling_last = 0;
             } else {
                 // already cycling, so restack to put windows back in their proper order
                 m_layermanager.restack();
@@ -1577,7 +1591,19 @@ void BScreen::prevFocus(int opts) {
                     (fbwin->isStuck() 
                      || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
                     // either on this workspace, or stuck
-                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) ) {
+
+                    // keep track of the originally selected window in a set
+                    WinClient &last_client = fbwin->winClient();
+
+
+                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setCurrentClient(**it)) ) {
+                        // moved onto a new fbwin
+                        if (!cycling_last || cycling_last->fbwindow() != fbwin) {
+                            if (cycling_last)
+                                // set back to orig current Client in that fbwin
+                                cycling_last->fbwindow()->setCurrentClient(*cycling_last, false);
+                            cycling_last = &last_client;
+                        }
                         fbwin->tempRaise();
                         break;
                     }
@@ -2389,6 +2415,7 @@ bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
 void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
     if (cycling_focus) {
         cycling_focus = false;
+        cycling_last = 0;
         // put currently focused window to top
         WinClient *client = *cycling_window;
         focused_list.erase(cycling_window);

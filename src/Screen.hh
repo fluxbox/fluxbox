@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.87 2003/04/26 14:47:40 fluxgen Exp $
+// $Id: Screen.hh,v 1.88 2003/04/27 14:36:04 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -357,6 +357,7 @@ private:
     // Screen global so it works for sticky windows too.
     FocusedWindows focused_list;
     FocusedWindows::iterator cycling_window;
+    WinClient *cycling_last;
 
     std::auto_ptr<Slit> m_slit;
 

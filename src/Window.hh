@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.63 2003/04/26 14:05:47 rathnor Exp $
+// $Id: Window.hh,v 1.64 2003/04/27 14:36:05 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -124,7 +124,7 @@ public:
     /// remove client from client list
     bool removeClient(WinClient &client);
     /// set new current client and raise it
-    void setCurrentClient(WinClient &client);
+    bool setCurrentClient(WinClient &client, bool setinput = true);
     WinClient *findClient(Window win);
     void nextClient();
     void prevClient();
