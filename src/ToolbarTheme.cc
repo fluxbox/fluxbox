@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.10 2003/08/16 13:36:52 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.11 2003/08/27 20:13:32 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -50,6 +50,7 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
     m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),    
     m_alpha(*this, "toolbar.alpha", "Toolbar.Alpha"),
+    m_height(*this, "toolbar.height", "Toolbar.Height"),
     m_display(FbTk::App::instance()->display()) {
     // set default value
     *m_bevel_width = 0;
@@ -70,4 +71,9 @@ void ToolbarTheme::reconfigTheme() {
 
     if (*m_bevel_width > 20)
         *m_bevel_width = 20;
+
+    if (*m_height > 100)
+        *m_height = 100;
+    else if (*m_height < 0)
+        *m_height = 0;
 }

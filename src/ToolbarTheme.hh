@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.8 2003/08/13 15:12:39 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.9 2003/08/27 20:13:32 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -45,14 +45,14 @@ public:
     inline int bevelWidth() const { return *m_bevel_width; }    
     inline bool shape() const { return *m_shape; }
     inline unsigned char alpha() const { return *m_alpha; }
-
+    inline int height() const { return *m_height; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_toolbar;
     BorderTheme m_border;
 
     FbTk::ThemeItem<int> m_bevel_width;
     FbTk::ThemeItem<bool> m_shape;
-    FbTk::ThemeItem<int> m_alpha;
+    FbTk::ThemeItem<int> m_alpha, m_height;
 
     Display *m_display;
 
