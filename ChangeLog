@@ -1,8 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.1.9:
+*02/05/18:
+   * Fixed style save_rc when changing style
 *02/05/17:
    * Removed some unnessesary const return values on fundamental types
    * Fixed const-correct on Resource class and BTexture class
+   * Fixed transient bug, although the transient code should be better.
+   * Minor fixes so it compiles with Intel(tm) Linux Compiler 6.0
+   * Clean up in class FluxboxWindow
 *02/05/08:
    * Fixed checking on focused_window in handleKeyEvents, fluxbox.cc
    * Added "Allow Desktop MouseWheel Switching" runtime option (Thanks Rando Christensen)
