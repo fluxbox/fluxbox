@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.cc,v 1.4 2004/01/21 13:16:09 fluxgen Exp $
+// $Id: CommandDialog.cc,v 1.5 2004/10/06 19:02:03 akir Exp $
 
 #include "CommandDialog.hh"
 
@@ -46,8 +46,7 @@ using namespace std;
 CommandDialog::CommandDialog(BScreen &screen, const std::string &title):
     FbWindow(screen.rootWindow().screenNumber(),
              0, 0, 200, 1, ExposureMask),
-    m_font("fixed"),
-    m_textbox(*this, m_font, ""),
+    m_textbox(*this, screen.winFrameTheme().font(), ""),
     m_label(*this, screen.winFrameTheme().font(), title),    
     m_gc(m_textbox),
     m_screen(screen),
@@ -61,8 +60,7 @@ CommandDialog::CommandDialog(BScreen &screen, const std::string &title):
 CommandDialog::CommandDialog(BScreen &screen, const std::string &title, const std::string &precommand):
     FbWindow(screen.rootWindow().screenNumber(),
              0, 0, 200, 1, ExposureMask),
-    m_font("fixed"),
-    m_textbox(*this, m_font, ""),
+    m_textbox(*this, screen.winFrameTheme().font(), ""),
     m_label(*this, screen.winFrameTheme().font(), title),    
     m_gc(m_textbox),
     m_screen(screen),
@@ -249,8 +247,8 @@ void CommandDialog::init() {
 
 void CommandDialog::updateSizes() {
     m_label.moveResize(0, 0,
-                       width(), m_font.height() + 2);
+                       width(), m_textbox.font().height() + 2);
     
     m_textbox.moveResize(2, m_label.height(),
-                         width() - 4, m_font.height() + 2);    
+                         width() - 4, m_textbox.font().height() + 2);    
 }

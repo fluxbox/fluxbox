@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.hh,v 1.3 2004/01/02 13:48:28 fluxgen Exp $
+// $Id: CommandDialog.hh,v 1.4 2004/10/06 19:02:03 akir Exp $
 
 #ifndef RUNCOMMANDDIALOG_HH
 #define RUNCOMMANDDIALOG_HH
@@ -60,7 +60,6 @@ private:
     void render();
     void updateSizes();
 
-    FbTk::Font m_font;
     FbTk::TextBox m_textbox;
     FbTk::TextButton m_label;
     FbTk::GContext m_gc;
