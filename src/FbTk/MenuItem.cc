@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.3 2004/06/10 11:40:43 fluxgen Exp $
+// $Id: MenuItem.cc,v 1.4 2004/07/05 09:40:08 fluxgen Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -90,7 +90,7 @@ void MenuItem::draw(FbDrawable &draw,
 
     int text_w = theme.frameFont().textWidth(label().c_str(), label().size());
     
-    text_y = y + theme.bevelWidth()/2 + theme.frameFont().ascent()/2 + height/2;
+    text_y = y - theme.bevelWidth()/2 + theme.frameFont().ascent()/2 + height/2;
 
     switch(theme.frameFontJustify()) {
     case FbTk::LEFT:

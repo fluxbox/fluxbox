@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.69 2004/06/27 13:50:24 fluxgen Exp $
+// $Id: Menu.cc,v 1.70 2004/07/05 09:40:08 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -768,7 +768,7 @@ void Menu::redrawTitle() {
                   screenNumber(),
                   theme().titleTextGC().gc(), // graphic context
                   text, len,  // text string with lenght
-                  dx, theme().titleHeight()/2 + (font.ascent() + theme().bevelWidth())/2);  // position
+                  dx, theme().titleHeight()/2 + (font.ascent() - theme().bevelWidth())/2);  // position
 }
 
 
