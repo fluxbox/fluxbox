@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.164 2003/05/08 15:06:59 rathnor Exp $
+// $Id: Window.cc,v 1.165 2003/05/08 15:14:50 rathnor Exp $
 
 #include "Window.hh"
 
@@ -552,7 +552,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
             btn->show();
             // we need motion notify so we mask it
             btn->window().setEventMask(ExposureMask | ButtonPressMask | 
-                                       ButtonReleaseMask | ButtonMotionMask | EnterWindowMask);
+                                       ButtonReleaseMask | ButtonMotionMask | 
+                                       EnterWindowMask);
 
 
             FbTk::RefCount<FbTk::Command> 
@@ -580,7 +581,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
         FbTk::EventManager &evm = *FbTk::EventManager::instance();
         // we need motion notify so we mask it
         btn->window().setEventMask(ExposureMask | ButtonPressMask | 
-                                   ButtonReleaseMask | ButtonMotionMask);
+                                   ButtonReleaseMask | ButtonMotionMask | 
+                                   EnterWindowMask);
 
 
         FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(client));
