@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.44 2003/08/19 21:28:57 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.45 2003/08/28 13:58:17 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -139,6 +139,7 @@ public:
 		
 private:
     void rearrangeItems();
+    void deleteItems();
 
     void updateIconbarGraphics();
     void setupMenus();
@@ -186,8 +187,10 @@ private:
     FbTk::Resource<int> m_rc_on_head;
     FbTk::Resource<Placement> m_rc_placement;
     FbTk::Resource<int> m_rc_height;
+    FbTk::Resource<std::string> m_rc_tools;
     std::auto_ptr<Shape> m_shape;
-
+    typedef std::list<std::string> StringList;
+    StringList m_tools;
 
     bool m_resize_lock; ///< to lock rearrangeItems or not
 };

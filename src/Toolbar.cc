@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.117 2003/08/27 19:56:56 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.118 2003/08/28 13:58:18 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -38,16 +38,18 @@
 #include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
-#include "ImageControl.hh"
-
-#include "EventManager.hh"
-#include "SimpleCommand.hh"
 #include "IntResMenuItem.hh"
-#include "MacroCommand.hh"
 #include "BoolMenuItem.hh"
 #include "Xinerama.hh"
 #include "Strut.hh"
 #include "FbCommands.hh"
+
+#include "FbTk/ImageControl.hh"
+#include "FbTk/MacroCommand.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/SimpleCommand.hh"
+#include "FbTk/StringUtil.hh"
+
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -65,18 +67,7 @@
 
 #include <cstring>
 #include <cstdio>
-
-#ifdef TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else // !TIME_WITH_SYS_TIME
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else // !HAVE_SYS_TIME_H
-#include <time.h>
-#endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
-
+#include <iterator>
 
 #include <iostream>
 
@@ -259,6 +250,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER, 
                    scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),
     m_rc_height(scrn.resourceManager(), 0, scrn.name() + ".toolbar.height", scrn.altName() + ".Toolbar.Height"),
+    m_rc_tools(scrn.resourceManager(), "", scrn.name() + ".toolbar.tools", scrn.altName() + ".Toolbar.Tools"),
     m_shape(new Shape(frame.window, 0)),
     m_resize_lock(false) {
 
@@ -283,16 +275,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.bevel_w = 1;
     frame.grab_x = frame.grab_y = 0;
     
-    // add toolbar items
-    WorkspaceNameTool *item = new WorkspaceNameTool(frame.window, m_workspace_theme, screen());
-    using namespace FbTk;
-    RefCount<Command> showmenu(new ShowMenuAboveToolbar(*this));
-    item->button().setOnClick(showmenu);
-    m_item_list.push_back(item);
-    m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, screen()));
-    m_item_list.push_back(new SystemTray(frame.window));
-    m_item_list.push_back(new ClockTool(frame.window, m_clock_theme, screen()));
-
+    // set antialias on themes
     m_clock_theme.setAntialias(screen().antialias());
     m_iconbar_theme.setAntialias(screen().antialias());
     m_workspace_theme.setAntialias(screen().antialias());
@@ -317,15 +300,13 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
 }
 
 Toolbar::~Toolbar() {
-    while (!m_item_list.empty()) {
-        delete m_item_list.back();
-        m_item_list.pop_back();
-    }
+    FbTk::EventManager::instance()->remove(window());
+
+    deleteItems();
+    clearStrut();
 
     if (m_window_pm)
         screen().imageControl().removeImage(m_window_pm);
-
-    clearStrut();
 }
 
 void Toolbar::clearStrut() {
@@ -397,6 +378,69 @@ void Toolbar::reconfigure() {
     m_clock_theme.setAntialias(screen().antialias());
     m_iconbar_theme.setAntialias(screen().antialias());
     m_workspace_theme.setAntialias(screen().antialias());
+
+
+
+    // parse resource tools and determine if we need to rebuild toolbar
+
+    bool need_update = false;
+    // parse and transform to lower case
+    std::list<std::string> tools;    
+    FbTk::StringUtil::stringtok(tools, *m_rc_tools, ", ");
+    transform(tools.begin(),
+              tools.end(),
+              tools.begin(),
+              FbTk::StringUtil::toLower);
+
+    if (tools.size() == m_tools.size() && tools.size() != 0) {
+        StringList::const_iterator tool_it = tools.begin();
+        StringList::const_iterator current_tool_it = m_tools.begin();
+        StringList::const_iterator tool_it_end = tools.end();
+        for (; tool_it != tool_it_end; ++tool_it, ++current_tool_it) {
+            if (*current_tool_it != *tool_it)
+                break;
+        }
+        // did we find anything that wasn't in the right place or new item?
+        if (tool_it != tool_it_end)
+            need_update = true;
+    } else // sizes does not match so we update
+        need_update = true;
+
+    if (need_update) {
+
+        // destroy tools and rebuild them
+        deleteItems();
+
+        m_tools = tools; // copy values
+        
+        if (m_tools.size()) {
+            // make lower case
+            transform(m_tools.begin(), m_tools.end(), 
+                      m_tools.begin(),
+                      FbTk::StringUtil::toLower);
+
+            // create items
+            StringList::const_iterator item_it = m_tools.begin();
+            StringList::const_iterator item_it_end = m_tools.end();
+            for (; item_it != item_it_end; ++item_it) {
+                if (*item_it == "workspacename") {
+                    WorkspaceNameTool *item = new WorkspaceNameTool(frame.window, m_workspace_theme, screen());
+                    using namespace FbTk;
+                    RefCount<Command> showmenu(new ShowMenuAboveToolbar(*this));
+                    item->button().setOnClick(showmenu);
+                    m_item_list.push_back(item);
+                } else if (*item_it == "iconbar") {
+                    m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, screen()));
+                } else if (*item_it == "systemtray") {
+                    m_item_list.push_back(new SystemTray(frame.window));
+                } else if (*item_it == "clock") {
+                    m_item_list.push_back(new ClockTool(frame.window, m_clock_theme, screen()));
+                }
+            }
+            // show all items
+            frame.window.showSubwindows();
+        }
+    }
 
     if (doAutoHide())
         m_hide_timer.start();
@@ -517,7 +561,9 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &not_used) {
 
 
 void Toolbar::exposeEvent(XExposeEvent &ee) {
-
+    if (ee.window == frame.window)
+        frame.window.clearArea(ee.x, ee.y,
+                               ee.width, ee.height);
 }
 
 
@@ -526,10 +572,9 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
 }
 
 void Toolbar::handleEvent(XEvent &event) {
-    if (event.type == ConfigureNotify && 
-        event.xconfigure.window != window().window()) {
-        rearrangeItems();
-    }
+    if (event.type == ConfigureNotify &&
+        event.xconfigure.window != window().window())
+            rearrangeItems();
 }
 
 void Toolbar::update(FbTk::Subject *subj) {
@@ -845,7 +890,8 @@ void Toolbar::saveOnHead(int head) {
 }
 
 void Toolbar::rearrangeItems() {
-    if (m_resize_lock || screen().isShuttingdown())
+    if (m_resize_lock || screen().isShuttingdown() ||
+        m_item_list.size() == 0)
         return;
     // lock this
     m_resize_lock = true;
@@ -885,4 +931,12 @@ void Toolbar::rearrangeItems() {
     }
     // unlock
     m_resize_lock = false;
+}
+
+void Toolbar::deleteItems() {
+    while (!m_item_list.empty()) {
+        delete m_item_list.back();
+        m_item_list.pop_back();
+    }
+    m_tools.clear();
 }
