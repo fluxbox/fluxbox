@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*02/11/15:
+   * Fixed antialias bug in toolbar
+   * Fixed bug [ 627897 ] Clicking tab leads to crashing X-Server.
+     Tab.cc
 *02/11/14:
    * Fixed bug [ 604958 ] Menu not (full) visible when tabs bottom
      Rootmenu.cc/hh

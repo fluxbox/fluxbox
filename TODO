@@ -1,3 +1,4 @@
+* make a function for menus to be moved so they're totaly visible... (see note/code in Toolbar::buttonReleaseEvent)
 * Clean up in BImage class, some of those functions are huge, and needs
   to be smaller. 
   - also make the class more independent so it could be movable to other
