@@ -132,9 +132,10 @@ Window Rootmenu::useAutoGroupWindow()
 		auto_group_window = 0;	// clear it immediately
 	// If not set check the parent and the parent's parent, ...
 	else {
-		Rootmenu* parent = dynamic_cast<Rootmenu*>(GetParent());
-		if (parent)
-			w = parent->useAutoGroupWindow();
+		// TODO: dynamic_cast throws std::bad_cast!
+		Rootmenu *p = dynamic_cast<Rootmenu*>(parent());
+		if (p)
+			w = p->useAutoGroupWindow();
 	}
 	return w;
 }
