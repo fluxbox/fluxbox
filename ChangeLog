@@ -4,7 +4,12 @@ Changes for 0.9.6:
    * Apply gravity when changing decorations (Simon)
      - also fix gravity when decorations not present
      Window.cc FbWinFrame.cc
+*03/09/15:
+   * Fixed bug in IconbarTool mode = NONE (Henrik)
+     IconbarTool.cc
 *03/09/14:
+   * Fixed minor bug in stick pressed button (Henrik)
+     WinButton.cc
    * Focus fixes (Simon)
      Hopefully fixes mysterious instances of focus not being set right.
      Window.cc fluxbox.cc
