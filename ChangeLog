@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/04/17:
+  * KDE as default now, not a big overhead anyways (Henrik)
+    configure.in
 *04/04/14:
   * Revert to sync. Async stops it from replaying (Simon)
     Window.cc
