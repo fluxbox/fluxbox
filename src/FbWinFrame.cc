@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.67 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.68 2004/01/02 13:26:44 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -81,7 +81,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_button_pm(0),
     m_themelistener(*this),
     m_shape(new Shape(m_window, theme.shapePlace())) {
-    theme.addListener(m_themelistener);
+    m_theme.reconfigSig().attach(&m_themelistener);
     init();
 }
 
@@ -365,25 +365,24 @@ void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
 }
 
 void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
-    setClientWindow(win.window());
-}
 
-void FbWinFrame::setClientWindow(Window win) {
     Display *display = FbTk::App::instance()->display();
-    XSetWindowBorderWidth(display, win, 0);
 
-    XChangeSaveSet(display, win, SetModeInsert);
+    win.setBorderWidth(0);
 
-    XSelectInput(display, m_window.window(), NoEventMask);
+    XChangeSaveSet(display, win.window(), SetModeInsert);
+
+    m_window.setEventMask(NoEventMask);
 
     // we need to mask this so we don't get unmap event
-    XSelectInput(display, win, NoEventMask);
-    XReparentWindow(display, win, m_window.window(), 0, m_clientarea.y());
+    win.setEventMask(NoEventMask);
+    win.reparent(m_window, 0, clientArea().y());
     // remask window so we get events
-    XSelectInput(display, win, PropertyChangeMask | StructureNotifyMask | 
-                 FocusChangeMask);
-    XSelectInput(display, m_window.window(), ButtonPressMask | ButtonReleaseMask |
-                 ButtonMotionMask | EnterWindowMask | SubstructureRedirectMask);
+    win.setEventMask(PropertyChangeMask | StructureNotifyMask | 
+                     FocusChangeMask);
+
+    m_window.setEventMask(ButtonPressMask | ButtonReleaseMask |
+                          ButtonMotionMask | EnterWindowMask | SubstructureRedirectMask);
 
     XFlush(display);
 
@@ -392,10 +391,10 @@ void FbWinFrame::setClientWindow(Window win) {
     attrib_set.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask | 
         ButtonMotionMask;
 
-    XChangeWindowAttributes(display, win, CWEventMask|CWDontPropagate, &attrib_set);
+    XChangeWindowAttributes(display, win.window(), CWEventMask|CWDontPropagate, &attrib_set);
 
     m_clientarea.raise();
-    XRaiseWindow(display, win);
+    win.raise();
     m_window.showSubwindows();
 }
 
@@ -649,14 +648,6 @@ void FbWinFrame::reconfigure() {
         }
         
         if (m_use_handle) {
-            client_height -= m_handle.height() + m_handle.borderWidth();
-        }
-        
-        m_clientarea.moveResize(0, client_top,
-                                m_window.width(), client_height);
-        
-        if (m_use_handle) {
-
             // align handle and grips
             const int grip_height = m_handle.height();
             const int grip_width = 20; //TODO
@@ -672,9 +663,16 @@ void FbWinFrame::reconfigure() {
             m_grip_right.moveResize(m_handle.width() - grip_width - handle_bw, -handle_bw,
                                     grip_width, grip_height);
             m_handle.raise();
+
+            client_height -= m_handle.height() + m_handle.borderWidth();
+
         } else {
             m_handle.lower();
         }
+
+        m_clientarea.moveResize(0, client_top,
+                                m_window.width(), client_height);
+        
     }
 
 
@@ -824,7 +822,6 @@ void FbWinFrame::renderTitlebar() {
         return;
 
     // render pixmaps
-
     render(m_theme.titleFocusTexture(), m_title_focused_color, 
            m_title_focused_pm,
            m_titlebar.width(), m_titlebar.height());
@@ -838,6 +835,7 @@ void FbWinFrame::renderTitlebar() {
            m_label_focused_pm,
            m_label.width(), m_label.height());
 		
+
     render(m_theme.labelUnfocusTexture(), m_label_unfocused_color, 
            m_label_unfocused_pm,
            m_label.width(), m_label.height());
@@ -969,6 +967,7 @@ void FbWinFrame::renderButtons() {
 }
 
 void FbWinFrame::init() {
+
     // setup update timer
     FbTk::RefCount<FbTk::Command> update_transp(new FbTk::SimpleCommand<FbWinFrame>(*this, 
                                                                                     &FbWinFrame::updateTransparent));
@@ -1041,8 +1040,9 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
     if (!tex.usePixmap()) {
         pm = None;
         col = tex.color();
-    } else
+    } else {
         pm = m_imagectrl.renderImage(w, h, tex);
+    }
 
     if (tmp) 
         m_imagectrl.removeImage(tmp);
@@ -1106,7 +1106,7 @@ void FbWinFrame::renderLabelButtons() {
             renderButtonUnfocus(**btn_it);
 
     }
-
+    
     if (m_current_label != 0) {
 
         if (label_pm) {
@@ -1115,7 +1115,7 @@ void FbWinFrame::renderLabelButtons() {
             m_current_label->setBackgroundColor(label_color);
 
     }
-    
+
 }
 
 void FbWinFrame::setBorderWidth(unsigned int border_width) {
