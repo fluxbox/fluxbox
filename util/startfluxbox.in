@@ -23,9 +23,6 @@ EOF
     shift
 done
 
-exit 0
-
-
 if [ -x "$startup" ]; then
     exec "$startup"
 elif [ -r "$startup" ]; then
