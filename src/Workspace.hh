@@ -71,8 +71,8 @@ public:
 
   FluxboxWindow *getWindow(int);
 
-  Bool isCurrent(void);
-  Bool isLastWindow(FluxboxWindow *);
+  bool isCurrent(void);
+  bool isLastWindow(FluxboxWindow *);
   
   const int addWindow(FluxboxWindow *, Bool = False);
   const int removeWindow(FluxboxWindow *);

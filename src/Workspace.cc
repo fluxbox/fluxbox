@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.10 2002/02/10 19:05:12 fluxgen Exp $
+// $Id: Workspace.cc,v 1.11 2002/02/16 11:28:16 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -57,6 +57,11 @@
 #include <algorithm>
 #include <iostream>
 using namespace std;
+
+#ifdef DEBUG
+#include <iostream>
+using namespace std;
+#endif
 
 Workspace::Workspace(BScreen *scrn, int i):
 screen(scrn),
@@ -295,12 +300,12 @@ void Workspace::update(void) {
 }
 
 
-Bool Workspace::isCurrent(void) {
+bool Workspace::isCurrent(void) {
 	return (id == screen->getCurrentWorkspaceID());
 }
 
 
-Bool Workspace::isLastWindow(FluxboxWindow *w) {
+bool Workspace::isLastWindow(FluxboxWindow *w) {
 	return (w == windowList.back());
 }
 
@@ -332,14 +337,17 @@ void Workspace::setName(char *new_name) {
 	clientmenu->update();
 }
 
-
+//------------ shutdown ---------
+// Calles  restore on all windows
+// in the workspace and then
+// clears the windowList
+//-------------------------------
 void Workspace::shutdown(void) {
 
 	while (!windowList.empty()) {
 		windowList.back()->restore();
 		delete windowList.back(); //delete window (the window removes it self from windowList)
 	}
-	
 }
 
 
