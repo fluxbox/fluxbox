@@ -1,8 +1,10 @@
-News in 0.9.10:
-    * Keybindings for directional focus movement:
-      * key actions:
+News in 0.9.10: 
+    * New actions:
+      * directional focus movement:
         FocusUp, FocusDown, FocusLeft, FocusRight
-    * Added apps file matching on WM_WINDOW_ROLE (Simon)
+      * other:
+        RaiseLayer, LowerLayer, Exit
+    * Added apps file matching on WM_WINDOW_ROLE
       * use "role=string". Particularly useful for gaim+gimp windows
        [app] (role=buddy_list) ...
     * Window menu file
@@ -22,8 +24,11 @@ News in 0.9.10:
           [shade]
           [close]
         [end]
-    * New actions:
-      * exit  (exit fluxbox, new to keybinding)
+    * Added [wallpapers|wallpapermenu|rootcommands] to possible
+      menuitems
+      * [wallpapers] (directory) {rootcommand}
+        creates a submenu in the menu to click on the wallpaper one
+        wants. default rootcommand is fbsetbg
     * Improved menu transparent rendering speed and the 
       text is not transparent anymore so you are able
       to see the text even if you have 100% transparency
@@ -60,8 +65,8 @@ News in 0.9.10:
       while literal is one of
       DESKTOP BOTTOM NORMAL TOP DOCK ABOVEDOCK MENU
     * fluxbox-generate_menu:
-      * Preliminary basic support for icons in fluxbox-generate_menu (Han)
-        * put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm
+      * Preliminary basic support for icons in fluxbox-generate_menu
+        put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm
 
 Bug fixes:
     * Compiles with gcc 3.4
@@ -70,7 +75,7 @@ Bug fixes:
     * Rendering of transparency on menu exposes 
     * handling alpha value of zero
     * Bug in Iconbar mode menu
-    * Bug in systray (Henrik)
+    * Bug in systray
       (this fixes the problem with "sim" in systray)
       It didn't force client position on configure request
     * Tiled texture
