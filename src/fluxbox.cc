@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.204 2003/12/04 21:31:02 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.205 2003/12/08 17:32:08 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -985,7 +985,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
 #ifdef USE_TOOLBAR
         // hide toolbar that matches screen
-        for (int toolbar = 0; toolbar < m_toolbars.size(); ++toolbar) {
+        for (size_t toolbar = 0; toolbar < m_toolbars.size(); ++toolbar) {
             if (&(m_toolbars[toolbar]->screen()) == screen)
                 m_toolbars[toolbar]->menu().hide();
         }
