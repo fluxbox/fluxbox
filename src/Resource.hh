@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.11 2003/05/07 11:32:42 fluxgen Exp $
+// $Id: Resource.hh,v 1.12 2003/05/10 13:44:24 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -27,9 +27,8 @@
 #include "NotCopyable.hh"
 #include <string>
 #include <list>
-/**
-	Base class for resources
-*/
+
+/// Base class for resources, this is only used in ResourceManager
 class Resource_base:private FbTk::NotCopyable
 {
 public:
@@ -66,40 +65,47 @@ public:
 
     ResourceManager() { }
     virtual ~ResourceManager() {}
-    /**
-       load all resouces registered to this class
-    */
+
+    /// Load all resources registered to this class
+    /// @return true on success
     virtual bool load(const char *filename);
-    /**
-       save all resouces registered to this class
-    */
+
+    /// Save all resouces registered to this class
+    /// @return true on success
     virtual bool save(const char *filename, const char *mergefilename=0);
-    /**
-       add resource to list
-    */
+
+    /// Add resource to list, only used in Resource<T>
     template <class T>
     void addResource(Resource<T> &r) {
         m_resourcelist.push_back(&r);
         m_resourcelist.unique();
     }
-    /**
-       Remove a specific resource
-    */
+
+    /// Remove a specific resource, only used in Resource<T>
     template <class T>
     void removeResource(Resource<T> &r) {
         m_resourcelist.remove(&r);
     }
+
 protected:
     static void ensureXrmIsInitialize();
-private:
 
+private:
     static bool m_init;
     ResourceList m_resourcelist;
 };
 
+
+/// Real resource class
 /**
-	Real resource class
-*/
+ * usage: Resource<int> someresource(resourcemanager, 10, "someresourcename", "somealternativename"); \n
+ * and then implement setFromString and getString \n
+ * example: \n
+ * template <> \n
+ * void Resource<int>::setFromString(const char *str) { \n
+ *   *(*this) = atoi(str); \n
+ * }
+ */
 template <typename T>
 class Resource:public Resource_base
 {
@@ -117,10 +123,13 @@ public:
     }
 
     inline void setDefaultValue() {  m_value = m_defaultval; }
+    /// sets resource from string, specialized, must be implemented
     void setFromString(const char *strval);
     inline Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
-	
-    std::string getString();	
+    /// specialized, must be implemented
+    /// @return string value of resource
+    std::string getString();
+
     inline T& operator*() { return m_value; }
     inline const T& operator*() const { return m_value; }
     inline T *operator->() { return &m_value; }
@@ -130,4 +139,4 @@ private:
     ResourceManager &m_rm;
 };
 
-#endif //_RESOURCE_HH_
+#endif // RESOURCE_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.hh,v 1.1 2003/04/25 10:14:54 fluxgen Exp $
+// $Id: RootTheme.hh,v 1.2 2003/05/10 13:45:50 fluxgen Exp $
 
 #ifndef ROOTTHEME_HH
 #define ROOTTHEME_HH
@@ -30,10 +30,8 @@
 #include <X11/Xlib.h>
 #include <string>
 
-/**
- Contains border color, border size, bevel width and opGC for objects like 
- geometry window in BScreen
-*/
+
+/// Contains border color, border size, bevel width and opGC for objects like geometry window in BScreen
 class RootTheme: public FbTk::Theme {
 public:
     /// constructor
