@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.67 2002/09/08 19:45:59 fluxgen Exp $
+// $Id: Screen.cc,v 1.68 2002/09/10 10:59:57 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -834,6 +834,9 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 						tab->disconnect();
 						tab->setPosition();
 					}
+
+					if (win->isIconic())
+						win->deiconify();
 
 					win->withdraw();
 					BScreen::reassociateWindow(win, id, true);
