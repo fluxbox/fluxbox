@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.15 2002/04/02 23:14:07 fluxgen Exp $
+// $Id: Workspace.cc,v 1.16 2002/04/03 23:04:01 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -115,7 +115,7 @@ const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 		windowList.insert(it, w);
 	}
 
-	clientmenu->insert(w->getTitle());
+	clientmenu->insert(w->getTitle().c_str());
 	clientmenu->update();
 
 	screen->updateNetizenWindowAdd(w->getClientWindow(), id);

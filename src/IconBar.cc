@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.11 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: IconBar.cc,v 1.12 2002/04/03 23:01:49 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -239,8 +239,6 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	
 	FluxboxWindow *fluxboxwin = obj->getFluxboxWin();
 	Window iconwin = obj->getIconWin();
-	const char *title = fluxboxwin->getIconTitle();
-	unsigned int title_len = strlen(title);
 	unsigned int title_text_w;
 
 	const int multibyte = I18n::instance()->multibyte();
@@ -248,15 +246,15 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	if (multibyte) {
 		XRectangle ink, logical;
 		XmbTextExtents(m_screen->getWindowStyle()->font.set,
-				title, title_len, &ink, &logical);
+			fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size(), &ink, &logical);
 		title_text_w = logical.width;
 	} else {
 		title_text_w = XTextWidth(m_screen->getWindowStyle()->font.fontstruct,
-				title, title_len);
+			fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
 	}
 	
 	int l = title_text_w;
-	int dlen=title_len;
+	unsigned int dlen=fluxboxwin->getIconTitle().size();
 	unsigned int bevel_w = m_screen->getBevelWidth();
 	int dx=bevel_w*2;
 		
@@ -264,12 +262,12 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		if (multibyte) {
 		XRectangle ink, logical;
 			XmbTextExtents(m_screen->getWindowStyle()->tab.font.set, 
-										title, dlen,
-										&ink, &logical);
+				fluxboxwin->getIconTitle().c_str(), dlen,
+				&ink, &logical);
 			l = logical.width;
 		} else
 			l = XTextWidth(m_screen->getWindowStyle()->tab.font.fontstruct, 
-								title, dlen);
+				fluxboxwin->getIconTitle().c_str(), dlen);
 			l += (bevel_w * 4);
 
 		if (l < width)
@@ -295,13 +293,13 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		XmbDrawString(m_display, iconwin,
 			m_screen->getWindowStyle()->tab.font.set,
 			m_screen->getWindowStyle()->tab.l_text_focus_gc, dx, 
-			 1 - m_screen->getWindowStyle()->tab.font.set_extents->max_ink_extent.y,
-			title, dlen);
+			1 - m_screen->getWindowStyle()->tab.font.set_extents->max_ink_extent.y,
+			fluxboxwin->getIconTitle().c_str(), dlen);
 	} else {
 		XDrawString(m_display, iconwin,
 			m_screen->getWindowStyle()->tab.l_text_focus_gc, dx,
 			m_screen->getWindowStyle()->tab.font.fontstruct->ascent + 1, 
-			title, dlen);
+			fluxboxwin->getIconTitle().c_str(), dlen);
 	}	
 
 }

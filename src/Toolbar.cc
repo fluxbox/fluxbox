@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.17 2002/04/03 12:08:54 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.18 2002/04/03 23:02:49 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -727,17 +727,17 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 		if (foc->getScreen() != screen)
 			return;
 
-		int dx = (frame.bevel_w * 2), dlen = strlen(foc->getTitle());
+		int dx = (frame.bevel_w * 2), dlen = foc->getTitle().size();
 		unsigned int l;
 		I18n *i18n = I18n::instance();
 		
 		if (i18n->multibyte()) {
 			XRectangle ink, logical;
-			XmbTextExtents(screen->getToolbarStyle()->font.set, foc->getTitle(), dlen,
+			XmbTextExtents(screen->getToolbarStyle()->font.set, foc->getTitle().c_str(), dlen,
 				 &ink, &logical);
 			l = logical.width;
 		} else
-			l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, foc->getTitle(), dlen);
+			l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, foc->getTitle().c_str(), dlen);
 		
 		l += (frame.bevel_w * 4);
 
@@ -746,10 +746,10 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 				if (i18n->multibyte()) {
 					XRectangle ink, logical;
 					XmbTextExtents(screen->getToolbarStyle()->font.set,
-						 foc->getTitle(), dlen, &ink, &logical);
+						 foc->getTitle().c_str(), dlen, &ink, &logical);
 					l = logical.width;
 				} else
-					l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, foc->getTitle(), dlen);
+					l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, foc->getTitle().c_str(), dlen);
 	
 				l += (frame.bevel_w * 4);
 	
@@ -774,12 +774,12 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 				screen->getToolbarStyle()->font.set,
 				screen->getToolbarStyle()->w_text_gc, dx, 1 -
 				screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
-				foc->getTitle(), dlen);
+				foc->getTitle().c_str(), dlen);
 		else
 			XDrawString(display, frame.window_label,
 				screen->getToolbarStyle()->w_text_gc, dx,
 				screen->getToolbarStyle()->font.fontstruct->ascent	+ 1,
-				foc->getTitle(), dlen);
+				foc->getTitle().c_str(), dlen);
 	} else
 		XClearWindow(display, frame.window_label);
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.35 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Window.cc,v 1.36 2002/04/03 23:01:04 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -152,9 +152,6 @@ tab(0)
 
 	client.wm_hint_flags = client.normal_hint_flags = 0;
 	client.transient_for = client.transient = 0;
-	client.title = 0;
-	client.title_len = 0;
-	client.icon_title = 0;
 	client.mwm_hint = (MwmHints *) 0;
 	client.blackbox_hint = 0;
 
@@ -420,12 +417,6 @@ FluxboxWindow::~FluxboxWindow(void) {
 
 	if (windowmenu)
 		delete windowmenu;
-
-	if (client.title)
-		delete [] client.title;
-
-	if (client.icon_title)
-		delete [] client.icon_title;
 
 	if (tab!=0)
 		delete tab;	
@@ -1366,15 +1357,15 @@ void FluxboxWindow::reconfigure(void) {
 	client.y = frame.y + frame.y_border + frame.mwm_border_w +
 			 screen->getBorderWidth();
 
-	if (client.title) {
+	if (getTitle().size()>0) {
 		if (I18n::instance()->multibyte()) {
 			XRectangle ink, logical;
 			XmbTextExtents(screen->getWindowStyle()->font.set,
-					client.title, client.title_len, &ink, &logical);
+					getTitle().c_str(), getTitle().size(), &ink, &logical);
 			client.title_text_w = logical.width;
 		} else {
 			client.title_text_w = XTextWidth(screen->getWindowStyle()->font.fontstruct,
-					client.title, client.title_len);
+					getTitle().c_str(), getTitle().size());
 		}
 
 		client.title_text_w += (frame.bevel_w * 4);
@@ -1447,10 +1438,6 @@ void FluxboxWindow::positionWindows(void) {
 
 
 void FluxboxWindow::getWMName(void) {
-	if (client.title) {
-		delete [] client.title;
-		client.title = 0;
-	}
 
 	XTextProperty text_prop;
 	char **list;
@@ -1466,44 +1453,32 @@ void FluxboxWindow::getWMName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 							&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.title = StringUtil::strdup(*list);
+					client.title = static_cast<char *>(*list);
 					XFreeStringList(list);
 				} else
-					client.title = StringUtil::strdup((char *) text_prop.value);
+					client.title = (char *)text_prop.value;
 					
 			} else
-				client.title = StringUtil::strdup((char *) text_prop.value);
-
+				client.title = (char *)text_prop.value;
 			XFree((char *) text_prop.value);
 		} else
-			client.title = StringUtil::strdup(i18n->getMessage(
-#ifdef		NLS
-									WindowSet, WindowUnnamed,
-#else // !NLS
-									0, 0,
-#endif //
-									"Unnamed"));
+			client.title = i18n->getMessage(
+				WindowSet, WindowUnnamed,
+				"Unnamed");
 	} else {
-		client.title = StringUtil::strdup(i18n->getMessage(
-#ifdef		NLS
-							WindowSet, WindowUnnamed,
-#else // !NLS
-							0, 0,
-#endif //
-							"Unnamed"));
+		client.title = i18n->getMessage(
+			WindowSet, WindowUnnamed,
+			"Unnamed");
 	}
-	
-	client.title_len = strlen(client.title);
 
 	if (i18n->multibyte()) {
 		XRectangle ink, logical;
 		XmbTextExtents(screen->getWindowStyle()->font.set,
-				client.title, client.title_len, &ink, &logical);
+				getTitle().c_str(), getTitle().size(), &ink, &logical);
 		client.title_text_w = logical.width;
 	} else {
-		client.title_len = strlen(client.title);
 		client.title_text_w = XTextWidth(screen->getWindowStyle()->font.fontstruct,
-							client.title, client.title_len);
+							getTitle().c_str(), getTitle().size());
 	}
 
 	client.title_text_w += (frame.bevel_w * 4);
@@ -1511,10 +1486,6 @@ void FluxboxWindow::getWMName(void) {
 
 
 void FluxboxWindow::getWMIconName(void) {
-	if (client.icon_title) {
-		delete [] client.icon_title;
-		client.icon_title = (char *) 0;
-	}
 
 	XTextProperty text_prop;
 	char **list;
@@ -1528,18 +1499,18 @@ void FluxboxWindow::getWMIconName(void) {
 				if ((XmbTextPropertyToTextList(display, &text_prop,
 						&list, &num) == Success) &&
 						(num > 0) && *list) {
-					client.icon_title = StringUtil::strdup(*list);
+					client.icon_title = (char *)*list;
 					XFreeStringList(list);
 				} else
-					client.icon_title = StringUtil::strdup((char *) text_prop.value);
+					client.icon_title = (char *)text_prop.value;
 			} else
-				client.icon_title = StringUtil::strdup((char *) text_prop.value);
+				client.icon_title = (char *)text_prop.value;
 
 			XFree((char *) text_prop.value);
 		} else
-				client.icon_title = StringUtil::strdup(client.title);
+			client.icon_title = getTitle(); //assign title to icon title
 	} else
-		client.icon_title = StringUtil::strdup(client.title);
+		client.icon_title = getTitle(); //assign title to icon title
 }
 
 
@@ -2829,7 +2800,7 @@ void FluxboxWindow::redrawLabel(void) {
 	DrawUtil::DrawString(display, frame.label, gc,
 			&screen->getWindowStyle()->font, 
 			client.title_text_w, frame.label_w,
-			frame.bevel_w, client.title);
+			frame.bevel_w, getTitle().c_str());
 }
 
 

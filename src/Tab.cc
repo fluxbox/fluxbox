@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.21 2002/04/03 12:08:54 fluxgen Exp $
+// $Id: Tab.cc,v 1.22 2002/04/03 23:01:04 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -361,33 +361,33 @@ void Tab::draw(bool pressed) {
 			(!m_win->isShaded() && m_win->getScreen()->isTabRotateVertical())) {
 
 		tabtext_w = DrawUtil::XRotTextWidth(m_win->getScreen()->getWindowStyle()->tab.rot_font,
-						m_win->client.title, m_win->client.title_len);
+						m_win->getTitle().c_str(), m_win->getTitle().size());
 		tabtext_w += (m_win->frame.bevel_w * 4);
 
 		DrawUtil::DrawRotString(m_display, m_tabwin, gc,
 				m_win->getScreen()->getWindowStyle()->tab.rot_font,
 				m_win->getScreen()->getWindowStyle()->tab.font.justify,
 				tabtext_w, m_size_w, m_size_h,
-				m_win->frame.bevel_w, m_win->client.title);
+				m_win->frame.bevel_w, m_win->getTitle().c_str());
 
 	} else {
 		if (I18n::instance()->multibyte()) { // TODO: maybe move this out from here?
 			XRectangle ink, logical;
 			XmbTextExtents(m_win->getScreen()->getWindowStyle()->tab.font.set,
-					m_win->client.title, m_win->client.title_len,
+					m_win->getTitle().c_str(), m_win->getTitle().size(),
 					&ink, &logical);
 			tabtext_w = logical.width;
 		} else {
 			tabtext_w = XTextWidth(
 					m_win->getScreen()->getWindowStyle()->tab.font.fontstruct,
-					m_win->client.title, m_win->client.title_len);
+					m_win->getTitle().c_str(), m_win->getTitle().size());
 		}
 		tabtext_w += (m_win->frame.bevel_w * 4);
 
 		DrawUtil::DrawString(m_display, m_tabwin, gc,
 				&m_win->getScreen()->getWindowStyle()->tab.font,
 				tabtext_w, m_size_w,
-				m_win->frame.bevel_w, m_win->client.title);
+				m_win->frame.bevel_w, m_win->getTitle().c_str());
 	}
 }
 

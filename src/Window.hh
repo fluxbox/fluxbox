@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.14 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Window.hh,v 1.15 2002/04/03 23:01:04 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -146,8 +146,8 @@ public:
 
 	inline Windowmenu *getWindowmenu(void) { return windowmenu; }
 
-	inline const char *getTitle(void) const { return client.title; }
-	inline const char *getIconTitle(void) const { return client.icon_title; }
+	inline const std::string &getTitle(void) const { return client.title; }
+	inline const std::string &getIconTitle(void) const { return client.icon_title; }
 	inline const int getXFrame(void) const { return frame.x; }
 	inline const int getYFrame(void) const { return frame.y; }
 	inline const int getXClient(void) const { return client.x; }
@@ -237,8 +237,8 @@ private:
 			*transient;  // which window is our transient?
 		Window window, window_group;
 
-		char *title, *icon_title;
-		int x, y, old_bw, title_len;
+		std::string title, icon_title;
+		int x, y, old_bw;
 		unsigned int width, height, title_text_w,
 			min_width, min_height, max_width, max_height, width_inc, height_inc,
 			min_aspect_x, min_aspect_y, max_aspect_x, max_aspect_y,
@@ -384,8 +384,6 @@ protected:
 	void downsize(void);
 	void right_fixsize(int * = 0, int * = 0);
 	void left_fixsize(int * = 0, int * = 0);
-
-
 };
 
 
