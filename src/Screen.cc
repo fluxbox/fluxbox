@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.249 2003/12/14 01:09:00 fluxgen Exp $
+// $Id: Screen.cc,v 1.250 2003/12/18 15:27:21 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -335,6 +335,17 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_menutheme->setAlpha(*resource.menu_alpha);
     m_menutheme->setMenuMode(*resource.menu_mode);
+    // clamp values
+    if (*resource.menu_delay > 5000)
+        *resource.menu_delay = 5000;
+    if (*resource.menu_delay < 0)
+        *resource.menu_delay = 0;
+
+    if (*resource.menu_delay_close > 5000)
+        *resource.menu_delay_close = 5000;
+    if (*resource.menu_delay_close < 0)
+        *resource.menu_delay_close = 0;
+
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
 
@@ -601,6 +612,18 @@ FbTk::Menu *BScreen::createMenu(const std::string &label) {
 void BScreen::reconfigure() {
     m_menutheme->setAlpha(*resource.menu_alpha);
     m_menutheme->setMenuMode(*resource.menu_mode);
+
+    // clamp values
+    if (*resource.menu_delay > 5000)
+        *resource.menu_delay = 5000;
+    if (*resource.menu_delay < 0)
+        *resource.menu_delay = 0;
+
+    if (*resource.menu_delay_close > 5000)
+        *resource.menu_delay_close = 5000;
+    if (*resource.menu_delay_close < 0)
+        *resource.menu_delay_close = 0;
+
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
 
@@ -878,10 +901,11 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     // This is a little tricks to reduce flicker 
     // this way we can set focus pixmap on frame before we show it
     // and using ExposeEvent to redraw without flicker
-    //WinClient *win = getLastFocusedWindow(currentWorkspaceID());
-    //if (win && win->fbwindow()) {
-    //        win->fbwindow()->setFocusFlag(true);
-    //}
+    /*
+      WinClient *win = getLastFocusedWindow(currentWorkspaceID());
+      if (win && win->fbwindow())
+      win->fbwindow()->setFocusFlag(true);
+    */
 
     currentWorkspace()->showAll();
 
@@ -899,9 +923,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
 
 void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS) {
-    if (! m_current_workspace || id >= m_workspaces_list.size()) {
+    if (! m_current_workspace || id >= m_workspaces_list.size())
         return;
-    }
 
     if (!win) {
         WinClient *client = Fluxbox::instance()->getFocusedWindow();
@@ -915,16 +938,17 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (win && &win->screen() == this &&
         (! win->isStuck())) {
 
-        if (win->isIconic()) {
+        // if iconified, deiconify it before we send it somewhere
+        if (win->isIconic())
             win->deiconify();
-        }
 
+        // if the window isn't on current workspace, hide it
         if (id != currentWorkspace()->workspaceID())
             win->withdraw();
 
-
         reassociateWindow(win, id, true);
-			
+
+        // if the window is on current workspace, show it.
         if (id == currentWorkspace()->workspaceID())
             win->deiconify(false, false);
 
@@ -2255,7 +2279,7 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
 
     FocusedWindows::iterator it = focused_list.begin();    
     FocusedWindows::iterator it_end = focused_list.end();
-    for (; it != it_end; ++it)
+    for (; it != it_end; ++it) {
         if ((*it)->fbwindow() &&
             (((int)(*it)->fbwindow()->workspaceNumber()) == workspace 
              && !(*it)->fbwindow()->isIconic()
@@ -2263,17 +2287,18 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
             // only give focus to a stuck window if it is currently focused
             // otherwise they tend to override normal workspace focus
             return *it;
+    }
     return 0;
 }
 
 void BScreen::updateSize() {
+    // force update geometry
     rootWindow().updateGeometry();
-
-    // reconfigure anything that depends on root window size
 
     // reset background
     m_root_theme->reconfigTheme();
 
+    // send resize notify
     m_resize_sig.notify();
 }
 
