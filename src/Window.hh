@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.90 2003/07/28 16:29:25 rathnor Exp $
+// $Id: Window.hh,v 1.91 2003/08/11 16:57:11 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -54,7 +54,7 @@ class XLayer;
 };
 
 /// Creates the window frame and handles any window event for it
-class FluxboxWindow : public FbTk::TimeoutHandler, public FbTk::EventHandler {
+class FluxboxWindow: public FbTk::EventHandler {
 public:
     /// Represents certain "preset" sets of decorations.
     enum Decoration {
@@ -249,8 +249,6 @@ public:
     unsigned int decorationMask() const;
     void setDecorationMask(unsigned int mask);
 
-    virtual void timeout();
-
     /**
        @name accessors		
     */
@@ -338,6 +336,7 @@ public:
     const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
     FbTk::Subject &dieSig() { return m_diesig; }
     const FbTk::Subject &dieSig() const { return m_diesig; }
+    FbTk::Subject &focusSig() { return m_focussig; }
     /** @} */ // end group signals
 
     const timeval &lastFocusTime() const { return m_last_focus_time;}
@@ -398,7 +397,7 @@ private:
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);
     // state and hint signals
-    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig;
+    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig;
 
     // Window states
     bool moving, resizing, shaded, iconic,
