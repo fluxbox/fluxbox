@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.13 2004/08/29 21:11:24 akir Exp $
+// $Id: MenuCreator.cc,v 1.14 2004/09/09 14:32:56 akir Exp $
 
 #include "MenuCreator.hh"
 
@@ -200,6 +200,16 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         MacroCommand *exec_and_hide = new FbTk::MacroCommand();
         exec_and_hide->add(hide_menu);
         exec_and_hide->add(exec_cmd);
+        RefCount<Command> exec_and_hide_cmd(exec_and_hide);
+        menu.insert(str_label.c_str(), exec_and_hide_cmd);
+    } else if (str_key == "macrocmd") {
+        using namespace FbTk;
+        RefCount<Command> macro_cmd(CommandParser::instance().parseLine("macrocmd " + str_cmd));
+        RefCount<Command> hide_menu(new SimpleCommand<FbTk::Menu>(menu, 
+                                                                  &Menu::hide));
+        MacroCommand *exec_and_hide = new FbTk::MacroCommand();
+        exec_and_hide->add(hide_menu);
+        exec_and_hide->add(macro_cmd);
         RefCount<Command> exec_and_hide_cmd(exec_and_hide);
         menu.insert(str_label.c_str(), exec_and_hide_cmd);
     } else if (str_key == "style") {	// style
