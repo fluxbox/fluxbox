@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/20:
+   * Fix crash with toolbarmode = OFF, and put toolbar menu back into
+     screen's configure menu (Simon)
+     Screen.hh/cc ToolbarHandler.cc
 *03/07/19:
    * Make most Commands execute on mouse screen rather than screen 
      of focused window (Simon)

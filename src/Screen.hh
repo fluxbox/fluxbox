@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.114 2003/07/10 11:28:24 fluxgen Exp $
+// $Id: Screen.hh,v 1.115 2003/07/20 02:45:57 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -310,6 +310,12 @@ public:
     /// updates max avaible area for the workspace
     void updateAvailableWorkspaceArea();
 
+    // for extras to add menus. These menus must be marked
+    // internal for their safety, and the extension must
+    // delete and remove the menu itself
+    void addConfigMenu(const char *label, FbTk::Menu &menu);
+    void removeConfigMenu(FbTk::Menu &menu);
+
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
            UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
 
@@ -360,9 +366,12 @@ private:
 
     typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;
+    typedef std::list<std::pair<const char *, FbTk::Menu *> > Configmenus;
+
 
     Rootmenus m_rootmenu_list;
     Netizens m_netizen_list;
+    Configmenus m_configmenu_list;
     Icons m_icon_list;
 
     // This list keeps the order of window focusing for this screen

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.204 2003/07/19 03:59:55 rathnor Exp $
+// $Id: Screen.cc,v 1.205 2003/07/20 02:45:57 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1940,9 +1940,28 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
     return ((menu.numberOfItems() == 0) ? true : false);
 }
 
+void BScreen::addConfigMenu(const char *label, FbTk::Menu &menu) {
+    m_configmenu_list.push_back(std::make_pair(label, &menu));
+    setupConfigmenu(*m_configmenu.get());
+}
+
+void BScreen::removeConfigMenu(FbTk::Menu &menu) {
+    Configmenus::iterator it = m_configmenu_list.begin();
+    Configmenus::iterator it_end = m_configmenu_list.end();
+    for (; it != it_end; ++it) {
+        if (it->second == &menu) {
+            m_configmenu_list.erase(it);
+            break;
+        }
+    }
+    setupConfigmenu(*m_configmenu.get());
+}    
+
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     I18n *i18n = I18n::instance();
     using namespace FBNLS;
+
+    menu.removeAll();
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), 
@@ -1996,6 +2015,11 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         menu.insert("Slit", &slit()->menu());
     }
 #endif // SLIT
+
+    Configmenus::iterator it = m_configmenu_list.begin();
+    Configmenus::iterator it_end = m_configmenu_list.end();
+    for (; it != it_end; ++it)
+        menu.insert(it->first, it->second);
 
     menu.insert(new
                 BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuImageDithering,

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.23 2003/07/18 15:40:55 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.24 2003/07/20 02:45:57 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -155,6 +155,10 @@ ToolbarHandler::ToolbarHandler(BScreen &screen)
     m_toolbarmenu.setInternalMenu();
     setupModeMenu(m_modemenu, *this);
     setMode(*m_rc_mode, false); // the atomhandler part will initialise it shortly
+    // now add this to the config menus for the screen
+    // (we only want it done once, so it can't go in initforscreen)
+
+    screen.addConfigMenu("Toolbar", m_toolbarmenu);
 }
 
 void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
@@ -175,7 +179,6 @@ void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
         m_toolbarmenu.removeAll();
         m_toolbar.reset(new Toolbar(m_screen, 
                                     *m_screen.layerManager().getLayer(Fluxbox::instance()->getNormalLayer()), m_toolbarmenu));
-        Fluxbox::instance()->load_rc(m_screen);
         m_toolbar->reconfigure();
         
         m_toolbarmenu.insert("Mode...", &m_modemenu);   
@@ -384,14 +387,16 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
 }
 
 void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
-    if (&screen != &m_screen)
+    if (&screen != &m_screen || mode() == OFF)
         return;
 
     m_toolbar->redrawWorkspaceLabel(true);
-    m_toolbar->disableUpdates();
-    m_toolbar->delAllIcons(true);
-    initForScreen(m_screen);
-    m_toolbar->enableUpdates();
+    if (mode() != NONE) {
+        m_toolbar->disableUpdates();
+        m_toolbar->delAllIcons(true);
+        initForScreen(m_screen);
+        m_toolbar->enableUpdates();
+    }
 
 }
 
