@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.79 2002/11/14 00:24:35 fluxgen Exp $
+// $Id: Screen.cc,v 1.80 2002/11/15 12:15:39 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -344,12 +344,12 @@ resource(rm, screenname, altscreenname)
 		for (int i = 0; i < *resource.workspaces; ++i) {
 			wkspc = new Workspace(this, workspacesList.size());
 			workspacesList.push_back(wkspc);
-			workspacemenu->insert(wkspc->name().c_str(), wkspc->menu());
+			workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
 		}
 	} else {
 		wkspc = new Workspace(this, workspacesList.size());
 		workspacesList.push_back(wkspc);
-		workspacemenu->insert(wkspc->name().c_str(), wkspc->menu());
+		workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
 	}
 
 	workspacemenu->insert(i18n->
@@ -686,7 +686,7 @@ int BScreen::addWorkspace() {
 	workspacesList.push_back(wkspc);
 	addWorkspaceName(wkspc->name().c_str()); // update names
 	//add workspace to workspacemenu
-	workspacemenu->insert(wkspc->name().c_str(), wkspc->menu(),
+	workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu(),
 		wkspc->workspaceID() + 2); //+2 so we add it after "remove last"
 		
 	workspacemenu->update();
@@ -961,7 +961,7 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	Workspaces::iterator wit = workspacesList.begin();
 	Workspaces::iterator wit_end = workspacesList.end();
 	for (; wit != wit_end; ++wit) {
-		session_stack[i++] = (*wit)->menu()->windowID();
+		session_stack[i++] = (*wit)->menu().windowID();
 	}
 
 	session_stack[i++] = workspacemenu->windowID();
