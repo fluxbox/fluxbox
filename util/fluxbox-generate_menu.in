@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.3 2003/12/17 01:09:00 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.4 2003/12/18 00:59:04 fluxgen Exp $
 
 #
 # Portability notes:
@@ -278,6 +278,7 @@ case ${LC_ALL} in
         EDITORMENU='Ú≈ƒ¡À‘œ“Ÿ'
         EXITITEM='˜Ÿ ‘…'
         FBSETTINGSMENU='FB-Œ¡”‘“œ À…'
+#        GAMESMENU='Games'
         GNOMEMENUTEXT='Gnome-Õ≈Œ¿'
         GRAPHICMENU='Á“¡∆…À¡'
         KDEMENUTEXT='KDE-Õ≈Œ¿'
@@ -301,6 +302,7 @@ case ${LC_ALL} in
         EXITITEM='Beenden'
         FBSETTINGSMENU='Fluxbox-Einstellungen'
         FILEUTILSMENU='Datei-Utilities'
+#        GAMESMENU='Games'
         GNOMEMENUTEXT='Gnome-Menues'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='Kde-Menues'
@@ -330,6 +332,7 @@ case ${LC_ALL} in
         EDITORMENU='Editorer'
         EXITITEM='Exit'
         FBSETTINGSMENU='FB-inst‰llningar'
+#        GAMESMENU='Games'
         GNOMEMENUTEXT='Gnome-menyer'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='KDE-menyer'
@@ -352,6 +355,7 @@ case ${LC_ALL} in
         EXITITEM='Afsluiten'
         FBSETTINGSMENU='FB-Instellingen'
         FILEUTILSMENU='Verkenners'
+        GAMESMENU='Spelletjes'
         GNOMEMENUTEXT='Gnome-menu'
         GRAPHICMENU='Grafisch'
         KDEMENUTEXT='KDE-menu'
@@ -378,6 +382,7 @@ case ${LC_ALL} in
         EXITITEM='Lopeta'
         FBSETTINGSMENU='FB:n Asetukset'
         FILEUTILSMENU='Tiedostoapuohjelmat'
+#        GAMESMENU='Games'
         GNOMEMENUTEXT='Gnomen valikot'
         GRAPHICMENU='Grafiikka'
         KDEMENUTEXT='KDE:n valikot'
@@ -408,6 +413,7 @@ case ${LC_ALL} in
         EDITORMENU='•®•«•£•ø'
         EXITITEM='Ω™Œª'
         FBSETTINGSMENU='Fluxbox¿ﬂƒÍ'
+#        GAMESMENU='Games'
         GNOMEMENUTEXT='Gnome•·•À•Â°º'
         GRAPHICMENU='≤Ë¡¸'
         KDEMENUTEXT='KDE•·•À•Â°º'
@@ -430,6 +436,7 @@ case ${LC_ALL} in
         EXITITEM='Sortir'
         FBSETTINGSMENU='Configurer Fluxbox'
         FILEUTILSMENU='Outils fichiers'
+#        GAMESMENU='Games'
         GNOMEMENUTEXT='Menus Gnome'
         GRAPHICMENU='Graphisme'
         KDEMENUTEXT='Menus KDE'
