@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.211 2003/07/26 16:17:01 rathnor Exp $
+// $Id: Window.cc,v 1.212 2003/07/28 12:49:18 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -852,6 +852,57 @@ void FluxboxWindow::prevClient() {
     m_client->raise();
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
     setInputFocus();
+}
+
+
+void FluxboxWindow::moveClientLeft() {
+    if (m_clientlist.size() == 1 ||
+        *m_clientlist.begin() == &winClient())
+        return;
+    // move label button to the left
+    frame().moveLabelButtonLeft(*m_labelbuttons[&winClient()]);
+    // move client in clientlist to the left
+    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), &winClient());    
+    ClientList::iterator new_pos = it;
+    new_pos--;
+    m_clientlist.erase(it);
+    m_clientlist.insert(new_pos, &winClient());
+
+    updateClientLeftWindow();
+
+}
+
+void FluxboxWindow::moveClientRight() {
+    if (m_clientlist.size() == 1)
+        return;
+    // move label button to the right
+    frame().moveLabelButtonRight(*m_labelbuttons[&winClient()]);
+    // move client in clientlist to the right
+    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), &winClient());    
+    ClientList::iterator new_pos = m_clientlist.erase(it);
+    new_pos++;
+    m_clientlist.insert(new_pos, &winClient());
+
+    updateClientLeftWindow();
+}
+
+/// Update LEFT window atom on all clients.
+void FluxboxWindow::updateClientLeftWindow() {
+    // It should just update the affected clients but that
+    // would require more complex code and we're assuming
+    // the user dont have alot of windows grouped so this 
+    // wouldn't be too time consuming and it's easier to
+    // implement.
+    ClientList::iterator it = clientList().begin();
+    ClientList::iterator it_end = clientList().end();
+    // set no left window on first tab
+    (*it)->setGroupLeftWindow(0);
+    WinClient *last_client = *it;
+    ++it;
+    for (; it != it_end; ++it) {
+        (*it)->setGroupLeftWindow(last_client->window());
+        last_client = *it;
+    }
 }
 
 bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
