@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.1 2003/04/26 18:12:46 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.2 2003/06/12 15:14:03 rathnor Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -41,7 +41,7 @@ std::string expandFilename(const std::string &filename);
 ///  returns string between character first and last
 int getStringBetween(std::string& out, const char *instr, 
                      char first, char last,
-                     const char *ok_chars=" \t\n");
+                     const char *ok_chars=" \t\n", bool allow_nesting = false);
 
 /// converts a string to lover case
 void toLower(char * const conv);

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.1 2003/04/26 18:12:47 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.2 2003/06/12 15:14:02 rathnor Exp $
 
 #include "StringUtil.hh"
 
@@ -99,7 +99,7 @@ string expandFilename(const std::string &filename) {
  was found.
 */
 int getStringBetween(std::string& out, const char *instr, const char first, const char last,
-                     const char *ok_chars) {
+                     const char *ok_chars, bool allow_nesting) {
     assert(first);
     assert(last);
     assert(instr);
@@ -117,17 +117,26 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
         return -i; //return position to error	
 
     // find the end of the token
-    std::string::size_type j = i;
+    std::string::size_type j = i, k;
+    int nesting = 0;
     while (1) {
+        k = in.find_first_of(first, j+1);
         j = in.find_first_of(last, j+1);
         if (j==std::string::npos)
             return -in.size(); //send negative size
 
+        if (allow_nesting && k < j && in[k-1] != '\\') {
+            nesting++;
+            j = k;
+            continue;
+        }
         //we found the last char, check so it doesn't have a '\' before
-        if (j>1 && in[j-1] != '\\')	
-            break;
-        else if (j>1) {
-            in.erase(j-1, 1); //remove the '\'
+        if (j>1 && in[j-1] != '\\') {
+            if (allow_nesting && nesting > 0) nesting--;
+            else
+                break;
+        } else if (j>1 && !allow_nesting) { // we leave escapes if we're allowing nesting
+            in.erase(j-1, 1); //remove the '\'
             j--;
             total_add++; //save numchars removed so we can calculate totalpos
         }
