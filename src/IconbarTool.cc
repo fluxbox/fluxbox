@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.26 2004/01/09 10:27:23 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.27 2004/01/09 11:59:10 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -380,10 +380,16 @@ unsigned int IconbarTool::borderWidth() const {
     return m_icon_container.borderWidth();
 }
 
-void IconbarTool::update(FbTk::Subject *subj) {
+void IconbarTool::update(FbTk::Subject *subj) {    
     // ignore updates if we're shutting down
-    if (m_screen.isShuttingdown())
+    if (m_screen.isShuttingdown()) {
+        m_screen.clientListSig().detach(this);
+        m_screen.iconListSig().detach(this);
+        m_screen.currentWorkspaceSig().detach(this);        
+        if (!m_icon_list.empty())
+            deleteIcons();
         return;
+    }
 
     m_icon_container.setAlignment(*m_rc_alignment);
     // clamp to normal values
