@@ -1,6 +1,6 @@
 // Screen.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-// 
+// Copyright (c) 2001 - 2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//
 // Screen.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
