@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.10 2002/01/08 12:13:55 fluxgen Exp $
+// $Id: Theme.cc,v 1.11 2002/01/08 21:37:39 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -75,9 +75,10 @@ Theme::Theme(Display *display, Window rootwindow, Colormap colormap,
 m_imagecontrol(ic),
 m_display(display),
 m_colormap(colormap),
-m_screennum(screennum)
+m_screennum(screennum),
+m_rootcommand(rootcommand ? "" : rootcommand) //we dont want to send 0-pointer to std::string
 {
-	m_rootcommand = (rootcommand == 0 ? "" : rootcommand);
+	
 	//default settings	
 	m_menustyle.titlefont.set = m_menustyle.framefont.set = m_toolbarstyle.font.set =
 		m_windowstyle.font.set = m_windowstyle.tab.font.set =  0;
