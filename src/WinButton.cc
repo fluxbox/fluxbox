@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.14 2003/09/14 17:34:47 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.15 2003/09/22 12:07:00 rathnor Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -118,7 +118,7 @@ void WinButton::drawType() {
 
         if (used) {
             FbTk::FbWindow::clear();
-        } else if (gc() == 0) { // must have valid graphic context
+        } else if (gc() != 0) { // must have valid graphic context
             FbTk::FbWindow::drawRectangle(gc(),
                                           2, height() - 5, width() - 5, 2);
         }
