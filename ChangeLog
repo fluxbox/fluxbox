@@ -1,4 +1,23 @@
 Changes for 0.1.7:
+*02/02/09:
+   * Fixed bug in Workspace::removeWindow
+*02/02/08:
+   * Back to stl list
+   * Fixed bug in Basemenu.hh (Thanks Paul W Brannan)
+*02/02/06:
+   * Reverted back to LinkedList in Toolbar.cc/.hh, Screen.hh/Screen.cc
+     due to some strange segfaults.
+   * Added Gnome _WIN_STATE (sticky, minimized, shaded)
+*02/02/05:
+   * Fixed a signed/unsigned problem
+   * Moved keyhandling, buttonevent and clientmessage to 
+     functions in fluxbox.cc
+*02/02/04:
+   * Fixed some unsigned/signed warnings
+   * Moved from LinkedList to STL in some files (Thanks Paul W Brannan)
+   * Added pt_PT to nls (Thanks Luis Medinas)
+   * Fixed multibyte in Iconbar (Thanks Jesper Louis Andersen)
+   * Removed some unnecessary timer->stop() (Thanks Jesper Louis Andersen)
 *02/02/02:
    * Added leftWorkspace and rightWorkspace, now those keybindings
      actually work. (Claes Nästén)
