@@ -4,6 +4,11 @@ Changes for 0.9.2:
    * Add UnderMousePlacement policy, plus minor positioning fix (Simon)
      -> Patch originally contributed by "Mike" (lgn@users.sf)
      Screen.hh Workspace.cc fluxbox.cc Window.cc
+*03/04/24:
+  * updated fluxbox-generate_menu (Han)
+   - decent reply to -- longopts
+   - better ussage message
+   - Added more OpenOffice entries
 *03/04/21:
    * Fix toolbar startup and reconfigure things (Simon)
      (Thanks Brian Sea)
