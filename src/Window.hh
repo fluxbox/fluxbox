@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.41 2003/01/07 01:33:18 fluxgen Exp $
+// $Id: Window.hh,v 1.42 2003/01/09 22:16:40 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -53,10 +53,11 @@ class BScreen;
 
 namespace FbTk {
 class MenuTheme;
+class ImageControl;
 };
 
 /// Creates the window frame and handles any window event for it
-class FluxboxWindow : public TimeoutHandler, public FbTk::EventHandler {
+class FluxboxWindow : public FbTk::TimeoutHandler, public FbTk::EventHandler {
 public:
     /// layer bits
     enum WinLayer {
@@ -102,7 +103,7 @@ public:
     };
 
     /// create fluxbox window with parent win and screen connection
-    FluxboxWindow(Window win, BScreen *scr, int screen_num, BImageControl &imgctrl, FbWinFrameTheme &tm,
+    FluxboxWindow(Window win, BScreen *scr, int screen_num, FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
                   FbTk::MenuTheme &menutheme);
     virtual ~FluxboxWindow();
 
@@ -313,8 +314,6 @@ private:
     // state and hint signals
     WinSubject m_hintsig, m_statesig, m_workspacesig, m_diesig;
 
-    //   BImageControl &image_ctrl; /// image control for rendering
-	
     std::string m_instance_name; /// instance name from WM_CLASS
     std::string m_class_name; /// class name from WM_CLASS
 	
@@ -323,7 +322,7 @@ private:
         focused, stuck, modal, send_focus_message, m_managed;
 
     BScreen *screen; /// screen on which this window exist
-    BTimer timer;
+    FbTk::Timer timer;
     Display *display; /// display connection (obsolete by FbTk)
     BaseDisplay::BlackboxAttributes blackbox_attrib;
 
