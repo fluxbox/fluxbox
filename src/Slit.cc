@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.41 2003/04/25 10:46:07 fluxgen Exp $
+// $Id: Slit.cc,v 1.42 2003/04/25 17:27:36 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -265,16 +265,14 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       clientlist_menu(*scr.menuTheme(),
                       scr.getScreenNumber(),
                       *scr.getImageControl()),
-      slit_layermenu(0),
+      m_slit_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
+                                           scr.getScreenNumber(),
+                                           *scr.getImageControl(),
+                                           *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                   this,
+                                   true)),
       m_layeritem(0),
       m_slit_theme(new SlitTheme(*this)) {
-
-    slit_layermenu.reset(new LayerMenu<Slit>(*scr.menuTheme(),
-                                   scr.getScreenNumber(),
-                                   *scr.getImageControl(),
-                                   *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                   this,
-                                   true));
 
     // default placement and direction
     m_direction = screen().getSlitDirection();
@@ -1141,7 +1139,7 @@ void Slit::setupMenu() {
                                      "Placement"),
                     &placement_menu);
 
-    slitmenu.insert("Layer...", slit_layermenu.get());
+    slitmenu.insert("Layer...", m_slit_layermenu.get());
 
     slitmenu.insert(new BoolMenuItem(i18n->getMessage(
                                                       CommonSet, CommonAutoHide,
