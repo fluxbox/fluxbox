@@ -1,4 +1,10 @@
 (Format: Year/Month/Day)
+Changes for 0.9.12
+*04/12/10:
+  * Update ClockTool when timeformat changed, close #1026096 (Mathias)
+    ClockTool.cc
+  * SlitClientMenu had with wheelup/down sometimes (Mathias)
+    Slit.cc
 Changes for 0.9.11
 *04/12/02:
   * New features for the Slit (Mathias)
