@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.27 2003/08/19 16:18:54 fluxgen Exp $
+// $Id: Keys.hh,v 1.28 2003/09/06 13:58:06 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -46,17 +46,9 @@ public:
     /// destructor
     ~Keys();
 
-    /** 
-        Strip out modifiers we want to ignore
-        @return the cleaned state number
-    */
-    static unsigned int cleanMods(unsigned int mods)
-        //remove numlock, capslock and scrolllock
-        { return mods & (~s_capslock_mod & ~s_numlock_mod & ~s_scrolllock_mod); }
-
     unsigned int keycodeToModmask(unsigned int keycode);
-    void loadModmap();
 
+    void loadModmap();
     /**
        Load configuration from file
        @return true on success, else false
@@ -132,13 +124,11 @@ private:
     */
     bool mergeTree(t_key *newtree, t_key *basetree=0);
 
-    static int s_capslock_mod, s_numlock_mod, s_scrolllock_mod; ///< modifiers
-		
     std::vector<t_key *> m_keylist;	
-    std::string m_execcmdstring; ///< copy of the execcommandstring
-    int m_param;                 ///< copy of the param argument
-    Display *m_display;          ///< display connection
-    XModifierKeymap *m_modmap;   ///< Modifier->keycode mapping
+
+    Display *m_display;  ///< display connection
+    XModifierKeymap *m_modmap;
+    
 };
 
 #endif // KEYS_HH

@@ -19,14 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.36 2003/08/19 16:19:28 fluxgen Exp $
+//$Id: Keys.cc,v 1.37 2003/09/06 13:58:06 fluxgen Exp $
 
 
 #include "Keys.hh"
 
-#include "StringUtil.hh"
-#include "App.hh"
-#include "Command.hh"
+#include "FbTk/StringUtil.hh"
+#include "FbTk/App.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/KeyUtil.hh"
+
 #include "CommandParser.hh"
 
 #ifdef HAVE_CONFIG_H
@@ -71,10 +73,6 @@
 
 using namespace std;
 
-int Keys::s_capslock_mod = 0;
-int Keys::s_numlock_mod = 0;
-int Keys::s_scrolllock_mod = 0;
-
 Keys::Keys(const char *filename):
     m_display(FbTk::App::instance()->display()),
     m_modmap(0) {
@@ -86,9 +84,9 @@ Keys::Keys(const char *filename):
 }
 
 Keys::~Keys() {	
-    if (m_modmap) {
+    if (m_modmap)
         XFreeModifiermap(m_modmap);
-    }
+
     ungrabKeys();
     deleteTree();
 }
@@ -223,12 +221,24 @@ bool Keys::load(const char *filename) {
     return true;
 }
 
+void Keys::loadModmap() {
+    if (m_modmap)
+        XFreeModifiermap(m_modmap);
+
+    m_modmap = XGetModifierMapping(m_display);
+    // force reinit of modifiers
+    FbTk::KeyUtil::init();
+}
+
 /**
  Grabs a key with the modifier
  and with numlock,capslock and scrollock
 */
 void Keys::grabKey(unsigned int key, unsigned int mod) {
-
+    const int capsmod = FbTk::KeyUtil::capslockMod();
+    const int nummod = FbTk::KeyUtil::numlockMod();
+    const int scrollmod = FbTk::KeyUtil::scrolllockMod();
+    
     for (int screen=0; screen<ScreenCount(m_display); screen++) {
 		
         Window root = RootWindow(m_display, screen);
@@ -240,35 +250,35 @@ void Keys::grabKey(unsigned int key, unsigned int mod) {
         // Grab with numlock, capslock and scrlock	
 
         //numlock	
-        XGrabKey(m_display, key, mod|s_numlock_mod,
+        XGrabKey(m_display, key, mod|nummod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);		
         //scrolllock
-        XGrabKey(m_display, key, mod|s_scrolllock_mod,
+        XGrabKey(m_display, key, mod|scrollmod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);	
         //capslock
-        XGrabKey(m_display, key, mod|s_capslock_mod,
+        XGrabKey(m_display, key, mod|capsmod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);
 	
         //capslock+numlock
-        XGrabKey(m_display, key, mod|s_capslock_mod|s_numlock_mod,
+        XGrabKey(m_display, key, mod|capsmod|nummod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);
 
         //capslock+scrolllock
-        XGrabKey(m_display, key, mod|s_capslock_mod|s_scrolllock_mod,
+        XGrabKey(m_display, key, mod|capsmod|scrollmod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);						
 	
         //capslock+numlock+scrolllock
-        XGrabKey(m_display, key, mod|s_capslock_mod|s_scrolllock_mod|s_numlock_mod,
+        XGrabKey(m_display, key, mod|capsmod|scrollmod|nummod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);						
 
         //numlock+scrollLock
-        XGrabKey(m_display, key, mod|s_numlock_mod|s_scrolllock_mod,
+        XGrabKey(m_display, key, mod|nummod|scrollmod,
                  root, True,
                  GrabModeAsync, GrabModeAsync);
 	
@@ -325,7 +335,7 @@ unsigned int Keys::getKey(const char *keystr) {
 void Keys::doAction(XKeyEvent &ke) {
     static t_key *next_key = 0;
     // Remove numlock, capslock and scrolllock
-    ke.state = cleanMods(ke.state);
+    ke.state = FbTk::KeyUtil::cleanMods(ke.state);
 	
     if (!next_key) {
 	
@@ -442,52 +452,6 @@ Keys::t_key::~t_key() {
         }
     }
 
-}
-
-/**
- * load state relating to the modifier map
- */
-void Keys::loadModmap() {
-    if (m_modmap) {
-        XFreeModifiermap(m_modmap);
-    }
-    m_modmap = XGetModifierMapping(m_display);
-
-    // mask to use for modifier
-    int mods[] = {
-        ShiftMask,
-        LockMask,
-        ControlMask,
-        Mod1Mask,
-        Mod2Mask,
-        Mod3Mask,
-        Mod4Mask,
-        Mod5Mask,
-        0
-    };
-	
-    // find modifiers and set them
-    for (int i=0, realkey=0; i<8; ++i) {
-        for (int key=0; key<m_modmap->max_keypermod; ++key, ++realkey) {
-
-            if (m_modmap->modifiermap[realkey] == 0)
-                continue;
-
-            KeySym ks = XKeycodeToKeysym(m_display, m_modmap->modifiermap[realkey], 0);
-
-            switch (ks) {
-            case XK_Caps_Lock:
-                s_capslock_mod = mods[i];
-                break;
-            case XK_Scroll_Lock:
-                s_scrolllock_mod = mods[i];
-                break;
-            case XK_Num_Lock:
-                s_numlock_mod = mods[i];
-                break;
-            }
-        }
-    }
 }
 
 unsigned int Keys::keycodeToModmask(unsigned int keycode) {
