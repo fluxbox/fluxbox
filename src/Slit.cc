@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.48 2003/05/10 22:53:57 fluxgen Exp $
+// $Id: Slit.cc,v 1.49 2003/05/11 17:42:51 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -259,37 +259,43 @@ private:
 };
 
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
-    : m_screen(scr), timer(this), 
-      slitmenu(*scr.menuTheme(), 
-               scr.getScreenNumber(), 
-               *scr.getImageControl(),
-               *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      placement_menu(*scr.menuTheme(),
-                     scr.getScreenNumber(),
-                     *scr.getImageControl(),
-                     *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      clientlist_menu(*scr.menuTheme(),
-                      scr.getScreenNumber(),
-                      *scr.getImageControl(),
-                      *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      m_slit_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
+    : m_screen(scr), m_timer(this), 
+      m_slitmenu(*scr.menuTheme(), 
+                 scr.getScreenNumber(), 
+                 *scr.getImageControl(),
+                 *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+      m_placement_menu(*scr.menuTheme(),
+                       scr.getScreenNumber(),
+                       *scr.getImageControl(),
+                       *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+      m_clientlist_menu(*scr.menuTheme(),
+                        scr.getScreenNumber(),
+                        *scr.getImageControl(),
+                        *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+      m_layermenu(new LayerMenu<Slit>(*scr.menuTheme(),
                                            scr.getScreenNumber(),
                                            *scr.getImageControl(),
                                            *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                   this,
-                                   true)),
+                                           this,
+                                           true)),
+      //For KDE dock applets
+      m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
+                                    "KWM_DOCKWINDOW", False)), //KDE v1.x
+      m_kwm2_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
+                                    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)), //KDE v2.x
+
       m_layeritem(0),
       m_slit_theme(new SlitTheme(*this)) {
 
     // default placement and direction
     m_direction = screen().getSlitDirection();
     m_placement = screen().getSlitPlacement();
-    hidden = do_auto_hide = screen().doSlitAutoHide();
+    m_hidden = m_do_auto_hide = screen().doSlitAutoHide();
 
     frame.pixmap = None;
 
-    timer.setTimeout(200); // default timeout
-    timer.fireOnce(true);
+    m_timer.setTimeout(200); // default timeout
+    m_timer.fireOnce(true);
 
     XSetWindowAttributes attrib;
     unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
@@ -315,10 +321,6 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
 
-    //For KDE dock applets
-    kwm1_dockwindow = XInternAtom(disp, "KWM_DOCKWINDOW", False); //KDE v1.x
-    kwm2_dockwindow = XInternAtom(disp, "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False); //KDE v2.x
-    
     // Get client list for sorting purposes
     loadClientList(filename);
 
@@ -331,7 +333,6 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 Slit::~Slit() {
     if (frame.pixmap != 0)
         screen().getImageControl()->removeImage(frame.pixmap);
- 
 }
 
 
@@ -339,7 +340,7 @@ void Slit::addClient(Window w) {
 #ifdef DEBUG
     cerr<<__FILE__": addClient(w = 0x"<<hex<<w<<dec<<")"<<endl;
 #endif // DEBUG
-    //Can't add non existent window
+    // Can't add non existent window
     if (w == None)
         return;
 
@@ -347,8 +348,8 @@ void Slit::addClient(Window w) {
     SlitClient *client = 0;
     std::string match_name;
     ::getWMName(&screen(), w, match_name);
-    SlitClients::iterator it = clientList.begin();
-    SlitClients::iterator it_end = clientList.end();
+    SlitClients::iterator it = m_client_list.begin();
+    SlitClients::iterator it_end = m_client_list.end();
     bool found_match = false;
     for (; it != it_end; ++it) {
         // If the name matches...
@@ -365,14 +366,14 @@ void Slit::addClient(Window w) {
         } else if (found_match) {
             // Insert before first non-match after a previously found match?
             client = new SlitClient(&screen(), w);
-            clientList.insert(it, client);
+            m_client_list.insert(it, client);
             break;
         }
     }
     // Append to client list?
     if (client == 0) {
         client = new SlitClient(&screen(), w);
-        clientList.push_back(client);
+        m_client_list.push_back(client);
     }
 
     Display *disp = FbTk::App::instance()->display();
@@ -410,8 +411,8 @@ void Slit::addClient(Window w) {
 
     // Check if KDE v2.x dock applet
     if (XGetWindowProperty(disp, w,
-                           kwm2_dockwindow, 0l, 1l, False,
-                           kwm2_dockwindow,
+                           m_kwm2_dockwindow, 0l, 1l, False,
+                           m_kwm2_dockwindow,
                            &ajunk, &ijunk, &uljunk, &uljunk,
                            (unsigned char **) &data) == Success) {
         iskdedockapp = (data && data[0] != 0);
@@ -421,8 +422,8 @@ void Slit::addClient(Window w) {
     // Check if KDE v1.x dock applet
     if (!iskdedockapp) {
         if (XGetWindowProperty(disp, w,
-                               kwm1_dockwindow, 0l, 1l, False,
-                               kwm1_dockwindow,
+                               m_kwm1_dockwindow, 0l, 1l, False,
+                               m_kwm1_dockwindow,
                                &ajunk, &ijunk, &uljunk, &uljunk,
                                (unsigned char **) &data) == Success) {
             iskdedockapp = (data && data[0] != 0);
@@ -503,7 +504,7 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
 
     // Destructive removal?
     if (destroy)
-        clientList.remove(client);
+        m_client_list.remove(client);
     else // Clear the window info, but keep around to help future sorting?
         client->initialize();
 
@@ -539,8 +540,8 @@ void Slit::removeClient(Window w, bool remap) {
 
     bool reconf = false;
 
-    SlitClients::iterator it = clientList.begin();
-    SlitClients::iterator it_end = clientList.end();
+    SlitClients::iterator it = m_client_list.begin();
+    SlitClients::iterator it_end = m_client_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->window == w) {
             removeClient((*it), remap, false);
@@ -560,7 +561,7 @@ void Slit::reconfigure() {
     frame.height = 0;
 
     // be sure to sync slit auto hide up with the screen's menu resource
-    do_auto_hide = screen().doSlitAutoHide();
+    m_do_auto_hide = screen().doSlitAutoHide();
 
     // Need to count windows because not all client list entries
     // actually correspond to mapped windows.
@@ -568,15 +569,14 @@ void Slit::reconfigure() {
     const int bevel_width = screen().rootTheme().bevelWidth();
     switch (direction()) {
     case VERTICAL: {
-        SlitClients::iterator it = clientList.begin();
-        SlitClients::iterator it_end = clientList.end();
+        SlitClients::iterator it = m_client_list.begin();
+        SlitClients::iterator it_end = m_client_list.end();
         for (; it != it_end; ++it) {
-            //client created window?
+            // client created window?
             if ((*it)->window != None && (*it)->visible) {
                 num_windows++;
-                frame.height += (*it)->height + bevel_width;
-					
-                //frame width < client window?
+                frame.height += (*it)->height + bevel_width;					
+                
                 if (frame.width < (*it)->width) 
                     frame.width = (*it)->width;
             }
@@ -596,8 +596,8 @@ void Slit::reconfigure() {
         break;
 
     case HORIZONTAL: {
-        SlitClients::iterator it = clientList.begin();
-        SlitClients::iterator it_end = clientList.end();
+        SlitClients::iterator it = m_client_list.begin();
+        SlitClients::iterator it_end = m_client_list.end();
         for (; it != it_end; ++it) {
             //client created window?
             if ((*it)->window != None && (*it)->visible) {
@@ -629,7 +629,7 @@ void Slit::reconfigure() {
 
     frame.window.setBorderWidth(screen().rootTheme().borderWidth());
     frame.window.setBorderColor(screen().rootTheme().borderColor());
-    //did we actually use slit slots
+    // did we actually use slit slots
     if (num_windows == 0)
         frame.window.hide();
     else
@@ -660,8 +660,8 @@ void Slit::reconfigure() {
         y = bevel_width;
 
         {
-            SlitClients::iterator it = clientList.begin();
-            SlitClients::iterator it_end = clientList.end();
+            SlitClients::iterator it = m_client_list.begin();
+            SlitClients::iterator it_end = m_client_list.end();
             for (; it != it_end; ++it) {
                 if ((*it)->window == None)
                     continue;
@@ -713,8 +713,8 @@ void Slit::reconfigure() {
         y = 0;
 
         {
-            SlitClients::iterator it = clientList.begin();
-            SlitClients::iterator it_end = clientList.end();
+            SlitClients::iterator it = m_client_list.begin();
+            SlitClients::iterator it_end = m_client_list.end();
             for (; it != it_end; ++it) {
                 //client created window?
                 if ((*it)->window == None)
@@ -766,10 +766,10 @@ void Slit::reconfigure() {
         break;
     }
 
-    if (do_auto_hide && !hidden && !timer.isTiming()) 
-        timer.start();
+    if (doAutoHide() && !isHidden() && !m_timer.isTiming()) 
+        m_timer.start();
 
-    slitmenu.reconfigure();
+    m_slitmenu.reconfigure();
     updateClientmenu();
 }
 
@@ -877,7 +877,7 @@ void Slit::reposition() {
         break;
     }
 
-    if (hidden) {
+    if (isHidden()) {
         frame.window.moveResize(frame.x_hidden,
                                 frame.y_hidden, frame.width, frame.height);
     } else {
@@ -889,30 +889,30 @@ void Slit::reposition() {
 
 void Slit::shutdown() {
     saveClientList();
-    while (!clientList.empty())
-        removeClient(clientList.front(), true, true);
+    while (!m_client_list.empty())
+        removeClient(m_client_list.front(), true, true);
 }
 
 void Slit::cycleClientsUp() {
-    if (clientList.size() < 2)
+    if (m_client_list.size() < 2)
         return;
 
     // rotate client list up, ie the first goes last
-    SlitClients::iterator it = clientList.begin();
+    SlitClients::iterator it = m_client_list.begin();
     SlitClient *client = *it;
-    clientList.erase(it);
-    clientList.push_back(client);
+    m_client_list.erase(it);
+    m_client_list.push_back(client);
     reconfigure();
 }
 
 void Slit::cycleClientsDown() {
-    if (clientList.size() < 2)
+    if (m_client_list.size() < 2)
         return;
 
     // rotate client list down, ie the last goes first
-    SlitClient *client = clientList.back();
-    clientList.remove(client);
-    clientList.push_front(client);
+    SlitClient *client = m_client_list.back();
+    m_client_list.remove(client);
+    m_client_list.push_front(client);
     reconfigure();
 }
 
@@ -969,55 +969,55 @@ void Slit::buttonPressEvent(XButtonEvent &e) {
         return;
 
     if (e.button == Button3) {
-        if (! slitmenu.isVisible()) {
-            int x = e.x_root - (slitmenu.width() / 2),
-                y = e.y_root - (slitmenu.height() / 2); 
+        if (! m_slitmenu.isVisible()) {
+            int x = e.x_root - (m_slitmenu.width() / 2),
+                y = e.y_root - (m_slitmenu.height() / 2); 
 
             if (x < 0)
                 x = 0;
-            else if (x + slitmenu.width() > screen().getWidth())
-                x = screen().getWidth() - slitmenu.width();
+            else if (x + m_slitmenu.width() > screen().getWidth())
+                x = screen().getWidth() - m_slitmenu.width();
 
             if (y < 0)
                 y = 0;
-            else if (y + slitmenu.height() > screen().getHeight())
-                y = screen().getHeight() - slitmenu.height();
+            else if (y + m_slitmenu.height() > screen().getHeight())
+                y = screen().getHeight() - m_slitmenu.height();
 
-            slitmenu.move(x, y);
-            slitmenu.show();
+            m_slitmenu.move(x, y);
+            m_slitmenu.show();
         } else
-            slitmenu.hide();
+            m_slitmenu.hide();
     }
 }
 
 
 void Slit::enterNotifyEvent(XCrossingEvent &) {
-    if (! do_auto_hide)
+    if (! doAutoHide())
         return;
 
-    if (hidden) {
-        if (! timer.isTiming()) 
-            timer.start();
+    if (isHidden()) {
+        if (! m_timer.isTiming()) 
+            m_timer.start();
     } else {
-        if (timer.isTiming()) 
-            timer.stop();
+        if (m_timer.isTiming()) 
+            m_timer.stop();
     }
 }
 
 
 void Slit::leaveNotifyEvent(XCrossingEvent &ev) {
-    if (! do_auto_hide)
+    if (! doAutoHide())
         return;
 
-    if (hidden) {
-        if (timer.isTiming()) 
-            timer.stop();
+    if (isHidden()) {
+        if (m_timer.isTiming()) 
+            m_timer.stop();
     } else {
-        if (! timer.isTiming()) {
+        if (! m_timer.isTiming()) {
             // the menu is open, keep it firing until it closes
-            if (slitmenu.isVisible()) 
-                timer.fireOnce(false);
-            timer.start();
+            if (m_slitmenu.isVisible()) 
+                m_timer.fireOnce(false);
+            m_timer.start();
         }
     }
 
@@ -1039,8 +1039,8 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
     XConfigureWindow(FbTk::App::instance()->display(), 
                      event.window, event.value_mask, &xwc);
 
-    SlitClients::iterator it = clientList.begin();
-    SlitClients::iterator it_end = clientList.end();
+    SlitClients::iterator it = m_client_list.begin();
+    SlitClients::iterator it_end = m_client_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->window == event.window) {
             if ((*it)->width != ((unsigned) event.width) ||
@@ -1064,16 +1064,16 @@ void Slit::exposeEvent(XExposeEvent &event) {
 }
 
 void Slit::timeout() {
-    if (do_auto_hide) {
-        if (!slitmenu.isVisible()) {
-            timer.fireOnce(true);
+    if (doAutoHide()) {
+        if (!m_slitmenu.isVisible()) {
+            m_timer.fireOnce(true);
         } else 
             return;
     } else 
-        if (!hidden) return;
+        if (!isHidden()) return;
         
-    hidden = ! hidden; // toggle hidden state
-    if (hidden)
+    m_hidden = ! m_hidden; // toggle hidden state
+    if (isHidden())
         frame.window.move(frame.x_hidden, frame.y_hidden);
     else
         frame.window.move(frame.x, frame.y);
@@ -1094,7 +1094,7 @@ void Slit::loadClientList(const char *filename) {
             std::getline(file, name); // get the entire line
             if (name.size() > 0) { // don't add client unless we have a valid line
                 SlitClient *client = new SlitClient(name.c_str());
-                clientList.push_back(client);
+                m_client_list.push_back(client);
             }
         }
     }
@@ -1102,30 +1102,33 @@ void Slit::loadClientList(const char *filename) {
 
 void Slit::updateClientmenu() {
     // clear old items
-    clientlist_menu.removeAll();
-    clientlist_menu.setLabel("Clients");
+    m_clientlist_menu.removeAll();
+    m_clientlist_menu.setLabel("Clients");
+
     FbTk::RefCount<FbTk::Command> cycle_up(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsUp));
     FbTk::RefCount<FbTk::Command> cycle_down(new FbTk::SimpleCommand<Slit>(*this, &Slit::cycleClientsDown));
-    clientlist_menu.insert("Cycle Up", cycle_up);
-    clientlist_menu.insert("Cycle Down", cycle_down);
+    m_clientlist_menu.insert("Cycle Up", cycle_up);
+    m_clientlist_menu.insert("Cycle Down", cycle_down);
+
     FbTk::MenuItem *separator = new FbTk::MenuItem("-------");
     separator->setEnabled(false);
-    clientlist_menu.insert(separator);
+    m_clientlist_menu.insert(separator);
+
     FbTk::RefCount<FbTk::Command> reconfig(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
-    SlitClients::iterator it = clientList.begin();
-    for (; it != clientList.end(); ++it) {
+    SlitClients::iterator it = m_client_list.begin();
+    for (; it != m_client_list.end(); ++it) {
         if ((*it) != 0 && (*it)->window != 0)
-            clientlist_menu.insert(new SlitClientMenuItem(*(*it), reconfig));
+            m_clientlist_menu.insert(new SlitClientMenuItem(*(*it), reconfig));
     }
 
-    clientlist_menu.update();
+    m_clientlist_menu.update();
 }
 
 void Slit::saveClientList() {
 
     std::ofstream file(m_filename.c_str());
-    SlitClients::iterator it = clientList.begin();
-    SlitClients::iterator it_end = clientList.end();
+    SlitClients::iterator it = m_client_list.begin();
+    SlitClients::iterator it_end = m_client_list.end();
     std::string prevName;
     std::string name;
     for (; it != it_end; ++it) {
@@ -1138,14 +1141,15 @@ void Slit::saveClientList() {
 }
 
 void Slit::setAutoHide(bool val) {
-    do_auto_hide = val;
+    m_do_auto_hide = val;
     screen().saveSlitAutoHide(val);
-    if (do_auto_hide)
-        if (! timer.isTiming()) {
-            if (slitmenu.isVisible())
-                timer.fireOnce(false);
-            timer.start();
+    if (doAutoHide()) {
+        if (! m_timer.isTiming()) {
+            if (m_slitmenu.isVisible())
+                m_timer.fireOnce(false);
+            m_timer.start();
         }
+    }
 }
 
 void Slit::setupMenu() {
@@ -1162,36 +1166,34 @@ void Slit::setupMenu() {
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
 
     // setup base menu
-    slitmenu.setLabel("Slit");
-    slitmenu.insert(i18n->getMessage(
-                                     CommonSet, CommonPlacementTitle,
-                                     "Placement"),
-                    &placement_menu);
+    m_slitmenu.setLabel("Slit");
+    m_slitmenu.insert(i18n->getMessage(
+                                       CommonSet, CommonPlacementTitle,
+                                       "Placement"),
+                      &m_placement_menu);
 
-    slitmenu.insert("Layer...", m_slit_layermenu.get());
+    m_slitmenu.insert("Layer...", m_layermenu.get());
 
-    slitmenu.insert(new BoolMenuItem(i18n->getMessage(
-                                                      CommonSet, CommonAutoHide,
-                                                      "Auto hide"),
-                                     screen().doSlitAutoHide(),
-                                     save_and_reconfigure));
+    m_slitmenu.insert(new BoolMenuItem(i18n->getMessage(
+                                                        CommonSet, CommonAutoHide,
+                                                        "Auto hide"),
+                                       screen().doSlitAutoHide(),
+                                       save_and_reconfigure));
 
-    slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(
-                                            SlitSet, SlitSlitDirection,
-                                            "Slit Direction"), 
-                                        *this,
-                                        save_and_reconfigure));
-    slitmenu.insert("Clients", &clientlist_menu);
-    slitmenu.update();
+    m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(
+                                                           SlitSet, SlitSlitDirection,
+                                                           "Slit Direction"), 
+                                          *this,
+                                          save_and_reconfigure));
+    m_slitmenu.insert("Clients", &m_clientlist_menu);
+    m_slitmenu.update();
 
     // setup sub menu
-
-    
-    placement_menu.setLabel(i18n->getMessage(
+    m_placement_menu.setLabel(i18n->getMessage(
                                              SlitSet, SlitSlitPlacement,
                                              "Slit Placement"));
-    placement_menu.setMinimumSublevels(3);
-    placement_menu.setInternalMenu();
+    m_placement_menu.setMinimumSublevels(3);
+    m_placement_menu.setInternalMenu();
    
 
     // setup items in sub menu
@@ -1214,18 +1216,18 @@ void Slit::setupMenu() {
     // create items in sub menu
     for (size_t i=0; i<9; ++i) {
         if (place_menu[i].default_str == 0) {
-            placement_menu.insert("");
+            m_placement_menu.insert("");
         } else {
             const char *i18n_str = i18n->getMessage(place_menu[i].set, 
                                                     place_menu[i].base,
                                                     place_menu[i].default_str);
-            placement_menu.insert(new PlaceSlitMenuItem(i18n_str, *this,
+            m_placement_menu.insert(new PlaceSlitMenuItem(i18n_str, *this,
                                                         place_menu[i].slit_placement,
                                                         save_and_reconfigure));
         }
     }
     // finaly update sub menu
-    placement_menu.update();
+    m_placement_menu.update();
 }
 
 void Slit::moveToLayer(int layernum) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.26 2003/05/07 22:53:21 fluxgen Exp $
+/// $Id: Slit.hh,v 1.27 2003/05/11 17:42:51 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -61,16 +61,16 @@ public:
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
-    inline bool isHidden() const { return hidden; }
-    inline bool doAutoHide() const { return do_auto_hide; }
+    inline bool isHidden() const { return m_hidden; }
+    inline bool doAutoHide() const { return m_do_auto_hide; }
     inline Direction direction() const { return m_direction; }
     inline Placement placement() const { return m_placement; }
-    FbTk::Menu &menu() { return slitmenu; }
+    FbTk::Menu &menu() { return m_slitmenu; }
 
     inline const FbTk::FbWindow &window() const { return frame.window; }
 
-    inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
-    inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
+    inline int x() const { return (m_hidden ? frame.x_hidden : frame.x); }
+    inline int y() const { return (m_hidden ? frame.y_hidden : frame.y); }
 
     inline unsigned int width() const { return frame.width; }
     inline unsigned int height() const { return frame.height; }
@@ -117,18 +117,18 @@ private:
     void loadClientList(const char *filename);
     void updateClientmenu();
 
-    bool hidden, do_auto_hide;
+    bool m_hidden, m_do_auto_hide;
     Direction m_direction;
     Placement m_placement;
 
     BScreen &m_screen;
-    FbTk::Timer timer;
+    FbTk::Timer m_timer;
 
     typedef std::list<SlitClient *> SlitClients;
 
-    SlitClients clientList;
-    FbMenu slitmenu, placement_menu, clientlist_menu;
-    std::auto_ptr<LayerMenu<Slit> > m_slit_layermenu;
+    SlitClients m_client_list;
+    FbMenu m_slitmenu, m_placement_menu, m_clientlist_menu;
+    std::auto_ptr<LayerMenu<Slit> > m_layermenu;
     std::string m_filename;
 
     struct frame {
@@ -138,8 +138,9 @@ private:
         int x, y, x_hidden, y_hidden;
         unsigned int width, height;
     } frame;
+
     // for KDE
-    Atom kwm1_dockwindow, kwm2_dockwindow;
+    Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
 
     std::auto_ptr<FbTk::XLayerItem> m_layeritem;
     std::auto_ptr<SlitTheme> m_slit_theme;
