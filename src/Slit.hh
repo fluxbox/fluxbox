@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.38 2003/08/29 10:30:46 fluxgen Exp $
+/// $Id: Slit.hh,v 1.39 2004/04/19 22:42:26 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -49,7 +49,7 @@ class Strut;
 /// Handles dock apps
 class Slit: public FbTk::EventHandler, public FbTk::Observer {
 public:
-    
+    typedef std::list<SlitClient *> SlitClients;    
     /**
        Client alignment
     */
@@ -63,6 +63,8 @@ public:
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
+    void show() { frame.window.show(); }
+    void hide() { frame.window.hide(); }
     void setDirection(Direction dir);
     void setPlacement(Placement place);
     void setAutoHide(bool val);
@@ -115,7 +117,8 @@ public:
 
     inline unsigned int width() const { return frame.width; }
     inline unsigned int height() const { return frame.height; }
-    
+    const SlitClients &clients() const { return m_client_list; }
+    SlitClients &clients() { return m_client_list; }
 private:
     void clearWindow();
     void setupMenu();
@@ -130,8 +133,6 @@ private:
 
     BScreen &m_screen;
     FbTk::Timer m_timer;
-
-    typedef std::list<SlitClient *> SlitClients;
 
     SlitClients m_client_list;
     FbMenu m_slitmenu, m_placement_menu, m_clientlist_menu;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.92 2004/02/20 09:29:06 fluxgen Exp $
+// $Id: Slit.cc,v 1.93 2004/04/19 22:42:05 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -487,39 +487,7 @@ void Slit::addClient(Window w) {
     XWindowAttributes attrib;
     
 #ifdef KDE
-
-    //Check and see if new client is a KDE dock applet
-    //If so force reasonable size
-    bool iskdedockapp = false;
-    Atom ajunk;
-    int ijunk;
-    unsigned long *data = 0, uljunk;
-
-    // Check if KDE v2.x dock applet
-    if (XGetWindowProperty(disp, w,
-                           m_kwm2_dockwindow, 0l, 1l, False,
-                           m_kwm2_dockwindow,
-                           &ajunk, &ijunk, &uljunk, &uljunk,
-                           (unsigned char **) &data) == Success && data) {
-        iskdedockapp = (data && data[0] != 0);
-        XFree((void *) data);
-        data = 0;
-    }
-
-    // Check if KDE v1.x dock applet
-    if (!iskdedockapp) {
-        if (XGetWindowProperty(disp, w,
-                               m_kwm1_dockwindow, 0l, 1l, False,
-                               m_kwm1_dockwindow,
-                               &ajunk, &ijunk, &uljunk, &uljunk,
-                               (unsigned char **) &data) == Success && data) {
-            iskdedockapp = (data && data[0] != 0);
-            XFree((void *) data);
-            data = 0;
-        }
-    }
-
-    if (iskdedockapp)
+    if (screen().isKdeDockapp(w))   
         client->resize(24, 24);
     else
 #endif // KDE
@@ -549,13 +517,13 @@ void Slit::addClient(Window w) {
     client->enableEvents();
     
     // flush events
-    XFlush(disp);
+    //    XFlush(disp);
 
     // add slit client to eventmanager
     FbTk::EventManager::instance()->add(*this, client->clientWindow());
     FbTk::EventManager::instance()->add(*this, client->iconWindow());
 
-    frame.window.show();
+    //    frame.window.show();
     clearWindow();
     reconfigure();
 
