@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.11 2003/07/25 11:17:41 rathnor Exp $
+// $Id: FbRun.hh,v 1.12 2003/08/25 01:16:41 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -34,25 +34,19 @@
 /**
    Creates and managed a run window
 */
-class FbRun: public FbTk::EventHandler {
+class FbRun: public FbTk::EventHandler, public FbTk::FbWindow {
 public:
     FbRun(int x = 0, int y = 0, size_t width = 200);
     ~FbRun();
     void handleEvent(XEvent * const ev);
     void setText(const std::string &text);
     void setTitle(const std::string &title);
-    void move(int x, int y);
     void resize(size_t width, size_t height);
-    size_t height() const { return m_win.height(); }
-    size_t width() const { return m_win.width(); }
-    /// hide window
-    void hide();
-    /// show window
-    void show();
+
     /// load and reconfigure for new font
     bool loadFont(const std::string &fontname);
-    void setForeground(const FbTk::Color &color);
-    void setBackground(const FbTk::Color &color);
+    void setForegroundColor(const FbTk::Color &color);
+    void setBackgroundColor(const FbTk::Color &color);
     void setAntialias(bool val) { m_font.setAntialias(val); }
     const FbTk::Font &font() const { return m_font; }
     /// execute command and exit
@@ -98,7 +92,6 @@ private:
 
     FbTk::Font m_font; ///< font used to draw command text
     Display *m_display;  ///< display connection
-    FbTk::FbWindow m_win;  ///< toplevel window 
     std::string m_runtext; ///< command to execute
     int m_bevel; ///< distance to window edge from font in pixels
     GC m_gc; ///< graphic context
@@ -111,7 +104,7 @@ private:
     int m_start_pos; ///< start position of portion of text to display
     int m_cursor_pos; ///< relative to m_start_pos
     int m_end_pos; ///< end postition of portion of text to display
-
+    Pixmap m_pixmap;
 };
 
 #endif // FBRUN_HH
