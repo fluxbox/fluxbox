@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.38 2002/12/04 14:16:42 rathnor Exp $
+// $Id: Workspace.cc,v 1.39 2003/01/05 22:30:20 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -813,7 +813,7 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                 : screen->getTabWidth();
     }
 
-    win->configure(place_x, place_y, win->getWidth(), win->getHeight());
+    win->moveResize(place_x, place_y, win->getWidth(), win->getHeight());
 }
 
 
