@@ -1,5 +1,17 @@
+Changes for 0.1.7:
+*02/01/18:
+   * Fixed ResourceManager 
+   * Changed resources to Resource<T> in class Fluxbox
+   * Added Resource.hh/.cc, XrmDatabaseHelper.hh, NotCopyable.hh
+*02/01/16:
+   * Fixed indent in Window.hh
+*02/01/15:
+   * Fixed exception in FluxboxWindow::FluxboxWindow
+*02/01/14:
+   * Fixed throw statement in FluxboxWindow
+
 Changes for 0.1.6:
-*01/01/11:
+*02/01/11:
    * Fixed small bug in keybindings code, now killwindow and shade will
      work as supposed with tabs. (Claes Nästén)
    * Fixed so it compiles with cygwin (Thanks Eric Nicolas)

@@ -1,8 +1,6 @@
 The coding style is almost the same as i blackbox.
 Instead of 2 spaces there is tab.
-It might look strange now in some places, that is because
-the code hasnt been "translated" to tab 100% yet.
-Use a tab size of 2 and you will be fine.
+Use a tab size of 2 or 4 and you will be fine.
 
 if-statements:
 
@@ -29,6 +27,12 @@ It should look like this
 			stuff);
 	}
 	
+If a line need to be splited in an if-statement then it should use two 
+tab for indent next row in if-statement like this:
+
+	if ( longline && longline && longling &&
+			longline && longline && longline)
+		funktion();
 
 The include guards:
 _FILENAME_HH_ 
@@ -46,7 +50,7 @@ type classname::function(...) {
 }
 
 
-enums must be in uppercase letters:
+enums must be in uppercase letters and not in file scope:
 enum {WHITE, RED, BLUE};
 
 Class data members are prefixed by m_ 
