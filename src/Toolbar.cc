@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.118 2003/08/28 13:58:18 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.119 2003/08/28 15:04:47 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -250,7 +250,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER, 
                    scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),
     m_rc_height(scrn.resourceManager(), 0, scrn.name() + ".toolbar.height", scrn.altName() + ".Toolbar.Height"),
-    m_rc_tools(scrn.resourceManager(), "", scrn.name() + ".toolbar.tools", scrn.altName() + ".Toolbar.Tools"),
+    m_rc_tools(scrn.resourceManager(), "workspacename, iconbar, systemtray, clock", 
+               scrn.name() + ".toolbar.tools", scrn.altName() + ".Toolbar.Tools"),
     m_shape(new Shape(frame.window, 0)),
     m_resize_lock(false) {
 
