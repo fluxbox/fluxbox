@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.33 2003/01/12 23:52:37 fluxgen Exp $
+// $Id: Slit.cc,v 1.34 2003/02/17 12:53:21 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -226,16 +226,17 @@ private:
 
 }; // End anonymous namespace
 
-Slit::Slit(BScreen &scr, const char *filename):m_screen(&scr), timer(this), 
-                         slitmenu(*scr.menuTheme(), 
-                                  scr.getScreenNumber(), 
-                                  *scr.getImageControl()),
-                         placement_menu(*scr.menuTheme(),
-                         scr.getScreenNumber(),
-                         *scr.getImageControl()),
-                         clientlist_menu(*scr.menuTheme(),
-                         scr.getScreenNumber(),
-                         *scr.getImageControl())  {
+Slit::Slit(BScreen &scr, const char *filename):
+    m_screen(&scr), timer(this), 
+    slitmenu(*scr.menuTheme(), 
+             scr.getScreenNumber(), 
+             *scr.getImageControl()),
+    placement_menu(*scr.menuTheme(),
+                   scr.getScreenNumber(),
+                   *scr.getImageControl()),
+    clientlist_menu(*scr.menuTheme(),
+                    scr.getScreenNumber(),
+                    *scr.getImageControl()) {
 
     // default placement and direction
     m_direction = HORIZONTAL;
@@ -474,6 +475,7 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
     // Destructive removal?
     if (destroy)
         delete client;
+
     updateClientmenu();
 }
 
