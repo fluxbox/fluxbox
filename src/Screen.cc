@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.42 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Screen.cc,v 1.43 2002/04/04 14:28:54 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -98,7 +98,7 @@
 
 using namespace std;
 
-static Bool running = True;
+static bool running = true;
 
 static int anotherWMRunning(Display *display, XErrorEvent *) {
 	fprintf(stderr,
@@ -109,7 +109,7 @@ static int anotherWMRunning(Display *display, XErrorEvent *) {
 			"	another window manager already running on display %s.\n"),
 			DisplayString(display));
 
-	running = False;
+	running = false;
 
 	return(-1);
 }
@@ -274,10 +274,10 @@ resource(rm, screenname, altscreenname)
 		fluxbox->getSessionCursor());
 
 	image_control =
-		new BImageControl(fluxbox, this, True, fluxbox->getColorsPerChannel(),
+		new BImageControl(fluxbox, this, true, fluxbox->getColorsPerChannel(),
 			fluxbox->getCacheLife(), fluxbox->getCacheMax());
 	image_control->installRootColormap();
-	root_colormap_installed = True;
+	root_colormap_installed = true;
 
 	fluxbox->load_rc(this);
 
@@ -328,13 +328,13 @@ resource(rm, screenname, altscreenname)
 	unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
 	attrib.border_pixel = getBorderColor()->getPixel();
 	attrib.colormap = getColormap();
-	attrib.save_under = True;
+	attrib.save_under = true;
 
 	geom_window =
 		XCreateWindow(getBaseDisplay()->getXDisplay(), getRootWindow(),
 			0, 0, geom_w, geom_h, theme->getBorderWidth(), getDepth(),
 			InputOutput, getVisual(), mask, &attrib);
-	geom_visible = False;
+	geom_visible = false;
 
 	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
 		if (theme->getWindowStyle().t_focus.getTexture() ==
@@ -387,7 +387,7 @@ resource(rm, screenname, altscreenname)
 	workspacemenu->update();
 
 	current_workspace = workspacesList.front();
-	workspacemenu->setItemSelected(2, True);
+	workspacemenu->setItemSelected(2, true);
 
 	toolbar = new Toolbar(this);
 
@@ -469,10 +469,10 @@ resource(rm, screenname, altscreenname)
 }
 
 namespace {
-    template<typename T>
-    void delete_obj(T * obj) {
-        delete obj;
-    }
+	template<typename T>
+	void delete_obj(T * obj) {
+		delete obj;
+	}
 }
 
 BScreen::~BScreen(void) {
@@ -489,22 +489,22 @@ BScreen::~BScreen(void) {
 
 	removeWorkspaceNames();
 
-    std::for_each(
-        workspacesList.begin(),
-        workspacesList.end(),
-        delete_obj<Workspace>);
+	std::for_each(
+		workspacesList.begin(),
+		workspacesList.end(),
+		delete_obj<Workspace>);
 
-    // don't delete items in the rootmenuList?
+	// don't delete items in the rootmenuList?
 
-    std::for_each(
-        iconList.begin(),
-        iconList.end(),
-        delete_obj<FluxboxWindow>);
+	std::for_each(
+		iconList.begin(),
+		iconList.end(),
+		delete_obj<FluxboxWindow>);
 
-    std::for_each(
-        netizenList.begin(),
-        netizenList.end(),
-        delete_obj<Netizen>);
+	std::for_each(
+		netizenList.begin(),
+		netizenList.end(),
+		delete_obj<Netizen>);
 
 #ifdef		HAVE_STRFTIME
 	if (resource.strftime_format)
@@ -686,7 +686,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 	if (! w) return;
 	
 	{
-    Icons::iterator it = iconList.begin();
+	Icons::iterator it = iconList.begin();
 	Icons::iterator it_end = iconList.end();
 	for (; it != it_end; ++it) {
 		if (*it == w) {
@@ -700,7 +700,7 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 	iconmenu->update();
 	toolbar->delIcon(w);
 	
-    Icons::iterator it = iconList.begin();
+	Icons::iterator it = iconList.begin();
 	Icons::iterator it_end = iconList.end();
 	for (int i = 0; it != it_end; ++it, ++i) {
 		(*it)->setWindowNumber(i);
@@ -767,12 +767,11 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 		return;
 	
 	if (id != current_workspace->getWorkspaceID()) {
-		XSync(fluxbox->getXDisplay(), True);
+		XSync(fluxbox->getXDisplay(), true);
 		
 		current_workspace->hideAll();
 
-		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2,
-					 False);
+		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2, false);
 
 		if (fluxbox->getFocusedWindow() &&
 				fluxbox->getFocusedWindow()->getScreen() == this &&
@@ -785,9 +784,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
 		current_workspace = getWorkspace(id);
 
-		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2,
-					 True);
-		toolbar->redrawWorkspaceLabel(True);
+		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2, true);
+		toolbar->redrawWorkspaceLabel(true);
 
 		current_workspace->showAll();
 
@@ -820,7 +818,7 @@ void BScreen::sendToWorkspace(unsigned int id, bool changeWS) {
 					}
 
 					win->withdraw();
-					BScreen::reassociateWindow(win, id, True);
+					BScreen::reassociateWindow(win, id, true);
 					if (changeWS) {
 						BScreen::changeWorkspaceID(id);
 						win->setInputFocus();
@@ -922,7 +920,7 @@ void BScreen::updateNetizenWindowFocus(void) {
 
 	Netizens::iterator it = netizenList.begin();
 	Netizens::iterator it_end = netizenList.end();
-  	Window f = ((fluxbox->getFocusedWindow()) ?
+	Window f = ((fluxbox->getFocusedWindow()) ?
 			fluxbox->getFocusedWindow()->getClientWindow() : None);
 	for (; it != it_end; ++it) {
 		(*it)->sendWindowFocus(f);
@@ -1199,7 +1197,7 @@ void BScreen::initMenu(void) {
 	} else
 		rootmenu = new Rootmenu(this);
 
-	Bool defaultMenu = True;
+	Bool defaultMenu = true;
 
 	if (fluxbox->getMenuFilename()) {
 		ifstream menu_file(fluxbox->getMenuFilename());
@@ -1292,7 +1290,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 
 				I18n *i18n = I18n::instance();
 				if (str_key == "end") {
-					return ((menu->getCount() == 0) ? True : False);
+					return ((menu->getCount() == 0) ? true : false);
 				} else if (str_key == "nop") { 
 					menu->insert(str_label.c_str());
 				} else if (str_key == "exec") { // exec
@@ -1594,7 +1592,7 @@ void BScreen::showPosition(int x, int y) {
 		XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
 		XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
-		geom_visible = True;
+		geom_visible = true;
 	}
 	const int label_size = 1024;
 	char label[label_size];
@@ -1638,7 +1636,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 		XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
 		XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
-		geom_visible = True;
+		geom_visible = true;
 	}
 	
 	char label[1024];
@@ -1668,7 +1666,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 void BScreen::hideGeometry(void) {
 	if (geom_visible) {
 		XUnmapWindow(getBaseDisplay()->getXDisplay(), geom_window);
-		geom_visible = False;
+		geom_visible = false;
 	}
 }
 
@@ -1676,14 +1674,14 @@ void BScreen::hideGeometry(void) {
 // Goes to the workspace "right" of the current
 //--------------------------------------------
 void BScreen::nextWorkspace(const int delta) {
-    changeWorkspaceID( (getCurrentWorkspaceID()+delta) % getCount());
+	changeWorkspaceID( (getCurrentWorkspaceID()+delta) % getCount());
 }
 
 //------------- prevWorkspace ----------------
 // Goes to the workspace "left" of the current
 //--------------------------------------------
 void BScreen::prevWorkspace(const int delta) {
-    changeWorkspaceID( (getCurrentWorkspaceID()-delta+getCount()) % getCount());
+	changeWorkspaceID( (getCurrentWorkspaceID()-delta+getCount()) % getCount());
 }
 
 //-------------- rightWorkspace ---------------
