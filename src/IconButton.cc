@@ -76,10 +76,6 @@ public:
     void execute() {
         if(m_win.isIconic() || !m_win.isFocused()) {
             switch(m_tool.deiconifyMode()) {
-            case IconbarTool::FOLLOW:
-                m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
-                m_win.raiseAndFocus();
-                break;
             case IconbarTool::SEMIFOLLOW:
                 if (m_win.isIconic()) {
                     m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
@@ -89,8 +85,12 @@ public:
                 }
                 break;
             case IconbarTool::CURRENT:
-            default:
                 m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
+                break;
+            case IconbarTool::FOLLOW:
+            default:
+                m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                m_win.raiseAndFocus();
                 break;
             };
 

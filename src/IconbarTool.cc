@@ -88,11 +88,11 @@ std::string FbTk::Resource<IconbarTool::DeiconifyMode>::getString() {
     case IconbarTool::SEMIFOLLOW:
         return std::string("SemiFollow");
         break;
-    case IconbarTool::FOLLOW:
-        return std::string("Follow");
+    case IconbarTool::CURRENT:
+        return std::string("Current");
         break;
     };
-    return std::string("Current");
+    return std::string("Follow");
 }
 
 template<>
