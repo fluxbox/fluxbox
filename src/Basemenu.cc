@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.18 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.19 2002/04/08 18:57:04 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -577,7 +577,7 @@ void Basemenu::drawSubmenu(unsigned int index) {
 				head_h = screen->getHeight();
 			}
 
-			if ((x + item->submenu()->getWidth()) > (head_x + head_w)) {
+			if (static_cast<int>(x + item->submenu()->getWidth()) > static_cast<int>(head_x + head_w)) {
 				x = ((shifted) ? menu.x_shift : menu.x) -
 					item->submenu()->getWidth() - screen->getBorderWidth();
 			}
@@ -585,7 +585,7 @@ void Basemenu::drawSubmenu(unsigned int index) {
 			if (x < head_x)
 				x = head_x;
 
-			if ((y + item->submenu()->getHeight()) > (head_y + head_h)) {
+			if (static_cast<int>(y + item->submenu()->getHeight()) > static_cast<int>(head_y + head_h)) {
 				y = head_y + head_h -
 					item->submenu()->getHeight() - screen->getBorderWidth2x();
 			}
