@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.106 2002/12/01 13:42:03 rathnor Exp $
+// $Id: Window.cc,v 1.107 2002/12/09 14:17:50 rathnor Exp $
 
 #include "Window.hh"
 
@@ -71,7 +71,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s):
     display(0),
     lastButtonPressTime(0),
     m_windowmenu(0),
-    m_layer(LAYER_NORMAL),
+    m_layer(LAYER_NORMAL), old_decoration(DECOR_NORMAL),
     tab(0) {
 	
     lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
@@ -3177,7 +3177,11 @@ void FluxboxWindow::toggleDecoration() {
         setDecoration(DECOR_NONE); 
         decorations.enabled = false;
     } else { //revert back to old decoration
-        setDecoration(old_decoration);
+        if (old_decoration == DECOR_NONE) { // make sure something happens
+            setDecoration(DECOR_NORMAL);
+        } else {
+            setDecoration(old_decoration);
+        }
         decorations.enabled = true;
     }
 }
