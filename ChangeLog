@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/19:
+  * fluxbox-generate_menu:  (Han)
+    removes the reload-menu code which is obsolete  
+    since Mathias's latest patch
+    fluxbox-generate_menu.in
 *04/03/18:
   * Fixed menu time stamp for root menu (Thanks Mathias Gumz)
     the root menu now reloads if you edit the menu file
