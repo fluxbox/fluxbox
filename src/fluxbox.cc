@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.107 2003/04/15 00:50:25 rathnor Exp $
+// $Id: fluxbox.cc,v 1.108 2003/04/15 08:54:40 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -688,12 +688,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
         break;
     case MapNotify:
-        {
-            FluxboxWindow *win = searchWindow(e->xmap.window);
-            if (win != 0)
-                win->mapNotifyEvent(e->xmap);
-
-        }
+        // handled directly in FluxboxWindow::handleEvent
         break;
 	
 
@@ -713,7 +708,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 	break;
     case DestroyNotify: {
 #ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): DestroyNotify"<<endl;
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): DestroyNotify window="<<hex<<
+            e->xdestroywindow.window<<dec<<endl;
 #endif // DEBUG
         FluxboxWindow *win = searchWindow(e->xdestroywindow.window);        
         if (win != 0) {
@@ -939,12 +935,12 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 	
     if ( ue.event != ue.window && (screen != 0 || !ue.send_event))
         return;
-	
+
     if ((win = searchWindow(ue.window)) != 0) {
         WinClient *client = win->findClient(ue.window);
 
-
         if (client != 0) {
+
             win->unmapNotifyEvent(ue);
             client = 0; // it's invalid now when win destroyed the client
 
@@ -953,6 +949,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
             // finaly destroy window if empty
             if (win->numClients() == 0) {
+
                 delete win;
                 win = 0;
             }
