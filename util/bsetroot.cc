@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.17 2003/05/11 00:00:32 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.18 2003/05/19 09:40:14 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -208,13 +208,14 @@ void bsetroot::solid() {
     pixmaps = new Pixmap[ScreenCount(display())];
 
     for (; screen < ScreenCount(display()); screen++) {
+        FbTk::Color c;
+        if (!c.setFromString(fore, screen)) // just report error
+            continue;
+
         FbRootWindow root(screen);
 
-        FbTk::Color c;
         GC gc;
         XGCValues gcv;
-
-        c.setFromString(fore, screen);
 
         if (! c.isAllocated())
             c.setPixel(BlackPixel(display(), screen));
@@ -242,10 +243,10 @@ void bsetroot::solid() {
     }
 }
 
-//-------------- modula  ------------------
-// draws pixmaps with an 16x16 pattern with
-// fg and bg colors.
-//-----------------------------------------
+/**
+ Draws pixmaps with an 16x16 pattern with
+ fg and bg colors.
+*/
 void bsetroot::modula(int x, int y) {
     char data[32];
     long pattern;
@@ -331,7 +332,7 @@ void bsetroot::modula(int x, int y) {
 /**
  draws pixmaps with a fluxbox texure
 */
-void bsetroot::gradient(void) {
+void bsetroot::gradient() {
     // using temporaray pixmap and then copying it to background pixmap, as it'll
     // get crashed somewhere on the way causing apps like XChat chrashing
     // as the pixmap has been destroyed
