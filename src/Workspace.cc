@@ -22,13 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.39 2003/01/05 22:30:20 fluxgen Exp $
+// $Id: Workspace.cc,v 1.40 2003/01/09 18:33:58 fluxgen Exp $
 
 #include "Workspace.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
-#include "Clientmenu.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "Window.hh"
@@ -77,7 +76,7 @@ Workspace::GroupList Workspace::m_groups;
 Workspace::Workspace(BScreen *scrn, unsigned int i):
     screen(scrn),
     lastfocus(0),
-    m_clientmenu(*this),
+    m_clientmenu(*scrn->menuTheme(), scrn->getScreenNumber(), *scrn->getImageControl()),
     m_name(""),
     m_id(i),
     cascade_x(32), cascade_y(32) {

@@ -25,9 +25,9 @@
 #ifndef	 WORKSPACE_HH
 #define	 WORKSPACE_HH
 
-
-#include "Clientmenu.hh"
 #include "NotCopyable.hh"
+
+#include "Menu.hh"
 
 #include <X11/Xlib.h>
 
@@ -70,9 +70,8 @@ public:
 
     const BScreen *getScreen() const { return screen; }	
     const FluxboxWindow *getLastFocusedWindow() const { return lastfocus; }	
-    Clientmenu &menu() { return m_clientmenu; }
-    ///	client menu 
-    inline const Clientmenu &menu() const { return m_clientmenu; }
+    FbTk::Menu &menu() { return m_clientmenu; }
+    inline const FbTk::Menu &menu() const { return m_clientmenu; }
     ///	name of this workspace
     inline const std::string &name() const { return m_name; }
     /**
@@ -103,7 +102,7 @@ private:
 
     BScreen *screen;
     FluxboxWindow *lastfocus;
-    Clientmenu m_clientmenu;
+    FbTk::Menu m_clientmenu;
 
     typedef std::list<FluxboxWindow *> WindowStack;
     typedef std::vector<std::string> Group;
