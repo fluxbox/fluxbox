@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.1 2002/08/20 02:04:34 fluxgen Exp $
+// $Id: FbRun.cc,v 1.2 2002/09/03 10:55:02 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -40,7 +40,7 @@ m_bevel(4),
 m_gc(None),
 m_end(false) {
 
-	createWindow(x, y, width, m_font.height() + m_bevel);
+	createWindow(x, y, width + m_bevel, m_font.height());
 	// create GC
 	XGCValues gcv;
 
@@ -110,7 +110,7 @@ void FbRun::move(int x, int y) {
 
 void FbRun::resize(size_t width, size_t height) {
 	assert(m_win);
-	XResizeWindow(m_display, m_win, width, height + m_bevel);
+	XResizeWindow(m_display, m_win, width, height);
 	m_width = width;
 	m_height = height + m_bevel;
 	setNoMaximize();
@@ -130,7 +130,7 @@ void FbRun::redrawLabel() {
 	assert(m_win);
 
 	XClearWindow(m_display, m_win);
-	drawString(0, m_height - m_bevel/2,
+	drawString(m_bevel/2, m_height - m_bevel/2,
 		m_runtext.c_str(), m_runtext.size());
 
 }
