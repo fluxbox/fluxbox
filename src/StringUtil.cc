@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.12 2002/09/15 09:40:51 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.13 2002/10/15 09:51:56 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -134,7 +134,7 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
 }
 
 void toLower(char * const conv) {
-	for (int byte_pos = 0; byte_pos < strlen(conv); ++byte_pos)
+	for (size_t byte_pos = 0; byte_pos < strlen(conv); ++byte_pos)
 		conv[byte_pos] = tolower(conv[byte_pos]);
 }
 
