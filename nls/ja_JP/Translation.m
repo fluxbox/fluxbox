@@ -1,3 +1,4 @@
+$ codeset=eucJP
 $set 1 #BaseDisplay
 
 1 %s:  X エラー: %s(%d) opcodes %d/%d\n  resource 0x%lx\n
@@ -41,6 +42,7 @@ $set 3 #Configmenu
 25 Window内にタブドロップでもタブグループに
 26 ウィンドウドラッグでワークスペースを移動
 27 マウスホイールでワークスペース切り換え
+28 アンチエイリアス
 
 $set 4 #Icon
 
@@ -185,10 +187,12 @@ $set 15 #main
 1 error: '-rc' オプションは引数を必要とします\n
 2 error: '-display' オプションは引数を必要とします\n
 3 warning: 環境変数 'DISPLAY' を設定できませんでした\n
-4 Fluxbox %s: (c) 2001 Henrik Kinnunen\n\n\
+4 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\t 指定ディスプレイに接続.\n\
   -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
   -version\t\t\t バージョン情報を表示して終了.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\t このヘルプを表示して終了.\n\n
 5 コンパイル時のオプション:\n\
   Debugging\t\t\t%s\n\

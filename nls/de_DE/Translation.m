@@ -1,3 +1,4 @@
+$ codeset=ISO-8859-1
 $set 1 #BaseDisplay
 
 1 %s:  X Fehler ! : %s(%d) opcodes %d/%d\n  resource 0x%lx\n
@@ -186,10 +187,12 @@ $set 15 #main
 1 error: '-rc' requires an argument\n
 2 error: '-display' requires an argument\n
 3 warning: could not set environment variable 'DISPLAY'\n
-4 Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
+4 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\tuse display connection.\n\
   -rc <string>\t\t\tuse alternate resource file.\n\
   -version\t\t\tdisplay version and exit.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tdisplay this help text and exit.\n\n
 5 Compile time options:\n\
   Debugging\t\t\t%s\n\

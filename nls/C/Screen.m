@@ -51,4 +51,6 @@ $ #PositionFormat
 # X: %4d x Y: %4d
 $ #GeometryFormat
 # W: %4d x H: %4d
+$ #GeometryLength
+# W: 0000 x H: 0000
 

@@ -86,6 +86,7 @@ enum {
 	ScreenPositionLength = 0x16,
 	ScreenPositionFormat = 0x17,
 	ScreenGeometryFormat = 0x18,
+	ScreenGeometryLength = 0x19,
 
 	SlitSet = 0x7,
 	SlitSlitTitle = 0x1,

@@ -1,3 +1,4 @@
+$ codeset=ISO-8859-1
 $set 1 #BaseDisplay
 
 1 %s:  X грешка: %s(%d) opcodes %d/%d\n  resource 0x%lx\n
@@ -187,10 +188,12 @@ $set 15 #main
 1 грешка: '-rc' изисква аргумент\n
 2 грешка: '-display' изисква аргумент\n
 3 внимание: не мога да наглася променливата на средата 'DISPLAY'\n
-4 Fluxkbox %s: (c) 2001 Henrik Kinnunen\n\n\
+4 Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\tuse display connection.\n\
   -rc <string>\t\t\tползвай заместващ ресурсен файл.\n\
   -version\t\t\tпокажи версията и излез.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tпокажи този помощен текст и излез.\n\n
 5 Избрани възможности по време на компилацията:\n\
   Debugging\t\t\t%s\n\

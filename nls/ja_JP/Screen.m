@@ -49,4 +49,6 @@ $ #PositionFormat
 # X: %4d x Y: %4d
 $ #GeometryFormat
 # ษý: %4d x นโ: %4d
+$ #GeometryLength
+# ษý: 0000 x นโ: 0000
 
