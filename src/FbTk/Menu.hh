@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.29 2003/12/18 18:03:23 fluxgen Exp $
+// $Id: Menu.hh,v 1.30 2004/02/27 14:22:27 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -165,10 +165,10 @@ protected:
     inline void setHideTree(bool h) { hide_tree = h; }
 
     virtual void itemSelected(int button, unsigned int index) { }
-    virtual void drawItem(unsigned int index, bool highlight = false, 
-                          bool clear= false, bool render_trans = true,
-                          int x= -1, int y= -1, 
-                          unsigned int width= 0, unsigned int height= 0);
+    virtual int drawItem(unsigned int index, bool highlight = false, 
+                         bool clear= false, bool render_trans = true,
+                         int x= -1, int y= -1, 
+                         unsigned int width= 0, unsigned int height= 0);
     virtual void redrawTitle();
     virtual void internal_hide();
     inline Menu *parent() { return m_parent; }

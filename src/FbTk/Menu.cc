@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.55 2004/02/27 11:55:27 fluxgen Exp $
+// $Id: Menu.cc,v 1.56 2004/02/27 14:21:13 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -736,14 +736,14 @@ bool Menu::hasSubmenu(unsigned int index) const {
 }
 
 
-void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_trans,
+int Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_trans,
                     int x, int y, unsigned int w, unsigned int h) {
     if (index >= menuitems.size() || menuitems.size() == 0 || 
         menu.persub == 0)
-        return;
+        return 0;
 
     MenuItem *item = menuitems[index];
-    if (! item) return;
+    if (! item) return 0;
 
     bool dotext = true, dohilite = true, dosel = true;
     const char *text = item->label().c_str();
@@ -990,7 +990,7 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
                                      menu.item_w, menu.item_h);
     }
     
-    
+    return item_y;
 }
 
 void Menu::setLabel(const char *labelstr) {
@@ -1228,6 +1228,7 @@ void Menu::exposeEvent(XExposeEvent &ee) {
 
         // draw the sublevels and the number of items the exposure spans
         unsigned int i, ii;
+        int max_y = 0;
         for (i = sbl; i <= sbl_d; i++) {
             // set the iterator to the first item in the sublevel needing redrawing
             unsigned int index = id + i * menu.persub;
@@ -1236,15 +1237,20 @@ void Menu::exposeEvent(XExposeEvent &ee) {
                 Menuitems::iterator it_end = menuitems.end();
                 for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
                     unsigned int index = ii + (i * menu.persub);
-                    drawItem(index, 
-                             (which_sub == static_cast<signed>(index)), // highlight
-                             true, // clear
-                             false, // render trans
-                             ee.x, ee.y, ee.width, ee.height);
+                    max_y = max(drawItem(index, 
+                                         (which_sub == static_cast<signed>(index)), // highlight
+                                         true, // clear
+                                         false, // render trans
+                                         ee.x, ee.y, ee.width, ee.height), max_y);
                 }
             }
         }
-        menu.frame.updateTransparent(ee.x, ee.y, ee.width, ee.height);
+        if (menu.persub != 0) {
+            int index_min = id + sbl * menu.persub;
+            int min_y = (index_min - (index_min/menu.persub)*menu.persub) * menu.item_h;
+            menu.frame.updateTransparent(0, min_y,
+                                         width(), max_y + menu.item_h);
+        }
     }
 }
 
