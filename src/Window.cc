@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.162 2003/05/08 01:51:18 rathnor Exp $
+// $Id: Window.cc,v 1.163 2003/05/08 02:20:52 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1565,7 +1565,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
     if (!win->isIconic()) {
         screen.updateNetizenWindowRaise(client->window());
     }
-    win->getLayerItem().lowerLayer();
+    win->getLayerItem().moveToLayer(layernum);
     // remember number just in case a transient happens to revisit this window
     layernum = win->getLayerItem().getLayerNum();
     win->setLayerNum(layernum);
