@@ -1,10 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/02/01:
-  * fix a problem with configure (Mathias)
+  * Added apps to fbgm, minor other changes (thanx to Dung)
+    closes #1107234, #1105034
+    util/fluxbox-generate_menu.in
+  * Change of SIGNAL-behavior (Mathias)
+       SIGHUP  - restart of fluxbox
+       SIGUSR1 - load configuration
+       SIGUSR2 - reload configuration
+    fluxbox.cc
+  * Fix a problem with configure (Mathias)
     imlib2 is now really default-off
     configure.in
-  * minor changes to ru_RU (thanx php-coder)
+  * Minor changes to ru_RU (thanx php-coder)
 *05/01/31:
   * Close #1107213, 64bit issues (thanx to  Matthieu Herrb <matthieu.herrb@laas.fr>)
     Window.hh Ewmh.cc Gnome.cc FbTk/FbPixmap.cc
