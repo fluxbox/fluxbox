@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.142 2003/04/28 22:43:26 fluxgen Exp $
+// $Id: Screen.cc,v 1.143 2003/05/04 13:04:31 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -959,10 +959,10 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 }
 
 void BScreen::removeWindow(FluxboxWindow *win) {
-    Workspaces::iterator it = workspacesList.begin();
-    Workspaces::iterator it_end = workspacesList.end();
-    for (; it != it_end; ++it)
-        (*it)->removeWindow(win);
+    if (win->isIconic())
+        removeIcon(win);
+    else
+        getWorkspace(win->getWorkspaceNumber())->removeWindow(win);
 }
 
 
@@ -2276,10 +2276,7 @@ void BScreen::shutdown() {
              workspacesList.end(),
              mem_fun(&Workspace::shutdown));
 
-    while (!iconList.empty()) {
-        iconList.back()->restore(true); // restore with remap
-        delete iconList.back(); // the window removes it self from iconlist
-    }
+
 
 
 #ifdef SLIT
