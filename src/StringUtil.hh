@@ -18,14 +18,60 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+//$Id: StringUtil.hh,v 1.3 2002/01/08 00:10:02 fluxgen Exp $
+
 #ifndef _STRINGUTIL_HH_
 #define _STRINGUTIL_HH_
+
+#include <string>
 
 struct StringUtil
 {
 	static char *strdup(const char *);
+	
+	//Similar to `strstr' but this function ignores the case of both strings
 	static const char *strcasestr(const char *str, const char *ptn);
+	
 	static char *expandFilename(const char *filename);
+
+	//--------- stringtok ----------------------------------
+	// Breaks a string into tokens
+	// Usage check:
+	// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/howto.html#3
+	// Taken from an example at:
+	// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/stringtok_std_h.txt
+	//--------------------------------------------------
+	template <typename Container>
+	static void
+	stringtok (Container &container, std::string const &in,
+  	         const char * const delimiters = " \t\n")
+	{
+		const std::string::size_type len = in.length();
+			std::string::size_type i = 0;
+
+		while ( i < len ) {
+			// eat leading whitespace
+			i = in.find_first_not_of(delimiters, i);
+			if (i == std::string::npos)
+				return;   // nothing left but white space
+
+				// find the end of the token
+				std::string::size_type j = in.find_first_of(delimiters, i);
+
+				// push token
+				if (j == std::string::npos) {
+					container.push_back(in.substr(i));
+					return;
+				} else
+					container.push_back(in.substr(i, j-i));
+
+				// set up for next loop
+				i = j + 1;
+			}
+	}
 };
+
+
 
 #endif // _STRINGUTIL_HH_
