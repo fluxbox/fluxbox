@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.116 2003/04/25 09:07:14 rathnor Exp $
+// $Id: fluxbox.cc,v 1.117 2003/04/25 11:28:44 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -864,15 +864,15 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                     if (mx + screen->getWorkspacemenu()->width() >
                         screen->getWidth()) {
                         mx = screen->getWidth() -
-                            screen->getWorkspacemenu()->width() -						
-                            screen->getBorderWidth();
+                            screen->getWorkspacemenu()->width() -
+                            screen->getWorkspacemenu()->fbwindow().borderWidth();
                     }
 
                     if (my + screen->getWorkspacemenu()->height() >
                         screen->getHeight()) {
                         my = screen->getHeight() -
                             screen->getWorkspacemenu()->height() -
-                            screen->getBorderWidth();
+                            screen->getWorkspacemenu()->fbwindow().borderWidth();
                     }
                     screen->getWorkspacemenu()->move(mx, my);
 
@@ -894,14 +894,14 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                     if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
                         mx = screen->getWidth() -
                             screen->getRootmenu()->width() -
-                            screen->getBorderWidth();
+                            screen->getRootmenu()->fbwindow().borderWidth();
                     }
 
                     if (my + screen->getRootmenu()->height() >
                         screen->getHeight()) {
                         my = screen->getHeight() -
                             screen->getRootmenu()->height() -
-                            screen->getBorderWidth();
+                            screen->getRootmenu()->fbwindow().borderWidth();
                     }
                     screen->getRootmenu()->move(mx, my);
 
@@ -1260,14 +1260,14 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                         if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
                             mx = screen->getWidth() -
                                 screen->getRootmenu()->width() -
-                                screen->getBorderWidth();
+                                screen->getRootmenu()->fbwindow().borderWidth();
                         }
 
                         if (my + screen->getRootmenu()->height() >
                             screen->getHeight()) {
                             my = screen->getHeight() -
                                 screen->getRootmenu()->height() -
-                                screen->getBorderWidth();
+                                screen->getRootmenu()->fbwindow().borderWidth();
                         }
                         screen->getRootmenu()->move(mx, my);
 
@@ -1285,29 +1285,29 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             break;
         }
     case KeyRelease:
-    {
-        // we ignore most key releases unless we need to use
-        // a release to stop something (e.g. window cycling).
+        {
+            // we ignore most key releases unless we need to use
+            // a release to stop something (e.g. window cycling).
 
-        // we notify if _all_ of the watched modifiers are released
-        if (watching_screen && watch_keyrelease) {
-            // mask the mod of the released key out
-            // won't mask anything if it isn't a mod
-            ke.state &= ~key->keycodeToModmask(ke.keycode);
+            // we notify if _all_ of the watched modifiers are released
+            if (watching_screen && watch_keyrelease) {
+                // mask the mod of the released key out
+                // won't mask anything if it isn't a mod
+                ke.state &= ~key->keycodeToModmask(ke.keycode);
             
-            if ((watch_keyrelease & ke.state) == 0) {
+                if ((watch_keyrelease & ke.state) == 0) {
                 
-                watching_screen->notifyReleasedKeys(ke);
-                XUngrabKeyboard(getXDisplay(), CurrentTime);
+                    watching_screen->notifyReleasedKeys(ke);
+                    XUngrabKeyboard(getXDisplay(), CurrentTime);
                 
-                // once they are released, we drop the watch
-                watching_screen = 0;
-                watch_keyrelease = 0;
+                    // once they are released, we drop the watch
+                    watching_screen = 0;
+                    watch_keyrelease = 0;
+                }
             }
-        }
 
-        break;
-    }	
+            break;
+        }	
     default:
         break;
     }
