@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.36 2003/12/19 00:36:53 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.37 2004/01/18 19:12:11 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -78,6 +78,8 @@ void Ewmh::initForScreen(BScreen &screen) {
 	m_net_wm_state_maximized_horz,
 	m_net_wm_state_maximized_vert,
 	m_net_wm_state_fullscreen,
+        m_net_wm_state_hidden,
+        m_net_wm_state_skip_taskbar,
 
         m_net_wm_desktop,
 
@@ -102,24 +104,26 @@ void Ewmh::initForScreen(BScreen &screen) {
 
 void Ewmh::setupClient(WinClient &winclient) {
     updateStrut(winclient);
+
 }
 
 void Ewmh::setupFrame(FluxboxWindow &win) {
-
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
-    long *data = 0;
-/*	
-	if (XGetWindowProperty(disp, win.clientWindow(), 
-        m_net_wm_state, 0, 1, False, XA_CARDINAL, 
-        &ret_type, &fmt, &nitems, &bytes_after, 
-        (unsigned char **) &data) ==  Success && data) {
-        flags = *data;
-        setState(win, flags);
+    unsigned char *data = 0;
+
+    win.winClient().property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM, 
+                             &ret_type, &fmt, &nitems, &bytes_after, 
+                             &data);
+    if (data) {
+        // we must convert to long
+        unsigned long *real = (unsigned long *)data;
+        for (int i=0; i<nitems; ++i)
+            setState(win, real[i], true);
         XFree(data);
-	}
-*/
+    }
+
     if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
                                  &ret_type, &fmt, &nitems, &bytes_after, 
                                  (unsigned char **) &data) && data) {
@@ -143,7 +147,7 @@ void Ewmh::updateClientList(BScreen &screen) {
 
     BScreen::Workspaces::const_iterator workspace_it = 
         screen.getWorkspacesList().begin();
-    BScreen::Workspaces::const_iterator workspace_it_end = 
+    const BScreen::Workspaces::const_iterator workspace_it_end = 
         screen.getWorkspacesList().end();
     for (; workspace_it != workspace_it_end; ++workspace_it) {
         Workspace::Windows::iterator win_it = 
@@ -179,9 +183,9 @@ void Ewmh::updateClientList(BScreen &screen) {
         Workspace::Windows::const_iterator it_end = 
             (*workspace_it)->windowList().end();		
         for (; it != it_end; ++it) {
-            if ((*it)->numClients() == 1)
+            if ((*it)->numClients() == 1) {
                 wl[win++] = (*it)->clientWindow();
-            else {
+            } else {
                 // add every client in fluxboxwindow to list window list
                 std::list<WinClient *>::iterator client_it = 
                     (*it)->clientList().begin();
@@ -201,11 +205,10 @@ void Ewmh::updateClientList(BScreen &screen) {
         for (; client_it != client_it_end; ++client_it)
             wl[win++] = (*client_it)->window();
     }
-    
     //number of windows to show in client list
     num = win;
     screen.rootWindow().changeProperty(m_net_client_list,
-                                       XA_CARDINAL, 32,
+                                       XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
 	
     delete [] wl;
@@ -274,7 +277,6 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 
 // return true if we did handle the atom here
 bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
-
     if (ce.message_type == m_net_wm_desktop) {
         if (screen == 0)
             return true;
@@ -367,7 +369,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, W
         // ce.data.l[4] = height
         // TODO: gravity and flags
         winclient->fbwindow()->moveResize(ce.data.l[1], ce.data.l[2],
-                       ce.data.l[3], ce.data.l[4]);
+                                          ce.data.l[3], ce.data.l[4]);
         return true;
     }
 
@@ -420,7 +422,9 @@ void Ewmh::createAtoms() {
     m_net_wm_state_maximized_horz = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
     m_net_wm_state_maximized_vert = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_VERT", False);
     m_net_wm_state_fullscreen = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
-    
+    m_net_wm_state_hidden = XInternAtom(disp, "_NET_WM_STATE_HIDDEN", False);
+    m_net_wm_state_skip_taskbar = XInternAtom(disp, "_NET_WM_STATE_SKIP_TASKBAR", False);
+
     m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
     m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
     m_net_wm_icon = XInternAtom(disp, "_NET_WM_ICON", False);
@@ -487,7 +491,9 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
 		win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         setFullscreen(win, value);
-    }
+    } else if (state == m_net_wm_state_hidden ||
+               state == m_net_wm_state_skip_taskbar)
+        win.setHidden(value);
 }
 
 // toggle window state
@@ -502,6 +508,9 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
         win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         setFullscreen(win, getState(win) == 0); // toggle current state
+    } else if (state == m_net_wm_state_hidden ||
+               state == m_net_wm_state_skip_taskbar) {
+        win.setHidden(!win.isHidden());
     }
 }
 

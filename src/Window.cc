@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.262 2004/01/17 00:49:20 fluxgen Exp $
+// $Id: Window.cc,v 1.263 2004/01/18 19:14:08 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1684,6 +1684,12 @@ void FluxboxWindow::moveToLayer(int layernum) {
     }
 }
 
+void FluxboxWindow::setHidden(bool value) {
+    if(value) 
+        m_blackbox_attrib.flags |= ATTRIB_HIDDEN;
+    else
+        m_blackbox_attrib.flags ^= ATTRIB_HIDDEN;
+}
 
 // window has actually RECEIVED focus (got a FocusIn event)
 // so now we make it a focused frame etc
@@ -2911,19 +2917,15 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     /////////////////////////////////////
     // begin by checking the screen (or Xinerama head) edges
 
-    if (screen().hasXinerama()) {
-        // head "0" == whole screen width + height, which we skip since the
-        // sum of all the heads covers those edges
-        for (int h = 1; h <= screen().numHeads(); h++) {
-            snapToWindow(dx, dy, left, right, top, bottom, 
-                         screen().maxLeft(h),
-                         screen().maxRight(h),
-                         screen().maxTop(h),
-                         screen().maxBottom(h));
-        }
-    } else
-        snapToWindow(dx, dy, left, right, top, bottom, 0, screen().width(), 0, screen().height());
-    
+    // head "0" == whole screen width + height, which we skip since the
+    // sum of all the heads covers those edges
+    for (int h = 1; h <= screen().numHeads(); h++) {
+        snapToWindow(dx, dy, left, right, top, bottom, 
+                     screen().maxLeft(h),
+                     screen().maxRight(h),
+                     screen().maxTop(h),
+                     screen().maxBottom(h));
+    }    
     /////////////////////////////////////
     // now check window edges
 

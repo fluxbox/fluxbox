@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.12 2003/09/23 13:52:05 rathnor Exp $
+// $Id: Ewmh.hh,v 1.13 2004/01/18 19:12:11 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -87,6 +87,9 @@ private:
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
 	m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
         m_net_wm_state_fullscreen,
+        m_net_wm_state_hidden,
+        m_net_wm_state_skip_taskbar,
+
         m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
         m_net_wm_handled_icons;
 			

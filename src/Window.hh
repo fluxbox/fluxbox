@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.105 2003/12/30 20:56:40 fluxgen Exp $
+// $Id: Window.hh,v 1.106 2004/01/18 19:14:08 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -100,7 +100,8 @@ public:
         ATTRIB_OMNIPRESENT = 0x08,
         ATTRIB_WORKSPACE = 0x10,
         ATTRIB_STACK = 0x20,		
-        ATTRIB_DECORATION = 0x40
+        ATTRIB_DECORATION = 0x40,
+        ATTRIB_HIDDEN = 0x80,
     };	
 
     /**
@@ -206,7 +207,7 @@ public:
     void raiseLayer();
     void lowerLayer();
     void moveToLayer(int layernum);
-
+    void setHidden(bool value);
     void reconfigure();
 
 
@@ -261,6 +262,7 @@ public:
        @name accessors		
     */
     //@{
+    inline bool isHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
     bool isVisible() const;
