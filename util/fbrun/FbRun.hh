@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.9 2003/03/22 11:31:43 fluxgen Exp $
+// $Id: FbRun.hh,v 1.10 2003/06/24 10:22:42 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -71,7 +71,7 @@ public:
     void exposeEvent(XExposeEvent &ev);
     void keyPressEvent(XKeyEvent &ev);
     ///@}
-	
+
 private:
     void nextHistoryItem();
     void prevHistoryItem();
@@ -79,10 +79,22 @@ private:
     void cursorRight();
     void drawString(int x, int y, const char *text, size_t len);
     void getSize(size_t &width, size_t &height);
-    void createWindow(int x, int y, size_t width, size_t height);	
-    void redrawLabel();	
+    void createWindow(int x, int y, size_t width, size_t height);
+    void redrawLabel();
     /// set no maximizable for this window
     void setNoMaximize();
+
+    void cursorHome();
+    void cursorEnd();
+    void backspace();
+    void deleteForward();
+    void killToEnd();
+    void insertCharacter(KeySym ks, char *keychar);
+    void adjustStartPos();
+    void adjustEndPos();
+    void firstHistoryItem();
+    void lastHistoryItem();
+    void tabCompleteHistory();
 
     FbTk::Font m_font; ///< font used to draw command text
     FbTk::FbWindow m_win;  ///< toplevel window 
@@ -95,7 +107,11 @@ private:
     size_t m_current_history_item; ///< holds current position in command history
     std::string m_history_file; ///< holds filename for command history file
     Cursor m_cursor;
-    int m_cursor_pos;
+
+    int m_start_pos; ///< start position of portion of text to display
+    int m_cursor_pos; ///< relative to m_start_pos
+    int m_end_pos; ///< end postition of portion of text to display
+
 };
 
 #endif // FBRUN_HH
