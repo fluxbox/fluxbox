@@ -51,7 +51,7 @@ fluxbox_SOURCES= BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	XrmDatabaseHelper.hh NotCopyable.hh Resource.hh Resource.cc Font.hh Font.cc \
 	FbAtoms.hh FbAtoms.cc Color.hh Color.cc Texture.hh Texture.cc \
 	SignalHandler.hh SignalHandler.cc \
-	EventHandler.hh AtomHandler.hh Gnome.hh Gnome.cc \
+	EventHandler.hh AtomHandler.hh Gnome.hh Gnome.cc Ewmh.hh Ewmh.cc\
 	Observer.hh Observer.cc Subject.hh Subject.cc
 MAINTAINERCLEANFILES= Makefile.in
 
