@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.28 2004/01/12 12:25:16 fluxgen Exp $
+// $Id: main.cc,v 1.29 2004/02/28 10:32:06 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -49,14 +49,15 @@
 using namespace std;
 void showInfo(ostream &ostr) {
     ostr<<"Fluxbox version: "<<__fluxbox_version<<endl;
+#if defined(__DATE__) && defined(__TIME__)
     ostr<<"Compiled: "<<__DATE__<<" "<<__TIME__<<endl;
-    ostr<<"Compiler: ";
-#ifdef  __GNUG__ 
-    ostr<<"GCC";
-#else
-    ostr<<"Unknown";
 #endif
-    ostr<<endl<<"Compiler version: "<<__VERSION__<<endl;    
+#ifdef __fluxbox_compiler
+    ostr<<"Compiler: "<<__fluxbox_compiler<<endl;
+#endif // __fluxbox_compiler
+#ifdef __fluxbox_compiler_version
+    ostr<<"Compiler version: "<<__fluxbox_compiler_version<<endl;    
+#endif // __fluxbox_compiler_version
 
     ostr<<endl<<"Defaults:"<<endl;
     ostr<<"    menu: "<<DEFAULTMENU<<endl;
