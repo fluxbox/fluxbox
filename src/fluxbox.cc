@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.49 2002/04/09 23:14:25 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.50 2002/04/12 13:02:56 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1485,7 +1485,7 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 	
 			//get new states			
 			int flag = ce.data.l[0] & ce.data.l[1];
-			//set states	
+			//set states			
 			win->setGnomeState(flag);
 			
 		} else if (ce.message_type == getGnomeHintsAtom()) {
@@ -2344,9 +2344,9 @@ void Fluxbox::real_rereadMenu(void) {
 	}
 	menuTimestamps.erase(menuTimestamps.begin(), menuTimestamps.end());
 
-	std::list<BScreen *>::iterator sit = screenList.begin();
-	std::list<BScreen *>::iterator sit_end = screenList.end();
-	for (; sit != sit_end; ++it) {
+	ScreenList::iterator sit = screenList.begin();
+	ScreenList::iterator sit_end = screenList.end();
+	for (; sit != sit_end; ++sit) {
 		(*sit)->rereadMenu();
 	}
 }
