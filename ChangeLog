@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/24:
+   * Fix crash when toolbar turned off, and toolbar initialisation (Simon)
+     Menu.cc Screen.cc Toolbar.cc
 *03/05/21:
    * Fix cascade placement for multiple heads (Simon)
      Workspace.hh/cc Window.hh/cc FbWinFrame.hh/cc

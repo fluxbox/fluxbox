@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.86 2003/05/19 15:32:47 rathnor Exp $
+// $Id: Toolbar.cc,v 1.87 2003/05/24 05:49:31 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -279,7 +279,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                 this,
                 true),
     m_theme(scrn.screenNumber()),
-    m_place(BOTTOMCENTER),
+    m_place(scrn.toolbarPlacement()),
     m_themelistener(*this),
     m_layeritem(frame.window, layer) {
 
@@ -332,6 +332,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.pwbutton.setOnClick(prevwindow);
     frame.nwbutton.setOnClick(nextwindow);
 
+    reconfigure(); // get everything together
     frame.window.showSubwindows();
     frame.window.show();
 }

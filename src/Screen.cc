@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.176 2003/05/22 01:17:15 rathnor Exp $
+// $Id: Screen.cc,v 1.177 2003/05/24 05:49:31 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -654,11 +654,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     workspacemenu->setItemSelected(2, true);
 
-    if (toolbar()) {
-        toolbar()->setPlacement(*resource.toolbar_placement);
-        toolbar()->theme().font().setAntialias(*resource.antialias);
-        toolbar()->reconfigure();
-    }
+    // if toolbar needs initialisation, do it in ToolbarHandler instead
+    // so it will work when destroyed later etc
 
     initMenu(); // create and initiate rootmenu
 
