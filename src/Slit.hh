@@ -1,8 +1,8 @@
 // Slit.hh for Fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Slit.hh for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
+/// $Id: Slit.hh,v 1.16 2003/01/05 23:42:27 fluxgen Exp $
+
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
 
@@ -37,6 +39,7 @@
 // forward declaration
 class Slit;
 
+/// menu in slit
 class Slitmenu : public Basemenu {
 public:
     explicit Slitmenu(Slit &theslist);
@@ -102,7 +105,7 @@ private:
     friend class Placementmenu;
 };
 
-
+/// Handles dock apps
 class Slit : public TimeoutHandler {
 public:
     explicit Slit(BScreen *screen);
