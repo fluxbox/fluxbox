@@ -32,16 +32,17 @@ class App {
 public:
 	/// @return singleton instance of App
 	static App *instance();
-	explicit App(const char *displayname);
+	explicit App(const char *displayname=0);
 	virtual ~App();
 	/// display connection
 	Display *display() const { return m_display; }
 	/// starts event loop
-	void eventLoop();
+	virtual void eventLoop();
 	/// ends event loop
 	void end();
 private:
 	static App *s_app;
+	bool m_done;
 	Display *m_display;
 };
 

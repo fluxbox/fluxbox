@@ -20,6 +20,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "App.hh"
+
+#include "EventManager.hh"
+
 #include <cassert>
 #include <string>
 
@@ -33,7 +36,7 @@ App *App::instance() {
 	return s_app;
 }
 
-App::App(const char *displayname) {
+App::App(const char *displayname):m_done(false) {
 	if (s_app != 0)
 		throw std::string("Can't create more than one instance of FbTk::App");
 	s_app = this;
@@ -46,6 +49,19 @@ App::~App() {
 		m_display = 0;
 	}
 	s_app = 0;
+}
+
+void App::eventLoop() {
+	XEvent ev;
+	while (!m_done) {
+		XNextEvent(display(), &ev);
+		EventManager::instance()->handleEvent(ev);
+	}
+}
+
+
+void App::end() {
+	m_done = true; //end loop in App::eventLoop
 }
 
 }; // end namespace FbTk
