@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.9 2003/02/18 15:11:12 rathnor Exp $
+// $Id: Menu.hh,v 1.10 2003/02/23 00:59:13 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -111,6 +111,7 @@ public:
     virtual void show();
     /// hide menu
     virtual void hide();
+    virtual void clearWindow();
     /*@}*/
 	
     /**
@@ -121,8 +122,8 @@ public:
     bool isVisible() const { return visible; }
     int screenNumber() const { return m_screen_num; }
     Window window() const { return menu.window.window(); }
-    FbTk::FbWindow &fbwindow() { return menu.window; }
-    const FbTk::FbWindow &fbwindow() const { return menu.window; }
+    FbWindow &fbwindow() { return menu.window; }
+    const FbWindow &fbwindow() const { return menu.window; }
     const std::string &label() const { return menu.label; }  
     int x() const { return menu.x; }
     int y() const { return menu.y; }
