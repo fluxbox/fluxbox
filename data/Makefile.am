@@ -4,7 +4,7 @@ SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init startup
 MAINTAINERCLEANFILES= 	Makefile.in
 pkgdata_DATA= 		keys menu init startup
-EXTRA_DIST= 		keys init.in README.style README.menu README
+EXTRA_DIST= 		keys init.in startup.in README.style README.menu README
 all-local: 		menu init
 distclean-local:
 		rm -f *\~
