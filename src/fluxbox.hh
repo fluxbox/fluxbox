@@ -22,16 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.75 2003/12/03 00:29:39 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.76 2003/12/19 00:35:08 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
 
-#include "App.hh"
-#include "Resource.hh"
-#include "Timer.hh"
-#include "Observer.hh"
-#include "SignalHandler.hh"
+#include "FbTk/App.hh"
+#include "FbTk/Resource.hh"
+#include "FbTk/Timer.hh"
+#include "FbTk/Observer.hh"
+#include "FbTk/SignalHandler.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -97,9 +97,9 @@ public:
 		
     BScreen *searchScreen(Window w);
 
-    inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
-    inline long getUpdateDelayTime() const { return resource.update_delay_time; }
-    inline const Time &getLastTime() const { return m_last_time; }
+    inline unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
+    inline unsigned int getUpdateDelayTime() const { return *m_rc_update_delay_time; }
+    inline unsigned int getLastTime() const { return m_last_time; }
 
     void addAtomHandler(AtomHandler *atomh);
     void removeAtomHandler(AtomHandler *atomh);
@@ -107,7 +107,7 @@ public:
     /// obsolete
     enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 
-    enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+
 
     inline const Bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
 
@@ -188,7 +188,6 @@ public:
     void timed_reconfigure();
 
     bool isStartup() const { return m_starting; }
-    enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 	
     typedef std::vector<Fluxbox::Titlebar> TitlebarList;
     /// @return whether the timestamps on the menu changed
@@ -225,11 +224,7 @@ private:
         time_t timestamp;
     } MenuTimestamp;
 
-    struct resource {
-        Time double_click_interval;		
-        long update_delay_time;
-    } resource;
-		
+
 
     std::string getRcFilename();
     void load_rc();
@@ -252,8 +247,10 @@ private:
     FbTk::ResourceManager m_resourcemanager, &m_screen_rm;
 	
     //--- Resources
+
     FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;
-    FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers;
+    FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers,
+        m_rc_double_click_interval, m_rc_update_delay_time;
     FbTk::Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile;
@@ -278,7 +275,6 @@ private:
     ScreenList m_screen_list;
 
     WinClient *m_focused_window;
-    FbTk::Timer m_timer;
 
     typedef struct RedirectEvent {
         BScreen *screen;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.207 2003/12/16 23:36:06 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.208 2003/12/19 00:35:08 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -30,12 +30,7 @@
 #include "Screen.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "StringUtil.hh"
-#include "Resource.hh"
-#include "XrmDatabaseHelper.hh"
 #include "AtomHandler.hh"
-#include "ImageControl.hh"
-#include "EventManager.hh"
 #include "FbCommands.hh"
 #include "WinClient.hh"
 #include "Keys.hh"
@@ -44,6 +39,11 @@
 
 #include "FbTk/Image.hh"
 #include "FbTk/KeyUtil.hh"
+#include "FbTk/ImageControl.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/StringUtil.hh"
+#include "FbTk/Resource.hh"
+#include "FbTk/XrmDatabaseHelper.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -160,23 +160,7 @@ setFromString(char const *strval) {
         *this = false;
 }
 
-template<>
-void FbTk::Resource<Fluxbox::FocusModel>::
-setFromString(char const *strval) {
-    // auto raise options here for backwards read compatibility
-    // they are not supported for saving purposes. Nor does the "AutoRaise" 
-    // part actually do anything
-    if (strcasecmp(strval, "SloppyFocus") == 0 
-        || strcasecmp(strval, "AutoRaiseSloppyFocus") == 0) 
-        m_value = Fluxbox::SLOPPYFOCUS;
-    else if (strcasecmp(strval, "SemiSloppyFocus") == 0
-        || strcasecmp(strval, "AutoRaiseSemiSloppyFocus") == 0) 
-        m_value = Fluxbox::SEMISLOPPYFOCUS;
-    else if (strcasecmp(strval, "ClickToFocus") == 0) 
-        m_value = Fluxbox::CLICKTOFOCUS;
-    else
-        setDefaultValue();
-}
+
 
 template<>
 void FbTk::Resource<Fluxbox::TitlebarList>::
@@ -238,20 +222,6 @@ template<>
 std::string FbTk::Resource<std::string>::
 getString() { return **this; }
 
-template<>
-std::string FbTk::Resource<Fluxbox::FocusModel>::
-getString() {
-    switch (m_value) {
-    case Fluxbox::SLOPPYFOCUS:
-        return string("SloppyFocus");
-    case Fluxbox::SEMISLOPPYFOCUS:
-        return string("SemiSloppyFocus");
-    case Fluxbox::CLICKTOFOCUS:
-        return string("ClickToFocus");
-    }
-    // default string
-    return string("ClickToFocus");
-}
 
 template<>
 std::string FbTk::Resource<Fluxbox::TitlebarList>::
@@ -407,6 +377,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_colors_per_channel(m_resourcemanager, 4, 
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
+      m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
+      m_rc_update_delay_time(m_resourcemanager, 0, "session.updateDelayTime", "Session.UpdateDelayTime"),
       m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
@@ -511,8 +483,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         cerr<<"Warning: cannot set locale modifiers"<<endl;
 
 
-    resource.update_delay_time = 5;
-
 #ifdef HAVE_GETPID
     m_fluxbox_pid = XInternAtom(disp, "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
@@ -523,6 +493,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         sprintf(scrname, "session.screen%d", i);
         sprintf(altscrname, "session.Screen%d", i);
         BScreen *screen = new BScreen(m_screen_rm.lock(), 
+
                                       scrname, altscrname,
                                       i, getNumberOfLayers());
         if (! screen->isScreenManaged()) {
@@ -589,11 +560,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     m_reconfigure_wait = m_reread_menu_wait = false;
 	
-    m_timer.setTimeout(0);
-    FbTk::RefCount<FbTk::Command> reconf_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
-    m_timer.setCommand(reconf_cmd);
-    m_timer.fireOnce(true);
-
     // Create keybindings handler and load keys file	
     m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
@@ -605,7 +571,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
 #endif //DEBUG
     m_starting = false;
-    //    FbTk::ThemeManager::instance().listItems();
+    // 
+    // For dumping theme items
+    // FbTk::ThemeManager::instance().listItems();
+    //
+    m_resourcemanager.dump();
 }
 
 
@@ -999,68 +969,68 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (! screen->isRootColormapInstalled())
                 screen->imageControl().installRootColormap();
 
-            if (screen->getWorkspacemenu()->isVisible())
-                screen->getWorkspacemenu()->hide();
-            if (screen->getRootmenu()->isVisible())
-                screen->getRootmenu()->hide();
+            if (screen->getWorkspacemenu().isVisible())
+                screen->getWorkspacemenu().hide();
+            if (screen->getRootmenu().isVisible())
+                screen->getRootmenu().hide();
 
         } else if (be.button == 2) {
             int mx = be.x_root -
-                (screen->getWorkspacemenu()->width() / 2);
+                (screen->getWorkspacemenu().width() / 2);
             int my = be.y_root -
-                (screen->getWorkspacemenu()->titleHeight() / 2);
+                (screen->getWorkspacemenu().titleHeight() / 2);
 	
             if (mx < 0) mx = 0;
             if (my < 0) my = 0;
 
-            if (mx + screen->getWorkspacemenu()->width() >
+            if (mx + screen->getWorkspacemenu().width() >
                 screen->width()) {
                 mx = screen->width()-1 -
-                    screen->getWorkspacemenu()->width() -
-                    2*screen->getWorkspacemenu()->fbwindow().borderWidth();
+                    screen->getWorkspacemenu().width() -
+                    2*screen->getWorkspacemenu().fbwindow().borderWidth();
             }
 
-            if (my + screen->getWorkspacemenu()->height() >
+            if (my + screen->getWorkspacemenu().height() >
                 screen->height()) {
                 my = screen->height()-1 -
-                    screen->getWorkspacemenu()->height() -
-                    2*screen->getWorkspacemenu()->fbwindow().borderWidth();
+                    screen->getWorkspacemenu().height() -
+                    2*screen->getWorkspacemenu().fbwindow().borderWidth();
             }
-            screen->getWorkspacemenu()->move(mx, my);
+            screen->getWorkspacemenu().move(mx, my);
 
-            if (! screen->getWorkspacemenu()->isVisible()) {
-                screen->getWorkspacemenu()->removeParent();
-                screen->getWorkspacemenu()->show();
+            if (! screen->getWorkspacemenu().isVisible()) {
+                screen->getWorkspacemenu().removeParent();
+                screen->getWorkspacemenu().show();
             }
         } else if (be.button == 3) { 
             //calculate placement of root menu
             //and show/hide it				
             int mx = be.x_root -
-                (screen->getRootmenu()->width() / 2);
+                (screen->getRootmenu().width() / 2);
             int my = be.y_root -
-                (screen->getRootmenu()->titleHeight() / 2);
-            int borderw = screen->getRootmenu()->fbwindow().borderWidth();
+                (screen->getRootmenu().titleHeight() / 2);
+            int borderw = screen->getRootmenu().fbwindow().borderWidth();
 
             if (mx < 0) mx = 0;
             if (my < 0) my = 0;
             
-            if (mx + screen->getRootmenu()->width() + 2*borderw > screen->width()) {
+            if (mx + screen->getRootmenu().width() + 2*borderw > screen->width()) {
                 mx = screen->width() -
-                    screen->getRootmenu()->width() -
+                    screen->getRootmenu().width() -
                     2*borderw;
             }
 
-            if (my + screen->getRootmenu()->height() + 2*borderw >
+            if (my + screen->getRootmenu().height() + 2*borderw >
                 screen->height()) {
                 my = screen->height() -
-                    screen->getRootmenu()->height() -
+                    screen->getRootmenu().height() -
                     2*borderw;
             }
-            screen->getRootmenu()->move(mx, my);
+            screen->getRootmenu().move(mx, my);
 
-            if (! screen->getRootmenu()->isVisible()) {
+            if (! screen->getRootmenu().isVisible()) {
                 checkMenu();
-                screen->getRootmenu()->show();
+                screen->getRootmenu().show();
             }
         } else if (screen->isDesktopWheeling() && be.button == 4) {
             screen->nextWorkspace(1);
@@ -1539,15 +1509,6 @@ void Fluxbox::save_rc() {
     } else
         cerr<<"database filename is invalid!"<<endl;
 	
-
-    sprintf(rc_string, "session.doubleClickInterval:	%lu",
-            resource.double_click_interval);
-    XrmPutLineResource(&new_blackboxrc, rc_string);
-
-
-    sprintf(rc_string, "session.updateDelayTime: %lu", resource.update_delay_time);
-    XrmPutLineResource(&new_blackboxrc, rc_string);
-
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
 
@@ -1642,11 +1603,9 @@ void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
 
 /// loads resources
 void Fluxbox::load_rc() {
-    XrmDatabaseHelper database;
 	
     //get resource filename
     string dbfile(getRcFilename());
-
 
     if (dbfile.size() != 0) {
         if (!m_resourcemanager.load(dbfile.c_str())) {
@@ -1660,10 +1619,8 @@ void Fluxbox::load_rc() {
             cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
     }
 	
-    XrmValue value;
-    char *value_type;
     if (m_rc_menufile->size() == 0)
-            m_rc_menufile.setDefaultValue();
+        m_rc_menufile.setDefaultValue();
  
     if (m_rc_slitlistfile->size() != 0) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
@@ -1682,29 +1639,6 @@ void Fluxbox::load_rc() {
         *m_rc_stylefile = DEFAULTSTYLE;
     else // expand tilde
         *m_rc_stylefile = StringUtil::expandFilename(*m_rc_stylefile);
-
-    //load file
-    database = XrmGetFileDatabase(dbfile.c_str());
-    if (database==0) {
-        cerr<<"Fluxbox: Cant open "<<dbfile<<" !"<<endl;
-        cerr<<"Using: "<<DEFAULT_INITFILE<<endl;
-        database = XrmGetFileDatabase(DEFAULT_INITFILE);
-    }
-
-    if (XrmGetResource(*database, "session.doubleClickInterval",
-                       "Session.DoubleClickInterval", &value_type, &value)) {
-        if (sscanf(value.addr, "%lu", &resource.double_click_interval) != 1)
-            resource.double_click_interval = 250;
-    } else
-        resource.double_click_interval = 250;
-
-
-    if (XrmGetResource(*database, "session.updateDelayTime", "Session.updateDelayTime", 
-                       &value_type, &value)) {
-        if (sscanf(value.addr, "%lu", &resource.update_delay_time) != 1)
-            resource.update_delay_time = 5;
-    } else
-        resource.update_delay_time = 5;
 
     // expand tilde
     *m_rc_groupfile = StringUtil::expandFilename(*m_rc_groupfile);
@@ -1731,30 +1665,9 @@ void Fluxbox::load_rc(BScreen &screen) {
     char *value_type, name_lookup[1024], class_lookup[1024];
     int screen_number = screen.screenNumber();
 
-    sprintf(name_lookup, "session.screen%d.rowPlacementDirection", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.RowPlacementDirection", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "righttoleft", value.size))
-            screen.saveRowPlacementDirection(BScreen::RIGHTLEFT);
-        else	
-            screen.saveRowPlacementDirection(BScreen::LEFTRIGHT);
-    } else
-        screen.saveRowPlacementDirection(BScreen::LEFTRIGHT);
-
-    sprintf(name_lookup, "session.screen%d.colPlacementDirection", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.ColPlacementDirection", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "bottomtotop", value.size))
-            screen.saveColPlacementDirection(BScreen::BOTTOMTOP);
-        else
-            screen.saveColPlacementDirection(BScreen::TOPBOTTOM);
-    } else
-        screen.saveColPlacementDirection(BScreen::TOPBOTTOM);
 
     screen.removeWorkspaceNames();
-
+    
     sprintf(name_lookup, "session.screen%d.workspaceNames", screen_number);
     sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
@@ -1791,21 +1704,6 @@ void Fluxbox::load_rc(BScreen &screen) {
         for (unsigned int i=0; i<paths.size(); ++i)
             FbTk::Image::addSearchPath(paths[i]);
     }
-
-    sprintf(name_lookup, "session.screen%d.windowPlacement", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (! strncasecmp(value.addr, "RowSmartPlacement", value.size))
-            screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
-        else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
-            screen.savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
-        else if (! strncasecmp(value.addr, "UnderMousePlacement", value.size))
-            screen.savePlacementPolicy(BScreen::UNDERMOUSEPLACEMENT);
-        else
-            screen.savePlacementPolicy(BScreen::CASCADEPLACEMENT);
-    } else
-        screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
     
     if (dbfile.size() != 0) {
         if (!m_screen_rm.load(dbfile.c_str())) {
@@ -1850,8 +1748,7 @@ void Fluxbox::reload_rc() {
 void Fluxbox::reconfigure() {
     m_reconfigure_wait = true;
 
-    if (! m_timer.isTiming()) 
-        m_timer.start();
+    timed_reconfigure();
 }
 
 
@@ -1904,8 +1801,7 @@ void Fluxbox::checkMenu() {
 void Fluxbox::rereadMenu() {
     m_reread_menu_wait = true;
 
-    if (! m_timer.isTiming())
-        m_timer.start();
+    timed_reconfigure();
 }
 
 
@@ -2055,7 +1951,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 void Fluxbox::revertFocus(BScreen &screen, bool wait_for_end) {
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
-    // Fluxbox::FocusModel = sloppy, click, whatever
+    // BScreen::FocusModel = sloppy, click, whatever
     if (wait_for_end) {
         if (m_focus_revert_screen == 0) {
             m_focus_revert_screen = &screen;
@@ -2082,15 +1978,13 @@ void Fluxbox::revertFocus(BScreen &screen, bool wait_for_end) {
           next_focus->fbwindow()->setCurrentClient(*next_focus, true, ignore_event))) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
         switch (screen.getFocusModel()) {
-        case SLOPPYFOCUS:
-        case SEMISLOPPYFOCUS:
+        case BScreen::SLOPPYFOCUS:
+        case BScreen::SEMISLOPPYFOCUS:
             XSetInputFocus(FbTk::App::instance()->display(), 
                            PointerRoot, None, CurrentTime);
             break;
-        case CLICKTOFOCUS:
-            XSetInputFocus(FbTk::App::instance()->display(), 
-                           screen.rootWindow().window(),
-                           RevertToPointerRoot, CurrentTime);
+        case BScreen::CLICKTOFOCUS:
+            screen.rootWindow().setInputFocus(RevertToPointerRoot, CurrentTime);
             break;
         }
     }
