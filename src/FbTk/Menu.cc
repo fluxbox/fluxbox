@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.31 2003/07/20 10:41:56 rathnor Exp $
+// $Id: Menu.cc,v 1.32 2003/07/21 02:45:27 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -542,7 +542,7 @@ void Menu::update(int active_index) {
                 drawItem(i, true, true, false);
                 drawSubmenu(i);
             } else
-                drawItem(i, (i == active_index), true, false);
+                drawItem(i, (i == active_index && isItemEnabled(i)), true, false);
         }
 
         if (m_parent && visible)
