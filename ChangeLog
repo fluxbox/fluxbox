@@ -18,7 +18,8 @@ Changes for 0.9.9:
         - deiconify them on current windows
       * origin 
         - deiconify them where they were
-
+      * originquiet
+        - deiconify to old workspace but dont follow
    (Thanks Mathias Gumz)
    FbCommands.cc/hh, FbCommandFactory.cc
   * Attach area for tabs:
