@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.142 2003/05/12 11:14:47 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.143 2003/05/13 00:20:49 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -559,12 +559,8 @@ Fluxbox::~Fluxbox() {
         delete m_atomhandler.back();
         m_atomhandler.pop_back();
     }
-	
-    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it)
-        delete *it;
-	
+
+    clearMenuFilenames();	
 }
 
 void Fluxbox::eventLoop() {
@@ -2227,18 +2223,12 @@ void Fluxbox::real_reconfigure() {
     if (old_blackboxrc)
         XrmDestroyDatabase(old_blackboxrc);
 
-    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end; ++it)
-         delete *it;
-
-    m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
 
     ScreenList::iterator sit = m_screen_list.begin();
     ScreenList::iterator sit_end = m_screen_list.end();
     for (; sit != sit_end; ++sit)
         (*sit)->reconfigure();
-	
+
     //reconfigure keys
     m_key->reconfigure(StringUtil::expandFilename(*m_rc_keyfile).c_str());
 
@@ -2246,21 +2236,26 @@ void Fluxbox::real_reconfigure() {
 }
 
 
-void Fluxbox::checkMenu() {
-    bool reread = false;
-    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
-    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
-    for (; it != it_end && (! reread); ++it) {
+bool Fluxbox::menuTimestampsChanged() const {
+    std::list<MenuTimestamp *>::const_iterator it = m_menu_timestamps.begin();
+    std::list<MenuTimestamp *>::const_iterator it_end = m_menu_timestamps.end();
+    for (; it != it_end; ++it) {
         struct stat buf;
 
         if (! stat((*it)->filename.c_str(), &buf)) {
             if ((*it)->timestamp != buf.st_ctime)
-                reread = true;
+                return true;
         } else
-            reread = true;
+            return true;
     }
 
-    if (reread) rereadMenu();
+    // no timestamp changed
+    return false;
+}
+
+void Fluxbox::checkMenu() {
+    if (menuTimestampsChanged())
+        rereadMenu();
 }
 
 
@@ -2316,6 +2311,14 @@ void Fluxbox::saveMenuFilename(const char *filename) {
     }
 }
 
+void Fluxbox::clearMenuFilenames() {
+    std::list<MenuTimestamp *>::iterator it = m_menu_timestamps.begin();
+    std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
+    for (; it != it_end; ++it)
+         delete *it;
+
+    m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
+}
 
 void Fluxbox::timeout() {
     if (m_reconfigure_wait)

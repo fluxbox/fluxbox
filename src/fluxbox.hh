@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.57 2003/05/12 04:23:31 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.58 2003/05/13 00:18:28 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -156,6 +156,7 @@ public:
     void loadTitlebar();
     void saveStyleFilename(const char *val) { m_rc_stylefile = (val == 0 ? "" : val); }
     void saveMenuFilename(const char *);
+    void clearMenuFilenames();
     void saveTitlebarFilename(const char *);
     void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
     void saveWindowSearch(Window win, FluxboxWindow *fbwin);
@@ -166,6 +167,7 @@ public:
     void restart(const char *command = 0);
     void reconfigure();
     void rereadMenu();
+    /// reloads the menus if the timestamps changed
     void checkMenu();
 	
     /// handle any system signal sent to the application
@@ -185,6 +187,8 @@ public:
     enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 	
     typedef std::vector<Fluxbox::Titlebar> TitlebarList;
+    /// @return whether the timestamps on the menu changed
+    bool menuTimestampsChanged() const;
 
 private:
     struct cursor {
