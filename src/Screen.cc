@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.251 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: Screen.cc,v 1.252 2003/12/18 21:13:52 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2049,9 +2049,12 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
     // for each file in directory add filename and path to menu
     for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
         std::string style(stylesdir + '/' + filelist[file_index]);
-        // add to menu only if the file is a regular file
-        if (FbTk::Directory::isRegularFile(style) || 
-            FbTk::Directory::isRegularFile(style + "/theme.cfg"))
+        // add to menu only if the file is a regular file, and not a
+        // .file or a backup~ file
+        if ((FbTk::Directory::isRegularFile(style) &&
+                    (filelist[file_index][0] != '.') &&
+                    (style[style.length() - 1] != '~')
+                ) || FbTk::Directory::isRegularFile(style + "/theme.cfg"))
             menu.insert(new StyleMenuItem(filelist[file_index], style));
     } 
     // update menu graphics
