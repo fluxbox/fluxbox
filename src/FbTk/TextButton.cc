@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.cc,v 1.6 2004/09/11 22:58:20 fluxgen Exp $
+// $Id: TextButton.cc,v 1.7 2004/10/10 16:04:33 akir Exp $
 
 #include "TextButton.hh"
 #include "Font.hh"
@@ -36,6 +36,8 @@ TextButton::TextButton(const FbTk::FbWindow &parent,
     m_font(&font),
     m_text(text),
     m_justify(FbTk::LEFT), m_bevel(1),
+    m_left_padding(0),
+    m_right_padding(0),
     m_buffer(drawable(), width(), height(), depth()) {
 
 }
@@ -77,6 +79,19 @@ void TextButton::setBevel(int bevel) {
     if (m_bevel == bevel)
         return;
     m_bevel = bevel;
+}
+
+void TextButton::setTextPaddingLeft(unsigned int leftpadding) {
+    m_left_padding = leftpadding;
+}
+
+void TextButton::setTextPaddingRight(unsigned int rightpadding) {
+    m_right_padding = rightpadding;
+}
+
+void TextButton::setTextPadding(unsigned int padding) {
+    setTextPaddingLeft(padding/2);
+    setTextPaddingRight(padding/2);
 }
 
 /// clear window and redraw text 
@@ -121,9 +136,6 @@ void TextButton::clearArea(int x, int y,
         updateTransparent(x, y, width, height);
         drawText();
     }   
-
-    
-
 }
 
 unsigned int TextButton::textWidth() const {
@@ -133,7 +145,7 @@ unsigned int TextButton::textWidth() const {
 void TextButton::drawText(int x_offset, int y_offset) {
     unsigned int textlen = text().size();
     // do text alignment
-    int align_x = FbTk::doAlignment(width() - x_offset,
+    int align_x = FbTk::doAlignment(width() - x_offset - m_left_padding - m_right_padding,
                                     bevel(),
                                     justify(),
                                     font(),
@@ -150,7 +162,7 @@ void TextButton::drawText(int x_offset, int y_offset) {
                     screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
-                    align_x + x_offset, center_pos + y_offset); // position
+                    align_x + x_offset + m_left_padding, center_pos + y_offset); // position
 }
 
 void TextButton::exposeEvent(XExposeEvent &event) {

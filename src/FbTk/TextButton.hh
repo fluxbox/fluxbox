@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.hh,v 1.5 2004/01/08 22:03:13 fluxgen Exp $
+// $Id: TextButton.hh,v 1.6 2004/10/10 16:04:33 akir Exp $
 
 #ifndef FBTK_TEXTBUTTON_HH
 #define FBTK_TEXTBUTTON_HH
@@ -44,6 +44,9 @@ public:
     void setText(const std::string &text);
     void setFont(const FbTk::Font &font);
     void setBevel(int bevel);
+    void setTextPadding(unsigned int padding);
+    void setTextPaddingLeft(unsigned int leftpadding);
+    void setTextPaddingRight(unsigned int rightpadding);
 
     void resize(unsigned int width, unsigned int height);
     void moveResize(int x, int y,
@@ -63,6 +66,8 @@ public:
     inline const FbTk::Font &font() const { return *m_font; }
     unsigned int textWidth() const;
     int bevel() const { return m_bevel; }
+    unsigned int leftPadding() const { return m_left_padding; }
+    unsigned int rightPadding() const { return m_right_padding; }
 
 protected:
     virtual void drawText(int x_offset = 0, int y_offset = 0);
@@ -71,7 +76,11 @@ private:
     const FbTk::Font *m_font;
     std::string m_text;
     FbTk::Justify m_justify;
+    
     int m_bevel;
+    unsigned int m_left_padding; ///< space between buttonborder and text
+    unsigned int m_right_padding; ///< space between buttonborder and text
+
     FbTk::FbPixmap m_buffer; ///< for background buffer
 };
 
