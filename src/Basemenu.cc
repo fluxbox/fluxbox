@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.34 2002/11/12 22:15:06 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.35 2002/11/15 14:24:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -386,7 +386,7 @@ void Basemenu::update() {
 }
 
 
-void Basemenu::show(void) {
+void Basemenu::show() {
 	XMapSubwindows(m_display, menu.window);
 	XMapWindow(m_display, menu.window);
 	visible = True;
@@ -397,10 +397,11 @@ void Basemenu::show(void) {
 
 		shown = this;
 	}
+
 }
 
 
-void Basemenu::hide(void) {
+void Basemenu::hide() {
 	if ((! torn) && hide_tree && m_parent && m_parent->isVisible()) {
 		Basemenu *p = m_parent;
 
@@ -412,7 +413,7 @@ void Basemenu::hide(void) {
 }
 
 
-void Basemenu::internal_hide(void) {
+void Basemenu::internal_hide() {
 	if (which_sub >= 0) {
 		BasemenuItem *tmp = menuitems[which_sub];
 		tmp->submenu()->internal_hide();
@@ -840,7 +841,7 @@ void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 			if (which_sub >= 0)
 				drawSubmenu(which_sub);
 		}
-		
+
 		if (re->x >= 0 && re->x <= (signed) menu.width &&
 			re->y >= 0 && re->y <= (signed) menu.title_h)
 		if (re->button == 3)
