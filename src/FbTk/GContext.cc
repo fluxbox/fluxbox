@@ -34,11 +34,10 @@ namespace FbTk {
 Display *GContext::m_display = 0;
 
 GContext::GContext(const FbTk::FbDrawable &drawable): 
-    m_gc(XCreateGC(m_display != 0 ? m_display : FbTk::App::instance()->display(),
-                   drawable.drawable(),
-                   0, 0)) {
+    m_gc(XCreateGC(drawable.display(), drawable.drawable(), 0, 0)) {
+    
     if (m_display == 0)
-        m_display = FbTk::App::instance()->display();
+        m_display = drawable.display();
 
     setGraphicsExposure(false);
 }
