@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.8 2003/02/17 22:57:52 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.9 2003/02/18 21:41:09 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -435,6 +435,8 @@ void FbWinFrame::reconfigure() {
     // render the theme
     renderButtons();
     renderHandles();
+    redrawTitle();
+    redrawTitlebar();
 }
 
 unsigned int FbWinFrame::titleHeight() const {
