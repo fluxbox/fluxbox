@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.4 2003/08/13 10:11:14 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.5 2003/08/16 11:47:26 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -30,9 +30,9 @@
 
 #include "FbTk/Observer.hh"
 
-#include <list>
-
 #include <X11/Xlib.h>
+
+#include <list>
 
 class IconbarTheme;
 class BScreen;

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.7 2003/08/15 17:23:23 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.8 2003/08/16 11:47:26 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -31,8 +31,7 @@
 #include "IconButton.hh"
 #include "Workspace.hh"
 
-#include <iostream>
-using namespace std;
+#include <typeinfo>
 
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::RELATIVE),
@@ -124,6 +123,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
             // did we find it?
             if (it == m_icon_list.end())
                 return;
+
             // remove from list and render theme again
             delete *it;
             m_icon_list.erase(it);
@@ -133,23 +133,62 @@ void IconbarTool::update(FbTk::Subject *subj) {
         }
     }
 
-    // ok, we got some signal that we need to update our iconbar container
+    bool remove_all = false; // if we should readd all windows    
 
-    // remove all clients and add them again...the only way to do it now
-    deleteIcons();
+    if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
+        BScreen::ScreenSubject *screen_subj = static_cast<BScreen::ScreenSubject *>(subj);
+        if (&screen_subj->screen().currentWorkspaceSig() == screen_subj) {
+            remove_all = true; // remove and readd all windows
+        }
+    }
+
+    // ok, we got some signal that we need to update our iconbar container
 
     // get current workspace and all it's clients
     Workspace &space = *m_screen.currentWorkspace();
     // build a ItemList and add it (faster than adding single items)
     Container::ItemList items;
-    Workspace::Windows::iterator it = space.windowList().begin();
-    Workspace::Windows::iterator it_end = space.windowList().end();
+    Workspace::Windows itemlist(space.windowList());
+    // add icons to the itemlist
+    {
+        BScreen::Icons::iterator icon_it = m_screen.getIconList().begin();
+        BScreen::Icons::iterator icon_it_end = m_screen.getIconList().end();
+        for (; icon_it != icon_it_end; ++icon_it) {
+            // just add the icons that are on the this workspace
+            if ((*icon_it)->workspaceNumber() == m_screen.currentWorkspaceID())
+                itemlist.push_back(*icon_it);
+        }
+    }
+
+    // go through the current list and see if there're windows to be added
+    // (note: we dont need to check if there's one deleted since we're listening
+    //  to dieSig )
+    if (!remove_all) {
+        IconList::iterator win_it = m_icon_list.begin();
+        IconList::iterator win_it_end = m_icon_list.end();
+        Workspace::Windows::iterator remove_it = itemlist.end();
+        for (; win_it != win_it_end; ++win_it)
+            remove_it = remove(itemlist.begin(), remove_it, &(*win_it)->win());
+
+       itemlist.erase(remove_it, itemlist.end());
+       // we dont need to do anything
+       // since we dont have anything to add ...
+       if (itemlist.size() == 0) 
+           return;
+
+    } else {
+        deleteIcons();
+    }
+
+    // ok, now we should have a list of icons that we need to add
+    Workspace::Windows::iterator it = itemlist.begin();
+    Workspace::Windows::iterator it_end = itemlist.end();
     for (; it != it_end; ++it) {
         
         // we just want windows that has clients
-        if ((*it)->clientList().size() == 0)
+         if ((*it)->clientList().size() == 0)
             continue;
-        
+
         IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), **it);
         items.push_back(button);
         m_icon_list.push_back(button);
