@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   __i18n_h
-#define   __i18n_h
+#ifndef   _I18N_HH_
+#define   _I18N_HH_
 
 #ifdef    NLS
 #  include "../nls/blackbox-nls.hh"
