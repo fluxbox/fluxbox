@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/20:
+  * Fixed toolbar autohide bug (Henrik)
+    Toolbar.cc
   * Added new action: BindKey <key line>  (Henrik)
     This will allow you to add key bindings while you're running fluxbox
     in the Fluxbox Command dialog.
