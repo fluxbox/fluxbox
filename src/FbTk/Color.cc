@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.8 2004/01/09 21:36:21 fluxgen Exp $
+// $Id: Color.cc,v 1.9 2004/02/28 16:55:22 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -105,16 +105,16 @@ bool Color::setFromString(const char *color_string, int screen) {
     return true;
 }
 
-/*
-  Color &Color::Color::operator  = (const Color &col_copy) {
-  // check for aliasing
-  if (this == &col_copy)
-  return *this;
 
-  copy(col_copy);
-  return *this;
-  }
-*/
+Color &Color::Color::operator  = (const Color &col_copy) {
+    // check for aliasing
+    if (this == &col_copy)
+        return *this;
+    
+    copy(col_copy);
+    return *this;
+}
+
 
 void Color::free() {
     if (isAllocated()) {
@@ -137,9 +137,9 @@ void Color::copy(const Color &col_copy) {
 
     free();
 		
-    allocate(col_copy.red(), 
-             col_copy.green(),
-             col_copy.blue(),
+    allocate(col_copy.red()*0xFF, 
+             col_copy.green()*0xFF,
+             col_copy.blue()*0xFF,
              col_copy.m_screen);
 	
 }

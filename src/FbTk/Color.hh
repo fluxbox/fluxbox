@@ -1,5 +1,5 @@
 // Color.hh for Fluxbox Window Manager 
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen@users.sourceforge.net)
 //
 // from Image.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.hh,v 1.6 2003/12/16 17:06:49 fluxgen Exp $
+// $Id: Color.hh,v 1.7 2004/02/28 16:55:22 fluxgen Exp $
 
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
@@ -46,8 +46,8 @@ public:
     bool setFromString(const char *color_string, int screen);
     /// TODO don't like this
     void setPixel(unsigned long pixel) { m_pixel = pixel; }
-    // TODO
-    //Color &operator = (const Color &col_copy);
+
+    Color &operator = (const Color &col_copy);
 	
     inline bool isAllocated() const { return m_allocated; }
     inline unsigned short red() const { return m_red; }
