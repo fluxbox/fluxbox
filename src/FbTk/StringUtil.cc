@@ -1,5 +1,5 @@
 // StringUtil.cc for fluxbox 
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen<at>linuxmail.org)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen<at>fluxbox<dot>org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.10 2004/02/28 10:46:02 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.11 2004/05/02 20:42:56 fluxgen Exp $
 
 #include "StringUtil.hh"
 

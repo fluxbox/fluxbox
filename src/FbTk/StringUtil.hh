@@ -1,5 +1,5 @@
 // StringUtil.hh for fluxbox 
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen(at)linuxmail.org)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen(at)fluxbox<dot>org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.8 2003/12/16 17:06:52 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.9 2004/05/02 20:42:56 fluxgen Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -37,6 +37,7 @@ const char *strcasestr(const char *str, const char *ptn);
 
 /// expands ~ to value of ${HOME} enviroment variable
 std::string expandFilename(const std::string &filename);
+
 /// @return extension of filename (ex: filename.txt will return txt)
 std::string findExtension(const std::string &filename);
 
