@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.55 2002/05/02 07:14:21 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.56 2002/05/08 09:33:11 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1188,16 +1188,20 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 				screen->rightWorkspace(key->getParam());
 			break;
 			case Keys::KILLWINDOW: //kill the current window
-				XKillClient(screen->getBaseDisplay()->getXDisplay(),
-					focused_window->getClientWindow());
+				if (focused_window) {
+					XKillClient(screen->getBaseDisplay()->getXDisplay(),
+						focused_window->getClientWindow());
+				}
 			break;
 			case Keys::NEXTWINDOW:	//activate next window
 				screen->nextFocus(key->getParam());
-				focused_window->getTab()->raise();
+				if (focused_window)
+					focused_window->getTab()->raise();
 			break;
 			case Keys::PREVWINDOW:	//activate prev window
 				screen->prevFocus(key->getParam());
-				focused_window->getTab()->raise();
+				if (focused_window)
+					focused_window->getTab()->raise();
 			break;
 			case Keys::NEXTTAB: 
 				if (focused_window && focused_window->getTab()) {
@@ -1944,7 +1948,7 @@ void Fluxbox::load_rc(void) {
 		if (!m_rc_menufile->size())
 			m_rc_menufile.setDefaultValue();
 
-		delete tmpvar;
+		delete [] tmpvar;
 	} else
 		m_rc_menufile.setDefaultValue();
 
