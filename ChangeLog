@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/19:
+  * fbsetbg update (Thanks Han)
+    - fixes fbsetbg -l after a changing the wallpapersetter.
+    - fixes xli debug message
+    - cleanups
+    - adds feh (thanks teemu)
 *03/09/16:
    * Apply gravity when changing decorations (Simon)
      - also fix gravity when decorations not present
