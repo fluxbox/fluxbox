@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/21:
+  * fluxbox-generate_menu:
+    Updated polish locales from: £ukasz Wrzosek (unl at poczta dot fm)
 *04/05/18:
   * Make the size of arrows in buttons half the button size (grubert).
   * Add UP and DOWN buttons.
