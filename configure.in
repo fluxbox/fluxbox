@@ -247,21 +247,25 @@ AC_ARG_ENABLE(
 		AC_MSG_RESULT([no])
 		XFT=false
 	)
+        AC_CHECK_LIB(Xft, XftDrawStringUtf8,
+		LIBS="$LIBS -lXft"
+		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support"),
+        )
   else
     AC_MSG_RESULT([no])
 	XFT=false
   fi,
   AC_CHECK_LIB(Xft, XftFontOpen,
-		LIBS="$LIBS -lXft"
-		XFT=true
-		AC_DEFINE(USE_XFT, 1, "antialias support"),
-		AC_MSG_RESULT([no])
-		XFT=false
-	)
+	LIBS="$LIBS -lXft"
+	XFT=true
+	AC_DEFINE(USE_XFT, 1, "antialias support"),
+	AC_MSG_RESULT([no])
+	XFT=false
+  )
   AC_CHECK_LIB(Xft, XftDrawStringUtf8,
-		LIBS="$LIBS -lXft"
-		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support"),
-        )
+	LIBS="$LIBS -lXft"
+	AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support"),
+  )
 )
 AM_CONDITIONAL(XFT, test x$XFT = xtrue)
 
