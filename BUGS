@@ -2,6 +2,10 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
+  * workspace menu sometimes rendered poorly when empty. Possibly only 
+    when the only window in it was iconified. Screenshot (Thanks EsKi):
+    http://www.cse.unsw.edu.au/~simonb/fluxbox/bad_workspace_menu.png
+
   * vertical toolbar alignment reported broken with pixmap themes
 
   * Some builds/distros seem to require all supported locales to be 
