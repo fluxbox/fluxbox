@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.126 2003/04/16 16:17:56 rathnor Exp $
+// $Id: Screen.cc,v 1.127 2003/04/18 12:51:14 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -641,7 +641,7 @@ BScreen::BScreen(ResourceManager &rm,
 
     m_configmenu.reset(createMenuFromScreen(*this));
     setupConfigmenu(*m_configmenu.get());
-    //    m_configmenu->setInternalMenu();
+    m_configmenu->setInternalMenu();
 
     workspacemenu->setItemSelected(2, true);
 
@@ -1631,10 +1631,14 @@ void BScreen::initMenu() {
                   }
                   rootmenuList.clear();
         */
-        rootmenuList.erase(rootmenuList.begin(), rootmenuList.end());
-
+        while (!rootmenuList.empty()) {
+            delete rootmenuList.back();
+            rootmenuList.pop_back();
+        }
+        
         while (m_rootmenu->numberOfItems())
-            m_rootmenu->remove(0);			
+            m_rootmenu->remove(0); 
+        	
     } else
         m_rootmenu.reset(createMenuFromScreen(*this));
 
