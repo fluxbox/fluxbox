@@ -13,6 +13,8 @@ TODO for Fluxbox 0.2.0
 
 * grabKillWindow to keygrabber grabCloseWindow
 
+* Fix snapping for {VERT,HORIZ}{INC,DEC} keybindings when resising for example
+  xterms.
 * grabRootmenu
 * wheel-config support
 * separator in the menus
@@ -21,7 +23,6 @@ TODO for Fluxbox 0.2.0
 * 0,0-pos fix
 * gnome support 
 * net wm atom support
-* fix some more enums to uppercase
 * clean up in the global namespace
 * remove cyclic deps
 * Create fbinput style app

@@ -11,6 +11,6 @@ distclean-local:
 init: init.in
 	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir)," init.in > init
 menu: generate_menu
-	./generate_menu
+	sh ./generate_menu
 	@regex_cmd@ -e "s,\@VERSION\@,$(VERSION)," menu.in > menu.pre
 	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir)," menu.pre > menu

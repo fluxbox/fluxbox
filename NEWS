@@ -1,17 +1,24 @@
 So whats new in 0.1.6? 
-* different rootCommand on different screens
-* less strict keyconfig file reading
-* coding design
-* You can drop tabs on titlebar too
-* tab width is configured for each screen
+* Rootcommand is configured for each screen
+* Less strict keyconfig file reading
+* Coding design
+* Tabs can be dropped on the window as well 
+  (if the sloppy window grouping is on)
+* Tab width is configured for each screen
 * Tab cycling
 * "Maximize stop at slit" option
+* Lower window with mouse button 3 
+* You can now comment lines in keys config file
+  (commented lines must start with a #)
+* You can now click to raise window while 
+  you are in sloppy focus mode
 
 Bugfixes:
-* close button
-* keys memory leak
-* keybinding bug
-* withdraw state fixed (opera will not open another instance)
+* Close button (aterm, eterm etc)
+* Keys memory leak
+* Keybinding bug
+* Withdraw state fixed (opera will not open another instance 
+  if there is one already opened)
 * Slit OnTop while Toolbar OnTop
 * Alt + resize and pressing button 1
 * Tab toggle texture/position

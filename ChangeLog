@@ -1,7 +1,17 @@
 Changes for 0.1.6:
+*01/01/11:
+   * Fixed so it compiles with cygwin (Thanks Eric Nicolas)
 *02/01/10:
+   * Fixed {VERT,HORIZ}{INC,DEC} keybindings so that tabs will
+     resize/reposition. (Claes Nästén)
+   * Updated documentation (Thanks Rando Christensen)
+   * All enums are now changed to uppercase letters. (Claes Nästén)
+   * Now tabs won't appear on some apps where they shouldn't,
+     for example bbpager and mplayer. (Claes Nästén) 
    * Fixed rootCommand to screen, so we can have
      different rootcommands on the different screens
+   * Fixed so we can disable lines in the keyfile with a #
+   * Fixed raise with mouse click while sloppy window focus
 *02/01/09:
    * Updated copyright date
    * Updated generate_menu (Thanks zyrnix)
@@ -23,7 +33,7 @@ Changes for 0.1.6:
 *02/01/05:
    * Changed placement/alignment enums to uppercase letters (Claes Nästén)
    * Fixed tab/iconbar resource bug (Claes Nästén)
-   * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay )
+   * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay)
    * Fixed stickytoggle bug in Windowmenu (Thanks Chris Elston)
    * Fixed shade bug in Windowmenu 
    * Fixed error in nls/it_IT/Makefile.am
