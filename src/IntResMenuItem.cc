@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IntResMenuItem.cc,v 1.4 2004/08/31 15:26:38 rathnor Exp $
+// $Id: IntResMenuItem.cc,v 1.5 2004/10/21 10:40:37 akir Exp $
 
 #include "IntResMenuItem.hh"
 #include "PixmapWithMask.hh"
@@ -71,5 +71,5 @@ void IntResMenuItem::click(int button, int time) {
     // update label
     setLabel(appendIntValue(m_org_label, *m_res).c_str());
     // call other commands
-    MenuItem::click(button, time);
+    FbTk::MenuItem::click(button, time);
 }
