@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.45 2002/09/08 19:44:18 fluxgen Exp $
+// $Id: Screen.hh,v 1.46 2002/10/13 22:29:25 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -37,6 +37,10 @@
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
 #include "fluxbox.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
 
 #ifdef SLIT
 #include "Slit.hh"
