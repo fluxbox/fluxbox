@@ -1,7 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+  * Updated ko_KR - (thanx Jo Hyunseok)
+    nls/ko_KR/Translation.m
 *05/01/10:
-  * Fix for #1087220 (WithdrawnState handling) Mathias
+  * Fix for #1087220 (WithdrawnState handling) (Mathias)
     fluxbox.cc
   * Fix position initialisation from apps file (Simon)
     Window.cc
