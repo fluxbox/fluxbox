@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.82 2002/11/21 15:57:47 fluxgen Exp $
+// $Id: Screen.cc,v 1.83 2002/11/24 20:56:06 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -233,14 +233,15 @@ m_currentworkspace_sig(*this), // current workspace signal
 theme(0),
 resource(rm, screenname, altscreenname)
 {
+	Display *disp = BaseDisplay::getXDisplay();
 
 	event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
 		ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
 
 	XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
-	XSelectInput(BaseDisplay::getXDisplay(), getRootWindow(), event_mask);
-	XSync(BaseDisplay::getXDisplay(), False);
+	XSelectInput(disp, getRootWindow(), event_mask);
+	XSync(disp, False);
 	XSetErrorHandler((XErrorHandler) old);
 
 	managed = running;
@@ -263,18 +264,17 @@ resource(rm, screenname, altscreenname)
 #ifdef HAVE_GETPID
 	pid_t bpid = getpid();
 
-	XChangeProperty(BaseDisplay::getXDisplay(), getRootWindow(),
+	XChangeProperty(disp, getRootWindow(),
 		Fluxbox::instance()->getFluxboxPidAtom(), XA_CARDINAL,
 		sizeof(pid_t) * 8, PropModeReplace,
 		(unsigned char *) &bpid, 1);
 #endif // HAVE_GETPID
 
 
-	XDefineCursor(BaseDisplay::getXDisplay(), getRootWindow(),
-		fluxbox->getSessionCursor());
+	XDefineCursor(disp, getRootWindow(), fluxbox->getSessionCursor());
 
 	image_control =
-		new BImageControl(fluxbox, this, true, fluxbox->colorsPerChannel(),
+		new BImageControl(this, true, fluxbox->colorsPerChannel(),
 			fluxbox->getCacheLife(), fluxbox->getCacheMax());
 	image_control->installRootColormap();
 	root_colormap_installed = true;
@@ -282,7 +282,7 @@ resource(rm, screenname, altscreenname)
 	fluxbox->load_rc(this);
 
 	image_control->setDither(*resource.image_dither);
-	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), colormap(), getScreenNumber(), 
+	theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
 	theme->reconfigure(*resource.antialias);
@@ -306,7 +306,7 @@ resource(rm, screenname, altscreenname)
 	attrib.save_under = true;
 
 	geom_window =
-		XCreateWindow(getBaseDisplay()->getXDisplay(), getRootWindow(),
+		XCreateWindow(disp, getRootWindow(),
 			0, 0, geom_w, geom_h, theme->getBorderWidth(), getDepth(),
 			InputOutput, getVisual(), mask, &attrib);
 	geom_visible = false;
@@ -315,25 +315,23 @@ resource(rm, screenname, altscreenname)
 		if (theme->getWindowStyle().t_focus.type() ==
 			(FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			geom_pixmap = None;
-			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
+			XSetWindowBackground(disp, geom_window,
 				 theme->getWindowStyle().t_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
 				 &theme->getWindowStyle().t_focus);
-			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
-				 geom_window, geom_pixmap);
+			XSetWindowBackgroundPixmap(disp, geom_window, geom_pixmap);
 		}
 	} else {
 		if (theme->getWindowStyle().l_focus.type() ==
 				(FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			geom_pixmap = None;
-			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
+			XSetWindowBackground(disp, geom_window,
 				 theme->getWindowStyle().l_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
 				 &theme->getWindowStyle().l_focus);
-			XSetWindowBackgroundPixmap(getBaseDisplay()->getXDisplay(),
-				 geom_window, geom_pixmap);
+			XSetWindowBackgroundPixmap(disp, geom_window, geom_pixmap);
 		}
 	}
 
@@ -367,7 +365,7 @@ resource(rm, screenname, altscreenname)
 	m_toolbar.reset(new Toolbar(this));
 
 #ifdef SLIT
-	slit = new Slit(this);
+	m_slit.reset(new Slit(this));
 #endif // SLIT
 
 	initMenu();
@@ -377,7 +375,7 @@ resource(rm, screenname, altscreenname)
 	//update menus
 	rootmenu->update();
 #ifdef SLIT
-	slit->reconfigure();
+	m_slit->reconfigure();
 #endif // SLIT
 
 	// start with workspace 0
@@ -387,8 +385,7 @@ resource(rm, screenname, altscreenname)
 	int i;
 	unsigned int nchild;
 	Window r, p, *children;
-	XQueryTree(getBaseDisplay()->getXDisplay(), getRootWindow(), &r, &p,
-			 &children, &nchild);
+	XQueryTree(disp, getRootWindow(), &r, &p, &children, &nchild);
 
 	// preen the window list of all icon windows... for better dockapp support
 	for (i = 0; i < (int) nchild; i++) {
@@ -417,7 +414,7 @@ resource(rm, screenname, altscreenname)
 			continue;
 
 		XWindowAttributes attrib;
-		if (XGetWindowAttributes(getBaseDisplay()->getXDisplay(), children[i],
+		if (XGetWindowAttributes(disp, children[i],
 				&attrib)) {
 			if (attrib.override_redirect) 
 				continue;
@@ -442,23 +439,18 @@ resource(rm, screenname, altscreenname)
 		}
 	}
 
-	if (! resource.sloppy_focus)
-		XSetInputFocus(getBaseDisplay()->getXDisplay(), m_toolbar->getWindowID(),
+	if (! resource.sloppy_focus) {
+		XSetInputFocus(disp, m_toolbar->getWindowID(),
 			RevertToParent, CurrentTime);
+	}
 
 	XFree(children);
-	XFlush(getBaseDisplay()->getXDisplay());
-}
-
-namespace {
-	template<typename T>
-	void delete_obj(T * obj) {
-		delete obj;
-	}
+	XFlush(disp);
 }
 
 BScreen::~BScreen() {
-	if (! managed) return;
+	if (! managed)
+		return;
 
 	if (geom_pixmap != None)
 		image_control->removeImage(geom_pixmap);
@@ -493,10 +485,6 @@ BScreen::~BScreen() {
 	delete workspacemenu;
 	delete m_iconmenu;
 	delete configmenu;
-
-#ifdef SLIT
-	delete slit;
-#endif // SLIT
 
 	delete image_control;
 
@@ -581,7 +569,7 @@ void BScreen::reconfigure() {
 	m_toolbar->reconfigure();
 
 #ifdef		SLIT
-	slit->reconfigure();
+	m_slit->reconfigure();
 #endif // SLIT
 	
 	//reconfigure workspaces
@@ -973,14 +961,14 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	session_stack[i++] = configmenu->windowID();
 
 #ifdef		SLIT
-	session_stack[i++] = slit->menu().getDirectionmenu().windowID();
-	session_stack[i++] = slit->menu().getPlacementmenu().windowID();
+	session_stack[i++] = m_slit->menu().getDirectionmenu().windowID();
+	session_stack[i++] = m_slit->menu().getPlacementmenu().windowID();
 #ifdef XINERAMA
 	if (hasXinerama()) {
-		session_stack[i++] = slit->menu().getHeadmenu()->windowID();
+		session_stack[i++] = m_slit->menu().getHeadmenu()->windowID();
 	}
 #endif // XINERAMA
-	session_stack[i++] = slit->menu().windowID();
+	session_stack[i++] = m_slit->menu().windowID();
 #endif // SLIT
 
 	session_stack[i++] =
@@ -1002,9 +990,9 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	if (m_toolbar->isOnTop())
 		session_stack[i++] = m_toolbar->getWindowID();
 
-#ifdef		SLIT
-	if (slit->isOnTop())
-		session_stack[i++] = slit->getWindowID();
+#ifdef SLIT
+	if (m_slit->isOnTop())
+		session_stack[i++] = m_slit->getWindowID();
 #endif // SLIT
 	if (!workspace_stack.empty()) {
 		Workspace::Stack::const_reverse_iterator it = workspace_stack.rbegin();
@@ -1554,8 +1542,8 @@ void BScreen::shutdown() {
 		}
 	}
 
-#ifdef		SLIT
-	slit->shutdown();
+#ifdef SLIT
+	m_slit->shutdown();
 #endif // SLIT
 
 }
