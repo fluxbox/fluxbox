@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/02/16:
+  * Fixed window size bug in no-decor windows on start/restart (Henrik)
+    Window.cc
+*04/02/14:
+  * Fixed bug in _NET_MOVERESIZE_WINDOW (Henrik)
+    Ewmh.cc
 *04/02/10:
   * Minor fixes (Thanks Mathias Gumz)
     fluxbox.hh/cc, Slit.cc, Xinerama.hh, Screen.cc
