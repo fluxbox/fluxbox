@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.61 2002/07/13 21:37:52 fluxgen Exp $
+// $Id: Window.cc,v 1.62 2002/07/19 21:35:37 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -483,7 +483,7 @@ Window FluxboxWindow::createToplevelWindow(
 		CWOverrideRedirect | CWEventMask;
 
 	attrib_create.background_pixmap = None;
-	attrib_create.colormap = screen->getColormap();
+	attrib_create.colormap = screen->colormap();
 	attrib_create.override_redirect = True;
 	attrib_create.event_mask = ButtonPressMask | ButtonReleaseMask |
 		ButtonMotionMask | EnterWindowMask;
@@ -612,7 +612,7 @@ void FluxboxWindow::decorate() {
 	BTexture *texture = &(screen->getWindowStyle()->b_focus);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.fbutton = None;
-		frame.fbutton_pixel = texture->getColor()->getPixel();
+		frame.fbutton_pixel = texture->color().pixel();
 	} else
 		frame.fbutton =
 			image_ctrl->renderImage(frame.button_w, frame.button_h, texture);
@@ -622,7 +622,7 @@ void FluxboxWindow::decorate() {
 	texture = &(screen->getWindowStyle()->b_unfocus);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.ubutton = None;
-		frame.ubutton_pixel = texture->getColor()->getPixel();
+		frame.ubutton_pixel = texture->color().pixel();
 	} else
 		frame.ubutton =
 			image_ctrl->renderImage(frame.button_w, frame.button_h, texture);
@@ -632,7 +632,7 @@ void FluxboxWindow::decorate() {
 	texture = &(screen->getWindowStyle()->b_pressed);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pbutton = None;
-		frame.pbutton_pixel = texture->getColor()->getPixel();
+		frame.pbutton_pixel = texture->color().pixel();
 	} else
 		frame.pbutton =
 			image_ctrl->renderImage(frame.button_w, frame.button_h, texture);
@@ -643,7 +643,7 @@ void FluxboxWindow::decorate() {
 		texture = &(screen->getWindowStyle()->t_focus);
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.ftitle = None;
-			frame.ftitle_pixel = texture->getColor()->getPixel();
+			frame.ftitle_pixel = texture->color().pixel();
 		} else
 			frame.ftitle =
 				image_ctrl->renderImage(frame.width, frame.title_h, texture);
@@ -655,22 +655,22 @@ void FluxboxWindow::decorate() {
 		texture = &(screen->getWindowStyle()->t_unfocus);
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.utitle = None;
-			frame.utitle_pixel = texture->getColor()->getPixel();
+			frame.utitle_pixel = texture->color().pixel();
 		} else
 			frame.utitle =
 				image_ctrl->renderImage(frame.width, frame.title_h, texture);
 		if (tmp) image_ctrl->removeImage(tmp);
 
 		XSetWindowBorder(display, frame.title,
-			 screen->getBorderColor()->getPixel());
+			 screen->getBorderColor()->pixel());
 
 		decorateLabel();
 		
 	}
 
 	if (decorations.border) {
-		frame.fborder_pixel = screen->getWindowStyle()->f_focus.getPixel();
-		frame.uborder_pixel = screen->getWindowStyle()->f_unfocus.getPixel();
+		frame.fborder_pixel = screen->getWindowStyle()->f_focus.pixel();
+		frame.uborder_pixel = screen->getWindowStyle()->f_unfocus.pixel();
 	}
 
 	if (decorations.handle) {
@@ -678,7 +678,7 @@ void FluxboxWindow::decorate() {
 		texture = &(screen->getWindowStyle()->h_focus);
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.fhandle = None;
-			frame.fhandle_pixel = texture->getColor()->getPixel();
+			frame.fhandle_pixel = texture->color().pixel();
 		} else
 			frame.fhandle =
 				image_ctrl->renderImage(frame.width, frame.handle_h, texture);
@@ -688,7 +688,7 @@ void FluxboxWindow::decorate() {
 		texture = &(screen->getWindowStyle()->h_unfocus);
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.uhandle = None;
-			frame.uhandle_pixel = texture->getColor()->getPixel();
+			frame.uhandle_pixel = texture->color().pixel();
 		} else
 			frame.uhandle =
 				image_ctrl->renderImage(frame.width, frame.handle_h, texture);
@@ -699,7 +699,7 @@ void FluxboxWindow::decorate() {
 		texture = &(screen->getWindowStyle()->g_focus);
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.fgrip = None;
-			frame.fgrip_pixel = texture->getColor()->getPixel();
+			frame.fgrip_pixel = texture->color().pixel();
 		} else
 			frame.fgrip =
 				image_ctrl->renderImage(frame.grip_w, frame.grip_h, texture);
@@ -710,22 +710,22 @@ void FluxboxWindow::decorate() {
 		texture = &(screen->getWindowStyle()->g_unfocus);
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.ugrip = None;
-			frame.ugrip_pixel = texture->getColor()->getPixel();
+			frame.ugrip_pixel = texture->color().pixel();
 		} else
 			frame.ugrip =
 				image_ctrl->renderImage(frame.grip_w, frame.grip_h, texture);
 		if (tmp) image_ctrl->removeImage(tmp);
 
 		XSetWindowBorder(display, frame.handle,
-			screen->getBorderColor()->getPixel());
+			screen->getBorderColor()->pixel());
 		XSetWindowBorder(display, frame.left_grip,
-			screen->getBorderColor()->getPixel());
+			screen->getBorderColor()->pixel());
 		XSetWindowBorder(display, frame.right_grip,
-			screen->getBorderColor()->getPixel());
+			screen->getBorderColor()->pixel());
 	}
 		
 	XSetWindowBorder(display, frame.window,
-		screen->getBorderColor()->getPixel());
+		screen->getBorderColor()->pixel());
 }
 
 
@@ -734,7 +734,7 @@ void FluxboxWindow::decorateLabel() {
 	BTexture *texture = &(screen->getWindowStyle()->l_focus);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.flabel = None;
-		frame.flabel_pixel = texture->getColor()->getPixel();		
+		frame.flabel_pixel = texture->color().pixel();		
 	} else
 		frame.flabel = image_ctrl->renderImage(frame.label_w, frame.label_h, texture);
 			
@@ -744,7 +744,7 @@ void FluxboxWindow::decorateLabel() {
 	texture = &(screen->getWindowStyle()->l_unfocus);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.ulabel = None;
-		frame.ulabel_pixel = texture->getColor()->getPixel();
+		frame.ulabel_pixel = texture->color().pixel();
 	} else
 		frame.ulabel = image_ctrl->renderImage(frame.label_w, frame.label_h, texture);
 		
