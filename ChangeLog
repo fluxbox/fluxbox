@@ -9,6 +9,8 @@ Changes for 0.9.10:
       how it goes :) It basically means we don't have to refresh
       menus as much, but uses more memory. Shouldn't break anything new.
       Menu.cc FbWindow.hh/cc
+  * Fix slit transparency too (finally) while we're at it (Simon)
+    Slit.hh/cc
 *04/05/13:
   * Fix a crash when a window closes while [opaque] moving (Simon)
     - also tidy up several related things when a window hides

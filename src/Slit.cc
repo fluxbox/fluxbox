@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.93 2004/04/19 22:42:05 fluxgen Exp $
+// $Id: Slit.cc,v 1.94 2004/05/17 15:20:32 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -310,10 +310,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                       create_mask, &attrib);
 
     FbTk::EventManager::instance()->add(*this, frame.window);
-    m_transp.reset(new FbTk::Transparent(screen().rootPixmap(), frame.window.drawable(), 
-                                         *m_rc_alpha,
-                                         screen().screenNumber()));
-
+    
+    frame.window.setAlpha(*m_rc_alpha);
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
     moveToLayer((*m_rc_layernum).getNum());
 
@@ -689,15 +687,7 @@ void Slit::reconfigure() {
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
-    if (m_transp.get()) {
-        if (frame.pixmap == 0)
-            m_transp->setDest(frame.window.drawable(), frame.window.screenNumber());
-        else
-            m_transp->setDest(frame.pixmap, frame.window.screenNumber());
-
-        m_transp->setAlpha(*m_rc_alpha);
-    }
-
+    frame.window.setAlpha(*m_rc_alpha);
     clearWindow();
 
     int x = 0, y = 0;
@@ -1041,18 +1031,7 @@ void Slit::exposeEvent(XExposeEvent &ev) {
     // we don't need to clear the entire window 
     // just the are that gets exposed
     frame.window.clearArea(ev.x, ev.y, ev.width, ev.height);
-    if (m_transp.get()) {
-        if ((int)m_transp->alpha() != *m_rc_alpha)
-            m_transp->setAlpha(*m_rc_alpha);
-
-        if (screen().rootPixmap() != m_transp->source())
-            m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
-
-        m_transp->render(frame.window.x() + ev.x, frame.window.y() + ev.y,
-                         ev.x, ev.y,
-                         ev.width, ev.height);
-        
-    }
+    frame.window.updateTransparent(ev.x, ev.y, ev.width, ev.height);
 }
 
 void Slit::update(FbTk::Subject *subj) {
@@ -1061,19 +1040,7 @@ void Slit::update(FbTk::Subject *subj) {
 
 void Slit::clearWindow() {
     frame.window.clear();
-    if (m_transp.get()) {
-        if ((int)m_transp->alpha() != *m_rc_alpha)
-            m_transp->setAlpha(*m_rc_alpha);
-
-        if (screen().rootPixmap() != m_transp->source())
-            m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
-
-        m_transp->render(frame.window.x(), frame.window.y(),
-                         0, 0,
-                         frame.window.width(), frame.window.height());
-        
-    }
-
+    frame.window.updateTransparent();
 }
 
 void Slit::toggleHidden() {
