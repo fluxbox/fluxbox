@@ -1,0 +1,30 @@
+#this line is a comment
+#Mod1 B :NextWindow
+# Mod1 C :PrevWindow
+ # Mod1 E :NextWindow
+ 		# 	Mod1  	G :PrevWindow
+
+Mod1 F1 :Workspace1
+Mod1 F2 :Workspace2
+Mod1 F3 :Workspace3
+
+Mod1 Tab :NextWindow
+Mod1 Shift Tab :PrevWindow
+Mod1 XX    :MaximizeWindow
+Mod1    F4 :Workspace4
+Mod1 F5    :Workspace5
+Mod1 F6 :Workspace6
+Mod1	F7 :Workspace7
+Mod1 F8 :Workspace8
+Mod1 F9		:Workspace9
+Mod1 F10 		:Workspace10
+Mod1    F11 :Workspace11
+Mod1 F12 :Workspace12
+Mod1 Q :PrevWorkspace
+Mod1 W :NextWorkspace
+Mod1 Shift W :NextTab
+Mod1 Shift Q :PrevTab
+Mod3 Q Mod1 W :ExecCommand    first  	xterm arg1 arg2 stuff
+Mod2 Q   Mod1   W    :NextWindow
+Mod3 Q :ExecCommand xterm arg1 arg2 stuff
+None XF86AudioLowerVolume :ExecCommand aumix -w -5
