@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.16 2002/04/12 13:02:12 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.17 2002/04/28 18:55:43 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -135,6 +135,7 @@ public:
 	void saveToolbarSearch(Window, Toolbar *);
 	void saveTabSearch(Window, Tab *);
 	void saveGroupSearch(Window, FluxboxWindow *);	
+	void save_rc(void);
 	void removeMenuSearch(Window);
 	void removeWindowSearch(Window);
 	void removeToolbarSearch(Window);
@@ -205,7 +206,8 @@ private:
 	std::map<Window, FluxboxWindow *> groupSearch;
 	std::map<Window, Basemenu *> menuSearch;
 	std::map<Window, Toolbar *> toolbarSearch;
-	std::map<Window, Tab *> tabSearch;
+	typedef std::map<Window, Tab *> TabList;
+	TabList tabSearch;
 	
 #ifdef		SLIT
 	std::map<Window, Slit *> slitSearch;
@@ -240,7 +242,7 @@ protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
 	char *getRcFilename();
 	void load_rc(void);
-	void save_rc(void);
+	
 	void reload_rc(void);
 	void real_rereadMenu(void);
 	void real_reconfigure(void);
