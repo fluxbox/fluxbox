@@ -365,7 +365,16 @@ rootcommand("")
 				continue;
 
 			if (attrib.map_state != IsUnmapped) {
-				new FluxboxWindow(children[i], this);
+				FluxboxWindow *tempwin = 0;
+				try {
+					tempwin = new FluxboxWindow(children[i], this);
+				} catch (FluxboxWindow::Error err) {
+					FluxboxWindow::showError(err);
+					delete tempwin;
+					tempwin = 0;
+				} catch (...) {
+					cerr<<"FATAL: Unknown catch"<<endl;
+				}
 
 				FluxboxWindow *win = fluxbox->searchWindow(children[i]);
 				if (win) {
