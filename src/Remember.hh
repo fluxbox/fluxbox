@@ -20,17 +20,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.2 2003/04/26 11:24:55 rathnor Exp $
+// $Id: Remember.hh,v 1.3 2003/04/26 12:44:53 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
 #ifndef REMEMBER_HH
 #define REMEMBER_HH
 
-#include "Window.hh"
 #include "AtomHandler.hh"
-#include "Screen.hh"
-#include "StringUtil.hh"
 
 #include <fstream>
 #include <map>
@@ -98,7 +95,11 @@ public:
 };
 
 
-/*
+class FluxboxWindow;
+class BScreen;
+class WinClient;
+
+/**
  * Class Remember is an atomhandler to avoid interfering with
  * the main code as much as possible, since we hope that one day
  * things like this (and maybe toolbar/slit) can become some sort
