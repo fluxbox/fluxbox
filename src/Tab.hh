@@ -19,18 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.15 2002/08/11 20:57:13 fluxgen Exp $
+// $Id: Tab.hh,v 1.16 2002/11/30 20:56:21 fluxgen Exp $
 
 #ifndef TAB_HH
 #define TAB_HH
 
-#include "Image.hh"
-#include "Window.hh"
+#include <X11/Xlib.h>
+#include <strings.h>
+class FluxboxWindow;
 
-
-//Note: Tab is a friend of FluxboxWindow
-
-
+/**
+Note: Tab is a friend of FluxboxWindow
+*/
 class Tab {
 public:
 	enum Placement{ PTOP = 0, PBOTTOM = 5, PLEFT = 10, PRIGHT = 15, PNONE = 20};
