@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.hh,v 1.2 2003/11/27 22:01:11 fluxgen Exp $
+// $Id: SendToMenu.hh,v 1.3 2003/12/17 00:43:51 fluxgen Exp $
 
 #ifndef SENDTOMENU_HH
 #define SENDTOMENU_HH
@@ -31,12 +31,13 @@
 
 class FluxboxWindow;
 
-class SendToMenu:public FbMenu, private FbTk::Observer {
+class SendToMenu:public FbMenu {
 public:
     explicit SendToMenu(FluxboxWindow &win);
     virtual ~SendToMenu() { }
-private:
+protected:
     void update(FbTk::Subject *subj);
+private:
     FluxboxWindow &m_win;
 };
 
