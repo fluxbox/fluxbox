@@ -66,7 +66,7 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 		if (item->function()) {
 			switch (item->function()) {
 			case BScreen::EXECUTE:
-				if (item->exec()) {
+				if (item->exec().size()) {
 					#ifndef    __EMX__
 					char displaystring[MAXPATHLEN];
 					sprintf(displaystring, "DISPLAY=%s",
@@ -74,9 +74,9 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 					sprintf(displaystring + strlen(displaystring) - 1, "%d",
 						screen->getScreenNumber());
 
-					bexec(item->exec(), displaystring);
+					bexec(item->exec().c_str(), displaystring);
 					#else //   __EMX__
-					spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec(), NULL);
+					spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), NULL);
 					#endif // !__EMX__
 				}
 				break;
@@ -86,8 +86,8 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			case BScreen::RESTARTOTHER:
-				if (item->exec())
-					fluxbox->restart(item->exec());
+				if (item->exec().size())
+					fluxbox->restart(item->exec().c_str());
 				break;
 
 			case BScreen::EXIT:
@@ -95,8 +95,8 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			case BScreen::SETSTYLE:
-				if (item->exec()) {
-					fluxbox->saveStyleFilename(item->exec());
+				if (item->exec().size()) {
+					fluxbox->saveStyleFilename(item->exec().c_str());
 					fluxbox->reconfigureTabs(); //TODO
 				}
 
