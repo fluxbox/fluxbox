@@ -1,0 +1,447 @@
+.\"
+.\" Manual page for Fluxbox Styles
+.\"
+.\" Fluxbox is Copyright (c) 2001-2004 Henrik Kinnunen
+.\" Fluxstyle(1) is Copyright (c) 2004 Curtis Micol
+.\"
+.\" This manual page is freely distrubted and modified.
+.\" Parts of the text are taken from websites and style
+.\" files on http://www.fluxbox.org and http://www.fluxmod.dk
+.\"
+.\" Created and Updated for version 0.9.7 by Curtis Micol <asenchi@asenchi.com>
+.\"
+.\" Define this: <blockquote><pre>
+.de EX
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.\" Begin actual page
+.\"
+.TH fluxstyle 1 "January 7th, 2004" "0.9.7"
+.SH NAME
+fluxstyle \- all you need to know about Fluxbox styles
+.SH DESCRIPTION
+.\"
+.\" Taken from the documentation
+.\"
+.SS What is a Style?
+A style is basically a theme for the 
+.IR Fluxbox(1)
+window manager. It is a simple ASCII text file that tells Fluxbox how
+to generate the appearance of the different components of the window manager.
+The default installation of Fluxbox is shipped with many classic styles that
+show the customization of current Fluxbox versions. They are usually located in
+.IR ~/.fluxbox/styles
+and in the global Fluxbox share directory
+.IR /usr/local/share/fluxbox/styles
+which may vary depending on the method of installation used. To use one of
+the styles shipped with Fluxbox, look in your root menu under the configure
+part of the menu for 'System Styles'.
+.PP
+Fluxbox uses its own graphics class to render its images on the fly.  By using
+style files, you can determine at a great level of configurability what your
+desktop will look like.  Fluxbox styles are compatible with those of the
+Blackbox window manager (where Fluxbox originated).  Users migrating from
+Blackbox can use their current favourite themes.
+
+.SH STRUCTURE OF STYLES
+The style is made up of a few major components which then have their own
+sub-directives. The toolbar, menu, slit and window are the major components.  The
+.IR window.*
+directives control the appearance of your window frames,
+.IR window.tab.*
+controls the appearance of the window tabs.
+.IR menu.*
+controls the appearance of the popup menu that you see when you right click
+on the desktop.
+.IR toolbar.*
+is the bar you will see at the top or bottom of your screen. Finally the
+.IR slit.*
+has options you can use to customize the appearance of the slit. However
+if you don't set the slit directives specifically, the slit's appearance is controlled
+by the
+.IR toolbar.*
+directives instead.
+.PP
+To understand how the style mechanism works, it is nice to know a litte about how
+X11 resources work.
+.PP
+X11 resources consist of a key and a value.  The key si constructed of several smaller
+keys (sometimes referred to as children), delimited by a period (.).  Keys may also
+contain a asterisk (*) to serve as a wildcard, which means that one line of typed text
+will match several keys.  This is useful for styles that are based on one or two colors.
+
+.SH LOCATION OF STYLES
+We'll cover quickly where styles can be found and placed after you create your own.
+.PP
+There are a number of default styles that come with the installation, while we have already
+covered this, we will again just provide a central location for all style locations.  These
+default styles are located in
+.IR /usr/local/share/fluxbox/styles
+providing a default configureation at installation.
+.PP
+Once you create your own, you can create a directory in
+.IR ~/.fluxbox/
+called 'styles'.  Place your styles here and you will be able to access them from the configure
+portion of the Root Menu called 'User Styles'.  This goes true for any directories associated
+with your style.  An example being, if you create a style with pixmaps, create
+.IR ~/.fluxbox/pixmaps
+and place your pixmaps here.  Of course, this means that the path to your pixmaps in your style
+file will be the same.
+
+.SH CREATING STYLES
+As discussed in the
+.IR STRUCTURE
+section of this man page, Fluxbox allows you to configure its four main components: the toolbar, the menus, the
+slit and the window decorations.  Remember that you can customize the slit with its own
+directives, but if you don't, it will take the appearance of the toolbar.
+.PP
+Here are some quick examples to illustrate basic syntax:
+.EX
+toolbar.clock.color: green
+.EE
+This sets the color resource of the toolbar clock to 'green'.  Another example:
+.EX
+menu*color:	rgb:3/4/5
+.EE
+This sets the color resource of the menu
+.I and all of its 'children'
+to `rgb:3/4/5'.  
+(For a description of color names, see
+.IR X (1).)
+So this one also applies to
+.IR menu.title.color " and " menu.frame.color .
+And with   
+.EX
+*font:  -b&h-lucida-medium-r-normal-*-*-140-*
+.EE
+you set the font resource for all keys to this font name all at once.
+(For information about the fonts installed on your system, you can use a program like
+.IR xfontsel "(1), " gtkfontsel ", or " xlsfonts "(1).)"
+.PP
+This last example brings up wildcards and overrides.  In a Fluxbox style you can set a value
+with a wild card.  The previous example means that every font in the style will be what is
+specified.  You can do this with any value.  For example if you wanted all of the text to be one
+color you could do:
+.EX
+*textColor:  rgb:3/4/5
+.EE
+This means you can setup a very simple style with very few properties.  See
+.IR EXAMPLES
+below for an example of this in practice.  You can also override wildcards in the style
+file.  Lets take our example above and add an override for the toolbar.clock.textColor:
+.EX
+*textColor: rgb:3/4/5
+toolbar.clock.textColor: rgb:255/0/0
+.EE
+With that all of the text will be 'rgb:3/4/5' except the toolbar clock text which will be 'rgb:255/0/0'
+.PP
+Now, what makes Fluxbox just so spectacular, is its ability to render textures
+on the fly.
+Texture descriptions are specified directly to the key that they
+should apply to, e.g.:
+.ta \w'toolbar.clock.colorTo:\ 'u
+.EX
+toolbar.clock:  Raised Gradient Diagonal Bevel1
+toolbar.clock.color:    rgb:8/6/4
+toolbar.clock.colorTo:  rgb:4/3/2
+.EE
+Don't worry, we will explain right now!
+A texture description consists of up to five fields, which are as follows:
+.TP
+.B Flat / Raised / Sunken
+gives the component either a flat, raised or sunken appearance.
+.TP
+.B Gradient / Solid
+tells Fluxbox to draw either a solid color or a gradient texture.
+.TP
+.B Horizontal / Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic / Rectangle / Pyramid
+Select one of these texture types. They only work when also
+.B Gradient
+is specified!
+.TP
+.B Interlaced
+tells Fluxbox to interlace the texture (darken every other line).
+This option is most commonly used with gradiented textures, but from Fluxbox
+version 0.60.3 on, it also works in solid textures.
+.TP
+.B Bevel1 / Bevel2
+tells Fluxbox which type of bevel to use.
+Bevel1 is the default bevel.
+The shading is placed on the edge of the image.
+Bevel2 is an alternative.
+The shading is placed one pixel in from the edge of the image.
+.PP
+Instead of a texture description, also the option
+.B ParentRelative
+is available, which makes the component appear as a part of its parent, e.g.
+totally transparent.
+.PP
+Or for even more possibilities
+.B Pixmap .
+If pixmap texture is specified (it might not be necessary on every occasion)
+the pixmap file is specified in a separate pixmap resource.
+.EX
+toolbar.clock: pixmap
+toolbar.clock.pixmap: .fluxbox/styles/mine/clock_background.xpm
+.EE
+This feature might need some investigation, reports say that sometimes
+the resources color and colorTo must be set and then they may not be set.
+.PP
+All gradiented textures are composed of two color values: the
+.IR color " and " colorTo " resources."
+When
+.B Interlaced
+is used in
+.B Solid
+mode, the
+.I colorTo
+resource is used to find the interlacing color.
+.PP
+Here is the complete component list, also all components together with
+which kind of value they can contain.
+Comments are preceded with an exclamation sign (!), which is also used for
+comments in Fluxbox style c.q. X resource files.
+.PP
+.ta \w'window.button.unfocus.picColor:\ 'u
+.nf
+.\"
+.\" The comments also to be translated!
+.\"
+! The toolbar itself
+toolbar:        Texture
+toolbar.color:  Color
+toolbar.colorTo:        Color
+
+! The buttons on the toolbar
+toolbar.button: Texture or \fIParentRelative\fR
+toolbar.button.color:   Color
+toolbar.button.colorTo: Color
+
+! Color of the button arrows
+toolbar.button.picColor:        Color
+
+! Buttons in pressed state
+toolbar.button.pressed: Texture \fI(e.g. Sunken)\fR or \fIParentRelative\fR
+toolbar.button.pressed.color:   Color
+toolbar.button.pressed.colorTo: Color
+
+! Color of pressed button arrows
+toolbar.button.pressed.picColor:        Color
+
+! The toolbar workspace label
+toolbar.label:  Texture or \fIParentRelative\fR
+toolbar.label.color:    Color
+toolbar.label.colorTo:  Color
+toolbar.label.textColor:        Color
+
+! The toolbar window label
+toolbar.windowLabel:    Texture or \fIParentRelative\fR
+toolbar.windowLabel.color:      Color
+toolbar.windowLabel.colorTo:    Color
+toolbar.windowLabel.textColor:  Color
+
+! The toolbar clock
+toolbar.clock:  Texture or \fIParentRelative\fR
+toolbar.clock.color:    Color
+toolbar.clock.colorTo:  Color
+toolbar.clock.textColor:        Color
+
+! How the toolbar's text should be justified.
+toolbar.justify:        \fIcenter\fR, \fIleft\fR, or \fIright\fR
+
+! Font to be used for all toolbar components
+toolbar.font:   Font \fI(e.g. -*-helvetica-medium-r-normal-*-*-100-*)\fR
+
+! The menu titlebar
+menu.title:     Texture
+menu.title.color:       Color
+menu.title.colorTo:     Color
+menu.title.textColor:   Color
+menu.title.font:        Font
+menu.title.justify:     \fIcenter\fR, \fIleft\fR, or \fIright\fR
+
+! The menu frame
+menu.frame:     Texture
+menu.frame.color:       Color
+menu.frame.colorTo:     Color
+menu.frame.textColor:   Color
+menu.frame.disableColor:        Color
+menu.frame.font:        Font
+menu.frame.justify:     \fIcenter\fR, \fIleft\fR, or \fIright\fR
+
+! Bullets for submenu items
+menu.bullet:    \fIempty\fR, \fItriangle\fR, \fIsquare\fR, or \fIdiamond\fR
+menu.bullet.position:   \fIright\fR or \fIleft\fR
+
+! The highlighted menu item
+menu.hilite:    Texture (e.g. \fIRaised\fR)
+menu.hilite.color:      Color
+menu.hilite.colorTo:    Color
+menu.hilite.textColor:  Color
+
+! A focused window
+window.title.focus:     Texture
+window.title.focus.color:       Color
+window.title.focus.colorTo:     Color
+
+! An unfocused window
+window.title.unfocus:   Texture
+window.title.unfocus.color:     Color
+window.title.unfocus.colorTo:   Color
+
+! Window label in window.title
+window.label.focus:     Texture or \fIParentRelative\fR
+window.label.focus.color:       Color
+window.label.focus.colorTo:     Color
+window.label.focus.textColor:   Color
+
+window.label.unfocus:   Texture or \fIParentRelative\fR
+window.label.unfocus.color:     Color
+window.label.unfocus.colorTo:   Color
+window.label.unfocus.textColor: Color
+
+! Handlebar
+window.handle.focus:    Texture
+window.handle.focus.color:      Color
+window.handle.focus.colorTo:    Color
+
+window.handle.unfocus:  Texture
+window.handle.unfocus.color:    Color
+window.handle.unfocus.colorTo:  Color
+
+! Resize grips
+window.grip.focus:      Texture
+window.grip.focus.color:        Color
+window.grip.focus.colorTo:      Color
+
+window.grip.unfocus:    Texture
+window.grip.unfocus.color:      Color
+window.grip.unfocus.colorTo:    Color
+
+! Window buttons
+window.button.focus:    Texture or \fIParentRelative\fR
+window.button.focus.color:      Color
+window.button.focus.colorTo:    Color
+window.button.focus.picColor:   Color
+
+window.button.unfocus:  Texture or \fIParentRelative\fR
+window.button.unfocus.color:    Color
+window.button.unfocus.colorTo:  Color
+window.button.unfocus.picColor: Color
+
+window.button.pressed:  Texture (e.g. \fISunken\fR)
+window.button.pressed.color:    Color
+window.button.pressed.colorTo:  Color
+
+! Frame around window
+window.frame.focusColor:        Color
+window.frame.unfocusColor:      Color
+
+! Font and justification for window labels
+window.font:    Font
+window.justify: \fIcenter\fR, \fIleft\fR, or \fIright\fR
+
+! Slit resources
+slit:
+slit.color:                     Color
+slit.colorTo:                   Color
+
+! Miscellaneous resources
+
+! A border can be drawn round all components
+borderWidth:    a number of pixels, e.g. \fI1\fR
+borderColor:    Color
+
+bevelWidth:     a number of pixels > 0
+handleWidth:    a number of pixels > 0
+
+! Width of the window frame
+! When not specified, frameWidth defaults to the value of bevelWidth
+frameWidth:     a number of pixels >= 0
+
+! This command is executed whenever this style is selected.
+! Typically it sets the root window to a nice picture.
+rootCommand:    Shell command, e.g. \fIbsetroot -mod 4 4 -fg rgb:       5/6/6 -bg grey20\fR
+
+! Some of the bbtools read these old 0.51 resources
+menuFont:       Font
+titleFont:      Font
+.fi
+.SH EXAMPLES
+This may seem like a long list, but remember, when you create your own style, you
+can easily set lots of keys with a single command, e.g.
+.EX
+.ta \w'*unfocus.textColor:\ 'u
+*color: slategrey
+*colorTo:       darkslategrey
+*unfocus.color: darkslategrey
+*unfocus.colorTo:       black
+*textColor:     white
+*unfocus.textColor:     lightgrey
+*font:  lucidasans-10
+.EE
+This sets already nice defaults for many components.
+
+.SH COLOR FORMATS
+These are the color formats for styles:
+.EX
+#000000 (Hexadecimal)
+/usr/X11R6/lib/X11/rgb.txt
+.EE
+
+.SH AUTHOR and CREDITS
+Blackbox was written and maintained by Brad Hughes
+.nh \" hyphenation off
+<blackbox@alug.org>
+.hy \" on again
+and Jeff Raven
+.nh
+<jraven@psu.edu>,
+.hy
+.PP
+Fluxbox is written and maintained by Henrik Kinnunen
+.nh
+<fluxgen@linuxmail.org>
+.hy
+with contributions and patches merged from
+many individuals around the world.
+.PP
+The Official Fluxbox website:
+.nh
+.B http://www.fluxbox.org/
+.hy
+.PP
+Flumod is a Fluxbox community site where you can find many new styles that
+work with this version of Fluxbox and take advantage of all the new features.
+You can find Fluxmod here:
+.nh
+.B http://www.fluxmod.dk/
+.hy
+.PP
+You can also find more styles here:
+.nh
+.B http://themes.freshmeat.net/
+.PP
+This manpage was composed from various resources including the documentation, fluxbox
+man page and numerous other resources by Curtis Micol
+.nh
+<asenchi@asenchi.com>
+.hy 
+and using the great contributions of
+.hy
+<grubert@users.sourceforge.net>.
+.nh
+Numerous other languages could be available if someone jumps in.
+.SH SEE ALSO
+.IR fluxbox (1) 
+.IR bsetroot (1)

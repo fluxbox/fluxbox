@@ -1,0 +1,77 @@
+.\"
+.\" Man page for fbsetbg
+.\"
+.\" Copyright (c) 2004 by Bastian Kleineidam <reflexionsniveau@web.de>
+.\"
+.TH FBSETBG 1 "16 December 2003"
+.SH NAME
+fbsetbg \- set the background wallpaper for fluxbox
+.SH SYNOPSIS
+\fBfbsetbg\fP [\fIoptions\fP]... \fIimage\fP
+.br
+\fBfbsetbg\fP \fB-l\fP
+.SH DESCRIPTION
+\fBfbsetbg\fP is a wrapper that tries to find a suitable background-setting
+app and then tries to set the wallpaper using that app. You don't have to
+configure fbsetbg. It just uses the first app it can find.
+Furthermore it provides clear error messages in a window that make debugging
+problems a lot easier.
+.SH OPTIONS
+.TP
+\fB-f\fP
+Set fullscreen wallpaper.
+.TP
+\fB-c\fP
+Set centered wallpaper.
+.TP
+\fB-t\fP
+Set tiled wallpaper.
+.TP
+\fB-a\fP
+Set maximized wallpaper, preserving aspect (if your bgsetter doesn't
+support this we fall back to \fB-f\fP).
+.TP
+\fB-u\fP
+Use specified wallpapersetter, use no argument to forget.
+.TP
+\fB-b\fP
+Forward the options to bsetroot.
+.TP
+\fB-F\fP,\fB-C\fP,\fB-T\fP,\fB-A\fP,\fB-U\fP,\fB-B\fP
+same as uncapsed but without remembering.
+.TP
+\fB-h\fP
+Display this help.
+.TP
+\fB-l\fP
+Set previous wallpaper.
+.TP
+\fB-i\fP
+Information about selected wallpaper command.
+.TP
+\fB-d\fP
+Debug info (deprecated, use \fB-i\fP).
+.TP
+\fB-p\fP
+Tips.
+.SH FILES
+.TP
+\fB$HOME/.fluxbox/lastwallpaper\fP
+In this file the wallpaper you set will be stored, for the \fB-l\fP
+option.
+.SH ENVIRONMENT
+.TP
+\fBwpsetters\fP
+Wallpapersetters to use.
+.TP
+\fBDISPLAY\fP
+The display you want to set the wallpaper on.
+.SH EXAMPLES
+  \fBwpsetters=feh fbsetbg wallpaper.jpg\fP
+  \fBDISPLAY=:0.0 fbsetbg -l\fP
+.SH AUTHOR
+This manpage was originally written by Bastian Kleineidam
+<calvin@debian.org> for the Debian distribution of fluxbox
+(but may be used by others).
+
+The main author of fluxbox is Henrik Kinnunen <fluxgen@fluxbox.org>.

@@ -1,0 +1,67 @@
+.\"
+.\" Man page for fbrun
+.\"
+.\" Copyright (c) 2004 by Bastian Kleineidam <reflexionsniveau@web.de>
+.\"
+.TH FBRUN 1 "16 December 2003"
+.SH NAME
+fbrun \- display run dialog window
+.SH SYNOPSIS
+\fBfbrun\fP [\fIoptions\fP]...
+.SH DESCRIPTION
+\fBfbrun\fP is basically equivalent to the "Run..." dialog in other
+desktop environments. This means that it is an easy way to start a
+program that isn't contained in the menu (or needs a special set of
+parameters for this particular invocation).
+
+Another way fbrun can be useful is to be called from the menu with a
+preloaded command line that you can edit and then execute. An example
+might be sshing to a very long host name with lots of options of which
+one changes all the time. In this case, you could add an entry for fbrun
+to your menu that contains all the options and the host name. When you use
+said entry, you could edit the line as necessary and execute it.
+.SH OPTIONS
+.TP
+\fB-font\fP \fIname\fP
+Text font name
+.TP
+\fB-title\fP \fIname\fP
+Set title
+.TP
+\fB-text\fP \fItext\fP
+Text input
+.TP
+\fB-w\fP \fIwidth\fP
+Window width in pixels
+.TP
+\fB-h\fP \fIheight\fP
+Window height in pixels
+.TP
+\fB-display\fP \fIname\fP
+Display name
+.TP
+\fB-pos\fP \fIx\fP \fIy\fP
+Window position in pixels
+.TP
+\fB-fg\fP \fIname\fP
+Foreground text color
+.TP
+\fB-bg\fP \fIname\fP
+Background color
+.TP
+\fB-na\fP
+Disable antialias
+.TP
+\fB-hf\fP \fIfilename\fP
+History file to load (default ~/.fluxbox/fbrun_history
+.TP
+\fB-help\fP
+Show this help
+.SH EXAMPLE
+  \fBfbrun -fg black -bg white -text xterm -title "run xterm"\fP
+.SH AUTHOR
+This manpage was originally written by Bastian Kleineidam
+<calvin@debian.org> for the Debian distribution of fluxbox
+(but may be used by others).
+
+The main author of fluxbox is Henrik Kinnunen <fluxgen@fluxbox.org>.
