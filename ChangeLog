@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.8:
 *04/01/14:
+  * Fixed some border issues with left/right alignment in Iconbar (Henrik)
+    IconbarTool.cc, Container.cc
   * Implement transparency for toolbar (Simon)
     - can use toolbar.alpha, as well as toolbar.<tool>.alpha
     ToolTheme.hh/cc IconbarTheme.hh/cc *Tool.cc Container.cc Toolbar.cc
