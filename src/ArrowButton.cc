@@ -1,5 +1,5 @@
 // ArrowButton.cc for Fluxbox Window Manager
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,11 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.1 2002/12/13 20:21:09 fluxgen Exp $
+// $Id: ArrowButton.cc,v 1.2 2003/04/27 01:54:18 fluxgen Exp $
 
 #include "ArrowButton.hh"
-
-#include "App.hh"
 
 ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
                          FbTk::FbWindow &parent,
@@ -87,9 +85,9 @@ void ArrowButton::drawArrow() {
     }
 
     if (gc() != 0) {
-        Display *disp = FbTk::App::instance()->display();
-        XFillPolygon(disp, window().window(), gc(),
-                     pts, 3, Convex, CoordModePrevious);
+        window().fillPolygon(gc(),
+                             pts, 3, 
+                             Convex, CoordModePrevious);
     }
 }
 

@@ -1,5 +1,5 @@
 // ArrowButton.hh for Fluxbox Window Manager
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.hh,v 1.1 2002/12/13 20:21:12 fluxgen Exp $
+// $Id: ArrowButton.hh,v 1.2 2003/04/27 01:54:18 fluxgen Exp $
 
 #ifndef ARROWBUTTON_HH
 #define ARROWBUTTON_HH
 
 #include "Button.hh"
+
 /// Displays a arrow on a button
 class ArrowButton: public FbTk::Button {
 public:
