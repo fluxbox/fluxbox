@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.15 2004/01/13 12:27:51 fluxgen Exp $
+// $Id: IconButton.cc,v 1.16 2004/01/16 09:32:44 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -65,7 +65,23 @@ private:
     FluxboxWindow &m_win;
 };
 
+class FocusCommand: public FbTk::Command {
+public:
+    explicit FocusCommand(FluxboxWindow &win):m_win(win) { }
+    void execute() {
+       if(m_win.isIconic() || !m_win.isFocused())
+         m_win.raiseAndFocus();
+       else
+         m_win.iconify();
+    }
+private:
+    FluxboxWindow &m_win;
+};
+
+
 } // end anonymous namespace
+
+
 
 IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                        FluxboxWindow &win):
@@ -75,7 +91,6 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true) {
 
-    FbTk::RefCount<FbTk::Command> focus(new FbTk::SimpleCommand<FluxboxWindow>(m_win, &FluxboxWindow::raiseAndFocus));
     FbTk::RefCount<FbTk::Command> hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
     //!! TODO: There're some issues with MacroCommand when
     //         this object dies when the last macrocommand is executed (focused cmd)
@@ -83,7 +98,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     //    FbTk::MacroCommand *focus_macro = new FbTk::MacroCommand();
     //    focus_macro->add(hidemenus);
     //    focus_macro->add(focus);
-    FbTk::RefCount<FbTk::Command> focus_cmd(focus);
+    FbTk::RefCount<FbTk::Command> focus_cmd(new ::FocusCommand(m_win));
     FbTk::RefCount<FbTk::Command> menu_cmd(new ::ShowMenu(m_win));
     setOnClick(focus_cmd, 1);
     setOnClick(menu_cmd, 3);
