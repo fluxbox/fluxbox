@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.9 2003/04/27 01:04:39 fluxgen Exp $
+// $Id: main.cc,v 1.10 2003/08/25 01:30:46 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -120,8 +120,8 @@ int main(int argc, char **argv) {
         FbTk::Color fg_color(foreground.c_str(), 0);
         FbTk::Color bg_color(background.c_str(), 0);
 		
-        fbrun.setForeground(fg_color);
-        fbrun.setBackground(bg_color);
+        fbrun.setForegroundColor(fg_color);
+        fbrun.setBackgroundColor(bg_color);
 
         if (set_height)
             fbrun.resize(fbrun.width(), height);
