@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.189 2003/09/11 21:30:20 rathnor Exp $
+// $Id: fluxbox.cc,v 1.190 2003/09/12 22:55:33 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -871,10 +871,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-
-        } else {
-            if (winclient == m_focused_window)
-                setFocusedWindow(0);
         }
     }
 	break;
@@ -1912,7 +1908,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
     BScreen *old_screen = 0, *screen = 0;
     WinClient *old_client = 0;
     Workspace *old_wkspc = 0, *wkspc = 0;
-
+    
     if (m_focused_window != 0) {
         // check if m_focused_window is valid
         bool found = false;
@@ -1957,8 +1953,10 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
             win->setCurrentClient(*client, false); // don't setinputfocus
             win->setFocusFlag(true); // set focus flag
         }
+
     } else
         m_focused_window = 0;
+
 
 
     if (screen != 0)
