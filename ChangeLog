@@ -1,6 +1,8 @@
 Changes for 0.1.6:
 *02/01/01:
    * Updated the man page (Thanks Matthew Hawkins)
+   * Fixed windowmenu bug when resizing with num/caps/scrollock on (Thanks Devaux Fabien)
+   * Restored lower window with mouse feature 
 *01/12/29:
    * Fixed slit:onTop with toolbar:onTop bug 
    * Changed Keygrabbing constants to uppercase
