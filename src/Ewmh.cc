@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.3 2002/10/16 19:03:57 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.4 2002/10/16 23:32:17 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -44,17 +44,15 @@ Ewmh::~Ewmh() {
 void Ewmh::initForScreen(const BScreen &screen) {
 	Display *disp = BaseDisplay::getXDisplay();
 
-	XSetWindowAttributes attr;
-	attr.override_redirect = True;
-	Window wincheck = XCreateWindow(disp, screen.getRootWindow(),
-		0, 0, 1, 1, 0,
-		CopyFromParent, InputOnly, CopyFromParent,
-		CWOverrideRedirect, &attr);
-	
+	Window wincheck = XCreateSimpleWindow(disp,
+		screen.getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
+
 	if (wincheck != None) {
 		m_windows.push_back(wincheck);
 		
 		XChangeProperty(disp, screen.getRootWindow(), m_net_supporting_wm_check, XA_WINDOW, 32,
+			PropModeReplace, (unsigned char *) &wincheck, 1);
+		XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *) &wincheck, 1);
 
 		XChangeProperty(disp, wincheck, m_net_wm_name, XA_STRING, 8,
