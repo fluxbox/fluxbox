@@ -16,6 +16,10 @@ bugs:
                       -> in mozilla - alt-tabbing does strange thigns with 
                          other transient layer-wise (other transient flashes)
 * gaim (0.64) crashes when remembering dimensions... is this a gaim bug?
+* workspace switching extremely slow in some cases. Particularly, user has 
+  large number of [remote] xload windows.
+* Can lock up on workspace change - possibly related to above as it 
+  works when there aren't too many xload windows started up yet.
 
 fixed bugs (or not-our-fault bugs):
 * Some people get weird transparency behaviour.
