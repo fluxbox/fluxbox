@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.2 2003/08/12 00:18:43 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.3 2003/08/12 12:14:37 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -56,7 +56,14 @@ public:
     unsigned int height() const;
 
 private:
+    /// render single button that holds win
+    void renderWindow(FluxboxWindow &win);
+    /// render single button
+    void renderButton(IconButton &button);
+    /// render all buttons
     void renderTheme();
+    /// destroy all icons
+    void deleteIcons();
 
     BScreen &m_screen;
     Container m_icon_container;
