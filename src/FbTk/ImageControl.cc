@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.6 2003/10/09 16:48:09 rathnor Exp $
+// $Id: ImageControl.cc,v 1.7 2004/01/02 13:28:00 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -85,7 +85,7 @@ inline unsigned long bsqrt(unsigned long x) {
 }; // end anonymous namespace
 
 ImageControl::ImageControl(int screen_num, bool dither,
-                             int cpc, unsigned long cache_timeout, unsigned long cmax):
+                           int cpc, unsigned long cache_timeout, unsigned long cmax):
     m_dither(dither),
     m_colors(0),
     m_num_colors(0),
@@ -150,8 +150,9 @@ ImageControl::~ImageControl() {
 
 
 Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
-                                  unsigned long texture_type,
-                                  const FbTk::Color &color, const FbTk::Color &color_to) const {
+                                 unsigned long texture_type,
+                                 const FbTk::Color &color, const FbTk::Color &color_to) const {
+    
     Cache tmp;
     tmp.width = width;
     tmp.height = height;
@@ -165,38 +166,19 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
         (*it)->count++;
         return (*it)->pixmap;
     }
-        
-    /*
-    CacheList::iterator it = cache.begin();
-    CacheList::iterator it_end = cache.end();
-    for (; it != it_end; ++it) {
-        if (((*it)->width == width) &&
-            ((*it)->height == height) &&
-            ((*it)->texture == texture_type) &&
-            ((*it)->pixel1 == color.pixel())) {
-            if (texture_type & FbTk::Texture::GRADIENT) {
-                if ((*it)->pixel2 == color_to.pixel()) {
-                    (*it)->count++;
-                    return (*it)->pixmap;
-                }
-            } else {
-                (*it)->count++;
-                return (*it)->pixmap;
-            }
-        }
-    }
+
     return None;
-    */
+    
 }
 
 
 Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
-                                  const FbTk::Texture &texture) {
+                                 const FbTk::Texture &texture) {
 
     if (texture.type() & FbTk::Texture::PARENTRELATIVE)
         return ParentRelative;
 
-	// search cache first
+    // search cache first
     Pixmap pixmap = searchCache(width, height, texture.type(),
                                 texture.color(), texture.colorTo());
     if (pixmap)
@@ -260,9 +242,9 @@ void ImageControl::removeImage(Pixmap pixmap) {
 
 
 void ImageControl::colorTables(const unsigned char **rmt, const unsigned char **gmt,
-                                const unsigned char **bmt,
-                                int *roff, int *goff, int *boff,
-                                int *rbit, int *gbit, int *bbit) const {
+                               const unsigned char **bmt,
+                               int *roff, int *goff, int *boff,
+                               int *rbit, int *gbit, int *bbit) const {
 
     if (rmt) *rmt = red_color_table;
     if (gmt) *gmt = green_color_table;
@@ -285,9 +267,9 @@ void ImageControl::getXColorTable(XColor **c, int *n) {
 
 
 void ImageControl::getGradientBuffers(unsigned int w,
-                                       unsigned int h,
-                                       unsigned int **xbuf,
-                                       unsigned int **ybuf) {
+                                      unsigned int h,
+                                      unsigned int **xbuf,
+                                      unsigned int **ybuf) {
 
     if (w > grad_buffer_width) {
         if (grad_xbuffer) {
@@ -434,7 +416,7 @@ void ImageControl::createColorTable() {
         }
     }
 
-    break;
+        break;
 
     case PseudoColor:
     case StaticColor: {
@@ -448,7 +430,7 @@ void ImageControl::createColorTable() {
 
         if (m_colors_per_channel < 2 || m_num_colors > static_cast<unsigned int>(1 << m_screen_depth)) {
             fprintf(stderr, "ImageControl::ImageControl: invalid colormap size %d "
-                        "(%d/%d/%d) - reducing",
+                    "(%d/%d/%d) - reducing",
                     m_num_colors, m_colors_per_channel, m_colors_per_channel,
                     m_colors_per_channel);
 
@@ -533,97 +515,97 @@ void ImageControl::createColorTable() {
 
     case GrayScale:
     case StaticGray:
-    {
+        {
 
-        if (visual()->c_class == StaticGray) {
-            m_num_colors = 1 << m_screen_depth;
-        } else {
-            m_num_colors = m_colors_per_channel * m_colors_per_channel * m_colors_per_channel;
-
-            if (m_num_colors > static_cast<unsigned int>(1 << m_screen_depth)) {
-                m_colors_per_channel = (1 << m_screen_depth) / 3;
+            if (visual()->c_class == StaticGray) {
+                m_num_colors = 1 << m_screen_depth;
+            } else {
                 m_num_colors = m_colors_per_channel * m_colors_per_channel * m_colors_per_channel;
+
+                if (m_num_colors > static_cast<unsigned int>(1 << m_screen_depth)) {
+                    m_colors_per_channel = (1 << m_screen_depth) / 3;
+                    m_num_colors = m_colors_per_channel * m_colors_per_channel * m_colors_per_channel;
+                }
             }
-        }
 
-        if (m_colors_per_channel < 2 || m_num_colors > static_cast<unsigned int>(1 << m_screen_depth)) {
-            fprintf(stderr,"FbTk::ImageControl: invalid colormap size %d "
-                    "(%d/%d/%d) - reducing",
-                    m_num_colors, m_colors_per_channel, m_colors_per_channel,
-                    m_colors_per_channel);
+            if (m_colors_per_channel < 2 || m_num_colors > static_cast<unsigned int>(1 << m_screen_depth)) {
+                fprintf(stderr,"FbTk::ImageControl: invalid colormap size %d "
+                        "(%d/%d/%d) - reducing",
+                        m_num_colors, m_colors_per_channel, m_colors_per_channel,
+                        m_colors_per_channel);
 
-            m_colors_per_channel = (1 << m_screen_depth) / 3;
-        }
+                m_colors_per_channel = (1 << m_screen_depth) / 3;
+            }
 
-        m_colors = new XColor[m_num_colors];
+            m_colors = new XColor[m_num_colors];
 
-        int p, bits = 255 / (m_colors_per_channel - 1);
-        red_bits = green_bits = blue_bits = bits;
+            int p, bits = 255 / (m_colors_per_channel - 1);
+            red_bits = green_bits = blue_bits = bits;
 
-        for (unsigned int i = 0; i < 256; i++)
-            red_color_table[i] = green_color_table[i] = blue_color_table[i] =
-                i / bits;
+            for (unsigned int i = 0; i < 256; i++)
+                red_color_table[i] = green_color_table[i] = blue_color_table[i] =
+                    i / bits;
 
-        for (unsigned int i = 0; i < m_num_colors; i++) {
-            m_colors[i].red = (i * 0xffff) / (m_colors_per_channel - 1);
-            m_colors[i].green = (i * 0xffff) / (m_colors_per_channel - 1);
-            m_colors[i].blue = (i * 0xffff) / (m_colors_per_channel - 1);;
-            m_colors[i].flags = DoRed|DoGreen|DoBlue;
-
-            if (! XAllocColor(disp, m_colormap,
-                              &m_colors[i])) {
-                fprintf(stderr, "Couldn't alloc color %i %i %i\n",
-                        m_colors[i].red, m_colors[i].green, m_colors[i].blue);
-                m_colors[i].flags = 0;
-            } else
+            for (unsigned int i = 0; i < m_num_colors; i++) {
+                m_colors[i].red = (i * 0xffff) / (m_colors_per_channel - 1);
+                m_colors[i].green = (i * 0xffff) / (m_colors_per_channel - 1);
+                m_colors[i].blue = (i * 0xffff) / (m_colors_per_channel - 1);;
                 m_colors[i].flags = DoRed|DoGreen|DoBlue;
-        }
+
+                if (! XAllocColor(disp, m_colormap,
+                                  &m_colors[i])) {
+                    fprintf(stderr, "Couldn't alloc color %i %i %i\n",
+                            m_colors[i].red, m_colors[i].green, m_colors[i].blue);
+                    m_colors[i].flags = 0;
+                } else
+                    m_colors[i].flags = DoRed|DoGreen|DoBlue;
+            }
 
 
-        XColor icolors[256];
-        unsigned int incolors = (((1 << m_screen_depth) > 256) ? 256 :
-                                 (1 << m_screen_depth));
+            XColor icolors[256];
+            unsigned int incolors = (((1 << m_screen_depth) > 256) ? 256 :
+                                     (1 << m_screen_depth));
 
-        for (unsigned int i = 0; i < incolors; i++)
-            icolors[i].pixel = i;
+            for (unsigned int i = 0; i < incolors; i++)
+                icolors[i].pixel = i;
 
-        XQueryColors(disp, m_colormap, icolors, incolors);
-        for (unsigned int i = 0; i < m_num_colors; i++) {
-            if (! m_colors[i].flags) {
-                unsigned long chk = 0xffffffff, pixel, close = 0;
+            XQueryColors(disp, m_colormap, icolors, incolors);
+            for (unsigned int i = 0; i < m_num_colors; i++) {
+                if (! m_colors[i].flags) {
+                    unsigned long chk = 0xffffffff, pixel, close = 0;
 
-                p = 2;
-                while (p--) {
-                    for (unsigned int ii = 0; ii < incolors; ii++) {
-                        int r = (m_colors[i].red - icolors[i].red) >> 8;
-                        int g = (m_colors[i].green - icolors[i].green) >> 8;
-                        int b = (m_colors[i].blue - icolors[i].blue) >> 8;
-                        pixel = (r * r) + (g * g) + (b * b);
+                    p = 2;
+                    while (p--) {
+                        for (unsigned int ii = 0; ii < incolors; ii++) {
+                            int r = (m_colors[i].red - icolors[i].red) >> 8;
+                            int g = (m_colors[i].green - icolors[i].green) >> 8;
+                            int b = (m_colors[i].blue - icolors[i].blue) >> 8;
+                            pixel = (r * r) + (g * g) + (b * b);
 
-                        if (pixel < chk) {
-                            chk = pixel;
-                            close = ii;
-                        }
+                            if (pixel < chk) {
+                                chk = pixel;
+                                close = ii;
+                            }
 
-                        m_colors[i].red = icolors[close].red;
-                        m_colors[i].green = icolors[close].green;
-                        m_colors[i].blue = icolors[close].blue;
+                            m_colors[i].red = icolors[close].red;
+                            m_colors[i].green = icolors[close].green;
+                            m_colors[i].blue = icolors[close].blue;
 
-                        if (XAllocColor(disp, m_colormap, &m_colors[i])) {
-                            m_colors[i].flags = DoRed|DoGreen|DoBlue;
-                            break;
+                            if (XAllocColor(disp, m_colormap, &m_colors[i])) {
+                                m_colors[i].flags = DoRed|DoGreen|DoBlue;
+                                break;
+                            }
                         }
                     }
                 }
             }
+
+            break;
         }
 
-        break;
-    }
-
     default:
-       cerr<<"FbTk::ImageControl: Unsupported visual"<<endl;
-       break;
+        cerr<<"FbTk::ImageControl: Unsupported visual"<<endl;
+        break;
     }
 }
 
