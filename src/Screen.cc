@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.28 2002/02/21 00:38:51 fluxgen Exp $
+// $Id: Screen.cc,v 1.29 2002/02/21 12:03:40 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1768,19 +1768,30 @@ void BScreen::initGnomeAtoms(void) {
 }
 
 void BScreen::updateGnomeClientList() {
-	int num = getCurrentWorkspace()->getWindowList().size();
+	int num=0;
+	Workspaces::iterator workspace_it = workspacesList.begin();
+	Workspaces::iterator workspace_it_end = workspacesList.end();
+	for (; workspace_it != workspace_it_end; ++workspace_it) {
+		num += (*workspace_it)->getWindowList().size();
+	}
+	//int num = getCurrentWorkspace()->getWindowList().size();
+	
 	Window *wl = new Window[num];
-	// Fill in array of window ID's
-	Workspace::Windows::iterator it = getCurrentWorkspace()->getWindowList().begin();
-	Workspace::Windows::iterator it_end = getCurrentWorkspace()->getWindowList().end();
+	workspace_it = workspacesList.begin();
 	int win=0;
-	for (; it != it_end; ++it) {
-		//check if the window don't want to be visible in the list
-		if (! ( (*it)->getGnomeHints() & FluxboxWindow::WIN_STATE_HIDDEN) ) {
-			wl[win++] = (*it)->getClientWindow();
+	for (; workspace_it != workspace_it_end; ++workspace_it) {
+	
+		// Fill in array of window ID's
+		Workspace::Windows::iterator it = (*workspace_it)->getWindowList().begin();
+		Workspace::Windows::iterator it_end = (*workspace_it)->getWindowList().end();		
+		for (; it != it_end; ++it) {
+			//check if the window don't want to be visible in the list
+			if (! ( (*it)->getGnomeHints() & FluxboxWindow::WIN_STATE_HIDDEN) ) {
+				wl[win++] = (*it)->getClientWindow();
+			}
 		}
 	}
-	
+	//number of windows to show in client list
 	num = win;
 	XChangeProperty(getBaseDisplay()->getXDisplay(), 
 		getRootWindow(), getBaseDisplay()->getGnomeClientListAtom(), XA_CARDINAL, 32,
