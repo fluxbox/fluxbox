@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.12 2003/03/04 11:06:03 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.13 2003/03/04 21:41:05 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -43,7 +43,7 @@ Ewmh::~Ewmh() {
 }
 
 void Ewmh::initForScreen(BScreen &screen) {
-    Display *disp = FbTk::App::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
 
 
     Window wincheck = XCreateSimpleWindow(disp,
