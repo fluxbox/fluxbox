@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.19 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Theme.cc,v 1.20 2002/04/20 10:33:10 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -382,7 +382,7 @@ void Theme::loadMenuStyle() {
 
 	//---------- font
 	m_menustyle.framefont->loadFromDatabase(m_database, "menu.frame.font", "Menu.Frame.Font");
-	m_menustyle.titlefont->loadFromDatabase(m_database, "menu.Title.font", "Menu.Title.Font");
+	m_menustyle.titlefont->loadFromDatabase(m_database, "menu.title.font", "Menu.Title.Font");
 	/*
 	if (I18n::instance()->multibyte()) {
 		
