@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.6 2002/02/08 13:20:23 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.7 2002/02/17 19:00:04 fluxgen Exp $
 
-#ifndef   _BASEMENU_HH_
-#define   _BASEMENU_HH_
+#ifndef   BASEMENU_HH
+#define   BASEMENU_HH
 
 #include <X11/Xlib.h>
 #include <vector>

@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef _NOTCOPYABLE_HH_
-#define _NOTCOPYABLE_HH_
+#ifndef NOTCOPYABLE_HH
+#define NOTCOPYABLE_HH
 // inherit this class to 
 // disable assignment and copy
 class NotCopyable

@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.5 2002/01/21 01:56:39 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.6 2002/02/17 18:52:20 fluxgen Exp $
 
-#ifndef _STRINGUTIL_HH_
-#define _STRINGUTIL_HH_
+#ifndef STRINGUTIL_HH
+#define STRINGUTIL_HH
 
 #include <string>
 

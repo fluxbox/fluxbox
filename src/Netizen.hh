@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef	 _NETIZEN_HH_
-#define	 _NETIZEN_HH_
+#ifndef	 NETIZEN_HH
+#define	 NETIZEN_HH
 
 // forward declaration
 class Netizen;

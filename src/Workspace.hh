@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   _WORKSPACE_HH_
-#define   _WORKSPACE_HH_
+#ifndef   WORKSPACE_HH
+#define   WORKSPACE_HH
 
 #include <X11/Xlib.h>
 #include <string>

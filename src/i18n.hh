@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.4 2002/01/11 11:54:48 fluxgen Exp $
+// $Id: i18n.hh,v 1.5 2002/02/17 18:41:44 fluxgen Exp $
 
-#ifndef   _I18N_HH_
-#define   _I18N_HH_
+#ifndef   I18N_HH
+#define   I18N_HH
 
 #ifdef    NLS
 #  include "../nls/blackbox-nls.hh"

@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.10 2002/02/04 06:51:15 fluxgen Exp $
+// $Id: Tab.hh,v 1.11 2002/02/17 18:52:02 fluxgen Exp $
 
-#ifndef _TAB_HH_
-#define _TAB_HH_
+#ifndef TAB_HH
+#define TAB_HH
 
 #ifndef _IMAGE_HH_
 #include "Image.hh"

@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef  _ROOTMENU_HH_
-#define  _ROOTMENU_HH_
+#ifndef  ROOTMENU_HH
+#define  ROOTMENU_HH
 
 // forward declarations
 class Rootmenu;

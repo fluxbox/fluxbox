@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   _WINDOWMENU_HH_
-#define   _WINDOWMENU_HH_
+#ifndef   WINDOWMENU_HH
+#define   WINDOWMENU_HH
 
 // forward declaration
 class Windowmenu;

@@ -42,10 +42,10 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.5 2002/01/08 00:14:40 fluxgen Exp $
+// $Id: Theme.hh,v 1.6 2002/02/17 18:49:50 fluxgen Exp $
 
-#ifndef _THEME_HH_
-#define _THEME_HH_
+#ifndef THEME_HH
+#define THEME_HH
 
 
 #ifndef _IMAGE_HH_

@@ -19,14 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XrmDatabaseHelper.hh,v 1.3 2002/02/04 07:03:46 fluxgen Exp $
+// $Id: XrmDatabaseHelper.hh,v 1.4 2002/02/17 18:44:07 fluxgen Exp $
 
 // This is a helper for XrmDatabase
 // when database goes out of scope
 // the XrmDatabase variable will be destroyed.
 
-#ifndef _XRMDATABASEHELPER_HH_
-#define _XRMDATABASEHELPER_HH_
+#ifndef XRMDATABASEHELPER_HH
+#define XRMDATABASEHELPER_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>

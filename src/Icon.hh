@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef _ICON_HH_
-#define _ICON_HH_
+#ifndef ICON_HH
+#define ICON_HH
 
 // forward declaration
 class Iconmenu;

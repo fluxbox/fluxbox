@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.4 2002/02/04 22:41:27 fluxgen Exp $
+// $Id: Image.hh,v 1.5 2002/02/17 18:57:47 fluxgen Exp $
 
-#ifndef   _IMAGE_HH_
-#define   _IMAGE_HH_
+#ifndef   IMAGE_HH
+#define   IMAGE_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.hh,v 1.2 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Configmenu.hh,v 1.3 2002/02/17 18:57:47 fluxgen Exp $
 
-#ifndef   _CONFIGMENU_HH_
-#define   _CONFIGMENU_HH_
+#ifndef   CONFIGMENU_HH
+#define   CONFIGMENU_HH
 
 // forward declaration
 class Configmenu;

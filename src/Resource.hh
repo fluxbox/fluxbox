@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.2 2002/01/21 02:11:49 fluxgen Exp $
+// $Id: Resource.hh,v 1.3 2002/02/17 18:57:47 fluxgen Exp $
 
-#ifndef _RESOURCE_HH_
-#define _RESOURCE_HH_
+#ifndef RESOURCE_HH
+#define RESOURCE_HH
 
 #include "NotCopyable.hh"
 #include <string>

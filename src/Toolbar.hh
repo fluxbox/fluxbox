@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.6 2002/02/04 22:38:41 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.7 2002/02/17 18:49:02 fluxgen Exp $
 
-#ifndef   _TOOLBAR_HH_
-#define   _TOOLBAR_HH_
+#ifndef   TOOLBAR_HH
+#define   TOOLBAR_HH
 
 #include <X11/Xlib.h>
 #ifndef _BASEMENU_HH_

@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   _WORKSPACEMENU_HH_
-#define   _WORKSPACEMENU_HH_
+#ifndef   WORKSPACEMENU_HH
+#define   WORKSPACEMENU_HH
 
 // forward declaration
 class Workspacemenu;

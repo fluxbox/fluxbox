@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.5 2002/02/04 06:42:00 fluxgen Exp $
+// $Id: Keys.hh,v 1.6 2002/02/17 18:57:47 fluxgen Exp $
 
-#ifndef _KEYS_HH_
-#define _KEYS_HH_
+#ifndef KEYS_HH
+#define KEYS_HH
 
 #include <string>
 #include <vector>

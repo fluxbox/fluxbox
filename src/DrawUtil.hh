@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.2 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.3 2002/02/17 19:00:14 fluxgen Exp $
 
-#ifndef _DRAWUTIL_HH_
-#define _DRAWUTIL_HH_
+#ifndef DRAWUTIL_HH
+#define DRAWUTIL_HH
 
 #include <X11/Xlib.h>
 

@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   _CLIENTMENU_HH_
-#define   _CLIENTMENU_HH_
+#ifndef   CLIENTMENU_HH
+#define   CLIENTMENU_HH
 
 // forward declarations
 class Clientmenu;
