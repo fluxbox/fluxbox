@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.170 2003/05/17 11:05:33 fluxgen Exp $
+// $Id: Screen.cc,v 1.171 2003/05/18 22:01:14 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -35,7 +35,7 @@
 #include "Workspace.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
-#include "DirHelper.hh"
+#include "Directory.hh"
 #include "WinButton.hh"
 #include "SimpleCommand.hh"
 #include "FbWinFrameTheme.hh"
@@ -165,7 +165,7 @@ private:
 
 
 template<>
-void Resource<Toolbar::Placement>::
+void FbTk::Resource<Toolbar::Placement>::
 setFromString(const char *strval) {
     if (strcasecmp(strval, "TopLeft")==0)
         m_value = Toolbar::TOPLEFT;
@@ -197,7 +197,7 @@ setFromString(const char *strval) {
 
 
 template<>
-void Resource<ToolbarHandler::ToolbarMode>::
+void FbTk::Resource<ToolbarHandler::ToolbarMode>::
 setFromString(const char *strval) {
     if (strcasecmp(strval, "Off") == 0) 
         m_value = ToolbarHandler::OFF;
@@ -216,7 +216,7 @@ setFromString(const char *strval) {
 }
 
 
-string Resource<Toolbar::Placement>::
+string FbTk::Resource<Toolbar::Placement>::
 getString() {
     switch (m_value) {
     case Toolbar::TOPLEFT:
@@ -263,7 +263,7 @@ getString() {
 
 
 template<>
-string Resource<ToolbarHandler::ToolbarMode>::
+string FbTk::Resource<ToolbarHandler::ToolbarMode>::
 getString() {
     switch (m_value) {
     case ToolbarHandler::OFF:
@@ -342,7 +342,7 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
 
 
 template<>
-void Resource<Slit::Placement>::setFromString(const char *strval) {
+void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
     if (strcasecmp(strval, "TopLeft")==0)
         m_value = Slit::TOPLEFT;
     else if (strcasecmp(strval, "CenterLeft")==0)
@@ -364,7 +364,7 @@ void Resource<Slit::Placement>::setFromString(const char *strval) {
 }
 
 template<>
-void Resource<Slit::Direction>::setFromString(const char *strval) {
+void FbTk::Resource<Slit::Direction>::setFromString(const char *strval) {
     if (strcasecmp(strval, "Vertical") == 0) 
         m_value = Slit::VERTICAL;
     else if (strcasecmp(strval, "Horizontal") == 0) 
@@ -373,7 +373,7 @@ void Resource<Slit::Direction>::setFromString(const char *strval) {
         setDefaultValue();
 }
 
-string Resource<Slit::Placement>::getString() {
+string FbTk::Resource<Slit::Placement>::getString() {
     switch (m_value) {
     case Slit::TOPLEFT:
         return string("TopLeft");
@@ -405,7 +405,7 @@ string Resource<Slit::Placement>::getString() {
 }
 
 template<>
-string Resource<Slit::Direction>::getString() {
+string FbTk::Resource<Slit::Direction>::getString() {
     switch (m_value) {
     case Slit::VERTICAL:
         return string("Vertical");
@@ -447,7 +447,7 @@ void FbTk::ThemeItem<int>::setFromString(const char *str) {
     sscanf(str, "%d", &m_value);
 }
 
-BScreen::ScreenResource::ScreenResource(ResourceManager &rm, 
+BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
                                         const std::string &scrname, 
                                         const std::string &altscrname):
     toolbar_auto_hide(rm, false, scrname+".toolbar.autoHide", altscrname+".Toolbar.AutoHide"),
@@ -490,7 +490,7 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
 
 };
 
-BScreen::BScreen(ResourceManager &rm,
+BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname, const string &altscreenname,
                  int scrn, int num_layers) : 
     m_clientlist_sig(*this),  // client signal
@@ -2267,18 +2267,19 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
     if (! stat(stylesdir.c_str(), &statbuf)) {
         if (S_ISDIR(statbuf.st_mode)) { // is a directory?
 
-            DirHelper d(stylesdir.c_str());
+            FbTk::Directory dir(stylesdir.c_str());
 
             // create a vector of all the filenames in the directory
             // add sort it
-            std::vector<std::string> filelist(d.entries());
-            for (size_t file_index = 0; file_index < d.entries(); ++file_index)
-                filelist[file_index] = d.readFilename();
+            std::vector<std::string> filelist(dir.entries());
+            for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
+                filelist[file_index] = dir.readFilename();
+
             std::sort(filelist.begin(), filelist.end(), less<string>());
 
             int slen = stylesdir.size();
             // for each file in directory add filename and path to menu
-            for (size_t file_index = 0; file_index < d.entries(); file_index++) {
+            for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
                 int nlen = filelist[file_index].size();
                 char style[MAXPATHLEN + 1];
 
