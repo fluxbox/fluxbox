@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.112 2003/08/19 21:28:57 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.113 2003/08/23 15:42:48 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -161,7 +161,7 @@ getString() {
 namespace {
 class SetToolbarPlacementCmd: public FbTk::Command {
 public:
-    explicit SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
+    SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
     void execute() {
         m_tbar.setPlacement(m_place);
         m_tbar.reconfigure();        
@@ -172,6 +172,32 @@ private:
     Toolbar::Placement m_place;
 };
 
+class ShowMenuAboveToolbar: public FbTk::Command {
+public:
+    explicit ShowMenuAboveToolbar(Toolbar &tbar):m_tbar(tbar) { }
+    void execute() {
+
+        // get last button pos
+        const XEvent &event = Fluxbox::instance()->lastEvent();
+        int x = event.xbutton.x_root - (m_tbar.menu().width() / 2);
+        int y = event.xbutton.y_root - (m_tbar.menu().height() / 2);
+
+        if (x < 0)
+            x = 0;
+        else if (x + m_tbar.menu().width() > m_tbar.screen().width())
+            x = m_tbar.screen().width() - m_tbar.menu().width();
+
+        if (y < 0)
+            y = 0;
+        else if (y + m_tbar.menu().height() > m_tbar.screen().height())
+            y = m_tbar.screen().height() - m_tbar.menu().height();
+
+        m_tbar.menu().move(x, y);
+        m_tbar.menu().show();        
+    }
+private:
+    Toolbar &m_tbar;
+};
 }; // end anonymous
 
 // toolbar frame
@@ -258,7 +284,11 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.grab_x = frame.grab_y = 0;
     
     // add toolbar items
-    m_item_list.push_back(new WorkspaceNameTool(frame.window, m_workspace_theme, screen()));
+    WorkspaceNameTool *item = new WorkspaceNameTool(frame.window, m_workspace_theme, screen());
+    using namespace FbTk;
+    RefCount<Command> showmenu(new ShowMenuAboveToolbar(*this));
+    item->button().setOnClick(showmenu);
+    m_item_list.push_back(item);
     m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, screen()));
     m_item_list.push_back(new SystemTray(frame.window));
     m_item_list.push_back(new ClockTool(frame.window, m_clock_theme, screen()));
@@ -279,7 +309,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.window.show();
 
     scrn.resourceManager().unlock();
-
+    // setup to listen to child events
+    FbTk::EventManager::instance()->addParent(*this, window());
     // get everything together
     reconfigure(); 
 
