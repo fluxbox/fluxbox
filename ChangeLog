@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/12:
+   * The window menu now popups in iconbar when you right click on the icon.
+   * Fixed bug [ 574717 ] restaring fluxbox should keep iconic.
+     The gnome atom wasn't updated when the window change to iconic state
 *02/08/11:
    * New menu items (Thanks Cosmic Flo)
    * Added Autogrouping
