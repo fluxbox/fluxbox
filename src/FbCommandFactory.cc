@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.26 2004/01/21 14:11:42 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.27 2004/02/20 19:40:31 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -108,6 +108,8 @@ FbCommandFactory::FbCommandFactory() {
         "rootmenu",
         "saverc",
         "sendtoworkspace",
+        "sendtonextworkspace",
+        "sendtoprevworkspace",
         "setstyle",
         "setworkspacename",
         "setworkspacenamedialog",
@@ -235,6 +237,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::toggleDecoration);
     else if (command == "sendtoworkspace")
         return new SendToWorkspaceCmd(atoi(arguments.c_str()) - 1); // make 1-indexed to user
+    else if (command == "sendtonextworkspace")
+        return new SendToNextWorkspaceCmd(atoi(arguments.c_str()));
+    else if (command == "sendtoprevworkspace")
+        return new SendToPrevWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "killwindow")
         return new KillWindowCmd();
      else if (command == "nexttab")

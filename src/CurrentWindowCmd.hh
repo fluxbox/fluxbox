@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.hh,v 1.6 2003/10/25 22:11:22 fluxgen Exp $
+// $Id: CurrentWindowCmd.hh,v 1.7 2004/02/20 19:40:31 fluxgen Exp $
 
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
@@ -63,6 +63,24 @@ protected:
 class SendToWorkspaceCmd: public WindowHelperCmd {
 public:
     explicit SendToWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
+protected:
+    void real_execute();
+private:
+    const int m_workspace_num;
+};
+
+class SendToNextWorkspaceCmd: public WindowHelperCmd {
+public:
+    explicit SendToNextWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
+protected:
+    void real_execute();
+private:
+    const int m_workspace_num;
+};
+
+class SendToPrevWorkspaceCmd: public WindowHelperCmd {
+public:
+    explicit SendToPrevWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
 protected:
     void real_execute();
 private:

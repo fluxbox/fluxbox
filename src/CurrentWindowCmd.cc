@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.8 2003/10/26 12:36:55 fluxgen Exp $
+// $Id: CurrentWindowCmd.cc,v 1.9 2004/02/20 19:40:31 fluxgen Exp $
 
 #include "CurrentWindowCmd.hh"
 
@@ -45,6 +45,19 @@ void KillWindowCmd::real_execute() {
 void SendToWorkspaceCmd::real_execute() {
     if (m_workspace_num >= 0 && m_workspace_num < fbwindow().screen().getNumberOfWorkspaces())
         fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow());
+}
+
+void SendToNextWorkspaceCmd::real_execute() {
+    unsigned int workspace_num= 
+        ( fbwindow().screen().currentWorkspaceID() + m_workspace_num ) % 
+          fbwindow().screen().getNumberOfWorkspaces();
+    fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
+}
+
+void SendToPrevWorkspaceCmd::real_execute() {
+    int workspace_num= fbwindow().screen().currentWorkspaceID() - m_workspace_num;
+    if ( workspace_num < 0 ) workspace_num+= fbwindow().screen().getNumberOfWorkspaces();
+    fbwindow().screen().sendToWorkspace(workspace_num, &fbwindow());
 }
 
 void WindowHelperCmd::execute() {
