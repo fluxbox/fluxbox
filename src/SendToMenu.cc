@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.cc,v 1.5 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: SendToMenu.cc,v 1.6 2003/12/17 00:45:30 fluxgen Exp $
 
 #include "SendToMenu.hh"
 
@@ -65,20 +65,26 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
 }
 
 void SendToMenu::update(FbTk::Subject *subj) {
-    // if workspace changed we enable all workspaces except the current one
-    if (subj != 0 && (subj == &(m_win.screen().currentWorkspaceSig()) || 
-                      subj == &(m_win.workspaceSig()))) {
-        // enabled all workspaces
-        const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
-        for (size_t i = 0; i < wlist.size(); ++i)
-            setItemEnabled(i, true);
-        // disable send to on the workspace which the window exist
-        setItemEnabled(m_win.workspaceNumber(), false);
-        FbMenu::update();
-        // we're done
-        return;
+    if (subj != 0) {
+        // if workspace changed we enable all workspaces except the current one
+        if (subj == &(m_win.screen().currentWorkspaceSig()) || 
+            subj == &(m_win.workspaceSig())) {
+            // enabled all workspaces
+            const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
+            for (size_t i = 0; i < wlist.size(); ++i)
+                setItemEnabled(i, true);
+            // disable send to on the workspace which the window exist
+            setItemEnabled(m_win.workspaceNumber(), false);
+            FbMenu::update();
+            // we're done
+            return;
+        } else if (subj == &(theme().reconfigSig())) {
+            // we got reconfig Theme signal, let base menu handle it 
+            FbTk::Menu::update(subj);
+            return;
+        }
+        
     }
-
     // rebuild menu
 
     removeAll();
