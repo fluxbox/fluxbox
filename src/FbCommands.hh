@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.17 2003/12/20 17:41:32 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.18 2004/03/16 18:44:40 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -61,7 +61,6 @@ public:
     void execute();
 private:
     std::string m_cmd;
-    const int m_screen_num;
 };
 
 /// reconfigures fluxbox
