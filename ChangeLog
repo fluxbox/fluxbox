@@ -1,4 +1,24 @@
 changes for 0.1.8:
+*02/04/02:
+   * Fixed smarter next/prev focus in Screen.cc/.hh and addWindow in Workspace.cc
+     Makes new windows get inserted after the focused window in the cycling 
+     order instead of always at the end. (Thanks Ben Jansens)
+   * Added doSkipWindow function in Screen.hh/cc
+   * Fixed some signed/unsigened in fluxbox.cc
+*02/03/27:
+   * Fixed includes and namespace in Font.cc/hh
+*02/03/21:
+   * Added FbTk::Font to the code, Font.hh/cc
+   * Changed MenuStyle font to FbTk::Font
+   * Changed DrawUtil to namespace
+*02/03/20:
+   * Fixed some unsigned/signed stuff in Basemenu.cc/hh
+   * Rearranged public/private order in Slit.hh
+   * Removed #include "BaseDisplay.hh" and added #include <unistd.h>
+     in Timer.cc
+   * Changed StringUtil to namespace instead of struct
+*02/03/19:
+   * Added Xinerama support   
 *02/03/18:
    * Fixed indentation to tabs in Image.cc/hh Slit.cc/hh and
      Timer.hh/cc
