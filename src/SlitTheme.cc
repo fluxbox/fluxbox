@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitTheme.cc,v 1.1 2003/08/29 10:30:08 fluxgen Exp $
+// $Id: SlitTheme.cc,v 1.2 2003/08/29 23:52:14 fluxgen Exp $
 
 #include "SlitTheme.hh"
 
@@ -53,6 +53,10 @@ bool SlitTheme::fallback(FbTk::ThemeItem_base &item) {
         return FbTk::ThemeManager::instance().loadItem(item,
                                                        "borderWidth",
                                                        "BorderWidth");
+    } else if (item.name().find(".borderColor") != std::string::npos) {
+        return FbTk::ThemeManager::instance().loadItem(item,
+                                                       "borderColor",
+                                                       "BorderColor");
     }
 
     return false;
