@@ -1,4 +1,14 @@
 (Format: Year/Month/Day)
+Changes for 0.1.14:
+*02/11/24:
+   * Fixed bug [ 641136 ] OpenOffice 1.0.1 aborts (Simon)
+     Ewmh.cc
+   * Fixed bug [ 561602 ] Problem using ToggleDecor in terminals (Simon)
+     Window.cc/hh
+   * Fixed bug [ 642189 ] Wrong AA font on init (Simon)
+     Font.cc
+
+--------------------------------------------------------------------------
 Changes for 0.1.13:
 *02/11/17:
    * Fixed bug in toggleTab
