@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.37 2002/05/22 00:36:56 fluxgen Exp $
+// $Id: Screen.hh,v 1.38 2002/07/23 13:47:05 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -91,7 +91,7 @@ public:
 
 	inline const GC &getOpGC() const { return theme->getOpGC(); }
 	
-	inline const BColor *getBorderColor(void) const { return &theme->getBorderColor(); }
+	inline const FbTk::Color *getBorderColor(void) const { return &theme->getBorderColor(); }
 	inline BImageControl *getImageControl(void) { return image_control; }
 	inline Rootmenu *getRootmenu(void) { return rootmenu; }
 	inline const std::string &getRootCommand(void ) const { return *resource.rootcommand; }
@@ -210,14 +210,14 @@ public:
 	void removeWorkspaceNames(void);
 	void updateWorkspaceNamesAtom(void);
 	
-	void addWorkspaceName(char *);
-	void addNetizen(Netizen *);
-	void removeNetizen(Window);
-	void addIcon(FluxboxWindow *);
-	void removeIcon(FluxboxWindow *);
+	void addWorkspaceName(const char *name);
+	void addNetizen(Netizen *net);
+	void removeNetizen(Window win);
+	void addIcon(FluxboxWindow *win);
+	void removeIcon(FluxboxWindow *win);
 	void getNameOfWorkspace(unsigned int workspace, char **name);
 	void changeWorkspaceID(unsigned int);
-	void sendToWorkspace(unsigned int workspace, bool changeworkspace=true);
+	void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
 	void raiseWindows(Window *workspace_stack, int num);
 	void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void prevFocus(int = 0);
@@ -344,8 +344,8 @@ private:
 protected:
 	bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
 
-	bool readDatabaseTexture(char *, char *, BTexture *, unsigned long);
-	bool readDatabaseColor(char *, char *, BColor *, unsigned long);
+	bool readDatabaseTexture(char *, char *, FbTk::Texture *, unsigned long);
+	bool readDatabaseColor(char *, char *, FbTk::Color *, unsigned long);
 
 	void readDatabaseFontSet(char *, char *, XFontSet *);
 	XFontSet createFontSet(char *);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.56 2002/07/20 09:32:34 fluxgen Exp $
+// $Id: Screen.cc,v 1.57 2002/07/23 13:47:05 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -823,15 +823,15 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 }
 
 
-void BScreen::sendToWorkspace(unsigned int id, bool changeWS) {
-	FluxboxWindow *win;
+void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS) {
 	if (! current_workspace || id >= workspacesList.size())
 		return;
 
+	if (!win)
+		win = fluxbox->getFocusedWindow();
+
 	if (id != current_workspace->workspaceID()) {
 		XSync(fluxbox->getXDisplay(), True);
-
-		win = fluxbox->getFocusedWindow();
 
 		if (win && win->getScreen() == this &&
 				(! win->isStuck())) {
