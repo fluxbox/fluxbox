@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/07/03:
+   * Added selected dot for style menu so one can see which style is selected (Henrik)
+     Screen.cc
+   * Fixed Slit autohide bug (Henrik)
+     Slit.cc
 *03/07/01:
    * Added keyboard navigation for menus (Henrik)
      (click on title to get input focus, unless you're using RootMenu in keys)
