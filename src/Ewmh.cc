@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.28 2003/07/02 14:31:43 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.29 2003/07/04 01:03:40 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -95,7 +95,7 @@ void Ewmh::initForScreen(BScreen &screen) {
 	
 }
 
-void Ewmh::setupWindow(FluxboxWindow &win) {
+void Ewmh::setupFrame(FluxboxWindow &win) {
 
     Atom ret_type;
     int fmt;

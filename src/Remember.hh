@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.8 2003/06/18 13:34:56 fluxgen Exp $
+// $Id: Remember.hh,v 1.9 2003/07/04 01:03:40 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -43,7 +43,7 @@ class ClientPattern;
 
 class Application {
 public:
-    Application();
+    Application(bool grouped);
     inline void forgetWorkspace() { workspace_remember = false; }
     inline void forgetDimensions() { dimensions_remember = false; }
     inline void forgetPosition() { position_remember = false; }
@@ -107,6 +107,9 @@ public:
     bool save_on_close_remember;
     bool save_on_close;
 
+    bool is_grouped;
+    FluxboxWindow *group;
+
 };
 
 /**
@@ -161,7 +164,8 @@ public:
     // Functions relating to AtomHandler
     
     // Functions we actually use
-    void setupWindow(FluxboxWindow &win);
+    void setupFrame(FluxboxWindow &win);
+    void setupClient(WinClient &winclient);
     void updateWindowClose(FluxboxWindow &win);
 
     // Functions we ignore (zero from AtomHandler)
@@ -186,7 +190,8 @@ public:
 private:
 
     // returns number of lines read
-    int parseApp(std::ifstream &file, Application &app);
+    // optionally can give a line to read before the first (lookahead line)
+    int parseApp(std::ifstream &file, Application &app, std::string *first_line = 0);
     Patterns m_pats;
     Clients m_clients;
 

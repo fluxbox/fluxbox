@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.28 2003/06/26 12:22:42 rathnor Exp $
+// $Id: Gnome.cc,v 1.29 2003/07/04 01:03:40 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -85,8 +85,8 @@ void Gnome::initForScreen(BScreen &screen) {
 	
 }
 
-void Gnome::setupWindow(FluxboxWindow &win) {
-    // load gnome state atom
+void Gnome::setupFrame(FluxboxWindow &win) {
+    // load gnome state (take queues from the main window of the frame)
     Display *disp = FbTk::App::instance()->display();
     Atom ret_type;
     int fmt;

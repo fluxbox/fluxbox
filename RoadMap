@@ -133,7 +133,7 @@ Key Features:
  * Regular expression support in remember 
    on several attributes                      (Simon)
  * Save grouping so it persists over restart  (Simon)
- - Autogrouping functionality into remember   (Simon)
+ * Autogrouping functionality into remember   (Simon)
    (this will thus get regexp matching etc)
  + Shaped menu/slit/toolbar                   (Henrik)
  * Improved screen object placement           (Henrik)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.200 2003/07/03 13:57:58 fluxgen Exp $
+// $Id: Screen.cc,v 1.201 2003/07/04 01:03:40 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1035,40 +1035,53 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         return 0;
     }
 
+    bool new_win = false;
+
     // check if it should be grouped with something else
     FluxboxWindow *win;
     if ((win = findGroupLeft(*winclient)) != 0) {
         win->attachClient(*winclient);
+        Fluxbox::instance()->attachSignals(*winclient);
     } else {
-        win = new FluxboxWindow(*winclient, *this, 
-                                winFrameTheme(), *menuTheme(),
-                                *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+
+        Fluxbox::instance()->attachSignals(*winclient);
+        if (winclient->fbwindow()) // may have been set in an atomhandler
+            win = winclient->fbwindow();
+        else {
+            win = new FluxboxWindow(*winclient, *this, 
+                                    winFrameTheme(), *menuTheme(),
+                                    *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+            
+            new_win = true;
+
+            if (!win->isManaged()) {
+                delete win;
+                return 0;
+            } 
+        }
     }
-
-    if (!win->isManaged()) {
-        delete win;
-        return 0;
-    } else {
-
-        // always put on end of focused list, if it gets focused it'll get pushed up
-        // there is only the one win client at this stage
-        if (doFocusNew())
-            focused_list.push_front(&win->winClient());
-        else
-            focused_list.push_back(&win->winClient());
-
-        //TODO: is next line needed?
-        Fluxbox::instance()->saveWindowSearch(client, win);
+                
+    // always put on end of focused list, if it gets focused it'll get pushed up
+    // there is only the one win client at this stage
+    if (doFocusNew())
+        focused_list.push_front(&win->winClient());
+    else
+        focused_list.push_back(&win->winClient());
+    
+    if (new_win) {
         setupWindowActions(*win);
         Fluxbox::instance()->attachSignals(*win);
     }
+
+    Fluxbox::instance()->saveWindowSearch(client, win);
 
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
     FluxboxWindow *otherwin = 0;
     // TODO: does this do the right stuff focus-wise?
-    if ((otherwin = findGroupRight(*winclient)) && otherwin != win)
+    if ((otherwin = findGroupRight(*winclient)) && otherwin != win) {
         win->attachClient(otherwin->winClient());
+    }
 
     if (!win->isIconic() && (win->workspaceNumber() == currentWorkspaceID() || win->isStuck())) {
         win->show();
@@ -1096,6 +1109,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     Fluxbox::instance()->saveWindowSearch(client.window(), win);
     setupWindowActions(*win);
     Fluxbox::instance()->attachSignals(*win);
+    // winclient actions should have been setup when the WinClient was created
     if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
         win->show();      
     }

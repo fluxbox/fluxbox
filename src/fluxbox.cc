@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.167 2003/07/01 20:29:44 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.168 2003/07/04 01:03:41 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1326,10 +1326,17 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.stateSig().attach(this);
     win.workspaceSig().attach(this);
     win.layerSig().attach(this);
-    win.winClient().dieSig().attach(this);
     win.dieSig().attach(this);
     for (size_t i=0; i<m_atomhandler.size(); ++i) {
-        m_atomhandler[i]->setupWindow(win);
+        m_atomhandler[i]->setupFrame(win);
+    }
+}
+
+void Fluxbox::attachSignals(WinClient &winclient) {
+    winclient.dieSig().attach(this);
+
+    for (size_t i=0; i<m_atomhandler.size(); ++i) {
+        m_atomhandler[i]->setupClient(winclient);
     }
 }
 

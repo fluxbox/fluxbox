@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.201 2003/07/02 05:27:40 fluxgen Exp $
+// $Id: Window.cc,v 1.202 2003/07/04 01:03:40 rathnor Exp $
 
 #include "Window.hh"
 
@@ -557,11 +557,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
     // get the current window on the end of our client list
     Window leftwin = None;
-    ClientList::iterator client_it = clientList().end();
-    ClientList::iterator client_it_end = clientList().end();
-    --client_it;
-    if (client_it != client_it_end)
-        leftwin = (*client_it)->window();
+    if (!clientList().empty())
+        leftwin = clientList().back()->window();
 
     client.setGroupLeftWindow(leftwin);
 
@@ -570,8 +567,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
         Fluxbox *fb = Fluxbox::instance();
         // make sure we set new window search for each client
-        client_it = old_win->clientList().begin();
-        client_it_end = old_win->clientList().end();
+        ClientList::iterator client_it = old_win->clientList().begin();
+        ClientList::iterator client_it_end = old_win->clientList().end();
         for (; client_it != client_it_end; ++client_it) {
             // setup eventhandlers for client
             fb->saveWindowSearch((*client_it)->window(), this);
@@ -638,6 +635,7 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
         Fluxbox::instance()->saveWindowSearch(client.window(), this);
         client.saveBlackboxAttribs(m_blackbox_attrib);
+        m_clientlist.push_back(&client);
     }
 
     // make sure that the state etc etc is updated for the new client
@@ -659,6 +657,46 @@ bool FluxboxWindow::detachClient(WinClient &client) {
     if (client.m_win != this || numClients() <= 1)
         return false;
     
+    // I'm not sure how to do this bit better
+    // we need to find the window we've got, and update the
+    // window to its right to have a left window set to the
+    // window which is to the left of the current.
+    // Think in terms of:
+    // window1 <- my_window <- window2
+    // we need to take out my_window, so update window2 leftwin to be window1
+
+    Window leftwin = None;
+    ClientList::iterator client_it_end = clientList().end();
+    ClientList::iterator client_it = clientList().begin();
+    ClientList::iterator client_it_before = client_it_end;
+    ClientList::iterator client_it_after = clientList().begin();
+    if (!clientList().empty()) {
+        ++client_it_after;
+        if (clientList().front() == &client) {
+            leftwin = None;
+        } else {
+            ++client_it;
+            client_it_before = clientList().begin();
+            ++client_it_after;
+
+            while (client_it != client_it_end) {
+                if (*client_it == &client) {
+                    break;
+                }
+                ++client_it_before;
+                ++client_it;
+                ++client_it_after;
+            }
+        }
+    }
+
+    // update the leftwin of the window to the right
+    if (client_it_before != client_it_end) 
+        leftwin = (*client_it_before)->window();
+
+    if (client_it_after != client_it_end)
+        (*client_it_after)->setGroupLeftWindow(leftwin);
+
     removeClient(client);
 
     client.m_win = screen().createWindow(client);
@@ -2998,6 +3036,7 @@ void FluxboxWindow::restore(bool remap) {
 
     while (!clientList().empty()) {
         restore(clientList().back(), remap);
+        // deleting winClient removes it from the clientList
     }
 }
 

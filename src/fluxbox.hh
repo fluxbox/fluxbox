@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.63 2003/06/30 15:04:06 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.64 2003/07/04 01:03:41 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -61,6 +61,7 @@
 
 class AtomHandler;
 class FluxboxWindow;
+class WinClient;
 class Keys;
 class BScreen;
 class FbAtoms;
@@ -175,6 +176,7 @@ public:
     void update(FbTk::Subject *changed);
 
     void attachSignals(FluxboxWindow &win);
+    void attachSignals(WinClient &winclient);
 	
     virtual void timeout();
 

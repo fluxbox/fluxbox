@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.7 2003/06/18 13:33:15 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.8 2003/07/04 01:03:40 rathnor Exp $
 
 #include "AtomHandler.hh"
 
@@ -32,8 +32,9 @@ public:
     Ewmh();
     ~Ewmh();
     void initForScreen(BScreen &screen);
-    void setupWindow(FluxboxWindow &win);
-	
+    void setupFrame(FluxboxWindow &win);
+    void setupClient(WinClient &winclient) {}
+
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);
     void updateCurrentWorkspace(BScreen &screen);

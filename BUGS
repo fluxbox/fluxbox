@@ -19,6 +19,9 @@ bugs:
   large number of [remote] xload windows.
 * Can lock up on workspace change - possibly related to above as it 
   works when there aren't too many xload windows started up yet.
+* Remember-patch grouping can change order on each restart. Need to turn 
+  off remember functionality when restarting (only use it for first 
+  instance).
 
 other todo:
 FAQ items for:

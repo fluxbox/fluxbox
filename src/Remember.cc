@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.24 2003/06/12 15:12:19 rathnor Exp $
+// $Id: Remember.cc,v 1.25 2003/07/04 01:03:40 rathnor Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -46,6 +46,7 @@
 #include <fstream>
 #include <string>
 #include <memory>
+#include <set>
 
 using namespace std;
 
@@ -128,7 +129,10 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
 
 }; // end anonymous namespace
 
-Application::Application() {
+Application::Application(bool grouped)
+    : is_grouped(grouped),
+      group(0)
+{
     workspace_remember =
 	dimensions_remember =
 	position_remember =
@@ -146,6 +150,7 @@ Application::Application() {
  ************/
 
 Remember::Remember() {
+    enableUpdate();
     load();
 }
 
@@ -155,11 +160,18 @@ Remember::~Remember() {
     // the patterns free the "Application"s
     // the client mapping shouldn't need cleaning
     Patterns::iterator it;
+    std::set<Application *> all_apps; // no duplicates
     while (!m_pats.empty()) {
         it = m_pats.begin();
         delete it->first; // ClientPattern
-        delete it->second; // Application
+        all_apps.insert(it->second); // Application, not necessarily unique
         m_pats.erase(it);
+    }
+
+    std::set<Application *>::iterator ait = all_apps.begin(); // no duplicates
+    while (ait != all_apps.end()) {
+        delete (*ait);
+        ++ait;
     }
 }
 
@@ -184,7 +196,7 @@ Application* Remember::find(WinClient &winclient) {
 
 Application * Remember::add(WinClient &winclient) {
     ClientPattern *p = new ClientPattern();
-    Application *app = new Application();
+    Application *app = new Application(false);
     // by default, we match against the WMClass of a window.
     p->addTerm(p->getProperty(ClientPattern::NAME, winclient), ClientPattern::NAME);
     m_clients[&winclient] = app;
@@ -193,11 +205,16 @@ Application * Remember::add(WinClient &winclient) {
     return app;
 }
 
-int Remember::parseApp(ifstream &file, Application &app) {
+int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
     string line;
     int row = 0;
     while (! file.eof()) {
-        if (getline(file, line)) {
+        if (first_line || getline(file, line)) {
+            if (first_line) {
+                line = *first_line;
+                first_line = 0;
+            }
+
             row++;
             if (line[0] != '#') { //the line is commented
                 int parse_pos = 0, err = 0;
@@ -307,6 +324,8 @@ void Remember::load() {
         if (!apps_file.eof()) {
             string line;
             int row = 0;
+            bool in_group = false;
+            std::list<ClientPattern *> grouped_pats;
             while (getline(apps_file, line) && ! apps_file.eof()) {
                 row++;
                 if (line[0] == '#')
@@ -319,14 +338,36 @@ void Remember::load() {
 
                 if (pos > 0 && key == "app") {
                     ClientPattern *pat = new ClientPattern(line.c_str() + pos);
-                    if ((err = pat->error()) == 0) {
-                        Application *app = new Application();
-                        m_pats.push_back(make_pair(pat, app));
-                        row += parseApp(apps_file, *app);
+                    if (!in_group) {
+                        if ((err = pat->error()) == 0) {
+                            Application *app = new Application(false);
+                            m_pats.push_back(make_pair(pat, app));
+                            row += parseApp(apps_file, *app);
+                        } else {
+                            cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
+                            delete pat; // since it didn't work
+                        }
                     } else {
-                        cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
-                        delete pat; // since it didn't work
+                        grouped_pats.push_back(pat);
                     }
+                } else if (pos > 0 && key == "group") {
+                    in_group = true;
+                } else if (in_group) {
+                    // otherwise assume that it is the start of the attributes
+                    Application *app = new Application(true);
+                    while (!grouped_pats.empty()) {
+                        // associate all the patterns with this app
+                        m_pats.push_back(make_pair(grouped_pats.front(), app));
+                        grouped_pats.pop_front();
+                    }
+                    
+                    // we hit end... probably don't have attribs for the group
+                    // so finish it off with an empty application
+                    // otherwise parse the app
+                    if (!(pos>0 && key == "end")) {
+                        row += parseApp(apps_file, *app, &line);
+                    }
+                    in_group = false;
                 } else
                     cerr<<"Error in apps file on line "<<row<<"."<<endl;
                 
@@ -350,9 +391,27 @@ void Remember::save() {
     ofstream apps_file(apps_string.c_str());
     Patterns::iterator it = m_pats.begin();
     Patterns::iterator it_end = m_pats.end();
+
+    std::set<Application *> grouped_apps; // no duplicates
+
     for (; it != it_end; ++it) {
-        apps_file << "[app]"<<it->first->toString()<<endl;
         Application &a = *it->second;
+        if (a.is_grouped) {
+            // if already processed
+            if (grouped_apps.find(&a) != grouped_apps.end())
+                continue;
+            // otherwise output this whole group
+            apps_file << "[group]" << endl;
+            Patterns::iterator git = m_pats.begin();
+            Patterns::iterator git_end = m_pats.end();
+            for (; git != git_end; git++) {
+                if (git->second->group == a.group) {
+                    apps_file << " [app]"<<git->first->toString()<<endl;
+                }
+            }
+        } else {
+            apps_file << "[app]"<<it->first->toString()<<endl;
+        }
         if (a.workspace_remember) {
             apps_file << "  [Workspace]\t{" << a.workspace << "}" << endl;
         }
@@ -541,7 +600,7 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
     }
 }
 
-void Remember::setupWindow(FluxboxWindow &win) {
+void Remember::setupFrame(FluxboxWindow &win) {
     WinClient &winclient = win.winClient();
 
     // we don't touch the window if it is a transient
@@ -573,7 +632,10 @@ void Remember::setupWindow(FluxboxWindow &win) {
     if (app == 0) 
         return; // nothing to do
 
-    BScreen &screen = win.screen();
+    if (app->is_grouped && app->group == 0)
+        app->group = &win;
+
+    BScreen &screen = winclient.screen();
 
     if (app->workspace_remember) {
         // TODO: fix placement to initialise properly
@@ -611,9 +673,28 @@ void Remember::setupWindow(FluxboxWindow &win) {
 
 }
 
+void Remember::setupClient(WinClient &winclient) {
+
+    Application *app = find(winclient);
+    if (app == 0) 
+        return; // nothing to do
+
+    if (winclient.fbwindow() == 0 && app->is_grouped && app->group) {
+        app->group->attachClient(winclient);
+    }
+}
+
 void Remember::updateWindowClose(FluxboxWindow &win) {
     // This doesn't work at present since fluxbox.cc is missing the windowclose stuff.
     // I don't trust it (particularly winClient()) while this is the case
+
+    // scan all winclients and remove this fbw
+    Patterns::iterator it = m_pats.begin();
+    while (it != m_pats.end()) {
+        if (&win == it->second->group)
+            it->second->group = 0;
+        ++it;
+    }
 
     return;
 

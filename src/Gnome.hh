@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.7 2003/06/18 13:32:43 fluxgen Exp $
+// $Id: Gnome.hh,v 1.8 2003/07/04 01:03:40 rathnor Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -65,7 +65,8 @@ public:
     Gnome();
     ~Gnome();
     void initForScreen(BScreen &screen);
-    void setupWindow(FluxboxWindow &win);
+    void setupFrame(FluxboxWindow &win);
+    void setupClient(WinClient &winclient) {}
 
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);

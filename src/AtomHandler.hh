@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.8 2003/06/18 13:32:19 fluxgen Exp $
+// $Id: AtomHandler.hh,v 1.9 2003/07/04 01:03:40 rathnor Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -27,6 +27,7 @@
 #include <X11/Xlib.h>
 
 class FluxboxWindow;
+class WinClient;
 class BScreen;
 
 class AtomHandler {
@@ -34,7 +35,8 @@ public:
     virtual ~AtomHandler() { }
 
     virtual void initForScreen(BScreen &screen) = 0;
-    virtual void setupWindow(FluxboxWindow &win) = 0;
+    virtual void setupFrame(FluxboxWindow &win) = 0;
+    virtual void setupClient(WinClient &winclient) = 0;
 
     virtual void updateClientList(BScreen &screen) = 0;
     virtual void updateWorkspaceNames(BScreen &screen) = 0;

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.4 2003/06/24 16:27:18 fluxgen Exp $
+// $Id: ToolbarHandler.hh,v 1.5 2003/07/04 01:03:40 rathnor Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -56,7 +56,9 @@ public:
   
 
     void initForScreen(BScreen &screen);
-    void setupWindow(FluxboxWindow &win);
+    void setupFrame(FluxboxWindow &win);
+    // TODO: add setupClient and configure option to show groups or indiv. clients
+    void setupClient(WinClient &winclient) {}
     
     void updateState(FluxboxWindow &win);
     void updateWindowClose(FluxboxWindow &win);

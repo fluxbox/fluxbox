@@ -1,5 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/07/04:
+   * Add support in remember for grouping apps (Simon)
+     Achieved by using [group], e.g.
+     [group]
+       [app] (title=groupme)
+       [Deco] {NONE}
+     [end]
+     will group anything with the title "groupme" and will give that group
+     no decorations. You can have multiple [app] lines in a [group].
+     Recall that app lines can also use regular expressions.
+     - also includes split AtomHandler::setupWindow(fbw) into 
+       setupFrame(fbw) and setupClient(winclient).
+     Remember.hh/cc Window.cc Screen.cc fluxbox.hh/cc 
+     AtomHandler.hh Gnome.hh/cc Ewmh.hh/cc ToolbarHandler.hh/cc
 *03/07/03:
    * Added selected dot for style menu so one can see which style is selected (Henrik)
      Screen.cc
