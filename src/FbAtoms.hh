@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.hh,v 1.4 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: FbAtoms.hh,v 1.5 2002/08/12 19:25:35 fluxgen Exp $
 #ifndef FBATOMS_HH
 #define FBATOMS_HH
 
@@ -34,92 +34,93 @@ public:
 	explicit FbAtoms(Display *display);
 	virtual ~FbAtoms();
 	void initAtoms(Display *display);
+
 #ifdef GNOME
-	inline const Atom &getGnomeProtAtom() const { return gnome_wm_prot; }
-	inline const Atom &getGnomeClientListAtom() const { return gnome_wm_win_client_list; }
-	inline const Atom &getGnomeSupportingWMCheckAtom() const { return gnome_wm_supporting_wm_check; }
-	inline const Atom &getGnomeWorkspaceAtom() const { return gnome_wm_win_workspace; }
-	inline const Atom &getGnomeWorkspaceCountAtom() const { return gnome_wm_win_workspace_count; }
-	inline const Atom &getGnomeWorkspaceNamesAtom() const { return gnome_wm_win_workspace_names; }
-	inline const Atom &getGnomeStateAtom() const { return gnome_wm_win_state; }
-	inline const Atom &getGnomeHintsAtom() const { return gnome_wm_win_hints; }
-	inline const Atom &getGnomeLayerAtom() const { return gnome_wm_win_layer; }
+	inline Atom getGnomeProtAtom() const { return gnome_wm_prot; }
+	inline Atom getGnomeClientListAtom() const { return gnome_wm_win_client_list; }
+	inline Atom getGnomeSupportingWMCheckAtom() const { return gnome_wm_supporting_wm_check; }
+	inline Atom getGnomeWorkspaceAtom() const { return gnome_wm_win_workspace; }
+	inline Atom getGnomeWorkspaceCountAtom() const { return gnome_wm_win_workspace_count; }
+	inline Atom getGnomeWorkspaceNamesAtom() const { return gnome_wm_win_workspace_names; }
+	inline Atom getGnomeStateAtom() const { return gnome_wm_win_state; }
+	inline Atom getGnomeHintsAtom() const { return gnome_wm_win_hints; }
+	inline Atom getGnomeLayerAtom() const { return gnome_wm_win_layer; }
 #endif //GNOME
 
-	inline const Atom &getWMChangeStateAtom() const { return xa_wm_change_state; }
-	inline const Atom &getWMStateAtom() const { return xa_wm_state; }
-	inline const Atom &getWMDeleteAtom() const { return xa_wm_delete_window; }
-	inline const Atom &getWMProtocolsAtom() const { return xa_wm_protocols; }
-	inline const Atom &getWMTakeFocusAtom() const { return xa_wm_take_focus; }
-	inline const Atom &getWMColormapAtom() const { return xa_wm_colormap_windows; }
-	inline const Atom &getMotifWMHintsAtom() const { return motif_wm_hints; }
+	inline Atom getWMChangeStateAtom() const { return xa_wm_change_state; }
+	inline Atom getWMStateAtom() const { return xa_wm_state; }
+	inline Atom getWMDeleteAtom() const { return xa_wm_delete_window; }
+	inline Atom getWMProtocolsAtom() const { return xa_wm_protocols; }
+	inline Atom getWMTakeFocusAtom() const { return xa_wm_take_focus; }
+	inline Atom getWMColormapAtom() const { return xa_wm_colormap_windows; }
+	inline Atom getMotifWMHintsAtom() const { return motif_wm_hints; }
 
 	// this atom is for normal app->WM hints about decorations, stacking,
 	// starting workspace etc...
-	inline const Atom &getFluxboxHintsAtom() const { return blackbox_hints;}
+	inline Atom getFluxboxHintsAtom() const { return blackbox_hints;}
 
 	// these atoms are for normal app->WM interaction beyond the scope of the
 	// ICCCM...
-	inline const Atom &getFluxboxAttributesAtom() const	{ return blackbox_attributes; }
-	inline const Atom &getFluxboxChangeAttributesAtom() const { return blackbox_change_attributes; }
+	inline Atom getFluxboxAttributesAtom() const	{ return blackbox_attributes; }
+	inline Atom getFluxboxChangeAttributesAtom() const { return blackbox_change_attributes; }
 
 	// these atoms are for window->WM interaction, with more control and
 	// information on window "structure"... common examples are
 	// notifying apps when windows are raised/lowered... when the user changes
 	// workspaces... i.e. "pager talk"
-	inline const Atom &getFluxboxStructureMessagesAtom() const{ return blackbox_structure_messages; }
+	inline Atom getFluxboxStructureMessagesAtom() const{ return blackbox_structure_messages; }
 
 	// *Notify* portions of the NETStructureMessages protocol
-	inline const Atom &getFluxboxNotifyStartupAtom() const { return blackbox_notify_startup; }
-	inline const Atom &getFluxboxNotifyWindowAddAtom() const { return blackbox_notify_window_add; }
-	inline const Atom &getFluxboxNotifyWindowDelAtom() const { return blackbox_notify_window_del; }
-	inline const Atom &getFluxboxNotifyWindowFocusAtom() const { return blackbox_notify_window_focus; }
-	inline const Atom &getFluxboxNotifyCurrentWorkspaceAtom() const { return blackbox_notify_current_workspace; }
-	inline const Atom &getFluxboxNotifyWorkspaceCountAtom() const { return blackbox_notify_workspace_count; }
-	inline const Atom &getFluxboxNotifyWindowRaiseAtom() const { return blackbox_notify_window_raise; }
-	inline const Atom &getFluxboxNotifyWindowLowerAtom() const { return blackbox_notify_window_lower; }
+	inline Atom getFluxboxNotifyStartupAtom() const { return blackbox_notify_startup; }
+	inline Atom getFluxboxNotifyWindowAddAtom() const { return blackbox_notify_window_add; }
+	inline Atom getFluxboxNotifyWindowDelAtom() const { return blackbox_notify_window_del; }
+	inline Atom getFluxboxNotifyWindowFocusAtom() const { return blackbox_notify_window_focus; }
+	inline Atom getFluxboxNotifyCurrentWorkspaceAtom() const { return blackbox_notify_current_workspace; }
+	inline Atom getFluxboxNotifyWorkspaceCountAtom() const { return blackbox_notify_workspace_count; }
+	inline Atom getFluxboxNotifyWindowRaiseAtom() const { return blackbox_notify_window_raise; }
+	inline Atom getFluxboxNotifyWindowLowerAtom() const { return blackbox_notify_window_lower; }
 
 	// atoms to change that request changes to the desktop environment during
 	// runtime... these messages can be sent by any client... as the sending
 	// client window id is not included in the ClientMessage event...
-	inline const Atom &getFluxboxChangeWorkspaceAtom() const { return blackbox_change_workspace; }
-	inline const Atom &getFluxboxChangeWindowFocusAtom() const { return blackbox_change_window_focus; }
-	inline const Atom &getFluxboxCycleWindowFocusAtom() const { return blackbox_cycle_window_focus; }
+	inline Atom getFluxboxChangeWorkspaceAtom() const { return blackbox_change_workspace; }
+	inline Atom getFluxboxChangeWindowFocusAtom() const { return blackbox_change_window_focus; }
+	inline Atom getFluxboxCycleWindowFocusAtom() const { return blackbox_cycle_window_focus; }
 
 #ifdef NEWWMSPEC
 
 	// root window properties
-	inline const Atom &getNETSupportedAtom() const { return net_supported; }
-	inline const Atom &getNETClientListAtom() const	{ return net_client_list; }
-	inline const Atom &getNETClientListStackingAtom() const	{ return net_client_list_stacking; }
-	inline const Atom &getNETNumberOfDesktopsAtom() const { return net_number_of_desktops; }
-	inline const Atom &getNETDesktopGeometryAtom() const { return net_desktop_geometry; }
-	inline const Atom &getNETDesktopViewportAtom() const { return net_desktop_viewport; }
-	inline const Atom &getNETCurrentDesktopAtom() const { return net_current_desktop; }
-	inline const Atom &getNETDesktopNamesAtom() const { return net_desktop_names; }
-	inline const Atom &getNETActiveWindowAtom() const { return net_active_window; }
-	inline const Atom &getNETWorkareaAtom() const { return net_workarea; }
-	inline const Atom &getNETSupportingWMCheckAtom() const { return net_supporting_wm_check; }
-	inline const Atom &getNETVirtualRootsAtom() const { return net_virtual_roots; }
+	inline Atom getNETSupportedAtom() const { return net_supported; }
+	inline Atom getNETClientListAtom() const { return net_client_list; }
+	inline Atom getNETClientListStackingAtom() const { return net_client_list_stacking; }
+	inline Atom getNETNumberOfDesktopsAtom() const { return net_number_of_desktops; }
+	inline Atom getNETDesktopGeometryAtom() const { return net_desktop_geometry; }
+	inline Atom getNETDesktopViewportAtom() const { return net_desktop_viewport; }
+	inline Atom getNETCurrentDesktopAtom() const { return net_current_desktop; }
+	inline Atom getNETDesktopNamesAtom() const { return net_desktop_names; }
+	inline Atom getNETActiveWindowAtom() const { return net_active_window; }
+	inline Atom getNETWorkareaAtom() const { return net_workarea; }
+	inline Atom getNETSupportingWMCheckAtom() const { return net_supporting_wm_check; }
+	inline Atom getNETVirtualRootsAtom() const { return net_virtual_roots; }
 
 	// root window messages
-	inline const Atom &getNETCloseWindowAtom() const { return net_close_window; }
-	inline const Atom &getNETWMMoveResizeAtom() const { return net_wm_moveresize; }
+	inline Atom getNETCloseWindowAtom() const { return net_close_window; }
+	inline Atom getNETWMMoveResizeAtom() const { return net_wm_moveresize; }
 
 	// application window properties
-	inline const Atom &getNETPropertiesAtom() const	{ return net_properties; }
-	inline const Atom &getNETWMNameAtom() const { return net_wm_name; }
-	inline const Atom &getNETWMDesktopAtom() const { return net_wm_desktop; }
-	inline const Atom &getNETWMWindowTypeAtom() const { return net_wm_window_type; }
-	inline const Atom &getNETWMStateAtom() const { return net_wm_state; }
-	inline const Atom &getNETWMStrutAtom() const { return net_wm_strut; }
-	inline const Atom &getNETWMIconGeometryAtom() const	{ return net_wm_icon_geometry; }
-	inline const Atom &getNETWMIconAtom() const	{ return net_wm_icon; }
-	inline const Atom &getNETWMPidAtom() const { return net_wm_pid; }
-	inline const Atom &getNETWMHandledIconsAtom() const	{ return net_wm_handled_icons; }
+	inline Atom getNETPropertiesAtom() const { return net_properties; }
+	inline Atom getNETWMNameAtom() const { return net_wm_name; }
+	inline Atom getNETWMDesktopAtom() const { return net_wm_desktop; }
+	inline Atom getNETWMWindowTypeAtom() const { return net_wm_window_type; }
+	inline Atom getNETWMStateAtom() const { return net_wm_state; }
+	inline Atom getNETWMStrutAtom() const { return net_wm_strut; }
+	inline Atom getNETWMIconGeometryAtom() const { return net_wm_icon_geometry; }
+	inline Atom getNETWMIconAtom() const { return net_wm_icon; }
+	inline Atom getNETWMPidAtom() const { return net_wm_pid; }
+	inline Atom getNETWMHandledIconsAtom() const { return net_wm_handled_icons; }
 
 	// application protocols
-	inline const Atom &getNETWMPingAtom() const	{ return net_wm_ping; }
+	inline Atom getNETWMPingAtom() const { return net_wm_ping; }
 
 #endif // NEWWMSPEC
 
