@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/02/26:
+  * Improved transparent rendering speed in titlebar (Henrik)
+    FbWinFrame.cc
+  * Improved transparent rendering speed in Menu (Henrik)
+    Menu.cc
+  * Added CompareEqual class template that helps comparing
+    accessor functions with PODs for containers
+    CompareEqual.hh
 *04/02/25:
   * Fixed cycling in tab completion for fbrun (Thanks Mathias Gumz)
     FbRun.cc
