@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.33 2002/02/28 15:46:01 fluxgen Exp $
+// $Id: Screen.cc,v 1.34 2002/03/08 12:18:22 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -409,7 +409,7 @@ resource(rm, screenname, altscreenname)
 	slit = new Slit(this);
 	#endif // SLIT
 
-	InitMenu();
+	initMenu();
 
 	raiseWindows(0, 0);
 	rootmenu->update();
@@ -615,7 +615,7 @@ void BScreen::reconfigure(void) {
 
 	{
 		int remember_sub = rootmenu->getCurrentSubmenu();
-		InitMenu();
+		initMenu();
 		raiseWindows(0, 0);
 		rootmenu->reconfigure();
 		rootmenu->drawSubmenu(remember_sub);
@@ -647,7 +647,7 @@ void BScreen::reconfigure(void) {
 
 
 void BScreen::rereadMenu(void) {
-	InitMenu();
+	initMenu();
 	raiseWindows(0, 0);
 
 	rootmenu->reconfigure();
@@ -877,8 +877,9 @@ void BScreen::removeNetizen(Window w) {
 	Netizens::iterator it_end = netizenList.end();
 	for (; it != it_end; ++it) {
 		if ((*it)->getWindowID() == w) {
-			Netizen *n = *netizenList.erase(it);
+			Netizen *n = *it;
 			delete n;
+			netizenList.erase(it);			
 			break;
 		}
 	}
@@ -1192,7 +1193,7 @@ void BScreen::raiseFocus(void) {
 			raiseWindow(fluxbox->getFocusedWindow());
 }
 
-void BScreen::InitMenu(void) {
+void BScreen::initMenu(void) {
 	I18n *i18n = I18n::instance();
 	
 	if (rootmenu) {
@@ -1294,7 +1295,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 
 		if (getline(file, line)) {
 			row++;
-			if (line[0] != '#') {
+			if (line[0] != '#') { //the line is commented
 				int parse_pos = 0, err = 0;
 
 
