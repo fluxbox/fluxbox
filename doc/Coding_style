@@ -210,3 +210,15 @@ Don't create free-functions, encapsulate them in a namespace or a class
 and name filenames so it's clear what they hold so it's easier to find
 functions, classes and other stuff.
 
+
+ChangeLog format:
+*year/month/day:
+   * whats changed (who changed it)
+     which file
+
+ex:
+
+*02/01/01:
+   * Fixed bug workspace change (TheDude)
+     Workspace.cc
+
