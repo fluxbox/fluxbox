@@ -19,32 +19,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.17 2002/07/27 18:03:39 fluxgen Exp $
+//$Id: Keys.cc,v 1.18 2002/08/11 21:21:06 fluxgen Exp $
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "Keys.hh"
+
 #include "StringUtil.hh"
 
-#ifdef HAVE_STDIO_H
-#include <stdio.h>
-#endif	// HAVE_STDIO_H
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
+
 
 #ifdef HAVE_CTYPE_H
 #include <ctype.h>
 #endif	// HAVE_CTYPE_H
 
-#ifdef STDC_HEADERS
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#endif	// STDC_HEADERS
-
-#if HAVE_STRINGS_H
-#include <strings.h>
-#endif
+#include <cstdio>
+#include <cstdlib>
+#include <cerrno>
+#include <cstring>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -136,7 +130,7 @@ m_abortkey(0),
 m_display(display)
 {
 	assert(display);
-	if (filename)
+	if (filename != 0)
 		load(filename);
 }
 
@@ -150,7 +144,7 @@ Keys::~Keys() {
 //--------------------------------
 void Keys::deleteTree() {
 	while (!m_keylist.empty()) {
-		if (m_keylist.back())
+		if (m_keylist.back() && m_keylist.back() != 0)
 			delete m_keylist.back();		
 		m_keylist.pop_back();
 	}
@@ -181,34 +175,34 @@ bool Keys::load(const char *filename) {
 	
 	//ungrab all keys
 	ungrabKeys();
+
 	//free memory of previous grabs
 	deleteTree();
-			
+
 	XSync(m_display, False);
 						
 	//open the file
 	ifstream infile(filename);
 	if (!infile)
-		return false;
-	
-	
-	auto_ptr<char> linebuffer(new char[1024]);
-	
+		return false; // faild to open file
+
 	int line=0;//current line, so we can tell the user where the fault is
 
 	while (!infile.eof()) {
-		
-		infile.getline(linebuffer.get(), 1024);		
+		string linebuffer;
+
+		getline(infile, linebuffer);
 
 		line++;
 		vector<string> val;
 		//Parse arguments
-		StringUtil::stringtok(val, linebuffer.get());
+		StringUtil::stringtok(val, linebuffer.c_str());
+
 		//must have at least 1 argument
-		if (val.size()<=0)
+		if (val.size() <= 0)
 			continue;
 			
-		if (val[0][0]=='#') //the line is commented
+		if (val[0][0] == '#') //the line is commented
 			continue;
 		
 		unsigned int key=0, mod=0;		
@@ -253,7 +247,7 @@ bool Keys::load(const char *filename) {
 				if (i < LASTKEYGRAB ) {
 					if (!current_key) {
 						cerr<<"Error on line: "<<line<<endl;
-						cerr<<linebuffer.get()<<endl;
+						cerr<<linebuffer<<endl;
 						delete current_key;
 						current_key = 0;
 						last_key = 0;
@@ -280,7 +274,7 @@ bool Keys::load(const char *filename) {
 						case Keys::EXECUTE:
 						last_key->execcommand = 
 								const_cast<char *>
-								(StringUtil::strcasestr(linebuffer.get(),
+								(StringUtil::strcasestr(linebuffer.c_str(),
 									getActionStr(Keys::EXECUTE))+
 							strlen(getActionStr(Keys::EXECUTE)));
 						break;
@@ -330,9 +324,9 @@ bool Keys::load(const char *filename) {
 					last_key = 0;
 					
 				}	else { //destroy list if no action is found
-					#ifdef DEBUG
+#ifdef DEBUG
 					cerr<<"Didnt find action="<<val[argc]<<endl;
-					#endif					
+#endif // DEBUG			
 					//destroy current_key ... this will also destroy the last_key										
 					delete current_key;
 					current_key = 0;
@@ -424,9 +418,10 @@ unsigned int Keys::getModifier(const char *modstr) {
 		{"MOD5", Mod5Mask},
 		{0, 0}
 		};
-		
+
+	// find mod mask string
 	for (unsigned int i=0; modlist[i].string!=0; i++) {
-		if (modlist[i]==modstr)		
+		if (modlist[i] == modstr)		
 			return modlist[i].mask;		
 	}
 	
@@ -552,6 +547,7 @@ void Keys::showKeyTree(t_key *key, unsigned int w) {
 		cerr<<"( "<<(int)key->key<<" "<<(int)key->mod<<" ) {"<<getActionStr(key->action)<<"}"<<endl;
 }
 #endif //DEBUG
+
 //------------ mergeTree ---------------
 // Merges two chains and binds new keys
 // Returns true on success else false.
@@ -621,7 +617,9 @@ Keys::t_key::t_key(t_key *k) {
 Keys::t_key::~t_key() {	
 	while (!keylist.empty()) {		
 		t_key *k = keylist.back();
-		delete k;
-		keylist.pop_back();				
+		if (k != 0) { // make sure we don't have a bad key pointer
+			delete k;
+			keylist.pop_back();
+		}
 	}
 }
