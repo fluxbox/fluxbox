@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.hh,v 1.3 2003/02/23 01:09:02 fluxgen Exp $
+// $Id: Color.hh,v 1.4 2003/05/10 13:29:13 fluxgen Exp $
 
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
@@ -30,18 +30,19 @@
 #include "NotCopyable.hh"
 
 namespace FbTk {
-/**
-   Holds rgb color and pixel value
-*/
+
+/// Allocates rgb color and pixel value
 class Color {
 public:
     Color();
     explicit Color(unsigned long pixel);
     Color(const Color &col_copy);
     Color(unsigned short red, unsigned short green, unsigned short blue, int screen);
+    /// parses and sets rgb and pixel value from a string
     Color(const char *color_string, int screen);
     ~Color();
 
+    /// parses and sets rgb and pixel value from a string
     bool setFromString(const char *color_string, int screen);
     /// TODO don't like this
     void setPixel(unsigned long pixel) { m_pixel = pixel; }
