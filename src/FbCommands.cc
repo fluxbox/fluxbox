@@ -19,14 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.19 2003/12/19 00:47:30 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.20 2003/12/19 03:56:51 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
-#include "FbTk/Theme.hh"
 #include "Screen.hh"
-#include "Menu.hh"
-#include "SetWorkspaceName.hh"
+#include "CommandDialog.hh"
+#include "Workspace.hh"
+
+#include "FbTk/Theme.hh"
+#include "FbTk/Menu.hh"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -163,13 +165,51 @@ void ShowWorkspaceMenuCmd::execute() {
  
 }
 
+
+
+SetWorkspaceNameCmd::SetWorkspaceNameCmd(const std::string &name, int spaceid):
+    m_name(name), m_workspace(spaceid) { }
+
 void SetWorkspaceNameCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0) {
+        screen = Fluxbox::instance()->keyScreen();
+        if (screen == 0) {
+            cerr<<"Screen == 0!"<<endl;
+            return;
+        }
+    }
+
+    if (m_workspace < 0) {
+        screen->currentWorkspace()->setName(m_name);
+    } else {
+        Workspace *space = screen->getWorkspace(m_workspace);
+        if (space == 0)
+            return;
+        space->setName(m_name);
+    }
+
+    screen->updateWorkspaceNamesAtom();
+    Fluxbox::instance()->save_rc();
+}
+
+void WorkspaceNameDialogCmd::execute() {
 
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0)
         return;
 
-    SetWorkspaceName *win = new SetWorkspaceName(*screen);
+    CommandDialog *win = new CommandDialog(*screen, "Set Workspace Name:", "SetWorkspaceName ");
+    win->setText(screen->currentWorkspace()->name());
+    win->show();
+}
+
+void CommandDialogCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    FbTk::FbWindow *win = new CommandDialog(*screen, "Fluxbox Command");
     win->show();
 }
 

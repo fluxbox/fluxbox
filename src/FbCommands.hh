@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.14 2003/12/16 23:35:00 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.15 2003/12/19 03:56:51 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -94,6 +94,20 @@ public:
 };
 
 class SetWorkspaceNameCmd: public FbTk::Command {
+public:
+    SetWorkspaceNameCmd(const std::string &name, int spaceid = -1);
+    void execute();
+private:
+    std::string m_name;
+    int m_workspace;
+};
+
+class WorkspaceNameDialogCmd: public FbTk::Command {
+public:
+    void execute();
+};
+
+class CommandDialogCmd: public FbTk::Command {
 public:
     void execute();
 };
