@@ -140,20 +140,27 @@ void FbRun::run(const std::string &command) {
             }
         }
 
-        // now m_current_history_item points at the duplicate, or
-        // at m_history.size() if no duplicate
         fstream inoutfile(m_history_file.c_str(), ios::in|ios::out);
         if (inoutfile) {
-            int i = 0;
-            // read past history items before current
-            for (string line; !inoutfile.eof() && i < m_current_history_item; i++)
-                getline(inoutfile, line);
-            // write the history items that come after current
-            for (i++; i < m_history.size(); i++)
-                inoutfile<<m_history[i]<<endl;
-            
-            // and append the current one back to the end
-            inoutfile<<text()<<endl;
+            // now m_current_history_item points at the duplicate, or
+            // at m_history.size() if no duplicate
+            if (m_current_history_item != m_history.size()) {
+                int i = 0;
+                // read past history items before current
+                for (; inoutfile.good() && i < m_current_history_item; i++)
+                    inoutfile.ignore(1, '\n');
+
+                // write the history items that come after current
+                for (i++; i < m_history.size(); i++)
+                    inoutfile<<m_history[i]<<endl;
+                
+            } else {
+                // set put-pointer at end of file
+                inoutfile.seekp(0, ios::end);
+            }
+            // append current command to the file
+            inoutfile<<command<<endl;
+
         } else
             cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
     }
