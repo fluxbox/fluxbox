@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenu.cc,v 1.2 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: FbMenu.cc,v 1.3 2004/04/18 18:53:55 fluxgen Exp $
 
 
 #include "FbMenu.hh"
@@ -39,7 +39,13 @@ FbMenu::~FbMenu() {
 
 }
 
+void FbMenu::update(int index) {
+    FbTk::Menu::update(index);
+    m_shape->update();
+}
+
 void FbMenu::clearWindow() {
+    FbTk::Menu::clearWindow();
     m_shape->update();
 }
 
