@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.20 2002/10/19 17:12:44 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.21 2002/10/23 22:02:13 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -39,16 +39,13 @@
 #include "Windowmenu.hh"
 #include "Workspace.hh"
 
-#ifdef STDC_HEADERS
-#include <string.h>
-#endif // STDC_HEADERS
-
+#include <cstring>
 
 Windowmenu::Windowmenu(FluxboxWindow &win) : Basemenu(win.getScreen()),
 window(win),
 screen(win.getScreen()),
-sendToMenu(this),
-sendGroupToMenu(this) {
+sendToMenu(win),
+sendGroupToMenu(win) {
 
 	setTitleVisibility(False);
 	setMovable(False);
@@ -110,7 +107,7 @@ sendGroupToMenu(this) {
 	setItemEnabled(3, window.isIconifiable());
 	setItemEnabled(4, window.isMaximizable());
 	setItemEnabled(9, window.isClosable());
-	setItemEnabled(10, window.isResizable()); // tab option
+	setItemEnabled(10, window.isGroupable()); // tab option
 
 }
 
@@ -208,13 +205,11 @@ void Windowmenu::reconfigure() {
 }
 
 
-Windowmenu::SendtoWorkspacemenu::SendtoWorkspacemenu(Windowmenu *w)
-	: Basemenu(w->screen)
+Windowmenu::SendtoWorkspacemenu::SendtoWorkspacemenu(FluxboxWindow &win): Basemenu(win.getScreen()),
+m_fbwindow(win)
 {
-	windowmenu = w;
-
-	setTitleVisibility(False);
-	setMovable(False);
+	setTitleVisibility(false);
+	setMovable(false);
 	setInternalMenu();
 	update();
 }
@@ -224,18 +219,16 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int inde
 	if (button > 2)
 		return;
 
-	if (index <= windowmenu->screen->getCount()) {
+	if (index <= screen()->getCount()) {
 		
 		// no need to send it to a workspace it already exist on
-		if (index == windowmenu->screen->getCurrentWorkspaceID())
+		if (index == screen()->getCurrentWorkspaceID())
 			return;
 
 		if (button == 1) { // send to workspace without changing workspace
-			windowmenu->screen->sendToWorkspace(index,
-				&windowmenu->window, false);
+			screen()->sendToWorkspace(index, &m_fbwindow, false);
 		} else if (button == 2) { // send to workspace and change workspace
-			windowmenu->screen->sendToWorkspace(index,
-				&windowmenu->window, true);
+			screen()->sendToWorkspace(index, &m_fbwindow, true);
 		}
 	}
 
@@ -250,8 +243,8 @@ void Windowmenu::SendtoWorkspacemenu::update() {
 		for (i = 0; i < r; ++i)
 			remove(0);
 	}
-	for (i = 0; i < windowmenu->screen->getCount(); ++i)
-		insert(windowmenu->screen->getWorkspace(i)->name().c_str());
+	for (i = 0; i < screen()->getCount(); ++i)
+		insert(screen()->getWorkspace(i)->name().c_str());
 
 	Basemenu::update();
 }
@@ -263,47 +256,48 @@ void Windowmenu::SendtoWorkspacemenu::show() {
 	Basemenu::show();
 }
 
+Windowmenu::SendGroupToWorkspacemenu::
+	SendGroupToWorkspacemenu(FluxboxWindow &win):SendtoWorkspacemenu(win)
+{
+
+}
+
 void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int index) {
 	if (button > 2)
 		return;
 
-	if (index <= getWindowMenu()->screen->getCount()) {
-		if (index == getWindowMenu()->screen->getCurrentWorkspaceID())
+	if (index <= screen()->getCount()) {
+		if (index == screen()->getCurrentWorkspaceID())
 			return;
-		if (getWindowMenu()->window.isStuck())
-			getWindowMenu()->window.stick();
+		if (fbwin().isStuck())
+			fbwin().stick();
 		
 		// if the window is iconic, deiconify it
-		if (getWindowMenu()->window.isIconic())
-			getWindowMenu()->window.deiconify();
+		if (fbwin().isIconic())
+			fbwin().deiconify();
 
 		if (button == 1) {
 			// TODO: use reassociateGroup from BScreen instead
-			if (getWindowMenu()->window.hasTab()) {
-				for (Tab *first = Tab::getFirst(getWindowMenu()->window.getTab());
+			if (fbwin().hasTab()) {
+				for (Tab *first = Tab::getFirst(fbwin().getTab());
 						first!=0; first=first->next()) {
 					first->withdraw();
 					first->getWindow()->withdraw();
-					getWindowMenu()->screen->reassociateWindow(first->getWindow(), index, True);
+					screen()->reassociateWindow(first->getWindow(), index, true);
 					
 				}
 			} else	{
-				getWindowMenu()->window.withdraw();
-				getWindowMenu()->screen->reassociateWindow(&getWindowMenu()->window, index, True);
+				fbwin().withdraw();
+				screen()->reassociateWindow(&fbwin(), index, true);
 			}
 					
 		}
 		
 		if (button == 2)
-			getWindowMenu()->screen->changeWorkspaceID(index);
+			screen()->changeWorkspaceID(index);
 	}
 	hide();
 }
 
-Windowmenu::SendGroupToWorkspacemenu::
-	SendGroupToWorkspacemenu(Windowmenu *w):SendtoWorkspacemenu(w)
-{
-
-}
 
 

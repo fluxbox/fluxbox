@@ -52,25 +52,24 @@ private:
  
 	class SendtoWorkspacemenu : public Basemenu {
 	public:
-		SendtoWorkspacemenu(Windowmenu *);
-		inline Windowmenu *getWindowMenu() const { return windowmenu; }
+		SendtoWorkspacemenu(FluxboxWindow &win);
 		void update();
 
 		virtual void show();
+		FluxboxWindow &fbwin() { return m_fbwindow; }
 	protected:
 		virtual void itemSelected(int button, unsigned int index);
-
 	private:
-		Windowmenu *windowmenu;
-	
+		FluxboxWindow &m_fbwindow;
 	};
- 	
+
 	class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
 	public:
-		SendGroupToWorkspacemenu(Windowmenu *winmenu);
+		SendGroupToWorkspacemenu(FluxboxWindow &win);
 
 	protected:	
 		virtual void itemSelected(int button, unsigned int index);
+		
 	};
 	
 	SendtoWorkspacemenu sendToMenu;
