@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.7 2004/01/09 01:19:48 fluxgen Exp $
+// $Id: GContext.hh,v 1.8 2004/01/11 12:53:46 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -87,6 +87,12 @@ public:
 
     inline void setSubwindowMode(int mode) {
         XSetSubwindowMode(m_display, m_gc, mode);
+    }
+    inline void setFillStyle(int style) {
+        XSetFillStyle(m_display, m_gc, style);
+    }
+    inline void setFillRule(int rule) {
+        XSetFillRule(m_display, m_gc, rule);
     }
 
     void copy(GC gc);
