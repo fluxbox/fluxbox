@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.51 2003/12/16 23:33:21 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.52 2003/12/20 19:04:45 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -91,7 +91,6 @@ public:
     void enterNotifyEvent(XCrossingEvent &ce);
     void leaveNotifyEvent(XCrossingEvent &ce);
     void exposeEvent(XExposeEvent &ee);
-    void keyPressEvent(XKeyEvent &ke);
     void handleEvent(XEvent &event);
     //@}
 	
