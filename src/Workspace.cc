@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.97 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Workspace.cc,v 1.98 2004/06/21 09:53:01 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -281,7 +281,7 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 
     string instance_name = win.winClient().getWMClassName();
 
-    // go throu every group and search for matching win instancename
+    // go through every group and search for matching win instancename
     GroupList::iterator g(m_groups.begin());
     GroupList::iterator g_end(m_groups.end());
     for (; g != g_end; ++g) {
@@ -303,7 +303,8 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
                             (*g).end(), 
                             FindInGroup(*(*wit))) != (*g).end()) {
                     // make sure the window is groupable
-                    if ( !(*wit)->isGroupable() && (*wit)->winClient().fbwindow() == &win)
+                    // and don't group with ourself
+                    if ( !(*wit)->isGroupable() || (*wit)->winClient().fbwindow() == &win)
                         break; // try next name
 #ifdef DEBUG
                     cerr<<__FILE__<<"("<<__FUNCTION__<<"): window ("<<*wit<<") attaching window ("<<&win<<")"<<endl;

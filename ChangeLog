@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/21:
+  * Fix autogrouping issue where windows wouldn't show (Simon)
+    Workspace.cc
 *04/06/20:
   * Clean out old nls stuff. Move in those strings that 
     are still in the new names, new Makefiles, etc (Simon)
