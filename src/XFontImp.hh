@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.1 2002/10/13 22:22:14 fluxgen Exp $
+// $Id: XFontImp.hh,v 1.2 2002/10/15 16:44:26 fluxgen Exp $
 
 #ifndef XFONTIMP_HH
 #define XFONTIMP_HH
@@ -34,6 +34,7 @@ public:
 	unsigned int textWidth(const char * const text, unsigned int size) const;
 	unsigned int height() const;
 	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+	bool loaded() const { return m_fontstruct != 0; }
 private:
 	XFontStruct *m_fontstruct;
 };
