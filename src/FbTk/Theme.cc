@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.27 2004/06/07 11:46:05 rathnor Exp $
+// $Id: Theme.cc,v 1.28 2004/08/26 18:26:39 akir Exp $
 
 #include "Theme.hh"
 
@@ -88,8 +88,12 @@ bool ThemeManager::load(const std::string &filename, int screen_num) {
 
         location.append("/theme.cfg");
         if (!Directory::isRegularFile(location)) {
-            cerr<<"Error loading theme file "<<location<<": not a regular file"<<endl;
-            return false;
+            location = prefix;
+            location.append("/style.cfg");
+            if (!Directory::isRegularFile(location)) {
+                cerr<<"Error loading theme file "<<location<<": not a regular file"<<endl;
+                return false;
+            }
         }
     } else {
         // dirname

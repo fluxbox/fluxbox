@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.10 2004/07/05 09:27:04 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.11 2004/08/26 18:26:39 akir Exp $
 
 #include "MenuCreator.hh"
 
@@ -83,7 +83,8 @@ static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
         if ((FbTk::Directory::isRegularFile(style) &&
              (filelist[file_index][0] != '.') &&
              (style[style.length() - 1] != '~')) ||
-            FbTk::Directory::isRegularFile(style + "/theme.cfg"))
+            FbTk::Directory::isRegularFile(style + "/theme.cfg") ||
+            FbTk::Directory::isRegularFile(style + "/style.cfg"))
             parent.insert(new StyleMenuItem(filelist[file_index], style));
     } 
     // update menu graphics
@@ -219,6 +220,11 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         createStyleMenu(menu, str_label, 
                         str_key == "stylesmenu" ? str_cmd : str_label);
     } // end of stylesdir
+    else if (str_key == "themesdir" || str_key == "themesmenu") {
+        createStyleMenu(menu, str_label, 
+                        str_key == "themesmenu" ? str_cmd : str_label);
+    } // end of themesdir
+
     else if (str_key == "workspaces") {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
         if (screen != 0) {

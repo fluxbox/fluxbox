@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/26:
+  * Tiny unification (Mathias)
+    - theme.cfg and style.cfg allowed
+    - in menufiles:
+        [stylesdir] and [themesdir] allowed
+        [stylesmenu] and [themesmenu] allowed
   * Fix bevel on solid colour textures (Simon)
     FbTk/Texture.hh/cc FbTk/ThemeItems.hh
   * Make arrow in toolbar buttons scalable size (Simon)
