@@ -2,6 +2,7 @@
 Changes for 0.1.10:
 *02/05/29:
    * Fixed "Desktop Wheeling" translation in ru_RU (Thanks Anton Denisov)
+   * Added slit order (Thanks 
 *02/05/25:
    * Fixed NLS variable in configure.in (Thanks kita)
    * Minor fixes in fluxbox-generate_menu script (Thanks xyrnix)

@@ -26,7 +26,8 @@ Contributors:
     Stanislav Karchebny <berk@madfire.net>
       - minor additions, fixes, cleanups...
     Steve Cooper <stevencooper@isomedia.com>
-      - Workspace warping, window cycling with optional parameters
+      - Workspace warping, window cycling with optional parameters,
+	    slit order
     Han Boetes <han@mijncomputer.nl>
       - RPM Packaging, debugging and scripts.
 	Jeramy B. Smith
