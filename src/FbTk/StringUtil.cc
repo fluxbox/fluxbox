@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.5 2003/08/22 19:38:00 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.6 2003/08/22 22:11:19 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -169,6 +169,13 @@ std::string toUpper(const std::string &conv) {
     std::string ret = conv;
     std::transform(ret.begin(), ret.end(), ret.begin(), toupper);
     return ret;
+}
+
+std::string basename(const std::string &filename) {
+    std::string::size_type first_pos = filename.find_last_of("/");
+    if (first_pos != std::string::npos)
+        return filename.substr(first_pos + 1);
+    return filename;
 }
 
 }; // end namespace StringUtil

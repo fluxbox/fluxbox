@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.4 2003/08/22 19:37:07 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.5 2003/08/22 22:11:19 fluxgen Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -49,6 +49,10 @@ int getStringBetween(std::string& out, const char *instr,
 std::string toLower(const std::string &conv);
 /// @return upper case letters of conv
 std::string toUpper(const std::string &conv);
+#ifdef basename
+#undef basename
+#endif // basename
+std::string basename(const std::string &basename);
 
 /// Breaks a string into tokens
 template <typename Container>
