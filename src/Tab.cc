@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.42 2002/11/25 14:07:21 fluxgen Exp $
+// $Id: Tab.cc,v 1.43 2002/11/26 16:40:57 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -367,43 +367,23 @@ void Tab::draw(bool pressed) const {
 	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
 		m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
 
-	int dx=0;
 	Theme::WindowStyle *winstyle = m_win->getScreen()->getWindowStyle();
 	size_t dlen = m_win->getTitle().size();
-	size_t l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
 	
 	size_t max_width = m_size_w; // special cases in rotated mode
 	if (winstyle->tab.font.isRotated())
 		max_width = m_size_h;
 
-	if ( l > m_size_w) {
-		for (; dlen >= 0; dlen--) {
-			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen) + m_win->frame.bevel_w*4;
-
-			if (l < max_width || dlen == 0)
-				break;
-		}
-	}
-
-	switch (winstyle->tab.justify) {
-	case DrawUtil::Font::RIGHT:
-		dx += max_width - l - m_win->frame.bevel_w*3;
-	break;
-	case DrawUtil::Font::CENTER:
-		dx += (max_width - l) / 2;
-	break;
-	case DrawUtil::Font::LEFT:
-		dx = m_win->frame.bevel_w;
-	break;
-	default:
-	break;
-	}	
+	int dx = DrawUtil::doAlignment(max_width, m_win->frame.bevel_w,
+		winstyle->tab.justify,
+		winstyle->tab.font,
+		m_win->getTitle().c_str(), m_win->getTitle().size(), dlen);
 	
 	int dy = winstyle->tab.font.ascent() + m_win->frame.bevel_w;
 	// swap dx and dy if we're rotated
 	if (winstyle->tab.font.isRotated()) {
 		int tmp = dy;
-		dy = m_size_h - dx; // upside down
+		dy = m_size_h - dx; // upside down (reverse direction)
 		dx = tmp;
 	}
 	
