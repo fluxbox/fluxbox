@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.12 2002/02/26 22:42:58 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.13 2002/03/01 15:28:56 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -276,8 +276,9 @@ private:
 	char *rc_file, **argv;
 	int argc;
 	Keys *key;
+	//default arguments for titlebar left and right
+	static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
 
-	
 protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
 	char *getRcFilename();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.37 2002/02/27 22:04:01 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.38 2002/03/01 15:28:56 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -288,7 +288,10 @@ Fluxbox *Fluxbox::singleton=0;
 Fluxbox *Fluxbox::instance(int m_argc, char **m_argv, char *dpy_name, char *rc) {
 	return singleton;
 }
-
+//default values for titlebar left and right
+//don't forget to change last value in m_rc_titlebar_* if you add more to these
+Fluxbox::Titlebar Fluxbox::m_titlebar_left[] = {STICK};
+Fluxbox::Titlebar Fluxbox::m_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 
 Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 : BaseDisplay(m_argv[0], dpy_name),
@@ -299,8 +302,8 @@ m_rc_colors_per_channel(m_resourcemanager, 4, "session.colorsPerChannel", "Sessi
 m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
 m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
 m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
-m_rc_titlebar_left(m_resourcemanager, TitlebarList(0), "session.titlebar.left", "Session.Titlebar.Left"),
-m_rc_titlebar_right(m_resourcemanager, TitlebarList(0), "session.titlebar.right", "Session.Titlebar.Right"),
+m_rc_titlebar_left(m_resourcemanager, TitlebarList(&m_titlebar_left[0], &m_titlebar_left[1]), "session.titlebar.left", "Session.Titlebar.Left"),
+m_rc_titlebar_right(m_resourcemanager, TitlebarList(&m_titlebar_right[0], &m_titlebar_right[3]), "session.titlebar.right", "Session.Titlebar.Right"),
 m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
 m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
 focused_window(0),
