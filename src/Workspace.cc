@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.41 2003/01/12 18:08:05 fluxgen Exp $
+// $Id: Workspace.cc,v 1.42 2003/01/12 18:51:46 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -30,7 +30,6 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
-#include "Windowmenu.hh"
 #include "StringUtil.hh"
 #include "Slit.hh"
 
