@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.216 2003/08/11 17:04:32 fluxgen Exp $
+// $Id: Window.cc,v 1.217 2003/08/13 09:42:22 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -381,8 +381,8 @@ void FluxboxWindow::init() {
     btn->show();    
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     // we need motion notify so we mask it
-    btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
-                               ButtonMotionMask | EnterWindowMask);
+    btn->setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
+                      ButtonMotionMask | EnterWindowMask);
 
     FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*m_client));
     btn->setOnClick(set_client_cmd);
@@ -619,9 +619,9 @@ void FluxboxWindow::attachClient(WinClient &client) {
             frame().addLabelButton(*btn);
             btn->show();
             // we need motion notify so we mask it
-            btn->window().setEventMask(ExposureMask | ButtonPressMask | 
-                                       ButtonReleaseMask | ButtonMotionMask | 
-                                       EnterWindowMask);
+            btn->setEventMask(ExposureMask | ButtonPressMask | 
+                              ButtonReleaseMask | ButtonMotionMask | 
+                              EnterWindowMask);
 
 
             FbTk::RefCount<FbTk::Command> 
@@ -650,9 +650,9 @@ void FluxboxWindow::attachClient(WinClient &client) {
         btn->show();
         FbTk::EventManager &evm = *FbTk::EventManager::instance();
         // we need motion notify so we mask it
-        btn->window().setEventMask(ExposureMask | ButtonPressMask | 
-                                   ButtonReleaseMask | ButtonMotionMask | 
-                                   EnterWindowMask);
+        btn->setEventMask(ExposureMask | ButtonPressMask | 
+                          ButtonReleaseMask | ButtonMotionMask | 
+                          EnterWindowMask);
 
 
         FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(client));

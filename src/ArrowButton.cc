@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.3 2003/05/17 11:30:59 fluxgen Exp $
+// $Id: ArrowButton.cc,v 1.4 2003/08/13 09:38:09 fluxgen Exp $
 
 #include "ArrowButton.hh"
 
@@ -31,8 +31,8 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
     m_arrow_type(arrow_type),
     m_mouse_handler(0) {
 
-    window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
-                          EnterWindowMask | LeaveWindowMask);
+    setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
+                 EnterWindowMask | LeaveWindowMask);
 }
 
 ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
@@ -43,8 +43,8 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
     m_arrow_type(arrow_type),
     m_mouse_handler(0) {
 
-    window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
-                          EnterWindowMask | LeaveWindowMask);
+    setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
+                 EnterWindowMask | LeaveWindowMask);
 }
 
 void ArrowButton::clear() {
@@ -102,9 +102,9 @@ void ArrowButton::drawArrow() {
     }
 
     if (gc() != 0) {
-        window().fillPolygon(gc(),
-                             pts, 3, 
-                             Convex, CoordModePrevious);
+        fillPolygon(gc(),
+                    pts, 3, 
+                    Convex, CoordModePrevious);
     }
 }
 
