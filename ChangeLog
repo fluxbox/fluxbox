@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/10:
+   * Fixed buffer for TextButton (Henrik)
+     Reduces flicker
+     TextButton.hh/cc, Button.cc/hh
+   * Added Move action (Thanks Mathias Gumz)
+     Usage: Move x y
+     FbCommandFactory.cc, FbCommandFactory.hh
    * Fixed minor bug in IconbarTool (Henrik)
      IconbarTool.hh/cc
    * Added update timer for transparency in FbWinFrame (Henrik)
@@ -90,15 +96,15 @@ Changes for 0.9.6:
 Changes for 0.9.5:
 *03/08/27:
    * Added support for _NET_WM_STATE_MAXIMIZE_{HORZ/VERT} (Thanks stephan wezel <s.wezel<at>web <dot> de>)
-   	 Ewmh.hh/cc
+     Ewmh.hh/cc
    * Added new theme item for toolbar: (Henrik)
-  	  * toolbar.height      
+      * toolbar.height      
    * Added new theme items for menu:  (Henrik)
       * menu.selected.pixmap
-	  * menu.unselected.pixmap
-	  * menu.submenu.pixmap
-	  One can now specify pixmap to use for toggle items and
-	  what "arrow" to show on submenu items
+      * menu.unselected.pixmap
+      * menu.submenu.pixmap
+      One can now specify pixmap to use for toggle items and
+      what "arrow" to show on submenu items
    * Changed FbRun to use FbPixmap and GContext (Henrik)
      FbRun.hh/cc
    * Added FbTk::GContext a wrapper for X GC (Henrik)
@@ -146,7 +152,7 @@ Changes for 0.9.5:
    * Fixed fallback option for theme items (Henrik)
      So the toolbar should look better in old themes
      ToolTheme.cc/hh, IconbarTheme.hh/cc, Theme.hh/cc,
-   * Fixed bug in Subject.cc that cause observers to be added more than once (Henrik)	
+   * Fixed bug in Subject.cc that cause observers to be added more than once (Henrik)
      Subject.cc
 *03/08/17:
    * Update fbsetbg and fluxbox-generate_menu (Han)
@@ -191,43 +197,43 @@ Changes for 0.9.5:
    * Fixed a minor focus bug, the m_focused_window was out of sync after revertFocus (Henrik)
      fluxbox.cc
    * Changed so FbTk::Timer executes a FbTk::Command instead of calling TimoutHandler (Henrik)
-     Timer.hh/cc, fluxbox.cc, Slit.hh/cc, ImageControl.hh/cc	
+     Timer.hh/cc, fluxbox.cc, Slit.hh/cc, ImageControl.hh/cc
    * Added new files for Toolbar (Henrik)
      WorkspaceNameTool.hh/cc, ClockTool.hh/cc, ToolbarItem.hh/cc, ToolTheme.hh/cc
      TextTheme.hh/cc
      * toolbar theme items now:
-	   The clock:
+       The clock:
        toolbar.clock: <texture>
-	   toolbar.clock.pixmap: <filename>
-	   toolbar.clock.color: <color>
-	   toolbar.clock.colorTo: <color>
-	   toolbar.clock.textColor: <color>
-	   toolbar.clock.font: <font>
+       toolbar.clock.pixmap: <filename>
+       toolbar.clock.color: <color>
+       toolbar.clock.colorTo: <color>
+       toolbar.clock.textColor: <color>
+       toolbar.clock.font: <font>
 
-	   Workspace name:
-	   toolbar.workspace: <texture>
-	   toolbar.workspace.pixmap: <filename>
-	   toolbar.workspace.color: <color>
-	   toolbar.workspace.colorTo: <color>
-	   toolbar.workspace.textColor: <color>
-	   toolbar.workspace.font: <font>
+       Workspace name:
+       toolbar.workspace: <texture>
+       toolbar.workspace.pixmap: <filename>
+       toolbar.workspace.color: <color>
+       toolbar.workspace.colorTo: <color>
+       toolbar.workspace.textColor: <color>
+       toolbar.workspace.font: <font>
 
-	   This is for an empty iconbar: 
-	   toolbar.iconbar.empty: <texture>
-	   toolbar.iconbar.empty.pixmap: <filename>
-	   toolbar.iconbar.empty.color: <color>
-	   toolbar.iconbar.empty.colorTo: <color>
+       This is for an empty iconbar: 
+       toolbar.iconbar.empty: <texture>
+       toolbar.iconbar.empty.pixmap: <filename>
+       toolbar.iconbar.empty.color: <color>
+       toolbar.iconbar.empty.colorTo: <color>
 
-	   Focused window in iconbar:
-	   toolbar.iconbar.focused: <texture>
-	   toolbar.iconbar.focused.pixmap: <filename>
-	   toolbar.iconbar.focused.color: <color>
-	   toolbar.iconbar.focused.colorTo: <color>
-	   toolbar.iconbar.focused.textColor: <color>
-	   toolbar.iconbar.focused.font: <font>
+       Focused window in iconbar:
+       toolbar.iconbar.focused: <texture>
+       toolbar.iconbar.focused.pixmap: <filename>
+       toolbar.iconbar.focused.color: <color>
+       toolbar.iconbar.focused.colorTo: <color>
+       toolbar.iconbar.focused.textColor: <color>
+       toolbar.iconbar.focused.font: <font>
        And the same for .unfocused:
        toolbar.iconbar.unfocused: <texture>
-	   etc.	   
+       etc.   
 
 *03/08/10:
    * Fix session.menuFile to work with ~ properly (Simon)
