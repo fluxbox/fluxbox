@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.56 2003/04/26 18:57:10 fluxgen Exp $
+// $Id: Workspace.cc,v 1.57 2003/05/04 13:07:17 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -484,7 +484,8 @@ void Workspace::setName(const std::string &name) {
 */
 void Workspace::shutdown() {
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): windowlist:"<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): scr "<<screen.getScreenNumber()<<", ws "<<
+        m_id<<", windowlist:"<<endl;
     copy(m_windowlist.begin(), m_windowlist.end(),
          ostream_iterator<FluxboxWindow *>(cerr, " \n"));
     cerr<<endl;
