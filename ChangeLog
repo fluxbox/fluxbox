@@ -1,6 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/07/15:
+  * Mouse scroll on icons in toolbar changes workspace (Henrik)
+    IconButton.cc
+  * Minor fix for Resource<bool> (Thanks David Júlio)
+    fluxbox.cc
+  * Fixed so the delete key is working for fbrun (Henrik)
+    FbTk/TextBox.cc
+  * Fixed minor bug when time_t is long long  (Henrik)
+    fluxbox.cc
   * Removed ugly toolbar at startup (Henrik)
     it'll show up once all the windows are created.
     Toolbar.cc, fluxbox.cc
