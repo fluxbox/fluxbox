@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.74 2002/10/15 17:12:23 fluxgen Exp $
+// $Id: Screen.cc,v 1.75 2002/10/23 17:30:12 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -457,7 +457,7 @@ resource(rm, screenname, altscreenname)
 
 	XFree(children);
 	XFlush(getBaseDisplay()->getXDisplay());
-
+	theme->reconfigure(*resource.antialias);
 }
 
 namespace {
@@ -721,7 +721,8 @@ int BScreen::addWorkspace() {
 	
 }
 
-
+/// removes last workspace
+/// @return number of desktops left
 int BScreen::removeLastWorkspace() {
 	if (workspacesList.size() > 1) {
 		Workspace *wkspc = workspacesList.back();
@@ -886,14 +887,6 @@ void BScreen::removeNetizen(Window w) {
 
 
 void BScreen::updateNetizenCurrentWorkspace() {
-#ifdef NEWWMSPEC
-	//update _NET_WM_CURRENT_DESKTOP
-	int workspace = getCurrentWorkspaceID();
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		getBaseDisplay()->getNETCurrentDesktopAtom(), XA_CARDINAL, 32, PropModeReplace,
-			(unsigned char *)&workspace, 1);
-#endif // NEWWMSPEC
-
 	 m_currentworkspace_sig.notify();
 	
 	Netizens::iterator it = netizenList.begin();

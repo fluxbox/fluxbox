@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.31 2002/10/19 14:15:07 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.32 2002/10/23 17:32:30 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -222,11 +222,6 @@ private:
 	void handleKeyEvent(XKeyEvent &ke);	
 	void doWindowAction(Keys::KeyAction action, const int param);
 
-	#ifdef NEWWMSPEC
-	bool checkNETWMAtoms(XClientMessageEvent &ce);
-	#endif
-
-	
 	ResourceManager m_resourcemanager, m_screen_rm;
 	
 	//--- Resources

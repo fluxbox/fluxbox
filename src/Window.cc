@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.92 2002/10/22 14:39:21 fluxgen Exp $
+// $Id: Window.cc,v 1.93 2002/10/23 17:31:23 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -757,22 +757,6 @@ void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventP
 	buttonlist.push_back(b);
 }
 
-#ifdef NEWWMSPEC
-//TODO!! 
-
-void FluxboxWindow::updateNETWMAtoms() {
-
-}
-
-int FluxboxWindow::getNETWMWindowState() {
-
-}
-
-void FluxboxWindow::loadNETWMWorkspaceAtom() {
-
-}
-
-#endif //!NEWWMSPEC
 
 Window FluxboxWindow::findTitleButton(int type) {
 	for (unsigned int i=0; i<buttonlist.size(); i++) {
@@ -2705,14 +2689,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 				if (m_windowmenu.get())
 					m_windowmenu->reconfigure();
 			}
-		} else {
-
-#ifdef NEWWMSPEC
-			bool val = false;
-			if (!val)
-				handleNETWMPropertyNotify(atom);
-#endif // NEWWMSPEC
-		}
+		} 
 		break;
 	}
 
