@@ -22,17 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.83 2003/04/25 09:07:08 rathnor Exp $
+// $Id: Screen.hh,v 1.84 2003/04/25 11:02:57 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
-#include "Theme.hh"
 #include "BaseDisplay.hh"
-#include "Workspace.hh"
 #include "Resource.hh"
 #include "Subject.hh"
-#include "FbWinFrameTheme.hh"
 #include "MultLayers.hh"
 #include "XLayerItem.hh"
 #include "ToolbarHandler.hh"
@@ -48,15 +45,12 @@
 #include <fstream>
 #include <memory>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 class Netizen;
 class Toolbar;
 class FbWinFrameTheme;
 class RootTheme;
 class WinClient;
+class Workspace;
 
 namespace FbTk {
 class MenuTheme;
@@ -64,7 +58,7 @@ class Menu;
 class ImageControl;
 };
 
-/// Handles screen connection and screen clients
+/// Handles screen connection, screen clients and workspaces
 /**
  Create a toolbar and workspaces, handles switching between workspaces and windows
  */
@@ -97,9 +91,7 @@ public:
     inline bool doFocusLast() const { return *resource.focus_last; }
     inline bool doShowWindowPos() const { return *resource.show_window_pos; }
     bool antialias() const { return *resource.antialias; }
-    inline GC getOpGC() const { return theme->getOpGC(); }
-	
-    inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
+
     inline FbTk::ImageControl *getImageControl() { return image_control; }
     const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
@@ -111,10 +103,10 @@ public:
 
     inline bool &doSlitAutoHide() { return *resource.slit_auto_hide; }
     inline const bool &doSlitAutoHide() const { return *resource.slit_auto_hide; }
-#ifdef SLIT
+
     inline Slit *getSlit() { return m_slit.get(); }
     inline const Slit *getSlit() const { return m_slit.get(); }
-#endif // SLIT
+
     inline Slit::Placement getSlitPlacement() const { return *resource.slit_placement; }
     inline Slit::Direction getSlitDirection() const { return *resource.slit_direction; }
     inline void saveSlitPlacement(Slit::Placement p) { resource.slit_placement = p;  }
@@ -136,13 +128,7 @@ public:
     const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
 
-    inline unsigned int getHandleWidth() const { return theme->getHandleWidth(); }
-    inline unsigned int getBevelWidth() const { return theme->getBevelWidth(); }
-    inline unsigned int getFrameWidth() const { return theme->getFrameWidth(); }
-    inline unsigned int getBorderWidth() const { return theme->getBorderWidth(); }
-    inline unsigned int getBorderWidth2x() const { return theme->getBorderWidth()*2; }
-    inline unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
-    
+    inline unsigned int getCurrentWorkspaceID() const;
     Pixmap rootPixmap() const { return m_root_pm; }
     /*
       maximum screen surface
@@ -234,14 +220,12 @@ public:
     inline bool isClock24Hour() { return resource.clock24hour; }
     inline void saveClock24Hour(bool c) { resource.clock24hour = c; }
 
-    inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
-    inline const Theme::WindowStyle *getWindowStyle() const { return &theme->getWindowStyle(); } 
-    inline FbWinFrameTheme &winFrameTheme() { return m_windowtheme; }
-    inline const FbWinFrameTheme &winFrameTheme() const { return m_windowtheme; }
+    inline FbWinFrameTheme &winFrameTheme() { return *m_windowtheme.get(); }
+    inline const FbWinFrameTheme &winFrameTheme() const { return *m_windowtheme.get(); }
     inline FbTk::MenuTheme *menuTheme() { return m_menutheme.get(); }
     inline const FbTk::MenuTheme *menuTheme() const { return m_menutheme.get(); }
+    inline const RootTheme &rootTheme() const { return *m_root_theme.get(); }
 
-    const Theme *getTheme() const { return theme; }
     FluxboxWindow *getIcon(unsigned int index);
     FbTk::MultLayers &layerManager() { return m_layermanager; }
     const FbTk::MultLayers &layerManager() const { return m_layermanager; }
@@ -270,8 +254,10 @@ public:
 
     std::string getNameOfWorkspace(unsigned int workspace) const;
     void changeWorkspaceID(unsigned int);
-    void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
-    void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
+    void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, 
+                         bool changeworkspace=true);
+    void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, 
+                           bool ignore_sticky);
     void prevFocus() { prevFocus(0); }
     void nextFocus() { nextFocus(0); }
     void prevFocus(int options);
@@ -372,9 +358,7 @@ private:
     FocusedWindows focused_list;
     FocusedWindows::iterator cycling_window;
 
-#ifdef SLIT
     std::auto_ptr<Slit> m_slit;
-#endif // SLIT
 
     Workspace *current_workspace;
     std::auto_ptr<FbTk::Menu> workspacemenu;
@@ -386,11 +370,8 @@ private:
     Workspaces workspacesList;
 
     Window auto_group_window;
-	
-    //!!	
-    Theme *theme; ///< obsolete
 
-    FbWinFrameTheme m_windowtheme;
+    std::auto_ptr<FbWinFrameTheme> m_windowtheme;
     std::auto_ptr<FbTk::MenuTheme> m_menutheme;
 
     struct ScreenResource {
@@ -432,6 +413,7 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
     ToolbarHandler *m_toolbarhandler;
     Pixmap m_root_pm;
+  
 };
 
 
