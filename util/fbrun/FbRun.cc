@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.32 2004/09/29 00:51:29 akir Exp $
+// $Id: FbRun.cc,v 1.33 2004/10/10 16:35:29 akir Exp $
 
 #include "FbRun.hh"
 
@@ -365,7 +365,8 @@ void FbRun::tabCompleteApps() {
         
         string path;
         
-        if(!prefix.empty() && prefix[0] =='/') {
+        if(!prefix.empty() && 
+            string("/.~").find_first_of(prefix[0]) != string::npos) {
             size_t rseparator= prefix.find_last_of("/");
             path= prefix.substr(0, rseparator + 1) +  ":";
             add_dirs= true;
@@ -438,7 +439,7 @@ void FbRun::tabCompleteApps() {
             }
             if (m_apps[apps_item].find(prefix) == 0) {
                 m_current_apps_item = apps_item;
-                if (FbTk::Directory::isDirectory(m_apps[m_current_apps_item]))
+                if (add_dirs && FbTk::Directory::isDirectory(m_apps[m_current_apps_item]))
                     setText(m_apps[m_current_apps_item] +  "/");
                 else
                     setText(m_apps[m_current_apps_item]);
