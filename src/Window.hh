@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.87 2003/07/26 16:17:02 rathnor Exp $
+// $Id: Window.hh,v 1.88 2003/07/28 12:42:32 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -165,6 +165,8 @@ public:
     WinClient *findClient(Window win);
     void nextClient();
     void prevClient();
+    void moveClientLeft();
+    void moveClientRight();
 
     bool validateClient();
     bool setInputFocus();
@@ -200,7 +202,7 @@ public:
     void moveToLayer(int layernum);
 
     void reconfigure();
-    void setupWindow();
+
 
     void installColormap(bool);
     void restore(WinClient *client, bool remap);
@@ -355,16 +357,16 @@ public:
         FluxboxWindow &m_win;
     };
 
-    bool oplock; // Used to help stop transient loops occurring by locking a window 
-                 // during certain operations
-
+    bool oplock; ///< Used to help stop transient loops occurring by locking a window during certain operations
 private:
     static const int PropBlackboxAttributesElements = 8;
+
+    void setupWindow();
 
     void init();
     /// applies a shape mask to the window if it has one
     void shape();
-
+    void updateClientLeftWindow();
     void grabButtons();
 
     void startMoving(Window win);
