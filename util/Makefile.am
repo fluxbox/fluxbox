@@ -14,5 +14,3 @@ distclean-local:
 bsetroot.o: bsetroot.cc ../config.h bsetroot.hh ../src/BaseDisplay.hh \
  ../src/Timer.hh ../src/Image.hh ../src/FbAtoms.hh
 
-../data/menu: fluxbox-generate_menu
-	./fluxbox-generate_menu -o ../data/menu -p ${prefix}/share -m "Fluxbox-${VERSION}"
