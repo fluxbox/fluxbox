@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.208 2003/07/28 15:06:33 rathnor Exp $
+// $Id: Screen.cc,v 1.209 2003/07/28 16:29:24 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1035,6 +1035,7 @@ void BScreen::updateNetizenConfigNotify(XEvent &e) {
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
+    XSync(FbTk::App::instance()->display(), false);
     WinClient *winclient = new WinClient(client, *this);
 
     if (winclient->initial_state == WithdrawnState) {

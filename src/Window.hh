@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.89 2003/07/28 15:06:35 rathnor Exp $
+// $Id: Window.hh,v 1.90 2003/07/28 16:29:25 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -214,6 +214,7 @@ public:
 
     void setWorkspace(int n);
     void changeBlackboxHints(const BlackboxHints &bh);
+    void updateFunctions();
     void restoreAttributes();
     void showMenu(int mx, int my);
     // popup menu on last button press position

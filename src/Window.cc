@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.214 2003/07/28 15:46:00 rathnor Exp $
+// $Id: Window.cc,v 1.215 2003/07/28 16:29:25 rathnor Exp $
 
 #include "Window.hh"
 
@@ -425,8 +425,6 @@ void FluxboxWindow::init() {
     else
         getMWMHints();
     
-    functions.close = m_client->isClosable();
-
     //!!
     // fetch client size and placement
     XWindowAttributes wattrib;
@@ -1035,10 +1033,20 @@ void FluxboxWindow::getMWMHints() {
                 functions.close = true;
         }
     }
-	
-	
 }
 
+void FluxboxWindow::updateFunctions() {
+    if (!m_client)
+        return;
+    bool changed = false;
+    if (m_client->isClosable() != functions.close) {
+        functions.close = m_client->isClosable();
+        changed = true;
+    }
+
+    if (changed)
+        setupWindow();
+}
 
 void FluxboxWindow::getBlackboxHints() {
     const FluxboxWindow::BlackboxHints *hint = m_client->getBlackboxHint();
@@ -3461,7 +3469,7 @@ void FluxboxWindow::setupWindow() {
                 newbutton->setOnClick(maximize_horiz_cmd, 3);
                 newbutton->setOnClick(maximize_vert_cmd, 2);
 
-            } else if (isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
+            } else if (m_client->isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
                 newbutton = new WinButton(*this, winbutton_theme,
                                           WinButton::CLOSE, 
                                           frame.titlebar(), 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.21 2003/07/28 15:46:00 rathnor Exp $
+// $Id: WinClient.cc,v 1.22 2003/07/28 16:29:25 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -592,6 +592,8 @@ void WinClient::updateWMProtocols() {
         }
 
         XFree(proto);
+        if (m_win)
+            m_win->updateFunctions();
     } else {
         cerr<<"Warning: Failed to read WM Protocols. "<<endl;
     }
