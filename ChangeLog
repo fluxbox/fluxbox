@@ -1,5 +1,42 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/02:
+  * New command: exit
+    (Henrik)
+    FbCommandFactory.cc
+  * Fixed loading of a windowmenu file. (Henrik)
+    New resource:
+     * session.screen<num>.windowMenu: <filename>
+    The menu file format is the same as the normal ~/.fluxbox/menu
+    but with some special menu items:
+    [iconify], [maximize], [shade], [close], [extramenus]
+    [layer], [sendto]
+    + the all the other menu items that you can use in the normal
+      root menu (i.e [exec] (aterm) {aterm})
+    The [extramenus] will add  "remember" menu
+    example: session.screen0.windowMenu: ~/.fluxbox/windowmenu
+        [begin]
+        [exec] (aterm) {aterm}
+        [maximize]
+        [shade]
+        [stick]
+        [submenu] (advanced)
+           [layer]
+           [sendto]
+           [extramenus]
+        [end]
+        [separator]
+        [close]
+        [end]
+  * Moved out some simple classes from Screen.cc (Henrik)
+    new files:
+    StyleMenuItem.hh/cc
+  * Fixed new menu parsing  (Henrik)
+    everything goes through MenuCreator now.
+    Window.cc, Screen.hh/cc, fluxbox.cc/hh
+    new files: 
+    MenuCreator.cc/hh, Parser.hh/cc, FbMenuParser.hh/cc, 
+    IconMenu.hh/cc, WorkspaceMenu.hh/cc
 *04/04/30:
   * fix up reparent issue that affects java menus (thanks Scott Moser)
     Window.cc
@@ -19,6 +56,7 @@ Changes for 0.9.10:
 *04/04/26:
   * Fixed some small compile errors with gcc 3.4
     (Henrik)
+--------------------------------------------------------------------
 Changes for 0.9.9:
 *04/04/22:
   * New Command: Deiconify <mode> <dest>
@@ -150,7 +188,7 @@ Changes for 0.9.9:
   * Added Control-c to the TextBox.cc so the (Thanks Mathias Gumz)
     TextBox gets cleared if one presses Control-c
     TextBox.cc
-  * Fixed so @ and | works in text box (Thanks Mathias Gumz)	
+  * Fixed so @ and | works in text box (Thanks Mathias Gumz)
     TextBox.cc
 *04/03/16:
   * Minor fix for ${INSTALL} and reload fluxbox menu  (Han)
