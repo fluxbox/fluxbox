@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.109 2003/04/15 12:11:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.110 2003/04/15 13:58:57 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1190,10 +1190,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     Workspace::Windows &wins = space->getWindowList();
                     if (wins.size() == 1)
                         break;
-                    Workspace::Windows::iterator it = wins.begin();
-                    for (; it != wins.end(); ++it) {
-                        if ((*it) != focused_window) {
-                            focused_window->attachClient((*it)->winClient());
+                    BScreen::FocusedWindows &fwins = screen->getFocusedList();
+                    BScreen::FocusedWindows::iterator it = fwins.begin();
+                    for (; it != fwins.end(); ++it) {
+                        if ((*it)->fbwindow() != focused_window &&
+                            (*it)->fbwindow()->getWorkspaceNumber() == screen->getCurrentWorkspaceID()) {
+                            focused_window->attachClient(**it);
                             break;
                         }
                     }
