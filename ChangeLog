@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/07/14:
+  * Fixed menu draw bug while doing keyboard navigation (Henrik)
+    FbTk/Menu.cc
   * Fixed transient window bug at startup (Henrik)
     Screen.cc
 *04/07/06:
