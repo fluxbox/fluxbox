@@ -13,3 +13,4 @@ config.status
 libtool
 stamp-h
 version.h
+depcomp
