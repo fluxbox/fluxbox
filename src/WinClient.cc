@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.31 2003/12/04 21:31:02 fluxgen Exp $
+// $Id: WinClient.cc,v 1.32 2003/12/15 11:55:58 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -63,12 +63,12 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_focus_mode(F_PASSIVE),
                      m_diesig(*this), m_screen(screen), 
                      m_strut(0) {
+    updateWMProtocols();
     updateBlackboxHints();
     updateMWMHints();
     updateWMHints();
     updateWMNormalHints();
     updateWMClassHint();
-    updateWMProtocols();
     updateTitle();
     updateIconTitle();
     Fluxbox::instance()->saveWindowSearch(win, this);
@@ -398,8 +398,13 @@ void WinClient::updateWMHints() {
                 else
                     m_focus_mode = F_NOINPUT;
             }
-        } else
-            m_focus_mode = F_PASSIVE;
+        } else // not present => false (check?). 
+            // note that mozilla has no value, and has send_focus
+            // and requires globally active
+            if (send_focus_message)
+                m_focus_mode = F_GLOBALLYACTIVE;
+            else
+                m_focus_mode = F_NOINPUT;
 
         if (wmhint->flags & StateHint)
             initial_state = wmhint->initial_state;
