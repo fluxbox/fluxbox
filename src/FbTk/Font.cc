@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.21 2004/09/11 22:58:20 fluxgen Exp $
+//$Id: Font.cc,v 1.22 2004/10/31 23:04:30 akir Exp $
 
 
 #include "StringUtil.hh"
@@ -364,8 +364,9 @@ bool Font::load(const std::string &name) {
         std::list< std::string > tokens;
         std::string              fname;
 
-        fname= std::string(name.c_str(), sep + 1);
-        FbTk::StringUtil::stringtok(tokens, name.substr(sep + 1, name.length()), ",");
+        fname= std::string(name.c_str(), sep);
+
+        FbTk::StringUtil::stringtok(tokens, name.substr(sep + 1), ",");
 
         tokens.unique();
         bool firstone= true;
@@ -386,7 +387,7 @@ bool Font::load(const std::string &name) {
                     fname+= ", ";
                 else
                     firstone= false;
-                fname= fname + *token;
+                fname= fname + ":" + *token;
             }
         }
 
