@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.114 2004/05/13 01:48:18 rathnor Exp $
+// $Id: Window.hh,v 1.115 2004/06/19 15:04:28 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -404,7 +404,7 @@ private:
 
     void restoreGravity();
     void setGravityOffsets();
-    void setState(unsigned long stateval);
+    void setState(unsigned long stateval, bool setting_up);
     void upsize();
     void downsize();
 

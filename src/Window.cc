@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.289 2004/06/07 21:48:14 fluxgen Exp $
+// $Id: Window.cc,v 1.290 2004/06/19 15:04:27 rathnor Exp $
 
 #include "Window.hh"
 
@@ -557,8 +557,6 @@ void FluxboxWindow::init() {
         stick();
         deiconify(); //we're omnipresent and visible
     }
-
-    setState(m_current_state);
 
     sendConfigureNotify();
     // no focus default
@@ -1285,7 +1283,7 @@ void FluxboxWindow::iconify() {
 
     iconic = true;
 
-    setState(IconicState);
+    setState(IconicState, false);
 
     hide(true);
 
@@ -1332,7 +1330,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     bool was_iconic = iconic;
 
     iconic = false;
-    setState(NormalState);
+    setState(NormalState, false);
 
     ClientList::iterator client_it = clientList().begin();
     ClientList::iterator client_it_end = clientList().end();
@@ -1522,13 +1520,13 @@ void FluxboxWindow::shade() {
         m_blackbox_attrib.flags ^= ATTRIB_SHADED;
         m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
 
-        setState(NormalState);
+        setState(NormalState, false);
     } else {
         shaded = true;
         m_blackbox_attrib.flags |= ATTRIB_SHADED;
         m_blackbox_attrib.attrib |= ATTRIB_SHADED;
         // shading is the same as iconic
-        setState(IconicState);
+        setState(IconicState, false);
     }
 
 }
@@ -1550,7 +1548,7 @@ void FluxboxWindow::stick() {
 
     }
  
-    setState(m_current_state);
+    setState(m_current_state, false);
     // notify since some things consider "stuck" to be a pseudo-workspace
     m_workspacesig.notify();
 
@@ -1811,28 +1809,31 @@ void FluxboxWindow::saveBlackboxAttribs() {
 
 /**
  Sets state on each client in our list
+ Use setting_up for setting startup state - it may not be committed yet
+ That'll happen when its mapped
  */
-void FluxboxWindow::setState(unsigned long new_state) {
+void FluxboxWindow::setState(unsigned long new_state, bool setting_up) {
     if (numClients() == 0)
         return;
 
     m_current_state = new_state;
-    unsigned long state[2];
-    state[0] = (unsigned long) m_current_state;
-    state[1] = (unsigned long) None;
+    if (!setting_up) {
+        unsigned long state[2];
+        state[0] = (unsigned long) m_current_state;
+        state[1] = (unsigned long) None;
 
-    for_each(m_clientlist.begin(), m_clientlist.end(),
-             FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
-                                  PropModeReplace,
-                                  (unsigned char *)state, 2));
+        for_each(m_clientlist.begin(), m_clientlist.end(),
+                 FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
+                                      PropModeReplace,
+                                      (unsigned char *)state, 2));
 
-    saveBlackboxAttribs();
-    //notify state changed
-    m_statesig.notify();
+        saveBlackboxAttribs();
+        //notify state changed
+        m_statesig.notify();
+    }
 }
 
 bool FluxboxWindow::getState() {
-    m_current_state = 0;
 
     Atom atom_return;
     bool ret = false;
@@ -1863,7 +1864,7 @@ bool FluxboxWindow::getState() {
  */
 void FluxboxWindow::restoreAttributes() {
     if (!getState())
-        m_current_state = NormalState;
+        m_current_state = m_client->initial_state;
 
     Atom atom_return;
     int foo;
@@ -1894,29 +1895,16 @@ void FluxboxWindow::restoreAttributes() {
         return;
 
     if (m_blackbox_attrib.flags & ATTRIB_SHADED &&
-        m_blackbox_attrib.attrib & ATTRIB_SHADED) {
-        int save_state =
-            ((m_current_state == IconicState) ? NormalState : m_current_state);
-
+        m_blackbox_attrib.attrib & ATTRIB_SHADED)
         shaded = true;
-			
-        m_current_state = save_state;
-    }
 
     if (( m_blackbox_attrib.workspace != screen().currentWorkspaceID()) &&
-        ( m_blackbox_attrib.workspace < screen().getCount())) {
+        ( m_blackbox_attrib.workspace < screen().getCount()))
         m_workspace_number = m_blackbox_attrib.workspace;
 
-        if (m_current_state == NormalState) m_current_state = WithdrawnState;
-    } else if (m_current_state == WithdrawnState)
-        m_current_state = NormalState;
-
     if (m_blackbox_attrib.flags & ATTRIB_OMNIPRESENT &&
-        m_blackbox_attrib.attrib & ATTRIB_OMNIPRESENT) {
+        m_blackbox_attrib.attrib & ATTRIB_OMNIPRESENT)
         stuck = true;
-
-        m_current_state = NormalState;
-    }
 
     if (m_blackbox_attrib.flags & ATTRIB_STACK) {
         //!! TODO check value?
@@ -1942,7 +1930,6 @@ void FluxboxWindow::restoreAttributes() {
         m_blackbox_attrib.premax_h = h;
     }
 
-    setState(m_current_state);
 }
 
 /**
@@ -2062,14 +2049,14 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 	
     bool get_state_ret = getState();
     if (! (get_state_ret && fluxbox->isStartup())) {
-        if ((m_client->wm_hint_flags & StateHint) &&
-            (! (m_current_state == NormalState || m_current_state == IconicState))) {
+        if ((m_client->wm_hint_flags & StateHint) && m_current_state == 0) {// &&
             m_current_state = m_client->initial_state;
-        } else
-            m_current_state = NormalState;
+        }
     } else if (iconic)
         m_current_state = NormalState;
-		
+
+    setState(m_current_state, false);
+
     switch (m_current_state) {
     case IconicState:
         iconify();
@@ -2091,7 +2078,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         if (wsp != 0 && isGroupable())
             destroyed = wsp->checkGrouping(*this);
                 
-	// if we wasn't grouped with another window we deiconify ourself	
+	// if we weren't grouped with another window we deiconify ourself	
         if (!destroyed)
             deiconify(false);
 
@@ -2118,7 +2105,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
         if (! client->validateClient())
             return;
 
-        setState(NormalState);		
+        setState(NormalState, false);
 			
         if (client->isTransient() || screen().doFocusNew())
             setCurrentClient(*client, true);

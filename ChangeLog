@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/20:
+  * Fix honouring of initial state on window open (Simon)
+    Window.hh/cc Screen.cc
 *04/06/18:
   * background xmessage in fbsetbg so it doesn't block anything
     also set the "okay" button to default so you can just press enter

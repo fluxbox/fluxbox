@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.281 2004/06/14 12:25:31 fluxgen Exp $
+// $Id: Screen.cc,v 1.282 2004/06/19 15:04:27 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1186,10 +1186,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         win->attachClient(otherwin->winClient());
     }
 
-    if (!win->isIconic() && (win->workspaceNumber() == currentWorkspaceID() || win->isStuck())) {
-        win->show();
-    }
-
     m_clientlist_sig.notify();
 
     FbTk::App::instance()->sync(false);
@@ -1229,9 +1225,6 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // WinClient already exists).
     
     Fluxbox::instance()->attachSignals(*win);
-    // winclient actions should have been setup when the WinClient was created
-    if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck())
-        win->show();      
 
     m_clientlist_sig.notify();
 
