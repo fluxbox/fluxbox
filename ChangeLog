@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/22:
+  * Preliminary basic support for icons in fluxbox-generate_menu (Han)
+    - put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm
+    fluxbox-generate_menu.in
 *04/08/19:
   * Fixes to make nroff not report errors for fbsetbg.1 (Han)
     fbsetbg.1
