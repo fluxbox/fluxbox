@@ -1,3 +1,6 @@
+// Netizen.cc for Fluxbox
+// Copyright (c) 2001-2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
+//
 // Netizen.cc for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -13,7 +16,7 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
@@ -26,7 +29,7 @@
 
 Netizen::Netizen(const BScreen * const scr, Window win):
     m_screen(scr), 
-    m_display(BaseDisplay::getXDisplay()),
+    m_display(FbTk::App::instance()->display()),
     window(win) {
     window = win;
 
