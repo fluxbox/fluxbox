@@ -50,7 +50,7 @@ endif
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	BaseDisplay.cc BaseDisplay.hh \
 	BoolMenuItem.hh \
-	DirHelper.hh DirHelper.cc DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
+	DirHelper.hh DirHelper.cc ${newwmspec_SOURCE} \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
