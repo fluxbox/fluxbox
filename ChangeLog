@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/04/25:
+   * Fix small gcc 3.3 build issue (Simon)
+     Window.hh/cc
    * Add UnderMousePlacement policy, plus minor positioning fix (Simon)
      -> Patch originally contributed by "Mike" (lgn@users.sf)
      Screen.hh Workspace.cc fluxbox.cc Window.cc

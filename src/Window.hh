@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.60 2003/04/20 15:11:48 rathnor Exp $
+// $Id: Window.hh,v 1.61 2003/04/25 11:27:13 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -421,11 +421,6 @@ private:
     enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
   
 };
-
-template <>
-void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
-    m_object->moveToLayer(m_layernum);
-}
 
 
 #endif // WINDOW_HH

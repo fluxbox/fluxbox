@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.146 2003/04/25 11:11:27 fluxgen Exp $
+// $Id: Window.cc,v 1.147 2003/04/25 11:27:11 rathnor Exp $
 
 #include "Window.hh"
 
@@ -185,6 +185,12 @@ private:
 };
 
 };
+
+template <>
+void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
+    m_object->moveToLayer(m_layernum);
+}
+
 
 FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme, 
@@ -3181,3 +3187,4 @@ void FluxboxWindow::sendConfigureNotify() {
         screen.updateNetizenConfigNotify(&event);
     } // end for        
 }
+
