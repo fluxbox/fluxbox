@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.15 2003/09/10 21:24:36 fluxgen Exp $
+// $Id: Button.cc,v 1.16 2003/10/13 23:43:11 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -36,6 +36,7 @@ Button::Button(int screen_num, int x, int y,
     m_foreground_pm(0),
     m_background_pm(0),
     m_pressed_pm(0),
+    m_pressed_color("black", screen_num),
     m_gc(DefaultGC(FbTk::App::instance()->display(), screen_num)),
     m_pressed(false) {
 
@@ -50,6 +51,7 @@ Button::Button(const FbWindow &parent, int x, int y,
     m_foreground_pm(0),
     m_background_pm(0),
     m_pressed_pm(0),
+    m_pressed_color("black", parent.screenNumber()),
     m_gc(DefaultGC(FbTk::App::instance()->display(), screenNumber())),
     m_pressed(false) {
     // add this to eventmanager
@@ -76,6 +78,10 @@ void Button::setPressedPixmap(Pixmap pm) {
     m_pressed_pm = pm;
 }
 
+void Button::setPressedColor(const FbTk::Color &color) {
+    m_pressed_color = color;
+}
+
 void Button::setBackgroundColor(const Color &color) {
     m_background_pm = 0; // we're using background color now
     m_background_color = color;    
@@ -90,6 +96,9 @@ void Button::setBackgroundPixmap(Pixmap pm) {
 void Button::buttonPressEvent(XButtonEvent &event) {
     if (m_pressed_pm != 0)
         FbWindow::setBackgroundPixmap(m_pressed_pm);
+    else if (m_pressed_color.isAllocated())
+        FbWindow::setBackgroundColor(m_pressed_color);
+        
     m_pressed = true;    
     clear();
     updateTransparent();

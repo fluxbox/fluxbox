@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.6 2003/09/10 21:23:36 fluxgen Exp $
+// $Id: Button.hh,v 1.7 2003/10/13 23:43:11 fluxgen Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -50,6 +50,7 @@ public:
     void setPixmap(Pixmap pm);
     /// sets the pixmap to be viewed when the button is pressed
     void setPressedPixmap(Pixmap pm);
+    void setPressedColor(const FbTk::Color &color);
     /// sets graphic context for drawing
     void setGC(GC gc) { m_gc = gc; }
     /// sets background pixmap, this will override background color
@@ -78,6 +79,7 @@ private:
     Pixmap m_background_pm; ///< background pixmap
     Color m_background_color; ///< background color
     Pixmap m_pressed_pm; ///< pressed pixmap
+    Color m_pressed_color;
     GC m_gc; ///< graphic context for button
     bool m_pressed; ///< if the button is pressed
     RefCount<Command> m_onclick[5]; ///< what to do when this button is clicked with button num
