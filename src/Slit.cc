@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.66 2003/06/24 13:48:34 fluxgen Exp $
+// $Id: Slit.cc,v 1.67 2003/06/24 16:29:14 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -291,8 +291,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
         CWColormap | CWOverrideRedirect | CWEventMask;
     attrib.background_pixmap = None;
-    attrib.background_pixel = attrib.border_pixel =
-        screen().rootTheme().borderColor().pixel();
+    attrib.background_pixel = attrib.border_pixel = theme().borderColor().pixel();
     attrib.colormap = screen().rootWindow().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = s_eventmask;
@@ -302,7 +301,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     Display *disp = FbTk::App::instance()->display();
     frame.window =
         XCreateWindow(disp, screen().rootWindow().window(), frame.x, frame.y,
-                      frame.width, frame.height, screen().rootTheme().borderWidth(),
+                      frame.width, frame.height, theme().borderWidth(),
                       screen().rootWindow().depth(), InputOutput, screen().rootWindow().visual(),
                       create_mask, &attrib);
 
@@ -631,7 +630,7 @@ void Slit::reconfigure() {
     // Need to count windows because not all client list entries
     // actually correspond to mapped windows.
     int num_windows = 0;
-    const int bevel_width = screen().rootTheme().bevelWidth();
+    const int bevel_width = theme().bevelWidth();
     // determine width or height increase
     bool height_inc = false;
     switch (direction()) {
@@ -677,8 +676,8 @@ void Slit::reconfigure() {
     reposition();
     Display *disp = FbTk::App::instance()->display();
 
-    frame.window.setBorderWidth(screen().rootTheme().borderWidth());
-    frame.window.setBorderColor(screen().rootTheme().borderColor());
+    frame.window.setBorderWidth(theme().borderWidth());
+    frame.window.setBorderColor(theme().borderColor());
     // did we actually use slit slots
     if (num_windows == 0)
         frame.window.hide();
@@ -806,8 +805,8 @@ void Slit::reposition() {
         head_h = screen().height();
     }
 
-    int border_width = screen().rootTheme().borderWidth();
-    int bevel_width = screen().rootTheme().bevelWidth();
+    int border_width = theme().borderWidth();
+    int bevel_width = theme().bevelWidth();
 
     // place the slit in the appropriate place
     switch (placement()) {
