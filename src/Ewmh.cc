@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.22 2003/05/11 13:36:10 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.23 2003/05/11 17:06:02 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -135,9 +135,9 @@ void Ewmh::updateClientList(BScreen &screen) {
         screen.getWorkspacesList().end();
     for (; workspace_it != workspace_it_end; ++workspace_it) {
         Workspace::Windows::iterator win_it = 
-            (*workspace_it)->getWindowList().begin();
+            (*workspace_it)->windowList().begin();
         Workspace::Windows::iterator win_it_end = 
-            (*workspace_it)->getWindowList().end();
+            (*workspace_it)->windowList().end();
         for (; win_it != win_it_end; ++win_it) {
             num += (*win_it)->numClients();
         }
@@ -163,9 +163,9 @@ void Ewmh::updateClientList(BScreen &screen) {
 	
         // Fill in array of window ID's
         Workspace::Windows::const_iterator it = 
-            (*workspace_it)->getWindowList().begin();
+            (*workspace_it)->windowList().begin();
         Workspace::Windows::const_iterator it_end = 
-            (*workspace_it)->getWindowList().end();		
+            (*workspace_it)->windowList().end();		
         for (; it != it_end; ++it) {
             if ((*it)->numClients() == 1)
                 wl[win++] = (*it)->getClientWindow();
