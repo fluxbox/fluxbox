@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/16:
+   * Fixed iconified windows in toolbar  (Henrik)
+     IconbarTool.cc
+   * Fixed default values on startup for some themes  (Henrik)
+     MenuTheme.cc, ToolbarTheme.cc, IconbarTheme.cc, FbWinFrameTheme.cc
 *03/08/15:
    * Fixed new height resource for toolbar (Henrik)
      This will override the styles font height
