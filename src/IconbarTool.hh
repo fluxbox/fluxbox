@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.7 2003/09/08 17:52:34 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.8 2003/09/10 11:08:14 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -44,8 +44,14 @@ class FluxboxWindow;
 class IconbarTool: public ToolbarItem, public FbTk::Observer {
 public:
     typedef std::list<IconButton *> IconList;
-
-    enum Mode {NONE, ICONS, WORKSPACEICONS, WORKSPACE, ALLWINDOWS};
+    /// iconbar mode
+    enum Mode {
+        NONE, ///< no icons
+        ICONS,  ///< all icons from all workspaces
+        WORKSPACEICONS,  ///< icons on current workspace
+        WORKSPACE, ///< all windows and all icons on current workspace
+        ALLWINDOWS ///< all windows and all icons from all workspaces
+    };
 
     IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, 
                 BScreen &screen, FbTk::Menu &menu);
