@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.10 2002/02/17 18:47:45 fluxgen Exp $
+// $Id: Window.hh,v 1.11 2002/02/26 22:35:58 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -156,7 +156,7 @@ public:
 	inline const int &getYClient(void) const { return client.y; }
 	inline const int &getWorkspaceNumber(void) const { return workspace_number; }
 	inline const int &getWindowNumber(void) const { return window_number; }
-
+	inline const WinLayer getLayer(void) const { return m_layer; }
 	inline const unsigned int &getWidth(void) const { return frame.width; }
 	inline const unsigned int &getHeight(void) const { return frame.height; }
 	inline const unsigned int &getClientHeight(void) const
@@ -229,6 +229,7 @@ private:
 
 	int focus_mode, window_number, workspace_number;
 	unsigned long current_state;
+	WinLayer m_layer;
 
 	struct _client {
 		FluxboxWindow *transient_for, // which window are we a transient for?
@@ -309,12 +310,16 @@ private:
 	void updateGnomeLayerAtom();
 	void updateGnomeWorkspaceAtom();
 	
+	void setGnomeLayer(int layer);
+
 	int getGnomeWindowState();	
 	bool handleGnomePropertyNotify(Atom atom);
 	int getGnomeLayer();
 	void loadGnomeAtoms();
 	void loadGnomeStateAtom();
 	void loadGnomeHintsAtom();
+	void loadGnomeLayerAtom();
+
 	int gnome_hints;
 	#endif //GNOME
 	

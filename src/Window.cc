@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.29 2002/02/17 18:48:22 fluxgen Exp $
+// $Id: Window.cc,v 1.30 2002/02/26 22:35:58 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -73,6 +73,7 @@ timer(0),
 display(0),
 lastButtonPressTime(0),
 windowmenu(0),
+m_layer(LAYER_NORMAL),
 tab(0)
 #ifdef GNOME
 ,gnome_hints(0)
@@ -921,7 +922,19 @@ int FluxboxWindow::getGnomeWindowState() {
 
 //TODO
 int FluxboxWindow::getGnomeLayer() {
-	return WIN_LAYER_NORMAL;
+	switch (m_layer) {
+		case LAYER_NORMAL:
+			return WIN_LAYER_NORMAL;
+		case LAYER_BOTTOM:
+			return WIN_LAYER_BELOW;
+		case LAYER_TOP:
+			return WIN_LAYER_ONTOP;
+		case LAYER_BELOW:
+			return WIN_LAYER_BELOW;
+		default:
+		break;
+	}
+	return WIN_LAYER_NORMAL;	
 }
 
 bool FluxboxWindow::handleGnomePropertyNotify(Atom atom) {
@@ -945,7 +958,7 @@ bool FluxboxWindow::handleGnomePropertyNotify(Atom atom) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): gnome layer"<<endl;
 		#endif
-	
+		loadGnomeLayerAtom();
 	} else
 		return false;
 
@@ -994,12 +1007,36 @@ void FluxboxWindow::setGnomeState(int state) {
 		cerr<<"Arrange Ignore"<<endl;			
 	*/
 }
+
+void FluxboxWindow::setGnomeLayer(int layer) {
+	switch (layer) {
+		case WIN_LAYER_DESKTOP:
+			m_layer = LAYER_BOTTOM;
+		break;
+		case WIN_LAYER_BELOW:
+			m_layer = LAYER_BELOW;
+		break;
+		case WIN_LAYER_NORMAL:
+			m_layer = LAYER_NORMAL;
+		break;		
+		case WIN_LAYER_ONTOP:
+		case WIN_LAYER_DOCK:
+		case WIN_LAYER_ABOVE_DOCK:
+		case WIN_LAYER_MENU:
+			m_layer = LAYER_TOP;
+		break;
+		default:
+			m_layer = LAYER_NORMAL;
+		break;
+	}
+}
 //------------ loadGnomeAtoms ------------
 // Loads the values from the atoms
 //----------------------------------------
 void FluxboxWindow::loadGnomeAtoms() {
 	loadGnomeStateAtom();
 	loadGnomeHintsAtom();
+	loadGnomeLayerAtom();
 }
 //----------- loadGnomeStateAtom -------
 // Gets gnome state from the atom
@@ -1040,7 +1077,26 @@ void FluxboxWindow::loadGnomeHintsAtom() {
 		XFree (data);
 	}
 }
-
+//---------- loadGnomeLayerAtom ------------
+// Gets the gnome layer from the atom
+//------------------------------------------
+void FluxboxWindow::loadGnomeLayerAtom() {
+	Atom ret_type;
+	int fmt;
+	unsigned long nitems, bytes_after;
+	long *data = 0;
+	BaseDisplay *bd = screen->getBaseDisplay();
+	if (XGetWindowProperty (bd->getXDisplay(), getClientWindow(), 
+			bd->getGnomeLayerAtom(), 0, 1, False, XA_CARDINAL, 
+			&ret_type, &fmt, &nitems, &bytes_after, 
+			(unsigned char **) &data) ==  Success && data) {
+		setGnomeLayer(static_cast<int>(*data));
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): gnome hints:0x"<<hex<<*data<<dec<<endl;
+		#endif
+		XFree (data);
+	}
+}
 #endif //!GNOME
 
 #ifdef NEWWMSPEC
