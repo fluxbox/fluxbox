@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.1 2002/10/13 22:22:14 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.2 2002/10/16 23:31:10 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
@@ -35,6 +35,8 @@
 #endif // HAVE_SETLOCALE
 
 #include <cstdarg>
+#include <iostream>
+using namespace std;
 
 namespace {
 
@@ -157,6 +159,13 @@ XFontSet createFontSet(const char *fontname) {
 };
 
 XmbFontImp::XmbFontImp(const char *filename, bool utf8):m_fontset(0), m_utf8mode(utf8) {
+#ifdef DEBUG
+#ifdef X_HAVE_UTF8_STRING
+	cerr<<"Using utf8 = "<<utf8<<endl;
+#else // X_HAVE_UTF8_STRING
+	cerr<<"Using uft8 = false"<<endl;
+#endif //X_HAVE_UTF8_STRING
+#endif // DEBUG
 	if (filename != 0)
 		load(filename);
 }
@@ -199,7 +208,7 @@ void XmbFontImp::drawText(Drawable w, int screen, GC gc, const char *text,
 	}
 }
 
-unsigned int XmbFontImp::textWidth(const char *text, unsigned int len) const {
+unsigned int XmbFontImp::textWidth(const char * const text, unsigned int len) const {
 	if (m_fontset == 0)
 		return 0;
 	XRectangle ink, logical;
