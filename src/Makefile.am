@@ -35,7 +35,7 @@ bin_PROGRAMS= fluxbox
 BUILT_SOURCES = defaults.hh
 defaults.hh: Makefile
 	echo '// This file is generated from makefile. Do not edit!' > defaults.hh
-	echo '#define DEFAULTMENU "$(DEFAULTMENU)"' >> defaults.hh
+	echo '#define DEFAULTMENU "$(DEFAULT_MENU)"' >> defaults.hh
 	echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"' >> defaults.hh
 	echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"' >> defaults.hh
 	echo '#define DEFAULT_INITFILE "$(pkgdatadir)/init"' >> defaults.hh
