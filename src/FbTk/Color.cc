@@ -1,5 +1,5 @@
 // Color.cc for Fluxbox window manager
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@users.sourceforge.net)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.5 2003/08/11 23:39:28 fluxgen Exp $
+// $Id: Color.cc,v 1.6 2003/08/29 00:58:20 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -79,15 +79,10 @@ bool Color::setFromString(const char *color_string, int screen) {
 
     XColor color;
 
-    if (! XParseColor(disp, colm, color_string, &color)) {
-        cerr<<"FbTk::Color: Parse color error: \""<<color_string<<"\""<<endl;
+    if (! XParseColor(disp, colm, color_string, &color))
         return false;
-    } else if (! XAllocColor(disp, colm, &color)) {
-        cerr<<"FbTk::Color: Allocation error: \""<<color_string<<"\""<<endl;
+    else if (! XAllocColor(disp, colm, &color))
         return false;
-    }
-
-
 
     setPixel(color.pixel);
     setRGB(maxValue(color.red), 
