@@ -956,7 +956,7 @@ case ${LC_ALL} in
         XUTILSMENU='Utilità X'
         ;;
     ro_RO*) # Romanian locales
-# Ah my Russian hero. Please help me update the translation
+# Ah my Romanian hero. Please help me update the translation
 # $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
 # $ $EDITOR fluxbox-generate-menu.in
 # $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
@@ -969,31 +969,31 @@ case ${LC_ALL} in
         EDITORMENU='Editoare'
         EXITITEM='Iesire'
         FBSETTINGSMENU='Meniul Fluxbox'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        FILEUTILSMENU='Utilitare de fisier'
+        FLUXBOXCOMMAND='Comanda Fluxbox'
         GAMESMENU='Jocuri'
         GNOMEMENUTEXT='Meniu Gnome'
         GRAPHICMENU='Grafica'
         KDEMENUTEXT='Meniu KDE'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        LOCKSCREEN='Incuie ecranul'
         MISCMENU='Diverse'
-        MULTIMEDIAMENU='Multimedia (CHANGE ME!)'
+        MULTIMEDIAMENU='Multimedia'
         MUSICMENU='Muzica'
-        NETMENU='Net (CHANGE ME!)'
-        OFFICEMENU='Office (CHANGE ME!)'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        NETMENU='Retea'
+        OFFICEMENU='Office'
+        RANDOMBACKGROUND='Fundal aleator'
+        REGENERATEMENU='Regenereaza meniul'
         RELOADITEM='Reincarca configuratia'
-        RESTARTITEM='Restart (CHANGE ME!)'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RESTARTITEM='Restart'
+        RUNCOMMAND='Lanseaza'
+        SCREENSHOT='Captura ecran'
         STYLEMENUTITLE='Alege un stil...'
         SYSTEMSTYLES='Stiluri sistem'
         TERMINALMENU='Terminale'
-        TOOLS='Tools (CHANGE ME!)'
+        TOOLS='Unelte'
         USERSTYLES='Stiluri utilizator'
         WINDOWMANAGERS='WindowManagers'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWNAME='Nume fereastra'
         WORKSPACEMENU='Lista workspace-uri'
         XUTILSMENU='Utilitare X'
         ;;
