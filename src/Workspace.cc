@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.90 2004/01/21 14:14:40 fluxgen Exp $
+// $Id: Workspace.cc,v 1.91 2004/02/20 09:29:07 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -339,7 +339,7 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 }
 
 bool Workspace::loadGroups(const std::string &filename) {
-    string real_filename = filename;
+    string real_filename = FbTk::StringUtil::expandFilename(filename);
     FbTk::StringUtil::removeTrailingWhitespace(real_filename);
     ifstream infile(real_filename.c_str());
     if (!infile)

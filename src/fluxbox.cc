@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.230 2004/02/10 18:51:08 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.231 2004/02/20 09:29:05 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -569,7 +569,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     }
 
     // setup theme manager to have our style file ready to be scanned
-    FbTk::ThemeManager::instance().load(getStyleFilename());
+    FbTk::ThemeManager::instance().load(FbTk::StringUtil::expandFilename(getStyleFilename()));
 
     XSynchronize(disp, False);
     sync(false);
@@ -1642,16 +1642,7 @@ void Fluxbox::load_rc() {
 
     if (m_rc_stylefile->empty()) 
         *m_rc_stylefile = DEFAULTSTYLE;
-    else // expand tilde
-        *m_rc_stylefile = StringUtil::expandFilename(*m_rc_stylefile);
 
-
-    // expand tilde
-    *m_rc_groupfile = StringUtil::expandFilename(*m_rc_groupfile);
-
-#ifdef DEBUG
-    cerr<<__FILE__<<": Loading groups ("<<*m_rc_groupfile<<")"<<endl;
-#endif // DEBUG
     if (!Workspace::loadGroups(*m_rc_groupfile)) {
         cerr<<"Failed to load groupfile: "<<*m_rc_groupfile<<endl;
     }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.91 2004/02/12 10:29:24 rathnor Exp $
+// $Id: Slit.cc,v 1.92 2004/02/20 09:29:06 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -1129,11 +1129,12 @@ void Slit::loadClientList(const char *filename) {
         return;
 
     // save filename so we can save client list later
-    m_filename = FbTk::StringUtil::expandFilename(filename); 
+    m_filename = filename;
+    std::string real_filename= FbTk::StringUtil::expandFilename(filename); 
 
     struct stat buf;
-    if (stat(m_filename.c_str(), &buf) == 0) {
-        std::ifstream file(m_filename.c_str());
+    if (stat(real_filename.c_str(), &buf) == 0) {
+        std::ifstream file(real_filename.c_str());
         std::string name;
         while (! file.eof()) {
             name = "";
@@ -1170,7 +1171,7 @@ void Slit::updateClientmenu() {
     m_clientlist_menu.insert("Cycle Up", cycle_up);
     m_clientlist_menu.insert("Cycle Down", cycle_down);
 
-    FbTk::MenuItem *separator = new FbTk::MenuItem("-------");
+    FbTk::MenuItem *separator = new FbTk::MenuItem("---");
     separator->setEnabled(false);
     m_clientlist_menu.insert(separator);
 
@@ -1186,7 +1187,7 @@ void Slit::updateClientmenu() {
 
 void Slit::saveClientList() {
 
-    std::ofstream file(m_filename.c_str());
+    std::ofstream file(FbTk::StringUtil::expandFilename(m_filename).c_str());
     SlitClients::iterator it = m_client_list.begin();
     SlitClients::iterator it_end = m_client_list.end();
     std::string prevName;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.41 2003/12/30 18:14:33 fluxgen Exp $
+//$Id: Keys.cc,v 1.42 2004/02/20 09:29:07 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -158,7 +158,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
     if (val.size() <= 0)
         return true; // empty lines are valid.
 			
-    if (val[0][0] == '#') //the line is commented
+    if (val[0][0] == '#' || val[0][0] == '!' ) //the line is commented
         return true; // still a valid line.
 		
     unsigned int key = 0, mod = 0;
