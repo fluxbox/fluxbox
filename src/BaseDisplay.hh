@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.32 2002/11/26 16:05:34 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.33 2002/11/27 21:44:45 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -53,7 +53,7 @@ void bexec(const char *command, char *displaystring);
 /**
 	Singleton class to manage display connection
 */
-class BaseDisplay:public FbTk::App, private FbTk::NotCopyable, FbTk::EventHandler<XEvent>
+class BaseDisplay:public FbTk::App, private FbTk::NotCopyable
 {
 public:
 	BaseDisplay(const char *app_name, const char *display_name = 0);
@@ -109,7 +109,7 @@ public:
 	void grab();
 	void ungrab();
 	void eventLoop();
-
+	virtual void handleEvent(XEvent * const ev) { }
 private:
 
 	struct shape {
