@@ -22,19 +22,11 @@
 #include "Netizen.hh"
 
 #include "Screen.hh"
+#include "FbAtoms.hh"
 
-// use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef		HAVE_CONFIG_H
-#include "../config.h"
-#endif // HAVE_CONFIG_H
-
-Netizen::Netizen(BScreen *scr, Window win):
-screen(scr), 
-m_display(scr->getBaseDisplay()->getXDisplay()),
+Netizen::Netizen(const BScreen * const scr, Window win):
+m_screen(scr), 
+m_display(BaseDisplay::getXDisplay()),
 window(win) {
 	window = win;
 
@@ -54,7 +46,7 @@ window(win) {
 void Netizen::sendWorkspaceCount() {
  
 	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyWorkspaceCountAtom();
-	event.xclient.data.l[1] = screen->getCount();
+	event.xclient.data.l[1] = m_screen->getCount();
 
 	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
@@ -63,7 +55,7 @@ void Netizen::sendWorkspaceCount() {
 void Netizen::sendCurrentWorkspace() {
 
 	event.xclient.data.l[0] = FbAtoms::instance()->getFluxboxNotifyCurrentWorkspaceAtom();
-	event.xclient.data.l[1] = screen->getCurrentWorkspaceID();
+	event.xclient.data.l[1] = m_screen->getCurrentWorkspaceID();
 
 	XSendEvent(m_display, window, False, NoEventMask, &event);
 }
