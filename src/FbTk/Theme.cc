@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.8 2003/07/01 12:39:49 fluxgen Exp $
+// $Id: Theme.cc,v 1.9 2003/07/04 10:25:11 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -29,6 +29,7 @@
 #include "Texture.hh"
 #include "App.hh"
 
+#include <cstdio>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
