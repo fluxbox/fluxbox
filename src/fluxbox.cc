@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.33 2002/02/16 02:28:11 pekdon Exp $
+// $Id: fluxbox.cc,v 1.34 2002/02/17 18:43:30 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -574,33 +574,7 @@ void Fluxbox::process_event(XEvent *e) {
 	
 
 	case UnmapNotify:
-	{
-
-		FluxboxWindow *win = 0;
-		#ifdef DEBUG 
-		cerr<<__FILE__<<"("<<__LINE__<<"): Unmapnotify 0x"<<hex<<
-			e->xunmap.window<<dec<<endl;
-		#endif
-		#ifdef SLIT
-		Slit *slit = (Slit *) 0;
-		#endif // SLIT
-
-		if ((win = searchWindow(e->xunmap.window))!=0 ) {
-			// only process windows with StructureNotify selected 
-	     	// (ignore SubstructureNotify)				
-//			if (win->getClientWindow() != e->xunmap.window ||
-//					win->isTransient()) {
-				win->unmapNotifyEvent(&e->xunmap);
-//			}
-		#ifdef SLIT
-		} else if ((slit = searchSlit(e->xunmap.window))!=0) {
-			slit->removeClient(e->xunmap.window);
-			#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): Here"<<endl;
-			#endif 
-		#endif // SLIT
-		}
-	}
+	handleUnmapNotify(e->xunmap);
 	break;	
 	case CreateNotify:
 		break;
@@ -644,17 +618,18 @@ void Fluxbox::process_event(XEvent *e) {
 		}
 	break;
 	case PropertyNotify:
-		{
-			last_time = e->xproperty.time;
-
-			if (e->xproperty.state != PropertyDelete) {
-				FluxboxWindow *win = searchWindow(e->xproperty.window);
-
-				if (win)
-					win->propertyNotifyEvent(e->xproperty.atom);
-			}
+	{
 			
+		last_time = e->xproperty.time;
+
+		if (e->xproperty.state != PropertyDelete) {
+			FluxboxWindow *win = searchWindow(e->xproperty.window);
+
+			if (win)
+				win->propertyNotifyEvent(e->xproperty.atom);
 		}
+			
+	}
 	break;
 	case EnterNotify:
 		{
@@ -954,6 +929,40 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 	default:
 	break;
 	}
+}
+
+void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
+
+		
+	FluxboxWindow *win = 0;
+	#ifdef DEBUG 
+	cerr<<__FILE__<<"("<<__LINE__<<"): Unmapnotify 0x"<<hex<<
+		ue.window<<dec<<endl;
+	#endif
+	
+	#ifdef SLIT
+	Slit *slit = (Slit *) 0;
+	#endif // SLIT
+	BScreen *screen = searchScreen(ue.event);
+	
+	if ( (ue.event != ue.window) && (screen != 0 || !ue.send_event))
+	 	return;
+	
+	if ( (win = searchWindow(ue.window)) !=0 ) {
+
+		if (win->unmapNotifyEvent(&ue))
+			delete win;
+		      
+	}
+	#ifdef SLIT
+	else if ((slit = searchSlit(ue.window))!=0) {
+		slit->removeClient(ue.window);
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): Here"<<endl;
+		#endif 
+	}
+	#endif // SLIT
+
 }
 
 //------------ handleClientMessage --------
@@ -1320,71 +1329,50 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 // Returns true on success else false
 //---------------------------------------------
 bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
+	BScreen *screen = 0;
+	FluxboxWindow *win = 0;
+	win = searchWindow(ce.window);
+	screen = searchScreen(ce.window);
+	
 	if (ce.message_type == getGnomeWorkspaceAtom()) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
 		#endif//!DEBUG
-		BScreen *screen = 0;
-		FluxboxWindow *win = 0;
-					
-		if ( (win = searchWindow(ce.window))!=0 && // the message sent to client window?
+		if ( win !=0 && // the message sent to client window?
 				win->getScreen() && ce.data.l[0] >= 0 &&
 				ce.data.l[0] < win->getScreen()->getCount()) {
 			win->getScreen()->changeWorkspaceID(ce.data.l[0]);
 					
-		} else if ((screen = searchScreen(ce.window))!=0 && //the message sent to root window?
+		} else if (screen!=0 && //the message sent to root window?
 				ce.data.l[0] >= 0 &&
 				ce.data.l[0] < screen->getCount())
 			screen->changeWorkspaceID(ce.data.l[0]);
-		
-	} else if (ce.message_type == getGnomeStateAtom()) {
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
-		#endif
-		FluxboxWindow *win = 0;
-
-		if ((win = searchWindow(ce.window))!=0) {
+		return true;
+	} else if (win) {
+	
+		if (ce.message_type == getGnomeStateAtom()) {
+			#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
+			#endif
+			
+			#ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): Mask of members to change:"<<
 				hex<<ce.data.l[0]<<dec<<endl; // mask_of_members_to_change
 			cerr<<"New members:"<<ce.data.l[1]<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_STICKY) {
-				cerr<<"Sticky"<<endl;
-				if (!win->isStuck())
-					win->stick();
-			} else if (win->isStuck())
-				win->stick();
+			#endif
+	
+			//get new states			
+			int flag = ce.data.l[0] & ce.data.l[1];
+			//set states	
+			win->setGnomeState(flag);
 			
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_MINIMIZED) {
-				cerr<<"Minimized"<<endl;
-				if (!win->isIconic())
-					win->iconify();
-			} else if (win->isIconic())
-				win->deiconify(true, true);
-			
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_MAXIMIZED_VERT)
-				cerr<<"Maximize Vert"<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_MAXIMIZED_HORIZ)
-				cerr<<"Maximize Horiz"<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_HIDDEN)
-				cerr<<"Hidden"<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_SHADED) {
-				cerr<<"Shaded"<<endl;
-				if (!win->isShaded()) win->shade();
-			}
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_HID_WORKSPACE)
-				cerr<<"HID Workspace"<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_HID_TRANSIENT)
-				cerr<<"HID Transient"<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_FIXED_POSITION)
-				cerr<<"Fixed Position"<<endl;
-			if (ce.data.l[0] & BaseDisplay::WIN_STATE_ARRANGE_IGNORE)
-				cerr<<"Arrange Ignore"<<endl;			
-		}
-	} if (ce.message_type == getGnomeHintsAtom()) {
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
-		#endif
-	} else 
+		} else if (ce.message_type == getGnomeHintsAtom()) {
+			#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
+			#endif
+		} else 
+			return false; //the gnome atom wasn't found or not supported
+	} else	
 		return false; //no gnome atom
 
 	return true;
@@ -1413,7 +1401,7 @@ bool Fluxbox::checkNETWMAtoms(XClientMessageEvent &ce) {
 Bool Fluxbox::handleSignal(int sig) {
 	switch (sig) {
 	case SIGHUP:
-		reconfigure();
+		load_rc();
 		break;
 
 	case SIGUSR1:
@@ -1429,7 +1417,6 @@ Bool Fluxbox::handleSignal(int sig) {
 	case SIGINT:
 	case SIGTERM:
 		shutdown();
-
 	default:
 		return False;
 	}
@@ -1751,7 +1738,7 @@ void Fluxbox::save_rc(void) {
 		BScreen *screen = it.current();
 		int screen_number = screen->getScreenNumber();
 
-#ifdef		SLIT
+		#ifdef SLIT
 		string slit_placement;
 
 		switch (screen->getSlitPlacement()) {
@@ -1781,7 +1768,8 @@ void Fluxbox::save_rc(void) {
 		sprintf(rc_string, "session.screen%d.slit.autoHide: %s", screen_number,
 			((screen->getSlit()->doAutoHide()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
-#endif // SLIT
+		
+		#endif // SLIT
 
 		sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
 			((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
@@ -1854,15 +1842,13 @@ void Fluxbox::save_rc(void) {
 		// write out the users workspace names
 		sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
 		string workspaces_string(rc_string);
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): workspaces="<<screen->getCount()<<endl;
-		#endif
+
 		for (int workspace=0; workspace < screen->getCount(); workspace++) {
 			if (screen->getWorkspace(workspace)->getName()!=0)
 				workspaces_string.append(screen->getWorkspace(workspace)->getName());
 			else
 				workspaces_string.append("Null");
-			workspaces_string.append(", ");
+			workspaces_string.append(",");
 		}
 
 		XrmPutLineResource(&new_blackboxrc, workspaces_string.c_str());
@@ -2337,15 +2323,6 @@ void Fluxbox::real_rereadMenu(void) {
 	for (; it.current(); it++)
 		it.current()->rereadMenu();
 }
-
-/*
-void Fluxbox::saveStyleFilename(const char *filename) {
-	if (resource.style_file)
-		delete [] resource.style_file;
-
-	resource.style_file = StringUtil::strdup(filename);
-}
-*/
 
 void Fluxbox::saveMenuFilename(const char *filename) {
 	Bool found = False;
