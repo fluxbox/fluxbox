@@ -1,5 +1,5 @@
-// Main.cc for Fluxbox Window manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// main.cc for Fluxbox Window manager
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen(at)linuxmail.org)
 //
 // main.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.13 2003/01/09 18:28:48 fluxgen Exp $
+// $Id: main.cc,v 1.14 2003/04/27 01:51:04 fluxgen Exp $
 
 
 
