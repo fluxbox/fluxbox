@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.156 2003/05/01 13:19:36 rathnor Exp $
+// $Id: Window.cc,v 1.157 2003/05/04 13:55:39 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2273,7 +2273,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
         if (! isMoving()) {
             startMoving(me.window);
-        } else {			
+        } else {
             int dx = me.x_root - button_grab_x, 
                 dy = me.y_root - button_grab_y;
 
@@ -2627,7 +2627,7 @@ void FluxboxWindow::startMoving(Window win) {
     // freely map and unmap the window we're moving.
     XGrabPointer(display, screen.getRootWindow(), False, Button1MotionMask |
                  ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                 None, fluxbox->getMoveCursor(), CurrentTime);
+                 screen.getRootWindow(), fluxbox->getMoveCursor(), CurrentTime);
 
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
