@@ -1,11 +1,17 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*02/10/15:
+   * Conditional compile/linking of Xft specific files
+     src/Makefile.am, configure.in
+   * Antialias option in Configmenu
+     Configmenu.cc, Screen.cc/hh, Theme.cc/hh
 *02/10/14:
    * Added XftFontImp.hh/cc for Xft font support.
      Compile with --enable-xft
 *02/10/13:
    * Minor cleaning in configure.in
    * Fixed grab reconfigure bug
+     Window.cc
    * Fixed UTF-8 support in XmbFontImp.cc
    * Moved font system specific stuff from Font.hh/cc to 
      font implementation classes.
@@ -14,6 +20,7 @@ Changes for 0.1.13:
 *02/10/11:
    * Fixed support for _NET_WM_STATE with _NET_WM_STATE_STICKY and 
      _NET_WM_STATE_SHADED
+	 Ewmh.cc
 *02/10/02:
    * Added Ewmh.hh/cc for Extended Window Manager Hints
 *02/09/21:
