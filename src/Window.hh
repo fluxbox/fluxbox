@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.59 2003/04/20 02:47:15 rathnor Exp $
+// $Id: Window.hh,v 1.60 2003/04/20 15:11:48 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -214,8 +214,8 @@ public:
        @name accessors		
     */
     //@{
-    inline bool isTransient() const;
-    inline bool hasTransient() const;
+    bool isTransient() const;
+    bool hasTransient() const;
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
     inline bool isVisible() const { return visible; }
