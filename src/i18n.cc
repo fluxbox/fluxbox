@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.7 2002/12/01 13:42:07 rathnor Exp $
+// $Id: i18n.cc,v 1.8 2002/12/02 22:50:57 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -37,14 +37,14 @@
 
 #include <X11/Xlocale.h>
 
-#ifdef STDC_HEADERS
-#	include <stdlib.h>
-#	include <string.h>
-#	include <stdio.h>
-#endif // STDC_HEADERS
 
-#ifdef		HAVE_LOCALE_H
-#	include <locale.h>
+#include <cstdlib>
+#include <cstring>
+#include <cstdio>
+
+
+#ifdef	HAVE_LOCALE_H
+#include <locale.h>
 #endif // HAVE_LOCALE_H
 
 #include <iostream>
