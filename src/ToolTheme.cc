@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.cc,v 1.2 2003/08/13 09:55:51 fluxgen Exp $
+// $Id: ToolTheme.cc,v 1.3 2003/08/19 21:27:40 fluxgen Exp $
 
 #include "ToolTheme.hh"
 
@@ -41,3 +41,9 @@ void ToolTheme::reconfigTheme() {
     update();
 }
 
+
+bool ToolTheme::fallback(FbTk::ThemeItem_base &item) {
+    if (item.name() == "toolbar.workspace")
+        return FbTk::ThemeManager::instance().loadItem(item, "toolbar.label", "Toolbar.Label");
+    return false;
+}

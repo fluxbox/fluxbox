@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.hh,v 1.2 2003/08/13 09:56:06 fluxgen Exp $
+// $Id: ToolTheme.hh,v 1.3 2003/08/19 21:27:39 fluxgen Exp $
 
 #ifndef TOOLTHEME_HH
 #define TOOLTHEME_HH
@@ -39,6 +39,8 @@ class ToolTheme: public FbTk::Theme, public TextTheme {
 public:
     ToolTheme(int screen_num, const std::string &name, const std::string &altname);
     virtual ~ToolTheme();
+
+    bool fallback(FbTk::ThemeItem_base &item);
 
     void reconfigTheme();
     // textures
