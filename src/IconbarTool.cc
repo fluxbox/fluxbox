@@ -1,5 +1,5 @@
 // IconbarTool.cc
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.40 2004/06/17 00:17:22 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.41 2004/06/27 13:45:20 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -196,7 +196,7 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
                     handler, 
                     IconbarTool::ALLWINDOWS, saverc_cmd));
 
-    menu.insert("---"); // separator line
+    menu.insert(new FbTk::MenuSeparator());
 
     menu.insert(new ToolbarAlignMenuItem(
                     _FBTEXT(Align, Left, "Left", "Align to the left"),
@@ -488,10 +488,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
         if (&m_screen.currentWorkspaceSig() == screen_subj &&
             mode() != ALLWINDOWS && mode() != ICONS) {
             remove_all = true; // remove and readd all windows
-        }/* else if (&m_screen.iconListSig() == screen_subj &&
-            (mode() == ALLWINDOWS || mode() == ICONS || mode() == WORKSPACE)) {
-            remove_all = true;
-            }*/
+        }
     }
 
     // lock graphic update
