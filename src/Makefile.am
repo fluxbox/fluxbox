@@ -53,6 +53,9 @@ if REGEXP_SRC
 REGEXP_SOURCE = RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
 endif
 endif
+if TOOLBAR_SRC
+TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc ToolbarTheme.hh ToolbarTheme.cc IconBar.hh IconBar.cc
+endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	BoolMenuItem.hh \
@@ -60,7 +63,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
-	IconBar.cc IconBar.hh \
 	I18n.cc I18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh \
@@ -69,9 +71,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Screen.cc Screen.hh \
 	Slit.cc Slit.hh SlitTheme.hh SlitClient.hh SlitClient.cc \
 	TextButton.hh TextButton.cc \
-	Toolbar.cc Toolbar.hh \
-	ToolbarHandler.cc ToolbarHandler.hh \
-	ToolbarTheme.hh ToolbarTheme.cc \
 	WinButton.hh WinButton.cc \
 	WinButtonTheme.hh WinButtonTheme.cc \
 	Window.cc Window.hh \
@@ -82,7 +81,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Strut.hh \
 	Xinerama.hh \
 	Xutil.hh Xutil.cc \
-	${REMEMBER_SOURCE} ${REGEXP_SOURCE}
+	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
 
 LDADD=FbTk/libFbTk.a

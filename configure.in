@@ -2,7 +2,7 @@ dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,0.9.3,no-define)
+AM_INIT_AUTOMAKE(fluxbox,cvs-2003-06-25,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -142,10 +142,28 @@ AC_ARG_ENABLE(
 )
 AM_CONDITIONAL(REMEMBER_SRC, test x$REMEMBER_SRC = xtrue)
 
+dnl Check for Toolbar options
+AC_MSG_CHECKING([whether to include Toolbar])
+AC_ARG_ENABLE(
+  toolbar, [  --enable-toolbar        include code for Toolbar [default=yes]],
+  if test x$enableval = "xyes"; then
+    AC_MSG_RESULT([yes])
+    AC_DEFINE(USE_TOOLBAR, 1, " compile with toolbar")
+    TOOLBAR_SRC=true
+  else
+    AC_MSG_RESULT([no])
+    TOOLBAR_SRC=false
+  fi,
+  AC_MSG_RESULT([yes])
+  AC_DEFINE(USE_TOOLBAR, 1, " compile with toolbar")
+  TOOLBAR_SRC=true
+)
+AM_CONDITIONAL(TOOLBAR_SRC, test x$TOOLBAR_SRC = xtrue)
+
 AC_MSG_CHECKING([whether to have (POSIX) regular expression support])
 AC_ARG_ENABLE(
   regexp,
-[  --enable-regexp           regular expression support [default=yes]],
+[  --enable-regexp         regular expression support [default=yes]],
   if test x$enableval = "xyes"; then
         AC_EGREP_HEADER([regex_t],regex.h,
                 AC_DEFINE(USE_REGEXP, 1, "Regular Expression support")

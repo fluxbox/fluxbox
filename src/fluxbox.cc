@@ -22,13 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.163 2003/06/25 06:02:53 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.164 2003/06/25 13:06:04 fluxgen Exp $
 
 #include "fluxbox.hh"
 
 #include "I18n.hh"
 #include "Screen.hh"
-#include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
 #include "StringUtil.hh"
@@ -41,7 +40,6 @@
 #include "WinClient.hh"
 #include "Keys.hh"
 #include "FbAtoms.hh"
-#include "ToolbarHandler.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -64,6 +62,10 @@
 #ifdef REMEMBER
 #include "Remember.hh"
 #endif // REMEMBER
+#ifdef USE_TOOLBAR
+#include "Toolbar.hh"
+#include "ToolbarHandler.hh"
+#endif // USE_TOOLBAR
 
 // X headers
 #include <X11/Xlib.h>
@@ -524,7 +526,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_RANDR
 
         m_screen_list.push_back(screen);
+#ifdef USE_TOOLBAR
         m_atomhandler.push_back(new ToolbarHandler(*screen));
+#endif // USE_TOOLBAR
         
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
@@ -1808,15 +1812,6 @@ void Fluxbox::save_rc() {
         BScreen *screen = *it;
         int screen_number = screen->screenNumber();
   
-        /*
-#ifdef SLIT
- #ifdef XINERAMA
-        sprintf(rc_string, "session.screen%d.slit.onHead: %d", screen_number,
-                screen->getSlitOnHead());
-        XrmPutLineResource(&new_blackboxrc, rc_string);
- #endif // XINERAMA
-#endif // SLIT
-        */      
         sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
                 ((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
                  "LeftToRight" : "RightToLeft"));
