@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.39 2002/12/02 20:54:30 fluxgen Exp $
+// $Id: Theme.cc,v 1.40 2003/01/09 22:09:19 fluxgen Exp $
 
 
 #include "Theme.hh"
@@ -446,45 +446,6 @@ void Theme::loadTabStyle() {
 }
 
 void Theme::loadRootCommand() {
-    XrmValue value;
-    char *value_type;
-	
-    if (m_rootcommand.size()) {
-#ifndef  __EMX__		
-        char tmpstring[256]; //to hold m_screennum 
-        tmpstring[0]=0;
-        sprintf(tmpstring, "%d", m_screennum);
-        string displaystring("DISPLAY=");
-        displaystring.append(DisplayString(m_display));
-        displaystring.append(tmpstring); // append m_screennum				
-		
-        bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
-
-#else //         __EMX__
-        spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), 0);  
-#endif // !__EMX__     
-
-    } else if (XrmGetResource(m_database, "rootCommand", "RootCommand",
-                              &value_type, &value)) {
-#ifndef		__EMX__
-        char tmpstring[256]; //to hold m_screennum
-        tmpstring[0]=0;
-        sprintf(tmpstring, "%d", m_screennum);
-        string displaystring("DISPLAY=");
-        displaystring.append(DisplayString(m_display));
-        displaystring.append(tmpstring); // append m_screennum				
-		
-        bexec(value.addr, const_cast<char *>(displaystring.c_str()));
-#else //	 __EMX__
-        spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, 0);
-#endif // !__EMX__
-		
-    }
-#ifdef DEBUG
-    else
-        cerr<<__FILE__<<"("<<__LINE__<<"): Didn't find rootCommand."<<endl;
-#endif	
-
 }
 
 void Theme::loadMisc() {
