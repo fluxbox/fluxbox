@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.134 2003/04/25 16:07:46 fluxgen Exp $
+// $Id: Screen.cc,v 1.135 2003/04/25 17:39:00 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -568,8 +568,7 @@ BScreen::BScreen(ResourceManager &rm,
     // set database for new Theme Engine
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
 
-    const char *s = i18n->getMessage(
-                                     FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
+    const char *s = i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
                                      "W: 0000 x H: 0000");
 	
     int l = strlen(s);
@@ -588,7 +587,7 @@ BScreen::BScreen(ResourceManager &rm,
     //!! TODO border width
     geom_window = 
         XCreateWindow(disp, getRootWindow(),
-                      0, 0, geom_w, geom_h, m_root_theme->borderWidth(), getDepth(),
+                      0, 0, geom_w, geom_h, rootTheme().borderWidth(), getDepth(),
                       InputOutput, getVisual(), mask, &attrib);
     geom_visible = false;
 
@@ -1328,14 +1327,13 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
             //create new buttons
             FbTk::Button *newbutton = 0;
             if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
-                newbutton = new WinButton(WinButton::MINIMIZE, 
+                newbutton = new WinButton(win, WinButton::MINIMIZE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
                 newbutton->setOnClick(iconify_cmd);
 
-
             } else if (win.isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
-                newbutton = new WinButton(WinButton::MAXIMIZE, 
+                newbutton = new WinButton(win, WinButton::MAXIMIZE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
 
@@ -1344,7 +1342,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 newbutton->setOnClick(maximize_vert_cmd, 2);
 
             } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
-                newbutton = new WinButton(WinButton::CLOSE, 
+                newbutton = new WinButton(win, WinButton::CLOSE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
 
@@ -1353,16 +1351,17 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 cerr<<__FILE__<<": Creating close button"<<endl;
 #endif // DEBUG
             } else if ((*dir)[i] == Fluxbox::STICK) {
-                newbutton = new WinButton(WinButton::STICK,
+                WinButton *winbtn = new WinButton(win, WinButton::STICK,
                                           frame.titlebar(),
                                           0, 0, 10, 10);
-                newbutton->setOnClick(stick_cmd);
-
+                win.stateSig().attach(winbtn);
+                winbtn->setOnClick(stick_cmd);
+                newbutton = winbtn;                
             } else if ((*dir)[i] == Fluxbox::SHADE) {
-                newbutton = new WinButton(WinButton::SHADE,
+                WinButton *winbtn = new WinButton(win, WinButton::SHADE,
                                           frame.titlebar(),
-                                          0, 0, 10, 10);
-                newbutton->setOnClick(shade_cmd);
+                                          0, 0, 10, 10);               
+                winbtn->setOnClick(shade_cmd);
             }
         
             if (newbutton != 0) {
