@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.12 2004/01/21 21:57:46 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.13 2004/02/10 12:57:42 rathnor Exp $
 
 #
 # Portability notes:
@@ -220,9 +220,9 @@ clean_up() {
 # Some magic to clean up empty menus
 rm -f ${MENUFILENAME}.tmp
 touch ${MENUFILENAME}.tmp
-local counter=10 # prevent looping in odd circumstances
+counter=10 # prevent looping in odd circumstances
 until [ $counter -lt 1 ] || \
-    diff -u ${MENUFILENAME} ${MENUFILENAME}.tmp 2>&1 > /dev/null; do
+    cmp ${MENUFILENAME} ${MENUFILENAME}.tmp 2>&1 > /dev/null; do
     [ -s ${MENUFILENAME}.tmp ] && mv ${MENUFILENAME}.tmp ${MENUFILENAME}
     counter=`expr $counter - 1`
     grep -v '^$' ${MENUFILENAME}|sed -e "/^\[submenu].*/{
@@ -1031,10 +1031,11 @@ append "[exec]    (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
 
 case "$DEFAULT_BROWSERNAME" in
     links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
-    firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
+    firefox|firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
     konqueror) append "[exec] (konqueror) {kfmclient openProfile webbrowsing}" ;;
     opera) append "[exec] (opera) {env QT_XFT=true opera}" ;;
     MozillaFirebird) append "[exec] (firebird) {MozillaFirebird}" ;;
+    MozillaFirefox) append "[exec] (firefox) {MozillaFirefox}" ;;
     *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
 esac
 
@@ -1048,7 +1049,7 @@ append_menu_end
 
 append_submenu "${NETMENU}"
     append_submenu "${BROWSERMENU}"
-        normal_find mozilla-firebird MozillaFirebird galeon mozilla dillo netscape
+        normal_find mozilla-firefox MozillaFirefox galeon mozilla dillo netscape
         find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
         find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
         find_it links       append "[exec]   (links) {${DEFAULT_TERM} -e links ${HOMEPAGE}}"
@@ -1067,11 +1068,14 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IRC
-        normal_find xchat ksirc
-        find_it irssi       append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
-        find_it BitchX      append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
-          find_it bitchx    append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
-        find_it ircii       append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
+        normal_find xchat ksirc vyqchat lostirc logui konversation kvirc
+        find_it irssi         append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
+        find_it BitchX        append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
+          find_it bitchx        append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
+        find_it ircii         append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
+        find_it epic4         append "[exec]   (epic4) {${DEFAULT_TERM} -e epic4}"
+        find_it weechat       append "[exec]   (weechat) {${DEFAULT_TERM} -e weechat}"
+        find_it ninja         append "[exec]   (ninja) {${DEFAULT_TERM} -e ninja}"
     append_menu_end
 
     append_submenu P2P
@@ -1121,7 +1125,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
                            grecord kmidi xplaycd soundtracker grip easytag audacity \
-                           zinf rhythmbox  kaboodle
+                           zinf rhythmbox  kaboodle beep-media-player
                find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
                find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
@@ -1144,14 +1148,22 @@ append_submenu "${OFFICEMENU}"
     normal_find xclock xcalc kcalc
     find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
-    find_it ooffice append "[exec] (Open Office) {ooffice}"
-    find_it oocalc append "[exec] (OO Calc) {oocalc}"
-    find_it oowriter append "[exec] (OO Writer) {oowriter}"
-    find_it ooimpress append "[exec] (OO Impress) {ooimpress}"
-    find_it oodraw append "[exec] (OO Draw) {oodraw}"
-    find_it oomath append "[exec] (OO Math) {oomath}"
-    find_it oopadmin append "[exec] (OO Printer Administration) {oopadmin}"
-    find_it mrproject append "[exec] (Mr.Project) {mrproject}"
+    find_it ooffice append "[exec] (Open Office) {ooffice}" || \
+        find_it ooffice append "[exec] (Ximian Open Office) {xooffice}"
+    find_it oocalc append "[exec] (OO Calc) {oocalc}" || \
+        find_it xoocalc append "[exec] (XOO Calc) {xoocalc}"
+    find_it oowriter append "[exec] (OO Writer) {oowriter}" || \
+        find_it xoowriter append "[exec] (XOO Writer) {xoowriter}"
+    find_it ooimpress append "[exec] (OO Impress) {ooimpress}" || \
+        find_it xooimpress append "[exec] (XOO Impress) {xooimpress}"
+    find_it oodraw append "[exec] (OO Draw) {oodraw}" || \
+        find_it xoodraw append "[exec] (XOO Draw) {xoodraw}"
+    find_it oomath append "[exec] (OO Math) {oomath}" || \
+        find_it xoomath append "[exec] (XOO Math) {xoomath}"
+    find_it oopadmin append "[exec] (OO Printer Administration) {oopadmin}" || \
+        find_it xoopadmin append "[exec] (XOO Printer Administration) {xoopadmin}"
+    find_it mrproject append "[exec] (Mr.Project) {mrproject}" || \
+        find_it xmrproject append "[exec] (XMr.Project) {xmrproject}"
     find_it soffice append "[exec] (Star Office) {soffice}"
     normal_find abiword kword wordperfect katoob acroread xpdf
 append_menu_end
@@ -1163,6 +1175,9 @@ append_submenu "${GAMESMENU}"
         gtali tuxracer xpenguins xsnow xeyes xpenguins smclone openmortal \
         quake2 quake3 skoosh same-gnome enigma xbill icebreaker
     find_it et append "[exec] (Enemy Territory) {et}"
+    find_it ut append "[exec] (Unreal Tournament) {ut}" || \
+        find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
+
 append_menu_end
 
 # We'll only use this once
@@ -1193,6 +1208,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_menu "[submenu] (${SYSTEMSTYLES}) {${STYLEMENUTITLE}}"
         append "[stylesdir] (${PREFIX}/share/fluxbox/styles)"
+	append "[stylesdir] (/usr/share/commonbox/styles/)"
     append_menu_end
 
     append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"
@@ -1283,10 +1299,22 @@ if [ ! "${REMOVE}" ]; then
     clean_up
 fi
 
-# force all running fluxbox'es to reload their settings.
-for i in `ps xo pid,command|grep -v awk|grep -v /bin/sh|awk '/fluxbox/ {print $1}'`; do
-    kill -s USR1 $i
-done
+# Signal all running fluxbox'es to reload their menu.
+case `uname` in
+    *BSD|Linux)
+        for i in `ps xco pid,command|awk '/fluxbox$/ {print $1}'`; do
+            kill -s USR2 $i 2>&1 >/dev/null
+        done
+        ;;
+    SunOS)
+        for i in `ps -eco pid,comm|awk '/fluxbox$/ {print $1}'`; do
+            kill -s USR2 $i 2>&1 >/dev/null
+        done
+        ;;
+    *)
+        echo 'You have to reload the settings manually.'
+        ;;
+esac
 
 echo 'Menu successfully generated.'
 echo 'Use fluxbox-generate_menu -h to read about all the latest features.'

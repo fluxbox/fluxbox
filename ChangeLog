@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/02/10:
+  * fbgm updates (Thanks Han and Nero Wolfe [mrwolfe<at>linuxmail.org])
+    - portability fixes, improve menu reloading, and new menu entries
+    fluxbox-generate_menu.in
 *04/01/30:
   * Tidy up a few slitlist things (Simon)
     - expand ~, trim spaces, allow comments, use WM_CLASS instead of NAME
