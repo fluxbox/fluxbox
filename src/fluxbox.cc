@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.165 2003/06/30 15:05:26 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.166 2003/06/30 20:36:57 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -40,6 +40,7 @@
 #include "WinClient.hh"
 #include "Keys.hh"
 #include "FbAtoms.hh"
+#include "defaults.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE

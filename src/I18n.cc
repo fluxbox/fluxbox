@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.1 2003/06/12 14:24:26 fluxgen Exp $
+// $Id: I18n.cc,v 1.2 2003/06/30 20:37:57 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -42,6 +42,9 @@
 #endif // HAVE_LOCALE_H
 
 #include <iostream>
+
+#include "defaults.hh"
+
 using std::cerr;
 using std::endl;
 using std::string;
