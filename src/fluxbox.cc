@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.47 2002/04/09 09:42:16 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.48 2002/04/09 12:09:03 cout Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -333,11 +333,7 @@ key(0)
 	
 	masked = None;
 	
-	windowSearchList = new LinkedList<WindowSearch>;
-	menuSearchList = new LinkedList<MenuSearch>;
-
 	#ifdef SLIT
-	slitSearchList = new LinkedList<SlitSearch>;
 	#ifdef KDE
 	//For KDE dock applets
 	kwm1_dockwindow = XInternAtom(getXDisplay(), "KWM_DOCKWINDOW", False); //KDE v1.x
@@ -346,18 +342,10 @@ key(0)
 
 	#endif // SLIT
 
-	toolbarSearchList = new LinkedList<ToolbarSearch>;
-	tabSearchList = new LinkedList<TabSearch>;
-	groupSearchList = new LinkedList<WindowSearch>;
-
-	menuTimestamps = new LinkedList<MenuTimestamp>;
-
-
 	#ifdef HAVE_GETPID
 	fluxbox_pid = XInternAtom(getXDisplay(), "_BLACKBOX_PID", False);
 	#endif // HAVE_GETPID
 
-	screenList = new LinkedList<BScreen>;
 	int i;
 	load_rc();
 	//allocate screens
@@ -372,11 +360,11 @@ key(0)
 			continue;
 		}
 
-		screenList->insert(screen);
+		screenList.push_back(screen);
 	}
 	
 	I18n *i18n = I18n::instance();
-	if (! screenList->count()) {
+	if (screenList.size() == 0) {
 		fprintf(stderr,
 			i18n->
 				getMessage(
@@ -404,12 +392,10 @@ key(0)
 
 
 Fluxbox::~Fluxbox(void) {
-	
-	while (screenList->count())
-		delete screenList->remove(0);
-
-	while (menuTimestamps->count()) {
-		MenuTimestamp *ts = menuTimestamps->remove(0);
+	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
+	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
+	for (; it != it_end; ++it) {
+		MenuTimestamp *ts = *it;
 
 		if (ts->filename)
 			delete [] ts->filename;
@@ -419,19 +405,6 @@ Fluxbox::~Fluxbox(void) {
 	
 	delete key;
 	key = 0;
-
-	delete screenList;
-	delete menuTimestamps;
-
-	delete windowSearchList;
-	delete menuSearchList;
-	delete toolbarSearchList;
-	delete tabSearchList;
-	delete groupSearchList;
-
-#ifdef		SLIT
-	delete slitSearchList;
-#endif // SLIT
 }
 
 //---------- setupConfigFiles -----------
@@ -637,10 +610,10 @@ void Fluxbox::process_event(XEvent *e) {
 
 		if (iskdedockapp) {
 			XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
-			LinkedListIterator<BScreen> it(screenList);
-			for (; it.current() == screenList->last(); it++) {
-				BScreen *screen = it.current();
-				screen->getSlit()->addClient(e->xmaprequest.window);
+			std::list<BScreen *>::iterator it = screenList.begin();
+			std::list<BScreen *>::iterator it_end = screenList.end();
+			for (; (*it) == screenList->last(); ++it) {
+				(*it)->getSlit()->addClient(e->xmaprequest.window);
 			}
 			return;
 		}
@@ -926,11 +899,12 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 		} else if ((tab = searchTab(be.window))) {
 			tab->buttonPressEvent(&be);
 		} else {
-			LinkedListIterator<BScreen> it(screenList);
+			std::list<BScreen *>::iterator it = screenList.begin();
+			std::list<BScreen *>::iterator it_end = screenList.end();
 
-			for (; it.current(); it++) {
+			for (; it != it_end; ++it) {
 
-				BScreen *screen = it.current();
+				BScreen *screen = *it;
 				if (be.window != screen->getRootWindow())
 					continue;
 				
@@ -1271,11 +1245,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			break;
 			case Keys::ROOTMENU: //show root menu
 			{
-				LinkedListIterator<BScreen> it(screenList);
+                std::list<BScreen *>::iterator it = screenList.begin();
+                std::list<BScreen *>::iterator it_end = screenList.end();
 
-				for (; it.current(); it++) {
+				for (; it != it_end; ++it) {
 
-					BScreen *screen = it.current();
+					BScreen *screen = (*it);
 					if (ke.window != screen->getRootWindow())
 						continue;
 						
@@ -1575,12 +1550,13 @@ Bool Fluxbox::handleSignal(int sig) {
 
 BScreen *Fluxbox::searchScreen(Window window) {
 	BScreen *screen = (BScreen *) 0;
-	LinkedListIterator<BScreen> it(screenList);
+	std::list<BScreen *>::iterator it = screenList.begin();
+	std::list<BScreen *>::iterator it_end = screenList.end();
 
-	for (; it.current(); it++) {
-		if (it.current()) {
-			if (it.current()->getRootWindow() == window) {
-				screen = it.current();
+	for (; it != it_end; ++it) {
+		if (*it) {
+			if ((*it)->getRootWindow() == window) {
+				screen = (*it);
 				return screen;
 			}
 		}
@@ -1591,228 +1567,100 @@ BScreen *Fluxbox::searchScreen(Window window) {
 
 
 FluxboxWindow *Fluxbox::searchWindow(Window window) {
-	LinkedListIterator<WindowSearch> it(windowSearchList);
-
-	for (; it.current(); it++) {
-		WindowSearch *tmp = it.current();
-		if (tmp && tmp->getWindow() == window)
-			return tmp->getData(); 			
-	}
-
-	return (FluxboxWindow *) 0;
+	std::map<Window, FluxboxWindow *>::iterator it = windowSearch.find(window);
+	return it == windowSearch.end() ? 0 : it->second;
 }
 
 
 FluxboxWindow *Fluxbox::searchGroup(Window window, FluxboxWindow *win) {
-	FluxboxWindow *w = (FluxboxWindow *) 0;
-	LinkedListIterator<WindowSearch> it(groupSearchList);
-
-	for (; it.current(); it++) {
-		WindowSearch *tmp = it.current();
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				w = tmp->getData();
-				if (w->getClientWindow() != win->getClientWindow())
-					return win;
-			}
-		}
-	}
-
-	return (FluxboxWindow *) 0;
+	std::map<Window, FluxboxWindow *>::iterator it = groupSearch.find(window);
+	return it == groupSearch.end() ? 0 : it->second;
 }
 
 
 Basemenu *Fluxbox::searchMenu(Window window) {
-	Basemenu *menu = (Basemenu *) 0;
-	LinkedListIterator<MenuSearch> it(menuSearchList);
-
-	for (; it.current(); it++) {
-		MenuSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				menu = tmp->getData();
-				return menu;
-			}
-		}
-	}
-
-	return (Basemenu *) 0;
+	std::map<Window, Basemenu *>::iterator it = menuSearch.find(window);
+	return it == menuSearch.end() ? 0 : it->second;
 }
 
 
 Toolbar *Fluxbox::searchToolbar(Window window) {
-	Toolbar *tbar = (Toolbar *) 0;
-	LinkedListIterator<ToolbarSearch> it(toolbarSearchList);
-
-	for (; it.current(); it++) {
-		ToolbarSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				tbar = tmp->getData();
-				return tbar;
-			}
-		}
-	}
-
-	return (Toolbar *) 0;
+	std::map<Window, Toolbar *>::iterator it = toolbarSearch.find(window);
+	return it == toolbarSearch.end() ? 0 : it->second;
 }
 
 Tab *Fluxbox::searchTab(Window window) {
-	LinkedListIterator<TabSearch> it(tabSearchList);
-
-	for (; it.current(); it++) {
-		TabSearch *tmp = it.current();
-		if (tmp && tmp->getWindow() == window)
-			return tmp->getData();			
-	}
-
-	return 0;
+	std::map<Window, Tab *>::iterator it = tabSearch.find(window);
+	return it == tabSearch.end() ? 0 : it->second;
 }
 
 
 #ifdef		SLIT
 Slit *Fluxbox::searchSlit(Window window) {
-	Slit *s = (Slit *) 0;
-	LinkedListIterator<SlitSearch> it(slitSearchList);
-
-	for (; it.current(); it++) {
-		SlitSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				s = tmp->getData();
-				return s;
-			}
-		}
-	}
-
-	return (Slit *) 0;
+	std::map<Window, Slit *>::iterator it = slitSearch.find(window);
+	return it == slitSearch.end() ? 0 : it->second;
 }
 #endif // SLIT
 
 
 void Fluxbox::saveWindowSearch(Window window, FluxboxWindow *data) {
-	windowSearchList->insert(new WindowSearch(window, data));
+	windowSearch[window] = data;
 }
 
 
 void Fluxbox::saveGroupSearch(Window window, FluxboxWindow *data) {
-	groupSearchList->insert(new WindowSearch(window, data));
+	groupSearch[window] = data;
 }
 
 
 void Fluxbox::saveMenuSearch(Window window, Basemenu *data) {
-	menuSearchList->insert(new MenuSearch(window, data));
+	menuSearch[window] = data;
 }
 
 
 void Fluxbox::saveToolbarSearch(Window window, Toolbar *data) {
-	toolbarSearchList->insert(new ToolbarSearch(window, data));
+	toolbarSearch[window] = data;
 }
 
 
 void Fluxbox::saveTabSearch(Window window, Tab *data) {
-	tabSearchList->insert(new TabSearch(window, data));
+	tabSearch[window] = data;
 }
 
 #ifdef		SLIT
 void Fluxbox::saveSlitSearch(Window window, Slit *data) {
-	slitSearchList->insert(new SlitSearch(window, data));
+	slitSearch[window] = data;
 }
 #endif // SLIT
 
 
 void Fluxbox::removeWindowSearch(Window window) {
-	LinkedListIterator<WindowSearch> it(windowSearchList);
-	for (; it.current(); it++) {
-		WindowSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				windowSearchList->remove(tmp);
-				delete tmp;
-				break;
-			}
-		}
-	}
+	windowSearch.erase(window);
 }
 
 
 void Fluxbox::removeGroupSearch(Window window) {
-	LinkedListIterator<WindowSearch> it(groupSearchList);
-	for (; it.current(); it++) {
-		WindowSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				groupSearchList->remove(tmp);
-				delete tmp;
-				break;
-			}
-		}
-	}
+	groupSearch.erase(window);
 }
 
 
 void Fluxbox::removeMenuSearch(Window window) {
-	LinkedListIterator<MenuSearch> it(menuSearchList);
-	for (; it.current(); it++) {
-		MenuSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				menuSearchList->remove(tmp);
-				delete tmp;
-				break;
-			}
-		}
-	}
+	menuSearch.erase(window);
 }
 
 
 void Fluxbox::removeToolbarSearch(Window window) {
-	LinkedListIterator<ToolbarSearch> it(toolbarSearchList);
-	for (; it.current(); it++) {
-		ToolbarSearch *tmp = it.current();
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				toolbarSearchList->remove(tmp);	
-				delete tmp;
-				break;
-			}
-		}
-	}
+	toolbarSearch.erase(window);
 }
 
 
 void Fluxbox::removeTabSearch(Window window) {
-	LinkedListIterator<TabSearch> it(tabSearchList);
-	for (; it.current(); it++) {
-		TabSearch *tmp = it.current();
-		if (tmp && tmp->getWindow() == window) {
-			tabSearchList->remove(tmp);	
-			delete tmp;
-			break;
-		}
-	}
+	tabSearch.erase(window);
 }
 
 #ifdef		SLIT
 void Fluxbox::removeSlitSearch(Window window) {
-	LinkedListIterator<SlitSearch> it(slitSearchList);
-	for (; it.current(); it++) {
-		SlitSearch *tmp = it.current();
-
-		if (tmp) {
-			if (tmp->getWindow() == window) {
-				slitSearchList->remove(tmp);
-				delete tmp;
-				break;
-			}
-		}
-	}
+	slitSearch.erase(window);
 }
 #endif // SLIT
 
@@ -1836,10 +1684,13 @@ void Fluxbox::shutdown(void) {
 
 	XSetInputFocus(getXDisplay(), PointerRoot, None, CurrentTime);
 
-	LinkedListIterator<BScreen> it(screenList);
-	for (; it.current(); it++)
-		if(it.current())
-			it.current()->shutdown();
+	std::list<BScreen *>::iterator it = screenList.begin();
+	std::list<BScreen *>::iterator it_end = screenList.end();
+	for (; it != it_end; ++it) {
+		if(*it) {
+			(*it)->shutdown();
+		}
+	}
 
 	XSync(getXDisplay(), False);
 
@@ -1878,12 +1729,13 @@ void Fluxbox::save_rc(void) {
 					(resource.auto_raise_delay.tv_usec / 1000)));
 	XrmPutLineResource(&new_blackboxrc, rc_string);
 
-	LinkedListIterator<BScreen> it(screenList);
+	std::list<BScreen *>::iterator it = screenList.begin();
+	std::list<BScreen *>::iterator it_end = screenList.end();
 
 	//Save screen resources
 
-	for (; it.current(); it++) {
-		BScreen *screen = it.current();
+	for (; it != it_end; ++it) {
+		BScreen *screen = *it;
 		int screen_number = screen->getScreenNumber();
 
 		#ifdef SLIT
@@ -2398,8 +2250,10 @@ void Fluxbox::real_reconfigure(void) {
 	if (old_blackboxrc)
 		XrmDestroyDatabase(old_blackboxrc);
 
-	for (int i = 0, n = menuTimestamps->count(); i < n; i++) {
-		MenuTimestamp *ts = menuTimestamps->remove(0);
+	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
+	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
+	for (; it != it_end; ++it) {
+		MenuTimestamp *ts = *it;
 
 		if (ts) {
 			if (ts->filename)
@@ -2408,12 +2262,12 @@ void Fluxbox::real_reconfigure(void) {
 			delete ts;
 		}
 	}
+	menuTimestamps.erase(menuTimestamps.begin(), menuTimestamps.end());
 
-	LinkedListIterator<BScreen> it(screenList);
-	for (; it.current(); it++) {
-		BScreen *screen = it.current();
-
-		screen->reconfigure();
+	std::list<BScreen *>::iterator sit = screenList.begin();
+	std::list<BScreen *>::iterator sit_end = screenList.end();
+	for (; sit != sit_end; ++sit) {
+		(*sit)->reconfigure();
 	}
 	
 	//reconfigure keys
@@ -2432,18 +2286,16 @@ void Fluxbox::real_reconfigure(void) {
 // ---------------------------------------
 void Fluxbox::reconfigureTabs(void) {
 	//tab reconfiguring
-	LinkedListIterator<TabSearch> it(tabSearchList);
+	std::map<Window, Tab *>::iterator it = tabSearch.begin();
+	std::map<Window, Tab *>::iterator it_end = tabSearch.end();
 	//setting all to unconfigured
-	for (; it.current(); it++) {
-		TabSearch *tmp = it.current();
-		if (tmp)
-			tmp->getData()->setConfigured(false);
+	for (; it != it_end; ++it) {
+		it->second->setConfigured(false);
 	}
-	it.reset(); // resetting list and start configure tabs
+	it = tabSearch.begin(); // resetting list and start configure tabs
 	//reconfiguring
-	for (; it.current(); it++) {
-		TabSearch *tmp = it.current();
-		Tab *tab = tmp->getData();
+	for (; it != it_end; ++it) {
+		Tab *tab = it->second;
 		if (!tab->configured()) {
 			tab->setConfigured(true);
 			tab->resizeGroup(); 
@@ -2455,12 +2307,13 @@ void Fluxbox::reconfigureTabs(void) {
 
 void Fluxbox::checkMenu(void) {
 	Bool reread = False;
-	LinkedListIterator<MenuTimestamp> it(menuTimestamps);
-	for (; it.current() && (! reread); it++) {
+	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
+	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
+	for (; it != it_end && (! reread); ++it) {
 		struct stat buf;
 
-		if (! stat(it.current()->filename, &buf)) {
-			if (it.current()->timestamp != buf.st_ctime)
+		if (! stat((*it)->filename, &buf)) {
+			if ((*it)->timestamp != buf.st_ctime)
 				reread = True;
 		} else
 			reread = True;
@@ -2478,28 +2331,35 @@ void Fluxbox::rereadMenu(void) {
 
 
 void Fluxbox::real_rereadMenu(void) {
-	for (int i = 0, n = menuTimestamps->count(); i < n; i++) {
-		MenuTimestamp *ts = menuTimestamps->remove(0);
+	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
+	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
+	for (; it != it_end; ++it) {
+		MenuTimestamp *ts = *it;
 
 		if (ts) {
 			if (ts->filename)
-	delete [] ts->filename;
+				delete [] ts->filename;
 
 			delete ts;
 		}
 	}
+	menuTimestamps.erase(menuTimestamps.begin(), menuTimestamps.end());
 
-	LinkedListIterator<BScreen> it(screenList);
-	for (; it.current(); it++)
-		it.current()->rereadMenu();
+	std::list<BScreen *>::iterator sit = screenList.begin();
+	std::list<BScreen *>::iterator sit_end = screenList.end();
+	for (; sit != sit_end; ++it) {
+		(*sit)->rereadMenu();
+	}
 }
 
 void Fluxbox::saveMenuFilename(const char *filename) {
 	Bool found = False;
 
-	LinkedListIterator<MenuTimestamp> it(menuTimestamps);
-	for (; it.current() && (! found); it++)
-		if (! strcmp(it.current()->filename, filename)) found = True;
+	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
+	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
+	for (; it != it_end; ++it) {
+		if (! strcmp((*it)->filename, filename)) found = True;
+	}
 
 	if (! found) {
 		struct stat buf;
@@ -2510,7 +2370,7 @@ void Fluxbox::saveMenuFilename(const char *filename) {
 			ts->filename = StringUtil::strdup(filename);
 			ts->timestamp = buf.st_ctime;
 
-			menuTimestamps->insert(ts);
+			menuTimestamps.push_back(ts);
 		}
 	}
 }

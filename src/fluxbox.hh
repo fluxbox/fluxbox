@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.14 2002/03/19 00:16:44 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.15 2002/04/09 12:09:03 cout Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -49,7 +49,6 @@
 #include "Keys.hh"
 #include "BaseDisplay.hh"
 #include "Image.hh"
-#include "LinkedList.hh"
 #include "Timer.hh"
 #include "Window.hh"
 #include "Tab.hh"
@@ -60,6 +59,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+#include <list>
 
 class Fluxbox : public BaseDisplay, public TimeoutHandler {	
 public:
@@ -161,20 +162,6 @@ public:
 	enum { B_AMERICANDATE = 1, B_EUROPEANDATE };
 #endif // HAVE_STRFTIME
 	
-	template <class Z>
-	class DataSearch {
-	private:
-		Window window;
-		Z *data;
-
-
-	public:
-		DataSearch(Window w, Z *d) { window = w; data = d; }
-
-		inline const Window &getWindow(void) const { return window; }
-		inline Z *getData(void) { return data; }
-	};
-	
 	typedef std::vector<Fluxbox::Titlebar> TitlebarList;
 		
 private:
@@ -214,27 +201,23 @@ private:
 	//std::vector<std::string> parseTitleArgs(const char *arg);
 	void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 	
-	typedef DataSearch<FluxboxWindow> WindowSearch;
-	LinkedList<WindowSearch> *windowSearchList, *groupSearchList;
-	typedef DataSearch<Basemenu> MenuSearch;
-	LinkedList<MenuSearch> *menuSearchList;
-	typedef DataSearch<Toolbar> ToolbarSearch;
-	LinkedList<ToolbarSearch> *toolbarSearchList;
-	typedef DataSearch<Tab> TabSearch;
-	LinkedList<TabSearch> *tabSearchList;
+	std::map<Window, FluxboxWindow *> windowSearch;
+	std::map<Window, FluxboxWindow *> groupSearch;
+	std::map<Window, Basemenu *> menuSearch;
+	std::map<Window, Toolbar *> toolbarSearch;
+	std::map<Window, Tab *> tabSearch;
 	
 #ifdef		SLIT
-	typedef DataSearch<Slit> SlitSearch;
-	LinkedList<SlitSearch> *slitSearchList;
-  #ifdef KDE
+	std::map<Window, Slit *> slitSearch;
+#	ifdef KDE
 	//For KDE dock applets
 	Atom kwm1_dockwindow; //KDE v1.x
 	Atom kwm2_dockwindow; //KDE v2.x
-	#endif//KDE
+#	endif//KDE
 #endif // SLIT
 
-	LinkedList<MenuTimestamp> *menuTimestamps;
-	LinkedList<BScreen> *screenList;
+	std::list<MenuTimestamp *> menuTimestamps;
+	std::list<BScreen *> screenList;
 
 	FluxboxWindow *focused_window, *masked_window;
 	BTimer timer;
