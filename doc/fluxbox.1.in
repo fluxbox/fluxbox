@@ -251,7 +251,6 @@ titlebar, you can press Alt + button 1 anywhere in the window and then
 drag it around.
 You can also use Alt + button 1 to raise a partially visible window.
 Finally, Alt + button 2 lowers a window, and Alt + button 3 resizes the window.
-.B FROM HERE ON UNREVISITED
 .SH MENU FILE
 A default menu file is installed in
 .IR @pkgdatadir@/menu .
@@ -271,10 +270,12 @@ session.menuFile:       ~/.fluxbox/menu
 .EE
 For this change to take effect, Fluxbox has to be restarted.
 Be sure that your menu is usable, then choose `Restart' from the default
-Fluxbox root menu.
+Fluxbox root menu. If only the contents of the menu file changed, only
+.I reload config
+is needed.
 .SS Menu syntax
 The menu syntax is very simple and very effective.
-There are upto three fields in a menu line.
+There are up to three fields in a menu line.
 They are of the form:
 .EX
 [tag] (label or filename) {command or filename}
@@ -433,10 +434,11 @@ Here is a short example of a menu file:
 [end]
 # end of menu file
 .fi
+.B FROM HERE ON UNREVISITED
 .SH STYLES
 Fluxbox enables you to use specialized files that contain
 .IR X (1)
-resources to specify colors, textures and fonts, and thus
+resources to specify colors, textures, pixmaps and fonts, and thus
 the overall look of your window borders, menus and the toolbar.
 .PP
 The default installation of Fluxbox provides some of these style files.
