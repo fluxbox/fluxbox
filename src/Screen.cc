@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.292 2004/09/12 14:56:18 rathnor Exp $
+// $Id: Screen.cc,v 1.293 2004/09/16 10:10:36 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -226,6 +226,14 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  RootTheme(scrn, 
                            *resource.rootcommand)),
     m_root_window(scrn),
+    m_geom_window(m_root_window,
+                  0, 0, 10, 10, 
+                  false,  // override redirect
+                  true), // save under
+    m_pos_window(m_root_window,
+                 0, 0, 10, 10,
+                 false,  // override redirect
+                 true), // save under
     resource(rm, screenname, altscreenname),
     m_name(screenname),
     m_altname(altscreenname),
@@ -307,40 +315,15 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     menuTheme().frameFont().setAntialias(*resource.antialias);
 
 
-    // create geometry window 
-
-    int geom_h = 10;
-    int geom_w = 100; // just initial, will be fixed in render
-
-    // create geometry window 
-
-    int pos_h = 10;
-    int pos_w = 100; // just initial, will be fixed in render
-
-    XSetWindowAttributes attrib;
-    unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
-    attrib.border_pixel = winFrameTheme().border().color().pixel();
-    attrib.colormap = rootWindow().colormap();
-    attrib.save_under = true;
-
     winFrameTheme().reconfigSig().attach(this);// for geom window
 
-    m_geom_window = 
-        XCreateWindow(disp, rootWindow().window(),
-                      0, 0, geom_w, geom_h, winFrameTheme().border().width(), rootWindow().depth(),
-                      InputOutput, rootWindow().visual(), mask, &attrib);
+
     geom_visible = false;
     geom_pixmap = 0;
-
-    renderGeomWindow();
-
-    m_pos_window = 
-        XCreateWindow(disp, rootWindow().window(),
-                      0, 0, pos_w, pos_h, winFrameTheme().border().width(), rootWindow().depth(),
-                      InputOutput, rootWindow().visual(), mask, &attrib);
     pos_visible = false;
     pos_pixmap = 0;
 
+    renderGeomWindow();
     renderPosWindow();
 
     // setup workspaces and workspace menu

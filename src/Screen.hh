@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.146 2004/09/12 14:56:19 rathnor Exp $
+// $Id: Screen.hh,v 1.147 2004/09/16 10:10:37 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -385,7 +385,7 @@ private:
     GC opGC;
     Pixmap geom_pixmap, pos_pixmap;
 
-    FbTk::FbWindow m_geom_window, m_pos_window;
+
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbTk::Menu> m_configmenu, m_rootmenu, m_workspacemenu;
@@ -419,6 +419,7 @@ private:
     std::auto_ptr<RootTheme> m_root_theme;
 
     FbRootWindow m_root_window;
+    FbTk::FbWindow m_geom_window, m_pos_window;
 
     struct ScreenResource {
         ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
