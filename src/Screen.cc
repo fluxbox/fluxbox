@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.168 2003/05/15 23:26:38 fluxgen Exp $
+// $Id: Screen.cc,v 1.169 2003/05/16 00:35:50 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -53,7 +53,6 @@
 #include "WinClient.hh"
 #include "Subject.hh"
 #include "FbWinFrame.hh"
-#include "SlitResource.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
