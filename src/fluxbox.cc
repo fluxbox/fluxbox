@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.128 2003/05/04 23:38:06 rathnor Exp $
+// $Id: fluxbox.cc,v 1.129 2003/05/07 11:33:12 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -992,7 +992,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         int ignored;
         if (!XQueryPointer(FbTk::App::instance()->display(),
                            ke.window, &root, &ignorew, &ignored, &ignored, 
-                           &ignored, &ignored, &((unsigned int) ignored)))
+                           &ignored, &ignored, (unsigned int *)&ignored))
             // pointer on different screen to ke.window
             mousescreen = searchScreen(root);
 
@@ -2297,7 +2297,7 @@ void Fluxbox::revertFocus(BScreen *screen) {
         BScreen *tempscr = m_screen_list.front();
         XQueryPointer(FbTk::App::instance()->display(),
                       tempscr->getRootWindow(), &root, &ignorew, &ignored, 
-                      &ignored, &ignored, &ignored, &((unsigned int) ignored));
+                      &ignored, &ignored, &ignored, (unsigned int *)&ignored);
         screen = searchScreen(root);
         if (screen == 0) {
 #ifdef DEBUG
