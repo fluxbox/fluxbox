@@ -1,26 +1,25 @@
-News in 0.1.13:
-   * Antialias support (Xft)
-   * UTF-8 support
-   * Extended window manager support (i.e Gnome2...)
-     * atom support:
-       * _NET_WM_DESKTOP,
-       * _NET_NUMBER_OF_DESKTOPS,
-       * _NET_CURRENT_DESKTOP,
-       * _NET_ACTIVE_WINDOW,
-       * _NET_CLOSE_WINDOW
-       * _NET_WM_STATE 
-       * _NET_WM_STATE_STICKY
-       * _NET_WM_STATE_SHADED
-   * fbrun command history and horizontal scrolling
-   * Default terminal and browser choice in fluxbox-generate_menu
-   * Workspace menu popups if you click with first mouse button on workspace label
-Bug fixes:
-   * Fixed bug [ 604958 ] Menu not (full) visible when tabs bottom
-   * Fixed bug [ 581588 ] Toolbar auto-hiding
-   * Fixed bug [ 608945 ] xmms crashes fluxbox
-   * Fixed bug [ 522673 ] Numlock not handled correctly in Solaris
-   * Fixed bug [ 604634 ] Fluxbox 0.1.11 menu on iconbar problem
-   * Fixed bug [ 627897 ] Clicking tab leads to crashing X-Server.
-   * Fixed bug [ 609267 ] Sending minimized group
+News in 0.9.0:
+    * Layer support for slit, windows and toolbar ("always on top/bottom")
+    * Toolbar and slit menu in configure menu
+    * Toolbar width percent changing in realtime by either scrolling 
+      or left/right click on the menu item
+    * Toolbar placement vertical on left and right side of the screen
+    * Slit clients cycle up/down and hiding specific clients
+    * Style menu doesn't close now so you can take your time selecting a style
 
-See ChangeLog for details
+
+Known bugs and missing features that will be fixed in future version:
+    * Tabs are disabled
+    * Slit theme
+    * Doesn't save Slit placement 
+    * It maximizes over everything
+    * Window size doesn't match client size in some cases
+    * Some menus doesn't close when you click on items
+    * Outline workspace warping leaving lines/misbehaving
+    * Pixmap of sticky button doesn't update
+    * Send to menu is disabled (keybindings will still work though)
+    * Some items in configure menu will close the previous menu that holds 
+      clientmenu but not the clientmenu
+    * Iconbar doesn't use vertical alignment when toolbar is vertical
+
+See ChangeLog for more details
