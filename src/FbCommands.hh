@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.6 2003/06/22 14:16:25 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.7 2003/06/30 14:59:38 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -35,7 +35,7 @@ namespace FbCommands {
 /// executes a system command
 class ExecuteCmd: public FbTk::Command {
 public:
-    ExecuteCmd(const std::string &cmd, int screen_num);
+    ExecuteCmd(const std::string &cmd, int screen_num = -1);
     void execute();
 private:
     std::string m_cmd;
