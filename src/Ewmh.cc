@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.41 2004/01/21 15:42:14 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.42 2004/01/21 15:52:21 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -173,8 +173,6 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
              *
              */
             if (atoms[l] == m_net_wm_window_type_dock) {
-                win.moveToLayer(Fluxbox::instance()->getDockLayer());
-                cerr<<"Dock app: moveToLayer Dock layer"<<endl;
                 // we also assume it shouldn't be visible in any toolbar
                 win.setHidden(true);
                 break;
