@@ -2798,8 +2798,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     dx = screen().width() - me.x_root-1; // move mouse to screen width - 1
                 }
                 if (new_id != cur_id) {
-                    XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
 
+                    XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
                     screen().changeWorkspaceID(new_id);
 
                     m_last_resize_x = me.x_root + dx;
@@ -2896,7 +2896,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         // drag'n'drop code for tabs
         //
         FbTk::TextButton &active_button = *m_labelbuttons[(m_attaching_tab==0)?client:m_attaching_tab];
-;
+
         if (m_attaching_tab == 0) {
             if (s_num_grabs > 0)
                 return;
@@ -3361,7 +3361,7 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     for (; it != it_end; it++) {
         if ((*it) == this) 
             continue; // skip myself
-       
+
         bw = (*it)->decorationMask() & DECORM_ENABLED ? (*it)->frame().window().borderWidth() : 0;
 
         snapToWindow(dx, dy, left, right, top, bottom,
@@ -3486,12 +3486,11 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             if (client.m_win != 0) {
                 client.m_win->move(frame().x() - m_last_resize_x + x, frame().y() - m_last_resize_y + y);
                 client.m_win->show();
-                }
+            }
+        } else if(attach_to_win==this && attach_to_win->isTabable()) {
+            //reording of tabs within a frame
+            moveClientTo(*old_attached, x, y);
         }
-	else if(attach_to_win==this && attach_to_win->isTabable()) {
-		//reording of tabs within a frame
-		moveClientTo(*old_attached, x, y);
-	}
 
     }
 }
