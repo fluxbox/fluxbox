@@ -355,38 +355,38 @@ void Toolbar::reconfigure(void) {
 
 	frame.window_label_w =
 		(frame.width - (frame.clock_w + (frame.button_w * 4) +
-										frame.workspace_label_w + (frame.bevel_w * 8) + 6));
+		frame.workspace_label_w + (frame.bevel_w * 8) + 6));
 
 	if (hidden)
 		XMoveResizeWindow(display, frame.window, frame.x_hidden, frame.y_hidden,
-					frame.width, frame.height);
+			frame.width, frame.height);
 	else
 		XMoveResizeWindow(display, frame.window, frame.x, frame.y,
-					frame.width, frame.height);
+			frame.width, frame.height);
 
 	XMoveResizeWindow(display, frame.workspace_label, frame.bevel_w,
-				frame.bevel_w, frame.workspace_label_w,
-										frame.label_h);
+		frame.bevel_w, frame.workspace_label_w,
+		frame.label_h);
 	XMoveResizeWindow(display, frame.psbutton, (frame.bevel_w * 2) +
-										frame.workspace_label_w + 1, frame.bevel_w + 1,
-										frame.button_w, frame.button_w);
+		frame.workspace_label_w + 1, frame.bevel_w + 1,
+		frame.button_w, frame.button_w);
 	XMoveResizeWindow(display ,frame.nsbutton, (frame.bevel_w * 3) +
-										frame.workspace_label_w + frame.button_w + 2,
-										frame.bevel_w + 1, frame.button_w, frame.button_w);
+		frame.workspace_label_w + frame.button_w + 2,
+		frame.bevel_w + 1, frame.button_w, frame.button_w);
 	XMoveResizeWindow(display, frame.window_label, (frame.bevel_w * 4) +
-										(frame.button_w * 2) + frame.workspace_label_w + 3,
-				frame.bevel_w, frame.window_label_w, frame.label_h);
+		(frame.button_w * 2) + frame.workspace_label_w + 3,
+		frame.bevel_w, frame.window_label_w, frame.label_h);
 	XMoveResizeWindow(display, frame.pwbutton, (frame.bevel_w * 5) +
-										(frame.button_w * 2) + frame.workspace_label_w +
-										frame.window_label_w + 4, frame.bevel_w + 1,
-										frame.button_w, frame.button_w);
+		(frame.button_w * 2) + frame.workspace_label_w +
+		frame.window_label_w + 4, frame.bevel_w + 1,
+		frame.button_w, frame.button_w);
 	XMoveResizeWindow(display, frame.nwbutton, (frame.bevel_w * 6) +
-										(frame.button_w * 3) + frame.workspace_label_w +
-										frame.window_label_w + 5, frame.bevel_w + 1,
-										frame.button_w, frame.button_w);
+		(frame.button_w * 3) + frame.workspace_label_w +
+		frame.window_label_w + 5, frame.bevel_w + 1,
+		frame.button_w, frame.button_w);
 	XMoveResizeWindow(display, frame.clock, frame.width - frame.clock_w -
-				frame.bevel_w, frame.bevel_w, frame.clock_w,
-				frame.label_h);
+		frame.bevel_w, frame.bevel_w, frame.clock_w,
+		frame.label_h);
 
 	Pixmap tmp = frame.base;
 	BTexture *texture = &(screen->getToolbarStyle()->toolbar);
