@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/07/14:
+  * Fixed transient window bug at startup (Henrik)
+    Screen.cc
 *04/07/06:
   * Applied tiled texture fix patch (Thanks  dhx (xyx@gm...))
     FbPixmap.hh/cc, TextureRender.cc
