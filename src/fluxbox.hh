@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.32 2002/10/23 17:32:30 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.33 2002/11/27 21:59:25 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -77,7 +77,7 @@ class AtomHandler;
 	singleton type
 */
 class Fluxbox : public BaseDisplay, public TimeoutHandler, 
-	public FbTk::EventHandler<FbTk::SignalEvent>,
+	public FbTk::SignalEventHandler,
 	public FbAtoms,
 	public FbTk::Observer {
 public:
@@ -161,7 +161,7 @@ public:
 	void checkMenu();
 	
 	/// handle any system signal sent to the application
-	void handleEvent(FbTk::SignalEvent * const signum);
+	void handleSignal(int signum);
 	void update(FbTk::Subject *changed);
 
 	void attachSignals(FluxboxWindow &win);
