@@ -139,6 +139,7 @@ enum {
 	RememberSticky = 9,
 	RememberUnknown = 10,
 	RememberWorkspace = 11,
+    RememberHead = 12,
 
 	ScreenSet = 12,
 	ScreenAnotherWMRunning = 1,
