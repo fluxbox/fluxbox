@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.7 2003/08/24 16:24:19 fluxgen Exp $
+// $Id: IconButton.cc,v 1.8 2003/09/10 21:41:18 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -98,12 +98,12 @@ void IconButton::exposeEvent(XExposeEvent &event) {
     if (m_icon_window == event.window)
         m_icon_window.clear();
     else
-        FbTk::Button::exposeEvent(event);
+        FbTk::TextButton::exposeEvent(event);
 }
 void IconButton::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
 
-    FbTk::Button::moveResize(x, y, width, height);
+    FbTk::TextButton::moveResize(x, y, width, height);
 
     if (m_icon_window.width() != FbTk::Button::width() ||
         m_icon_window.height() != FbTk::Button::height())
@@ -111,15 +111,22 @@ void IconButton::moveResize(int x, int y,
 }
 
 void IconButton::resize(unsigned int width, unsigned int height) {
-    FbTk::Button::resize(width, height);
+    FbTk::TextButton::resize(width, height);
     if (m_icon_window.width() != FbTk::Button::width() ||
         m_icon_window.height() != FbTk::Button::height())
         update(0); // update icon window
 }
 
 void IconButton::clear() {
-    FbTk::Button::clear();
+    FbTk::TextButton::clear();
     setupWindow();
+}
+
+void IconButton::clearArea(int x, int y,
+                           unsigned int width, unsigned int height,
+                           bool exposure) {
+    FbTk::TextButton::clearArea(x, y,
+                                width, height, exposure);
 }
 
 void IconButton::update(FbTk::Subject *subj) {
@@ -187,6 +194,12 @@ void IconButton::setupWindow() {
 
     setText(m_win.winClient().title());
     // draw with x offset and y offset
-    drawText(m_icon_window.x() + m_icon_window.width() + 1);
+    drawText();
 }
+
+void IconButton::drawText(int x, int y) {
+    // offset text
+    FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y);                               
+}
+                          
 
