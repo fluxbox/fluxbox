@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.5 2003/02/23 16:52:17 fluxgen Exp $
+// $Id: Button.cc,v 1.6 2003/04/28 22:21:56 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -35,7 +35,8 @@ Button::Button(int screen_num, int x, int y,
           ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),
     m_pressed_pm(0),
-    m_gc(DefaultGC(FbTk::App::instance()->display(), screen_num)) {
+    m_gc(DefaultGC(FbTk::App::instance()->display(), screen_num)),
+    m_pressed(false) {
 
     // add this to eventmanager
     FbTk::EventManager::instance()->add(*this, m_win); 
@@ -47,7 +48,8 @@ Button::Button(const FbWindow &parent, int x, int y,
           ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_foreground_pm(0),
     m_pressed_pm(0),
-    m_gc(DefaultGC(FbTk::App::instance()->display(), m_win.screenNumber())) {
+    m_gc(DefaultGC(FbTk::App::instance()->display(), m_win.screenNumber())),
+    m_pressed(false) {
     // add this to eventmanager
     FbTk::EventManager::instance()->add(*this, m_win);
 }
