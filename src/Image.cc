@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.18 2002/11/24 20:54:29 fluxgen Exp $
+// $Id: Image.cc,v 1.19 2002/11/27 22:04:02 fluxgen Exp $
 
 #include "Image.hh"
 
@@ -41,7 +41,6 @@
 #ifdef	HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif // HAVE_SYS_TYPES_H
-
 
 #include <cstdlib>
 #include <cstring>
@@ -107,21 +106,23 @@ BImage::~BImage() {
 }
 
 
-Pixmap BImage::render(const FbTk::Texture *texture) {
-	using namespace FbTk;
-	if (texture->type() & Texture::PARENTRELATIVE)
+Pixmap BImage::render(const FbTk::Texture &texture) {
+
+	if (texture.type() & FbTk::Texture::PARENTRELATIVE)
 		return ParentRelative;
-	else if (texture->type() & Texture::SOLID)
+	else if (texture.type() & FbTk::Texture::SOLID)
 		return renderSolid(texture);
-	else if (texture->type() & Texture::GRADIENT)
+	else if (texture.type() & FbTk::Texture::GRADIENT)
 		return renderGradient(texture);
 
 	return None;
 }
 
 
-Pixmap BImage::renderSolid(const FbTk::Texture *texture) {
-	Display *disp = BaseDisplay::getXDisplay();
+Pixmap BImage::renderSolid(const FbTk::Texture &texture) {
+
+	Display *disp = BaseDisplay::instance()->getXDisplay();
+
 	Pixmap pixmap = XCreatePixmap(disp,
 		control->drawable(), width,
 		height, control->depth());
@@ -136,80 +137,78 @@ Pixmap BImage::renderSolid(const FbTk::Texture *texture) {
 	XGCValues gcv;
 	GC gc, hgc, lgc;
 
-	gcv.foreground = texture->color().pixel();
+	gcv.foreground = texture.color().pixel();
 	gcv.fill_style = FillSolid;
 	gc = XCreateGC(disp, pixmap,
 		GCForeground | GCFillStyle, &gcv);
 
-	gcv.foreground = texture->hiColor().pixel();
+	gcv.foreground = texture.hiColor().pixel();
 	hgc = XCreateGC(disp, pixmap,
 		GCForeground, &gcv);
 
-	gcv.foreground = texture->loColor().pixel();
+	gcv.foreground = texture.loColor().pixel();
 	lgc = XCreateGC(disp, pixmap,
 			GCForeground, &gcv);
 
-	XFillRectangle(BaseDisplay::getXDisplay(), pixmap, gc, 0, 0,
-		width, height);
-
+	XFillRectangle(disp, pixmap, gc, 0, 0, width, height);
+	
 	using namespace FbTk;
-
-	if (texture->type() & Texture::INTERLACED) {
-		gcv.foreground = texture->colorTo().pixel();
+	
+	if (texture.type() & Texture::INTERLACED) {
+		gcv.foreground = texture.colorTo().pixel();
 		GC igc = XCreateGC(disp, pixmap,
 			GCForeground, &gcv);
 
 		register unsigned int i = 0;
 		for (; i < height; i += 2)
-			XDrawLine(disp, pixmap, igc,
-				0, i, width, i);
+			XDrawLine(disp, pixmap, igc, 0, i, width, i);
 
 		XFreeGC(disp, igc);
 	}
 
-	if (texture->type() & Texture::BEVEL1) {
-		if (texture->type() & Texture::RAISED) {
+	if (texture.type() & Texture::BEVEL1) {
+		if (texture.type() & Texture::RAISED) {
 			XDrawLine(disp, pixmap, lgc,
-								0, height - 1, width - 1, height - 1);
+				0, height - 1, width - 1, height - 1);
 			XDrawLine(disp, pixmap, lgc,
-							width - 1, height - 1, width - 1, 0);
+				width - 1, height - 1, width - 1, 0);
 
 			XDrawLine(disp, pixmap, hgc,
-								0, 0, width - 1, 0);
+				0, 0, width - 1, 0);
 			XDrawLine(disp, pixmap, hgc,
-								0, height - 1, 0, 0);
-		} else if (texture->type() & Texture::SUNKEN) {
+				0, height - 1, 0, 0);
+		} else if (texture.type() & Texture::SUNKEN) {
 			XDrawLine(disp, pixmap, hgc,
-								0, height - 1, width - 1, height - 1);
+				0, height - 1, width - 1, height - 1);
 			XDrawLine(disp, pixmap, hgc,
-								width - 1, height - 1, width - 1, 0);
+				width - 1, height - 1, width - 1, 0);
 
 			XDrawLine(disp, pixmap, lgc,
-								0, 0, width - 1, 0);
+				0, 0, width - 1, 0);
 			XDrawLine(disp, pixmap, lgc,
-								0, height - 1, 0, 0);
+				0, height - 1, 0, 0);
 		}
-	} else if (texture->type() & Texture::BEVEL2) {
-			if (texture->type() & Texture::RAISED) {
-				XDrawLine(disp, pixmap, lgc,
-							1, height - 3, width - 3, height - 3);
-				XDrawLine(disp, pixmap, lgc,
-							width - 3, height - 3, width - 3, 1);
+	} else if (texture.type() & Texture::BEVEL2) {
+		if (texture.type() & Texture::RAISED) {
+			XDrawLine(disp, pixmap, lgc,
+				1, height - 3, width - 3, height - 3);
+			XDrawLine(disp, pixmap, lgc,
+				width - 3, height - 3, width - 3, 1);
 
-				XDrawLine(disp, pixmap, hgc,
-							1, 1, width - 3, 1);
-				XDrawLine(disp, pixmap, hgc,
-							1, height - 3, 1, 1);
-			} else if (texture->type() & Texture::SUNKEN) {
-				XDrawLine(disp, pixmap, hgc,
-							1, height - 3, width - 3, height - 3);
-				XDrawLine(disp, pixmap, hgc,
-							width - 3, height - 3, width - 3, 1);
+			XDrawLine(disp, pixmap, hgc,
+				1, 1, width - 3, 1);
+			XDrawLine(disp, pixmap, hgc,
+				1, height - 3, 1, 1);
+		} else if (texture.type() & Texture::SUNKEN) {
+			XDrawLine(disp, pixmap, hgc,
+				1, height - 3, width - 3, height - 3);
+			XDrawLine(disp, pixmap, hgc,
+				width - 3, height - 3, width - 3, 1);
 
-				XDrawLine(disp, pixmap, lgc,
-							1, 1, width - 3, 1);
-				XDrawLine(disp, pixmap, lgc,
-							1, height - 3, 1, 1);
+			XDrawLine(disp, pixmap, lgc,
+				1, 1, width - 3, 1);
+			XDrawLine(disp, pixmap, lgc,
+				1, height - 3, 1, 1);
 		}
 	}
 
@@ -221,50 +220,50 @@ Pixmap BImage::renderSolid(const FbTk::Texture *texture) {
 }
 
 
-Pixmap BImage::renderGradient(const FbTk::Texture *texture) {
+Pixmap BImage::renderGradient(const FbTk::Texture &texture) {
 
 	bool inverted = false;
 
 	using namespace FbTk;
 
-	interlaced = texture->type() & Texture::INTERLACED;
+	interlaced = texture.type() & Texture::INTERLACED;
 
-	if (texture->type() & Texture::SUNKEN) {
-		from = &(texture->colorTo());
-		to = &(texture->color());
+	if (texture.type() & Texture::SUNKEN) {
+		from = &(texture.colorTo());
+		to = &(texture.color());
 
-		if (! (texture->type() & Texture::INVERT)) 
+		if (! (texture.type() & Texture::INVERT)) 
 			inverted = true;
 	} else {
-		from = &(texture->color());
-		to = &(texture->colorTo());
+		from = &(texture.color());
+		to = &(texture.colorTo());
 
-		if (texture->type() & Texture::INVERT) 
+		if (texture.type() & Texture::INVERT) 
 			inverted = true;
 	}
 
 	control->getGradientBuffers(width, height, &xtable, &ytable);
 
-	if (texture->type() & Texture::DIAGONAL) 
+	if (texture.type() & Texture::DIAGONAL) 
 		dgradient();
-	else if (texture->type() & Texture::ELLIPTIC) 
+	else if (texture.type() & Texture::ELLIPTIC) 
 		egradient();
-	else if (texture->type() & Texture::HORIZONTAL) 
+	else if (texture.type() & Texture::HORIZONTAL) 
 		hgradient();
-	else if (texture->type() & Texture::PYRAMID) 
+	else if (texture.type() & Texture::PYRAMID) 
 		pgradient();
-	else if (texture->type() & Texture::RECTANGLE) 
+	else if (texture.type() & Texture::RECTANGLE) 
 		rgradient();
-	else if (texture->type() & Texture::VERTICAL) 
+	else if (texture.type() & Texture::VERTICAL) 
 		vgradient();
-	else if (texture->type() & Texture::CROSSDIAGONAL) 
+	else if (texture.type() & Texture::CROSSDIAGONAL) 
 		cdgradient();
-	else if (texture->type() & Texture::PIPECROSS) 
+	else if (texture.type() & Texture::PIPECROSS) 
 		pcgradient();
 
-	if (texture->type() & Texture::BEVEL1)
+	if (texture.type() & Texture::BEVEL1)
 		bevel1();
-	else if (texture->type() & Texture::BEVEL2)
+	else if (texture.type() & Texture::BEVEL2)
 		bevel2();
 
 	if (inverted)
@@ -2180,34 +2179,39 @@ Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
 
 
 Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
-			const FbTk::Texture *texture) {
+			const FbTk::Texture &texture) {
 
-	if (texture->type() & FbTk::Texture::PARENTRELATIVE)
+	if (texture.type() & FbTk::Texture::PARENTRELATIVE)
 		return ParentRelative;
 
-	Pixmap pixmap = searchCache(width, height, texture->type(),
-						texture->color(), texture->colorTo());
-	if (pixmap) return pixmap;
+	// search cache first
+	Pixmap pixmap = searchCache(width, height, texture.type(),
+						texture.color(), texture.colorTo());
+	if (pixmap)
+		return pixmap; // return cache item
 
+	// render new image
 	BImage image(this, width, height);
 	pixmap = image.render(texture);
 
 	if (pixmap) {
+		// create new cache item and add it to cache list
+
 		Cache *tmp = new Cache;
 
 		tmp->pixmap = pixmap;
 		tmp->width = width;
 		tmp->height = height;
 		tmp->count = 1;
-		tmp->texture = texture->type();
-		tmp->pixel1 = texture->color().pixel();
+		tmp->texture = texture.type();
+		tmp->pixel1 = texture.color().pixel();
 
-		if (texture->type() & FbTk::Texture::GRADIENT)
-			tmp->pixel2 = texture->colorTo().pixel();
+		if (texture.type() & FbTk::Texture::GRADIENT)
+			tmp->pixel2 = texture.colorTo().pixel();
 		else
 			tmp->pixel2 = 0l;
 
-		cache.push_back(tmp);
+		cache.push_back(tmp); 
 
 		if ((unsigned) cache.size() > cache_max) {
 #ifdef DEBUG

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.16 2002/11/24 20:22:38 fluxgen Exp $
+// $Id: Image.hh,v 1.17 2002/11/27 22:03:00 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -47,11 +47,11 @@ public:
 	BImage(BImageControl *ic, unsigned int width, unsigned int height);
 	~BImage();
 	/// render to pixmap
-	Pixmap render(const FbTk::Texture *src_texture);
+	Pixmap render(const FbTk::Texture &src_texture);
 	/// render solid texture to pixmap
-	Pixmap renderSolid(const FbTk::Texture *src_texture);
+	Pixmap renderSolid(const FbTk::Texture &src_texture);
 	/// render gradient texture to pixmap
-	Pixmap renderGradient(const FbTk::Texture *src_texture);
+	Pixmap renderGradient(const FbTk::Texture &src_texture);
 
 protected:
 	/**
@@ -125,7 +125,7 @@ public:
 		@return pixmap of the rendered image, on failure None
 	*/
 	Pixmap renderImage(unsigned int width, unsigned int height,
-		const FbTk::Texture *src_texture);
+		const FbTk::Texture &src_texture);
 
 	void installRootColormap();
 	void removeImage(Pixmap thepix);
