@@ -70,11 +70,12 @@ public:
 
     static Pixmap getRootPixmap(int screen_num);
 
-private:
-    void free();
     void create(Drawable src,
                 unsigned int width, unsigned int height,
                 int depth);
+
+private:
+    void free();
     Pixmap m_pm;
     unsigned int m_width, m_height;
     int m_depth;

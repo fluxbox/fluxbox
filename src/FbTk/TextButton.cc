@@ -43,7 +43,10 @@ TextButton::TextButton(const FbTk::FbWindow &parent,
 }
 
 void TextButton::resize(unsigned int width, unsigned int height) {
-     m_buffer.resize(width, height);
+    if (this->width() == width && height == this->height())
+        return;
+
+    m_buffer.resize(width, height);
 
     if (backgroundPixmap() != ParentRelative)
         FbWindow::setBackgroundPixmap(m_buffer.drawable());
@@ -52,10 +55,16 @@ void TextButton::resize(unsigned int width, unsigned int height) {
 
 void TextButton::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
-    m_buffer.resize(width, height);
+    if (this->width() == width && height == this->height() &&
+        x == this->x() && y == this->y())
+        return;
+
+    if (this->width() != width || height != this->height())
+        m_buffer.resize(width, height);
 
     if (backgroundPixmap() != ParentRelative)
         FbWindow::setBackgroundPixmap(m_buffer.drawable());
+    
     Button::moveResize(x, y, width, height);
 }
 
@@ -104,7 +113,6 @@ void TextButton::clearArea(int x, int y,
                            unsigned int width, unsigned int height,
                            bool exposure) {
     if (backgroundPixmap() != ParentRelative) {
-
         if (backgroundPixmap()) {
             m_buffer.copyArea(backgroundPixmap(),
                               gc(),
@@ -120,7 +128,6 @@ void TextButton::clearArea(int x, int y,
                                    width, height);
 
         }
-
         drawText();
 
         setBufferPixmap(m_buffer.drawable());
@@ -163,6 +170,7 @@ void TextButton::drawText(int x_offset, int y_offset) {
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
                     align_x + x_offset + m_left_padding, center_pos + y_offset); // position
+    
 }
 
 void TextButton::exposeEvent(XExposeEvent &event) {

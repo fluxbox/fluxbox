@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/04/03:
+  * Tidy up some redundant pixmap allocations (Simon)
+    Menu.cc TextButton.cc FbPixmap.hh
 *05/03/23:
   * added "Fullscreen" as a command (Mathias)
     CurrentWindow.cc/hh FbCommandFactory.cc

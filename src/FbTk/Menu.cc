@@ -473,12 +473,19 @@ void Menu::updateMenu(int active_index) {
         // buffer pixmap -> resize buffer pixmap
         if (m_title_pm.width() != width() || 
             m_title_pm.height() != theme().titleHeight()) {
-            m_title_pm = FbPixmap(menu.title.window(),
-                                  width(), theme().titleHeight(),
-                                  menu.title.depth());
-            m_real_title_pm = FbPixmap(menu.title.window(),
+
+            if (m_title_pm.drawable() != None) {
+                m_title_pm.resize(width(), theme().titleHeight());
+                m_real_title_pm.resize(width(), theme().titleHeight());
+            } else {
+                m_title_pm.create(menu.title.window(),
+                                      width(), theme().titleHeight(),
+                                      menu.title.depth());
+                m_real_title_pm.create(menu.title.window(),
                                        width(), theme().titleHeight(),
                                        menu.title.depth());
+            }
+
             // set pixmap that we have as real face to the user
             menu.title.setBackgroundPixmap(m_real_title_pm.drawable());
             menu.title.setBufferPixmap(m_real_title_pm.drawable());
@@ -560,13 +567,18 @@ void Menu::updateMenu(int active_index) {
     if (m_need_update || m_frame_pm.width() != menu.frame.width() ||
         m_frame_pm.height() != menu.frame.height()){
 
-        m_frame_pm = FbTk::FbPixmap(menu.frame.window(),
-                                    menu.frame.width(), menu.frame.height(),
-                                    menu.frame.depth());
+        if (m_frame_pm.drawable() != None) {
+            m_frame_pm.resize(menu.frame.width(), menu.frame.height());
+            m_real_frame_pm.resize(menu.frame.width(), menu.frame.height());
+        } else {
+            m_frame_pm.create(menu.frame.window(),
+                              menu.frame.width(), menu.frame.height(),
+                              menu.frame.depth());
 
-        m_real_frame_pm = FbTk::FbPixmap(menu.frame.window(),
-                                         menu.frame.width(), menu.frame.height(),
-                                         menu.frame.depth());
+            m_real_frame_pm.create(menu.frame.window(),
+                                   menu.frame.width(), menu.frame.height(),
+                                   menu.frame.depth());
+        }
         if (m_transp.get() != 0) 
             m_transp->setDest(m_real_frame_pm.drawable(), screenNumber());
 
@@ -591,7 +603,6 @@ void Menu::updateMenu(int active_index) {
                                     0, 0,
                                     width(), menu.frame_h);
             }
-            
 
         }
 
