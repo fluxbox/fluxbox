@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.26 2003/03/03 21:51:08 rathnor Exp $
+// $Id: Toolbar.hh,v 1.27 2003/04/16 13:43:48 rathnor Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -37,10 +37,11 @@
 #include "XLayer.hh"
 #include "XLayerItem.hh"
 #include "LayerMenu.hh"
+#include "fluxbox.hh"
 
 #include <memory>
 
-
+class BScreen;
 namespace FbTk {
 class ImageControl;
 };
@@ -86,7 +87,7 @@ public:
     inline FbTk::Menu &layermenu() { return m_layermenu; }
     inline const FbTk::Menu &layermenu() const { return m_layermenu; }
 
-    void moveToLayer(int layernum) { m_layeritem.moveToLayer(layernum); }
+    void moveToLayer(int layernum);
 
     FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
 

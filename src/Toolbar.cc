@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.71 2003/04/16 12:53:14 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.72 2003/04/16 13:43:44 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -256,7 +256,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                 scrn.getScreenNumber(), 
                 *scrn.getImageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                this),
+                this,
+                true),
     m_theme(scrn.getScreenNumber()),
     m_place(BOTTOMCENTER),
     m_themelistener(*this),
@@ -1192,4 +1193,9 @@ void Toolbar::HideHandler::timeout() {
     } else {
         toolbar->frame.window.move(toolbar->frame.x, toolbar->frame.y);
     }
+}
+
+void Toolbar::moveToLayer(int layernum) {
+    m_layeritem.moveToLayer(layernum); 
+    m_screen.saveToolbarLayer((Fluxbox::Layer) layernum); 
 }

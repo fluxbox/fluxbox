@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.1 2003/03/03 21:51:09 rathnor Exp $
+// $Id: ToolbarHandler.hh,v 1.2 2003/04/16 13:43:49 rathnor Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -29,8 +29,8 @@
 #include "Menu.hh"
 #include "Toolbar.hh"
 
-class FluxboxWindow;
 class BScreen;
+class FluxboxWindow;
 
 class ToolbarHandler : public AtomHandler {
 public:

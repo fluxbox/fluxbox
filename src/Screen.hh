@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.77 2003/04/16 00:36:09 fluxgen Exp $
+// $Id: Screen.hh,v 1.78 2003/04/16 13:43:42 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -36,7 +36,6 @@
 #include "MultLayers.hh"
 #include "XLayerItem.hh"
 #include "ToolbarHandler.hh"
-#include "fluxbox.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -206,6 +205,8 @@ public:
     inline void saveToolbarMode(ToolbarHandler::ToolbarMode m) { *resource.toolbar_mode = m; }
     inline void saveToolbarPlacement(Toolbar::Placement place) { *resource.toolbar_placement = place; }
     inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
+    inline void saveToolbarLayer(Fluxbox::Layer layer) { *resource.toolbar_layernum = layer; }
+    inline void saveSlitLayer(Fluxbox::Layer layer) { *resource.slit_layernum = layer; }
 
     inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
     inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.20 2003/02/20 16:38:17 fluxgen Exp $
+/// $Id: Slit.hh,v 1.21 2003/04/16 13:43:44 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -32,6 +32,8 @@
 #include "Timer.hh"
 #include "XLayerItem.hh"
 #include "LayerMenu.hh"
+#include "fluxbox.hh"
+#include "Screen.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -40,7 +42,6 @@
 #include <string>
 #include <memory>
 
-class BScreen;
 class SlitClient;
 
 /// Handles dock apps
@@ -102,7 +103,7 @@ public:
     void configureRequestEvent(XConfigureRequestEvent &event);
     //@}
 	
-    void moveToLayer(int layernum) { m_layeritem->moveToLayer(layernum); }
+    void moveToLayer(int layernum) { m_layeritem->moveToLayer(layernum); m_screen.saveSlitLayer((Fluxbox::Layer) layernum); }
     FbTk::XLayerItem &getLayerItem() { return *m_layeritem; }
 
     virtual void timeout();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.38 2003/04/14 14:53:12 fluxgen Exp $
+// $Id: Slit.cc,v 1.39 2003/04/16 13:43:43 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -254,7 +254,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                    scr.getScreenNumber(),
                                    *scr.getImageControl(),
                                    *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                   this));
+                                   this,
+                                   true));
 
     // default placement and direction
     m_direction = HORIZONTAL;

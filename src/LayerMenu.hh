@@ -20,13 +20,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.1 2003/02/18 22:09:02 rathnor Exp $
+// $Id: LayerMenu.hh,v 1.2 2003/04/16 13:43:41 rathnor Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
 
 #include "MenuItem.hh"
 #include "FbMenu.hh"
+#include "FbCommands.hh"
+#include "RefCount.hh"
+#include "SimpleCommand.hh"
 
 class Fluxbox;
 
@@ -36,12 +39,16 @@ class Fluxbox;
 template <typename ItemType> 
 class LayerMenuItem : public FbTk::MenuItem {
 public:
+    LayerMenuItem(const char *label, ItemType *object, int layernum,
+                  FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label,cmd), m_object(object), m_layernum(layernum) {}
     LayerMenuItem(const char *label, ItemType *object, int layernum):
         FbTk::MenuItem(label), m_object(object), m_layernum(layernum) {}
 
     bool isEnabled() const { return m_object->getLayerItem().getLayerNum() != m_layernum; } ;
     void click(int button, int time) {
         m_object->moveToLayer(m_layernum);
+        FbTk::MenuItem::click(button, time);
     }
     
 private:
@@ -55,7 +62,7 @@ template <typename ItemType>
 class LayerMenu : public FbMenu {
 public:
     LayerMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
-              FbTk::XLayer &layer, ItemType *item);
+              FbTk::XLayer &layer, ItemType *item, bool save_rc);
 
 private:
     ItemType *m_object;
@@ -64,7 +71,7 @@ private:
 
 template <typename ItemType>
 LayerMenu<ItemType>::LayerMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
-                               FbTk::XLayer &layer, ItemType *item):
+                               FbTk::XLayer &layer, ItemType *item, bool save_rc):
     FbMenu(tm, screen_num, imgctrl, layer), 
     m_object(item) 
 {
@@ -86,11 +93,21 @@ LayerMenu<ItemType>::LayerMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageC
         {0, 0, "Desktop", fluxbox->getDesktopLayer()},
     };
     
+    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
+                                     *Fluxbox::instance(), 
+                                     &Fluxbox::save_rc));
+
     for (size_t i=0; i < 6; ++i) {
         // TODO: fetch nls string
-        insert(new LayerMenuItem<ItemType>(
-            layer_menuitems[i].default_str, 
-            m_object, layer_menuitems[i].layernum));               
+        if (save_rc) {    
+            insert(new LayerMenuItem<ItemType>(
+                       layer_menuitems[i].default_str, 
+                       m_object, layer_menuitems[i].layernum, saverc_cmd));
+        } else {
+            insert(new LayerMenuItem<ItemType>(
+                       layer_menuitems[i].default_str, 
+                       m_object, layer_menuitems[i].layernum));               
+        }
     }
     update();
 }
