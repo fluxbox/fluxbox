@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.37 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Remember.cc,v 1.38 2004/06/07 21:16:13 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -209,18 +209,18 @@ Application::Application(bool grouped)
     : is_grouped(grouped),
       group(0)
 {
-	decostate_remember     = 
-	dimensions_remember =
-	focushiddenstate_remember = 
-  iconhiddenstate_remember =
-	jumpworkspace_remember = 
-	layer_remember         = 
-	position_remember =
-	shadedstate_remember =
-	stuckstate_remember    = 
-	tabstate_remember =
-	workspace_remember     = 
-	save_on_close_remember = false;
+    decostate_remember = 
+        dimensions_remember =
+        focushiddenstate_remember = 
+        iconhiddenstate_remember =
+        jumpworkspace_remember = 
+        layer_remember  = 
+        position_remember =
+        shadedstate_remember =
+        stuckstate_remember = 
+        tabstate_remember =
+        workspace_remember = 
+        save_on_close_remember = false;
 }
 
 /********************************************************
