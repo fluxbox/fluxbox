@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.55 2002/07/10 14:51:32 fluxgen Exp $
+// $Id: Screen.cc,v 1.56 2002/07/20 09:32:34 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -268,7 +268,7 @@ resource(rm, screenname, altscreenname)
 		fluxbox->getSessionCursor());
 
 	image_control =
-		new BImageControl(fluxbox, this, true, fluxbox->getColorsPerChannel(),
+		new BImageControl(fluxbox, this, true, fluxbox->colorsPerChannel(),
 			fluxbox->getCacheLife(), fluxbox->getCacheMax());
 	image_control->installRootColormap();
 	root_colormap_installed = true;
@@ -276,7 +276,7 @@ resource(rm, screenname, altscreenname)
 	fluxbox->load_rc(this);
 
 	image_control->setDither(*resource.image_dither);
-	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
+	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), colormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
 	#ifdef GNOME
@@ -320,8 +320,8 @@ resource(rm, screenname, altscreenname)
 
 	XSetWindowAttributes attrib;
 	unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
-	attrib.border_pixel = getBorderColor()->getPixel();
-	attrib.colormap = getColormap();
+	attrib.border_pixel = getBorderColor()->pixel();
+	attrib.colormap = colormap();
 	attrib.save_under = true;
 
 	geom_window =
@@ -335,7 +335,7 @@ resource(rm, screenname, altscreenname)
 			(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				 theme->getWindowStyle().t_focus.getColor()->getPixel());
+				 theme->getWindowStyle().t_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
 				 &theme->getWindowStyle().t_focus);
@@ -347,7 +347,7 @@ resource(rm, screenname, altscreenname)
 				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				 theme->getWindowStyle().l_focus.getColor()->getPixel());
+				 theme->getWindowStyle().l_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
 				 &theme->getWindowStyle().l_focus);
@@ -586,7 +586,7 @@ void BScreen::reconfigure(void) {
 				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				theme->getWindowStyle().t_focus.getColor()->getPixel());
+				theme->getWindowStyle().t_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
 				&theme->getWindowStyle().t_focus);
@@ -598,7 +598,7 @@ void BScreen::reconfigure(void) {
 				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
-				theme->getWindowStyle().l_focus.getColor()->getPixel());
+				theme->getWindowStyle().l_focus.color().pixel());
 		} else {
 			geom_pixmap = image_control->renderImage(geom_w, geom_h,
 				&theme->getWindowStyle().l_focus);
@@ -611,7 +611,7 @@ void BScreen::reconfigure(void) {
 	XSetWindowBorderWidth(getBaseDisplay()->getXDisplay(), geom_window,
 		theme->getBorderWidth());
 	XSetWindowBorder(getBaseDisplay()->getXDisplay(), geom_window,
-		theme->getBorderColor().getPixel());
+		theme->getBorderColor().pixel());
 
 	//reconfigure menus
 	workspacemenu->reconfigure();

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.16 2002/07/19 16:10:18 fluxgen Exp $
+// $Id: Slit.cc,v 1.17 2002/07/20 09:35:01 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -112,8 +112,8 @@ Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(*this) {
 		CWColormap | CWOverrideRedirect | CWEventMask;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-		screen->getBorderColor()->getPixel();
-	attrib.colormap = screen->getColormap();
+		screen->getBorderColor()->pixel();
+	attrib.colormap = screen->colormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = SubstructureRedirectMask | ButtonPressMask |
 		EnterWindowMask | LeaveWindowMask;
@@ -398,7 +398,7 @@ void Slit::reconfigure(void) {
 
 	XSetWindowBorderWidth(display ,frame.window, screen->getBorderWidth());
 	XSetWindowBorder(display, frame.window,
-		screen->getBorderColor()->getPixel());
+		screen->getBorderColor()->pixel());
 
 	//did we actually use slit slots
 	if (num_windows == 0)
@@ -412,7 +412,7 @@ void Slit::reconfigure(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pixmap = None;
 		XSetWindowBackground(display, frame.window,
-			 texture->getColor()->getPixel());
+			 texture->color().pixel());
 	} else {
 		frame.pixmap = image_ctrl->renderImage(frame.width, frame.height,
 			texture);
