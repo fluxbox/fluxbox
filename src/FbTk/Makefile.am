@@ -39,6 +39,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Compose.hh \
 	TextBox.hh TextBox.cc \
 	GContext.hh GContext.cc \
+	KeyUtil.hh KeyUtil.cc \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \
 	${xmb_SOURCE}
