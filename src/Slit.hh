@@ -111,19 +111,19 @@ public:
 	explicit Slit(BScreen *);
 	virtual ~Slit();
 
-	inline const bool isOnTop(void) const { return on_top; }
-	inline const bool isHidden(void) const { return hidden; }
-	inline const bool doAutoHide(void) const { return do_auto_hide; }
+	inline bool isOnTop(void) const { return on_top; }
+	inline bool isHidden(void) const { return hidden; }
+	inline bool doAutoHide(void) const { return do_auto_hide; }
 
 	Slitmenu &getMenu() { return slitmenu; }
 
 	inline const Window &getWindowID() const { return frame.window; }
 
-	inline const int getX() const { return ((hidden) ? frame.x_hidden : frame.x); }
-	inline const int getY() const { return ((hidden) ? frame.y_hidden : frame.y); }
+	inline int getX() const { return ((hidden) ? frame.x_hidden : frame.x); }
+	inline int getY() const { return ((hidden) ? frame.y_hidden : frame.y); }
 
-	inline const unsigned int getWidth(void) const { return frame.width; }
-	inline const unsigned int getHeight(void) const { return frame.height; }
+	inline unsigned int getWidth(void) const { return frame.width; }
+	inline unsigned int getHeight(void) const { return frame.height; }
 
 	void addClient(Window);
 	void removeClient(Window, bool = true);

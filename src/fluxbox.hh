@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.18 2002/05/02 07:14:22 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.19 2002/05/17 11:07:36 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -101,22 +101,16 @@ public:
 	
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
-	inline const char *getStyleFilename(void)
-		{ return m_rc_stylefile->c_str(); }
+	inline const char *getStyleFilename(void) const { return m_rc_stylefile->c_str(); }
 
-	inline const char *getMenuFilename(void)
-		{ return m_rc_menufile->c_str(); }
+	inline const char *getMenuFilename(void) const { return m_rc_menufile->c_str(); }
 
-	inline const int &getColorsPerChannel(void)
-		{ return *m_rc_colors_per_channel; }
+	inline int getColorsPerChannel(void) const { return *m_rc_colors_per_channel; }
 
-	inline const timeval &getAutoRaiseDelay(void) const
-		{ return resource.auto_raise_delay; }
+	inline const timeval &getAutoRaiseDelay(void) const { return resource.auto_raise_delay; }
 
-	inline const unsigned int getCacheLife(void)
-		{ return *m_rc_cache_life * 60000; }
-	inline const unsigned int getCacheMax(void)
-		{ return *m_rc_cache_max; }
+	inline unsigned int getCacheLife(void) const { return *m_rc_cache_life * 60000; }
+	inline unsigned int getCacheMax(void) const { return *m_rc_cache_max; }
 
 	inline void maskWindowEvents(Window w, FluxboxWindow *bw)
 		{ masked = w; masked_window = bw; }

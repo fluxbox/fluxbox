@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.19 2002/05/07 13:57:09 fluxgen Exp $
+// $Id: Workspace.cc,v 1.20 2002/05/17 11:03:36 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -77,7 +77,7 @@ Workspace::~Workspace() {
 }
 
 
-const int Workspace::addWindow(FluxboxWindow *w, bool place) {
+int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	if (! w)
 		return -1;
 
@@ -127,8 +127,9 @@ const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 }
 
 
-const int Workspace::removeWindow(FluxboxWindow *w) {
-	if (! w) return -1;
+int Workspace::removeWindow(FluxboxWindow *w) {
+	if (! w) 
+		return -1;
 
 	stackingList.remove(w);
 
@@ -324,7 +325,7 @@ FluxboxWindow *Workspace::getWindow(unsigned int index) {
 }
 
 
-const int Workspace::getCount(void) const {
+int Workspace::getCount(void) const {
 	return windowList.size();
 }
 

@@ -53,8 +53,8 @@ public:
 	explicit BTimer(TimeoutHandler *);
 	virtual ~BTimer(void);
 
-	inline const int isTiming(void) const { return m_timing; } 
-	inline const int doOnce(void) const { return m_once; }
+	inline int isTiming(void) const { return m_timing; } 
+	inline int doOnce(void) const { return m_once; }
 
 	inline const timeval &getTimeout(void) const { return m_timeout; }
 	inline const timeval &getStartTime(void) const { return m_start; }

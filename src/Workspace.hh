@@ -54,8 +54,8 @@ public:
 	void update();
 	void setCurrent();
 	void shutdown();
-	const int addWindow(FluxboxWindow *window, bool place = false);
-	const int removeWindow(FluxboxWindow *);
+	int addWindow(FluxboxWindow *window, bool place = false);
+	int removeWindow(FluxboxWindow *);
 
 	inline BScreen *getScreen() const { return screen; }	
 	inline FluxboxWindow *getLastFocusedWindow(void) const { return lastfocus; }	
@@ -69,7 +69,7 @@ public:
 	inline const Windows &getWindowList() const { return windowList; }
 	bool isCurrent() const;
 	bool isLastWindow(FluxboxWindow *window) const;
-	const int getCount() const;
+	int getCount() const;
 
 protected:
 	void placeWindow(FluxboxWindow *);
