@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.17 2004/01/08 22:05:12 fluxgen Exp $
+// $Id: Button.cc,v 1.18 2004/02/27 13:24:21 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -94,35 +94,47 @@ void Button::setBackgroundPixmap(Pixmap pm) {
 }
 
 void Button::buttonPressEvent(XButtonEvent &event) {
-    if (m_pressed_pm != 0)
+    bool update = false;
+    if (m_pressed_pm != 0) {
+        update = true;
         FbWindow::setBackgroundPixmap(m_pressed_pm);
-    else if (m_pressed_color.isAllocated())
+    } else if (m_pressed_color.isAllocated()) {
+        update = true;
         FbWindow::setBackgroundColor(m_pressed_color);
+    }
         
     m_pressed = true;    
-    clear();
-    updateTransparent();
+    if (update) {
+        clear();
+    }
 }
 
 void Button::buttonReleaseEvent(XButtonEvent &event) {
     m_pressed = false;
-    if (m_background_pm)
-        setBackgroundPixmap(m_background_pm);
-    else
+    bool update = false;
+    if (m_background_pm) {
+        if (m_pressed_pm != 0) {
+            update = true;
+            setBackgroundPixmap(m_background_pm);
+        }
+    } else if (m_pressed_color.isAllocated()) {
+        update = true;
         setBackgroundColor(m_background_color);
-
-    clear(); // clear background
-
-    if (m_foreground_pm) { // draw foreground pixmap
-        Display *disp = App::instance()->display();
-
-        if (m_gc == 0) // get default gc if we dont have one
-            m_gc = DefaultGC(disp, screenNumber());
-
-        XCopyArea(disp, m_foreground_pm, window(), m_gc, 0, 0, width(), height(), 0, 0);
     }
 
-    updateTransparent();
+    if (update) {
+        clear(); // clear background
+
+        if (m_foreground_pm) { // draw foreground pixmap
+            Display *disp = App::instance()->display();
+
+            if (m_gc == 0) // get default gc if we dont have one
+                m_gc = DefaultGC(disp, screenNumber());
+        
+            XCopyArea(disp, m_foreground_pm, window(), m_gc, 0, 0, width(), height(), 0, 0);
+        }
+
+    }
 
     // finaly, execute command (this must be done last since this object might be deleted by the command)
     if (event.button > 0 && event.button <= 5 &&
@@ -135,13 +147,14 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
 }
 
 void Button::exposeEvent(XExposeEvent &event) {
+    /*
     if (m_background_pm)
         setBackgroundPixmap(m_background_pm);
     else
         setBackgroundColor(m_background_color);
-
+    */
     clearArea(event.x, event.y, event.width, event.height);
-    updateTransparent(event.x, event.y, event.width, event.height);
+    //    updateTransparent(event.x, event.y, event.width, event.height);
 }
 
 }; // end namespace FbTk
