@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/21:
+  * Fix disappearing close button (Simon)
+    WinClient.hh/cc
 *03/09/19:
   * fbsetbg update (Thanks Han)
     - fixes fbsetbg -l after a changing the wallpapersetter.

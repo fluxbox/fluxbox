@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.13 2003/09/11 19:55:27 rathnor Exp $
+// $Id: WinClient.hh,v 1.14 2003/09/21 12:49:48 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -46,7 +46,8 @@ public:
     bool sendFocus(); // returns whether we sent a message or not 
                       // i.e. whether we assume the focus will get taken
     void sendClose(bool forceful = false);
-    inline bool isClosable() const { return closable; }
+    // not aware of anything that makes this false at present
+    inline bool isClosable() const { return true; }
     void reparent(Window win, int x, int y);
     bool getAttrib(XWindowAttributes &attr) const;
     bool getWMName(XTextProperty &textprop) const;
@@ -157,7 +158,7 @@ private:
     // number of transients which we are modal for
     // or indicates that we are modal if don't have any transients
     int m_modal;
-    bool send_focus_message, closable;
+    bool send_focus_message, send_close_message;
 
     int m_win_gravity;
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.24 2003/09/11 19:55:27 rathnor Exp $
+// $Id: WinClient.cc,v 1.25 2003/09/21 12:49:47 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -54,7 +54,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_win(fbwin),
                      m_modal(0),
                      send_focus_message(false),
-                     closable(false),
+                     send_close_message(false),
+                     closable(true),
                      m_win_gravity(0),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
@@ -169,7 +170,7 @@ bool WinClient::sendFocus() {
 }
 
 void WinClient::sendClose(bool forceful) {
-    if (forceful || !isClosable())
+    if (forceful || !send_close_message)
         XKillClient(FbTk::App::instance()->display(), window());
     else {
         // send WM_DELETE message
@@ -584,9 +585,13 @@ void WinClient::updateWMProtocols() {
 
     if (XGetWMProtocols(FbTk::App::instance()->display(), window(), &proto, &num_return)) {
 
+        // defaults
+        send_focus_message = false;
+        send_close_message = false;
+        // could be added to netizens twice...
         for (int i = 0; i < num_return; ++i) {
             if (proto[i] == fbatoms->getWMDeleteAtom())
-                closable = true;
+                send_close_message = true;
             else if (proto[i] == fbatoms->getWMTakeFocusAtom())
                 send_focus_message = true;
             else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
