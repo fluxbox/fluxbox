@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.38 2004/01/19 18:21:51 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.39 2004/01/19 22:43:08 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -610,6 +610,9 @@ void Ewmh::createAtoms() {
     m_net_wm_state_fullscreen = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
     m_net_wm_state_hidden = XInternAtom(disp, "_NET_WM_STATE_HIDDEN", False);
     m_net_wm_state_skip_taskbar = XInternAtom(disp, "_NET_WM_STATE_SKIP_TASKBAR", False);
+    m_net_wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
+    m_net_wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
+
 
     m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
     m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
@@ -678,8 +681,23 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         setFullscreen(win, value);
     } else if (state == m_net_wm_state_hidden ||
-               state == m_net_wm_state_skip_taskbar)
+               state == m_net_wm_state_skip_taskbar) {        
         win.setHidden(value);
+    } else if (state == m_net_wm_state_below) {
+
+        if (value)
+            win.moveToLayer(Fluxbox::instance()->getBottomLayer());
+        else
+            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+
+    } else if (state == m_net_wm_state_above) {
+
+        if (value)
+            win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+        else
+            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+
+    }
 }
 
 // toggle window state
@@ -697,7 +715,18 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
     } else if (state == m_net_wm_state_hidden ||
                state == m_net_wm_state_skip_taskbar) {
         win.setHidden(!win.isHidden());
+    } else if (state == m_net_wm_state_below) {
+        if (win.layerNum() == Fluxbox::instance()->getBottomLayer())
+            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+        else
+            win.moveToLayer(Fluxbox::instance()->getBottomLayer());
+    } else if (state == m_net_wm_state_above) {
+        if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
+            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+        else
+            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
     }
+
 }
 
 
