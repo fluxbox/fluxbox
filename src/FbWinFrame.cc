@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.17 2003/04/14 14:40:30 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.18 2003/04/14 23:40:41 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -270,18 +270,23 @@ void FbWinFrame::setClientWindow(Window win) {
     XSetWindowBorderWidth(display, win, 0);
 
     XChangeSaveSet(display, win, SetModeInsert);
-    XSetWindowAttributes attrib_set;
-    // sync old events so we can discard events from reparent later
-    XSync(display, False);
+
+    
+    XSelectInput(display, m_clientarea.window(), NoEventMask);
+    // we need to mask this so we don't get unmap event
+    XSelectInput(display, win, NoEventMask);
     XReparentWindow(display, win, m_clientarea.window(), 0, 0);
-    XSync(display, True); // discard unmap notify event
-    // redirected events from client window 
+    // remask window so we get events
+    XSelectInput(display, win, PropertyChangeMask | StructureNotifyMask | 
+                 FocusChangeMask );
     XSelectInput(display, m_clientarea.window(), SubstructureRedirectMask);
 
     XFlush(display);
 
+    XSetWindowAttributes attrib_set;
     attrib_set.event_mask = PropertyChangeMask | StructureNotifyMask | FocusChangeMask;
-    attrib_set.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
+    attrib_set.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask | 
+        ButtonMotionMask;
 
     XChangeWindowAttributes(display, win, CWEventMask|CWDontPropagate, &attrib_set);
 
