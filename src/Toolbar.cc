@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.103 2003/07/25 10:03:55 rathnor Exp $
+// $Id: Toolbar.cc,v 1.104 2003/07/28 15:06:34 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -31,6 +31,7 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
+#include "WinClient.hh"
 #include "Workspace.hh"
 #include "ImageControl.hh"
 #include "ToolbarTheme.hh"
@@ -880,21 +881,23 @@ void Toolbar::checkClock(bool redraw, bool date) {
 
 
 void Toolbar::redrawWindowLabel(bool redraw) {
-    if (Fluxbox::instance()->getFocusedWindow()) {
+    WinClient *winclient = Fluxbox::instance()->getFocusedWindow();
+    if (winclient) {
         if (redraw)
             frame.window_label.clear();
 
-        FluxboxWindow *foc = Fluxbox::instance()->getFocusedWindow();
+        const std::string &title = winclient->getTitle();
+
         // don't draw focused window if it's not on the same screen
-        if (&foc->screen() != &screen() || foc->title().size() == 0)
+        if (&winclient->screen() != &screen() || title.size() == 0)
             return;
-		
-        unsigned int newlen = foc->title().size();
+	
+        unsigned int newlen = title.size();
         int dx = FbTk::doAlignment(frame.window_label_w, frame.bevel_w*2,
                                    m_theme.justify(),
                                    m_theme.font(),
-                                   foc->title().c_str(), 
-                                   foc->title().size(), newlen);
+                                   title.c_str(), 
+                                   title.size(), newlen);
 	int dy = 1 + m_theme.font().ascent();
 
         if (m_theme.font().isRotated()) {
@@ -907,7 +910,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
         m_theme.font().drawText(frame.window_label.window(),
                                 screen().screenNumber(),
                                 m_theme.windowTextGC(),
-                                foc->title().c_str(), newlen,
+                                title.c_str(), newlen,
                                 dx, dy);
     } else
         frame.window_label.clear();
@@ -961,8 +964,9 @@ void Toolbar::edit() {
 
     frame.workspace_label.clear();
     Fluxbox * const fluxbox = Fluxbox::instance();
-    if (fluxbox->getFocusedWindow())	//disable focus on current focused window
-        fluxbox->getFocusedWindow()->setFocusFlag(false);
+    WinClient *winclient = fluxbox->getFocusedWindow();
+    if (winclient && winclient->fbwindow())	//disable focus on current focused window
+        winclient->fbwindow()->setFocusFlag(false);
 
     frame.workspace_label.drawRectangle(screen().winFrameTheme().labelTextFocusGC(),
                                         frame.workspace_label_w / 2, 0, 1,
@@ -1116,10 +1120,9 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
         Fluxbox * const fluxbox = Fluxbox::instance();			
 
         if (fluxbox->getFocusedWindow()) {
-            fluxbox->getFocusedWindow()->setInputFocus();
-            fluxbox->getFocusedWindow()->setFocusFlag(true);
+            fluxbox->getFocusedWindow()->focus();
         } else
-            XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
+            fluxbox->revertFocus(screen());
 			
         if (ks == XK_Return)	//change workspace name if keypress = Return
             screen().currentWorkspace()->setName(m_new_workspace_name.c_str());

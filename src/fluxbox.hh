@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.68 2003/07/23 10:43:30 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.69 2003/07/28 15:06:36 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -88,9 +88,10 @@ public:
 
     inline Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
 
-    FluxboxWindow *searchGroup(Window, FluxboxWindow *);
-    FluxboxWindow *searchWindow(Window);
-    inline FluxboxWindow *getFocusedWindow() { return m_focused_window; }
+    // Not currently implemented until we decide how it'll be used
+    //WinClient *searchGroup(Window);
+    WinClient *searchWindow(Window);
+    inline WinClient *getFocusedWindow() { return m_focused_window; }
 
 		
     BScreen *searchScreen(Window w);
@@ -151,7 +152,7 @@ public:
 
     void watchKeyRelease(BScreen &screen, unsigned int mods);
 
-    void setFocusedWindow(FluxboxWindow *w);
+    void setFocusedWindow(WinClient *w);
     void revertFocus(BScreen &screen);
     void shutdown();
     void load_rc(BScreen &scr);
@@ -162,10 +163,14 @@ public:
     void clearMenuFilenames();
     void saveTitlebarFilename(const char *);
     void saveSlitlistFilename(const char *val) { m_rc_slitlistfile = (val == 0 ? "" : val); }
-    void saveWindowSearch(Window win, FluxboxWindow *fbwin);
-    void saveGroupSearch(Window win, FluxboxWindow *fbwin);	
+    void saveWindowSearch(Window win, WinClient *winclient);
+    // some windows relate to the group, not the client, so we record separately
+    // searchWindow on these windows will give the active client in the group
+    void saveWindowSearchGroup(Window win, FluxboxWindow *fbwin);
+    void saveGroupSearch(Window win, WinClient *winclient);
     void save_rc();
     void removeWindowSearch(Window win);
+    void removeWindowSearchGroup(Window win);
     void removeGroupSearch(Window win);
     void restart(const char *command = 0);
     void reconfigure();
@@ -243,14 +248,21 @@ private:
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
 
 	
-    std::map<Window, FluxboxWindow *> m_window_search;
-    std::map<Window, FluxboxWindow *> m_group_search;
+    std::map<Window, WinClient *> m_window_search;
+    std::map<Window, FluxboxWindow *> m_window_search_group;
+    // A window is the group leader, which can map to several
+    // WinClients in the group, it is *not* fluxbox's concept of groups
+    // See ICCCM section 4.1.11
+    // The group leader (which may not be mapped, so may not have a WinClient) 
+    // will have it's window being the group index
+    std::multimap<Window, WinClient *> m_group_search;
 	
     std::list<MenuTimestamp *> m_menu_timestamps;
     typedef std::list<BScreen *> ScreenList;
     ScreenList m_screen_list;
 
-    FluxboxWindow *m_focused_window, *m_masked_window;
+    WinClient *m_focused_window;
+    FluxboxWindow *m_masked_window;
     FbTk::Timer m_timer;
 
     BScreen *m_mousescreen, *m_keyscreen;

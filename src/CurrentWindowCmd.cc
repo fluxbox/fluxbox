@@ -20,58 +20,68 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.2 2003/07/26 13:44:00 rathnor Exp $
+// $Id: CurrentWindowCmd.cc,v 1.3 2003/07/28 15:06:33 rathnor Exp $
 
 #include "CurrentWindowCmd.hh"
 
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "Screen.hh"
+#include "WinClient.hh"
 
 CurrentWindowCmd::CurrentWindowCmd(Action act):m_action(act) { }
 
 void CurrentWindowCmd::execute() {
-    Fluxbox *fb = Fluxbox::instance();
-    if (fb->getFocusedWindow() != 0)
-        (*fb->getFocusedWindow().*m_action)();
+    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    if (client && client->fbwindow())
+        (client->fbwindow()->*m_action)();
 }
 
 
 void KillWindowCmd::real_execute() {
-    XKillClient(FbTk::App::instance()->display(), window().clientWindow());
+    winclient().sendClose(true);
 }
 
 void SendToWorkspaceCmd::real_execute() {
-    if (m_workspace_num >= 0 && m_workspace_num < window().screen().getNumberOfWorkspaces())
-        window().screen().sendToWorkspace(m_workspace_num, &window());
+    if (m_workspace_num >= 0 && m_workspace_num < fbwindow().screen().getNumberOfWorkspaces())
+        fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow());
 }
 
 void WindowHelperCmd::execute() {
-    if (Fluxbox::instance()->getFocusedWindow())
+    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    if (client && client->fbwindow()) // guarantee that fbwindow() exists too
         real_execute();
 }
 
-FluxboxWindow &WindowHelperCmd::window() {
+WinClient &WindowHelperCmd::winclient() {
+    // will exist from execute above
     return *Fluxbox::instance()->getFocusedWindow();
+}
+
+FluxboxWindow &WindowHelperCmd::fbwindow() {
+    // will exist from execute above
+    return *Fluxbox::instance()->getFocusedWindow()->fbwindow();
 }
 
 MoveLeftCmd::MoveLeftCmd(int step_size):MoveHelper(step_size) { }
 void MoveLeftCmd::real_execute() {
-    window().move(window().x() - stepSize(), window().y());
+    fbwindow().move(fbwindow().x() - stepSize(),
+                    fbwindow().y());
 }
 
 MoveRightCmd::MoveRightCmd(int step_size):MoveHelper(step_size) { }
 void MoveRightCmd::real_execute() {
-    window().move(window().x() + stepSize(), window().y());
+    fbwindow().move(fbwindow().x() + stepSize(),
+                    fbwindow().y());
 }
 
 MoveDownCmd::MoveDownCmd(int step_size):MoveHelper(step_size) { }
 void MoveDownCmd::real_execute() {
-    window().move(window().x(), window().y() + stepSize());
+    fbwindow().move(fbwindow().x(), fbwindow().y() + stepSize());
 }
 
 MoveUpCmd::MoveUpCmd(int step_size):MoveHelper(step_size) { }
 void MoveUpCmd::real_execute() {
-    window().move(window().x(), window().y() - stepSize());
+    fbwindow().move(fbwindow().x(), fbwindow().y() - stepSize());
 }
 

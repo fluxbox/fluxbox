@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.30 2003/07/17 17:56:28 rathnor Exp $
+// $Id: Gnome.cc,v 1.31 2003/07/28 15:06:33 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -278,22 +278,22 @@ void Gnome::updateHints(FluxboxWindow &win) {
 	
 }
 
-bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win) {
+bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
     if (ce.message_type == m_gnome_wm_win_workspace) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
 #endif//!DEBUG
-        if ( win !=0 && // the message sent to client window?
+        if ( winclient !=0 && // the message sent to client window?
              ce.data.l[0] >= 0 &&
-             ce.data.l[0] < (signed)win->screen().getCount()) {
-            win->screen().changeWorkspaceID(ce.data.l[0]);
+             ce.data.l[0] < (signed)winclient->screen().getCount()) {
+            winclient->screen().changeWorkspaceID(ce.data.l[0]);
 					
         } else if (screen!=0 && //the message sent to root window?
                    ce.data.l[0] >= 0 &&
                    ce.data.l[0] < (signed)screen->getCount())
             screen->changeWorkspaceID(ce.data.l[0]);
         return true;
-    } else if (win == 0)
+    } else if (winclient == 0)
         return false; 
 		
 
@@ -308,15 +308,16 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
         cerr<<"New members:"<<ce.data.l[1]<<endl;
 #endif // DEBUG
 	
-        //get new states			
-        int flag = ce.data.l[0] & ce.data.l[1];
-        //don't update this when when we set new state
-        disableUpdate();
-        // convert to Fluxbox state
-        setState(win, flag);
-        // enable update of atom states
-        enableUpdate();
-			
+        if (winclient && winclient->fbwindow()) {
+            //get new states			
+            int flag = ce.data.l[0] & ce.data.l[1];
+            //don't update this when when we set new state
+            disableUpdate();
+            // convert to Fluxbox state
+            setState(winclient->fbwindow(), flag);
+            // enable update of atom states
+            enableUpdate();
+        }
     } else if (ce.message_type == m_gnome_wm_win_hints) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
@@ -327,7 +328,8 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, 
         cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_LAYER"<<endl;
 #endif // DEBUG
 
-        setLayer(win, ce.data.l[0]);
+        if (winclient && winclient->fbwindow())
+            setLayer(winclient->fbwindow(), ce.data.l[0]);
     } else
         return false; //the gnome atom wasn't found or not supported
 

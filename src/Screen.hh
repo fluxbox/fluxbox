@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.116 2003/07/20 08:12:36 rathnor Exp $
+// $Id: Screen.hh,v 1.117 2003/07/28 15:06:34 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -258,8 +258,6 @@ public:
     void setLayer(FbTk::XLayerItem &item, int layernum);
     // remove? no, items are never removed from their layer until they die
 
-    FluxboxWindow* useAutoGroupWindow();
-
     /// updates root window size and resizes/reconfigures screen clients 
     /// that depends on screen size (slit)
     /// (and maximized windows?)
@@ -390,8 +388,6 @@ private:
 
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
-
-    Window auto_group_window;
 
     std::auto_ptr<FbWinFrameTheme> m_windowtheme;
     std::auto_ptr<WinButtonTheme> m_winbutton_theme;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.88 2003/07/28 12:42:32 fluxgen Exp $
+// $Id: Window.hh,v 1.89 2003/07/28 15:06:35 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -44,7 +44,6 @@
 class WinClient;
 class FbWinFrameTheme;
 class BScreen;
-class Strut;
 
 class TextButton;
 class FbWinFrame;
@@ -168,7 +167,6 @@ public:
     void moveClientLeft();
     void moveClientRight();
 
-    bool validateClient();
     bool setInputFocus();
     void raiseAndFocus() { raise(); setInputFocus(); }
     void setFocusFlag(bool flag);
@@ -178,7 +176,7 @@ public:
     void hide();
     void iconify();
     void deiconify(bool = true, bool = true);
-    /// destroy this window
+    /// close current client
     void close();
     /// set the window in withdrawn state
     void withdraw();
@@ -246,9 +244,6 @@ public:
     void applyDecorations(bool initial = false);
     void toggleDecoration();
 
-
-    void setStrut(Strut *strut);
-    void clearStrut();
 
     unsigned int decorationMask() const;
     void setDecorationMask(unsigned int mask);
@@ -382,7 +377,6 @@ private:
     void updateTitleFromClient();
     /// gets icon name from client window
     void updateIconNameFromClient();
-    void getWMProtocols();
     void getMWMHints();
     void getBlackboxHints();
     void saveBlackboxAttribs();
@@ -456,8 +450,6 @@ private:
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
     std::auto_ptr<FbWinFrame> m_frame;
-
-    Strut *m_strut;
 
     FbTk::XLayerItem m_layeritem;
     int m_layernum;

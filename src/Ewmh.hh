@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.9 2003/07/04 14:06:20 rathnor Exp $
+// $Id: Ewmh.hh,v 1.10 2003/07/28 15:06:33 rathnor Exp $
 
 #include "AtomHandler.hh"
 
@@ -33,7 +33,7 @@ public:
     ~Ewmh();
     void initForScreen(BScreen &screen);
     void setupFrame(FluxboxWindow &win);
-    void setupClient(WinClient &winclient) {}
+    void setupClient(WinClient &winclient);
 
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);
@@ -47,9 +47,9 @@ public:
 
 
     bool checkClientMessage(const XClientMessageEvent &ce, 
-                            BScreen * screen, FluxboxWindow * const win);
+                            BScreen * screen, WinClient * const winclient);
 
-    bool propertyNotify(FluxboxWindow &win, Atom the_property);
+    bool propertyNotify(WinClient &winclient, Atom the_property);
     //ignore these ones
     void updateFrameClose(FluxboxWindow &win) {}
     void updateClientClose(WinClient &winclient) {}
@@ -61,7 +61,7 @@ private:
     void setState(FluxboxWindow &win, Atom state, bool value) const;
     void toggleState(FluxboxWindow &win, Atom state) const;
     void createAtoms();
-    void updateStrut(FluxboxWindow &win);
+    void updateStrut(WinClient &winclient);
 
     // root window properties
     Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,

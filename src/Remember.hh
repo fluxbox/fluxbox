@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.11 2003/07/10 13:23:09 rathnor Exp $
+// $Id: Remember.hh,v 1.12 2003/07/28 15:06:33 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -188,9 +188,9 @@ public:
     void updateLayer(FluxboxWindow &win) {}
 
     bool checkClientMessage(const XClientMessageEvent &ce, 
-        BScreen * screen, FluxboxWindow * const win) { return false; }
+        BScreen * screen, WinClient * const winclient) { return false; }
     // ignore this
-    bool propertyNotify(FluxboxWindow &win, Atom the_property) { return false; }
+    bool propertyNotify(WinClient &winclient, Atom the_property) { return false; }
 private:
 
     // returns number of lines read

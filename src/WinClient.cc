@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.19 2003/07/21 15:26:56 rathnor Exp $
+// $Id: WinClient.cc,v 1.20 2003/07/28 15:06:34 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -52,9 +52,10 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
-                     send_focus_message(false),
                      m_win(fbwin),
                      m_modal(0),
+                     send_focus_message(false),
+                     closable(false),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
                      m_blackbox_hint(0),
@@ -68,6 +69,10 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
     updateWMClassHint();
     updateTitle();
     updateIconTitle();
+    Fluxbox::instance()->saveWindowSearch(win, this);
+    if (window_group != None) 
+        Fluxbox::instance()->saveGroupSearch(window_group, this);
+
 }
 
 WinClient::~WinClient() {
@@ -76,6 +81,8 @@ WinClient::~WinClient() {
 #endif // DEBUG
 
     FbTk::EventManager::instance()->remove(window());
+
+    clearStrut();
 
     if (m_win != 0)
         m_win->removeClient(*this);
@@ -160,22 +167,27 @@ bool WinClient::sendFocus() {
     return true;
 }
 
-void WinClient::sendClose() {
-    Display *disp = FbTk::App::instance()->display();
-    // fill in XClientMessage structure for delete message
-    XEvent ce;
-    ce.xclient.type = ClientMessage;
-    ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
-    ce.xclient.display = disp;
-    ce.xclient.window = window();
-    ce.xclient.format = 32;
-    ce.xclient.data.l[0] = FbAtoms::instance()->getWMDeleteAtom();
-    ce.xclient.data.l[1] = CurrentTime;
-    ce.xclient.data.l[2] = 0l;
-    ce.xclient.data.l[3] = 0l;
-    ce.xclient.data.l[4] = 0l;
-    // send event delete message to client window
-    XSendEvent(disp, window(), false, NoEventMask, &ce);
+void WinClient::sendClose(bool forceful) {
+    if (forceful || !isClosable())
+        XKillClient(FbTk::App::instance()->display(), window());
+    else {
+        // send WM_DELETE message
+        Display *disp = FbTk::App::instance()->display();
+        // fill in XClientMessage structure for delete message
+        XEvent ce;
+        ce.xclient.type = ClientMessage;
+        ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
+        ce.xclient.display = disp;
+        ce.xclient.window = window();
+        ce.xclient.format = 32;
+        ce.xclient.data.l[0] = FbAtoms::instance()->getWMDeleteAtom();
+        ce.xclient.data.l[1] = CurrentTime;
+        ce.xclient.data.l[2] = 0l;
+        ce.xclient.data.l[3] = 0l;
+        ce.xclient.data.l[4] = 0l;
+        // send event delete message to client window
+        XSendEvent(disp, window(), false, NoEventMask, &ce);
+    }
 }
 
 void WinClient::reparent(Window win, int x, int y) {
@@ -251,9 +263,8 @@ void WinClient::updateTransientInfo() {
         return; 
     }
 
-    FluxboxWindow *transient_win = Fluxbox::instance()->searchWindow(win);
-    if (transient_win)
-        transient_for = transient_win->findClient(win);
+
+    transient_for = Fluxbox::instance()->searchWindow(win);
 
     // make sure we don't have deadlock loop in transient chain
     for (WinClient *w = this; w != 0; w = w->transient_for) {
@@ -527,4 +538,61 @@ void WinClient::removeModal() {
     --m_modal;
     if (transient_for)
         transient_for->removeModal();
+}
+
+bool WinClient::validateClient() const {
+    Display *display = FbTk::App::instance()->display();
+    XSync(display, false);
+
+    XEvent e;
+    if (( XCheckTypedWindowEvent(display, window(), DestroyNotify, &e) ||
+          XCheckTypedWindowEvent(display, window(), UnmapNotify, &e)) 
+        && XPutBackEvent(display, &e)) {
+        Fluxbox::instance()->ungrab();
+        return false;
+    }
+
+    return true;
+}
+
+void WinClient::setStrut(Strut *strut) {    
+    clearStrut();
+    m_strut = strut;
+}
+
+void WinClient::clearStrut() {
+    if (m_strut != 0) {
+        screen().clearStrut(m_strut);
+        m_strut = 0;
+    }
+}
+
+bool WinClient::focus() {
+    if (m_win == 0)
+        return false;
+    else
+        return m_win->setCurrentClient(*this, true);
+}
+
+void WinClient::getWMProtocols() {
+    Atom *proto = 0;
+    int num_return = 0;
+    FbAtoms *fbatoms = FbAtoms::instance();
+
+    if (XGetWMProtocols(FbTk::App::instance()->display(), window(), &proto, &num_return)) {
+
+        for (int i = 0; i < num_return; ++i) {
+            if (proto[i] == fbatoms->getWMDeleteAtom())
+                closable = true;
+            else if (proto[i] == fbatoms->getWMTakeFocusAtom())
+                send_focus_message = true;
+            else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
+                screen().addNetizen(window());
+        }
+
+        XFree(proto);
+    } else {
+        cerr<<"Warning: Failed to read WM Protocols. "<<endl;
+    }
+
 }

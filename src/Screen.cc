@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.207 2003/07/25 10:03:55 rathnor Exp $
+// $Id: Screen.cc,v 1.208 2003/07/28 15:06:33 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -738,11 +738,11 @@ void BScreen::removeWindow(FluxboxWindow *win) {
 
 void BScreen::removeClient(WinClient &client) {
     WinClient *cyc = *cycling_window;
-    FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
+    WinClient *focused = Fluxbox::instance()->getFocusedWindow();
     focused_list.remove(&client);
     if (cyc == &client) {
         cycling_window = focused_list.end();
-    } else if (focused && &focused->winClient() == &client) {
+    } else if (focused == &client) {
         // if we are focused, then give our focus to our transient parent
         // or revert normally
         if (client.transientFor() && client.transientFor()->fbwindow())
@@ -832,7 +832,11 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         return;
 
     XSync(FbTk::App::instance()->display(), true);
-    FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
+    WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
+    FluxboxWindow *focused = 0;
+    if (focused_client)
+        focused = focused_client->fbwindow();
+        
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
 #endif // DEBUG
@@ -882,8 +886,11 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (! m_current_workspace || id >= m_workspaces_list.size())
         return;
 
-    if (!win)
-        win = Fluxbox::instance()->getFocusedWindow();
+    if (!win) {
+        WinClient *client = Fluxbox::instance()->getFocusedWindow();
+        if (client) 
+            win = client->fbwindow();
+    }
 
     if (id != currentWorkspace()->workspaceID()) {
         XSync(FbTk::App::instance()->display(), True);
@@ -930,7 +937,7 @@ void BScreen::addNetizen(Window win) {
     }
 
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
-		Fluxbox::instance()->getFocusedWindow()->clientWindow() : None);
+		Fluxbox::instance()->getFocusedWindow()->window() : None);
     net->sendWindowFocus(f);
 }
 
@@ -970,7 +977,7 @@ void BScreen::updateNetizenWindowFocus() {
     Netizens::iterator it = m_netizen_list.begin();
     Netizens::iterator it_end = m_netizen_list.end();
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
-                Fluxbox::instance()->getFocusedWindow()->clientWindow() : None);
+                Fluxbox::instance()->getFocusedWindow()->window() : None);
     for (; it != it_end; ++it) {
         (*it)->sendWindowFocus(f);
     }
@@ -1075,8 +1082,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         Fluxbox::instance()->attachSignals(*win);
     }
 
-    Fluxbox::instance()->saveWindowSearch(client, win);
-
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
     FluxboxWindow *otherwin = 0;
@@ -1108,7 +1113,6 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // don't add to focused_list, as it should already be in there (since the
     // WinClient already exists).
     
-    Fluxbox::instance()->saveWindowSearch(client.window(), win);
     Fluxbox::instance()->attachSignals(*win);
     // winclient actions should have been setup when the WinClient was created
     if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
@@ -1213,15 +1217,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 
 
 void BScreen::nextFocus(int opts) {
-    bool have_focused = false;
-    FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
     const int num_windows = currentWorkspace()->numberOfWindows();
-
-    if (focused != 0) {
-        if (focused->screen().screenNumber() == screenNumber()) {
-            have_focused = true;
-        }
-    }
 
     if (num_windows >= 1) {
         if (!(opts & CYCLELINEAR)) {
@@ -1272,16 +1268,30 @@ void BScreen::nextFocus(int opts) {
             }
             cycling_window = it;
         } else { // not stacked cycling
+            // I really don't like this, but evidently some people use it(!)
             Workspace *wksp = currentWorkspace();
             Workspace::Windows &wins = wksp->windowList();
             Workspace::Windows::iterator it = wins.begin();
-            
+
+            FluxboxWindow *focused_group = 0;
+            // start from the focused window
+            bool have_focused = false;
+            WinClient *focused = Fluxbox::instance()->getFocusedWindow();
+            if (focused != 0) {
+                if (focused->screen().screenNumber() == screenNumber()) {
+                    have_focused = true;
+                    focused_group = focused->fbwindow();
+                }
+            }
+
             if (!have_focused) {
-                focused = (*it);
+                focused_group = (*it);
             } else {
-                for (; (*it) != focused; ++it) //get focused window iterator
+                //get focused window iterator
+                for (; it != wins.end() && (*it) != focused_group; ++it) 
                     continue;
             }
+
             do {
                 ++it;
                 if (it == wins.end())
@@ -1289,8 +1299,8 @@ void BScreen::nextFocus(int opts) {
                 // see if the window should be skipped
                 if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
                     break;
-            } while ((*it) != focused);
-            if ((*it) != focused && it != wins.end())
+            } while ((*it) != focused_group);
+            if ((*it) != focused_group && it != wins.end())
                 (*it)->raise();
         }
 
@@ -1300,16 +1310,8 @@ void BScreen::nextFocus(int opts) {
 
 
 void BScreen::prevFocus(int opts) {
-    bool have_focused = false;
-    FluxboxWindow *focused;
     int num_windows = currentWorkspace()->numberOfWindows();
 	
-    if ((focused = Fluxbox::instance()->getFocusedWindow())) {
-        if (focused->screen().screenNumber() == screenNumber()) {
-            have_focused = true;
-        }
-    }
-
     if (num_windows >= 1) {
         if (!(opts & CYCLELINEAR)) {
             if (!cycling_focus) {
@@ -1366,13 +1368,25 @@ void BScreen::prevFocus(int opts) {
             Workspace::Windows &wins = wksp->windowList();
             Workspace::Windows::iterator it = wins.begin();
             
+            FluxboxWindow *focused_group = 0;
+            // start from the focused window
+            bool have_focused = false;
+            WinClient *focused = Fluxbox::instance()->getFocusedWindow();
+            if (focused != 0) {
+                if (focused->screen().screenNumber() == screenNumber()) {
+                    have_focused = true;
+                    focused_group = focused->fbwindow();
+                }
+            }
+
             if (!have_focused) {
-                focused = (*it);
+                focused_group = (*it);
             } else {
-                for (; (*it) != focused; ++it) //get focused window iterator
+                //get focused window iterator
+                for (; it != wins.end() && (*it) != focused_group; ++it) 
                     continue;
             }
-            
+
             do {
                 if (it == wins.begin())
                     it = wins.end();
@@ -1380,9 +1394,9 @@ void BScreen::prevFocus(int opts) {
                 // see if the window should be skipped
                 if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
                     break;
-            } while ((*it) != focused);
+            } while ((*it) != focused_group);
             
-            if ((*it) != focused && it != wins.end())
+            if ((*it) != focused_group && it != wins.end())
                 (*it)->raise();
         }
     }
@@ -2150,7 +2164,7 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
     return (!win ||
             (opts & CYCLESKIPSTUCK) != 0 && win->isStuck() || // skip if stuck
             // skip if not active client (i.e. only visit each fbwin once)
-            (opts & CYCLEGROUPS) != 0 && win->winClient() != winclient.window() ||
+            (opts & CYCLEGROUPS) != 0 && win->winClient().window() != winclient.window() ||
             (opts & CYCLESKIPSHADED) != 0 && win->isShaded() // skip if shaded
         ); 
 }
@@ -2229,15 +2243,6 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
     return 0;
 }
 
-/**
- Access and clear the auto-group window
-*/
-FluxboxWindow* BScreen::useAutoGroupWindow() {
-    Window w = auto_group_window;
-    auto_group_window = 0;
-    return w ? Fluxbox::instance()->searchWindow(w) : 0;
-}
-
 void BScreen::updateSize() {
     rootWindow().updateGeometry();
 
@@ -2263,16 +2268,19 @@ FluxboxWindow *BScreen::findGroupLeft(WinClient &winclient) {
     if (w == None)
         return 0;
 
-    FluxboxWindow *fbwin = Fluxbox::instance()->searchWindow(w);
+    WinClient *have_client = Fluxbox::instance()->searchWindow(w);
 
-    if (!fbwin) {
+    if (!have_client) {
         // not found, add it to expecting
         m_expecting_groups[w] = &winclient;
-    } else if (&fbwin->screen() != &winclient.screen())
+    } else if (&have_client->screen() != &winclient.screen())
         // something is not consistent
         return 0;
 
-    return fbwin;
+    if (have_client)
+        return have_client->fbwindow();
+    else
+        return 0;
 }
 
 FluxboxWindow *BScreen::findGroupRight(WinClient &winclient) {

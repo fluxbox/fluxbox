@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.29 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Ewmh.cc,v 1.30 2003/07/28 15:06:33 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -95,6 +95,10 @@ void Ewmh::initForScreen(BScreen &screen) {
 	
 }
 
+void Ewmh::setupClient(WinClient &winclient) {
+    updateStrut(winclient);
+}
+
 void Ewmh::setupFrame(FluxboxWindow &win) {
 
     Atom ret_type;
@@ -122,8 +126,6 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
         XFree(data);
     }
-
-    updateStrut(win);
 
 }
 
@@ -260,34 +262,36 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 }
 
 // return true if we did handle the atom here
-bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win) {
+bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
 
     if (ce.message_type == m_net_wm_desktop) {
         if (screen == 0)
             return true;
         // ce.data.l[0] = workspace number
         // valid window and workspace number?
-        if (win == 0 || 
+        if (winclient == 0 || winclient->fbwindow() == 0 ||
             static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
             return true;
 		
-        screen->sendToWorkspace(ce.data.l[0], win, false);		
+        screen->sendToWorkspace(ce.data.l[0], winclient->fbwindow(), false);		
         return true;
     } else if (ce.message_type == m_net_wm_state) {
-        if (win == 0)
+        if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
+
+        FluxboxWindow &win = *winclient->fbwindow();
         // ce.data.l[0] = the action (remove, add or toggle)
         // ce.data.l[1] = the first property to alter
         // ce.data.l[2] = second property to alter (can be zero)
         if (ce.data.l[0] == STATE_REMOVE) {
-            setState(*win, ce.data.l[1], false);
-            setState(*win, ce.data.l[2], false);
+            setState(win, ce.data.l[1], false);
+            setState(win, ce.data.l[2], false);
         } else if (ce.data.l[0] == STATE_ADD) {
-            setState(*win, ce.data.l[1], true);
-            setState(*win, ce.data.l[2], true);
+            setState(win, ce.data.l[1], true);
+            setState(win, ce.data.l[2], true);
         } else if (ce.data.l[0] == STATE_TOGGLE) {
-            toggleState(*win, ce.data.l[1]);
-            toggleState(*win, ce.data.l[2]);
+            toggleState(win, ce.data.l[1]);
+            toggleState(win, ce.data.l[2]);
         }
 
         return true;
@@ -330,20 +334,20 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
     } else if (ce.message_type == m_net_active_window) {
 		
         // make sure we have a valid window
-        if (win == 0)
+        if (winclient == 0)
             return true;
         // ce.window = window to focus
 		
-        win->setInputFocus();
+        winclient->focus();
         return true;
     } else if (ce.message_type == m_net_close_window) {
-        if (win == 0)
+        if (winclient == 0)
             return true;
         // ce.window = window to close (which in this case is the win argument)
-        win->close();
+        winclient->sendClose();
         return true;
     } else if (ce.message_type == m_net_moveresize_window) {
-        if (win == 0)
+        if (winclient == 0 && winclient->fbwindow())
             return true;
         // ce.data.l[0] = gravity and flags
         // ce.data.l[1] = x
@@ -351,7 +355,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
         // ce.data.l[3] = width
         // ce.data.l[4] = height
         // TODO: gravity and flags
-        win->moveResize(ce.data.l[1], ce.data.l[2],
+        winclient->fbwindow()->moveResize(ce.data.l[1], ce.data.l[2],
                        ce.data.l[3], ce.data.l[4]);
         return true;
     }
@@ -361,9 +365,9 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
 }
 
 
-bool Ewmh::propertyNotify(FluxboxWindow &win, Atom the_property) {
+bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_net_wm_strut) {
-        updateStrut(win);
+        updateStrut(winclient);
         return true;
     }
 
@@ -434,20 +438,20 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) const {
 }
 
 
-void Ewmh::updateStrut(FluxboxWindow &win) {
+void Ewmh::updateStrut(WinClient &winclient) {
     Atom ret_type = 0;
     int fmt = 0;
     unsigned long nitems = 0, bytes_after = 0;
     long *data = 0;
-    if (win.winClient().property(m_net_wm_strut, 0, 4, False, XA_CARDINAL,
+    if (winclient.property(m_net_wm_strut, 0, 4, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): Strut: "<<data[0]<<", "<<data[1]<<", "<<
             data[2]<<", "<<data[3]<<endl;
 #endif // DEBUG
-        win.setStrut(win.screen().requestStrut(data[0], data[1], data[2], data[3]));
-        win.screen().updateAvailableWorkspaceArea();
+            winclient.setStrut(
+                winclient.screen().requestStrut(data[0], data[1], data[2], data[3]));
+            winclient.screen().updateAvailableWorkspaceArea();
     }
-
 }

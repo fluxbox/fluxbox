@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.hh,v 1.1 2003/06/30 14:35:11 fluxgen Exp $
+// $Id: CurrentWindowCmd.hh,v 1.2 2003/07/28 15:06:33 rathnor Exp $
 
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
@@ -28,6 +28,8 @@
 #include "Command.hh"
 
 class FluxboxWindow;
+class WinClient;
+
 /// command that calls FluxboxWindow::<the function> on execute()
 /// similar to FbTk::SimpleCommand<T>
 class CurrentWindowCmd: public FbTk::Command {
@@ -47,7 +49,8 @@ public:
 
 protected:
 
-    FluxboxWindow &window();
+    WinClient &winclient();
+    FluxboxWindow &fbwindow();
     virtual void real_execute() = 0;
 
 };

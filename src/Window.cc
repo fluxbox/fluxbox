@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.212 2003/07/28 12:49:18 fluxgen Exp $
+// $Id: Window.cc,v 1.213 2003/07/28 15:06:34 rathnor Exp $
 
 #include "Window.hh"
 
@@ -262,7 +262,6 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
     m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
-    m_strut(0),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {
@@ -279,15 +278,13 @@ FluxboxWindow::~FluxboxWindow() {
     cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
 #endif // DEBUG
 
-    clearStrut();
-
     if (moving || resizing || m_attaching_tab) {
         screen().hideGeometry();
         XUngrabPointer(display, CurrentTime);
     }
 
     // no longer a valid window to do stuff with
-    Fluxbox::instance()->removeWindowSearch(frame().window().window());
+    Fluxbox::instance()->removeWindowSearchGroup(frame().window().window());
 
     Client2ButtonMap::iterator it = m_labelbuttons.begin();
     Client2ButtonMap::iterator it_end = m_labelbuttons.end();
@@ -421,20 +418,15 @@ void FluxboxWindow::init() {
 
 
     functions.resize = functions.move = functions.iconify = functions.maximize = true;
-    functions.close = decorations.close = false;
+    decorations.close = false;
+
+    functions.close = m_client->isClosable();
 
     if (m_client->getBlackboxHint() != 0)
         getBlackboxHints();
     else
         getMWMHints();
     
-    // get size, aspect, minimum/maximum size and other hints set
-    // by the client
-
-    getWMProtocols();
-    if (m_client->window_group != None) 
-        Fluxbox::instance()->saveGroupSearch(m_client->window_group, this);
-
     //!!
     // fetch client size and placement
     XWindowAttributes wattrib;
@@ -448,8 +440,6 @@ void FluxboxWindow::init() {
     m_client->old_bw = wattrib.border_width;
     m_client->x = wattrib.x; m_client->y = wattrib.y;
 
-    fluxbox.saveWindowSearch(frame().window().window(), this);
-
     m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
     m_timer.fireOnce(true);
 
@@ -458,6 +448,8 @@ void FluxboxWindow::init() {
     }
 
     m_managed = true; //this window is managed
+
+    Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
 	
     // update transient infomation
     m_client->updateTransientInfo();
@@ -603,13 +595,11 @@ void FluxboxWindow::attachClient(WinClient &client) {
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
-        Fluxbox *fb = Fluxbox::instance();
         // make sure we set new window search for each client
         ClientList::iterator client_it = old_win->clientList().begin();
         ClientList::iterator client_it_end = old_win->clientList().end();
         for (; client_it != client_it_end; ++client_it) {
             // setup eventhandlers for client
-            fb->saveWindowSearch((*client_it)->window(), this);
             evm.add(*this, (*client_it)->window());
             
             // reparent window to this
@@ -671,7 +661,6 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
         client.m_win = this;    
 
-        Fluxbox::instance()->saveWindowSearch(client.window(), this);
         client.saveBlackboxAttribs(m_blackbox_attrib);
         m_clientlist.push_back(&client);
     }
@@ -993,30 +982,6 @@ void FluxboxWindow::updateIconNameFromClient() {
 }
 
 
-void FluxboxWindow::getWMProtocols() {
-    Atom *proto = 0;
-    int num_return = 0;
-    FbAtoms *fbatoms = FbAtoms::instance();
-
-    if (XGetWMProtocols(display, m_client->window(), &proto, &num_return)) {
-
-        for (int i = 0; i < num_return; ++i) {
-            if (proto[i] == fbatoms->getWMDeleteAtom())
-                functions.close = true;
-            else if (proto[i] == fbatoms->getWMTakeFocusAtom())
-                m_client->send_focus_message = true;
-            else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
-                screen().addNetizen(m_client->window());
-        }
-
-        XFree(proto);
-    } else {
-        cerr<<"Warning: Failed to read WM Protocols. "<<endl;
-    }
-
-}
-
-
 void FluxboxWindow::getMWMHints() {
     const WinClient::MwmHints *hint = m_client->getMwmHint();
 
@@ -1185,7 +1150,7 @@ bool FluxboxWindow::setInputFocus() {
         }
     }
 
-    if (! validateClient())
+    if (! m_client->validateClient())
         return false;
 
     if (!m_client->transients.empty() && m_client->isModal()) {
@@ -1256,7 +1221,9 @@ void FluxboxWindow::iconify() {
                     (*it)->fbwindow()->iconify();
         }
     }
-    if (Fluxbox::instance()->getFocusedWindow() == this) 
+
+    WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
+    if (focused_client && focused_client->fbwindow() == this)
         Fluxbox::instance()->revertFocus(screen());
 
 }
@@ -1316,16 +1283,6 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     oplock = false;
     if (do_raise)
 	raise();
-}
-
-/**
-   Send close request to client window
-*/
-void FluxboxWindow::close() {
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<")"<<endl;
-#endif // DEBUG    
-    m_client->sendClose();
 }
 
 /**
@@ -1703,7 +1660,7 @@ void FluxboxWindow::installColormap(bool install) {
 
     Fluxbox *fluxbox = Fluxbox::instance();
     fluxbox->grab();
-    if (! validateClient())
+    if (! m_client->validateClient())
         return;
 
     int i = 0, ncmap = 0;
@@ -2151,13 +2108,13 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     if (!ne.override_redirect && isVisible()) {
         Fluxbox *fluxbox = Fluxbox::instance();
         fluxbox->grab();
-        if (! validateClient())
+        if (! client->validateClient())
             return;
 
         setState(NormalState);		
 			
         if (client->isTransient() || screen().doFocusNew()) {
-            setInputFocus();
+            setCurrentClient(*client, true);
         }
         else
             setFocusFlag(false);			
@@ -2197,6 +2154,8 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
 
 /**
    Checks if event is for m_client->window.
+   If it isn't, we leave it until the window is unmapped, if it is, 
+   we just hide it for now.
 */
 void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
     if (de.window == m_client->window()) {
@@ -2295,7 +2254,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
     default:
         if (atom == FbAtoms::instance()->getWMProtocolsAtom()) {
-            getWMProtocols();
+            m_client->getWMProtocols();
             //!!TODO  check this area            
             // reset window actions
             setupWindow();
@@ -2771,18 +2730,6 @@ void FluxboxWindow::toggleDecoration() {
     }
 }
 
-void FluxboxWindow::setStrut(Strut *strut) {    
-    clearStrut();
-    m_strut = strut;
-}
-
-void FluxboxWindow::clearStrut() {
-    if (m_strut != 0) {
-        screen().clearStrut(m_strut);
-        m_strut = 0;
-    }
-}
-
 unsigned int FluxboxWindow::decorationMask() const {
     unsigned int ret = 0;
     if (decorations.titlebar)
@@ -2823,21 +2770,6 @@ void FluxboxWindow::setDecorationMask(unsigned int mask) {
     decorations.tab      = mask & DECORM_TAB;
     decorations.enabled  = mask & DECORM_ENABLED;
     applyDecorations();
-}
-
-bool FluxboxWindow::validateClient() {
-    XSync(display, false);
-
-    XEvent e;
-    if (!m_client || 
-        ( XCheckTypedWindowEvent(display, m_client->window(), DestroyNotify, &e) ||
-          XCheckTypedWindowEvent(display, m_client->window(), UnmapNotify, &e)) 
-        && XPutBackEvent(display, &e)) {
-        Fluxbox::instance()->ungrab();
-        return false;
-    }
-
-    return true;
 }
 
 void FluxboxWindow::startMoving(Window win) {
@@ -3096,7 +3028,12 @@ void FluxboxWindow::attachTo(int x, int y) {
                               parent().window(),
                               x, y, &dest_x, &dest_y, &child)) {        
         // search for a fluxboxwindow 
-        FluxboxWindow *attach_to_win = Fluxbox::instance()->searchWindow(child);
+        WinClient *client = Fluxbox::instance()->searchWindow(child);
+        FluxboxWindow *attach_to_win = 0;
+        if (client)
+            attach_to_win = client->fbwindow();
+
+        cerr<<"client = "<<client<<", child = "<<hex<<child<<dec<<", fbwin = "<<attach_to_win<<endl;
 
         if (attach_to_win != this &&
             attach_to_win != 0) {
@@ -3468,6 +3405,10 @@ void FluxboxWindow::removeExtraMenu(FbTk::Menu *menu) {
     setupWindow();
 }    
 
+void FluxboxWindow::close() {
+    if (m_client)
+        m_client->sendClose(false);
+}
 
 void FluxboxWindow::setupWindow() {
     // sets up our window

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.77 2003/07/25 10:03:55 rathnor Exp $
+// $Id: Workspace.cc,v 1.78 2003/07/28 15:06:35 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -276,7 +276,7 @@ void Workspace::reconfigure() {
     Windows::iterator it = m_windowlist.begin();
     Windows::iterator it_end = m_windowlist.end();
     for (; it != it_end; ++it) {
-        if ((*it)->validateClient())
+        if ((*it)->winClient().validateClient())
             (*it)->reconfigure();
     }
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.175 2003/07/27 13:53:34 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.176 2003/07/28 15:06:35 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -757,9 +757,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
         handleButtonEvent(e->xbutton);
 	break;	
     case ConfigureRequest: {
-        FluxboxWindow *win = (FluxboxWindow *) 0;
+        WinClient *winclient = (WinClient *) 0;
 
-        if ((win = searchWindow(e->xconfigurerequest.window))) {
+        if ((winclient = searchWindow(e->xconfigurerequest.window))) {
             // already handled in FluxboxWindow::handleEvent
         } else { 
             grab();
@@ -836,9 +836,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
         cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
 #endif // DEBUG
 
-        FluxboxWindow *win = searchWindow(e->xmaprequest.window);
+        WinClient *winclient = searchWindow(e->xmaprequest.window);
+        FluxboxWindow *win = 0;
 
-        if (! win) {
+        if (! winclient) {
             //!!! TODO
             BScreen *scr = searchScreen(e->xmaprequest.parent);
             if (scr != 0)
@@ -846,7 +847,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
             else
                 cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
 
+        } else {
+            win = winclient->fbwindow();
         }
+
         // we don't handle MapRequest in FluxboxWindow::handleEvent
         if (win)
             win->mapRequestEvent(e->xmaprequest);
@@ -854,9 +858,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case MapNotify: {
         // handled directly in FluxboxWindow::handleEvent
-        FluxboxWindow *win = searchWindow(e->xmap.window);
-        if (win)
-            win->mapNotifyEvent(e->xmap);
     } break;
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
@@ -873,20 +874,16 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case CreateNotify:
 	break;
     case DestroyNotify: {
-        FluxboxWindow *win = searchWindow(e->xdestroywindow.window);        
-        if (win != 0) {
-            WinClient *client = win->findClient(e->xdestroywindow.window);
-            if (client != 0) {
+        WinClient *winclient = searchWindow(e->xdestroywindow.window);        
+        if (winclient != 0) {
+            FluxboxWindow *win = winclient->fbwindow();
+            if (win)
                 win->destroyNotifyEvent(e->xdestroywindow);
 
-                delete client;
+            delete winclient;
                 
-                if (win->numClients() == 0 ||
-                    &win->winClient() == client && win->numClients() == 1) {
-                    delete win;
-                }
-
-            }
+            if (win && win->numClients() == 0)
+                delete win;
         } 
 
     }
@@ -895,13 +892,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case PropertyNotify: {
         m_last_time = e->xproperty.time;
-        FluxboxWindow *win = searchWindow(e->xproperty.window);
-        if (win == 0)
+        WinClient *winclient = searchWindow(e->xproperty.window);
+        if (winclient == 0)
             break;
         // most of them are handled in FluxboxWindow::handleEvent
         // but some special cases like ewmh propertys needs to be checked 
         for (size_t i=0; i<m_atomhandler.size(); ++i) {
-            if (m_atomhandler[i]->propertyNotify(*win, e->xproperty.atom))
+            if (m_atomhandler[i]->propertyNotify(*winclient, e->xproperty.atom))
                 break;
         }
     } break;
@@ -942,10 +939,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
             e->xfocus.detail == NotifyPointer)
             break;
 
-        FluxboxWindow *win = searchWindow(e->xfocus.window);
-        if (win && ! win->isFocused()) {
-            setFocusedWindow(win);
-        }
+        WinClient *winclient = searchWindow(e->xfocus.window);
+        if (winclient && !(m_focused_window == winclient))
+            setFocusedWindow(winclient);
 	
     } break;
     case FocusOut:{
@@ -953,8 +949,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
             break;
-        FluxboxWindow *win = searchWindow(e->xfocus.window);
-        if (win == 0 && FbTk::Menu::focused() == 0) {
+        WinClient *winclient = searchWindow(e->xfocus.window);
+        if (winclient == 0 && FbTk::Menu::focused() == 0) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
@@ -1079,25 +1075,29 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
 		
-    FluxboxWindow *win = 0;
+    WinClient *winclient = 0;
 	
     BScreen *screen = searchScreen(ue.event);
 	
     if ( ue.event != ue.window && (screen != 0 || !ue.send_event))
         return;
 
-    if ((win = searchWindow(ue.window)) != 0) {
-        WinClient *client = win->findClient(ue.window);
+    if ((winclient = searchWindow(ue.window)) != 0) {
 
-        if (client != 0) {
+        if (winclient != 0) {
+            FluxboxWindow *win = winclient->fbwindow();
 
-            win->unmapNotifyEvent(ue);
-            client = 0; // it's invalid now when win destroyed the client
+            if (!win) {
+                delete winclient;
+                return;
+            }
 
-            if (win == m_focused_window)
-                revertFocus(win->screen());
+            // this should delete client and adjust m_focused_window if necessary
+            win->unmapNotifyEvent(ue); 
 
-            // finaly destroy window if empty
+            winclient = 0; // it's invalid now when win destroyed the client
+
+            // finally destroy window if empty
             if (win->numClients() == 0) {
                 delete win;
                 win = 0;
@@ -1120,14 +1120,14 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         return;
 	
     if (ce.message_type == m_fbatoms->getWMChangeStateAtom()) {
-        FluxboxWindow *win = searchWindow(ce.window);
-        if (! win || ! win->validateClient())
+        WinClient *winclient = searchWindow(ce.window);
+        if (! winclient || !winclient->fbwindow() || ! winclient->validateClient())
             return;
 
         if (ce.data.l[0] == IconicState)
-            win->iconify();
+            winclient->fbwindow()->iconify();
         if (ce.data.l[0] == NormalState)
-            win->deiconify();
+            winclient->fbwindow()->deiconify();
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeWorkspaceAtom()) {
         BScreen *screen = searchScreen(ce.window);
 
@@ -1136,9 +1136,12 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             screen->changeWorkspaceID(ce.data.l[0]);
 				
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
-        FluxboxWindow *win = searchWindow(ce.window);
-        if (win && win->isVisible())
-            win->setInputFocus();
+        WinClient *winclient = searchWindow(ce.window);
+        if (winclient) {
+            FluxboxWindow *win = winclient->fbwindow();
+            if (win && win->isVisible())
+                win->setCurrentClient(*winclient, true);
+        }
     } else if (ce.message_type == m_fbatoms->getFluxboxCycleWindowFocusAtom()) {
         BScreen *screen = searchScreen(ce.window);
 
@@ -1147,12 +1150,11 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
                 screen->prevFocus();
             else
                 screen->nextFocus();
-        }		
+        }
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeAttributesAtom()) {
-		
-        FluxboxWindow *win = searchWindow(ce.window);
-
-        if (win && win->validateClient()) {
+        WinClient *winclient = searchWindow(ce.window);
+        FluxboxWindow *win = 0;
+        if (winclient && (win = winclient->fbwindow()) && winclient->validateClient()) {
             FluxboxWindow::BlackboxHints net;
             net.flags = ce.data.l[0];
             net.attrib = ce.data.l[1];
@@ -1162,11 +1164,13 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
             win->changeBlackboxHints(net);
         }
     } else {
-        FluxboxWindow *win = searchWindow(ce.window);
+        WinClient *winclient = searchWindow(ce.window);
         BScreen *screen = searchScreen(ce.window);
-		
-        for (size_t i=0; i<m_atomhandler.size(); ++i) {
-            m_atomhandler[i]->checkClientMessage(ce, screen, win);
+
+        if (winclient && screen) {
+            for (size_t i=0; i<m_atomhandler.size(); ++i) {
+                m_atomhandler[i]->checkClientMessage(ce, screen, winclient);
+            }
         }
     }
 }
@@ -1325,8 +1329,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             // make sure each workspace get this 
             BScreen &scr = win.screen();
             scr.removeWindow(&win);
-            if (m_focused_window == &win) 
-                revertFocus(scr);
             
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
@@ -1372,9 +1374,13 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             if (m_atomhandler[i]->update())
                 m_atomhandler[i]->updateClientClose(client);
         }
+
         BScreen &screen = client.screen();
         screen.updateNetizenWindowDel(client.window());
         screen.removeClient(client);
+
+        if (m_focused_window == &client) 
+            revertFocus(screen);
 
         removeWindowSearch(client.window());        
     }
@@ -1434,30 +1440,45 @@ void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
     }
 }
 
-FluxboxWindow *Fluxbox::searchWindow(Window window) {
-    std::map<Window, FluxboxWindow *>::iterator it = m_window_search.find(window);
-    return it == m_window_search.end() ? 0 : it->second;
+WinClient *Fluxbox::searchWindow(Window window) {
+    std::map<Window, WinClient *>::iterator it = m_window_search.find(window);
+    if (it != m_window_search.end()) 
+        return it->second;
+    
+    std::map<Window, FluxboxWindow *>::iterator git = m_window_search_group.find(window);
+    return git == m_window_search_group.end() ? 0 : &git->second->winClient();
 }
 
 
-FluxboxWindow *Fluxbox::searchGroup(Window window, FluxboxWindow *win) {
-    std::map<Window, FluxboxWindow *>::iterator it = m_group_search.find(window);
-    return it == m_group_search.end() ? 0 : it->second;
+/* Not implemented until we know how it'll be used
+ * Recall that this refers to ICCCM groups, not fluxbox tabgroups
+ * See ICCCM 4.1.11 for details
+ */
+/*
+WinClient *Fluxbox::searchGroup(Window window) {
 }
+*/
 
-
-void Fluxbox::saveWindowSearch(Window window, FluxboxWindow *data) {
+void Fluxbox::saveWindowSearch(Window window, WinClient *data) {
     m_window_search[window] = data;
 }
 
+/* some windows relate to the whole group */
+void Fluxbox::saveWindowSearchGroup(Window window, FluxboxWindow *data) {
+    m_window_search_group[window] = data;
+}
 
-void Fluxbox::saveGroupSearch(Window window, FluxboxWindow *data) {
-    m_group_search[window] = data;
+void Fluxbox::saveGroupSearch(Window window, WinClient *data) {
+    m_group_search.insert(pair<Window, WinClient *>(window, data));
 }
 
 
 void Fluxbox::removeWindowSearch(Window window) {
     m_window_search.erase(window);
+}
+
+void Fluxbox::removeWindowSearchGroup(Window window) {
+    m_window_search_group.erase(window);
 }
 
 void Fluxbox::removeGroupSearch(Window window) {
@@ -1996,9 +2017,9 @@ void Fluxbox::timeout() {
 }
 
 // set focused window
-void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
+void Fluxbox::setFocusedWindow(WinClient *client) {
     // already focused
-    if (m_focused_window == win) {
+    if (m_focused_window == client) {
 #ifdef DEBUG
         cerr<<"Focused window already win"<<endl;
 #endif // DEBUG
@@ -2006,19 +2027,19 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
     }
 #ifdef DEBUG
     cerr<<"-----------------"<<endl;
-    cerr<<"Setting Focused window = "<<win<<endl;
+    cerr<<"Setting Focused window = "<<client<<endl;
     cerr<<"Current Focused window = "<<m_focused_window<<endl;
     cerr<<"------------------"<<endl;
 #endif // DEBUG    
     BScreen *old_screen = 0, *screen = 0;
-    FluxboxWindow *old_win = 0;
+    WinClient *old_client = 0;
     Workspace *old_wkspc = 0, *wkspc = 0;
 
     if (m_focused_window != 0) {
         // check if m_focused_window is valid
         bool found = false;
-        std::map<Window, FluxboxWindow *>::iterator it = m_window_search.begin();
-        std::map<Window, FluxboxWindow *>::iterator it_end = m_window_search.end();
+        std::map<Window, WinClient *>::iterator it = m_window_search.begin();
+        std::map<Window, WinClient *>::iterator it_end = m_window_search.end();
         for (; it != it_end; ++it) {
             if (it->second == m_focused_window) {
                 // we found it, end loop
@@ -2030,26 +2051,32 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
         if (!found) {
             m_focused_window = 0;
         } else {
-            old_win = m_focused_window;
-            old_screen = &old_win->screen();
+            old_client = m_focused_window;
+            old_screen = &old_client->screen();
 
-            old_wkspc = old_screen->getWorkspace(old_win->workspaceNumber());
+            if (old_client->fbwindow()) {
+                FluxboxWindow *old_win = old_client->fbwindow();
+                old_wkspc = old_screen->getWorkspace(old_win->workspaceNumber());
 
-            old_win->setFocusFlag(false);
+                if (!client || client->fbwindow() != old_win)
+                    old_win->setFocusFlag(false);
+            }
         }
     }
 
-    if (win && ! win->isIconic()) {
+    if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {
+        FluxboxWindow *win = client->fbwindow();
         // make sure we have a valid win pointer with a valid screen
         ScreenList::iterator winscreen = 
             std::find(m_screen_list.begin(), m_screen_list.end(),
-                      &win->screen());
+                      &client->screen());
         if (winscreen == m_screen_list.end()) {
             m_focused_window = 0; // the window pointer wasn't valid, mark no window focused
         } else {
             screen = *winscreen;
-            wkspc = screen->getWorkspace(win->workspaceNumber());		
-            m_focused_window = win;     // update focused window
+            wkspc = screen->getWorkspace(win->workspaceNumber());
+            m_focused_window = client;     // update focused window
+            win->setCurrentClient(*client, false); // don't setinputfocus
             win->setFocusFlag(true); // set focus flag
         }
     } else

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.9 2003/07/04 14:06:20 rathnor Exp $
+// $Id: Gnome.hh,v 1.10 2003/07/28 15:06:33 rathnor Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -78,12 +78,12 @@ public:
     void updateHints(FluxboxWindow &win);
     void updateWorkspace(FluxboxWindow &win);
 
-    bool checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win);
+    bool checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient);
 	
     // ignore these ones
     void updateFrameClose(FluxboxWindow &win) {}
     void updateClientClose(WinClient &winclient) {}
-    bool propertyNotify(FluxboxWindow &win, Atom the_property) { return false; }
+    bool propertyNotify(WinClient &winclient, Atom the_property) { return false; }
 
 private:
     void setLayer(FluxboxWindow *win, int layer);

@@ -1,5 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/29:
+   * Change:    (Simon)
+     - Fluxbox::window search
+     - Fluxbox::m_focused_window
+     - strut saving
+     - Some event handling
+     - and more
+     to use WinClient, not FluxboxWindow.
+     This should fix some bugs where things weren't consistent and 
+     hopefully sets the stage to fix various other things that get out of 
+     whack.
+     fluxbox.hh/cc Screen.hh/cc Window.hh/cc Workspace.cc WinClient.hh/cc
+     CurrentWindowCmd.hh/cc AtomHandler.hh Ewmh.hh/cc Gnome.hh/cc 
+     Remember.hh ToolbarHandler.hh Toolbar.cc CurrentWindowCmd.hh/cc
 *03/07/28:
    * Added MoveTabLeft and MoveTabRight commands (Henrik)
      Window.hh/cc, FbWinFrame.hh/cc, FbCommandFactory.cc

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.10 2003/07/21 15:26:56 rathnor Exp $
+// $Id: WinClient.hh,v 1.11 2003/07/28 15:06:34 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -32,6 +32,7 @@
 #include <string>
 
 class BScreen;
+class Strut;
 
 /// Holds client window info 
 class WinClient:public FbTk::FbWindow {
@@ -44,7 +45,8 @@ public:
     void updateRect(int x, int y, unsigned int width, unsigned int height);
     bool sendFocus(); // returns whether we sent a message or not 
                       // i.e. whether we assume the focus will get taken
-    void sendClose();
+    void sendClose(bool forceful = false);
+    inline bool isClosable() const { return closable; }
     void reparent(Window win, int x, int y);
     bool getAttrib(XWindowAttributes &attr) const;
     bool getWMName(XTextProperty &textprop) const;
@@ -55,8 +57,9 @@ public:
     const std::string &getWMClassClass() const;
     /// updates from wm class hints
     void updateWMClassHint();
+    void getWMProtocols();
 
-    inline const std::string getTitle() const { return m_title; }
+    inline const std::string &getTitle() const { return m_title; }
     void updateTitle();
     void updateIconTitle();
     BScreen &screen() { return m_screen; }
@@ -80,6 +83,11 @@ public:
         return (m_win == &win);
     }
 
+    void setStrut(Strut *strut);
+    void clearStrut();
+
+    bool focus(); // calls Window->setCurrentClient to give focus to this client
+
     const std::string &title() const { return m_title; }
     const std::string &iconTitle() const { return m_icon_title; }
     const FluxboxWindow *fbwindow() const { return m_win; }
@@ -98,6 +106,9 @@ public:
     void setGroupLeftWindow(Window win);
     bool hasGroupLeftWindow() const;
 
+    // does this client have a pending unmap or destroy event?
+    bool validateClient() const;
+
     /**
        !! TODO !!
        remove or move these to private
@@ -114,7 +125,6 @@ public:
         min_aspect_x, min_aspect_y, max_aspect_x, max_aspect_y,
         base_width, base_height, win_gravity;
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
-    bool send_focus_message;
 
     // this structure only contains 3 elements... the Motif 2.0 structure contains
     // 5... we only need the first 3... so that is all we will define
@@ -145,6 +155,7 @@ private:
     // number of transients which we are modal for
     // or indicates that we are modal if don't have any transients
     int m_modal;
+    bool send_focus_message, closable;
 
     std::string m_title, m_icon_title;
     std::string m_class_name, m_instance_name;
@@ -156,6 +167,8 @@ private:
 
     WinClientSubj m_diesig;
     BScreen &m_screen;
+
+    Strut *m_strut;
 
 };
 
