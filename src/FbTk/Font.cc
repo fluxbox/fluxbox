@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.17 2004/08/31 21:47:56 akir Exp $
+//$Id: Font.cc,v 1.18 2004/08/31 23:07:58 akir Exp $
 
 
 #include "StringUtil.hh"
@@ -252,11 +252,15 @@ Font::Font(const char *name, bool antialias):
         m_multibyte = true;
 
     // check for utf-8 mode
+#ifdef CODESET
     char *locale_codeset = nl_langinfo(CODESET);
+#else // openbsd doesnt have this (yet?)
+    char *locale_codeset = 0;
+#endif // CODESET
 
-    if (strcmp("UTF-8", locale_codeset) == 0) {
+    if (locale_codeset && strcmp("UTF-8", locale_codeset) == 0) {
         m_utf8mode = true;
-    } else {
+    } else if (locale_codeset != 0) {
         // if locale isn't UTF-8 we try to
         // create a iconv pointer so we can
         // convert non utf-8 strings to utf-8
