@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.2 2002/11/30 14:13:43 rathnor Exp $
+// $Id: Texture.cc,v 1.3 2002/11/30 20:34:27 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -91,10 +91,8 @@ void Texture::setFromString(const char * const texture_str) {
 			else
 				addType(Texture::BEVEL1);
 
-#ifdef INTERLACE
 		if (strstr(ts, "interlaced"))
 			addType(Texture::INTERLACED);
-#endif // INTERLACE
 	}
 
 	delete [] ts;
