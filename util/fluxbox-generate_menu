@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.21 2002/12/20 09:02:02 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.22 2002/12/29 10:37:47 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -51,17 +51,21 @@ Options:
     -t  Favourite terminal
     -b  Favourite browser
     -w  Homepage for console-browsers. Default is fluxbox.org.
-    -u  user sub-menu
+    -u  user sub-menu; default is ~/.fluxbox/usermenu
 
     -h  Display this help
     -a  Display the authors of this script
-
 
   Only for packagers:
 
     -p  Package-datadir; default is /usr/share
     -n  Gnome-datadir; default is Package-datadir
     -q  KDE-datadir; default is Package-datadir
+
+
+Files:
+    ~/.fluxbux/usermenu your own file which can be included in the menu
+    ~/.fluxbox/menuconfig   rc file for fluxbox-generate_menu
 
 EOF
 }
@@ -81,6 +85,7 @@ fluxbox-generate_menu was brought to you by:
 EOF
 }
 
+# ugly code for solaris compat.
 find_it() {
     file=`which $1 2> /dev/null`
     if [ -x "$file" ]; then
@@ -103,15 +108,13 @@ append_menu() {
 }
 
 append_submenu() {
-    # only an empty line in templates
-    [ "${REMOVE}" ] && echo >> ${FILENAME}
+    [ "${REMOVE}" ] && echo >> ${FILENAME} # only an empty line in templates
     append_menu "[submenu] ($1)"
 }
 
 append_menu_end() {
     append_menu "[end]"
-    # only an empty line in templates
-    [ "${REMOVE}" ] && echo >> ${FILENAME}
+    [ "${REMOVE}" ] && echo >> ${FILENAME} # only an empty line in templates
 }
 
 menu_entry() {
@@ -147,14 +150,69 @@ N
 mv -f ${FILENAME}.tmp ${FILENAME}
 }
 
-# Save options for inclusion in menu
-options="$@"
-
 # Set Defaults
 FILENAME="${HOME}/.fluxbox/menu"
 MENUTITLE="Fluxbox"
 HOMEPAGE="fluxbox.org"
 USERMENU="${HOME}/.fluxbox/usermenu"
+
+# Read the menuconfig file if it exists or else create it.
+if [ -e ${HOME}/.fluxbox/menuconfig ];then
+      . ${HOME}/.fluxbox/menuconfig
+else
+    if [ ! "$WHOAMI" = root ];then # this is only for users.
+        cat<<EOF> ${HOME}/.fluxbox/menuconfig
+# This file is read by fluxbox-generate_menu.  If you don't like a
+# default you can change it here.  Don't forget to remove the # in front
+# of the line.
+
+# Your favourite terminal
+# MY_TERM=aterm
+
+# Your favourite browser
+# MY_BROWSER=mozilla
+
+# Name of the outputfile
+# FILENAME=${HOME}/.fluxbox/menu
+
+# Data-dir
+# PKGDATADIR=/usr/share
+
+# Gnome data-dir
+# in case gnome is installed in another datadir.
+# GPKGDATADIR=/opt/gnome/share
+
+# Kde data-dir
+# KPKGDATADIR=/opt/kde/share
+
+# MENUTITLE=Fluxbox 0.1.14
+
+# standard url for console-browsers
+# HOMEPAGE=fluxbox.org
+
+# location with your own menu-entries
+# USERMENU=~/.fluxbox/usermenu
+
+# Boolean variables.
+# Setting a variable to no won't help. Comment them out if you don't want them.
+# Setting are overruled by the command-line options.
+
+# Include all backgrounds in your backgrounds-directory
+# BACKGROUNDMENUITEM=yes
+
+# Include kde-menus
+# KDEMENU=yes
+
+# Include gnome-menus
+# GNOMEMENU=yes
+
+# Don't cleanup the menu
+# REMOVE=no
+
+EOF
+    fi
+fi
+
 
 # Get options.
 while getopts ":Bkhragb:t:p:w:u:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
@@ -195,10 +253,7 @@ if [ -w "${FILENAME}" ]; then
     mv ${FILENAME} ${FILENAME}.bak
 fi
 
-# default homepage for console-browsers
-HOMEPAGE=${HOMEPAGE:=fluxbox.org}
-
-#packagedatadir
+# packagedatadir
 if [ ! -d "${PKGDATADIR}" -o "${PKGDATADIR}" = "" ]; then
    if [ "`uname`" = "Linux" ];then
         PKGDATADIR=/usr/share
@@ -207,12 +262,12 @@ if [ ! -d "${PKGDATADIR}" -o "${PKGDATADIR}" = "" ]; then
     fi
 fi
 
-#gnome packagedatadir
+# gnome packagedatadir
 if [ ! -d "${GPKGDATADIR}" -o "${GPKGDATADIR}" = "" ]; then
     GPKGDATADIR=${PKGDATADIR}
 fi
 
-#kde packagedatadir
+# kde packagedatadir
 if [ ! -d "${KPKGDATADIR}" -o "${KPKGDATADIR}" = "" ]; then
     KPKGDATADIR=${PKGDATADIR}
 fi
@@ -239,7 +294,7 @@ find_it $MY_BROWSER
 if [ $? -ne 0 ];then
     [ -n "$MY_BROWSER" ] && echo "Warning: you choose an invalid browser." >&2
     #The precise order is up for debate.
-    for browser in opera phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
+    for browser in opera skipstone phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
         if find_it $browser; then
             DEFAULT_BROWSER=$browser
             break
@@ -479,6 +534,32 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Aree di lavoro"
                 XUTILSMENU="X-utils"
         ;;
+        ro_RO*) # Romanian locales
+                #OFFICEMENU="Office"
+                #RESTARTITEM="Restart"
+                BACKGROUNDMENU="Fundaluri"
+                BACKGROUNDMENUTITLE="Alege fundalul"
+                BROWSERMENU="Navigatoare"
+                CONFIGUREMENU="Configurare"
+                EDITORMENU="Editoare"
+                EXITITEM="Iesire"
+                FBSETTINGSMENU="Meniul Fluxbox"
+                GAMESMENU="Jocuri"
+                GNOMEMENUTEXT="Meniu Gnome"
+                GRAPHICMENU="Grafica"
+                KDEMENUTEXT="Meniu KDE"
+                MISCMENU="Diverse"
+                MULTIMEDIAMENU="Multimedia"
+                MUSICMENU="Muzica"
+                NETMENU="Net"
+                RELOADITEM="Reincarca configuratia"
+                STYLEMENUTITLE="Alege un stil..."
+                SYSTEMSTYLES="Stiluri sistem"
+                TERMINALMENU="Terminale"
+                USERSTYLES="Stiluri utilizator"
+                WORKSPACEMENU="Lista workspace-uri"
+                XUTILSMENU="Utilitare X"
+        ;;
         *)
         ;;
 esac
@@ -548,9 +629,8 @@ append_submenu "${NETMENU}"
     append_submenu IRC
         normal_find xchat
         find_it irssi       append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
-        find_it BitchX      append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}"
-        [ $? -ne 0 ] && \
-          find_it bitchx            append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
+        find_it BitchX      append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
+          find_it bitchx    append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
         find_it ircii       append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
     append_menu_end
 
@@ -572,9 +652,11 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
        append_submenu "${MUSICMENU}"
-               normal_find xmms gqmpeg xmixer gmix kmix grecord \
-                   kmidi xplaycd soundtracker grip easytag lopster
+               normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix grecord \
+                   kmidi xplaycd soundtracker grip easytag lopster audacity
+               find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
+               find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
        append_menu_end
 
 
@@ -591,8 +673,7 @@ append_menu_end
 
 append_submenu "${OFFICEMENU}"
     normal_find xclock xcalc kcalc
-    find_it gcalc           append "[exec] (gcalc) {gcalc}"
-    [ $? -ne 0 ] && \
+    find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
     find_it ooffice append "[exec] (Open Office) {ooffice}"
     find_it soffice append "[exec] (Star Office) {soffice}"
@@ -604,7 +685,7 @@ append_submenu "${GAMESMENU}"
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
         gnotski iagno knights same-gnome xboard freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins \
-        quake2 quake3
+        quake2 quake3 skoosh
 append_menu_end
 
 # gnome menu
@@ -674,12 +755,12 @@ append_submenu "${FBSETTINGSMENU}"
             find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
             # if gxmessage exitst use it; else use xmessage
             find_it gxmessage append \
-                "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
-            [ $? -ne 0 ] && \
+                "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
                 find_it xmessage append \
                     "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
-                find_it fbrun append "[exec] (Run) {fbrun}"
-                find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu $options}"
+	    find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
+            find_it fbrun append "[exec] (Run) {fbrun}"
+            find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu}"
         append_menu_end
 
         append "[reconfig] (${RELOADITEM})"
