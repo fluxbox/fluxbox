@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.9 2003/04/16 16:02:14 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.10 2003/04/17 14:16:20 fluxgen Exp $
 
 #include "FbWindow.hh"
+#include "EventManager.hh"
 
 #include "Color.hh"
 #include "App.hh"
@@ -59,8 +60,8 @@ FbWindow::FbWindow(const FbWindow &parent,
                    long eventmask,
                    bool override_redirect, 
                    int depth, int class_type):
-   m_parent(&parent),
-   m_screen_num(parent.screenNumber()), m_destroy(true) { 
+    m_parent(&parent),
+    m_screen_num(parent.screenNumber()), m_destroy(true) { 
 
     create(parent.window(), x, y, width, height, eventmask, 
            override_redirect, depth, class_type);
@@ -74,8 +75,13 @@ FbWindow::FbWindow(Window client):m_parent(0), m_window(client),
 }
 
 FbWindow::~FbWindow() {
-    if (m_window != 0 && m_destroy)
-        XDestroyWindow(s_display, m_window);
+
+    if (m_window != 0) {
+        // so we don't get any dangling eventhandler for this window
+        FbTk::EventManager::instance()->remove(m_window); 
+        if (m_destroy)
+            XDestroyWindow(s_display, m_window);     
+    }
 }
 
 
