@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/07:
+  * Fixed bug window title change bug for iconbar (Henrik)
+    IconbarTool.cc, Workspace.cc, Window.hh/cc
   * Fixed bug in extra drawing in the iconbar (Henrik)
     TODO: check this out more
 	Container.cc
