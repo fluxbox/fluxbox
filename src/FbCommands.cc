@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.2 2003/02/15 01:58:06 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.3 2003/04/15 12:13:22 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
+#include "FbTk/Theme.hh"
 
 #include <sys/types.h>
 #include <unistd.h>
