@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.28 2004/10/06 11:40:28 akir Exp $
+// $Id: FbCommands.cc,v 1.29 2004/10/21 10:24:34 akir Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -37,6 +37,13 @@
 
 #include <fstream>
 #include <iostream>
+
+#ifdef HAVE_CSTDLIB
+  #include <cstdlib>
+#else
+  #include <stdlib.h>
+#endif
+
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -128,7 +135,7 @@ ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
 }
 
 void ExportCmd::execute() {
-    setenv(m_name.c_str(), m_value.c_str(), 1);
+    putenv((m_name + "=" + m_value).c_str());
 }
 
 
