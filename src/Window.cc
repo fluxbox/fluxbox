@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.118 2003/02/17 09:56:00 fluxgen Exp $
+// $Id: Window.cc,v 1.119 2003/02/17 22:42:52 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -117,8 +117,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     tab(0),
     m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100),
     m_layeritem(getFrameWindow(), layer),
-    m_layernum(layer.getLayerNum())
- {
+    m_layernum(layer.getLayerNum()) {
 
 
 
@@ -1980,21 +1979,15 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
         }
 
         if (m_frame.clientArea() == be.window) {
-			
-            if (m_windowmenu.isVisible()) //hide menu if its visible
-                m_windowmenu.hide();
-
             raise();
-
-            XAllowEvents(display, ReplayPointer, be.time);
-			
-        } else {
-            
+            XAllowEvents(display, ReplayPointer, be.time);			
+        } else {            
             button_grab_x = be.x_root - m_frame.x() - screen->getBorderWidth();
-            button_grab_y = be.y_root - m_frame.y() - screen->getBorderWidth();
-            if (m_windowmenu.isVisible())
-                m_windowmenu.hide();
+            button_grab_y = be.y_root - m_frame.y() - screen->getBorderWidth();      
         }
+        
+        if (m_windowmenu.isVisible())
+                m_windowmenu.hide();
     }
 
 }
@@ -2064,21 +2057,21 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 }
             }
 
-            /*
-              if (! screen->doOpaqueMove()) {
-              XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-              frame.move_x, frame.move_y, frame.resize_w, frame.resize_h);
+            
+            if (! screen->doOpaqueMove()) {
+                XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+                               last_move_x, last_move_y, 
+                               m_frame.width(), m_frame.height());
 
-              frame.move_x = dx;
-              frame.move_y = dy;
-
-              XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-              frame.move_x, frame.move_y, frame.resize_w,
-              frame.resize_h);
-              } else {
-            */
-            moveResize(dx, dy, m_frame.width(), m_frame.height());
-            //			}
+                XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+                               dx, dy, 
+                               m_frame.width(), m_frame.height());
+                last_move_x = dx;
+                last_move_y = dy;
+            } else {
+            
+                moveResize(dx, dy, m_frame.width(), m_frame.height());
+            }
 
             if (screen->doShowWindowPos())
                 screen->showPosition(dx, dy);
@@ -2222,43 +2215,30 @@ void FluxboxWindow::startMoving(Window win) {
         m_windowmenu.hide();
 
     fluxbox->maskWindowEvents(client.window, this);
-    /* TODO: opaque moving
-       if (! screen->doOpaqueMove()) {
-       fluxbox->grab();
-
-       frame.move_x = frame.x;
-       frame.move_y = frame.y;
-       frame.move_ws = screen->getCurrentWorkspaceID();
-       frame.resize_w = frame.width + screen->getBorderWidth2x();
-       frame.resize_h = ((shaded) ? frame.title_h : frame.height) +
-       screen->getBorderWidth2x();
-
-       if (screen->doShowWindowPos())
-       screen->showPosition(frame.x, frame.y);
-
-       XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-       frame.move_x, frame.move_y,
-       frame.resize_w, frame.resize_h);
-       }*/
+    last_move_x = frame().x();
+    last_move_y = frame().y();
+    if (! screen->doOpaqueMove()) {
+        XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+                       frame().x(), frame().y(),
+                       frame().width(), frame().height());
+        screen->showPosition(frame().x(), frame().y());
+    }
 }
 
 void FluxboxWindow::stopMoving() {
     moving = false;
     Fluxbox *fluxbox = Fluxbox::instance();
 
-    fluxbox->maskWindowEvents(0, (FluxboxWindow *) 0);
+    fluxbox->maskWindowEvents(0, 0);
 
-    /* TODO: non opaque moving
-       if (! screen->doOpaqueMove()) {
-       XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
-       frame.move_x, frame.move_y, frame.resize_w,
-       frame.resize_h);
-
-       configure(frame.move_x, frame.move_y, frame.width, frame.height);
-       fluxbox->ungrab();
-       } else
-    */
-    moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
+   
+    if (! screen->doOpaqueMove()) {
+        XDrawRectangle(FbTk::App::instance()->display(), screen->getRootWindow(), screen->getOpGC(),
+                       last_move_x, last_move_y, 
+                       frame().width(), frame().height());
+        moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
+    } else
+        moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
 
     screen->hideGeometry();
     XUngrabPointer(display, CurrentTime);
