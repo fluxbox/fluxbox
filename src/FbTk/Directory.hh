@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.hh,v 1.3 2003/12/16 17:06:49 fluxgen Exp $
+// $Id: Directory.hh,v 1.4 2004/04/19 18:09:14 fluxgen Exp $
 
 #ifndef FBTK_DIRECTORY_HH
 #define FBTK_DIRECTORY_HH
@@ -37,6 +37,7 @@ class Directory: private FbTk::NotCopyable {
 public:
     explicit Directory(const char *dir = 0);
     ~Directory();
+    const std::string &name() const { return m_name; }
     /// go to start of filelist
     void rewind();
     /// gets next dirent info struct in directory and 
@@ -55,7 +56,11 @@ public:
     static bool isDirectory(const std::string &filename);
     /// @return true if a file is a regular file
     static bool isRegularFile(const std::string &filename);
+    /// @return true if a file executable for user
+    static bool isExecutable(const std::string &filename);
+    
 private:
+    std::string m_name;
     DIR *m_dir;
     size_t m_num_entries; ///< number of file entries in directory
 };

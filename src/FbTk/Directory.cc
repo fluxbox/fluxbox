@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.cc,v 1.2 2003/08/17 13:19:54 fluxgen Exp $
+// $Id: Directory.cc,v 1.3 2004/04/19 18:09:15 fluxgen Exp $
 
 #include "Directory.hh"
 
@@ -60,6 +60,7 @@ std::string Directory::readFilename() {
 void Directory::close() {
     if (m_dir != 0) { 
         closedir(m_dir);
+        m_name.clear();
         m_dir = 0;
         m_num_entries = 0;
     }
@@ -76,6 +77,8 @@ bool Directory::open(const char *dir) {
     m_dir = opendir(dir);
     if (m_dir == 0) // successfull loading?
         return false;
+
+    m_name= dir;
 
     // get number of entries
     while (read())
@@ -100,6 +103,16 @@ bool Directory::isRegularFile(const std::string &filename) {
         return false;
 
     return S_ISREG(statbuf.st_mode);
+}
+
+bool Directory::isExecutable(const std::string &filename) {
+    struct stat statbuf;
+    if (stat(filename.c_str(), &statbuf) != 0)
+        return false;
+
+    return statbuf.st_mode & S_IXUSR || 
+           statbuf.st_mode & S_IXGRP ||
+           statbuf.st_mode & S_IXOTH;
 }
 
 }; // end namespace FbTk
