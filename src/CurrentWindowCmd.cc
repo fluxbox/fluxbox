@@ -86,14 +86,22 @@ void MoveCmd::real_execute() {
 }
 
 ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :
-  m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
+    m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
+template<typename T>
+T max(const T& a, const T& b) {
+    return a >= b ? a : b;
+}
+    
 void ResizeCmd::real_execute() {
-  fbwindow().resize(
-                    fbwindow().width() + 
-                    m_step_size_x * fbwindow().winClient().width_inc,
-                    fbwindow().height() + 
-                    m_step_size_y * fbwindow().winClient().height_inc);
+  
+    int w = max<int>(static_cast<int>(fbwindow().width() + 
+                                      m_step_size_x * fbwindow().winClient().width_inc), 
+                     fbwindow().frame().titlebarHeight() * 2 + 10);
+    int h = max<int>(static_cast<int>(fbwindow().height() + 
+                                      m_step_size_y * fbwindow().winClient().height_inc), 
+                     fbwindow().frame().titlebarHeight() + 10);
+    fbwindow().resize(w, h);
 }
 
 MoveToCmd::MoveToCmd(const int step_size_x, const int step_size_y) :
@@ -107,5 +115,6 @@ ResizeToCmd::ResizeToCmd(const int step_size_x, const int step_size_y) :
     m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
 void ResizeToCmd::real_execute() {
-    fbwindow().resize(m_step_size_x, m_step_size_y);
+    if (m_step_size_x > 0 && m_step_size_y > 0)
+        fbwindow().resize(m_step_size_x, m_step_size_y);
 }
