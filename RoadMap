@@ -139,7 +139,7 @@ Key Features:
  * Improved screen object placement           (Henrik)
    (will fix Maximize over slit/toolbar)
 Other Minor Features:
- - Add some sort of program launch function   (Simon)
+ * Add some sort of program launch function   (Simon)
  - nls code - layers, remember, new stuff...  (Both)
 Bugfixes/lower priority:
  * Titlebar sometimes doesn't redraw properly

@@ -1,6 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
 *03/07/10:
+   * Add [startup] to Remember (Simon)
+       Can now add entries to apps file like:
+         [startup] {xterm}
+       Then "xterm" will be launched on fluxbox startup. 
+       Can also give a screen option:
+         [startup] (screen=1) {xterm}
+       will start it on screen 1 rather than the default 0.
    * Added new shape theme items (Henrik)
       * toolbar.shape: <bool> this will make the toolbar shape the corners that are towards center
 	    of the screen

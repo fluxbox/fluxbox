@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.10 2003/07/04 14:06:20 rathnor Exp $
+// $Id: Remember.hh,v 1.11 2003/07/10 13:23:09 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -148,6 +148,9 @@ public:
     // particularly useful to update counters etc on windowclose
     typedef std::map<WinClient *, Application *> Clients;
     
+    // we have to remember any startups we did so that they are saved again
+    typedef std::list<std::string> Startups;
+
     Remember();
     ~Remember();
 
@@ -195,6 +198,8 @@ private:
     int parseApp(std::ifstream &file, Application &app, std::string *first_line = 0);
     Patterns m_pats;
     Clients m_clients;
+
+    Startups m_startups;
 
 };
 

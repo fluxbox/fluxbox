@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.26 2003/07/04 14:06:20 rathnor Exp $
+// $Id: Remember.cc,v 1.27 2003/07/10 13:23:09 rathnor Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -32,6 +32,7 @@
 #include "FbMenu.hh"
 #include "MenuItem.hh"
 #include "App.hh"
+#include "FbCommands.hh"
 
 #include <X11/Xlib.h>
 
@@ -127,7 +128,62 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
     return menu;
 };
 
+// offset is the offset in the string that we start looking from
+// return true if all ok, false on error
+bool handleStartupItem(string line, int offset) {
+    int next = 0;
+    string str;
+    int screen = 0;
+
+    // accept some options, for now only "screen=NN"
+    // these option are given in parentheses before the command
+    next = FbTk::StringUtil::getStringBetween(str, 
+                                              line.c_str() + offset, 
+                                              '(', ')');
+    if (next > 0) {
+        // there are some options
+        string option;
+        int pos = str.find('=');
+        bool error = false;
+        if (pos > 0) {
+            option = str.substr(0, pos);
+            if (option == "screen") {
+                istringstream iss(str.c_str() + pos + 1);
+                iss >> screen;
+            } else {
+                error = true;
+            }
+        } else {
+            error = true;
+        }
+        if (error) {
+            cerr<<"Error parsing startup options."<<endl;
+            return false;
+        }
+    } else {
+        next = 0;
+    }
+
+    next = FbTk::StringUtil::getStringBetween(str, 
+                                              line.c_str() + offset + next, 
+                                              '{', '}');
+
+    if (next <= 0) {
+        cerr<<"Error parsing [startup] at column "<<offset<<" - expecting {command}."<<endl;
+        return false;
+    } else {
+        FbCommands::ExecuteCmd *tmp_exec_cmd = new FbCommands::ExecuteCmd(str, screen);
+#ifdef DEBUG
+        cerr<<"Executing startup command '"<<str<<"' on screen "<<screen<<endl;
+#endif // DEBUG
+        tmp_exec_cmd->execute();
+        delete tmp_exec_cmd;
+        return true;
+    }
+};
+
 }; // end anonymous namespace
+
 
 Application::Application(bool grouped)
     : is_grouped(grouped),
@@ -350,6 +406,12 @@ void Remember::load() {
                     } else {
                         grouped_pats.push_back(pat);
                     }
+                } else if (pos > 0 && key == "startup") {
+                    if (!handleStartupItem(line, pos)) {
+                        cerr<<"Error reading apps file at line "<<row<<"."<<endl;
+                    }
+                    // save the item even if it was bad (aren't we nice)
+                    m_startups.push_back(line.substr(pos));
                 } else if (pos > 0 && key == "group") {
                     in_group = true;
                 } else if (in_group) {
@@ -389,6 +451,14 @@ void Remember::save() {
     string apps_string;
     Fluxbox::instance()->getDefaultDataFilename("apps", apps_string);
     ofstream apps_file(apps_string.c_str());
+
+    // first of all we output all the startup commands
+    Startups::iterator sit = m_startups.begin();
+    Startups::iterator sit_end = m_startups.end();
+    for (; sit != sit_end; ++sit) {
+        apps_file<<"[startup] "<<(*sit)<<endl;
+    }
+
     Patterns::iterator it = m_pats.begin();
     Patterns::iterator it_end = m_pats.end();
 
@@ -400,12 +470,13 @@ void Remember::save() {
             // if already processed
             if (grouped_apps.find(&a) != grouped_apps.end())
                 continue;
+            grouped_apps.insert(&a);
             // otherwise output this whole group
             apps_file << "[group]" << endl;
             Patterns::iterator git = m_pats.begin();
             Patterns::iterator git_end = m_pats.end();
             for (; git != git_end; git++) {
-                if (git->second->group == a.group) {
+                if (git->second == &a) {
                     apps_file << " [app]"<<git->first->toString()<<endl;
                 }
             }
