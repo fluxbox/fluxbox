@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.216 2003/12/31 00:35:21 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.217 2004/01/09 11:37:01 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -463,8 +463,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 #ifdef HAVE_RANDR
     // get randr event type
-    int error_base;
-    XRRQueryExtension(disp, &m_randr_event_type, &error_base);
+    int randr_error_base;
+    XRRQueryExtension(disp, &m_randr_event_type, &randr_error_base);
 #endif // HAVE_RANDR
 
     load_rc();
