@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.2 2003/10/25 22:09:19 fluxgen Exp $
+// $Id: ThemeItems.hh,v 1.3 2003/11/28 23:02:05 fluxgen Exp $
 
 /// @file implements common theme items
 
@@ -78,7 +78,8 @@ void ThemeItem<FbTk::Font>::setDefaultValue() {
 
 template <>
 void ThemeItem<FbTk::Font>::setFromString(const char *str) {
-    if (m_value.load(str) == false) {
+
+    if (str == 0 || m_value.load(str) == false) {
         if (FbTk::ThemeManager::instance().verbose()) {
             cerr<<"FbTk::Theme: Error loading font "<<
                 ((m_value.isAntialias() || m_value.utf8()) ? "(" : "")<<
