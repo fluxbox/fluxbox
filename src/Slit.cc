@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.11 2002/04/08 18:58:27 fluxgen Exp $
+// $Id: Slit.cc,v 1.12 2002/04/08 22:26:58 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -567,20 +567,18 @@ void Slit::buttonPressEvent(XButtonEvent *e) {
 		XLowerWindow(display, frame.window);
 	} else if (e->button == Button3) {
 		if (! slitmenu.isVisible()) {
-			int x, y;
-
-			x = e->x_root - (slitmenu.getWidth() / 2);
-			y = e->y_root - (slitmenu.getHeight() / 2);
+			int x = e->x_root - (slitmenu.width() / 2),
+				y = e->y_root - (slitmenu.height() / 2); 
 
 			if (x < 0)
 				x = 0;
-			else if (x + slitmenu.getWidth() > screen->getWidth())
-				x = screen->getWidth() - slitmenu.getWidth();
+			else if (x + slitmenu.width() > screen->getWidth())
+				x = screen->getWidth() - slitmenu.width();
 
 			if (y < 0)
 				y = 0;
-			else if (y + slitmenu.getHeight() > screen->getHeight())
-				y = screen->getHeight() - slitmenu.getHeight();
+			else if (y + slitmenu.height() > screen->getHeight())
+				y = screen->getHeight() - slitmenu.height();
 
 			slitmenu.move(x, y);
 			slitmenu.show();

@@ -1,3 +1,5 @@
+// Windowmenu.cc for Fluxbox
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // Windowmenu.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -18,6 +20,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: Windowmenu.cc,v 1.11 2002/04/08 22:35:16 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -228,9 +232,9 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int inde
 
 
 void Windowmenu::SendtoWorkspacemenu::update(void) {
-	unsigned int i, r = getCount();
+	unsigned int i, r = numberOfItems();
 
-	if (getCount() != 0) {
+	if (numberOfItems() != 0) {
 		for (i = 0; i < r; ++i)
 			remove(0);
 	}

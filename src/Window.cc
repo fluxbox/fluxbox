@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.40 2002/04/04 22:39:52 fluxgen Exp $
+// $Id: Window.cc,v 1.41 2002/04/08 22:32:07 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1377,7 +1377,7 @@ void FluxboxWindow::reconfigure(void) {
 		XUngrabButton(display, Button1, AnyModifier, frame.plate);
 
 	if (windowmenu) {
-		windowmenu->move(windowmenu->getX(), frame.y + frame.title_h);
+		windowmenu->move(windowmenu->x(), frame.y + frame.title_h);
 		windowmenu->reconfigure();
 	}
 		
@@ -3192,30 +3192,30 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 		int mx = 0, my = 0;
 
 		if (frame.title == be->window || frame.label == be->window) {
-			mx = be->x_root - (windowmenu->getWidth() / 2);
+			mx = be->x_root - (windowmenu->width() / 2);
 			my = frame.y + frame.title_h;
 		} else if (frame.handle == be->window) {
-			mx = be->x_root - (windowmenu->getWidth() / 2);
-			my = frame.y + frame.y_handle - windowmenu->getHeight();
+			mx = be->x_root - (windowmenu->width() / 2);
+			my = frame.y + frame.y_handle - windowmenu->height();
 		} else {
 			bool buttonproc=false;
 			
 			if (buttonproc)
-				mx = be->x_root - (windowmenu->getWidth() / 2);
+				mx = be->x_root - (windowmenu->width() / 2);
 
 			if (be->y <= (signed) frame.bevel_w)
 				my = frame.y + frame.y_border;
 			else
-				my = be->y_root - (windowmenu->getHeight() / 2);
+				my = be->y_root - (windowmenu->height() / 2);
 		}
 
-		if (mx > (signed) (frame.x + frame.width - windowmenu->getWidth()))
-			mx = frame.x + frame.width - windowmenu->getWidth();
+		if (mx > (signed) (frame.x + frame.width - windowmenu->width()))
+			mx = frame.x + frame.width - windowmenu->width();
 		if (mx < frame.x)
 			mx = frame.x;
 
-		if (my > (signed) (frame.y + frame.y_handle - windowmenu->getHeight()))
-			my = frame.y + frame.y_handle - windowmenu->getHeight();
+		if (my > (signed) (frame.y + frame.y_handle - windowmenu->height()))
+			my = frame.y + frame.y_handle - windowmenu->height();
 		if (my < (signed) (frame.y + ((decorations.titlebar) ? frame.title_h :
 							frame.y_border)))
 			my = frame.y +
@@ -3225,9 +3225,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			if (! windowmenu->isVisible()) { // if not window menu is visible then show it
 				windowmenu->move(mx, my);
 				windowmenu->show();		
-				XRaiseWindow(display, windowmenu->getWindowID());
-				XRaiseWindow(display, windowmenu->getSendToMenu()->getWindowID());
-				XRaiseWindow(display, windowmenu->getSendGroupToMenu()->getWindowID());
+				XRaiseWindow(display, windowmenu->windowID());
+				XRaiseWindow(display, windowmenu->getSendToMenu()->windowID());
+				XRaiseWindow(display, windowmenu->getSendGroupToMenu()->windowID());
 			} else //else hide menu
 				windowmenu->hide(); 
 		}

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.19 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.20 2002/04/08 22:30:51 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1035,18 +1035,18 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 		if (! toolbarmenu->isVisible()) {
 			int x, y;
 
-			x = be->x_root - (toolbarmenu->getWidth() / 2);
-			y = be->y_root - (toolbarmenu->getHeight() / 2);
+			x = be->x_root - (toolbarmenu->width() / 2);
+			y = be->y_root - (toolbarmenu->height() / 2);
 
 			if (x < 0)
 				x = 0;
-			else if (x + toolbarmenu->getWidth() > screen->getWidth())
-				x = screen->getWidth() - toolbarmenu->getWidth();
+			else if (x + toolbarmenu->width() > screen->getWidth())
+				x = screen->getWidth() - toolbarmenu->width();
 
 			if (y < 0)
 				y = 0;
-			else if (y + toolbarmenu->getHeight() > screen->getHeight())
-				y = screen->getHeight() - toolbarmenu->getHeight();
+			else if (y + toolbarmenu->height() > screen->getHeight())
+				y = screen->getHeight() - toolbarmenu->height();
 
 			toolbarmenu->move(x, y);
 			toolbarmenu->show();

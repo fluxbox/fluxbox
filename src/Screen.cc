@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.43 2002/04/04 14:28:54 fluxgen Exp $
+// $Id: Screen.cc,v 1.44 2002/04/08 22:26:25 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -596,7 +596,7 @@ void BScreen::reconfigure(void) {
 	iconmenu->reconfigure();
 
 	{
-		int remember_sub = rootmenu->getCurrentSubmenu();
+		int remember_sub = rootmenu->currentSubmenu();
 		initMenu();
 		raiseWindows(0, 0);
 		rootmenu->reconfigure();
@@ -984,48 +984,48 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 
 	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 30)];
 	int i = 0;	
-	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->getWindowID());
-	session_stack[i++] = iconmenu->getWindowID();
+	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->windowID());
+	session_stack[i++] = iconmenu->windowID();
 
 	Workspaces::iterator wit = workspacesList.begin();
 	Workspaces::iterator wit_end = workspacesList.end();
 	for (; wit != wit_end; ++wit) {
-		session_stack[i++] = (*wit)->getMenu()->getWindowID();
+		session_stack[i++] = (*wit)->getMenu()->windowID();
 	}
 
-	session_stack[i++] = workspacemenu->getWindowID();
+	session_stack[i++] = workspacemenu->windowID();
 
-	session_stack[i++] = configmenu->getFocusmenu()->getWindowID();
-	session_stack[i++] = configmenu->getPlacementmenu()->getWindowID();
-	session_stack[i++] = configmenu->getTabmenu()->getWindowID();
-	session_stack[i++] = configmenu->getWindowID();
+	session_stack[i++] = configmenu->getFocusmenu()->windowID();
+	session_stack[i++] = configmenu->getPlacementmenu()->windowID();
+	session_stack[i++] = configmenu->getTabmenu()->windowID();
+	session_stack[i++] = configmenu->windowID();
 
 	#ifdef		SLIT
-	session_stack[i++] = slit->getMenu().getDirectionmenu()->getWindowID();
-	session_stack[i++] = slit->getMenu().getPlacementmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu().getDirectionmenu()->windowID();
+	session_stack[i++] = slit->getMenu().getPlacementmenu()->windowID();
 	#ifdef XINERAMA
 	if (hasXinerama()) {
-		session_stack[i++] = slit->getMenu().getHeadmenu()->getWindowID();
+		session_stack[i++] = slit->getMenu().getHeadmenu()->windowID();
 	}
 	#endif // XINERAMA
-	session_stack[i++] = slit->getMenu().getWindowID();
+	session_stack[i++] = slit->getMenu().windowID();
 	#endif // SLIT
 
 	session_stack[i++] =
-		toolbar->getMenu()->getPlacementmenu()->getWindowID();
+		toolbar->getMenu()->getPlacementmenu()->windowID();
 	#ifdef XINERAMA
 	if (hasXinerama()) {
-		session_stack[i++] = toolbar->getMenu()->getHeadmenu()->getWindowID();
+		session_stack[i++] = toolbar->getMenu()->getHeadmenu()->windowID();
 	}
 	#endif // XINERAMA
-	session_stack[i++] = toolbar->getMenu()->getWindowID();
+	session_stack[i++] = toolbar->getMenu()->windowID();
 
 	Rootmenus::iterator rit = rootmenuList.begin();
 	Rootmenus::iterator rit_end = rootmenuList.end();
 	for (; rit != rit_end; ++rit) {
-		session_stack[i++] = (*rit)->getWindowID();
+		session_stack[i++] = (*rit)->windowID();
 	}
-	session_stack[i++] = rootmenu->getWindowID();
+	session_stack[i++] = rootmenu->windowID();
 
 	if (toolbar->isOnTop())
 		session_stack[i++] = toolbar->getWindowID();
@@ -1176,7 +1176,7 @@ void BScreen::raiseFocus(void) {
 
 	if (fluxbox->getFocusedWindow())
 		if (fluxbox->getFocusedWindow()->getScreen()->getScreenNumber() ==
-	getScreenNumber()) {
+				getScreenNumber()) {
 			have_focused = true;
 			focused_window_number = fluxbox->getFocusedWindow()->getWindowNumber();
 		}
@@ -1192,12 +1192,12 @@ void BScreen::initMenu(void) {
 	if (rootmenu) {
 		rootmenuList.erase(rootmenuList.begin(), rootmenuList.end());
 
-		while (rootmenu->getCount())
+		while (rootmenu->numberOfItems())
 			rootmenu->remove(0);
 	} else
 		rootmenu = new Rootmenu(this);
 
-	Bool defaultMenu = true;
+	bool defaultMenu = true;
 
 	if (fluxbox->getMenuFilename()) {
 		ifstream menu_file(fluxbox->getMenuFilename());
@@ -1290,7 +1290,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 
 				I18n *i18n = I18n::instance();
 				if (str_key == "end") {
-					return ((menu->getCount() == 0) ? true : false);
+					return ((menu->numberOfItems() == 0) ? true : false);
 				} else if (str_key == "nop") { 
 					menu->insert(str_label.c_str());
 				} else if (str_key == "exec") { // exec
@@ -1469,7 +1469,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 		}
 	}
 
-	return ((menu->getCount() == 0) ? true : false);
+	return ((menu->numberOfItems() == 0) ? true : false);
 }
 
 void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory) {

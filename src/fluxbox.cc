@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.45 2002/04/04 14:23:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.46 2002/04/08 22:36:30 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -946,24 +946,24 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 						
 				} else if (be.button == 2) {
 					int mx = be.x_root -
-						(screen->getWorkspacemenu()->getWidth() / 2);
+						(screen->getWorkspacemenu()->width() / 2);
 					int my = be.y_root -
-						(screen->getWorkspacemenu()->getTitleHeight() / 2);
+						(screen->getWorkspacemenu()->titleHeight() / 2);
 	
 					if (mx < 0) mx = 0;
 					if (my < 0) my = 0;
 
-					if (mx + screen->getWorkspacemenu()->getWidth() >
+					if (mx + screen->getWorkspacemenu()->width() >
 						screen->getWidth()) {
 						mx = screen->getWidth() -
-							screen->getWorkspacemenu()->getWidth() -						
+							screen->getWorkspacemenu()->width() -						
 							screen->getBorderWidth();
 					}
 
-					if (my + screen->getWorkspacemenu()->getHeight() >
+					if (my + screen->getWorkspacemenu()->height() >
 							screen->getHeight()) {
 						my = screen->getHeight() -
-							screen->getWorkspacemenu()->getHeight() -
+							screen->getWorkspacemenu()->height() -
 							screen->getBorderWidth();
 					}
 					screen->getWorkspacemenu()->move(mx, my);
@@ -976,23 +976,23 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 				//calculate placement of workspace menu
 				//and show/hide it				
 					int mx = be.x_root -
-						(screen->getRootmenu()->getWidth() / 2);
+						(screen->getRootmenu()->width() / 2);
 					int my = be.y_root -
-						(screen->getRootmenu()->getTitleHeight() / 2);
+						(screen->getRootmenu()->titleHeight() / 2);
 
 					if (mx < 0) mx = 0;
 					if (my < 0) my = 0;
 
-					if (mx + screen->getRootmenu()->getWidth() > screen->getWidth()) {
+					if (mx + screen->getRootmenu()->width() > screen->getWidth()) {
 						mx = screen->getWidth() -
-							screen->getRootmenu()->getWidth() -
+							screen->getRootmenu()->width() -
 							screen->getBorderWidth();
 					}
 
-					if (my + screen->getRootmenu()->getHeight() >
+					if (my + screen->getRootmenu()->height() >
 							screen->getHeight()) {
 						my = screen->getHeight() -
-							screen->getRootmenu()->getHeight() -
+							screen->getRootmenu()->height() -
 							screen->getBorderWidth();
 					}
 					screen->getRootmenu()->move(mx, my);
