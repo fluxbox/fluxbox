@@ -1,12 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/02/19:
+   * Fixed transient raise/lower (Henrik)
 *03/02/17:
-   * Added layer menus for windows, toolbar, and slit, plus associated 
+   * Added layer menus for windows, toolbar, and slit, plus associated  (Simon)
      resources. Cleaned up some cruft from the previous layering setup.
      Gnome.cc LayerMenu.hh Screen.hh/cc Slit.hh/cc Tab.cc Toolbar.hh/cc Window.hh/cc Workspace.hh fluxbox.hh/cc
-   * Renamed LayeredMenu to FbMenu
+   * Renamed LayeredMenu to FbMenu (Simon)
      LayeredMenu.hh FbMenu.hh
-   * Changed XLayerItem to hold FbWindows instead of Windows
+   * Changed XLayerItem to hold FbWindows instead of Windows (Simon)
      XLayerItem.hh/cc XLayer.cc MultLayers.cc Window.cc
    * Added shade option for button config (Henrik)
      Screen.cc
@@ -16,6 +18,10 @@ Changes for 0.1.15:
      Screen.cc, Toolbar.cc
    * Added IntResMenuItem, for resource<int> changes in the menu (Henrik)
      IntResMenuItem.hh/cc
+   * Fixed non opaque moving (Henrik)
+     Window.cc
+   * Fixed titlebar alignment problem (Henrik)
+     FbWinFrame.cc
 *03/02/16:
    * Fixed configurable titlebar buttons (Henrik)
      Screen.cc
