@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.6 2003/01/13 03:04:47 fluxgen Exp $
+// $Id: Menu.cc,v 1.7 2003/01/24 12:19:15 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -248,12 +248,15 @@ void Menu::enableTitle() {
 }
 
 void Menu::update() {
- 
+    if (menu.bevel_w > 10) // clamp to "normal" size
+        menu.bevel_w = 10;
+    if (m_border_width > 20)
+        m_border_width = 20;
+
     menu.item_h = m_theme.frameFont().height() + menu.bevel_w;
     menu.title_h = m_theme.frameFont().height() + menu.bevel_w*2;
-	
-    if (title_vis) {
 
+    if (title_vis) {
         menu.item_w = m_theme.titleFont().textWidth(menu.label.c_str(), menu.label.size());
 		
         menu.item_w += (menu.bevel_w * 2);
@@ -281,8 +284,9 @@ void Menu::update() {
         menu.sublevels = 1;
 
         while (menu.item_h * (menuitems.size() + 1) / menu.sublevels +
-               menu.title_h + m_border_width > m_screen_height)
+               menu.title_h + m_border_width > m_screen_height) {
             menu.sublevels++;
+        }
 
         if (menu.sublevels < menu.minsub) 
             menu.sublevels = menu.minsub;
@@ -298,7 +302,7 @@ void Menu::update() {
     if (! menu.width) menu.width = menu.item_w;
 
     menu.frame_h = (menu.item_h * menu.persub);
-    menu.height = ((title_vis) ? menu.title_h + m_border_width : 0) +
+    menu.height = ((title_vis) ? menu.title_h + menu.title.borderWidth() : 0) +
         menu.frame_h;
     if (! menu.frame_h) menu.frame_h = 1;
     if (menu.height < 1) menu.height = 1;
@@ -359,11 +363,13 @@ void Menu::update() {
 
     menu.window.resize(menu.width, menu.height);
 
-    if (title_vis)
-        menu.title.resize(menu.width, menu.title_h);
+    if (title_vis) {
+        menu.title.moveResize(-menu.title.borderWidth(), -menu.title.borderWidth(), 
+                              menu.width + menu.title.borderWidth(), menu.title_h);
+    }
 
-    menu.frame.moveResize(0, ((title_vis) ? menu.title_h + m_border_width : 0), 
-                          menu.width, menu.frame_h);
+    menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + menu.title.borderWidth()*2 : 0), 
+                          menu.window.width(), menu.frame_h);
     menu.window.clear();
     menu.title.clear();
     menu.frame.clear();
@@ -497,7 +503,7 @@ void Menu::drawSubmenu(unsigned int index) {
 		
             if (m_alignment == ALIGNTOP) {
                 y = (((shifted) ? menu.y_shift : menu.y) +
-                     ((title_vis) ? menu.title_h + m_border_width : 0) -
+                     ((title_vis) ? menu.title_h + menu.title.borderWidth() : 0) -
                      ((item->submenu()->title_vis) ?
                       item->submenu()->menu.title_h + menu.window.borderWidth() : 0));
             } else {
@@ -1006,11 +1012,29 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
 
 
 void Menu::reconfigure() {
-    menu.window.setBackgroundColor(m_theme.borderColor());
-    menu.window.setBorderColor(m_theme.borderColor());
-    menu.window.setBorderWidth(m_theme.borderWidth());
     menu.bevel_w = m_theme.bevelWidth();
-    m_border_width = menu.window.borderWidth();
+    m_border_width = m_theme.borderWidth();
+    if (menu.bevel_w > 10) // clamp to "normal" size
+        menu.bevel_w = 10;
+    if (menu.bevel_w < 0)
+        menu.bevel_w = 1;
+    if (m_border_width > 20) // clamp to normal size
+        m_border_width = 20;
+    if (m_border_width < 0)
+        m_border_width = 0;
+
+    menu.window.setBackgroundColor(m_theme.borderColor());
+    menu.title.setBackgroundColor(m_theme.borderColor());
+    menu.frame.setBackgroundColor(m_theme.borderColor());
+
+    menu.window.setBorderColor(m_theme.borderColor());
+    menu.title.setBorderColor(m_theme.borderColor());
+    menu.frame.setBorderColor(m_theme.borderColor());
+
+    menu.window.setBorderWidth(m_border_width);
+    menu.title.setBorderWidth(m_border_width);
+
+
     update();
 }
 
