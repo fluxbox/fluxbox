@@ -29,6 +29,7 @@
 #include <X11/Xatom.h>
 #include <vector>
 
+// Implementes Gnome Window Manager Hints (http://developer.gnome.org/doc/standards/wm/book1.html)
 class Gnome:public AtomHandler {
 public:
     enum GnomeLayer { 
