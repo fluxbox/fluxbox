@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.58 2002/05/17 11:16:26 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.59 2002/05/24 13:25:25 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -118,7 +118,6 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
 #include <memory>
 
 using namespace std;
@@ -2421,7 +2420,6 @@ void Fluxbox::timeout(void) {
 
 
 void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
-	
 	BScreen *old_screen = 0, *screen = 0;
 	FluxboxWindow *old_win = 0;
 	Toolbar *old_tbar = 0, *tbar = 0;
