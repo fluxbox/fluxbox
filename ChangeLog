@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/13:
+  * Fixed a minor issue with icc (intel compiler) (Mathias)
+    Slit.cc Xinerama.hh Screen.cc Container.hh LayerMenu.hh
+    FbMenu.cc/hh IconMenu.cc WorkspaceMenu.cc MenuCreator.cc
+    IconButton.cc Remember.cc Workspace.cc Toolbar.cc IconbarTool.cc
+    SendToMenu.cc FbTK/Menu.cc/hh FbTk/Theme.hh
   * Added nls/vi_VN (thanx Phan Vinh Thinh)
   * Fixed DragNDrop - Sorting of tabs (thanx Rob Stevens)
     Window.cc/hh FbWinFrame.cc
