@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.22 2003/12/03 00:18:58 fluxgen Exp $
+// $Id: Theme.cc,v 1.23 2003/12/29 11:04:09 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -73,7 +73,8 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
     return true;
 }
 
-bool ThemeManager::load(const std::string &filename) {
+bool ThemeManager::load(const std::string &filename, int screen_num) {
+    cerr<<"Load Theme: "<<filename<<endl;
     std::string location = FbTk::StringUtil::expandFilename(filename);
     std::string prefix = "";
 
@@ -107,11 +108,15 @@ bool ThemeManager::load(const std::string &filename) {
     location.append("/pixmaps");
     Image::addSearchPath(location);
 
-    //get list and go throu all the resources and load them
+    // get list and go throu all the resources and load them
     ThemeList::iterator theme_it = m_themelist.begin();
     const ThemeList::iterator theme_it_end = m_themelist.end();
     for (; theme_it != theme_it_end; ++theme_it) {
-        loadTheme(**theme_it);
+        if (screen_num < 0)
+            loadTheme(**theme_it);
+        else if (screen_num == (*theme_it)->screenNum()) // specified screen
+            loadTheme(**theme_it);
+            
     }
     // notify all themes that we reconfigured
     theme_it = m_themelist.begin();
