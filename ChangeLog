@@ -1,9 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
-<<<<<<< ChangeLog
-
-=======
 *03/09/08:
+   * Added iconbar mode menu (Henrik)
+     * new resource item:
+       session.screen<num>.iconbar.mode: <mode>
+     Toolbar.cc, IconbarTool.cc/hh
    * Added icon list sig to Screen (Henrik)
      This will notify when the icon list changed.
      Useful for IconbarTool
