@@ -1,5 +1,3 @@
-* const-correctnes
-
 * Clean up in BImage class, some of those functions are huge, and needs
   to be smaller. 
   - also make the class more independent so it could be movable to other
@@ -29,15 +27,10 @@
 	and more 
 * Fix configurable toolbar
   so the user can configure toolbar in a config file
-* Toolbar shouldn't hide if its autohide and 
-  you are in "change workspace mode"
 * Finnish (Finland) translation
 * Wheel-config support
 * Separator in the menus
-* More Gnome atom support 
-* Net wm atom support
 * Clean up in the global namespace
-* Create fbinput style app
 * Add "system menu" for minimized apps in the icon bar.
   (Close, Kill, Send to, etc)	
 * "Iconify group"/group commands in Windowmenu

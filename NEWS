@@ -1,31 +1,24 @@
-News in 0.1.11:
-   * Autogrouping:
-      This will read groups from a file and auto group programs when
-      they start.
-   * Autogrouping-from-tab:
-      This will allow you to popup the root menu, if you right click on the tab,
-      and select an application and it'll start grouped to the tab.
-      (note: this might interfere with the normal autogrouping in a bad way)
-   * Two new themes: BlueNight and LemonSpace
-   * Carry window across workspace with outlined mode.
-   * Slit now has a theme option:
-      slit: <texture option>
-      slit.color: <color value>
-      slit.colorTo: <color value>
-      It will fall back to the toolbar theme if it doesn't find it.
-   * ja_JP and fr_FR in fluxbox-generate_menu
-   * New util: fbrun
-      Which allows you to type a command and run it.
-   * The window menu now pop up in iconbar when you right click on the icon.  
+News in 0.1.13:
+   * Antialias support (Xft)
+   * UTF-8 support
+   * Extended window manager support (i.e Gnome2...)
+     * supports:
+	    * _NET_WM_DESKTOP,
+        * _NET_NUMBER_OF_DESKTOPS,
+        * _NET_CURRENT_DESKTOP,
+        * _NET_ACTIVE_WINDOW,
+        * _NET_CLOSE_WINDOW
+		* _NET_WM_STATE 
+		   * _NET_WM_STATE_STICKY
+           * _NET_WM_STATE_SHADED
+   * fbrun command history
+   * Default terminal and browser choice in fluxbox-generate_menu
 
 Bug fixes:
-   * Fixed bug [ 582574 ] borderless windows cant be horiz resized.
-   * Fixed bug [ 600811 ] undefined keys messes up
-   * Fixed bug [ 598490 ] misplaced parentrelative gives redrw prb
-   * Fixed bug [ 586830 ] the clock now updates once per second.
-   * Fixed bug [ 574717 ] restarting fluxbox should keep iconic.
-   * Fixed "send to..." bug
-   * Fixed slitlist bug
-   * Fixed workspace name and the reassociation bug 
+   * Fixed bug [ 604958 ] Menu not (full) visible when tabs bottom
+   * Fixed bug [ 581588 ] Toolbar auto-hiding
+   * Fixed bug [ 608945 ] xmms crashes fluxbox
+   * Fixed bug [ 522673 ] Numlock not handled correctly in Solaris
+   * Fixed bug [ 604634 ] Fluxbox 0.1.11 menu on iconbar problem
 
 See ChangeLog for details
