@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.25 2002/05/29 21:15:07 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.26 2002/07/19 21:18:29 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -124,8 +124,8 @@ m_alignment(ALIGNDONTCARE) {
 	XSetWindowAttributes attrib;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-		m_screen->getBorderColor()->getPixel();
-	attrib.colormap = m_screen->getColormap();
+		m_screen->getBorderColor()->pixel();
+	attrib.colormap = m_screen->colormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
 		ButtonMotionMask | ExposureMask;
@@ -140,7 +140,7 @@ m_alignment(ALIGNDONTCARE) {
 	
 	//attibutes for title to menuwindow
 	attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel | CWEventMask;
-	attrib.background_pixel = m_screen->getBorderColor()->getPixel();
+	attrib.background_pixel = m_screen->getBorderColor()->pixel();
 	attrib.event_mask |= EnterWindowMask | LeaveWindowMask;
 	//create menu title
 	menu.title =
@@ -351,7 +351,7 @@ void Basemenu::update(void) {
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			menu.title_pixmap = None;
 			XSetWindowBackground(m_display, menu.title,
-				 texture->getColor()->getPixel());
+				 texture->color().pixel());
 		} else {
 			menu.title_pixmap =
 				m_image_ctrl->renderImage(menu.width, menu.title_h, texture);
@@ -366,7 +366,7 @@ void Basemenu::update(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		menu.frame_pixmap = None;
 		XSetWindowBackground(m_display, menu.frame,
-			 texture->getColor()->getPixel());
+			 texture->color().pixel());
 	} else {
 		menu.frame_pixmap =
 			m_image_ctrl->renderImage(menu.width, menu.frame_h, texture);
@@ -1120,9 +1120,9 @@ void Basemenu::leaveNotifyEvent(XCrossingEvent *ce) {
 
 void Basemenu::reconfigure(void) {
 	XSetWindowBackground(m_display, menu.window,
-					 m_screen->getBorderColor()->getPixel());
+					 m_screen->getBorderColor()->pixel());
 	XSetWindowBorder(m_display, menu.window,
-			 m_screen->getBorderColor()->getPixel());
+			 m_screen->getBorderColor()->pixel());
 	XSetWindowBorderWidth(m_display, menu.window, m_screen->getBorderWidth());
 
 	menu.bevel_w = m_screen->getBevelWidth();
