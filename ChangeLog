@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/10/10:
+  * Added session.screen0.iconbar.iconTextPadding and 
+    session.tabPadding (Mathias)
+    - defines the space between the text and the border of the buttons
+  * Added session.focusTabMinWidth (Thanx Ciaran McCreesh)
+    - defines the guaranteed minimize size of the focuessed tab
+	  in % of the whole window (1-90)
   * Update de_DE Translation and add some missing NLS values
     (Thanks Christian Storm)
     - also a tiny cleanup of weird nls set
