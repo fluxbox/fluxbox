@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.9 2003/02/18 21:41:09 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.10 2003/02/20 23:21:23 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -134,6 +134,9 @@ void FbWinFrame::show() {
  Toggle shade state, and resize window
  */
 void FbWinFrame::shade() {
+    if (!m_use_titlebar)
+        return;
+
     if (!m_shaded) {
         m_width_before_shade = m_window.width();
         m_height_before_shade = m_window.height();
@@ -168,12 +171,13 @@ void FbWinFrame::resize(unsigned int width, unsigned int height) {
 
 void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
     // total height for frame without client
-    unsigned int total_height = m_handle.height() + m_titlebar.height();
+    unsigned int total_height = m_handle.height() + m_handle.borderWidth() + 
+        m_titlebar.height() + m_titlebar.borderWidth();
     // resize frame height with total height + specified height
     if (!m_use_titlebar)
-        total_height -= m_titlebar.height();
+        total_height -= m_titlebar.height() + m_titlebar.borderWidth();
     if (!m_use_handle)
-        total_height -= m_handle.height();
+        total_height -= m_handle.height() + m_handle.borderWidth();
     resize(width, total_height + height);
 }
 
@@ -269,13 +273,27 @@ void FbWinFrame::removeClient() {
 }
 
 void FbWinFrame::hideTitlebar() {
+    if (!m_use_titlebar)
+        return;
+
     m_titlebar.hide();
     m_use_titlebar = false;
+    m_clientarea.raise();
+    m_window.resize(m_window.width(), m_window.height() - m_titlebar.height());
+#ifdef DEBUG
+    cerr<<__FILE__<<": Hide Titlebar"<<endl;
+#endif // DEBUG
 }
 
 void FbWinFrame::showTitlebar() {
+    if (m_use_titlebar)
+        return;
+
     m_titlebar.show();
     m_use_titlebar = true;
+#ifdef DEBUG
+    cerr<<__FILE__<<": Show Titlebar"<<endl;
+#endif // DEBUG
 }
 
 void FbWinFrame::hideHandle() {
@@ -392,12 +410,13 @@ void FbWinFrame::reconfigure() {
     // align titlebar and render it
     if (m_use_titlebar)
         reconfigureTitlebar();
+
     // setup client area size/pos
-    int next_y =  m_titlebar.height() + 2*m_titlebar.borderWidth();
+    int next_y = m_titlebar.height() + 2*m_titlebar.borderWidth();
     unsigned int client_height = m_window.height() - m_titlebar.height() - m_handle.height();
 
     if (!m_use_titlebar) {
-        next_y = 0;
+        next_y = -m_titlebar.y();
         if (!m_use_handle)
             client_height = m_window.height();
         else
@@ -475,6 +494,8 @@ void FbWinFrame::redrawTitle() {
 }
 
 void FbWinFrame::redrawTitlebar() {
+    if (!m_use_titlebar)
+        return;
     m_titlebar.clear();
     m_label.clear();
     redrawTitle();
@@ -484,6 +505,9 @@ void FbWinFrame::redrawTitlebar() {
    Align buttons with title text window
 */
 void FbWinFrame::reconfigureTitlebar() {
+    if (!m_use_titlebar)
+        return;
+
     // resize titlebar to window size with font height
     m_titlebar.moveResize(-m_titlebar.borderWidth(), -m_titlebar.borderWidth(),
                           m_window.width(),
