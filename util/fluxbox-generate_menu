@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.15 2002/11/29 13:39:37 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.16 2002/12/14 08:27:54 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -32,7 +32,7 @@ display_usage() {
     cat <<EOF
 
 Usage: fluxbox-generate_menu [-kgr] [-t terminal] [-w browser]
-         [-m menu-title] [-p /path] [-n /path] [-q /path] [-o /path] 
+         [-m menu-title] [-p /path] [-n /path] [-q /path] [-o /path]
 Options:
 
     -k  Insert a kde menu
@@ -114,8 +114,8 @@ append_menu_end() {
 }
 
 menu_entry() {
-    append "[exec] ("`grep -v GenericName $* | grep Name= | cut -d = -f 2`") \
-        {"`grep -v TryExec $* | grep Exec= | cut -d = -f 2`"}"
+    append "[exec] (`grep -v GenericName $* | grep Name= | cut -d = -f 2`) \
+        {`grep -v TryExec $* | grep Exec= | cut -d = -f 2`}"
 }
 
 menu_entry_dircheck() {
@@ -146,6 +146,9 @@ N
 mv -f ${FILENAME}.tmp ${FILENAME}
 }
 
+# Save options for inclusion in menu
+options="$@"
+
 # Get options.
 while getopts ":khragb:t:p:w:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
    case "${COMMAND_LINE_ARGUMENT}" in
@@ -165,7 +168,6 @@ while getopts ":khragb:t:p:w:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
       *) display_help ; exit 1 ;;
    esac
 done
-
 
 # Set Defaults
 
@@ -252,10 +254,9 @@ fi
 # a unix system without any terms. that's odd
 if [ -z "$DEFAULT_TERM" ];then
     cat <<EOF>&2
-Error: I can't find any terminal-emulators in your path.
-Please specify your favourite terminal with the -t option.
+Warning: I can't find any terminal-emulators in your PATH.
+Please fix your PATH or specify your favourite terminal with the -t option
 EOF
-    exit 1
 fi
 
 
@@ -284,7 +285,7 @@ XUTILSMENU="X-utils"
 
 # Check translation
 case ${LC_ALL} in
-        ru_RU) #Russian locales
+        ru_RU*) #Russian locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="‚“¡’⁄≈“Ÿ"
                 CONFIGUREMENU="Ó¡”‘“œ À¡"
@@ -305,7 +306,7 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Ú¡¬œﬁ…≈ –“œ”‘“¡Œ”‘◊¡"
                 XUTILSMENU="X-’‘…Ã…‘Ÿ"
         ;;
-        sv_SE) #Swedish locales
+        sv_SE*) #Swedish locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="Browsers"
                 CONFIGUREMENU="Konfiguration"
@@ -326,7 +327,7 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Arbetsytor"
                 XUTILSMENU="X-program"
         ;;
-        nl_NL) #Nederlandse locales
+        nl_NL*) #Nederlandse locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="Browsers"
                 CONFIGUREMENU="Instellingen"
@@ -347,7 +348,7 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Werkveld Lijst"
                 XUTILSMENU="X-utils"
         ;;
-        fi_FI) #Finnish locales
+        fi_FI*) #Finnish locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="Selaimet"
                 CONFIGUREMENU="Konfigurointi"
@@ -368,7 +369,7 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Tyˆaluet"
                 XUTILSMENU="X-Ohjelmat"
         ;;
-        ja_JP) #Japanese locales
+        ja_JP*) #Japanese locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="•÷•È•¶•∂"
                 CONFIGUREMENU="¿ﬂƒÍ"
@@ -389,7 +390,7 @@ case ${LC_ALL} in
                 WORKSPACEMENU="•Ô°º•Ø•π•⁄°º•π"
                 XUTILSMENU="X•Ê°º•∆•£•Í•∆•£"
         ;;
-        fr_FR) # french locales
+        fr_FR*) # french locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="Navigateurs"
                 CONFIGUREMENU="Configurer"
@@ -410,7 +411,7 @@ case ${LC_ALL} in
                 WORKSPACEMENU="Liste des bureaux"
                 XUTILSMENU="X-utils"
         ;;
-        it_IT|it_IT@euro) # italian locales
+        it_IT*) # italian locales
                 #OFFICEMENU="Office"
                 BROWSERMENU="Browsers"
                 CONFIGUREMENU="Configurazione"
@@ -593,10 +594,13 @@ fi
             find_it fluxkeys append "[exec] (FluxKeys) {fluxkeys}"
             find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
             # if gxmessage exitst use it; else use xmessage
-            find_it gxmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
+            find_it gxmessage append \
+                "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
             [ $? -ne 0 ] && \
-                find_it xmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+                find_it xmessage append \
+                    "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
             find_it fbrun append "[exec] (Run) {fbrun}"
+	    find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu $options}"
         append_menu_end
 
             append "[reconfig] (${RELOADITEM})"
@@ -613,3 +617,5 @@ append_menu_end
 if [ ! "${REMOVE}" ];then
     clean_up
 fi
+
+echo "Menu succesfully generated."
