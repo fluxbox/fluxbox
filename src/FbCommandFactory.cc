@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.27 2004/02/20 19:40:31 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.28 2004/03/08 12:23:16 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -68,7 +68,7 @@ FbCommandFactory::FbCommandFactory() {
         "exec",
         "execcommand",
         "execute",
-        "iconfiy",
+        "iconify",
         "killwindow",
         "leftworkspace",
         "lower",
