@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.225 2003/09/11 21:30:20 rathnor Exp $
+// $Id: Window.cc,v 1.226 2003/09/12 22:48:49 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -362,7 +362,7 @@ void FluxboxWindow::init() {
     frame().gripLeft().setCursor(frame().theme().lowerLeftAngleCursor());
     frame().gripRight().setCursor(frame().theme().lowerRightAngleCursor());
 
-    frame().resize(m_client->width(), m_client->height());
+
     FbTk::TextButton *btn =  new FbTk::TextButton(frame().label(), 
                                       frame().theme().font(),
                                       m_client->title());
@@ -384,6 +384,8 @@ void FluxboxWindow::init() {
     // redirect events from frame to us
 
     frame().setEventHandler(*this); 
+
+    frame().resize(m_client->width(), m_client->height());
 
     m_last_focus_time.tv_sec = m_last_focus_time.tv_usec = 0;
 
@@ -510,6 +512,7 @@ void FluxboxWindow::init() {
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
+
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
 
     if (shaded) { // start shaded
@@ -549,6 +552,8 @@ void FluxboxWindow::init() {
 
     if (m_shaped)
         shape();
+
+
 }
 
 /// apply shape to this window
@@ -777,6 +782,8 @@ bool FluxboxWindow::removeClient(WinClient &client) {
 
     m_labelbuttons.erase(&client);
 
+    frame().reconfigure();
+
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"] numClients = "<<numClients()<<endl;
 #endif // DEBUG   
@@ -811,7 +818,7 @@ void FluxboxWindow::nextClient() {
         m_client = *it;
     m_client->raise();
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
-    setInputFocus();
+    frame().setFocus(setInputFocus());
 }
 
 void FluxboxWindow::prevClient() {
@@ -830,7 +837,7 @@ void FluxboxWindow::prevClient() {
 
     m_client->raise();
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
-    setInputFocus();
+    frame().setFocus(setInputFocus());
 }
 
 
@@ -908,8 +915,6 @@ void FluxboxWindow::associateClientWindow() {
 
     frame().setClientWindow(*m_client);
     frame().resizeForClient(m_client->width(), m_client->height());
-    // make sure the frame reconfigures
-    frame().reconfigure();
 }
 
 
@@ -954,6 +959,8 @@ void FluxboxWindow::reconfigure() {
 
     frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
     frame().setUpdateDelayTime(Fluxbox::instance()->getUpdateDelayTime());
+
+    frame().reconfigure();
 
     m_windowmenu.reconfigure();
 	
@@ -1100,9 +1107,10 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
             new_width = width();
             new_height = height();
         }
-        frame().moveResize(new_x, new_y, new_width, new_height);
 
         setFocusFlag(focused);
+        frame().moveResize(new_x, new_y, new_width, new_height);
+
         shaded = false;
         send_event = true;
     } else {
@@ -1258,13 +1266,8 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     frame().show();
 
-    if (was_iconic && screen().doFocusNew()) {
+    if (was_iconic && screen().doFocusNew())
         setInputFocus();
-    }
-
-    if (focused != frame().focused())
-        frame().setFocus(focused);
-
 
     if (reassoc && !m_client->transients.empty()) {
         // deiconify all transients
@@ -1281,7 +1284,9 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
             }
         }
     }
+
     oplock = false;
+
     if (do_raise)
 	raise();
 }
@@ -1646,7 +1651,10 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     }
 
     installColormap(focus);
-    frame().setFocus(focus);
+
+    if (focus != frame().focused()) {
+        frame().setFocus(focus);
+    }   
 
     if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
         && screen().doAutoRaise()) {
@@ -1712,8 +1720,7 @@ void FluxboxWindow::saveBlackboxAttribs() {
                  PropModeReplace,
                  (unsigned char *)&m_blackbox_attrib,
                  PropBlackboxAttributesElements
-                 )
-        );
+                 ));
 }
 
 /**
@@ -2013,11 +2020,10 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState);		
 			
-        if (client->isTransient() || screen().doFocusNew()) {
+        if (client->isTransient() || screen().doFocusNew())
             setCurrentClient(*client, true);
-        }
         else
-            setFocusFlag(false);			
+            setFocusFlag(false);
 
         iconic = false;
 
@@ -2168,7 +2174,6 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 void FluxboxWindow::exposeEvent(XExposeEvent &ee) {
     frame().exposeEvent(ee);
 }
-
 
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     WinClient *client = findClient(cr.window);
@@ -2609,10 +2614,10 @@ void FluxboxWindow::applyDecorations(bool initial) {
 
     if (decorations.handle) {
         frame().showHandle();
-        frame().reconfigure(); // show handle requires reconfigure
     } else
         frame().hideHandle();
 
+    frame().reconfigure();
 }
 
 void FluxboxWindow::toggleDecoration() {

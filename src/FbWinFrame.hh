@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.17 2003/09/11 13:17:14 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.18 2003/09/12 22:49:14 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -168,6 +168,7 @@ public:
     inline FbTk::FbWindow &gripLeft() { return m_grip_left; }
     inline const FbTk::FbWindow &gripRight() const { return m_grip_right; }
     inline FbTk::FbWindow &gripRight() { return m_grip_right; }
+    inline const FbTk::TextButton *currentLabel() const { return m_current_label; }
     inline bool focused() const { return m_focused; }
     inline bool isShaded() const { return m_shaded; }
     inline const FbWinFrameTheme &theme() const { return m_theme; }
@@ -179,8 +180,9 @@ public:
     //@}
 
 private:
-    void redrawTitle();
     void redrawTitlebar();
+    void redrawTitle();
+
     /// reposition titlebar items
     void reconfigureTitlebar();
     /**
