@@ -26,5 +26,6 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Subject.hh Subject.cc Observer.hh Observer.cc \
 	Transparent.hh Transparent.cc \
 	FbPixmap.hh FbPixmap.cc \
+	FbDrawable.hh FbDrawable.cc \
 	${xft_SOURCE} \
 	${xmb_SOURCE}
