@@ -19,12 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRootWindow.hh,v 1.2 2003/05/12 04:29:23 fluxgen Exp $
+// $Id: FbRootWindow.hh,v 1.3 2004/02/10 18:50:07 fluxgen Exp $
 
 #ifndef FBROOTWINDOW_HH
 #define FBROOTWINDOW_HH
 
-#include "FbWindow.hh"
+#include "FbTk/FbWindow.hh"
 
 class FbRootWindow: public FbTk::FbWindow {
 public:
