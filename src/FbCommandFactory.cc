@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.1 2003/06/30 14:49:23 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.2 2003/06/30 19:51:07 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -59,6 +59,7 @@ FbCommandFactory::FbCommandFactory() {
         "close",
         "shade",
         "stick",
+        "toggledecor",
         "sendtoworkspace",
         "killwindow",
         "nexttab",
@@ -128,6 +129,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::shade);
     else if (command == "stick" || command == "stickwindow")
         return new CurrentWindowCmd(&FluxboxWindow::stick);
+    else if (command == "toggledecor")
+        return new CurrentWindowCmd(&FluxboxWindow::toggleDecoration);
     else if (command == "sendtoworkspace")
         return new SendToWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "killwindow")
