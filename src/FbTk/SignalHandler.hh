@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.hh,v 1.3 2002/12/01 13:42:14 rathnor Exp $
+// $Id: SignalHandler.hh,v 1.4 2003/01/05 23:34:38 fluxgen Exp $
 
 #ifndef FBTK_SIGNALHANDLER_HH
 #define FBTK_SIGNALHANDLER_HH
@@ -36,7 +36,7 @@ public:
 
 /**
    Handles system signals, singleton.
-   Usage: inherit the class EventHandler and then register 
+   Usage: inherit the class SignalEventHandler and then register 
    it to SignalHandler by calling registerHandler with
    a signal number
 */
