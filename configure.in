@@ -2,7 +2,7 @@ dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,0.9.2,no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.9.3,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -104,7 +104,7 @@ AC_ARG_ENABLE(
 dnl Check for Remember options
 AC_MSG_CHECKING([whether to include remember functionality])
 AC_ARG_ENABLE(
-  remember, [  --enable-remember           include code for Remembering attributes [default=yes]],
+  remember, [  --enable-remember       include code for Remembering attributes [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
     AC_DEFINE(REMEMBER, 1, " compile with remember")
@@ -324,6 +324,24 @@ AC_ARG_ENABLE(
   MULTIBYTE=true
 )
 AM_CONDITIONAL(MULTIBYTE, test x$MULTIBYTE = xtrue)
+
+AC_MSG_CHECKING([whether to have RANDR (The X Resize and Rotate Extension) support])
+AC_ARG_ENABLE(
+  randr,
+[  --enable-randr          RANDR (The X Resize and Rotate Extension) support [default=yes]],
+  if test x$enableval = "xyes"; then
+	AC_MSG_RESULT([yes])
+	AC_CHECK_LIB(Xrandr, XRRQueryExtension,
+		AC_DEFINE(HAVE_RANDR, 1, "randr support")		
+		LIBS="$LIBS -lXrandr")
+  else
+    AC_MSG_RESULT([no])
+  fi,  
+  AC_MSG_RESULT([yes])
+  AC_CHECK_LIB(Xrandr, XRRQueryExtension,
+		AC_DEFINE(HAVE_RANDR, 1, "randr support")		
+		LIBS="$LIBS -lXrandr")
+)
 
 dnl Check for Xinerama support
 

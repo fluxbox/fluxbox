@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.139 2003/05/11 23:44:09 rathnor Exp $
+// $Id: fluxbox.cc,v 1.140 2003/05/12 04:23:31 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -41,6 +41,7 @@
 #include "WinClient.hh"
 #include "Keys.hh"
 #include "FbAtoms.hh"
+
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -71,9 +72,15 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
+// X extensions
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
+#ifdef HAVE_RANDR
+#include <X11/extensions/Xrandr.h>
+#endif // HAVE_RANDR
+
+// system headers
 
 #include <cstdio>
 #include <cstdlib>
@@ -410,6 +417,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_starting(true),
       m_shutdown(false),
       m_server_grabs(0),
+      m_randr_event_type(0),
       m_RC_PATH("fluxbox"),
       m_RC_INIT_FILE("init") {
       
@@ -442,6 +450,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     s_singleton = this;
 
+#ifdef HAVE_RANDR
+    // get randr event type
+    int error_base;
+    XRRQueryExtension(disp, &m_randr_event_type, &error_base);
+#endif // HAVE_RANDR
+
     // setup atom handlers before we create any windows
 #ifdef USE_GNOME
     addAtomHandler(new Gnome()); // for gnome 1 atom support
@@ -450,6 +464,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #ifdef USE_NEWWMSPEC
     addAtomHandler(new Ewmh()); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
+
 #ifdef REMEMBER
     addAtomHandler(new Remember()); // for remembering window attribs
 #endif // REMEMBER
@@ -853,6 +868,15 @@ void Fluxbox::handleEvent(XEvent * const e) {
         handleClientMessage(e->xclient);
 	break;
     default: {
+#ifdef HAVE_RANDR
+        if (e->type == m_randr_event_type) {
+            // update root window size in screen
+            BScreen *scr = searchScreen(e->xany.window);
+            if (scr != 0)
+                scr->updateSize(); 
+        }            
+#endif // HAVE_RANDR
+
     }
 
     }
