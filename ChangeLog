@@ -1,8 +1,10 @@
 (Format: Year/Month/Day)
-Changes for 0.9.10:
+Changes for 0.9.11
 *04/09/02:
   * Fix crash when in windowmenu->submenu and closing the app (Mathias)
     Remember.cc
+-------------------------------------------------------
+Changes for 0.9.10:
 *04/09/01:
   * Fix width of a menuentry (Mathias)
     FbTk/MenuItem.cc
