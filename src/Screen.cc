@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.188 2003/06/23 13:10:52 fluxgen Exp $
+// $Id: Screen.cc,v 1.189 2003/06/23 13:31:47 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -461,14 +461,16 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 #ifdef SLIT
     m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
                  Fluxbox::instance()->getSlitlistFilename().c_str()));
-    //!! TODO: we shouldn't do this more than once, but since slit handles it's own resources 
-    // we must do this.
-    fluxbox->load_rc(*this);
+
 #endif // SLIT
 
     // create toolbarhandler for toolbar
 
     m_toolbarhandler.reset(new ToolbarHandler(*this, toolbarMode()));
+
+    //!! TODO: we shouldn't do this more than once, but since slit/toolbar handles their
+    // own resources we must do this.
+    fluxbox->load_rc(*this);
 
     m_configmenu.reset(createMenuFromScreen(*this));
     setupConfigmenu(*m_configmenu.get());
@@ -486,9 +488,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->update();
 
 #ifdef SLIT
-    if (m_slit.get())
-        m_slit->reconfigure();
+    if (slit())
+        slit()->reconfigure();
 #endif // SLIT
+    if (toolbar())
+        toolbar()->reconfigure();
 
     // start with workspace 0
     changeWorkspaceID(0);
