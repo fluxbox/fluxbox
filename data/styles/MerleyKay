@@ -120,7 +120,7 @@ window.justify:			Center
 
 window.tab.font:	                -*-clean-medium-r-*-*-12-*-*-*-*-60-iso8859-*
 toolbar.font:                   -*-lucida-bold-r-*-*-*-100-*-*-*-*-*-*
-window.font: -*-helvetica-medium-r-normal-*-12-*-*-*-*-*-iso8859-1
+window.font: -*-helvetica-medium-r-normal-*-12-*-*-*-*-*-iso8859-*
 #menu.title.font:                -*-lucida-bold-r-*-*-*-100-*-*-*-*-*-*
 menu.title.font:  -*-lucida-bold-r-*-*-*-100-*-*-*-*-*-*
 menu.frame.font:                -*-lucida-medium-r-*-*-*-100-*-*-*-*-*-*

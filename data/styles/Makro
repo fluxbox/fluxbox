@@ -98,14 +98,14 @@ window.tab.label.focus.textColor:	rgb:40/20/05
 window.tab.borderWidth:	1
 window.tab.borderColor:	rgb:10/10/10
 ! ----------- (fluxbox.sourceforge.net)
-window.tab.font:	               -*-helvetica-medium-r-*-*-11-*-*-*-*-*-iso8859-1
+window.tab.font:	               -*-helvetica-medium-r-*-*-11-*-*-*-*-*-iso8859-*
 
 window.justify:			Left
 
-toolbar.font:                   -*-helvetica-medium-r-*-*-11-*-*-*-*-*-iso8859-1
-window.font: -*-helvetica-bold-r-*-*-11-*-*-*-*-*-iso8859-1
-menu.title.font:  -*-helvetica-bold-r-*-*-11-*-*-*-*-*-iso8859-1
-menu.frame.font:                -*-helvetica-medium-r-*-*-10-*-*-*-*-*-iso8859-1
+toolbar.font:                   -*-helvetica-medium-r-*-*-11-*-*-*-*-*-iso8859-*
+window.font: -*-helvetica-bold-r-*-*-11-*-*-*-*-*-iso8859-*
+menu.title.font:  -*-helvetica-bold-r-*-*-11-*-*-*-*-*-iso8859-*
+menu.frame.font:                -*-helvetica-medium-r-*-*-10-*-*-*-*-*-iso8859-*
 
 borderColor:			rgb:10/10/10
 

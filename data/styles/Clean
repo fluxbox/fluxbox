@@ -99,14 +99,14 @@ window.tab.label.focus.textColor:	black
 window.tab.borderWidth:	1
 window.tab.borderColor:	rgb:10/10/10
 ! ----------- (fluxbox.sourceforge.net)
-window.tab.font:	               -*-lucidatypewriter-medium-r-normal-*-10-100-75-75-m-60-iso8859-1
+window.tab.font:	               -*-lucidatypewriter-medium-r-normal-*-10-100-75-75-m-60-iso8859-*
 
 window.justify:			Right
 
-toolbar.font: -*-lucidatypewriter-medium-r-normal-*-10-100-75-75-m-60-iso8859-1
-window.font: -misc-8x8\ system\ font-medium-r-normal--9-90-100-100-m-100-iso8859-1
-menu.title.font:  -*-lucidatypewriter-medium-r-normal-*-10-100-75-75-m-60-iso8859-1
-menu.frame.font:                -*-lucida-medium-r-normal-*-10-100-*-*-*-*-iso8859-1
+toolbar.font: -*-lucidatypewriter-medium-r-normal-*-10-100-75-75-m-60-iso8859-*
+window.font: -misc-8x8\ system\ font-medium-r-normal--9-90-100-100-m-100-iso8859-*
+menu.title.font:  -*-lucidatypewriter-medium-r-normal-*-10-100-75-75-m-60-iso8859-*
+menu.frame.font:                -*-lucida-medium-r-normal-*-10-100-*-*-*-*-iso8859-*
 
 borderColor:			rgb:10/10/10
 
