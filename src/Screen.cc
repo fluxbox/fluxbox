@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.81 2002/11/17 11:27:50 fluxgen Exp $
+// $Id: Screen.cc,v 1.82 2002/11/21 15:57:47 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -285,6 +285,7 @@ resource(rm, screenname, altscreenname)
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), colormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
+	theme->reconfigure(*resource.antialias);
 
 	const char *s =	i18n->getMessage(
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
@@ -447,7 +448,6 @@ resource(rm, screenname, altscreenname)
 
 	XFree(children);
 	XFlush(getBaseDisplay()->getXDisplay());
-	theme->reconfigure(*resource.antialias);
 }
 
 namespace {
