@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.14 2003/09/10 11:19:39 fluxgen Exp $
+// $Id: Button.cc,v 1.15 2003/09/10 21:24:36 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -57,7 +57,7 @@ Button::Button(const FbWindow &parent, int x, int y,
 }
 
 Button::~Button() {
-    FbTk::EventManager::instance()->remove(*this);
+
 }
 
 void Button::setOnClick(RefCount<Command> &cmd, int button) {
@@ -77,6 +77,7 @@ void Button::setPressedPixmap(Pixmap pm) {
 }
 
 void Button::setBackgroundColor(const Color &color) {
+    m_background_pm = 0; // we're using background color now
     m_background_color = color;    
     FbTk::FbWindow::setBackgroundColor(color);
 }
@@ -91,15 +92,15 @@ void Button::buttonPressEvent(XButtonEvent &event) {
         FbWindow::setBackgroundPixmap(m_pressed_pm);
     m_pressed = true;    
     clear();
-    FbWindow::updateTransparent();
+    updateTransparent();
 }
 
 void Button::buttonReleaseEvent(XButtonEvent &event) {
     m_pressed = false;
     if (m_background_pm)
-        FbWindow::setBackgroundPixmap(m_background_pm);
+        setBackgroundPixmap(m_background_pm);
     else
-        FbWindow::setBackgroundColor(m_background_color);
+        setBackgroundColor(m_background_color);
 
     clear(); // clear background
 
@@ -112,7 +113,7 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
         XCopyArea(disp, m_foreground_pm, window(), m_gc, 0, 0, width(), height(), 0, 0);
     }
 
-    FbWindow::updateTransparent();
+    updateTransparent();
 
     // finaly, execute command (this must be done last since this object might be deleted by the command)
     if (event.button > 0 && event.button <= 5 &&
@@ -126,12 +127,12 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
 
 void Button::exposeEvent(XExposeEvent &event) {
     if (m_background_pm)
-        FbWindow::setBackgroundPixmap(m_background_pm);
+        setBackgroundPixmap(m_background_pm);
     else
-        FbWindow::setBackgroundColor(m_background_color);
+        setBackgroundColor(m_background_color);
 
-    clear();
-    FbWindow::updateTransparent();
+    clearArea(event.x, event.y, event.width, event.height);
+    updateTransparent(event.x, event.y, event.width, event.height);
 }
 
 }; // end namespace FbTk
