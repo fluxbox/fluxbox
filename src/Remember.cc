@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.9 2003/04/27 15:53:53 rathnor Exp $
+// $Id: Remember.cc,v 1.10 2003/04/28 12:58:08 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -545,12 +545,14 @@ void Remember::setupWindow(FluxboxWindow &win) {
 
     // we don't touch the window if it is a transient
     // of something else
+    int menupos = win.getWindowmenu().numberOfItems()-2;
+    if (menupos < -1) menupos = -1;
     if (winclient.transientFor()) {
         // still put something in the menu so people don't get confused
         // so, we add a disabled item...
         FbTk::MenuItem *item = new FbTk::MenuItem("Remember...");
         item->setEnabled(false);
-        win.getWindowmenu().insert(item, win.getWindowmenu().numberOfItems()-2);
+        win.getWindowmenu().insert(item, menupos);
         win.getWindowmenu().update();
         return;
     }
@@ -560,7 +562,7 @@ void Remember::setupWindow(FluxboxWindow &win) {
     // TODO: nls
     win.getWindowmenu().insert("Remember...", 
                                createRememberMenu(*this, win), 
-                               win.getWindowmenu().numberOfItems()-2);
+                               menupos);
     win.getWindowmenu().update();
 
     Application *app = find(winclient);

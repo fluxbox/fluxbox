@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.140 2003/04/28 00:36:50 fluxgen Exp $
+// $Id: Screen.cc,v 1.141 2003/04/28 12:58:08 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1291,8 +1291,8 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // WinClient already exists).
     
     Fluxbox::instance()->saveWindowSearch(client.window(), win);
-    Fluxbox::instance()->attachSignals(*win);
     setupWindowActions(*win);
+    Fluxbox::instance()->attachSignals(*win);
     if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
         win->show();      
     }
