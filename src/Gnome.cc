@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.36 2004/06/28 13:33:05 fluxgen Exp $
+// $Id: Gnome.cc,v 1.37 2004/08/11 13:16:10 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -88,7 +88,6 @@ void Gnome::initForScreen(BScreen &screen) {
 
 void Gnome::setupFrame(FluxboxWindow &win) {
     // load gnome state (take queues from the main window of the frame)
-    Display *disp = FbTk::App::instance()->display();
     Atom ret_type;
     int fmt;
     unsigned long nitems, bytes_after;
@@ -105,10 +104,9 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     }
 
     // load gnome layer atom
-    if (XGetWindowProperty(disp, win.clientWindow(), 
-                           m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL, 
-                           &ret_type, &fmt, &nitems, &bytes_after, 
-                           (unsigned char **) &data) ==  Success && data) {
+    if (win.winClient().property(m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL, 
+                                 &ret_type, &fmt, &nitems, &bytes_after, 
+                                 (unsigned char **) &data) && data) {
         flags = *data;
         setLayer(&win, flags);
         XFree (data);
@@ -117,10 +115,9 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     }
 
     // load gnome workspace atom
-    if (XGetWindowProperty(disp, win.clientWindow(), 
-                           m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
-                           &ret_type, &fmt, &nitems, &bytes_after, 
-                           (unsigned char **) &data) ==  Success && data) {
+    if (win.winClient().property(m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
+                                 &ret_type, &fmt, &nitems, &bytes_after, 
+                                 (unsigned char **) &data) && data) {
         unsigned int workspace_num = *data;
         if (win.workspaceNumber() != workspace_num) 
             win.screen().reassociateWindow(&win, workspace_num, false);
@@ -136,6 +133,11 @@ bool Gnome::propertyNotify(WinClient &winclient, Atom the_property) {
     if (the_property == m_gnome_wm_win_state) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): _WIN_STATE"<<endl;
+#endif // DEBUG
+        return true;
+    } else if (the_property == m_gnome_wm_win_layer) {
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): _WIN_LAYER"<<endl;
 #endif // DEBUG
         return true;
     }
@@ -413,31 +415,56 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
     
     switch (layer) {
     case WIN_LAYER_DESKTOP:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DESKTOP)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getDesktopLayer();
         break;
     case WIN_LAYER_BELOW:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_BELOW)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getBottomLayer();
         break;
     case WIN_LAYER_NORMAL:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_NORMAL)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getNormalLayer();
         break;		
     case WIN_LAYER_ONTOP:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ONTOP)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getTopLayer();
         break;
     case WIN_LAYER_DOCK:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_DOCK)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getDockLayer();
         break;
     case WIN_LAYER_ABOVE_DOCK:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_ABOVE_DOCK)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getAboveDockLayer();
         break;
     case WIN_LAYER_MENU:
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", WIN_LAYER_MENU)"<<endl;
+#endif // DEBUG
         layer = Fluxbox::instance()->getMenuLayer();
         break;
     default:
         // our windows are in the opposite direction to gnome
         layer = Fluxbox::instance()->getDesktopLayer() - layer;
+#ifdef DEBUG
+        cerr<<"Gnome::setLayer("<<win->title()<<", "<<layer<<")"<<endl;
+#endif // DEBUG
         break;
     }
+
     win->moveToLayer(layer);
 
 }
