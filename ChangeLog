@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/11/29:
+  * Added shadow text (Henrik)
+    To use shadow in text you need to add option to your font style item.
+	The theme item will continue to work in old fluxbox and it'll just 
+	ignore the "shadow" option
+	Example:
+	menu.title.font: Verdana-10:bold,shadow
+	menu.frame.font: Verdana-8:shadow
+    window.font: sans-8:shadow
+	*.font: sans-12:shadow
 *03/11/27:
   * The "Send To..."-menu is back (Henrik)
     SendToMenu.hh/cc, Window.cc
