@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.33 2004/06/10 11:38:26 fluxgen Exp $
+// $Id: Menu.hh,v 1.34 2004/06/13 00:31:29 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -205,13 +205,15 @@ private:
         std::string label;
         int x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
             grab_x, grab_y;
-        unsigned int title_h, frame_h, item_w, item_h, bevel_w,
-            bevel_h;
+        unsigned int title_h, frame_h, item_w, item_h, bevel_w;
     } menu;
 
     Drawable m_root_pm;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
-    FbPixmap m_frame_pm, m_real_frame_pm;
+    FbPixmap m_frame_pm,  ///< buffer pixmap
+        m_real_frame_pm; ///< buffer pixmap (this one is shown to the user)
+    FbPixmap m_title_pm, ///< buffer pixmap to avoid flicker
+        m_real_title_pm; ///< buffer pixmap (this one is shown to the user)
     std::auto_ptr<Transparent> m_transp;
     bool m_need_update;
     Timer m_submenu_timer;
