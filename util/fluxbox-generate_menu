@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.53 2003/09/29 11:59:35 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.54 2003/10/08 14:18:25 rathnor Exp $
 
 #
 # Portability notes:
@@ -63,7 +63,7 @@ Options:
 
     -k  Insert a kde menu
     -g  Add a gnome menu
-    -B  enable backgroundmenu
+    -B  enable backgrounds menu
     -r  Don't remove empty menu-entries; for templates
 
     -t  Favourite terminal
@@ -609,38 +609,83 @@ if [ ! "${INSTALL}" = Yes ]; then
 
 EOF
             else
-                echo "Warning: I could't create ${HOME}/.fluxbox/menuconfig" >&2
+                echo "Warning: I couldn't create ${HOME}/.fluxbox/menuconfig" >&2
             fi
         fi
     fi
 fi
+
+testoption() {
+    if [ -z "$3" -o -n "`echo $3|grep '^-'`" ]; then
+        echo "Error: The option $2 requires an argument." >&2
+        exit 1
+    fi
+    case $1 in
+        ex) # executable
+            if find_it "$3"; then
+                :
+            else
+                echo "Error: The option $2 needs an executable as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        di) # directory
+            if [ -d "$3" ]; then
+                :
+            else
+                echo "Error: The option $2 needs a directory as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        fl) # file
+            if [ -r "$3" ]; then
+                :
+            else
+                echo "Error: The option $2 needs a readable file as argument, and \`$3' is not." >&2
+            fi
+            ;;
+        sk) # skip
+            :
+            ;;
+    esac
+}
+
 # Get options.
-while getopts ":Bkhragb:t:p:w:u:n:q:o:m:-:" COMMAND_LINE_ARGUMENT ; do
-   case "${COMMAND_LINE_ARGUMENT}" in
-       B) BACKGROUNDMENUITEM=yes ;;
-       k) KDEMENU=yes ;;
-       g) GNOMEMENU=yes ;;
-       t) MY_TERM=${OPTARG} ;;
-       b) MY_BROWSER=${OPTARG} ;;
-       o) MENUFILENAME=${OPTARG} ;;
-       p) PREFIX=${OPTARG} ;;
-       n) GNOME_PREFIX=${OPTARG} ;;
-       q) KDE_PREFIX=${OPTARG} ;;
-       m) MENUTITLE=${OPTARG} ;;
-       w) HOMEPAGE=${OPTARG} ;;
-       u) USERMENU=${OPTARG} ;;
-       r) REMOVE=no ;;
-       h) display_help ; exit 0 ;;
-       a) display_authors ; exit 0 ;;
-       -) echo "fluxbox-generate_menu doesn't recognize -- gnu-longopts."
-          echo 'Use fluxbox-generate_menu -h for a long help message.'
-          display_usage
-          exit 1 ;;
-       *) echo 'Use fluxbox-generate_menu -h for a long help message.'
-          display_usage
-          exit 1 ;;
-   esac
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -B) BACKGROUNDMENUITEM=yes; shift;;
+        -k) KDEMENU=yes; shift;;
+        -g) GNOMEMENU=yes; shift;;
+        -t) MY_TERM=${2}; testoption ex $1 $2; shift 2;;
+        -b) MY_BROWSER=${2}; testoption ex $1 $2; shift 2;;
+        -o) MENUFILENAME=${2}; testoption fi $1 $2; shift 2;;
+        -p) PREFIX=${2}; testoption di $1 $2; shift 2;;
+        -n) GNOME_PREFIX=${2}; testoption di $1 $2; shift 2;;
+        -q) KDE_PREFIX=${2}; testoption di $1 $2; shift 2;;
+        -m) MENUTITLE=${2}; testoption sk $1 $2; shift 2;;
+        -w) HOMEPAGE=${2}; testoption sk $1 $2; shift 2;;
+        -u) USERMENU=${2}; testoption fl $1 $2; shift 2;;
+        -r) REMOVE=no; shift;;
+        -h) display_help ; exit 0 ;;
+        -a) display_authors ; exit 0 ;;
+        --*) echo "fluxbox-generate_menu doesn't recognize -- gnu-longopts."
+            echo 'Use fluxbox-generate_menu -h for a long help message.'
+            display_usage
+            exit 1 ;;
+        -[a-zA-Z][a-zA-Z]*)
+            # split concatenated single-letter options apart
+            FIRST="$1"; shift
+            set -- `echo "$FIRST" | sed 's/^-\(.\)\(.*\)/-\1 -\2/'` "$@"
+            ;;
+        -*)
+            echo 1>&2 "fluxbox-generate_menu: unrecognized option "\`"$1'"
+            display_usage
+            exit 1
+            ;;
+        *)
+            break
+            ;;
+    esac
 done
+
 # Check defaults
 
 # Can we actually create ${MENUFILENAME}
@@ -987,5 +1032,5 @@ if [ ! "${REMOVE}" ]; then
     clean_up
 fi
 
-echo 'Menu succesfully generated.'
-echo 'Use fluxbox-generate_menu -h to read all about the latest features.'
+echo 'Menu successfully generated.'
+echo 'Use fluxbox-generate_menu -h to read about all the latest features.'

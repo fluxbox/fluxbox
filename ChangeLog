@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/08:
+  * fluxbox-generate_menu update from Han
+    - replace getopts with portable workaround
+    fluxbox-generate_menu
   * fbsetbg updates from Han, and some tweaking (Simon)
     fbsetbg
 *03/10/06:
