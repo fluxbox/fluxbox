@@ -1,5 +1,8 @@
 News in 0.9.7:
-    * Added menu delay/click to open or close submenus
+    * Two new styles:
+      Emerge from Nuno Alexandre
+      BlueFlux from Lauri Hakkarainen
+    * Added menu delay/click to open or close sub menus
       new resource items:
       session.screen0.menuMode:  can be either Click or Delay (default: Delay)
       session.screen0.menuDelay:  in msec  (default: 0 )
@@ -8,8 +11,8 @@ News in 0.9.7:
       session.screen0.menuMode: Delay
       session.screen0.menuDelay: 400
       session.screen0.menuDelayClose: 300
-    * Added aligment for buttons in iconbar
-       Change Left, Relative or Right via the Iconbar mode menu
+    * Added alignment for buttons in icon bar
+       Change Left, Relative or Right via the iconbar mode menu
        New resource item:
        session.screen0.iconbar.clientWidth: Integer
        session.screen0.iconbar.alignment:  LEFT, RELATIVE or RIGHT
@@ -35,7 +38,8 @@ News in 0.9.7:
       SetResourceValueDialog - shows a dialog where you can type the resource
                                name and it's value
       SetResourceValueCmd <resourcename> <resource value>
-      BindKey <key string> :<action>   - this will append key string and                                                  action to your keys file and bind
+      BindKey <key string> :<action>   - this will append key string and 
+                                         action to your keys file and bind
                                          the key
       
     * Window menu accessible in workspaces client menu  
@@ -57,6 +61,7 @@ Bug fixes:
     * Fixed image cache bug
     * Fixed some icc warnings
     * Fixed mozilla focus issue
-    * Fixed crash bug when adding alot of new workspaces
-    * Fixed menu draw bug in empty submenus
+    * Fixed crash bug when adding new workspaces
+    * Fixed menu draw bug in empty sub menus
+
 See ChangeLog for more details
