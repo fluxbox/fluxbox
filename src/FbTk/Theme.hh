@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.1 2002/12/02 19:34:51 fluxgen Exp $
+// $Id: Theme.hh,v 1.2 2002/12/16 11:01:43 fluxgen Exp $
 
 // holds ThemeItem, Theme and ThemeManager
 
+#ifndef FBTK_THEME_HH
+#define FBTK_THEME_HH
 
 #include <string>
 #include <list>
@@ -33,9 +35,11 @@
 namespace FbTk {
 
 class Theme;
+
+/// Base class for ThemeItem, holds name and altname
 /**
-   base class for themeitem, holds name and altname
- */
+  @see ThemeItem
+*/
 class ThemeItem_base {
 public:
     ThemeItem_base(const std::string &name, const std::string &altname):
@@ -50,9 +54,8 @@ private:
     std::string m_name, m_altname;
 };
 
-/**
-   template ThemeItem class for things like Texture and Color
-*/
+
+/// template ThemeItem class for things like Texture and Color
 template <typename T>
 class ThemeItem:public ThemeItem_base {
 public:
@@ -80,10 +83,7 @@ private:
 };
 
 
-
-/**
-   Hold themeitems. Use this to create a Theme set
-*/
+/// Hold ThemeItems. Use this to create a Theme set
 class Theme {
 public:
     explicit Theme(int screen_num); // create a theme for a specific screen
@@ -105,8 +105,9 @@ private:
 };
 
 
+/// Singleton theme manager
 /**
-   singleton theme manager
+ Use this to load all the registred themes
 */
 class ThemeManager {
 public:
@@ -120,7 +121,7 @@ private:
 
     friend class FbTk::Theme; // so only theme can register itself in constructor
     /// @return false if screen_num if out of 
-    // range or theme already registered, else true
+    /// range or theme already registered, else true
     bool registerTheme(FbTk::Theme &tm); 
     /// @return false if theme isn't registred in the manager
     bool unregisterTheme(FbTk::Theme &tm);
@@ -159,4 +160,5 @@ void Theme::remove(ThemeItem<T> &item)  {
 
 }; // end namespace FbTk
 
+#endif // FBTK_THEME_HH
 
