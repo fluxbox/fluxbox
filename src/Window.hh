@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.33 2002/10/11 10:18:43 fluxgen Exp $
+// $Id: Window.hh,v 1.34 2002/10/19 10:53:10 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -41,6 +41,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #define PropMwmHintsElements	3
 
@@ -123,8 +124,9 @@ public:
 	const Window &getFrameWindow() const { return frame.window; }
 	const Window &getClientWindow() const { return client.window; }
 
-	Windowmenu *getWindowmenu() { return windowmenu; }
-
+	Windowmenu *getWindowmenu() { return m_windowmenu.get(); }
+	const Windowmenu *getWindowmenu() const { return m_windowmenu.get(); }
+	
 	const std::string &getTitle() const { return client.title; }
 	const std::string &getIconTitle() const { return client.icon_title; }
 	int getXFrame() const { return frame.x; }
@@ -245,7 +247,7 @@ private:
 	BaseDisplay::BlackboxAttributes blackbox_attrib;
 
 	Time lastButtonPressTime;
-	Windowmenu *windowmenu;
+	std::auto_ptr<Windowmenu> m_windowmenu;
 
 	timeval lastFocusTime;
 

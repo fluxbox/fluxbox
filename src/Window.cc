@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.90 2002/10/15 17:37:28 fluxgen Exp $
+// $Id: Window.cc,v 1.91 2002/10/19 10:56:30 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -68,7 +68,7 @@ screen(0),
 timer(this),
 display(0),
 lastButtonPressTime(0),
-windowmenu(0),
+m_windowmenu(0),
 m_layer(LAYER_NORMAL),
 tab(0) {
 	
@@ -300,7 +300,7 @@ tab(0) {
 	XMapSubwindows(display, frame.window);
 
 	if (decorations.menu)
-		windowmenu = new Windowmenu(*this);
+		m_windowmenu = std::auto_ptr<Windowmenu>(new Windowmenu(*this));
 
 	if (workspace_number < 0 || workspace_number >= screen->getCount())
 		screen->getCurrentWorkspace()->addWindow(this, place_window);
@@ -355,11 +355,6 @@ FluxboxWindow::~FluxboxWindow() {
 	} else //it's iconic
 		screen->removeIcon(this);
 	
-	if (windowmenu) {
-		delete windowmenu;
-		windowmenu = 0;
-	}
-
 	if (tab != 0) {
 		delete tab;	
 		tab = 0;
@@ -1031,9 +1026,9 @@ void FluxboxWindow::reconfigure() {
 	
 	grabButtons();
 
-	if (windowmenu) {
-		windowmenu->move(windowmenu->x(), frame.y + frame.title_h);
-		windowmenu->reconfigure();
+	if (m_windowmenu.get()) {
+		m_windowmenu->move(m_windowmenu->x(), frame.y + frame.title_h);
+		m_windowmenu->reconfigure();
 	}
 		
 	
@@ -1296,8 +1291,8 @@ void FluxboxWindow::getMWMHints() {
 		} else {
 			decorations.titlebar = decorations.handle = decorations.border =
 				decorations.iconify = decorations.maximize =
-				decorations.close = decorations.menu = decorations.tab = false;
-
+				decorations.close = decorations.tab = false;
+			decorations.menu = true;
 			if (client.mwm_hint->decorations & MwmDecorBorder)
 				decorations.border = true;
 			if (client.mwm_hint->decorations & MwmDecorHandle)
@@ -1570,8 +1565,8 @@ void FluxboxWindow::iconify() {
 	if (iconic)
 		return;
 
-	if (windowmenu)
-		windowmenu->hide();
+	if (m_windowmenu.get())
+		m_windowmenu->hide();
 
 	setState(IconicState);
 
@@ -1681,8 +1676,8 @@ void FluxboxWindow::withdraw() {
 	XSelectInput(display, client.window,
 				PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
 
-	if (windowmenu)
-		windowmenu->hide();
+	if (m_windowmenu.get())
+		m_windowmenu->hide();
 	
 	if (tab)
 		tab->withdraw();
@@ -2358,11 +2353,13 @@ void FluxboxWindow::restoreAttributes() {
 }
 
 void FluxboxWindow::showMenu(int mx, int my) {
-	windowmenu->move(mx, my);
-	windowmenu->show();		
-	windowmenu->raise();
-	windowmenu->getSendToMenu().raise();
-	windowmenu->getSendGroupToMenu().raise();
+	if (m_windowmenu.get() == 0)
+		return;
+	m_windowmenu->move(mx, my);
+	m_windowmenu->show();		
+	m_windowmenu->raise();
+	m_windowmenu->getSendToMenu().raise();
+	m_windowmenu->getSendGroupToMenu().raise();
 }
 				
 void FluxboxWindow::restoreGravity() {
@@ -2699,8 +2696,8 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
 				if (decorations.titlebar)
 					positionButtons(true);
-				if (windowmenu)
-					windowmenu->reconfigure();
+				if (m_windowmenu.get())
+					m_windowmenu->reconfigure();
 			}
 		} else {
 
@@ -2808,8 +2805,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 		
 		if (frame.plate == be->window) {
 			
-			if (windowmenu && windowmenu->isVisible()) //hide menu if its visible
-				windowmenu->hide();
+			if (m_windowmenu.get() && m_windowmenu->isVisible()) //hide menu if its visible
+				m_windowmenu->hide();
 			//raise tab first, if there is any, so the focus on windows get 
 			//right and dont "hide" the tab behind other windows
 			if (tab)
@@ -2837,8 +2834,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			frame.grab_x = be->x_root - frame.x - screen->getBorderWidth();
 			frame.grab_y = be->y_root - frame.y - screen->getBorderWidth();
 
-			if (windowmenu && windowmenu->isVisible())
-				windowmenu->hide();
+			if (m_windowmenu.get() && m_windowmenu->isVisible())
+				m_windowmenu->hide();
 			//raise tab first if there is any
 			if (hasTab())
 				tab->raise();
@@ -2850,47 +2847,47 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 		if (hasTab())
 			getTab()->lower(); //lower the tab AND it's windows
 
-	} else if (windowmenu && be->button == 3 &&
+	} else if (m_windowmenu.get() && be->button == 3 &&
 			(frame.title == be->window || frame.label == be->window ||
 			frame.handle == be->window)) {
 
 		int mx = 0, my = 0;
 
 		if (frame.title == be->window || frame.label == be->window) {
-			mx = be->x_root - (windowmenu->width() / 2);
+			mx = be->x_root - (m_windowmenu->width() / 2);
 			my = frame.y + frame.title_h;
 		} else if (frame.handle == be->window) {
-			mx = be->x_root - (windowmenu->width() / 2);
-			my = frame.y + frame.y_handle - windowmenu->height();
+			mx = be->x_root - (m_windowmenu->width() / 2);
+			my = frame.y + frame.y_handle - m_windowmenu->height();
 		} else {
 			bool buttonproc=false;
 			
 			if (buttonproc)
-				mx = be->x_root - (windowmenu->width() / 2);
+				mx = be->x_root - (m_windowmenu->width() / 2);
 
 			if (be->y <= (signed) frame.bevel_w)
 				my = frame.y + frame.y_border;
 			else
-				my = be->y_root - (windowmenu->height() / 2);
+				my = be->y_root - (m_windowmenu->height() / 2);
 		}
 
-		if (mx > (signed) (frame.x + frame.width - windowmenu->width()))
-			mx = frame.x + frame.width - windowmenu->width();
+		if (mx > (signed) (frame.x + frame.width - m_windowmenu->width()))
+			mx = frame.x + frame.width - m_windowmenu->width();
 		if (mx < frame.x)
 			mx = frame.x;
 
-		if (my > (signed) (frame.y + frame.y_handle - windowmenu->height()))
-			my = frame.y + frame.y_handle - windowmenu->height();
+		if (my > (signed) (frame.y + frame.y_handle - m_windowmenu->height()))
+			my = frame.y + frame.y_handle - m_windowmenu->height();
 		if (my < (signed) (frame.y + ((decorations.titlebar) ? frame.title_h :
 							frame.y_border)))
 			my = frame.y +
 			((decorations.titlebar) ? frame.title_h : frame.y_border);
 
-		if (windowmenu) {
-			if (! windowmenu->isVisible()) { // if not window menu is visible then show it
+		if (m_windowmenu.get()) {
+			if (! m_windowmenu->isVisible()) { // if not window menu is visible then show it
 				showMenu(mx, my);
 			} else //else hide menu
-				windowmenu->hide(); 
+				m_windowmenu->hide(); 
 		}
 		
 	} else if (be->button == 4) { //scroll to tab right
@@ -3124,10 +3121,12 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 	case DECOR_NONE:
 		decorations.titlebar = decorations.border = decorations.handle =
 		decorations.iconify = decorations.maximize =
-			decorations.menu = decorations.tab = false; //tab is also a decor
+			decorations.tab = false; //tab is also a decor
+		decorations.menu = true; // menu is present
 		functions.iconify = functions.maximize = false;
 		functions.move = true;   // We need to move even without decor
 		functions.resize = true; // We need to resize even without decor
+		
 	break;
 
 	default:
@@ -3201,8 +3200,8 @@ void FluxboxWindow::startMoving(Window win) {
 		ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
 		None, fluxbox->getMoveCursor(), CurrentTime);
 
-	if (windowmenu && windowmenu->isVisible())
-		windowmenu->hide();
+	if (m_windowmenu.get() && m_windowmenu->isVisible())
+		m_windowmenu->hide();
 
 	fluxbox->maskWindowEvents(client.window, this);
 
