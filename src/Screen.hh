@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.105 2003/06/15 11:37:53 rathnor Exp $
+// $Id: Screen.hh,v 1.106 2003/06/18 13:42:21 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -52,6 +52,7 @@ class RootTheme;
 class WinButtonTheme;
 class WinClient;
 class Workspace;
+class Strut;
 
 namespace FbTk {
 class MenuTheme;
@@ -69,7 +70,7 @@ class BScreen : private FbTk::NotCopyable {
 public:
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
-	
+
     BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
             int scrn, int number_of_layers);
@@ -334,6 +335,12 @@ public:
     FluxboxWindow *createWindow(Window clientwin);
     FluxboxWindow *createWindow(WinClient &client);
     void setupWindowActions(FluxboxWindow &win);
+    /// request workspace space, i.e "don't maximize over this area"
+    Strut *requestStrut(int left, int right, int top, int bottom);
+    /// remove requested space and destroy strut
+    void clearStrut(Strut *strut); 
+    /// updates max avaible area for the workspace
+    void updateAvailableWorkspaceArea();
 
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
            UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
@@ -456,10 +463,13 @@ private:
    
     int m_xinerama_center_x, m_xinerama_center_y;
 
+    std::auto_ptr<Strut> m_available_workspace_area;
+
     struct XineramaHeadInfo {
         int x, y, width, height;        
     } *m_xinerama_headinfo;
 
+    std::list<Strut *> m_strutlist;
 };
 
 

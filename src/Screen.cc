@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.184 2003/06/15 20:09:13 fluxgen Exp $
+// $Id: Screen.cc,v 1.185 2003/06/18 13:42:21 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -54,6 +54,7 @@
 #include "Subject.hh"
 #include "FbWinFrame.hh"
 #include "FbWindow.hh"
+#include "Strut.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -521,7 +522,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                            *resource.rootcommand)),
     m_root_window(scrn),
     resource(rm, screenname, altscreenname),
-    m_toolbarhandler(0) {
+    m_toolbarhandler(0),
+    m_available_workspace_area(new Strut(0, 0, 0, 0)),
+    m_xinerama_headinfo(0) {
 
     Display *disp = FbTk::App::instance()->display();
 
@@ -783,29 +786,29 @@ Pixmap BScreen::rootPixmap() const {
 unsigned int BScreen::maxLeft(int head) const {
     if (hasXinerama())
         return getHeadX(head);
-    else
-        return 0;
+    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? 0 : m_available_workspace_area->left();
 }
 
 unsigned int BScreen::maxRight(int head) const {
     if (hasXinerama())
         return getHeadX(head) + getHeadWidth(head);
-    else
-        return width();
+    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? width() : width() - m_available_workspace_area->right();
 }
 
 unsigned int BScreen::maxTop(int head) const {
     if (hasXinerama())
         return getHeadY(head);
-    else
-        return 0;
+    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? 0 : m_available_workspace_area->top();
 }
 
 unsigned int BScreen::maxBottom(int head) const {
     if (hasXinerama())
         return getHeadY(head) + getHeadHeight(head);
-    else
-        return height();
+    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? height() : height() - m_available_workspace_area->bottom();
 }
 
 void BScreen::reconfigure() {
@@ -1443,6 +1446,55 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 
 }
 
+Strut *BScreen::requestStrut(int left, int right, int top, int bottom) {
+    Strut *str = new Strut(left, right, top, bottom);
+    m_strutlist.push_back(str);
+    return str;
+}
+
+void BScreen::clearStrut(Strut *str) {
+    if (str == 0)
+        return;
+    // find strut and erase it
+    std::list<Strut *>::iterator pos = find(m_strutlist.begin(),
+         m_strutlist.end(),
+         str);
+    if (pos == m_strutlist.end())
+        return;
+    m_strutlist.erase(pos);
+    delete str;
+}
+
+/// helper class for for_each in BScreen::updateAvailableWorkspaceArea()
+namespace {
+class MaxArea {
+public:
+    MaxArea(Strut &max_area):m_max_area(max_area) { }
+    void operator ()(const Strut *str) {
+        static int left, right, bottom, top;
+        left = std::max(m_max_area.left(), str->left());
+        right = std::max(m_max_area.right(), str->right());
+        bottom = std::max(m_max_area.bottom(), str->bottom());
+        top = std::max(m_max_area.top(), str->top());
+        m_max_area = Strut(left, right, top, bottom);
+    }
+private:
+    Strut &m_max_area;
+};
+
+}; // end anonymous namespace
+
+void BScreen::updateAvailableWorkspaceArea() {
+    // find max of left, right, top and bottom and set avaible workspace area
+
+    // clear old area
+    m_available_workspace_area.reset(new Strut(0, 0, 0, 0));
+    
+    // calculate max area
+    for_each(m_strutlist.begin(),
+             m_strutlist.end(),
+             MaxArea(*m_available_workspace_area.get()));
+}
 
 void BScreen::saveStrftimeFormat(const char *format) {
     //make sure std::string don't get 0 string
