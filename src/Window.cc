@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.304 2004/10/21 10:38:25 akir Exp $
+// $Id: Window.cc,v 1.305 2004/10/28 19:13:30 akir Exp $
 
 #include "Window.hh"
 
@@ -622,6 +622,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
     if (client.m_win == this)
         return;
 
+    menu().hide();
+    
     // reparent client win to this frame 
     frame().setClientWindow(client);
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
@@ -813,6 +815,8 @@ bool FluxboxWindow::removeClient(WinClient &client) {
             setCurrentClient(*next_client, false);
     }
 
+    menu().hide();
+    
     m_clientlist.remove(&client);
 
     if (m_client == &client) {
@@ -2662,6 +2666,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                                    m_last_move_x, m_last_move_y,
                                    active_button.width(), 
                                    active_button.height());
+
+            menu().hide();
         } else { 
             // we already grabed and started to drag'n'drop tab
             // so we update drag'n'drop-rectangle
