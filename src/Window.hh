@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.30 2002/09/07 20:13:55 fluxgen Exp $
+// $Id: Window.hh,v 1.31 2002/09/08 19:49:39 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -94,55 +94,58 @@ public:
 		@name accessors		
 	*/
 	//@{
-	inline bool isTransient() const { return ((transient) ? true : false); }
-	inline bool hasTransient() const { return ((client.transient) ? true : false); }
-	inline bool isManaged() const { return managed; }
-	inline bool isFocused() const { return focused; }
-	inline bool isVisible() const { return visible; }
-	inline bool isIconic() const { return iconic; }
-	inline bool isShaded() const { return shaded; }
-	inline bool isMaximized() const { return maximized; }
-	inline bool isIconifiable() const { return functions.iconify; }
-	inline bool isMaximizable() const { return functions.maximize; }
-	inline bool isResizable() const { return functions.resize; }
-	inline bool isClosable() const { return functions.close; }
-	inline bool isStuck() const { return stuck; }
-	inline bool hasTitlebar() const { return decorations.titlebar; }
-	inline bool hasTab() const { return (tab!=0 ? true : false); }
-	inline bool isMoving() const { return moving; }
-	inline bool isResizing() const { return resizing; }
-	inline const BScreen *getScreen() const { return screen; }
-	inline BScreen *getScreen() { return screen; }
-	inline const Tab *getTab() const { return tab; }
-	inline Tab *getTab() { return tab; }
-	inline const FluxboxWindow *getTransient() const { return client.transient; }
-	inline FluxboxWindow *getTransient() { return client.transient; }	
-	inline const FluxboxWindow *getTransientFor() const { return client.transient_for; }
-	inline FluxboxWindow *getTransientFor() { return client.transient_for; }
+	bool isTransient() const { return ((client.transient_for) ? true : false); }
+	bool hasTransient() const { return ((client.transients.size()) ? true : false); }
+	bool isManaged() const { return managed; }
+	bool isFocused() const { return focused; }
+	bool isVisible() const { return visible; }
+	bool isIconic() const { return iconic; }
+	bool isShaded() const { return shaded; }
+	bool isMaximized() const { return maximized; }
+	bool isIconifiable() const { return functions.iconify; }
+	bool isMaximizable() const { return functions.maximize; }
+	bool isResizable() const { return functions.resize; }
+	bool isClosable() const { return functions.close; }
+	bool isStuck() const { return stuck; }
+	bool hasTitlebar() const { return decorations.titlebar; }
+	bool hasTab() const { return (tab!=0 ? true : false); }
+	bool isMoving() const { return moving; }
+	bool isResizing() const { return resizing; }
+	const BScreen *getScreen() const { return screen; }
+	BScreen *getScreen() { return screen; }
+	const Tab *getTab() const { return tab; }
+	Tab *getTab() { return tab; }
+	const std::list<FluxboxWindow *> &getTransients() const { return client.transients; } 
+	std::list<FluxboxWindow *> &getTransients() { return client.transients; } 	
+	const FluxboxWindow *getTransientFor() const { return client.transient_for; }
+	FluxboxWindow *getTransientFor() { return client.transient_for; }
 	
-	inline const Window &getFrameWindow() const { return frame.window; }
-	inline const Window &getClientWindow() const { return client.window; }
+	const Window &getFrameWindow() const { return frame.window; }
+	const Window &getClientWindow() const { return client.window; }
 
-	inline Windowmenu *getWindowmenu() { return windowmenu; }
+	Windowmenu *getWindowmenu() { return windowmenu; }
 
-	inline const std::string &getTitle() const { return client.title; }
-	inline const std::string &getIconTitle() const { return client.icon_title; }
-	inline int getXFrame() const { return frame.x; }
-	inline int getYFrame() const { return frame.y; }
-	inline int getXClient() const { return client.x; }
-	inline int getYClient() const { return client.y; }
-	inline unsigned int getWorkspaceNumber() const { return workspace_number; }
-	inline int getWindowNumber() const { return window_number; }
-	inline WinLayer getLayer() const { return m_layer; }
-	inline unsigned int getWidth() const { return frame.width; }
-	inline unsigned int getHeight() const { return frame.height; }
-	inline unsigned int getClientHeight() const { return client.height; }
-	inline unsigned int getClientWidth() const { return client.width; }
-	inline unsigned int getTitleHeight() const { return frame.title_h; }
-	const std::string className() const { return m_class_name; }
-	const std::string instanceName() const { return m_instance_name; }
+	const std::string &getTitle() const { return client.title; }
+	const std::string &getIconTitle() const { return client.icon_title; }
+	int getXFrame() const { return frame.x; }
+	int getYFrame() const { return frame.y; }
+	int getXClient() const { return client.x; }
+	int getYClient() const { return client.y; }
+	unsigned int getWorkspaceNumber() const { return workspace_number; }
+	int getWindowNumber() const { return window_number; }
+	WinLayer getLayer() const { return m_layer; }
+	unsigned int getWidth() const { return frame.width; }
+	unsigned int getHeight() const { return frame.height; }
+	unsigned int getClientHeight() const { return client.height; }
+	unsigned int getClientWidth() const { return client.width; }
+	unsigned int getTitleHeight() const { return frame.title_h; }
+	const std::string &className() const { return m_class_name; }
+	const std::string &instanceName() const { return m_instance_name; }
 	bool isLowerTab() const;
-	// signals
+	/**
+		@name signals
+ 	*/
+	//@{
 	FbTk::Subject &stateSig() { return m_statesig; }
 	const FbTk::Subject &stateSig() const { return m_statesig; }
 	FbTk::Subject &hintSig() { return m_hintsig; }
@@ -151,9 +154,11 @@ public:
 	const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
 	//@}
 
-	inline void setWindowNumber(int n) { window_number = n; }
+	//@}
+
+	void setWindowNumber(int n) { window_number = n; }
 	
-	inline const timeval &getLastFocusTime() const {return lastFocusTime;}
+	const timeval &getLastFocusTime() const {return lastFocusTime;}
 
 	bool validateClient();
 	bool setInputFocus();
@@ -246,8 +251,8 @@ private:
 	Decoration old_decoration;
 
 	struct _client {
-		FluxboxWindow *transient_for, // which window are we a transient for?
-			*transient;  // which window is our transient?
+		FluxboxWindow *transient_for; // which window are we a transient for?
+		std::list<FluxboxWindow *>	transients;  // which windows are our transients?
 		Window window, window_group;
 
 		std::string title, icon_title;
