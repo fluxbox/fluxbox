@@ -30,6 +30,7 @@
 # To guarantee this script works on all platforms that support fluxbox
 # please keep the following restrictions in mind:
 #
+# - don't use [ "a" == "a" ]; use [ "a" = "a" ]    (found with help from FreeBSD user relaxed)
 # - don't use if ! command;, use command; if [ $? -ne 0 ];
 # - don't use [ -e file ] use [ -r file ]
 # - don't use $(), use ``
@@ -76,9 +77,10 @@ Options:
     -B  enable backgrounds menu
     -r  Don't remove empty menu-entries; for templates
 
-    -d  path(s) to search for *.desktop files
+    -d  other path(s) to recursively search for *.desktop files
     -ds wider search for *.desktop files (takes more time)
-    -i  path(s) to search for icons
+    -i  other path(s) to search for icons
+        e.g., "/usr/kde/3.3/share/icons/crystalsvg/16x16/*"
     -is wider search for icons (worth the extra time)
 
     -t  Favourite terminal
@@ -121,7 +123,9 @@ EOF
 }
 
 # ugly code for solaris compat.
-case `uname` in
+UNAME=`uname`
+# echo "UNAME=$UNAME"
+case "$UNAME" in
     Linux|*BSD)
         find_it() {
             which $1 > /dev/null 2>&1 && shift && $*
@@ -130,7 +134,7 @@ case `uname` in
         find_it_options() {
             which $1 > /dev/null 2>&1
         }
-        ;;
+		;;
     *)
         find_it() {
             file=`which $1 2> /dev/null`
@@ -157,14 +161,29 @@ case `uname` in
         ;;
 esac
 
+case "$UNAME" in
+	Linux)
+		replaceWithinString(){
+			#echo "replaceWithinString: $1, $2, $3" >&2
+			#echo ${1//$2/$3} # causes error in BSD even though not used
+			echo $1 | awk "{ gsub(/$2/, \"$3\"); print }"
+		}
+	;;
+	*BSD)
+		replaceWithinString(){
+			echo $1 | awk "{ gsub(/$2/, \"$3\"); print }"
+		}
+	;;
+esac
+
 convertIcon(){
 	if [ ! -f "$1" ] ; then 
 		echo "Icon file not found: $1" >&2
 		return 1
 	fi
 
-	if [ "$1" == "$2" ]; then
-		# $VERBOSE "Files are in the same location: $1 == $2" >&2
+	if [ "$1" = "$2" ]; then
+		# $dnlamVERBOSE "Files are in the same location: $1 = $2" >&2
 		# not really an error; just nothing to do.
 		return 0;
 	fi
@@ -172,8 +191,8 @@ convertIcon(){
 	local BASENAME="${1##*/}"
 
 	# make sure it is an icon by checking if it has an extension
-	if [ "$BASENAME" == "${BASENAME%%.*}" ]; then
-		# $VERBOSE "File $1 does not have a filename extention." >&2
+	if [ "$BASENAME" = "${BASENAME%%.*}" ]; then
+		# $dnlamVERBOSE "File $1 does not have a filename extention." >&2
 		return 1;
 	fi
 
@@ -186,7 +205,7 @@ convertIcon(){
 	esac
 
 	# may not have to convert png if imlib is enabled
-	if [ "$PNG_ICONS" == "yes" ]; then
+	if [ "$PNG_ICONS" = "yes" ]; then
 		case "$1" in
 			*.png)
 				echo "$1"
@@ -212,14 +231,14 @@ convertIcon(){
 
 removePath(){
 	execname="$1"
-	local progname=${execname%% *}
+	local progname="${execname%% *}"
 	# separate program name and its parameters
-	if [ "$progname" == "$execname" ]; then
+	if [ "$progname" = "$execname" ]; then
 		# no params
 		# remove path from only program name
 		execname="${progname##*/}"
 	else
-		local params=${execname#* }
+		local params="${execname#* }"
 		# remove path from only program name
 		execname="${progname##*/} $params"
 	fi
@@ -228,18 +247,18 @@ removePath(){
 
 doSearchLoop(){
 	for ICONPATH in "$@"; do
-		## $VERBOSE ": $ICONPATH" >> $ICONMAPPING
+		## $dnlamVERBOSE ": $ICONPATH" >> $ICONMAPPING
 	  	[ -d "$ICONPATH" ] || continue
 		#echo -n "."
-		# # $VERBOSE ":: $ICONPATH/$temp_icon" >> $ICONMAPPING
+		# # $dnlamVERBOSE ":: $ICONPATH/$temp_icon" >> $ICONMAPPING
 		if [ -f "$ICONPATH/$temp_icon" ]; then
 			echo "$ICONPATH/$temp_icon"
 			return 0;
 		else # try different extensions; 
 			# remove extension
-			iconNOext=${temp_icon%%.*}
+			iconNOext="${temp_icon%%.*}"
 			[ -d "$ICONPATH" ] && for ICONEXT in .xpm .png .gif ; do
-				## $VERBOSE "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
+				## echo "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
 				if [ -f "$ICONPATH/$iconNOext$ICONEXT" ]; then
 					echo "$ICONPATH/$iconNOext$ICONEXT"
 					return 0;
@@ -253,15 +272,15 @@ doSearchLoop(){
 
 doSearch(){
 	# remove '(' from '(fluxbox ...) | ...'
-	local execname="${1//(}"
+	local execname=`replaceWithinString "$1" "\("`
 	local temp_icon="$2"
-	# $VERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
+	# $dnlamVERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
 
 	# check in $ICONMAPPING before searching directories
 	entry_icon=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
-	if [ "$entry_icon" ]; then
-		entry_icon=${entry_icon//<}
-		entry_icon=${entry_icon//>}
+	if [ -n "$entry_icon" ]; then
+		entry_icon=`replaceWithinString "$entry_icon" "<"`
+		entry_icon=`replaceWithinString "$entry_icon" ">"`
 		echo $entry_icon
 		return 0;
 	fi
@@ -281,19 +300,19 @@ searchForIcon(){
 	# remove '&' and everything after it
 	entry_exec="${1%%&*}"
 	entry_icon="$2"
-	# $VERBOSE "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
+	# $dnlamVERBOSE echo "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
 	
 	# get the basename and parameters of entry_exec -- no path
 	entry_exec=`removePath "${entry_exec}"`
 	[ -z "$entry_exec" ] && { echo "Exec is NULL $1 with icon $2"; return 1; }
 
 	# search for specified icon if it does not exists
-	if [ "$entry_icon" ] && [ "$entry_exec" != "$entry_icon" ] && [ ! -f "$entry_icon" ]; then
+	if [ -n "$entry_icon" ] && [ ! "$entry_exec" = "$entry_icon" ] && [ ! -f "$entry_icon" ]; then
 		# to search for icon in other paths,
 		# get basename
 		local temp_icon="${entry_icon##*/}"
 		# remove parameters
-		temp_icon=${temp_icon#* }
+		temp_icon="${temp_icon#* }"
 		# clear entry_icon until temp_icon is found
 		unset entry_icon
 
@@ -303,7 +322,7 @@ searchForIcon(){
 	fi
 
 	# remove parameters
-	local execname=${entry_exec%% *}
+	local execname="${entry_exec%% *}"
 
 	# echo "search for icon named $execname.{xpm,png,gif}"
 	if [ ! -f "$entry_icon" ]; then
@@ -311,17 +330,18 @@ searchForIcon(){
 	fi
 
 	# -----------  done with search ------------
+	# $dnlamVERBOSE echo "::: $entry_icon" >&2
 
 	# convert icon file, if needed
-	if [ -f "$entry_icon" ] && [ "yes$ConvertIfNecessary" ]; then
+	if [ -f "$entry_icon" ] && [ -n "yes$ConvertIfNecessary" ]; then
 		entry_icon=`convertIcon "$entry_icon" "$HOME/.fluxbox/icons"`
-		# echo ":::: $entry_icon"
+		# $dnlamVERBOSE echo ":::: $entry_icon" >&2
 	fi
 
 	# remove path to icon; just get basename
-	local icon_base=${entry_icon##*/}
+	local icon_base="${entry_icon##*/}"
 	# remove extension
-	icon_base=${icon_base%%.*}
+	icon_base="${icon_base%%.*}"
 	# echo "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" 
 	if [ -f "$entry_icon" ]; then
 	# if icon exists and entry does not already exists, add it
@@ -337,20 +357,22 @@ searchForIcon(){
 
 toSingleLine(){ echo "$@"; }
 createIconMapping(){
-	# $VERBOSE "# creating `date`" >> $ICONMAPPING
-	# $VERBOSE "# using desktop files in $@" >> $ICONMAPPING
-	# $VERBOSE "# searching for icons in `eval toSingleLine $OTHER_ICONPATHS`" >> $ICONMAPPING
+	# $dnlamVERBOSE "# creating `date`" >> $ICONMAPPING
+	# $dnlamVERBOSE "# using desktop files in $@" >> $ICONMAPPING
+	# $dnlamVERBOSE "# searching for icons in `eval toSingleLine $OTHER_ICONPATHS`" >> $ICONMAPPING
 	# need to determine when to use .fluxbox/icons/$execname.xpm over those listed in iconmapping
+	# $dnlamVERBOSE echo "createIconMapping: $@"
 	for DIR in "$@" ; do
 		if [ -d "$DIR" ]; then
-			echo "# ------- Looking in $DIR" >> $ICONMAPPING
+			# $dnlamVERBOSE echo "# ------- Looking in $DIR" >&2 
+			# >> $ICONMAPPING
 			find "$DIR" -type f -name "*.desktop" | while read DESKTOP_FILE; do 
 				# echo $DESKTOP_FILE; 
 				#entry_name=`grep -m 1 '^[ ]*Name=' $DESKTOP_FILE`
 				#entry_name=${entry_name##*=}
 				entry_exec=`grep -m 1 '^[ ]*Exec=' "$DESKTOP_FILE"`
 				entry_exec=${entry_exec##*=}
-				entry_exec=${entry_exec//\"}
+				entry_exec=`replaceWithinString "$entry_exec" "\""`
 				if [ -z "$entry_exec" ]; then
 					entry_exec=${DESKTOP_FILE%%.desktop*}
 				fi
@@ -358,7 +380,7 @@ createIconMapping(){
 				entry_icon=`grep -m 1 '^[ ]*Icon=' "$DESKTOP_FILE"`
 				entry_icon=${entry_icon##*=}
 		
-				# echo "--- $entry_exec $entry_icon"
+				# $dnlamVERBOSE echo "--- $entry_exec $entry_icon" >&2
 				case "$entry_icon" in
 					"" | mime_empty | no_icon )
 						: echo "no icon for $entry_exec"
@@ -370,65 +392,66 @@ createIconMapping(){
 			done
 		fi
 	done
-	# $VERBOSE "# done `date`" >> $ICONMAPPING
+	# $dnlamVERBOSE "# done `date`" >> $ICONMAPPING
 }
 
 lookupIcon() {
-	if [ ! -f $ICONMAPPING ]; then
+	if [ ! -f "$ICONMAPPING" ]; then
 		echo "!!! Icon map file not found: $ICONMAPPING" >&2
 		return 1
 	fi
 	
-	local execname=$1
+	local execname="$1"
 	shift
-	[ "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
+	[ -n "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
 
 	[ -z "$execname" ] && { echo "execname is NULL; cannot lookup"; return 1; }
 	execname=`removePath "$execname"`
-	
 
 	#echo "grepping ${execname}"
 	iconString=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
-	# $VERBOSE "lookupIcon $execname, $iconString" >&2
+	# $dnlamVERBOSE "lookupIcon $execname, $iconString" >&2
 
 	if [ -z "$iconString" ] ; then
 		iconString=`grep -m 1 "^\"${execname%% *}" $ICONMAPPING | grep -o '<.*>'`
 	fi
 
 	if [ -z "$iconString" ] && [ -z "$PARSING_DESKTOP" ] ; then
-		## $VERBOSE "lookupIcon: Searching ...  should only be needed for icons not gotten from *.desktop (manual-created ones): $execname" >&2
+		## $dnlamVERBOSE "lookupIcon: Searching ...  should only be needed for icons not gotten from *.desktop (manual-created ones): $execname" >&2
 		searchForIcon "$execname" "$execname"
-		[ "$entry_icon" ] && iconString="<$entry_icon>"
+		[ -n "$entry_icon" ] && iconString="<$entry_icon>"
 	fi
 
-	# [ "$iconString" ] && echo "  Found icon for $execname: $iconString" >&2
+	# [ -n "$iconString" ] && echo "  Found icon for $execname: $iconString" >&2
 	echo $iconString
 }
 
 append() {
  	if [ -z "${INSTALL}" ]; then
+		# $dnlamVERBOSE echo "append: $*" >&2
 		local iconString="`echo $* | grep -o '<.*>'`"
+		# echo "iconString=$iconString" >&2
 		if [ -z "$iconString" ]; then
 			echo -n "      $* " >> ${MENUFILENAME}
-			# get the program name between '{}' from parameters
-			local execname=$*
+			# get the program name between '{}' from parameters			
+			local execname="$*"
 			execname=${execname#*\{}
 			execname=${execname%%\}*}
+			# $dnlamVERBOSE echo "execname=$execname" >&2
 			# if execname hasn't changed from original $*, then no '{...}' was given
-			if [ "$execname" != "$*" ]; then
+			if [ ! "$execname" = "$*" ]; then
 				case "$execname" in
 					$DEFAULT_TERM*)
 						# remove quotes
-						execname=${execname//\"}
+						execname=`replaceWithinString "$execname" "\""`
 						# remove "$DEFAULT_TERM -e "
 						# needed in case calling another program (e.g., vi) via "xterm -e"					
 						execname=${execname##*$DEFAULT_TERM -e }
 					;;
 				esac
-				# echo -$execname-
 				# lookup execname in icon map file
 				iconString=`lookupIcon "$execname"`
-				#[ "$iconString" ] || echo "No icon found for $execname"
+				#[ -n "$iconString" ] || echo "No icon found for $execname"
 			fi
 			echo "${iconString}" >> ${MENUFILENAME}
 		else
@@ -1215,7 +1238,7 @@ while [ $# -gt 0 ]; do
 		-is) OTHER_ICONPATHS="
 				/usr{,/local}/share{,/xclass}/{icons,pixmaps}
 				/usr{,/local}/share/icons/mini
-				/usr{,/local}/share/icons/{default.kde,hicolor}/16x16/*
+				/usr{,/local}/{,X11R6/}share/icons/{default.kde,hicolor}/16x16/*
 			"
 			shift;;
 		-ds) OTHER_DESKTOP_PATHS="
@@ -1312,7 +1335,7 @@ for KDE_PREFIX in "${KDE_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; d
 done
 
 if [ -z "${INSTALL}" ]; then
-	# [ -z "$VERBOSE" ] && VERBOSE=": echo"   # for debugging
+	# [ -z "$dnlamVERBOSE" ] && dnlamVERBOSE=": echo"   # for debugging
 	FB_ICONDIR="$HOME/.fluxbox/icons"
 	[ -d "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
 	ICONMAPPING="$HOME/.fluxbox/iconmapping"
@@ -1341,13 +1364,15 @@ if [ -z "${INSTALL}" ]; then
 	OTHER_ICONPATHS=`eval checkDirs $OTHER_ICONPATHS`
 	OTHER_DESKTOP_PATHS=`eval checkDirs $OTHER_DESKTOP_PATHS`
 
-	# $VERBOSE "Using USER_DESKTOP_PATHS=\"$USER_DESKTOP_PATHS\" and USER_ICONPATHS=\"$USER_ICONPATHS\""
-	# $VERBOSE "Using OTHER_ICONPATHS=$OTHER_ICONPATHS"
-	# $VERBOSE "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
-	# $VERBOSE "Calling function: createIconMapping"
+	# $dnlamVERBOSE "Using USER_DESKTOP_PATHS=\"$USER_DESKTOP_PATHS\" and USER_ICONPATHS=\"$USER_ICONPATHS\""
+	# $dnlamVERBOSE "Using OTHER_ICONPATHS=$OTHER_ICONPATHS"
+	# $dnlamVERBOSE "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
+	# $dnlamVERBOSE "Calling function: createIconMapping"
 	
+	# $dnlamVERBOSE echo "Creating $ICONMAPPING" >&2
+	touch "$ICONMAPPING"
 	eval createIconMapping $USER_DESKTOP_PATHS $OTHER_DESKTOP_PATHS
-	# $VERBOSE "Done createIconMapping."
+	# $dnlamVERBOSE "Done createIconMapping."
 fi
 
 # directory for the backgrounds
@@ -1435,7 +1460,7 @@ case "$DEFAULT_BROWSERNAME" in
     *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
 esac
 
-find_it ${LAUNCHER}         append "[exec]   (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
+find_it "${LAUNCHER}" append "[exec]   (${RUNCOMMAND}) {${LAUNCHER} $FBRUNOPTIONS}"
 
 
 append_submenu "${TERMINALMENU}"
@@ -1712,16 +1737,18 @@ fi
 
 # escapes any parentheses in menu label
 # e.g.,  "[exec] (konqueror (web))" becomes  "[exec] (konqueror (web\))"
-sed -i 's/(\(.*\)(\(.*\)))/(\1 (\2\\))/' $MENUFILENAME
+sed 's/(\(.*\)(\(.*\)))/(\1 (\2\\))/' $MENUFILENAME > menu.tmp
+mv -f menu.tmp $MENUFILENAME
 
 if [ -z "$INSTALL" ]; then
     if [ -z "$CHECKINIT" ]; then
         INITMENUFILENAME=`awk '/menuFile/ {print $2}' $HOME/.fluxbox/init`
-        cmp $INITMENUFILENAME $MENUFILENAME 2> /dev/null
-        if [ $? -ne 0 ]; then
-            echo "Warning: Your $HOME/.fluxbox/init does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
+		INITMENUFILENAME=`replaceWithinString "$INITMENUFILENAME" "~" "$HOME"`
+        if [ ! "$INITMENUFILENAME" = "$MENUFILENAME" ]; then 
+            echo "Note: In $HOME/.fluxbox/init, your \"session.menuFile\" does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
         fi
     fi
-    echo 'Menu successfully generated.'
+    echo "Menu successfully generated: $MENUFILENAME"
+	#echo "  Make sure \"session.menuFile: $MENUFILENAME\" is in $HOME/.fluxbox/init."
     echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
 fi
