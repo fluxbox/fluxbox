@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.64 2003/06/22 14:17:17 fluxgen Exp $
+// $Id: Slit.cc,v 1.65 2003/06/23 13:32:30 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -71,6 +71,83 @@
 #include <iostream>
 #include <algorithm>
 using namespace std;
+
+template<>
+void FbTk::Resource<Slit::Placement>::setFromString(const char *strval) {
+    if (strcasecmp(strval, "TopLeft")==0)
+        m_value = Slit::TOPLEFT;
+    else if (strcasecmp(strval, "CenterLeft")==0)
+        m_value = Slit::CENTERLEFT;
+    else if (strcasecmp(strval, "BottomLeft")==0)
+        m_value = Slit::BOTTOMLEFT;
+    else if (strcasecmp(strval, "TopCenter")==0)
+        m_value = Slit::TOPCENTER;
+    else if (strcasecmp(strval, "BottomCenter")==0)
+        m_value = Slit::BOTTOMCENTER;
+    else if (strcasecmp(strval, "TopRight")==0)
+        m_value = Slit::TOPRIGHT;
+    else if (strcasecmp(strval, "CenterRight")==0)
+        m_value = Slit::CENTERRIGHT;
+    else if (strcasecmp(strval, "BottomRight")==0)
+        m_value = Slit::BOTTOMRIGHT;
+    else
+        setDefaultValue();
+}
+
+template<>
+void FbTk::Resource<Slit::Direction>::setFromString(const char *strval) {
+    if (strcasecmp(strval, "Vertical") == 0) 
+        m_value = Slit::VERTICAL;
+    else if (strcasecmp(strval, "Horizontal") == 0) 
+        m_value = Slit::HORIZONTAL;
+    else
+        setDefaultValue();
+}
+
+string FbTk::Resource<Slit::Placement>::getString() {
+    switch (m_value) {
+    case Slit::TOPLEFT:
+        return string("TopLeft");
+        break;
+    case Slit::CENTERLEFT:
+        return string("CenterLeft");
+        break;
+    case Slit::BOTTOMLEFT:
+        return string("BottomLeft");
+        break;
+    case Slit::TOPCENTER:
+        return string("TopCenter");
+        break;			
+    case Slit::BOTTOMCENTER:
+        return string("BottomCenter");
+        break;
+    case Slit::TOPRIGHT:
+        return string("TopRight");
+        break;
+    case Slit::CENTERRIGHT:
+        return string("CenterRight");
+        break;
+    case Slit::BOTTOMRIGHT:
+        return string("BottomRight");
+        break;
+    }
+    //default string
+    return string("BottomRight");
+}
+
+template<>
+string FbTk::Resource<Slit::Direction>::getString() {
+    switch (m_value) {
+    case Slit::VERTICAL:
+        return string("Vertical");
+        break;
+    case Slit::HORIZONTAL:
+        return string("Horizontal");
+        break;
+    }
+    // default string
+    return string("Vertical");
+}
 
 namespace { 
 
@@ -275,19 +352,26 @@ void Slit::updateStrut() {
     int left = 0, right = 0, top = 0, bottom = 0;
     switch (placement()) {
     case TOPLEFT:
-        top = height();
-        left = width();
+        if (direction() == HORIZONTAL)
+            top = height();
+        else
+            left = width();
         break;
     case TOPCENTER:
-        top = height();
+        if (direction() == HORIZONTAL)
+            top = height();
         break;
     case TOPRIGHT:
-        right = width();
-        top = height();
+        if (direction() == HORIZONTAL)
+            top = height();
+        else
+            right = width();
         break;
     case BOTTOMLEFT:
-        bottom = height();
-        left = width();
+        if (direction() == HORIZONTAL)
+            bottom = height();
+        else
+            left = width();
         break;
     case BOTTOMCENTER:
         // would be strange to have it request size on vertical direction
