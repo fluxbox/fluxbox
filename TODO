@@ -3,7 +3,6 @@
 	fix toupper for str_key in in Menu loading
 	nls for "error on row" in Menu loading ?? 
 * remove cyclic deps:
-	Tab <-> Window
 	Workspace <-> Window
 	and more 
 
