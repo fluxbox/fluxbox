@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.10 2003/06/12 14:51:59 fluxgen Exp $
+// $Id: WinClient.cc,v 1.11 2003/06/12 15:13:23 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -174,6 +174,51 @@ bool WinClient::getWMName(XTextProperty &textprop) const {
 
 bool WinClient::getWMIconName(XTextProperty &textprop) const {
     return XGetWMName(FbTk::App::instance()->display(), window(), &textprop);
+}
+
+const std::string WinClient::getWMClassName() const {
+    XClassHint ch;
+    
+    if (XGetClassHint(FbTk::App::instance()->display(), window(), &ch) == 0) {
+#ifdef DEBUG
+        cerr<<"Failed to read class hint!"<<endl;
+#endif //DEBUG
+        return "";
+    } else {
+        string m_instance_name;
+        if (ch.res_name != 0) {
+            m_instance_name = const_cast<char *>(ch.res_name);
+            XFree(ch.res_name);
+        } else 
+            m_instance_name = "";
+        
+        if (ch.res_class != 0)
+            XFree(ch.res_class);
+
+        return m_instance_name;
+    }
+}
+
+const std::string WinClient::getWMClassClass() const {
+    XClassHint ch;
+    
+    if (XGetClassHint(FbTk::App::instance()->display(), window(), &ch) == 0) {
+#ifdef DEBUG
+        cerr<<"Failed to read class hint!"<<endl;
+#endif //DEBUG
+        return "";
+    } else {
+        string m_class_name;
+        if (ch.res_name != 0)
+            XFree(ch.res_name);
+        
+        if (ch.res_class != 0) {
+            m_class_name = const_cast<char *>(ch.res_class);
+            XFree(ch.res_class);
+        } else
+            m_class_name = "";
+        return m_class_name;
+    }
 }
 
 void WinClient::updateTransientInfo() {
