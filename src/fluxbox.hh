@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.17 2002/04/28 18:55:43 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.18 2002/05/02 07:14:22 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -209,13 +209,13 @@ private:
 	typedef std::map<Window, Tab *> TabList;
 	TabList tabSearch;
 	
-#ifdef		SLIT
+#ifdef SLIT
 	std::map<Window, Slit *> slitSearch;
-#	ifdef KDE
+#ifdef KDE
 	//For KDE dock applets
 	Atom kwm1_dockwindow; //KDE v1.x
 	Atom kwm2_dockwindow; //KDE v2.x
-#	endif//KDE
+#endif//KDE
 #endif // SLIT
 
 	std::list<MenuTimestamp *> menuTimestamps;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.54 2002/04/28 18:57:10 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.55 2002/05/02 07:14:21 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -609,7 +609,7 @@ void Fluxbox::process_event(XEvent *e) {
 
 		if (iskdedockapp) {
 			XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
-			std::list<BScreen *>::iterator it = screenList.begin();			
+			ScreenList::iterator it = screenList.begin();			
 			for (; (*it) == screenList.back(); ++it) {
 				(*it)->getSlit()->addClient(e->xmaprequest.window);
 			}
@@ -897,8 +897,8 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 		} else if ((tab = searchTab(be.window))) {
 			tab->buttonPressEvent(&be);
 		} else {
-			std::list<BScreen *>::iterator it = screenList.begin();
-			std::list<BScreen *>::iterator it_end = screenList.end();
+			ScreenList::iterator it = screenList.begin();
+			ScreenList::iterator it_end = screenList.end();
 
 			for (; it != it_end; ++it) {
 
@@ -1023,7 +1023,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
 		if (win->unmapNotifyEvent(&ue))
 			delete win;
-		      
+  
 	}
 	#ifdef SLIT
 	else if ((slit = searchSlit(ue.window))!=0) {
@@ -1131,14 +1131,14 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 
 			switch (action) {					
 			case Keys::WORKSPACE:
-                            // Workspace1 has id 0, hence -1
-			    screen->changeWorkspaceID(key->getParam()-1);
+				// Workspace1 has id 0, hence -1
+				screen->changeWorkspaceID(key->getParam()-1);
 			break;
 			case Keys::SENDTOWORKSPACE:
-                            // Workspace1 has id 0, hence -1
-			    screen->sendToWorkspace(key->getParam()-1);
+				// Workspace1 has id 0, hence -1
+				screen->sendToWorkspace(key->getParam()-1);
 			break;
-            // NOTE!!! The WORKSPACEn commands are not needed anymore
+			// NOTE!!! The WORKSPACEn commands are not needed anymore
 			case Keys::WORKSPACE1:
 				screen->changeWorkspaceID(0);
 			break;
@@ -1193,9 +1193,11 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			break;
 			case Keys::NEXTWINDOW:	//activate next window
 				screen->nextFocus(key->getParam());
+				focused_window->getTab()->raise();
 			break;
 			case Keys::PREVWINDOW:	//activate prev window
 				screen->prevFocus(key->getParam());
+				focused_window->getTab()->raise();
 			break;
 			case Keys::NEXTTAB: 
 				if (focused_window && focused_window->getTab()) {
@@ -1225,6 +1227,32 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 					}
 				}
 			break;
+			case Keys::FIRSTTAB:
+				if (focused_window && focused_window->getTab()) {
+					Tab *tab = focused_window->getTab();
+					screen->getCurrentWorkspace()->raiseWindow(
+						tab->first()->getWindow());
+					tab->first()->getWindow()->setInputFocus();
+				}
+			break;
+			case Keys::LASTTAB:
+				if (focused_window && focused_window->getTab()) {
+					Tab *tab = focused_window->getTab();
+					screen->getCurrentWorkspace()->raiseWindow(
+						tab->last()->getWindow());
+					tab->last()->getWindow()->setInputFocus();
+				}
+			break;
+			case Keys::MOVETABPREV:
+				if (focused_window && focused_window->getTab()) {
+					focused_window->getTab()->movePrev();
+				}
+			break;
+			case Keys::MOVETABNEXT:
+				if (focused_window && focused_window->getTab()) {
+					focused_window->getTab()->moveNext();
+				}
+			break;
 			case Keys::EXECUTE: //execute command on keypress
 			{
 				#ifndef		__EMX__
@@ -1247,8 +1275,8 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			break;
 			case Keys::ROOTMENU: //show root menu
 			{
-                std::list<BScreen *>::iterator it = screenList.begin();
-                std::list<BScreen *>::iterator it_end = screenList.end();
+				ScreenList::iterator it = screenList.begin();
+				ScreenList::iterator it_end = screenList.end();
 
 				for (; it != it_end; ++it) {
 
@@ -1364,7 +1392,7 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 				focused_window->getXFrame(), focused_window->getYFrame()+param,
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-        // NOTE !!! BIGNUDGExxxx is not needed, just use 10 as a parameter
+		// NOTE !!! BIGNUDGExxxx is not needed, just use 10 as a parameter
 		case Keys::BIGNUDGERIGHT:		
 			focused_window->configure(
 				focused_window->getXFrame()+10, focused_window->getYFrame(),
@@ -1554,8 +1582,8 @@ Bool Fluxbox::handleSignal(int sig) {
 
 BScreen *Fluxbox::searchScreen(Window window) {
 	BScreen *screen = (BScreen *) 0;
-	std::list<BScreen *>::iterator it = screenList.begin();
-	std::list<BScreen *>::iterator it_end = screenList.end();
+	ScreenList::iterator it = screenList.begin();
+	ScreenList::iterator it_end = screenList.end();
 
 	for (; it != it_end; ++it) {
 		if (*it) {
@@ -1689,8 +1717,8 @@ void Fluxbox::shutdown(void) {
 	XSetInputFocus(getXDisplay(), PointerRoot, None, CurrentTime);
 
 	//send shutdown to all screens
-	std::list<BScreen *>::iterator it = screenList.begin();
-	std::list<BScreen *>::iterator it_end = screenList.end();
+	ScreenList::iterator it = screenList.begin();
+	ScreenList::iterator it_end = screenList.end();
 	for (; it != it_end; ++it) {
 		if(*it)
 			(*it)->shutdown();
@@ -1732,8 +1760,8 @@ void Fluxbox::save_rc(void) {
 					(resource.auto_raise_delay.tv_usec / 1000)));
 	XrmPutLineResource(&new_blackboxrc, rc_string);
 
-	std::list<BScreen *>::iterator it = screenList.begin();
-	std::list<BScreen *>::iterator it_end = screenList.end();
+	ScreenList::iterator it = screenList.begin();
+	ScreenList::iterator it_end = screenList.end();
 
 	//Save screen resources
 
@@ -2265,8 +2293,8 @@ void Fluxbox::real_reconfigure(void) {
 	}
 	menuTimestamps.erase(menuTimestamps.begin(), menuTimestamps.end());
 
-	std::list<BScreen *>::iterator sit = screenList.begin();
-	std::list<BScreen *>::iterator sit_end = screenList.end();
+	ScreenList::iterator sit = screenList.begin();
+	ScreenList::iterator sit_end = screenList.end();
 	for (; sit != sit_end; ++sit)
 		(*sit)->reconfigure();
 	
