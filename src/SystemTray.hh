@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.hh,v 1.1 2003/08/15 13:48:50 fluxgen Exp $
+// $Id: SystemTray.hh,v 1.2 2003/08/16 12:12:21 fluxgen Exp $
 
 #ifndef SYSTEMTRAY_HH
 #define SYSTEMTRAY_HH
@@ -40,7 +40,7 @@ class SystemTray: public ToolbarItem, public FbTk::EventHandler {
 public:
 
     explicit SystemTray(const FbTk::FbWindow &parent);
-    ~SystemTray();
+    virtual ~SystemTray();
 
     void move(int x, int y);
     void resize(unsigned int width, unsigned int height);
@@ -56,6 +56,9 @@ public:
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
+
+    int numClients() const { return m_clients.size(); }
+    const FbTk::FbWindow &window() const { return m_window; }
 
 private:
     typedef std::list<FbTk::FbWindow *> ClientList;

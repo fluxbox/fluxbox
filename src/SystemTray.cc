@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.1 2003/08/15 13:48:50 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.2 2003/08/16 12:12:21 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -27,6 +27,8 @@
 
 #include "AtomHandler.hh"
 #include "fluxbox.hh"
+
+#include <X11/Xutil.h>
 
 #include <iostream>
 #include <string>
@@ -117,7 +119,6 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
     ce.xclient.data.l[4] = 0l; // selection specific data
 
     XSendEvent(disp, root_window, false, StructureNotifyMask, &ce);
-
 
 }
 
@@ -265,7 +266,7 @@ void SystemTray::handleEvent(XEvent &event) {
 }
 
 void SystemTray::rearrangeClients() {
-    // resize clients    
+    // move and resize clients    
     ClientList::iterator client_it = m_clients.begin();
     ClientList::iterator client_it_end = m_clients.end();
     int next_x = 0;
