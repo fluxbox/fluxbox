@@ -1,5 +1,5 @@
 // MenuTheme.cc for FbTk
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.15 2004/04/26 15:04:37 rathnor Exp $
+// $Id: MenuTheme.cc,v 1.16 2004/06/07 21:02:49 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -30,6 +30,7 @@
 #include "StringUtil.hh"
 
 #include <cstdio>
+#include <algorithm>
 
 namespace FbTk {
 
@@ -48,6 +49,8 @@ MenuTheme::MenuTheme(int screen_num):
     titlefont_justify(*this, "menu.title.justify", "Menu.Title.Justify"),
     bullet_pos(*this, "menu.bullet.position", "Menu.Bullet.Position"),
     m_bullet(*this, "menu.bullet", "Menu.Bullet"),
+    m_title_height(*this, "menu.titleHeight", "Menu.TitleHeight"),
+    m_item_height(*this, "menu.itemHeight", "Menu.ItemHeight"),
     m_border_width(*this, "menu.borderWidth", "Menu.BorderWidth"),
     m_bevel_width(*this, "menu.bevelWidth", "Menu.BevelWidth"),
     m_border_color(*this, "menu.borderColor", "Menu.BorderColor"),
@@ -90,9 +93,11 @@ void MenuTheme::reconfigTheme() {
     if (*m_border_width > 20)
         *m_border_width = 20;
 
-    m_bullet_pixmap->scale(frameFont().height(), frameFont().height());
-    m_selected_pixmap->scale(frameFont().height(), frameFont().height());
-    m_unselected_pixmap->scale(frameFont().height(), frameFont().height());
+    int item_height = std::max(itemHeight(), frameFont().height() + bevelWidth());
+
+    m_bullet_pixmap->scale(item_height, item_height);
+    m_selected_pixmap->scale(item_height, item_height);
+    m_unselected_pixmap->scale(item_height, item_height);
 
     t_text_gc.setForeground(*t_text);
     f_text_gc.setForeground(*f_text);

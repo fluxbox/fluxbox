@@ -1,5 +1,5 @@
 // MenuTheme.hh for FbTk
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.13 2003/12/17 00:43:22 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.14 2004/06/07 21:02:49 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -102,6 +102,8 @@ public:
     BulletType bullet() const { return *m_bullet; }
     FbTk::Justify bulletPos() const { return *bullet_pos; }
 
+    unsigned int titleHeight() const { return *m_title_height; }
+    unsigned int itemHeight() const { return *m_item_height; }
     unsigned int borderWidth() const { return *m_border_width; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
 
@@ -126,6 +128,7 @@ private:
     FbTk::ThemeItem<FbTk::Justify> framefont_justify, titlefont_justify;
     FbTk::ThemeItem<FbTk::Justify> bullet_pos; 
     FbTk::ThemeItem<BulletType> m_bullet;
+    FbTk::ThemeItem<unsigned int> m_title_height, m_item_height;
     FbTk::ThemeItem<unsigned int> m_border_width;
     FbTk::ThemeItem<unsigned int> m_bevel_width;
     FbTk::ThemeItem<FbTk::Color> m_border_color;
