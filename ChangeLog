@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/08:
+  * fbsetbg now remembers -u option  and it also has   (Han)
+    a new -U option which does the same	thing without remembering 
+    fbsetbg  
   * Added "visible" menu item to Toolbar (Henrik)
     When this item is off the toolbar vill be completely
     hidden. (You can still access the toolbar menu via main
