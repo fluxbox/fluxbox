@@ -21,9 +21,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.23 2003/06/06 14:07:22 rathnor Exp $
+// $Id: Remember.cc,v 1.24 2003/06/12 15:12:19 rathnor Exp $
 
 #include "Remember.hh"
+#include "ClientPattern.hh"
 #include "StringUtil.hh"
 #include "Screen.hh"
 #include "Window.hh"
@@ -125,32 +126,7 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
     return menu;
 };
 
-std::string getWMClass(Window w) {
-    XClassHint ch;
-    
-    if (XGetClassHint(FbTk::App::instance()->display(), w, &ch) == 0) {
-        cerr<<"Failed to read class hint!"<<endl;
-        return "";
-    } else {
-        string instance_name;
-        if (ch.res_name != 0) {
-            instance_name = const_cast<char *>(ch.res_name);
-            XFree(ch.res_name);
-        } else 
-            instance_name = "";
-        
-        if (ch.res_class != 0) {
-            //m_class_name = const_cast<char *>(ch.res_class);
-            XFree(ch.res_class);
-        } else {
-            //m_class_name = "";
-        }
-
-        return instance_name;
-    }
-}
-
-};
+}; // end anonymous namespace
 
 Application::Application() {
     workspace_remember =
@@ -165,35 +141,56 @@ Application::Application() {
 	save_on_close_remember = false;
 }
 
+/********************************************************
+ * Remember *
+ ************/
+
 Remember::Remember() {
     load();
 }
 
-Application* Remember::add(const char* app_name) {
-    if (!app_name)
-        return 0;
-    Application* a = new Application();
-    apps[app_name] = a;
-    return a;
+Remember::~Remember() {
+    // free our resources
+
+    // the patterns free the "Application"s
+    // the client mapping shouldn't need cleaning
+    Patterns::iterator it;
+    while (!m_pats.empty()) {
+        it = m_pats.begin();
+        delete it->first; // ClientPattern
+        delete it->second; // Application
+        m_pats.erase(it);
+    }
 }
 
 Application* Remember::find(WinClient &winclient) {
-    return find(getWMClass(winclient.window()).c_str());
+    // if it is already associated with a application, return that one
+    // otherwise, check it against every pattern that we've got
+    Clients::iterator wc_it = m_clients.find(&winclient);
+    if (wc_it != m_clients.end())
+        return wc_it->second;
+    else {
+        Patterns::iterator it = m_pats.begin();
+        for (; it != m_pats.end(); it++) 
+            if (it->first->match(winclient)) {
+                it->first->addMatch();
+                m_clients[&winclient] = it->second;
+                return it->second;
+            }
+    }
+    // oh well, no matches
+    return 0;
 }
 
-Application* Remember::add(WinClient &winclient) {
-    return add(getWMClass(winclient.window()).c_str());
-}
-
-
-Application* Remember::find(const char* app_name) {
-    if (!app_name)
-        return 0;
-    Apps::iterator i = apps.find(app_name);
-    if (i != apps.end())
-        return i->second;
-    else
-        return 0;
+Application * Remember::add(WinClient &winclient) {
+    ClientPattern *p = new ClientPattern();
+    Application *app = new Application();
+    // by default, we match against the WMClass of a window.
+    p->addTerm(p->getProperty(ClientPattern::NAME, winclient), ClientPattern::NAME);
+    m_clients[&winclient] = app;
+    p->addMatch();
+    m_pats.push_back(make_pair(p, app));
+    return app;
 }
 
 int Remember::parseApp(ifstream &file, Application &app) {
@@ -315,31 +312,24 @@ void Remember::load() {
                 if (line[0] == '#')
                     continue;
                 string key;
-                int pos=0;
-                int err = FbTk::StringUtil::getStringBetween(key, 
+                int err=0;
+                int pos = FbTk::StringUtil::getStringBetween(key, 
                                                              line.c_str(), 
                                                              '[', ']');
 
-                if (err > 0 && key == "app") {
-                    pos += err;
-                    string label;
-                    err = FbTk::StringUtil::getStringBetween(label, 
-                                                             line.c_str()+pos,
-                                                             '(', ')');
-                    if (err>0) {
-                        Application *app = 0;
-                        Apps::iterator i = apps.find(label);
-                        if (i == apps.end()) {
-                            app = new Application();
-                            apps[label] = app;
-                        } else
-                            app = i->second;
+                if (pos > 0 && key == "app") {
+                    ClientPattern *pat = new ClientPattern(line.c_str() + pos);
+                    if ((err = pat->error()) == 0) {
+                        Application *app = new Application();
+                        m_pats.push_back(make_pair(pat, app));
                         row += parseApp(apps_file, *app);
-                    } else
-                        cerr<<"Error1 in apps file. Line("<<row<<")"<<endl;
+                    } else {
+                        cerr<<"Error reading apps file at line "<<row<<", column "<<(err+pos)<<"."<<endl;
+                        delete pat; // since it didn't work
+                    }
                 } else
-                    cerr<<"Error2 in apps file. Line("<<row<<")"<<endl;
-
+                    cerr<<"Error in apps file on line "<<row<<"."<<endl;
+                
             }
         } else {
 #ifdef DEBUG
@@ -358,28 +348,28 @@ void Remember::save() {
     string apps_string;
     Fluxbox::instance()->getDefaultDataFilename("apps", apps_string);
     ofstream apps_file(apps_string.c_str());
-    Apps::iterator it = apps.begin();
-    Apps::iterator it_end = apps.end();
+    Patterns::iterator it = m_pats.begin();
+    Patterns::iterator it_end = m_pats.end();
     for (; it != it_end; ++it) {
-        apps_file << "[app] (" <<  it->first << ")" << endl;
-        Application *a = it->second;
-        if (a->workspace_remember) {
-            apps_file << "  [Workspace]\t{" << a->workspace << "}" << endl;
+        apps_file << "[app]"<<it->first->toString()<<endl;
+        Application &a = *it->second;
+        if (a.workspace_remember) {
+            apps_file << "  [Workspace]\t{" << a.workspace << "}" << endl;
         }
-        if (a->dimensions_remember) {
-            apps_file << "  [Dimensions]\t{" << a->w << " " << a->h << "}" << endl;
+        if (a.dimensions_remember) {
+            apps_file << "  [Dimensions]\t{" << a.w << " " << a.h << "}" << endl;
         }
-        if (a->position_remember) {
-            apps_file << "  [Position]\t{" << a->x << " " << a->y << "}" << endl;
+        if (a.position_remember) {
+            apps_file << "  [Position]\t{" << a.x << " " << a.y << "}" << endl;
         }
-        if (a->shadedstate_remember) {
-            apps_file << "  [Shaded]\t{" << ((a->shadedstate)?"yes":"no") << "}" << endl;
+        if (a.shadedstate_remember) {
+            apps_file << "  [Shaded]\t{" << ((a.shadedstate)?"yes":"no") << "}" << endl;
         }
-        if (a->tabstate_remember) {
-            apps_file << "  [Tab]\t\t{" << ((a->tabstate)?"yes":"no") << "}" << endl;
+        if (a.tabstate_remember) {
+            apps_file << "  [Tab]\t\t{" << ((a.tabstate)?"yes":"no") << "}" << endl;
         }
-        if (a->decostate_remember) {
-            switch (a->decostate) {
+        if (a.decostate_remember) {
+            switch (a.decostate) {
             case (0) :
                 apps_file << "  [Deco]\t{NONE}" << endl; 
                 break;
@@ -401,21 +391,21 @@ void Remember::save() {
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
             default:
-                apps_file << "  [Deco]\t{0x"<<hex<<a->decostate<<dec<<"}"<<endl;
+                apps_file << "  [Deco]\t{0x"<<hex<<a.decostate<<dec<<"}"<<endl;
                 break;
             }
         }
-        if (a->stuckstate_remember) {
-            apps_file << "  [Sticky]\t{" << ((a->stuckstate)?"yes":"no") << "}" << endl;
+        if (a.stuckstate_remember) {
+            apps_file << "  [Sticky]\t{" << ((a.stuckstate)?"yes":"no") << "}" << endl;
         }
-        if (a->jumpworkspace_remember) {
-            apps_file << "  [Jump]\t{" << ((a->jumpworkspace)?"yes":"no") << "}" << endl;
+        if (a.jumpworkspace_remember) {
+            apps_file << "  [Jump]\t{" << ((a.jumpworkspace)?"yes":"no") << "}" << endl;
         }
-        if (a->layer_remember) {
-            apps_file << "  [Layer]\t{" << a->layer << "}" << endl;
+        if (a.layer_remember) {
+            apps_file << "  [Layer]\t{" << a.layer << "}" << endl;
         }
-        if (a->save_on_close_remember) {
-            apps_file << "  [Close]\t{" << ((a->save_on_close)?"yes":"no") << "}" << endl;
+        if (a.save_on_close_remember) {
+            apps_file << "  [Close]\t{" << ((a.save_on_close)?"yes":"no") << "}" << endl;
         }
         apps_file << "[end]" << endl;
     }
@@ -563,6 +553,7 @@ void Remember::setupWindow(FluxboxWindow &win) {
     if (winclient.transientFor()) {
         // still put something in the menu so people don't get confused
         // so, we add a disabled item...
+        // TODO: nls
         FbTk::MenuItem *item = new FbTk::MenuItem("Remember...");
         item->setEnabled(false);
         win.menu().insert(item, menupos);
@@ -623,10 +614,15 @@ void Remember::setupWindow(FluxboxWindow &win) {
 void Remember::updateWindowClose(FluxboxWindow &win) {
     // This doesn't work at present since fluxbox.cc is missing the windowclose stuff.
     // I don't trust it (particularly winClient()) while this is the case
+
     return;
 
     WinClient &winclient = win.winClient();
     Application *app = find(winclient);
+    Clients::iterator wc_it = m_clients.find(&win.winClient());
+
+    if (wc_it != m_clients.end())
+        m_clients.erase(wc_it);
 
     if (!app || !(app->save_on_close_remember && app->save_on_close))
         return;
@@ -636,23 +632,6 @@ void Remember::updateWindowClose(FluxboxWindow &win) {
             rememberAttrib(winclient, (Attribute) attrib);
         }
     }
-/*
-    if (app->workspace_remember) 
-        app->rememberWorkspace(win.workspaceNumber());
-    if (app->dimensions_remember)
-        app->rememberDimensions(win.width(), win.height());
-    if (app->position_remember)
-        app->rememberPosition(win.x(), win.y());
-    if (app->shadedstate_remember)
-        app->rememberShadedstate(win.isShaded());
-    // external tabs off atm
-    //if (app->tabstate_remember) ...
-    if (app->decostate_remember)
-        app->rememberDecostate(win.decorationMask());
-    if (app->stuckstate_remember)
-        app->rememberStuckstate(win.isStuck());
-    if (app->jumpworkspace_remember)
-        app->rememberJumpworkspace(true);
-*/
+
     save();
 }

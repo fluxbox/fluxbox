@@ -48,6 +48,10 @@ gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 if REMEMBER_SRC
 REMEMBER_SOURCE= Remember.hh Remember.cc
+# For now we only want regexp if we have remember
+if REGEXP_SRC
+REGEXP_SOURCE = RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
+endif
 endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
@@ -76,7 +80,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh \
 	WinClient.hh WinClient.cc \
 	Xinerama.hh \
-	${REMEMBER_SOURCE}
+	${REMEMBER_SOURCE} ${REGEXP_SOURCE}
 
 
 LDADD=FbTk/libFbTk.a

@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.6 2003/06/05 13:33:27 fluxgen Exp $
+// $Id: Remember.hh,v 1.7 2003/06/12 15:12:19 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -32,7 +32,14 @@
 
 #include <fstream>
 #include <map>
+#include <list>
 #include <string>
+#include <utility>
+
+class FluxboxWindow;
+class BScreen;
+class WinClient;
+class ClientPattern;
 
 class Application {
 public:
@@ -99,12 +106,8 @@ public:
 
     bool save_on_close_remember;
     bool save_on_close;
+
 };
-
-
-class FluxboxWindow;
-class BScreen;
-class WinClient;
 
 /**
  * Class Remember is an atomhandler to avoid interfering with
@@ -132,13 +135,21 @@ public:
         REM_LASTATTRIB // not actually used
     };
 
-    typedef std::map<std::string, Application *> Apps;
+    // a "pattern"  to the relevant app
+    // each app exists ONLY for that pattern.
+    // And we need to keep a list of pairs as we want to keep the
+    // applications in the same order as they will be in the apps file
+    typedef std::list< std::pair<ClientPattern *, Application *> > Patterns;
+
+    // We keep track of which app is assigned to a winclient
+    // particularly useful to update counters etc on windowclose
+    typedef std::map<WinClient *, Application *> Clients;
+    
     Remember();
+    ~Remember();
 
     Application* find(WinClient &winclient);
-    Application* find(const char* app_name);
     Application* add(WinClient &winclient);
-    Application* add(const char* app_name);
 
     void load();
     void save();
@@ -176,7 +187,8 @@ private:
 
     // returns number of lines read
     int parseApp(std::ifstream &file, Application &app);
-    Apps apps;
+    Patterns m_pats;
+    Clients m_clients;
 
 };
 

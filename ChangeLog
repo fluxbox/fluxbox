@@ -1,4 +1,25 @@
 (Format: Year/Month/Day)
+Changes for 0.9.4:
+*03/06/13:
+   * Regular expression support for remember (Simon)
+     Also ability to limit number of matches for a given rule
+     Also ability to match several different window attributes
+     Can disable in compile using --disable-regexp (will just do plain 
+     string equality then)
+     - General format is:
+       [app] (property=expr) ... {number}
+       If "property=" is excluded, the name property is assumed.
+       If {number} is excluded, 0 = no limit is assumed.
+     - Current available properties are:
+       * name -> the name of the window - the first field of WM_CLASS
+       * class -> the class of the window - the second field of WM_CLASS
+       * title -> the title of the window - the WM_NAME property
+     - e.g. [app] (*[tT]erm) {2} 
+       will match anything ending with term, for up to 2 instances
+     - e.g. [app] (title=.*gaim.*) 
+       will match anything with gaim in the title ("gaim", "the gaim 
+       window", etc.
+     RegExp.hh/cc ClientPattern.hh/cc configure.in Makefile.am Remember.hh/cc WinClient.hh/cc StringUtil.hh/cc
 Changes for 0.9.3:
 *03/06/08:
    * Add Reconfigure and Restart Key actions, thanks Jann Fisher (Simon)
