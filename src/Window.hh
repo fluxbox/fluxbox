@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.92 2003/08/19 16:13:25 fluxgen Exp $
+// $Id: Window.hh,v 1.93 2003/09/12 16:30:21 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -175,7 +175,7 @@ public:
     // unmap this window
     void hide();
     void iconify();
-    void deiconify(bool = true, bool = true);
+    void deiconify(bool reassoc = true, bool do_raise = true);
     /// close current client
     void close();
     /// set the window in withdrawn state
