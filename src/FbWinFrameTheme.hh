@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.2 2003/02/15 01:55:27 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.3 2003/02/16 01:13:24 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -33,9 +33,8 @@
 
 class FbWinFrameTheme: public FbTk::Theme {
 public:
-    FbWinFrameTheme(int screen_num);
+    explicit FbWinFrameTheme(int screen_num);
     ~FbWinFrameTheme();
-
     /**
        @name textures
     */
