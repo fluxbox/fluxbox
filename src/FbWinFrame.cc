@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.18 2003/04/14 23:40:41 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.19 2003/04/15 14:36:12 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -405,7 +405,12 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
             break;
         }
     }
-    
+    if (event.window == m_grip_right.window() ||
+        event.window == m_grip_left.window() ||
+        event.window == m_clientarea.window() ||
+        event.window == m_handle.window() ||
+        event.window == m_window.window())
+        return;
     if (event.button > 5 || event.button < 1)
         return;
 
@@ -425,8 +430,14 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
         }
     }
 
-    if (event.button < 1 || event.button > 5 || 
-        event.window == m_clientarea.window())
+    if (event.window == m_grip_right.window() ||
+        event.window == m_grip_left.window() ||
+        event.window == m_clientarea.window() ||
+        event.window == m_handle.window() ||
+        event.window == m_window.window())
+        return;
+
+    if (event.button < 1 || event.button > 5)
         return;
 
     static int last_release_time = 0;
