@@ -22,17 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.258 2003/12/30 20:56:40 fluxgen Exp $
+// $Id: Window.cc,v 1.259 2003/12/31 00:36:16 fluxgen Exp $
 
 #include "Window.hh"
-
-
-#include "FbTk/StringUtil.hh"
-#include "FbTk/TextButton.hh"
-#include "FbTk/Compose.hh"
-#include "FbTk/EventManager.hh"
-#include "FbTk/MultiButtonMenuItem.hh"
-
 
 #include "WinClient.hh"
 #include "I18n.hh"
@@ -48,6 +40,13 @@
 #include "WinButton.hh"
 #include "WinButtonTheme.hh"
 #include "SendToMenu.hh"
+
+#include "FbTk/StringUtil.hh"
+#include "FbTk/TextButton.hh"
+#include "FbTk/Compose.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/MultiButtonMenuItem.hh"
+#include "FbTk/KeyUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -77,39 +76,46 @@ namespace {
 
 void grabButton(Display *display, unsigned int button, 
                 Window window, Cursor cursor) {
+    
+    const int numlock = FbTk::KeyUtil::instance().numlock();
+    const int capslock = FbTk::KeyUtil::instance().capslock();
+    const int scrolllock = FbTk::KeyUtil::instance().scrolllock();
+
+    // Grab with Mod1 and with all lock modifiers 
+    // (num, scroll and caps)
 
     //numlock
-    XGrabButton(display, button, Mod1Mask|Mod2Mask, window, True,
+    XGrabButton(display, button, Mod1Mask|numlock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
     //scrolllock
-    XGrabButton(display, button, Mod1Mask|Mod5Mask, window, True,
+    XGrabButton(display, button, Mod1Mask|scrolllock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 	
     //capslock
-    XGrabButton(display, button, Mod1Mask|LockMask, window, True,
+    XGrabButton(display, button, Mod1Mask|capslock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //capslock+numlock
-    XGrabButton(display, Button1, Mod1Mask|LockMask|Mod2Mask, window, True,
+    XGrabButton(display, Button1, Mod1Mask|capslock|numlock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //capslock+scrolllock
-    XGrabButton(display, button, Mod1Mask|LockMask|Mod5Mask, window, True,
+    XGrabButton(display, button, Mod1Mask|capslock|scrolllock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 	
     //capslock+numlock+scrolllock
-    XGrabButton(display, button, Mod1Mask|LockMask|Mod2Mask|Mod5Mask, window, 
+    XGrabButton(display, button, Mod1Mask|capslock|numlock|scrolllock, window, 
                 True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
     //numlock+scrollLock
-    XGrabButton(display, button, Mod1Mask|Mod2Mask|Mod5Mask, window, True,
+    XGrabButton(display, button, Mod1Mask|numlock|scrolllock, window, True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 	
@@ -940,23 +946,24 @@ void FluxboxWindow::grabButtons() {
 		GrabModeSync, GrabModeSync, None, None);		
     XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame().window().window());
 
+    if (Fluxbox::instance()->useMod1()) {
+        XGrabButton(display, Button1, Mod1Mask, frame().window().window(), True,
+                    ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+                    GrabModeAsync, None, frame().theme().moveCursor());
 
-    XGrabButton(display, Button1, Mod1Mask, frame().window().window(), True,
-		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-		GrabModeAsync, None, frame().theme().moveCursor());
-
-    //----grab with "all" modifiers
-    grabButton(display, Button1, frame().window().window(), frame().theme().moveCursor());
-	
-    XGrabButton(display, Button2, Mod1Mask, frame().window().window(), True,
-		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
+        //----grab with "all" modifiers
+        grabButton(display, Button1, frame().window().window(), frame().theme().moveCursor());
+   
+        XGrabButton(display, Button2, Mod1Mask, frame().window().window(), True,
+                    ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
 		
-    XGrabButton(display, Button3, Mod1Mask, frame().window().window(), True,
-		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-		GrabModeAsync, None, None);
+        XGrabButton(display, Button3, Mod1Mask, frame().window().window(), True,
+                    ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+                    GrabModeAsync, None, None);
 	
-    //---grab with "all" modifiers
-    grabButton(display, Button3, frame().window().window(), None);
+        //---grab with "all" modifiers
+        grabButton(display, Button3, frame().window().window(), None);
+    }
 }
 
 
