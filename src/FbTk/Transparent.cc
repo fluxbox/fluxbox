@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.3 2003/04/26 12:44:24 fluxgen Exp $
+// $Id: Transparent.cc,v 1.4 2003/05/07 09:31:29 fluxgen Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
@@ -92,15 +92,35 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
 
 namespace FbTk {
 
+bool Transparent::s_init = false;
+bool Transparent::s_render = false;
 
 Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int screen_num):
     m_alpha_pic(0), m_src_pic(0), m_dest_pic(0),
     m_source(src), m_dest(dest), m_alpha(alpha) {
 
+    Display *disp = FbTk::App::instance()->display();
+
+    // check for RENDER support
+    if (!s_init) {
+        int major_opcode, first_event, first_error;
+        if (XQueryExtension(disp, "RENDER", 
+                            &major_opcode, 
+                            &first_event, &first_error) == False) {
+            s_render = false;
+        } else { // we got RENDER support
+            s_render = true;
+        }
+        s_init = true;
+    }
+
+    
 #ifdef HAVE_XRENDER
+    if (!s_render)
+        return;
+
     allocAlpha(m_alpha);
 
-    Display *disp = FbTk::App::instance()->display();
 
     XRenderPictFormat *format = 
         XRenderFindVisualFormat(disp, 
@@ -121,21 +141,21 @@ Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int s
 
 Transparent::~Transparent() {
 #ifdef HAVE_XRENDER
-    if (m_alpha_pic != 0)
+    if (m_alpha_pic != 0 && s_render)
         freeAlpha();
 
     Display *disp = FbTk::App::instance()->display();
 
-    if (m_dest_pic != 0)
+    if (m_dest_pic != 0 && s_render)
         XRenderFreePicture(disp, m_dest_pic);
 
-    if (m_src_pic != 0)
+    if (m_src_pic != 0  && s_render)
         XRenderFreePicture(disp, m_src_pic);
 #endif // HAVE_XRENDER
 }
 
 void Transparent::setAlpha(unsigned char alpha) {
-    if (m_source == 0)
+    if (m_source == 0 || !s_render)
         return;
 
     freeAlpha();
@@ -144,7 +164,7 @@ void Transparent::setAlpha(unsigned char alpha) {
 
 void Transparent::setDest(Drawable dest, int screen_num) {
 #ifdef HAVE_XRENDER
-    if (m_dest == dest)
+    if (m_dest == dest || !s_render)
         return;
 
     Display *disp = FbTk::App::instance()->display();
@@ -171,7 +191,7 @@ void Transparent::setDest(Drawable dest, int screen_num) {
 
 void Transparent::setSource(Drawable source, int screen_num) {
 #ifdef HAVE_XRENDER
-    if (m_source == source)
+    if (m_source == source || !s_render)
         return;
     // save old alpha value so we can recreate new later
     // with the same value
@@ -211,7 +231,7 @@ void Transparent::render(int src_x, int src_y,
                          unsigned int width, unsigned int height) const {
 #ifdef HAVE_XRENDER
     if (m_src_pic == 0 || m_dest_pic == 0 ||
-        m_alpha_pic  == 0)
+        m_alpha_pic  == 0 || !s_render)
         return;
     // render src+alpha to dest picture
     XRenderComposite(FbTk::App::instance()->display(), 
@@ -229,7 +249,7 @@ void Transparent::render(int src_x, int src_y,
 
 void Transparent::allocAlpha(unsigned char alpha) {
 #ifdef HAVE_XRENDER
-    if (m_source == 0)
+    if (m_source == 0 || !s_render)
         return;
     if (m_alpha_pic != 0)
         freeAlpha();
@@ -241,7 +261,8 @@ void Transparent::allocAlpha(unsigned char alpha) {
 
 void Transparent::freeAlpha() {
 #ifdef HAVE_XRENDER
-    XRenderFreePicture(FbTk::App::instance()->display(), m_alpha_pic);
+    if (s_render && m_alpha_pic != 0)
+        XRenderFreePicture(FbTk::App::instance()->display(), m_alpha_pic);
 #endif // HAVE_XRENDER
     m_alpha_pic = 0;
     m_alpha = 255;

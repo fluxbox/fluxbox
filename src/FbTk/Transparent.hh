@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.hh,v 1.1 2003/04/20 13:27:16 fluxgen Exp $
+// $Id: Transparent.hh,v 1.2 2003/05/07 09:30:53 fluxgen Exp $
 
 #ifndef FBTK_TRANSPARENT_HH
 #define FBTK_TRANSPARENT_HH
@@ -54,6 +54,10 @@ private:
     unsigned long m_dest_pic;
     Drawable m_source, m_dest;
     unsigned char m_alpha;
+    
+    static bool s_init;
+    static bool s_render; ///< wheter we have RENDER support
+
 };
 
 }; // end namespace  FbTk
