@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/04/14:
+  * Fixed a menu title bug (Thanks Mathias Gumz)
+    Menu.cc
 *04/04/12:
   * Hide window menu when clicking on another window (Thanks Mathias Gumz)
     Screen.hh/cc, Window.hh/cc
