@@ -313,17 +313,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     FbTk::ThemeManager::instance().load(getStyleFilename());
 
     // setup atom handlers before we create any windows
-#ifdef USE_GNOME
-    addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
-#endif //USE_GNOME
-
-#ifdef USE_NEWWMSPEC
-    addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
-#endif // USE_NEWWMSPEC
-
 #ifdef REMEMBER
     addAtomHandler(new Remember(), "remember"); // for remembering window attribs
 #endif // REMEMBER
+#ifdef USE_NEWWMSPEC
+    addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
+#endif // USE_NEWWMSPEC
+#ifdef USE_GNOME
+    addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
+#endif //USE_GNOME
 
     grab();
 
