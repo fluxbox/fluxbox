@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.57 2002/05/08 10:14:51 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.58 2002/05/17 11:16:26 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -118,7 +118,7 @@
 
 #include <iostream>
 #include <string>
-#include <strstream>
+#include <sstream>
 #include <memory>
 
 using namespace std;
@@ -1092,7 +1092,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 			win->changeBlackboxHints(&net);
 		}
 	} else {
-		bool val  = false;
+		bool val = false;
 		#ifdef GNOME
 		val  = checkGnomeAtoms(ce);
 		#endif //!GNOME
@@ -1101,6 +1101,8 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 		if (!val)
 			val = checkNETWMAtoms(ce);
 		#endif //!NEWWMSPEC
+		//disable `unused`-warning
+		val = true;
 	}
 }
 //----------- handleKeyEvent ---------------
