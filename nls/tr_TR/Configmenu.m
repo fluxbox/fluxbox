@@ -3,31 +3,31 @@ $set 3 #Configmenu
 $ #ConfigOptions
 # Ayarlar
 $ #FocusModel
-# Foküsleme
+# Hizalama
 $ #WindowPlacement
 # Pencere yerleþimi
 $ #ImageDithering
-# Resim oluþturmasý
+# Resim oluþturulmasý
 $ #OpaqueMove
-# Ekraný içerikli taþý
+# Donuk Pencere Taþýnmasý
 $ #FullMax
-# Tam ekranla, vallahi
+# Ekraný Kapla
 $ #FocusNew
-# Yeni pencereleri foküsle
+# Yeni Pencereleri Hizala
 $ #FocusLast
-# Masaüstündeki son pencereyi foküsle
+# Masaüstü deðiþiminde pencereyi hizala
 $ #ClickToFocus
-# Týklayarak foküsle
+# Hizalamak için týkla
 $ #SloppyFocus
-# Aðýr foküsle
+# Yavaþ Hizala
 $ #AutoRaise
-# Otomatikman yükselt
+# Otomatik Göster
 $ #SmartRows
-# Akýllý yerleþim( Sýralar )
+# Akýllý Yerleþim( Sýralar )
 $ #SmartCols
-# Akýllý yerleþim( Sütunlar )
+# Akýllý Yerleþim( Sütunlar )
 $ #Cascade
-# Cascade Placement
+# Kademeli Yerleþim
 $ #LeftRight
 # Soldan saða
 $ #RightLeft
@@ -37,20 +37,20 @@ $ #TopBottom
 $ #BottomTop
 # Alttan üste
 $ #Tabs
-# Use Tabs
+# Sekmeleri Kullan
 $ #Icons
-# Use Icons
+# Sekme Ýkonlarý
 $ #TabPlacement
-# Tab Placement
+# Sekme Yerleþimi
 $ #TabRotateVertical
-# Rotate Vertical Tabs
+# Sekmeleri Düþey Yerleþtir
 $ #SemiSloppyFocus
-# Semi Sloppy Focus
+# Aynýlarý Hizala
 $ #MaxOverSlit
-# Maximize Over Slit
+# Kesik Üzerinden Ekraný Kapla
 $ #SloppyWindowGrouping
-# Sloppy Window Grouping
+# Penecere Gruplandýrmasý
 $ #WorkspaceWarping
-# Workspace Warping
+# Masaüstü Sapmasý
 $ #DesktopWheeling
-# Desktop Wheeling
+# Masaüstü Geçiþi

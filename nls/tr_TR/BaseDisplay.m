@@ -5,12 +5,12 @@ $ #XError
 $ #SignalCaught
 # %s : %d sinyali alýndý \n
 $ #ShuttingDown
-# kapatýlýyorum\n
+# kapatýlýyor\n
 $ #Aborting
-# kapatýlýyorum ... çöküntüyü býrakýyorum\n
+# Ýptal Ediliyor...\n
 $ #XConnectFail
 # BaseDisplay::BaseDisplay : X sunucusuna baðlanýlýnamadý .\n
 $ #CloseOnExecFail
 # BaseDisplay::BaseDisplay : çalýþtýrýrken kapatmada ekrana baðlanýlýnamadý \n
 $ #BadWindowRemove
-# BaseDisplay::eventLoop() : eylem kuyruðundaki 'kötü' pencereyi siliyorum \n
+# BaseDisplay::eventLoop() : eylem kuyruðundaki sorunlu pencere kaldýrýlýyor \n

@@ -2,48 +2,48 @@ $set 6 #Screen
 
 $ #AnotherWMRunning
 # BScreen::BScreen : X sunucusunu sorgularken hata oldu.\n  \
-%s ekranýnda baþka bir pencere yöneticisi çalýþýyor gibi.\n
+%s ekranýnda baþka bir pencere yöneticisi çalýþýyor\n
 $ #ManagingScreen
 # BScreen::BScreen : %d ekraný, 0x%lx görünümüyle , %d derinliðiyle\n
 $ #FontLoadFail
 # BScreen::LoadStyle() : '%s' yazý tipi yüklenemedi.\n
 $ #DefaultFontLoadFail
-# BScreen::LoadStyle(): önayarlý yazý tipi yüklenemedi.\n
+# BScreen::LoadStyle(): öntanýmlý yazý tipi yüklenemedi.\n
 $ #EmptyMenuFile
-# %s : boþ mönü dosyasý\n
+# %s : boþ menü dosyasý\n
 $ #xterm
-# X komutasý
+# xterm
 $ #Restart
-# Yeniden baþla
+# Yeniden Baþlat
 $ #Exit
 # Çýk
 $ #EXECError
-# BScreen::parseMenuFile : [exec] hatasý, mönü yaftasý ve/yada komuta belirlenmedi\n
+# BScreen::parseMenuFile : [exec] hatasý, menü ve/yada komut belirlenmemiþ\n
 $ #EXITError
-# BScreen::parseMenuFile : [exit] hatasý, mönü yaftasý belirlenmedi\n
+# BScreen::parseMenuFile : [exit] hatasý, menü alaný belirlenmedi\n
 $ #STYLEError
-# BScreen::parseMenuFile : [style] hatasý, mönü yaftasý ve/yada dosya adý belirlenmedi\n
+# BScreen::parseMenuFile : [style] hatasý, menü alaný ve/yada dosya adý belirlenmedi\n
 $ #CONFIGError
-# BScreen::parseMenuFile: [config] hatasý, mönü yaftasý belirlenmedi\n
+# BScreen::parseMenuFile: [config] hatasý, menü alaný belirlenmedi\n
 $ #INCLUDEError
 # BScreen::parseMenuFile: [include] hatasý, dosya adý belirlenmedi\n
 $ #INCLUDEErrorReg
-# BScreen::parseMenuFile: [include] hatasý, '%s' vasat bir dosya deðil\n
+# BScreen::parseMenuFile: [include] hatasý, '%s' uygun bir dosya deðil\n
 $ #SUBMENUError
-# BScreen::parseMenuFile: [submenu] hatasý, mönü yaftasý belirlenmedi\n
+# BScreen::parseMenuFile: [submenu] hatasý, menü alaný belirlenmedi\n
 $ #RESTARTError
-# BScreen::parseMenuFile: [restart] hatasý, mönü yaftasý belirlenmedi\n
+# BScreen::parseMenuFile: [restart] hatasý, menü alaný belirlenmedi\n
 $ #RECONFIGError
-# BScreen::parseMenuFile: [reconfig] hatasý, mönü yaftasý belirlenmedi\n
+# BScreen::parseMenuFile: [reconfig] hatasý, menü alaný belirlenmedi\n
 $ #STYLESDIRError
 # BScreen::parseMenuFile: [stylesdir/stylesmenu] hatasý, dizin adý belirlenmedi\n
 $ #STYLESDIRErrorNotDir
 # BScreen::parseMenuFile: [stylesdir/stylesmenu] hatasý, '%s' bir dizin \
 deðildir\n
 $ #STYLESDIRErrorNoExist
-# BScreen::parseMenuFile: [stylesdir/stylesmenu] hatasý, '%s' var deðil\n
+# BScreen::parseMenuFile: [stylesdir/stylesmenu] hatasý, '%s' yok\n
 $ #WORKSPACESError
-# BScreen::parseMenuFile: [workspaces] hatasý, mönü yaftasý belirlenmedi\n
+# BScreen::parseMenuFile: [workspaces] hatasý, menü alaný belirlenmedi\n
 $ #PositionLength
 # 0: 0000 x 0: 0000
 $ #PositionFormat

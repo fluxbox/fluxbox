@@ -1,23 +1,23 @@
 $set 5 #Image
 
 $ #ErrorCreatingSolidPixmap
-# BImage::render_solid : resmi yaratamadým\n
+# BImage::render_solid : pixmap oluþturulamadý\n
 $ #ErrorCreatingXImage
-# BImage::renderXImage : XImage'i yaratamadým\n
+# BImage::renderXImage : XImage oluþturulamadý\n
 $ #UnsupVisual
-# BImage::renderXImage : desteklenmeyen görünüþ( renk derinliði )\n
+# BImage::renderXImage : desteklenmeyen renk derinliði\n
 $ #ErrorCreatingPixmap
-# BImage::renderPixmap : resmi yaratamadým\n
+# BImage::renderPixmap : resim oluþturulamadý\n
 $ #InvalidColormapSize
 # BImageControl::BImageControl : geçersiz renk haritasý büyüklüðü %d (%d/%d/%d) - azaltýyorum\n
 $ #ErrorAllocatingColormap
 # BImageControl::BImageControl : renk haritasý ayrýlanamadý\n
 $ #ColorAllocFail
-# BImageControl::BImageControl : rengi ayrýrken hata oldu : %d/%d/%d\n
+# BImageControl::BImageControl : renk ayrýmýnda hata oluþtu : %d/%d/%d\n
 $ #PixmapRelease
-# BImageControl::~BImageControl : resim arabelleði - %d resim temizlendi\n
+# BImageControl::~BImageControl : resim önbelleði - %d resim temizlendi\n
 $ #PixmapCacheLarge
-# BImageControl::renderImage : arabellek büyük, temizlemeye baþlýyorum\n
+# BImageControl::renderImage : önbellek doldu, temizleniyor\n
 $ #ColorParseError
 # BImageControl::getColor : renk tarama hatasý : '%s'\n
 $ #ColorAllocError

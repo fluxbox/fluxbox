@@ -1,21 +1,21 @@
 $set 14 #main
 
 $ #RCRequiresArg
-# hata : '-rc' bir argüman bekler\n
+# hata : '-rc' bir argüman gerektirir\n
 $ #DISPLAYRequiresArg
-# hata : '-display' bir argüman bekler\n
+# hata : '-display' bir argüman gerektirir\n
 $ #WarnDisplaySet
-# ikaz : 'DISPLAY' verisini oturtamadým\n
+# uyarý : 'DISPLAY' deðiþkeni atanamadý\n
 $ #Usage
 # Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
-  -display <metin>\t\tekraný kullan.\n\
-  -rc <metin>\t\t\tbaþka bir ayarlama dosyasýný kullan.\n\
-  -version\t\t\tnesil bilgisini gösterir ve çýkar.\n\
-  -help\t\t\t\tbu yardým iletisini gösterir ve çýkar.\n\n
+  -display <metin>\t\tekran baðlantýsý kullan.\n\
+  -rc <metin>\t\t\talternatif bir ayar kaynak dosyasý kullan.\n\
+  -version\t\t\tsürümü göster.\n\
+  -help\t\t\t\tyardým ekraný.\n\n
 $ #CompileOptions
-# Denetleme seçenekleri :\n\
-  Bilgilendirme\t\t\t%s\n\
-  Týzlama:\t\t\t%s\n\
-  Gölgeleme:\t\t\t%s\n\
+# Derleme seçenekleri :\n\
+  Hata Ayýklama\t\t\t%s\n\
+  Karýþtýrma:\t\t\t%s\n\
+  Þekillendirme:\t\t\t%s\n\
   Slit:\t\t\t\t%s\n\
-  R8b'e göre týzla:\t%s\n\n
+  8bpp Kaynaklý Belirsizlik:\t%s\n\n

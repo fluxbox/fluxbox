@@ -2,21 +2,23 @@ $set 10 #Windowmenu
 
 $ #SendTo
 # Gönder ...
+$ #SendGroupTo
+# Gruba Gönder...
 $ #Shade
-# Topla
+# Þekillendir
 $ #Iconify
-# Ikonalaþtýr
+# Küçült
 $ #Maximize
-# Azamileþtir
+# Ekraný Kapla
 $ #Raise
-# Alçalt
+# Göster
 $ #Lower
-# Yükselt
+# Küçült
 $ #Stick
-# Yapýþýk
+# Yapýþtýr
 $ #KillClient
-# Öldür
+# Kill
 $ #Close
 # Kapat
 $ #Tab
-# Tab
+# Sekme
