@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.15 2003/04/03 22:37:43 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.16 2003/04/09 17:20:01 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -67,6 +67,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_bevel(1),
     m_use_titlebar(true), 
     m_use_handle(true),
+    m_focused(false),
     m_button_pm(0),
     m_themelistener(*this) {
     //    m_shape(new Shape(m_window, 0)) { //Shape::TOPLEFT | Shape::TOPRIGHT)) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.129 2003/03/22 05:13:08 rathnor Exp $
+// $Id: Window.cc,v 1.130 2003/04/09 17:20:06 rathnor Exp $
 
 #include "Window.hh"
 
@@ -202,6 +202,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     decorations.enabled = true;
     // set client window
     client.window = w;
+    client.window_group = None;
 
     // set default values for decoration
     decorations.menu = true;	//override menu option

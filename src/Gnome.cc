@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.13 2003/03/04 11:13:42 fluxgen Exp $
+// $Id: Gnome.cc,v 1.14 2003/04/09 17:20:01 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -33,6 +33,7 @@ using namespace std;
 
 Gnome::Gnome() {
     createAtoms();
+    enableUpdate();
 }
 
 Gnome::~Gnome() {
@@ -160,7 +161,7 @@ void Gnome::updateClientList(BScreen &screen) {
                     XA_CARDINAL, 32,
                     PropModeReplace, (unsigned char *)wl, num);
 	
-    delete wl;
+    delete[] wl;
 }
 
 void Gnome::updateWorkspaceNames(BScreen &screen) {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.13 2003/03/04 21:41:05 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.14 2003/04/09 17:20:00 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -33,6 +33,7 @@ using namespace std;
 
 Ewmh::Ewmh() {
     createAtoms();
+    enableUpdate();
 }
 
 Ewmh::~Ewmh() {

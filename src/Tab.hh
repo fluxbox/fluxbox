@@ -19,15 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.17 2002/12/01 13:42:00 rathnor Exp $
+// $Id: Tab.hh,v 1.18 2003/04/09 17:20:03 rathnor Exp $
 
 #ifndef TAB_HH
 #define TAB_HH
 
 #include <X11/Xlib.h>
 #include <strings.h>
-class FluxboxWindow;
-
+//class FluxboxWindow;
+#include "Window.hh"
 /**
 Note: Tab is a friend of FluxboxWindow
 */

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.27 2003/04/09 13:00:21 fluxgen Exp $
+// $Id: IconBar.cc,v 1.28 2003/04/09 17:20:02 rathnor Exp $
 
 #include "IconBar.hh"
 
@@ -80,6 +80,7 @@ unsigned int IconBarObj::height() const {
 IconBar::IconBar(BScreen *scrn, Window parent, FbTk::Font &font):
     m_screen(scrn),
     m_parent(parent),
+    m_focus_pm(None),
     m_vertical(false),
     m_font(font)
 {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.67 2003/03/23 04:18:59 rathnor Exp $
+// $Id: Toolbar.cc,v 1.68 2003/04/09 17:20:04 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -194,7 +194,9 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
     nwbutton(ArrowButton::RIGHT, // arrow type
              window, // parent
              0, 0, // pos 
-             1, 1) // size
+             1, 1), // size
+    hour(-1), // start with invalid number to force update
+    minute(-1)
 
 {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
