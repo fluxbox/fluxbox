@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.29 2004/01/22 05:48:41 fluxgen Exp $
+# $Id: fbsetbg,v 1.30 2004/03/11 00:08:34 rathnor Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -33,7 +33,7 @@
 # - don't use [ -e file ] use [ -r file ]
 # - don't use $(), use ``
 # - don't use ~, use ${HOME}
-# - don't use id -u, use whoami
+# - don't use id -u or $UID, use whoami
 # - don't use echo -e
 # - getopts won't work on all platforms, but the config-file can
 #   compensate for that.
@@ -154,13 +154,20 @@ case `uname` in
 esac
 
 message() {
-    # echo if we have terminal output, otherwise
-    # pop up a window
-    if [ -t 1 ]; then
-        echo "$command: $@"
-    else
-        xmessage -center "$command: $@"
-    fi
+
+    # This Terminal detection method is inaccurate. Looking for a
+    # replacement.
+
+    # echo if we have terminal output, otherwise pop up a window
+    # if [ -t 1 ]; then
+    #     echo "$command: $@"
+    # else
+        if find_it gxmessage; then
+            gxmessage -center "$command: $@"
+        else
+            xmessage -center "$command: $@"
+        fi
+    # fi
 }
 
 remembercommand() {
@@ -181,7 +188,7 @@ remembercommand() {
 debugfbsetbg() {
     echo
     echo $debugstory
-    echo
+    echo $sad_esetroot_story
     exit 0
 }
 
@@ -278,6 +285,9 @@ while [ $# -gt 0 ]; do
                     message "No previous wallpaper recorded for display ${DISPLAY}"
                     exit 1
                 fi
+            else
+                message "No previous wallpaper recorded for display ${DISPLAY}"
+                exit 1
             fi
             remember=false
             break ;;
@@ -317,8 +327,15 @@ if [ "$setterfromcommandline" != true ]; then
     fi
     for wpsetter in $wpsetters; do
         if find_it $wpsetter; then
-            WPSETTER=$wpsetter
-            break
+            if [ ! "$wpsetter" = Esetroot ]; then
+                WPSETTER=$wpsetter
+                break
+            elif ldd `which Esetroot`|grep libImlib 2>&1 > /dev/null; then
+                WPSETTER=$wpsetter
+                break
+            else
+                sad_esetroot_story="I also found Esetroot, but it doesn't have support for setting wallpapers. You need to install libimlib2 and rebuild Eterm to get it working."
+            fi
         fi
     done
 fi

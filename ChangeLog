@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/11:
+  * fbsetbg: special Esetroot check and message improvements (Han)
 *04/03/08:
   * Fix focus passing when grouping (Simon)
     Window.cc
