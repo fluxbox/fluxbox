@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ -e ~/.fluxbox/startup ];then
+    exec sh ~/.fluxbox/startup
+else
+    if [ ! -d ~/.fluxbox ];then
+	mkdir -p ~/.fluxbox/{backgrounds,styles}
+    fi
+    cp @pkgdatadir@/startup ~/.fluxbox
+    @pkgbindir@/bsetroot -solid Black
+    exec @pkgbindir@/fluxbox
+fi
