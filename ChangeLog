@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/09:
+  * Better visualisation of the RememberState in RememberMenu (Mathias)
+    src/FbTk/Remember.cc
 *04/11/07:
   * Fix a problem with snapping windows (Mathias)
     decorationless windows have a borderWidth of 0 -> problems at 
