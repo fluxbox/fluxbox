@@ -25,7 +25,7 @@
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 
-// $Id: Image.cc,v 1.8 2002/04/08 18:57:53 fluxgen Exp $
+// $Id: Image.cc,v 1.9 2002/05/07 17:14:01 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -1827,9 +1827,9 @@ void BImage::cdgradient(void) {
 
 BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, Bool _dither,
 		int _cpc, unsigned long cache_timeout,
-	unsigned long cmax):
+	unsigned long cmax)
 #ifdef TIMEDCACHE
-	 timer(this)
+: timer(this)
 #endif //TIMEDCACHE
 {
 	I18n *i18n = I18n::instance();
