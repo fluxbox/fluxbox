@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.2 2003/02/15 01:56:57 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.3 2003/04/16 13:33:18 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -61,7 +61,7 @@ public:
 
 class SetStyleCmd: public FbTk::Command {
 public:
-    SetStyleCmd(const std::string &filename);
+    explicit SetStyleCmd(const std::string &filename);
     void execute();
 private:
     std::string m_filename;
