@@ -614,7 +614,7 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 				disconnect();
 
 				// convinience
-				unsigned short int placement = m_win->getScreen()->getTabPlacement();
+				unsigned int placement = m_win->getScreen()->getTabPlacement();
 
 				// (ab)using dest_x and dest_y
 				dest_x = be->x_root;
