@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.9 2002/08/14 22:43:30 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.10 2002/09/15 09:40:26 fluxgen Exp $
 
 #ifndef STRINGUTIL_HH
 #define STRINGUTIL_HH
@@ -37,6 +37,8 @@ const char *strcasestr(const char *str, const char *ptn);
 std::string expandFilename(const std::string &filename);
 int getStringBetween(std::string& out, const char *instr, const char first, const char last,
 	const char *ok_chars=" \t\n");
+
+void toLower(char * const conv);
 
 //--------- stringtok ----------------------------------
 // Breaks a string into tokens

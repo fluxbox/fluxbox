@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.11 2002/08/14 22:43:30 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.12 2002/09/15 09:40:51 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -131,6 +131,11 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
 	out = in.substr(i+1, j-i-1); //copy the string between first and last		
 	//return value to last character
 	return (j+1+total_add);
+}
+
+void toLower(char * const conv) {
+	for (int byte_pos = 0; byte_pos < strlen(conv); ++byte_pos)
+		conv[byte_pos] = tolower(conv[byte_pos]);
 }
 
 }; //end namespace StringUtil
