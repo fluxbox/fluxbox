@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.90 2002/12/02 23:19:16 fluxgen Exp $
+// $Id: Screen.cc,v 1.91 2002/12/04 22:43:18 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -158,6 +158,18 @@ setFromString(const char *strval) {
         m_value = Toolbar::TOPRIGHT;
     else if (strcasecmp(strval, "BottomRight")==0)
         m_value = Toolbar::BOTTOMRIGHT;
+    else if (strcasecmp(strval, "LeftTop") == 0)
+        m_value = Toolbar::LEFTTOP;
+    else if (strcasecmp(strval, "LeftCenter") == 0)
+        m_value = Toolbar::LEFTCENTER;
+    else if (strcasecmp(strval, "LeftBottom") == 0)
+        m_value = Toolbar::LEFTBOTTOM;
+    else if (strcasecmp(strval, "RightTop") == 0)
+        m_value = Toolbar::RIGHTTOP;
+    else if (strcasecmp(strval, "RightCenter") == 0)
+        m_value = Toolbar::RIGHTCENTER;
+    else if (strcasecmp(strval, "RightBottom") == 0)
+        m_value = Toolbar::RIGHTBOTTOM;
     else
         setDefaultValue();
 }
@@ -178,6 +190,7 @@ getString() {
 template<>
 string Resource<Toolbar::Placement>::
 getString() {
+    cerr<<"m_value = "<<m_value<<endl;
     switch (m_value) {
     case Toolbar::TOPLEFT:
         return string("TopLeft");
@@ -196,6 +209,24 @@ getString() {
         break;
     case Toolbar::BOTTOMRIGHT:
         return string("BottomRight");
+        break;
+    case Toolbar::LEFTTOP:
+        return string("LeftTop");
+        break;
+    case Toolbar::LEFTCENTER:
+        return string("LeftCenter");
+        break;
+    case Toolbar::LEFTBOTTOM:
+        return string("LeftBottom");
+        break;
+    case Toolbar::RIGHTTOP:
+        return string("RightTop");
+        break;
+    case Toolbar::RIGHTCENTER:
+        return string("RightCenter");
+        break;
+    case Toolbar::RIGHTBOTTOM:
+        return string("RightBottom");
         break;
     }
     //default string
@@ -383,6 +414,8 @@ BScreen::BScreen(ResourceManager &rm,
     workspacemenu->setItemSelected(2, true);
 
     m_toolbar.reset(new Toolbar(this));
+    m_toolbar->setPlacement(*resource.toolbar_placement);
+    m_toolbar->reconfigure();
 
 #ifdef SLIT
     m_slit.reset(new Slit(this));
@@ -598,11 +631,11 @@ void BScreen::reconfigure() {
         rootmenu->drawSubmenu(remember_sub);
     }
 
-
+    m_toolbar->setPlacement(*resource.toolbar_placement);
     m_toolbar->reconfigure();
     if (m_toolbar->theme().font().isAntialias() != *resource.antialias)
         m_toolbar->theme().font().setAntialias(*resource.antialias);
-    m_toolbar->setPlacement(*resource.toolbar_placement);
+   
     
     if (m_slit.get())
         m_slit->reconfigure();
