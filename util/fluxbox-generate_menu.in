@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.22 2004/05/21 18:36:06 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.23 2004/06/12 14:30:50 rathnor Exp $
 
 #
 # Portability notes:
@@ -471,37 +471,37 @@ case ${LC_ALL} in
 # $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
-        BACKGROUNDMENU='Backgrounds (CHANGE ME!)'
-        BACKGROUNDMENUTITLE='Set the Background (CHANGE ME!)'
+        BACKGROUNDMENU='背景'
+        BACKGROUNDMENUTITLE='背景の設定'
         BROWSERMENU='ブラウザ'
         CONFIGUREMENU='設定'
         EDITORMENU='エディタ'
         EXITITEM='終了'
-        FBSETTINGSMENU='Fluxbox設定'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
-        GAMESMENU='Games (CHANGE ME!)'
+        FBSETTINGSMENU='Fluxboxの設定'
+        FILEUTILSMENU='ファイル操作'
+        FLUXBOXCOMMAND='Fluxboxコマンド'
+        GAMESMENU='ゲーム'
         GNOMEMENUTEXT='Gnomeメニュー'
         GRAPHICMENU='画像'
         KDEMENUTEXT='KDEメニュー'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        LOCKSCREEN='スクリーンロック'
         MISCMENU='いろいろ'
         MUSICMENU='音楽'
         NETMENU='ネットワーク'
-        OFFICEMENU='Office (CHANGE ME!)'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        OFFICEMENU='オフィス(Office)'
+        RANDOMBACKGROUND='背景(ランダム)'
+        REGENERATEMENU='メニュー再構成'
         RELOADITEM='再読み込み'
         RESTARTITEM='再起動'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='コマンドの実行'
+        SCREENSHOT='スクリーンショット'
         STYLEMENUTITLE='スタイル選択...'
         SYSTEMSTYLES='スタイル'
         TERMINALMENU='ターミナル'
-        TOOLS='Tools (CHANGE ME!)'
+        TOOLS='ツール'
         USERSTYLES='スタイル'
-        WINDOWMANAGERS='Window Managers (CHANGE ME!)'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWMANAGERS='ウィンドウマネージャ'
+        WINDOWNAME='ウィンドウ名'
         WORKSPACEMENU='ワークスペース'
         XUTILSMENU='Xユーティリティ'
         ;;
