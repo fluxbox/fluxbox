@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.5 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.6 2002/01/10 12:52:51 fluxgen Exp $
 
 #ifndef   _BASEDISPLAY_HH_
 #define   _BASEDISPLAY_HH_
@@ -78,7 +78,7 @@ public:
 	} BlackboxAttributes;
 
 #ifdef GNOME
-	inline Atom *getGnomeListAtoms() { return gnome_atom_list; }
+//	inline Atom *getGnomeListAtoms() { return gnome_atom_list; }
 	inline Atom &getGnomeProtAtom() { return gnome_wm_prot; }
 	inline Atom &getGnomeClientListAtom() { return gnome_wm_win_client_list; }
 	inline Atom &getGnomeSupportingWMCheckAtom() { return gnome_wm_supporting_wm_check; }
@@ -308,14 +308,14 @@ private:
 #endif // NEWWMSPEC
 
 #ifdef GNOME
-	union {
+//	union {
 		Atom gnome_wm_win_layer, gnome_wm_win_state, gnome_wm_win_hints,
 			gnome_wm_win_app_state, gnome_wm_win_expanded_size,
 			gnome_wm_win_icons, gnome_wm_win_workspace,
 			gnome_wm_win_workspace_count,	gnome_wm_win_workspace_names,
 			gnome_wm_win_client_list;
-		Atom gnome_atom_list[10];	
-	};	
+//		Atom gnome_atom_list[10];	
+//	};	
 	Atom gnome_wm_prot;
 	Atom gnome_wm_supporting_wm_check;	
 #endif // GNOME
