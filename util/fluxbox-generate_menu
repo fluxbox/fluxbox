@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.23 2003/01/04 15:22:29 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.24 2003/01/23 07:08:24 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -64,7 +64,7 @@ Options:
 
 
 Files:
-    ~/.fluxbux/usermenu your own file which can be included in the menu
+    ~/.fluxbux/usermenu     your own submenu which will be included in the menu
     ~/.fluxbox/menuconfig   rc file for fluxbox-generate_menu
 
 EOF
@@ -149,6 +149,310 @@ N
 }" > ${FILENAME}.tmp
 mv -f ${FILENAME}.tmp ${FILENAME}
 }
+
+# menu defaults (if translation forget to set one of them)
+BACKGROUNDMENU="Backgrounds"
+BACKGROUNDMENUTITLE="Set the Background"
+BROWSERMENU="Browsers"
+CONFIGUREMENU="Configure"
+EDITORMENU="Editors"
+EXITITEM="Exit"
+FBSETTINGSMENU="fluxbox menu"
+GAMESMENU="Games"
+GNOMEMENUTEXT="Gnome-menus"
+GRAPHICMENU="Graphics"
+KDEMENUTEXT="KDE-menus"
+MISCMENU="Misc"
+MULTIMEDIAMENU="Multimedia"
+MUSICMENU="Music"
+NETMENU="Net"
+OFFICEMENU="Office"
+RELOADITEM="Reload config"
+RESTARTITEM="Restart"
+STYLEMENUTITLE="Choose a style..."
+SYSTEMSTYLES="System Styles"
+TERMINALMENU="Terminals"
+USERSTYLES="User Styles"
+WORKSPACEMENU="Workspace List"
+XUTILSMENU="X-utils"
+
+# Check translation
+case ${LC_ALL} in
+    ru_RU*) #Russian locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Office"
+        #SYSTEMSTYLES="Û‘…Ã…"
+        #USERSTYLES="Û‘…Ã…"
+        BROWSERMENU="‚“¡’⁄≈“Ÿ"
+        CONFIGUREMENU="Ó¡”‘“œ À¡"
+        EDITORMENU="Ú≈ƒ¡À‘œ“Ÿ"
+        EXITITEM="˜Ÿ ‘…"
+        FBSETTINGSMENU="FB-Œ¡”‘“œ À…"
+        GNOMEMENUTEXT="Gnome-Õ≈Œ¿"
+        GRAPHICMENU="Á“¡∆…À¡"
+        KDEMENUTEXT="KDE-Õ≈Œ¿"
+        MISCMENU="“œﬁ≈≈"
+        MUSICMENU="˙◊’À"
+        NETMENU="Û≈‘ÿ"
+        RELOADITEM="≈“≈Œ¡”‘“œ…‘ÿ"
+        RESTARTITEM="≈“≈⁄¡–’”‘…‘ÿ"
+        STYLEMENUTITLE="˜Ÿ¬≈“…‘≈ ”‘…Ãÿ"
+        TERMINALMENU="Ù≈“Õ…Œ¡ÃŸ"
+        WORKSPACEMENU="Ú¡¬œﬁ…≈ –“œ”‘“¡Œ”‘◊¡"
+        XUTILSMENU="X-’‘…Ã…‘Ÿ"
+        ;;
+    de_DE*) # german locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Bueroprogramme"
+        #SYSTEMSTYLES="Stile"
+        #USERSTYLES="Stile"
+        BROWSERMENU="Internet-Browser"
+        CONFIGUREMENU="Einstellungen"
+        EDITORMENU="Editoren"
+        EXITITEM="Beenden"
+        FBSETTINGSMENU="Fluxbox-Einstellungen"
+        GNOMEMENUTEXT="Gnome-Menues"
+        GRAPHICMENU="Grafik"
+        KDEMENUTEXT="Kde-Menues"
+        MISCMENU="Sonstiges"
+        MUSICMENU="Musik"
+        NETMENU="Netzwerk"
+        RELOADITEM="Konfiguration neu laden"
+        RESTARTITEM="Neustarten"
+        STYLEMENUTITLE="Einen Stil auswaehlen..."
+        TERMINALMENU="Terminals"
+        WORKSPACEMENU="Arbeitsflaechenliste"
+        XUTILSMENU="X-Anwendungen"
+        ;;
+    sv_SE*) #Swedish locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Office"
+        #SYSTEMSTYLES="Stiler"
+        #USERSTYLES="Stiler"
+        BROWSERMENU="Browsers"
+        CONFIGUREMENU="Konfiguration"
+        EDITORMENU="Editorer"
+        EXITITEM="Exit"
+        FBSETTINGSMENU="FB-inst‰llningar"
+        GNOMEMENUTEXT="Gnome-menyer"
+        GRAPHICMENU="Grafik"
+        KDEMENUTEXT="KDE-menyer"
+        MISCMENU="Blandat"
+        MUSICMENU="Musik"
+        NETMENU="Net"
+        RELOADITEM="Ladda om konfig"
+        RESTARTITEM="Starta om"
+        STYLEMENUTITLE="V‰lj en stil"
+        TERMINALMENU="Terminaler"
+        WORKSPACEMENU="Arbetsytor"
+        XUTILSMENU="X-program"
+        ;;
+    nl_NL*) #Nederlandse locales
+        BACKGROUNDMENU="Achtergrond"
+        BACKGROUNDMENUTITLE="Kies een achtergrond"
+        BROWSERMENU="Browsers"
+        CONFIGUREMENU="Instellingen"
+        EDITORMENU="Editors"
+        EXITITEM="Afsluiten"
+        FBSETTINGSMENU="FB-Instellingen"
+        GNOMEMENUTEXT="Gnome-menu"
+        GRAPHICMENU="Grafisch"
+        KDEMENUTEXT="KDE-menu"
+        MISCMENU="Onregelmatig"
+        MUSICMENU="Muziek"
+        NETMENU="Net"
+        OFFICEMENU="Office"
+        RELOADITEM="Vernieuw instellingen"
+        RESTARTITEM="Restart"
+        STYLEMENUTITLE="Kies een styl"
+        SYSTEMSTYLES="Systeem Stylen"
+        TERMINALMENU="Terminals"
+        USERSTYLES="Gebruikers Stylen"
+        WORKSPACEMENU="Werkveld Lijst"
+        XUTILSMENU="X-utils"
+        ;;
+    fi_FI*) #Finnish locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Office"
+        #SYSTEMSTYLES="Tyylit"
+        #USERSTYLES="Tyylit"
+        BROWSERMENU="Selaimet"
+        CONFIGUREMENU="Konfigurointi"
+        EDITORMENU="Editorit"
+        EXITITEM="Lopeta"
+        FBSETTINGSMENU="FB:n Asetukset"
+        GNOMEMENUTEXT="Gnomen valikot"
+        GRAPHICMENU="Grafiikka"
+        KDEMENUTEXT="KDE:n valikot"
+        MISCMENU="Sekalaista"
+        MUSICMENU="Musikki"
+        NETMENU="Verkko"
+        RELOADITEM="P‰ivit‰"
+        RESTARTITEM="K‰ynnist‰ uudelleen"
+        STYLEMENUTITLE="Valitse tyyli"
+        TERMINALMENU="Terminaalit"
+        WORKSPACEMENU="Tyˆaluet"
+        XUTILSMENU="X-Ohjelmat"
+        ;;
+    ja_JP*) #Japanese locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Office"
+        #SYSTEMSTYLES="•π•ø•§•Î"
+        #USERSTYLES="•π•ø•§•Î"
+        BROWSERMENU="•÷•È•¶•∂"
+        CONFIGUREMENU="¿ﬂƒÍ"
+        EDITORMENU="•®•«•£•ø"
+        EXITITEM="Ω™Œª"
+        FBSETTINGSMENU="Fluxbox¿ﬂƒÍ"
+        GNOMEMENUTEXT="Gnome•·•À•Â°º"
+        GRAPHICMENU="≤Ë¡¸"
+        KDEMENUTEXT="KDE•·•À•Â°º"
+        MISCMENU="§§§Ì§§§Ì"
+        MUSICMENU="≤ª≥⁄"
+        NETMENU="•Õ•√•»•Ô°º•Ø"
+        RELOADITEM="∫∆∆…§ﬂπ˛§ﬂ"
+        RESTARTITEM="∫∆µØ∆∞"
+        STYLEMENUTITLE="•π•ø•§•Î¡™¬Ú..."
+        TERMINALMENU="•ø°º•ﬂ• •Î"
+        WORKSPACEMENU="•Ô°º•Ø•π•⁄°º•π"
+        XUTILSMENU="X•Ê°º•∆•£•Í•∆•£"
+        ;;
+    fr_FR*) # french locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Office"
+        #SYSTEMSTYLES="Styles de la Systeme"
+        #USERSTYLES="Styles de la "
+        BROWSERMENU="Navigateurs"
+        CONFIGUREMENU="Configurer"
+        EDITORMENU="Editeurs"
+        EXITITEM="Sortir"
+        FBSETTINGSMENU="FB-Settings"
+        GNOMEMENUTEXT="menus-Gnome"
+        GRAPHICMENU="Graphisme"
+        KDEMENUTEXT="menus-KDE"
+        MISCMENU="Misc"
+        MUSICMENU="Musique"
+        NETMENU="Net"
+        RELOADITEM="Recharger config"
+        RESTARTITEM="RedÈmarrer"
+        STYLEMENUTITLE="Choisir un style..."
+        TERMINALMENU="Terminaux"
+        WORKSPACEMENU="Liste des bureaux"
+        XUTILSMENU="X-utils"
+        ;;
+    it_IT*) # italian locales
+        #BACKGROUNDMENU="Backgrounds"
+        #BACKGROUNDMENUTITLE="Set the Background"
+        #OFFICEMENU="Office"
+        #SYSTEMSTYLES="Stile"
+        #USERSTYLES="Stile"
+        BROWSERMENU="Browsers"
+        CONFIGUREMENU="Configurazione"
+        EDITORMENU="Editori"
+        EXITITEM="Esci"
+        FBSETTINGSMENU="Preferenze"
+        GAMESMENU="Giochi"
+        GNOMEMENUTEXT="Gnome"
+        GRAPHICMENU="Grafica"
+        KDEMENUTEXT="KDE"
+        MISCMENU="Varie"
+        MUSICMENU="Musica"
+        NETMENU="Internet"
+        RELOADITEM="Rileggi la configurazione"
+        RESTARTITEM="Riavvia"
+        STYLEMENUTITLE="Scegli uno stile"
+        TERMINALMENU="Terminali"
+        WORKSPACEMENU="Aree di lavoro"
+        XUTILSMENU="X-utils"
+        ;;
+    ro_RO*) # Romanian locales
+        #OFFICEMENU="Office"
+        #RESTARTITEM="Restart"
+        BACKGROUNDMENU="Fundaluri"
+        BACKGROUNDMENUTITLE="Alege fundalul"
+        BROWSERMENU="Navigatoare"
+        CONFIGUREMENU="Configurare"
+        EDITORMENU="Editoare"
+        EXITITEM="Iesire"
+        FBSETTINGSMENU="Meniul Fluxbox"
+        GAMESMENU="Jocuri"
+        GNOMEMENUTEXT="Meniu Gnome"
+        GRAPHICMENU="Grafica"
+        KDEMENUTEXT="Meniu KDE"
+        MISCMENU="Diverse"
+        MULTIMEDIAMENU="Multimedia"
+        MUSICMENU="Muzica"
+        NETMENU="Net"
+        RELOADITEM="Reincarca configuratia"
+        STYLEMENUTITLE="Alege un stil..."
+        SYSTEMSTYLES="Stiluri sistem"
+        TERMINALMENU="Terminale"
+        USERSTYLES="Stiluri utilizator"
+        WORKSPACEMENU="Lista workspace-uri"
+        XUTILSMENU="Utilitare X"
+        ;;
+    es_ES*) # spanish locales
+        BACKGROUNDMENU="Fondos"
+	BACKGROUNDMENUTITLE="Seleccionar Fondo"
+	BROWSERMENU="Navegadores"
+	CONFIGUREMENU="Configurar"
+	EDITORMENU="Editores"
+	EXITITEM="Salir"
+	FBSETTINGSMENU="Men˙ fluxbox"
+	GAMESMENU="Juegos"
+	GNOMEMENUTEXT="Men˙s Gnome"
+	GRAPHICMENU="Gr·ficos"
+	KDEMENUTEXT="Men˙s KDE"
+	MISCMENU="Varios"
+	MULTIMEDIAMENU="Multimedia"
+	MUSICMENU="M˙sica"
+	NETMENU="Red"
+	OFFICEMENU="Oficina"
+	RELOADITEM="Reconfigurar"
+	RESTARTITEM="Reiniciar"
+	STYLEMENUTITLE="Escoge un Estilo..."
+	SYSTEMSTYLES="Estilos del Sistema"
+	TERMINALMENU="Terminales"
+	USERSTYLES="Estilos del Usuario"
+	WORKSPACEMENU="Lista de Escritorios"
+	XUTILSMENU="Utilidades X"
+        ;;
+    pl_PL*) # Polish locales
+        BACKGROUNDMENU="Tapety"
+        BACKGROUNDMENUTITLE="Ustaw tapet?"
+        BROWSERMENU="Przegl?darki"
+        CONFIGUREMENU="Konfiguracja"
+        EDITORMENU="Edytory"
+        EXITITEM="Wyj?cie"
+        FBSETTINGSMENU="Menu Fluxbox"
+        GAMESMENU="Gry"
+        GNOMEMENUTEXT="Menu Gnome"
+        GRAPHICMENU="Grafika"
+        KDEMENUTEXT="Menu KDE"
+        MISCMENU="RÛ?ne"
+        MULTIMEDIAMENU="Multimedia"
+        MUSICMENU="Muzyka"
+        NETMENU="Sie?"
+        OFFICEMENU="Aplikacje biurowe"
+        RELOADITEM="Od?wie? konfiguracj?"
+        RESTARTITEM="Restart"
+        STYLEMENUTITLE="Wybierz styl..."
+        SYSTEMSTYLES="Style systemowe"
+        TERMINALMENU="Terminale"
+        USERSTYLES="Style u?ytkownika"
+        WORKSPACEMENU="Lista pulpitÛw"
+        XUTILSMENU="Narz?dzia X"
+        ;;
+    *)
+        ;;
+esac
+
 
 # Set Defaults
 FILENAME="${HOME}/.fluxbox/menu"
@@ -313,282 +617,6 @@ Please fix your PATH or specify your favourite terminal with the -t option
 EOF
 fi
 
-# menu defaults (if translation forget to set one of them)
-BACKGROUNDMENU="Backgrounds"
-BACKGROUNDMENUTITLE="Set the Background"
-BROWSERMENU="Browsers"
-CONFIGUREMENU="Configure"
-EDITORMENU="Editors"
-EXITITEM="Exit"
-FBSETTINGSMENU="fluxbox menu"
-GAMESMENU="Games"
-GNOMEMENUTEXT="Gnome-menus"
-GRAPHICMENU="Graphics"
-KDEMENUTEXT="KDE-menus"
-MISCMENU="Misc"
-MULTIMEDIAMENU="Multimedia"
-MUSICMENU="Music"
-NETMENU="Net"
-OFFICEMENU="Office"
-RELOADITEM="Reload config"
-RESTARTITEM="Restart"
-STYLEMENUTITLE="Choose a style..."
-SYSTEMSTYLES="System Styles"
-TERMINALMENU="Terminals"
-USERSTYLES="User Styles"
-WORKSPACEMENU="Workspace List"
-XUTILSMENU="X-utils"
-
-# Check translation
-case ${LC_ALL} in
-        ru_RU*) #Russian locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Office"
-                #SYSTEMSTYLES="Û‘…Ã…"
-                #USERSTYLES="Û‘…Ã…"
-                BROWSERMENU="‚“¡’⁄≈“Ÿ"
-                CONFIGUREMENU="Ó¡”‘“œ À¡"
-                EDITORMENU="Ú≈ƒ¡À‘œ“Ÿ"
-                EXITITEM="˜Ÿ ‘…"
-                FBSETTINGSMENU="FB-Œ¡”‘“œ À…"
-                GNOMEMENUTEXT="Gnome-Õ≈Œ¿"
-                GRAPHICMENU="Á“¡∆…À¡"
-                KDEMENUTEXT="KDE-Õ≈Œ¿"
-                MISCMENU="“œﬁ≈≈"
-                MUSICMENU="˙◊’À"
-                NETMENU="Û≈‘ÿ"
-                RELOADITEM="≈“≈Œ¡”‘“œ…‘ÿ"
-                RESTARTITEM="≈“≈⁄¡–’”‘…‘ÿ"
-                STYLEMENUTITLE="˜Ÿ¬≈“…‘≈ ”‘…Ãÿ"
-                TERMINALMENU="Ù≈“Õ…Œ¡ÃŸ"
-                WORKSPACEMENU="Ú¡¬œﬁ…≈ –“œ”‘“¡Œ”‘◊¡"
-                XUTILSMENU="X-’‘…Ã…‘Ÿ"
-        ;;
-        de_DE*) # german locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Bueroprogramme"
-                #SYSTEMSTYLES="Stile"
-                #USERSTYLES="Stile"
-                BROWSERMENU="Internet-Browser"
-                CONFIGUREMENU="Einstellungen"
-                EDITORMENU="Editoren"
-                EXITITEM="Beenden"
-                FBSETTINGSMENU="Fluxbox-Einstellungen"
-                GNOMEMENUTEXT="Gnome-Menues"
-                GRAPHICMENU="Grafik"
-                KDEMENUTEXT="Kde-Menues"
-                MISCMENU="Sonstiges"
-                MUSICMENU="Musik"
-                NETMENU="Netzwerk"
-                RELOADITEM="Konfiguration neu laden"
-                RESTARTITEM="Neustarten"
-                STYLEMENUTITLE="Einen Stil auswaehlen..."
-                TERMINALMENU="Terminals"
-                WORKSPACEMENU="Arbeitsflaechenliste"
-                XUTILSMENU="X-Anwendungen"
-        ;;
-        sv_SE*) #Swedish locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Office"
-                #SYSTEMSTYLES="Stiler"
-                #USERSTYLES="Stiler"
-                BROWSERMENU="Browsers"
-                CONFIGUREMENU="Konfiguration"
-                EDITORMENU="Editorer"
-                EXITITEM="Exit"
-                FBSETTINGSMENU="FB-inst‰llningar"
-                GNOMEMENUTEXT="Gnome-menyer"
-                GRAPHICMENU="Grafik"
-                KDEMENUTEXT="KDE-menyer"
-                MISCMENU="Blandat"
-                MUSICMENU="Musik"
-                NETMENU="Net"
-                RELOADITEM="Ladda om konfig"
-                RESTARTITEM="Starta om"
-                STYLEMENUTITLE="V‰lj en stil"
-                TERMINALMENU="Terminaler"
-                WORKSPACEMENU="Arbetsytor"
-                XUTILSMENU="X-program"
-        ;;
-        nl_NL*) #Nederlandse locales
-                BACKGROUNDMENU="Achtergrond"
-                BACKGROUNDMENUTITLE="Kies een achtergrond"
-                BROWSERMENU="Browsers"
-                CONFIGUREMENU="Instellingen"
-                EDITORMENU="Editors"
-                EXITITEM="Afsluiten"
-                FBSETTINGSMENU="FB-Instellingen"
-                GNOMEMENUTEXT="Gnome-menu"
-                GRAPHICMENU="Grafisch"
-                KDEMENUTEXT="KDE-menu"
-                MISCMENU="Onregelmatig"
-                MUSICMENU="Muziek"
-                NETMENU="Net"
-                OFFICEMENU="Office"
-                RELOADITEM="Vernieuw instellingen"
-                RESTARTITEM="Restart"
-                STYLEMENUTITLE="Kies een styl"
-                SYSTEMSTYLES="Systeem Stylen"
-                TERMINALMENU="Terminals"
-                USERSTYLES="Gebruikers Stylen"
-                WORKSPACEMENU="Werkveld Lijst"
-                XUTILSMENU="X-utils"
-        ;;
-        fi_FI*) #Finnish locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Office"
-                #SYSTEMSTYLES="Tyylit"
-                #USERSTYLES="Tyylit"
-                BROWSERMENU="Selaimet"
-                CONFIGUREMENU="Konfigurointi"
-                EDITORMENU="Editorit"
-                EXITITEM="Lopeta"
-                FBSETTINGSMENU="FB:n Asetukset"
-                GNOMEMENUTEXT="Gnomen valikot"
-                GRAPHICMENU="Grafiikka"
-                KDEMENUTEXT="KDE:n valikot"
-                MISCMENU="Sekalaista"
-                MUSICMENU="Musikki"
-                NETMENU="Verkko"
-                RELOADITEM="P‰ivit‰"
-                RESTARTITEM="K‰ynnist‰ uudelleen"
-                STYLEMENUTITLE="Valitse tyyli"
-                TERMINALMENU="Terminaalit"
-                WORKSPACEMENU="Tyˆaluet"
-                XUTILSMENU="X-Ohjelmat"
-        ;;
-        ja_JP*) #Japanese locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Office"
-                #SYSTEMSTYLES="•π•ø•§•Î"
-                #USERSTYLES="•π•ø•§•Î"
-                BROWSERMENU="•÷•È•¶•∂"
-                CONFIGUREMENU="¿ﬂƒÍ"
-                EDITORMENU="•®•«•£•ø"
-                EXITITEM="Ω™Œª"
-                FBSETTINGSMENU="Fluxbox¿ﬂƒÍ"
-                GNOMEMENUTEXT="Gnome•·•À•Â°º"
-                GRAPHICMENU="≤Ë¡¸"
-                KDEMENUTEXT="KDE•·•À•Â°º"
-                MISCMENU="§§§Ì§§§Ì"
-                MUSICMENU="≤ª≥⁄"
-                NETMENU="•Õ•√•»•Ô°º•Ø"
-                RELOADITEM="∫∆∆…§ﬂπ˛§ﬂ"
-                RESTARTITEM="∫∆µØ∆∞"
-                STYLEMENUTITLE="•π•ø•§•Î¡™¬Ú..."
-                TERMINALMENU="•ø°º•ﬂ• •Î"
-                WORKSPACEMENU="•Ô°º•Ø•π•⁄°º•π"
-                XUTILSMENU="X•Ê°º•∆•£•Í•∆•£"
-        ;;
-        fr_FR*) # french locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Office"
-                #SYSTEMSTYLES="Styles de la Systeme"
-                #USERSTYLES="Styles de la "
-                BROWSERMENU="Navigateurs"
-                CONFIGUREMENU="Configurer"
-                EDITORMENU="Editeurs"
-                EXITITEM="Sortir"
-                FBSETTINGSMENU="FB-Settings"
-                GNOMEMENUTEXT="menus-Gnome"
-                GRAPHICMENU="Graphisme"
-                KDEMENUTEXT="menus-KDE"
-                MISCMENU="Misc"
-                MUSICMENU="Musique"
-                NETMENU="Net"
-                RELOADITEM="Recharger config"
-                RESTARTITEM="RedÈmarrer"
-                STYLEMENUTITLE="Choisir un style..."
-                TERMINALMENU="Terminaux"
-                WORKSPACEMENU="Liste des bureaux"
-                XUTILSMENU="X-utils"
-        ;;
-        it_IT*) # italian locales
-                #BACKGROUNDMENU="Backgrounds"
-                #BACKGROUNDMENUTITLE="Set the Background"
-                #OFFICEMENU="Office"
-                #SYSTEMSTYLES="Stile"
-                #USERSTYLES="Stile"
-                BROWSERMENU="Browsers"
-                CONFIGUREMENU="Configurazione"
-                EDITORMENU="Editori"
-                EXITITEM="Esci"
-                FBSETTINGSMENU="Preferenze"
-                GAMESMENU="Giochi"
-                GNOMEMENUTEXT="Gnome"
-                GRAPHICMENU="Grafica"
-                KDEMENUTEXT="KDE"
-                MISCMENU="Varie"
-                MUSICMENU="Musica"
-                NETMENU="Internet"
-                RELOADITEM="Rileggi la configurazione"
-                RESTARTITEM="Riavvia"
-                STYLEMENUTITLE="Scegli uno stile"
-                TERMINALMENU="Terminali"
-                WORKSPACEMENU="Aree di lavoro"
-                XUTILSMENU="X-utils"
-        ;;
-        ro_RO*) # Romanian locales
-                #OFFICEMENU="Office"
-                #RESTARTITEM="Restart"
-                BACKGROUNDMENU="Fundaluri"
-                BACKGROUNDMENUTITLE="Alege fundalul"
-                BROWSERMENU="Navigatoare"
-                CONFIGUREMENU="Configurare"
-                EDITORMENU="Editoare"
-                EXITITEM="Iesire"
-                FBSETTINGSMENU="Meniul Fluxbox"
-                GAMESMENU="Jocuri"
-                GNOMEMENUTEXT="Meniu Gnome"
-                GRAPHICMENU="Grafica"
-                KDEMENUTEXT="Meniu KDE"
-                MISCMENU="Diverse"
-                MULTIMEDIAMENU="Multimedia"
-                MUSICMENU="Muzica"
-                NETMENU="Net"
-                RELOADITEM="Reincarca configuratia"
-                STYLEMENUTITLE="Alege un stil..."
-                SYSTEMSTYLES="Stiluri sistem"
-                TERMINALMENU="Terminale"
-                USERSTYLES="Stiluri utilizator"
-                WORKSPACEMENU="Lista workspace-uri"
-                XUTILSMENU="Utilitare X"
-        ;;
-        es_ES*) # spanish locales
-                BACKGROUNDMENU="Fondos"
-		BACKGROUNDMENUTITLE="Seleccionar Fondo"
-		BROWSERMENU="Navegadores"
-		CONFIGUREMENU="Configurar"
-		EDITORMENU="Editores"
-		EXITITEM="Salir"
-		FBSETTINGSMENU="Men˙ fluxbox"
-		GAMESMENU="Juegos"
-		GNOMEMENUTEXT="Men˙s Gnome"
-		GRAPHICMENU="Gr·ficos"
-		KDEMENUTEXT="Men˙s KDE"
-		MISCMENU="Varios"
-		MULTIMEDIAMENU="Multimedia"
-		MUSICMENU="M˙sica"
-		NETMENU="Red"
-		OFFICEMENU="Oficina"
-		RELOADITEM="Reconfigurar"
-		RESTARTITEM="Reiniciar"
-		STYLEMENUTITLE="Escoge un Estilo..."
-		SYSTEMSTYLES="Estilos del Sistema"
-		TERMINALMENU="Terminales"
-		USERSTYLES="Estilos del Usuario"
-		WORKSPACEMENU="Lista de Escritorios"
-		XUTILSMENU="Utilidades X"
-        ;;
-        *)
-        ;;
-esac
 
 # Start of menu
 cat << EOF > ${FILENAME}
@@ -765,37 +793,54 @@ append_submenu "${FBSETTINGSMENU}"
         append "[stylesdir] (~/.fluxbox/styles)"
     append_menu_end
 
-        if [ "$BACKGROUNDMENUITEM" = "yes" ];then
+    # Backgroundmenu
+    if [ "$BACKGROUNDMENUITEM" = "yes" ];then
         append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
+        if [ `ls -1 ${HOME}/.fluxbox/backgrounds 2>/dev/null |wc -l` -gt 30 ]; then
+            menucounter=1 ; counter=1
+            append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
+            for i in ${HOME}/.fluxbox/backgrounds/* ${PKGDATADIR}/fluxbox/backgrounds/* ; do
+                counter=`expr $counter + 1`
+                if [ $counter -eq 30 ];then
+                    counter=1
+                    menucounter=`expr $menucounter + 1`
+                    append_menu_end
+                    append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
+                fi
+                picturename=`basename $i`
+                append "[exec] (${picturename//.???}) {bsetbg -f $i }"
+            done
+            append_menu_end
+        else
             for i in ${HOME}/.fluxbox/backgrounds/* ${PKGDATADIR}/fluxbox/backgrounds/* ; do
                 picturename=`basename $i`
                 append "[exec] (${picturename//.???}) {bsetbg -f $i }"
             done
-        append_menu_end
         fi
-
-        append "[workspaces]   (${WORKSPACEMENU})"
-
-        append_submenu Tools
-            find_it fluxconf append "[exec] (FluxConf) {fluxconf}"
-            find_it fluxkeys append "[exec] (FluxKeys) {fluxkeys}"
-            find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
-            # if gxmessage exitst use it; else use xmessage
-            find_it gxmessage append \
-                "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
-                find_it xmessage append \
-                    "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
-	    find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
-            find_it fbrun append "[exec] (Run) {fbrun}"
-            find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu}"
         append_menu_end
+    fi
 
-        append "[reconfig] (${RELOADITEM})"
-        append "[restart] (${RESTARTITEM})"
-        append "[exit] (${EXITITEM})"
+    append "[workspaces]   (${WORKSPACEMENU})"
 
+    append_submenu Tools
+        find_it fluxconf append "[exec] (FluxConf) {fluxconf}"
+        find_it fluxkeys append "[exec] (FluxKeys) {fluxkeys}"
+        find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
+        # if gxmessage exitst use it; else use xmessage
+        find_it gxmessage append \
+          "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
+            find_it xmessage append \
+              "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+        find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
+        find_it fbrun append "[exec] (Run) {fbrun}"
+        find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu}"
     append_menu_end
 
+    append "[reconfig] (${RELOADITEM})"
+    append "[restart] (${RESTARTITEM})"
+    append "[exit] (${EXITITEM})"
+
+    append_menu_end
 append_menu_end
 
 # this function removes empty menu items. It can not yet  remove  nested
@@ -806,3 +851,4 @@ if [ ! "${REMOVE}" ];then
 fi
 
 echo "Menu succesfully generated."
+echo "Use fluxbox-generate_menu -h to read all about the latest features."
