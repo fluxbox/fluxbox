@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.30 2003/12/16 23:32:29 fluxgen Exp $
+// $Id: Keys.hh,v 1.31 2003/12/20 17:37:20 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -48,27 +48,34 @@ public:
        Load configuration from file
        @return true on success, else false
     */
-    bool load(const char *filename=0);
+    bool load(const char *filename = 0);
+    /**
+       Save keybindings to a file
+       Note: the file will be overwritten
+       @return true on success, else false
+     */
+    bool save(const char *filename = 0) const;
+    /// bind a key action from a string
+    /// @return false on failure
+    bool addBinding(const std::string &binding);
+
     /**
        do action from XKeyEvent
     */
     void doAction(XKeyEvent &ke);
+
     /**
        Reload configuration from filename
        @return true on success, else false
     */
     bool reconfigure(const char *filename);
-
+    const std::string filename() const { return m_filename; }
 private:
     void deleteTree();
 
     void bindKey(unsigned int key, unsigned int mod);
-    /**
-       @param modstr modifier string (i.e Mod4, Mod5)
-       @return modifier number that match modstr
-    */
-
-    std::string filename;	
+    
+    std::string m_filename;	
 	
     class t_key {	
     public:
@@ -111,7 +118,7 @@ private:
     std::vector<t_key *> m_keylist;	
 
     Display *m_display;  ///< display connection
-    
+    unsigned int m_current_line;
 };
 
 #endif // KEYS_HH

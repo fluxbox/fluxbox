@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.39 2003/12/04 21:31:02 fluxgen Exp $
+//$Id: Keys.cc,v 1.40 2003/12/20 17:37:57 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -118,96 +118,124 @@ bool Keys::load(const char *filename) {
     if (!infile)
         return false; // faild to open file
 
-    int line=0;//current line, so we can tell the user where the fault is
+    m_current_line = 0;//current line, so we can tell the user where the fault is
 
     while (!infile.eof()) {
         string linebuffer;
 
         getline(infile, linebuffer);
 
-        line++;
-        vector<string> val;
-        //Parse arguments
-        FbTk::StringUtil::stringtok(val, linebuffer.c_str());
+        m_current_line++;
 
-        //must have at least 1 argument
-        if (val.size() <= 0)
-            continue;
-			
-        if (val[0][0] == '#') //the line is commented
-            continue;
-		
-        unsigned int key=0, mod=0;		
-        char keyarg=0;
-        t_key *current_key=0, *last_key=0;
-		
-        for (unsigned int argc=0; argc<val.size(); argc++) {
-
-            if (val[argc][0] != ':') { // parse key(s)
-                keyarg++;
-                if (keyarg==1) //first arg is modifier
-                    mod = FbTk::KeyUtil::getModifier(val[argc].c_str());
-                else if (keyarg>1) {
-
-                    //keyarg=0;
-                    int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
-                    if(tmpmod)
-                        mod|=tmpmod; //If it's a modifier
-                    else { 
-                        key = FbTk::KeyUtil::getKey(val[argc].c_str()); // else get the key
-                        if (key == 0) {
-                            cerr<<"["<<filename<<"]: Invalid key/modifier on line("<<
-                                line<<"): "<<linebuffer<<endl;
-                            break; // get next line
-                        }
-                        if (!current_key) {
-                            current_key = new t_key(key, mod);
-                            last_key = current_key;
-                        } else { 
-                            t_key *temp_key = new t_key(key, mod);
-                            last_key->keylist.push_back(temp_key);
-                            last_key = temp_key;
-                        }
-                    }
-                }			
-
-            } else { // parse command line
-                if (last_key == 0) {
-                    cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
-                    cerr<<"> "<<linebuffer<<endl;
-                    break;
-                }
-
-                const char *str = 
-                    FbTk::StringUtil::strcasestr(linebuffer.c_str(),
-                                                 val[argc].c_str() + 1); // +1 to skip ':'
-                if (str == 0) {
-                    cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
-                    cerr<<"> "<<linebuffer<<endl;
-                } else {
-
-                    last_key->m_command = CommandParser::instance().parseLine(str);
-
-                    if (*last_key->m_command == 0) {
-                        cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
-                        cerr<<"> "<<linebuffer<<endl;
-                    } else {
-                        // Add the keychain to list
-                        if (!mergeTree(current_key))
-                            cerr<<"Keys: Failed to merge keytree!"<<endl;
-                    }
-                }
-                delete current_key;
-                current_key = 0;
-                last_key = 0;
-
-                break; // dont process this linebuffer more
-            }  // end if
-        } // end for
+        addBinding(linebuffer);
     } // end while eof
 
+    m_current_line = 0;
+    m_filename = filename;
     return true;
 }
+
+bool Keys::save(const char *filename) const {
+    //!!
+    //!! TODO: fix keybinding saving 
+    //!! (we probably need to save key actions 
+    //!! as strings instead of creating new Commands)
+
+    // open file for writing
+    //    ofstream outfile(filename);
+    //    if (!outfile)
+    return false;
+    //    return true;
+}
+
+bool Keys::addBinding(const std::string &linebuffer) {
+
+    vector<string> val;
+    // Parse arguments
+    FbTk::StringUtil::stringtok(val, linebuffer.c_str());
+
+    // must have at least 1 argument
+    if (val.size() <= 0)
+        return true; // empty lines are valid.
+			
+    if (val[0][0] == '#') //the line is commented
+        return true; // still a valid line.
+		
+    unsigned int key = 0, mod = 0;
+    char keyarg = 0;
+    t_key *current_key=0, *last_key=0;
+
+    // for each argument 
+    for (unsigned int argc=0; argc<val.size(); argc++) {
+
+        if (val[argc][0] != ':') { // parse key(s)
+            keyarg++;
+            if (keyarg==1) //first arg is modifier
+                mod = FbTk::KeyUtil::getModifier(val[argc].c_str());
+            else if (keyarg > 1) {
+
+                int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
+                if(tmpmod)
+                    mod |= tmpmod; //If it's a modifier
+                else { 
+                    key = FbTk::KeyUtil::getKey(val[argc].c_str()); // else get the key
+                    if (key == 0) {
+                        cerr<<"Keys: Invalid key/modifier on line("<<
+                            m_current_line<<"): "<<linebuffer<<endl;
+                        return false;
+                    }
+                    if (!current_key) {
+                        current_key = new t_key(key, mod);
+                        last_key = current_key;
+                    } else { 
+                        t_key *temp_key = new t_key(key, mod);
+                        last_key->keylist.push_back(temp_key);
+                        last_key = temp_key;
+                    }
+                }
+            }			
+
+        } else { // parse command line
+            if (last_key == 0) {
+                cerr<<"Keys: Error on line: "<<m_current_line<<endl;
+                cerr<<"> "<<linebuffer<<endl;
+                return false;
+            }
+            bool ret_val = true;
+            const char *str = 
+                FbTk::StringUtil::strcasestr(linebuffer.c_str(),
+                                             val[argc].c_str() + 1); // +1 to skip ':'
+            if (str == 0) {
+                cerr<<"Keys: Error on line: "<<m_current_line<<endl;
+                cerr<<"> "<<linebuffer<<endl;
+                ret_val = false;
+            } else {
+
+                last_key->m_command = CommandParser::instance().parseLine(str);
+
+                if (*last_key->m_command == 0) {
+                    cerr<<"Keys: Error on line: "<<m_current_line<<endl;
+                    cerr<<"> "<<linebuffer<<endl;
+                } else {
+                    // Add the keychain to list
+                    if (!mergeTree(current_key)) {
+                        cerr<<"Keys: Failed to merge keytree!"<<endl;
+                        ret_val = false;
+                    }
+                }
+            }
+            delete current_key;
+            current_key = 0;
+            last_key = 0;
+
+            return ret_val;
+
+        }  // end if
+    } // end for
+
+    return false;
+}
+
 
 /**
  @return the KeyAction of the XKeyEvent
