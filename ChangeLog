@@ -1,4 +1,9 @@
 Changes for 0.1.7:
+*02/03/01:
+   * Fixed default values for title bar
+*02/02/27:
+   * Fixed add/remove workspace bug in Screen.cc
+   * Fixed generate_menu (Thanks Preben Peppe Guldberg)
 *02/02/26:
    * indentation in Workspace.hh
    * Added key action SENDTOWORKSPACE (Thanks Oliwier Ptak)
@@ -9,16 +14,16 @@ Changes for 0.1.7:
    * Added Bulgarian translation (Thanks Miroslav Iordanov)
    * Added Japanese translation (Thanks Takashi KATAYAMA)
 *02/02/21:
-   * Bugfix in _WIN_CLIENT_LIST
+   * Bug fix in _WIN_CLIENT_LIST
 *02/02/20:
    * Added _WIN_CLIENT_LIST
-   * Fixed parameter to keybindings (Thanks Tomer Kol)
+   * Fixed parameter to key bindings (Thanks Tomer Kol)
    * Fixed a bug in BScreen::raiseWindow 
 *02/02/17:
    * Fixed _WIN_WORKSPACE_COUNT
    * Clean up in menu parsing
    * Fixed WIN_HINTS_SKIP_FOCUS
-   * Fixed iconbar bug
+   * Fixed icon bar bug
 *02/02/16:
    * Updated include guards
    * Added _WIN_LAYER 
@@ -34,7 +39,7 @@ Changes for 0.1.7:
    * Fixed bug in Workspace::removeWindow
    * Moved to STL vector in BaseDisplay (Thanks Paul W Brannan)
 *02/02/08:
-   * Back to stl list
+   * Back to STL list
    * Fixed bug in Basemenu.hh (Thanks Paul W Brannan)
 *02/02/06:
    * Reverted back to LinkedList in Toolbar.cc/.hh, Screen.hh/Screen.cc
