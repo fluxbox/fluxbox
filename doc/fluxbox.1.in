@@ -824,9 +824,9 @@ be turned on their sides.
 This option allows you to drop a tab anywhere on the target window to group it,
 instead of only on the target window's tab.
 .TP
-.B Maximize Slit Stop
-This option makes maximizing windows stop at the slit border, so that your 
-slit stays visible at all times.
+.B Maximize Over Slit 
+This option makes maximized windows cover the Slit when they get maximized.
+Turn this option off if you want your slit to stay visible at all times.
 .SH RESOURCE FILE
 Usually the
 .I ~/.fluxbox/init

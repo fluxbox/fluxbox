@@ -41,8 +41,8 @@ A few extra notes:
    This will group the two windows together.
  - With 'Sloppy Window Grouping' turned on (in your configure menu), you can
    drop the tabs anywhere on the target window to group windows together.
- - The 'Maximize Slit Stop' option means that maximized windows will stop at
-   the outside border of the slit, keeping the slit in full view.
+ - The 'Maximize over Slit' option means that maximized windows will not stop 
+   at the outside border of the slit, and will instead cover it.
  - In the init file, the session.screen0.rootCommand: option will override
    the rootCommand option in a theme- keeping your background the same, no
    matter what the theme says it should be.

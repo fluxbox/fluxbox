@@ -1,6 +1,8 @@
 Changes for 0.1.6:
 *01/01/11:
    * Fixed so it compiles with cygwin (Thanks Eric Nicolas)
+   * Fixed bug in maximize over slit option
+   * Updated documents (Thanks Rando Christensen)
 *02/01/10:
    * Fixed {VERT,HORIZ}{INC,DEC} keybindings so that tabs will
      resize/reposition. (Claes Nästén)
