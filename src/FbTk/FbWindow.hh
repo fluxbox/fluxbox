@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.1 2002/12/03 16:25:25 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.2 2002/12/04 00:02:52 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -77,6 +77,8 @@ public:
     size_t height() const { return m_height; }
     /// compare X window
     bool operator == (Window win) const { return m_window == win; }	
+    /// compare two windows
+    bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
 private:
     void updateGeometry();
     void create(Window parent, int x, int y, size_t width, size_t height, long eventmask, 
