@@ -1,170 +1,181 @@
-#define BaseDisplaySet 0x1
-#define BaseDisplayXError 0x1
-#define BaseDisplaySignalCaught 0x2
-#define BaseDisplayShuttingDown 0x3
-#define BaseDisplayAborting 0x4
-#define BaseDisplayXConnectFail 0x5
-#define BaseDisplayCloseOnExecFail 0x6
-#define BaseDisplayBadWindowRemove 0x7
+#ifndef BLACKBOX_NLS_HH
+#define BLACKBOX_NLS_HH
 
-#define BasemenuSet 0x2
-#define BasemenuBlackboxMenu 0x1
+namespace FBNLS
+{
+enum {
+	BaseDisplaySet = 0x1,
+	BaseDisplayXError = 0x1,
+	BaseDisplaySignalCaught = 0x2,
+	BaseDisplayShuttingDown = 0x3,
+	BaseDisplayAborting = 0x4,
+	BaseDisplayXConnectFail = 0x5,
+	BaseDisplayCloseOnExecFail = 0x6,
+	BaseDisplayBadWindowRemove = 0x7,
 
-#define ConfigmenuSet 0x3
-#define ConfigmenuConfigOptions 0x1
-#define ConfigmenuFocusModel 0x2
-#define ConfigmenuWindowPlacement 0x3
-#define ConfigmenuImageDithering 0x4
-#define ConfigmenuOpaqueMove 0x5
-#define ConfigmenuFullMax 0x6
-#define ConfigmenuFocusNew 0x7
-#define ConfigmenuFocusLast 0x8
-#define ConfigmenuClickToFocus 0x9
-#define ConfigmenuSloppyFocus 0xa
-#define ConfigmenuAutoRaise 0xb
-#define ConfigmenuSmartRows 0xc
-#define ConfigmenuSmartCols 0xd
-#define ConfigmenuCascade 0xe
-#define ConfigmenuLeftRight 0xf
-#define ConfigmenuRightLeft 0x10
-#define ConfigmenuTopBottom 0x11
-#define ConfigmenuBottomTop 0x12
-#define ConfigmenuTabs 0x13
-#define ConfigmenuIcons 0x14
-#define ConfigmenuTabPlacement 0x15
-#define ConfigmenuTabRotateVertical 0x16
-#define ConfigmenuSemiSloppyFocus 0x17
-#define ConfigmenuMaxOverSlit 0x18
-#define ConfigmenuSloppyWindowGrouping 0x19
+	BasemenuSet = 0x2,
+	BasemenuBlackboxMenu = 0x1,
 
-#define IconSet 0x4
-#define IconIcons 0x1
+	ConfigmenuSet = 0x3,
+	ConfigmenuConfigOptions = 0x1,
+	ConfigmenuFocusModel = 0x2,
+	ConfigmenuWindowPlacement = 0x3,
+	ConfigmenuImageDithering = 0x4,
+	ConfigmenuOpaqueMove = 0x5,
+	ConfigmenuFullMax = 0x6,
+	ConfigmenuFocusNew = 0x7,
+	ConfigmenuFocusLast = 0x8,
+	ConfigmenuClickToFocus = 0x9,
+	ConfigmenuSloppyFocus = 0xa,
+	ConfigmenuAutoRaise = 0xb,
+	ConfigmenuSmartRows = 0xc,
+	ConfigmenuSmartCols = 0xd,
+	ConfigmenuCascade = 0xe,
+	ConfigmenuLeftRight = 0xf,
+	ConfigmenuRightLeft = 0x10,
+	ConfigmenuTopBottom = 0x11,
+	ConfigmenuBottomTop = 0x12,
+	ConfigmenuTabs = 0x13,
+	ConfigmenuIcons = 0x14,
+	ConfigmenuTabPlacement = 0x15,
+	ConfigmenuTabRotateVertical = 0x16,
+	ConfigmenuSemiSloppyFocus = 0x17,
+	ConfigmenuMaxOverSlit = 0x18,
+	ConfigmenuSloppyWindowGrouping = 0x19,
 
-#define ImageSet 0x5
-#define ImageErrorCreatingSolidPixmap 0x1
-#define ImageErrorCreatingXImage 0x2
-#define ImageUnsupVisual 0x3
-#define ImageErrorCreatingPixmap 0x4
-#define ImageInvalidColormapSize 0x5
-#define ImageErrorAllocatingColormap 0x6
-#define ImageColorAllocFail 0x7
-#define ImagePixmapRelease 0x8
-#define ImagePixmapCacheLarge 0x9
-#define ImageColorParseError 0xa
-#define ImageColorAllocError 0xb
+	IconSet = 0x4,
+	IconIcons = 0x1,
 
-#define ScreenSet 0x6
-#define ScreenAnotherWMRunning 0x1
-#define ScreenManagingScreen 0x2
-#define ScreenFontLoadFail 0x3
-#define ScreenDefaultFontLoadFail 0x4
-#define ScreenEmptyMenuFile 0x5
-#define Screenxterm 0x6
-#define ScreenRestart 0x7
-#define ScreenExit 0x8
-#define ScreenEXECError 0x9
-#define ScreenEXITError 0xa
-#define ScreenSTYLEError 0xb
-#define ScreenCONFIGError 0xc
-#define ScreenINCLUDEError 0xd
-#define ScreenINCLUDEErrorReg 0xe
-#define ScreenSUBMENUError 0xf
-#define ScreenRESTARTError 0x10
-#define ScreenRECONFIGError 0x11
-#define ScreenSTYLESDIRError 0x12
-#define ScreenSTYLESDIRErrorNotDir 0x13
-#define ScreenSTYLESDIRErrorNoExist 0x14
-#define ScreenWORKSPACESError 0x15
-#define ScreenPositionLength 0x16
-#define ScreenPositionFormat 0x17
-#define ScreenGeometryFormat 0x18
+	ImageSet = 0x5,
+	ImageErrorCreatingSolidPixmap = 0x1,
+	ImageErrorCreatingXImage = 0x2,
+	ImageUnsupVisual = 0x3,
+	ImageErrorCreatingPixmap = 0x4,
+	ImageInvalidColormapSize = 0x5,
+	ImageErrorAllocatingColormap = 0x6,
+	ImageColorAllocFail = 0x7,
+	ImagePixmapRelease = 0x8,
+	ImagePixmapCacheLarge = 0x9,
+	ImageColorParseError = 0xa,
+	ImageColorAllocError = 0xb,
 
-#define SlitSet 0x7
-#define SlitSlitTitle 0x1
-#define SlitSlitDirection 0x2
-#define SlitSlitPlacement 0x3
+	ScreenSet = 0x6,
+	ScreenAnotherWMRunning = 0x1,
+	ScreenManagingScreen = 0x2,
+	ScreenFontLoadFail = 0x3,
+	ScreenDefaultFontLoadFail = 0x4,
+	ScreenEmptyMenuFile = 0x5,
+	Screenxterm = 0x6,
+	ScreenRestart = 0x7,
+	ScreenExit = 0x8,
+	ScreenEXECError = 0x9,
+	ScreenEXITError = 0xa,
+	ScreenSTYLEError = 0xb,
+	ScreenCONFIGError = 0xc,
+	ScreenINCLUDEError = 0xd,
+	ScreenINCLUDEErrorReg = 0xe,
+	ScreenSUBMENUError = 0xf,
+	ScreenRESTARTError = 0x10,
+	ScreenRECONFIGError = 0x11,
+	ScreenSTYLESDIRError = 0x12,
+	ScreenSTYLESDIRErrorNotDir = 0x13,
+	ScreenSTYLESDIRErrorNoExist = 0x14,
+	ScreenWORKSPACESError = 0x15,
+	ScreenPositionLength = 0x16,
+	ScreenPositionFormat = 0x17,
+	ScreenGeometryFormat = 0x18,
 
-#define ToolbarSet 0x8
-#define ToolbarNoStrftimeLength 0x1
-#define ToolbarNoStrftimeDateFormat 0x2
-#define ToolbarNoStrftimeDateFormatEu 0x3
-#define ToolbarNoStrftimeTimeFormat24 0x4
-#define ToolbarNoStrftimeTimeFormat12 0x5
-#define ToolbarNoStrftimeTimeFormatP 0x6
-#define ToolbarNoStrftimeTimeFormatA 0x7
-#define ToolbarToolbarTitle 0x8
-#define ToolbarEditWkspcName 0x9
-#define ToolbarToolbarPlacement 0xa
+	SlitSet = 0x7,
+	SlitSlitTitle = 0x1,
+	SlitSlitDirection = 0x2,
+	SlitSlitPlacement = 0x3,
 
-#define WindowSet 0x9
-#define WindowCreating 0x1
-#define WindowXGetWindowAttributesFail 0x2
-#define WindowCannotFindScreen 0x3
-#define WindowUnnamed 0x4
-#define WindowMapRequest 0x5
-#define WindowUnmapNotify 0x6
-#define WindowUnmapNotifyReparent 0x7
+	ToolbarSet = 0x8,
+	ToolbarNoStrftimeLength = 0x1,
+	ToolbarNoStrftimeDateFormat = 0x2,
+	ToolbarNoStrftimeDateFormatEu = 0x3,
+	ToolbarNoStrftimeTimeFormat24 = 0x4,
+	ToolbarNoStrftimeTimeFormat12 = 0x5,
+	ToolbarNoStrftimeTimeFormatP = 0x6,
+	ToolbarNoStrftimeTimeFormatA = 0x7,
+	ToolbarToolbarTitle = 0x8,
+	ToolbarEditWkspcName = 0x9,
+	ToolbarToolbarPlacement = 0xa,
 
-#define WindowmenuSet 0xa
-#define WindowmenuSendTo 0x1
-#define WindowmenuSendGroupTo 0x2
-#define WindowmenuShade 0x3
-#define WindowmenuIconify 0x4
-#define WindowmenuMaximize 0x5
-#define WindowmenuRaise 0x6
-#define WindowmenuLower 0x7
-#define WindowmenuStick 0x8
-#define WindowmenuKillClient 0x9
-#define WindowmenuClose 0xa
-#define WindowmenuTab 0xb
+	WindowSet = 0x9,
+	WindowCreating = 0x1,
+	WindowXGetWindowAttributesFail = 0x2,
+	WindowCannotFindScreen = 0x3,
+	WindowUnnamed = 0x4,
+	WindowMapRequest = 0x5,
+	WindowUnmapNotify = 0x6,
+	WindowUnmapNotifyReparent = 0x7,
 
-#define WorkspaceSet 0xb
-#define WorkspaceDefaultNameFormat 0x1
+	WindowmenuSet = 0xa,
+	WindowmenuSendTo = 0x1,
+	WindowmenuSendGroupTo = 0x2,
+	WindowmenuShade = 0x3,
+	WindowmenuIconify = 0x4,
+	WindowmenuMaximize = 0x5,
+	WindowmenuRaise = 0x6,
+	WindowmenuLower = 0x7,
+	WindowmenuStick = 0x8,
+	WindowmenuKillClient = 0x9,
+	WindowmenuClose = 0xa,
+	WindowmenuTab = 0xb,
 
-#define WorkspacemenuSet 0xc
-#define WorkspacemenuWorkspacesTitle 0x1
-#define WorkspacemenuNewWorkspace 0x2
-#define WorkspacemenuRemoveLast 0x3
+	WorkspaceSet = 0xb,
+	WorkspaceDefaultNameFormat = 0x1,
 
-#define blackboxSet 0xd
-#define blackboxNoManagableScreens 0x1
-#define blackboxMapRequest 0x2
+	WorkspacemenuSet = 0xc,
+	WorkspacemenuWorkspacesTitle = 0x1,
+	WorkspacemenuNewWorkspace = 0x2,
+	WorkspacemenuRemoveLast = 0x3,
 
-#define CommonSet 0xe
-#define CommonYes 0x1
-#define CommonNo 0x2
-#define CommonDirectionTitle 0x3
-#define CommonDirectionHoriz 0x4
-#define CommonDirectionVert 0x5
-#define CommonAlwaysOnTop 0x6
-#define CommonPlacementTitle 0x7
-#define CommonPlacementTopLeft 0x8
-#define CommonPlacementCenterLeft 0x9
-#define CommonPlacementBottomLeft 0xa
-#define CommonPlacementTopCenter 0xb
-#define CommonPlacementBottomCenter 0xc
-#define CommonPlacementTopRight 0xd
-#define CommonPlacementCenterRight 0xe
-#define CommonPlacementBottomRight 0xf
-#define CommonPlacementLeftTop 0x10
-#define CommonPlacementLeftCenter 0x11
-#define CommonPlacementLeftBottom 0x12
-#define CommonPlacementRightTop 0x13
-#define CommonPlacementRightCenter 0x14
-#define CommonPlacementRightBottom 0x15
-#define CommonPlacementTopRelative 0x16
-#define CommonPlacementBottomRelative 0x17
-#define CommonPlacementLeftRelative 0x18
-#define CommonPlacementRightRelative 0x19
-#define CommonAutoHide 0x1a
 
-#define mainSet 0xf
-#define mainRCRequiresArg 0x1
-#define mainDISPLAYRequiresArg 0x2
-#define mainWarnDisplaySet 0x3
-#define mainUsage 0x4
-#define mainCompileOptions 0x5
+	blackboxSet = 0xd,
+	blackboxNoManagableScreens = 0x1,
+	blackboxMapRequest = 0x2,
 
-#define bsetrootSet 0x10
-#define bsetrootMustSpecify 0x1
-#define bsetrootUsage 0x2
+	CommonSet = 0xe,
+	CommonYes = 0x1,
+	CommonNo = 0x2,
+	CommonDirectionTitle = 0x3,
+	CommonDirectionHoriz = 0x4,
+	CommonDirectionVert = 0x5,
+	CommonAlwaysOnTop = 0x6,
+	CommonPlacementTitle = 0x7,
+	CommonPlacementTopLeft = 0x8,
+	CommonPlacementCenterLeft = 0x9,
+	CommonPlacementBottomLeft = 0xa,
+	CommonPlacementTopCenter = 0xb,
+	CommonPlacementBottomCenter = 0xc,
+	CommonPlacementTopRight = 0xd,
+	CommonPlacementCenterRight = 0xe,
+	CommonPlacementBottomRight = 0xf,
+	CommonPlacementLeftTop = 0x10,
+	CommonPlacementLeftCenter = 0x11,
+	CommonPlacementLeftBottom = 0x12,
+	CommonPlacementRightTop = 0x13,
+	CommonPlacementRightCenter = 0x14,
+	CommonPlacementRightBottom = 0x15,
+	CommonPlacementTopRelative = 0x16,
+	CommonPlacementBottomRelative = 0x17,
+	CommonPlacementLeftRelative = 0x18,
+	CommonPlacementRightRelative = 0x19,
+	CommonAutoHide = 0x1a,
+
+	mainSet = 0xf,
+	mainRCRequiresArg = 0x1,
+	mainDISPLAYRequiresArg = 0x2,
+	mainWarnDisplaySet = 0x3,
+	mainUsage = 0x4,
+	mainCompileOptions = 0x5,
+
+	bsetrootSet = 0x10,
+	bsetrootMustSpecify = 0x1,
+	bsetrootUsage = 0x2,
+}; //end enum
+
+}; //end namespace NLS
+#endif //BLACKBOX_NLS_HH
