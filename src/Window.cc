@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.86 2002/09/12 14:55:11 rathnor Exp $
+// $Id: Window.cc,v 1.87 2002/09/14 12:31:18 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1488,7 +1488,7 @@ void FluxboxWindow::configure(int dx, int dy,
 		event.xconfigure.above = frame.window;
 		event.xconfigure.override_redirect = false;
 
-		XSendEvent(display, client.window, True, NoEventMask, &event);
+		XSendEvent(display, client.window, False, StructureNotifyMask, &event);
 
 		screen->updateNetizenConfigNotify(&event);
 	}
@@ -2677,16 +2677,24 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		getWMNormalHints();
 
 		if ((client.normal_hint_flags & PMinSize) &&
-				(client.normal_hint_flags & PMaxSize)) {
+			(client.normal_hint_flags & PMaxSize)) {
+ 
 			if (client.max_width <= client.min_width &&
-					client.max_height <= client.min_height) {
-				decorations.maximize = decorations.handle =
-					functions.resize = functions.maximize = false;
-			} else {
+				client.max_height <= client.min_height) {
+				decorations.maximize = false;
 				decorations.handle = false;
-				decorations.maximize = functions.resize = functions.maximize = true;
+				functions.resize=false;
+				functions.maximize=false;
+			} else {
+				if (! isTransient()) {
+					decorations.maximize = true;
+					decorations.handle = true;
+					functions.maximize = true;	        
+				}
+				functions.resize = true;
 			}
-		}
+ 
+    	}
 
 		int x = frame.x, y = frame.y;
 		unsigned int w = frame.width, h = frame.height;
