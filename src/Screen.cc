@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.225 2003/08/24 13:07:01 fluxgen Exp $
+// $Id: Screen.cc,v 1.226 2003/08/25 13:15:53 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -331,6 +331,14 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // load this screens resources
     fluxbox->load_rc(*this);
 
+    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
+
+#ifdef SLIT
+    if (slit()) // this will load theme and reconfigure slit
+        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
+#endif // SLIT
+
+
     m_menutheme->setAlpha(*resource.menu_alpha);
 
     imageControl().setDither(*resource.image_dither);
@@ -345,17 +353,16 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // create geometry window 
 
-    const char *s = i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
-                                     "W: 0000 x H: 0000");
-	
-    int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
-    int geom_w = winFrameTheme().font().textWidth(s, strlen(s)) + m_root_theme->bevelWidth()*2;
+    int geom_h = 10;
+    int geom_w = 100; // just initial, will be fixed in render
 
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
     attrib.border_pixel = m_root_theme->borderColor().pixel();
     attrib.colormap = rootWindow().colormap();
     attrib.save_under = true;
+
+    winFrameTheme().reconfigSig().attach(this);// for geom window
 
     m_geom_window = 
         XCreateWindow(disp, rootWindow().window(),
@@ -416,13 +423,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rereadMenu();
     
     m_configmenu->update();
-
-#ifdef SLIT
-    if (slit()) // this will load theme and reconfigure slit
-        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
-#endif // SLIT
-
-    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
 
     // start with workspace 0
     changeWorkspaceID(0);
@@ -584,6 +584,13 @@ unsigned int BScreen::maxBottom(int head) const {
         return doFullMax() ? height() : height() - m_available_workspace_area->bottom();
 }
 
+void BScreen::update(FbTk::Subject *subj) {
+    // for now we're only listening to the theme sig, so no object check
+    // if another signal is added later, will need to differentiate here
+
+    renderGeomWindow();
+}
+
 void BScreen::reconfigure() {
     m_menutheme->setAlpha(*resource.menu_alpha);
     Fluxbox::instance()->loadRootCommand(*this);
@@ -597,22 +604,7 @@ void BScreen::reconfigure() {
     //    std::string theme_filename(Fluxbox::instance()->getStyleFilename());
     //    FbTk::ThemeManager::instance().load(theme_filename.c_str());
 
-    I18n *i18n = I18n::instance();
-
-    const char *s = i18n->getMessage(FBNLS::ScreenSet, 
-                                     FBNLS::ScreenPositionLength,
-                                     "W: 0000 x H: 0000");
-    int l = strlen(s);
-
-    //TODO: repeated from somewhere else?
-    int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
-    int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
-    m_geom_window.resize(geom_w, geom_h);
-    
     renderGeomWindow();
-
-    m_geom_window.setBorderWidth(m_root_theme->borderWidth());
-    m_geom_window.setBorderColor(m_root_theme->borderColor());
 
     //reconfigure menus
     workspacemenu->reconfigure();
@@ -2163,6 +2155,20 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
 }
 
 void BScreen::renderGeomWindow() {
+
+    const char *s = I18n::instance()->getMessage(FBNLS::ScreenSet, 
+                                     FBNLS::ScreenPositionLength,
+                                     "W: 0000 x H: 0000");
+    int l = strlen(s);
+
+    int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
+    int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
+    m_geom_window.resize(geom_w, geom_h);
+
+    m_geom_window.setBorderWidth(m_root_theme->borderWidth());
+    m_geom_window.setBorderColor(m_root_theme->borderColor());
+
+
     Pixmap tmp = geom_pixmap;
 
     if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {

@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/08/25:
+   * Fix some style initialisation issues (Simon)
+     Screen.hh/cc FbWinFrame.cc
    * Added window icon for FbRun (Henrik)
      fbrun.xpm, FbRun.hh/cc
 *03/08/24:

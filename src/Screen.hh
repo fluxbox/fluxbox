@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.122 2003/08/24 13:06:38 fluxgen Exp $
+// $Id: Screen.hh,v 1.123 2003/08/25 13:15:53 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -32,6 +32,7 @@
 #include "MultLayers.hh"
 #include "FbRootWindow.hh"
 #include "NotCopyable.hh"
+#include "Observer.hh"
 #include "fluxbox.hh"
 #include "MenuTheme.hh"
 
@@ -59,13 +60,14 @@ class Menu;
 class ImageControl;
 class XLayerItem;
 class FbWindow;
+class Subject;
 };
 
 /// Handles screen connection, screen clients and workspaces
 /**
  Create workspaces, handles switching between workspaces and windows
  */
-class BScreen : private FbTk::NotCopyable {
+class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
@@ -153,7 +155,9 @@ public:
     FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     FbTk::Subject &resizeSig() { return m_resize_sig; }
     //@}
-		
+
+    void update(FbTk::Subject *subj);
+
     /// @return the resource value of number of workspace
     inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.41 2003/08/24 15:39:52 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.42 2003/08/25 13:15:53 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -1039,10 +1039,19 @@ void FbWinFrame::setBorderWidth(unsigned int borderW) {
         bw_changes += (signed) borderW - handle().borderWidth();
 
     window().setBorderWidth(borderW);
+    //window().setBorderColor(theme().borderColor());
+
     titlebar().setBorderWidth(borderW);
+    //titlebar().setBorderColor(theme().borderColor());
+
     handle().setBorderWidth(borderW);
+    //handle().setBorderColor(theme().borderColor());
+
     gripLeft().setBorderWidth(borderW);
+    //gripLeft().setBorderColor(theme().borderColor());
+
     gripRight().setBorderWidth(borderW);
+    //gripRight().setBorderColor(theme().borderColor());
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
