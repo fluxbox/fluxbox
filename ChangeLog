@@ -1,6 +1,6 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
-*05/02/02:
+*05/01/02:
   * Fix for #996298, Windows dont respect toolbar.border.width (Mathias)
     Toolbar.cc
   * Snapping to Screenedges, even when "maxover" is disabled (Mathias)
