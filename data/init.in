@@ -22,6 +22,7 @@ session.screen0.colPlacementDirection:	TopToBottom
 session.screen0.windowPlacement:	RowSmartPlacement
 session.screen0.tab.width:	64
 session.screen0.tab.height:	16
+session.screen0.showwindowposition: true
 session.opaqueMove:	False
 session.autoRaiseDelay:	250
 session.menuFile:	~/.fluxbox/menu
