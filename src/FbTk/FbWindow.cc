@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.32 2004/04/28 13:04:06 rathnor Exp $
+// $Id: FbWindow.cc,v 1.33 2004/05/17 15:01:32 rathnor Exp $
 
 #include "FbWindow.hh"
 
@@ -92,6 +92,7 @@ FbWindow::FbWindow(int screen_num,
                    unsigned int width, unsigned int height, 
                    long eventmask, 
                    bool override_redirect,
+                   bool save_unders,
                    int depth,
                    int class_type):
     m_parent(0),
@@ -101,13 +102,14 @@ FbWindow::FbWindow(int screen_num,
 	
     create(RootWindow(FbTk::App::instance()->display(), screen_num), 
            x, y, width, height, eventmask,
-           override_redirect, depth, class_type);
+           override_redirect, save_unders, depth, class_type);
 };
 
 FbWindow::FbWindow(const FbWindow &parent,
                    int x, int y, unsigned int width, unsigned int height, 
                    long eventmask,
-                   bool override_redirect, 
+                   bool override_redirect,
+                   bool save_unders,
                    int depth, int class_type):
     m_parent(&parent),
     m_screen_num(parent.screenNumber()), 
@@ -115,7 +117,7 @@ FbWindow::FbWindow(const FbWindow &parent,
     m_buffer_pm(0) { 
 
     create(parent.window(), x, y, width, height, eventmask, 
-           override_redirect, depth, class_type);
+           override_redirect, save_unders, depth, class_type);
 	
 	
 };
@@ -432,7 +434,7 @@ void FbWindow::updateGeometry() {
 void FbWindow::create(Window parent, int x, int y,
                       unsigned int width, unsigned int height, 
                       long eventmask, bool override_redirect,
-                      int depth, int class_type) {
+                      bool save_unders, int depth, int class_type) {
                      
 
     if (s_display == 0)
@@ -447,6 +449,11 @@ void FbWindow::create(Window parent, int x, int y,
     if (override_redirect) {        
         valmask |= CWOverrideRedirect;
         values.override_redirect = True;
+    }
+
+    if (save_unders) {
+        valmask |= CWSaveUnder;
+        values.save_under = True;
     }
 
     m_window = XCreateWindow(s_display, parent, x, y, width, height,

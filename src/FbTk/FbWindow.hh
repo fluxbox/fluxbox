@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.29 2004/04/28 13:04:06 rathnor Exp $
+// $Id: FbWindow.hh,v 1.30 2004/05/17 15:01:32 rathnor Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -55,6 +55,7 @@ public:
     FbWindow(int screen_num,
              int x, int y, unsigned int width, unsigned int height, long eventmask, 
              bool overrride_redirect = false,
+             bool save_unders = false,
              int depth = CopyFromParent, 
              int class_type = InputOutput);
 
@@ -63,6 +64,7 @@ public:
              unsigned int width, unsigned int height, 
              long eventmask, 
              bool overrride_redirect = false,
+             bool save_unders = false,
              int depth = CopyFromParent, 
              int class_type = InputOutput);
 
@@ -171,6 +173,7 @@ private:
     void create(Window parent, int x, int y, unsigned int width, unsigned int height,
                 long eventmask, 
                 bool override_redirect, 
+                bool save_unders,
                 int depth, 
                 int class_type);
     static Display *s_display; ///< display connection

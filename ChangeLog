@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/17:
+  * Fix rendering of transparency on menu exposes (Simon)
+    - also enable save unders for menu windows
+      This is kind of experimental. Backing store is off by default
+      in XF86-4. If you want to play, add: Option "BackingStore"  "yes"
+      to the Screen section in your XF86Config file. And let me know
+      how it goes :) It basically means we don't have to refresh
+      menus as much, but uses more memory. Shouldn't break anything new.
+      Menu.cc FbWindow.hh/cc
 *04/05/13:
   * Fix a crash when a window closes while [opaque] moving (Simon)
     - also tidy up several related things when a window hides

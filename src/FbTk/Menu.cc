@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.59 2004/04/19 22:47:36 fluxgen Exp $
+// $Id: Menu.cc,v 1.60 2004/05/17 15:01:32 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -122,7 +122,8 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     menu.window = FbTk::FbWindow(tm.screenNum(),
                                  0, 0, 10, 10,
                                  event_mask,
-                                 true); // override redirect
+                                 true,  // override redirect
+                                 true); // save_under
 
     // strip focus change mask from attrib, since we should only use it with main window
     event_mask ^= FocusChangeMask;
@@ -143,7 +144,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     menu.frame = FbTk::FbWindow(menu.window,
                                 0, menu.title_h,
                                 width(), menu.frame_h ? menu.frame_h : 1, 
-                                event_mask);
+                                event_mask, false, true);
     evm.add(*this, menu.frame);
     // update style 
     reconfigure();
@@ -1226,29 +1227,34 @@ void Menu::exposeEvent(XExposeEvent &ee) {
         // this is a compilicated algorithm... lets do it step by step...
         // first... we see in which sub level the expose starts... and how many
         // items down in that sublevel
+
+        // Simon was here :-) I think this all makes much more sense when
+        // we rename sbl to "start_col", sbl_d to "end_col", ditto id -> row
+        // a "sublevel" is basically a column in a multi-column menu (e.g. placement)
+
         if (menu.item_w == 0)
             menu.item_w = 1;
         if (menu.item_h == 0)
             menu.item_h = 1;
-        unsigned int sbl = (ee.x / menu.item_w), id = (ee.y / menu.item_h),
-            // next... figure out how many sublevels over the redraw spans
-            sbl_d = ((ee.x + ee.width) / menu.item_w),
-            // then we see how many items down to redraw
-            id_d = ((ee.y + ee.height) / menu.item_h);
-        if (static_cast<signed>(id_d) > menu.persub) 
-            id_d = menu.persub;
+        unsigned int 
+            start_column = (ee.x / menu.item_w), 
+            end_column = ((ee.x + ee.width) / menu.item_w),
+            start_row = (ee.y / menu.item_h),
+            end_row = ((ee.y + ee.height) / menu.item_h);
+        if (static_cast<signed>(end_row) > menu.persub) 
+            end_row = menu.persub;
 
         // draw the sublevels and the number of items the exposure spans
-        unsigned int i, ii;
+        unsigned int col, row;
         int max_y = 0;
-        for (i = sbl; i <= sbl_d; i++) {
-            // set the iterator to the first item in the sublevel needing redrawing
-            unsigned int index = id + i * menu.persub;
+        for (col = start_column; col <= end_column; col++) {
+            // set the iterator to the first item in the column needing redrawing
+            unsigned int index = start_row + col * menu.persub;
             if (index < menuitems.size()) {
                 Menuitems::iterator it = menuitems.begin() + index;
                 Menuitems::iterator it_end = menuitems.end();
-                for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
-                    unsigned int index = ii + (i * menu.persub);
+                for (row = start_row; row <= end_row && it != it_end; ++it, row++) {
+                    unsigned int index = row + (col * menu.persub);
                     max_y = max(drawItem(index, 
                                          (which_sub == static_cast<signed>(index)), // highlight
                                          true, // clear
@@ -1257,12 +1263,10 @@ void Menu::exposeEvent(XExposeEvent &ee) {
                 }
             }
         }
-        if (menu.persub != 0) {
-            int index_min = id + sbl * menu.persub;
-            int min_y = (index_min - (index_min/menu.persub)*menu.persub) * menu.item_h;
-            menu.frame.updateTransparent(0, min_y,
-                                         width(), max_y + menu.item_h);
-        }
+        menu.frame.updateTransparent(start_column * menu.item_w,
+                                     start_row    * menu.item_h,
+                                     (end_column-start_column+1) * menu.item_w,
+                                     (end_row-start_row+1)       * menu.item_h);
     }
 }
 
