@@ -192,6 +192,26 @@ WORKSPACEMENU="Workspace List"
 
 # Check translation
 case ${LC_ALL} in
+	ru_RU) #Russian locales
+		BROWSERMENU="Браузеры"
+		EDITORMENU="Редакторы"
+		NETMENU="Сеть"
+		GRAPHICMENU="Графика"
+		MUSICMENU="Звук"
+		TERMINALMENU="Терминалы"
+		MISCMENU="Прочее"
+		XUTILSMENU="X-утилиты"
+		FBSETTINGSMENU="FB-настройки"
+		KDEMENUTEXT="KDE-меню"
+		GNOMEMENUTEXT="Gnome-меню"
+		RESTARTITEM="Перезапустить"
+		EXITITEM="Выйти"
+		CONFIGUREMENU="Настройка"
+		RELOADITEM="Перенастроить"
+		STYLEMENU="Стили"
+		STYLEMENUTITLE="Выберите стиль"
+		WORKSPACEMENU="Рабочие пространства"
+	;;
 	sv_SE) #Swedish locales
 		BROWSERMENU="Browsers"
 		EDITORMENU="Editorer"
