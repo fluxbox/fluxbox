@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.27 2002/08/12 03:28:17 fluxgen Exp $
+// $Id: Window.hh,v 1.28 2002/08/16 10:44:17 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -196,7 +196,7 @@ public:
 	void unstick();
 	void reconfigure();
 	void installColormap(bool);
-	void restore();
+	void restore(bool remap);
 	void configure(int dx, int dy, unsigned int dw, unsigned int dh);
 	void setWorkspace(int n);
 	void changeBlackboxHints(BaseDisplay::BlackboxHints *bh);
