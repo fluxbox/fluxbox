@@ -1,7 +1,7 @@
 dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
-AM_INIT_AUTOMAKE(fluxbox,0.1.6,no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.1.6-pre,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -160,7 +160,7 @@ AC_ARG_ENABLE(debug,
   [  --enable-debug          include verbose debugging code [default=no]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    DEBUG="-DDEBUG"
+    DEBUG="-DDEBUG -fno-inline"
   else
     AC_MSG_RESULT([no])
   fi,
@@ -245,7 +245,7 @@ dnl Determine the return type of signal handlers
 AC_TYPE_SIGNAL
 
 dnl Determine if maintainer portions of the Makefiles should be included.
-AM_MAINTAINER_MODE
+dnl AM_MAINTAINER_MODE
 
 dnl Print results
 AC_MSG_RESULT([])
@@ -276,4 +276,5 @@ nls/ru_RU/Makefile
 nls/sv_SE/Makefile
 nls/tr_TR/Makefile
 nls/it_IT/Makefile
+nls/pt_PT/Makefile
 version.h)
