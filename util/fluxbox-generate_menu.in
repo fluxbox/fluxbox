@@ -173,8 +173,8 @@ append_menu_end() {
 menu_entry() {
     if [ -f "$1" ]; then
         #                   space&tab here
-        entry_name=`grep '^[	 ]*Name=' "$1" | head -1 | cut -d = -f 2`
-        entry_exec=`grep '^[	 ]*Exec=' "$1" | head -1 | cut -d = -f 2`
+        entry_name=`grep '^[	 ]*Name=' "$1" | head -n 1 | cut -d = -f 2`
+        entry_exec=`grep '^[	 ]*Exec=' "$1" | head -n 1 | cut -d = -f 2`
         if [ -n "$entry_name" -a -n "$entry_exec" ]; then
             append "[exec] ($entry_name) {$entry_exec}"
         fi
@@ -248,6 +248,7 @@ rm -f ${MENUFILENAME}.tmp
 }
 
 # menu defaults (if translation forget to set one of them)
+ABOUTITEM='About'
 BACKGROUNDMENU='Backgrounds'
 BACKGROUNDMENUTITLE='Set the Background'
 BROWSERMENU='Browsers'
@@ -642,29 +643,29 @@ case ${LC_ALL} in
 # $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
 # email fbgm.diff to han@mijncomputer.nl
 
-	BACKGROUNDMENUTITLE='Seleccionar Fondo'
-	BROWSERMENU='Navegadores'
-	CONFIGUREMENU='Configurar'
-	EDITORMENU='Editores'
-	EXITITEM='Salir'
-	FBSETTINGSMENU='Menú fluxbox'
-	GAMESMENU='Juegos'
-	GNOMEMENUTEXT='Menús Gnome'
-	GRAPHICMENU='Gráficos'
-	KDEMENUTEXT='Menús KDE'
-	MISCMENU='Varios'
-	MULTIMEDIAMENU='Multimedia'
-	MUSICMENU='Música'
-	NETMENU='Red'
-	OFFICEMENU='Oficina'
-	RELOADITEM='Reconfigurar'
-	RESTARTITEM='Reiniciar'
-	STYLEMENUTITLE='Escoge un Estilo...'
-	SYSTEMSTYLES='Estilos del Sistema'
-	TERMINALMENU='Terminales'
-	USERSTYLES='Estilos del Usuario'
-	WORKSPACEMENU='Lista de Escritorios'
-	XUTILSMENU='Utilidades X'
+        BACKGROUNDMENUTITLE='Seleccionar Fondo'
+        BROWSERMENU='Navegadores'
+        CONFIGUREMENU='Configurar'
+        EDITORMENU='Editores'
+        EXITITEM='Salir'
+        FBSETTINGSMENU='Menú fluxbox'
+        GAMESMENU='Juegos'
+        GNOMEMENUTEXT='Menús Gnome'
+        GRAPHICMENU='Gráficos'
+        KDEMENUTEXT='Menús KDE'
+        MISCMENU='Varios'
+        MULTIMEDIAMENU='Multimedia'
+        MUSICMENU='Música'
+        NETMENU='Red'
+        OFFICEMENU='Oficina'
+        RELOADITEM='Reconfigurar'
+        RESTARTITEM='Reiniciar'
+        STYLEMENUTITLE='Escoge un Estilo...'
+        SYSTEMSTYLES='Estilos del Sistema'
+        TERMINALMENU='Terminales'
+        USERSTYLES='Estilos del Usuario'
+        WORKSPACEMENU='Lista de Escritorios'
+        XUTILSMENU='Utilidades X'
         BACKGROUNDMENU='Fondos'
         FILEUTILSMENU='Utilidades'
         FLUXBOXCOMMAND='Comandos de Fluxbox'
@@ -964,7 +965,7 @@ if find_it_options $MY_TERM; then
 else
     [ -n "$MY_TERM" ] && echo "Warning: you chose an invalid term." >&2
     #The precise order is up for debate.
-    for term in Eterm aterm rxvt wterm xterm konsole gnome-terminal; do
+    for term in Eterm urxvt urxvtc aterm rxvt wterm xterm konsole gnome-terminal; do
         if find_it $term; then
             DEFAULT_TERM=$term
             break
@@ -1026,7 +1027,7 @@ EOF
 
 echo "[begin] (${MENUTITLE})" >> ${MENUFILENAME}
 
-append "[exec]    (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
+append "[exec] (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
 
 case "$DEFAULT_BROWSERNAME" in
     links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
@@ -1099,7 +1100,7 @@ append_menu_end
 
 append_submenu "${EDITORMENU}"
     normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
-        wings xemacs emacs
+        wings xemacs emacs kvim cream
     find_it     nano   append "[exec]   (nano)     {${DEFAULT_TERM} -e nano}"
     find_it     vi     append "[exec]   (vi)       {${DEFAULT_TERM} -e vi}" ||\
         find_it     vim    append "[exec]   (vim)      {${DEFAULT_TERM} -e vim}"
@@ -1117,7 +1118,7 @@ append_menu_end
 
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
-               normal_find gimp xv gqview showimg xpaint kpaint kiconedit \
+               normal_find gimp gimp2 inkscape sodipodi xv gqview showimg xpaint kpaint kiconedit \
                    ee xzgv xscreensaver-demo xlock
                find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
                find_it blender          append "[exec] (blender) {blender -w}"
@@ -1165,6 +1166,7 @@ append_submenu "${OFFICEMENU}"
     done
 
     normal_find abiword kword wordperfect katoob acroread xpdf lyx
+    normal_find dia xfig
 append_menu_end
 
 append_submenu "${GAMESMENU}"
@@ -1210,7 +1212,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_menu "[submenu] (${SYSTEMSTYLES}) {${STYLEMENUTITLE}}"
         append "[stylesdir] (${PREFIX}/share/fluxbox/styles)"
-	append "[stylesdir] (/usr/share/commonbox/styles/)"
+        append "[stylesdir] (/usr/share/commonbox/styles/)"
     append_menu_end
 
     append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"
@@ -1289,6 +1291,7 @@ append_submenu "${FBSETTINGSMENU}"
     append "[commanddialog] (${FLUXBOXCOMMAND})"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
+    append "[exec] (${ABOUTITEM}) {(fluxbox -v; fluxbox -info | sed 1d) 2> /dev/null | xmessage -file - -center}"
     append "[separator]"
     append "[exit] (${EXITITEM})"
 
