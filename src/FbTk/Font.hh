@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.6 2003/12/16 17:06:51 fluxgen Exp $
+//$Id: Font.hh,v 1.7 2003/12/19 17:07:53 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -54,6 +54,7 @@ public:
     /// @return true if utf-8 mode is enabled, else false
     static bool utf8() { return m_utf8mode; }
     void setAntialias(bool flag);
+    inline void setShadow(bool flag) { m_shadow = flag; }
     /**
        @param text text to check size
        @param size length of text in bytes
@@ -88,6 +89,7 @@ public:
     bool isRotated() const { return m_rotated; }
     /// @return rotated angle
     float angle() const { return m_angle; }
+    bool shadow() const { return m_shadow; }
 private:
 	
     std::auto_ptr<FontImp> m_fontimp; ///< font implementation
