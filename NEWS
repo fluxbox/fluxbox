@@ -1,39 +1,31 @@
-News in Fluxbox 0.1.8:
+News for 0.1.9:
+  * Improved fluxbox-generate_menu script.
+    Which now installs itself so you can regenerate the menu any time,
+    and with gnome and kde menus
+	run: fluxbox-generate_menu -h
+	for more information.
+  * Default 24 hour clock format
+  * Code cleaning
+  * Compiles with no errors on Mac OS X
+  * Now compiles with Intel Compiler 6.0 and GCC 3.1    
+  * New keybindings:
+    * FirstTab
+       Go to first tab
+    * LastTab
+       Go to last tab
+    * MoveTabPrev
+       Move current tab left
+    * MoveTabNext
+       Move current tab right
+  * "Allow Desktop MouseWheel Switching" runtime option
+  * Configurable geometry show
+    configure in init with: session.screen0.showwindowposition
+  * Now saves resources when you change them in the menu and not when you
+    exit Fluxbox. So you can edit the init file and the reconfigure/restart 
+    Fluxbox to activate changes.
 
-* Code clean up
-* NLS-fixes
-* Better window cycling with optional parameters.
-  NextWindow and PrevWindow now takes an integer parameter
-  parameter values:
-     0 or unspecified = Default/current behavior - no skipping
-     1 = Skip: lower tabs
-     2 = Skip: stuck windows
-     3 = Skip: lower tabs/stuck windows
-     4 = Skip: shaded windows
-     5 = Skip: lower tabs/shaded windows
-     6 = Skip: stuck windows/shaded windows
-     7 = Skip: lower tabs/stuck windows/shaded windows
-* Xinerama support ( configure option --enable-xinerama )
-* Workspace warping, drag window between workspaces, 
-  does only work with opaque moving
-* You can enable tabs in "Tabs off"-mode
-* New key bindings:
-  ToggleDecor
-      Toggle the decor of a window
-  ToggleTab
-      Toggle the tab
-  RootMenu
-      Pop up the root menu 
-* Smarter Next/Prev focus,
-  Makes new windows get inserted after the focused window in 
-  the cycling order instead of always at the end.
-* Scrolling on root window changes workspace
-
-Bug fixes in Fluxbox 0.1.8:
-
-* Window dragging + workspace changing ( bug [ 528101 ] )
-* Minor task bar issue, it will update icon bar-text now ( bug [ 533436 ] )
-* "decoration.handle" bug, which caused the window to have wrong height 
-  with no decorations
-* Slit-client window bug.
-   
+Bugfixes:
+  * bug [ 552723 ] removing decorations while shaded.
+  * shade bug while vertical rotated tabs and tabs off 
+  * bug [ 515483 ] "XMMS Problem"
+  * Fixed transient bug which cause Fluxbox to crach ( the "acroread" bug )
