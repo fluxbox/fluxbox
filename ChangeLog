@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/15:
+  * Fix event manager target window (Simon)
+    -> Some events don't have the main window as xany.window
+       (e.g. XConfigureRequestEvent has the parent there)
+    -> Fixes missing configurerequest events for e.g. galeon
+    EventManager.hh/cc fluxbox.cc
 *03/10/14:
   * Bug fix in NextWindow/PrevWindow Command  (Henrik)
     it was only executed when last event = keyevent

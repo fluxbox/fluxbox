@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.5 2003/08/23 15:44:06 fluxgen Exp $
+// $Id: EventManager.hh,v 1.6 2003/10/14 16:23:16 rathnor Exp $
 
 #include "EventHandler.hh"
 #include <map>
@@ -42,6 +42,11 @@ public:
     void remove(const FbWindow &win);
     void add(EventHandler &ev, Window win) { registerEventHandler(ev, win); }
     void remove(Window win) { unregisterEventHandler(win); }
+
+    // Some events have the parent window as the xany.window
+    // This function always returns the actual window member of the event structure
+    static Window getEventWindow(XEvent &ev);
+
     void registerEventHandler(EventHandler &ev, Window win);
     void unregisterEventHandler(Window win);
 private:

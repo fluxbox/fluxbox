@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.9 2003/10/02 16:14:41 rathnor Exp $
+// $Id: EventManager.cc,v 1.10 2003/10/14 16:23:16 rathnor Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -57,6 +57,58 @@ void EventManager::remove(const FbWindow &win) {
     unregisterEventHandler(win.window());
 }
 
+Window EventManager::getEventWindow(XEvent &ev) {
+    // we only have cases for events that differ from xany
+    switch (ev.type) {
+    case CreateNotify:
+        // XCreateWindowEvent
+        return ev.xcreatewindow.window;
+        break;
+    case DestroyNotify:
+        // XDestroyWindowEvent
+        return ev.xdestroywindow.window;
+        break;
+    case UnmapNotify:
+        // XUnmapEvent
+        return ev.xunmap.window;
+        break;
+    case MapNotify:
+        // XMapEvent
+        return ev.xmap.window;
+        break;
+    case MapRequest:
+        // XMapRequestEvent
+        return ev.xmaprequest.window;
+        break;
+    case ReparentNotify:
+        // XReparentEvent
+        return ev.xreparent.window;
+        break;
+    case ConfigureNotify:
+        // XConfigureNotify
+        return ev.xconfigure.window;
+        break;
+    case GravityNotify:
+        // XGravityNotify
+        return ev.xgravity.window;
+        break;
+    case ConfigureRequest:
+        // XConfigureRequestEvent
+        return ev.xconfigurerequest.window;
+        break;
+    case CirculateNotify:
+        // XCirculateEvent
+        return ev.xcirculate.window;
+        break;
+    case CirculateRequest:
+        // XCirculateRequestEvent
+        return ev.xcirculaterequest.window;
+        break;
+    default:
+        return ev.xany.window;
+    }
+}
+
 void EventManager::registerEventHandler(EventHandler &ev, Window win) {
     if (win != None)
         m_eventhandlers[win] = &ev;
@@ -73,8 +125,10 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
     EventHandler *evhand = 0;
     if (parent)
         evhand = m_parent[win];
-    else
+    else {
+        win = getEventWindow(ev);
         evhand = m_eventhandlers[win];
+    }
 
     if (evhand == 0)
         return;

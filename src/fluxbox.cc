@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.199 2003/10/13 19:31:04 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.200 2003/10/14 16:23:15 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1091,8 +1091,15 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
  */
 void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 #ifdef DEBUG
+    const char * atom = "nothing";
+    if (ce.message_type)
+        atom = XGetAtomName(FbTk::App::instance()->display(), ce.message_type);
+
     cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]=0x"<<hex<<ce.data.l[0]<<
-	"  message_type=0x"<<ce.message_type<<dec<<endl;
+	"  message_type=0x"<<ce.message_type<<dec<<" = \""<<atom<<"\""<<endl;
+
+    if (ce.message_type && atom) XFree((char *) atom);
+
 #endif // DEBUG
 
     if (ce.format != 32)
@@ -1366,7 +1373,6 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         if (m_focused_window == &client) 
             revertFocus(screen);
 
-        removeWindowSearch(client.window());
         // failed to revert focus?
         if (m_focused_window == &client)
             m_focused_window = 0;
@@ -1423,9 +1429,9 @@ void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
 
 WinClient *Fluxbox::searchWindow(Window window) {
     std::map<Window, WinClient *>::iterator it = m_window_search.find(window);
-    if (it != m_window_search.end()) 
+    if (it != m_window_search.end())
         return it->second;
-    
+
     std::map<Window, FluxboxWindow *>::iterator git = m_window_search_group.find(window);
     return git == m_window_search_group.end() ? 0 : &git->second->winClient();
 }
