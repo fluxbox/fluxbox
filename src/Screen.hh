@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.27 2002/04/03 12:08:54 fluxgen Exp $
+// $Id: Screen.hh,v 1.28 2002/04/09 12:13:44 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -98,13 +98,13 @@ public:
 	inline Slit *getSlit(void) { return slit; }
 	inline const int &getSlitPlacement(void) const { return resource.slit_placement; }
 	inline const int &getSlitDirection(void) const { return resource.slit_direction; }
-	inline void saveSlitPlacement(int p) { resource.slit_placement = p; }
-	inline void saveSlitDirection(int d) { resource.slit_direction = d; }
-	inline void saveSlitOnTop(Bool t)		{ resource.slit_on_top = t; }
-	inline void saveSlitAutoHide(Bool t) { resource.slit_auto_hide = t; }
+	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
+	inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
+	inline void saveSlitOnTop(Bool t) { resource.slit_on_top = t;  }
+	inline void saveSlitAutoHide(Bool t) { resource.slit_auto_hide = t;  }
 #ifdef XINERAMA
 	inline const unsigned int getSlitOnHead(void) const { return resource.slit_on_head; }
-	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h; }
+	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 #endif // XINERAMA
 
 #endif // SLIT
@@ -143,36 +143,36 @@ public:
 	inline const Tab::Placement getTabPlacement(void) { return *resource.tab_placement; }
 	inline const Tab::Alignment getTabAlignment(void) { return *resource.tab_alignment; }
 
-	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r; }
-	inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd; }
-	inline void saveSloppyFocus(bool s) { resource.sloppy_focus = s; }
-	inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s; }
-	inline void saveAutoRaise(bool a) { resource.auto_raise = a; }
-	inline void saveWorkspaces(int w) { *resource.workspaces = w; }
-	inline void saveToolbarOnTop(bool r) { *resource.toolbar_on_top = r; }
-	inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r; }
-	inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w; }
-	inline void saveToolbarPlacement(Toolbar::Placement p) { *resource.toolbar_placement = p; }
+	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
+	inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
+	inline void saveSloppyFocus(bool s) { resource.sloppy_focus = s;  }
+	inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s;  }
+	inline void saveAutoRaise(bool a) { resource.auto_raise = a;  }
+	inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
+	inline void saveToolbarOnTop(bool r) { *resource.toolbar_on_top = r;  }
+	inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
+	inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
+	inline void saveToolbarPlacement(Toolbar::Placement p) { *resource.toolbar_placement = p;  }
 #ifdef XINERAMA
-	inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head; }
+	inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
 #endif // XINERAMA
 
-	inline void savePlacementPolicy(int p) { resource.placement_policy = p; }
-	inline void saveRowPlacementDirection(int d) { resource.row_direction = d; }
-	inline void saveColPlacementDirection(int d) { resource.col_direction = d; }
-	inline void saveEdgeSnapThreshold(int t) { resource.edge_snap_threshold = t; }
-	inline void saveImageDither(bool d) { resource.image_dither = d; }
-	inline void saveMaxOverSlit(bool m) { resource.max_over_slit = m; }
-	inline void saveOpaqueMove(bool o) { resource.opaque_move = o; }
-	inline void saveFullMax(bool f) { resource.full_max = f; }
-	inline void saveFocusNew(bool f) { resource.focus_new = f; }
-	inline void saveFocusLast(bool f) { resource.focus_last = f; }
-	inline void saveTabWidth(unsigned int w) { resource.tab_width = w; }
-	inline void saveTabHeight(unsigned int h) { resource.tab_height = h; }
-	inline void saveTabPlacement(Tab::Placement p) { *resource.tab_placement = p; }
-	inline void saveTabAlignment(Tab::Alignment a) { *resource.tab_alignment = a; }
-	inline void saveTabRotateVertical(Bool r) { resource.tab_rotate_vertical = r; }
-	inline void saveSloppyWindowGrouping(Bool s) { resource.sloppy_window_grouping = s; }
+	inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
+	inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
+	inline void saveColPlacementDirection(int d) { resource.col_direction = d;  }
+	inline void saveEdgeSnapThreshold(int t) { resource.edge_snap_threshold = t;  }
+	inline void saveImageDither(bool d) { resource.image_dither = d;  }
+	inline void saveMaxOverSlit(bool m) { resource.max_over_slit = m;  }
+	inline void saveOpaqueMove(bool o) { resource.opaque_move = o;  }
+	inline void saveFullMax(bool f) { resource.full_max = f;  }
+	inline void saveFocusNew(bool f) { resource.focus_new = f;  }
+	inline void saveFocusLast(bool f) { resource.focus_last = f;  }
+	inline void saveTabWidth(unsigned int w) { resource.tab_width = w;  }
+	inline void saveTabHeight(unsigned int h) { resource.tab_height = h;  }
+	inline void saveTabPlacement(Tab::Placement p) { *resource.tab_placement = p;  }
+	inline void saveTabAlignment(Tab::Alignment a) { *resource.tab_alignment = a;  }
+	inline void saveTabRotateVertical(bool r) { resource.tab_rotate_vertical = r;   }
+	inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
@@ -243,7 +243,6 @@ public:
 	// prevFocus/nextFocus option bits
 	enum { CYCLESKIPLOWERTABS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
 				CYCLEDEFAULT = 0x00 };
-
 private:
 	bool doSkipWindow(const FluxboxWindow *w, int options);
 	#ifdef GNOME
