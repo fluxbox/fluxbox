@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.27 2004/04/18 18:57:24 fluxgen Exp $
+// $Id: FbRun.cc,v 1.28 2004/04/19 18:10:44 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -27,6 +27,7 @@
 #include "EventManager.hh"
 #include "Color.hh"
 #include "KeyUtil.hh"
+#include "Directory.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -41,11 +42,6 @@
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <unistd.h>
 
 #include <iostream>
 #include <iterator>
@@ -102,34 +98,30 @@ FbRun::FbRun(int x, int y, size_t width):
         XSetWMHints(m_display, window(), &wmhints);
     }
 
-  
     string path= getenv("PATH");
-
     unsigned int l;
     unsigned int r;
+    FbTk::Directory dir;
 
     for(l= 0, r= 0; r < path.size(); r++) {
-        if (path[r]==':' && r - l > 0) {
-            struct dirent** namelist;
-            struct stat buf;
-            int n;
+        if ((path[r]==':' || r == path.size() - 1) && r - l > 0) {
 
-            string dir= path.substr(l, r - l);
-            n= scandir(dir.c_str(), &namelist, 0, alphasort);
+            string filename;
+            string fncomplete;
+            dir.open(path.substr(l, r - l).c_str());
+            int n= dir.entries();
             if (n >= 0) {
                 while(n--) {
-                    if (!stat((dir + "/" + namelist[n]->d_name).c_str(), &buf) 
-                        && S_ISREG(buf.st_mode) && 
-                        (buf.st_mode & S_IXUSR 
-                         || buf.st_mode & S_IXGRP 
-                         || buf.st_mode & S_IXOTH)) {
-                            m_apps.push_back(namelist[n]->d_name);
+                    filename= dir.readFilename();
+                    fncomplete= dir.name() + "/" + filename;
+                    if (dir.isRegularFile(fncomplete) && 
+                        dir.isExecutable(fncomplete)) {
+                        m_apps.push_back(filename);
                     }
-                    free(namelist[n]);
                 }
-                free(namelist);
             }
             l= r + 1;
+            dir.close();
         }
     }
 
