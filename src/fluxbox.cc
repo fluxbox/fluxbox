@@ -1,5 +1,5 @@
-// fluxbox.cc for Fluxbox.
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// fluxbox.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // blackbox.cc for blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -21,6 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: fluxbox.cc,v 1.16 2002/01/09 14:07:09 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1427,7 +1429,7 @@ void Fluxbox::save_rc(void) {
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
 	char rc_string[1024];
 
-	char *dbfile = getRcFilename();	//note: dbfile memory will be release @ end of function
+	auto_ptr<char> dbfile(getRcFilename());
 
 //	load_rc(); This overwrites configs made while running, for example
 // usage of iconbar and tabs
@@ -1680,15 +1682,13 @@ void Fluxbox::save_rc(void) {
     delete [] save_string;
   }
 
-  XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile);
+  XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
 
   XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);		//merge database together
-  XrmPutFileDatabase(old_blackboxrc, dbfile);
+  XrmPutFileDatabase(old_blackboxrc, dbfile.get());
   XrmDestroyDatabase(old_blackboxrc);
 //	XrmDestroyDatabase(new_blackboxrc);
-	
-	//finaly release filename memory
-  delete [] dbfile;
+
 }
 
 //-------- getRcFilename -------------
@@ -1716,17 +1716,15 @@ void Fluxbox::load_rc(void) {
   XrmDatabase database = (XrmDatabase) 0;
   
   //get resource filename
-  char *dbfile = getRcFilename(); //note: dont forget to free memory
+  auto_ptr<char> dbfile(getRcFilename());
 
   //load file
-  database = XrmGetFileDatabase(dbfile);
+  database = XrmGetFileDatabase(dbfile.get());
 	if (!database) {
-		cerr<<"Fluxbox: Cant open "<<dbfile<<" !"<<endl;
+		cerr<<"Fluxbox: Cant open "<<dbfile.get()<<" !"<<endl;
 		cerr<<"Using: "<<DEFAULT_INITFILE<<endl;
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
 	}
-	//destroy dbfile (created by getRcFilename)
-  delete [] dbfile;
 
   XrmValue value;
   char *value_type;
@@ -1937,13 +1935,11 @@ void Fluxbox::loadTitlebar() {
 void Fluxbox::load_rc(BScreen *screen) {
   XrmDatabase database = (XrmDatabase) 0;
 
-  char *dbfile = getRcFilename();
+  auto_ptr<char> dbfile(getRcFilename());
 
-  database = XrmGetFileDatabase(dbfile);
+  database = XrmGetFileDatabase(dbfile.get());
 	if (!database) 
 		database = XrmGetFileDatabase(DEFAULT_INITFILE);
-		
-  delete [] dbfile;
 
   XrmValue value;
   char *value_type, name_lookup[1024], class_lookup[1024];
@@ -2398,20 +2394,18 @@ void Fluxbox::real_reconfigure(void) {
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
 	char style[MAXPATHLEN + 64];
 
-	char *dbfile = getRcFilename();
+	auto_ptr<char> dbfile(getRcFilename());
  
 	sprintf(style, "session.styleFile: %s", resource.style_file);
 	XrmPutLineResource(&new_blackboxrc, style);
 
-	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile);
+	XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.get());
 
 	XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);
-	XrmPutFileDatabase(old_blackboxrc, dbfile);
+	XrmPutFileDatabase(old_blackboxrc, dbfile.get());
 	
 	if (old_blackboxrc)
 		XrmDestroyDatabase(old_blackboxrc);
-
-	delete [] dbfile;
 
 	for (int i = 0, n = menuTimestamps->count(); i < n; i++) {
 		MenuTimestamp *ts = menuTimestamps->remove(0);
