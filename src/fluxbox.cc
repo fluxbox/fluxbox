@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.35 2002/02/20 23:12:07 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.36 2002/02/26 22:42:23 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -315,7 +315,9 @@ key(0)
 	singleton = this;
 	BaseDisplay::GrabGuard gg(*this);
 	gg.grab();
-
+	
+	setupConfigFiles();
+	
 	if (! XSupportsLocale())
 		fprintf(stderr, "X server does not support locale\n");
 
@@ -331,7 +333,7 @@ key(0)
 	windowSearchList = new LinkedList<WindowSearch>;
 	menuSearchList = new LinkedList<MenuSearch>;
 
-#ifdef SLIT
+	#ifdef SLIT
 	slitSearchList = new LinkedList<SlitSearch>;
 	#ifdef KDE
 	//For KDE dock applets
@@ -339,7 +341,7 @@ key(0)
 	kwm2_dockwindow = XInternAtom(getXDisplay(), "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False); //KDE v2.x
 	#endif //KDE
 
-#endif // SLIT
+	#endif // SLIT
 
 	toolbarSearchList = new LinkedList<ToolbarSearch>;
 	tabSearchList = new LinkedList<TabSearch>;
@@ -434,6 +436,109 @@ Fluxbox::~Fluxbox(void) {
 #endif // SLIT
 }
 
+//---------- setupConfigFiles -----------
+// setup the configutation files in 
+// home directory
+//---------------------------------------
+void Fluxbox::setupConfigFiles() {
+
+	bool createInit, createKeys, createMenu;
+	createInit = createKeys = createMenu = false;
+
+	string dirname = getenv("HOME")+string("/.")+string(RC_PATH) + "/";
+	string initFile, keysFile, menuFile;
+	initFile = dirname+RC_INIT_FILE;
+	keysFile = dirname+"keys";
+	menuFile = dirname+"menu";
+
+	struct stat buf;
+
+	// is file/dir already there?
+	if (! stat(dirname.c_str(), &buf)) {
+		/*TODO: this
+		if (! (buf.st_mode & S_IFDIR)) {
+			cerr << dirname.c_str() << "!" << endl;
+			return 1;
+		}
+		*/
+		
+		// check if anything with those name exists, if not create new
+		if (stat(initFile.c_str(), &buf))
+			createInit = true;
+		if (stat(keysFile.c_str(), &buf))
+			createKeys = true;
+		if (stat(menuFile.c_str(), &buf))
+			createMenu = true;
+
+	} else {
+		#ifdef DEBUG
+		cerr <<__FILE__<<"("<<__LINE__<<"): Creating dir: " << dirname.c_str() << endl;
+		#endif // DEBUG
+
+		// create directory with perm 700
+		if (mkdir(dirname.c_str(), 0700)) {
+			cerr << "Can't create " << dirname << " directory!" << endl;
+			return;	
+		}
+		
+		//mark creation of files
+		createInit = createKeys = createMenu = true;
+	}
+
+
+	// should we copy key configuraion?
+	if (createKeys) {
+		ifstream from(DEFAULTKEYSFILE);
+		ofstream to(keysFile.c_str());
+
+		if (! to.good()) {
+			cerr << "Can't write file" << endl;			
+		} else if (from.good()) {
+			#ifdef DEBUG
+			cerr << "Copying file: " << DEFAULTKEYSFILE << endl;
+			#endif // DEBUG
+			to<<from.rdbuf(); //copy file
+			
+		} else {
+			cerr<<"Can't copy default keys file."<<endl;
+		}		
+	}
+
+	// should we copy menu configuraion?
+	if (createMenu) {
+		ifstream from(DEFAULTMENU);
+		ofstream to(menuFile.c_str());
+
+		if (! to.good()) {
+			cerr << "Can't open " << menuFile.c_str() << "for writing" << endl;
+		} else if (from.good()) {
+			#ifdef DEBUG
+			cerr << "Copying file: " << DEFAULTMENU << endl;
+			#endif // DEBUG
+			to<<from.rdbuf(); //copy file
+
+		} else {
+			cerr<<"Can't copy default menu file."<<endl;
+		}		
+	}	
+
+	// should we copy default init file?
+	if (createInit) {
+		ifstream from(DEFAULT_INITFILE);
+		ofstream to(initFile.c_str());
+
+		if (! to.good()) {
+			cerr << "Can't open " << initFile.c_str() << "for writing" << endl;
+		} else if (from.good()) {
+			#ifdef DEBUG
+			cerr << "Copying file: " << DEFAULT_INITFILE << endl;
+			#endif // DEBUG
+			to<<from.rdbuf(); //copy file
+		} else {
+			cerr<<"Can't copy default init file."<<endl;	
+		}
+	}
+}
 
 void Fluxbox::process_event(XEvent *e) {
 
@@ -935,10 +1040,6 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
 		
 	FluxboxWindow *win = 0;
-	#ifdef DEBUG 
-	cerr<<__FILE__<<"("<<__LINE__<<"): Unmapnotify 0x"<<hex<<
-		ue.window<<dec<<endl;
-	#endif
 	
 	#ifdef SLIT
 	Slit *slit = (Slit *) 0;
@@ -1062,6 +1163,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			case Keys::WORKSPACE:
                             // Workspace1 has id 0, hence -1
 			    screen->changeWorkspaceID(key->getParam()-1);
+			break;
+			case Keys::SENDTOWORKSPACE:
+                            // Workspace1 has id 0, hence -1
+			    screen->sendToWorkspace(key->getParam()-1);
 			break;
             // NOTE!!! The WORKSPACEn commands are not needed anymore
 			case Keys::WORKSPACE1:
