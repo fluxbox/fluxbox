@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.144 2003/05/04 23:38:06 rathnor Exp $
+// $Id: Screen.cc,v 1.145 2003/05/07 11:36:43 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -569,11 +569,12 @@ BScreen::BScreen(ResourceManager &rm,
     image_control->setDither(*resource.image_dither);
 
     // setup windowtheme, toolbartheme for antialias
+    // before we load the theme
     winFrameTheme().font().setAntialias(*resource.antialias);
     menuTheme()->titleFont().setAntialias(*resource.antialias);
     menuTheme()->frameFont().setAntialias(*resource.antialias);
 
-    // set database for new Theme Engine
+    // load database for theme engine
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
 
     const char *s = i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
@@ -592,7 +593,7 @@ BScreen::BScreen(ResourceManager &rm,
     attrib.border_pixel = m_root_theme->borderColor().pixel();
     attrib.colormap = colormap();
     attrib.save_under = true;
-    //!! TODO border width
+
     geom_window = 
         XCreateWindow(disp, getRootWindow(),
                       0, 0, geom_w, geom_h, rootTheme().borderWidth(), getDepth(),
