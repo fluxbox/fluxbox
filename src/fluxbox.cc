@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.162 2003/06/24 18:34:52 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.163 2003/06/25 06:02:53 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -524,7 +524,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_RANDR
 
         m_screen_list.push_back(screen);
-        m_atomhandler.push_back(&screen->toolbarHandler());
+        m_atomhandler.push_back(new ToolbarHandler(*screen));
         
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
@@ -911,9 +911,6 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         if (screen->slit())
             screen->slit()->menu().hide();
 #endif // SLIT
-        // hide toolbar menu
-        if (screen->toolbar())
-            screen->toolbar()->menu().hide();
 
         if (be.button == 1) {
             if (! screen->isRootColormapInstalled())
@@ -2303,7 +2300,6 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 #endif // DEBUG    
     BScreen *old_screen = 0, *screen = 0;
     FluxboxWindow *old_win = 0;
-    Toolbar *old_tbar = 0, *tbar = 0;
     Workspace *old_wkspc = 0, *wkspc = 0;
 
     if (m_focused_window != 0) {
@@ -2325,7 +2321,6 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             old_win = m_focused_window;
             old_screen = &old_win->screen();
 
-            old_tbar = old_screen->toolbar();
             old_wkspc = old_screen->getWorkspace(old_win->workspaceNumber());
 
             old_win->setFocusFlag(false);
@@ -2341,7 +2336,6 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
             m_focused_window = 0; // the window pointer wasn't valid, mark no window focused
         } else {
             screen = *winscreen;
-            tbar = screen->toolbar();
             wkspc = screen->getWorkspace(win->workspaceNumber());		
             m_focused_window = win;     // update focused window
             win->setFocusFlag(true); // set focus flag
@@ -2349,13 +2343,10 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
     } else
         m_focused_window = 0;
 
-    if (tbar != 0)
-        tbar->redrawWindowLabel(true);
+
     if (screen != 0)
         screen->updateNetizenWindowFocus();
 
-    if (old_tbar && old_tbar != tbar)
-        old_tbar->redrawWindowLabel(true);
     if (old_screen && old_screen != screen)
         old_screen->updateNetizenWindowFocus();
 
