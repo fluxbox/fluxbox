@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.109 2003/08/15 13:51:43 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.110 2003/08/15 15:29:10 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -504,6 +504,20 @@ void Toolbar::update(FbTk::Subject *subj) {
 }
 
 void Toolbar::setPlacement(Toolbar::Placement where) {
+    // disable vertical toolbar
+    switch (where) {
+    case LEFTTOP:
+    case LEFTCENTER:
+    case LEFTBOTTOM:
+    case RIGHTTOP:
+    case RIGHTCENTER:
+    case RIGHTBOTTOM:
+        where = BOTTOMCENTER;
+        break;
+    default:
+        break;
+    }
+
     *m_rc_placement = where;
     int head_x = 0,
         head_y = 0,
@@ -748,11 +762,11 @@ void Toolbar::setupMenus() {
         Toolbar::Placement placement;
     } place_menu[]  = {
         {0, 0, "Top Left", Toolbar::TOPLEFT},
-        /*
+        
         {0, 0, "Left Top", Toolbar::LEFTTOP},
         {0, 0, "Left Center", Toolbar::LEFTCENTER},
         {0, 0, "Left Bottom", Toolbar::LEFTBOTTOM}, 
-        */
+        
         {0, 0, "Bottom Left", Toolbar::BOTTOMLEFT},
         {0, 0, "Top Center", Toolbar::TOPCENTER},
         {0, 0, 0, Toolbar::TOPCENTER},
@@ -760,11 +774,11 @@ void Toolbar::setupMenus() {
         {0, 0, 0, Toolbar::BOTTOMCENTER},
         {0, 0, "Bottom Center", Toolbar::BOTTOMCENTER},
         {0, 0, "Top Right", Toolbar::TOPRIGHT},
-        /*
+        
         {0, 0, "Right Top", Toolbar::RIGHTTOP},
         {0, 0, "Right Center", Toolbar::RIGHTCENTER},
         {0, 0, "Right Bottom", Toolbar::RIGHTBOTTOM},
-        */
+        
         {0, 0, "Bottom Right", Toolbar::BOTTOMRIGHT}
     };
     tbar.placementMenu().setMinimumSublevels(3);
