@@ -19,8 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+// $Id: Workspace.cc,v 1.6 2002/01/20 02:08:12 fluxgen Exp $
+
+// use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -28,9 +29,6 @@
 #ifdef		HAVE_CONFIG_H
 #	include "../config.h"
 #endif // HAVE_CONFIG_H
-
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
 
 #include "i18n.hh"
 #include "fluxbox.hh"
@@ -50,7 +48,15 @@
 #	include <string.h>
 #endif // STDC_HEADERS
 
-Workspace::Workspace(BScreen *scrn, int i) {
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+
+Workspace::Workspace(BScreen *scrn, int i):
+screen(scrn),
+lastfocus(0),
+name(""),
+cascade_x(32), cascade_y(32)
+{
 	screen = scrn;
 
 	cascade_x = cascade_y = 32;
@@ -61,10 +67,7 @@ Workspace::Workspace(BScreen *scrn, int i) {
 	windowList = new LinkedList<FluxboxWindow>;
 	clientmenu = new Clientmenu(this);
 
-	lastfocus = (FluxboxWindow *) 0;
-
 	char *tmp;
-	name = (char *) 0;
 	screen->getNameOfWorkspace(id, &tmp);
 	setName(tmp);
 
@@ -73,20 +76,19 @@ Workspace::Workspace(BScreen *scrn, int i) {
 }
 
 
-Workspace::~Workspace(void) {
+Workspace::~Workspace() {
 	delete stackingList;
 	delete windowList;
 	delete clientmenu;
-
-	if (name)
-		delete [] name;
 }
 
 
 const int Workspace::addWindow(FluxboxWindow *w, Bool place) {
-	if (! w) return -1;
+	if (! w)
+		return -1;
 
-	if (place) placeWindow(w);
+	if (place)
+		placeWindow(w);
 
 	w->setWorkspace(id);
 	w->setWindowNumber(windowList->count());
@@ -123,8 +125,8 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 			if (! top || ! top->setInputFocus()) {				
 				Fluxbox::instance()->setFocusedWindow((FluxboxWindow *) 0);
 				XSetInputFocus(Fluxbox::instance()->getXDisplay(),
-						screen->getToolbar()->getWindowID(),
-						RevertToParent, CurrentTime);						
+					screen->getToolbar()->getWindowID(),
+					RevertToParent, CurrentTime);						
 			}
 		}
 	}
@@ -302,14 +304,12 @@ void Workspace::setCurrent(void) {
 
 
 void Workspace::setName(char *new_name) {
-	if (name)
-		delete [] name;
 
 	if (new_name) {
-		name = StringUtil::strdup(new_name);
+		name = new_name;
 	} else {
-		name = new char[128];
-		sprintf(name, I18n::instance()->
+		char tname[128];
+		sprintf(tname, I18n::instance()->
 			getMessage(
 #ifdef		NLS
 			WorkspaceSet, WorkspaceDefaultNameFormat,
@@ -317,11 +317,12 @@ void Workspace::setName(char *new_name) {
 			0, 0,
 #endif // NLS
 			"Workspace %d"), id + 1);
+		name = tname;
 	}
 	
 	screen->updateWorkspaceNamesAtom();
 	
-	clientmenu->setLabel(name);
+	clientmenu->setLabel(name.c_str());
 	clientmenu->update();
 }
 

@@ -22,14 +22,14 @@
 #ifndef   _WORKSPACE_HH_
 #define   _WORKSPACE_HH_
 
+#include "LinkedList.hh"
 #include <X11/Xlib.h>
+#include <string>
 
 class BScreen;
 class Clientmenu;
 class Workspace;
 class FluxboxWindow;
-
-#include "LinkedList.hh"
 
 
 class Workspace {
@@ -40,7 +40,7 @@ private:
 
   LinkedList<FluxboxWindow> *stackingList, *windowList;
 
-  char *name;
+  std::string name;
   int id, cascade_x, cascade_y;
 
 
@@ -58,7 +58,7 @@ public:
   
   inline Clientmenu *getMenu(void) { return clientmenu; }
 
-  inline const char *getName(void) const { return name; }
+  inline const char *getName(void) const { return name.c_str(); }
 
   inline const int &getWorkspaceID(void) const { return id; }
   
