@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.11 2002/04/03 23:08:19 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.12 2002/04/08 22:37:49 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -31,90 +31,82 @@
 #include <vector>
 #include <string>
 
-// forward declarations
 class Basemenu;
 class BasemenuItem;
-
 class Fluxbox;
 class BImageControl;
 class BScreen;
 
 class Basemenu {
 public:
-	explicit Basemenu(BScreen *);
-	virtual ~Basemenu(void);
+	enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
+	enum { RIGHT = 1, LEFT };
+	enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
+	
+	explicit Basemenu(BScreen *screen);
+	virtual ~Basemenu();
 
-	inline const Bool &isTorn(void) const { return torn; }
-	inline const Bool &isVisible(void) const { return visible; }
-
-	inline BScreen *getScreen(void) const { return screen; }
-
-	inline const Window &getWindowID(void) const { return menu.window; }
-
-	inline const char *getLabel(void) const { return menu.label; }
-
-	int insert(const char *, int = 0, const char * = 0, int = -1);
-
-	int insert(const char *, Basemenu *, int = -1);
+	//manipulators
+	int insert(const char *label, int function= 0, const char *exec = 0, int pos = -1);
+	int insert(const char *label, Basemenu *submenu, int pos= -1);
 	int remove(unsigned int item);
-
-	inline const int &getX(void) const { return menu.x; }
-	inline const int &getY(void) const { return menu.y; }
-	inline int getCount(void) { return menuitems.size(); }
-	inline const int &getCurrentSubmenu(void) const { return which_sub; }
-
-	inline const unsigned int &getWidth(void) const { return menu.width; }
-	inline const unsigned int &getHeight(void) const { return menu.height; }
-	inline const unsigned int &getTitleHeight(void) const { return menu.title_h; }
-
-	inline void setInternalMenu(void) { internal_menu = True; }
-	inline void setAlignment(int a) { alignment = a; }
-	inline void setTorn(void) { torn = True; }
-	inline void removeParent(void) { if (internal_menu) parent = (Basemenu *) 0; }
-
-	bool hasSubmenu(unsigned int index);
-	bool isItemSelected(unsigned int index);
-	bool isItemEnabled(unsigned int index);
-
+	inline void setInternalMenu() { internal_menu = true; }
+	inline void setAlignment(Alignment a) { m_alignment = a; }
+	inline void setTorn() { torn = true; }
+	inline void removeParent() { if (internal_menu) m_parent = 0; }
 	void buttonPressEvent(XButtonEvent *);
 	void buttonReleaseEvent(XButtonEvent *);
 	void motionNotifyEvent(XMotionEvent *);
 	void enterNotifyEvent(XCrossingEvent *);
 	void leaveNotifyEvent(XCrossingEvent *);
 	void exposeEvent(XExposeEvent *);
-	void reconfigure(void);
+	void reconfigure();
 	void setLabel(const char *n);
-	void move(int, int);
-	void update(void);
+	void move(int x, int y);
+	void update();
 	void setItemSelected(unsigned int index, bool val);
-	void setItemEnabled(unsigned int, bool val);
-
+	void setItemEnabled(unsigned int index, bool val);
 	virtual void drawSubmenu(unsigned int index);
-	virtual void show(void);
-	virtual void hide(void);
-
-	enum { ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
-	enum { RIGHT = 1, LEFT };
-	enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
+	virtual void show();
+	virtual void hide();
+	
+	//accessors
+	inline	bool isTorn() const { return torn; }
+	inline	bool isVisible() const { return visible; }
+	inline BScreen *screen() const { return m_screen; }
+	inline const Window windowID() const { return menu.window; }
+	inline const std::string &label() const { return menu.label; }	
+	inline int x() const { return menu.x; }
+	inline int y() const { return menu.y; }
+	inline unsigned int width() const { return menu.width; }
+	inline unsigned int height() const { return menu.height; }
+	inline unsigned int numberOfItems() const { return menuitems.size(); }
+	inline int currentSubmenu() const { return which_sub; }	
+	inline unsigned int titleHeight() const { return menu.title_h; }
+	bool hasSubmenu(unsigned int index) const;
+	bool isItemSelected(unsigned int index) const;
+	bool isItemEnabled(unsigned int index) const;
 
 private:
 	typedef std::vector<BasemenuItem *> Menuitems;
+	Fluxbox *m_fluxbox;
+	BScreen *m_screen;
+	Display *m_display;
+	Basemenu *m_parent;
+	BImageControl *m_image_ctrl;
 	Menuitems menuitems;
-	Fluxbox *fluxbox;
-	Basemenu *parent;
-	BImageControl *image_ctrl;
-	BScreen *screen;
-
-	Bool moving, visible, movable, torn, internal_menu, title_vis, shifted,
+	
+	bool moving, visible, movable, torn, internal_menu, title_vis, shifted,
 		hide_tree;
-	Display *display;
-	int which_sub, which_press, which_sbl, alignment;
+	
+	int which_sub, which_press, which_sbl;
+	Alignment m_alignment;
 
 	struct _menu {
 		Pixmap frame_pixmap, title_pixmap, hilite_pixmap, sel_pixmap;
 		Window window, frame, title;
 
-		char *label;
+		std::string label;
 		int x, y, x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
 			grab_x, grab_y;
 		unsigned int width, height, title_h, frame_h, item_w, item_h, bevel_w,
@@ -123,7 +115,7 @@ private:
 
 
 protected:
-	inline BasemenuItem *find(unsigned int index) { return menuitems[index]; }
+	inline BasemenuItem *find(unsigned int index) const { return menuitems[index]; }
 	inline void setTitleVisibility(bool b) { title_vis = b; }
 	inline void setMovable(bool b) { movable = b; }
 	inline void setHideTree(bool h) { hide_tree = h; }
@@ -133,7 +125,7 @@ protected:
 	virtual void drawItem(unsigned int index, bool highlight= false, bool clear= false,
 			int x= -1, int y= -1, unsigned int width= 0, unsigned int height= 0);
 	virtual void redrawTitle();
-	virtual void internal_hide(void);
+	virtual void internal_hide();
 };
 
 class BasemenuItem {
@@ -159,14 +151,14 @@ public:
 		, m_selected(false)
 	{ }
 
-	inline const char *exec(void) const { return m_exec.c_str(); }
-	inline const char *label(void) const { return m_label.c_str(); }
-	inline int function(void) const { return m_function; }
-	inline Basemenu *submenu(void) { return m_submenu; }
+	inline const std::string &exec() const { return m_exec; }
+	inline const std::string &label() const { return m_label; }
+	inline int function() const { return m_function; }
+	inline Basemenu *submenu() const { return m_submenu; }
 
-	inline bool isEnabled(void) const { return m_enabled; }
+	inline bool isEnabled() const { return m_enabled; }
 	inline void setEnabled(bool enabled) { m_enabled = enabled; }
-	inline bool isSelected(void) const { return m_selected; }
+	inline bool isSelected() const { return m_selected; }
 	inline void setSelected(bool selected) { m_selected = selected; }
 
 private:
