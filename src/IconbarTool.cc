@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.43 2004/08/29 08:33:12 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.44 2004/08/30 13:42:13 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -278,7 +278,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_rc_alignment(screen.resourceManager(), Container::LEFT,
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
-                   screen.name() + ".iconbar.clientWidth", screen.altName() + ".Iconbar.ClientWidth"),
+                   screen.name() + ".iconbar.iconWidth", screen.altName() + ".Iconbar.IconWidth"),
     m_rc_use_pixmap(screen.resourceManager(), true,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(screen.menuTheme(), screen.imageControl(),
