@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbMenuParser.cc,v 1.2 2004/06/10 11:42:35 fluxgen Exp $
+// $Id: FbMenuParser.cc,v 1.3 2004/10/21 10:49:20 akir Exp $
 
 #include "FbMenuParser.hh"
 
@@ -126,7 +126,7 @@ Parser::Item FbMenuParser::nextItem() {
 }
 
 bool FbMenuParser::nextLine() {
-    if (!getline(m_file, m_curr_line))
+    if (!std::getline(m_file, m_curr_line))
         return false;
 
     m_row++;
