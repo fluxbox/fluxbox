@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.222 2003/08/18 11:26:17 fluxgen Exp $
+// $Id: Screen.cc,v 1.223 2003/08/22 15:03:28 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -275,7 +275,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // the order of windowtheme and winbutton theme is important
     // because winbutton need to rescale the pixmaps in winbutton theme
     // after fbwinframe have resized them
-    m_winbutton_theme(new WinButtonTheme(scrn)),
+    m_winbutton_theme(new WinButtonTheme(scrn, *m_windowtheme)),
     m_menutheme(new MenuTheme(scrn)),
     m_root_theme(new 
                  RootTheme(scrn, 
