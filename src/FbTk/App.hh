@@ -51,6 +51,7 @@ public:
     virtual void eventLoop();
     /// forces an end to event loop
     void end();
+    bool done() const { return m_done; }
 private:
     static App *s_app;
     bool m_done;
