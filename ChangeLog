@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/19:
+  * Fixes to make nroff not report errors for fbsetbg.1 (Han)
+    fbsetbg.1
 *04/08/18:
   * Fix handling of font encodings, and related bugs (Simon)
     FbTk/Font.hh/cc fluxbox.cc
