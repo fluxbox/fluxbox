@@ -40,6 +40,10 @@ App::App(const char *displayname):m_done(false) {
     if (s_app != 0)
         throw std::string("Can't create more than one instance of FbTk::App");
     s_app = this;
+    // this allows the use of std::string.c_str(), which returns 
+    // a blank string, rather than a null string, so we make them equivalent
+    if (displayname != 0 && displayname[0] == '\0')
+        displayname = 0;
     m_display = XOpenDisplay(displayname);
 }
 
