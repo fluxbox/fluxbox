@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.174 2003/07/23 10:43:30 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.175 2003/07/27 13:53:34 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -423,14 +423,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_server_grabs(0),
       m_randr_event_type(0),
       m_RC_PATH("fluxbox"),
-      m_RC_INIT_FILE("init"),
-      // For KDE dock applets
-      // KDE v1.x
-      m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
-                                    "KWM_DOCKWINDOW", False)),
-      // KDE v2.x
-      m_kwm2_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
-                                    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)) {
+      m_RC_INIT_FILE("init") {
       
 
     if (s_singleton != 0)
@@ -441,7 +434,13 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         throw string("Can not connect to X server.\n"
                      "Make sure you started X before you start Fluxbox.");
     }
-
+    // For KDE dock applets
+    // KDE v1.x
+    m_kwm1_dockwindow = XInternAtom(FbTk::App::instance()->display(), 
+                                    "KWM_DOCKWINDOW", False);
+    // KDE v2.x
+    m_kwm2_dockwindow = XInternAtom(FbTk::App::instance()->display(), 
+                                    "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False);
     // setup X error handler
     XSetErrorHandler((XErrorHandler) handleXErrors);
 
