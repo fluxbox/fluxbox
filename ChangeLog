@@ -1,15 +1,53 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
 *03/04/15:
+   * Added drag and drop support for tabs (Henrik)
+     Window.hh/cc
+   * Fixed client and icon count in Ewmh (Henrik)
+     Ewmh.cc
+   * Cleaning (Henrik)
+     fluxbox.hh/cc, FbAtoms.hh/cc, IconBar.hh/cc, WinClient.cc
+	 Window.cc, Screen.hh/cc, Toolbar.hh/cc, FbCommands.cc, 
+	 Workspace.cc, Gnome.cc
    * Add most recently used/stacked window cycling, set as default (Simon)
      Window.cc Screen.hh/cc fluxbox.hh/cc Keys.hh/cc     
 *03/04/14:
+   * merged embedded-tab-branch into main branch
    * Don't create menuconfig during install and style cleanups (Han)
      fluxbox_generate_menu 
    * Sun compat in Makefile.am (Han)
      data/Makefile.am
+*03/04/11:
+   * Icon list updates when window state changes and notifies
+     observer fluxbox::update
+     fluxbox.cc
+   * Reassociation of window when it changes to sticky is 
+     done in fluxbox::update now
+     fluxbox.cc
+   * Fixed transient bug
+     WinClient.cc, Window.cc, fluxbox.cc
+   * Added TextButton.hh/cc
+   * Fixed label buttons in FbWinFrame for multiple clients
+     FbWinFrame.hh/cc, Window.hh/cc
+   * Added Next/Prev Client menu items to window menu
+     Screen.cc
+*03/04/09:
+   * Fixed Client menu
+     Workspace.cc
+   * Removed tab resources and old tab code
+     Tab.hh/cc, Screen.hh/cc, fluxbox.hh/cc, Window.hh/cc, Workspace.cc
 *03/04/08:
    * Fixes in fluxbox-generate_menu (Thanks Han)
+*03/04/07:
+   * Moved client specific stuff from FluxboxWindow to WinClient
+     Window.hh/cc, fluxbox.cc, Screen.cc/hh
+   * Fixed client list update in Ewmh module
+     Ewmh.cc
+*03/04/04:
+   * Added WinClient.hh/cc which holds client information
+*03/04/03:
+   * Added AttachClient and DetachClient key actions
+     Keys.hh/cc
 *03/03/30:
    * Using pkg-config instead of xft-config (Thanks Matt Hope)
      xft.m4
@@ -25,7 +63,9 @@ Changes for 0.9.1:
      Window.cc fluxbox.cc
 *03/02/25:
    * Fixed freebsd error and some nls in fluxbox-generate_menu (Han)
+
 ---------------------------------------------------
+
 Changes for 0.9.0:
 *03/02/23:
    * Fixed auto hide option for toolbar menu (Henrik)
