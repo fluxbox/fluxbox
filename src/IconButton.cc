@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.10 2003/10/31 19:32:39 rathnor Exp $
+// $Id: IconButton.cc,v 1.11 2003/10/31 20:02:49 rathnor Exp $
 
 #include "IconButton.hh"
 
@@ -197,7 +197,7 @@ void IconButton::setupWindow() {
 
 void IconButton::drawText(int x, int y) {
     // offset text
-    FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y);                               
+    FbTk::TextButton::drawText(m_icon_window.x() + m_icon_window.width() + 1, y);
 }
                           
 
