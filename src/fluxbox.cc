@@ -1584,12 +1584,12 @@ void Fluxbox::save_rc(void) {
 		char *toolbar_placement = (char *) 0;
 
 		switch (screen->getToolbarPlacement()) {
-		case Toolbar::TopLeft: toolbar_placement = "TopLeft"; break;
-		case Toolbar::BottomLeft: toolbar_placement = "BottomLeft"; break;
-		case Toolbar::TopCenter: toolbar_placement = "TopCenter"; break;
-		case Toolbar::TopRight: toolbar_placement = "TopRight"; break;
-		case Toolbar::BottomRight: toolbar_placement = "BottomRight"; break;
-		case Toolbar::BottomCenter: default:
+		case Toolbar::TOPLEFT: toolbar_placement = "TopLeft"; break;
+		case Toolbar::BOTTOMLEFT: toolbar_placement = "BottomLeft"; break;
+		case Toolbar::TOPCENTER: toolbar_placement = "TopCenter"; break;
+		case Toolbar::TOPRIGHT: toolbar_placement = "TopRight"; break;
+		case Toolbar::BOTTOMRIGHT: toolbar_placement = "BottomRight"; break;
+		case Toolbar::BOTTOMCENTER: default:
 			toolbar_placement = "BottomCenter"; break;
 		}
 
@@ -2038,19 +2038,19 @@ void Fluxbox::load_rc(BScreen *screen) {
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
                      &value)) {
     if (! strncasecmp(value.addr, "TopLeft", value.size))
-      screen->saveToolbarPlacement(Toolbar::TopLeft);
+      screen->saveToolbarPlacement(Toolbar::TOPLEFT);
     else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-      screen->saveToolbarPlacement(Toolbar::BottomLeft);
+      screen->saveToolbarPlacement(Toolbar::BOTTOMLEFT);
     else if (! strncasecmp(value.addr, "TopCenter", value.size))
-      screen->saveToolbarPlacement(Toolbar::TopCenter);
+      screen->saveToolbarPlacement(Toolbar::TOPCENTER);
     else if (! strncasecmp(value.addr, "TopRight", value.size))
-      screen->saveToolbarPlacement(Toolbar::TopRight);
+      screen->saveToolbarPlacement(Toolbar::TOPRIGHT);
     else if (! strncasecmp(value.addr, "BottomRight", value.size))
-      screen->saveToolbarPlacement(Toolbar::BottomRight);
+      screen->saveToolbarPlacement(Toolbar::BOTTOMRIGHT);
     else
-      screen->saveToolbarPlacement(Toolbar::BottomCenter);
+      screen->saveToolbarPlacement(Toolbar::BOTTOMCENTER);
   } else
-    screen->saveToolbarPlacement(Toolbar::BottomCenter);
+    screen->saveToolbarPlacement(Toolbar::BOTTOMCENTER);
 
   screen->removeWorkspaceNames();
 

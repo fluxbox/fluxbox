@@ -722,9 +722,9 @@ void Tab::motionNotifyEvent(XMotionEvent *me) {
 				int dtty, dbby, dty, dby;
 		
 				switch (m_win->getScreen()->getToolbarPlacement()) {
-				case Toolbar::TopLeft:
-				case Toolbar::TopCenter:
-				case Toolbar::TopRight:
+				case Toolbar::TOPLEFT:
+				case Toolbar::TOPCENTER:
+				case Toolbar::TOPRIGHT:
 					dtty = m_win->getScreen()->getToolbar()->getExposedHeight() +
 							m_win->getScreen()->getBorderWidth();
 					dbby = m_win->getScreen()->getHeight();

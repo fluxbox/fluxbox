@@ -1,4 +1,6 @@
 Changes for 0.1.6:
+*02/01/06:
+   * Changed toolbar placement enums to uppercase letters (Claes Nästén)
 *02/01/05:
    * Changed placement/alignment enums to uppercase letters (Claes Nästén)
    * Fixed tab/iconbar resource bug (Claes Nästén)

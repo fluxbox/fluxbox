@@ -156,8 +156,8 @@ public:
 
   virtual void timeout(void);
 
-  enum { TopLeft = 1, BottomLeft, TopCenter,
-         BottomCenter, TopRight, BottomRight };
+  enum { TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
+         BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT };
 };
 
 

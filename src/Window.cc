@@ -1847,9 +1847,9 @@ void FluxboxWindow::maximize(unsigned int button) {
 				case Slit::TopRight:
 					slitModT = mSlt->getHeight() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
-					case Toolbar::TopLeft:
-					case Toolbar::TopCenter:
-					case Toolbar::TopRight:
+					case Toolbar::TOPLEFT:
+					case Toolbar::TOPCENTER:
+					case Toolbar::TOPRIGHT:
 						slitModT -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
 						break;
 					}				
@@ -1857,9 +1857,9 @@ void FluxboxWindow::maximize(unsigned int button) {
 				default:
 					slitModB = mSlt->getHeight() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
-					case Toolbar::BottomLeft:
-					case Toolbar::BottomCenter:
-					case Toolbar::BottomRight:
+					case Toolbar::BOTTOMLEFT:
+					case Toolbar::BOTTOMCENTER:
+					case Toolbar::BOTTOMRIGHT:
 						slitModB -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
 						break;
 					}	
@@ -1916,9 +1916,9 @@ void FluxboxWindow::maximize(unsigned int button) {
 			 - dh) / 2) - screen->getBorderWidth2x();
 
 			switch (screen->getToolbarPlacement()) {
-			case Toolbar::TopLeft:
-			case Toolbar::TopCenter:
-			case Toolbar::TopRight:
+			case Toolbar::TOPLEFT:
+			case Toolbar::TOPCENTER:
+			case Toolbar::TOPRIGHT:
 				dy += screen->getToolbar()->getExposedHeight() +
 						screen->getBorderWidth2x();
 				break;
@@ -3009,9 +3009,9 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 				int dtty, dbby, dty, dby;
 				switch (screen->getToolbarPlacement()) {
-				case Toolbar::TopLeft:
-				case Toolbar::TopCenter:
-				case Toolbar::TopRight:
+				case Toolbar::TOPLEFT:
+				case Toolbar::TOPCENTER:
+				case Toolbar::TOPRIGHT:
 					dtty = screen->getToolbar()->getExposedHeight() +
 							screen->getBorderWidth();
 					dbby = screen->getHeight();

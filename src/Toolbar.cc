@@ -227,7 +227,7 @@ void Toolbar::reconfigure(void) {
 	frame.height += (frame.bevel_w * 2);
 	
 	switch (screen->getToolbarPlacement()) {
-	case TopLeft:
+	case TOPLEFT:
 		frame.x = 0;
 		frame.y = 0;
 		frame.x_hidden = 0;
@@ -235,7 +235,7 @@ void Toolbar::reconfigure(void) {
 										 - frame.height;
 		break;
 
-	case BottomLeft:
+	case BOTTOMLEFT:
 		frame.x = 0;
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = 0;
@@ -243,7 +243,7 @@ void Toolbar::reconfigure(void) {
 										 - screen->getBorderWidth();
 		break;
 
-	case TopCenter:
+	case TOPCENTER:
 		frame.x = (screen->getWidth() - frame.width) / 2;
 		frame.y = 0;
 		frame.x_hidden = frame.x;
@@ -251,7 +251,7 @@ void Toolbar::reconfigure(void) {
 										 - frame.height;
 		break;
 
-	case BottomCenter:
+	case BOTTOMCENTER:
 	default:
 		frame.x = (screen->getWidth() - frame.width) / 2;
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
@@ -260,7 +260,7 @@ void Toolbar::reconfigure(void) {
 										 - screen->getBorderWidth();
 		break;
 
-	case TopRight:
+	case TOPRIGHT:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = 0;
 		frame.x_hidden = frame.x;
@@ -268,7 +268,7 @@ void Toolbar::reconfigure(void) {
 										 - frame.height;
 		break;
 
-	case BottomRight:
+	case BOTTOMRIGHT:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = frame.x;
@@ -1349,7 +1349,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Top Left"),
-				Toolbar::TopLeft);
+				Toolbar::TOPLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomLeft,
@@ -1357,7 +1357,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Bottom Left"),
-				Toolbar::BottomLeft);
+				Toolbar::BOTTOMLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopCenter,
@@ -1365,7 +1365,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Top Center"),
-				Toolbar::TopCenter);
+				Toolbar::TOPCENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomCenter,
@@ -1373,7 +1373,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Bottom Center"),
-				Toolbar::BottomCenter);
+				Toolbar::BOTTOMCENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopRight,
@@ -1381,7 +1381,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Top Right"),
-				Toolbar::TopRight);
+				Toolbar::TOPRIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomRight,
@@ -1389,7 +1389,7 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 				0, 0,
 #endif // NLS
 				"Bottom Right"),
-	Toolbar::BottomRight);
+	Toolbar::BOTTOMRIGHT);
 
 	update();
 }
