@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.1 2003/08/11 14:32:39 fluxgen Exp $
+// $Id: WorkspaceNameTool.cc,v 1.2 2003/08/11 20:39:05 fluxgen Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -38,10 +38,14 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
     m_screen(screen),
     m_pixmap(0) {
     // set text
+    m_button.setGC(m_theme.textGC());
     m_button.setText(m_screen.currentWorkspace()->name());
+
     // setup signals
     screen.currentWorkspaceSig().attach(this);
     theme.reconfigSig().attach(this);
+
+    renderTheme();
 }
 
 WorkspaceNameTool::~WorkspaceNameTool() {
@@ -109,7 +113,6 @@ void WorkspaceNameTool::renderTheme() {
     if (tmp)
         m_screen.imageControl().removeImage(tmp);
 
-    m_button.setFont(m_theme.font());
     m_button.setJustify(m_theme.justify());
     m_button.clear();
 }
