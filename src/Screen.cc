@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.99 2003/01/12 18:47:02 fluxgen Exp $
+// $Id: Screen.cc,v 1.100 2003/01/12 23:56:49 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -239,6 +239,7 @@ getString() {
 }
 
 namespace {
+
 class AddWorkspaceCmd:public FbTk::Command {
 public:
     explicit AddWorkspaceCmd(BScreen &scrn):m_screen(scrn) { }
@@ -262,14 +263,46 @@ private:
 void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
     menu.removeAll(); // clear all items
     using namespace FbTk;
-
+    menu.setLabel("Workspace");
     RefCount<Command> new_workspace(new AddWorkspaceCmd(scr));
     RefCount<Command> remove_last(new RemoveLastWorkspaceCmd(scr));
     menu.insert("New Workspace", new_workspace);
     menu.insert("Remove Last", remove_last);
+    menu.update();
 }
 
 };
+
+/// for root command
+class RootTheme: public FbTk::Theme {
+public:
+    explicit RootTheme(BScreen &scr):FbTk::Theme(scr.getScreenNumber()),
+                                     m_root_command(*this, "rootCommand", "RootCommand"), 
+                                     m_scr(scr) { }
+    void reconfigTheme() {
+        // override resource root command?
+        if (m_scr.getRootCommand() == "") { 
+            // do root command
+            FbCommands::ExecuteCmd cmd(*m_root_command);
+            cmd.execute();
+        } else {
+            FbCommands::ExecuteCmd cmd(m_scr.getRootCommand());
+            cmd.execute();
+        }
+    }
+private:
+    FbTk::ThemeItem<std::string> m_root_command;
+    BScreen &m_scr;
+};
+
+template <>
+void FbTk::ThemeItem<std::string>::load() { }
+
+template <>
+void FbTk::ThemeItem<std::string>::setDefaultValue() { *(*this) = ""; }
+
+template <>
+void FbTk::ThemeItem<std::string>::setFromString(const char *str) { *(*this) = (str ? str : ""); }
 
 BScreen::ScreenResource::ScreenResource(ResourceManager &rm, 
                                         const std::string &scrname, const std::string &altscrname):
@@ -296,7 +329,6 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
     tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead")
-    //    toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
 
 };
@@ -310,9 +342,10 @@ BScreen::BScreen(ResourceManager &rm,
                              m_currentworkspace_sig(*this), // current workspace signal
                              theme(0), m_windowtheme(scrn),
                              m_menutheme(new FbTk::MenuTheme(scrn)),
-                              resource(rm, screenname, altscreenname)
+                             resource(rm, screenname, altscreenname),
+                             m_root_theme(new RootTheme(*this))
 {
-    Display *disp = BaseDisplay::getXDisplay();
+    Display *disp = FbTk::App::instance()->display();
 
     event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
         SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
@@ -441,7 +474,6 @@ BScreen::BScreen(ResourceManager &rm,
     current_workspace = workspacesList.front();
 
 #ifdef SLIT
-    // must create this one before configure menu
     m_slit.reset(new Slit(*this));
 #endif // SLIT
 
@@ -454,8 +486,6 @@ BScreen::BScreen(ResourceManager &rm,
 
     workspacemenu->setItemSelected(2, true);
 
-
-    //    m_toolbar->setPlacement(*resource.toolbar_placement);
     m_toolbar->reconfigure();
 
     initMenu(); // create and initiate rootmenu
