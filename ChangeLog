@@ -1,6 +1,24 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/25:
+   * Applied toggle max vertical/horizontal patch (Thanks MrChuoi mrchuoi<[aT]>yahoo.com)
+     Window.hh/cc
+   * Fixed compile time option for Toolbar (Henrik)
+     --enable-toolbar (default on)
+     configure.in, src/Makefile.am, fluxbox.cc
 *03/06/24:
+   * Added new theme items (Henrik)
+      * toolbar.borderWidth: <integer>
+      * toolbar.bevelWidth: <integer>
+      * toolbar.borderColor: <color>
+      * slit.borderWidth: <integer>
+      * slit.bevelWidth: <integer>
+      * slit.borderColor: <color>
+     SlitTheme.hh, ToolbarTheme.hh/cc, Slit.cc, Toolbar.cc
+   * Moved toolbar mode resource to ToolbarHandler (Henrik)
+     Screen.hh/cc, ToolbarHandler.hh/cc
+   * Fixed minor bug in button alignment (Henrik)
+     FbWinFrame.cc
    * Fixed minor bug in transparent Slit (Henrik)
      Slit.cc/hh, Screen.cc
    * Emacs keybindings and tab completion for FbRun (Thanks David J Burger)
