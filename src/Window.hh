@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.75 2003/05/24 13:01:48 fluxgen Exp $
+// $Id: Window.hh,v 1.76 2003/05/26 04:24:24 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -373,7 +373,6 @@ private:
     void associateClientWindow();
     void createWinButtons();
     void decorateLabel();
-    void positionWindows();
 	
     void restoreGravity();
     void setGravityOffsets();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.186 2003/05/24 13:02:49 fluxgen Exp $
+// $Id: Window.cc,v 1.187 2003/05/26 04:24:24 rathnor Exp $
 
 #include "Window.hh"
 
@@ -502,7 +502,7 @@ void FluxboxWindow::init() {
 
     grabButtons();
 		
-    positionWindows();
+    applyDecorations();
 
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
         m_workspace_number = screen().currentWorkspaceID();
@@ -839,10 +839,10 @@ void FluxboxWindow::grabButtons() {
 
 
 void FluxboxWindow::reconfigure() {
-    
+
     upsize();
 
-    positionWindows();
+    applyDecorations();
 
     setFocusFlag(focused);
 
@@ -854,32 +854,6 @@ void FluxboxWindow::reconfigure() {
 
     m_windowmenu.reconfigure();
 	
-}
-
-
-void FluxboxWindow::positionWindows() {
-
-    frame().window().setBorderWidth(screen().rootTheme().borderWidth());
-    frame().clientArea().setBorderWidth(0); // client area bordered by other things
-
-    frame().titlebar().setBorderWidth(screen().rootTheme().borderWidth());
-    if (decorations.titlebar) {
-        frame().showTitlebar();
-    } else {
-        frame().hideTitlebar();
-    }
-    
-    frame().handle().setBorderWidth(screen().rootTheme().borderWidth());
-    frame().gripLeft().setBorderWidth(screen().rootTheme().borderWidth());
-    frame().gripRight().setBorderWidth(screen().rootTheme().borderWidth());
-
-    if (decorations.handle)
-        frame().showHandle();
-    else 
-        frame().hideHandle();
-	
-    frame().reconfigure();
-
 }
 
 /// update current client title and title in our frame
@@ -1026,12 +1000,12 @@ void FluxboxWindow::getMWMHints() {
     Atom atom_return;
     unsigned long num, len;
     Atom  motif_wm_hints = XInternAtom(display, "_MOTIF_WM_HINTS", False);
-    if (!m_client->property(motif_wm_hints, 0,
+    if (!(m_client->property(motif_wm_hints, 0,
                             PropMwmHintsElements, false,
                             motif_wm_hints, &atom_return,
                             &format, &num, &len,
-                            (unsigned char **) &m_client->mwm_hint) == Success &&
-        m_client->mwm_hint) {
+                            (unsigned char **) &m_client->mwm_hint) &&
+          m_client->mwm_hint)) {
         return;
     }
     if (num != static_cast<unsigned int>(PropMwmHintsElements))
@@ -1182,18 +1156,18 @@ bool FluxboxWindow::setInputFocus() {
     //TODO hint skip focus
     if (((signed) (frame().x() + frame().width())) < 0) {
         if (((signed) (frame().y() + frame().height())) < 0) {
-            moveResize(screen().rootTheme().borderWidth(), screen().rootTheme().borderWidth(),
+            moveResize(frame().window().borderWidth(), frame().window().borderWidth(),
                        frame().width(), frame().height());
         } else if (frame().y() > (signed) screen().height()) {
-            moveResize(screen().rootTheme().borderWidth(), screen().height() - frame().height(),
+            moveResize(frame().window().borderWidth(), screen().height() - frame().height(),
                        frame().width(), frame().height());
         } else {
-            moveResize(screen().rootTheme().borderWidth(), frame().y() + screen().rootTheme().borderWidth(),
+            moveResize(frame().window().borderWidth(), frame().y() + frame().window().borderWidth(),
                        frame().width(), frame().height());
         }
     } else if (frame().x() > (signed) screen().width()) {
         if (((signed) (frame().y() + frame().height())) < 0) {
-            moveResize(screen().width() - frame().width(), screen().rootTheme().borderWidth(),
+            moveResize(screen().width() - frame().width(), frame().window().borderWidth(),
                        frame().width(), frame().height());
         } else if (frame().y() > (signed) screen().height()) {
             moveResize(screen().width() - frame().width(),
@@ -1201,7 +1175,7 @@ bool FluxboxWindow::setInputFocus() {
                        frame().width(), frame().height());
         } else {
             moveResize(screen().width() - frame().width(),
-                       frame().y() + screen().rootTheme().borderWidth(), 
+                       frame().y() + frame().window().borderWidth(), 
                        frame().width(), frame().height());
         }
     }
@@ -2360,8 +2334,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
                 raise();
             XAllowEvents(display, ReplayPointer, be.time);			
         } else {            
-            m_button_grab_x = be.x_root - frame().x() - screen().rootTheme().borderWidth();
-            m_button_grab_y = be.y_root - frame().y() - screen().rootTheme().borderWidth();      
+            m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
+            m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();      
         }
         
         if (m_windowmenu.isVisible())
@@ -2398,7 +2372,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
     if (Fluxbox::instance()->getIgnoreBorder()
         && !(me.state & Mod1Mask) // really should check for exact matches
         && !(isMoving() || isResizing())) {
-        int borderw = screen().rootTheme().borderWidth();
+        int borderw = frame().window().borderWidth();
         if (me.x_root < (frame().x() + borderw) ||
             me.y_root < (frame().y() + borderw) ||
             me.x_root > (frame().x() + (int)frame().width() + borderw) ||
@@ -2430,8 +2404,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             int dx = me.x_root - m_button_grab_x, 
                 dy = me.y_root - m_button_grab_y;
 
-            dx -= screen().rootTheme().borderWidth();
-            dy -= screen().rootTheme().borderWidth();
+            dx -= frame().window().borderWidth();
+            dy -= frame().window().borderWidth();
 
             // Warp to next or previous workspace?, must have moved sideways some
             int moved_x = me.x_root - m_last_resize_x;
@@ -2561,8 +2535,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             // so we update drag'n'drop-rectangle
             int dx = me.x_root - 1, dy = me.y_root - 1;
 
-            dx -= screen().rootTheme().borderWidth();
-            dy -= screen().rootTheme().borderWidth();
+            dx -= frame().window().borderWidth();
+            dy -= frame().window().borderWidth();
 
             if (screen().getEdgeSnapThreshold()) {
                 int drx = screen().width() - (dx + 1);
@@ -2699,6 +2673,21 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 
 // commit current decoration values to actual displayed things
 void FluxboxWindow::applyDecorations() {
+    frame().clientArea().setBorderWidth(0); // client area bordered by other things
+
+    unsigned int borderW = 0;
+    if (decorations.border) 
+        borderW = screen().rootTheme().borderWidth();
+
+    if (frame().window().borderWidth() != borderW) {
+        frame().window().setBorderWidth(borderW);
+        frame().titlebar().setBorderWidth(borderW);
+        frame().handle().setBorderWidth(borderW);
+        frame().gripLeft().setBorderWidth(borderW);
+        frame().gripRight().setBorderWidth(borderW);
+        frame().reconfigure();
+    }
+
     // we rely on frame not doing anything if it is already shown/hidden
     if (decorations.titlebar) 
         frame().showTitlebar();
@@ -2710,7 +2699,6 @@ void FluxboxWindow::applyDecorations() {
     else
         frame().hideHandle();
 
-    // is reconfigure needed here?
 }
 
 void FluxboxWindow::toggleDecoration() {

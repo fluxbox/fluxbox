@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.16 2003/05/15 23:30:06 fluxgen Exp $
+// $Id: Remember.cc,v 1.17 2003/05/26 04:24:24 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -262,6 +262,11 @@ int Remember::parseApp(ifstream &file, Application &app) {
                     } else if (str_label == "TOOL") {
                         app.rememberDecostate((unsigned int)
                                              FluxboxWindow::DECORM_TITLEBAR
+                                             | FluxboxWindow::DECORM_MENU
+                                             );
+                    } else if (str_label == "BORDER") {
+                        app.rememberDecostate((unsigned int)
+                                             FluxboxWindow::DECORM_BORDER
                                              | FluxboxWindow::DECORM_MENU
                                              );
                     } else {

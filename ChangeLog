@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/26:
+   * Fix usage of decorations.border, add BORDER decoration to remember 
+       (Simon)
+     Window.hh/cc Remember.cc
 *03/05/24:
    * Fix crash when toolbar turned off, and toolbar initialisation (Simon)
      Menu.cc Screen.cc Toolbar.cc
