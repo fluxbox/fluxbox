@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.30 2003/06/10 12:18:26 fluxgen Exp $
+//$Id: Keys.cc,v 1.31 2003/06/15 11:38:35 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -102,6 +102,8 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {"KillWindow", KILLWINDOW},
     {"NextWindow", NEXTWINDOW},
     {"PrevWindow", PREVWINDOW},
+    {"NextGroup", NEXTGROUP},
+    {"PrevGroup", PREVGROUP},
     {"NextTab", NEXTTAB},
     {"PrevTab", PREVTAB},
     {"FirstTab", FIRSTTAB},
@@ -319,6 +321,13 @@ bool Keys::load(const char *filename) {
                             last_key->param = atoi( val[argc+1].c_str());
                         else
                             last_key->param = 0;
+                        break;
+                    case NEXTGROUP:
+                    case PREVGROUP:
+                        if (argc + 1 < val.size())
+                            last_key->param = atoi( val[argc+1].c_str()) ^ 1;
+                        else
+                            last_key->param = 1;
                         break;
                     case NEXTWINDOW:
                     case PREVWINDOW:

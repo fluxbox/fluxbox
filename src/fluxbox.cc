@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.157 2003/06/12 14:32:08 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.158 2003/06/15 11:38:35 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1213,6 +1213,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                             m_focused_window->clientWindow());
             }
             break;
+        case Keys::NEXTGROUP:    //activate next group (params set right in Keys)
         case Keys::NEXTWINDOW: { //activate next window
             unsigned int mods = Keys::cleanMods(ke.state);
             if (mousescreen == 0)
@@ -1229,6 +1230,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             mousescreen->nextFocus(m_key->getParam());
             break;
         }
+        case Keys::PREVGROUP:    //activate prev group (params set right in Keys)
         case Keys::PREVWINDOW:	{//activate prev window
             unsigned int mods = Keys::cleanMods(ke.state);
             if (mousescreen == 0)
