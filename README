@@ -21,7 +21,7 @@ To disable tabs and/or iconbar just  change it in configure menu.
 
 To use your own configuration:
 Create a directorory, in your homedir, called .fluxbox
-and copy: init, titlebar and menu from fluxbox datapath.
+and copy: init, keys and menu from fluxbox datapath.
 Dont forget to change session.menuFile and session.titlebarFile
 in the file init.
 
