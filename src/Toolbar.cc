@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.149 2004/08/29 08:33:12 rathnor Exp $
+// $Id: Toolbar.cc,v 1.150 2004/08/29 12:33:53 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -609,7 +609,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_h = screen().getHeadHeight(head);
     }
 
-    frame.width = head_w * (*m_rc_width_percent) / 100;
+    int bevel_width = theme().bevelWidth();
+    int border_width = theme().border().width();
+
+    frame.width = (head_w - 2*border_width) * (*m_rc_width_percent) / 100;
     //!! TODO: change this 
     // max height of each toolbar items font...
     unsigned int max_height = m_tool_factory.maxFontHeight();
@@ -624,9 +627,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     frame.height += 2;
     frame.height += (frame.bevel_w * 2);
-
-    int bevel_width = theme().bevelWidth();
-    int border_width = theme().border().width();
 
     // should we flipp sizes?
     if (isVertical()) {
@@ -660,7 +660,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
 
     case TOPCENTER:
-        frame.x = head_x + (head_w - frame.width) / 2;
+        frame.x = head_x + (head_w - frame.width) / 2 - border_width;
         frame.y = head_y;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + bevel_width - border_width - frame.height;
@@ -686,7 +686,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
     default:
-        frame.x = head_x + (head_w - frame.width) / 2;
+        frame.x = head_x + (head_w - frame.width) / 2 - border_width;
         frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h - bevel_width - border_width;
@@ -695,7 +695,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     case LEFTCENTER:
         frame.x = head_x;
-        frame.y = head_y + (head_h - frame.height)/2;
+        frame.y = head_y + (head_h - frame.height)/2 - border_width;
         frame.x_hidden = frame.x - frame.width + bevel_width + border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
@@ -719,7 +719,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     case RIGHTCENTER:
         frame.x = head_x + head_w - frame.width - border_width*2;
-        frame.y = head_y + (head_h - frame.height)/2;
+        frame.y = head_y + (head_h - frame.height)/2 - border_width;
         frame.x_hidden = frame.x + frame.width - bevel_width - border_width;
         frame.y_hidden = frame.y;
         if (m_shape.get())
