@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.25 2003/12/23 01:55:07 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.26 2004/01/09 10:27:23 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -434,7 +434,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
                     renderTheme();
                 }
             } else if (mode() != WORKSPACE) {
-                if (winsubj->win().isIconic()) {
+                if (winsubj->win().isIconic() && mode() != ALLWINDOWS) {
                     removeWindow(winsubj->win());
                     renderTheme();
                 }
