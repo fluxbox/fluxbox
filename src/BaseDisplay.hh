@@ -1,5 +1,5 @@
-// BaseDisplay.hh for Fluxbox
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org
+// BaseDisplay.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // BaseDisplay.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -21,6 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: BaseDisplay.hh,v 1.5 2002/01/09 14:11:20 fluxgen Exp $
 
 #ifndef   _BASEDISPLAY_HH_
 #define   _BASEDISPLAY_HH_

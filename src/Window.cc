@@ -1,6 +1,6 @@
-// Window.cc for fluxbox
-// Copyright (c) 2001	Henrik Kinnunen (fluxgen@linuxmail.org)
-
+// Window.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002	Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Window.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -21,6 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: Window.cc,v 1.15 2002/01/09 14:11:20 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library

@@ -1,3 +1,6 @@
+// main.cc for Fluxbox Window manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // main.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -18,6 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: main.cc,v 1.2 2002/01/09 14:11:20 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -58,7 +63,21 @@
 #include <iostream>
 using namespace std;
 
+#ifdef DEBUG_UDS
+
+#include <uds/init.hh>
+#include <uds/uds.hh>
+
+// configure UDS
+uds::uds_flags_t uds::flags = uds::leak_check;
+
+#endif //!DEBUG_UDS
+
 int main(int argc, char **argv) {
+	#ifdef DEBUG_UDS
+	uds::Init uds_init;
+	#endif //!DEBUG_UDS
+	
 	char *session_display = (char *) 0;
 	char *rc_file = (char *) 0;
 

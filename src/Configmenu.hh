@@ -1,3 +1,6 @@
+// Configmenu.hh for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Configmenu.hh for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,6 +22,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Configmenu.hh,v 1.2 2002/01/09 14:11:20 fluxgen Exp $
+
 #ifndef   _CONFIGMENU_HH_
 #define   _CONFIGMENU_HH_
 
@@ -28,7 +33,6 @@ class Configmenu;
 #include "Basemenu.hh"
 #include "Screen.hh"
 #include "fluxbox.hh"
-
 
 class Configmenu : public Basemenu {
 private:

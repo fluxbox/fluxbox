@@ -1,5 +1,5 @@
 // Keys.cc for Fluxbox - an X11 Window manager
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.6 2002/01/08 21:45:49 fluxgen Exp $
+//$Id: Keys.cc,v 1.7 2002/01/09 14:11:20 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"

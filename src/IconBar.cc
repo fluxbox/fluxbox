@@ -1,5 +1,5 @@
-// IconBar.cc 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// IconBar.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -18,6 +18,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: IconBar.cc,v 1.7 2002/01/09 14:11:20 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"

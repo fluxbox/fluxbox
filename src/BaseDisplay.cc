@@ -1,3 +1,6 @@
+// BaseDisplay.cc for Fluxbox Window manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // BaseDisplay.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,9 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//
-// Changes for Fluxbox made by Henrik Kinnunen (fluxgen@linuxmail.org)
-//
+// $Id: BaseDisplay.cc,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library

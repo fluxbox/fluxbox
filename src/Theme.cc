@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.12 2002/01/09 00:08:19 fluxgen Exp $
+// $Id: Theme.cc,v 1.13 2002/01/09 14:11:20 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -653,7 +653,11 @@ void Theme::loadToolbarStyle() {
 void Theme::loadRootCommand() {
 	XrmValue value;
 	char *value_type;
-
+	#ifdef DEBUG
+	cerr<<"rootcommand.size()="<<m_rootcommand.size()<<endl;
+	cerr<<"rootcommand="<<m_rootcommand<<endl;
+	#endif
+	
 	if (m_rootcommand.size()) {
 		#ifndef         __EMX__		
 		char tmpstring[256]; //to hold m_screennum 

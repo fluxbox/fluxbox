@@ -1,5 +1,5 @@
 // DrawUtil.cc for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -18,7 +18,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
-// $Id: DrawUtil.cc,v 1.3 2002/01/07 23:42:25 fluxgen Exp $
+
+// $Id: DrawUtil.cc,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"

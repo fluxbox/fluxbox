@@ -1,4 +1,4 @@
-// Tab.hh for Fluxbox
+// Tab.hh for Fluxbox Window Manager
 // Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18,6 +18,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $Id: Tab.hh,v 1.5 2002/01/09 14:11:20 fluxgen Exp $
 
 #ifndef _TAB_HH_
 #define _TAB_HH_

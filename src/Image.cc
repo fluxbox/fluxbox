@@ -1,3 +1,6 @@
+// Image.cc for Flxubox Window Manager 
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxbox@linuxmail.org)
+//
 // Image.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -21,6 +24,9 @@
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
+
+// $Id: Image.cc,v 1.3 2002/01/09 14:11:20 fluxgen Exp $
+
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
 #endif // _GNU_SOURCE

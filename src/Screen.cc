@@ -1,4 +1,6 @@
-// $id$
+// Screen.cc for Fluxbox Window Manager
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Screen.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,6 +21,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
+
+// $id$
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -189,7 +193,7 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 	image_control->setDither(resource.image_dither);
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), fluxbox->getRootCommand());
-
+	
 #ifdef GNOME
 	/* create the GNOME window */
   Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
@@ -425,7 +429,6 @@ BScreen::~BScreen(void) {
 	delete iconList;
 	delete netizenList;
 	delete theme;
-	theme = 0;
 
 }
 
@@ -433,7 +436,8 @@ void BScreen::reconfigure(void) {
 	if (Fluxbox::instance()->getRootCommand())
 		theme->setRootCommand(Fluxbox::instance()->getRootCommand());
 	else
-		theme->setRootCommand("");		
+		theme->setRootCommand("");
+
 	theme->load(fluxbox->getStyleFilename());
 	theme->reconfigure();
 	I18n *i18n = I18n::instance();

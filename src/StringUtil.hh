@@ -1,5 +1,5 @@
 // StringUtil.hh for fluxbox 
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.3 2002/01/08 00:10:02 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
 
 #ifndef _STRINGUTIL_HH_
 #define _STRINGUTIL_HH_
@@ -48,7 +48,7 @@ struct StringUtil
   	         const char * const delimiters = " \t\n")
 	{
 		const std::string::size_type len = in.length();
-			std::string::size_type i = 0;
+		std::string::size_type i = 0;
 
 		while ( i < len ) {
 			// eat leading whitespace
