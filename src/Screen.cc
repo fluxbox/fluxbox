@@ -453,7 +453,7 @@ void BScreen::initWindows() {
 
     // preen the window list of all icon windows... for better dockapp support
     for (unsigned int i = 0; i < nchild; i++) {
-		
+
         if (children[i] == None)
             continue;
 
@@ -480,7 +480,7 @@ void BScreen::initWindows() {
     // manage shown windows
     // complexity: O(n^2) if we have lots of transients to transient_for
     // but usually O(n)
-    Window transient_for = 0;    
+    Window transient_for = 0;
     for (unsigned int i = 0; i < nchild; ++i) {
         if (children[i] == None)
             continue;
@@ -494,7 +494,7 @@ void BScreen::initWindows() {
 
         // if we have a transient_for window and it isn't created yet...
         // postpone creation of this window and find transient_for window
-        // in the list and swap place with it so we can create transient_for window 
+        // in the list and swap place with it so we can create transient_for window
         // first
         if (XGetTransientForHint(disp, children[i], &transient_for) &&
             fluxbox->searchWindow(transient_for) == 0) {
@@ -502,7 +502,7 @@ void BScreen::initWindows() {
             // and swap place with it so it gets created first
             unsigned int j = i + 1;
             for (; j < nchild; ++j) {
-                if (children[j] == transient_for) {                        
+                if (children[j] == transient_for) {
                     swap(children[i], children[j]);
                     break;
                 }
@@ -510,11 +510,11 @@ void BScreen::initWindows() {
             // reevaluate window
             if (!fluxbox->validateWindow(children[i]))
                 continue;
-   
+
 #ifdef DEBUG
             cerr<<"BScreen::initWindows(): j = "<<j<<" i = "<<i<<" nchild = "<<nchild<<endl;
 #endif // DEBUG
-                    
+
 #ifdef DEBUG
             if (j < nchild)
                 cerr<<"BScreen::initWindows(): postpone creation of 0x"<<hex<<children[j]<<dec<<endl;
@@ -524,7 +524,7 @@ void BScreen::initWindows() {
 #endif // DEBUG
         }
 
-                                 
+
         XWindowAttributes attrib;
         if (XGetWindowAttributes(disp, children[i],
                                  &attrib)) {
@@ -580,7 +580,7 @@ unsigned int BScreen::maxRight(int head) const {
 
 unsigned int BScreen::maxTop(int head) const {
     // we ignore strut if we're doing full maximization
-		
+
     if (hasXinerama())
         return doFullMax() ? getHeadY(head) : getHeadY(head) + availableWorkspaceArea(head)->top();
     else
@@ -2252,6 +2252,7 @@ void BScreen::initXinerama() {
         m_xinerama_headinfo[i].width = screen_info[i].width;
         m_xinerama_headinfo[i].height = screen_info[i].height;
     }
+    XFree(screen_info);
 #ifdef DEBUG
     cerr<<"BScreen::initXinerama(): number of heads ="<<number<<endl;
 #endif // DEBUG
