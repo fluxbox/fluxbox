@@ -22,7 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.25 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.26 2002/08/04 15:12:51 fluxgen Exp $
+
+#include "Toolbar.hh"
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -40,7 +42,6 @@
 #include "Icon.hh"
 #include "Rootmenu.hh"
 #include "Screen.hh"
-#include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
@@ -72,14 +73,18 @@
 using namespace std;
 
 Toolbar::Toolbar(BScreen *scrn):
+on_top(scrn->isToolbarOnTop()),
+editing(false),
+hidden(scrn->doToolbarAutoHide()), 
+do_auto_hide(scrn->doToolbarAutoHide()),
 screen(scrn),
-image_ctrl(screen->getImageControl()),
+image_ctrl(scrn->getImageControl()),
 clock_timer(this), 	// get the clock updating every minute
-iconbar(0)
-{
+iconbar(0) {
 
-	fluxbox = Fluxbox::instance();	
-
+	
+	
+	fluxbox = Fluxbox::instance();
 
 	timeval now;
 	gettimeofday(&now, 0);
@@ -89,12 +94,7 @@ iconbar(0)
 	hide_handler.toolbar = this;
 	hide_timer = new BTimer(&hide_handler);
 	hide_timer->setTimeout(fluxbox->getAutoRaiseDelay());
-	hide_timer->fireOnce(True);
-
-
-	editing = False;
-	on_top = screen->isToolbarOnTop();
-	hidden = do_auto_hide = screen->doToolbarAutoHide();
+	hide_timer->fireOnce(true);
 
 	frame.grab_x = frame.grab_y = 0;
 
@@ -109,7 +109,7 @@ iconbar(0)
 	attrib.background_pixel = attrib.border_pixel =
 		screen->getBorderColor()->pixel();
 	attrib.colormap = screen->colormap();
-	attrib.override_redirect = True;
+	attrib.override_redirect = true;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
 		EnterWindowMask | LeaveWindowMask;
 
@@ -174,7 +174,7 @@ iconbar(0)
 }
 
 
-Toolbar::~Toolbar(void) {
+Toolbar::~Toolbar() {
 	XUnmapWindow(display, frame.window);
 	 
 	if (frame.base) image_ctrl->removeImage(frame.base);
@@ -217,7 +217,7 @@ void Toolbar::delIcon(FluxboxWindow *w) {
 		Fluxbox::instance()->removeToolbarSearch(iconbar->delIcon(w));
 }
 		
-void Toolbar::reconfigure(void) {
+void Toolbar::reconfigure() {
 	int head_x = 0,
 			head_y = 0,
 			head_w,
@@ -531,7 +531,7 @@ void Toolbar::reconfigure(void) {
 	redrawNextWorkspaceButton();
 	redrawPrevWindowButton();
 	redrawNextWindowButton();
-	checkClock(True);
+	checkClock(true);
 
 	toolbarmenu->reconfigure();
 
@@ -566,9 +566,9 @@ void Toolbar::reconfigure(void) {
 
 
 #ifdef		HAVE_STRFTIME
-void Toolbar::checkClock(Bool redraw) {
+void Toolbar::checkClock(bool redraw) {
 #else // !HAVE_STRFTIME
-void Toolbar::checkClock(Bool redraw, Bool date) {
+void Toolbar::checkClock(bool redraw, bool date) {
 #endif // HAVE_STRFTIME
 	time_t tmp = 0;
 	struct tm *tt = 0;
@@ -582,7 +582,7 @@ void Toolbar::checkClock(Bool redraw, Bool date) {
 			frame.hour = tt->tm_hour;
 			frame.minute = tt->tm_min;
 			XClearWindow(display, frame.clock);
-			redraw = True;
+			redraw = true;
 		}
 	} else
 		cerr<<__FILE__<<"("<<__LINE__<<"): time(null)<0"<<endl;
@@ -692,14 +692,13 @@ void Toolbar::checkClock(Bool redraw, Bool date) {
 		}
 
 		switch (screen->getToolbarStyle()->font.justify) {
-		case DrawUtil::Font::RIGHT:
-			dx += frame.clock_w - l;
+			case DrawUtil::Font::RIGHT:
+				dx += frame.clock_w - l;
 			break;
-
-		case DrawUtil::Font::CENTER:
-			dx += (frame.clock_w - l) / 2;
+			case DrawUtil::Font::CENTER:
+				dx += (frame.clock_w - l) / 2;
 			break;
-		default: //LEFT
+			default: //LEFT, no justification
 			break;
 		}
 
@@ -718,7 +717,7 @@ void Toolbar::checkClock(Bool redraw, Bool date) {
 }
 
 
-void Toolbar::redrawWindowLabel(Bool redraw) {
+void Toolbar::redrawWindowLabel(bool redraw) {
 	if (Fluxbox::instance()->getFocusedWindow()) {
 		if (redraw)
 			XClearWindow(display, frame.window_label);
@@ -785,7 +784,7 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 }
  
  
-void Toolbar::redrawWorkspaceLabel(Bool redraw) {
+void Toolbar::redrawWorkspaceLabel(bool redraw) {
 	if (screen->getCurrentWorkspace()->name().size()>0) {
 		
 		if (redraw)
@@ -863,7 +862,7 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 }
 
 
-void Toolbar::redrawPrevWorkspaceButton(Bool pressed, Bool redraw) {
+void Toolbar::redrawPrevWorkspaceButton(bool pressed, bool redraw) {
 	if (redraw) {
 		if (pressed) {
 			if (frame.pbutton)
@@ -891,7 +890,7 @@ void Toolbar::redrawPrevWorkspaceButton(Bool pressed, Bool redraw) {
 }
 
 
-void Toolbar::redrawNextWorkspaceButton(Bool pressed, Bool redraw) {
+void Toolbar::redrawNextWorkspaceButton(bool pressed, bool redraw) {
 	if (redraw) {
 		if (pressed) {
 			if (frame.pbutton)
@@ -919,7 +918,7 @@ void Toolbar::redrawNextWorkspaceButton(Bool pressed, Bool redraw) {
 }
 
 
-void Toolbar::redrawPrevWindowButton(Bool pressed, Bool redraw) {
+void Toolbar::redrawPrevWindowButton(bool pressed, bool redraw) {
 	if (redraw) {
 		if (pressed) {
 			if (frame.pbutton)
@@ -947,7 +946,7 @@ void Toolbar::redrawPrevWindowButton(Bool pressed, Bool redraw) {
 }
 
 
-void Toolbar::redrawNextWindowButton(Bool pressed, Bool redraw) {
+void Toolbar::redrawNextWindowButton(bool pressed, bool redraw) {
 	if (redraw) {
 		if (pressed) {
 			if (frame.pbutton)
@@ -975,11 +974,11 @@ void Toolbar::redrawNextWindowButton(Bool pressed, Bool redraw) {
 }
 
 
-void Toolbar::edit(void) {
+void Toolbar::edit() {
 	Window window;
 	int foo;
 
-	editing = True;	//mark for editing
+	editing = true;	//mark for editing
 	
 	//workspace labe already got intput focus ?
 	if (XGetInputFocus(display, &window, &foo) &&
@@ -993,9 +992,9 @@ void Toolbar::edit(void) {
 
 	XClearWindow(display, frame.workspace_label);	//clear workspace text
 
-	fluxbox->setNoFocus(True);
+	fluxbox->setNoFocus(true);
 	if (fluxbox->getFocusedWindow())	//disable focus on current focused window
-		fluxbox->getFocusedWindow()->setFocusFlag(False);
+		fluxbox->getFocusedWindow()->setFocusFlag(false);
 
 	XDrawRectangle(display, frame.workspace_label,
 		screen->getWindowStyle()->l_text_focus_gc,
@@ -1008,13 +1007,13 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 	FluxboxWindow *fluxboxwin=0;
 	if (be->button == 1) {
 		if (be->window == frame.psbutton)
-			redrawPrevWorkspaceButton(True, True);
+			redrawPrevWorkspaceButton(true, true);
 		else if (be->window == frame.nsbutton)
-			redrawNextWorkspaceButton(True, True);
+			redrawNextWorkspaceButton(true, true);
 		else if (be->window == frame.pwbutton)
-			redrawPrevWindowButton(True, True);
+			redrawPrevWindowButton(true, true);
 		else if (be->window == frame.nwbutton)
-			redrawNextWindowButton(True, True);
+			redrawNextWindowButton(true, true);
 		else if ( iconbar ) {
 			if ( (fluxboxwin = iconbar->findWindow(be->window)) )
 				fluxboxwin->deiconify();
@@ -1022,7 +1021,7 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 #ifndef	 HAVE_STRFTIME
 		else if (be->window == frame.clock) {
 			XClearWindow(display, frame.clock);
-			checkClock(True, True);
+			checkClock(true, true);
 		}
 #endif // HAVE_STRFTIME
 		else if (! on_top) {
@@ -1061,25 +1060,25 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 void Toolbar::buttonReleaseEvent(XButtonEvent *re) {
 	if (re->button == 1) {
 		if (re->window == frame.psbutton) {
-			redrawPrevWorkspaceButton(False, True);
+			redrawPrevWorkspaceButton(false, true);
 
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
 			 screen->prevWorkspace(1);
 		} else if (re->window == frame.nsbutton) {
-			redrawNextWorkspaceButton(False, True);
+			redrawNextWorkspaceButton(false, true);
 
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
 				screen->nextWorkspace(1);
 		} else if (re->window == frame.pwbutton) {
-			redrawPrevWindowButton(False, True);
+			redrawPrevWindowButton(false, true);
 
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
 				screen->prevFocus();
 		} else if (re->window == frame.nwbutton) {
-			redrawNextWindowButton(False, True);
+			redrawNextWindowButton(false, true);
 
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
@@ -1089,7 +1088,7 @@ void Toolbar::buttonReleaseEvent(XButtonEvent *re) {
 #ifndef	 HAVE_STRFTIME
 		else if (re->window == frame.clock) {
 			XClearWindow(display, frame.clock);
-			checkClock(True);
+			checkClock(true);
 		}
 #endif // HAVE_STRFTIME
 	} else if (re->button == 4) //mousewheel scroll up
@@ -1123,7 +1122,8 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent *) {
 
 
 void Toolbar::exposeEvent(XExposeEvent *ee) {
-	if (ee->window == frame.clock) checkClock(True);
+	if (ee->window == frame.clock) 
+		checkClock(true);
 	else if (ee->window == frame.workspace_label && (! editing))
 		redrawWorkspaceLabel();
 	else if (ee->window == frame.window_label) redrawWindowLabel();
@@ -1148,10 +1148,10 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 
 			editing = false;
 			
-			fluxbox->setNoFocus(False);
+			fluxbox->setNoFocus(false);
 			if (fluxbox->getFocusedWindow()) {
 				fluxbox->getFocusedWindow()->setInputFocus();
-				fluxbox->getFocusedWindow()->setFocusFlag(True);
+				fluxbox->getFocusedWindow()->setFocusFlag(true);
 			} else
 				XSetInputFocus(display, PointerRoot, None, CurrentTime);
 			
@@ -1225,8 +1225,8 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 }
 
 
-void Toolbar::timeout(void) {
-	checkClock(True);
+void Toolbar::timeout() {
+	checkClock(true);
 
 	timeval now;
 	gettimeofday(&now, 0);
@@ -1234,7 +1234,7 @@ void Toolbar::timeout(void) {
 }
 
 
-void Toolbar::HideHandler::timeout(void) {
+void Toolbar::HideHandler::timeout() {
 	toolbar->hidden = ! toolbar->hidden;
 	if (toolbar->hidden)
 		XMoveWindow(toolbar->display, toolbar->frame.window,
@@ -1294,7 +1294,7 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 }
 
 
-Toolbarmenu::~Toolbarmenu(void) {
+Toolbarmenu::~Toolbarmenu() {
 	delete placementmenu;
 #ifdef XINERAMA
 	if (toolbar->screen->hasXinerama()) {
@@ -1347,14 +1347,14 @@ void Toolbarmenu::itemSelected(int button, unsigned int index) {
 }
 
 
-void Toolbarmenu::internal_hide(void) {
+void Toolbarmenu::internal_hide() {
 	Basemenu::internal_hide();
 	if (toolbar->doAutoHide() && ! toolbar->isEditing())
 		toolbar->hide_handler.timeout();
 }
 
 
-void Toolbarmenu::reconfigure(void) {
+void Toolbarmenu::reconfigure() {
 	placementmenu->reconfigure();
 #ifdef XINERAMA
 	if (toolbar->screen->hasXinerama()) {
