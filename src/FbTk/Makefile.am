@@ -39,7 +39,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	XrmDatabaseHelper.hh \
 	Image.hh Image.cc \
 	PixmapWithMask.hh \
-	Compose.hh \
+	Compose.hh CompareEqual.hh \
 	TextBox.hh TextBox.cc \
 	GContext.hh GContext.cc \
 	KeyUtil.hh KeyUtil.cc \
