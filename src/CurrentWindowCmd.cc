@@ -129,3 +129,8 @@ void ResizeToCmd::real_execute() {
     if (m_step_size_x > 0 && m_step_size_y > 0)
         fbwindow().resize(m_step_size_x, m_step_size_y);
 }
+
+FullscreenCmd::FullscreenCmd() { }
+void FullscreenCmd::real_execute() {
+    fbwindow().setFullscreen(!fbwindow().isFullscreen());
+}

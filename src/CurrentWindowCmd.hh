@@ -154,4 +154,11 @@ private:
   const int m_step_size_x;
   const int m_step_size_y;
 };
+
+class FullscreenCmd: public WindowHelperCmd{
+public:
+    explicit FullscreenCmd();
+protected:
+    void real_execute();
+};
 #endif // CURRENTWINDOWCMD_HH

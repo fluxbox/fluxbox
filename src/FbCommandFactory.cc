@@ -63,6 +63,7 @@ FbCommandFactory::FbCommandFactory() {
         "focusdown",
         "focusleft",
         "focusright",
+        "fullscreen",
         "iconify",
         "killwindow",
         "leftworkspace",
@@ -208,6 +209,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     //
     // Current focused window commands
     //
+    else if (command == "fullscreen")
+        return new FullscreenCmd();
     else if (command == "minimizewindow" || command == "minimize" || command == "iconify")
         return new CurrentWindowCmd(&FluxboxWindow::iconify);
     else if (command == "maximizewindow" || command == "maximize")
