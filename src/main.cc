@@ -1,6 +1,6 @@
 // main.cc for Fluxbox Window manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-//               and 2003 Simon Bowden (rathnor at users.sourceforge.net)
+// Copyright (c) 2001 - 2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//               and 2003-2005 Simon Bowden (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
             }
         } else if (strcmp(argv[i], "-version") == 0 || strcmp(argv[i], "-v") == 0) {
             // print current version string
-            cout<<"Fluxbox "<<__fluxbox_version<<" : (c) 2001-2004 Henrik Kinnunen "<<endl<<endl;
+            cout<<"Fluxbox "<<__fluxbox_version<<" : (c) 2001-2005 Henrik Kinnunen "<<endl<<endl;
             exit(0);
         } else if (strcmp(argv[i], "-log") == 0 ) {
             if (i + 1 >= argc) {
