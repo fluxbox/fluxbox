@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.2 2002/10/16 23:13:15 fluxgen Exp $
+//$Id: XftFontImp.cc,v 1.3 2002/10/16 23:56:13 fluxgen Exp $
 
 #include "XftFontImp.hh"
 #include "BaseDisplay.hh"
@@ -41,9 +41,11 @@ bool XftFontImp::load(const std::string &name) {
 	Display *disp = BaseDisplay::getXDisplay();
 	XftFont *newxftfont = XftFontOpenName(disp, 0, name.c_str());
 		
-	if (newxftfont == 0) // failed to open font, use old fon
-		return false;
-
+	if (newxftfont == 0) { // failed to open font, lets test with XLFD
+		newxftfont = XftFontOpenXlfd(disp, 0, name.c_str());
+		if (newxftfont == 0)
+			return false;
+	}
 	// destroy old font and set new
 	if (m_xftfont != 0)
 		XftFontClose(disp, m_xftfont);
