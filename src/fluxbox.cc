@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.100 2003/02/23 00:53:31 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.101 2003/02/23 21:41:49 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -731,10 +731,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
             (screen = searchScreen(e->xcrossing.window))) {
             screen->getImageControl()->installRootColormap();
 
-            // if sloppy focus, then remove focus from windows
-            if (screen->isSloppyFocus() ||
-                screen->isSemiSloppyFocus())
-                setFocusedWindow(0);
         }
 			
     }
