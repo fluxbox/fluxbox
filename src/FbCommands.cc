@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.15 2003/08/30 11:59:29 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.16 2003/09/06 14:13:06 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -52,7 +52,7 @@ void ExecuteCmd::execute() {
                 screen_num = 0;
             else
                 screen_num = Fluxbox::instance()->mouseScreen()->screenNumber();
-        } 
+        }
 
         sprintf(intbuff, "%d", screen_num);
 
@@ -109,8 +109,52 @@ void ShowRootMenuCmd::execute() {
         return;
 
     if (screen->getRootmenu()) {
-        screen->getRootmenu()->show();
-        screen->getRootmenu()->grabInputFocus();
+
+      Window root_ret;
+      Window window_ret;
+
+      int rx, ry;
+      int wx, wy;
+      unsigned int mask;
+
+      if ( XQueryPointer(FbTk::App::instance()->display(),
+            screen->rootWindow().window(), &root_ret, &window_ret,
+            &rx, &ry, &wx, &wy, &mask) ) {
+
+        if ( rx - (screen->getRootmenu()->width()/2) > 0 )
+          rx-= screen->getRootmenu()->width()/2;
+        screen->getRootmenu()->move(rx, ry);
+      }
+
+      screen->getRootmenu()->show();
+      screen->getRootmenu()->grabInputFocus();
+    }
+}
+
+void ShowWorkspaceMenuCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    if (screen->getWorkspacemenu()) {
+
+      Window root_ret;
+      Window window_ret;
+
+      int rx, ry;
+      int wx, wy;
+      unsigned int mask;
+
+      if ( XQueryPointer(FbTk::App::instance()->display(),
+            screen->rootWindow().window(), &root_ret, &window_ret,
+            &rx, &ry, &wx, &wy, &mask) ) {
+
+        if ( rx - (screen->getWorkspacemenu()->width()/2) > 0 )
+          rx-= screen->getWorkspacemenu()->width()/2;
+        screen->getWorkspacemenu()->move(rx, ry);
+      }
+      screen->getWorkspacemenu()->show();
+      screen->getWorkspacemenu()->grabInputFocus();
     }
 }
 
