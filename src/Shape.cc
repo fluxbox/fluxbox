@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.9 2004/01/11 15:02:11 fluxgen Exp $
+// $Id: Shape.cc,v 1.10 2004/01/21 17:01:27 fluxgen Exp $
 
 #include "Shape.hh"
 
@@ -62,6 +62,9 @@ FbTk::FbPixmap *createShape(FbTk::FbWindow &win, int place) {
     // we use calloc here so we get consistent C alloc/free with XDestroyImage
     // and no warnings in valgrind :)
     char *data = (char *)calloc(data_size, sizeof (char));
+    if (data == 0)
+        return 0;
+
     memset(data, 0xFF, data_size);
     
     XImage *ximage = XCreateImage(disp,
