@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.14 2003/05/24 13:13:22 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.15 2003/06/23 13:34:54 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -118,7 +118,9 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
     } else if (!m_toolbar.get()) {
         m_toolbarmenu.removeAll();
         m_toolbar.reset(new Toolbar(m_screen, 
-                                    *m_screen.layerManager().getLayer(m_screen.getToolbarLayerNum()), m_toolbarmenu));
+                                    *m_screen.layerManager().getLayer(Fluxbox::instance()->getNormalLayer()), m_toolbarmenu));
+        Fluxbox::instance()->load_rc(m_screen);
+        m_toolbar->reconfigure();
         
         m_toolbarmenu.insert("Mode...", &m_modemenu);   
         m_toolbarmenu.update();
