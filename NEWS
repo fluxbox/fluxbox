@@ -1,29 +1,45 @@
-So whats new in 0.1.6? 
-* Rootcommand is configured for each screen
-* Less strict keyconfig file reading
-* Coding design
-* Tabs can be dropped on the window as well 
-  (if the sloppy window grouping is on)
-* Tab width is configured for each screen
-* Tab cycling
-* "Maximize stop at slit" option
-* Lower window with mouse button 3 
-* You can now comment lines in keys config file
-  (commented lines must start with a #)
-* You can now click to raise window while 
-  you are in sloppy focus mode
+News in 0.1.7:
+* Title bar configuration is moved to the init file
+* Fluxbox will auto copy the default files to ~/.fluxbox/
+  if they don't exist
+* Partial Gnome support:
+  - Atoms supported:
+    _WIN_WORKSPACE
+    _WIN_WORKSPACE_COUNT
+    _WIN_WORKSPACE_NAMES
+    _WIN_CLIENT_LIST
+    _WIN_STATE :
+	    WIN_STATE_MINIMIZED
+	    WIN_STATE_STICKY 
+	    WIN_STATE_SHADED
+    _WIN_HINT :
+        WIN_HINTS_SKIP_FOCUS
+* Tree new languages
+  - Portuguese
+  - Bulgarian
+  - Japanese
+* New key bindings and with parameter support
+  - NudgeRight <step>
+  - NudgeLeft <step>
+  - NudgeUp <step>
+  - NudgeDown <step>
+  - PrevWorkspace <step>
+  - NextWorkspace <step>
+  - Workspace <workspacenum>
+    We keep the Workspace1 Workspace2 etc
+    but they will be removed in next release
+  (new) - LeftWorkspace
+    this will change to the workspace to the left (no workspace cycling)
+  (new) - RightWorkspace
+    this will change to the workspace to the right (no workspace cycling)
+  (new) - SendToWorkspace <workspacenum>
+     sends current window to a workspace
+ 
+* Huge code clean up
 
-Bugfixes:
-* Close button (aterm, eterm etc)
-* Keys memory leak
-* Keybinding bug
-* Withdraw state fixed (opera will not open another instance 
-  if there is one already opened)
-* Slit OnTop while Toolbar OnTop
-* Alt + resize and pressing button 1
-* Tab toggle texture/position
-* Windowmenu bug when resizing with num/caps/scrollock on
-* Shade bug in Windowmenu
-* Sticky toggle bug in Windowmenu
-* Tab/Iconbar resource
-* Crash on no title (the slit apps)
+Bugfixes in 0.1.7:
+* BadWindow error in ~FluxboxWindow
+* negative width in a window
+* Fixed lower/raise of windows when using windowmenu/keybinding
+  so now tabs should follow
+* Slit always on top crash

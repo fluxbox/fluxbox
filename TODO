@@ -1,35 +1,39 @@
-TODO for Fluxbox 0.2.0
-Screen.cc {
+* Screen.cc:
 	fix toupper for str_key in in Menu loading
-	nls for "error on row" in Menu loading ??
-}
-* 
-* Remove the cylic dep between class Tab and class Window
+	nls for "error on row" in Menu loading ?? 
+* remove cyclic deps:
+	Tab <-> Window
+	Workspace <-> Window
+	and more 
 * Fix "no font" crash
-* Remove cyclic dep on Basemenu with class Fluxbox
 * Fix configurable toolbar
-	so the user can configure toolbar in a config file
-
-* Fix so config file is created @ $HOME if first use
-	and config files is copied and configured
-
-* Fix so toolbar dont hide if its autohide and
-	you are in "change workspace mode"
-* the BadAccess error in Theme
-* Finska översättning
-* keybinding for ROOTMENU
-* wheel-config support
-* separator in the menus
-(* restructure BImageControl::parseTexture)
-* fix "move group to..." without tab bugg.
+  so the user can configure toolbar in a config file
+* Toolbar shouldn't hide if its autohide and 
+  you are in "change workspace mode"
+* The BadAccess error in Theme
+* Finnish (Finland) translation
+* Keybinding for ROOTMENU
+* Wheel-config support
+* Separator in the menus
+* Fix "move group to..." without tab bugg.
 * 0,0-pos fix
-* gnome support 
-* net wm atom support
-* clean up in the global namespace
-* remove cyclic deps
+* More Gnome atom support 
+* Net wm atom support
+* Clean up in the global namespace
 * Create fbinput style app
-(* Add wheelscroll-workspace-change configuration (reversed order or
-  regular)- Add "system menu" for minimized apps in the toolbar.
-  (Close, Kill, Send to, etc) )
-	
-* "Iconify group" in Windowmenu
+* Add wheelscroll-workspace-change configuration (reversed order or
+  regular)
+* Add "system menu" for minimized apps in the icon bar.
+  (Close, Kill, Send to, etc)	
+* "Iconify group"/group commands in Windowmenu
+* Call and navigate menus from the keyboard (bind a menu to a key
+  and use arrows to navigate)
+* Dynamic tag width. Currently I know of two options - constant width
+  and dividing the full window width. I like it better when the width is
+  enough to show all the title, as long as the aggregation of all tabs
+  doesn't exceed the frame's width (see PWM for example)
+* Unique names (e.g, the second xterm title will be "xterm <2>", as in
+  emacs), needed for the next wish:
+* "Goto Frame" as Emacs C-x b, that show completions in the bar
+  (I really like the emacs's "ido.el" package behavior, which I recommend
+   to any emacs user)
