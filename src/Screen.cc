@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.231 2003/09/08 16:37:27 fluxgen Exp $
+// $Id: Screen.cc,v 1.232 2003/09/12 23:35:31 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2047,8 +2047,8 @@ void BScreen::showPosition(int x, int y) {
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),
-                                    m_root_theme->bevelWidth(), 
-                                    m_root_theme->bevelWidth() + 
+                                    winFrameTheme().bevelWidth(), 
+                                    winFrameTheme().bevelWidth() + 
                                     winFrameTheme().font().ascent());
 		
 }
@@ -2084,8 +2084,8 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),
-                                    m_root_theme->bevelWidth(), 
-                                    m_root_theme->bevelWidth() + 
+                                    winFrameTheme().bevelWidth(), 
+                                    winFrameTheme().bevelWidth() + 
                                     winFrameTheme().font().ascent());	
 }
 
@@ -2152,8 +2152,8 @@ void BScreen::renderGeomWindow() {
                                      "W: 0000 x H: 0000");
     int l = strlen(s);
 
-    int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
-    int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
+    int geom_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
+    int geom_w = winFrameTheme().font().textWidth(s, l) + winFrameTheme().bevelWidth()*2;
     m_geom_window.resize(geom_w, geom_h);
 
     m_geom_window.setBorderWidth(winFrameTheme().border().width());
