@@ -1,8 +1,8 @@
 # Makefile.am for fluxbox
-# Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+# Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 #
 # src/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
-# Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+# Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -47,7 +47,7 @@ if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
 
-fluxbox_SOURCES = AtomHandler.hh BaseDisplay.cc BaseDisplay.hh \
+fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc BaseDisplay.hh \
 	Basemenu.cc Basemenu.hh \
 	Clientmenu.cc Clientmenu.hh Configmenu.cc Configmenu.hh \
 	DirHelper.hh DirHelper.cc DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
