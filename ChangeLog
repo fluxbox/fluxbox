@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/03/11:
+  * Remove trailing whitespaces from any command (Mathias)
+    CommandParser.cc
   * Fix usage of 'which' - test behaviour of which to choose usage 
     method, rather than guessing based on system (Simon)
     fbsetbg fluxbox-generate_menu.in
