@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.17 2002/08/13 23:58:26 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.18 2002/08/14 21:41:21 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -137,7 +137,7 @@ void bexec(const char *command, char *displaystring) {
 #endif // !__EMX__
 
 
-BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):FbAtoms(0),
+BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):
 m_startup(true), m_shutdown(false), 
 m_display_name(XDisplayName(dpy_name)), m_app_name(app_name),
 m_server_grabs(0)
@@ -164,8 +164,7 @@ m_server_grabs(0)
 					"as close-on-exec\n"));
 		throw static_cast<int>(2); //throw error 2
 	}
-	//initiate atoms
-	initAtoms(m_display);
+	
 
 	number_of_screens = ScreenCount(m_display);
 
