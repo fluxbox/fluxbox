@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.72 2002/08/30 13:11:47 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.73 2002/08/30 14:07:38 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -1145,6 +1145,36 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			#endif
 			if (action==Keys::LASTKEYGRAB) //if action not found end case
 				break;
+
+			// what to allow if moving
+			if (focused_window && focused_window->isMoving()) {
+				int allowed = false;
+				switch (action) {
+				case Keys::WORKSPACE:
+				case Keys::SENDTOWORKSPACE:
+				case Keys::WORKSPACE1:
+				case Keys::WORKSPACE2:
+				case Keys::WORKSPACE3:
+				case Keys::WORKSPACE4:
+				case Keys::WORKSPACE5:
+				case Keys::WORKSPACE6:
+				case Keys::WORKSPACE7:
+				case Keys::WORKSPACE8:
+				case Keys::WORKSPACE9:
+				case Keys::WORKSPACE10:
+				case Keys::WORKSPACE11:
+				case Keys::WORKSPACE12:
+				case Keys::NEXTWORKSPACE:
+				case Keys::PREVWORKSPACE:
+				case Keys::LEFTWORKSPACE:
+				case Keys::RIGHTWORKSPACE:
+					allowed = true;
+					break;
+				default:
+					allowed = false;
+				}
+				if (!allowed) break;
+			}
 
 			switch (action) {					
 			case Keys::WORKSPACE:
