@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.16 2003/01/05 23:42:27 fluxgen Exp $
+/// $Id: Slit.hh,v 1.17 2003/01/09 22:06:49 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -106,7 +106,7 @@ private:
 };
 
 /// Handles dock apps
-class Slit : public TimeoutHandler {
+class Slit : public FbTk::TimeoutHandler {
 public:
     explicit Slit(BScreen *screen);
     virtual ~Slit();
@@ -184,7 +184,7 @@ private:
     bool on_top, hidden, do_auto_hide;
 
     BScreen *m_screen;
-    BTimer timer;
+    FbTk::Timer timer;
 
     typedef std::list<SlitClient *> SlitClients;
 
