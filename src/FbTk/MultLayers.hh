@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.hh,v 1.5 2003/02/09 14:11:14 rathnor Exp $
+// $Id: MultLayers.hh,v 1.6 2003/07/20 18:05:40 rathnor Exp $
 
 #ifndef FBTK_MULTLAYERS_HH
 #define FBTK_MULTLAYERS_HH
@@ -59,8 +59,14 @@ public:
     XLayer *getLayer(size_t num);
     const XLayer *getLayer(size_t num) const;
 
+    inline bool isUpdatable() const { return m_lock == 0; }
+    inline void lock() { ++m_lock; }
+    inline void unlock() { if (--m_lock == 0) restack(); }
+
 private:
     std::vector<XLayer *> m_layers;
+
+    int m_lock;
 
 };
 

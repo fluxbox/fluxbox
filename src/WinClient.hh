@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.8 2003/06/23 14:16:05 rathnor Exp $
+// $Id: WinClient.hh,v 1.9 2003/07/20 18:05:39 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -70,7 +70,10 @@ public:
     TransientList &transientList() { return transients; }
     const TransientList &transientList() const { return transients; }
     bool isTransient() const { return transient_for != 0; }
-    bool isModal() const { return modal; }
+
+    bool isModal() const { return m_modal > 0; }
+    void addModal(); // some transient of ours (or us) is modal
+    void removeModal(); // some transient (or us) is no longer modal
 
     bool operator == (const FluxboxWindow &win) const {
         return (m_win == &win);
@@ -138,7 +141,9 @@ public:
     enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 private:
-    bool modal;
+    // number of transients which we are modal for
+    // or indicates that we are modal if don't have any transients
+    int m_modal;
 
     std::string m_title, m_icon_title;
     std::string m_class_name, m_instance_name;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.21 2003/07/20 10:41:56 rathnor Exp $
+// $Id: Menu.hh,v 1.22 2003/07/20 18:05:39 rathnor Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -37,7 +37,6 @@
 #include "RefCount.hh"
 #include "Command.hh"
 #include "Observer.hh"
-#include "XLayerItem.hh"
 #include "FbPixmap.hh"
 #include "MenuTheme.hh"
 

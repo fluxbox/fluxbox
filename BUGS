@@ -14,13 +14,9 @@ BUGS:
   * After startup the font of the toolbar is to big; reload config works
     around this.
     => is this fixed now?? (as of ResourceManager changes)
+    => Don't think so, extra info = seems to happen for Multiple screens
 
   * Saving of number of workspaces on restart
-
-  * Multiple transients:
-    in openoffice - focus jumps between until user does something
-    in mozilla    - alt-tabbing does strange thigns with other transient
-                    layer-wise (other transient flashes)
 
   * gaim (0.64) crashes when remembering dimensions... is this a gaim
     bug?
@@ -77,6 +73,12 @@ Fixed bugs (or not-our-fault bugs):
   * If you toggle a setting in the configuration-menu the notch does not
     indicate the change until you point to another option.
     => Fixed
+
+  * Multiple transients:
+    in openoffice - focus jumps between until user does something
+    in mozilla    - alt-tabbing does strange thigns with other transient
+                    layer-wise (other transient flashes)
+    => fixed
 
 ------------------------------
 Core dumps and notes

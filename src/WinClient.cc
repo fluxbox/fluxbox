@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.17 2003/07/10 11:58:13 fluxgen Exp $
+// $Id: WinClient.cc,v 1.18 2003/07/20 18:05:39 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -54,7 +54,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      wm_hint_flags(0),
                      send_focus_message(false),
                      m_win(fbwin),
-                     modal(false),
+                     m_modal(0),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
                      m_blackbox_hint(0),
@@ -245,8 +245,9 @@ void WinClient::updateTransientInfo() {
         return;
 	
     if (win != None && m_win->screen().rootWindow() == win) {
-        modal = true;
-        return; // transient for root window...
+        // transient for root window... =  transient for group
+        // I don't think we are group-aware yet
+        return; 
     }
 
     FluxboxWindow *transient_win = Fluxbox::instance()->searchWindow(win);
@@ -513,4 +514,16 @@ bool WinClient::hasGroupLeftWindow() const {
         }
     }
     return false;
+}
+
+void WinClient::addModal() {
+    ++m_modal;
+    if (transient_for)
+        transient_for->addModal();
+}
+
+void WinClient::removeModal() {
+    --m_modal;
+    if (transient_for)
+        transient_for->removeModal();
 }

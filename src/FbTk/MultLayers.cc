@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.cc,v 1.6 2003/02/18 15:08:12 rathnor Exp $
+// $Id: MultLayers.cc,v 1.7 2003/07/20 18:05:39 rathnor Exp $
 
 #include "MultLayers.hh"
 #include "XLayer.hh"
@@ -32,7 +32,9 @@ using namespace std;
 
 using namespace FbTk;
 
-MultLayers::MultLayers(int numlayers) {
+MultLayers::MultLayers(int numlayers) :
+    m_lock(0) 
+{
     for (int i=0; i < numlayers; ++i) 
         m_layers.push_back(new XLayer(*this, i));
 }
@@ -150,6 +152,8 @@ void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
 }
 
 void MultLayers::restack() {
+    if (!isUpdatable()) 
+        return;
 
     int layernum=0, winnum=0, size = this->size();
 

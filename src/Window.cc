@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.206 2003/07/20 08:12:36 rathnor Exp $
+// $Id: Window.cc,v 1.207 2003/07/20 18:05:39 rathnor Exp $
 
 #include "Window.hh"
 
@@ -145,6 +145,11 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock) return;
     win.oplock = true;
 
+    // we need to lock actual restacking so that raising above active transient
+    // won't do anything nasty
+    if (!win.winClient().transientList().empty())
+        win.screen().layerManager().lock();
+
     if (!win.isIconic()) {
         win.screen().updateNetizenWindowRaise(win.clientWindow());
         win.layerItem().raise();
@@ -159,12 +164,20 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
             raiseFluxboxWindow(*(*it)->fbwindow());
     }
     win.oplock = false;
+
+    if (!win.winClient().transientList().empty())
+        win.screen().layerManager().unlock();
 }
 
 /// lower window and do the same for each transient it holds
 void lowerFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock) return;
     win.oplock = true;
+
+    // we need to lock actual restacking so that raising above active transient
+    // won't do anything nasty
+    if (!win.winClient().transientList().empty())
+        win.screen().layerManager().lock();
 
     if (!win.isIconic()) {
         win.screen().updateNetizenWindowLower(win.clientWindow());
@@ -179,12 +192,17 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
             lowerFluxboxWindow(*(*it)->fbwindow());
     }
     win.oplock = false;
+    if (!win.winClient().transientList().empty())
+        win.screen().layerManager().unlock();
 }
 
 /// raise window and do the same for each transient it holds
 void tempRaiseFluxboxWindow(FluxboxWindow &win) {
     if (win.oplock) return;
     win.oplock = true;
+
+    if (!win.winClient().transientList().empty())
+        win.screen().layerManager().lock();
 
     if (!win.isIconic()) {
         // don't update netizen, as it is only temporary
@@ -200,6 +218,10 @@ void tempRaiseFluxboxWindow(FluxboxWindow &win) {
             tempRaiseFluxboxWindow(*(*it)->fbwindow());
     }
     win.oplock = false;
+
+    if (!win.winClient().transientList().empty())
+        win.screen().layerManager().unlock();
+
 }
 
 class SetClientCmd:public FbTk::Command {
@@ -1107,8 +1129,6 @@ bool FluxboxWindow::setInputFocus() {
     if (! validateClient())
         return false;
 
-    bool ret = false;
-
     if (!m_client->transients.empty() && m_client->isModal()) {
         WinClient::TransientList::iterator it = m_client->transients.begin();
         WinClient::TransientList::iterator it_end = m_client->transients.end();
@@ -1116,30 +1136,19 @@ bool FluxboxWindow::setInputFocus() {
             if ((*it)->isModal())
                 return (*it)->fbwindow()->setCurrentClient(**it, true);
         }
+    } 
+    if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
+        m_client->getFocusMode() == WinClient::F_PASSIVE) {
+        m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
     } else {
-        if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
-            m_client->getFocusMode() == WinClient::F_PASSIVE) {
-            m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
-        } else {
-            return false;
-        }
-
-	screen().setFocusedWindow(*m_client);
-
-        Fluxbox::instance()->setFocusedWindow(this);
-
-        frame().setFocus(true);
-
-        m_client->sendFocus();
-
-        if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
-            && screen().doAutoRaise())
-            m_timer.start();
-
-        ret = true;
+        return false;
     }
 
-    return ret;
+    if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
+        && screen().doAutoRaise())
+        m_timer.start();
+
+    return true;
 }
 
 void FluxboxWindow::hide() {
@@ -1224,8 +1233,9 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     frame().show();
 
-    if (was_iconic && screen().doFocusNew())
+    if (was_iconic && screen().doFocusNew()) {
         setInputFocus();
+    }
 
     if (focused != frame().focused())
         frame().setFocus(focused);
@@ -1579,9 +1589,11 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     if (focused)
         gettimeofday(&m_last_focus_time, 0);
 
+    screen().setFocusedWindow(*m_client);
+    m_client->sendFocus();
     frame().setFocus(focus);
 
-    if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus()) &&
+    if (!focused && (screen().isSloppyFocus() || screen().isSemiSloppyFocus()) &&
         screen().doAutoRaise())
         m_timer.stop();
 }
@@ -2042,8 +2054,9 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState);		
 			
-        if (client->isTransient() || screen().doFocusNew())
+        if (client->isTransient() || screen().doFocusNew()) {
             setInputFocus();
+        }
         else
             setFocusFlag(false);			
 
@@ -2555,8 +2568,9 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             
             // if client is set, use setCurrent client, otherwise just setInputFocus
             if ((!sa.leave || sa.inferior) && 
-                ((client && setCurrentClient(*client, true)) || setInputFocus()))
+                ((client && setCurrentClient(*client, true)) || setInputFocus())) {
                 installColormap(True);
+            }
         }        
     }
 }

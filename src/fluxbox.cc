@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.171 2003/07/18 15:40:55 rathnor Exp $
+// $Id: fluxbox.cc,v 1.172 2003/07/20 18:05:39 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -891,11 +891,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
             break;
 
         FluxboxWindow *win = searchWindow(e->xfocus.window);
-        if (win && ! win->isFocused())
+        if (win && ! win->isFocused()) {
             setFocusedWindow(win);
+        }
 	
     } break;
     case FocusOut:{
+
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
             break;
@@ -904,8 +906,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-            if (getFocusedWindow())
-                getFocusedWindow()->setInputFocus();
+
         }
     }
 	break;
@@ -1084,8 +1085,9 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 				
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
         FluxboxWindow *win = searchWindow(ce.window);
-        if (win && win->isVisible() && win->setInputFocus())
+        if (win && win->isVisible() && win->setInputFocus()) {
             win->installColormap(true);
+        }
     } else if (ce.message_type == m_fbatoms->getFluxboxCycleWindowFocusAtom()) {
         BScreen *screen = searchScreen(ce.window);
 

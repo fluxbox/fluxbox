@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.8 2003/04/15 23:20:31 rathnor Exp $
+// $Id: XLayer.cc,v 1.9 2003/07/20 18:05:40 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -39,6 +39,9 @@ XLayer::~XLayer() {
 }
 
 void XLayer::restack() {
+    if (!m_manager.isUpdatable())
+        return;
+
     int num_windows = countWindows();
 
     // each LayerItem can contain several windows
@@ -78,6 +81,8 @@ int XLayer::countWindows() {
 
 // Stack all windows associated with 'item' below the 'above' item
 void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
+    if (!m_manager.isUpdatable())
+        return;
 
     Window *winlist;
     size_t winnum, size, num = item->numWindows();

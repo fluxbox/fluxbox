@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/20:
+   * Fix aspects of focus and raising, including transients (Simon)
+     - fixes focus toggling with transients and sloppy focus
+     WinClient.hh/cc Window.cc fluxbox.cc MultLayers.hh/cc XLayer.hh/cc Menu.hh
    * Fix menu [re]drawing, particularly when selecting options (Simon)
      Menu.hh/cc
    * Fix disappearing Remember menu, plus titles of sub-window menus
