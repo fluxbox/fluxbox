@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.140 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Toolbar.cc,v 1.141 2004/06/07 21:32:12 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -191,6 +191,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     frame(*this, scrn.screenNumber()),
     m_window_pm(0),
     m_screen(scrn),
+    m_layeritem(frame.window, layer),
     m_layermenu(scrn.menuTheme(), 
                 scrn.imageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
@@ -203,7 +204,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
                   scrn.imageControl(),
                   *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_theme(scrn.screenNumber()),
-    m_layeritem(frame.window, layer),
     m_tool_factory(scrn),
     m_strut(0),
     // lock rcmanager here

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.52 2003/12/20 19:04:45 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.53 2004/06/07 21:32:11 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -160,6 +160,7 @@ private:
 
     FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
 
+    FbTk::XLayerItem m_layeritem; ///< layer item, must be declared before layermenu
     LayerMenu<Toolbar> m_layermenu;
     FbMenu  m_placementmenu, m_toolbarmenu;
 
@@ -167,7 +168,7 @@ private:
     // themes
     ToolbarTheme m_theme;
     
-    FbTk::XLayerItem m_layeritem;
+
     typedef std::list<ToolbarItem *> ItemList;
     ItemList m_item_list;
 

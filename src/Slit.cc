@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.95 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Slit.cc,v 1.96 2004/06/07 21:36:06 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -247,12 +247,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_clientlist_menu(scr.menuTheme(),
                         scr.imageControl(),
                         *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
-      m_layermenu(new LayerMenu<Slit>(scr.menuTheme(),
-                                      scr.imageControl(),
-                                      *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                      this,
-                                      true)),
-      //For KDE dock applets
+       //For KDE dock applets
       m_kwm1_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
                                     "KWM_DOCKWINDOW", False)), //KDE v1.x
       m_kwm2_dockwindow(XInternAtom(FbTk::App::instance()->display(), 
@@ -316,6 +311,12 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     
     frame.window.setAlpha(*m_rc_alpha);
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
+    m_layermenu.reset(new LayerMenu<Slit>(scr.menuTheme(),
+                                    scr.imageControl(),
+                                    *scr.layerManager().
+                                    getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                          this,
+                                          true));
     moveToLayer((*m_rc_layernum).getNum());
 
     if (m_layermenu.get())
