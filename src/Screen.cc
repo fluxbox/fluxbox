@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.285 2004/07/14 18:28:05 fluxgen Exp $
+// $Id: Screen.cc,v 1.286 2004/08/30 11:33:23 akir Exp $
 
 
 #include "Screen.hh"
@@ -1813,18 +1813,20 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     _BOOLITEM(Configmenu, ClickRaises,
               "Click Raises", "Click Raises", 
               *resource.click_raises, saverc_cmd);
+#ifdef USE_XFT
     // setup antialias cmd to reload style and save resource on toggle
     _BOOLITEM(Configmenu, AntiAlias,
               "AntiAlias", "Use Anti-aliased fonts",
               *resource.antialias, save_and_reconfigure);
-
+#endif // USE_XFT
 #undef _BOOLITEM
 
+#ifdef HAVE_XRENDER
     FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
                                               0, 255);
     menu_alpha_item->setCommand(saverc_cmd);
     menu.insert(menu_alpha_item);
-
+#endif // HAVE_XRENDER
 
 
     // finaly update menu 
