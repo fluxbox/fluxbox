@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.3 2002/12/25 11:27:29 fluxgen Exp $
+// $Id: Button.cc,v 1.4 2003/01/10 02:16:29 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -57,11 +57,11 @@ Button::~Button() {
 }
 
 void Button::setOnClick(RefCount<Command> &cmd, int button) {
-	// we only handle buttons 1 to 5
-	if (button > 5 || button == 0)
-		return;
-	//set on click command for the button
-	m_onclick[button - 1] = cmd;
+    // we only handle buttons 1 to 5
+    if (button > 5 || button == 0)
+        return;
+    //set on click command for the button
+    m_onclick[button - 1] = cmd;
 }
 
 void Button::move(int x, int y) {
@@ -124,7 +124,7 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
 
         if (m_gc == 0) // get default gc
             m_gc = DefaultGC(disp, m_win.screenNumber());
-    
+
         XCopyArea(disp, m_foreground_pm, m_win.window(), m_gc, 0, 0, width(), height(), 0, 0);
     }
 
@@ -132,8 +132,9 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
         event.x > width() || event.y > height())
         return;
 
-	if (event.button > 0 && event.button <= 5)
-		m_onclick[event.button - 1]->execute();
+    if (event.button > 0 && event.button <= 5 &&
+        m_onclick[event.button -1].get() != 0)
+        m_onclick[event.button - 1]->execute();
    
 }
 
