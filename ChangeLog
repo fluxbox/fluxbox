@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/07:
+  * Fixed bug in extra drawing in the iconbar (Henrik)
+    TODO: check this out more
+	Container.cc
+  * Fixed bug with color/colorTo and .pixmap in styles (Henrik)
+    Toolbar.cc, Slit.cc, Screen.cc, WorkspaceNameTool.cc,
+	IconbarTool.cc, Texture.cc, ButtonTool.cc, ClockTool.cc, FbWinFrame.cc
+  * Added Toolbar to main config menu again (Henrik)
+    Toolbar.cc
 *03/12/06:
   * Updates for startfluxbox.in (Han)
 *03/12/04:
