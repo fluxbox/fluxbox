@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.66 2002/08/11 22:44:29 fluxgen Exp $
+// $Id: Window.cc,v 1.67 2002/08/12 03:28:17 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -321,9 +321,9 @@ tab(0)
 
 	setFocusFlag(false);
 
-	#ifdef GNOME
+#ifdef GNOME
 	updateGnomeAtoms();
-	#endif
+#endif // GNOME
 
 #ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
@@ -333,7 +333,7 @@ tab(0)
 
 
 FluxboxWindow::~FluxboxWindow() {
-	if (screen==0) //the window wasn't created 
+	if (screen == 0) //the window wasn't created 
 		return;
 	
 	Fluxbox *fluxbox = Fluxbox::instance();
@@ -360,12 +360,12 @@ FluxboxWindow::~FluxboxWindow() {
 		tab = 0;
 	}
 	
-	if (client.mwm_hint!=0) {
+	if (client.mwm_hint != 0) {
 		XFree(client.mwm_hint);
 		client.mwm_hint = 0;
 	}
 
-	if (client.blackbox_hint!=0) {
+	if (client.blackbox_hint != 0) {
 		XFree(client.blackbox_hint);
 		client.blackbox_hint = 0;
 	}
@@ -374,9 +374,9 @@ FluxboxWindow::~FluxboxWindow() {
 	if (isTransient()) {
 		//guard from having transient_for = this
 		if (client.transient_for == this) {
-			#ifdef DEBUG
+#ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): WARNING! client.transient_for == this WARNING!"<<endl;
-			#endif //DEBUG
+#endif //DEBUG
 			client.transient_for = 0;
 		}
 		
@@ -1954,6 +1954,10 @@ void FluxboxWindow::withdraw() {
 
 
 void FluxboxWindow::maximize(unsigned int button) {
+	// deiconify if we're iconic
+	if (isIconic())
+		deiconify();
+
 	if (! maximized) {
 		int dx, dy;
 		unsigned int dw, dh, slitModL = 0, slitModR = 0, slitModT = 0, slitModB = 0;
@@ -2619,7 +2623,14 @@ void FluxboxWindow::restoreAttributes() {
 	setState(current_state);
 }
 
-
+void FluxboxWindow::showMenu(int mx, int my) {
+	windowmenu->move(mx, my);
+	windowmenu->show();		
+	XRaiseWindow(display, windowmenu->windowID());
+	XRaiseWindow(display, windowmenu->getSendToMenu()->windowID());
+	XRaiseWindow(display, windowmenu->getSendGroupToMenu()->windowID());
+}
+				
 void FluxboxWindow::restoreGravity() {
 	// restore x coordinate
 	switch (client.win_gravity) {
@@ -3173,11 +3184,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 
 		if (windowmenu) {
 			if (! windowmenu->isVisible()) { // if not window menu is visible then show it
-				windowmenu->move(mx, my);
-				windowmenu->show();		
-				XRaiseWindow(display, windowmenu->windowID());
-				XRaiseWindow(display, windowmenu->getSendToMenu()->windowID());
-				XRaiseWindow(display, windowmenu->getSendGroupToMenu()->windowID());
+				showMenu(mx, my);
 			} else //else hide menu
 				windowmenu->hide(); 
 		}

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.26 2002/08/11 22:33:41 fluxgen Exp $
+// $Id: Window.hh,v 1.27 2002/08/12 03:28:17 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -201,7 +201,7 @@ public:
 	void setWorkspace(int n);
 	void changeBlackboxHints(BaseDisplay::BlackboxHints *bh);
 	void restoreAttributes();
-	
+	void showMenu(int mx, int my);	
 
 	void buttonPressEvent(XButtonEvent *be);
 	void buttonReleaseEvent(XButtonEvent *be);
