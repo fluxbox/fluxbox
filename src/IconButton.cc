@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.1 2003/08/11 15:45:50 fluxgen Exp $
+// $Id: IconButton.cc,v 1.2 2003/08/12 00:16:16 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -30,6 +30,7 @@
 #include "IconButtonTheme.hh"
 #include "Window.hh"
 #include "WinClient.hh"
+#include "SimpleCommand.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -49,6 +50,9 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     m_win(win), 
     m_icon_window(window(), 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask) {
+
+    FbTk::RefCount<FbTk::Command> focus(new FbTk::SimpleCommand<FluxboxWindow>(m_win, &FluxboxWindow::raiseAndFocus));
+    setOnClick(focus);
 
     m_win.hintSig().attach(this);
 
@@ -115,16 +119,16 @@ void IconButton::update(FbTk::Subject *subj) {
 
     if(hints->flags & IconMaskHint) {
         m_icon_mask.copy(hints->icon_mask);
-        m_icon_mask.scale(height(), height());
+        m_icon_mask.scale(m_icon_pixmap.width(), m_icon_pixmap.height());
     } else
         m_icon_mask = 0;
 
     XFree(hints);
+    hints = 0;
 
 #ifdef SHAPE
-    //!! TODO! bugs!?!
-    /*
-      if (m_icon_mask.drawable() != 0) {
+
+    if (m_icon_mask.drawable() != 0) {
         XShapeCombineMask(FbTk::App::instance()->display(),
                           m_icon_window.drawable(),
                           ShapeBounding,
@@ -132,7 +136,7 @@ void IconButton::update(FbTk::Subject *subj) {
                           m_icon_mask.drawable(),
                           ShapeSet);
     }
-    */
+
 #endif // SHAPE
 
     setupWindow();
