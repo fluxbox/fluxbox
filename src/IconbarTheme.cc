@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.5 2003/08/19 21:26:45 fluxgen Exp $
+// $Id: IconbarTheme.cc,v 1.6 2003/08/28 23:51:26 fluxgen Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -62,12 +62,21 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     using namespace FbTk;
     ThemeManager &tm = ThemeManager::instance();
 
-    if (&m_focused_texture == &item)
-        return tm.loadItem(item, "window.title.focus", "Window.Title.Focus");
-    else if (&m_unfocused_texture == &item) {
-        return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) ? 
-                true : 
-                tm.loadItem(item, "window.title.unfocus", "Window.Title.Unfocus"));
+    if (&m_focused_texture == &item) {
+        // special case for textures since they're using .load()
+        FbTk::ThemeItem<FbTk::Texture> tmp_item(m_focused_texture.theme(),
+                                                "window.label.focus", "Window.Title.Focus");
+        tmp_item.load();
+        // copy texture
+        *m_focused_texture = *tmp_item;
+    } else if (&m_unfocused_texture == &item) {
+        // special case for textures since they're using .load()
+        FbTk::ThemeItem<FbTk::Texture> tmp_item(m_unfocused_texture.theme(),
+                                                "window.label.unfocus", "Window.Label.Unfocus");
+        tmp_item.load();
+        // copy texture
+        *m_unfocused_texture = *tmp_item;
+
     } else if (&m_empty_texture == &item) {
         return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) ? 
                 true : 
@@ -75,18 +84,27 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
     } else if (item.name() == m_name + ".borderWidth" || 
                item.name() == m_name + ".focused.borderWidth" ||
                item.name() == m_name + ".unfocused.borderWidth")
+
         return tm.loadItem(item, "borderWidth", "BorderWidth");
+
     else if (item.name() == m_name + ".borderColor" || 
              item.name() == m_name + ".focused.borderColor" ||
              item.name() == m_name + ".unfocused.borderColor")
+
         return tm.loadItem(item, "borderColor", "BorderColor");
+
     else if (item.name() == m_name + ".focused.font" ||
              item.name() == m_name + ".unfocused.font")
+
         return tm.loadItem(item, "window.font", "Window.Font");
-    else if (item.name() == m_name + ".focused.textColor")
-        return tm.loadItem(item, "window.label.focus.textColor", "Window.Label.Focus.TextColor");
-    else if (item.name() == m_name + ".unfocused.textColor")
+
+    else if (item.name() == m_name + ".focused.textColor") {
+
+        return tm.loadItem(item, "window.label.focus.textColor", "Window.Label.Focus.TextColor");        
+
+    } else if (item.name() == m_name + ".unfocused.textColor")
         return tm.loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
 
+ 
     return false;
 }
