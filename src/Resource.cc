@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.2 2002/02/04 06:47:34 fluxgen Exp $
+// $Id: Resource.cc,v 1.3 2002/07/20 09:51:26 fluxgen Exp $
 
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
@@ -55,11 +55,11 @@ bool ResourceManager::load(const char *filename) {
 	for (; i != i_end; ++i) {
 	
 		Resource_base *resource = *i;
-		if (XrmGetResource(*database, resource->getName().c_str(),
-				resource->getAltName().c_str(), &value_type, &value))			
+		if (XrmGetResource(*database, resource->name().c_str(),
+				resource->altName().c_str(), &value_type, &value))			
 			resource->setFromString(value.addr);
 		else {
-			cerr<<"Faild to read: "<<resource->getName()<<endl;
+			cerr<<"Failed to read: "<<resource->name()<<endl;
 			cerr<<"Setting default value"<<endl;
 			resource->setDefaultValue();
 		}
@@ -87,7 +87,7 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
 	//write all resources to database
 	for (; i != i_end; ++i) {
 		Resource_base *resource = *i;
-		rc_string = resource->getName() + string(": ") + resource->getString();
+		rc_string = resource->name() + string(": ") + resource->getString();
 		XrmPutLineResource(&*database, rc_string.c_str());
 	}
 
@@ -97,13 +97,14 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
 	//check if we want to merge a database
 	if (mergefilename) {
 		XrmDatabaseHelper olddatabase(mergefilename);
-		if (olddatabase == 0)
+		if (olddatabase == 0) // did we load the file?
 			return false;
 		
-		XrmMergeDatabases(*database, &*olddatabase);
-		XrmPutFileDatabase(*olddatabase, filename); //save database to file
-		*database=0; //don't try to destroy the database
-	} else //save database to file
+		XrmMergeDatabases(*database, &*olddatabase); // merge databases
+		XrmPutFileDatabase(*olddatabase, filename); // save database to file
+		
+		*database = 0; // don't try to destroy the database
+	} else // save database to file
 		XrmPutFileDatabase(*database, filename);
 
 	return true;
