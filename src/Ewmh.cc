@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.40 2004/01/21 09:37:10 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.41 2004/01/21 15:42:14 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -144,31 +144,6 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     unsigned char *data = 0;
 
-    win.winClient().property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM, 
-                             &ret_type, &fmt, &nitems, &bytes_after, 
-                             &data);
-    if (data) {
-        // we must convert to long
-        unsigned long *real = (unsigned long *)data;
-        for (unsigned long i=0; i<nitems; ++i)
-            setState(win, real[i], true);
-        XFree(data);
-    }
-
-    if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
-                                 &ret_type, &fmt, &nitems, &bytes_after, 
-                                 (unsigned char **) &data) && data) {
-        unsigned int desktop = static_cast<unsigned int>(*data);
-        if (desktop == 0xFFFFFFFF && !win.isStuck())
-            win.stick();
-        else
-            win.screen().sendToWorkspace(desktop, &win, false);
-
-        XFree(data);
-    }
-
-    updateWorkspace(win);
-
     /* From Extended Window Manager Hints, draft 1.3:
      *
      * _NET_WM_WINDOW_TYPE, ATOM[]/32
@@ -199,6 +174,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
              */
             if (atoms[l] == m_net_wm_window_type_dock) {
                 win.moveToLayer(Fluxbox::instance()->getDockLayer());
+                cerr<<"Dock app: moveToLayer Dock layer"<<endl;
                 // we also assume it shouldn't be visible in any toolbar
                 win.setHidden(true);
                 break;
@@ -206,6 +182,24 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
         }
     }
+
+    setupState(win);
+
+    if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
+                                 &ret_type, &fmt, &nitems, &bytes_after, 
+                                 (unsigned char **) &data) && data) {
+        unsigned int desktop = static_cast<unsigned int>(*data);
+        if (desktop == 0xFFFFFFFF && !win.isStuck())
+            win.stick();
+        else
+            win.screen().sendToWorkspace(desktop, &win, false);
+
+        XFree(data);
+    }
+
+    updateWorkspace(win);
+
+
 }
 
 void Ewmh::updateFrameClose(FluxboxWindow &win) {
@@ -730,14 +724,12 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
                state == m_net_wm_state_skip_taskbar) {        
         win.setHidden(value);
     } else if (state == m_net_wm_state_below) {
-
         if (value)
             win.moveToLayer(Fluxbox::instance()->getBottomLayer());
         else
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
 
     } else if (state == m_net_wm_state_above) {
-
         if (value)
             win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
         else
@@ -766,11 +758,12 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
         else
             win.moveToLayer(Fluxbox::instance()->getBottomLayer());
+
     } else if (state == m_net_wm_state_above) {
         if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());
         else
-            win.moveToLayer(Fluxbox::instance()->getNormalLayer());
+            win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
     }
 
 }
@@ -784,13 +777,46 @@ void Ewmh::updateStrut(WinClient &winclient) {
     if (winclient.property(m_net_wm_strut, 0, 4, False, XA_CARDINAL,
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): Strut: "<<data[0]<<", "<<data[1]<<", "<<
-            data[2]<<", "<<data[3]<<endl;
-#endif // DEBUG
-            winclient.setStrut(
-                winclient.screen().requestStrut(data[0], data[1], data[2], data[3]));
+
+            winclient.setStrut(winclient.screen().requestStrut(data[0], data[1], 
+                                                               data[2], data[3]));
             winclient.screen().updateAvailableWorkspaceArea();
+    }
+}
+
+void Ewmh::setupState(FluxboxWindow &win) {
+    /* From Extended Window Manager Hints, draft 1.3:
+     *
+     * _NET_WM_STATE, ATOM[]
+     *
+     * A list of hints describing the window state. Atoms present in 
+     * the list MUST be considered set, atoms not present in the list 
+     * MUST be considered not set. The Window Manager SHOULD honor 
+     * _NET_WM_STATE whenever a withdrawn window requests to be mapped.
+     * A Client wishing to change the state of a window MUST send a 
+     * _NET_WM_STATE client message to the root window (see below). 
+     * The Window Manager MUST keep this property updated to reflect 
+     * the current state of the window. 
+     * 
+     * The Window Manager should remove the property whenever a window 
+     * is withdrawn, but it should leave the property in place when it
+     * is shutting down, e.g. in response to losing ownership of the 
+     * WM_Sn manager selection.
+     */
+    Atom ret_type;
+    int fmt;
+    unsigned long nitems, bytes_after;
+    unsigned char *data = 0;
+
+    win.winClient().property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM, 
+                             &ret_type, &fmt, &nitems, &bytes_after, 
+                             &data);
+    if (data) {        
+        Atom *states = (Atom *)data;
+        for (unsigned long i=0; i < nitems; ++i)
+            setState(win, states[i], true);
+
+        XFree(data);
     }
 }
 
