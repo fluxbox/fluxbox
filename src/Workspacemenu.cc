@@ -21,7 +21,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspacemenu.cc,v 1.7 2002/05/07 14:05:00 fluxgen Exp $
+// $Id: Workspacemenu.cc,v 1.8 2002/08/14 22:57:55 fluxgen Exp $
+
+#include "Workspacemenu.hh"
+
+#include "i18n.hh"
+#include "Screen.hh"
+#include "Workspace.hh"
 
 //use GNU extension
 #ifndef   _GNU_SOURCE
@@ -32,11 +38,6 @@
 #include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#include "Workspacemenu.hh"
-
-#include "i18n.hh"
-#include "Screen.hh"
-#include "Workspace.hh"
 #include <iostream>
 #include <cassert>
 
