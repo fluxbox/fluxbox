@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.15 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Window.cc,v 1.16 2002/01/09 19:28:35 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -478,6 +478,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 
 	if (tab)
 		delete tab;	
+	tab = 0;
 	
 	if (client.mwm_hint)
 		XFree(client.mwm_hint);
