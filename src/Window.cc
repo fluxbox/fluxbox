@@ -2760,13 +2760,13 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 		
 			screen->getWorkspace(workspace_number)->raiseWindow(this);
 		}
-	/*} else if (be->button == 2 && (be->window != frame.iconify_button) &&
-													(be->window != frame.close_button)) {
+	} else if (be->button == 2 && be->window == frame.label) {
 		screen->getWorkspace(workspace_number)->lowerWindow(this);
-	*/		
+			
 	} else if (windowmenu && be->button == 3 &&
-				(frame.title == be->window || frame.label == be->window ||
-				frame.handle == be->window || frame.window == be->window)) {
+			(frame.title == be->window || frame.label == be->window ||
+			frame.handle == be->window)) {
+
 		int mx = 0, my = 0;
 
 		if (frame.title == be->window || frame.label == be->window) {
