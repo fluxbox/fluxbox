@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.20 2002/10/25 21:10:58 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.21 2002/11/30 20:10:09 fluxgen Exp $
 
 #include "Configmenu.hh"
 
@@ -32,6 +32,7 @@
 #include "Screen.hh"
 #include "Tab.hh"
 #include "fluxbox.hh"
+#include "ImageControl.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

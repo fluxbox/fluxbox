@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.82 2002/11/27 22:00:19 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.83 2002/11/30 20:18:35 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -40,7 +40,7 @@
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
 #include "AtomHandler.hh"
-
+#include "ImageControl.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE

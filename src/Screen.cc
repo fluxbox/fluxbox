@@ -22,14 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.86 2002/11/27 21:55:36 fluxgen Exp $
+// $Id: Screen.cc,v 1.87 2002/11/30 20:15:27 fluxgen Exp $
 
 
 #include "Screen.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
-#include "Image.hh"
+#include "ImageControl.hh"
 #include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
@@ -283,7 +283,7 @@ resource(rm, screenname, altscreenname)
 	XDefineCursor(disp, getRootWindow(), fluxbox->getSessionCursor());
 
 	image_control =
-		new BImageControl(this, true, fluxbox->colorsPerChannel(),
+		new BImageControl(scrn, true, fluxbox->colorsPerChannel(),
 			fluxbox->getCacheLife(), fluxbox->getCacheMax());
 	image_control->installRootColormap();
 	root_colormap_installed = true;

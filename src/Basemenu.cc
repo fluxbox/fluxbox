@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.37 2002/11/27 22:06:06 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.38 2002/11/30 20:09:19 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -37,6 +37,7 @@
 #include "fluxbox.hh"
 #include "Basemenu.hh"
 #include "Screen.hh"
+#include "ImageControl.hh"
 #include "StringUtil.hh"
 
 #include <cstdio>
