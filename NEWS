@@ -1,91 +1,69 @@
-News in 0.9.10: 
-    * Old styles should look like they used to
-    * New actions:
-      * directional focus movement:
-        FocusUp, FocusDown, FocusLeft, FocusRight
-      * other:
-        RaiseLayer, LowerLayer, Exit
-    * Added apps file matching on WM_WINDOW_ROLE
-      * use "role=string". Particularly useful for gaim+gimp windows
-       [app] (role=buddy_list) ...
-    * Window menu file
-      * new resource:
-        * session.screen<num>.windowMenu: <filename>
-      * The menu file format is the same as the normal ~/.fluxbox/menu
-        but with some special menu items:
-        [iconify], [maximize], [shade], [close], [extramenus]
-        [layer], [sendto]
-        + the all the other menu items that you can use in the normal
-        root menu (i.e [exec] (aterm) {aterm})
-        The [extramenus] will add  "remember" menu
-        example: session.screen0.windowMenu: ~/.fluxbox/windowmenu
-        [begin]
-          [exec] (aterm) {aterm}
-          [maximize]
-          [shade]
-          [close]
-        [end]
-    * Added [wallpapers|wallpapermenu|rootcommands] to possible
-      menuitems
-      * [wallpapers] (directory) {rootcommand}
-        creates a submenu in the menu to click on the wallpaper one
-        wants. default rootcommand is fbsetbg
-    * Improved menu transparent rendering speed and the 
-      text is not transparent anymore so you are able
-      to see the text even if you have 100% transparency
-    * New menu theme items:
-      * menu.titleHeight: <integer>
-      * menu.itemHeight: <integer>
-      The height of the item/title will be the biggest of
-      font height + bevel and the specified height, so the
-      text will always fit.
-    * Added icons in menu and improved menu loading speed
-      * New option for menu file:
-       [key] (label) {argument to key} <the icon filename>
-       example:
-       [exec] (aterm) {aterm} <terminal.xpm>
-    * Improve rendering speed of toolbar
-    * Supports _NET_WM_WINDOW_TYPE_DESKTOP
-      * eg nautilus desktop windows are on the bottom, not tabable, etc
-    * Added some new options font loading:
-      *.font:  fontname-size:option,specoption1:key=val;key2=val2 etc
-      eg:
-      *.font: Verdana-10:bold,shadow:offsetx=2;offsety=4;color=green
-      *.font: Verdana-10:halo:color=blue
-      possible specoptions atm:
-      halo:
-        color=colorname
-      shadow:
-        color=colorname
-        offsetx=number  (negative allowed)
-        offsety=number  (negative allowed)
-    * Fixed so one can use to use this in the apps-file:
-      [Layer] {number | literal}
-      ex:
-	  [Layer] {BOTTOM}
-      while literal is one of
-      DESKTOP BOTTOM NORMAL TOP DOCK ABOVEDOCK MENU
-    * fluxbox-generate_menu:
-      * Preliminary basic support for icons in fluxbox-generate_menu
-        put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm
-
+News in 0.9.11: 
+    * Slit:
+      * wheel or middle/right click in slit menu 
+        moves items up/down
+      * Save slit list menu item
+    * (Re)added dragNdrop ordering of tabs
+    * Better visualisation of the RememberState in RememberMenu
+    * iconbar:
+      * new resources:
+        session.*.iconbar.wheelMode: <mode>
+           On     - enable mousewheeling on the iconbuttons
+           Off    - disables mousewheeling on the iconbuttons
+           Screen - uses the settings of desktopWheeling
+      
+        session.*.iconbar.deiconifyMode: <mode>
+           Current    - deiconifies the window on current workspace
+           Follow     - deiconifies the window on the workspace it
+                        was iconified from and jumps to that workspace
+           SemiFollow - acts as 'Current' for windows that were actually
+                        iconified, and as 'follow' for the others
+        * 
+      * Added option to specify what to do with windows, 
+        that got activated on a different workspaces than the
+         urrent one (thru NET_ACTIVE_WINDOW for example,
+         guinotification-plugin from gaim)
+        * session.screen0.followModel: <value>
+           Ignore  - ignore the activated window
+           Follow  - go to the workspace of the window
+          Current | CurrentWorkspace | Fetch - get the window onto the 
+                                               current workspace
+    * session.focusTabMinWidth:
+      defines the guaranteed minimize size of the focused tab
+      in percent of the whole window
+    * New command: export | setenv  
+      sets the enviroment of fluxbox to a given value
+      export NAME=VALUE
+      setenv NAME VALUE
+    * Alpha values are no longer in theme, but are in init file. Possible
+      values are (all beginning with session.screenN.), * means changed/new:
+        -  menu.alpha (*)
+        -  slit.alpha 
+        -  window.focus.alpha (*)
+        -  window.unfocus.alpha (*)
+        -  toolbar.alpha (*)
 Bug fixes:
-    * Compiles with gcc 3.4
-    * Reparent issue with java menus
-    * A crash when a window closes while [opaque] moving
-    * Rendering of transparency on menu exposes 
-    * handling alpha value of zero
-    * Bug in Iconbar mode menu
-    * Bug in systray
-      (this fixes the problem with "sim" in systray)
-      It didn't force client position on configure request
-    * Tiled texture
-    * Transient window bug at startup
-    * Ugly toolbar at startup
-    * When time_t is long long 
-    * Delete key is working for fbrun
-    * Mouse scroll on icons in toolbar changes workspace
-    * Click on handle bar raises window even if "click raises" = false
-    * fbrun segfaults when history item is bigger than entry box
+    * Fix to avoid gentoo bug #72703 also reported at  
+      http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
+    * Fix for a java-bug (wrong opened subwindows)
+    * Fix for hiding menu when menufile changed 
+    * Fix for segfault at startup
+    * fbrun doesnt overlap screenborders anymore
+    * Fixed Wine + Paradise Poker Client problem.
+    * Fix UnderMousePlacement, patch #1052534, close #1048000
+    * Some changes to avoid invisible fonts
+    * Fix memleaks
+    * A few fixes to compile fluxbox with icc and mipspro(irix) #1045785
+    * Fixed a problem when system-date is set back 
+    * Fixed some TextBox issues with some "untypeable" keys 
+    * Fix a couple of bugs with transparency in toolbar/buttons
+    * Fix crash when in windowmenu->submenu and closing the app 
+    * other bug fixes:
+      #1057499
+      #1046472
+      #1052095 
+      #1034522 
+      #1039658
+
 
 See ChangeLog for more details
