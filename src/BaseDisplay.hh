@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.6 2002/01/10 12:52:51 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.7 2002/01/20 02:09:40 fluxgen Exp $
 
 #ifndef   _BASEDISPLAY_HH_
 #define   _BASEDISPLAY_HH_
@@ -31,11 +31,11 @@
 #include <X11/Xatom.h>
 
 // forward declaration
-class BaseDisplay;
 class ScreenInfo;
 
 #include "LinkedList.hh"
 #include "Timer.hh"
+#include "NotCopyable.hh"
 
 
 #define PropBlackboxHintsElements      (5)
@@ -44,6 +44,7 @@ class ScreenInfo;
 #ifndef    __EMX__
 void bexec(const char *, char *);
 #endif // !__EMX__
+
 
 template <typename Z> inline Z min(Z a, Z b) { return ((a < b) ? a : b); }
 template <typename Z> inline Z max(Z a, Z b) { return ((a > b) ? a : b); }
@@ -256,7 +257,18 @@ public:
   // another pure virtual... this is used to handle signals that BaseDisplay
   // doesn't understand itself
   virtual Bool handleSignal(int) = 0;
-	
+
+	class GrabGuard:private NotCopyable
+	{
+		public:
+		GrabGuard(BaseDisplay &bd):m_bd(bd) { }
+		~GrabGuard() { m_bd.ungrab(); }
+		inline void grab() { m_bd.grab(); }		
+		inline void ungrab() { m_bd.ungrab(); }		
+		private:
+		BaseDisplay &m_bd;
+	};
+
 private:
   struct cursor {
     Cursor session, move, ll_angle, lr_angle;
