@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.6 2004/04/26 15:04:37 rathnor Exp $
+// $Id: ThemeItems.hh,v 1.7 2004/08/26 16:37:48 rathnor Exp $
 
 /// @file implements common theme items
 
@@ -128,7 +128,11 @@ void ThemeItem<FbTk::Texture>::load(const std::string *o_name, const std::string
     if (!m_value.colorTo().setFromString(colorto_name.c_str(),
                                          m_tm.screenNum()))
         m_value.colorTo().setFromString("white", m_tm.screenNum());
-           
+
+
+    if ((m_value.type() & FbTk::Texture::SOLID) != 0 && (m_value.type() & FbTk::Texture::FLAT) == 0)
+        m_value.calcHiLoColors(m_tm.screenNum());
+
     StringUtil::removeFirstWhitespace(pixmap_name);
     StringUtil::removeTrailingWhitespace(pixmap_name);
     if (pixmap_name.empty()) {

@@ -22,10 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.cc,v 1.8 2004/01/11 21:04:21 fluxgen Exp $
+// $Id: Texture.cc,v 1.9 2004/08/26 16:37:48 rathnor Exp $
 
+#include "App.hh"
 #include "Texture.hh"
 
+#include <X11/Xlib.h>
 #include <cstring>
 #include <cctype>
 
@@ -98,6 +100,45 @@ void Texture::setFromString(const char * const texture_str) {
     }
 
     delete [] ts;
+}
+
+void Texture::calcHiLoColors(int screen_num) {
+    Display *disp = FbTk::App::instance()->display();
+    XColor xcol;
+    Colormap colm = DefaultColormap(disp, screen_num);
+
+    xcol.red = (unsigned int) (m_color.red() +
+                               (m_color.red() >> 1));
+    if (xcol.red >= 0xff) xcol.red = 0xffff;
+    else xcol.red *= 0xff;
+    xcol.green = (unsigned int) (m_color.green() +
+                                 (m_color.green() >> 1));
+    if (xcol.green >= 0xff) xcol.green = 0xffff;
+    else xcol.green *= 0xff;
+    xcol.blue = (unsigned int) (m_color.blue() +
+                                (m_color.blue() >> 1));
+    if (xcol.blue >= 0xff) xcol.blue = 0xffff;
+    else xcol.blue *= 0xff;
+
+    if (! XAllocColor(disp, colm, &xcol))
+        xcol.pixel = 0;
+
+    m_hicolor.setPixel(xcol.pixel);
+
+    xcol.red =
+        (unsigned int) ((m_color.red() >> 2) +
+			(m_color.red() >> 1)) * 0xff;
+    xcol.green =
+        (unsigned int) ((m_color.green() >> 2) +
+			(m_color.green() >> 1)) * 0xff;
+    xcol.blue =
+        (unsigned int) ((m_color.blue() >> 2) +
+			(m_color.blue() >> 1)) * 0xff;
+
+    if (! XAllocColor(disp, colm, &xcol))
+        xcol.pixel = 0;
+
+    m_locolor.setPixel(xcol.pixel);
 }
 
 }; // end namespace FbTk

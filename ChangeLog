@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/26:
+  * Fix bevel on solid colour textures (Simon)
+    FbTk/Texture.hh/cc FbTk/ThemeItems.hh
   * Make arrow in toolbar buttons scalable size (Simon)
     - new theme item: toolbar.button.scale:  <number>
       The number is a scale factor, which is divided into 100 to give

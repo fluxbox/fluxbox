@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.6 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: Texture.hh,v 1.7 2004/08/26 16:37:48 rathnor Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
@@ -82,6 +82,8 @@ public:
     Color &loColor() { return m_locolor; }
 
     FbPixmap &pixmap() { return m_pixmap; }
+
+    void calcHiLoColors(int screen_num);
 
     const Color &color() const { return m_color; }
     const Color &colorTo() const { return m_color_to; }
