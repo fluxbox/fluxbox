@@ -64,6 +64,8 @@ enum {
 	ConfigmenuSemiSloppyFocus = 13,
 	ConfigmenuSloppyFocus = 14,
 	ConfigmenuWorkspaceWarping = 15,
+	ConfigmenuForcePseudoTrans = 16,
+	ConfigmenuMenuAlpha = 17,
 
 	EwmhSet = 5,
 	EwmhOutOfMemoryClientList = 1,
