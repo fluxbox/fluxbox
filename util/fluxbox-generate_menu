@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.43 2003/08/02 14:42:43 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.44 2003/08/02 14:54:05 rathnor Exp $
 
 #
 # Portability notes:
@@ -142,8 +142,8 @@ append_menu_end() {
 
 menu_entry() {
     if [ -f "$1" ]; then
-        append "[exec] (`grep -v GenericName \"$*\" 2>/dev/null | grep Name= | cut -d = -f 2`) \
-        {`grep -v TryExec \"$*\" 2>/dev/null| grep Exec= | cut -d = -f 2`}"
+        append "[exec] (`grep '^[ 	]*Name=' \"$1\" | cut -d = -f 2`) \
+        {`grep '^[ 	]*Exec=' \"$1\" | cut -d = -f 2`}"
     fi
 }
 
@@ -163,7 +163,6 @@ menu_entry_dir() {
 # recursively build a menu from the listed directories
 # the dirs are merged
 recurse_dir_menu () {
-    echo "recurse on $@"
     ls "$@"/ 2>/dev/null | sort | uniq | while read name; do
         for dir in "$@"; do
             if [ -n "$name" -a -d "$dir/$name" ]; then
