@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.12 2002/04/09 23:19:02 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.13 2002/04/14 22:26:43 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -110,7 +110,7 @@ screen(window->getScreen()){
 	setItemEnabled(3, window->isIconifiable());
 	setItemEnabled(4, window->isMaximizable());
 	setItemEnabled(9, window->isClosable());
-	setItemEnabled(10, window->hasTab());
+	setItemEnabled(10, true); //we should always be able to enable the tab
 
 }
 
