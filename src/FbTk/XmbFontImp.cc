@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.8 2004/08/10 11:57:35 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.9 2004/08/28 18:10:19 rathnor Exp $
 
 #include "XmbFontImp.hh"
 
@@ -116,17 +116,31 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
     return 0;
 }
 
-XFontSet createFontSet(const char *fontname) {
+XFontSet createFontSet(const char *fontname, bool utf8mode) {
     Display *display = FbTk::App::instance()->display();
     XFontSet fs;
     const int FONT_ELEMENT_SIZE=50;
     char **missing, *def = "-";
     int nmissing, pixel_size = 0, buf_size = 0;
     char weight[FONT_ELEMENT_SIZE], slant[FONT_ELEMENT_SIZE];
+    char * orig_locale = "";
 
+#ifdef HAVE_SETLOCALE
+    if (utf8mode) {
+        orig_locale = setlocale(LC_CTYPE, NULL);
+        setlocale(LC_CTYPE, "UTF-8");
+    }
+#endif // HAVE_SETLOCALE
     fs = XCreateFontSet(display,
                         fontname, &missing, &nmissing, &def);
-    if (fs && (! nmissing)) return fs;
+
+    if (fs && (! nmissing)) {
+#ifdef HAVE_SETLOCALE
+        if (utf8mode)
+            setlocale(LC_CTYPE, orig_locale);
+#endif // HAVE_SETLOCALE
+        return fs;
+    }
 
 #ifdef HAVE_SETLOCALE
     if (! fs) {
@@ -135,7 +149,7 @@ XFontSet createFontSet(const char *fontname) {
         setlocale(LC_CTYPE, "C");
         fs = XCreateFontSet(display, fontname,
                             &missing, &nmissing, &def);
-        setlocale(LC_CTYPE, "");
+        setlocale(LC_CTYPE, orig_locale);
     }
 #endif // HAVE_SETLOCALE
 
@@ -179,6 +193,11 @@ XFontSet createFontSet(const char *fontname) {
                         &missing, &nmissing, &def);
     delete [] pattern2;
 
+#ifdef HAVE_SETLOCALE
+    if (utf8mode)
+        setlocale(LC_CTYPE, orig_locale);
+#endif // HAVE_SETLOCALE
+
     return fs;
 }
 
@@ -198,11 +217,14 @@ XmbFontImp::~XmbFontImp() {
 bool XmbFontImp::load(const std::string &fontname) {
     if (fontname.size() == 0)
         return false;
-    XFontSet set = createFontSet(fontname.c_str());
+
+    XFontSet set = createFontSet(fontname.c_str(), m_utf8mode);
     if (set == 0)
         return false;
+
     if (m_fontset != 0)
         XFreeFontSet(App::instance()->display(), m_fontset);
+
     m_fontset = set;
     m_setextents = XExtentsOfFontSet(m_fontset);
 

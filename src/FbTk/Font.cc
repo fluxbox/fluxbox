@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.12 2004/08/25 10:03:09 akir Exp $
+//$Id: Font.cc,v 1.13 2004/08/28 18:10:19 rathnor Exp $
 
 
 #include "StringUtil.hh"
@@ -356,7 +356,7 @@ bool Font::load(const std::string &name) {
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
-    if (isAntialias() && m_iconv != (iconv_t)(-1)) {
+    if (m_iconv != (iconv_t)(-1)) {
         char* rtext  = recode(m_iconv, text, size);
         if (rtext != 0)
             size = strlen(rtext);
@@ -392,7 +392,7 @@ void Font::drawText(Drawable w, int screen, GC gc,
     // so we don't end up in a loop with m_shadow
     static bool first_run = true; 
 
-    if (isAntialias() && m_iconv != (iconv_t)(-1) && first_run) {
+    if (m_iconv != (iconv_t)(-1) && first_run) {
         rtext = recode(m_iconv, text, len);
         if (rtext != 0) {
             len = strlen(rtext);
