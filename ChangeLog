@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/28:
+  * Fix menu render bug with previously highlighted items (Simon)
+    FbTk/Menu.cc
 *04/08/27:
   * Protect Fluxbox::shutdown better from being double-called (Simon)
     fluxbox.cc

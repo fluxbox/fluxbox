@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.72 2004/08/03 21:25:51 fluxgen Exp $
+// $Id: Menu.cc,v 1.73 2004/08/28 14:25:52 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -695,17 +695,17 @@ void Menu::internal_hide() {
         tmp->submenu()->internal_hide();
     }
 
-    if (shown && shown->menu.window == menu.window)
-        shown = (Menu *) 0;
-
-    torn = visible = false;
-    which_sub = which_press = which_sub = -1;
-
     // if we have an active index we need to redraw it 
     // as non active
     int old = m_active_index;
     m_active_index = -1;
     drawItem(old, true); // clear old area from highlight
+
+    if (shown && shown->menu.window == menu.window)
+        shown = (Menu *) 0;
+
+    torn = visible = false;
+    which_sub = which_press = which_sub = -1;
     
     menu.window.hide();
 }
