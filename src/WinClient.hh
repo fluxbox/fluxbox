@@ -19,19 +19,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.3 2003/05/07 16:21:26 rathnor Exp $
+// $Id: WinClient.hh,v 1.4 2003/05/10 14:16:38 fluxgen Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
 
-#include "BaseDisplay.hh"
+#include "Window.hh"
 #include "Subject.hh"
 #include "FbWindow.hh"
 
 #include <X11/Xutil.h>
 #include <string>
-
-class FluxboxWindow;
 
 /// Holds client window info 
 class WinClient:public FbTk::FbWindow {
@@ -97,7 +95,7 @@ public:
     } MwmHints;
 
     MwmHints *mwm_hint;
-    BaseDisplay::BlackboxHints *blackbox_hint;
+    FluxboxWindow::BlackboxHints *blackbox_hint;
     FluxboxWindow *m_win;
     class WinClientSubj: public FbTk::Subject {
     public:
