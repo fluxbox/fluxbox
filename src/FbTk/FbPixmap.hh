@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.2 2003/04/27 00:10:28 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.3 2003/04/27 23:55:08 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -53,6 +53,10 @@ public:
     void fillPolygon(GC gc, XPoint *points, int npoints,
                      int shape, int mode);
     void copy(const FbPixmap &the_copy);
+    /// scales the pixmap to specified size
+    void scale(unsigned int width, unsigned int height);
+    /// drops pixmap and returns it
+    Pixmap release();
 
     FbPixmap &operator = (const FbPixmap &copy);
     /// sets new pixmap
@@ -62,6 +66,7 @@ public:
     inline unsigned int width() const { return m_width; }
     inline unsigned int height() const { return m_height; }
     inline int depth() const { return m_depth; }
+
 
 private:
     void free();
