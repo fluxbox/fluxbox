@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.11 2003/04/25 17:31:38 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.12 2003/04/29 08:51:27 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
+
+#include "FbDrawable.hh"
 
 #include <X11/Xlib.h>
 
@@ -30,10 +32,8 @@ namespace FbTk {
 
 class Color;
 
-/**
-   Wrapper for X window
- */
-class FbWindow {
+///   Wrapper for X window
+class FbWindow: public FbDrawable {
 public:
     FbWindow();
     FbWindow(const FbWindow &win_copy);
@@ -59,7 +59,7 @@ public:
     void setName(const char *name);
     void setEventMask(long mask);
     /// clear window with background pixmap or color
-    void clear();
+    virtual void clear();
     /// assign a new X window to this
     virtual FbWindow &operator = (Window win);
     virtual void hide();
@@ -72,21 +72,10 @@ public:
     virtual void lower();
     virtual void raise();
 
-    void copyArea(Drawable src, GC gc,
-                  int src_x, int src_y,
-                  int dest_x, int dest_y,
-                  unsigned int width, unsigned int height);
-    void fillRectangle(GC gc, int x, int y,
-                       unsigned int width, unsigned int height);
-    void drawRectangle(GC gc, int x, int y, 
-                  unsigned int width, unsigned int height);
-    void fillPolygon(GC gc, XPoint *points, int npoints,
-                     int shape, int mode);
-    void drawLine(GC gc, int start_x, int start_y, 
-                  int end_x, int end_y);
 
     const FbWindow *parent() const { return m_parent; }
-    Window window() const { return m_window; }
+    inline Window window() const { return m_window; }
+    inline Drawable drawable() const { return window(); }
     int x() const { return m_x; }
     int y() const { return m_y; }
     unsigned int width() const { return m_width; }

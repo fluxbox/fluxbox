@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.11 2003/04/25 17:32:21 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.12 2003/04/29 08:51:59 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -161,59 +161,6 @@ void FbWindow::lower() {
 
 void FbWindow::raise() {
     XRaiseWindow(s_display, m_window);
-}
-
-void FbWindow::copyArea(Drawable src, GC gc,
-                        int src_x, int src_y,
-                        int dest_x, int dest_y,
-                        unsigned int width, unsigned int height) {
-    if (window() == 0 || src == 0 || gc == 0)
-        return;
-    XCopyArea(s_display,
-              src, window(), gc,
-              src_x, src_y,
-              dest_x, dest_y,
-              width, height);
-}
-
-void FbWindow::fillRectangle(GC gc, int x, int y,
-                             unsigned int width, unsigned int height) {
-    if (window() == 0 || gc == 0)
-        return;
-    XFillRectangle(s_display,
-                   window(), gc,
-                   x, y,
-                   width, height);
-}
-
-void FbWindow::drawRectangle(GC gc, int x, int y, 
-                             unsigned int width, unsigned int height) {
-    if (window() == 0 || gc == 0)
-        return;
-    XDrawRectangle(s_display,
-                   window(), gc,
-                   x, y,
-                   width, height);
-}
-
-void FbWindow::fillPolygon(GC gc, XPoint *points, int npoints,
-                           int shape, int mode) {
-    if (window() == 0 || gc == 0 || points == 0 || npoints == 0)
-        return;
-    XFillPolygon(s_display,
-                 window(), gc, points, npoints,
-                 shape, mode);
-}
-
-void FbWindow::drawLine(GC gc, int start_x, int start_y, 
-                        int end_x, int end_y) {
-    if (window() == 0 || gc == 0)
-        return;
-    XDrawLine(s_display,
-              window(),
-              gc,
-              start_x, start_y,
-              end_x, end_y);
 }
 
 int FbWindow::screenNumber() const {
