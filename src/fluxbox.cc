@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.179 2003/08/10 12:50:04 rathnor Exp $
+// $Id: fluxbox.cc,v 1.180 2003/08/11 16:06:51 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -410,7 +410,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_focused_window(0), m_masked_window(0),
-      m_timer(this),
       m_mousescreen(0),
       m_keyscreen(0),
       m_watching_screen(0), m_watch_keyrelease(0),
@@ -472,6 +471,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // HAVE_RANDR
 
     load_rc();
+    // setup theme manager to have our style file ready to be scanned
+    FbTk::ThemeManager::instance().load(getStyleFilename());
 
     // setup atom handlers before we create any windows
 #ifdef USE_GNOME
@@ -541,7 +542,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #ifdef USE_TOOLBAR
         m_atomhandler.push_back(new ToolbarHandler(*screen));
 #endif // USE_TOOLBAR
-        
+
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
         screen->workspaceCountSig().attach(this);
@@ -552,6 +553,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
             m_atomhandler[atomh]->initForScreen(*screen);
         }
+
     }
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
@@ -561,12 +563,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                      "Make sure you don't have another window manager running.");
     }
 
+
     XSynchronize(disp, False);
     XSync(disp, False);
 
     m_reconfigure_wait = m_reread_menu_wait = false;
 	
     m_timer.setTimeout(0);
+    FbTk::RefCount<FbTk::Command> reconf_cmd(new FbTk::SimpleCommand<Fluxbox>(*this, &Fluxbox::timed_reconfigure));
+    m_timer.setCommand(reconf_cmd);
     m_timer.fireOnce(true);
 
     // Create keybindings handler and load keys file	
@@ -895,7 +900,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             break;
 
         WinClient *winclient = searchWindow(e->xfocus.window);
-        if (winclient && !(m_focused_window == winclient))
+        if (winclient && m_focused_window != winclient)
             setFocusedWindow(winclient);
 	
     } break;
@@ -910,6 +915,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
 
+        } else {
+            
         }
     }
 	break;
@@ -1284,7 +1291,9 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             // make sure each workspace get this 
             BScreen &scr = win.screen();
             scr.removeWindow(&win);
-            
+            if (m_focused_window == &win.winClient())
+                m_focused_window = 0;
+
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
                 if (m_atomhandler[i]->update())
@@ -1321,6 +1330,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             }
         }
     } else if (typeid(*changedsub) == typeid(WinClient::WinClientSubj)) {
+
         WinClient::WinClientSubj *subj = dynamic_cast<WinClient::WinClientSubj *>(changedsub);
         WinClient &client = subj->winClient();
 
@@ -1337,7 +1347,10 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         if (m_focused_window == &client) 
             revertFocus(screen);
 
-        removeWindowSearch(client.window());        
+        removeWindowSearch(client.window());
+        // failed to revert focus?
+        if (m_focused_window == &client)
+            m_focused_window = 0;
     }
 }
 
@@ -1540,26 +1553,11 @@ void Fluxbox::save_rc() {
                 placement.c_str());
         XrmPutLineResource(&new_blackboxrc, rc_string);
 
-        //		load_rc(screen);
+
         // these are static, but may not be saved in the users resource file,
         // writing these resources will allow the user to edit them at a later
         // time... but loading the defaults before saving allows us to rewrite the
         // users changes...
-
-#ifdef		HAVE_STRFTIME
-        sprintf(rc_string, "session.screen%d.strftimeFormat: %s", screen_number,
-                screen->getStrftimeFormat());
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-#else // !HAVE_STRFTIME
-        sprintf(rc_string, "session.screen%d.dateFormat:	%s", screen_number,
-                ((screen->getDateFormat() == B_EUROPEANDATE) ?
-                 "European" : "American"));
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-
-        sprintf(rc_string, "session.screen%d.clockFormat:	%d", screen_number,
-                ((screen->isClock24Hour()) ? 24 : 12));
-        XrmPutLineResource(&new_blackboxrc, rc_string);
-#endif // HAVE_STRFTIME
 
         // write out the users workspace names
         sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
@@ -1774,42 +1772,6 @@ void Fluxbox::load_rc(BScreen &screen) {
     } else
         screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
     
-#ifdef HAVE_STRFTIME
-    sprintf(name_lookup, "session.screen%d.strftimeFormat", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.StrftimeFormat", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value))
-        screen.saveStrftimeFormat(value.addr);
-    else
-        screen.saveStrftimeFormat("%I:%M %p");
-#else //	HAVE_STRFTIME
-
-    sprintf(name_lookup, "session.screen%d.dateFormat", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.DateFormat", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        if (strncasecmp(value.addr, "european", value.size))
-            screen.saveDateFormat(B_AMERICANDATE);
-        else
-            screen.saveDateFormat(B_EUROPEANDATE);
-    } else
-        screen.saveDateFormat(B_AMERICANDATE);
-
-    sprintf(name_lookup, "session.screen%d.clockFormat", screen_number);
-    sprintf(class_lookup, "Session.Screen%d.ClockFormat", screen_number);
-    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {
-        int clock;
-        if (sscanf(value.addr, "%d", &clock) != 1)
-            screen.saveClock24Hour(false);
-        else if (clock == 24) 
-            screen.saveClock24Hour(true);
-        else 
-            screen.saveClock24Hour(false);
-    } else
-        screen.saveClock24Hour(false);
-#endif // HAVE_STRFTIME
-
 }
 
 void Fluxbox::loadRootCommand(BScreen &screen)	{
@@ -1858,7 +1820,6 @@ void Fluxbox::real_reconfigure() {
 	
     if (old_blackboxrc)
         XrmDestroyDatabase(old_blackboxrc);
-
 
     ScreenList::iterator sit = m_screen_list.begin();
     ScreenList::iterator sit_end = m_screen_list.end();
@@ -1956,7 +1917,7 @@ void Fluxbox::clearMenuFilenames() {
     m_menu_timestamps.erase(m_menu_timestamps.begin(), m_menu_timestamps.end());
 }
 
-void Fluxbox::timeout() {
+void Fluxbox::timed_reconfigure() {
     if (m_reconfigure_wait)
         real_reconfigure();
 
