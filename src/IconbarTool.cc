@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.8 2003/08/16 11:47:26 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.9 2003/08/18 11:13:32 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -109,26 +109,16 @@ void IconbarTool::update(FbTk::Subject *subj) {
     if (subj != 0 && typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         // we handle everything except die signal here
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
-        if (subj != &(winsubj->win().dieSig())) {
+        if (subj == &(winsubj->win().focusSig())) {
             renderWindow(winsubj->win());
             return;
-        } else {
-            // got window die signal, lets find and remove the window
-            IconList::iterator it = m_icon_list.begin();
-            IconList::iterator it_end = m_icon_list.end();
-            for (; it != it_end; ++it) {
-                if (&(*it)->win() == &winsubj->win())
-                    break;
-            }
-            // did we find it?
-            if (it == m_icon_list.end())
-                return;
-
-            // remove from list and render theme again
-            delete *it;
-            m_icon_list.erase(it);
-            m_icon_container.removeItem(m_icon_container.find(*it));
-            renderTheme();
+        } else if (subj == &(winsubj->win().workspaceSig())) {
+            // workspace changed for this window, and if it's not on current workspace we remove it
+            if (m_screen.currentWorkspaceID() != winsubj->win().workspaceNumber())
+                removeWindow(winsubj->win());
+            return;
+        } else { // die sig
+            removeWindow(winsubj->win());
             return; // we don't need to update the entire list
         }
     }
@@ -195,6 +185,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
 
         (*it)->focusSig().attach(this);
         (*it)->dieSig().attach(this);
+        (*it)->workspaceSig().attach(this);
     }
 
     m_icon_container.showSubwindows();
@@ -306,4 +297,24 @@ void IconbarTool::deleteIcons() {
         delete m_icon_list.back();
         m_icon_list.pop_back();
     }
+}
+
+void IconbarTool::removeWindow(FluxboxWindow &win) {
+
+    // got window die signal, lets find and remove the window
+    IconList::iterator it = m_icon_list.begin();
+    IconList::iterator it_end = m_icon_list.end();
+    for (; it != it_end; ++it) {
+        if (&(*it)->win() == &win)
+            break;
+    }
+    // did we find it?
+    if (it == m_icon_list.end())
+        return;
+
+    // remove from list and render theme again
+    delete *it;
+    m_icon_list.erase(it);
+    m_icon_container.removeItem(m_icon_container.find(*it));
+    renderTheme();
 }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.5 2003/08/16 11:47:26 fluxgen Exp $
+// $Id: IconbarTool.hh,v 1.6 2003/08/18 11:13:32 fluxgen Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -65,6 +65,8 @@ private:
     void renderTheme();
     /// destroy all icons
     void deleteIcons();
+    /// remove a single window an render theme again
+    void removeWindow(FluxboxWindow &win);
 
     BScreen &m_screen;
     Container m_icon_container;
