@@ -22,8 +22,6 @@ BUGS:
   * After startup the font of the toolbar is to big; reload config works
     around this.
 
-  * Transient windows seem to not have a X border - is this right?
-
   * Saving of number of workspaces on restart
 
   * Multiple transients:
@@ -68,3 +66,7 @@ Fixed bugs (or not-our-fault bugs):
   * Workspace1... Workspace12 are disabled
 
   * MoveTab* actions are disabled
+
+  * Transient windows seem to not have a X border - is this right?
+    => no, they ought to have a border
+

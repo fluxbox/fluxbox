@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/18:
+   * Fix java bug. Wasn't sending ConfigureNotify's to client (Simon)
+     - also fix missing border on transient windows
+     - also set some gnome hints initially
+     Window.hh/cc Gnome.cc
 *03/07/12:
    * Fixed 8 bpp crash (Henrik)
      ImageControl.cc 

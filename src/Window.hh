@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.83 2003/07/10 11:32:57 fluxgen Exp $
+// $Id: Window.hh,v 1.84 2003/07/17 17:56:28 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -386,7 +386,7 @@ private:
     void left_fixsize(int *x = 0, int *y = 0);
     void resizeClient(WinClient &client, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
-    void sendConfigureNotify();
+    void sendConfigureNotify(bool send_to_netizens = true);
     // state and hint signals
     WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig;
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.29 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Gnome.cc,v 1.30 2003/07/17 17:56:28 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -99,6 +99,8 @@ void Gnome::setupFrame(FluxboxWindow &win) {
         flags = *data;
         setState(&win, flags);
         XFree (data);
+    } else {
+        updateState(win);
     }
 
     // load gnome layer atom
@@ -109,6 +111,8 @@ void Gnome::setupFrame(FluxboxWindow &win) {
         flags = *data;
         setLayer(&win, flags);
         XFree (data);
+    } else {
+        updateLayer(win);
     }
 
     // load gnome workspace atom
@@ -120,6 +124,8 @@ void Gnome::setupFrame(FluxboxWindow &win) {
         if (win.workspaceNumber() != workspace_num) 
             win.screen().reassociateWindow(&win, workspace_num, false);
         XFree (data);
+    } else {
+        updateWorkspace(win);
     }
 
 }

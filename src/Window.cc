@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.203 2003/07/10 11:33:31 fluxgen Exp $
+// $Id: Window.cc,v 1.204 2003/07/17 17:56:28 rathnor Exp $
 
 #include "Window.hh"
 
@@ -439,7 +439,7 @@ void FluxboxWindow::init() {
     // adjust the window decorations based on transience and window sizes
     if (m_client->isTransient()) {
         decorations.maximize =  functions.maximize = false;
-        decorations.handle = decorations.border = false;
+        decorations.handle = false;
     }	
 	
     if ((m_client->normal_hint_flags & PMinSize) &&
@@ -1956,7 +1956,7 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
-    // we're only conserned about client window event
+    // we're only concerned about client window event
     WinClient *client = findClient(re.window);
     if (client == 0) {
 #ifdef DEBUG
@@ -2031,9 +2031,6 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
             setInputFocus();
         else
             setFocusFlag(false);			
-
-	if (focused)
-            frame().setFocus(true);
 
         iconic = false;
 
@@ -2208,7 +2205,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (cr.value_mask & CWHeight)
         ch = cr.height;
 
-    // whether we should send ConfigureNotify to clients
+    // whether we should send ConfigureNotify to netizens
     bool send_notify = false;
 
     // the request is for client window so we resize the frame to it first
@@ -2222,9 +2219,6 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         // since we already send a notify in move we don't need to do that again
         send_notify = false;
     } 
-
-    if (send_notify)
-        sendConfigureNotify();
 
     if (cr.value_mask & CWStackMode) {
         switch (cr.detail) {
@@ -2241,6 +2235,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         }
     }
 
+    sendConfigureNotify(send_notify);
 }
 
 
@@ -3270,7 +3265,7 @@ void FluxboxWindow::resizeClient(WinClient &client,
                       frame().clientArea().height());    
 }
 
-void FluxboxWindow::sendConfigureNotify() {
+void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
     ClientList::iterator client_it = m_clientlist.begin();
     ClientList::iterator client_it_end = m_clientlist.end();
     for (; client_it != client_it_end; ++client_it) {
@@ -3301,7 +3296,10 @@ void FluxboxWindow::sendConfigureNotify() {
         event.xconfigure.above = frame().window().window();
         event.xconfigure.override_redirect = false;
 
-        screen().updateNetizenConfigNotify(event);
+        XSendEvent(display, client.window(), False, StructureNotifyMask, &event);
+
+        if (send_to_netizens)
+            screen().updateNetizenConfigNotify(event);
     } // end for        
 }
 
