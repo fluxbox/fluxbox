@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.9 2004/01/02 22:54:29 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.10 2004/01/03 01:12:10 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -158,7 +158,8 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
         CacheList::iterator it_end = cache.end();
         for (; it != it_end; ++it) {
             if ((*it)->texture_pixmap == text.pixmap().drawable() &&
-                (*it)->width == width && (*it)->height == height) {
+                (*it)->width == width && (*it)->height == height &&
+                (*it)->texture == text.type()) {
                 (*it)->count++;
                 return (*it)->pixmap;
             }
