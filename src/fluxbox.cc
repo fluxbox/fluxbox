@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.44 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.45 2002/04/04 14:23:54 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1112,7 +1112,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 			net.attrib = ce.data.l[1];
 			net.workspace = ce.data.l[2];
 			net.stack = ce.data.l[3];
-			net.decoration = static_cast<BaseDisplay::Decor>(ce.data.l[4]);
+			net.decoration = static_cast<int>(ce.data.l[4]);
 			win->changeBlackboxHints(&net);
 		}
 	} else {
@@ -1422,8 +1422,10 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 					if (t_alignment != Tab::PRIGHT)
 						focused_window->getTab()->setPosition();
 				}
-		break;		
-		default:	
+		break;
+		case Keys::TOGGLEDECOR:
+			focused_window->toggleDecoration();
+		default: //do nothing
 		break;							
 	}
 
