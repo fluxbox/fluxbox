@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/11/25:
+  * Applied patch #1072818 (thanx Glyn Kennington)
+    Toolbar.cc
   * (Re)added dragNdrop ordering of tabs (thanx Rob Stevens)
     FbWinFrame.cc/hh Window.cc/hh
 *04/11/24:
