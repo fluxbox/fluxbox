@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.40 2004/09/11 12:33:14 rathnor Exp $
+// $Id: FbWindow.cc,v 1.41 2004/09/11 15:52:23 rathnor Exp $
 
 #include "FbWindow.hh"
 #include "FbPixmap.hh"
@@ -110,6 +110,10 @@ FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0),
 }
 
 FbWindow::~FbWindow() {
+
+    // Need to free xrender pics before destroying window
+    if (m_transparent.get() != 0)
+        m_transparent.reset(0);
 
     if (m_window != 0) {
         // so we don't get any dangling eventhandler for this window

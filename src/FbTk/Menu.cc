@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.82 2004/09/11 13:45:16 fluxgen Exp $
+// $Id: Menu.cc,v 1.83 2004/09/11 15:52:23 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -567,6 +567,8 @@ void Menu::update(int active_index) {
         m_real_frame_pm = FbTk::FbPixmap(menu.frame.window(),
                                          menu.frame.width(), menu.frame.height(),
                                          menu.frame.depth());
+        if (m_transp.get() != 0) 
+            m_transp->setDest(m_real_frame_pm.drawable(), screenNumber());
 
         menu.frame.setBackgroundPixmap(m_real_frame_pm.drawable());
         GContext def_gc(menu.frame);
@@ -1385,7 +1387,6 @@ void Menu::keyPressEvent(XKeyEvent &event) {
 
 void Menu::reconfigure() {
 
-
     if (alpha() == 255 && m_transp.get() != 0) {
         m_transp.reset(0);
     } else if (alpha () < 255) {
@@ -1394,8 +1395,13 @@ void Menu::reconfigure() {
             m_transp.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()),
                                            m_real_frame_pm.drawable(), alpha(),
                                            screenNumber()));
-        } else
+        } else {
+            Pixmap root = FbPixmap::getRootPixmap(screenNumber());
+            if (m_transp->source() != root)
+                m_transp->setSource(root, screenNumber());
+
             m_transp->setAlpha(alpha());
+        }
     }
 
     m_need_update = true; // redraw items

@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/11:
+  * Fix some more X errors from XRender calls (Simon)
+    - also fixes some menu background update issues
+    FbTk/Menu.cc FbTk/Transparent.cc FbTk/FbWindow.cc
   * Ignore 32-bit visuals for now when selecting (Simon)
     - should fix problems with Composite being enabled in X.org
     FbRootWindow.cc

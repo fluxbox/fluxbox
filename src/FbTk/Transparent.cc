@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.7 2004/09/10 16:48:15 akir Exp $
+// $Id: Transparent.cc,v 1.8 2004/09/11 15:52:23 rathnor Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
@@ -60,7 +60,7 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
     Pixmap alpha_pm = XCreatePixmap(disp, drawable,
                                     1, 1, 8);
     if (alpha_pm == 0) {
-        cerr<<"FbTk::Transparent: "<<_FBTKTEXT(Error, NoRenderPixmap, "Warning: Failed to create alpha pixmap.", "XCreatePixmap files for our transparency pixmap")<<endl;
+        cerr<<"FbTk::Transparent: "<<_FBTKTEXT(Error, NoRenderPixmap, "Warning: Failed to create alpha pixmap.", "XCreatePixmap failed for our transparency pixmap")<<endl;
         return 0;
     }
 
@@ -130,7 +130,6 @@ Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int s
     XRenderPictFormat *format =
         XRenderFindVisualFormat(disp,
                                 DefaultVisual(disp, screen_num));
-
 
     if (src != 0 && format != 0) {
         m_src_pic = XRenderCreatePicture(disp, src, format,
