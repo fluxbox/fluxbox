@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.70 2003/04/15 12:15:44 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.71 2003/04/16 12:53:14 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -37,6 +37,8 @@
 #include "Text.hh"
 #include "ArrowButton.hh"
 #include "SimpleCommand.hh"
+#include "IntResMenuItem.hh"
+#include "MacroCommand.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -100,7 +102,29 @@ void setupMenus(Toolbar &tbar) {
 
     menu.setLabel(i18n->getMessage(
                                    FBNLS::ToolbarSet, FBNLS::ToolbarToolbarTitle,
-                                   "Toolbar"));
+                                   "Toolbar")); 
+
+    FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
+                                                          tbar.screen().getToolbarWidthPercentResource(),
+                                                          0, 100); // min/max value
+
+    FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
+                                                   SimpleCommand<Toolbar>
+                                                   (tbar, &Toolbar::reconfigure));
+    FbTk::RefCount<FbTk::Command> save_resources(new FbTk::
+                                                 SimpleCommand<Fluxbox>
+                                                 (*Fluxbox::instance(), &Fluxbox::save_rc));
+    FbTk::MacroCommand *toolbar_menuitem_macro = new FbTk::MacroCommand();
+    toolbar_menuitem_macro->add(reconfig_toolbar);
+    toolbar_menuitem_macro->add(save_resources);
+
+    FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
+
+    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);  
+
+    tbar.menu().insert(toolbar_menuitem);
+
+
     menu.setInternalMenu();
 
     menu.insert("Layer...", &tbar.layermenu());
@@ -122,7 +146,7 @@ void setupMenus(Toolbar &tbar) {
         {0, 0, 0, Toolbar::BOTTOMCENTER},
         {0, 0, 0, Toolbar::BOTTOMCENTER},
         {0, 0, "Bottom Center", Toolbar::BOTTOMCENTER},
-        {0, 0, "Top Left", Toolbar::TOPLEFT},
+        {0, 0, "Top Right", Toolbar::TOPRIGHT},
         {0, 0, "Right Top", Toolbar::RIGHTTOP},
         {0, 0, "Right Center", Toolbar::RIGHTCENTER},
         {0, 0, "Right Bottom", Toolbar::RIGHTBOTTOM},
