@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.45 2002/04/17 06:42:04 fluxgen Exp $
+// $Id: Window.cc,v 1.46 2002/04/17 07:24:59 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3360,9 +3360,19 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 					if (new_id != cur_id) {
 						frame.x += dx;
 						XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
-						screen->reassociateWindow(this, new_id, True);
+						screen->reassociateWindow(this, new_id, true);
+						
+						//if the window has a tab and is in a group
+						//reassociate those windows too 
+						if (hasTab() && (getTab()->next() || getTab()->prev())) {
+							Tab *tab_it = getTab()->first();
+							for (; tab_it; tab_it = tab_it->next()) {
+								screen->reassociateWindow(tab_it->getWindow(), new_id, true);
+							}
+						}
 						screen->changeWorkspaceID(new_id);
 						setInputFocus();
+						screen->raiseFocus();
 					}
 				}
 
