@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.24 2002/11/14 00:23:19 fluxgen Exp $
+// $Id: Slit.cc,v 1.25 2002/11/15 12:13:56 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -855,7 +855,7 @@ m_directionmenu(*this) {
 
 #ifdef XINERAMA
 	if (screen()->hasXinerama()) { // only create if we need
-		m_headmenu.reset(new Headmenu(this));
+		m_headmenu.reset(new Headmenu(*this));
 	}
 #endif // XINERAMA
 
@@ -1055,7 +1055,7 @@ void Slitmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 
 #ifdef XINERAMA
 
-Slitmenu::Headmenu::Headmenu(Slitmenu *sm): Basemenu(sm->screen()),
+Slitmenu::Headmenu::Headmenu(Slitmenu &sm): Basemenu(sm.screen()),
 slitmenu(sm) {
 
 	I18n *i18n = I18n::instance();
@@ -1082,7 +1082,7 @@ void Slitmenu::Headmenu::itemSelected(int button, unsigned int index) {
 
 		screen()->saveSlitOnHead(item->function());
 		hide();
-		slitmenu->slit.reconfigure();
+		slitmenu.slit.reconfigure();
 		Fluxbox::instance()->save_rc();
 	}
 }
