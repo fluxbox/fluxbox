@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.108 2003/01/05 22:22:33 fluxgen Exp $
+// $Id: Window.cc,v 1.109 2003/01/07 01:34:49 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -30,13 +30,11 @@
 #include "fluxbox.hh"
 #include "Iconmenu.hh"
 #include "Screen.hh"
-#include "Toolbar.hh"
-#include "Windowmenu.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
 #include "ImageControl.hh"
 #include "FbWinFrameTheme.hh"
-
+#include "MenuTheme.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -99,7 +97,8 @@ void grabButton(Display *display, unsigned int button,
 
 };
 
-FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, BImageControl &imgctrl, FbWinFrameTheme &tm):
+FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, BImageControl &imgctrl, FbWinFrameTheme &tm,
+                             FbTk::MenuTheme &menutheme):
     m_hintsig(*this),
     m_statesig(*this),
     m_workspacesig(*this),
@@ -111,7 +110,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, BImageControl
     timer(this),
     display(0),
     lastButtonPressTime(0),
-    m_windowmenu(0),
+    m_windowmenu(menutheme, screen_num, imgctrl),
     m_layer(LAYER_NORMAL), old_decoration(DECOR_NORMAL),
     tab(0),
     m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100) {
@@ -247,10 +246,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, BImageControl
 				
     positionWindows();
 
-    if (decorations.menu) {
-        m_windowmenu.reset(new Windowmenu(*this));
-    }
-
     if (workspace_number < 0 || workspace_number >= screen->getCount())
         screen->getCurrentWorkspace()->addWindow(this, place_window);
     else
@@ -279,7 +274,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, BImageControl
 
     // finaly show the frame and the client window
     m_frame.show();
-
+    XSync(display, False);
 }
 
 
@@ -401,7 +396,7 @@ void FluxboxWindow::grabButtons() {
 
 
 void FluxboxWindow::reconfigure() {
-
+    
     upsize();
 
     positionWindows();
@@ -412,11 +407,9 @@ void FluxboxWindow::reconfigure() {
 	
     grabButtons();
 
-    if (m_windowmenu.get()) {
-        m_windowmenu->move(m_windowmenu->x(), m_frame.y() + m_frame.titleHeight());
-        m_windowmenu->reconfigure();
-    }
-		
+    m_frame.setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
+
+    m_windowmenu.reconfigure();
 	
 }
 
@@ -926,8 +919,7 @@ void FluxboxWindow::iconify() {
     if (iconic) // no need to iconify if we're already
         return;
 
-    if (m_windowmenu.get())
-        m_windowmenu->hide();
+    m_windowmenu.hide();
 
     setState(IconicState);
 
@@ -1040,8 +1032,7 @@ void FluxboxWindow::withdraw() {
 
     m_frame.hide();
 
-    if (m_windowmenu.get())
-        m_windowmenu->hide();
+    m_windowmenu.hide();
 	
     if (tab)
         tab->withdraw();
@@ -1422,15 +1413,28 @@ void FluxboxWindow::restoreAttributes() {
    Show the window menu at pos mx, my
 */
 void FluxboxWindow::showMenu(int mx, int my) {
-    if (m_windowmenu.get() == 0)
-        return;
-    m_windowmenu->move(mx, my);
-    m_windowmenu->show();		
-    m_windowmenu->raise();
-    m_windowmenu->getSendToMenu().raise();
-    m_windowmenu->getSendGroupToMenu().raise();
+    m_windowmenu.move(mx, my);
+    m_windowmenu.show();		
+    m_windowmenu.raise();
+    //    m_windowmenu.getSendToMenu().raise();
+    //    m_windowmenu.getSendGroupToMenu().raise();
 }
-				
+
+/**
+   Moves the menu to last button press position and shows it,
+   if it's already visible it'll be hidden
+ */
+void FluxboxWindow::popupMenu() {
+    if (m_windowmenu.isVisible()) {
+        m_windowmenu.hide(); 
+        return;
+    }
+
+    m_windowmenu.move(m_last_button_x, m_frame.y() + m_frame.titlebar().height() + m_frame.titlebar().borderWidth()*2);
+    m_windowmenu.show();
+    m_windowmenu.raise();
+}
+
 void FluxboxWindow::restoreGravity() {
     // restore x coordinate
     switch (client.win_gravity) {
@@ -1779,6 +1783,11 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
 
 void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
+    m_last_button_x = be.x_root;
+    m_last_button_y = be.y_root;
+
+    // check frame events first
+    m_frame.buttonPressEvent(be);
 
     if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
         if ((! focused) && (! screen->isSloppyFocus())) { //check focus 
@@ -1787,30 +1796,29 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
 
         if (m_frame.clientArea() == be.window) {
 			
-            if (m_windowmenu.get() && m_windowmenu->isVisible()) //hide menu if its visible
-                m_windowmenu->hide();
+            if (m_windowmenu.isVisible()) //hide menu if its visible
+                m_windowmenu.hide();
 
             raise();
 
             XAllowEvents(display, ReplayPointer, be.time);
 			
         } else {
-				
+            
             button_grab_x = be.x_root - m_frame.x() - screen->getBorderWidth();
             button_grab_y = be.y_root - m_frame.y() - screen->getBorderWidth();
-
-            if (m_windowmenu.get() && m_windowmenu->isVisible())
-                m_windowmenu->hide();
-
-            raise();
+            if (m_windowmenu.isVisible())
+                m_windowmenu.hide();
         }
-    } else if (be.button == 2 && be.window == m_frame.label()) {
-        lower();
     }
+
 }
 
+void FluxboxWindow::shapeEvent(XShapeEvent *) { }
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
+    m_frame.buttonReleaseEvent(re); // let the frame handle the event first
+
     if (isMoving())
         stopMoving();		
     else if (isResizing())
@@ -1819,6 +1827,8 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         if (re.button == 2 && re.state == Mod1Mask)
             XUngrabPointer(display, CurrentTime);
     }
+
+
 }
 
 
@@ -1948,7 +1958,7 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 	//	functions.iconify = functions.maximize = true;
 	//	functions.move = true;   // We need to move even without decor
 	//	functions.resize = true; // We need to resize even without decor
-		
+        frame().hideAllDecorations();
 	break;
 
     default:
@@ -1958,8 +1968,9 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
             decorations.menu = true;
         functions.resize = functions.move = functions.iconify =
             functions.maximize = true;
+        m_frame.showAllDecorations();
         m_frame.show();
-
+        
 	break;
 
     case DECOR_TINY:
@@ -2022,8 +2033,8 @@ void FluxboxWindow::startMoving(Window win) {
                  ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
                  None, fluxbox->getMoveCursor(), CurrentTime);
 
-    if (m_windowmenu.get() && m_windowmenu->isVisible())
-        m_windowmenu->hide();
+    if (m_windowmenu.isVisible())
+        m_windowmenu.hide();
 
     fluxbox->maskWindowEvents(client.window, this);
     /* TODO: opaque moving

@@ -22,14 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.40 2003/01/05 22:20:46 fluxgen Exp $
+// $Id: Window.hh,v 1.41 2003/01/07 01:33:18 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
 
 #include "BaseDisplay.hh"
 #include "Timer.hh"
-#include "Windowmenu.hh"
+#include "Menu.hh"
 #include "Subject.hh"
 #include "FbWinFrame.hh"
 #include "EventHandler.hh"
@@ -49,7 +49,11 @@
 
 class Tab;
 class FbWinFrameTheme;
+class BScreen;
 
+namespace FbTk {
+class MenuTheme;
+};
 
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow : public TimeoutHandler, public FbTk::EventHandler {
@@ -98,7 +102,8 @@ public:
     };
 
     /// create fluxbox window with parent win and screen connection
-    FluxboxWindow(Window win, BScreen *scr, int screen_num, BImageControl &imgctrl, FbWinFrameTheme &tm);
+    FluxboxWindow(Window win, BScreen *scr, int screen_num, BImageControl &imgctrl, FbWinFrameTheme &tm,
+                  FbTk::MenuTheme &menutheme);
     virtual ~FluxboxWindow();
 
 
@@ -140,7 +145,10 @@ public:
     void setWorkspace(int n);
     void changeBlackboxHints(const BaseDisplay::BlackboxHints &bh);
     void restoreAttributes();
-    void showMenu(int mx, int my);	
+    void showMenu(int mx, int my);
+    // popup menu on last button press position
+    void popupMenu();
+
     void pauseMoving();
     void resumeMoving();
     /**
@@ -207,8 +215,8 @@ public:
     Window getFrameWindow() const { return m_frame.window().window(); }
     Window getClientWindow() const { return client.window; }
 
-    Windowmenu *getWindowmenu() { return m_windowmenu.get(); }
-    const Windowmenu *getWindowmenu() const { return m_windowmenu.get(); }
+    FbTk::Menu &getWindowmenu() { return m_windowmenu; }
+    const FbTk::Menu &getWindowmenu() const { return m_windowmenu; }
 	
     const std::string &getTitle() const { return client.title; }
     const std::string &getIconTitle() const { return client.icon_title; }
@@ -320,7 +328,7 @@ private:
     BaseDisplay::BlackboxAttributes blackbox_attrib;
 
     Time lastButtonPressTime;
-    std::auto_ptr<Windowmenu> m_windowmenu;
+    FbTk::Menu m_windowmenu;
 
     timeval lastFocusTime;
 	
@@ -370,6 +378,8 @@ private:
     int frame_resize_y, frame_resize_h;
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
+    int m_last_button_x, ///< last known x position of the mouse button
+        m_last_button_y; ///< last known y position of the mouse button
     FbWinFrame m_frame;
 
     enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
