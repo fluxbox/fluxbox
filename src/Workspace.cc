@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.14 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Workspace.cc,v 1.15 2002/04/02 23:14:07 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -98,7 +98,22 @@ const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	w->setWindowNumber(windowList.size());
 
 	stackingList.push_front(w);
-	windowList.push_back(w);
+
+	//insert window after the currently focused window	
+	FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
+	//if there isn't any window that's focused, just add it to the end of the list
+	if (focused == 0) {
+		windowList.push_back(w);
+	} else {
+		Windows::iterator it = windowList.begin();
+		for (; it != windowList.end(); ++it) {
+			if (*it == focused) {
+				++it;
+				break;
+			}
+		}
+		windowList.insert(it, w);
+	}
 
 	clientmenu->insert(w->getTitle());
 	clientmenu->update();
@@ -139,7 +154,16 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 	if (lastfocus == w)
 		lastfocus = (FluxboxWindow *) 0;
 
-	windowList.erase(windowList.begin() + w->getWindowNumber());
+	//could be faster?
+	Windows::iterator it = windowList.begin();
+	Windows::iterator it_end = windowList.end();
+	for (; it != it_end; ++it) {
+		if (*it == w) {
+			windowList.erase(it);
+			break;
+		}
+	}
+
 	clientmenu->remove(w->getWindowNumber());
 	clientmenu->update();
 
