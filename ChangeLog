@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/25:
+   * Make sure all the menus have titles, make -version go to stdout (Simon)
+     Screen.cc Slit.cc Toolbar.cc ToolbarHandler.cc Xinerama.hh 
+     Workspace.cc main.cc
    * Fix pesky crash and phantom icons (diesig wasn't getting through) (Simon)
      ToolbarHandler.cc
 *03/07/24:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.102 2003/07/19 11:55:49 rathnor Exp $
+// $Id: Toolbar.cc,v 1.103 2003/07/25 10:03:55 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -283,6 +283,10 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     screen().reconfigureSig().attach(&m_themelistener);
 
     moveToLayer((*m_rc_layernum).getNum());
+
+    // TODO: nls
+    m_layermenu.setLabel("Toolbar Layer");
+    m_placementmenu.setLabel("Toolbar Placement");
 
     m_layermenu.setInternalMenu();
     m_placementmenu.setInternalMenu();
@@ -1392,12 +1396,14 @@ void Toolbar::setupMenus() {
     menu.insert("Layer...", &tbar.layermenu());
 
     if (tbar.screen().hasXinerama()) {
+        // TODO: nls (main label plus menu heading
         menu.insert("On Head...", new XineramaHeadMenu<Toolbar>(
                         *tbar.screen().menuTheme(),
                         tbar.screen(),
                         tbar.screen().imageControl(),
                         *tbar.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                        tbar
+                        tbar,
+                        "Toolbar on Head"
                         ));
     }
 

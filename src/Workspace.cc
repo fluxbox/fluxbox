@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.76 2003/06/24 18:34:01 fluxgen Exp $
+// $Id: Workspace.cc,v 1.77 2003/07/25 10:03:55 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -131,6 +131,7 @@ Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager,
         m_cascade_y[i] = 32 + scrn.getHeadY(i);
     }
     m_clientmenu.setInternalMenu();
+    setName(name);
 }
 
 

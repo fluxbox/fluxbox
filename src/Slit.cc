@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.74 2003/07/23 10:42:12 fluxgen Exp $
+// $Id: Slit.cc,v 1.75 2003/07/25 10:03:55 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -314,6 +314,10 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
     moveToLayer((*m_rc_layernum).getNum());
+
+    // TODO: nls
+    if (m_layermenu.get())
+        m_layermenu->setLabel("Slit Layer");
 
     // Get client list for sorting purposes
     loadClientList(filename);
@@ -1219,12 +1223,14 @@ void Slit::setupMenu() {
 
 #ifdef XINERAMA
     if (screen().hasXinerama()) {
+        // TODO: nls (main label, plus menu heading)
         m_slitmenu.insert("On Head...", new XineramaHeadMenu<Slit>(
                                                                    *screen().menuTheme(),
                                                                    screen(),
                                                                    screen().imageControl(),
                                                                    *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                                   *this
+                                                                   *this,
+                                                                   "Slit on Head"
                                                                    ));
     }
                     

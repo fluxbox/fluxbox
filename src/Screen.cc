@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.206 2003/07/20 08:12:36 rathnor Exp $
+// $Id: Screen.cc,v 1.207 2003/07/25 10:03:55 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -145,11 +145,14 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
     return -1;
 }
 
-FbTk::Menu *createMenuFromScreen(BScreen &screen) {
+FbTk::Menu *createMenuFromScreen(BScreen &screen, const char *label = 0) {
     FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
                                   screen.screenNumber(), 
                                   screen.imageControl(), 
                                   *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
+    if (label)
+        menu->setLabel(label);
+
     return menu;
 }
 
@@ -412,7 +415,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // own resources we must do this.
     fluxbox->load_rc(*this);
 
-    m_configmenu.reset(createMenuFromScreen(*this));
+    // TODO: nls
+    m_configmenu.reset(createMenuFromScreen(*this, "Configuration"));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
 
@@ -1849,7 +1853,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // create focus menu
     // we don't set this to internal menu so will 
     // be deleted toghether with the parent
-    FbTk::Menu *focus_menu = createMenuFromScreen(*this);
+    const char *focusmenu_label = i18n->getMessage(ConfigmenuSet, ConfigmenuFocusModel,
+                                                   "Focus Model");
+    FbTk::Menu *focus_menu = createMenuFromScreen(*this, focusmenu_label);
 
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
                                                                ConfigmenuSet, 
@@ -1881,10 +1887,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     focus_menu->update();
 
-    menu.insert(i18n->getMessage(
-                                 ConfigmenuSet, ConfigmenuFocusModel,
-                                 "Focus Model"), 
-                focus_menu);
+    menu.insert(focusmenu_label, focus_menu);
 #ifdef SLIT
     if (slit() != 0) {
         slit()->menu().setInternalMenu();

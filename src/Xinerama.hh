@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xinerama.hh,v 1.4 2003/07/19 11:55:49 rathnor Exp $
+// $Id: Xinerama.hh,v 1.5 2003/07/25 10:03:55 rathnor Exp $
 
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
@@ -65,7 +65,7 @@ template <typename ItemType>
 class XineramaHeadMenu : public FbMenu {
 public:
     XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                     FbTk::XLayer &layer, ItemType &item);
+                     FbTk::XLayer &layer, ItemType &item, const char * title);
 
 private:
     ItemType &m_object;
@@ -74,11 +74,12 @@ private:
 
 template <typename ItemType>
 XineramaHeadMenu<ItemType>::XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                               FbTk::XLayer &layer, ItemType &item):
+                               FbTk::XLayer &layer, ItemType &item, const char * title = 0):
     FbMenu(tm, screen.screenNumber(), imgctrl, layer), 
     m_object(item) 
 {
-    
+    if (title)
+        setLabel(title);
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(
                                      *Fluxbox::instance(), 
                                      &Fluxbox::save_rc));

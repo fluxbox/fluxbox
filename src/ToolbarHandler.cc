@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.25 2003/07/25 08:46:51 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.26 2003/07/25 10:03:55 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -117,6 +117,9 @@ void setupModeMenu(FbTk::Menu &menu, ToolbarHandler &handler) {
     //I18n *i18n = I18n::instance();
     //using namespace FBNLS;
     using namespace FbTk;
+
+    // TODO: nls
+    menu.setLabel("Toolbar Mode");
 
     RefCount<Command> saverc_cmd(new SimpleCommand<Fluxbox>(
         *Fluxbox::instance(), 
