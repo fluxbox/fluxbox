@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.23 2002/05/15 09:35:49 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.24 2002/05/19 12:22:55 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -812,9 +812,9 @@ void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 }
 
 
-void Basemenu::setLabel(const char *l) {
-	//we don't want 0 to std::string
-	menu.label = l ? l : "";
+void Basemenu::setLabel(const char *labelstr) {
+	//make sure we don't send 0 to std::string
+	menu.label = (labelstr ? labelstr : "");
 }
 
 
