@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.141 2003/05/12 04:28:05 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.142 2003/05/12 11:14:47 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -500,8 +500,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             continue;
         }
 #ifdef HAVE_RANDR
+
+#ifdef X_RRScreenChangeSelectInput
+        // use old set randr event
+        XRRScreenChangeSelectInput(disp, screen->rootWindow().window(), True);
+#else
         XRRSelectInput(disp, screen->rootWindow().window(),
                        RRScreenChangeNotifyMask);
+#endif // X_RRScreenChangeSelectInput        
+
 #endif // HAVE_RANDR
 
         m_screen_list.push_back(screen);        
