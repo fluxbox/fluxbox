@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.1 2004/05/02 20:59:29 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.2 2004/05/02 22:17:00 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -413,7 +413,9 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
                                                  &win,
                                                  false));
 
-    } else 
+    } else if (type == "separator") {
+        menu.insert("---");
+    } else
         return false;
 #undef WINDOWNLS
 
