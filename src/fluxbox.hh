@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.36 2002/12/03 23:55:49 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.37 2003/01/10 00:41:15 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -75,7 +75,7 @@ class Tab;
 	main class for the window manager.
 	singleton type
 */
-class Fluxbox : public BaseDisplay, public TimeoutHandler, 
+class Fluxbox : public BaseDisplay, public FbTk::TimeoutHandler, 
                 public FbTk::SignalEventHandler,
                 public FbAtoms,
                 public FbTk::Observer {
@@ -247,7 +247,7 @@ private:
     ScreenList screenList;
 
     FluxboxWindow *focused_window, *masked_window;
-    BTimer timer;
+    FbTk::Timer timer;
 
 
 #ifdef		HAVE_GETPID
