@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.11 2003/07/20 10:58:27 rathnor Exp $
+# $Id: fbsetbg,v 1.12 2003/07/20 11:23:51 rathnor Exp $
 
 #
 # Portability notes:
@@ -49,14 +49,14 @@ WHOAMI=`whoami`
 
 # Functions
 display_usage() {
-    cat <<EOF
+    cat << EOF
 Usage: fbsetbg [ -fcta /path/to/wallpaper ] [ -l ] [ -h ] [ -d ]
 EOF
 }
 
 display_help() {
     display_usage
-    cat <<EOF
+    cat << EOF
 
 Options:
 
@@ -82,11 +82,11 @@ EOF
 }
 
 display_tips(){
-cat<<EOF
+cat<< EOF
 
 To replace all occurrences of bsetbg in a file use this command:
 
-  perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,'
+  perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,' filename
 
 If you want the style to set the wallpaper and you want fbsetbg to
 remember the previous wallpaper put this in your ~/.fluxbox/init
@@ -245,9 +245,9 @@ case "${COMMAND_LINE_ARGUMENT}" in
         wallpaper=$OPTARG
         ;;
     l)
-        if [ -r $lastwallpaper ];then
-            option=`grep "${DISPLAY}$" $lastwallpaper|cut -d'|' -f1`
-            wallpaper=`grep "${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
+        if [ -r $lastwallpaper ]; then
+            option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
+            wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
         else
             message 'No previous wallpaper recorded. You have never used fbsetbg before.'
             exit 1
@@ -266,7 +266,7 @@ case "${COMMAND_LINE_ARGUMENT}" in
            display_usage
            exit 1
        fi
-       if [ -z "$1" ];then
+       if [ -z "$1" ]; then
            message 'No wallpaper to set' >&2
            display_usage
            exit 1
@@ -278,7 +278,7 @@ option=${option:=$full}
 wallpaper=${wallpaper:=$1}
 
 
-if [ ! -r "$wallpaper" ];then
+if [ ! -r "$wallpaper" ]; then
     message "Can't find wallpaper $wallpaper"
     exit 1
 fi
