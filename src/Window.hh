@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.68 2003/05/10 14:23:29 fluxgen Exp $
+// $Id: Window.hh,v 1.69 2003/05/10 16:51:39 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -153,7 +153,7 @@ public:
     void nextClient();
     void prevClient();
 
-    void setWindowNumber(int n) { window_number = n; }
+    void setWindowNumber(int n) { m_window_number = n; }
       
     bool validateClient();
     bool setInputFocus();
@@ -282,9 +282,12 @@ public:
     inline const ClientList &clientList() const { return m_clientlist; }
     inline WinClient &winClient() { return *m_client; }
     inline const WinClient &winClient() const { return *m_client; }
+    // obsolete
+    inline const BScreen &getScreen() const { return m_screen; }
+    inline BScreen &getScreen() { return m_screen; }
 
-    inline const BScreen &getScreen() const { return screen; }
-    inline BScreen &getScreen() { return screen; }
+    inline const BScreen &screen() const { return m_screen; }
+    inline BScreen &screen() { return m_screen; }
 
     inline const FbTk::XLayerItem &getLayerItem() const { return m_layeritem; }
     inline FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
@@ -306,8 +309,8 @@ public:
     int getYFrame() const { return m_frame.y(); }
     int getXClient() const;
     int getYClient() const;
-    unsigned int getWorkspaceNumber() const { return workspace_number; }
-    int getWindowNumber() const { return window_number; }
+    unsigned int getWorkspaceNumber() const { return m_workspace_number; }
+    int getWindowNumber() const { return m_window_number; }
     int getLayerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
     unsigned int getWidth() const { return m_frame.width(); }
@@ -339,7 +342,7 @@ public:
     const FbTk::Subject &dieSig() const { return m_diesig; }
     /** @} */ // end group signals
 
-    const timeval &getLastFocusTime() const {return lastFocusTime;}
+    const timeval &getLastFocusTime() const { return m_last_focus_time;}
 
     //@}
 	
@@ -404,33 +407,31 @@ private:
     std::string m_instance_name; /// instance name from WM_CLASS
     std::string m_class_name; /// class name from WM_CLASS
 	
-    //Window state
+    // Window states
     bool moving, resizing, shaded, maximized, iconic,
         focused, stuck, send_focus_message, m_managed;
     WinClient *m_attaching_tab;
 
-    BScreen &screen; /// screen on which this window exist
-    FbTk::Timer timer;
+    BScreen &m_screen; /// screen on which this window exist
+    FbTk::Timer m_timer;
     Display *display; /// display connection
-    BlackboxAttributes blackbox_attrib;
+    BlackboxAttributes m_blackbox_attrib;
 
-    Time lastButtonPressTime;
     FbTk::Menu m_windowmenu;
     LayerMenu<FluxboxWindow> m_layermenu;
     
-    timeval lastFocusTime;
+    timeval m_last_focus_time;
 	
-    int button_grab_x, button_grab_y; // handles last button press event for move
-    int last_resize_x, last_resize_y; // handles last button press event for resize
-    int last_move_x, last_move_y; // handles last pos for non opaque moving
-    unsigned int last_resize_h, last_resize_w; // handles height/width for resize "window"
-    unsigned int move_ws; // handles home workspace for opaque workspace warping
+    int m_button_grab_x, m_button_grab_y; // handles last button press event for move
+    int m_last_resize_x, m_last_resize_y; // handles last button press event for resize
+    int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
+    unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
 
-    int focus_mode, window_number;
-    unsigned int workspace_number;
-    unsigned long current_state;
+    int m_focus_mode, m_window_number;
+    unsigned int m_workspace_number;
+    unsigned long m_current_state;
 
-    Decoration old_decoration;
+    Decoration m_old_decoration;
 
     ClientList m_clientlist;
     WinClient *m_client;
@@ -449,8 +450,6 @@ private:
         bool resize, move, iconify, maximize, close;
     } functions;
 	
-    int frame_resize_x, frame_resize_w;
-    int frame_resize_y, frame_resize_h;
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
