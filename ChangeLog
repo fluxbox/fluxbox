@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/31:
+  * Check for iconv function (Henrik)
+    configure.in, Font.hh/cc
   * Fix for gcc 2.95.4 issues with "typeid" and "make_pair" (Mathias)
     Slit.cc Toolbar.cc
   * Check for C++ std headers, some older machines dont have them (Simon)
