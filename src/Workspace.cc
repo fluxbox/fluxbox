@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.92 2004/02/28 16:55:59 fluxgen Exp $
+// $Id: Workspace.cc,v 1.93 2004/03/15 03:48:47 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -498,9 +498,9 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                 test_x = head_right - win_w;
 
             if (top_bot)
-                next_y = head_right; // it will get shrunk
+                next_y = head_top;
             else
-                next_y = head_left;
+                next_y = head_bot - win_h; // will be shrunk
 
             while (!placed &&
                    (left_right ? test_x + win_w < head_right
