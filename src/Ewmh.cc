@@ -706,9 +706,10 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // ce.data.l[2] = y
         // ce.data.l[3] = width
         // ce.data.l[4] = height
-        // TODO: gravity and flags
-        winclient->fbwindow()->moveResize(ce.data.l[1], ce.data.l[2],
-                                          ce.data.l[3], ce.data.l[4]);
+        // TODO: flags
+        int win_gravity=ce.data.l[0] & 0xFF;
+        winclient->fbwindow()->moveResizeForClient(ce.data.l[1], ce.data.l[2],
+                                          ce.data.l[3], ce.data.l[4], win_gravity);
         return true;
     }
 

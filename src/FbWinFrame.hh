@@ -76,16 +76,16 @@ public:
     inline bool isVisible() const { return m_visible; }
     /// shade frame (ie resize to titlebar size)
     void shade();
-    void move(int x, int y);
-    void resize(unsigned int width, unsigned int height);
+    void move(int x, int y, int win_gravity=ForgetGravity);
+    void resize(unsigned int width, unsigned int height, int win_gravity=ForgetGravity);
     /// resize client to specified size and resize frame to it
-    void resizeForClient(unsigned int width, unsigned int height);
+    void resizeForClient(unsigned int width, unsigned int height, int win_gravity=ForgetGravity);
 
     // for when there needs to be an atomic move+resize operation
-    void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true);
+    void moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true, int win_gravity=ForgetGravity);
 
     // can elect to ignore move or resize (mainly for use of move/resize individual functions
-    void moveResize(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true);
+    void moveResize(int x, int y, unsigned int width, unsigned int height, bool move = true, bool resize = true, int win_gravity=ForgetGravity);
 
     /// set focus/unfocus style
     void setFocus(bool newvalue);
@@ -133,7 +133,8 @@ public:
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
     void gravityTranslate(int &x, int &y, int win_gravity, bool move_frame = false);
-
+    //use width and height given instead of the real values, allows figuring out where to place a window before doing a moveResize
+    void gravityTranslate(int &x, int &y, unsigned int width, unsigned int height, int win_gravity, bool move_frame = false);
     void setBorderWidth(unsigned int borderW);
 
     /**

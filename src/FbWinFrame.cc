@@ -166,16 +166,16 @@ void FbWinFrame::shade() {
 }
 
 
-void FbWinFrame::move(int x, int y) {
-    moveResize(x, y, 0, 0, true, false);
+void FbWinFrame::move(int x, int y, int win_gravity) {
+    moveResize(x, y, 0, 0, true, false, win_gravity);
 }
 
-void FbWinFrame::resize(unsigned int width, unsigned int height) {
-    moveResize(0, 0, width, height, false, true);
+void FbWinFrame::resize(unsigned int width, unsigned int height, int win_gravity) {
+    moveResize(0, 0, width, height, false, true, win_gravity);
 }
 
 // need an atomic moveresize where possible
-void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {
+void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned int height, bool move, bool resize, int win_gravity) {
     // total height for frame
 
     unsigned int total_height = height;
@@ -188,14 +188,17 @@ void FbWinFrame::moveResizeForClient(int x, int y, unsigned int width, unsigned 
         if (m_use_handle)
             total_height += m_handle.height() + m_handle.borderWidth();
     }
-    moveResize(x, y, width, total_height, move, resize);
+    moveResize(x, y, width, total_height, move, resize, win_gravity);
 }
 
-void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
-    moveResizeForClient(0, 0, width, height, false, true);
+void FbWinFrame::resizeForClient(unsigned int width, unsigned int height, int win_gravity) {
+    moveResizeForClient(0, 0, width, height, false, true, win_gravity);
 }
 
-void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize) {
+void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height, bool move, bool resize, int win_gravity) {
+    if(win_gravity!=ForgetGravity) {
+        gravityTranslate(x, y, width + m_window.borderWidth()*2, height + m_window.borderWidth()*2, win_gravity, false);
+    }
     if (move && x == window().x() && y == window().y()) 
         move = false;
 
@@ -1456,6 +1459,10 @@ void FbWinFrame::updateTransparent() {
 // if win_gravity is negative, it does an inverse translation
 // This function should be used when a window is mapped/unmapped/pos configured
 void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_frame) {
+    gravityTranslate(x, y, m_window.width(), m_window.height(), win_gravity, move_frame);
+}
+//use width and height given instead of the real values, allows figuring out where to place a window before doing a moveResize
+void FbWinFrame::gravityTranslate(int &x, int &y, unsigned int width, unsigned int height, int win_gravity, bool move_frame) {
     bool invert = false;
     if (win_gravity < 0) {
         invert = true;
@@ -1483,43 +1490,56 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
     int x_offset = 0;
     int y_offset = 0;
 
-    // mostly no X offset, since we don't have extra frame on the sides
-    switch (win_gravity) {
-    case NorthWestGravity:
-    case NorthGravity:
-    case NorthEastGravity:
-        // no offset, since the top point is still the same
-        break;
-    case SouthWestGravity:
-    case SouthGravity:
-    case SouthEastGravity:
-        // window shifted down by height of titlebar, and the handle
-        // since that's necessary to get the bottom of the frame
-        // all the way up
+    /* win_gravity:    placed at the reference point
+     * StaticGravity    the left top corner of the client window
+     * NorthWestGravity    the left top corner of the frame window
+     * NorthGravity    the center of the frame window's top side
+     * NorthEastGravity    the right top corner of the frame window
+     * EastGravity    the center of the frame window's right side
+     * SouthEastGravity    the right bottom corner of the frame window
+     * SouthGravity    the center of the frame window's bottom side
+     * SouthWestGravity    the left bottom corner of the frame window
+     * WestGravity    the center of the frame window's left side
+     * CenterGravity    the center of the frame window
+     */ 
+    
+
+    //vertical offset
+    //North Gravities don't require a vertical offset
+    //South Gravities
+    if (win_gravity==SouthWestGravity || win_gravity==SouthGravity ||
+        win_gravity==SouthEastGravity) {
+        //We start on the frame so going the full height would take us one pixel past the edge of the frame
+        y_offset-=height-1;
+    }
+
+    //vertical centering
+    if (win_gravity==WestGravity || win_gravity==CenterGravity ||
+        win_gravity==EastGravity) {
+        y_offset-=height/2;
+    }
+
+    //horizontal offset
+    //West Gravities don't require a horizontal offset
+    //East Gravities
+    if (win_gravity==NorthEastGravity || win_gravity==EastGravity ||
+        win_gravity==SouthEastGravity ) {
+        //Starting on the frame so offset of one width would end up one pixel beyond the border
+        x_offset-=width-1;
+    }
+    //horizontal centering
+    if (win_gravity==NorthGravity || win_gravity==CenterGravity ||
+        win_gravity==SouthGravity ) {
+        x_offset-=width/2;
+    }
+
+    if( win_gravity==StaticGravity ) {
         if (m_use_titlebar)
             y_offset -= m_titlebar.height() + m_titlebar.borderWidth();
-        if (m_use_handle)
-            y_offset -= m_handle.height() + m_handle.borderWidth();
-        break;
-    case WestGravity:
-    case EastGravity:
-    case CenterGravity:
-        // these centered ones are a little more interesting
-        if (m_use_titlebar)
-            y_offset -= m_titlebar.height() + m_titlebar.borderWidth();
-        if (m_use_handle)
-            y_offset -= m_handle.height() + m_handle.borderWidth();
-        y_offset /= 2;
-        break;
-    case StaticGravity:
-        if (m_use_titlebar)
-            y_offset -= m_titlebar.height() + m_titlebar.borderWidth();
-        // static is the only one that also has the
-        // border taken into account
         x_offset -= m_window.borderWidth();
         y_offset -= m_window.borderWidth();
-        break;
     }
+
 
     if (invert) {
         x_offset = -x_offset;
@@ -1528,7 +1548,6 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
 
     x += x_offset;
     y += y_offset;
-
     if (move_frame && (x_offset != 0 || y_offset != 0)) {
         move(x, y);
     }

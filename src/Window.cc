@@ -1387,6 +1387,29 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 
 }
 
+void FluxboxWindow::moveResizeForClient(int new_x, int new_y,
+                               unsigned int new_width, unsigned int new_height, int gravity) {
+
+    // magic to detect if moved during initialisation
+    if (!isInitialized())
+        m_old_pos_x = 1;
+    frame().moveResizeForClient(new_x, new_y, new_width, new_height, true, true, gravity);
+    setFocusFlag(focused);
+    shaded = false;
+    sendConfigureNotify();
+
+    shape();
+
+    if (!moving) {
+        m_last_resize_x = new_x;
+        m_last_resize_y = new_y;
+    }
+
+}
+
+
+
+
 // returns whether the focus was "set" to this window
 // it doesn't guarantee that it has focus, but says that we have
 // tried. A FocusqIn event should eventually arrive for that
