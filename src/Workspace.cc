@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.28 2002/09/09 10:00:24 fluxgen Exp $
+// $Id: Workspace.cc,v 1.29 2002/09/10 11:03:58 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -237,8 +237,10 @@ void Workspace::removeAll(void) {
 void Workspace::raiseWindow(FluxboxWindow *w) {
 	FluxboxWindow *win = w;
 
-	while (win->isTransient() && win->getTransientFor())
+	while (win->getTransientFor()) {
 		win = win->getTransientFor();
+		assert(win != win->getTransientFor());
+	}
 	
 	int i = 1 + countTransients(*win);
 
@@ -262,12 +264,14 @@ void Workspace::raiseWindow(FluxboxWindow *w) {
 void Workspace::lowerWindow(FluxboxWindow *w) {
 	FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
 
-	while (bottom->isTransient() && bottom->getTransientFor()
-			&& bottom->getTransientFor() != bottom) //prevent infinite loop
+	while (bottom->getTransientFor()) {
 		bottom = bottom->getTransientFor();
+		assert(bottom != bottom->getTransientFor());
+	}
 
-	int i = 1 + countTransients(*w);
 	win = bottom;
+	int i = 1 + countTransients(*win);
+
 
 	Stack st(i);
 	Stack::iterator stackit = st.begin();
