@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.32 2003/06/20 01:26:16 fluxgen Exp $
+/// $Id: Slit.hh,v 1.33 2003/06/22 12:32:08 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -111,7 +111,6 @@ public:
 
     virtual void timeout();
 
-
 private:
     void clearWindow();
     void setupMenu();
@@ -122,7 +121,7 @@ private:
     void clearStrut();
     void updateStrut();
 
-    bool m_hidden, m_do_auto_hide;
+    bool m_hidden;
 
     BScreen &m_screen;
     FbTk::Timer m_timer;
