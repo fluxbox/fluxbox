@@ -1,7 +1,7 @@
 // Remember.hh for Fluxbox Window Manager
 // Copyright (c) 2002 Xavier Brouckaert
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-//                and Simon Bowden    (rathnor at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//                     and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.13 2003/12/11 15:23:14 fluxgen Exp $
+// $Id: Remember.hh,v 1.14 2004/01/19 18:26:25 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -192,10 +192,12 @@ public:
 
     void initForScreen(BScreen &screen) {}
 
+    void updateFocusedWindow(BScreen &, Window) { }
     void updateClientList(BScreen &screen) {}
     void updateWorkspaceNames(BScreen &screen) {}
     void updateCurrentWorkspace(BScreen &screen) {}
     void updateWorkspaceCount(BScreen &screen) {}
+    void updateWorkarea(BScreen &) { }
 
     void updateWorkspace(FluxboxWindow &win) {}
     void updateState(FluxboxWindow &win) {}

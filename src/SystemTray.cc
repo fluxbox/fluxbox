@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.4 2003/08/28 13:44:58 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.5 2004/01/19 18:22:57 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -55,6 +55,8 @@ public:
     void setupFrame(FluxboxWindow &win) { };
     void setupClient(WinClient &winclient) { };
 
+    void updateWorkarea(BScreen &) { }
+    void updateFocusedWindow(BScreen &, Window) { }
     void updateClientList(BScreen &screen) { };
     void updateWorkspaceNames(BScreen &screen) { };
     void updateCurrentWorkspace(BScreen &screen) { };
