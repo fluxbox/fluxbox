@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.21 2003/05/13 00:24:26 fluxgen Exp $
+// $Id: Menu.cc,v 1.22 2003/05/17 10:44:32 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -467,6 +467,8 @@ void Menu::update() {
 void Menu::show() {
     menu.window.showSubwindows();
     menu.window.show();
+    //!! TODO, this should probably be done explicit if one don't want to raise
+    raise();
     visible = true;
 
     if (! m_parent) {
