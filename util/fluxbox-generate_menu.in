@@ -163,7 +163,7 @@ convertIcon(){
 	fi
 
 	if [ "$1" == "$2" ]; then
-		$ECHO "Files are in the same location: $1 == $2" >&2
+		# $VERBOSE "Files are in the same location: $1 == $2" >&2
 		# not really an error; just nothing to do.
 		return 0;
 	fi
@@ -172,7 +172,7 @@ convertIcon(){
 
 	# make sure it is an icon by checking if it has an extension
 	if [ "$BASENAME" == "${BASENAME%%.*}" ]; then
-		$ECHO "File $1 does not have a filename extention." >&2
+		# $VERBOSE "File $1 does not have a filename extention." >&2
 		return 1;
 	fi
 
@@ -227,10 +227,10 @@ removePath(){
 
 doSearchLoop(){
 	for ICONPATH in "$@"; do
-		#$ECHO ": $ICONPATH" >> $ICONMAPPING
+		## $VERBOSE ": $ICONPATH" >> $ICONMAPPING
 	  	[ -d "$ICONPATH" ] || continue
 		#echo -n "."
-		# $ECHO ":: $ICONPATH/$temp_icon" >> $ICONMAPPING
+		# # $VERBOSE ":: $ICONPATH/$temp_icon" >> $ICONMAPPING
 		if [ -f "$ICONPATH/$temp_icon" ]; then
 			echo "$ICONPATH/$temp_icon"
 			return 0;
@@ -238,7 +238,7 @@ doSearchLoop(){
 			# remove extension
 			iconNOext=${temp_icon%%.*}
 			[ -d "$ICONPATH" ] && for ICONEXT in .xpm .png .gif ; do
-				#$ECHO "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
+				## $VERBOSE "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
 				if [ -f "$ICONPATH/$iconNOext$ICONEXT" ]; then
 					echo "$ICONPATH/$iconNOext$ICONEXT"
 					return 0;
@@ -254,7 +254,7 @@ doSearch(){
 	# remove '(' from '(fluxbox ...) | ...'
 	local execname="${1//(}"
 	local temp_icon="$2"
-	$ECHO "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
+	# $VERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
 
 	# check in $ICONMAPPING before searching directories
 	entry_icon=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
@@ -280,7 +280,7 @@ searchForIcon(){
 	# remove '&' and everything after it
 	entry_exec="${1%%&*}"
 	entry_icon="$2"
-	$ECHO "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
+	# $VERBOSE "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
 	
 	# get the basename and parameters of entry_exec -- no path
 	entry_exec=`removePath "${entry_exec}"`
@@ -327,7 +327,7 @@ searchForIcon(){
 		if ! grep -q -m 1 "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" $ICONMAPPING 2> /dev/null; then
 			echo -e "\"${entry_exec}\" \t <${entry_icon}>" >> $ICONMAPPING
 		else 
-			$ECHO "#    mapping already exists for ${entry_exec}" >> $ICONMAPPING
+			: echo "#    mapping already exists for ${entry_exec}" >> $ICONMAPPING
 		fi
 	else
 		echo "# No icon file found for $entry_exec" >> $ICONMAPPING
@@ -336,9 +336,9 @@ searchForIcon(){
 
 toSingleLine(){ echo "$@"; }
 createIconMapping(){
-	$ECHO "# creating `date`" >> $ICONMAPPING
-	$ECHO "# using desktop files in $@" >> $ICONMAPPING
-	$ECHO "# searching for icons in `eval toSingleLine $OTHER_ICONPATHS`" >> $ICONMAPPING
+	# $VERBOSE "# creating `date`" >> $ICONMAPPING
+	# $VERBOSE "# using desktop files in $@" >> $ICONMAPPING
+	# $VERBOSE "# searching for icons in `eval toSingleLine $OTHER_ICONPATHS`" >> $ICONMAPPING
 	# need to determine when to use .fluxbox/icons/$execname.xpm over those listed in iconmapping
 	for DIR in "$@" ; do
 		if [ -d "$DIR" ]; then
@@ -367,11 +367,9 @@ createIconMapping(){
 					;;
 				esac
 			done
-		else
-			$ECHO not exists: $DIR >&2
 		fi
 	done
-	$ECHO "# done `date`" >> $ICONMAPPING
+	# $VERBOSE "# done `date`" >> $ICONMAPPING
 }
 
 lookupIcon() {
@@ -390,14 +388,14 @@ lookupIcon() {
 
 	#echo "grepping ${execname}"
 	iconString=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
-	$ECHO "lookupIcon $execname, $iconString" >&2
+	# $VERBOSE "lookupIcon $execname, $iconString" >&2
 
 	if [ -z "$iconString" ] ; then
 		iconString=`grep -m 1 "^\"${execname%% *}" $ICONMAPPING | grep -o '<.*>'`
 	fi
 
 	if [ -z "$iconString" ] && [ -z "$PARSING_DESKTOP" ] ; then
-		#$ECHO "lookupIcon: Searching ...  should only be needed for icons not gotten from *.desktop (manual-created ones): $execname" >&2
+		## $VERBOSE "lookupIcon: Searching ...  should only be needed for icons not gotten from *.desktop (manual-created ones): $execname" >&2
 		searchForIcon "$execname" "$execname"
 		[ "$entry_icon" ] && iconString="<$entry_icon>"
 	fi
@@ -1272,7 +1270,7 @@ for KDE_PREFIX in "${KDE_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; d
 done
 
 if [ -z "${INSTALL}" ]; then
-	[ -z "$ECHO" ] && ECHO=": echo"   # for debugging
+	# [ -z "$VERBOSE" ] && VERBOSE=": echo"   # for debugging
 	FB_ICONDIR="$HOME/.fluxbox/icons"
 	[ -d "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
 	ICONMAPPING="$HOME/.fluxbox/iconmapping"
@@ -1301,13 +1299,13 @@ if [ -z "${INSTALL}" ]; then
 	OTHER_ICONPATHS=`eval checkDirs $OTHER_ICONPATHS`
 	OTHER_DESKTOP_PATHS=`eval checkDirs $OTHER_DESKTOP_PATHS`
 
-	$ECHO "Using USER_DESKTOP_PATHS=\"$USER_DESKTOP_PATHS\" and USER_ICONPATHS=\"$USER_ICONPATHS\""
-	$ECHO "Using OTHER_ICONPATHS=$OTHER_ICONPATHS"
-	$ECHO "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
-	$ECHO "Calling function: createIconMapping"
+	# $VERBOSE "Using USER_DESKTOP_PATHS=\"$USER_DESKTOP_PATHS\" and USER_ICONPATHS=\"$USER_ICONPATHS\""
+	# $VERBOSE "Using OTHER_ICONPATHS=$OTHER_ICONPATHS"
+	# $VERBOSE "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
+	# $VERBOSE "Calling function: createIconMapping"
 	
 	eval createIconMapping $USER_DESKTOP_PATHS $OTHER_DESKTOP_PATHS
-	$ECHO "Done createIconMapping."
+	# $VERBOSE "Done createIconMapping."
 fi
 
 # directory for the backgrounds
