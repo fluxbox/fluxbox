@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/10:
+  * Fixed geometry window bug when resizing (Henrik)
+    Window.cc, Screen.cc
+  * Cleaning in menu code (Henrik)
+    ...
 *03/12/09:
   * Ignore NotifyInferior focus changes (Simon)
     - trying to pin down various focus issues... does this help/hinder?
