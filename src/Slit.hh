@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.25 2003/05/06 01:45:17 rathnor Exp $
+/// $Id: Slit.hh,v 1.26 2003/05/07 22:53:21 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -101,6 +101,7 @@ public:
     void enterNotifyEvent(XCrossingEvent &event);
     void leaveNotifyEvent(XCrossingEvent &event);
     void configureRequestEvent(XConfigureRequestEvent &event);
+    void exposeEvent(XExposeEvent &event);
     //@}
 	
     void moveToLayer(int layernum);

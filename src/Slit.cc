@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.46 2003/05/06 01:45:17 rathnor Exp $
+// $Id: Slit.cc,v 1.47 2003/05/07 22:52:36 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -1059,6 +1059,9 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
         reconfigure();
 }
 
+void Slit::exposeEvent(XExposeEvent &event) {
+    frame.window.clear();
+}
 
 void Slit::timeout() {
     if (do_auto_hide) {
