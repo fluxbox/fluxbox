@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.hh,v 1.5 2003/12/23 01:55:07 rathnor Exp $
+// $Id: Container.hh,v 1.6 2004/01/21 13:34:40 fluxgen Exp $
 
 #ifndef CONTAINER_HH
 #define CONTAINER_HH
@@ -68,10 +68,11 @@ public:
     /// accessors
     inline Alignment alignment() const { return m_align; }
     inline int size() const { return m_item_list.size(); }
+    inline bool empty() const { return m_item_list.empty(); }
     inline const Item selected() const { return m_selected; }
     inline Item selected() { return m_selected; }
     unsigned int maxWidthPerClient() const;
-    inline unsigned int maxHeightPerClient() const { return (size() == 0 ? height() : height()/size()); }    
+    inline unsigned int maxHeightPerClient() const { return (empty() ? height() : height()/size()); }    
     inline bool updateLock() const { return m_update_lock; }
 
 private:

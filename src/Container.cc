@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.12 2004/01/14 23:05:14 fluxgen Exp $
+// $Id: Container.cc,v 1.13 2004/01/21 13:34:40 fluxgen Exp $
 
 #include "Container.hh"
 
@@ -184,7 +184,7 @@ void Container::exposeEvent(XExposeEvent &event) {
 }
 
 void Container::repositionItems() {
-    if (size() == 0 || m_update_lock)
+    if (empty() || m_update_lock)
         return;
 
     //!! TODO vertical position
