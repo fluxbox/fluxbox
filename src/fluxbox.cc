@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.135 2003/05/11 13:36:12 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.136 2003/05/11 15:24:09 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -357,11 +357,13 @@ static Window last_bad_window = None;
 
 static int handleXErrors(Display *d, XErrorEvent *e) {
 #ifdef DEBUG
+    
     char errtxt[128];
-	
+    
     XGetErrorText(d, e->error_code, errtxt, 128);
-    cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<e->error_code<<") opcodes "<<
-        e->request_code<<"/"<<e->minor_code<<" resource 0x"<<hex<<e->resourceid<<dec<<endl;
+    cerr<<"Fluxbox: X Error: "<<errtxt<<"("<<(int)e->error_code<<") opcodes "<<
+        (int)e->request_code<<"/"<<(int)e->minor_code<<" resource 0x"<<hex<<(int)e->resourceid<<dec<<endl;
+
 #endif // !DEBUG
 
     if (e->error_code == BadWindow)
@@ -748,6 +750,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
                 win = scr->createWindow(e->xmaprequest.window);
             else
                 cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
+
         }
         // we don't handle MapRequest in FluxboxWindow::handleEvent
         if (win)
@@ -964,11 +967,10 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
             client = 0; // it's invalid now when win destroyed the client
 
             if (win == m_focused_window)
-                revertFocus(&win->screen());
+                revertFocus(win->screen());
 
             // finaly destroy window if empty
             if (win->numClients() == 0) {
-
                 delete win;
                 win = 0;
             }
@@ -1557,7 +1559,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             BScreen &scr = win.screen();
             scr.removeWindow(&win);
             if (m_focused_window == &win) 
-                revertFocus(&scr);
+                revertFocus(scr);
             
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
@@ -2292,7 +2294,18 @@ void Fluxbox::timeout() {
 // set focused window
 void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
     // already focused
-    if (m_focused_window == win) return;
+    if (m_focused_window == win) {
+#ifdef DEBUG
+        cerr<<"Focused window already win"<<endl;
+#endif // DEBUG
+        return;
+    }
+#ifdef DEBUG
+    cerr<<"-----------------"<<endl;
+    cerr<<"Setting Focused window = "<<win<<endl;
+    cerr<<"Current Focused window = "<<m_focused_window<<endl;
+    cerr<<"------------------"<<endl;
+#endif // DEBUG    
     BScreen *old_screen = 0, *screen = 0;
     FluxboxWindow *old_win = 0;
     Toolbar *old_tbar = 0, *tbar = 0;
@@ -2364,37 +2377,17 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
  * previously focused window (it must NOT be set focused now, it 
  *   is probably dying).
  */
-void Fluxbox::revertFocus(BScreen *screen) {
+void Fluxbox::revertFocus(BScreen &screen) {
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
     // Fluxbox::FocusModel = sloppy, click, whatever
-
-    // if no given screen, get it from the mouse
-    if (screen == 0) {
-        Window root = 0, ignorew; 
-        int ignored;
-        BScreen *tempscr = m_screen_list.front();
-        XQueryPointer(FbTk::App::instance()->display(),
-                      tempscr->rootWindow().window(), &root, &ignorew, &ignored, 
-                      &ignored, &ignored, &ignored, (unsigned int *)&ignored);
-        screen = searchScreen(root);
-        if (screen == 0) {
-#ifdef DEBUG
-            cerr<<"No screen to base focus revert on!"<<endl;
-#endif // DEBUG
-            // flounder
-            XSetInputFocus(FbTk::App::instance()->display(), 
-                           PointerRoot, None, CurrentTime);
-            return;
-        }
-    }
-
-    WinClient *next_focus = screen->getLastFocusedWindow(screen->getCurrentWorkspaceID());
+    WinClient *next_focus = screen.getLastFocusedWindow(screen.getCurrentWorkspaceID());
 
     if (next_focus && next_focus->fbwindow()) {
-        next_focus->fbwindow()->setInputFocus();
+        setFocusedWindow(next_focus->fbwindow());
     } else {
-        switch (screen->getFocusModel()) {
+        setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
+        switch (screen.getFocusModel()) {
         case SLOPPYFOCUS:
         case SEMISLOPPYFOCUS:
             XSetInputFocus(FbTk::App::instance()->display(), 
@@ -2402,7 +2395,7 @@ void Fluxbox::revertFocus(BScreen *screen) {
             break;
         case CLICKTOFOCUS:
             XSetInputFocus(FbTk::App::instance()->display(), 
-                           screen->rootWindow().window(),
+                           screen.rootWindow().window(),
                            RevertToPointerRoot, CurrentTime);
             break;
         }
