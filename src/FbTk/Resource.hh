@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.5 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: Resource.hh,v 1.6 2003/12/19 17:08:25 fluxgen Exp $
 
 #ifndef FBTK_RESOURCE_HH
 #define FBTK_RESOURCE_HH
@@ -97,6 +97,8 @@ public:
         m_resourcelist.remove(&r);
     }
 
+    void setResourceValue(const std::string &resourcename, const std::string &value);
+
     // this marks the database as "in use" and will avoid reloading 
     // resources unless it is zero.
     // It returns this resource manager. Useful for passing to 
@@ -105,7 +107,13 @@ public:
     void unlock();
     // for debugging
     inline int lockDepth() const { return m_db_lock; }
-
+    void dump() {
+        ResourceList::iterator it = m_resourcelist.begin();
+        ResourceList::iterator it_end = m_resourcelist.end();
+        for (; it != it_end; ++it) {
+            std::cerr<<(*it)->name()<<std::endl;
+        }
+    }
 protected:
     static void ensureXrmIsInitialize();
 

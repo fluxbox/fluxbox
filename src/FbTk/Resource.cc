@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.cc,v 1.2 2003/07/18 15:40:55 rathnor Exp $
+// $Id: Resource.cc,v 1.3 2003/12/19 17:08:25 fluxgen Exp $
 
 #include "XrmDatabaseHelper.hh"
 #include "Resource.hh"
@@ -141,6 +141,19 @@ bool ResourceManager::save(const char *filename, const char *mergefilename) {
 
     m_filename = filename;
     return true;
+}
+
+void ResourceManager::setResourceValue(const std::string &resname, const std::string &value) {
+    // find resource name
+    ResourceList::iterator i = m_resourcelist.begin();
+    ResourceList::iterator i_end = m_resourcelist.end();
+    for (; i != i_end; ++i) {
+        if ((*i)->name() == resname ||
+            (*i)->altName() == resname) {
+            (*i)->setFromString(value.c_str());
+            return;
+        }
+    }
 }
 
 void ResourceManager::ensureXrmIsInitialize() {
