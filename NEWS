@@ -1,69 +1,24 @@
-News in 0.9.11: 
-    * Slit:
-      * wheel or middle/right click in slit menu 
-        moves items up/down
-      * Save slit list menu item
-    * (Re)added dragNdrop ordering of tabs
-    * Better visualisation of the RememberState in RememberMenu
-    * Iconbar:
-      * new resources:
-        session.*.iconbar.wheelMode: <mode>
-           On     - enable mousewheeling on the iconbuttons
-           Off    - disables mousewheeling on the iconbuttons
-           Screen - uses the settings of desktopWheeling
-      
-        session.*.iconbar.deiconifyMode: <mode>
-           Current    - deiconifies the window on current workspace
-           Follow     - deiconifies the window on the workspace it
-                        was iconified from and jumps to that workspace
-           SemiFollow - acts as 'Current' for windows that were actually
-                        iconified, and as 'follow' for the others
-        * 
-      * Added option to specify what to do with windows, 
-        that got activated on a different workspaces than the
-        current one (thru NET_ACTIVE_WINDOW for example,
-        guinotification-plugin from gaim):
-        
-        * session.screen0.followModel: <value>
-           Ignore  - ignore the activated window
-           Follow  - go to the workspace of the window
-          Current | CurrentWorkspace | Fetch - get the window onto the 
-                                               current workspace
-    * New resource:
-      * session.focusTabMinWidth: <integer>
-        defines the guaranteed minimize size of the focused tab
-        in percent of the whole window
-    * New command: export | setenv  
-      sets the enviroment of fluxbox to a given value
-      export NAME=VALUE
-      setenv NAME VALUE
-    * Alpha values are no longer in theme, but are in init file. Possible
-      values are (all beginning with session.screenN.), * means changed/new:
-        -  menu.alpha (*)
-        -  slit.alpha 
-        -  window.focus.alpha (*)
-        -  window.unfocus.alpha (*)
-        -  toolbar.alpha (*)
+News in 0.9.12: 
+    * Added Imlib2 support (./configure --enable-imlib2) [default=disabled]
+      Fluxbox can now load .png files an other formats.
+   *  Added Tab command, which goes to a specific tab number 
+      action:
+      Tab <number>
+      ex:
+      Mod1 1 :Tab 1
+      Mod2 3 :Tab 3
+    * Added support for hsetroot to fbsetbg
+    * 
+      * 
 Bug fixes:
-    * Fix to avoid gentoo bug #72703 also reported at  
-      http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
-    * Fix for a java-bug (wrong opened subwindows)
-    * Fix for hiding menu when menufile changed 
-    * Fix for segfault at startup
-    * fbrun doesnt overlap screenborders anymore
-    * Fixed Wine + Paradise Poker Client problem.
-    * Fix UnderMousePlacement, patch #1052534, close #1048000
-    * Some changes to avoid invisible fonts
-    * Fix memleaks
-    * A few fixes to compile fluxbox with icc and mipspro(irix) #1045785
-    * Fixed a problem when system-date is set back 
-    * Fixed some TextBox issues with some "untypeable" keys 
-    * Fix a couple of bugs with transparency in toolbar/buttons
-    * Fix crash when in windowmenu->submenu and closing the app 
-    * other bug fixes:
-      #1057499 font with :shadow isn't loaded
-      #1052095 the windowmenu didnt close, when the current tab changed 
-      #1039658 transparency issues on unfocused windows
-
-
+    * Fix for #1091710 (SystemTray is not covered by StyleStuff) (Mathias)
+      SystemTray is not configurable via styles thru the 
+      toolbar.systray.* - resource, it falls back to the look of the clock
+    * Warnings on amd64 (#1099278, #1099950)
+    * WithdrawnState handling) (#1087220)
+    * Windows dont respect toolbar.border.width (#996298)
+    * Fixed "remove last workspace" bug
+    * Fixed problems with gtk2-fullscreen-mode (gimp2, galeon etc)
+    * missing header (#1080323)
+    * Update ClockTool when timeformat changed (#1026096)
 See ChangeLog for more details
