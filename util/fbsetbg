@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.4 2003/04/29 13:50:05 fluxgen Exp $
+# $Id: fbsetbg,v 1.5 2003/05/12 19:52:58 fluxgen Exp $
 
 #
 # Portability notes:
@@ -151,8 +151,8 @@ case $WPSETTER in
         aspect=$full
         debugstory="This is a RedHat specific app. I can't find docs about it."
         ;;
-    display)
-        full='`xwininfo -root|grep geom` -window root'
+    display)        
+		full="`xwininfo -root|grep geom` -window root"
         tile='-window root'
         center='-backdrop -window root'
         aspect=$full
