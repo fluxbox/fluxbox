@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/07/15:
+  * Removed ugly toolbar at startup (Henrik)
+    it'll show up once all the windows are created.
+    Toolbar.cc, fluxbox.cc
 *04/07/14:
   * Fixed menu draw bug while doing keyboard navigation (Henrik)
     FbTk/Menu.cc
