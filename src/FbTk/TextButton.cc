@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.cc,v 1.2 2003/09/10 21:36:37 fluxgen Exp $
+// $Id: TextButton.cc,v 1.3 2003/09/14 09:50:01 fluxgen Exp $
 
 #include "TextButton.hh"
 #include "Font.hh"
@@ -86,7 +86,6 @@ void TextButton::clear() {
 void TextButton::clearArea(int x, int y,
                            unsigned int width, unsigned int height,
                            bool exposure) {
-
     if (backgroundPixmap() != ParentRelative) {
 
         if (backgroundPixmap()) {
@@ -106,13 +105,17 @@ void TextButton::clearArea(int x, int y,
 
         drawText();
 
-        FbWindow::setBackgroundPixmap(m_buffer.drawable());     
+        setBufferPixmap(m_buffer.drawable());
+        FbWindow::setBackgroundPixmap(m_buffer.drawable());
+        updateTransparent(x, y, width, height);
 
-        Button::clearArea(x, y, width, height, exposure);
-
+        FbWindow::clearArea(x, y, width, height, exposure);
+        
     } else { // parent relative 
+        FbWindow::setBufferPixmap(0);
         FbWindow::setBackgroundPixmap(backgroundPixmap());     
         Button::clearArea(x, y, width, height, exposure);
+        updateTransparent(x, y, width, height);
         drawText();
     }   
 
@@ -142,6 +145,10 @@ void TextButton::drawText(int x_offset, int y_offset) {
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
                     align_x + x_offset, center_pos + y_offset); // position
+}
+
+void TextButton::exposeEvent(XExposeEvent &event) {
+    clearArea(event.x, event.y, event.width, event.height, false);
 }
 
 }; // end namespace FbTk

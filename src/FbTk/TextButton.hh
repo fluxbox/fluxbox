@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.hh,v 1.2 2003/09/10 21:36:37 fluxgen Exp $
+// $Id: TextButton.hh,v 1.3 2003/09/14 09:50:01 fluxgen Exp $
 
 #ifndef FBTK_TEXTBUTTON_HH
 #define FBTK_TEXTBUTTON_HH
@@ -55,6 +55,8 @@ public:
     void clearArea(int x, int y,
                    unsigned int width, unsigned int height,
                    bool exposure = false);
+
+    void exposeEvent(XExposeEvent &event);
 
     inline FbTk::Justify justify() const { return m_justify; }
     inline const std::string &text() const { return m_text; }
