@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.6 2004/01/21 13:35:10 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.7 2004/04/18 21:18:28 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -103,7 +103,7 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_window.window(), CurrentTime);
     m_handler.reset(new SystemTrayHandler(*this));
-    Fluxbox::instance()->addAtomHandler(m_handler.get());
+    Fluxbox::instance()->addAtomHandler(m_handler.get(), "systray");
     Window root_window = RootWindow(disp, m_window.screenNumber());
 
     // send selection owner msg
