@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/10/22:
+  * Fix for #1039658 (Mathias)
+    FbWinFrame.cc
   * Added new ressources: (Mathias + SemiFollow from Erik Postma,thanx)
     - session.*.iconbar.wheelMode: <mode>
         On     - enable mousewheeling on the iconbuttons
