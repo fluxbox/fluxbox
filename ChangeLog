@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/14:
+   * Added class SignalHandler (SignalHandler.hh/cc) which should
+     take care of any system signals
 *02/08/12:
    * The window menu now popups in iconbar when you right click on the icon.
    * Fixed bug [ 574717 ] restaring fluxbox should keep iconic.
