@@ -217,7 +217,7 @@ void ClockTool::update(FbTk::Subject *subj) {
 
     int new_width = m_theme.font().textWidth(text.c_str(), text.size());
     if (new_width != m_button.width()) {
-        resize(m_theme.font().textWidth(text.c_str(), text.size()), m_button.height());
+        resize(new_width, m_button.height());
         resizeSig().notify();
     }
 }
@@ -260,6 +260,8 @@ void ClockTool::updateTime() {
 // Just change things that affect the size
 void ClockTool::updateSizing() {
     m_button.setBorderWidth(m_theme.border().width());
+    // resizes if new timeformat 
+    update(0);
 }
 
 void ClockTool::reRender() {
