@@ -58,10 +58,10 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc Ba
 	Netizen.cc Netizen.hh nl_types_cygnus.h \
 	Resource.hh Resource.cc \
 	Screen.cc Screen.hh \
-	Slit.cc Slit.hh StringUtil.cc StringUtil.hh Subject.cc Subject.hh \
+	Slit.cc Slit.hh StringUtil.cc StringUtil.hh \
 	Tab.hh Tab.cc Theme.hh Theme.cc \
 	Toolbar.cc Toolbar.hh \
-	ToolbarTheme.hh ToolbarTheme.cc Observer.cc Observer.hh \
+	ToolbarTheme.hh ToolbarTheme.cc \
 	WinButton.hh WinButton.cc Window.cc Window.hh \
 	Workspace.cc Workspace.hh \
 	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc LayeredMenu.hh
