@@ -21,8 +21,11 @@
 
 #ifndef NOTCOPYABLE_HH
 #define NOTCOPYABLE_HH
-// inherit this class to 
-// disable assignment and copy
+
+/** Makes the inherited class not copyable.
+   inherit this class to 
+   disable assignment and copy
+*/
 class NotCopyable
 {
 protected:
@@ -33,4 +36,4 @@ private:
 	NotCopyable &operator=(const NotCopyable &rhs); // assignment operator
 };
 
-#endif //_NOTCOPYBLE_HH_
+#endif //NOTCOPYBLE_HH
