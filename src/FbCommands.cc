@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.27 2004/09/11 20:28:35 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.28 2004/10/06 11:40:28 akir Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -122,6 +122,15 @@ void ExecuteCmd::execute() {
 #endif // !__EMX__
 
 }
+
+ExportCmd::ExportCmd(const std::string& name, const std::string& value) :
+    m_name(name), m_value(value) { 
+}
+
+void ExportCmd::execute() {
+    setenv(m_name.c_str(), m_value.c_str(), 1);
+}
+
 
 void ExitFluxboxCmd::execute() {
     Fluxbox::instance()->shutdown();

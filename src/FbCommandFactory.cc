@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.35 2004/09/16 14:58:28 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.36 2004/10/06 11:40:28 akir Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -66,6 +66,7 @@ FbCommandFactory::FbCommandFactory() {
         "commanddialog",
         "deiconify",
         "detachclient",
+        "export",
         "exec",
         "execcommand",
         "execute",
@@ -116,6 +117,7 @@ FbCommandFactory::FbCommandFactory() {
         "rightworkspace",
         "rootmenu",
         "saverc",
+        "setenv",
         "sendtoworkspace",
         "sendtonextworkspace",
         "sendtoprevworkspace",
@@ -176,8 +178,21 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SaveResources();
     else if (command == "execcommand" || command == "execute" || command == "exec")
         return new ExecuteCmd(arguments); // execute command on key screen
-    else if (command == "exit") 
+    else if (command == "exit")
         return new ExitFluxboxCmd();
+    else if (command == "setenv" || command == "export") {
+
+        std::string name = arguments;
+        FbTk::StringUtil::removeFirstWhitespace(name);
+        FbTk::StringUtil::removeTrailingWhitespace(name);
+        size_t pos = name.find_first_of(command == "setenv" ? " \t" : "=");
+        if (pos == std::string::npos || pos == name.size())
+            return 0;
+        
+        std::string value = name.substr(pos + 1);
+        name = name.substr(0, pos);
+        return new ExportCmd(name, value);
+    }
     else if (command == "quit")
         return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
     else if (command == "commanddialog") // run specified fluxbox command
