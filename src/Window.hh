@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.29 2002/08/30 14:06:40 fluxgen Exp $
+// $Id: Window.hh,v 1.30 2002/09/07 20:13:55 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -30,6 +30,7 @@
 #include "BaseDisplay.hh"
 #include "Timer.hh"
 #include "Windowmenu.hh"
+#include "Subject.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -51,41 +52,6 @@ class Tab;
 */
 class FluxboxWindow : public TimeoutHandler {
 public:
-	/// obsolete
-	enum Error{NOERROR=0, XGETWINDOWATTRIB, CANTFINDSCREEN};
-	
-#ifdef GNOME
-	enum GnomeLayer { 
-		WIN_LAYER_DESKTOP = 0,
-		WIN_LAYER_BELOW = 2,
-		WIN_LAYER_NORMAL = 4,
-		WIN_LAYER_ONTOP = 6,
-		WIN_LAYER_DOCK = 8,
-		WIN_LAYER_ABOVE_DOCK = 10,
-		WIN_LAYER_MENU = 12
-	};
-
-	enum GnomeState {
-		WIN_STATE_STICKY          = (1<<0), // everyone knows sticky
-		WIN_STATE_MINIMIZED       = (1<<1), // Reserved - definition is unclear
-		WIN_STATE_MAXIMIZED_VERT  = (1<<2), // window in maximized V state
-		WIN_STATE_MAXIMIZED_HORIZ = (1<<3), // window in maximized H state
-		WIN_STATE_HIDDEN          = (1<<4), // not on taskbar but window visible
-		WIN_STATE_SHADED          = (1<<5), // shaded (MacOS / Afterstep style)
-		WIN_STATE_HID_WORKSPACE   = (1<<6), // not on current desktop
-		WIN_STATE_HID_TRANSIENT   = (1<<7), // owner of transient is hidden
-		WIN_STATE_FIXED_POSITION  = (1<<8), // window is fixed in position even
-		WIN_STATE_ARRANGE_IGNORE  = (1<<9)  // ignore for auto arranging
-	};
-
-	enum GnomeHints {
-		WIN_HINTS_SKIP_FOCUS      = (1<<0), // "alt-tab" skips this win
-		WIN_HINTS_SKIP_WINLIST    = (1<<1), // do not show in window list
-		WIN_HINTS_SKIP_TASKBAR    = (1<<2), // do not show on taskbar
-		WIN_HINTS_GROUP_TRANSIENT = (1<<3), // Reserved - definition is unclear
-		WIN_HINTS_FOCUS_ON_CLICK  = (1<<4)  // app only accepts focus if clicked
-	};
-#endif // GNOME
 	
 	enum WinLayer {
 		LAYER_BOTTOM = 0x01, 
@@ -176,6 +142,13 @@ public:
 	const std::string className() const { return m_class_name; }
 	const std::string instanceName() const { return m_instance_name; }
 	bool isLowerTab() const;
+	// signals
+	FbTk::Subject &stateSig() { return m_statesig; }
+	const FbTk::Subject &stateSig() const { return m_statesig; }
+	FbTk::Subject &hintSig() { return m_hintsig; }
+	const FbTk::Subject &hintSig() const { return m_hintsig; }
+	FbTk::Subject &workspaceSig() { return m_workspacesig; }
+	const FbTk::Subject &workspaceSig() const { return m_workspacesig; }
 	//@}
 
 	inline void setWindowNumber(int n) { window_number = n; }
@@ -218,8 +191,6 @@ public:
 	
 	void setDecoration(Decoration decoration);
 	void toggleDecoration();
-
-	static void showError(FluxboxWindow::Error error);
 	
 #ifdef SHAPE
 	void shapeEvent(XShapeEvent *);
@@ -235,13 +206,19 @@ public:
 		unsigned long decorations; // Motif wm decorations
 	} MwmHints;
 
-#ifdef GNOME
-	void setGnomeState(int state);
-	inline int getGnomeHints() const { return gnome_hints; }
-#endif //GNOME
-	
+	class WinSubject: public FbTk::Subject {
+	public:
+		WinSubject(FluxboxWindow &w):m_win(w) { }
+		FluxboxWindow &win() { return m_win; }
+		const FluxboxWindow &win() const { return m_win; }
+	private:
+		FluxboxWindow &m_win;
+	};
+
 private:
-	
+	// state and hint signals
+	WinSubject m_hintsig, m_statesig, m_workspacesig;
+
 	BImageControl *image_ctrl; //image control for rendering
 	
 	// got from WM_CLASS
@@ -349,35 +326,6 @@ private:
 	void createHandle();
 	void destroyHandle();
 	void checkTransient();
-
-#ifdef GNOME
-	
-	void updateGnomeAtoms() const;
-	void updateGnomeStateAtom() const;
-	void updateGnomeHintsAtom() const;
-	void updateGnomeLayerAtom() const;
-	void updateGnomeWorkspaceAtom() const;
-	
-	void setGnomeLayer(int layer);
-
-	int getGnomeWindowState() const;	
-	bool handleGnomePropertyNotify(Atom atom);
-	int getGnomeLayer() const;
-	void loadGnomeAtoms();
-	void loadGnomeStateAtom();
-	void loadGnomeHintsAtom();
-	void loadGnomeLayerAtom();
-
-	int gnome_hints;
-#endif //GNOME
-	
-#ifdef NEWWMSPEC
-	
-	void updateNETWMAtoms();
-	void handleNETWMProperyNotify(Atom atom);
-	int getNETWMWindowState();
-
-#endif //NEWWMSPEC
 
 	Window findTitleButton(int type);	
 private:
