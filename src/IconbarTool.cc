@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.2 2003/08/12 00:19:14 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.3 2003/08/12 01:01:16 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -106,10 +106,15 @@ unsigned int IconbarTool::height() const {
 }
 
 void IconbarTool::update(FbTk::Subject *subj) {
+
     // just focus signal?
     if (subj != 0 && typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
-        renderTheme();
-        return;
+        // we handle everything except die signal here
+        FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
+        if (subj != &(winsubj->win().dieSig())) {
+            renderTheme();
+            return;
+        }
     }
 
     // ok, we got some signal that we need to update our iconbar container
@@ -136,7 +141,9 @@ void IconbarTool::update(FbTk::Subject *subj) {
         IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), **it);
         items.push_back(button);
         m_icon_list.push_back(button);
+
         (*it)->focusSig().attach(this);
+        (*it)->dieSig().attach(this);
     }
 
     m_icon_container.showSubwindows();
