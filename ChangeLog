@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/08:
+  * fbsetbg updates from Han, and some tweaking (Simon)
+    fbsetbg
 *03/10/06:
   * Fix rendering of offscreen windows (remove if !visible tests) (Simon)
     FbWinFrame.cc

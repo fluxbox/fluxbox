@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.20 2003/09/29 11:59:35 fluxgen Exp $
+# $Id: fbsetbg,v 1.21 2003/10/08 14:00:47 rathnor Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -40,9 +40,9 @@
 #   the version you have. for example grep '\W' only works on gnu-grep.
 #   Keep this in mind, use bare basic defaults.
 # - Do _NOT_ suggest to use #!/bin/bash. Not everybody uses bash.
-#   Non portable features like getopts in this script can be achieved in
-#   other ways.
 
+# TODO purheps: xprop -root _WIN_WORKSPACE
+# _NET_CURRENT_DESKTOP
 
 # The wallpapersetter is selected in this order
 wpsetters='Esetroot wmsetbg feh chbg display qiv xv xsri xli xsetbg' # broken icewmbg'
@@ -52,11 +52,14 @@ lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 WHOAMI=`whoami`
 [ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
+command="`basename \"$0\"`"
+
 
 # Functions
 display_usage() {
     cat << EOF
-Usage: fbsetbg [ -fFcCtTaA /path/to/wallpaper ] [ -l ] [ -h ] [ -d ] [ -p ]
+Usage: $command [ -fFcCtTaA /path/to/wallpaper ] [ -l ] [ -h ] [ -i ] [ -p ]
+Use $command -h for a complete help message.
 EOF
 }
 
@@ -71,7 +74,7 @@ Options:
     -t  Set tiled wallpaper
     -a  Set maximized wallpaper, preserving aspect.
         ( if your bgsetter doesn't support this
-          fbsetbg falls back to -f )
+          we fall back to -f )
 
     -F,-C,-T,-A same as uncapsed but without remembering.
 
@@ -79,7 +82,8 @@ Options:
 
     -l  Set previous wallpaper
 
-    -d  Debug fbsetbg
+    -i  Information about selected wallpaper command
+    -d  (deprecated, use -i) Debug info
     -p  Tips
 
 Files:
@@ -92,19 +96,20 @@ EOF
 
 display_tips() {
     cat << EOF
+Common tips to use with $command:
 
-1) To replace all occurrences of bsetbg with fbsetbg in a file use this
+1) To replace all occurrences of bsetbg with $command in a file use this
    command:
 
-   perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,' filename
+   perl -pi -e 's,([^f]|^)bsetbg,$command,' filename
 
-2) If you want the style to set the wallpaper and you want fbsetbg to
+2) If you want the style to set the wallpaper and you want $command to
    remember the previous wallpaper put this in your ~/.fluxbox/init
 
-   session.screen0.rootCommand:    fbsetbg -l
+   session.screen0.rootCommand:    $command -l
 
-3) Use fbsetbg -d to find out what wallpapersetter fbsetbg will use and
-   what he thinks about it.
+3) Use $command -i to find out what wallpapersetter $command will be
+   used and what I think about it.
 
 EOF
 }
@@ -133,7 +138,13 @@ case `uname` in
 esac
 
 message() {
-    xmessage -center "$@"
+    # echo if we have terminal output, otherwise
+    # pop up a window
+    if [ -t 1 ]; then
+        echo "$command: $@"
+    else
+        xmessage -center "$command: $@"
+    fi
 }
 
 remembercommand() {
@@ -163,77 +174,94 @@ for wpsetter in $wpsetters; do
 done
 
 standardrant=\
-"$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and apps like aterm
-and xchat won't work right with it. Consider using chbg, wmsetbg (from windowmaker)
-or Esetroot (from Eterm)"
+"$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and
+apps like aterm and xchat won't work right with it. Consider installing
+chbg, wmsetbg (from windowmaker) or Esetroot (from Eterm) and I'll use
+them instead."
 
 standardok=\
 "$WPSETTER is a nice wallpapersetter. You won't have any problems."
 
 unset debug
-#Get options.
-getopts ":a:f:c:t:A:F:C:T:pdlh-" COMMAND_LINE_ARGUMENT
-case "${COMMAND_LINE_ARGUMENT}" in
-    d) debug=true
-        ;;
-    a) option='$aspect'
-        wallpaper=$OPTARG
-        ;;
-    f) option='$full'
-        wallpaper=$OPTARG
-        ;;
-    c) option='$center'
-        wallpaper=$OPTARG
-        ;;
-    t) option='$tile'
-        wallpaper=$OPTARG
-        ;;
-    A) option='$aspect'
-        wallpaper=$OPTARG
-        remember=false
-        ;;
-    F) option='$full'
-        wallpaper=$OPTARG
-        remember=false
-        ;;
-    C) option='$center'
-        wallpaper=$OPTARG
-        remember=false
-        ;;
-    T) option='$tile'
-        wallpaper=$OPTARG
-        remember=false
-        ;;
 
-    l)
-        if [ -r $lastwallpaper ]; then
-            option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
-            wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
-        else
-            message "No previous wallpaper recorded for display ${DISPLAY}"
+if [ $# -eq 0 ]; then
+    message "no options given"
+    display_help
+    exit 1
+fi
+
+# Parse command-line options
+while :; do
+    case "$1" in
+        -d|-i) debug=true
+            break ;;
+        -a) option='$aspect'
+            wallpaper=$2
+            break ;;
+        -f) option='$full'
+            wallpaper=$2
+            break ;;
+        -c) option='$center'
+            wallpaper=$2
+            break ;;
+        -t) option='$tile'
+            wallpaper=$2
+            break ;;
+        -A) option='$aspect'
+            wallpaper=$2
+            remember=false
+            break ;;
+        -F) option='$full'
+            wallpaper=$2
+            remember=false
+            break ;;
+        -C) option='$center'
+            wallpaper=$2
+            remember=false
+            break ;;
+        -T) option='$tile'
+            wallpaper=$2
+            remember=false
+            break ;;
+        -l)
+            if [ -r "$lastwallpaper" ]; then
+                option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
+                wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
+                if [ -z "$wallpaper" ]; then
+                    message "No previous wallpaper recorded for display ${DISPLAY}"
+                    exit 1
+                fi
+            fi
+            remember=false
+            break
+            ;;
+        -p) display_tips ; exit 0 ;;
+        -h) display_help ; exit 0 ;;
+        --)
+            echo "$command doesn't recognize -- gnu-longopts."
+            echo 'Use $command -h for a help message.'
+            display_usage
+            exit 1 ;;
+        -*)
+            echo 1>&2 "$command: unrecognized option "\`"$1'"
+            display_usage
             exit 1
-        fi
-        remember=false
-        ;;
-    h) display_help ; exit 0 ;;
-    p) display_tips ; exit 0 ;;
-    -) echo "fbsetbg doesn't recognize -- gnu-longopts."
-        echo 'Use fbsetbg -h for a help message.'
-        display_usage
-        exit 1
-        ;;
-    *) if [ ! -r "$1" ]; then
-           echo "$1 isn't an existing wallpaper or a valid option." >&2
-           display_usage
-           exit 1
-       fi
-       if [ -z "$1" ]; then
-           message 'No wallpaper to set' >&2
-           display_usage
-           exit 1
-       fi
-       ;;
-esac
+            ;;
+        *)
+            if [ ! -r "$1" ]; then
+                echo "$1 isn't an existing wallpaper or a valid option." >&2
+                display_usage
+                exit 1
+            elif [ -z "$1" ]; then
+                message 'No wallpaper to set' >&2
+                display_usage
+                exit 1
+            else
+                break
+            fi
+            ;;
+    esac
+done
 
 
 case $WPSETTER in
