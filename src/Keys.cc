@@ -1,4 +1,4 @@
-// Key2.cc for Fluxbox - an X11 Window manager
+// Keys.cc for Fluxbox - an X11 Window manager
 // Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.5 2002/01/08 12:13:25 fluxgen Exp $
+//$Id: Keys.cc,v 1.6 2002/01/08 21:45:49 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -133,9 +133,9 @@ m_display(display)
 		load(filename);
 }
 
-Keys::~Keys() {
-	deleteTree();
+Keys::~Keys() {	
 	ungrabKeys();
+	deleteTree();
 }
 
 //--------- deleteTree -----------
@@ -174,7 +174,9 @@ bool Keys::load(char *filename) {
 	
 	//ungrab all keys
 	ungrabKeys();
-		
+	//free memory of previous grabs
+	deleteTree();
+			
 	XSync(m_display, False);
 						
 	//open the file
@@ -272,7 +274,7 @@ bool Keys::load(char *filename) {
 
 					//add the keychain to list										
 					if (!mergeTree(current_key))
-						cerr<<"Keys: Faild to merge keytree!"<<endl;
+						cerr<<"Keys: Failed to merge keytree!"<<endl;
 		
 					#ifdef DEBUG
 				  if (m_actionlist[i].action == Keys::EXECUTE) {
