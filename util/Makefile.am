@@ -11,7 +11,7 @@ MAINTAINERCLEANFILES =	Makefile.in
 EXTRA_DIST=fbsetbg fluxbox-generate_menu
 
 distclean-local:
-	rm -f *\~
+	rm -f *\~ Makefile.in
 
 bsetroot.o: bsetroot.cc ../config.h bsetroot.hh ../src/BaseDisplay.hh ../src/FbAtoms.hh
 
