@@ -1,7 +1,7 @@
 dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
-AM_INIT_AUTOMAKE(fluxbox,0.1.9,no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.1.10,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -17,7 +17,6 @@ dnl Locate required external software
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
-AM_PROG_LIBTOOL
 
 AC_CHECK_PROGS(regex_cmd, sed)
 if test x$regex_cmd = "x"; then
