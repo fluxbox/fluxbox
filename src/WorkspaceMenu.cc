@@ -49,6 +49,9 @@ WorkspaceMenu::WorkspaceMenu(BScreen &screen):
 }
 
 void WorkspaceMenu::update(FbTk::Subject *subj) {
+
+    _FB_USES_NLS;
+    
     if (subj != 0 && typeid(*subj) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject &screen_subj = *static_cast<BScreen::ScreenSubject *>(subj);
         BScreen &screen = screen_subj.screen();
@@ -66,8 +69,8 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
             FbTk::Menu::update(screen.currentWorkspace()->workspaceID() + 2);
         } else if (subj == &screen.workspaceCountSig() || 
                    subj == &screen.workspaceNamesSig()) {
-            while (numberOfItems() != 3) {
-                remove(2);
+            while (numberOfItems() > 2) {
+                remove(numberOfItems()-1);
             }
             // for each workspace add workspace name and it's menu
             // to our workspace menu
@@ -82,6 +85,8 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
                 mb_menu->setCommand(2, jump_cmd);
                 insert(mb_menu);
             }
+            insert(_FBTEXT(Menu, Icons, "Icons", "Iconic windows menu title"),
+                   MenuCreator::createMenuType("iconmenu", screen.screenNumber()));
 
             FbTk::Menu::update(-1);
         }
