@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.6 2003/06/08 13:47:30 rathnor Exp $
+// $Id: FbCommands.cc,v 1.7 2003/06/11 04:21:16 rathnor Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -49,11 +49,11 @@ void ExecuteCmd::execute() {
         displaystring += intbuff;
         setsid();
         putenv(const_cast<char *>(displaystring.c_str()));
-        execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), 0);
+        execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), (void *) NULL);
         exit(0);
     }
 #else //   __EMX__
-    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), 0);
+    spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), (void *) NULL);
 #endif // !__EMX__
 
 }
