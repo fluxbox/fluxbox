@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.8 2004/08/31 15:26:39 rathnor Exp $
+// $Id: ThemeItems.hh,v 1.9 2004/10/21 10:29:49 akir Exp $
 
 /// @file implements common theme items
 
@@ -32,6 +32,7 @@
 #include "Font.hh"
 #include "PixmapWithMask.hh"
 #include "Image.hh"
+#include "StringUtil.hh"
 
 #include <string>
 #ifdef HAVE_CSTDIO
@@ -49,19 +50,19 @@ template <>
 void FbTk::ThemeItem<std::string>::load(const std::string *name, const std::string *altname) { }
 
 template <>
-void FbTk::ThemeItem<std::string>::setDefaultValue() { 
-    *(*this) = ""; 
+void FbTk::ThemeItem<std::string>::setDefaultValue() {
+    *(*this) = "";
 }
 
 template <>
-void FbTk::ThemeItem<std::string>::setFromString(const char *str) { 
-    *(*this) = (str ? str : ""); 
+void FbTk::ThemeItem<std::string>::setFromString(const char *str) {
+    *(*this) = (str ? str : "");
 }
 
 template <>
 void FbTk::ThemeItem<int>::load(const std::string *name, const std::string *altname) { }
 
-template <>
+template<>
 void FbTk::ThemeItem<int>::setDefaultValue() {
     *(*this) = 0;
 }
@@ -102,7 +103,7 @@ void ThemeItem<FbTk::Font>::setFromString(const char *str) {
         }
         setDefaultValue();
     }
-    
+
 }
 
 // do nothing
@@ -197,13 +198,14 @@ setFromString(const char *str) {
 
         std::auto_ptr<FbTk::PixmapWithMask> pm(Image::load(filename, m_tm.screenNum()));
         if (pm.get() == 0)
-            setDefaultValue();            
+            setDefaultValue();
         else {
             (*this)->pixmap() = pm->pixmap().release();
             (*this)->mask() = pm->mask().release();
         }
-    } 
+    }
 }
+
 
 template <>
 void ThemeItem<FbTk::Color>::setDefaultValue() {
