@@ -26,6 +26,8 @@
 .\"
 .\" Updated for version 0.1.15 by Tobias Klausmann <klausman@users.sourceforge.net>
 .\"
+.\" Updating for version 0.9.6 by <grubert@users.sourceforge.net>
+.\"
 .\" ..define sort of <blockquote><pre> macro
 .de EX
 .ne 5
@@ -40,7 +42,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "December 15th, 2002" "0.1.15"
+.TH fluxbox 1 "September 24th, 2003" "0.9.6"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -65,13 +67,14 @@ used to dock small applications, e.g. most of the bbtools can use the slit.
 .PP
 Fluxbox will iconify windows to the toolbar, in addition to adding the window
 to the `Icons' submenu of the workspace menu.  One click and they reappear.
-A double-click on the titlebar of a window will shade it (i.e. the window will
-disappear, only the titlebar stays visible.)
+A double-click on the titlebar of a window will shade it i.e. the window will
+disappear, only the titlebar stays visible.
 .PP
 Fluxbox uses its own graphics class to render its images on the fly.
 By using style files, you can determine at a great level how your desktop looks
 like.  Fluxbox styles are compatible with those of Blackbox, so users migrating
 can still use their current favourite themes.
+.\" TODO KDE2
 Currently KDE WM hints are not supported, but Fluxbox is already prepared to
 support the new window manager specification that is now being developed for
 both Gnome and KDE2.0.
@@ -79,7 +82,7 @@ both Gnome and KDE2.0.
 Fluxbox supports the following commandline options:
 .TP
 .B \-help
-Display command line options and compiled-in features, then exit.
+Display command line options , then exit.
 .TP
 .B \-version
 Display version info and exit.
@@ -93,6 +96,13 @@ Start Fluxbox on the specified display.
 Programs started by Fluxbox will have the
 .B DISPLAY
 environment variable set to this value, too.
+.TP
+.B \-info
+Display some useful information (defaults and compiled-in features) and exit.
+.TP
+.B \-log \ filename
+Log output to the specified file.
+.\" ---------------------
 .SH RUNNING FLUXBOX
 This program is usually started by the user's startup script, most times called
 .IR ~/.xinitrc .
@@ -605,7 +615,7 @@ window.title.unfocus:	Texture
 window.title.unfocus.color:	Color
 window.title.unfocus.colorTo:	Color
 
-! Window label
+! Window label in window.title
 window.label.focus:	Texture or \fIParentRelative\fR
 window.label.focus.color:	Color
 window.label.focus.colorTo:	Color
@@ -652,19 +662,6 @@ window.button.pressed.colorTo:	Color
 ! Frame around window
 window.frame.focusColor:	Color
 window.frame.unfocusColor:	Color
-
-! Tab settings
-! if these are unset, some reasonable defaults will be picked.
-window.tab.justify:                     Right
-window.tab.label.unfocus:               Texture
-window.tab.label.unfocus.color:         Color
-window.tab.label.unfocus.textColor:     Color
-window.tab.label.focus:                 Texture
-window.tab.label.focus.color:           Color
-window.tab.label.focus.textColor:       Color
-window.tab.borderWidth:                 1
-window.tab.borderColor:                 Color
-window.tab.font:                        fixed
 
 ! Font and justification for window labels
 window.font:	Font
@@ -879,19 +876,9 @@ session.slitlistFile: /home/me/etc/slitsort
 Fluxbox has a few options that are configured by a configure menu.
 Most are self-explanatory, but here are a few notes:
 .TP
-.B Tab Placement
-The Tabs can be placed almost anywhere on a window. Again, these are
-mostly self-explanatory. however, using the
-.I Relative
-options will make the total width of all tabs be equal to the total width
-of the window. The 
-.I Rotate Vertical Tabs
-option makes tabs that are placed on the Right or left side of the window 
-be turned on their sides.
-.TP
 .B Sloppy Window Grouping
-This option allows you to drop a tab anywhere on the target window to group it,
-instead of only on the target window's tab.
+This option allows you to drop a window-title anywhere on the target window to group it,
+instead of only on the target window's window-title.
 .TP
 .B Maximize Over Slit 
 This option makes maximized windows cover the Slit when they get maximized.
