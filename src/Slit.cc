@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.63 2003/06/22 12:31:37 fluxgen Exp $
+// $Id: Slit.cc,v 1.64 2003/06/22 14:17:17 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -39,10 +39,11 @@
 #include "Screen.hh"
 #include "ImageControl.hh"
 #include "RefCount.hh"
-#include "SimpleCommand.hh"
 #include "BoolMenuItem.hh"
 #include "EventManager.hh"
+#include "SimpleCommand.hh"
 #include "MacroCommand.hh"
+#include "FbCommands.hh"
 #include "LayerMenu.hh"
 #include "fluxbox.hh"
 #include "XLayer.hh"
@@ -78,6 +79,9 @@ public:
     explicit SlitClientMenuItem(SlitClient &client, FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(client.matchName().c_str(), cmd), m_client(client) {
         FbTk::MenuItem::setSelected(client.visible());
+        // save resources as default click action
+        FbTk::RefCount<FbTk::Command> save_rc(new FbCommands::SaveResources());
+        setCommand(save_rc);
     }
     const std::string &label() const {
         return m_client.matchName();
@@ -88,7 +92,6 @@ public:
     void click(int button, int time) { 
         m_client.setVisible(!m_client.visible());
         FbTk::MenuItem::click(button, time);
-        Fluxbox::instance()->save_rc();
     }
 private:
     SlitClient &m_client;
@@ -258,10 +261,16 @@ void Slit::clearStrut() {
 }
 
 void Slit::updateStrut() {
+    bool had_strut = m_strut ? true : false;
     clearStrut();
-    // no need for area if we're autohiding
-    if (doAutoHide())
+    // no need for area if we're autohiding or set maximize over
+    if (doAutoHide() || *m_rc_maximize_over) {
+        // update screen area if we had a strut before
+        if (had_strut)
+            screen().updateAvailableWorkspaceArea();
         return;
+    }
+
 
     int left = 0, right = 0, top = 0, bottom = 0;
     switch (placement()) {
@@ -532,6 +541,7 @@ void Slit::removeClient(Window w, bool remap) {
 
 
 void Slit::reconfigure() {
+
     m_transp->setAlpha(*m_rc_alpha);
 
     frame.width = 0;
@@ -686,7 +696,6 @@ void Slit::reconfigure() {
     updateClientmenu();
     updateStrut();
 
-
 }
 
 
@@ -809,9 +818,6 @@ void Slit::reposition() {
         frame.window.moveResize(frame.x,  frame.y,
                                 frame.width, frame.height);
     }
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): frame("<<dec<<frame.x<<", "<<frame.y<<", "<<frame.width<<", "<<frame.height<<")"<<endl;
-#endif // DEBUG
 
 }
 
@@ -1101,8 +1107,7 @@ void Slit::setupMenu() {
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
     FbTk::MacroCommand *s_a_reconf_slit_macro = new FbTk::MacroCommand();
-    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), 
-                                                                              &Fluxbox::save_rc));
+    FbTk::RefCount<FbTk::Command> saverc_cmd(new FbCommands::SaveResources());
     FbTk::RefCount<FbTk::Command> reconf_cmd(new FbCommands::ReconfigureFluxboxCmd());
     FbTk::RefCount<FbTk::Command> reconf_slit_cmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
 
