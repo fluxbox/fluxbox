@@ -434,7 +434,7 @@ Here is a short example of a menu file:
 [end]
 # end of menu file
 .fi
-.B FROM HERE ON UNREVISITED
+.\" --- styles ---
 .SH STYLES
 Fluxbox enables you to use specialized files that contain
 .IR X (1)
@@ -734,6 +734,7 @@ can easily set lots of keys with a single command, e.g.
 *font:	lucidasans-10
 .EE
 This sets already nice defaults for many components.
+.\" --- keys ---
 .SH KEYS FILE
 You can customise Fluxbox' key handling through the
 .IR ~/.fluxbox/keys
@@ -769,62 +770,65 @@ Control n Mod1 n :NextTab
 .EE
 As you can see from the last line, keybinds can be chained in a fashion similar
 to emacs keybindings.
+
+Commands are caseinsensitive, workspace numbering starts at "1", some commands
+have synonyms.
+
 Here is a list of possible Operations:
 .EX
-Minimize
-Raise
-Lower
-RaiseLayer
-LowerLayer
-TopLayer
-BottomLayer
-AlwaysOnTop (this is an alias for TopLayer)
-AlwaysOnBottom (similarly)
-Close
+.B window manager commands
+Restart \fIargument\fR
 Quit
-RootMenu
-Workspace N (where N is positive integer)
-Workspace1
-Workspace2
-Workspace3
-Workspace4
-Workspace5
-Workspace6
-Workspace7
-Workspace8
-Workspace9
-Workspace10
-Workspace11
-Workspace12
-NextWorkspace
-PrevWorkspace
-LeftWorkspace
-RightWorkspace
-KillWindow
-NextWindow
-PrevWindow
-NextTab
-PrevTab
-ShadeWindow
-MaximizeWindow
-StickWindow
-ExecCommand
+Reconfigure
+SetStyle \fIargument\fR
+ExecCommand, Execute or Exec \fIcommand\fR
+.B commands to currently focused window
+Minimize, MinimizeWindow or Iconify
+Maximize, MaximizeWindow
 MaximizeVertical
 MaximizeHorizontal
-NudgeRight
-NudgeLeft
-NudgeUp
-NudgeDown
-BigNudgeRight
-BigNudgeLeft
-BigNudgeUp
-BigNudgeDown
-HorizontalIncrement
-VerticalIncrement
-HorizontalDecrement
-VerticalDecrement
+ResizeTo \fIwidth\fR \fIheight\fR
+Resize \fIdelta-width\fR \fIdelta-height\fR
+ResizeHorizontal \fIdelta-width\fR
+ResizeVertical \fIdelta-height\fR
+MoveTo \fIx\fR \fIy\fR
+Move \fIdelta-x\fR \fIdelta-y\fR
+MoveRight \fIdelta-x\fR
+MoveLeft \fIdelta-x\fR
+MoveUp \fIdelta-y\fR
+MoveDown \fIdelta-y\fR
+Raise
+Lower
+Close
+Shade, ShadeWindow
+Stick, StickWindow
 ToggleDecor
+SendToWorkspace \fInumber\fR : Sends the current window and takes you with it.
+KillWindow
+NextTab
+PrevTab
+MoveTabLeft
+MoveTabRight
+DetachClient
+.B workspace commands
+NextWorkspace
+PrevWorkspace
+RightWorkspace \fIby-number\fR
+LeftWorkspace \fIby-number\fR
+Workspace \fInumber\fR
+NextWindow \fIby-number\fR
+PrevWindow \fIby-number\fR
+NextGroup \fIby-number\fR
+PrevGroup \fIby-number\fR
+ArrangeWindows
+ShowDesktop : Iconifies all windows.
+RootMenu
+WorkspaceMenu
+SetWorkspaceName
+.B special commands
+MacroCmd
 .EE
+.\" --- groups ---
 .SH GROUPS FILE
 Since version 0.1.11, Fluxbox has a feature called autogrouping, that is apps are
 automatically grouped together if they are in the same group.
@@ -871,6 +875,7 @@ bbpager -w &
 exec fluxbox
 .EE
 Of course to use the slit you must have slit support compiled in.
+.\" --- slitlist ---
 .SH SLITLIST FILE
 Since version 0.1.10, Fluxbox has the capacity to launch dockapps in the order told
 by the 
@@ -1203,13 +1208,17 @@ This manpage was put together by Matthew Hawkins
 .hy
 from the original Blackbox man page by Wilbert Berendsen
 .nh
-(wbsoft@xs4all.nl) 
+<wbsoft@xs4all.nl> 
 .hy
 and subsequently hacked upon by Tobias Klausmann
 .nh
-(klausman@users.sourceforge.net)
+<klausman@users.sourceforge.net>
+.nh
+and 
 .hy
-Numerous other languages will be available.
+<grubert@users.sourceforge.net>.
+.nh
+Numerous other languages could be available if someone jumps in.
 .SH SEE ALSO
 .IR bsetroot (1) \" not there, yet ;-(
 
