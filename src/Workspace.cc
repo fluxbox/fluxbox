@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.75 2003/06/24 14:57:53 fluxgen Exp $
+// $Id: Workspace.cc,v 1.76 2003/06/24 18:34:01 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -34,6 +34,7 @@
 #include "SimpleCommand.hh"
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
+#include "MenuItem.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
