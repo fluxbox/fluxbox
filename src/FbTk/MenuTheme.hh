@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.2 2003/01/09 16:47:06 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.3 2003/02/15 01:49:18 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -29,6 +29,7 @@
 #include "Font.hh"
 #include "Texture.hh"
 #include "Text.hh"
+#include "Subject.hh"
 
 namespace FbTk {
 
@@ -37,7 +38,9 @@ public:
     enum BulletType { EMPTY, SQUARE, TRIANGLE};
     MenuTheme(int screen_num);
     virtual ~MenuTheme();
+
     void reconfigTheme();
+
     /**
        @name text colors
     */
@@ -82,6 +85,10 @@ public:
     unsigned int borderWidth() const { return *m_border_width; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
     const FbTk::Color &borderColor() const { return *m_border_color; }
+    /// attach observer
+    void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
+    /// detach observer
+    void removeListener(FbTk::Observer &obs) { m_theme_change_sig.detach(&obs); }
 private:
     FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text;
     FbTk::ThemeItem<FbTk::Texture> title, frame, hilite;
@@ -96,7 +103,7 @@ private:
 
     Display *m_display;
     GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-
+    FbTk::Subject m_theme_change_sig;
 };
 
 }; // end namespace FbTk

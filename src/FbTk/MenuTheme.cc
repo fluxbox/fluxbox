@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.3 2003/01/10 00:54:12 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.4 2003/02/15 01:49:43 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -111,6 +111,8 @@ void MenuTheme::reconfigTheme() {
     XChangeGC(m_display, hilite_gc,
               gc_value_mask, &gcv);
 
+    // notify any listeners
+    m_theme_change_sig.notify();
 }
 
 
