@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.64 2003/02/23 19:13:22 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.65 2003/03/03 21:51:07 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -83,6 +83,7 @@ private:
     Toolbar &m_tbar;
     Toolbar::Placement m_place;
 };
+
 
 void setupMenus(Toolbar &tbar) {
     I18n *i18n = I18n::instance();
@@ -213,7 +214,7 @@ Toolbar::Frame::~Frame() {
     evm.remove(clock);
 }
 
-Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
+Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width):
     editing(false),
     hidden(scrn.doToolbarAutoHide()), 
     do_auto_hide(scrn.doToolbarAutoHide()),
@@ -222,8 +223,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     image_ctrl(*scrn.getImageControl()),
     clock_timer(this), 	// get the clock updating every minute
     hide_timer(&hide_handler),
-    m_toolbarmenu(*scrn.menuTheme(), 
-                  scrn.getScreenNumber(), *scrn.getImageControl()),
+    m_toolbarmenu(menu),
     m_placementmenu(*scrn.menuTheme(),
                     scrn.getScreenNumber(), *scrn.getImageControl()),
     m_layermenu(*scrn.menuTheme(), 
@@ -267,9 +267,9 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     frame.base = frame.label = frame.wlabel = frame.clk = frame.button =
         frame.pbutton = None;
 
-		
-    if (Fluxbox::instance()->useIconBar())
-        m_iconbar.reset(new IconBar(&screen(), frame.window_label.window(), m_theme.font()));
+    //DEL/fix -> remove useIconBar resource
+//    if (Fluxbox::instance()->useIconBar())
+    m_iconbar.reset(new IconBar(&screen(), frame.window_label.window(), m_theme.font()));
 
 
     XMapSubwindows(display, frame.window.window());
@@ -325,7 +325,43 @@ void Toolbar::delIcon(FluxboxWindow *w) {
     if (m_iconbar.get() != 0)
         FbTk::EventManager::instance()->remove(m_iconbar->delIcon(w));
 }
-		
+
+void Toolbar::delAllIcons() {
+    if (m_iconbar.get() == 0)
+        return;
+
+    IconBar::WindowList *deleted = m_iconbar->delAllIcons();
+    IconBar::WindowList::iterator it = deleted->begin();
+    IconBar::WindowList::iterator it_end = deleted->end();
+    for (; it != it_end; ++it) {
+        FbTk::EventManager::instance()->remove(*it);
+    }
+    delete deleted;
+}
+    
+bool Toolbar::containsIcon(FluxboxWindow &win) {
+    return (m_iconbar->findIcon(&win) != 0);
+}
+
+void Toolbar::enableIconBar() {
+    // already on
+    if (m_iconbar.get() != 0) 
+        return;
+    m_iconbar.reset(new IconBar(&screen(), frame.window_label.window(), m_theme.font()));
+}
+
+void Toolbar::disableIconBar() {
+    // already off
+    if (m_iconbar.get() == 0) 
+        return;
+    
+    delAllIcons();
+
+    m_iconbar.reset(0); // destroy iconbar
+
+}
+
+
 void Toolbar::reconfigure() {
 
     if (do_auto_hide == false && 
@@ -592,29 +628,6 @@ void Toolbar::reconfigure() {
 
     m_toolbarmenu.reconfigure();
 
-    if (Fluxbox::instance()->useIconBar()) {
-        if (m_iconbar.get() == 0) { // create new iconbar if we don't have one
-            m_iconbar.reset(new IconBar(&screen(), frame.window_label.window(), m_theme.font()));
-            if (screen().getIconCount()) {
-                BScreen::Icons & l = screen().getIconList();
-                BScreen::Icons::iterator it = l.begin();
-                BScreen::Icons::iterator it_end = l.end();
-                for(; it != it_end; ++it) {
-                    addIcon(*it);
-                }
-            }
-			
-        } else 
-            m_iconbar->reconfigure();
-    } else if (m_iconbar.get() != 0) {
-        BScreen::Icons & l = screen().getIconList();
-        BScreen::Icons::iterator it = l.begin();
-        BScreen::Icons::iterator it_end = l.end();
-        for(; it != it_end; ++it)
-            delIcon(*it);
-
-        m_iconbar.reset(0); // destroy iconbar
-    }
 }
 
 

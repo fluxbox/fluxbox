@@ -1,7 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
-
--------------------------------------------
+*03/03/03:
+   * Add code for Toolbar modes (Simon)
+     AtomHandler.hh EventManager.cc Ewmh.hh/cc Gnome.hh/cc 
+     IconBar.hh/cc Screen.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc 
+     Window.cc fluxbox.cc
+ 
+------------------------------------------- 
 Changes for 0.9.0:
 *03/02/23:
    * Fixed auto hide option for toolbar menu (Henrik)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.72 2003/02/23 00:55:07 fluxgen Exp $
+// $Id: Screen.hh,v 1.73 2003/03/03 21:51:06 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -36,6 +36,7 @@
 #include "FbWinFrameTheme.hh"
 #include "MultLayers.hh"
 #include "XLayerItem.hh"
+#include "ToolbarHandler.hh"
 #include "fluxbox.hh"
 
 #include <X11/Xlib.h>
@@ -78,7 +79,7 @@ public:
             int scrn, int number_of_layers);
     ~BScreen();
 
-    inline bool doToolbarAutoHide() const { return *resource.toolbar_auto_hide; }
+    inline bool &doToolbarAutoHide() { return *resource.toolbar_auto_hide; }
     inline Toolbar::Placement toolbarPlacement() const { return *resource.toolbar_placement; }
     inline bool isSloppyFocus() const { return (*resource.focus_model == Fluxbox::SLOPPYFOCUS); }
     inline bool isSemiSloppyFocus() const { return (*resource.focus_model == Fluxbox::SEMISLOPPYFOCUS); }
@@ -103,6 +104,8 @@ public:
     inline FbTk::ImageControl *getImageControl() { return image_control; }
     const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
+    const FbTk::Menu &getToolbarModemenu() const ;
+    FbTk::Menu &getToolbarModemenu() ;
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
@@ -121,8 +124,11 @@ public:
     inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
     inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 
-    inline const Toolbar *getToolbar() const { return m_toolbar.get(); }
-    inline Toolbar *getToolbar() { return m_toolbar.get(); }
+    inline const Toolbar *getToolbar() const { return m_toolbarhandler->getToolbar(); }
+    inline Toolbar *getToolbar() { return m_toolbarhandler->getToolbar(); }
+
+    inline const ToolbarHandler &getToolbarHandler() const { return *m_toolbarhandler; }
+    inline ToolbarHandler &getToolbarHandler() { return *m_toolbarhandler; }
 
     inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
     inline Workspace *getCurrentWorkspace() { return current_workspace; }
@@ -175,6 +181,9 @@ public:
     inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
 
     inline int getToolbarWidthPercent() const { return *resource.toolbar_width_percent; }
+    inline Resource<int> &getToolbarWidthPercentResource() { return resource.toolbar_width_percent; }
+    inline const Resource<int> &getToolbarWidthPercentResource() const { return resource.toolbar_width_percent; }
+    inline ToolbarHandler::ToolbarMode getToolbarMode() const { return *resource.toolbar_mode; }
     inline int getPlacementPolicy() const { return resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
     inline int getRowPlacementDirection() const { return resource.row_direction; }
@@ -191,15 +200,13 @@ public:
     inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
     inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
-    //DEL inline void saveSloppyFocus(bool s) { resource.sloppy_focus = s;  }
-    //DEL inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s;  }
-    //DEL inline void saveAutoRaise(bool a) { resource.auto_raise = a;  }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
+
     inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
     inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
+    inline void saveToolbarMode(ToolbarHandler::ToolbarMode m) { *resource.toolbar_mode = m; }
     inline void saveToolbarPlacement(Toolbar::Placement place) { *resource.toolbar_placement = place; }
     inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
-
 
     inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
     inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
@@ -358,7 +365,7 @@ private:
 #ifdef SLIT
     std::auto_ptr<Slit> m_slit;
 #endif // SLIT
-    std::auto_ptr<Toolbar> m_toolbar;
+
     Workspace *current_workspace;
     std::auto_ptr<FbTk::Menu> workspacemenu;
 
@@ -394,6 +401,7 @@ private:
 
         Resource<Tab::Placement> tab_placement;
         Resource<Tab::Alignment> tab_alignment;
+        Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
         Resource<int> toolbar_on_head;
         Resource<Toolbar::Placement> toolbar_placement;
         bool slit_auto_hide;
@@ -410,6 +418,7 @@ private:
     } resource;
 
     std::auto_ptr<RootTheme> m_root_theme;
+    ToolbarHandler *m_toolbarhandler;
 };
 
 

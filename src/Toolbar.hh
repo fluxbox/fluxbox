@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.25 2003/02/23 00:50:02 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.26 2003/03/03 21:51:08 rathnor Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -63,7 +63,7 @@ public:
     };
 
     /// create a toolbar on the screen with specific width
-    explicit Toolbar(BScreen &screen, FbTk::XLayer &layer, size_t width = 200);
+    explicit Toolbar(BScreen &screen, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width = 200);
     /// destructor
     virtual ~Toolbar();
 
@@ -71,7 +71,13 @@ public:
     void addIcon(FluxboxWindow *w);
     /// remove icon from iconbar
     void delIcon(FluxboxWindow *w);
-	
+    /// remove all icons
+    void delAllIcons();
+    bool containsIcon(FluxboxWindow &win);
+
+    void enableIconBar();
+    void disableIconBar();
+
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
     inline FbTk::Menu &placementMenu() { return m_placementmenu; }
@@ -160,7 +166,7 @@ private:
     FbTk::ImageControl &image_ctrl; 
     FbTk::Timer clock_timer; ///< timer to update clock
     FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
-    FbTk::Menu m_toolbarmenu;
+    FbTk::Menu &m_toolbarmenu;
     FbTk::Menu m_placementmenu;
     LayerMenu<Toolbar> m_layermenu;
     std::auto_ptr<IconBar> m_iconbar;

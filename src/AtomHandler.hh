@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.6 2003/02/02 16:32:37 rathnor Exp $
+// $Id: AtomHandler.hh,v 1.7 2003/03/03 21:51:00 rathnor Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -32,23 +32,24 @@ class BScreen;
 class AtomHandler {
 public:
     virtual ~AtomHandler() { }
-	
-    virtual void initForScreen(const BScreen &screen) = 0;
+
+    virtual void initForScreen(BScreen &screen) = 0;
     virtual void setupWindow(FluxboxWindow &win) = 0;
-	
-    virtual void updateClientList(const BScreen &screen) = 0;
-    virtual void updateWorkspaceNames(const BScreen &screen) = 0;
-    virtual void updateCurrentWorkspace(const BScreen &screen) = 0;
-    virtual void updateWorkspaceCount(const BScreen &screen) = 0;
-	
+
+    virtual void updateClientList(BScreen &screen) = 0;
+    virtual void updateWorkspaceNames(BScreen &screen) = 0;
+    virtual void updateCurrentWorkspace(BScreen &screen) = 0;
+    virtual void updateWorkspaceCount(BScreen &screen) = 0;
+
+    virtual void updateWindowClose(FluxboxWindow &win) = 0;
     virtual void updateWorkspace(FluxboxWindow &win) = 0;
     virtual void updateState(FluxboxWindow &win) = 0;
     virtual void updateHints(FluxboxWindow &win) = 0;
     virtual void updateLayer(FluxboxWindow &win) = 0;
 
     virtual bool checkClientMessage(const XClientMessageEvent &ce, 
-                                    BScreen * const screen, FluxboxWindow * const win) = 0;
-	
+                                    BScreen * screen, FluxboxWindow * const win) = 0;
+
     /// should this object be updated or not?
     bool update() const { return m_update; }
 protected:

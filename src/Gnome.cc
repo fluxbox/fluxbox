@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.11 2003/02/18 15:11:07 rathnor Exp $
+// $Id: Gnome.cc,v 1.12 2003/03/03 21:51:01 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -43,7 +43,7 @@ Gnome::~Gnome() {
     }
 }
 
-void Gnome::initForScreen(const BScreen &screen) {
+void Gnome::initForScreen(BScreen &screen) {
     Display *disp = BaseDisplay::getXDisplay();
     // create the GNOME window
     Window gnome_win = XCreateSimpleWindow(disp,
@@ -120,7 +120,7 @@ void Gnome::setupWindow(FluxboxWindow &win) {
 
 }
 
-void Gnome::updateClientList(const BScreen &screen) {
+void Gnome::updateClientList(BScreen &screen) {
     size_t num=0;
 
     BScreen::Workspaces::const_iterator workspace_it = screen.getWorkspacesList().begin();
@@ -162,7 +162,7 @@ void Gnome::updateClientList(const BScreen &screen) {
     delete wl;
 }
 
-void Gnome::updateWorkspaceNames(const BScreen &screen) {
+void Gnome::updateWorkspaceNames(BScreen &screen) {
     XTextProperty	text;
     int number_of_desks = screen.getWorkspaceNames().size();
 	
@@ -185,7 +185,7 @@ void Gnome::updateWorkspaceNames(const BScreen &screen) {
         delete [] names[i];
 }
 
-void Gnome::updateCurrentWorkspace(const BScreen &screen) {
+void Gnome::updateCurrentWorkspace(BScreen &screen) {
     int workspace = screen.getCurrentWorkspaceID();
     XChangeProperty(BaseDisplay::getXDisplay(), 
                     screen.getRootWindow(),
@@ -195,7 +195,7 @@ void Gnome::updateCurrentWorkspace(const BScreen &screen) {
     updateClientList(screen); // make sure the client list is updated too
 }
 
-void Gnome::updateWorkspaceCount(const BScreen &screen) {
+void Gnome::updateWorkspaceCount(BScreen &screen) {
     int numworkspaces = screen.getCount();
     XChangeProperty(BaseDisplay::getXDisplay(), screen.getRootWindow(),
                     m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
@@ -242,7 +242,7 @@ void Gnome::updateHints(FluxboxWindow &win) {
 	
 }
 
-bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * const screen, FluxboxWindow * const win) {
+bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win) {
     if (ce.message_type == m_gnome_wm_win_workspace) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;

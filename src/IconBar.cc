@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.25 2003/02/23 14:29:08 fluxgen Exp $
+// $Id: IconBar.cc,v 1.26 2003/03/03 21:51:01 rathnor Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -120,14 +120,33 @@ Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
         IconList::iterator it =
             std::find(m_iconlist.begin(), m_iconlist.end(), obj);
         if (it != m_iconlist.end()) {
-            m_iconlist.erase(it);								
+            m_iconlist.erase(it);
             retwin = obj->getIconWin();		
-            delete obj;				
+            delete obj;
             XDestroyWindow(m_display, retwin);
             repositionIcons();		
         }
     }		
     return retwin;
+}
+
+/**
+ * Removes all icons from list
+ * Return X Windows of the removed iconobjs
+ */
+IconBar::WindowList *IconBar::delAllIcons() {
+    Window retwin = None;
+    WindowList *ret = new WindowList();
+    while (!m_iconlist.empty()) {
+            IconBarObj *obj = m_iconlist.back();
+            m_iconlist.pop_back();
+            retwin = obj->getIconWin();
+            ret->push_back(retwin);
+            delete obj;
+            XDestroyWindow(m_display, retwin);
+    }
+    repositionIcons();
+    return ret;
 }
 
 /**

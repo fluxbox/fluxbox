@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.4 2003/02/23 14:30:18 fluxgen Exp $
+// $Id: EventManager.cc,v 1.5 2003/03/03 21:51:13 rathnor Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -95,7 +95,8 @@ void EventManager::registerEventHandler(EventHandler &ev, Window win) {
 }
 
 void EventManager::unregisterEventHandler(Window win) {
-    m_eventhandlers.erase(win);
+    if (win != None)
+        m_eventhandlers.erase(win);
 }
 
 };

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.10 2003/02/02 16:32:37 rathnor Exp $
+// $Id: Ewmh.cc,v 1.11 2003/03/03 21:51:00 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -42,7 +42,7 @@ Ewmh::~Ewmh() {
     }
 }
 
-void Ewmh::initForScreen(const BScreen &screen) {
+void Ewmh::initForScreen(BScreen &screen) {
     Display *disp = BaseDisplay::getXDisplay();
 
     Window wincheck = XCreateSimpleWindow(disp,
@@ -119,7 +119,7 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
     }
 }
 
-void Ewmh::updateClientList(const BScreen &screen) {
+void Ewmh::updateClientList(BScreen &screen) {
     size_t num=0;
 
     BScreen::Workspaces::const_iterator workspace_it = screen.getWorkspacesList().begin();
@@ -165,7 +165,7 @@ void Ewmh::updateClientList(const BScreen &screen) {
     delete [] wl;
 }
 
-void Ewmh::updateWorkspaceNames(const BScreen &screen) {
+void Ewmh::updateWorkspaceNames(BScreen &screen) {
     XTextProperty text;
     const size_t number_of_desks = screen.getWorkspaceNames().size();
 	
@@ -186,7 +186,7 @@ void Ewmh::updateWorkspaceNames(const BScreen &screen) {
         delete [] names[i];	
 }
 
-void Ewmh::updateCurrentWorkspace(const BScreen &screen) {
+void Ewmh::updateCurrentWorkspace(BScreen &screen) {
     size_t workspace = screen.getCurrentWorkspaceID();
     XChangeProperty(BaseDisplay::getXDisplay(), 
                     screen.getRootWindow(),
@@ -195,7 +195,7 @@ void Ewmh::updateCurrentWorkspace(const BScreen &screen) {
 
 }
 
-void Ewmh::updateWorkspaceCount(const BScreen &screen) {
+void Ewmh::updateWorkspaceCount(BScreen &screen) {
     size_t numworkspaces = screen.getCount();
     XChangeProperty(BaseDisplay::getXDisplay(), screen.getRootWindow(),
                     m_net_number_of_desktops, XA_CARDINAL, 32, PropModeReplace,
@@ -225,7 +225,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 }
 
 // return true if we did handle the atom here
-bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * const screen, FluxboxWindow * const win) {
+bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win) {
 
     if (ce.message_type == m_net_wm_desktop) {
         if (screen == 0)

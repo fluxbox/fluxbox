@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.10 2003/02/23 00:50:53 fluxgen Exp $
+// $Id: IconBar.hh,v 1.11 2003/03/03 21:51:03 rathnor Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
@@ -52,12 +52,14 @@ private:
 class IconBar
 {
 public:
+    typedef std::list<Window> WindowList;
     IconBar(BScreen *scrn, Window parent, FbTk::Font &font);
     ~IconBar();
     void draw(); //TODO
     void reconfigure();
     Window addIcon(FluxboxWindow *fluxboxwin);
     Window delIcon(FluxboxWindow *fluxboxwin);
+    WindowList *delAllIcons();
     void buttonPressEvent(XButtonEvent *be);	
     FluxboxWindow *findWindow(Window w);
     IconBarObj *findIcon(FluxboxWindow * const fluxboxwin);

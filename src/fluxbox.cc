@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.102 2003/03/01 07:30:42 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.103 2003/03/03 21:51:11 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -447,7 +447,9 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc
             continue;
         }
         screenList.push_back(screen);
-		
+        
+        m_atomhandler.push_back(&screen->getToolbarHandler());
+        
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
         screen->workspaceCountSig().attach(this);
@@ -1449,7 +1451,7 @@ void Fluxbox::handleSignal(int signum) {
 
 void Fluxbox::update(FbTk::Subject *changedsub) {
 //TODO: fix signaling, this does not look good
-    if (typeid(*changedsub) == typeid(FluxboxWindow)) {
+    if (typeid(*changedsub) == typeid(FluxboxWindow::WinSubject)) {
         FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
         FluxboxWindow &win = winsub->win();
         if ((&(win.hintSig())) == changedsub) { // hint signal
@@ -1475,6 +1477,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
                 if (m_atomhandler[i]->update())
                     m_atomhandler[i]->updateLayer(win);
+            }
+        } else if ((&(win.dieSig())) == changedsub) { // window death signal
+#ifdef DEBUG
+            cerr<<__FILE__<<"("<<__LINE__<<") WINDOW die signal from "<<&win<<endl;
+#endif // DEBUG
+            for (size_t i=0; i<m_atomhandler.size(); ++i) {
+                if (m_atomhandler[i]->update())
+                    m_atomhandler[i]->updateWindowClose(win);
             }
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
 #ifdef DEBUG
@@ -1534,6 +1544,7 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.stateSig().attach(this);
     win.workspaceSig().attach(this);
     win.layerSig().attach(this);
+    win.dieSig().attach(this);
     for (size_t i=0; i<m_atomhandler.size(); ++i) {
         m_atomhandler[i]->setupWindow(win);
     }
@@ -2073,7 +2084,7 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (screen->getToolbarWidthPercent() <= 0 || 
         screen->getToolbarWidthPercent() > 100)
         screen->saveToolbarWidthPercent(66);
-
+    
     if (screen->getTabWidth()>512)
         screen->saveTabWidth(512);
     else if (screen->getTabWidth()<0)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.127 2003/02/23 13:58:36 rathnor Exp $
+// $Id: Window.cc,v 1.128 2003/03/03 21:51:09 rathnor Exp $
 
 #include "Window.hh"
 
@@ -377,7 +377,7 @@ FluxboxWindow::~FluxboxWindow() {
         Workspace *workspace = screen->getWorkspace(workspace_number);
         if (workspace)
             workspace->removeWindow(this);
-    } else //it's iconic
+    } else
         screen->removeIcon(this);
 	
     if (tab != 0) {
@@ -1015,25 +1015,25 @@ void FluxboxWindow::iconify() {
 
     m_windowmenu.hide();
 
-    setState(IconicState);
-
-
     XSelectInput(display, client.window, NoEventMask);
     XUnmapWindow(display, client.window);
     XSelectInput(display, client.window,
                  PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
 
-    m_frame.hide();
-
     visible = false;
     iconic = true;
 	
+    setState(IconicState);
+
+    m_frame.hide();
+
     screen->getWorkspace(workspace_number)->removeWindow(this);
 
     if (client.transient_for) {
         if (! client.transient_for->iconic)
             client.transient_for->iconify();
     }
+
     screen->addIcon(this);
 
     if (tab) //if this window got a tab then iconify it too
@@ -1057,6 +1057,10 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     } else if (workspace_number != screen->getCurrentWorkspace()->workspaceID())
         return;
 
+    bool was_iconic = iconic;
+
+    iconic = false;
+    visible = true;
     setState(NormalState);
 
     XSelectInput(display, client.window, NoEventMask);
@@ -1066,14 +1070,12 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 
     m_frame.show();
 
-    if (iconic && screen->doFocusNew())
+    if (was_iconic && screen->doFocusNew())
         setInputFocus();
 
     if (focused != m_frame.focused())
         m_frame.setFocus(focused);
 
-    visible = true;
-    iconic = false;
 
     if (reassoc && client.transients.size()) {
         // deiconify all transients

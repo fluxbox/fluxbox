@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.116 2003/02/23 12:02:30 fluxgen Exp $
+// $Id: Screen.cc,v 1.117 2003/03/03 21:51:04 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -202,6 +202,26 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
 
+template<>
+void Resource<ToolbarHandler::ToolbarMode>::
+setFromString(const char *strval) {
+    if (strcasecmp(strval, "Off") == 0) 
+        m_value = ToolbarHandler::OFF;
+    else if (strcasecmp(strval, "None") == 0) 
+        m_value = ToolbarHandler::NONE;
+    else if (strcasecmp(strval, "Icons") == 0) 
+        m_value = ToolbarHandler::ICONS;
+    else if (strcasecmp(strval, "WorkspaceIcons") == 0) 
+        m_value = ToolbarHandler::WORKSPACEICONS;
+    else if (strcasecmp(strval, "Workspace") == 0) 
+        m_value = ToolbarHandler::WORKSPACE;
+    else if (strcasecmp(strval, "AllWindows") == 0) 
+        m_value = ToolbarHandler::ALLWINDOWS;
+    else
+        setDefaultValue();
+}
+
+
 //--------- resource accessors --------------
 template<>
 string Resource<Tab::Alignment>::
@@ -258,6 +278,34 @@ getString() {
     }
     //default string
     return string("BottomCenter");
+}
+
+template<>
+string Resource<ToolbarHandler::ToolbarMode>::
+getString() {
+    switch (m_value) {
+    case ToolbarHandler::OFF:
+        return string("Off");
+        break;
+    case ToolbarHandler::NONE:
+        return string("None");
+        break;
+    case ToolbarHandler::LASTMODE:
+    case ToolbarHandler::ICONS:
+        return string("Icons");
+        break;
+    case ToolbarHandler::WORKSPACEICONS:
+        return string("Workspace");
+        break;
+    case ToolbarHandler::WORKSPACE:
+        return string("Workspace");
+        break;
+    case ToolbarHandler::ALLWINDOWS:
+        return string("AllWindows");
+        break;
+    }
+    // default string
+    return string("Icons");
 }
 
 namespace {
@@ -373,6 +421,7 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     toolbar_layernum(rm, Fluxbox::instance()->getDesktopLayer(), scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
     tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
     tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
+    toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
     toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
@@ -390,7 +439,8 @@ BScreen::BScreen(ResourceManager &rm,
                              theme(0), m_windowtheme(scrn), 
                              m_menutheme(new FbTk::MenuTheme(scrn)),
                              resource(rm, screenname, altscreenname),
-                             m_root_theme(new RootTheme(*this))
+                             m_root_theme(new RootTheme(*this)),
+                             m_toolbarhandler(0)
 {
     Display *disp = FbTk::App::instance()->display();
 
@@ -524,31 +574,11 @@ BScreen::BScreen(ResourceManager &rm,
     m_slit.reset(new Slit(*this, *layerManager().getLayer(getSlitLayerNum())));
 #endif // SLIT
 
-    m_toolbar.reset(new Toolbar(*this, *layerManager().getLayer(getToolbarLayerNum())));
-    m_toolbar->setPlacement(*resource.toolbar_placement);
-    // setup toolbar width menu item
-    FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
-                                                          resource.toolbar_width_percent,
-                                                          0, 100); // min/max value
-    FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
-                                                   SimpleCommand<Toolbar>
-                                                   (*(m_toolbar.get()), &Toolbar::reconfigure));
-    FbTk::RefCount<FbTk::Command> save_resources(new FbTk::
-                                                 SimpleCommand<Fluxbox>
-                                                 (*Fluxbox::instance(), &Fluxbox::save_rc));
-    FbTk::MacroCommand *toolbar_menuitem_macro = new FbTk::MacroCommand();
-    toolbar_menuitem_macro->add(reconfig_toolbar);
-    toolbar_menuitem_macro->add(save_resources);
+    m_toolbarhandler = new ToolbarHandler(*this, getToolbarMode());
 
-    FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
+    if (getToolbar()) 
+        getToolbar()->setPlacement(*resource.toolbar_placement);
 
-    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);    
-
-    m_toolbar->menu().insert(toolbar_menuitem, 0);
-
-    m_toolbar->menu().insert(new BoolMenuItem("Auto hide", *resource.toolbar_auto_hide, reconfig_toolbar), 0);
-
-    
     setupWorkspacemenu(*this, *workspacemenu);
 
     m_configmenu.reset(createMenuFromScreen(*this));
@@ -556,7 +586,8 @@ BScreen::BScreen(ResourceManager &rm,
 
     workspacemenu->setItemSelected(2, true);
 
-    m_toolbar->reconfigure();
+    if (getToolbar() != 0)
+        getToolbar()->reconfigure();
 
     initMenu(); // create and initiate rootmenu
 
@@ -622,10 +653,12 @@ BScreen::BScreen(ResourceManager &rm,
         }
     }
 
-    if (! isSloppyFocus()) {
-        XSetInputFocus(disp, m_toolbar->getWindowID(),
+    if (! isSloppyFocus() && getToolbar() != 0) {
+        XSetInputFocus(disp, getToolbar()->getWindowID(),
                        RevertToParent, CurrentTime);
     }
+
+    // set the toolbarhandler after the windows are setup, so it catches their state properly
 
     XFree(children);
     XFlush(disp);
@@ -668,6 +701,14 @@ BScreen::~BScreen() {
 
 }
 
+const FbTk::Menu &BScreen::getToolbarModemenu() const {
+    return m_toolbarhandler->getModeMenu();
+}
+
+FbTk::Menu &BScreen::getToolbarModemenu() {
+    return m_toolbarhandler->getModeMenu();
+}
+
 /// TODO
 unsigned int BScreen::getMaxLeft() const {
     return 0;
@@ -702,8 +743,8 @@ void BScreen::reconfigure() {
 
     FbTk::ThemeManager::instance().load(filename.c_str()); // new theme engine
 
-    if (m_toolbar.get())
-        m_toolbar->theme().font().setAntialias(*resource.antialias);
+    if (getToolbar())
+        getToolbar()->theme().font().setAntialias(*resource.antialias);
 
     theme->reconfigure(*resource.antialias);
     
@@ -758,10 +799,11 @@ void BScreen::reconfigure() {
 
 
     //    m_toolbar->setPlacement(*resource.toolbar_placement);
-    m_toolbar->reconfigure();
-    if (m_toolbar->theme().font().isAntialias() != *resource.antialias)
-        m_toolbar->theme().font().setAntialias(*resource.antialias);
-   
+    if (getToolbar() != 0) {
+        getToolbar()->reconfigure();
+        if (getToolbar()->theme().font().isAntialias() != *resource.antialias)
+            getToolbar()->theme().font().setAntialias(*resource.antialias);
+    }
 #ifdef SLIT    
     if (m_slit.get()) {
         m_slit->setPlacement(static_cast<Slit::Placement>(getSlitPlacement()));
@@ -808,12 +850,9 @@ void BScreen::updateWorkspaceNamesAtom() {
 void BScreen::addIcon(FluxboxWindow *w) {
     if (! w) return;
 
-    w->setWorkspace(-1);
     w->setWindowNumber(iconList.size());
 
     iconList.push_back(w);
-
-    m_toolbar->addIcon(w);
 }
 
 
@@ -829,11 +868,9 @@ void BScreen::removeIcon(FluxboxWindow *w) {
                 iconList.erase(it);
                 break;
             }
-	}
+        }
     }
-		
-    m_toolbar->delIcon(w);
-	
+    
     Icons::iterator it = iconList.begin();
     Icons::iterator it_end = iconList.end();
     for (int i = 0; it != it_end; ++it, ++i) {
@@ -873,8 +910,9 @@ int BScreen::addWorkspace() {
 		
     workspacemenu->update();
     saveWorkspaces(workspacesList.size());
-    m_toolbar->reconfigure();
-
+    if (getToolbar() != 0)
+        getToolbar()->reconfigure();
+    
     updateNetizenWorkspaceCount();	
 	
 	
@@ -901,7 +939,8 @@ int BScreen::removeLastWorkspace() {
     workspacesList.pop_back();		
     delete wkspc;
 
-    m_toolbar->reconfigure();
+    if (getToolbar() != 0)
+        getToolbar()->reconfigure();
 
     updateNetizenWorkspaceCount();
     saveWorkspaces(workspacesList.size());
@@ -949,7 +988,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         current_workspace = getWorkspace(id);
 
         workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
-        m_toolbar->redrawWorkspaceLabel(true);
+        if (getToolbar() != 0)
+            getToolbar()->redrawWorkspaceLabel(true);
 
         current_workspace->showAll();
 
@@ -1309,7 +1349,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 #endif // DEBUG
     }
 
-    if (w->getWorkspaceNumber() == wkspc_id)
+    if (!w->isIconic() && w->getWorkspaceNumber() == wkspc_id)
         return;
 
 
@@ -1781,11 +1821,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     if (getSlit() != 0)
         menu.insert("Slit", &getSlit()->menu());
 #endif // SLIT
-
     menu.insert(i18n->getMessage(
-                                 ToolbarSet, ToolbarToolbarTitle,
-                                 "Toolbar"), &m_toolbar->menu());
-
+        ToolbarSet, ToolbarToolbarTitle,
+        "Toolbar"), &m_toolbarhandler->getToolbarMenu());
     menu.insert(new
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuImageDithering,

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.5 2003/02/02 16:32:37 rathnor Exp $
+// $Id: Gnome.hh,v 1.6 2003/03/03 21:51:01 rathnor Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -64,22 +64,24 @@ public:
 	
     Gnome();
     ~Gnome();
-    void initForScreen(const BScreen &screen);
+    void initForScreen(BScreen &screen);
     void setupWindow(FluxboxWindow &win);
 
-    void updateClientList(const BScreen &screen);
-    void updateWorkspaceNames(const BScreen &screen);
-    void updateCurrentWorkspace(const BScreen &screen);
-    void updateWorkspaceCount(const BScreen &screen);
+    void updateClientList(BScreen &screen);
+    void updateWorkspaceNames(BScreen &screen);
+    void updateCurrentWorkspace(BScreen &screen);
+    void updateWorkspaceCount(BScreen &screen);
 
     void updateState(FluxboxWindow &win);
     void updateLayer(FluxboxWindow &win);
     void updateHints(FluxboxWindow &win);
     void updateWorkspace(FluxboxWindow &win);
 
-
-    bool checkClientMessage(const XClientMessageEvent &ce, BScreen * const screen, FluxboxWindow * const win);
+    bool checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win);
 	
+    // ignore these ones
+    void updateWindowClose(FluxboxWindow &win) {}
+
 private:
     void setLayer(FluxboxWindow *win, int layer);
     void setState(FluxboxWindow *win, int state);
