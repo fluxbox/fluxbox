@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/06/27:
+  * Fixed bug in systray (Henrik)
+    (this fixes the problem with "sim" in systray)
+    - It didn't force client position on configure request
+    SystemTray.cc 
   * Added toggle menu (Henrik)
     - redraws each time a toggle menu item changes
     ToggleMenu.hh, FbMenu.hh, LayerMenu.hh, FbTk/Menu.cc
