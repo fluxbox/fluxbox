@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/29:
+  * Add back Workspace<n> actions with deprecated message (Simon)
+    - need transition time, remove when 1.0 has been widely used for a while
+    FbCommandFactory.cc
   * More random render fixes (Simon)
     (font alignment in menu, menu optimisation, toolbar font/render)
     FbTk/Menu.cc FbTk/MenuItem.cc FbTk/XftFontImp.cc 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.32 2004/06/07 11:46:04 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.33 2004/08/29 09:08:29 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -129,6 +129,20 @@ FbCommandFactory::FbCommandFactory() {
         "toggledecor",
         "windowmenu",
         "workspace",
+        /* NOTE: The following are DEPRECATED and subject to removal */
+        "workspace1",
+        "workspace2",
+        "workspace3",
+        "workspace4",
+        "workspace5",
+        "workspace6",
+        "workspace7",
+        "workspace8",
+        "workspace9",
+        "workspace10",
+        "workspace11",
+        "workspace12",
+        /* end note */
         "workspacemenu",
         ""
     };
@@ -278,6 +292,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         if (!arguments.empty())
             num = atoi(arguments.c_str());
         return new JumpToWorkspaceCmd(num-1);
+    } if (command.substr(0, 9) == "workspace" && command[9] >= '0' && command[9] <= '9') {
+        cerr<<"*** WARNING: 'Workspace<n>' actions are deprecated! Use 'Workspace <n>' instead"<<endl;
+        int num = 1;
+        num = atoi(command.substr(9).c_str());
+        return new JumpToWorkspaceCmd(num-1);
+        
     } else if (command == "nextwindow")
         return new NextWindowCmd(atoi(arguments.c_str()));
     else if (command == "prevwindow")
