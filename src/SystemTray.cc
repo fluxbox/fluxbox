@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.11 2004/06/20 10:29:51 rathnor Exp $
+// $Id: SystemTray.cc,v 1.12 2004/06/27 21:47:16 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -209,6 +209,10 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
 
         int type = event.data.l[1];
         if (type == SYSTEM_TRAY_REQUEST_DOCK) {
+#ifndef DEBUG
+            cerr<<"SystemTray::"<<__FUNCTION__<<": SYSTEM_TRAY_REQUEST_DOCK"<<endl;
+            cerr<<"window = event.data.l[2] = "<<event.data.l[2]<<endl;
+#endif // DEBUG
             addClient(event.data.l[2]);
         }
         /*
@@ -245,7 +249,7 @@ void SystemTray::addClient(Window win) {
         return;
 
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<win<<dec<<endl;
+    cerr<<"SystemTray::"<<__FUNCTION__<<": 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
     if (m_clients.empty())
         show();
@@ -257,6 +261,10 @@ void SystemTray::addClient(Window win) {
     XChangeSaveSet(FbTk::App::instance()->display(), win, SetModeInsert);
     traywin->reparent(m_window, 0, 0);
     traywin->show();
+
+#ifdef DEBUG
+    cerr<<"number of clients = "<<m_clients.size()<<endl;
+#endif // DEBUG
 
     rearrangeClients();
 }
@@ -295,14 +303,19 @@ void SystemTray::handleEvent(XEvent &event) {
     } else if (event.type == ConfigureNotify) {
         // we got configurenotify from an client
         // check and see if we need to update it's size
-        // we don't let them be their size, we enforce ours (mwahaha)
+        // and we must reposition and resize them to fit 
+        // our toolbar
         ClientList::iterator it = findClient(event.xconfigure.window);
         if (it != m_clients.end()) {
             if (static_cast<unsigned int>(event.xconfigure.width) != (*it)->width() ||
                 static_cast<unsigned int>(event.xconfigure.height) != (*it)->height()) {
-                (*it)->resize((*it)->width(), (*it)->height());
+                // the position might differ so we update from our local
+                // copy of position
+                (*it)->moveResize((*it)->x(), (*it)->y(),
+                                  (*it)->width(), (*it)->height());
             }
         }
+
     }
 }
 
@@ -313,10 +326,6 @@ void SystemTray::rearrangeClients() {
     int next_x = 0;
     for (; client_it != client_it_end; ++client_it, next_x += height()) {
         (*client_it)->moveResize(next_x, 0, height(), height());
-
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): "<<(*client_it)->width()<<", "<<(*client_it)->height()<<endl;
-#endif // DEBUG
     }
 
     resize(next_x, height());
