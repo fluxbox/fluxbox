@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.123 2003/04/28 00:37:38 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.124 2003/04/28 13:34:38 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -424,7 +424,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     addAtomHandler(new Ewmh()); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
 #ifdef REMEMBER
-    m_atomhandler.push_back(new Remember()); // for remembering window attribs
+    addAtomHandler(new Remember()); // for remembering window attribs
 #endif // REMEMBER
 
     grab();
