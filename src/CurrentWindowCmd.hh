@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.hh,v 1.2 2003/07/28 15:06:33 rathnor Exp $
+// $Id: CurrentWindowCmd.hh,v 1.3 2003/08/19 23:37:31 fluxgen Exp $
 
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
@@ -110,4 +110,19 @@ protected:
     void real_execute();
 };
 
+// resize vertical
+class ResizeVerticalCmd: public MoveHelper {
+public:
+  explicit ResizeVerticalCmd(int step_size);
+protected:
+  void real_execute();
+};
+
+// resize horizontal
+class ResizeHorizontalCmd: public MoveHelper{
+public:
+  explicit ResizeHorizontalCmd(int step_size);
+protected:
+  void real_execute();
+};
 #endif // CURRENTWINDOWCMD_HH

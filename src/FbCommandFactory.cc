@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.11 2003/07/28 12:05:27 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.12 2003/08/19 23:37:31 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -38,7 +38,7 @@ FbCommandFactory FbCommandFactory::s_autoreg;
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
-    const char commands[][30] = {
+    const char commands[][32] = {
         "setstyle",
         "saverc",
         "reconfigure",
@@ -54,6 +54,8 @@ FbCommandFactory::FbCommandFactory() {
         "maximize",
         "maximizevertical",
         "maximizehorizontal",
+        "resizevertical",
+        "resizehorizontal",
         "moveright",
         "moveleft",
         "moveup",
@@ -125,6 +127,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::maximizeVertical);
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
+    else if (command == "resizehorizontal")
+        return new ResizeHorizontalCmd(atoi(arguments.c_str()));
+    else if (command == "resizevertical")
+        return new ResizeVerticalCmd(atoi(arguments.c_str()));
     else if (command == "moveright")
         return new MoveRightCmd(atoi(arguments.c_str()));
     else if (command == "moveleft")

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.3 2003/07/28 15:06:33 rathnor Exp $
+// $Id: CurrentWindowCmd.cc,v 1.4 2003/08/19 23:37:31 fluxgen Exp $
 
 #include "CurrentWindowCmd.hh"
 
@@ -83,5 +83,15 @@ void MoveDownCmd::real_execute() {
 MoveUpCmd::MoveUpCmd(int step_size):MoveHelper(step_size) { }
 void MoveUpCmd::real_execute() {
     fbwindow().move(fbwindow().x(), fbwindow().y() - stepSize());
+}
+
+ResizeHorizontalCmd::ResizeHorizontalCmd(int step_size):MoveHelper(step_size) { }
+void ResizeHorizontalCmd::real_execute() {
+  fbwindow().resize(fbwindow().width() + stepSize() * fbwindow().winClient().width_inc, fbwindow().height());
+}
+
+ResizeVerticalCmd::ResizeVerticalCmd(int step_size):MoveHelper(step_size) { }
+void ResizeVerticalCmd::real_execute() {
+  fbwindow().resize(fbwindow().width(), fbwindow().height() + stepSize() * fbwindow().winClient().height_inc);
 }
 
