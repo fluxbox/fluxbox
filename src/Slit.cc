@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.67 2003/06/24 16:29:14 fluxgen Exp $
+// $Id: Slit.cc,v 1.68 2003/06/24 20:19:36 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -1088,6 +1088,9 @@ void Slit::exposeEvent(XExposeEvent &ev) {
     // just the are that gets exposed
     frame.window.clearArea(ev.x, ev.y, ev.width, ev.height);
     if (m_transp.get()) {
+        if ((int)m_transp->alpha() != *m_rc_alpha)
+            m_transp->setAlpha(*m_rc_alpha);
+
         if (screen().rootPixmap() != m_transp->source())
             m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
 
@@ -1101,6 +1104,9 @@ void Slit::exposeEvent(XExposeEvent &ev) {
 void Slit::clearWindow() {
     frame.window.clear();
     if (m_transp.get()) {
+        if ((int)m_transp->alpha() != *m_rc_alpha)
+            m_transp->setAlpha(*m_rc_alpha);
+
         if (screen().rootPixmap() != m_transp->source())
             m_transp->setSource(screen().rootPixmap(), screen().screenNumber());
 
@@ -1253,24 +1259,14 @@ void Slit::setupMenu() {
     FbTk::MenuItem *alpha_menuitem = new IntResMenuItem("Alpha", 
                                                         m_rc_alpha,
                                                         0, 255);
-    // helper for setting new alpha value for slit
-    class SetAlpha:public FbCommands::SaveResources {
-    public:
-        SetAlpha(Slit &slit, int &alpha):m_slit(slit), m_alpha(alpha) { }
-        void execute() { 
-            FbCommands::SaveResources::execute();
-            if (m_slit.m_transp.get())
-                m_slit.m_transp->setAlpha(m_alpha); 
-            else
-                cerr<<"NO TRANSP!"<<endl;
-            m_slit.clearWindow(); 
-        }
-    private:  
-        Slit &m_slit;
-        int &m_alpha;
-    };
-    RefCount<Command> set_alpha_cmd(new SetAlpha(*this, *m_rc_alpha));
+    // setup command for alpha value
+    MacroCommand *alpha_macrocmd = new MacroCommand(); 
+    RefCount<Command> clear_cmd(new SimpleCommand<Slit>(*this, &Slit::clearWindow));
+    alpha_macrocmd->add(saverc_cmd);
+    alpha_macrocmd->add(clear_cmd);
+    RefCount<Command> set_alpha_cmd(alpha_macrocmd);
     alpha_menuitem->setCommand(set_alpha_cmd);
+
     m_slitmenu.insert(alpha_menuitem);
 
     m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(SlitSet, SlitSlitDirection,
