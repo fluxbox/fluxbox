@@ -1027,24 +1027,12 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 			focused_window->stick();
 		break;								
 		case Keys::VERTMAX:
-			//!!TODO: fix this
-			if (focused_window->isResizable()) {
-				int w = focused_window->getWidth();
-				int x = focused_window->getXFrame();
-				int y = focused_window->getYFrame();
-				focused_window->maximize(0);
-				focused_window->configure(x, y, w, focused_window->getHeight());
-			}
+			if (focused_window->isResizable())
+				focused_window->maximize(3); // maximize vertically, done with mouse3
 		break;
 		case Keys::HORIZMAX:
-			//!!TODO: fix this
-			if (focused_window->isResizable()) {
-				int h = focused_window->getHeight();
-				int x = focused_window->getXFrame();
-				int y = focused_window->getYFrame();
-				focused_window->maximize(0);
-				focused_window->configure(x, y, focused_window->getWidth(), h);
-			}
+			if (focused_window->isResizable())
+				focused_window->maximize(2); // maximize horisontally, done with mouse2
 		break;
 		case Keys::NUDGERIGHT:	
 			focused_window->configure(
@@ -1614,6 +1602,10 @@ void Fluxbox::save_rc(void) {
 
 		sprintf(rc_string, "session.screen%d.tab.rotatevertical:  %s", screen_number,
 					((screen->isTabRotateVertical()) ? "True" : "False"));
+		XrmPutLineResource(&new_blackboxrc, rc_string);
+
+		sprintf(rc_string, "session.screen%d.sloppywindowgrouping:  %s", screen_number,
+					((screen->isSloppyWindowGrouping()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		load_rc(screen);
@@ -2348,6 +2340,17 @@ void Fluxbox::load_rc(BScreen *screen) {
       screen->saveTabRotateVertical(False);
   } else
     screen->saveTabRotateVertical(False);
+
+  sprintf(name_lookup,  "session.screen%d.sloppywindowgrouping", screen_number);
+  sprintf(class_lookup, "Session.Screen%d.SloppyWindowGrouping", screen_number);
+  if (XrmGetResource(database, name_lookup, class_lookup,
+		     &value_type, &value)) {
+    if (! strncasecmp("true", value.addr, value.size))
+      screen->saveSloppyWindowGrouping(True);
+    else
+      screen->saveSloppyWindowGrouping(False);
+  } else
+    screen->saveSloppyWindowGrouping(False);
 
 }
 

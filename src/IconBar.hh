@@ -32,9 +32,10 @@ public:
 	~IconBarObj();
 	inline Window getIconWin(void) { return m_iconwin; }
 	inline FluxboxWindow *getFluxboxWin(void)  { return m_fluxboxwin; }
+	unsigned int getWidth(void);
 private:
-	Window m_iconwin;
 	FluxboxWindow *m_fluxboxwin;
+	Window m_iconwin;
 };
 
 class IconBar
@@ -42,21 +43,24 @@ class IconBar
 public:
 	IconBar(BScreen *scrn, Window parent);
 	~IconBar();
-	void draw();
+	void draw(); //TODO
 	void reconfigure();
 	Window addIcon(FluxboxWindow *fluxboxwin);
 	Window delIcon(FluxboxWindow *fluxboxwin);
 	void buttonPressEvent(XButtonEvent *be);	
 	FluxboxWindow *findWindow(Window w);
+	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
 	void exposeEvent(XExposeEvent *ee);
+
+	void draw(IconBarObj *obj, int width);
 private:
 	typedef LinkedList<IconBarObj> IconList;
 	typedef LinkedListIterator<IconBarObj> IconListIterator;
 
-	void draw(IconBarObj *obj, int width);
+//	void draw(IconBarObj *obj, int width);
 	void loadTheme(unsigned int width, unsigned int height);
 	void decorate(Window win);
-	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
+//	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
 	void repositionIcons(void);
 	Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
 	BScreen *m_screen;

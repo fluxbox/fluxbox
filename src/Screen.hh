@@ -27,6 +27,8 @@
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
 
+
+
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
@@ -100,6 +102,8 @@ public:
 	inline const Bool &isScreenManaged(void) const { return managed; }
 	inline const Bool &isTabRotateVertical(void) const
 	{ return resource.tab_rotate_vertical; }
+	inline const Bool &isSloppyWindowGrouping(void) const
+	{ return resource.sloppy_window_grouping; }
 	inline const Bool &doAutoRaise(void) const { return resource.auto_raise; }
 	inline const Bool &doImageDither(void) const
 	{ return resource.image_dither; }
@@ -203,6 +207,8 @@ public:
 	inline void saveTabAlignment(unsigned int a) { resource.tab_alignment = a; }
 	inline void saveTabRotateVertical(Bool r)
 	{ resource.tab_rotate_vertical = r; }
+	inline void saveSloppyWindowGrouping(Bool s)
+	{ resource.sloppy_window_grouping = s; }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
@@ -305,7 +311,8 @@ private:
 
 		Bool toolbar_on_top, toolbar_auto_hide, sloppy_focus, auto_raise,
 			auto_edge_balance, image_dither, ordered_dither, opaque_move, full_max,
-			focus_new, focus_last, tab_rotate_vertical, semi_sloppy_focus;
+			focus_new, focus_last, tab_rotate_vertical, semi_sloppy_focus,
+			sloppy_window_grouping;
 
 		int workspaces, toolbar_placement, toolbar_width_percent, placement_policy,
 			edge_snap_threshold, row_direction, col_direction;

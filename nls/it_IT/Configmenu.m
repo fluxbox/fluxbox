@@ -46,3 +46,5 @@ $ #TabRotateVertical
 # Routa Verticalmente I Tab
 $ #SemiSloppyFocus
 # Semi Sloppy Focus
+$ #SloppyWindowGrouping
+# Sloppy Window Grouping

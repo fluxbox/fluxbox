@@ -1839,7 +1839,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		if (! screen->doFullMax())
 			dh -= screen->getToolbar()->getExposedHeight() +
-						screen->getBorderWidth();
+						screen->getBorderWidth2x();
 
 		if (dw < client.min_width) dw = client.min_width;
 		if (dh < client.min_height) dh = client.min_height;
@@ -1862,24 +1862,24 @@ void FluxboxWindow::maximize(unsigned int button) {
 		if (screen->doFullMax()) {
 			dy = ((screen->getHeight() - dh) / 2) - screen->getBorderWidth();
 		} else {
-			dy = (((screen->getHeight() - screen->getToolbar()->getExposedHeight())
-			 - dh) / 2) - screen->getBorderWidth();
+			dy = (((screen->getHeight() - (screen->getToolbar()->getExposedHeight()))
+			 - dh) / 2) - screen->getBorderWidth2x();
 
 			switch (screen->getToolbarPlacement()) {
 			case Toolbar::TopLeft:
 			case Toolbar::TopCenter:
 			case Toolbar::TopRight:
 				dy += screen->getToolbar()->getExposedHeight() +
-						screen->getBorderWidth();
+						screen->getBorderWidth2x();
 				break;
 			}
 		}
 
-		if (decorations.tab && Fluxbox::instance()->useTabs()) { // Want to se the tabs
+		if (hasTab()) {
 			switch(screen->getTabPlacement()) {			
 			case Tab::PTop:
 				dy += screen->getTabHeight(); 
-				dh -= screen->getTabHeight() + screen->getBorderWidth();
+				dh -= screen->getTabHeight();
 				break;
 			case Tab::PLeft:
 				if (screen->isTabRotateVertical()) {
@@ -1897,11 +1897,11 @@ void FluxboxWindow::maximize(unsigned int button) {
 					dw -= screen->getTabWidth();	
 				break;
 			case Tab::PBottom:
-				dh -= screen->getTabHeight() + screen->getBorderWidth();
+				dh -= screen->getTabHeight();
 				break;
 			default:
 				dy += screen->getTabHeight();
-				dh -= screen->getTabHeight() + screen->getBorderWidth();
+				dh -= screen->getTabHeight();
 				break;
 			}
 		}
@@ -2365,13 +2365,11 @@ void FluxboxWindow::redrawLabel(void) {
 	
 	GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
 			 screen->getWindowStyle()->l_text_unfocus_gc);
-	
+
 	Misc::DrawString(display, frame.label, gc,
 			&screen->getWindowStyle()->font, 
 			client.title_text_w, frame.label_w,
 			frame.bevel_w, client.title);
-	
-
 }
 
 
@@ -2587,8 +2585,27 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		if (decorations.titlebar)
 			redrawLabel();
 
+		if (hasTab()) // update tab
+			getTab()->draw(false);
+
 		if (! iconic)
 			screen->getWorkspace(workspace_number)->update();
+		else if (Fluxbox::instance()->useIconBar()) {
+			IconBar *iconbar = 0;
+			IconBarObj *icon = 0;
+			if ((iconbar = screen->getToolbar()->getIconBar()) != 0) {
+				if ((icon = iconbar->findIcon(this)) != 0)
+					iconbar->draw(icon, icon->getWidth());
+#ifdef DEBUG
+				else
+					cerr<<__FILE__<<"("<<__LINE__<<"): can't find icon!"<<endl;
+#endif //DEBUG	
+			}
+#ifdef DEBUG
+			else
+				cerr<<__FILE__<<"("<<__LINE__<<"): can't find iconbar!"<<endl;
+#endif //DEBUG
+		}
 
 		break;
 
@@ -2762,7 +2779,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 		}
 	} else if (be->button == 2 && be->window == frame.label) {
 		screen->getWorkspace(workspace_number)->lowerWindow(this);
-			
+
 	} else if (windowmenu && be->button == 3 &&
 			(frame.title == be->window || frame.label == be->window ||
 			frame.handle == be->window)) {

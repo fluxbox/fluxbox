@@ -36,6 +36,7 @@
 
 #define CMENU_USE_TABS	8
 #define CMENU_USE_ICONS	9
+#define CMENU_SLOPPY_WIN_GROUP 10	
 #define CMENU_TAB_ROTATE 21
 
 Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
@@ -128,8 +129,13 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
        0, 0,
 #endif // NLS
        "Use Icons"), CMENU_USE_ICONS);
-
-
+ insert(i18n->getMessage(
+#ifdef   NLS
+       ConfigmenuSet, ConfigmenuSloppyWindowGrouping,
+#else // !NLS
+       0, 0,
+#endif // NLS
+       "Sloppy Window Grouping"), CMENU_SLOPPY_WIN_GROUP);
 
 	update();
 
@@ -140,6 +146,7 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	setItemSelected(7, screen->doFocusLast());
 	setItemSelected(CMENU_USE_TABS, Fluxbox::instance()->useTabs());
 	setItemSelected(CMENU_USE_ICONS, Fluxbox::instance()->useIconBar());
+	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen->isSloppyWindowGrouping());
 }
 
 
@@ -203,6 +210,14 @@ void Configmenu::itemSelected(int button, int index) {
 					screen->reconfigure();
 				}
 				break;
+			case CMENU_SLOPPY_WIN_GROUP:
+				{
+					screen->saveSloppyWindowGrouping(!screen->isSloppyWindowGrouping());
+					setItemSelected(index, screen->isSloppyWindowGrouping());
+					screen->reconfigure();
+				}
+				break;
+
 			}
 		}
 }

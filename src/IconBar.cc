@@ -152,14 +152,14 @@ void IconBar::exposeEvent(XExposeEvent *ee) {
 	}	
 
 	if (obj) {
-				
+
 		Window root;
 		unsigned int width, height;
 		unsigned int border_width, depth;	//not used
 		int x, y;
 		XGetGeometry(m_display, m_parent, &root, &x, &y, &width, &height,
 					&border_width, &depth);
-	
+
 		//max width on every icon
 		unsigned int icon_width = width / m_iconlist->count();
 	
@@ -190,7 +190,7 @@ void IconBar::repositionIcons(void) {
 	
 	//load right size of theme
 	loadTheme(icon_width, height);
-	
+
 	IconListIterator it(m_iconlist);	
 
 	for (x = 0; it.current(); it++, x+=icon_width) {
@@ -271,8 +271,7 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		if (l < width)
 			break;
 	}
-	
-	
+
 	switch (m_screen->getWindowStyle()->tab.font.justify) {
 	case Misc::Font::RIGHT:
 		dx += width - l;
@@ -284,7 +283,7 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		break;
 	}
 
-	//Draw title to m_tabwin
+	//Draw title to m_iconwin
 
 	XClearWindow(m_display, iconwin);		
 	
@@ -328,6 +327,7 @@ FluxboxWindow *IconBar::findWindow(Window w) {
 // returns pointer to IconBarObj on success else 
 // 0 on failure
 //------------------------------------
+
 IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 
 	IconListIterator it(m_iconlist);	
@@ -340,4 +340,23 @@ IconBarObj *IconBar::findIcon(FluxboxWindow *fluxboxwin) {
 	}
 	
 	return 0;
+}
+
+//---------- getIconWidth ------------
+// will return the width of an icon
+// window
+//------------------------------------
+unsigned int IconBarObj::getWidth() {
+	Window root;
+
+	unsigned int width, height;
+	unsigned int border_width, depth;	//not used
+	int x, y; //not used
+
+	Display *m_display = Fluxbox::instance()->getXDisplay();
+
+	XGetGeometry(m_display, m_iconwin, &root, &x, &y, 
+					&width, &height, &border_width, &depth);
+
+	return width;
 }

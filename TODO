@@ -1,4 +1,7 @@
 TODO for Fluxbox 0.2.0
+* "Dont use tab" doesnt save
+* Remove the cylic dep between class Tab and class Window
+* Remove the cylic dep between class Theme and class Fluxbox
 !* Fix "no font" crash
 * Remove cyclic dep on Basemenu with class Fluxbox
 * sloppy focus - auto-raise
@@ -23,9 +26,6 @@ TODO for Fluxbox 0.2.0
 * fix "move group to..." without tab bugg.
 * 0,0-pos fix
 * reconfigure tar upp nya dekorationer
-
-* fluxbox wont currently build on linux-hppa, needs the config.{sub,
-          guess} updated from ftp://ftp.gnu.org/pub/gnu/config/
 
 * Create fbrun style app
 (* Add wheelscroll-workspace-change configuration (reversed order or

@@ -46,3 +46,5 @@ $ #TabRotateVertical
 # Rotera Vertikala Flikar
 $ #SemiSloppyFocus
 # Halv hafsig fokus
+$ #SloppyWindowGrouping
+# Hafsig Fönster Gruppering

@@ -422,8 +422,7 @@ void Theme::loadWindowStyle() {
 	
 	readDatabaseTexture("window.title.focus", "Window.Title.Focus",
 					&m_windowstyle.t_focus,
-					WhitePixel(m_display,
-				 m_screennum));
+					WhitePixel(m_display, m_screennum));
 	readDatabaseTexture("window.title.unfocus", "Window.Title.Unfocus",
 					&m_windowstyle.t_unfocus,
 					BlackPixel(m_display, m_screennum));
@@ -512,7 +511,7 @@ void Theme::loadWindowStyle() {
 }
 
 void Theme::loadTabStyle() {
-	
+
 	if (!readDatabaseTexture("window.tab.title.focus", "Window.Tab.Title.Focus",
 					&m_windowstyle.tab.t_focus,
 					WhitePixel(m_display, m_screennum)))
@@ -532,7 +531,6 @@ void Theme::loadTabStyle() {
 					&m_windowstyle.tab.l_unfocus,
 					BlackPixel(m_display, m_screennum)))
 		m_windowstyle.tab.l_unfocus = m_windowstyle.l_unfocus;
-		
 
 	if (!readDatabaseColor("window.tab.label.focus.textColor",
 				"Window.Tab.Label.Focus.TextColor",
@@ -549,11 +547,10 @@ void Theme::loadTabStyle() {
 	readDatabaseColor("window.tab.borderColor", "Window.Tab.BorderColor", 
 			&m_windowstyle.tab.border_color,	
 				BlackPixel(m_display, m_screennum));
-	
-	
+
 	XrmValue value;
 	char *value_type;
-	
+
 	if (XrmGetResource(m_database, "window.tab.borderWidth", "Window.Tab.BorderWidth",
 										 &value_type, &value)) {
 		if (sscanf(value.addr, "%u", &m_windowstyle.tab.border_width) != 1)
@@ -578,7 +575,6 @@ void Theme::loadTabStyle() {
 	}
 	
 	//--------- rotated font for left and right tabs
-
 	// TODO: add extra checking
 	if (XrmGetResource(m_database, "window.tab.font", "Window.Tab.Font",
 			&value_type, &value)) {		
@@ -586,7 +582,6 @@ void Theme::loadTabStyle() {
 			m_windowstyle.tab.rot_font = Misc::XRotLoadFont(m_display, "fixed", 90);
 	} else
 		m_windowstyle.tab.rot_font = Misc::XRotLoadFont(m_display, "fixed", 90);
-
 
 	if (XrmGetResource(m_database, "window.tab.justify", "Window.Tab.Justify",
 			 &value_type, &value)) {
@@ -668,9 +663,9 @@ void Theme::loadRootCommand() {
 	XrmValue value;
 	char *value_type;
  Fluxbox *fb=Fluxbox::instance();
-// printf("getting root command from fb->getRootCommand()");
+
  const char *root_cmd=fb->getRootCommand();
-// printf("root kommandot: %s\n", root_cmd);
+
 	if (root_cmd) {
 		#ifndef         __EMX__
 		const int display_strlen = 1024;

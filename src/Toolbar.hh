@@ -130,6 +130,7 @@ public:
   { return ((hidden) ? frame.x_hidden : frame.x); }
   inline const int &getY(void) const
   { return ((hidden) ? frame.y_hidden : frame.y); }
+	inline IconBar *getIconBar(void) { return iconbar; }
 
   void buttonPressEvent(XButtonEvent *);
   void buttonReleaseEvent(XButtonEvent *);

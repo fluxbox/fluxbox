@@ -187,7 +187,7 @@ void Slit::addClient(Window w) {
 		XSelectInput(display, client->window, NoEventMask);
 
 		XReparentWindow(display, client->window, frame.window, 0, 0);
-		XMapRaised(display, client->window);
+		XMapRaised(display, client->window); //TODO: bbkeys bug here?
 		XChangeSaveSet(display, client->window, SetModeInsert);
 
 		XSelectInput(display, frame.window, SubstructureRedirectMask |

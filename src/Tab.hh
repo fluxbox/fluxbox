@@ -93,6 +93,7 @@ private:
 	static const int m_max_tabs; 
 	bool m_focus, m_moving;  // moving and focus 
 	void createTabWindow(); // creates the X win of tab
+	void loadTheme(); // loads the textures with right width and height
 	void setTabWidth(unsigned int w);
 	void setTabHeight(unsigned int h);
 	unsigned int calcRelativeWidth();

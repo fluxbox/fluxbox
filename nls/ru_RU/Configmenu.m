@@ -46,3 +46,5 @@ $ #TabRotateVertical
 # Закладки вертикально
 $ #SemiSloppyFocus
 # Размытый фокус
+$ #SloppyWindowGrouping
+# Sloppy Window Grouping

@@ -8,6 +8,18 @@ Changes for 0.1.6:
    * Changed Keygrabbing constants to uppercase
    * Changed Texture constants to uppercase and moved them into class BImage
      to clean up the global namespace
+*01/12/27:
+   * Fixed grabVertMax and grabHorizMax + 1 pixel maximise bug. (Claes Nästén)
+   * Now relative and vertical tabs gets textures rendered ok, still
+	 interlaced and gradients aren't rendered in right direction. (Claes Nästén)
+*01/12/26:
+   * Fixed tab and iconbar uppdating so that tab and iconbar labels will have
+	 the right text. (Claes Nästén)
+*01/12/23:
+   * Fixed a bug in Tab::buttonReleaseEvent and added sloppyWindowGrouping
+	 wich lets you release windows tabs on other windows and not only other
+	 tabs to group them (Claes Nästén)
+
 *01/12/19:
    * Moved some structs from file scope of BaseDisplay.hh in to class BaseDisplay
    * Fixed redraw bug when changing workspace
