@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/13:
+  * Fix a crash when a window closes while [opaque] moving (Simon)
+    - also tidy up several related things when a window hides
+    - don't call frame().hide() explicitly, use FBW.hide(bool)
+    Window.hh/cc Workspace.hh/cc Screen.cc
 *04/05/04:
   * Fix EventManager bug/memory leak (possibly caused crash) (Simon)
     EventManager.hh/cc

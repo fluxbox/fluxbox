@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.95 2004/03/21 09:00:25 rathnor Exp $
+// $Id: Workspace.cc,v 1.96 2004/05/13 01:48:18 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -218,12 +218,12 @@ void Workspace::showAll() {
 }
 
 
-void Workspace::hideAll() {
+void Workspace::hideAll(bool interrupt_moving) {
     Windows::reverse_iterator it = m_windowlist.rbegin();
     Windows::reverse_iterator it_end = m_windowlist.rend();
     for (; it != it_end; ++it) {
         if (! (*it)->isStuck())
-            (*it)->withdraw();
+            (*it)->withdraw(interrupt_moving);
     }
 }
 

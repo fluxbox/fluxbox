@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.277 2004/05/02 21:12:22 fluxgen Exp $
+// $Id: Screen.cc,v 1.278 2004/05/13 01:48:17 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -851,7 +851,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         }
     }
 
-    currentWorkspace()->hideAll();
+    currentWorkspace()->hideAll(false);
 
     // set new workspace
     m_current_workspace = getWorkspace(id);
@@ -903,7 +903,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
         // if the window isn't on current workspace, hide it
         if (id != currentWorkspace()->workspaceID())
-            win->withdraw();
+            win->withdraw(true);
 
         reassociateWindow(win, id, true);
 

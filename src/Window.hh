@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.113 2004/05/02 21:06:27 fluxgen Exp $
+// $Id: Window.hh,v 1.114 2004/05/13 01:48:18 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -184,13 +184,14 @@ public:
     // map this window
     void show();
     // unmap this window
-    void hide();
+    void hide() { hide(true); }
+    void hide(bool interrupt_moving);
     void iconify();
     void deiconify(bool reassoc = true, bool do_raise = true);
     /// close current client
     void close();
     /// set the window in withdrawn state
-    void withdraw();
+    void withdraw(bool interrupt_moving);
     /// toggle maximize
     void maximize(int type = MAX_FULL);
     /// maximizes the window horizontal
@@ -384,11 +385,11 @@ private:
     void grabButtons();
 
     void startMoving(Window win);
-    void stopMoving();
+    void stopMoving(bool interrupted = false);
     void startResizing(Window win, int x, int y);
-    void stopResizing(Window win=0);
+    void stopResizing(bool interrupted = false);
     /// try to attach current attaching client to a window at pos x, y
-    void attachTo(int x, int y);
+    void attachTo(int x, int y, bool interrupted = false);
 
     bool getState();
     /// gets title string from client window and updates frame's title

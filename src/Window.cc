@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.286 2004/05/03 13:45:23 rathnor Exp $
+// $Id: Window.cc,v 1.287 2004/05/13 01:48:18 rathnor Exp $
 
 #include "Window.hh"
 
@@ -302,11 +302,12 @@ FluxboxWindow::~FluxboxWindow() {
     cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
 #endif // DEBUG
 
-    if (moving || resizing || m_attaching_tab) {
-        screen().hideGeometry();
-        screen().hidePosition();
-        ungrabPointer(CurrentTime);
-    }
+    if (moving)
+        stopMoving(true);
+    if (resizing)
+        stopResizing(true);
+    if (m_attaching_tab)
+        attachTo(0, 0, true); 
 
     // no longer a valid window to do stuff with
     Fluxbox::instance()->removeWindowSearchGroup(frame().window().window());
@@ -1265,10 +1266,22 @@ bool FluxboxWindow::setInputFocus() {
     return ret;
 }
 
-void FluxboxWindow::hide() {
+// don't hide the frame directly, use this function
+void FluxboxWindow::hide(bool interrupt_moving) {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
 #endif // DEBUG
+    // resizing always stops on hides
+    if (resizing)
+        stopResizing(true);
+
+    if (interrupt_moving) {
+        if (moving)
+            stopMoving(true);
+        if (m_attaching_tab)
+            attachTo(0, 0, true); 
+    }
+
     menu().hide();
     frame().hide();
 }
@@ -1284,12 +1297,11 @@ void FluxboxWindow::iconify() {
     if (isIconic()) // no need to iconify if we're already
         return;
 
-    menu().hide();
     iconic = true;
 
     setState(IconicState);
 
-    frame().hide();
+    hide(true);
 
     ClientList::iterator client_it = m_clientlist.begin();
     const ClientList::iterator client_it_end = m_clientlist.end();
@@ -1374,15 +1386,10 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
 /**
  Set window in withdrawn state
 */
-void FluxboxWindow::withdraw() {
+void FluxboxWindow::withdraw(bool interrupt_moving) {
     iconic = false;
 
-    if (isResizing())
-        stopResizing();
-
-    frame().hide();
-
-    menu().hide();
+    hide(interrupt_moving);
 }
 
 /**
@@ -2083,7 +2090,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 	break;
 
     case WithdrawnState:
-        withdraw();
+        withdraw(true);
 	break;
 
     case NormalState: {
@@ -2176,7 +2183,7 @@ void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
         cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<endl;
 #endif // DEBUG
         if (numClients() == 1)
-            frame().hide();
+            hide();
     }
 
 }
@@ -2847,7 +2854,7 @@ void FluxboxWindow::startMoving(Window win) {
     }
 }
 
-void FluxboxWindow::stopMoving() {
+void FluxboxWindow::stopMoving(bool interrupted) {
     moving = false;
     Fluxbox *fluxbox = Fluxbox::instance();
 
@@ -2859,13 +2866,15 @@ void FluxboxWindow::stopMoving() {
                                m_last_move_x, m_last_move_y, 
                                frame().width() + 2*frame().window().borderWidth()-1,
                                frame().height() + 2*frame().window().borderWidth()-1);
-        moveResize(m_last_move_x, m_last_move_y, frame().width(), frame().height());
-        if (m_workspace_number != screen().currentWorkspaceID()) {
-            screen().reassociateWindow(this, screen().currentWorkspaceID(), true);
-            frame().show();
+        if (!interrupted) {
+            moveResize(m_last_move_x, m_last_move_y, frame().width(), frame().height());
+            if (m_workspace_number != screen().currentWorkspaceID()) {
+                screen().reassociateWindow(this, screen().currentWorkspaceID(), true);
+                frame().show();
+            }
         }
         fluxbox->ungrab();
-    } else {
+    } else if (!interrupted) {
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
         sendConfigureNotify();
     }
@@ -2873,7 +2882,7 @@ void FluxboxWindow::stopMoving() {
 
     screen().hidePosition();
     ungrabPointer(CurrentTime);
-	
+
     FbTk::App::instance()->sync(false); //make sure the redraw is made before we continue
 }
 
@@ -3048,7 +3057,7 @@ void FluxboxWindow::startResizing(Window win, int x, int y) {
                            m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 }
 
-void FluxboxWindow::stopResizing(Window win) {
+void FluxboxWindow::stopResizing(bool interrupted) {
     resizing = false;
 	
     parent().drawRectangle(screen().rootTheme().opGC(),
@@ -3058,26 +3067,31 @@ void FluxboxWindow::stopResizing(Window win) {
 
     screen().hideGeometry();
 
-    fixsize();
-	
-    moveResize(m_last_resize_x, m_last_resize_y,
+    if (!interrupted) {
+        fixsize();
+
+        moveResize(m_last_resize_x, m_last_resize_y,
                m_last_resize_w, m_last_resize_h);
+    }
 	
     ungrabPointer(CurrentTime);
 }
 
-void FluxboxWindow::attachTo(int x, int y) {
+void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
     if (m_attaching_tab == 0)
         return;
 
     ungrabPointer(CurrentTime);
-
 
     parent().drawRectangle(screen().rootTheme().opGC(),
                            m_last_move_x, m_last_move_y, 
                            m_labelbuttons[m_attaching_tab]->width(), 
                            m_labelbuttons[m_attaching_tab]->height());
     Fluxbox::instance()->ungrab();
+
+    if (interrupted)
+        return;
+
     int dest_x = 0, dest_y = 0;
     Window child = 0;
 
@@ -3160,8 +3174,7 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
 #endif // DEBUG
     if (numClients() == 0) {
-
-        frame().hide();
+        hide(true);
     }
 
 }
@@ -3260,7 +3273,7 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
         screen().reassociateWindow(this, net.workspace, true);
 
         if (screen().currentWorkspaceID() != net.workspace)
-            withdraw();
+            withdraw(true);
         else 
             deiconify();
     }

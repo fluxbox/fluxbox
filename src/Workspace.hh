@@ -57,7 +57,7 @@ public:
     ///   Set workspace name
     void setName(const std::string &name);
     void showAll();
-    void hideAll();
+    void hideAll(bool interrupt_moving);
     void removeAll();
     void reconfigure();
     void shutdown();
