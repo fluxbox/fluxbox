@@ -24,10 +24,10 @@
 
 
 SUBDIRS= FbTk
-DEFAULT_MENU=$(pkgdatadir)/menu
+DEFAULT_MENU=@DEFAULT_MENU@
 DEFAULT_STYLE=$(pkgdatadir)/styles/Clean
-DEFAULT_KEYSFILE=$(pkgdatadir)/keys
-DEFAULT_INITFILE=
+DEFAULT_KEYSFILE=@DEFAULT_KEYS@
+DEFAULT_INITFILE=@DEFAULT_INIT@
 
 AM_CPPFLAGS=@CPPFLAGS@ -I$(srcdir)/FbTk
 
@@ -39,7 +39,7 @@ defaults.hh: Makefile
 	echo '#define DEFAULTMENU "$(DEFAULT_MENU)"' >> defaults.hh
 	echo '#define DEFAULTSTYLE "$(DEFAULT_STYLE)"' >> defaults.hh
 	echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"' >> defaults.hh
-	echo '#define DEFAULT_INITFILE "$(pkgdatadir)/init"' >> defaults.hh
+	echo '#define DEFAULT_INITFILE "$(DEFAULT_INITFILE)"' >> defaults.hh
 	echo '#define LOCALEPATH "$(pkgdatadir)/nls"' >> defaults.hh
 	echo 'const char* svnversion(void);' >> defaults.hh
 
