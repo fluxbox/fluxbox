@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.224 2004/01/16 11:38:30 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.225 2004/01/16 18:07:40 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -756,9 +756,14 @@ void Fluxbox::handleEvent(XEvent * const e) {
     // we need to check focus out for menus before
     // we call FbTk eventhandler
     // so we can get FbTk::Menu::focused() before it sets to 0
+
     if (e->type == FocusOut && 
+        e->xfocus.mode != NotifyGrab &&
+        e->xfocus.detail != NotifyPointer &&
+        e->xfocus.detail != NotifyInferior &&
         FbTk::Menu::focused() != 0 &&
         FbTk::Menu::focused()->window() == e->xfocus.window) {
+
         // find screen num
         BScreen *screen = 0;
         ScreenList::iterator it = m_screen_list.begin();
@@ -770,8 +775,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
                 break; // found the screen, no more search
             }
         }
+
         if (screen != 0)
-            revertFocus(*screen);
+            revertFocus(*screen);        
     }
 
     // try FbTk::EventHandler first
@@ -923,7 +929,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
             e->xfocus.detail == NotifyPointer ||
             e->xfocus.detail == NotifyInferior)
             break;
-
         WinClient *winclient = searchWindow(e->xfocus.window);
         if (winclient && m_focused_window != winclient)
             setFocusedWindow(winclient);
