@@ -22,12 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.2 2003/07/12 21:50:15 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.3 2003/08/11 15:59:49 fluxgen Exp $
 
 #include "ImageControl.hh"
 
 #include "TextureRender.hh"
 #include "App.hh"
+#include "SimpleCommand.hh"
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -82,7 +83,6 @@ unsigned long bsqrt(unsigned long x) {
 ImageControl::ImageControl(int screen_num, bool dither,
                              int cpc, unsigned long cache_timeout, unsigned long cmax):
     m_dither(dither),
-    m_timer(this),
     m_colors(0),
     m_num_colors(0),
     m_colors_per_channel(cpc) {
@@ -99,6 +99,8 @@ ImageControl::ImageControl(int screen_num, bool dither,
 #ifdef TIMEDCACHE
     if (cache_timeout) {
         m_timer.setTimeout(cache_timeout);
+        RefCount<Command> clean_cache(new SimpleCommand<ImageControl>(*this, &ImageControl::cleanCache));
+        m_timer.setCommand(clean_cache);
         m_timer.start();
     }
 #endif // TIMEDCACHE
@@ -212,7 +214,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
 #ifdef DEBUG
             cerr<<"FbTk::ImageControl::renderImage(): cache is large, forcing cleanout"<<endl;
 #endif // DEBUG
-            timeout();
+            cleanCache();
         }
 
         return pixmap;
@@ -234,9 +236,10 @@ void ImageControl::removeImage(Pixmap pixmap) {
                 (*it)->count--;
 
 #ifdef TIMEDCACHE
-                timeout();
+                cleanCache();
 #else // !TIMEDCACHE
-                if (! (*it)->count) timeout();
+                if (! (*it)->count) 
+                    cleanCache()
 #endif // TIMEDCACHE
             }
 
@@ -349,7 +352,7 @@ unsigned long ImageControl::getSqrt(unsigned int x) const {
     return (*(sqrt_table + x));
 }
 
-void ImageControl::timeout() {
+void ImageControl::cleanCache() {
     Display *disp = FbTk::App::instance()->display();
     CacheList::iterator it = cache.begin();
     CacheList::iterator it_end = cache.end();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.2 2003/05/16 00:19:51 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.3 2003/08/11 15:59:49 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -37,8 +37,8 @@
 
 namespace FbTk {
 
-///	Holds screen info, color tables and caches textures
-class ImageControl : public TimeoutHandler, private NotCopyable {
+/// Holds screen info, color tables and caches textures
+class ImageControl: private NotCopyable {
 public:
     ImageControl(int screen_num, bool dither = false, int colors_per_channel = 4,
                   unsigned long cache_timeout = 300000l, unsigned long cache_max = 200l);
@@ -72,7 +72,7 @@ public:
     void setDither(bool d) { m_dither = d; }
     void setColorsPerChannel(int cpc);
 
-    virtual void timeout();
+    void cleanCache();
 
 private:
     /** 
