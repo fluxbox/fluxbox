@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRootWindow.cc,v 1.2 2003/05/12 04:29:50 fluxgen Exp $
+// $Id: FbRootWindow.cc,v 1.3 2004/09/11 14:13:06 rathnor Exp $
 
 #include "FbRootWindow.hh"
 #include "App.hh"
@@ -46,7 +46,8 @@ FbRootWindow::FbRootWindow(int screen_num):
         vinfo_nitems > 0) {
 
         for (int i = 0; i < vinfo_nitems; i++) {
-            if (DefaultDepth(disp, screen_num) < vinfo_return[i].depth)
+            // We can't handle 32-bit visuals just yet (Composite ARGB)
+            if (vinfo_return[i].depth != 32 && DefaultDepth(disp, screen_num) < vinfo_return[i].depth)
                 m_visual = vinfo_return[i].visual;
         }
 
