@@ -2,12 +2,12 @@ CXX=g++
 CXXFLAGS= -I.. -I../FbTk -DDEBUG -DUSE_XFT -Wall -g -O2 ../FbTk/libFbTk.a
 LIBS= 
 XFLAGS= -I/usr/X11R6/include
-XLIBS= -L/usr/X11R6/lib -lX11 -lXft
+XLIBS= -L/usr/X11R6/lib -lX11 -lXft -lXpm -lImlib2
 COMPILEFILE=$(CXX) -c $(CXXFLAGS)
 FONT_OBJ = ../FbTk/libFbTk.a
 COMPILE = ${CXX} ${CXXFLAGS} ${XLIBS}
 
-all: testFont testTexture movetest
+all: testMenu testFont testTexture movetest
 
 .cc.o:
 	$(CXX) -c $(CXXFLAGS) $<
@@ -29,6 +29,9 @@ signaltest:
 
 testFont: testFont.cc ${FONT_OBJ}
 	${CXX} testFont.cc -o testFont ${CXXFLAGS} ${XLIBS} 
+
+testMenu: menutest.cc 
+	${CXX} menutest.cc -o testMenu ${CXXFLAGS} ${XLIBS} ../FbMenuParser.o ../FbTk/libFbTk.a -lXpm -lImlib2 ../Parser.o
 
 testLayers: testLayers.cc
 	${CXX} ${CXXFLAGS} ${XLIBS} testLayers.cc ../FbTk/libFbTk.a -o testLayers
