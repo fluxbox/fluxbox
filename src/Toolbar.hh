@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.28 2003/04/23 00:13:47 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.29 2003/04/25 11:39:31 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -110,7 +110,7 @@ public:
     inline const IconBar *iconBar()  const { return m_iconbar.get(); }
     inline const ToolbarTheme &theme() const { return m_theme; }
     inline ToolbarTheme &theme() { return m_theme; }
-    inline bool isVertical() const;
+    bool isVertical() const;
     /**
        @name eventhandlers
     */

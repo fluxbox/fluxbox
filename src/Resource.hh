@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.9 2002/12/01 13:41:58 rathnor Exp $
+// $Id: Resource.hh,v 1.10 2003/04/25 11:40:58 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -122,7 +122,7 @@ public:
         m_resourcelist.remove(&r);
     }
 protected:
-    static inline void ensureXrmIsInitialize();
+    static void ensureXrmIsInitialize();
 private:
 
     static bool m_init;

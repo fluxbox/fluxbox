@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.84 2003/04/25 11:02:57 fluxgen Exp $
+// $Id: Screen.hh,v 1.85 2003/04/25 11:40:22 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -128,7 +128,7 @@ public:
     const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
 
-    inline unsigned int getCurrentWorkspaceID() const;
+    unsigned int getCurrentWorkspaceID() const;
     Pixmap rootPixmap() const { return m_root_pm; }
     /*
       maximum screen surface
