@@ -319,11 +319,10 @@ session.screen0.menuDelay:  in msec  (default: 0 )
 session.screen0.menuDelayClose: in msec (default: 0 )
 .EE
 .SS Menu syntax
-The menu syntax is very simple and very effective.
-There are up to three fields in a menu line.
+There are up to four fields in a menu line.
 They are of the form:
 .EX
-[tag] (label or filename) {command or filename}
+[tag] (label or filename) {command or filename} <icon filename>
 .EE
 The supported tags are as follows:
 .TP
@@ -446,7 +445,7 @@ Here is a short example of a menu file:
 .nf
 # Fluxbox menu file
 [begin] (Fluxbox)
-  [exec] (rxvt) {rxvt -ls}
+  [exec] (rxvt) {rxvt -ls} </usr/X11R6/share/icons/terminal.xpm>
   [exec] (netscape) {netscape -install}
   [exec] (The GIMP) {gimp}
   [exec] (XV) {xv}
