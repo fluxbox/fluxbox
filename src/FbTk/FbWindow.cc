@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.1 2002/12/03 16:25:27 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.2 2002/12/03 21:59:58 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -33,7 +33,8 @@ namespace FbTk {
 Display *FbWindow::s_display = 0;
 
 FbWindow::FbWindow():m_window(0) {
-
+    if (s_display == 0)
+        s_display = App::instance()->display();
 }
 
 FbWindow::FbWindow(int screen_num,
@@ -95,7 +96,8 @@ FbWindow &FbWindow::operator = (Window win) {
     if (m_window != 0)
         XDestroyWindow(s_display, m_window);
     m_window = win;
-    updateGeometry();
+    if (m_window != 0)
+        updateGeometry();
 	
     return *this;
 }
