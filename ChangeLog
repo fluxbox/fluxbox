@@ -1,5 +1,30 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/14:
+  * New theme items:
+    * toolbar.button.size for fixed buttons in the toolbar
+    * toolbar.button.borderWidth
+    * toolbar.button.borderColor
+    * toolbar.button
+    * toolbar.button.color
+    * toolbar.button.colorTo
+    * toolbar.button.pixmap
+    * toolbar.button.picColor	
+    * toolbar.button.pressed.color
+    * toolbar.button.pressed.colorTo
+    * toolbar.button.pressed
+  * Added pressed color for buttons (Henrik)
+    FbTk/ Button.hh/cc
+  * Added new tools for the toolbar (Henrik)
+   - nextworkspace/prevworkspace creates left/right arrows that changes workspace
+   - nextwindow/prevwindow creates left/right arrows that changes focused window	
+   ToolFactory.hh/cc
+  * Added new files  (Henrik)
+   - GenericTool.hh/cc  helper class for simple tools like buttons
+   - ButtonTool.hh/cc Tool class for buttons in toolbar
+   - ToolFactory.hh/cc Creates tools
+   - ButtonTheme.hh/cc holds theme for simple buttons, 
+     extends tooltheme with pressed texture and picColor
 *03/10/10:
   * Various drawing-related optimisations and bug fixes (Simon)
     - fixes toolbar random colour flicker on workspace change
