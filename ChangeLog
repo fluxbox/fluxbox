@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/07/05:
+  * Fixed minor bug: (Thanks Mathias Gumz)
+    - menu reload if filename changed
+    MenuCreator.cc
 *04/06/29:
   * manpage updates (thanks Curt Micol)
     fluxstyle.1 bsetroot.1
