@@ -550,6 +550,7 @@ doc/Makefile
 doc/ru/Makefile
 nls/Makefile
 nls/C/Makefile
+nls/cs_CZ/Makefile
 nls/da_DK/Makefile
 nls/es_ES/Makefile
 nls/et_EE/Makefile

@@ -614,6 +614,47 @@ case ${LC_ALL} in
         WORKSPACEMENU='òÁÂÏÞÉÅ ÐÒÏÓÔÒÁÎÓÔ×Á'
         XUTILSMENU='X-ÕÔÉÌÉÔÙ'
         ;;
+
+    cs_CZ.ISO*) # Czech locales (ISO-8859-2 encodings)
+        ABOUTITEM='O programu...'
+        BACKGROUNDMENU='Pozadí'
+        BACKGROUNDMENUTITLE='Nastavení pozadí'
+        BROWSERMENU='Prohlí¾eèe'
+        CONFIGUREMENU='Konfigurace'
+        EDITORMENU='Editory'
+        EXITITEM='Ukonèit'
+        FBSETTINGSMENU='Fluxbox Menu'
+        FILEUTILSMENU='Souborové utility'
+        FLUXBOXCOMMAND='Pøíkaz Fluxboxu'
+        GAMESMENU='Hry'
+        GNOMEMENUTEXT='Gnome-menu'
+        GRAPHICMENU='Grafika'
+        KDEMENUTEXT='KDE-menu'
+        LOCKSCREEN='Zamknout obrazovku'
+        MISCMENU='Rùzné'
+        MULTIMEDIAMENU='Multimédia'
+        MUSICMENU='Audio'
+        NETMENU='Internet'
+        NEWS='News'
+        OFFICEMENU='Kanceláø'
+        RANDOMBACKGROUND='Náhodné pozadí'
+        REGENERATEMENU='Obnovení menu'
+        RELOADITEM='Obnovení konfigurace'
+        RESTARTITEM='Restart'
+        RUNCOMMAND='Spustit program...'
+        SCREENSHOT='Screenshot'
+        STYLEMENUTITLE='Volba stylu...'
+        SYSTEMSTYLES='Systémové styly'
+        TERMINALMENU='Terminály'
+        TOOLS='Nástroje'
+        USERSTYLES='U¾ivatelské styly'
+        VIDEOMENU='Video'
+        WINDOWMANAGERS='Okenní mana¾ery'
+        WINDOWNAME='Jméno okna'
+        WORKSPACEMENU='Seznam ploch'
+        XUTILSMENU='X-utility'
+        ;;
+
     de_DE*) # german locales
         BACKGROUNDMENU='Hintergrundbilder'
         BACKGROUNDMENUTITLE='Hintergrundbild setzen'
@@ -1491,7 +1532,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
                    grecord kmidi xplaycd soundtracker grip easytag audacity \
-                   zinf rhythmbox  kaboodle beep-media-player
+                   zinf rhythmbox kaboodle beep-media-player
                find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
                find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
