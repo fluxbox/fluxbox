@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.126 2003/02/23 13:40:22 rathnor Exp $
+// $Id: Window.cc,v 1.127 2003/02/23 13:58:36 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2395,8 +2395,8 @@ void FluxboxWindow::stopResizing(Window win) {
 
 	
     moveResize(last_resize_x, last_resize_y,
-               last_resize_w;
-               last_resize_h;
+               last_resize_w,
+               last_resize_h);
 	
     XUngrabPointer(display, CurrentTime);
 }
