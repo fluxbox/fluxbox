@@ -38,7 +38,7 @@
 .\"
 .\" Updated for version 0.1.15 by Tobias Klausmann <klausman@users.sourceforge.net>
 .\"
-.\" Updating for version 0.9.6 by <grubert@users.sourceforge.net>
+.\" Updating for version 0.9.10 by <grubert@users.sourceforge.net>
 .\"
 .\" ..define sort of <blockquote><pre> macro
 .de EX
@@ -54,7 +54,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "August 9th, 2004" "0.9.9"
+.TH fluxbox 1 "August 16th, 2004" "0.9.9"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -359,10 +359,15 @@ Inserts an item that shuts down and exits Fluxbox.
 Any open windows are reparented to the root window before Fluxbox exits.
 .TP
 .B [include] (filename)
-Parses the file specified by
+Reads the file 
 .I filename
-inline with the
-current menu. The filename can be the full path to a file or it can begin with
+into the current menu. The file has to start with
+.IR [begin]
+and end with
+.IR [end].
+The 
+.I filename
+can be the full path to a file or it can begin with
 .IR ~/ ,
 which will be expanded into your home directory (e.g.
 .EX
@@ -371,6 +376,8 @@ which will be expanded into your home directory (e.g.
 will include
 .I /home/yourusername/fluxbox/stylesmenu
 in my menu).
+If the parameter to include directive is a directory, every file in this
+path will be included.
 .TP
 .B [nop] (label - optional)
 Insert a non-operational item into the current menu.
