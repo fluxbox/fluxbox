@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.190 2003/06/23 14:16:04 rathnor Exp $
+// $Id: Screen.cc,v 1.191 2003/06/23 14:33:43 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2615,18 +2615,3 @@ void BScreen::setOnHead<Toolbar>(Toolbar &tbar, int head) {
     //    saveToolbarOnHead(head);
     tbar.reconfigure();
 }
-
-// TODO: when toolbar gets its resources moved into Toolbar.hh/cc, then
-// this can be gone and a consistent interface for the two used
-// on the actual objects
-template <>
-int BScreen::getOnHead<Slit>(Slit &slit) {
-    return slit.getOnHead();
-}
-
-template <>
-void BScreen::setOnHead<Slit>(Slit &slit, int head) {
-    slit.saveOnHead(head);
-    slit.reconfigure();
-}
-
