@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.25 2004/08/05 22:53:49 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.26 2004/08/19 00:29:10 fluxgen Exp $
 
 #
 # Portability notes:
@@ -1284,13 +1284,14 @@ if [ ! "${REMOVE}" ]; then
     clean_up
 fi
 
-echo 'Menu successfully generated.'
-echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
-
-if [ -z "$CHECKINIT" ]; then
-    INITMENUFILENAME=`awk '/menuFile/ {print $2}' $HOME/.fluxbox/init`
-    cmp $INITMENUFILENAME $MENUFILENAME 2> /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Warning: Your $HOME/.fluxbox/init does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
+if [ -z "$INSTALL" ]; then
+    if [ -z "$CHECKINIT" ]; then
+        INITMENUFILENAME=`awk '/menuFile/ {print $2}' $HOME/.fluxbox/init`
+        cmp $INITMENUFILENAME $MENUFILENAME 2> /dev/null
+        if [ $? -ne 0 ]; then
+            echo "Warning: Your $HOME/.fluxbox/init does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
+        fi
     fi
+    echo 'Menu successfully generated.'
+    echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
 fi
