@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.147 2004/09/16 10:10:37 fluxgen Exp $
+// $Id: Screen.hh,v 1.148 2004/10/16 22:18:56 akir Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -78,6 +78,11 @@ class Subject;
 class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
     enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+    enum FollowModel { ///< a window becomes active / focussed on a different workspace
+        IGNORE_OTHER_WORKSPACES = 0, ///< who cares?
+        FOLLOW_ACTIVE_WINDOW, ///< go to that workspace
+        FETCH_ACTIVE_WINDOW ///< put that window to the current workspace 
+    };
     enum FocusDir { FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT };
     enum PlacementPolicy { ROWSMARTPLACEMENT, COLSMARTPLACEMENT, 
                            CASCADEPLACEMENT, UNDERMOUSEPLACEMENT};
@@ -125,6 +130,7 @@ public:
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline const std::string &getResizeMode()  const { return *resource.resizemode; }
     inline FocusModel getFocusModel() const { return *resource.focus_model; }
+    inline FollowModel getFollowModel() const { return *resource.follow_model; }
 
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
@@ -434,6 +440,7 @@ private:
         FbTk::Resource<std::string> resizemode;
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<FocusModel> focus_model;
+        FbTk::Resource<FollowModel> follow_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
             unfocused_alpha, menu_alpha, menu_delay, menu_delay_close;

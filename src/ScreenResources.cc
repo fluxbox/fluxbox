@@ -157,6 +157,34 @@ setFromString(char const *strval) {
 }
 
 template<>
+std::string FbTk::Resource<BScreen::FollowModel>::
+getString() {
+    switch (m_value) {
+    case BScreen::FOLLOW_ACTIVE_WINDOW:
+        return std::string("Follow");
+        break;
+    case BScreen::FETCH_ACTIVE_WINDOW:
+        return std::string("Current");
+        break;
+    };
+
+    return std::string("Ignore");
+}
+
+template<>
+void FbTk::Resource<BScreen::FollowModel>::
+setFromString(char const *strval) {
+    if (strcasecmp(strval, "Follow") == 0)
+        m_value = BScreen::FOLLOW_ACTIVE_WINDOW;
+    else if (strcasecmp(strval, "Current") == 0 || 
+             strcasecmp(strval, "CurrentWorkspace") == 0 ||
+             strcasecmp(strval, "Fetch") == 0)
+        m_value = BScreen::FETCH_ACTIVE_WINDOW;
+    else
+        setDefaultValue();
+}
+
+template<>
 void FbTk::Resource<FbTk::GContext::LineStyle>::setDefaultValue() {
     *(*this) = FbTk::GContext::LINESOLID;
 }
