@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.21 2002/05/21 21:25:10 fluxgen Exp $
+// $Id: Window.hh,v 1.22 2002/05/30 00:38:22 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -30,8 +30,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#ifdef		SHAPE
-#	include <X11/extensions/shape.h>
+#ifdef SHAPE
+#include <X11/extensions/shape.h>
 #endif // SHAPE
 
 #include "BaseDisplay.hh"
@@ -41,37 +41,8 @@
 #include <vector>
 #include <string>
 
+//#define PropMwmHintsElements	3
 
-
-#define MwmHintsFunctions	(1l << 0)
-#define MwmHintsDecorations	(1l << 1)
-
-#define MwmFuncAll			(1l << 0)
-#define MwmFuncResize		(1l << 1)
-#define MwmFuncMove			(1l << 2)
-#define MwmFuncIconify		(1l << 3)
-#define MwmFuncMaximize		(1l << 4)
-#define MwmFuncClose		(1l << 5)
-
-#define MwmDecorAll			(1l << 0)
-#define MwmDecorBorder		(1l << 1)
-#define MwmDecorHandle		(1l << 2)
-#define MwmDecorTitle		(1l << 3)
-#define MwmDecorMenu		(1l << 4)
-#define MwmDecorIconify		(1l << 5)
-#define MwmDecorMaximize	(1l << 6)
-//names for buttons
-#define NAME_STICKY		"sticky"
-#define NAME_MAXIMIZE	"maximize"
-#define NAME_MINIMIZE	"minimize"
-#define NAME_SHADE		"shade"
-#define NAME_CLOSE		"close"
-#define NAME_ICONIFY	"iconify"
-#define NAME_MENU		"menu"
-#define NAME_NONE		"none"
-
-
-#define PropMwmHintsElements	3
 class Tab;
 
 class FluxboxWindow : public TimeoutHandler {
@@ -98,15 +69,15 @@ public:
 		WIN_STATE_HID_WORKSPACE   = (1<<6), // not on current desktop
 		WIN_STATE_HID_TRANSIENT   = (1<<7), // owner of transient is hidden
 		WIN_STATE_FIXED_POSITION  = (1<<8), // window is fixed in position even
-		WIN_STATE_ARRANGE_IGNORE  = (1<<9) // ignore for auto arranging
+		WIN_STATE_ARRANGE_IGNORE  = (1<<9)  // ignore for auto arranging
 	};
 
 	enum GnomeHints {
 		WIN_HINTS_SKIP_FOCUS      = (1<<0), // "alt-tab" skips this win
 		WIN_HINTS_SKIP_WINLIST    = (1<<1), // do not show in window list
 		WIN_HINTS_SKIP_TASKBAR    = (1<<2), // do not show on taskbar
-		WIN_HINTS_GROUP_TRANSIENT = (1<<3), //Reserved - definition is unclear
-		WIN_HINTS_FOCUS_ON_CLICK  = (1<<4) // app only accepts focus if clicked
+		WIN_HINTS_GROUP_TRANSIENT = (1<<3), // Reserved - definition is unclear
+		WIN_HINTS_FOCUS_ON_CLICK  = (1<<4)  // app only accepts focus if clicked
 	};
 	#endif
 	
@@ -119,87 +90,112 @@ public:
 
 	enum Decoration {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
 
+	//Motif wm Hints
+	enum {
+		MwmHintsFunctions   = (1l << 0),
+		MwmHintsDecorations	= (1l << 1)
+	};
 	
-	FluxboxWindow(Window, BScreen * = 0);
-	virtual ~FluxboxWindow(void);
+	//Motif wm functions
+	enum MwmFunc{
+		MwmFuncAll          = (1l << 0),
+		MwmFuncResize       = (1l << 1),
+		MwmFuncMove         = (1l << 2),
+		MwmFuncIconify      = (1l << 3),
+		MwmFuncMaximize     = (1l << 4),
+		MwmFuncClose        = (1l << 5)
+	};
+	//Motif wm decorations
+	enum MwmDecor {
+		MwmDecorAll         = (1l << 0),
+		MwmDecorBorder      = (1l << 1),
+		MwmDecorHandle      = (1l << 2),
+		MwmDecorTitle       = (1l << 3),
+		MwmDecorMenu        = (1l << 4),
+		MwmDecorIconify     = (1l << 5),
+		MwmDecorMaximize    = (1l << 6)
+	};
 
-	inline bool isTransient(void) const { return ((transient) ? true : false); }
-	inline bool hasTransient(void) const { return ((client.transient) ? true : false); }
+	explicit FluxboxWindow(Window, BScreen *scr = 0);
+	virtual ~FluxboxWindow();
+
+	inline bool isTransient() const { return ((transient) ? true : false); }
+	inline bool hasTransient() const { return ((client.transient) ? true : false); }
 	inline bool isManaged() const { return managed; }
-	inline bool isFocused(void) const { return focused; }
-	inline bool isVisible(void) const { return visible; }
-	inline bool isIconic(void) const { return iconic; }
-	inline bool isShaded(void) const { return shaded; }
-	inline bool isMaximized(void) const { return maximized; }
-	inline bool isIconifiable(void) const { return functions.iconify; }
-	inline bool isMaximizable(void) const { return functions.maximize; }
-	inline bool isResizable(void) const { return functions.resize; }
-	inline bool isClosable(void) const { return functions.close; }
-	inline bool isStuck(void) const { return stuck; }
-	inline bool hasTitlebar(void) const { return decorations.titlebar; }
-	inline bool hasTab(void) const { return (tab!=0 ? true : false); }
-	inline bool isMoving(void) const { return moving; }
-	inline bool isResizing(void) const { return resizing; }
-	inline BScreen *getScreen(void) const { return screen; }
-	inline Tab *getTab(void) const { return tab; }
-	inline FluxboxWindow *getTransient(void) const { return client.transient; }
-	inline FluxboxWindow *getTransientFor(void) const { return client.transient_for; }
+	inline bool isFocused() const { return focused; }
+	inline bool isVisible() const { return visible; }
+	inline bool isIconic() const { return iconic; }
+	inline bool isShaded() const { return shaded; }
+	inline bool isMaximized() const { return maximized; }
+	inline bool isIconifiable() const { return functions.iconify; }
+	inline bool isMaximizable() const { return functions.maximize; }
+	inline bool isResizable() const { return functions.resize; }
+	inline bool isClosable() const { return functions.close; }
+	inline bool isStuck() const { return stuck; }
+	inline bool hasTitlebar() const { return decorations.titlebar; }
+	inline bool hasTab() const { return (tab!=0 ? true : false); }
+	inline bool isMoving() const { return moving; }
+	inline bool isResizing() const { return resizing; }
+	inline BScreen *getScreen() const { return screen; }
+	inline Tab *getTab() const { return tab; }
+	inline FluxboxWindow *getTransient() const { return client.transient; }
+	inline FluxboxWindow *getTransientFor() const { return client.transient_for; }
 
-	inline const Window &getFrameWindow(void) const { return frame.window; }
-	inline const Window &getClientWindow(void) const { return client.window; }
+	inline const Window &getFrameWindow() const { return frame.window; }
+	inline const Window &getClientWindow() const { return client.window; }
 
-	inline Windowmenu *getWindowmenu(void) { return windowmenu; }
+	inline Windowmenu *getWindowmenu() { return windowmenu; }
 
-	inline const std::string &getTitle(void) const { return client.title; }
-	inline const std::string &getIconTitle(void) const { return client.icon_title; }
-	inline int getXFrame(void) const { return frame.x; }
-	inline int getYFrame(void) const { return frame.y; }
-	inline int getXClient(void) const { return client.x; }
-	inline int getYClient(void) const { return client.y; }
-	inline unsigned int getWorkspaceNumber(void) const { return workspace_number; }
-	inline int getWindowNumber(void) const { return window_number; }
-	inline WinLayer getLayer(void) const { return m_layer; }
-	inline unsigned int getWidth(void) const { return frame.width; }
-	inline unsigned int getHeight(void) const { return frame.height; }
-	inline unsigned int getClientHeight(void) const { return client.height; }
-	inline unsigned int getClientWidth(void) const { return client.width; }
-	inline unsigned int getTitleHeight(void) const { return frame.title_h; }
+	inline const std::string &getTitle() const { return client.title; }
+	inline const std::string &getIconTitle() const { return client.icon_title; }
+	inline int getXFrame() const { return frame.x; }
+	inline int getYFrame() const { return frame.y; }
+	inline int getXClient() const { return client.x; }
+	inline int getYClient() const { return client.y; }
+	inline unsigned int getWorkspaceNumber() const { return workspace_number; }
+	inline int getWindowNumber() const { return window_number; }
+	inline WinLayer getLayer() const { return m_layer; }
+	inline unsigned int getWidth() const { return frame.width; }
+	inline unsigned int getHeight() const { return frame.height; }
+	inline unsigned int getClientHeight() const { return client.height; }
+	inline unsigned int getClientWidth() const { return client.width; }
+	inline unsigned int getTitleHeight() const { return frame.title_h; }
 
 	inline void setWindowNumber(int n) { window_number = n; }
 	
 	inline const timeval &getLastFocusTime() const {return lastFocusTime;}
 
-	bool validateClient(void);
-	bool setInputFocus(void);
+	bool validateClient();
+	bool setInputFocus();
 	void setTab(bool flag);
 	void setFocusFlag(bool);
-	void iconify(void);
+	void iconify();
 	void deiconify(bool = true, bool = true);
-	void close(void);
-	void withdraw(void);
+	void close();
+	void withdraw();
 	void maximize(unsigned int);
-	void shade(void);
-	void stick(void);
-	void unstick(void);
-	void reconfigure(void);
+	void shade();
+	void stick();
+	void unstick();
+	void reconfigure();
 	void installColormap(bool);
-	void restore(void);
+	void restore();
 	void configure(int dx, int dy, unsigned int dw, unsigned int dh);
 	void setWorkspace(int n);
-	void changeBlackboxHints(BaseDisplay::BlackboxHints *);
-	void restoreAttributes(void);
-	bool isLowerTab(void) const;
+	void changeBlackboxHints(BaseDisplay::BlackboxHints *bh);
+	void restoreAttributes();
+	bool isLowerTab() const;
 
-	void buttonPressEvent(XButtonEvent *);
-	void buttonReleaseEvent(XButtonEvent *);
-	void motionNotifyEvent(XMotionEvent *);
-	bool destroyNotifyEvent(XDestroyWindowEvent *);
-	void mapRequestEvent(XMapRequestEvent *);
-	void mapNotifyEvent(XMapEvent *);
-	bool unmapNotifyEvent(XUnmapEvent *);
-	void propertyNotifyEvent(Atom);
-	void exposeEvent(XExposeEvent *);
-	void configureRequestEvent(XConfigureRequestEvent *);
+	void buttonPressEvent(XButtonEvent *be);
+	void buttonReleaseEvent(XButtonEvent *be);
+	void motionNotifyEvent(XMotionEvent *me);
+	bool destroyNotifyEvent(XDestroyWindowEvent *dwe);
+	void mapRequestEvent(XMapRequestEvent *mre);
+	void mapNotifyEvent(XMapEvent *mapev);
+	bool unmapNotifyEvent(XUnmapEvent *unmapev);
+	void propertyNotifyEvent(Atom a);
+	void exposeEvent(XExposeEvent *ee);
+	void configureRequestEvent(XConfigureRequestEvent *ce);
 	
 	void setDecoration(Decoration decoration);
 	void toggleDecoration();
@@ -210,23 +206,28 @@ public:
 	void shapeEvent(XShapeEvent *);
 	#endif // SHAPE
 
-	virtual void timeout(void);
+	virtual void timeout();
 	
 	// this structure only contains 3 elements... the Motif 2.0 structure contains
 	// 5... we only need the first 3... so that is all we will define
 	typedef struct MwmHints {
-		unsigned long flags, functions, decorations;
+		unsigned long flags;       // Motif wm flags
+		unsigned long functions;   // Motif wm functions
+		unsigned long decorations; // Motif wm decorations
 	} MwmHints;
 	#ifdef GNOME
 	void setGnomeState(int state);
 	inline int getGnomeHints() const { return gnome_hints; }
-	#endif
+	#endif //GNOME
 	
 private:
-	BImageControl *image_ctrl;
 	
+	BImageControl *image_ctrl; //image control for rendering
+	
+	//Window state
 	bool moving, resizing, shaded, maximized, visible, iconic, transient,
 		focused, stuck, modal, send_focus_message, managed;
+
 	BScreen *screen;
 	BTimer timer;
 	Display *display;
@@ -270,9 +271,9 @@ private:
 		bool resize, move, iconify, maximize, close;
 	} functions;
 	
-	bool usetab;
+
 	Tab *tab;
-	friend class Tab;
+	friend class Tab; //TODO: Don't like long distant friendship
 	
 	typedef void (*ButtonDrawProc)(FluxboxWindow *, Window, bool);
 	typedef void (*ButtonEventProc)(FluxboxWindow *, XButtonEvent *);
@@ -289,7 +290,6 @@ private:
 	std::vector<Button> buttonlist;
 	
 	struct _frame {
-		//different bool because of XShapeQueryExtension
 		Bool shaped;
 		unsigned long ulabel_pixel, flabel_pixel, utitle_pixel,
 			ftitle_pixel, uhandle_pixel, fhandle_pixel, ubutton_pixel,
@@ -319,7 +319,7 @@ private:
 	void stopResizing(Window win=0);
 	void updateIcon();
 	
-	//create decoration functions
+	// Decoration functions
 	void createTitlebar();
 	void destroyTitlebar();
 	void createHandle();
@@ -378,33 +378,33 @@ private:
 	//button base draw... background 
 	void drawButtonBase(Window, bool);
 	
-	bool getState(void);
+	bool getState();
 	Window createToplevelWindow(int, int, unsigned int, unsigned int,
 						unsigned int);
 	Window createChildWindow(Window, Cursor = None);
 
-	void getWMName(void);
-	void getWMIconName(void);
-	void getWMNormalHints(void);
-	void getWMProtocols(void);
-	void getWMHints(void);
-	void getMWMHints(void);
-	void getBlackboxHints(void);
-	void setNetWMAttributes(void);
-	void associateClientWindow(void);
-	void decorate(void);
-	void decorateLabel(void);
+	void getWMName();
+	void getWMIconName();
+	void getWMNormalHints();
+	void getWMProtocols();
+	void getWMHints();
+	void getMWMHints();
+	void getBlackboxHints();
+	void setNetWMAttributes();
+	void associateClientWindow();
+	void decorate();
+	void decorateLabel();
 	void positionButtons(bool redecorate_label = false);
-	void positionWindows(void);
+	void positionWindows();
 	
-	void redrawLabel(void);
-	void redrawAllButtons(void);
+	void redrawLabel();
+	void redrawAllButtons();
  
-	void restoreGravity(void);
-	void setGravityOffsets(void);
+	void restoreGravity();
+	void setGravityOffsets();
 	void setState(unsigned long);
-	void upsize(void);
-	void downsize(void);
+	void upsize();
+	void downsize();
 	void right_fixsize(int * = 0, int * = 0);
 	void left_fixsize(int * = 0, int * = 0);
 };
