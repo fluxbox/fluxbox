@@ -111,6 +111,9 @@
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
+/* "Xft UTF8 support" */
+#undef HAVE_XFT_UTF8_STRING
+
 /* "Interlaced rendering" */
 #undef INTERLACE
 
