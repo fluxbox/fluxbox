@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XrmDatabaseHelper.hh,v 1.4 2002/02/17 18:44:07 fluxgen Exp $
+// $Id: XrmDatabaseHelper.hh,v 1.5 2002/07/20 09:52:13 fluxgen Exp $
 
 // This is a helper for XrmDatabase
 // when database goes out of scope
@@ -31,6 +31,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
+/**
+	Helper class for XrmDatabase.
+*/
 class XrmDatabaseHelper
 {
 public:
@@ -42,7 +45,8 @@ public:
 		if (m_database!=0)
 			XrmDestroyDatabase(m_database);
 	}
-	
+
+	/// assignment operator
 	XrmDatabaseHelper& operator=(const XrmDatabase& database) {
 		if (m_database!=0)
 			XrmDestroyDatabase(m_database);
