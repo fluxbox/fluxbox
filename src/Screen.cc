@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.61 2002/08/11 22:28:18 fluxgen Exp $
+// $Id: Screen.cc,v 1.62 2002/08/14 22:21:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -682,7 +682,7 @@ void BScreen::updateWorkspaceNamesAtom() {
 	
 	if (XStringListToTextProperty(names, number_of_desks, &text)) {
 		XSetTextProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-			 &text, getBaseDisplay()->getGnomeWorkspaceNamesAtom());
+			 &text, FbAtoms::instance()->getGnomeWorkspaceNamesAtom());
 		XFree(text.value);
 	}
 	
@@ -900,7 +900,7 @@ void BScreen::updateNetizenCurrentWorkspace() {
 	//update _WIN_WORKSPACE
 	int gnome_workspace = getCurrentWorkspaceID();
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32, PropModeReplace,
+		FbAtoms::instance()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32, PropModeReplace,
 			(unsigned char *)&gnome_workspace, 1);
 	updateGnomeClientList();
 	#endif
@@ -933,7 +933,7 @@ void BScreen::updateNetizenWorkspaceCount() {
 	{
 	int numworkspaces = getCount();
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		getBaseDisplay()->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32, PropModeReplace,
+		FbAtoms::instance()->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32, PropModeReplace,
 			(unsigned char *)&numworkspaces, 1);
 	}	
 	#endif
@@ -1348,12 +1348,11 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						 	"no menu label and/or filename defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else {
-						char *style;
-				
 						// perform shell style ~ home directory expansion
-						style = StringUtil::expandFilename(str_cmd.c_str());
-						menu->insert(str_label.c_str(), BScreen::SETSTYLE, style);
-						delete style;
+						// and insert style
+						menu->insert(str_label.c_str(), BScreen::SETSTYLE, 
+							StringUtil::expandFilename(str_cmd).c_str());
+						
 					}
 				} // end of style
 				
@@ -1379,13 +1378,11 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						 	"no filename defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else {	// start of else 'x'
-						char *newfile;
-
 						// perform shell style ~ home directory expansion
-						newfile = StringUtil::expandFilename(str_label.c_str());
+						string newfile(StringUtil::expandFilename(str_label));
 
-						if (newfile) {
-							FILE *submenufile = fopen(newfile, "r");
+						if (newfile.size() != 0) {
+							FILE *submenufile = fopen(newfile.c_str(), "r");
 
 							if (submenufile) {
 								struct stat buf;
@@ -1396,19 +1393,18 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 									getMessage(
 							 			FBNLS::ScreenSet, FBNLS::ScreenINCLUDEErrorReg,
 							 			"BScreen::parseMenuFile: [include] error: "
-							 			"'%s' is not a regular file\n"), newfile);
+							 			"'%s' is not a regular file\n"), newfile.c_str());
 									cerr<<"Row: "<<row<<endl;
 								}
 								
 								if (! feof(submenufile)) {
 									fclose(submenufile);
-									ifstream subfile(newfile);
+									ifstream subfile(newfile.c_str());
 									if (! parseMenuFile(subfile, menu, row))
-										fluxbox->saveMenuFilename(newfile);
+										fluxbox->saveMenuFilename(newfile.c_str());
 								}
 							} else
-								perror(newfile);
-							delete newfile;
+								perror(newfile.c_str());
 						} 
 					} // end of else 'x'
 				} // end of include
@@ -1497,14 +1493,14 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 }
 
 void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory) {
-	I18n *i18n = I18n::instance();
-	
+
 	// perform shell style ~ home directory expansion
-	auto_ptr<char> stylesdir(StringUtil::expandFilename(directory));
-						
+	string stylesdir(StringUtil::expandFilename(directory ? directory : ""));
+
+	I18n *i18n = I18n::instance();						
 	struct stat statbuf;
 
-	if (! stat(stylesdir.get(), &statbuf)) { // stat
+	if (! stat(stylesdir.c_str(), &statbuf)) { // stat
 		if (S_ISDIR(statbuf.st_mode)) { // dir
 			Rootmenu *stylesmenu;
 			if (newmenu)
@@ -1512,7 +1508,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 			else
 				stylesmenu = menu;
 
-			DIR *d = opendir(stylesdir.get());
+			DIR *d = opendir(stylesdir.c_str());
 			int entries = 0;
 			struct dirent *p;
 
@@ -1528,11 +1524,11 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 
 			qsort(ls, entries, sizeof(char *), dcmp);
 
-			int n, slen = strlen(stylesdir.get());
+			int n, slen = strlen(stylesdir.c_str());
 			for (n = 0; n < entries; n++) { // for
 				int nlen = strlen(ls[n]);
 				char style[MAXPATHLEN + 1];
-				strncpy(style, stylesdir.get(), slen);
+				strncpy(style, stylesdir.c_str(), slen);
 				*(style + slen) = '/';
 				strncpy(style + slen + 1, ls[n], nlen + 1);
 				if ((! stat(style, &statbuf)) && S_ISREG(statbuf.st_mode))
@@ -1549,7 +1545,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 				rootmenuList.push_back(stylesmenu);
 			}
 
-			fluxbox->saveMenuFilename(stylesdir.get());
+			fluxbox->saveMenuFilename(stylesdir.c_str());
 		} else { // dir
 			fprintf(stderr,
 			i18n->
@@ -1557,7 +1553,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 				FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNotDir,
 				"BScreen::parseMenuFile:"
 				" [stylesdir/stylesmenu] error, %s is not a"
-				" directory\n"), stylesdir.get());
+				" directory\n"), stylesdir.c_str());
 		} // end of 'dir'
 	} else { // stat
 		fprintf(stderr,
@@ -1565,7 +1561,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 		getMessage(
 			FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNoExist,		
 			"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-			" error, %s does not exist\n"), stylesdir.get());
+			" error, %s does not exist\n"), stylesdir.c_str());
 	} // end of 'stat'
 
 }
@@ -1749,29 +1745,29 @@ void BScreen::initGnomeAtoms() {
 	/* create the GNOME window */
 	gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
-
+	FbAtoms *fba = FbAtoms::instance();
 	/* supported WM check */
 	 XChangeProperty(getBaseDisplay()->getXDisplay(),
-		getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
+		getRootWindow(), fba->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
 	XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
-		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
+		fba->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
 	Atom gnomeatomlist[] = {
-		getBaseDisplay()->getGnomeWorkspaceAtom(),
-		getBaseDisplay()->getGnomeWorkspaceCountAtom(),
-		getBaseDisplay()->getGnomeStateAtom(),
-		getBaseDisplay()->getGnomeWorkspaceNamesAtom(),
-		getBaseDisplay()->getGnomeHintsAtom(),
-		getBaseDisplay()->getGnomeClientListAtom(),
+		fba->getGnomeWorkspaceAtom(),
+		fba->getGnomeWorkspaceCountAtom(),
+		fba->getGnomeStateAtom(),
+		fba->getGnomeWorkspaceNamesAtom(),
+		fba->getGnomeHintsAtom(),
+		fba->getGnomeClientListAtom(),
 //		getBaseDisplay()->getGnomeLayerAtom(), // not supported yet
 	};
 
 	//list atoms that we support
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(), 
-		getBaseDisplay()->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
+		fba->getGnomeProtAtom(), XA_ATOM, 32, PropModeReplace,
 		(unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
 
 }
@@ -1804,7 +1800,7 @@ void BScreen::updateGnomeClientList() {
 	//number of windows to show in client list
 	num = win;
 	XChangeProperty(getBaseDisplay()->getXDisplay(), 
-		getRootWindow(), getBaseDisplay()->getGnomeClientListAtom(), XA_CARDINAL, 32,
+		getRootWindow(), FbAtoms::instance()->getGnomeClientListAtom(), XA_CARDINAL, 32,
 		PropModeReplace, (unsigned char *)wl, num);
 	
 	if (wl)
