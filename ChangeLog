@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/30:
+  * Added "kill" to the windowmenu-commands (Mathias)
+    closes #1075142
+	Window.cc/hh MenuCreator.cc FbCommandFactory.cc
 *04/11/28:
   * Fix for possible segfaults in *.iconbar.deiconifyMode (Mathias)
     IconButton.cc
