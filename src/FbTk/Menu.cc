@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.39 2003/10/06 09:55:36 rathnor Exp $
+// $Id: Menu.cc,v 1.40 2003/11/01 00:12:53 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -723,7 +723,6 @@ void Menu::drawSubmenu(unsigned int index) {
         if (! item->submenu()->isVisible()) {
             item->submenu()->show();
             item->submenu()->raise();
-            item->submenu()->renderTransFrame();
         }
 			
         item->submenu()->moving = moving;

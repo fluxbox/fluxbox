@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/31:
+  * Fix slit client map on restart and surplus menu redraw (Simon)
+    SlitClient.hh Slit.cc Menu.cc
   * Fix textbutton text alignment (out by one) (Simon)
     TextButton.cc
   * Tweak some positioning for winbutton drawn icons (Simon)

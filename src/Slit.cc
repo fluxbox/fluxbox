@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.80 2003/08/30 01:01:47 fluxgen Exp $
+// $Id: Slit.cc,v 1.81 2003/11/01 00:12:53 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -968,7 +968,10 @@ void Slit::handleEvent(XEvent &event) {
         configureRequestEvent(event.xconfigurerequest);
     } else if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window, false);
-    } else if (event.type == UnmapNotify) {        
+    } else if (event.type == UnmapNotify && event.xany.send_event) {
+        // we ignore server-generated events, which can occur
+        // on restart. The ICCCM says that a client must send
+        // a synthetic event for the withdrawn state
         removeClient(event.xunmap.window);
     }
 }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitClient.hh,v 1.1 2003/06/20 01:25:26 fluxgen Exp $
+// $Id: SlitClient.hh,v 1.2 2003/11/01 00:12:53 rathnor Exp $
 
 #ifndef SLITCLIENT_HH
 #define SLITCLIENT_HH
@@ -55,6 +55,7 @@ public:
     void setWindow(Window win) { m_window = win; }
     void move(int x, int y) { m_x = x; m_y = y; }
     void resize(unsigned int width, unsigned int height) { m_width = width; m_height = height; }
+    void moveResize(int x, int y, unsigned int width, unsigned int height) { m_x = x; m_y = y; m_width = width; m_height = height; }
     void hide();
     void show();
     void setVisible(bool value) { m_visible = value; }
