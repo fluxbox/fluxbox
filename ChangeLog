@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*04/12/18:
+  * Some reordering/renaming of functions/files (Mathias)
+    FbTk/Directory.cc/hh -> FbTk/FileUtil.cc/hh
+    FbTk/Makefile.am FbTk/Theme.cc MenuCreator.cc fluxbox.cc
+    util/fbrun/FbRun.cc
   * Some updates to ru_RU (thanx to <php-coder at ngs dot ru>)
     nls/ru_RU/Translation.m
 *04/12/13:
