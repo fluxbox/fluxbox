@@ -30,9 +30,9 @@ class BScreen;
 
 class Netizen {
 public:
-    Netizen(const BScreen * const scr, Window w);
+    Netizen(const BScreen &scr, Window w);
 
-    inline Window getWindowID() const { return window; }
+    inline Window window() const { return m_window; }
 
     void sendWorkspaceCount();
     void sendCurrentWorkspace();
@@ -45,9 +45,9 @@ public:
 
     void sendConfigNotify(XEvent *xe);
 private:
-    const BScreen * const m_screen;
+    const BScreen &m_screen;
     Display *m_display; ///< display connection
-    Window window;
+    Window m_window;
     XEvent event;
 
 };
