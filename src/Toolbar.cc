@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.79 2003/05/11 13:36:11 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.80 2003/05/12 23:05:19 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -40,6 +40,7 @@
 #include "IntResMenuItem.hh"
 #include "MacroCommand.hh"
 #include "RootTheme.hh"
+#include "BoolMenuItem.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -96,8 +97,7 @@ void setupMenus(Toolbar &tbar) {
     FbTk::Menu &menu = tbar.menu();
     
     RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
-    menu.insert(i18n->getMessage(
-                                 FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
+    menu.insert(i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
                                  "Edit current workspace name"),
                 start_edit);
 
@@ -123,7 +123,12 @@ void setupMenus(Toolbar &tbar) {
     FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);  
 
-    tbar.menu().insert(toolbar_menuitem);
+    menu.insert(toolbar_menuitem);
+
+    menu.insert(new BoolMenuItem(i18n->getMessage(FBNLS::CommonSet, FBNLS::CommonAutoHide,
+                                                  "Auto hide"),
+                                 tbar.screen().doToolbarAutoHide(),
+                                 reconfig_toolbar_and_save_resource));
 
     menu.setInternalMenu();
 
