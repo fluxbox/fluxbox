@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.hh,v 1.2 2003/08/13 09:39:16 fluxgen Exp $
+// $Id: Container.hh,v 1.3 2003/09/08 16:28:32 fluxgen Exp $
 
 #ifndef CONTAINER_HH
 #define CONTAINER_HH
@@ -51,21 +51,28 @@ public:
     void removeAll();
     int find(Item item);
     void setSelected(int index);
+    /// force update
+    inline void update() { repositionItems(); }
+    /// so we can add items without having an graphic update for each item
+    inline void setUpdateLock(bool value) { m_update_lock = value; }
 
-    // event handler
+    /// event handler
     void exposeEvent(XExposeEvent &event);
 
-    // accessors
-    int size() const { return m_item_list.size(); }
-    const Item selected() const { return m_selected; }
-    Item selected() { return m_selected; }
+    /// accessors
+    inline int size() const { return m_item_list.size(); }
+    inline const Item selected() const { return m_selected; }
+    inline Item selected() { return m_selected; }
     unsigned int maxWidthPerClient() const;
-    unsigned int maxHeightPerClient() const { return (size() == 0 ? height() : height()/size()); }
+    inline unsigned int maxHeightPerClient() const { return (size() == 0 ? height() : height()/size()); }    
+    inline bool updateLock() const { return m_update_lock; }
+
 private:
     void repositionItems();
 
     ItemList m_item_list;
     Item m_selected;
+    bool m_update_lock;
 };
 
 #endif // CONTAINER_HH

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.2 2003/08/13 09:39:16 fluxgen Exp $
+// $Id: Container.cc,v 1.3 2003/09/08 16:28:32 fluxgen Exp $
 
 #include "FbTk/Button.hh"
 #include "Container.hh"
@@ -28,7 +28,8 @@
 #include "FbTk/EventManager.hh"
 
 Container::Container(const FbTk::FbWindow &parent):
-    FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), m_selected(0) {
+    FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), m_selected(0),
+    m_update_lock(false) {
 
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -165,7 +166,7 @@ void Container::exposeEvent(XExposeEvent &event) {
 }
 
 void Container::repositionItems() {
-    if (size() == 0)
+    if (size() == 0 || m_update_lock)
         return;
 
     //!! TODO vertical position
