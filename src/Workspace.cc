@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.46 2003/02/09 14:11:13 rathnor Exp $
+// $Id: Workspace.cc,v 1.47 2003/02/16 16:40:19 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -32,6 +32,7 @@
 #include "Window.hh"
 #include "StringUtil.hh"
 #include "Slit.hh"
+#include "SimpleCommand.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -68,20 +69,40 @@ int countTransients(const FluxboxWindow &win) {
     return ret;
 }
 
+class RaiseFocusAndSetWorkspace: public FbTk::Command {
+public:
+    RaiseFocusAndSetWorkspace(Workspace &space, FluxboxWindow &win):
+        m_space(space), m_win(win) { }
+    void execute() { 
+        // determine workspace change
+        for (size_t i=0; i<m_space.getScreen().getCount(); i++) {
+            if (m_space.getScreen().getWorkspace(i) == &m_space) {
+                m_space.getScreen().changeWorkspaceID(i); 
+                break;
+            }
+        }
+
+        m_win.raiseAndFocus();
+    }
+private:
+    Workspace &m_space;
+    FluxboxWindow &m_win;
+};
+
 };
 
 Workspace::GroupList Workspace::m_groups;
 
-Workspace::Workspace(BScreen *scrn, FbTk::MultLayers &layermanager, unsigned int i):
+Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int i):
     screen(scrn),
     lastfocus(0),
-    m_clientmenu(*scrn->menuTheme(), scrn->getScreenNumber(), *scrn->getImageControl()),
+    m_clientmenu(*scrn.menuTheme(), scrn.getScreenNumber(), *scrn.getImageControl()),
     m_layermanager(layermanager),
     m_name(""),
     m_id(i),
     cascade_x(32), cascade_y(32) {
 
-    setName(screen->getNameOfWorkspace(m_id));
+    setName(screen.getNameOfWorkspace(m_id));
 
 }
 
@@ -134,15 +155,17 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 
       }
     */
-    //add to list
-    m_clientmenu.insert(w->getTitle().c_str());
+    FbTk::RefCount<FbTk::Command> 
+        raise_and_focus(new RaiseFocusAndSetWorkspace(*this, *w));
+
+    m_clientmenu.insert(w->getTitle().c_str(), raise_and_focus);
     m_windowlist.push_back(w);
 	
     //update menugraphics
     m_clientmenu.update();
 	
     if (!w->isStuck()) 
-        screen->updateNetizenWindowAdd(w->getClientWindow(), m_id);
+        screen.updateNetizenWindowAdd(w->getClientWindow(), m_id);
 
     return w->getWindowNumber();
 }
@@ -157,15 +180,10 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     }
 
     if (w->isFocused()) {
-        if (screen->isSloppyFocus()) {
+        if (screen.isSloppyFocus()) {
             Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
         } else if (w->isTransient() && w->getTransientFor() &&
                    w->getTransientFor()->isVisible()) {
-            /* TODO: check transient
-               if (w->getTransientFor() == w) { // FATAL ERROR, this should not happend
-               cerr<<"w->getTransientFor() == w: aborting!"<<endl;
-               abort();
-               }*/
             w->getTransientFor()->setInputFocus();
         } else {
             FluxboxWindow *top = 0;
@@ -228,7 +246,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     m_clientmenu.update();
 	
     if (!w->isStuck())
-        screen->updateNetizenWindowDel(w->getClientWindow());
+        screen.updateNetizenWindowDel(w->getClientWindow());
 
     {
         Windows::iterator it = m_windowlist.begin();
@@ -394,7 +412,7 @@ void Workspace::update() {
 
 
 bool Workspace::isCurrent() const{
-    return (m_id == screen->getCurrentWorkspaceID());
+    return (m_id == screen.getCurrentWorkspaceID());
 }
 
 
@@ -403,7 +421,7 @@ bool Workspace::isLastWindow(FluxboxWindow *w) const{
 }
 
 void Workspace::setCurrent() {
-    screen->changeWorkspaceID(m_id);
+    screen.changeWorkspaceID(m_id);
 }
 
 
@@ -419,7 +437,7 @@ void Workspace::setName(const std::string &name) {
         m_name = tname;
     }
 	
-    screen->updateWorkspaceNamesAtom();
+    screen.updateWorkspaceNamesAtom();
 	
     m_clientmenu.setLabel(m_name.c_str());
     m_clientmenu.update();
@@ -441,19 +459,19 @@ void Workspace::shutdown() {
 
 void Workspace::placeWindow(FluxboxWindow *win) {
     Bool placed = False;
-    int borderWidth4x = screen->getBorderWidth2x() * 2,
+    int borderWidth4x = screen.getBorderWidth2x() * 2,
 #ifdef SLIT
-        slit_x = screen->getSlit()->x() - screen->getBorderWidth(),
-        slit_y = screen->getSlit()->y() - screen->getBorderWidth(),
-        slit_w = screen->getSlit()->width() + borderWidth4x,
-        slit_h = screen->getSlit()->height() + borderWidth4x,
+        slit_x = screen.getSlit()->x() - screen.getBorderWidth(),
+        slit_y = screen.getSlit()->y() - screen.getBorderWidth(),
+        slit_w = screen.getSlit()->width() + borderWidth4x,
+        slit_h = screen.getSlit()->height() + borderWidth4x,
 #endif // SLIT
 
         place_x = 0, place_y = 0, change_x = 1, change_y = 1;
 
-    if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
+    if (screen.getColPlacementDirection() == BScreen::BOTTOMTOP)
         change_y = -1;
-    if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
+    if (screen.getRowPlacementDirection() == BScreen::RIGHTLEFT)
         change_x = -1;
 
 #ifdef XINERAMA
@@ -461,55 +479,55 @@ void Workspace::placeWindow(FluxboxWindow *win) {
         head_x = 0,
         head_y = 0;
     int head_w, head_h;
-    if (screen->hasXinerama()) {
-        head = screen->getCurrHead();
-        head_x = screen->getHeadX(head);
-        head_y = screen->getHeadY(head);
-        head_w = screen->getHeadWidth(head);
-        head_h = screen->getHeadHeight(head);
+    if (screen.hasXinerama()) {
+        head = screen.getCurrHead();
+        head_x = screen.getHeadX(head);
+        head_y = screen.getHeadY(head);
+        head_w = screen.getHeadWidth(head);
+        head_h = screen.getHeadHeight(head);
 
     } else { // no xinerama
-        head_w = screen->getWidth();
-        head_h = screen->getHeight();
+        head_w = screen.getWidth();
+        head_h = screen.getHeight();
     }
 
 #endif // XINERAMA
 
-    int win_w = win->getWidth() + screen->getBorderWidth2x(),
-        win_h = win->getHeight() + screen->getBorderWidth2x();
+    int win_w = win->getWidth() + screen.getBorderWidth2x(),
+        win_h = win->getHeight() + screen.getBorderWidth2x();
 
     if (win->hasTab()) {
         if ((! win->isShaded()) &&
-            screen->getTabPlacement() == Tab::PLEFT ||
-            screen->getTabPlacement() == Tab::PRIGHT)
-            win_w += (screen->isTabRotateVertical())
-                ? screen->getTabHeight()
-                : screen->getTabWidth();
+            screen.getTabPlacement() == Tab::PLEFT ||
+            screen.getTabPlacement() == Tab::PRIGHT)
+            win_w += (screen.isTabRotateVertical())
+                ? screen.getTabHeight()
+                : screen.getTabWidth();
         else // tab placement top or bottom or win is shaded
-            win_h += screen->getTabHeight();
+            win_h += screen.getTabHeight();
     }
 
     register int test_x, test_y, curr_x, curr_y, curr_w, curr_h;
 
-    switch (screen->getPlacementPolicy()) {
+    switch (screen.getPlacementPolicy()) {
     case BScreen::ROWSMARTPLACEMENT: {
 #ifdef XINERAMA
         test_y = head_y;
 #else // !XINERAMA
         test_y = 0;
 #endif // XINERAMA
-        if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
+        if (screen.getColPlacementDirection() == BScreen::BOTTOMTOP)
 #ifdef XINERAMA
             test_y = (head_y + head_h) - win_h - test_y;
 #else // !XINERAMA
-        test_y = screen->getHeight() - win_h - test_y;
+        test_y = screen.getHeight() - win_h - test_y;
 #endif // XINERAMA
 
-        while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
+        while (((screen.getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 #ifdef XINERAMA
                 test_y >= head_y : test_y + win_h <= (head_y + head_h)
 #else // !XINERAMA
-                test_y > 0 : test_y + win_h < (signed) screen->getHeight()
+                test_y > 0 : test_y + win_h < (signed) screen.getHeight()
 #endif // XINERAMA
                 ) && ! placed) {
 
@@ -518,18 +536,18 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 #else // !XINERAMA
             test_x = 0;
 #endif // XINERAMA
-            if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
+            if (screen.getRowPlacementDirection() == BScreen::RIGHTLEFT)
 #ifdef XINERAMA
                 test_x = (head_x + head_w) - win_w - test_x;
 #else // !XINERAMA
-            test_x = screen->getWidth() - win_w - test_x;
+            test_x = screen.getWidth() - win_w - test_x;
 #endif // XINERAMA
 
-            while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
+            while (((screen.getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
 #ifdef XINERAMA
                     test_x >= head_x : test_x + win_w <= (head_x + head_w)
 #else // !XINERAMA
-                    test_x > 0 : test_x + win_w < (signed) screen->getWidth()
+                    test_x > 0 : test_x + win_w < (signed) screen.getWidth()
 #endif // XINERAMA
                     ) && ! placed) {
 
@@ -541,37 +559,37 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                 for (; it != it_end && placed; ++it) {
                     curr_x = (*it)->getXFrame();
                     curr_y = (*it)->getYFrame();
-                    curr_w = (*it)->getWidth() + screen->getBorderWidth2x();
+                    curr_w = (*it)->getWidth() + screen.getBorderWidth2x();
                     curr_h =
                         (((*it)->isShaded())
                          ? (*it)->getTitleHeight()
                          : (*it)->getHeight()) +
-                        screen->getBorderWidth2x();	
+                        screen.getBorderWidth2x();	
 
                     if ((*it)->hasTab()) {
                         if (! (*it)->isShaded()) { // not shaded window
-                            switch(screen->getTabPlacement()) {
+                            switch(screen.getTabPlacement()) {
                             case Tab::PTOP:
-                                curr_y -= screen->getTabHeight();
+                                curr_y -= screen.getTabHeight();
                             case Tab::PBOTTOM:
-                                curr_h += screen->getTabHeight();
+                                curr_h += screen.getTabHeight();
                                 break;
                             case Tab::PLEFT:
-                                curr_x -= (screen->isTabRotateVertical())
-                                    ? screen->getTabHeight()
-                                    : screen->getTabWidth();
+                                curr_x -= (screen.isTabRotateVertical())
+                                    ? screen.getTabHeight()
+                                    : screen.getTabWidth();
                             case Tab::PRIGHT:
-                                curr_w += (screen->isTabRotateVertical())
-                                    ? screen->getTabHeight()
-                                    : screen->getTabWidth();
+                                curr_w += (screen.isTabRotateVertical())
+                                    ? screen.getTabHeight()
+                                    : screen.getTabWidth();
                                 break;
                             case Tab::PNONE:
                                 break;
                             }
                         } else { // shaded window
-                            if (screen->getTabPlacement() == Tab::PTOP)
-                                curr_y -= screen->getTabHeight();
-                            curr_h += screen->getTabHeight();
+                            if (screen.getTabPlacement() == Tab::PTOP)
+                                curr_y -= screen.getTabHeight();
+                            curr_h += screen.getTabHeight();
                         }
                     } // tab cheking done
 
@@ -615,18 +633,18 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 #else // !XINERAMA
         test_x = 0;
 #endif // XINERAMA
-        if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
+        if (screen.getRowPlacementDirection() == BScreen::RIGHTLEFT)
 #ifdef XINERAMA
             test_x = (head_x + head_w) - win_w - test_x;
 #else // !XINERAMA
-        test_x = screen->getWidth() - win_w - test_x;
+        test_x = screen.getWidth() - win_w - test_x;
 #endif // XINERAMA
 
-        while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
+        while (((screen.getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
 #ifdef XINERAMA
                 test_x >= 0 : test_x + win_w <= (head_x + head_w)
 #else // !XINERAMA
-                test_x > 0 : test_x + win_w < (signed) screen->getWidth()
+                test_x > 0 : test_x + win_w < (signed) screen.getWidth()
 #endif // XINERAMA
                 ) && ! placed) {
 
@@ -635,18 +653,18 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 #else // !XINERAMA
             test_y = 0;
 #endif // XINERAMA
-            if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
+            if (screen.getColPlacementDirection() == BScreen::BOTTOMTOP)
 #ifdef XINERAMA
                 test_y = (head_y + head_h) - win_h - test_y;
 #else // !XINERAMA
-            test_y = screen->getHeight() - win_h - test_y;
+            test_y = screen.getHeight() - win_h - test_y;
 #endif // XINERAMA
 
-            while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
+            while (((screen.getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 #ifdef XINERAMA
                     test_y >= head_y : test_y + win_h <= (head_y + head_h)
 #else // !XINERAMA
-                    test_y > 0 : test_y + win_h < (signed) screen->getHeight()
+                    test_y > 0 : test_y + win_h < (signed) screen.getHeight()
 #endif // XINERAMA
                     ) && ! placed) {
                 placed = True;
@@ -656,29 +674,29 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                 for (; it != it_end && placed; ++it) {
                     curr_x = (*it)->getXFrame();
                     curr_y = (*it)->getYFrame();
-                    curr_w = (*it)->getWidth() + screen->getBorderWidth2x();
+                    curr_w = (*it)->getWidth() + screen.getBorderWidth2x();
                     curr_h =
                         (((*it)->isShaded())
                          ? (*it)->getTitleHeight()
                          : (*it)->getHeight()) +
-                        screen->getBorderWidth2x();;
+                        screen.getBorderWidth2x();;
 
                     if ((*it)->hasTab()) {
                         if (! (*it)->isShaded()) { // not shaded window
-                            switch(screen->getTabPlacement()) {
+                            switch(screen.getTabPlacement()) {
                             case Tab::PTOP:
-                                curr_y -= screen->getTabHeight();
+                                curr_y -= screen.getTabHeight();
                             case Tab::PBOTTOM:
-                                curr_h += screen->getTabHeight();
+                                curr_h += screen.getTabHeight();
                                 break;
                             case Tab::PLEFT:
-                                curr_x -= (screen->isTabRotateVertical())
-                                    ? screen->getTabHeight()
-                                    : screen->getTabWidth();
+                                curr_x -= (screen.isTabRotateVertical())
+                                    ? screen.getTabHeight()
+                                    : screen.getTabWidth();
                             case Tab::PRIGHT:
-                                curr_w += (screen->isTabRotateVertical())
-                                    ? screen->getTabHeight()
-                                    : screen->getTabWidth();
+                                curr_w += (screen.isTabRotateVertical())
+                                    ? screen.getTabHeight()
+                                    : screen.getTabWidth();
                                 break;
                             default:
 #ifdef DEBUG
@@ -688,9 +706,9 @@ void Workspace::placeWindow(FluxboxWindow *win) {
                                 break;
                             }
                         } else { // shaded window
-                            if (screen->getTabPlacement() == Tab::PTOP)
-                                curr_y -= screen->getTabHeight();
-                            curr_h += screen->getTabHeight();
+                            if (screen.getTabPlacement() == Tab::PTOP)
+                                curr_y -= screen.getTabHeight();
+                            curr_h += screen.getTabHeight();
                         }
                     } // tab cheking done
 
@@ -733,8 +751,8 @@ void Workspace::placeWindow(FluxboxWindow *win) {
         if ((cascade_x > (head_w / 2)) ||
             (cascade_y > (head_h / 2)))
 #else // !XINERAMA
-            if (((unsigned) cascade_x > (screen->getWidth() / 2)) ||
-                ((unsigned) cascade_y > (screen->getHeight() / 2)))
+            if (((unsigned) cascade_x > (screen.getWidth() / 2)) ||
+                ((unsigned) cascade_y > (screen.getHeight() / 2)))
 #endif // XINERAMA
 
                 cascade_x = cascade_y = 32;
@@ -755,20 +773,20 @@ void Workspace::placeWindow(FluxboxWindow *win) {
     if (place_y + win_h > (head_y + head_h))
         place_y = head_y + ((head_h - win_h) / 2);
 #else // !XINERAMA
-    if (place_x + win_w > (signed) screen->getWidth())
-        place_x = (((signed) screen->getWidth()) - win_w) / 2;
-    if (place_y + win_h > (signed) screen->getHeight())
-        place_y = (((signed) screen->getHeight()) - win_h) / 2;
+    if (place_x + win_w > (signed) screen.getWidth())
+        place_x = (((signed) screen.getWidth()) - win_w) / 2;
+    if (place_y + win_h > (signed) screen.getHeight())
+        place_y = (((signed) screen.getHeight()) - win_h) / 2;
 #endif // XINERAMA
 
     // fix window placement, think of tabs
     if (win->hasTab()) {
-        if (screen->getTabPlacement() == Tab::PTOP) 
-            place_y += screen->getTabHeight();
-        else if (screen->getTabPlacement() == Tab::PLEFT)
-            place_x += (screen->isTabRotateVertical())
-                ? screen->getTabHeight()
-                : screen->getTabWidth();
+        if (screen.getTabPlacement() == Tab::PTOP) 
+            place_y += screen.getTabHeight();
+        else if (screen.getTabPlacement() == Tab::PLEFT)
+            place_x += (screen.isTabRotateVertical())
+                ? screen.getTabHeight()
+                : screen.getTabWidth();
     }
 
     win->moveResize(place_x, place_y, win->getWidth(), win->getHeight());
