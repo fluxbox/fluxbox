@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.102 2002/11/26 16:44:48 fluxgen Exp $
+// $Id: Window.cc,v 1.103 2002/11/27 14:00:44 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1739,7 +1739,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 						case Toolbar::TOPLEFT:
 						case Toolbar::TOPCENTER:
 						case Toolbar::TOPRIGHT:
-							slitModT -= screen->getToolbar()->getExposedHeight() + 
+							slitModT -= screen->getToolbar()->exposedHeight() + 
 								screen->getBorderWidth();
 							break;
 						default:
@@ -1752,7 +1752,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 						case Toolbar::BOTTOMLEFT:
 						case Toolbar::BOTTOMCENTER:
 						case Toolbar::BOTTOMRIGHT:
-							slitModB -= screen->getToolbar()->getExposedHeight() + 
+							slitModB -= screen->getToolbar()->exposedHeight() + 
 								screen->getBorderWidth();
 							break;
 						default:
@@ -1800,15 +1800,15 @@ void FluxboxWindow::maximize(unsigned int button) {
 				// is the toolbar on this head?
 				if ((screen->getToolbarOnHead() == (signed) head) ||
 						(screen->getToolbarOnHead() < 0)) {
-					dh -= screen->getToolbar()->getExposedHeight() +
+					dh -= screen->getToolbar()->exposedHeight() +
 						screen->getBorderWidth2x();
 				}
 			} else {
-				dh -= screen->getToolbar()->getExposedHeight() +
+				dh -= screen->getToolbar()->exposedHeight() +
 					screen->getBorderWidth2x();
 			}
 #else // !XINERAMA
-			dh -= screen->getToolbar()->getExposedHeight() +
+			dh -= screen->getToolbar()->exposedHeight() +
 						screen->getBorderWidth2x();
 #endif // XINERAMA
 		}
@@ -1852,7 +1852,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 				if ((screen->getToolbarOnHead() == (signed) head) ||
 						(screen->getToolbarOnHead() < 0)) {
 					dy += (((screen->getHeadHeight(head) + slitModT - slitModB
-						- (screen->getToolbar()->getExposedHeight())) - dh) / 2)
+						- (screen->getToolbar()->exposedHeight())) - dh) / 2)
 						- screen->getBorderWidth2x();
 			 	} else {
 					dy += ((screen->getHeadHeight(head) + slitModT - slitModB - dh) / 2) -
@@ -1860,11 +1860,11 @@ void FluxboxWindow::maximize(unsigned int button) {
 				}
 			} else { // no xinerama
 				dy = (((screen->getHeight() + slitModT - slitModB -
-					(screen->getToolbar()->getExposedHeight())) - dh) / 2) -
+					(screen->getToolbar()->exposedHeight())) - dh) / 2) -
 					screen->getBorderWidth2x();
 			}
 #else // !XINERAMA
-			dy = (((screen->getHeight() + slitModT - slitModB - (screen->getToolbar()->getExposedHeight()))
+			dy = (((screen->getHeight() + slitModT - slitModB - (screen->getToolbar()->exposedHeight()))
 			 - dh) / 2) - screen->getBorderWidth2x();
 #endif // XINERAMA
 
@@ -1877,11 +1877,11 @@ void FluxboxWindow::maximize(unsigned int button) {
 				if (!screen->hasXinerama() ||
 						(screen->getToolbarOnHead() == (signed) head) ||
 						(screen->getToolbarOnHead() < 0)) {
-					dy += screen->getToolbar()->getExposedHeight() +
+					dy += screen->getToolbar()->exposedHeight() +
 						screen->getBorderWidth2x();
 				}
 #else // !XINERAMA
-				dy += screen->getToolbar()->getExposedHeight() +
+				dy += screen->getToolbar()->exposedHeight() +
 						screen->getBorderWidth2x();
 #endif // XINERAMA
 				break;
@@ -2968,7 +2968,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 				case Toolbar::TOPLEFT:
 				case Toolbar::TOPCENTER:
 				case Toolbar::TOPRIGHT:
-					dtty = screen->getToolbar()->getExposedHeight() +
+					dtty = screen->getToolbar()->exposedHeight() +
 							screen->getBorderWidth();
 					dbby = screen->getHeight();
 					break;
