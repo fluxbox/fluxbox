@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.2 2003/08/11 20:39:05 fluxgen Exp $
+// $Id: WorkspaceNameTool.cc,v 1.3 2003/08/12 00:22:11 fluxgen Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -109,6 +109,7 @@ void WorkspaceNameTool::renderTheme() {
     } else {
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
                                                        m_theme.texture());
+        m_button.setBackgroundPixmap(m_pixmap);
     }
     if (tmp)
         m_screen.imageControl().removeImage(tmp);
