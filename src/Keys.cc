@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.34 2003/06/30 20:59:28 fluxgen Exp $
+//$Id: Keys.cc,v 1.35 2003/07/02 05:42:21 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -189,7 +189,11 @@ bool Keys::load(const char *filename) {
                 }			
 
             } else { // parse command line
-
+                if (last_key == 0) {
+                    cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
+                    cerr<<"> "<<linebuffer<<endl;
+                    break;
+                }
 
                 const char *str = 
                     FbTk::StringUtil::strcasestr(linebuffer.c_str(),
