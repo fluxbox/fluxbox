@@ -22,16 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.22 2002/08/04 15:37:37 fluxgen Exp $
+// $Id: Workspace.cc,v 1.23 2002/08/11 22:35:40 fluxgen Exp $
 
-// use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
+#include "Workspace.hh"
 
 #include "i18n.hh"
 #include "fluxbox.hh"
@@ -39,20 +32,30 @@
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "Window.hh"
-#include "Workspace.hh"
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
 
-#include <stdio.h>
-#include <string.h>
+// use GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
+#include <cstdio>
+#include <cstring>
+
 #include <algorithm>
 #include <iostream>
+
 using namespace std;
 
+Workspace::GroupList Workspace::m_groups;
 
 Workspace::Workspace(BScreen *scrn, unsigned int i):
 screen(scrn),
@@ -60,15 +63,10 @@ lastfocus(0),
 m_clientmenu(this),
 m_name(""),
 m_id(i),
-cascade_x(32), cascade_y(32)
-{
+cascade_x(32), cascade_y(32) {
 
-	char *tmp;
-	screen->getNameOfWorkspace(m_id, &tmp);
-	setName(tmp);
+	setName(screen->getNameOfWorkspace(m_id));
 
-	if (tmp)
-		delete [] tmp;
 }
 
 
@@ -90,7 +88,7 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	stackingList.push_front(w);
 
 	//insert window after the currently focused window	
-	FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
+	//FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
 
 	//if there isn't any window that's focused, just add it to the end of the list
 	/*
@@ -328,18 +326,91 @@ FluxboxWindow *Workspace::getWindow(unsigned int index) {
 }
 
 
-int Workspace::getCount(void) const {
+int Workspace::getCount() const {
 	return windowList.size();
 }
 
+namespace {
+// helper class for checkGrouping
+class FindInGroup {
+public:
+	FindInGroup(const FluxboxWindow &w):m_w(w) { }
+	bool operator ()(const string &name) {
+		return (name == m_w.instanceName());
+	}
+private:
+	const FluxboxWindow &m_w;
+};
 
-void Workspace::update(void) {
+};
+
+//Note: this function doesn't check if the window is groupable
+void Workspace::checkGrouping(FluxboxWindow &win) {
+#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): Checking grouping. ("<<win.instanceName()<<"/"<<
+		win.className()<<")"<<endl;	
+#endif // DEBUG
+
+	// go throu every group and search for matching win instancename
+	GroupList::iterator g(m_groups.begin());
+	GroupList::iterator g_end(m_groups.end());
+	for (; g != g_end; ++g) {
+		Group::iterator name((*g).begin());
+		Group::iterator name_end((*g).end());
+		for (; name != name_end; ++name) {
+
+			if ((*name) != win.instanceName())
+				continue;
+
+			// find a window with the specific name
+			Windows::iterator wit(getWindowList().begin());
+			Windows::iterator wit_end(getWindowList().end());
+			for (; wit != wit_end; ++wit) {
+#ifdef DEBUG
+				cerr<<__FILE__<<" check group with : "<<(*wit)->instanceName()<<endl;
+#endif // DEBUG
+				if (find_if((*g).begin(), (*g).end(), FindInGroup(*(*wit))) != (*g).end()) {
+					//toggle tab on
+					if ((*wit)->getTab() == 0)
+						(*wit)->setTab(true);
+					if (win.getTab() == 0)
+						win.setTab(true);
+					(*wit)->getTab()->insert(win.getTab());
+
+					return; // grouping done
+				}
+			}
+
+		}
+
+	}
+}
+
+bool Workspace::loadGroups(const std::string &filename) {
+	ifstream infile(filename.c_str());
+	if (!infile)
+		return false;
+	m_groups.clear(); // erase old groups
+
+	// load new groups
+	while (!infile.eof()) {
+		string line;
+		vector<string> names;
+		getline(infile, line);
+		StringUtil::stringtok(names, line);
+		m_groups.push_back(names);
+	}
+	
+	return true;
+}
+
+void Workspace::update() {
 	m_clientmenu.update();
 	screen->getToolbar()->redrawWindowLabel(True);
 }
 
 
-bool Workspace::isCurrent(void) const{
+bool Workspace::isCurrent() const{
 	return (m_id == screen->getCurrentWorkspaceID());
 }
 
@@ -353,9 +424,8 @@ void Workspace::setCurrent(void) {
 }
 
 
-void Workspace::setName(const char *name) {
-
-	if (name) {
+void Workspace::setName(const std::string &name) {
+	if (name.size() != 0) {
 		m_name = name;
 	} else { //if name == 0 then set default name from nls
 		char tname[128];
@@ -514,12 +584,6 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 								curr_w += (screen->isTabRotateVertical())
 									? screen->getTabHeight()
 									: screen->getTabWidth();
-								break;
-							default:
-								#ifdef DEBUG
-								cerr << __FILE__ << ":" <<__LINE__ << ": " <<
-									"Unsupported Placement" << endl;
-								#endif // DEBUG
 								break;
 							}
 						} else { // shaded window

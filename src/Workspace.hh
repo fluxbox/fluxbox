@@ -50,7 +50,7 @@ public:
 	/**
 		Set workspace name
 	*/
-	void setName(const char *name);
+	void setName(const std::string &name);
 	void showAll();
 	void hideAll();
 	void removeAll();
@@ -86,21 +86,29 @@ public:
 	*/
 	FluxboxWindow *getWindow(unsigned int id);
 	const FluxboxWindow *getWindow(unsigned int id) const;
-	inline const Windows &getWindowList() const { return windowList; }
+	const Windows &getWindowList() const { return windowList; }
+	Windows &getWindowList() { return windowList; }
+
 	bool isCurrent() const;
 	bool isLastWindow(FluxboxWindow *window) const;
 	int getCount() const;
-
+	void checkGrouping(FluxboxWindow &win);
+	static bool loadGroups(const std::string &filename);
 protected:
 	void placeWindow(FluxboxWindow *win);
 
 private:
+	
+
 	BScreen *screen;
 	FluxboxWindow *lastfocus;
 	Clientmenu m_clientmenu;
 
 	typedef std::list<FluxboxWindow *> WindowStack;
- 
+	typedef std::vector<std::string> Group;
+	typedef std::vector<Group> GroupList;
+	
+	static GroupList m_groups; ///< handle auto groupings
 
 	WindowStack stackingList;
 	Windows windowList;
