@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.13 2003/08/22 22:17:30 fluxgen Exp $
+// $Id: Theme.cc,v 1.14 2003/08/28 14:18:36 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -132,6 +132,7 @@ void ThemeItem<FbTk::Texture>::load() {
     std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
     if (pm.get() == 0) {
         cerr<<"Resource("<<name()+".pixmap"<<"): Failed to load image: "<<pixmap_name<<endl;
+        m_value.pixmap() = 0;
     } else
         m_value.pixmap() = pm->pixmap().release();
 }
