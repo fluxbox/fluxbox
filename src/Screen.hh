@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.119 2003/08/11 15:32:46 fluxgen Exp $
+// $Id: Screen.hh,v 1.120 2003/08/12 00:27:13 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -135,6 +135,7 @@ public:
     inline FocusedWindows &getFocusedList() { return focused_list; }
     WinClient *getLastFocusedWindow(int workspace = -1);
     const Workspaces &getWorkspacesList() const { return m_workspaces_list; }
+    Workspaces &getWorkspacesList() { return m_workspaces_list; }
     const WorkspaceNames &getWorkspaceNames() const { return m_workspace_names; }
     /**
        @name Screen signals
