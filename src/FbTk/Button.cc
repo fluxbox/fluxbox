@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.9 2003/08/04 12:46:49 fluxgen Exp $
+// $Id: Button.cc,v 1.10 2003/08/11 14:40:15 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -89,15 +89,15 @@ void Button::setPressedPixmap(Pixmap pm) {
 }
 
 void Button::setBackgroundColor(const Color &color) {
-    m_win.setBackgroundColor(color);
-    m_background_color = color;
+    m_background_color = color;    
+    window().setBackgroundColor(color);
     clear();
     window().updateTransparent();
 }
 
 void Button::setBackgroundPixmap(Pixmap pm) {
-    m_win.setBackgroundPixmap(pm);
     m_background_pm = pm;
+    window().setBackgroundPixmap(pm);
     clear();
     window().updateTransparent();
 }
@@ -124,20 +124,17 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
         m_win.setBackgroundPixmap(m_background_pm);
     else
         m_win.setBackgroundColor(m_background_color);
+
     clear(); // clear background
 
-    if (m_foreground_pm) { // draw foreground
+    if (m_foreground_pm) { // draw foreground pixmap
         Display *disp = App::instance()->display();
 
-        if (m_gc == 0) // get default gc
+        if (m_gc == 0) // get default gc if we dont have one
             m_gc = DefaultGC(disp, m_win.screenNumber());
 
         XCopyArea(disp, m_foreground_pm, m_win.window(), m_gc, 0, 0, width(), height(), 0, 0);
     }
-
-    if (event.x < 0 || event.y < 0 ||
-        event.x > width() || event.y > height())
-        return;
 
     if (event.button > 0 && event.button <= 5 &&
         m_onclick[event.button -1].get() != 0)
@@ -147,6 +144,11 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
 }
 
 void Button::exposeEvent(XExposeEvent &event) {
+    if (m_background_pm)
+        m_win.setBackgroundPixmap(m_background_pm);
+    else
+        m_win.setBackgroundColor(m_background_color);
+
     clear();
     window().updateTransparent(event.x, event.y, event.width, event.height);
 }
