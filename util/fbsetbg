@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.17 2003/09/03 11:55:29 fluxgen Exp $
+# $Id: fbsetbg,v 1.18 2003/09/18 12:15:17 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -45,7 +45,7 @@
 
 
 # The wallpapersetter is selected in this order
-wpsetters='chbg Esetroot wmsetbg display qiv xv xsri xli xsetbg' # broken icewmbg'
+wpsetters='feh Esetroot wmsetbg chbg display qiv xv xsri xli xsetbg' # broken icewmbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 
 
@@ -83,8 +83,9 @@ Options:
     -p  Tips
 
 Files:
-    In this file the wallpaper you set will be stored, for the -l option:
-    ~/.fluxbox/lastwallpaper
+
+    ~/.fluxbox/lastwallpaper     In this file the wallpaper you set
+                                 will be stored, for the -l option:
 
 EOF
 }
@@ -92,7 +93,8 @@ EOF
 display_tips() {
     cat << EOF
 
-1) To replace all occurrences of bsetbg in a file use this command:
+1) To replace all occurrences of bsetbg with fbsetbg in a file use this
+   command:
 
    perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,' filename
 
@@ -129,7 +131,6 @@ case `uname` in
         }
         ;;
 esac
-
 
 message() {
     xmessage -center "$@"
@@ -169,13 +170,79 @@ or Esetroot (from Eterm)"
 standardok=\
 "$WPSETTER is a nice wallpapersetter. You won't have any problems."
 
+unset debug
+#Get options.
+getopts ":a:f:c:t:A:F:C:T:pdlh-" COMMAND_LINE_ARGUMENT
+case "${COMMAND_LINE_ARGUMENT}" in
+    d) debug=true
+        ;;
+    a) option='$aspect'
+        wallpaper=$OPTARG
+        ;;
+    f) option='$full'
+        wallpaper=$OPTARG
+        ;;
+    c) option='$center'
+        wallpaper=$OPTARG
+        ;;
+    t) option='$tile'
+        wallpaper=$OPTARG
+        ;;
+    A) option='$aspect'
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+    F) option='$full'
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+    C) option='$center'
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+    T) option='$tile'
+        wallpaper=$OPTARG
+        remember=false
+        ;;
+
+    l)
+        if [ -r $lastwallpaper ]; then
+            option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
+            wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
+        else
+            message "No previous wallpaper recorded for display ${DISPLAY}"
+            exit 1
+        fi
+        remember=false
+        ;;
+    h) display_help ; exit 0 ;;
+    p) display_tips ; exit 0 ;;
+    -) echo "fbsetbg doesn't recognize -- gnu-longopts."
+        echo 'Use fbsetbg -h for a help message.'
+        display_usage
+        exit 1
+        ;;
+    *) if [ ! -r "$1" ]; then
+           echo "$1 isn't an existing wallpaper or a valid option." >&2
+           display_usage
+           exit 1
+       fi
+       if [ -z "$1" ]; then
+           message 'No wallpaper to set' >&2
+           display_usage
+           exit 1
+       fi
+       ;;
+esac
+
+
 case $WPSETTER in
     chbg)
         full='-once -mode maximize'
         tile='-once -mode tile'
         center='-once -mode center'
         aspect='-once -mode smart -max_grow 100 -max_size 100'
-        debugstory=$standardok
+        debugstory="chbg supports all features but it doesn't report errors. I reported this bug to the chbg developers."
         ;;
     xsri)
         full='--center-x --center-y --scale-width=100 --scale-height=100'
@@ -217,7 +284,7 @@ case $WPSETTER in
         center='-center -onroot -quiet -border black'
         aspect='-fullscreen -onroot -quiet -border black'
         full=$aspect #broken
-        debugstory='The fillscreen option (-f) is broken, defaults to (-a). $standardrant'
+        debugstory="The fillscreen option (-f) is broken, defaults to (-a). $standardrant"
         ;;
     qiv)
         full='--root_s'
@@ -232,6 +299,13 @@ case $WPSETTER in
         center='-rmode 5 -root -quit'
         aspect='-maxpect -smooth -root -quit'
         debugstory=$standardrant
+        ;;
+    feh)
+        full='--bg-scale'
+        tile='--bg-tile'
+        center='--bg-center'
+        aspect=$full
+        debugstory=$standardok
         ;;
     icewmbg)
         tile='-s'
@@ -251,82 +325,26 @@ recommend you install the package provided by your distro."
         ;;
 esac
 
-#Get options.
-getopts ":a:f:c:t:A:F:C:T:pdlh-" COMMAND_LINE_ARGUMENT
-case "${COMMAND_LINE_ARGUMENT}" in
-    d) debugfbsetbg
-        exit 0
-        ;;
-    a) option=$aspect
-        wallpaper=$OPTARG
-        ;;
-    f) option=$full
-        wallpaper=$OPTARG
-        ;;
-    c) option=$center
-        wallpaper=$OPTARG
-        ;;
-    t) option=$tile
-        wallpaper=$OPTARG
-        ;;
-    A) option=$aspect
-        wallpaper=$OPTARG
-        remember=false
-        ;;
-    F) option=$full
-        wallpaper=$OPTARG
-        remember=false
-        ;;
-    C) option=$center
-        wallpaper=$OPTARG
-        remember=false
-        ;;
-    T) option=$tile
-        wallpaper=$OPTARG
-        remember=false
-        ;;
+if [ "$debug" = true ];then
+    debugfbsetbg
+    exit 0
+fi
 
-    l)
-        if [ -r $lastwallpaper ]; then
-            option=`grep "|${DISPLAY}$"    $lastwallpaper|cut -d'|' -f1`
-            wallpaper=`grep "|${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
-        else
-            message 'No previous wallpaper recorded. You have never used fbsetbg before.'
-            exit 1
-        fi
-        remember=false
-        ;;
-    h) display_help ; exit 0 ;;
-    p) display_tips ; exit 0 ;;
-    -) echo "fbsetbg doesn't recognize -- gnu-longopts."
-        echo 'Use fbsetbg -h for a long help message.'
-        display_usage
-        exit 1
-        ;;
-    *) if [ ! -r "$1" ]; then
-           echo "$1 isn't an existing wallpaper or a valid option." >&2
-           display_usage
-           exit 1
-       fi
-       if [ -z "$1" ]; then
-           message 'No wallpaper to set' >&2
-           display_usage
-           exit 1
-       fi
-       ;;
-esac
-
-option=${option:=$full}
+option=${option:='$full'}
 wallpaper=${wallpaper:=$1}
-
 
 if [ ! -r "$wallpaper" ]; then
     message "Can't find wallpaper $wallpaper"
     exit 1
 fi
 
-$WPSETTER $option "$wallpaper" || message "Something went wrong while setting the wallpaper
+eval $WPSETTER $option "$wallpaper"
+if [ $? -ne 0 ]; then
+    message "Something went wrong while setting the wallpaper.
 Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
+    exit 1
+fi
+
 #remember previous wallpaper
 [ ! "$remember" = false ] && remembercommand
 # Off course this returns 1 most of the time.
