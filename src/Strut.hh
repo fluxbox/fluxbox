@@ -20,14 +20,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Strut.hh,v 1.1 2003/06/18 12:27:48 fluxgen Exp $
+// $Id: Strut.hh,v 1.2 2003/06/20 01:30:41 fluxgen Exp $
 
 #ifndef STRUT_HH
 #define STRUT_HH
 
 class Strut {
 public:
-    Strut(int left, int right, int top, int bottom):m_left(left), m_right(right), m_top(top), m_bottom(bottom) { }
+    Strut(int left, int right, 
+          int top, int bottom):m_left(left), m_right(right), 
+                               m_top(top), m_bottom(bottom) { }
     int left() const { return m_left; }
     int right() const { return m_right; }
     int bottom() const { return m_bottom; }
