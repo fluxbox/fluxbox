@@ -19,15 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   __Clientmenu_hh
-#define   __Clientmenu_hh
+#ifndef   _CLIENTMENU_HH_
+#define   _CLIENTMENU_HH_
 
 // forward declarations
 class Clientmenu;
+class Workspace;
 
 #include "Basemenu.hh"
-#include "Workspace.hh"
-#include "fluxbox.hh"
+
 
 
 class Clientmenu : public Basemenu {
@@ -45,5 +45,5 @@ public:
 };
 
 
-#endif // __Clientmenu_hh
+#endif // _CLIENTMENU_HH_
 
