@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.13 2004/09/12 09:42:43 akir Exp $
+// $Id: main.cc,v 1.14 2004/09/12 10:01:46 akir Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -89,7 +89,6 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "-nearmouse") == 0) {
             set_pos = true;
             near_mouse = true;
-            i++;
         } else if (strcmp(argv[i], "-fg") == 0 && i+1 < argc) {
             foreground = argv[++i];
         } else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
