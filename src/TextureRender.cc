@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.3 2002/12/01 13:42:00 rathnor Exp $
+// $Id: TextureRender.cc,v 1.4 2002/12/01 19:41:40 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -30,7 +30,11 @@
 #include "i18n.hh"
 #include "App.hh"
 
-TextureRender::TextureRender(BImageControl &imgctrl, unsigned int w, unsigned int h, 
+#include <iostream>
+using namespace std;
+
+TextureRender::TextureRender(BImageControl &imgctrl, 
+                             unsigned int w, unsigned int h, 
                              XColor *_colors, size_t num_colors):
     control(imgctrl),
     colors(_colors),
@@ -82,10 +86,10 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
                                   RootWindow(disp, control.screenNum()), width,
                                   height, control.depth());
     if (pixmap == None) {
-        fprintf(stderr,
-                I18n::instance()->getMessage(
-                    FBNLS::ImageSet, FBNLS::ImageErrorCreatingSolidPixmap,
-                    "BImage::render_solid: error creating pixmap\n"));
+        cerr<<I18n::instance()->
+            getMessage(
+                       FBNLS::ImageSet, FBNLS::ImageErrorCreatingSolidPixmap,
+                       "BImage::render_solid: error creating pixmap")<<endl;
         return None;
     }
 
