@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.15 2003/09/29 14:58:15 rathnor Exp $
+// $Id: WinClient.hh,v 1.16 2003/12/17 01:20:49 fluxgen Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -38,69 +38,49 @@ class Strut;
 class WinClient:public FbTk::FbWindow {
 public:
     typedef std::list<WinClient *> TransientList;
+    // this structure only contains 3 elements... the Motif 2.0 structure contains
+    // 5... we only need the first 3... so that is all we will define
+    typedef struct MwmHints {
+        unsigned long flags;       // Motif wm flags
+        unsigned long functions;   // Motif wm functions
+        unsigned long decorations; // Motif wm decorations
+    } MwmHints;
 
     WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin = 0);
 
     ~WinClient();
+
     void updateRect(int x, int y, unsigned int width, unsigned int height);
+
     bool sendFocus(); // returns whether we sent a message or not 
                       // i.e. whether we assume the focus will get taken
     void sendClose(bool forceful = false);
     // not aware of anything that makes this false at present
     inline bool isClosable() const { return true; }
     void reparent(Window win, int x, int y);
-    bool getAttrib(XWindowAttributes &attr) const;
-    bool getWMName(XTextProperty &textprop) const;
-    bool getWMIconName(XTextProperty &textprop) const;
-    /// @return name member of class structure
-    const std::string &getWMClassName() const; 
-    /// @return class member of class structure
-    const std::string &getWMClassClass() const;
+
+    void addModal(); // some transient of ours (or us) is modal
+    void removeModal(); // some transient (or us) is no longer modal
+
     /// updates from wm class hints
     void updateWMClassHint();
     void updateWMProtocols();
 
-    inline const std::string &getTitle() const { return m_title; }
+ 
     void updateTitle();
     void updateIconTitle();
-    BScreen &screen() { return m_screen; }
-    const BScreen &screen() const { return m_screen; }
-    /// notifies when this client dies
-    FbTk::Subject &dieSig() { return m_diesig; }
-
     /// updates transient window information
     void updateTransientInfo();
-    WinClient *transientFor() { return transient_for; }
-    const WinClient *transientFor() const { return transient_for; }
-    TransientList &transientList() { return transients; }
-    const TransientList &transientList() const { return transients; }
-    bool isTransient() const { return transient_for != 0; }
-
-    bool isModal() const { return m_modal > 0; }
-    void addModal(); // some transient of ours (or us) is modal
-    void removeModal(); // some transient (or us) is no longer modal
-
-    bool operator == (const FluxboxWindow &win) const {
-        return (m_win == &win);
-    }
-
-    void setStrut(Strut *strut);
-    void clearStrut();
-
-    bool focus(); // calls Window->setCurrentClient to give focus to this client
-
-    const std::string &title() const { return m_title; }
-    const std::string &iconTitle() const { return m_icon_title; }
-    const FluxboxWindow *fbwindow() const { return m_win; }
-    FluxboxWindow *fbwindow() { return m_win; }
-
-    static const int PropBlackboxHintsElements = 5;
-    static const int PropMwmHintsElements = 3;
 
     void updateBlackboxHints();
     void updateMWMHints();
     void updateWMHints();
     void updateWMNormalHints();
+
+    void setStrut(Strut *strut);
+    void clearStrut();
+
+    bool focus(); // calls Window->setCurrentClient to give focus to this client
 
     /**
      * Changes width and height to the nearest (lower) value
@@ -112,15 +92,61 @@ public:
      */
     void applySizeHints(int &width, int &height, int *display_width = 0, int *display_height = 0);
 
-    // grouping is tracked by remembering the window to the left in the group
-    Window getGroupLeftWindow() const;
+
     void setGroupLeftWindow(Window win);
-    bool hasGroupLeftWindow() const;
+
+    void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs);
 
     // does this client have a pending unmap or destroy event?
     bool validateClient() const;
 
+    //
+    // accessors 
+    //
+
+    bool getAttrib(XWindowAttributes &attr) const;
+    bool getWMName(XTextProperty &textprop) const;
+    bool getWMIconName(XTextProperty &textprop) const;
+    /// @return name member of class structure
+    const std::string &getWMClassName() const; 
+    /// @return class member of class structure
+    const std::string &getWMClassClass() const;
+
+    BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
+    /// notifies when this client dies
+    FbTk::Subject &dieSig() { return m_diesig; }
+
+    inline WinClient *transientFor() { return transient_for; }
+    inline const WinClient *transientFor() const { return transient_for; }
+    inline TransientList &transientList() { return transients; }
+    inline const TransientList &transientList() const { return transients; }
+    inline bool isTransient() const { return transient_for != 0; }
+
+    inline bool isModal() const { return m_modal > 0; }
+
+    inline bool operator == (const FluxboxWindow &win) const {
+        return (m_win == &win);
+    }
+
+
+    inline const std::string &title() const { return m_title; }
+    inline const std::string &iconTitle() const { return m_icon_title; }
+    inline const FluxboxWindow *fbwindow() const { return m_win; }
+    inline FluxboxWindow *fbwindow() { return m_win; }
     inline int gravity() const { return m_win_gravity; }
+
+    bool hasGroupLeftWindow() const;
+    // grouping is tracked by remembering the window to the left in the group
+    Window getGroupLeftWindow() const;
+
+    inline int getFocusMode() const { return m_focus_mode; }
+    inline const FluxboxWindow::BlackboxHints *getBlackboxHint() const { return m_blackbox_hint; }
+    inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
+
+
+    static const int PropBlackboxHintsElements = 5;
+    static const int PropMwmHintsElements = 3;
 
     /**
        !! TODO !!
@@ -139,13 +165,6 @@ public:
         base_width, base_height;
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
-    // this structure only contains 3 elements... the Motif 2.0 structure contains
-    // 5... we only need the first 3... so that is all we will define
-    typedef struct MwmHints {
-        unsigned long flags;       // Motif wm flags
-        unsigned long functions;   // Motif wm functions
-        unsigned long decorations; // Motif wm decorations
-    } MwmHints;
 
     FluxboxWindow *m_win;
     class WinClientSubj: public FbTk::Subject {
@@ -156,13 +175,7 @@ public:
         WinClient &m_winclient;
     };
 
-    inline int getFocusMode() const { return m_focus_mode; }
-    inline const FluxboxWindow::BlackboxHints *getBlackboxHint() const {
-        return m_blackbox_hint; }
-    void saveBlackboxAttribs(FluxboxWindow::BlackboxAttributes &blackbox_attribs);
-    inline const MwmHints *getMwmHint() const { return m_mwm_hint; }
-
-    enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
+    enum FocusMode { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 private:
     // number of transients which we are modal for
