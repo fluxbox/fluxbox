@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.6 2002/02/17 18:57:47 fluxgen Exp $
+// $Id: Keys.hh,v 1.7 2002/02/20 23:10:48 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -36,6 +36,7 @@ enum KeyAction{
 			RAISE, LOWER,
 			CLOSE,
 			ABORTKEYCHAIN,
+            WORKSPACE,
 			WORKSPACE1, WORKSPACE2,  WORKSPACE3,  WORKSPACE4,	
 			WORKSPACE5, WORKSPACE6,	 WORKSPACE7,  WORKSPACE8,	
 			WORKSPACE9, WORKSPACE10, WORKSPACE11, WORKSPACE12,	
@@ -60,6 +61,7 @@ enum KeyAction{
 	bool reconfigure(char *filename);
 	const char *getActionStr(KeyAction action);
 	std::string getExecCommand() { return m_execcmdstring; }
+	int getParam() const { return m_param; }
 
 private:
 	void deleteTree();
@@ -100,6 +102,7 @@ private:
 		unsigned int mod;
 		std::vector<t_key *> keylist;
 		std::string execcommand;
+        int param;              // parameter to comands
 	};
 	
 	bool mergeTree(t_key *newtree, t_key *basetree=0);
@@ -117,6 +120,7 @@ private:
 	std::vector<t_key *> m_keylist;	
 	t_key *m_abortkey; //abortkey for keygrabbing chain
 	std::string m_execcmdstring; //copy of the execcommandstring
+    int m_param;                // copy of the param argument
 	Display *m_display;
 };
 

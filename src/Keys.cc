@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.9 2002/01/21 01:48:47 fluxgen Exp $
+//$Id: Keys.cc,v 1.10 2002/02/20 23:10:48 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -81,6 +81,7 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 	{"Lower", LOWER},
 	{"Close", CLOSE},
 	{"AbortKeychain", ABORTKEYCHAIN},
+	{"Workspace", WORKSPACE},
 	{"Workspace1", WORKSPACE1},
 	{"Workspace2", WORKSPACE2},
 	{"Workspace3", WORKSPACE3},
@@ -269,10 +270,41 @@ bool Keys::load(char *filename) {
 					}
 					
 					last_key->action = m_actionlist[i].action;
-					if (last_key->action == Keys::EXECUTE)
+                    switch(last_key->action) {
+                        case Keys::EXECUTE:
 						last_key->execcommand = 
-							const_cast<char *>(StringUtil::strcasestr(linebuffer.get(), getActionStr(Keys::EXECUTE))+
+                                const_cast<char *>
+                                (StringUtil::strcasestr(linebuffer.get(),
+                                                        getActionStr(Keys::EXECUTE))+
 							strlen(getActionStr(Keys::EXECUTE)));
+                            break;
+                        case WORKSPACE:
+                            if (argc + 1 < val.size())
+                                last_key->param = atoi( val[argc+1].c_str());
+                            else
+                                last_key->param = 0;
+                            break;
+                        case LEFTWORKSPACE:
+                        case RIGHTWORKSPACE:
+                        case NEXTWORKSPACE:
+                        case PREVWORKSPACE:
+                            if (argc + 1 < val.size())
+                                last_key->param = atoi( val[argc+1].c_str());
+                            else
+                                last_key->param = 1;
+                            break;
+                        case NUDGERIGHT:
+                        case NUDGELEFT:
+                        case NUDGEUP:
+                        case NUDGEDOWN:
+                            if (argc + 1 < val.size())
+                                last_key->param = atoi( val[argc+1].c_str());
+                            else
+                                last_key->param = 2;
+                            break;
+                        default:
+                            break;
+                    }
 
 					//add the keychain to list										
 					if (!mergeTree(current_key))
@@ -421,6 +453,7 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
 				} else {
 					if (m_keylist[i]->action == Keys::EXECUTE)
 						m_execcmdstring = m_keylist[i]->execcommand; //update execcmdstring if action is grabExecute
+                    m_param = m_keylist[i]->param;
 					return m_keylist[i]->action;
 				}
 			}
@@ -560,6 +593,7 @@ Keys::t_key::t_key(unsigned int key_, unsigned int mod_, KeyAction action_) {
 	action = action_;
 	key = key_;
 	mod = mod_;	
+    param = 0;
 }
 
 Keys::t_key::t_key(t_key *k) {
@@ -567,6 +601,7 @@ Keys::t_key::t_key(t_key *k) {
 	key = k->key;
 	mod = k->mod;
 	execcommand = k->execcommand;
+    param = k-> param;
 }
 
 Keys::t_key::~t_key() {	
