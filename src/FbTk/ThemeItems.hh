@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.1 2003/10/13 22:56:28 fluxgen Exp $
+// $Id: ThemeItems.hh,v 1.2 2003/10/25 22:09:19 fluxgen Exp $
 
 /// @file implements common theme items
 
@@ -113,17 +113,23 @@ void ThemeItem<FbTk::Texture>::load() {
 
 
     // set default value if we failed to load color
-    if (!m_value.color().setFromString(color_name.c_str(), m_tm.screenNum()))
+    if (!m_value.color().setFromString(color_name.c_str(),
+                                       m_tm.screenNum()))
         m_value.color().setFromString("darkgray", m_tm.screenNum());
 
-    if (!m_value.colorTo().setFromString(colorto_name.c_str(), m_tm.screenNum()))
+    if (!m_value.colorTo().setFromString(colorto_name.c_str(),
+                                         m_tm.screenNum()))
         m_value.colorTo().setFromString("white", m_tm.screenNum());
            
+    StringUtil::removeFirstWhitespace(pixmap_name);
+    StringUtil::removeTrailingWhitespace(pixmap_name);
 
-    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
+    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name,
+                                                 m_tm.screenNum()));
     if (pm.get() == 0) {
         if (FbTk::ThemeManager::instance().verbose())
-            cerr<<"Resource("<<name()+".pixmap"<<"): Failed to load image: "<<pixmap_name<<endl;
+            cerr<<"Resource("<<name()+".pixmap"
+                <<"): Failed to load image: "<<pixmap_name<<endl;
         m_value.pixmap() = 0;
     } else
         m_value.pixmap() = pm->pixmap().release();
@@ -163,9 +169,14 @@ setFromString(const char *str) {
     if (str == 0)
         setDefaultValue();
     else {
-        std::auto_ptr<FbTk::PixmapWithMask> pm(Image::load(str, m_tm.screenNum()));
+        std::string filename(str);
+
+        StringUtil::removeFirstWhitespace(filename);
+        StringUtil::removeTrailingWhitespace(filename);
+
+        std::auto_ptr<FbTk::PixmapWithMask> pm(Image::load(filename, m_tm.screenNum()));
         if (pm.get() == 0)
-            setDefaultValue();
+            setDefaultValue();            
         else {
             (*this)->pixmap() = pm->pixmap().release();
             (*this)->mask() = pm->mask().release();
