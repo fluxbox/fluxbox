@@ -5,6 +5,9 @@ Changes for 0.9.10:
     - big improvement in look/compatibility of older styles
     Toolbar.cc Theme.hh/cc ThemeItems.hh ToolbarTheme.cc MenuTheme.cc Text.cc
     IconbarTheme.cc SlitTheme.cc WorkspaceNameTheme.hh IconbarTool.cc
+*04/04/26:
+  * Fixed some small compile errors with gcc 3.4
+    (Henrik)
 Changes for 0.9.9:
 *04/04/22:
   * New Command: Deiconify <mode> <dest>
