@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.11 2004/01/12 11:14:55 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.12 2004/01/21 21:57:46 fluxgen Exp $
 
 #
 # Portability notes:
@@ -246,108 +246,158 @@ EDITORMENU='Editors'
 EXITITEM='Exit'
 FBSETTINGSMENU='fluxbox menu'
 FILEUTILSMENU='File utils'
+FLUXBOXCOMMAND='Fluxbox Command'
 GAMESMENU='Games'
 GNOMEMENUTEXT='Gnome-menus'
 GRAPHICMENU='Graphics'
 KDEMENUTEXT='KDE-menus'
+LOCKSCREEN='Lock screen'
 MISCMENU='Misc'
 MULTIMEDIAMENU='Multimedia'
 MUSICMENU='Audio'
 NETMENU='Net'
 OFFICEMENU='Office'
+RANDOMBACKGROUND='Random Background'
+REGENERATEMENU='Regen Menu'
 RELOADITEM='Reload config'
 RESTARTITEM='Restart'
+RUNCOMMAND='Run'
+SCREENSHOT='Screenshot'
 STYLEMENUTITLE='Choose a style...'
 SYSTEMSTYLES='System Styles'
 TERMINALMENU='Terminals'
+TOOLS='Tools'
 USERSTYLES='User Styles'
 VIDEOMENU='Video'
 WINDOWMANAGERS='Window Managers'
+WINDOWNAME='Window name'
 WORKSPACEMENU='Workspace List'
 XUTILSMENU='X-utils'
 
 # Check translation
 case ${LC_ALL} in
     ru_RU*) #Russian locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #SYSTEMSTYLES='óÔÉÌÉ'
-        #USERSTYLES='óÔÉÌÉ'
-        #WINDOWMANAGERS='WindowManagers'
+
+# Ah my Russian hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
+        BACKGROUNDMENU='Backgrounds (CHANGE ME!)'
+        BACKGROUNDMENUTITLE='Set the Background (CHANGE ME!)'
         BROWSERMENU='âÒÁÕÚÅÒÙ'
         CONFIGUREMENU='îÁÓÔÒÏÊËÁ'
         EDITORMENU='òÅÄÁËÔÏÒÙ'
         EXITITEM='÷ÙÊÔÉ'
         FBSETTINGSMENU='FB-ÎÁÓÔÒÏÊËÉ'
-#        GAMESMENU='Games'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        GAMESMENU='Games (CHANGE ME!)'
         GNOMEMENUTEXT='Gnome-ÍÅÎÀ'
         GRAPHICMENU='çÒÁÆÉËÁ'
         KDEMENUTEXT='KDE-ÍÅÎÀ'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='ðÒÏÞÅÅ'
         MUSICMENU='ú×ÕË'
         NETMENU='óÅÔØ'
+        OFFICEMENU='Office (CHANGE ME!)'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='ðÅÒÅÎÁÓÔÒÏÉÔØ'
         RESTARTITEM='ðÅÒÅÚÁÐÕÓÔÉÔØ'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='÷ÙÂÅÒÉÔÅ ÓÔÉÌØ'
+        SYSTEMSTYLES='óÔÉÌÉ'
         TERMINALMENU='ôÅÒÍÉÎÁÌÙ'
+        TOOLS='Tools (CHANGE ME!)'
+        USERSTYLES='óÔÉÌÉ'
+        WINDOWMANAGERS='WindowManagers (CHANGE ME!)'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='òÁÂÏÞÉÅ ÐÒÏÓÔÒÁÎÓÔ×Á'
         XUTILSMENU='X-ÕÔÉÌÉÔÙ'
         ;;
     de_DE*) # german locales
-        #WINDOWMANAGERS='Window Managers'
+# Ah my German hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
         BACKGROUNDMENU='Hintergrundbilder'
         BACKGROUNDMENUTITLE='Hintergrundbild setzen'
-        BROWSERMENU='Internet-Browser'
-        CONFIGUREMENU='Einstellungen'
+        BROWSERMENU='Internet-Browser (CHANGE ME!)'
+        CONFIGUREMENU='Einstellungen (CHANGE ME!)'
         EDITORMENU='Editoren'
         EXITITEM='Beenden'
         FBSETTINGSMENU='Fluxbox-Einstellungen'
         FILEUTILSMENU='Datei-Utilities'
-#        GAMESMENU='Games'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        GAMESMENU='Games (CHANGE ME!)'
         GNOMEMENUTEXT='Gnome-Menues'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='Kde-Menues'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='Sonstiges'
         MUSICMENU='Musik'
         NETMENU='Netzwerk'
         OFFICEMENU='Bueroprogramme'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Konfiguration neu laden'
         RESTARTITEM='Neustarten'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Einen Stil auswaehlen...'
         SYSTEMSTYLES='Systemweite Stile'
-        TERMINALMENU='Terminals'
+        TERMINALMENU='Terminals (CHANGE ME!)'
+        TOOLS='Tools (CHANGE ME!)'
         USERSTYLES='Eigene Stile'
+        WINDOWMANAGERS='Window Managers (CHANGE ME!)'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Arbeitsflaechenliste'
         XUTILSMENU='X-Anwendungen'
         ;;
     sv_SE*) #Swedish locales
+# Ah my Swedish hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
         BACKGROUNDMENU='Bakgrunder'
         BACKGROUNDMENUTITLE='Sätt bakgrund'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #SYSTEMSTYLES='Stiler'
-        #USERSTYLES='Stiler'
-        WINDOWMANAGERS='Fönsterhanterare'
         BROWSERMENU='Browsers'
         CONFIGUREMENU='Konfiguration'
         EDITORMENU='Editorer'
-        EXITITEM='Exit'
+        EXITITEM='Exit (CHANGE ME!)'
         FBSETTINGSMENU='FB-inställningar'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
         GAMESMENU='Spel'
         GNOMEMENUTEXT='Gnome-menyer'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='KDE-menyer'
+        LOCKSCREEN='Lock screen'
         MISCMENU='Blandat'
         MUSICMENU='Musik'
         NETMENU='Net'
+        OFFICEMENU='Office (CHANGE ME!)'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Ladda om konfig'
         RESTARTITEM='Starta om'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Välj en stil'
+        SYSTEMSTYLES='Stiler'
         TERMINALMENU='Terminaler'
+        TOOLS='Tools (CHANGE ME!)'
+        USERSTYLES='Stiler'
+        WINDOWMANAGERS='Fönsterhanterare'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Arbetsytor'
-        XUTILSMENU='X-program'
+        XUTILSMENU='X-program (CHANGE ME!)'
         ;;
     nl_NL*) #Nederlandse locales
         BACKGROUNDMENU='Achtergrond'
@@ -358,25 +408,39 @@ case ${LC_ALL} in
         EXITITEM='Afsluiten'
         FBSETTINGSMENU='FB-Instellingen'
         FILEUTILSMENU='Verkenners'
+        FLUXBOXCOMMAND='Fluxbox Commando'
         GAMESMENU='Spelletjes'
         GNOMEMENUTEXT='Gnome-menu'
         GRAPHICMENU='Grafisch'
         KDEMENUTEXT='KDE-menu'
+        LOCKSCREEN='Scherm op slot'
         MISCMENU='Onregelmatig'
         MUSICMENU='Muziek'
-        NETMENU='Net'
+        NETMENU='Internet'
         OFFICEMENU='Office'
+        RANDOMBACKGROUND='Willekeurige Achtergrond'
+        REGENERATEMENU='Nieuw Menu'
         RELOADITEM='Vernieuw instellingen'
         RESTARTITEM='Herstart'
+        RUNCOMMAND='Voer uit'
+        SCREENSHOT='Schermafdruk'
         STYLEMENUTITLE='Kies een stijl'
         SYSTEMSTYLES='Systeem Stijlen'
         TERMINALMENU='Terminals'
+        TOOLS='Gereedschap'
         USERSTYLES='Gebruikers Stijlen'
-        WINDOWMANAGERS='Window Managers'
+        WINDOWMANAGERS='Venster Managers'
+        WINDOWNAME='Venster Naam'
         WORKSPACEMENU='Werkveld menu'
-        XUTILSMENU='X-utils'
+        XUTILSMENU='X-Gereedschap'
         ;;
     fi_FI*) #Finnish locales
+# Ah my finish hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
         BACKGROUNDMENU='Taustat'
         BACKGROUNDMENUTITLE='Määritä tausta'
         BROWSERMENU='Selaimet'
@@ -385,52 +449,80 @@ case ${LC_ALL} in
         EXITITEM='Lopeta'
         FBSETTINGSMENU='FB:n Asetukset'
         FILEUTILSMENU='Tiedostoapuohjelmat'
-#        GAMESMENU='Games'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        GAMESMENU='Games (CHANGE ME!)'
         GNOMEMENUTEXT='Gnomen valikot'
         GRAPHICMENU='Grafiikka'
         KDEMENUTEXT='KDE:n valikot'
+        LOCKSCREEN='Lock screen'
         MISCMENU='Sekalaista'
         MUSICMENU='Musiikki'
         NETMENU='Verkko'
         OFFICEMENU='Toimistotyökalut'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Päivitä'
         RESTARTITEM='Käynnistä uudelleen'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Valitse tyyli'
         SYSTEMSTYLES='Järjestelmän tyylit'
         TERMINALMENU='Terminaalit'
+        TOOLS='Tools (CHANGE ME!)'
         USERSTYLES='Käyttäjän tyylit'
         WINDOWMANAGERS='Ikkunanhallintaohjelmat'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Työalueet'
         XUTILSMENU='X-Ohjelmat'
         ;;
     ja_JP*) #Japanese locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #SYSTEMSTYLES='¥¹¥¿¥¤¥ë'
-        #USERSTYLES='¥¹¥¿¥¤¥ë'
-        #WINDOWMANAGERS='Window Managers'
+# Ah my Japanese hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
+        BACKGROUNDMENU='Backgrounds (CHANGE ME!)'
+        BACKGROUNDMENUTITLE='Set the Background (CHANGE ME!)'
         BROWSERMENU='¥Ö¥é¥¦¥¶'
         CONFIGUREMENU='ÀßÄê'
         EDITORMENU='¥¨¥Ç¥£¥¿'
         EXITITEM='½ªÎ»'
         FBSETTINGSMENU='FluxboxÀßÄê'
-#        GAMESMENU='Games'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        GAMESMENU='Games (CHANGE ME!)'
         GNOMEMENUTEXT='Gnome¥á¥Ë¥å¡¼'
         GRAPHICMENU='²èÁü'
         KDEMENUTEXT='KDE¥á¥Ë¥å¡¼'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='¤¤¤í¤¤¤í'
         MUSICMENU='²»³Ú'
         NETMENU='¥Í¥Ã¥È¥ï¡¼¥¯'
+        OFFICEMENU='Office (CHANGE ME!)'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='ºÆÆÉ¤ß¹þ¤ß'
         RESTARTITEM='ºÆµ¯Æ°'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='¥¹¥¿¥¤¥ëÁªÂò...'
+        SYSTEMSTYLES='¥¹¥¿¥¤¥ë'
         TERMINALMENU='¥¿¡¼¥ß¥Ê¥ë'
+        TOOLS='Tools (CHANGE ME!)'
+        USERSTYLES='¥¹¥¿¥¤¥ë'
+        WINDOWMANAGERS='Window Managers (CHANGE ME!)'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='¥ï¡¼¥¯¥¹¥Ú¡¼¥¹'
         XUTILSMENU='X¥æ¡¼¥Æ¥£¥ê¥Æ¥£'
         ;;
     fr_FR*) # french locales
+# Ah my french hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
         BACKGROUNDMENU="Fond d'écran"
         BACKGROUNDMENUTITLE="Changer le fond d'écran"
         BROWSERMENU='Navigateurs'
@@ -439,56 +531,80 @@ case ${LC_ALL} in
         EXITITEM='Sortir'
         FBSETTINGSMENU='Configurer Fluxbox'
         FILEUTILSMENU='Outils fichiers'
-#        GAMESMENU='Games'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        GAMESMENU='Games (CHANGE ME!)'
         GNOMEMENUTEXT='Menus Gnome'
         GRAPHICMENU='Graphisme'
         KDEMENUTEXT='Menus KDE'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='Divers'
         MUSICMENU='Musique'
         NETMENU='Réseau'
         OFFICEMENU='Bureautique'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Recharger la configuration'
         RESTARTITEM='Redémarrer Fluxbox'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Choisir un style...'
         SYSTEMSTYLES='Styles Systeme'
         TERMINALMENU='Terminaux'
+        TOOLS='Tools (CHANGE ME!)'
         USERSTYLES='Styles Utilisateur'
         WINDOWMANAGERS='Gestionnaires de fenêtres'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Liste des bureaux'
         XUTILSMENU='Outils X'
         ;;
     it_IT*) # italian locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #SYSTEMSTYLES='Stile'
-        #USERSTYLES='Stile'
-        #WINDOWMANAGERS='Window Managers'
-        BROWSERMENU='Browsers'
+# Ah my Italian hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
+        BACKGROUNDMENU='Backgrounds (CHANGE ME!)'
+        BACKGROUNDMENUTITLE='Set the Background (CHANGE ME!)'
+        BROWSERMENU='Browsers (CHANGE ME!)'
         CONFIGUREMENU='Configurazione'
         EDITORMENU='Editori'
         EXITITEM='Esci'
         FBSETTINGSMENU='Preferenze'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
         GAMESMENU='Giochi'
         GNOMEMENUTEXT='Gnome'
         GRAPHICMENU='Grafica'
         KDEMENUTEXT='KDE'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='Varie'
         MUSICMENU='Musica'
         NETMENU='Internet'
+        OFFICEMENU='Office'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Rileggi la configurazione'
         RESTARTITEM='Riavvia'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Scegli uno stile'
+        SYSTEMSTYLES='Stile'
         TERMINALMENU='Terminali'
+        TOOLS='Tools (CHANGE ME!)'
+        USERSTYLES='Stile'
+        WINDOWMANAGERS='Window Managers (CHANGE ME!)'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Aree di lavoro'
-        XUTILSMENU='X-utils'
+        XUTILSMENU='X-utils (CHANGE ME!)'
         ;;
     ro_RO*) # Romanian locales
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #RESTARTITEM='Restart'
-        #WINDOWMANAGERS='WindowManagers'
+# Ah my Russian hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
         BACKGROUNDMENU='Fundaluri'
         BACKGROUNDMENUTITLE='Alege fundalul'
         BROWSERMENU='Navigatoare'
@@ -496,26 +612,41 @@ case ${LC_ALL} in
         EDITORMENU='Editoare'
         EXITITEM='Iesire'
         FBSETTINGSMENU='Meniul Fluxbox'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
         GAMESMENU='Jocuri'
         GNOMEMENUTEXT='Meniu Gnome'
         GRAPHICMENU='Grafica'
         KDEMENUTEXT='Meniu KDE'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='Diverse'
-        MULTIMEDIAMENU='Multimedia'
+        MULTIMEDIAMENU='Multimedia (CHANGE ME!)'
         MUSICMENU='Muzica'
-        NETMENU='Net'
+        NETMENU='Net (CHANGE ME!)'
+        OFFICEMENU='Office (CHANGE ME!)'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Reincarca configuratia'
+        RESTARTITEM='Restart (CHANGE ME!)'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Alege un stil...'
         SYSTEMSTYLES='Stiluri sistem'
         TERMINALMENU='Terminale'
+        TOOLS='Tools (CHANGE ME!)'
         USERSTYLES='Stiluri utilizator'
+        WINDOWMANAGERS='WindowManagers'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Lista workspace-uri'
         XUTILSMENU='Utilitare X'
         ;;
     es_ES*) # spanish locales
-        #FILEUTILSMENU='File utils'
-        #WINDOWMANAGERS='WindowManagers'
-        BACKGROUNDMENU='Fondos'
+# Ah my Spanish hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
 	BACKGROUNDMENUTITLE='Seleccionar Fondo'
 	BROWSERMENU='Navegadores'
 	CONFIGUREMENU='Configurar'
@@ -539,10 +670,25 @@ case ${LC_ALL} in
 	USERSTYLES='Estilos del Usuario'
 	WORKSPACEMENU='Lista de Escritorios'
 	XUTILSMENU='Utilidades X'
+        BACKGROUNDMENU='Fondos'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
+        TOOLS='Tools (CHANGE ME!)'
+        WINDOWMANAGERS='WindowManagers (CHANGE ME!)'
+        WINDOWNAME='Window name (CHANGE ME!)'
         ;;
     pl_PL*) # Polish locales
-        #FILEUTILSMENU='File utils'
-        #WINDOWMANAGERS='WindowManagers'
+# Ah my Russian hero. Please help me update the translation
+# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
+# $ $EDITOR fluxbox-generate-menu.in
+# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
+# email fbgm.diff to han@mijncomputer.nl
+
         BACKGROUNDMENU='Tapety'
         BACKGROUNDMENUTITLE='Ustaw tapet?'
         BROWSERMENU='Przegl?darki'
@@ -550,23 +696,70 @@ case ${LC_ALL} in
         EDITORMENU='Edytory'
         EXITITEM='Wyj?cie'
         FBSETTINGSMENU='Menu Fluxbox'
+        FILEUTILSMENU='File utils (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
         GAMESMENU='Gry'
         GNOMEMENUTEXT='Menu Gnome'
         GRAPHICMENU='Grafika'
         KDEMENUTEXT='Menu KDE'
+        LOCKSCREEN='Lock screen (CHANGE ME!)'
         MISCMENU='Ró?ne'
-        MULTIMEDIAMENU='Multimedia'
+        MULTIMEDIAMENU='Multimedia (CHANGE ME!)'
         MUSICMENU='Muzyka'
         NETMENU='Sie?'
         OFFICEMENU='Aplikacje biurowe'
+        RANDOMBACKGROUND='Random Background'
+        REGENERATEMENU='Regen Menu (CHANGE ME!)'
         RELOADITEM='Od?wie? konfiguracj?'
-        RESTARTITEM='Restart'
+        RESTARTITEM='Restart (CHANGE ME!)'
+        RUNCOMMAND='Run (CHANGE ME!)'
+        SCREENSHOT='Screenshot (CHANGE ME!)'
         STYLEMENUTITLE='Wybierz styl...'
         SYSTEMSTYLES='Style systemowe'
         TERMINALMENU='Terminale'
+        TOOLS='Tools (CHANGE ME!)'
         USERSTYLES='Style u?ytkownika'
+        WINDOWMANAGERS='WindowManagers (CHANGE ME!)'
+        WINDOWNAME='Window name (CHANGE ME!)'
         WORKSPACEMENU='Lista pulpitów'
         XUTILSMENU='Narz?dzia X'
+        ;;
+    pt_PT*) # Portuguese locales
+        BACKGROUNDMENU='Imagens de Fundo'
+        BACKGROUNDMENUTITLE='Definir Imagem de Fundo'
+        BROWSERMENU='Browsers'
+        CONFIGUREMENU='Configuração'
+        EDITORMENU='Editores'
+        EXITITEM='Sair'
+        FBSETTINGSMENU='Menu Fluxbox'
+        FILEUTILSMENU='Utilitários de Ficheiros'
+        FLUXBOXCOMMAND='Comando Fluxbox'
+        GAMESMENU='Jogos'
+        GNOMEMENUTEXT='Menu Gnome'
+        GRAPHICMENU='Gráficos'
+        KDEMENUTEXT='Menu KDE'
+        LOCKSCREEN='Trancar Ecrã'
+        MISCMENU='Misc.'
+        MULTIMEDIAMENU='Multimédia'
+        MUSICMENU='Áudio'
+        NETMENU='Rede'
+        OFFICEMENU='Escritório'
+        RANDOMBACKGROUND='Imagem Aleatória'
+        REGENERATEMENU='Regenerar Menu'
+        RELOADITEM='Recarregar configuração'
+        RESTARTITEM='Reiniciar'
+        RUNCOMMAND='Executar'
+        SCREENSHOT='Capturar Ecrã'
+        STYLEMENUTITLE='Escolha um estilo...'
+        SYSTEMSTYLES='Estilos do Sistema'
+        TERMINALMENU='Terminais'
+        TOOLS='Ferramentas'
+        USERSTYLES='Estilos do Utilizador'
+        VIDEOMENU='Vídeo'
+        WINDOWMANAGERS='Gestores de Janelas'
+        WINDOWNAME='Nome da Janela'
+        WORKSPACEMENU='Lista de Áreas de Trabalho'
+        XUTILSMENU='Utilitários X'
         ;;
     *)
         ;;
@@ -845,7 +1038,7 @@ case "$DEFAULT_BROWSERNAME" in
     *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
 esac
 
-find_it fbrun           append "[exec]   (Run) {fbrun $FBRUNOPTIONS}"
+find_it fbrun           append "[exec]   (${RUNCOMMAND}) {fbrun $FBRUNOPTIONS}"
 
 
 append_submenu "${TERMINALMENU}"
@@ -1017,7 +1210,7 @@ append_submenu "${FBSETTINGSMENU}"
         NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2> /dev/null|wc -l`
         if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
             append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
-            append "[exec] (random background) {fbsetbg -r ${HOME}/.fluxbox/backgrounds}"
+            append "[exec] (${RANDOMBACKGROUND}) {fbsetbg -r ${HOME}/.fluxbox/backgrounds}"
             if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
                 menucounter=1 ; counter=1
                 append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
@@ -1046,18 +1239,18 @@ append_submenu "${FBSETTINGSMENU}"
 
     append "[workspaces]   (${WORKSPACEMENU})"
 
-    append_submenu Tools
+    append_submenu ${TOOLS}
         normal_find fluxconf fluxkeys fluxmenu
         # if gxmessage exitst use it; else use xmessage
         find_it gxmessage append \
-          "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
+          "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
             find_it xmessage append \
-              "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
-        find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
-        find_it fbrun append "[exec] (Run) {fbrun $FBRUNOPTIONS}"
+              "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+        find_it import append "[exec] (${SCREENSHOT}) {import screenshot.png && qiv -W 50 screenshot.png}"
+        find_it fbrun append "[exec] (${RUNCOMMAND}) {fbrun $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
-        find_it fluxbox-generate_menu append "[exec] (regenerate menu) {fluxbox-generate_menu}"
+        find_it fluxbox-generate_menu append "[exec] (${REGENERATEMENU}) {fluxbox-generate_menu}"
     append_menu_end
 
     append_submenu ${WINDOWMANAGERS}
@@ -1072,9 +1265,9 @@ append_submenu "${FBSETTINGSMENU}"
         find_it startwindowmaker append "[restart] (windowmaker) {startwindowmaker}" ||\
             find_it wmaker append "[restart] (windowmaker) {wmaker}"
     append_menu_end
-    find_it xlock append "[exec] (Lock Screen) {xlock}" ||\
-        find_it xscreensaver-command append "[exec] (Lock Screen) {xscreensaver-command -lock}"
-    append "[commanddialog] (Fluxbox Command)"
+    find_it xlock append "[exec] (${LOCKSCREEN}) {xlock}" ||\
+        find_it xscreensaver-command append "[exec] (${LOCKSCREEN}) {xscreensaver-command -lock}"
+    append "[commanddialog] (${FLUXBOXCOMMAND})"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
     append "[separator]"
@@ -1089,6 +1282,11 @@ append_menu_end
 if [ ! "${REMOVE}" ]; then
     clean_up
 fi
+
+# force all running fluxbox'es to reload their settings.
+for i in `ps xo pid,command|grep -v awk|grep -v /bin/sh|awk '/fluxbox/ {print $1}'`; do
+    kill -s USR1 $i
+done
 
 echo 'Menu successfully generated.'
 echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
