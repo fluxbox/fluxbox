@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.11 2002/02/21 00:39:08 fluxgen Exp $
+//$Id: Keys.cc,v 1.12 2002/02/26 22:19:43 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -94,6 +94,7 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 	{"Workspace10", WORKSPACE10},
 	{"Workspace11", WORKSPACE11},
 	{"Workspace12",  WORKSPACE12},
+	{"SendToWorkspace", SENDTOWORKSPACE},
 	{"NextWorkspace", NEXTWORKSPACE},
 	{"PrevWorkspace", PREVWORKSPACE},
 	{"LeftWorkspace", LEFTWORKSPACE},
@@ -279,6 +280,7 @@ bool Keys::load(char *filename) {
 							strlen(getActionStr(Keys::EXECUTE)));
 						break;
 						case WORKSPACE:
+                        case SENDTOWORKSPACE:
 							if (argc + 1 < val.size())
 								last_key->param = atoi( val[argc+1].c_str());
 							else
