@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.17 2003/04/26 14:47:04 fluxgen Exp $
+// $Id: Menu.cc,v 1.18 2003/04/28 01:32:47 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -722,8 +722,8 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
 
             m_frame_pm.copyArea(menu.frame_pixmap, def_gc,
                                 item_x, item_y,
-                                menu.item_w, menu.item_h, 
-                                item_x, item_y);
+                                item_x, item_y,
+                                menu.item_w, menu.item_h);
         }    
 
     } else if (! (x == y && y == -1 && w == h && h == 0)) {
@@ -757,7 +757,8 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
         if (menu.hilite_pixmap) {
             m_frame_pm.copyArea(menu.hilite_pixmap,
                                 m_theme.hiliteGC(), hoff_x, hoff_y,
-                                hilite_w, hilite_h, hilite_x, hilite_y);
+                                hilite_x, hilite_y,
+                                hilite_w, hilite_h);
         } else {            
             m_frame_pm.fillRectangle(m_theme.hiliteGC(),
                                      hilite_x, hilite_y, hilite_w, hilite_h);
@@ -770,9 +771,9 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
         if (menu.sel_pixmap) {
             m_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
                                 m_theme.hiliteGC(), 
-                                0, 0,
-                                half_w, half_w, 
-                                sel_x, sel_y);
+                                0, 0,                                 
+                                sel_x, sel_y,
+                                half_w, half_w);
         } else {
             m_frame_pm.fillRectangle(m_theme.hiliteGC(),
                                      sel_x, sel_y, half_w, half_w);
