@@ -1,6 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/13:
+  * Added nls/vi_VN (thanx Phan Vinh Thinh)
   * Fixed DragNDrop - Sorting of tabs (thanx Rob Stevens)
     Window.cc/hh FbWinFrame.cc
 *04/12/10:
