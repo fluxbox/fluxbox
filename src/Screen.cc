@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.296 2004/10/18 01:24:23 akir Exp $
+// $Id$
 
 
 #include "Screen.hh"
@@ -408,6 +408,8 @@ BScreen::~BScreen() {
     // we need to destroy it before we destroy workspaces
     m_workspacemenu.reset(0);
 
+    // slit must be destroyed before headAreas (Struts)
+    m_slit.reset(0);
 
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
