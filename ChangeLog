@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/02/25:
+  * Fixed cycling in tab completion for fbrun (Thanks Mathias Gumz)
+    FbRun.cc
 *04/02/20:
   * Added SendToNextWorkspace and SendToPrevWorkspace actions (Thanks Mathias Gumz)
     CurrentWindowCmd.hh/cc, FbCommandFactory.cc
