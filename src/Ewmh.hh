@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.14 2004/01/19 18:21:51 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.15 2004/01/20 14:30:33 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -49,7 +49,6 @@ public:
     void updateLayer(FluxboxWindow &win);
     void updateHints(FluxboxWindow &win);
     void updateWorkspace(FluxboxWindow &win);
-
 
     bool checkClientMessage(const XClientMessageEvent &ce, 
                             BScreen * screen, WinClient * const winclient);
@@ -93,6 +92,8 @@ private:
         m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
+        m_net_wm_state_below,
+        m_net_wm_state_above,
 
         m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
         m_net_wm_handled_icons;
