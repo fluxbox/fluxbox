@@ -1,4 +1,7 @@
-# nls/es_ES/Makefile.am for Blackbox-0.61.x - an X11 Window Manager
+# nls/es_ES/Makefile.am for Fluxbox - an X11 Window Manager
+
+THE_LANG = es_ES
+CODESET = ISO-8859-15
 
 NLSTEST = @NLS@
 CLEANFILES = fluxbox.cat
@@ -8,26 +11,26 @@ EXTRA_DIST=$(MFILES)
 all-local: fluxbox.cat
 install-data-local: fluxbox.cat
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/es_ES"; \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/es_ES; \
-		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(pkgdatadir)/nls/es_ES; \
+		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)"; \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
+		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/es; \
-		ln -fs es_ES $(DESTDIR)$(pkgdatadir)/nls/es; \
+		ln -fs $(THE_LANG) $(DESTDIR)$(pkgdatadir)/nls/es; \
 	fi
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		rm -f $(DESTDIR)$(pkgdatadir)/nls/es_ES/fluxbox.cat; \
+		rm -f $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)/fluxbox.cat; \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/es; \
-		rmdir $(DESTDIR)$(pkgdatadir)/nls/es_ES; \
+		rmdir $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 	fi
 
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		rm -f Translation.m; \
-		awk -f ../convert.awk output=Translation.m $(MFILES); \
+		awk -f ../convert.awk codeset=$(CODESET) output=Translation.m $(MFILES); \
 	fi
 
 fluxbox.cat: Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		LANG=es_ES $(gencat_cmd) fluxbox.cat Translation.m; \
+		LANG=$(THE_LANG) $(gencat_cmd) fluxbox.cat Translation.m; \
 	fi

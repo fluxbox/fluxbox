@@ -1,4 +1,7 @@
-# nls/C/Makefile.am for Blackbox-0.61.x - an X11 Window Manager
+# nls/C/Makefile.am for Fluxbox - an X11 Window Manager
+
+THE_LANG = C
+# no CODESET
 
 NLSTEST = @NLS@
 CLEANFILES = fluxbox.cat
@@ -8,9 +11,9 @@ EXTRA_DIST= $(MFILES)
 all-local: fluxbox.cat
 install-data-local: fluxbox.cat
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/C"; \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/C; \
-		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(pkgdatadir)/nls/C; \
+		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)"; \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
+		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/US_ASCII; \
 		ln -fs C $(DESTDIR)$(pkgdatadir)/nls/US_ASCII; \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/POSIX; \
@@ -22,12 +25,12 @@ install-data-local: fluxbox.cat
 	fi
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		rm -f $(DESTDIR)$(pkgdatadir)/nls/C/fluxbox.cat; \
+		rm -f $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)/fluxbox.cat; \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/US_ASCII; \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/POSIX; \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/en_US; \
 		rm -f $(DESTDIR)$(pkgdatadir)/nls/en; \
-		rmdir $(DESTDIR)$(pkgdatadir)/nls/C; \
+		rmdir $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 	fi
 
 # note... when adding new catalogs... you do not need the

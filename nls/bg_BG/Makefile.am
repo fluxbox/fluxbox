@@ -1,4 +1,7 @@
-THE_LANG=bg_BG
+# nls/bg_BG/Makefile.am for Fluxbox - an X11 Window Manager
+
+THE_LANG = bg_BG
+CODESET = ISO-8859-1
 
 NLSTEST = @NLS@
 CLEANFILES = fluxbox.cat
@@ -22,10 +25,10 @@ uninstall-local:
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		rm -f Translation.m; \
-		awk -f ../convert.awk output=Translation.m $(MFILES); \
+		awk -f ../convert.awk codeset=$(CODESET) output=Translation.m $(MFILES); \
 	fi
 
 fluxbox.cat: Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		LANG=bg_BG $(gencat_cmd) fluxbox.cat Translation.m; \
+		LANG=$(THE_LANG) $(gencat_cmd) fluxbox.cat Translation.m; \
 	fi

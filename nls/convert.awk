@@ -4,6 +4,8 @@
 
   if (major > 1)
     printf "\n" > output
+  else if (codeset)
+    printf "$ codeset=%s\n", codeset > output
   printf "$set %d %s\n", major, $3 >> output
 
   if (header) {

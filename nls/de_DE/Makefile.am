@@ -1,4 +1,7 @@
-# nls/de_DE/Makefile.am for fluxbox - fluxbox.sf.net
+# nls/de_DE/Makefile.am for Fluxbox - fluxbox.sf.net
+
+THE_LANG = de_DE
+CODESET = ISO-8859-1
 
 NLSTEST = @NLS@
 CLEANFILES = fluxbox.cat
@@ -10,15 +13,15 @@ all-local: fluxbox.cat
 
 install-data-local: fluxbox.cat
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/de_DE"; \
-		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/de_DE; \
-		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(pkgdatadir)/nls/de_DE; \
+		echo "Installing catalog in $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)"; \
+		$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
+		$(INSTALL_DATA) fluxbox.cat $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 	fi
 
 uninstall-local:
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		rm -f $(DESTDIR)$(pkgdatadir)/nls/de_DE/fluxbox.cat; \
-		rmdir $(DESTDIR)$(pkgdatadir)/nls/de_DE; \
+		rm -f $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG)/fluxbox.cat; \
+		rmdir $(DESTDIR)$(pkgdatadir)/nls/$(THE_LANG); \
 	fi
 
 # note... when adding new catalogs... you do not need the
@@ -28,7 +31,7 @@ uninstall-local:
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
 		rm -f Translation.m; \
-		awk -f ../convert.awk output=Translation.m $(MFILES); \
+		awk -f ../convert.awk codeset=$(CODESET) output=Translation.m $(MFILES); \
 	fi
 
 fluxbox.cat: Translation.m

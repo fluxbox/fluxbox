@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/04:
+  * Fix NLS bad message errors by adding explicit codeset entries (Simon)
+    - thanks to Matt Hope for pointing us to the recent workaround from 
+      blackbox (and thanks to Matt Kraai who contrib-d to Blackbox)
+    - also clean up the Makefiles so they are more generalised
+    nls/*/Makefile.am nls/convert.awk
 *03/10/02:
   * Fix couple of memory leaks and uninitialised uses shown up with 
     valgrind (Simon)
