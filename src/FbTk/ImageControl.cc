@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.10 2004/01/03 01:12:10 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.11 2004/01/11 12:40:47 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -146,6 +146,7 @@ ImageControl::~ImageControl() {
         }
 
     }
+
 }
 
 
@@ -167,19 +168,31 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
         return None;
     }
 
-    Cache tmp;
+    /*    Cache tmp;
     tmp.texture_pixmap = text.pixmap().drawable();
     tmp.width = width;
     tmp.height = height;
     tmp.texture = text.type();
     tmp.pixel1 = text.color().pixel();
     tmp.pixel2 = text.colorTo().pixel();
-    CacheList::iterator it = cache.find(&tmp);
-    if (it == cache.end()) {
-        return None;
-    } else {
-        (*it)->count++;
-        return (*it)->pixmap;
+    */
+    CacheList::iterator it = cache.begin(); 	 
+    CacheList::iterator it_end = cache.end(); 	 
+    for (; it != it_end; ++it) { 	 
+        if (((*it)->width == width) && 	 
+            ((*it)->height == height) && 	 
+            ((*it)->texture == text.type()) && 	 
+            ((*it)->pixel1 == text.color().pixel())) { 	 
+            if (text.type() & FbTk::Texture::GRADIENT) { 	 
+                if ((*it)->pixel2 == text.colorTo().pixel()) { 	 
+                    (*it)->count++; 	 
+                    return (*it)->pixmap; 	 
+                } 	 
+            } else { 	 
+                (*it)->count++; 	 
+                return (*it)->pixmap; 	 
+            } 	 
+        } 	 
     }
 
     return None;
@@ -221,7 +234,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
         else
             tmp->pixel2 = 0l;
 
-        cache.insert(tmp); 
+        cache.push_back(tmp); 
 
         if ((unsigned) cache.size() > cache_max)
             cleanCache();
@@ -243,13 +256,14 @@ void ImageControl::removeImage(Pixmap pixmap) {
         if ((*it)->pixmap == pixmap) {
             if ((*it)->count) {
                 (*it)->count--;
-
-                if (s_timed_cache)
+                if (s_timed_cache) {
                     cleanCache();
-                else if (! (*it)->count) 
-                    cleanCache();
-
+                    return;
+                }
             }
+
+            if ((*it)->count <= 0)
+                cleanCache();
 
             return;
         }
@@ -362,22 +376,25 @@ unsigned long ImageControl::getSqrt(unsigned int x) const {
 
 void ImageControl::cleanCache() {
     Display *disp = FbTk::App::instance()->display();
+    std::list<CacheList::iterator> deadlist;
     CacheList::iterator it = cache.begin();
     CacheList::iterator it_end = cache.end();
     for (; it != it_end; ++it) {
         Cache *tmp = (*it);
-
         if (tmp->count <= 0) {
-            CacheList::iterator tmp_it = it;
-            ++tmp_it;
             XFreePixmap(disp, tmp->pixmap);
-            cache.erase(it);
+            deadlist.push_back(it);
             delete tmp;
             tmp=0;
-            it = tmp_it;
-            if (it == it_end) break;
-        }
+        } 
     }
+
+    std::list<CacheList::iterator>::iterator dead_it = deadlist.begin();
+    std::list<CacheList::iterator>::iterator dead_it_end = deadlist.end();
+    for (; dead_it != dead_it_end; ++dead_it) {
+        cache.erase(*dead_it);
+    }
+    
 }
 
 void ImageControl::createColorTable() {

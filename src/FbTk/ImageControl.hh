@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.8 2004/01/02 22:19:39 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.9 2004/01/11 12:40:47 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -127,7 +127,7 @@ private:
 
 	
     unsigned long cache_max;
-    typedef std::set<Cache *, ltCacheEntry> CacheList;
+    typedef std::list<Cache *> CacheList;
 
     mutable CacheList cache;
     static bool s_timed_cache;
