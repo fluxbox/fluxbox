@@ -20,20 +20,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.hh,v 1.1 2003/08/11 14:28:38 fluxgen Exp $
+// $Id: ToolTheme.hh,v 1.2 2003/08/13 09:56:06 fluxgen Exp $
 
 #ifndef TOOLTHEME_HH
 #define TOOLTHEME_HH
 
 
-#include <X11/Xlib.h>
-#include <string>
-
 #include "TextTheme.hh"
+#include "BorderTheme.hh"
 
 #include "FbTk/Texture.hh"
 
-
+#include <X11/Xlib.h>
+#include <string>
 
 /// Handles toolbar item theme for text and texture
 class ToolTheme: public FbTk::Theme, public TextTheme {
@@ -44,9 +43,10 @@ public:
     void reconfigTheme();
     // textures
     const FbTk::Texture &texture() const { return *m_texture; }
-
+    const BorderTheme &border() const { return m_border; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
+    BorderTheme m_border;
 };
 
 #endif // TOOLTHEME_HH

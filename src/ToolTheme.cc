@@ -20,14 +20,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.cc,v 1.1 2003/08/11 14:28:38 fluxgen Exp $
+// $Id: ToolTheme.cc,v 1.2 2003/08/13 09:55:51 fluxgen Exp $
 
 #include "ToolTheme.hh"
 
 ToolTheme::ToolTheme(int screen_num, const std::string &name, const std::string &altname):
     FbTk::Theme(screen_num),
     TextTheme(*this, name, altname),
-    m_texture(*this, name, altname) {
+    m_texture(*this, name, altname),
+    m_border(*this, name, altname) {
 
 }
 
@@ -36,6 +37,7 @@ ToolTheme::~ToolTheme() {
 }
 
 void ToolTheme::reconfigTheme() { 
+    // update text theme
     update();
 }
 
