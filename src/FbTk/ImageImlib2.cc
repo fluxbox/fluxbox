@@ -30,6 +30,7 @@
 
 #include <Imlib2.h>
 #include <map>
+#include <iostream>
 
 namespace {
 
@@ -51,7 +52,7 @@ ImageImlib2::ImageImlib2() {
 
     // TODO: this are the potential candidates,
     //       choose only sane ones. open for discussion
-    char* format_list[] = {
+    static char* format_list[] = {
         "PNG",                               // pngloader
         "JPEG", "JPG", "JFI", "JFIF",        // jpegloader
 //        "TIFF", "TIF",                       // tiffloader
@@ -73,6 +74,7 @@ ImageImlib2::ImageImlib2() {
 }
 
 ImageImlib2::~ImageImlib2() {
+    
     ScreenImlibContext it = contexts.begin();
     ScreenImlibContext it_end = contexts.end();
     for (; it != it_end; it++) {
@@ -91,56 +93,73 @@ PixmapWithMask *ImageImlib2::load(const std::string &filename, int screen_num) c
 
         Imlib_Context new_context = imlib_context_new();
         imlib_context_push(new_context);
-
+        
         imlib_context_set_display(dpy);
-        imlib_context_set_drawable(RootWindow(dpy, screen_num));
-        imlib_context_set_colormap(DefaultColormap(dpy, screen_num));
         imlib_context_set_visual(DefaultVisual(dpy, screen_num));
+        imlib_context_set_colormap(DefaultColormap(dpy, screen_num));
+        imlib_context_set_drawable(RootWindow(dpy, screen_num));
 
         imlib_context_pop();
 
         contexts[screen_num] = new_context;
         screen_context = contexts.find(screen_num);
     }
+        
 
     if (screen_context == contexts.end()) {
 #ifdef DEBUG
-        cerr << "ImageImlib2::load: error, couldnt find a valid Imlib_Context.\n";
+        std::cerr << "ImageImlib2::load: error, couldnt find a valid Imlib_Context.\n";
 #endif // DEBUG
         return 0;
     }
 
     // now load the stuff
     Imlib_Context context = screen_context->second;
-    imlib_context_push(context);
-    Imlib_Image image = imlib_load_image_immediately(filename.c_str());
-    if (image) { // loading was ok
-        imlib_context_set_image(image);
+    imlib_context_push(context); 
 
+    Imlib_Image image = 0;
+    Imlib_Load_Error err;
+
+    // TODO: contact imlib2-authors:
+    //
+    // we use this error-loading + get_data_for_reading_only because
+    // it doesnt memleak imlib2,
+    // 
+    //     imlib_load_image_immediately
+    //     imlib_load_image_without_cache
+    //     imlib_load_image_immediately_without_cache
+    // 
+    // seem to memleak or trouble imlib2 when something fails. the
+    // imlib_load_image_with_error_return checks for existence etc before
+    // actually doing anything, i ll analyze this further (mathias)
+    image = imlib_load_image_with_error_return(filename.c_str(), &err);
+    if (image) { // loading was ok
+        
+        imlib_context_set_image(image);
         Pixmap pm = 0, mask = 0;
+
+        // force loading/creation of the image
+        imlib_image_get_data_for_reading_only();
+
+        // and render it to the pixmaps
         imlib_render_pixmaps_for_whole_image(&pm, &mask);
         
-        // pm and mask belong to imlib, so we have to copy them
-        FbPixmap fbpm;
-        FbPixmap fbmask;
-
-        fbpm.copy(pm);
-        fbmask.copy(mask);
+        // pm and mask belong to imlib2, 
+        // so we have to copy them
+        PixmapWithMask* result = new PixmapWithMask();
+        result->pixmap().copy(pm);
+        result->mask().copy(mask);
 
         // mark pm and mask as freeable in imlib
-        imlib_free_image();
+        imlib_free_image_and_decache();
         imlib_free_pixmap_and_mask(pm);
 
         imlib_context_pop();
 
-        PixmapWithMask* result = new PixmapWithMask();
-        result->pixmap() = fbpm;
-        result->mask() = fbmask;
         return result;
-    }
+    } else // loading failure
+        imlib_context_pop();
 
-    // loading failure
-    imlib_context_pop();
     return 0;
 }
 
