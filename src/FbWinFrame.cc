@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.34 2003/08/11 15:03:11 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.35 2003/08/13 09:34:40 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -171,13 +171,13 @@ void FbWinFrame::move(int x, int y) {
     ButtonList::iterator btn_it_end = m_buttons_left.begin();
     for (; btn_it != btn_it_end; ++btn_it) {
         (*btn_it)->clear();
-        (*btn_it)->window().updateTransparent();
+        (*btn_it)->updateTransparent();
     }
     btn_it = m_buttons_right.begin();
     btn_it_end = m_buttons_right.end();
     for (; btn_it != btn_it_end; ++btn_it) {
         (*btn_it)->clear();
-        (*btn_it)->window().updateTransparent();
+        (*btn_it)->updateTransparent();
     }
     m_grip_left.clear();
     m_grip_right.clear();
@@ -663,7 +663,7 @@ void FbWinFrame::redrawTitle() {
     //!! TODO: bevel
     //int border_width = m_labelbuttons.front()->window().borderWidth();
     int border_width =  m_labelbuttons.size() != 0 ?
-        m_labelbuttons.front()->window().borderWidth() : 0;
+        m_labelbuttons.front()->borderWidth() : 0;
 
     LabelList::iterator btn_it = m_labelbuttons.begin();
     LabelList::iterator btn_it_end = m_labelbuttons.end();
@@ -676,7 +676,7 @@ void FbWinFrame::redrawTitle() {
                               button_width, 
                               label().height() + border_width);
         (*btn_it)->clear();
-        (*btn_it)->window().updateTransparent();
+        (*btn_it)->updateTransparent();
     }
         
 }
@@ -922,7 +922,7 @@ void FbWinFrame::setupButton(FbTk::Button &btn) {
 
     }
 
-    btn.window().setAlpha(theme().alpha());
+    btn.setAlpha(theme().alpha());
     btn.clear();
 }
 
@@ -941,7 +941,7 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
 }
 
 void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
-                                FbTk::Color &label_color, FbTk::Color &title_color) {
+                                       FbTk::Color &label_color, FbTk::Color &title_color) {
     if (m_focused) {
         if (m_label_focused_pm != 0)
             label_pm = m_label_focused_pm;
@@ -988,8 +988,8 @@ void FbWinFrame::renderLabelButtons() {
     for (; btn_it != btn_it_end; ++btn_it) {
 
         (*btn_it)->setGC(theme().labelTextFocusGC());
-        (*btn_it)->window().setBorderWidth(1);
-        (*btn_it)->window().setAlpha(theme().alpha());
+        (*btn_it)->setBorderWidth(1);
+        (*btn_it)->setAlpha(theme().alpha());
 
         if (m_label_unfocused_pm != 0)
             (*btn_it)->setBackgroundPixmap(m_label_unfocused_pm);
