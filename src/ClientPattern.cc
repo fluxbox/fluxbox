@@ -20,12 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.6 2003/12/17 01:19:39 fluxgen Exp $
+// $Id: ClientPattern.cc,v 1.7 2004/04/28 13:04:06 rathnor Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
 #include "StringUtil.hh"
 #include "WinClient.hh"
+#include "FbTk/App.hh"
 
 // use GNU extensions
 #ifndef _GNU_SOURCE
@@ -110,6 +111,8 @@ ClientPattern::ClientPattern(const char *str):
                     prop = CLASS;
                 } else if (strcasecmp(memstr.c_str(), "title") == 0) {
                     prop = TITLE;
+                } else if (strcasecmp(memstr.c_str(), "role") == 0) {
+                    prop = ROLE;
                 } else {
                     had_error = pos + match.find_first_of('(') + 1;
                     break;
@@ -186,6 +189,8 @@ std::string ClientPattern::toString() const {
         case TITLE:
             pat.append("title=");
             break;
+        case ROLE:
+            pat.append("role=");
         }
 
         pat.append((*it)->orig);
@@ -245,6 +250,10 @@ std::string ClientPattern::getProperty(WinProperty prop, const WinClient &client
         break;
     case NAME:
         return client.getWMClassName();
+        break;
+    case ROLE:
+        Atom wm_role = XInternAtom(FbTk::App::instance()->display(), "WM_WINDOW_ROLE", False);
+        return client.textProperty(wm_role);
         break;
     }
     return client.getWMClassName();

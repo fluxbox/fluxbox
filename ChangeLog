@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/04/28:
+  * Add apps file matching on WM_WINDOW_ROLE (Simon)
+    - use "role=string". Particularly useful for gaim windows
+      [app] (role=buddy_list) ...
+    ClientPattern.hh/cc FbWindow.hh/cc
 *04/04/27:
   * Fix up several toolbar theme items and alignments (Simon)
     - big improvement in look/compatibility of older styles

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.31 2004/01/21 20:07:41 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.32 2004/04/28 13:04:06 rathnor Exp $
 
 #include "FbWindow.hh"
 
@@ -32,6 +32,7 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
+#include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
 #include <cassert>
@@ -340,6 +341,33 @@ void FbWindow::reparent(const FbWindow &parent, int x, int y) {
     XReparentWindow(s_display, window(), parent.window(), x, y);
     m_parent = &parent;
     updateGeometry();
+}
+
+std::string FbWindow::textProperty(Atom property) const {
+    XTextProperty text_prop;
+    char ** stringlist;
+    int count;
+    std::string ret;
+
+    if (XGetTextProperty(s_display, window(), &text_prop, property) == 0)
+        return "";
+
+    if (text_prop.value == 0 || text_prop.nitems == 0)
+        return "";
+
+    if (text_prop.encoding != XA_STRING) {
+        // still returns a "StringList" despite the different name
+        if (XmbTextPropertyToTextList(s_display, &text_prop, &stringlist, &count) == 0 || count == 0)
+            return "";
+    } else {
+        if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0)
+            return "";
+
+    }
+
+    ret = stringlist[0];
+    XFreeStringList(stringlist);
+    return ret;
 }
 
 bool FbWindow::property(Atom property,

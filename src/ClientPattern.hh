@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.hh,v 1.2 2003/06/13 12:02:00 fluxgen Exp $
+// $Id: ClientPattern.hh,v 1.3 2004/04/28 13:04:06 rathnor Exp $
 
 #ifndef CLIENTPATTERN_HH
 #define CLIENTPATTERN_HH
@@ -53,7 +53,7 @@ public:
     /// @return a string representation of this pattern
     std::string toString() const;
 
-    enum WinProperty { TITLE, CLASS, NAME };
+    enum WinProperty { TITLE, CLASS, NAME, ROLE };
 
     /// Does this client match this pattern?
     bool match(const WinClient &win) const;

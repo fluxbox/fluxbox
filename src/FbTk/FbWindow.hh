@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.28 2004/01/21 20:22:26 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.29 2004/04/28 13:04:06 rathnor Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -28,7 +28,7 @@
 
 #include <X11/Xlib.h>
 #include <memory>
-
+#include <string>
 
 namespace FbTk {
 
@@ -134,6 +134,8 @@ public:
                         int mode,
                         unsigned char *data,
                         int nelements);
+
+    std::string textProperty(Atom property) const;
 
     /// @return parent FbWindow
     const FbWindow *parent() const { return m_parent; }
