@@ -19,6 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Slit.cc,v 1.11 2002/04/08 18:58:27 fluxgen Exp $
+
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
@@ -899,7 +901,7 @@ Slitmenu::Headmenu::Headmenu(Slitmenu *sm)
 	update();
 }
 
-void Slitmenu::Headmenu::itemSelected(int button, int index) {
+void Slitmenu::Headmenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
 		BasemenuItem *item = find(index);
 		if (! item)
