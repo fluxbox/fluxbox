@@ -1,106 +1,85 @@
-News in 0.9.9:
-    * New commands:
-      * Deiconify <mode> <dest>
-        * Where mode is:
-          * last
-           - deiconify last iconified window
-          * lastworkspace (default)
-           - deiconify last iconified window from current workspace
-          * all
-           - deiconify all iconified windows
-          * allworkspace
-           - deiconify all iconfied windows from current workspace
-        * and dest is:
-          * current (default)
-           - deiconify them on current windows
-          * origin
-           - deiconify them where they were
-          * originquiet
-           - deiconify to old workspace but dont follow
-      * SendToNextWorkspace <num>
-        * sends current window forward <num> workspaces
-      * SendToPrevWorkspace <num>
-        * sends current window backward <num> workspaces
-      * WindowMenu
-        * popups the window menu
-    * New resources:
-      * session.tabsAttachArea: <mode>
-        * where mode is:
-           * Window
-            - dropping tabs to any part of the destination-window leads
-              to attaching to that frame (default)
-           * Titlebar
-            - dropping tabs only to the titlebar of the destination-
-              window leads to attaching to that frame
-      * session.screen<num>.overlay.lineWidth: <integer>
-      * session.screen<num>.overlay.lineStyle:
-         * Valid arguments: LineSolid, LineOnOffDash LineDoubleDash
+News in 0.9.10:
+    * Keybindings for directional focus movement:
+      * key actions:
+        FocusUp, FocusDown, FocusLeft, FocusRight
+    * Added apps file matching on WM_WINDOW_ROLE (Simon)
+      * use "role=string". Particularly useful for gaim+gimp windows
+       [app] (role=buddy_list) ...
+    * Window menu file
+      * new resource:
+        * session.screen<num>.windowMenu: <filename>
+      * The menu file format is the same as the normal ~/.fluxbox/menu
+        but with some special menu items:
+        [iconify], [maximize], [shade], [close], [extramenus]
+        [layer], [sendto]
+        + the all the other menu items that you can use in the normal
+        root menu (i.e [exec] (aterm) {aterm})
+        The [extramenus] will add  "remember" menu
+        example: session.screen0.windowMenu: ~/.fluxbox/windowmenu
+        [begin]
+          [exec] (aterm) {aterm}
+          [maximize]
+          [shade]
+          [close]
+        [end]
+    * New actions:
+      * exit  (exit fluxbox, new to keybinding)
+    * Improved menu transparent rendering speed and the 
+      text is not transparent anymore so you are able
+      to see the text even if you have 100% transparency
+    * New menu theme items:
+      * menu.titleHeight: <integer>
+      * menu.itemHeight: <integer>
+      The height of the item/title will be the biggest of
+      font height + bevel and the specified height, so the
+      text will always fit.
+    * Added icons in menu and improved menu loading speed
+      * New option for menu file:
+       [key] (label) {argument to key} <the icon filename>
+       example:
+       [exec] (aterm) {aterm} <terminal.xpm>
+    * Improve rendering speed of toolbar
+    * Supports _NET_WM_WINDOW_TYPE_DESKTOP
+      * eg nautilus desktop windows are on the bottom, not tabable, etc
+    * Added some new options font loading:
+      *.font:  fontname-size:option,specoption1:key=val;key2=val2 etc
+      eg:
+      *.font: Verdana-10:bold,shadow:offsetx=2;offsety=4;color=green
+      *.font: Verdana-10:halo:color=blue
+      possible specoptions atm:
+      halo:
+        color=colorname
+      shadow:
+        color=colorname
+        offsetx=number  (negative allowed)
+        offsety=number  (negative allowed)
+    * Fixed so one can use to use this in the apps-file:
+      [Layer] {number | literal}
+      ex:
+	  [Layer] {BOTTOM}
+      while literal is one of
+      DESKTOP BOTTOM NORMAL TOP DOCK ABOVEDOCK MENU
+    * fluxbox-generate_menu:
+      * Preliminary basic support for icons in fluxbox-generate_menu (Han)
+        * put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm
 
-      * session.screen<num>.overlay.joinStyle:
-         * Valid arguments: JoinRound, JoindMiter, JoinBevel
-
-      * session.screen<num>.overlay.capStyle:
-         * Valid arguments: CapNotLast, CapRound, CapButt, CapProjecting
-
-    * KDE dockapps docks in systray inside toolbar now
-    * Support aspect ratio hints
-    * Optional decoration on transient windows
-    * Added ! as a comment char in keys file
-    * Improved rendering speed while changing workspace
-    * Improved checking for compiler and compiler version
-    * Improved transparent rendering speed
-    * Remember hidden state for apps
-      * [IconHidden] hides the app from the icon bar
-      * [FocusHidden] hides the app from the list to be reachable
-        via Next/PrevWindow
-      * [Hidden] is [IconHidden] + [FocusHidden]
-        Example ~/.fluxbox/apps: [IconHidden] {true}
-    * Expands tilde for slitlist file
-    * Using WM_CLASS instead of NAME in slitlist file
-    * Window snapping to other windows
-    * More support for Extended Window Manager Hints:
-      * _NET_WM_WINDOW_TYPE
-      * _NET_WM_WINDOW_TYPE_DOCK
-      * _NET_WM_STATE_ABOVE
-      * _NET_WM_STATE_BELOW
-      * _NET_WM_CLIENT_LIST_STACKING
-      * _NET_WM_DESKTOP_VIEWPORT
-      * _NET_WM_DESKTOP_GEOMETRY
-      * _NET_WORKAREA
-      * _NET_ACTIVE_WINDOW
-      * _NET_WM_STATE_HIDDEN
-      * _NET_WM_STATE_SKIP_TASKBAR
-    * sl_SI nls
-    * Updated nl_NL locales
-    * fbrun news:
-      * cycling in tab completion
-      * completes binaries from your $PATH
-        * if you want to use old history tab-complete, press Ctrl-tab
-      * completes path names
-      * Control-C clears the text
-      * Fixed cursor bug
-    * fluxbox-generate_menu news:
-      * Updated German locales
-      * More firefox support
-      * portability fixes
-      * improve menu reloading
-      * more menu entries
-      * French locales
-      * Portuguese locales
 Bug fixes:
-    * Decoration bug with mwm hint + remember
-    * Drawing issues with big menus
-    * _MOTIF_WM_HINTS decoration toggle bug
-    * No-text-in-iconbar bug on restart
-    * Menu time stamp on root menu
-    * placeWindow caused spinning with screens higher than width
-      e.g. vertical xinerama
-    * compiles in cygwin
-    * update of keys on keymap change
-    * infinite loop in fbrun
-    * window size bug in no-decor windows on start/restart
-    * The _NET_MOVERESIZE_WINDOW crash bug
-    * mplayer -vo xvid bug
-    * menu keyboard navigation bug
+    * Compiles with gcc 3.4
+    * Reparent issue with java menus
+    * A crash when a window closes while [opaque] moving
+    * Rendering of transparency on menu exposes 
+    * handling alpha value of zero
+    * Bug in Iconbar mode menu
+    * Bug in systray (Henrik)
+      (this fixes the problem with "sim" in systray)
+      It didn't force client position on configure request
+    * Tiled texture
+    * Transient window bug at startup
+    * Ugly toolbar at startu
+    * When time_t is long long 
+    * Delete key is working for fbrun
+    * Mouse scroll on icons in toolbar changes workspace
+    * Click on handle bar raises window even if "click raises" = false
+    * fbrun segfaults when history item is bigger than entry box
 
 See ChangeLog for more details
