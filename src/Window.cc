@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.123 2003/02/22 15:10:43 rathnor Exp $
+// $Id: Window.cc,v 1.124 2003/02/22 18:28:32 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -245,8 +245,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     client.width = wattrib.width;
     client.height = wattrib.height;
 
-    m_frame.move(wattrib.x, wattrib.y);
-    m_frame.resizeForClient(wattrib.width, wattrib.height);
 
     Fluxbox *fluxbox = Fluxbox::instance();
 
@@ -316,7 +314,8 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 		
     positionWindows();
 
-
+    m_frame.move(wattrib.x, wattrib.y);
+    m_frame.resizeForClient(wattrib.width, wattrib.height);
 
     if (workspace_number < 0 || workspace_number >= screen->getCount())
         workspace_number = screen->getCurrentWorkspaceID();
@@ -1148,7 +1147,8 @@ void FluxboxWindow::maximize() {
         unsigned int max_width = screen->getMaxRight();
         unsigned int max_top = screen->getMaxTop();
         moveResize(left_x, max_top, 
-                   max_width - left_x, screen->getMaxBottom() - max_top - m_frame.window().borderWidth());
+                   max_width - left_x, 
+                   screen->getMaxBottom() - max_top - m_frame.window().borderWidth());
     } else { // demaximize, restore to old values
         moveResize(m_old_pos_x, m_old_pos_y,
                    m_old_width, m_old_height);
@@ -1171,7 +1171,8 @@ void FluxboxWindow::maximizeHorizontal() {
 void FluxboxWindow::maximizeVertical() {
     unsigned int max_top = screen->getMaxTop();
     moveResize(m_frame.x(), max_top,
-               m_frame.width() - m_frame.window().borderWidth(), screen->getMaxBottom() - max_top);
+               m_frame.width() - m_frame.window().borderWidth(), 
+               screen->getMaxBottom() - max_top);
 }
 
 
@@ -1611,7 +1612,7 @@ void FluxboxWindow::restoreAttributes() {
     }
 
     if (blackbox_attrib.flags & BaseDisplay::ATTRIB_STACK) {
-        //TODO check value?
+        //!! TODO check value?
         m_layernum = blackbox_attrib.stack;
     }
 
@@ -1915,7 +1916,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
         if ((client.normal_hint_flags & PMinSize) &&
             (client.normal_hint_flags & PMaxSize)) {
- 
+
             if (client.max_width != 0 && client.max_width <= client.min_width &&
                 client.max_height != 0 && client.max_height <= client.min_height) {
                 decorations.maximize = false;
@@ -1973,7 +1974,9 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
     int cx = m_frame.x(), cy = m_frame.y();
     unsigned int cw = m_frame.width(), ch = m_frame.height();
-
+    unsigned int titlebar_y = (decorations.titlebar ? 
+                               m_frame.titlebar().height() + frame().titlebar().borderWidth() 
+                               : 0);
     if (cr.value_mask & CWBorderWidth)
         client.old_bw = cr.border_width;
 
@@ -1981,7 +1984,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         cx = cr.x;
 
     if (cr.value_mask & CWY)
-        cy = cr.y - (decorations.titlebar ? m_frame.titlebar().height() : 0);
+        cy = cr.y - titlebar_y;
 
     if (cr.value_mask & CWWidth)
         cw = cr.width;
@@ -1995,8 +1998,6 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         frame().resizeForClient(cw, ch);
     if (frame().x() != cx || frame().y() != cy)
         move(cx, cy);
-
-
 
     if (cr.value_mask & CWStackMode) {
         switch (cr.detail) {
@@ -2181,11 +2182,11 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         return;
     }
 
-    if (ev.window == getFrameWindow() ||
-        (!getFrameWindow() && ev.window == client.window)) {
+    if (ev.window == frame().window() ||
+        ev.window == client.window) {
         if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus()) 
             && !isFocused()) {
-            Fluxbox::instance()->grab();
+           
             
             // check that there aren't any subsequent leave notify events in the 
             // X event queue
@@ -2198,14 +2199,14 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             if ((!sa.leave || sa.inferior) && setInputFocus())
                 installColormap(True);
             
-            Fluxbox::instance()->ungrab();
+           
         }        
     }
 }
 
 void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) { 
-    if (ev.window == getFrameWindow())
-        installColormap(False);
+    if (ev.window == frame().window())
+        installColormap(false);
 }
 
 // TODO: functions should not be affected by decoration
@@ -2546,9 +2547,6 @@ void FluxboxWindow::upsize() {
     m_frame.handle().resize(m_frame.handle().width(), screen->getHandleWidth());
     m_frame.gripLeft().resize(m_frame.buttonHeight(), screen->getHandleWidth());
     m_frame.gripRight().resize(m_frame.gripLeft().width(), m_frame.gripLeft().height());
-    // convert client.width/height into frame sizes
-    m_frame.resizeForClient(client.width, client.height);
- 
 }
 
 
@@ -2562,8 +2560,10 @@ void FluxboxWindow::right_fixsize(int *gx, int *gy) {
     // calculate the size of the client window and conform it to the
     // size specified by the size hints of the client window...
     int dx = last_resize_w - client.base_width;
-    int dy = last_resize_h - client.base_height;
+    int titlebar_height = (decorations.titlebar ? frame().titlebar().height()  + frame().titlebar().borderWidth() : 0);
+    int handle_height = (decorations.handle ? frame().handle().height() + frame().handle().borderWidth() : 0);
 
+    int dy = last_resize_h - client.base_height - titlebar_height - handle_height;
     if (dx < (signed) client.min_width)
         dx = client.min_width;
     if (dy < (signed) client.min_height)
@@ -2574,6 +2574,12 @@ void FluxboxWindow::right_fixsize(int *gx, int *gy) {
         dy = client.max_height;
 
     // make it snap
+
+    if (client.width_inc == 0)
+        client.width_inc = 1;
+    if (client.height_inc == 0)
+        client.height_inc = 1;
+
     dx /= client.width_inc;
     dy /= client.height_inc;
 
@@ -2581,15 +2587,17 @@ void FluxboxWindow::right_fixsize(int *gx, int *gy) {
     if (gy) *gy = dy;
 
     dx = (dx * client.width_inc) + client.base_width;
-    dy = (dy * client.height_inc) + client.base_height;
-
+    dy = (dy * client.height_inc) + client.base_height + titlebar_height + handle_height;
     last_resize_w = dx;
     last_resize_h = dy;
 }
 
-void FluxboxWindow::left_fixsize(int *gx, int *gy) {
+void FluxboxWindow::left_fixsize(int *gx, int *gy) {   
+    int titlebar_height = (decorations.titlebar ? frame().titlebar().height()  + frame().titlebar().borderWidth() : 0);
+    int handle_height = (decorations.handle ? frame().handle().height() + frame().handle().borderWidth() : 0);
+    int decoration_height = titlebar_height + handle_height;
     int dx = m_frame.width() + m_frame.x() - last_resize_x;
-    int dy = last_resize_h - client.base_height;
+    int dy = last_resize_h - client.base_height - decoration_height;
 
     // check minimum size
     if (dx < static_cast<signed int>(client.min_width))
@@ -2621,7 +2629,7 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
 
     // snapping
     dx = dx * client.width_inc + client.base_width;
-    dy = dy * client.height_inc + client.base_height;
+    dy = dy * client.height_inc + client.base_height + decoration_height;
 
     // update last resize 
     last_resize_w = dx;
