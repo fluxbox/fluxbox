@@ -46,6 +46,9 @@ endif
 if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
+if REMEMBER_SRC
+REMEMBER_SOURCE= Remember.hh Remember.cc
+endif
 
 fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	BaseDisplay.cc BaseDisplay.hh \
@@ -73,6 +76,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc LayerMenu.hh \
 	IntResMenuItem.hh IntResMenuItem.cc FbMenu.hh \
 	WinClient.hh WinClient.cc \
-	Remember.hh Remember.cc
+	${REMEMBER_SOURCE}
+
 
 LDADD=FbTk/libFbTk.a
