@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.214 2003/08/11 16:27:23 fluxgen Exp $
+// $Id: Screen.cc,v 1.215 2003/08/11 20:32:51 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -492,8 +492,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rm.unlock();
 
     XFree(children);
-
-    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
 
     XFlush(disp);
 }
