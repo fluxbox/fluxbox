@@ -1,6 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/10:
+  * Close #1080323, missing header (Mathias)
+    FbTk/FbPixmap.cc
+  * Fix issue with maximizing shaded windows, #1082671 (Mathias)
+    Window.cc
+  * Added some apps and items to fluxbox-generate_menu (Mathias)
+    fluxbox-generate_menu.in
+  * Added support for hsetroot to fbsetbg (Mathias)
+    fbsetbg
   * Update ClockTool when timeformat changed, close #1026096 (Mathias)
     ClockTool.cc
   * SlitClientMenu had with wheelup/down sometimes (Mathias)
@@ -73,7 +81,7 @@ Changes for 0.9.11
     from Jonas Ericsson (jmaster at telia.com)
     fluxbox-generate_menu.in
 *04/11/09:
-  * Better visualisation of the RememberState in RememberMenu (Mathias)
+  * Better visualisation of the RememberState in RememberMenu, #1024498 (Mathias)
     src/FbTk/Remember.cc
 *04/11/07:
   * Fix a problem with snapping windows (Mathias)
