@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.15 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.16 2002/03/29 21:47:58 pekdon Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -238,8 +238,8 @@ void Toolbar::reconfigure(void) {
 		frame.width =
 			(screen->getHeadWidth(head) * screen->getToolbarWidthPercent() / 100);
 	}	else {
-		head_w = screen->getHeadWidth(head);
-		head_h = screen->getHeadHeight(head);
+		head_w = screen->getWidth();
+		head_h = screen->getHeight();
 
 		frame.width = screen->getWidth() * screen->getToolbarWidthPercent() / 100;
 	}
