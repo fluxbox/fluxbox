@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.28 2004/04/19 18:10:44 fluxgen Exp $
+// $Id: FbRun.cc,v 1.29 2004/04/21 14:58:44 rathnor Exp $
 
 #include "FbRun.hh"
 
@@ -42,6 +42,7 @@
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <iterator>
