@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.16 2002/10/15 17:07:32 fluxgen Exp $
+// $Id: Theme.hh,v 1.17 2002/10/29 16:06:23 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -89,11 +89,12 @@ public:
 
 	
 	typedef struct ToolbarStyle {
+		ToolbarStyle():font("fixed") { } // default font 'fixed'
 		FbTk::Color l_text, w_text, c_text, b_pic;
 		FbTk::Texture toolbar, label, window, button, pressed, clock;
 		GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
-		DrawUtil::Font font;
-
+		FbTk::Font font;
+		DrawUtil::Font::FontJustify justify;
 	} ToolbarStyle;	
 		
 	inline WindowStyle &getWindowStyle() { return m_windowstyle; }

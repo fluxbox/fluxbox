@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.31 2002/10/15 17:08:45 fluxgen Exp $
+// $Id: Theme.cc,v 1.32 2002/10/29 16:07:27 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -62,9 +62,6 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 #endif //DEBUG
 	//default settings	
 
-	m_toolbarstyle.font.set = 0;	
-	m_toolbarstyle.font.fontstruct = 0;
-		
 	load(filename);
 	//-------- create gc for the styles ------------
 	
@@ -114,15 +111,12 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 				GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.t_text.pixel();
-	//if (m_menustyle.titlefont.fontStruct())
-	//	gcv.font = m_menustyle.titlefont.fontStruct()->fid;
+
 	m_menustyle.t_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.pixel();
-	//if (m_menustyle.framefont.fontStruct())
-	//	gcv.font = m_menustyle.framefont.fontStruct()->fid;
 
 	m_menustyle.f_text_gc =
 		XCreateGC(m_display, rootwindow,
@@ -144,8 +138,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 				gc_value_mask, &gcv);
 
 	gcv.foreground = m_toolbarstyle.l_text.pixel();
-	if (m_toolbarstyle.font.fontstruct)
-		gcv.font = m_toolbarstyle.font.fontstruct->fid;
+
 	m_toolbarstyle.l_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
@@ -212,12 +205,6 @@ void Theme::freeTabStyle() {
 //--------------------
 void Theme::freeToolbarStyle() {
 	
-	if (m_toolbarstyle.font.set)
-		XFreeFontSet(m_display, m_toolbarstyle.font.set);
-
-	if (m_toolbarstyle.font.fontstruct)
-		XFreeFont(m_display, m_toolbarstyle.font.fontstruct);
-
 	XFreeGC(m_display, m_toolbarstyle.l_text_gc);
 	XFreeGC(m_display, m_toolbarstyle.w_text_gc);
 	XFreeGC(m_display, m_toolbarstyle.c_text_gc);
@@ -546,29 +533,21 @@ void Theme::loadToolbarStyle() {
 	
 	// ----------- load font
 	
-	if (I18n::instance()->multibyte()) {
-		readDatabaseFontSet("toolbar.font", "Toolbar.Font",
-			&m_toolbarstyle.font.set);
-				
-		m_toolbarstyle.font.set_extents =
-			XExtentsOfFontSet(m_toolbarstyle.font.set);
-	} else {
-		readDatabaseFont("toolbar.font", "Toolbar.Font",
-			&m_toolbarstyle.font.fontstruct);
-	}
+	loadFontFromDatabase(m_toolbarstyle.font, "toolbar.font", "Toolbar.Font");
+
 	XrmValue value;
 	char *value_type;
 
 	if (XrmGetResource(m_database, "toolbar.justify",
 			"Toolbar.Justify", &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_toolbarstyle.font.justify = DrawUtil::Font::RIGHT;
+			m_toolbarstyle.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_toolbarstyle.font.justify = DrawUtil::Font::CENTER;
+			m_toolbarstyle.justify = DrawUtil::Font::CENTER;
 		else
-			m_toolbarstyle.font.justify = DrawUtil::Font::LEFT;
+			m_toolbarstyle.justify = DrawUtil::Font::LEFT;
 	} else
-		m_toolbarstyle.font.justify = DrawUtil::Font::LEFT;
+		m_toolbarstyle.justify = DrawUtil::Font::LEFT;
 
 }
 
@@ -577,7 +556,7 @@ void Theme::loadRootCommand() {
 	char *value_type;
 	
 	if (m_rootcommand.size()) {
-		#ifndef  __EMX__		
+#ifndef  __EMX__		
 		char tmpstring[256]; //to hold m_screennum 
 		tmpstring[0]=0;
 		sprintf(tmpstring, "%d", m_screennum);
@@ -587,13 +566,13 @@ void Theme::loadRootCommand() {
 		
 		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
 
-		#else //         __EMX__
+#else //         __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), 0);  
-		#endif // !__EMX__     
+#endif // !__EMX__     
 
 	} else if (XrmGetResource(m_database, "rootCommand", "RootCommand",
 			&value_type, &value)) {
-		#ifndef		__EMX__
+#ifndef		__EMX__
 		char tmpstring[256]; //to hold m_screennum
 		tmpstring[0]=0;
 		sprintf(tmpstring, "%d", m_screennum);
@@ -602,11 +581,9 @@ void Theme::loadRootCommand() {
 		displaystring.append(tmpstring); // append m_screennum				
 		
 		bexec(value.addr, const_cast<char *>(displaystring.c_str()));
-		#else //	 __EMX__
-	
+#else //	 __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, 0);
-	
-		#endif // !__EMX__
+#endif // !__EMX__
 		
 	}
 	#ifdef DEBUG
@@ -937,10 +914,6 @@ void Theme::reconfigure(bool antialias) {
 	gcv.foreground = m_menustyle.hilite.color().pixel();
 	XChangeGC(m_display, m_menustyle.hilite_gc,
 			gc_value_mask, &gcv);
-
-	gcv.foreground = m_toolbarstyle.l_text.pixel();
-	if (m_toolbarstyle.font.fontstruct)
-		gcv.font = m_toolbarstyle.font.fontstruct->fid;
 
 	gc_value_mask |= GCFont;
 	XChangeGC(m_display, m_toolbarstyle.l_text_gc,
