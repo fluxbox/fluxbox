@@ -1,67 +1,14 @@
-News in 0.9.7:
-    * Two new styles:
-      Emerge from Nuno Alexandre
-      BlueFlux from Lauri Hakkarainen
-    * Added menu delay/click to open or close sub menus
-      new resource items:
-      session.screen0.menuMode:  can be either Click or Delay (default: Delay)
-      session.screen0.menuDelay:  in msec  (default: 0 )
-      session.screen0.menuDelayClose: in msec (default: 0 )
-      example:
-      session.screen0.menuMode: Delay
-      session.screen0.menuDelay: 400
-      session.screen0.menuDelayClose: 300
-    * Added alignment for buttons in icon bar
-       Change Left, Relative or Right via the iconbar mode menu
-       New resource item:
-       session.screen0.iconbar.clientWidth: Integer
-       session.screen0.iconbar.alignment:  LEFT, RELATIVE or RIGHT
-    * Added remember position (Thanks Mathias Gumz)
-      Usage: [app] (fbrun)
-             [Position] (WINCENTER) {0 0}
-             [end]
-      and inside the { } is the relative position
-      possible values for () are:
-      UPPERLEFT, UPPERRIGHT, LOWERLEFT, LOWERRIGHT, CENTER, WINCENTER 
-    * New menu item [separator] 
-      This will create a nice separator line      
-    * New theme items:
-       window.label.active:   <texture>
-       window.label.active.textColor:  <color>
-    For highlighting the active (visible) tab when not in focus.
-    * New actions:
-      ReloadStyle
-      CommandDialog  - this will show a dialog in which you can issue 
-                       fluxbox commands
-      WorkspaceNameDialog  - edit workspaces name dialog (old SetWorkspaceName)
-      SetWorkspaceName <name> 
-      SetResourceValueDialog - shows a dialog where you can type the resource
-                               name and it's value
-      SetResourceValueCmd <resourcename> <resource value>
-      BindKey <key string> :<action>   - this will append key string and 
-                                         action to your keys file and bind
-                                         the key
-      
-    * Window menu accessible in workspaces client menu  
-    * Shadow options for fonts
-      example:
-        menu.frame.font: Verdana-8:shadow
-    * Enabled/Disable toolbar menu item ("Visible" menu item)
-    * Toggle images in iconbar
-    * Edit clock format dialog
-    * Send to menu is back
-    * Changed Maximize menu item in Window menu to a multi button item
-      Button1: Maximize Normal
-      Button2: Maximize Vertical
-      Button3: Maximize Horizontal
-    * Added resource session.useMod1 <boolean> to disable/enable mod1
-      for Resize/Move window with mod1 + button
+News in 0.9.8:
+    * Transparent toolbar
+      Change the toolbar alpha in the style
+      toolbar.alpha: 0-255
+      or
+      toolbar.<tool>.alpha: 0-255
 Bug fixes: 
-    * Fixed slit and toolbar autohide bug
-    * Fixed image cache bug
-    * Fixed some icc warnings
-    * Fixed mozilla focus issue
-    * Fixed crash bug when adding new workspaces
-    * Fixed menu draw bug in empty sub menus
+    * Fixed image cache problem (the memory bug)
+    * Fixed color parsing bug
+    * Fixed iconbar bug in "All Windows" mode
+    * Fixed border bug with left/right alignment in iconbar
+    * Fixed a loop issue in fluxbox-generate_menu
 
 See ChangeLog for more details
