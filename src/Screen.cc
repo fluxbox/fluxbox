@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.257 2004/01/02 13:29:01 fluxgen Exp $
+// $Id: Screen.cc,v 1.258 2004/01/03 00:28:02 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2003,7 +2003,9 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                     cerr<<"Row: "<<row<<endl;
                 } else
                     menu.insert(str_label.c_str(), workspacemenu.get());
-            } // end of workspaces
+            } else if (str_key == "separator") {
+                menu.insert("---"); //!! TODO: this will be better in the future
+            }
             else { // ok, if we didn't find any special menu item we try with command parser
                 // we need to attach command with arguments so command parser can parse it
                 string line = str_key + " " + str_cmd;
