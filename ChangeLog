@@ -1,6 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
 *05/03/16:
+  * added -c <startupfile> to 'startfluxbox' (Mathias)
   * fix for gravity field on _NET_MOVERESIZE_WINDOW (thanx to Rob Stevens)
     Ewmh.cc, Window.(cc,hh), FbWinFrame.(cc,hh)
   * added new option to specify, on which screen fluxbox should handle 
