@@ -1,6 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/19:
+  * Added Edit Clock Format menu item  (Henrik)
+    This allow the user to edit the clock format without open 
+    and edit the init file manualy
+    ClockTool.cc
+  * Added new commands:                      (Henrik)
+    SetResourceValueCmd <resourcename> <resource value>
+    SetResourceValueDialog
+    These will help the user to set some resources that doesn't have
+    a configure menu item or that's painfull to change in small steps
+    (like Menu Alpha)
+    FbCommands.hh/cc, FbCommandFactory.cc
+  * Added setResourceValue, resourceValue and findResource to ResourceManager (Henrik)
+    Resource.hh/cc
   * Removed flicker in iconbar while changing active client  (Henrik)
     in Window.
     IconbarTool.hh/cc
