@@ -1,58 +1,72 @@
-News in 0.9.4:
-    * Keyboard navigation in menus
-       * Keys:
-         Up/Down: select menu item
-         Left/Right: go in/out from sub menus
-         Escape: close menu and return focus to windows
-         Enter: run/execute/toggle menu item
-      To set input focus on the menu you either click on the title bar
-      or bring it up with key bindings
-    * New action strings
-      * ArrangeWindows 
-   	    This will arrange the windows on the current desktop
-      * ShowDesktop
-	    This will iconify all windows on the current desktop
-    * The same action strings that are in keys file can 
-      now be used in the menu
-      example:
-      [ArrangeWindows] (arrange windows)
-    * New theme items
-       * toolbar.button.borderWidth: <integer>
-       * toolbar.borderWidth: <integer>
-       * toolbar.bevelWidth: <integer>
-       * toolbar.borderColor: <color>
-       * slit.borderWidth: <integer>
-       * slit.bevelWidth: <integer>
-       * slit.borderColor: <color>
-    * [startup] option in remember file
-      Can now add entries to apps file like:
-         [startup] {xterm}
-      Then "xterm" will be launched on fluxbox startup. 
-      Can also give a screen option:
-         [startup] (screen=1) {xterm}
-      will start it on screen 1 rather than the default 0.
-    * Rounded corners on menu, windows and toolbar
-      Theme items:
-       * menu.roundCorners: <shape item>
-       * toolbar.shaped: <boolean>
-       * window.roundCorners: <shape item>
-      Shape item can be: TopLeft TopRight BottomLeft and/or BottomRight
-      example: menu.roundCorners: TopRight BottomLeft
-    * The current style is now marked in the style menu
-    * Compile time option for toolbar
-      --disable-toolbar
-      --enable-toolbar (default)
-    * Emacs style key bindings in fbrun
-	* Tab completion in fbrun
-    * Group persistence over a restart
-    * Maximization stop on slit and toolbar (check Maximize Over menu items)
-    * Support for _NET_WM_STRUT
-    * Regular expression support for remember
+News in 0.9.5:
+    * New theme items:
+        Menu theme changes:
+        * menu.selected.pixmap
+        * menu.unselected.pixmap
+        * menu.submenu.pixmap
+        Window theme changes:
+        * window.title.height 
+        Toolbar theme changes:
+        * toolbar.height: <pixel size>
+        * toolbar.clock: <texture>
+        * toolbar.clock.pixmap: <filename>
+        * toolbar.clock.color: <color>
+        * toolbar.clock.colorTo: <color>
+        * toolbar.clock.textColor: <color>
+        * toolbar.clock.font: <font>
+
+        * toolbar.workspace: <texture>
+        * toolbar.workspace.pixmap: <filename>
+        * toolbar.workspace.color: <color>
+        * toolbar.workspace.colorTo: <color>
+        * toolbar.workspace.textColor: <color>
+        * toolbar.workspace.font: <font>
+        This is for an empty iconbar: 
+        * toolbar.iconbar.empty: <texture>
+        * toolbar.iconbar.empty.pixmap: <filename>
+        * toolbar.iconbar.empty.color: <color>
+        * toolbar.iconbar.empty.colorTo: <color>
+
+        Focused window in iconbar:
+        * toolbar.iconbar.focused: <texture>
+        * toolbar.iconbar.focused.pixmap: <filename>
+        * toolbar.iconbar.focused.color: <color>
+        * toolbar.iconbar.focused.colorTo: <color>
+        * toolbar.iconbar.focused.textColor: <color>
+        * toolbar.iconbar.focused.font: <font>
+        And the same for .unfocused:
+        * toolbar.iconbar.unfocused: <texture>
+          etc.    
+    * New actions:
+        * resizevertical
+        * resizehorizontal
+        * setworkspacename
+        * movetableft
+        * movetabright
+    * Set workspace name tool
+    * Search path resource for images
+        * session.screen<num>.imageSearchPath
+        This is a list separated by , or space
+        example: session.screen0.imageSearchPath: ~/.fluxbox/pixmaps, /usr/share/fluxbox/pixmaps 
+    * New height resource for toolbar
+        * session.screen<num>.toolbar.height
+        This will override the style's font height
+    * Support for system tray _NET_SYSTEM_TRAY
+        Applications that support this will show their icon
+        in the toolbar next to the clock.
+    * New texture type: Tiled
+        This will just affect pixmap loaded from file, and it will not scale them.
+    * Added MoveTabLeft and MoveTabRight commands 
+    
 Bug fixes: 
-    * Toggle maximize vertical/horizontal
-    * Slit/Toolbar auto hide bug
-    * Button alignment bug in title bar
-    * Trailing whitespace in group file resource
-    * Group cycling
+    * Fixed Transparency bug in menus
+    * Fixed so shaped windows like xmms wont get round corners
+    * Fixed shape bug when switching between shaped themes and non shaped
+    * Fixed kde dockapp bug
+    * FbRun works properly on multiple screens
+    * Fixed pesky crash and phantom icons
+    * Fixed aspects of focus and raising, including transients
+    * Fixed java bug, slow windows
+    * Fixed 8 bpp crash
 
 See ChangeLog for more details
