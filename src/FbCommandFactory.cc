@@ -284,7 +284,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SendToNextWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "sendtoprevworkspace")
         return new SendToPrevWorkspaceCmd(atoi(arguments.c_str()));
-    else if (command == "killwindow")
+    else if (command == "killwindow" || command == "kill")
         return new KillWindowCmd();
      else if (command == "nexttab")
         return new CurrentWindowCmd(&FluxboxWindow::nextClient);

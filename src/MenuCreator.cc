@@ -476,6 +476,9 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
     } else if (type == "close") {
         RefCmd close_cmd(new WindowCmd(win, &FluxboxWindow::close));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Close, "Close", "Close the window"):label.c_str(), close_cmd);
+    } else if (type == "kill" || type == "killwindow") {
+        RefCmd kill_cmd(new WindowCmd(win, &FluxboxWindow::kill));
+        menu.insert(label.empty()?_FBTEXT(Windowmenu, Kill, "Kill", "Kill the window"):label.c_str(), kill_cmd);
     } else if (type == "lower") {
         RefCmd lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
         menu.insert(label.empty()?_FBTEXT(Windowmenu, Lower, "Lower", "Lower the window"):label.c_str(), lower_cmd);

@@ -191,6 +191,8 @@ public:
     void deiconify(bool reassoc = true, bool do_raise = true);
     /// close current client
     void close();
+    /// kill current client
+    void kill();
     /// set the window in withdrawn state
     void withdraw(bool interrupt_moving);
     /// toggle maximize
