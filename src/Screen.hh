@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.140 2004/04/28 14:59:11 rathnor Exp $
+// $Id: Screen.hh,v 1.141 2004/05/02 21:10:30 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -74,9 +74,13 @@ class BScreen : public FbTk::Observer, private FbTk::NotCopyable {
 public:
     enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
     enum FocusDir { FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT };
-    enum PlacementPolicy { ROWSMARTPLACEMENT, COLSMARTPLACEMENT, CASCADEPLACEMENT, UNDERMOUSEPLACEMENT};
+    enum PlacementPolicy { ROWSMARTPLACEMENT, COLSMARTPLACEMENT, 
+                           CASCADEPLACEMENT, UNDERMOUSEPLACEMENT};
     enum RowDirection { LEFTRIGHT, RIGHTLEFT};
     enum ColumnDirection { TOPBOTTOM, BOTTOMTOP};
+    // prevFocus/nextFocus option bits
+    enum { CYCLEGROUPS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
+           CYCLELINEAR = 0x08, CYCLEDEFAULT = 0x00 };
 
     typedef std::vector<FluxboxWindow *> Icons;
     typedef std::list<WinClient *> FocusedWindows;
@@ -89,6 +93,7 @@ public:
     ~BScreen();
 
     void initWindows();
+    void initMenus();
     inline bool isSloppyFocus() const { return (*resource.focus_model == SLOPPYFOCUS); }
     inline bool isSemiSloppyFocus() const { return (*resource.focus_model == SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
@@ -105,11 +110,13 @@ public:
     inline bool doShowWindowPos() const { return *resource.show_window_pos; }
     inline bool antialias() const { return *resource.antialias; }
     inline bool decorateTransient() const { return *resource.decorate_transient; }
-
+    inline const std::string &windowMenuFilename() const { return *resource.windowmenufile; }
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     const FbTk::Menu &getRootmenu() const { return *m_rootmenu.get(); }
     FbTk::Menu &getRootmenu() { return *m_rootmenu.get(); }
-	
+    const FbTk::Menu &configMenu() const { return *m_configmenu.get(); }
+    FbTk::Menu &configMenu() { return *m_configmenu.get(); }
+
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline const std::string &getResizeMode()  const { return *resource.resizemode; }
     inline FocusModel getFocusModel() const { return *resource.focus_model; }
@@ -121,9 +128,8 @@ public:
     inline Workspace *currentWorkspace() { return m_current_workspace; }
     inline const Workspace *currentWorkspace() const { return m_current_workspace; }
 
-    const FbTk::Menu &getWorkspacemenu() const { return *workspacemenu.get(); }
-    FbTk::Menu &getWorkspacemenu() { return *workspacemenu.get(); }
-
+    const FbTk::Menu &getWorkspacemenu() const { return *m_workspacemenu.get(); }
+    FbTk::Menu &getWorkspacemenu() { return *m_workspacemenu.get(); }
 
 
     unsigned int currentWorkspaceID() const;
@@ -200,6 +206,7 @@ public:
     inline void saveFocusModel(FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
+    void saveMenu(FbTk::Menu &menu) { m_rootmenu_list.push_back(&menu); }
 
     void setAntialias(bool value);
 
@@ -338,13 +345,6 @@ public:
 
 
 
-
-
-
-    // prevFocus/nextFocus option bits
-    enum { CYCLEGROUPS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
-           CYCLELINEAR = 0x08, CYCLEDEFAULT = 0x00 };
-
     class ScreenSubject:public FbTk::Subject {
     public:
         ScreenSubject(BScreen &scr):m_scr(scr) { }
@@ -356,17 +356,10 @@ public:
 
 private:
     void setupConfigmenu(FbTk::Menu &menu);
-    void createStyleMenu(FbTk::Menu &menu, const char *label, const char *directory);
-
-    bool parseMenuFile(std::ifstream &filestream, FbTk::Menu &menu, int &row);
-
     void initMenu();
-
     bool doSkipWindow(const WinClient &winclient, int options);
-
     void renderGeomWindow();
     void renderPosWindow();
-    void updateIconMenu();
 
     ScreenSubject 
     m_clientlist_sig,  ///< client signal
@@ -387,9 +380,7 @@ private:
     FbTk::FbWindow m_geom_window, m_pos_window;
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
-    std::auto_ptr<FbTk::Menu> m_configmenu;
-
-    std::auto_ptr<FbTk::Menu> m_rootmenu;
+    std::auto_ptr<FbTk::Menu> m_configmenu, m_rootmenu, m_workspacemenu;
 
     typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;
@@ -410,8 +401,6 @@ private:
     std::auto_ptr<Slit> m_slit;
 
     Workspace *m_current_workspace;
-    std::auto_ptr<FbTk::Menu> workspacemenu;
-    std::auto_ptr<FbTk::Menu> m_iconmenu;
 
     WorkspaceNames m_workspace_names;
     Workspaces m_workspaces_list;
@@ -434,6 +423,7 @@ private:
             antialias, auto_raise, click_raises, decorate_transient;
         FbTk::Resource<std::string> rootcommand;		
         FbTk::Resource<std::string> resizemode;
+        FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<FocusModel> focus_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, menu_alpha, menu_delay, menu_delay_close;

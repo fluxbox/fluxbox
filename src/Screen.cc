@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.276 2004/04/28 14:59:11 rathnor Exp $
+// $Id: Screen.cc,v 1.277 2004/05/02 21:12:22 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -32,26 +32,34 @@
 #include "Window.hh"
 #include "Workspace.hh"
 #include "Netizen.hh"
+
+// themes
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
 #include "RootTheme.hh"
 #include "WinButtonTheme.hh"
-#include "FbCommands.hh"
+#include "SlitTheme.hh"
+
+// menu items
 #include "BoolMenuItem.hh"
 #include "IntResMenuItem.hh"
+#include "FocusModelMenuItem.hh"
+
+// menus
 #include "FbMenu.hh"
 #include "LayerMenu.hh"
+
+#include "MenuCreator.hh"
+
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
-#include "FbWindow.hh"
 #include "Strut.hh"
-#include "SlitTheme.hh"
 #include "CommandParser.hh"
-#include "IconMenuItem.hh"
 #include "AtomHandler.hh"
 
+
 #include "FbTk/Subject.hh"
-#include "FbTk/Directory.hh"
+#include "FbTk/FbWindow.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/MultLayers.hh"
 #include "FbTk/XLayerItem.hh"
@@ -119,6 +127,7 @@ extern  "C" {
 #include <memory>
 #include <algorithm>
 #include <functional>
+#include <stack>
 
 using namespace std;
 
@@ -136,70 +145,9 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
     return -1;
 }
 
-class FocusModelMenuItem : public FbTk::MenuItem {
-public:
-    FocusModelMenuItem(const char *label, BScreen &screen, 
-                       BScreen::FocusModel model, 
-                       FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(label, cmd), m_screen(screen), m_focusmodel(model) {
-    }
-    bool isEnabled() const { return m_screen.getFocusModel() != m_focusmodel; }
-    void click(int button, int time) {
-        m_screen.saveFocusModel(m_focusmodel);
-        FbTk::MenuItem::click(button, time);
-    }
-
-private:
-    BScreen &m_screen;
-    BScreen::FocusModel m_focusmodel;
-};
 
 
-} // End anonymous namespace
-
-namespace {
-
-class StyleMenuItem: public FbTk::MenuItem {
-public:
-    StyleMenuItem(const std::string &label, const std::string &filename):
-        FbTk::MenuItem(label.c_str()), 
-        m_filename(FbTk::StringUtil::
-                   expandFilename(filename)) {
-        // perform shell style ~ home directory expansion
-        // and insert style      
-        FbTk::RefCount<FbTk::Command> 
-            setstyle_cmd(new FbCommands::
-                         SetStyleCmd(m_filename));
-        setCommand(setstyle_cmd);
-        setToggleItem(true);
-    }
-    bool isSelected() const {
-        return Fluxbox::instance()->getStyleFilename() == m_filename;
-    }
-private:
-    const std::string m_filename;
-};
-
-void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
-    menu.removeAll(); // clear all items
-    using namespace FbTk;
-    menu.setLabel("Workspace");
-    RefCount<Command> new_workspace(new FbTk::SimpleCommand<BScreen, int>(scr, &BScreen::addWorkspace));
-    RefCount<Command> remove_last(new FbTk::SimpleCommand<BScreen, int>(scr, &BScreen::removeLastWorkspace));
-    //!! TODO: NLS
-    menu.insert("New Workspace", new_workspace);
-    menu.insert("Remove Last", remove_last);
-    // for each workspace add workspace name and it's menu to our workspace menu
-    for (size_t workspace = 0; workspace < scr.getCount(); ++workspace) {
-        Workspace *wkspc = scr.getWorkspace(workspace);
-        menu.insert(wkspc->name().c_str(), &wkspc->menu());
-    }
-
-    // update graphics
-    menu.update();
-}
-
-};
+} // end anonymous namespace
 
 
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
@@ -221,6 +169,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     decorate_transient(rm, false, scrname+".decorateTransient", altscrname+".DecorateTransient"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     resizemode(rm, "", scrname+".resizeMode", altscrname+".ResizeMode"),
+    windowmenufile(rm, "", scrname+".windowMenu", altscrname+".WindowMenu"),
     focus_model(rm, CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
@@ -387,12 +336,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // setup workspaces and workspace menu
 
-    workspacemenu.reset(createMenu(""));
-    workspacemenu->setInternalMenu();
-    //!! TODO: NLS
-    m_iconmenu.reset(createMenu("Icons"));
-    m_iconmenu->setInternalMenu();
-
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
             Workspace *wkspc = new Workspace(*this, m_layermanager, 
@@ -407,10 +350,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         m_workspaces_list.push_back(wkspc);
     }
 
-    setupWorkspacemenu(*this, *workspacemenu);
-    //!! TODO: NLS
-    workspacemenu->insert("Icons", m_iconmenu.get());
-    workspacemenu->update();
 
     m_current_workspace = m_workspaces_list.front();
 
@@ -427,12 +366,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu.reset(createMenu("Configuration"));
     setupConfigmenu(*m_configmenu.get());
     m_configmenu->setInternalMenu();
-
-    workspacemenu->setItemSelected(2, true);
-    // create and initiate rootmenu
-    rereadMenu();
-    
-    m_configmenu->update();
 
     // start with workspace 0
     changeWorkspaceID(0);
@@ -455,7 +388,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                                     *resource.gc_join_style);
 
     rm.unlock();
-
 
     XFlush(disp);
 }
@@ -702,7 +634,7 @@ void BScreen::reconfigure() {
     renderPosWindow();
 
     //reconfigure menus
-    workspacemenu->reconfigure();
+    m_workspacemenu->reconfigure();
     m_configmenu->reconfigure();
 
     // We need to check to see if the timestamps
@@ -780,17 +712,17 @@ void BScreen::updateWorkspaceNamesAtom() {
 }
 
 void BScreen::addIcon(FluxboxWindow *w) {
-    if (! w) return;
+    if (w == 0) 
+        return;
 
     m_icon_list.push_back(w);
-    updateIconMenu();
-
+    // notify listeners
     m_iconlist_sig.notify();
 }
 
 
 void BScreen::removeIcon(FluxboxWindow *w) {
-    if (! w)
+    if (w == 0)
         return;
 	
     Icons::iterator erase_it = remove_if(m_icon_list.begin(),
@@ -798,24 +730,8 @@ void BScreen::removeIcon(FluxboxWindow *w) {
                                          bind2nd(equal_to<FluxboxWindow *>(), w));
     if (erase_it != m_icon_list.end())
         m_icon_list.erase(erase_it);
-
-    updateIconMenu();
-
+    
     m_iconlist_sig.notify();
-}
-
-
-void BScreen::updateIconMenu() {
-    m_iconmenu->removeAll();
-    Icons::iterator it = m_icon_list.begin();
-    Icons::iterator it_end = m_icon_list.end();
-    for (; it != it_end; ++it) {
-        FluxboxWindow::ClientList::iterator client_it = (*it)->clientList().begin();
-        FluxboxWindow::ClientList::iterator client_it_end = (*it)->clientList().end();
-        for (; client_it != client_it_end; ++client_it)
-            m_iconmenu->insert(new IconMenuItem(**client_it));
-    }
-    m_iconmenu->update();
 }
 
 void BScreen::removeWindow(FluxboxWindow *win) {
@@ -855,7 +771,8 @@ void BScreen::removeClient(WinClient &client) {
         }
     }
     // the client could be on icon menu so we update it
-    updateIconMenu();
+    //!! TODO: check this with the new icon menu
+    //    updateIconMenu();
 
 }
 
@@ -872,11 +789,6 @@ int BScreen::addWorkspace() {
                                      m_workspaces_list.size());
     m_workspaces_list.push_back(wkspc);
     addWorkspaceName(wkspc->name().c_str()); // update names
-    //add workspace to workspacemenu
-    workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu(),
-                          wkspc->workspaceID() + 2); //+2 so we add it after "remove last" item
-		
-    workspacemenu->update();
     saveWorkspaces(m_workspaces_list.size());
     
     updateNetizenWorkspaceCount();	
@@ -897,9 +809,6 @@ int BScreen::removeLastWorkspace() {
 
     wkspc->removeAll();
 
-    workspacemenu->remove(wkspc->workspaceID()+2); // + 2 is where workspaces starts
-    workspacemenu->update();
-	
     //remove last workspace
     m_workspaces_list.pop_back();		
     delete wkspc;
@@ -944,12 +853,9 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
     currentWorkspace()->hideAll();
 
-    workspacemenu->setItemSelected(currentWorkspace()->workspaceID() + 2, false);
-
     // set new workspace
     m_current_workspace = getWorkspace(id);
 
-    workspacemenu->setItemSelected(currentWorkspace()->workspaceID() + 2, true);
     // This is a little tricks to reduce flicker 
     // this way we can set focus pixmap on frame before we show it
     // and using ExposeEvent to redraw without flicker
@@ -1066,7 +972,6 @@ void BScreen::updateNetizenWorkspaceCount() {
     for_each(m_netizen_list.begin(),
              m_netizen_list.end(),
              mem_fun(&Netizen::sendWorkspaceCount));
-
     m_workspacecount_sig.notify();	
 }
 
@@ -1165,6 +1070,7 @@ bool BScreen::addKdeDockapp(Window client) {
     sprintf(intbuff, "%d", screenNumber());
     std::string atom_name("_NET_SYSTEM_TRAY_S");
     atom_name += intbuff; // append number
+    // find the right atomhandler that has the name: _NET_SYSTEM_TRAY_S<num>
     AtomHandler *handler = Fluxbox::instance()->getAtomHandler(atom_name);
     FbTk::EventHandler *evh  = 0;
     FbTk::EventManager *evm = FbTk::EventManager::instance();
@@ -1176,6 +1082,8 @@ bool BScreen::addKdeDockapp(Window client) {
 #endif // SLIT
             return false;
     } else {
+        // this handler is a special case 
+        // so we call setupClient in it
         WinClient winclient(client, *this);
         handler->setupClient(winclient);
         // we need to save old handler and re-add it later
@@ -1732,6 +1640,10 @@ void BScreen::dirFocus(FluxboxWindow &win, const FocusDir dir) {
     if (foundwin) 
         foundwin->setInputFocus();
 }
+void BScreen::initMenus() {
+    m_workspacemenu.reset(MenuCreator::createMenuType("workspacemenu", screenNumber()));
+    initMenu();
+}
 
 void BScreen::initMenu() {
     I18n *i18n = I18n::instance();
@@ -1746,62 +1658,20 @@ void BScreen::initMenu() {
     } else
         m_rootmenu.reset(createMenu(""));
 
-    bool defaultMenu = true;
     Fluxbox * const fb = Fluxbox::instance();
     if (fb->getMenuFilename().size() > 0) {
-        std::string menufilestr = fb->getMenuFilename();
-        menufilestr = FbTk::StringUtil::expandFilename(menufilestr);
-        ifstream menu_file(menufilestr.c_str());
+        m_rootmenu.reset(MenuCreator::createFromFile(fb->getMenuFilename(),
+                                                     screenNumber()));
 
-        if (!menu_file.fail()) {
-            if (! menu_file.eof()) {
-                string line;
-                int row = 0;
-                while (getline(menu_file, line) && ! menu_file.eof()) {
-                    row++;
-                    if (line[0] != '#') {
-                        string key;
-                        int pos=0;
-                        int err = FbTk::StringUtil::
-                            getStringBetween(key, 
-                                             line.c_str(), 
-                                             '[', ']');
-						
-                        if (key == "begin") {
-                            pos += err;
-                            string label;
-                            err = FbTk::StringUtil::
-                                getStringBetween(label, 
-                                                 line.c_str()+pos, 
-                                                 '(', ')');
-                            if (err>0) {
-                                m_rootmenu->setLabel(label.c_str());
-                                defaultMenu = parseMenuFile(menu_file, *m_rootmenu.get(), row);
-                                // save filename so we can check timestamp on the root menu
-                                if (!defaultMenu)
-                                    fb->saveMenuFilename(menufilestr.c_str());
-                            } else
-                                cerr<<"Error in menufile. Line("<<row<<")"<<endl;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                fprintf(stderr,
-                        i18n->getMessage(
-                                         FBNLS::ScreenSet, FBNLS::ScreenEmptyMenuFile,
-                                         "%s: Empty menu file"),
-                        menufilestr.c_str());
-            }
-            menu_file.close();
-        } else
-            perror(menufilestr.c_str());
     }
 
-    if (defaultMenu) {
-        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd(""));
-        FbTk::RefCount<FbTk::Command> exit_fb(new FbCommands::ExitFluxboxCmd());
-        FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm", screenNumber()));
+
+    
+    if (m_rootmenu.get() == 0) {
+        m_rootmenu.reset(createMenu("Fluxbox default menu"));
+        FbTk::RefCount<FbTk::Command> restart_fb(CommandParser::instance().parseLine("restart"));
+        FbTk::RefCount<FbTk::Command> exit_fb(CommandParser::instance().parseLine("exit"));
+        FbTk::RefCount<FbTk::Command> execute_xterm(CommandParser::instance().parseLine("exec xterm"));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert(i18n->getMessage(FBNLS::ScreenSet, FBNLS::Screenxterm,
                                             "xterm"),
@@ -1813,231 +1683,9 @@ void BScreen::initMenu() {
                                             "Exit"),
                            exit_fb);
     }
+
 }
 
-/// looks through a menufile and adds correct items to the root-menu.
-bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
-	
-    string line;
-    FbTk::RefCount<FbTk::Command> 
-        hide_menu(new FbTk::SimpleCommand<FbTk::Menu>(menu, &FbTk::Menu::hide));
-
-    while (! file.eof()) {
-        
-        if (!getline(file, line))
-            continue;
-
-        row++;
-        if (line[0] == '#') //the line is commented
-            continue;
-
-            int parse_pos = 0, err = 0;
-
-
-            std::string str_key, str_label, str_cmd;
-				
-            err = FbTk::StringUtil::
-                getStringBetween(str_key, 
-                                 line.c_str(),
-                                 '[', ']');
-            if (err > 0 ) {
-                parse_pos += err;	
-                err = FbTk::StringUtil::
-                    getStringBetween(str_label, 
-                                     line.c_str() + parse_pos,
-                                     '(', ')');
-                if (err>0) {
-                    parse_pos += err;	
-                    FbTk::StringUtil::
-                        getStringBetween(str_cmd, 
-                                         line.c_str() + parse_pos,
-                                         '{', '}');
-                }
-            } else 
-                continue; //read next line
-				
-            if (!str_key.size()) 
-                continue;	//read next line
-
-            I18n *i18n = I18n::instance();
-            if (str_key == "end") {
-                return ((menu.numberOfItems() == 0) ? true : false);
-            } else if (str_key == "nop") { 
-                menu.insert(str_label.c_str());
-            } else if (str_key == "exec") { // exec
-                if (!(str_label.size() && str_cmd.size())) {
-                    fprintf(stderr,
-                            i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenEXECError,
-                                             "BScreen::parseMenuFile: [exec] error, "
-                                             "no menu label and/or command defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {
-                    FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd, screenNumber()));
-                    FbTk::MacroCommand *exec_and_hide = new FbTk::MacroCommand();
-                    exec_and_hide->add(hide_menu);
-                    exec_and_hide->add(exec_cmd);
-                    FbTk::RefCount<FbTk::Command> exec_and_hide_cmd(exec_and_hide);
-                    menu.insert(str_label.c_str(), exec_and_hide_cmd);
-                }
-            } else if (str_key == "exit") { // exit
-                if (!str_label.size()) {
-                    fprintf(stderr,
-                            i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenEXITError,
-                                             "BScreen::parseMenuFile: [exit] error, "
-                                             "no menu label defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {
-                    FbTk::RefCount<FbTk::Command> exit_fb_cmd(new FbCommands::ExitFluxboxCmd());
-                    menu.insert(str_label.c_str(), exit_fb_cmd);
-                }
-            } else if (str_key == "style") {	// style
-                if (!( str_label.size() && str_cmd.size())) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
-                                       "BScreen::parseMenuFile: [style] error, "
-                                       "no menu label and/or filename defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else
-                    menu.insert(new StyleMenuItem(str_label, str_cmd));						
-
-            } else if (str_key == "config") {
-                if (! str_label.size()) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
-                                       "BScreen::parseMenufile: [config] error, "
-                                       "no label defined"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {
-#ifdef DEBUG
-                    cerr<<__FILE__<<"("<<__FUNCTION__<<
-                        "): inserts configmenu: "<<m_configmenu.get()<<endl;
-#endif // DEBUG
-                    menu.insert(str_label.c_str(), m_configmenu.get());
-                }
-            } // end of config                
-            else if ( str_key == "include") { // include
-                if (!str_label.size()) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
-                                       "BScreen::parseMenuFile: [include] error, "
-                                       "no filename defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {	// start of else 'x'
-                    // perform shell style ~ home directory expansion
-                    string newfile(FbTk::StringUtil::expandFilename(str_label));
-
-                    if (!newfile.empty()) {
-                        if (!FbTk::Directory::isRegularFile(newfile)) {
-                            fprintf(stderr,
-                                    i18n->
-                                    getMessage(
-                                               FBNLS::ScreenSet, 
-                                               FBNLS::ScreenINCLUDEErrorReg,
-                                               "BScreen::parseMenuFile: [include] error: "
-                                               "'%s' is not a regular file\n"), 
-                                    newfile.c_str());
-                            cerr<<"Row: "<<row<<endl;
-                        } else {
-                            // the file is a regular file, lets open and parse it
-                            ifstream subfile(newfile.c_str());
-                            if (!parseMenuFile(subfile, menu, row))
-                                Fluxbox::instance()->saveMenuFilename(newfile.c_str());
-                        }
-                    } 
-                } // end of else 'x'
-            } // end of include
-            else if (str_key == "submenu") { // sub
-                if (!str_label.size()) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenSUBMENUError,
-                                       "BScreen::parseMenuFile: [submenu] error, "
-                                       "no menu label defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {
-                    FbTk::Menu *submenu = createMenu("");
-
-                    if (str_cmd.size())
-                        submenu->setLabel(str_cmd.c_str());
-                    else
-                        submenu->setLabel(str_label.c_str());
-
-                    parseMenuFile(file, *submenu, row);				
-                    submenu->update();
-                    menu.insert(str_label.c_str(), submenu);
-                    // save to list so we can delete it later
-                    m_rootmenu_list.push_back(submenu);
-					
-                }
-            } // end of sub
-            else if (str_key == "restart") {
-                if (!str_label.size()) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenRESTARTError,
-                                       "BScreen::parseMenuFile: [restart] error, "
-                                       "no menu label defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {
-                    FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd(str_cmd));
-                    menu.insert(str_label.c_str(), restart_fb);
-                }
-            } // end of restart
-            else if (str_key == "reconfig") { // reconf
-                if (!str_label.c_str()) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenRECONFIGError,
-                                       "BScreen::parseMenuFile: [reconfig] error, "
-                                       "no menu label defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else {
-                    FbTk::RefCount<FbTk::Command> 
-                        reconfig_fb_cmd(new FbCommands::ReconfigureFluxboxCmd());
-                    menu.insert(str_label.c_str(), reconfig_fb_cmd);
-                }
-            } else if (str_key == "stylesdir" || str_key == "stylesmenu") {
-
-                bool newmenu = (str_key == "stylesmenu");
-
-                if (!( str_label.size() && str_cmd.size()) && newmenu) {
-                    fprintf(stderr,
-                            i18n->
-                            getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRError,
-                                       "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-                                       " error, no directory defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else { 
-                    createStyleMenu(menu, str_label.c_str(), 
-                                    newmenu ? str_cmd.c_str() : str_label.c_str());
-                }
-            } // end of stylesdir
-            else if (str_key == "workspaces") {
-                if (!str_label.size()) {
-                    fprintf(stderr,
-                            i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenWORKSPACESError,
-                                             "BScreen:parseMenuFile: [workspaces] error, "
-                                             "no menu label defined\n"));
-                    cerr<<"Row: "<<row<<endl;
-                } else
-                    menu.insert(str_label.c_str(), workspacemenu.get());
-            } else if (str_key == "separator") {
-                menu.insert("---"); //!! TODO: this will be better in the future
-            }
-            else { // ok, if we didn't find any special menu item we try with command parser
-                // we need to attach command with arguments so command parser can parse it
-                string line = str_key + " " + str_cmd;
-                FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
-                if (*command != 0)
-                    menu.insert(str_label.c_str(), command);
-            }
-    } // end of while not eof
-
-    return ((menu.numberOfItems() == 0) ? true : false);
-}
 
 void BScreen::addConfigMenu(const char *label, FbTk::Menu &menu) {
     m_configmenu_list.push_back(std::make_pair(label, &menu));
@@ -2065,7 +1713,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), 
                                                                               &Fluxbox::save_rc));
-    FbTk::RefCount<FbTk::Command> reconf_cmd(new FbCommands::ReconfigureFluxboxCmd());
+    FbTk::RefCount<FbTk::Command> reconf_cmd(CommandParser::instance().parseLine("reconfigure"));
     s_a_reconf_macro->add(saverc_cmd);
     s_a_reconf_macro->add(reconf_cmd);
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
@@ -2076,26 +1724,18 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                                    "Focus Model");
     FbTk::Menu *focus_menu = createMenu(focusmenu_label ? focusmenu_label : "");
 
-    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
-                                                               ConfigmenuClickToFocus,
-                                                               "Click To Focus"), 
-                                              *this,
-                                              CLICKTOFOCUS,
-                                              save_and_reconfigure));
+#define _FOCUSITEM(a, b, c, d) focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(a, b, c), *this, d, save_and_reconfigure))
 
-    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
-                                                               ConfigmenuSloppyFocus,
-                                                               "Sloppy Focus"), 
-                                              *this,
-                                              SLOPPYFOCUS,
-                                              save_and_reconfigure));
-
-    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(ConfigmenuSet, 
-                                                               ConfigmenuSemiSloppyFocus,
-                                                               "Semi Sloppy Focus"),
-                                              *this,
-                                              SEMISLOPPYFOCUS,
-                                              save_and_reconfigure));
+    _FOCUSITEM(ConfigmenuSet, ConfigmenuClickToFocus,
+               "Click To Focus",
+               CLICKTOFOCUS);
+    _FOCUSITEM(ConfigmenuSet, ConfigmenuSloppyFocus,
+               "Sloppy Focus", 
+               SLOPPYFOCUS);
+    _FOCUSITEM(ConfigmenuSet, ConfigmenuSemiSloppyFocus,
+               "Semi Sloppy Focus",
+               SEMISLOPPYFOCUS);
+#undef _FOCUSITEM
 
     focus_menu->insert(new BoolMenuItem(i18n->getMessage(ConfigmenuSet, 
                                                          ConfigmenuAutoRaise,
@@ -2118,48 +1758,42 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     for (; it != it_end; ++it)
         menu.insert(it->first, it->second);
 
-    menu.insert(new
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuImageDithering,
-                                              "Image Dithering"),
-                             *resource.image_dither, save_and_reconfigure));
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuOpaqueMove,
-                                              "Opaque Window Moving"),
-                             *resource.opaque_move, saverc_cmd));
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFullMax,
-                                              "Full Maximization"),
-                             *resource.full_max, saverc_cmd));
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFocusNew,
-                                              "Focus New Windows"),
-                             *resource.focus_new, saverc_cmd));
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFocusLast,
-                                              "Focus Last Window on Workspace"),
-                             *resource.focus_last, saverc_cmd));
-
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuWorkspaceWarping,
-                                              "Workspace Warping"),
-                             *resource.workspace_warping, saverc_cmd));
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuDesktopWheeling,
-                                              "Desktop MouseWheel Switching"),
-                             *resource.desktop_wheeling, saverc_cmd));
-
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuDecorateTransient,
-                                              "Decorate Transient Windows"),
-                             *resource.decorate_transient, saverc_cmd));
-    menu.insert(new BoolMenuItem("Click Raises",
-				 *resource.click_raises,
-				 saverc_cmd));    
+#define _BOOLITEM(a, b, c, d, e) menu.insert(new BoolMenuItem(i18n->getMessage(a, b, c), d, e))
+                             
+    _BOOLITEM(ConfigmenuSet, ConfigmenuImageDithering,
+              "Image Dithering",
+              *resource.image_dither, save_and_reconfigure);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuOpaqueMove,
+              "Opaque Window Moving",
+              *resource.opaque_move, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuFullMax,
+              "Full Maximization",
+              *resource.full_max, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuFocusNew,
+              "Focus New Windows",
+              *resource.focus_new, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuFocusLast,
+              "Focus Last Window on Workspace",
+              *resource.focus_last, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuWorkspaceWarping,
+              "Workspace Warping",
+              *resource.workspace_warping, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuDesktopWheeling,
+              "Desktop MouseWheel Switching",
+              *resource.desktop_wheeling, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuDecorateTransient,
+              "Decorate Transient Windows",
+              *resource.decorate_transient, saverc_cmd);
+    _BOOLITEM(ConfigmenuSet, ConfigmenuClickRaises,
+              "Click Raises",
+              *resource.click_raises, saverc_cmd);
     // setup antialias cmd to reload style and save resource on toggle
-    menu.insert(new BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuAntiAlias,
-                                                  "AntiAlias"), 
-                                 *resource.antialias, 
-                                 save_and_reconfigure));
+    _BOOLITEM(ConfigmenuSet, ConfigmenuAntiAlias,
+              "AntiAlias", 
+              *resource.antialias, save_and_reconfigure);
+
+#undef _BOOLITEM
+
     //!! TODO: antialias
     FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
                                               0, 255);
@@ -2172,45 +1806,6 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     menu.update();
 }
 
-void BScreen::createStyleMenu(FbTk::Menu &menu, 
-                              const char *label, const char *directory) {
-    
-    // perform shell style ~ home directory expansion
-    string stylesdir(FbTk::StringUtil::expandFilename(directory ? directory : ""));
-
-    if (!FbTk::Directory::isDirectory(stylesdir)) {
-        //!! TODO: NLS
-        cerr<<"Error creating style menu! Stylesdir: "<<stylesdir<<" does not exist or is not a directory!"<<endl;
-        return;
-    }
-        
-
-    FbTk::Directory dir(stylesdir.c_str());
-
-    // create a vector of all the filenames in the directory
-    // add sort it
-    std::vector<std::string> filelist(dir.entries());
-    for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
-        filelist[file_index] = dir.readFilename();
-
-    std::sort(filelist.begin(), filelist.end(), less<string>());
-
-    // for each file in directory add filename and path to menu
-    for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
-        std::string style(stylesdir + '/' + filelist[file_index]);
-        // add to menu only if the file is a regular file, and not a
-        // .file or a backup~ file
-        if ((FbTk::Directory::isRegularFile(style) &&
-                    (filelist[file_index][0] != '.') &&
-                    (style[style.length() - 1] != '~')
-                ) || FbTk::Directory::isRegularFile(style + "/theme.cfg"))
-            menu.insert(new StyleMenuItem(filelist[file_index], style));
-    } 
-    // update menu graphics
-    menu.update();
-    Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
-   
-}
 
 void BScreen::shutdown() {
     rootWindow().setEventMask(NoEventMask);
