@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.24 2003/05/24 12:34:16 rathnor Exp $
+// $Id: Menu.cc,v 1.25 2003/07/02 05:26:14 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -39,6 +39,8 @@
 #include "Transparent.hh"
 
 #include <X11/Xatom.h>
+#include <X11/keysym.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -76,10 +78,12 @@ namespace FbTk {
 static Menu *shown = 0;
 
 unsigned char Menu::s_alpha = 255;
+Menu *Menu::s_focused = 0;
 
 Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_theme(tm),
     m_screen_num(screen_num),
+    m_prev_focused_window(0),
     m_image_ctrl(imgctrl),
     m_display(FbTk::App::instance()->display()),
     m_parent(0),
@@ -143,13 +147,15 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     XSetWindowAttributes attrib;
     attrib.override_redirect = True;
     attrib.event_mask = ButtonPressMask | ButtonReleaseMask | 
-        ButtonMotionMask | KeyPressMask | ExposureMask;
+        ButtonMotionMask | KeyPressMask | ExposureMask | FocusChangeMask;
 
     //create menu window
     menu.window = XCreateWindow(m_display, RootWindow(m_display, screen_num), 
                                 menu.x, menu.y, menu.width, menu.height,
                                 0, CopyFromParent,
                                 InputOutput, CopyFromParent, attrib_mask, &attrib);
+    // strip focus change mask from attrib, since we should only use it with main window
+    attrib.event_mask ^= FocusChangeMask;
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.add(*this, menu.window);
@@ -199,7 +205,8 @@ Menu::~Menu() {
     evm.remove(menu.title);
     evm.remove(menu.frame);
     evm.remove(menu.window);
-   
+    if (s_focused == this)
+        s_focused = 0;
 }
 
 int Menu::insert(const char *label, RefCount<Command> &cmd, int pos) {
@@ -278,6 +285,80 @@ void Menu::raise() {
 
 void Menu::lower() {
     menu.window.lower();
+}
+
+void Menu::nextItem() {
+    if (which_press == menuitems.size() - 1)
+        return;
+
+    int old_which_press = which_press;
+
+    if (old_which_press >= 0 && 
+        old_which_press < menuitems.size() && 
+        menuitems[old_which_press] != 0) {
+        if (menuitems[old_which_press]->submenu()) {
+            // we need to do this explicitly on the menu.window
+            // since it might hide the parent if we use Menu::hide
+            menuitems[old_which_press]->submenu()->menu.window.hide();
+        }
+        drawItem(old_which_press, false, true, true);
+    }
+
+    // restore old in case we changed which_press
+    which_press = old_which_press;
+    if (which_press < 0 || which_press >= menuitems.size())
+        which_press = 0;
+    else if (which_press < menuitems.size() - 1)
+        which_press++;
+
+
+    if (menuitems[which_press] == 0)
+        return;
+
+    if (menuitems[which_press]->submenu())
+        drawSubmenu(which_press);
+    else
+        drawItem(which_press, true, true, true);
+
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")"<<endl;
+    cerr<<"which_press = "<<which_press<<endl;
+#endif // DEBUG
+
+}
+
+void Menu::prevItem() {
+
+    int old_which_press = which_press;
+
+    if (old_which_press >= 0 && old_which_press < menuitems.size()) {
+        if (menuitems[old_which_press]->submenu()) {
+            // we need to do this explicitly on the menu.window
+            // since it might hide the parent if we use Menu::hide
+            menuitems[old_which_press]->submenu()->menu.window.hide();            
+        }
+        drawItem(old_which_press, false, true, true);
+    }
+    // restore old in case we changed which_press
+    which_press = old_which_press;
+
+    if (which_press < 0 || which_press >= menuitems.size())
+        which_press = 0;
+    else if (which_press - 1 >= 0)
+        which_press--;
+
+    if (menuitems[which_press] != 0) {
+        if (menuitems[which_press]->submenu())
+            drawSubmenu(which_press);
+        else
+            drawItem(which_press, true, true, true);
+    }
+
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")"<<endl;
+    cerr<<"which_press = "<<which_press<<endl;
+#endif // DEBUG
+
 }
 
 void Menu::disableTitle() {
@@ -486,7 +567,17 @@ void Menu::hide() {
         p->internal_hide();
     } else
         internal_hide();
+    
 }
+
+void Menu::grabInputFocus() {
+    s_focused = this;
+
+    // grab input focus
+    menu.window.setInputFocus(RevertToPointerRoot, CurrentTime);
+
+}
+
 
 void Menu::clearWindow() {
     menu.window.clear();
@@ -925,9 +1016,22 @@ bool Menu::isItemEnabled(unsigned int index) const {
     return item->isEnabled();
 }
 
+void Menu::handleEvent(XEvent &event) {
+    if (event.type == FocusOut) {
+        cerr<<"Focus out"<<endl;
+        if (s_focused == this)
+            s_focused = 0;
+    } else if (event.type == FocusIn) {
+        cerr<<"Focus in"<<endl;
+        if (s_focused != this)
+            s_focused = this; 
+    }
+}
 
 void Menu::buttonPressEvent(XButtonEvent &be) {
+    grabInputFocus();
     if (be.window == menu.frame && menu.item_h != 0 && menu.item_w != 0) {
+
         int sbl = (be.x / menu.item_w), i = (be.y / menu.item_h);
         int w = (sbl * menu.persub) + i;
 
@@ -1025,7 +1129,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if ((i != which_press || sbl != which_sbl) &&
             (w < static_cast<int>(menuitems.size()) && w >= 0)) {
             if (which_press != -1 && which_sbl != -1) {
-                int p = (which_sbl * menu.persub) + which_press;
+                int p = which_sbl * menu.persub + which_press;
                 MenuItem *item = menuitems[p];
 
                 drawItem(p, false, true, true);
@@ -1155,6 +1259,54 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     }
 }
 
+void Menu::keyPressEvent(XKeyEvent &event) {
+    KeySym ks;
+    char keychar[1];
+    XLookupString(&event, keychar, 1, &ks, 0);
+    // a modifier key by itself doesn't do anything
+    if (IsModifierKey(ks)) 
+        return;
+    if (event.state) // dont handle modifier with normal key
+        return;
+
+    switch (ks) {
+    case XK_Up:
+        prevItem();
+        break;
+    case XK_Down:
+        nextItem();
+        break;
+    case XK_Left:
+        if (which_press >= 0 && which_press < menuitems.size() &&
+            m_parent != 0) {
+            if (menuitems[which_press]->submenu())
+                menuitems[which_press]->submenu()->menu.window.hide();
+            drawItem(which_press, false, true, true);
+            m_parent->grabInputFocus();
+        }
+        break;
+    case XK_Right:
+        if (which_press >= 0 && which_press < menuitems.size() &&
+            menuitems[which_press]->submenu()) {
+            menuitems[which_press]->submenu()->grabInputFocus();
+            menuitems[which_press]->submenu()->which_press = -1;
+            menuitems[which_press]->submenu()->nextItem();
+        }
+        break;
+    case XK_Escape:
+        hide();
+        break;
+    case XK_Return:
+        if (which_press >= 0 && which_press < menuitems.size()) {
+            menuitems[which_press]->click(1, event.time);
+            itemSelected(1, which_press);
+            update();
+        }
+        break;
+    default:
+        break;
+    }
+}
 
 void Menu::reconfigure() {
     m_need_update = true; // redraw items

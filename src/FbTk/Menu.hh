@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.15 2003/05/13 00:24:00 fluxgen Exp $
+// $Id: Menu.hh,v 1.16 2003/07/02 05:26:45 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -85,6 +85,10 @@ public:
     virtual void raise();
     /// lower this window
     virtual void lower();
+    /// select next item
+    void nextItem();
+    /// select previous item
+    void prevItem();
 
     void disableTitle();
     void enableTitle();
@@ -95,14 +99,17 @@ public:
        @name event handlers
     */
     //@{
+    void handleEvent(XEvent &event);
     void buttonPressEvent(XButtonEvent &bp);
     void buttonReleaseEvent(XButtonEvent &br);
     void motionNotifyEvent(XMotionEvent &mn);
     void enterNotifyEvent(XCrossingEvent &en);
     void leaveNotifyEvent(XCrossingEvent &ce);
     void exposeEvent(XExposeEvent &ee);
+    void keyPressEvent(XKeyEvent &ke);
     //@}
-
+    /// get input focus
+    void grabInputFocus();
     void reconfigure();
     /// set label string
     void setLabel(const char *labelstr);
@@ -142,6 +149,7 @@ public:
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     static unsigned char alpha() { return s_alpha; }
+    static Menu *focused() { return s_focused; }
     /// @return menuitem at index
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
     inline MenuItem *find(unsigned int index) { return menuitems[index]; }
@@ -170,6 +178,7 @@ private:
     const MenuTheme &m_theme;
     Display *m_display;
     const int m_screen_num;
+    Window m_prev_focused_window;
     Menu *m_parent;
     ImageControl &m_image_ctrl;
     Menuitems menuitems;
@@ -206,6 +215,7 @@ private:
     std::auto_ptr<Transparent> m_trans;
     Drawable m_root_pm;
     static unsigned char s_alpha;
+    static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     FbPixmap m_frame_pm;
     bool m_need_update;
 };
