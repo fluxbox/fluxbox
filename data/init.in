@@ -10,7 +10,7 @@ session.screen0.toolbar.autoHide:	False
 session.screen0.toolbar.placement:	BottomCenter
 session.screen0.toolbar.widthPercent:	66
 session.screen0.workspaceNames:	one,two,three,four
-session.screen0.strftimeFormat:	%I:%M %p
+session.screen0.strftimeFormat:	%k:%M %p
 session.screen0.focusNewWindows:	True
 session.screen0.focusModel:	ClickToFocus
 session.screen0.fullMaximization:	False
