@@ -1,11 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/22:
+  * Added Lock Screen to fluxbox-generate_menu (Thanks Han)
 *03/12/21:
   * Fix rounding on Iconbar (Simon)
     Container.cc
   * And another attempt at sloppy focus issues (Simon)
     WinClient.cc Window.cc fluxbox.cc
-  * Fixed "mozilla" input focus bug (Henrik)
+  * Minor fix   (Henrik)
     We must assume Passive when no input hint is set
     WinClient.cc
 *03/12/20:
