@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.12 2003/08/19 21:25:26 fluxgen Exp $
+// $Id: Theme.cc,v 1.13 2003/08/22 22:17:30 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -28,20 +28,15 @@
 #include "Color.hh"
 #include "Texture.hh"
 #include "App.hh"
+#include "Image.hh"
+#include "PixmapWithMask.hh"
+
 
 #include <cstdio>
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef HAVE_XPM
-#include <X11/xpm.h>
-#endif // HAVE_XPM
-
+#include <memory>
 #include <iostream>
-
 using namespace std;
+
 namespace FbTk {
 
 // create default handlers for Color, Font, Texture, int and string
@@ -132,33 +127,44 @@ void ThemeItem<FbTk::Texture>::load() {
 
     if (!m_value.colorTo().setFromString(colorto_name.c_str(), m_tm.screenNum()))
         m_value.colorTo().setFromString("white", m_tm.screenNum());
-            
+           
 
-#ifdef HAVE_XPM
-    XpmAttributes xpm_attr;
-    xpm_attr.valuemask = 0;
-    Display *dpy = FbTk::App::instance()->display();
-    Pixmap pm = 0, mask = 0;
-    int retvalue = XpmReadFileToPixmap(dpy,
-                                       RootWindow(dpy, m_tm.screenNum()), 
-                                       const_cast<char *>(pixmap_name.c_str()),
-                                       &pm,
-                                       &mask, &xpm_attr);
-    if (retvalue == 0) { // success
-        m_value.pixmap() = pm;
-        if (mask != 0)
-            XFreePixmap(dpy, mask);
-    } else { // failure
-#ifdef DEBUG
-        cerr<<"Couldn't load pixmap: "<<pixmap_name<<endl;
-#endif // DEBUG
-        // create empty pixmap
-        m_value.pixmap() = FbTk::FbPixmap();
-    }
-#endif // HAVE_XPM
-
+    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
+    if (pm.get() == 0) {
+        cerr<<"Resource("<<name()+".pixmap"<<"): Failed to load image: "<<pixmap_name<<endl;
+    } else
+        m_value.pixmap() = pm->pixmap().release();
 }
 
+
+// not used
+template <>
+void FbTk::ThemeItem<PixmapWithMask>::
+load() { }
+
+template <>
+void FbTk::ThemeItem<PixmapWithMask>::
+setDefaultValue() {
+    // create empty pixmap
+    (*this)->pixmap() = FbTk::FbPixmap(); // pixmap
+    (*this)->mask() = FbTk::FbPixmap(); // mask
+}
+
+template <>
+void FbTk::ThemeItem<PixmapWithMask>::
+setFromString(const char *str) {
+    if (str == 0)
+        setDefaultValue();
+    else {
+        std::auto_ptr<FbTk::PixmapWithMask> pm(Image::load(str, m_tm.screenNum()));
+        if (pm.get() == 0)
+            setDefaultValue();
+        else {
+            (*this)->pixmap() = pm->pixmap().release();
+            (*this)->mask() = pm->mask().release();
+        }
+    } 
+}
 
 template <>
 void ThemeItem<FbTk::Color>::setDefaultValue() {
@@ -287,5 +293,23 @@ std::string ThemeManager::resourceValue(const std::string &name, const std::stri
     return "";
 }
 
-
+/*
+void ThemeManager::listItems() {
+    ThemeList::iterator it = m_themelist.begin();
+    ThemeList::iterator it_end = m_themelist.end();
+    for (; it != it_end; ++it) {
+        std::list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
+        std::list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
+        for (; item != item_end; ++item) {
+            cerr<<(*item)->name()<<":"<<endl;
+            if (typeid(**item) == typeid(ThemeItem<Texture>)) {
+                cerr<<(*item)->name()<<".pixmap:"<<endl;
+                cerr<<(*item)->name()<<".color:"<<endl;
+                cerr<<(*item)->name()<<".colorTo:"<<endl;
+            }
+        }
+    }
+             
+}
+*/
 }; // end namespace FbTk
