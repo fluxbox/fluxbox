@@ -25,7 +25,7 @@
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 
-// $Id: Image.cc,v 1.7 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: Image.cc,v 1.8 2002/04/08 18:57:53 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -100,8 +100,8 @@ BImage::BImage(BImageControl *c, unsigned int w, unsigned int h) {
 	cpccpc = cpc * cpc;
 
 	control->getColorTables(&red_table, &green_table, &blue_table,
-													&red_offset, &green_offset, &blue_offset,
-													&red_bits, &green_bits, &blue_bits);
+		&red_offset, &green_offset, &blue_offset,
+		&red_bits, &green_bits, &blue_bits);
 
 	if (control->getVisual()->c_class != TrueColor)
 		control->getXColorTable(&colors, &ncolors);
@@ -129,8 +129,8 @@ Pixmap BImage::render(BTexture *texture) {
 
 Pixmap BImage::render_solid(BTexture *texture) {
 	Pixmap pixmap = XCreatePixmap(control->getBaseDisplay()->getXDisplay(),
-				control->getDrawable(), width,
-				height, control->getDepth());
+		control->getDrawable(), width,
+		height, control->getDepth());
 	if (pixmap == None) {
 		fprintf(stderr,
 			I18n::instance()->getMessage(
@@ -145,24 +145,24 @@ Pixmap BImage::render_solid(BTexture *texture) {
 	gcv.foreground = texture->getColor()->getPixel();
 	gcv.fill_style = FillSolid;
 	gc = XCreateGC(control->getBaseDisplay()->getXDisplay(), pixmap,
-			GCForeground | GCFillStyle, &gcv);
+		GCForeground | GCFillStyle, &gcv);
 
 	gcv.foreground = texture->getHiColor()->getPixel();
 	hgc = XCreateGC(control->getBaseDisplay()->getXDisplay(), pixmap,
-			GCForeground, &gcv);
+		GCForeground, &gcv);
 
 	gcv.foreground = texture->getLoColor()->getPixel();
 	lgc = XCreateGC(control->getBaseDisplay()->getXDisplay(), pixmap,
 			GCForeground, &gcv);
 
 	XFillRectangle(control->getBaseDisplay()->getXDisplay(), pixmap, gc, 0, 0,
-			width, height);
+		width, height);
 
 #ifdef		INTERLACE
 	if (texture->getTexture() & BImage::INTERLACED) {
 		gcv.foreground = texture->getColorTo()->getPixel();
 		GC igc = XCreateGC(control->getBaseDisplay()->getXDisplay(), pixmap,
-						GCForeground, &gcv);
+			GCForeground, &gcv);
 
 		register unsigned int i = 0;
 		for (; i < height; i += 2)
