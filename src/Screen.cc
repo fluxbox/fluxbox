@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.162 2003/05/13 11:21:23 rathnor Exp $
+// $Id: Screen.cc,v 1.163 2003/05/13 14:03:27 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -494,7 +494,6 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
 BScreen::BScreen(ResourceManager &rm,
                  const string &screenname, const string &altscreenname,
                  int scrn, int num_layers) : 
-    ScreenInfo(scrn),
     m_clientlist_sig(*this),  // client signal
     m_workspacecount_sig(*this), // workspace count signal
     m_workspacenames_sig(*this), // workspace names signal 

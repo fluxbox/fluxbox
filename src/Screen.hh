@@ -22,18 +22,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.94 2003/05/12 04:28:46 fluxgen Exp $
+// $Id: Screen.hh,v 1.95 2003/05/13 14:02:48 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
-#include "ScreenInfo.hh"
 #include "Resource.hh"
 #include "Subject.hh"
 #include "MultLayers.hh"
 #include "ToolbarHandler.hh"
 #include "Slit.hh"
 #include "FbRootWindow.hh"
+#include "NotCopyable.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -64,7 +64,7 @@ class XLayerItem;
 /**
  Create a toolbar and workspaces, handles switching between workspaces and windows
  */
-class BScreen : public ScreenInfo {
+class BScreen : private FbTk::NotCopyable {
 public:
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
@@ -142,7 +142,7 @@ public:
 
     inline unsigned int getWidth() const { return rootWindow().width(); }
     inline unsigned int getHeight() const { return rootWindow().height(); }
-
+    inline unsigned int getScreenNumber() const { return rootWindow().screenNumber(); }
     typedef std::vector<FluxboxWindow *> Icons;
     typedef std::list<WinClient *> FocusedWindows;
 
