@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.7 2003/04/15 23:09:24 rathnor Exp $
+// $Id: XLayer.cc,v 1.8 2003/04/15 23:20:31 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -252,12 +252,12 @@ void XLayer::raise(XLayerItem &item) {
     iterator it = std::find(itemList().begin(), itemList().end(), &item);
     if (it != itemList().end())
         itemList().erase(it);
-#ifdef DEBUG
     else {
+#ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): WARNING: raise on item not in layer["<<m_layernum<<"]"<<endl;
+#endif // DEBUG
         return;
     }
-#endif // DEBUG
 
     itemList().push_front(&item);
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
@@ -271,14 +271,12 @@ void XLayer::tempRaise(XLayerItem &item) {
         return; // nothing to do
 
     iterator it = std::find(itemList().begin(), itemList().end(), &item);
-    if (it != itemList().end())
-        // don't remove it
+    if (it == itemList().end()) {
 #ifdef DEBUG
-    else {
         cerr<<__FILE__<<"("<<__LINE__<<"): WARNING: raise on item not in layer["<<m_layernum<<"]"<<endl;
+#endif // DEBUG
         return;
     }
-#endif // DEBUG
 
     // don't add it back to the top
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
