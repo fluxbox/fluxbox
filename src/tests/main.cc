@@ -1,4 +1,4 @@
-// main.cc
+// main.cc for testing menu in fluxbox
 // Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
