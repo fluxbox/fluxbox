@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.14 2004/08/31 15:26:39 rathnor Exp $
+//$Id: Font.cc,v 1.15 2004/08/31 20:27:08 fluxgen Exp $
 
 
 #include "StringUtil.hh"
@@ -94,6 +94,7 @@ namespace {
 #include <locale.h>
 #endif //HAVE_SETLOCALE
 
+#ifdef HAVE_ICONV
 /**
    Recodes the text from one encoding to another
    assuming cd is correct
@@ -103,7 +104,7 @@ namespace {
    @return the recoded string, or 0 on failure
 */
 char* recode(iconv_t cd,
-                    const char *msg, size_t size) {
+             const char *msg, size_t size) {
 
     // If empty message, yes this can happen, return
     if(strlen(msg) == 0 || size == 0) 
@@ -140,7 +141,13 @@ char* recode(iconv_t cd,
 
     return new_msg_ptr;
 }
+#else
 
+char *recode(iconv_t cd,
+             const char *msg, size_t size) {
+    return 0;
+}
+#endif // HAVE_ICONV
 
 int extract_halo_options(const std::string& opts, std::string& color) {
    std::list< std::string > tokens;
