@@ -13,14 +13,14 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   _NETIZEN_HH_
-#define   _NETIZEN_HH_
+#ifndef	 _NETIZEN_HH_
+#define	 _NETIZEN_HH_
 
 // forward declaration
 class Netizen;
@@ -33,30 +33,26 @@ class Netizen;
 
 class Netizen {
 private:
-  BaseDisplay *basedisplay;
-  BScreen *screen;
-  Window window;
-  XEvent event;
-
-
-protected:
-
+	BScreen *screen;
+	BaseDisplay *basedisplay;
+	Window window;
+	XEvent event;
 
 public:
-  Netizen(BScreen *, Window);
+	Netizen(BScreen *, Window);
 
-  inline const Window &getWindowID(void) const { return window; }
+	inline const Window &getWindowID(void) const { return window; }
 
-  void sendWorkspaceCount(void);
-  void sendCurrentWorkspace(void);
+	void sendWorkspaceCount(void);
+	void sendCurrentWorkspace(void);
 
-  void sendWindowFocus(Window);
-  void sendWindowAdd(Window, unsigned long);
-  void sendWindowDel(Window);
-  void sendWindowRaise(Window);
-  void sendWindowLower(Window);
+	void sendWindowFocus(Window);
+	void sendWindowAdd(Window, unsigned long);
+	void sendWindowDel(Window);
+	void sendWindowRaise(Window);
+	void sendWindowLower(Window);
 
-  void sendConfigNotify(XEvent *);
+	void sendConfigNotify(XEvent *);
 };
 
 
