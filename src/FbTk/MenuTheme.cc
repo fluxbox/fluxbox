@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.5 2003/02/22 19:08:28 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.6 2003/02/23 01:00:48 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -46,7 +46,7 @@ MenuTheme::MenuTheme(int screen_num):
     framefont(*this, "menu.frame.font", "Menu.Frame.Font"),
     framefont_justify(*this, "menu.frame.justify", "Menu.Frame.Justify"),
     titlefont_justify(*this, "menu.title.justify", "Menu.Title.Justify"),
-    bullet_pos(*this, "menu.bulletPos", "Menu.BulletPos"),
+    bullet_pos(*this, "menu.bullet.position", "Menu.Bullet.Position"),
     m_bullet(*this, "menu.bullet", "Menu.Bullet"),
     m_border_width(*this, "borderWidth", "BorderWidth"),
     m_bevel_width(*this, "bevelWidth", "BevelWidth"),
