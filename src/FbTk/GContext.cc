@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.cc,v 1.3 2003/09/11 19:57:38 fluxgen Exp $
+// $Id: GContext.cc,v 1.4 2003/10/09 16:48:09 rathnor Exp $
 
 #include "GContext.hh"
 
@@ -32,74 +32,30 @@
 namespace FbTk {
 
 GContext::GContext(const FbTk::FbDrawable &drawable): 
-    m_gc(XCreateGC(FbTk::App::instance()->display(),
+    m_display(FbTk::App::instance()->display()),     
+    m_gc(XCreateGC(m_display,
                    drawable.drawable(),
                    0, 0)) {
     setGraphicsExposure(false);
 }
 
 GContext::GContext(Drawable drawable):
-    m_gc(XCreateGC(FbTk::App::instance()->display(),
+    m_display(FbTk::App::instance()->display()), 
+    m_gc(XCreateGC(m_display,
                    drawable,
-                   0, 0)) {
+                   0, 0))
+{
     setGraphicsExposure(false);
 }
 
 GContext::~GContext() {
     if (m_gc)
-        XFreeGC(FbTk::App::instance()->display(), m_gc);
-}
-
-void GContext::setForeground(const FbTk::Color &color) {
-    setForeground(color.pixel());
-}
-
-void GContext::setForeground(long pixel_value) {
-    XSetForeground(FbTk::App::instance()->display(), m_gc,
-                   pixel_value);
-}
-
-void GContext::setBackground(const FbTk::Color &color) {
-    setBackground(color.pixel());
-}
-
-void GContext::setBackground(long pixel_value) {
-    XSetBackground(FbTk::App::instance()->display(), m_gc,
-                   pixel_value);
+        XFreeGC(m_display, m_gc);
 }
 
 /// not implemented!
-void GContext::setFont(const FbTk::Font &font) {
+//void GContext::setFont(const FbTk::Font &font) {
     //!! TODO
-}
-
-void GContext::setFont(int fid) {
-    XSetFont(FbTk::App::instance()->display(), m_gc, fid);
-}
-void GContext::setClipMask(const FbTk::FbPixmap &mask) {
-    XSetClipMask(FbTk::App::instance()->display(), m_gc,
-                 mask.drawable());
-}
-
-void GContext::setClipOrigin(int x, int y) {
-    XSetClipOrigin(FbTk::App::instance()->display(), m_gc,
-                   x, y);
-}
-
-void GContext::setGraphicsExposure(bool flag) {
-    XSetGraphicsExposures(FbTk::App::instance()->display(), m_gc, 
-                          flag);
-}
-
-void GContext::setFunction(int func) {
-    XSetFunction(FbTk::App::instance()->display(), m_gc,
-                 func);
-}
-
-void GContext::setSubwindowMode(int mode) {
-    XSetSubwindowMode(FbTk::App::instance()->display(), m_gc,
-                      mode);
-}
-
+//}
 
 } // end namespace FbTk

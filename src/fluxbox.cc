@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.197 2003/10/06 09:55:36 rathnor Exp $
+// $Id: fluxbox.cc,v 1.198 2003/10/09 16:48:09 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -614,10 +614,11 @@ Fluxbox::~Fluxbox() {
 }
 
 void Fluxbox::eventLoop() {
+    Display *disp = display();
     while (!m_shutdown) {
-        if (XPending(display())) {
+        if (XPending(disp)) {
             XEvent e;
-            XNextEvent(display(), &e);
+            XNextEvent(disp, &e);
 
             if (last_bad_window != None && e.xany.window == last_bad_window && 
                 e.type != DestroyNotify) { // we must let the actual destroys through
@@ -633,7 +634,7 @@ void Fluxbox::eventLoop() {
                 }
             }
         } else {
-            FbTk::Timer::updateTimers(ConnectionNumber(display())); //handle all timers
+            FbTk::Timer::updateTimers(ConnectionNumber(disp)); //handle all timers
         }
     }
 }

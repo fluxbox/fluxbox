@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.13 2003/10/06 06:22:42 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.14 2003/10/09 16:48:09 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -372,11 +372,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
     }
 
     // unlock container and update graphics
-    m_icon_container.setUpdateLock(false);
-    m_icon_container.showSubwindows();
-    m_icon_container.update();
-
     renderTheme();
+    m_icon_container.setUpdateLock(false);
+    m_icon_container.update();
+    m_icon_container.showSubwindows();
+    
 }
 
 void IconbarTool::renderWindow(FluxboxWindow &win) {

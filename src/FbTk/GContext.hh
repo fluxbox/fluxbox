@@ -19,19 +19,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.3 2003/09/11 19:57:38 fluxgen Exp $
+// $Id: GContext.hh,v 1.4 2003/10/09 16:48:09 rathnor Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
+
+#include "Color.hh"
+#include "FbPixmap.hh"
 
 #include <X11/Xlib.h>
 
 namespace FbTk {
 
 class FbDrawable;
-class FbPixmap;
 class Font;
-class Color;
 
 /// wrapper for X GC
 class GContext {
@@ -43,23 +44,55 @@ public:
 
     virtual ~GContext();
 
-    void setForeground(const FbTk::Color &color);
-    void setForeground(long pixel_value);
-    void setBackground(const FbTk::Color &color);
-    void setBackground(long pixel_value);
-    /// not implemented
-    void setFont(const FbTk::Font &font);
-    /// set font id
-    void setFont(int fid);
-    void setClipMask(const FbTk::FbPixmap &pm);
-    void setClipOrigin(int x, int y);
-    void setGraphicsExposure(bool value);
-    void setFunction(int func);
-    void setSubwindowMode(int mode);
+    inline void setForeground(const FbTk::Color &color) {
+        setForeground(color.pixel());
+    }
 
-    GC gc() const { return m_gc; }
+    inline void setForeground(long pixel_value) {
+        XSetForeground(m_display, m_gc,
+                       pixel_value);
+    }
+
+    inline void setBackground(const FbTk::Color &color) {
+        setBackground(color.pixel());
+    }
+
+    inline void setBackground(long pixel_value) {
+        XSetBackground(m_display, m_gc, pixel_value);
+    }
+
+    /// not implemented
+    inline void setFont(const FbTk::Font &font) {}
+
+    /// set font id
+    inline void setFont(int fid) {
+        XSetFont(m_display, m_gc, fid);
+    }
+
+    inline void setClipMask(const FbTk::FbPixmap &mask) {
+        XSetClipMask(m_display, m_gc, mask.drawable());
+    }
+
+    inline void setClipOrigin(int x, int y) {
+        XSetClipOrigin(m_display, m_gc, x, y);
+    }
+
+    inline void setGraphicsExposure(bool value) {
+        XSetGraphicsExposures(m_display, m_gc, value);
+    }
+
+    inline void setFunction(int func) {
+        XSetFunction(m_display, m_gc, func);
+    }
+
+    inline void setSubwindowMode(int mode) {
+        XSetSubwindowMode(m_display, m_gc, mode);
+    }
+
+    inline GC gc() const { return m_gc; }
 
 private:
+    Display *m_display; // worth caching
     GC m_gc;
 };
 

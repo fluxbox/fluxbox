@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/10:
+  * Various drawing-related optimisations and bug fixes (Simon)
+    - fixes toolbar random colour flicker on workspace change
+    - speeds up pixmap rendering a little (inlining and friends!)
+    FbWinFrame.cc GContext.hh/cc Color.hh ImageControl.hh/cc 
+    IconbarTool.cc fluxbox.cc Container.cc
 *03/10/08:
   * fluxbox-generate_menu update from Han
     - replace getopts with portable workaround

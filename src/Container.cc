@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.4 2003/09/15 20:13:24 fluxgen Exp $
+// $Id: Container.cc,v 1.5 2003/10/09 16:48:09 rathnor Exp $
 
 #include "FbTk/Button.hh"
 #include "Container.hh"
@@ -128,7 +128,8 @@ void Container::removeItem(int index) {
 void Container::removeAll() {
     m_selected = 0;
     m_item_list.clear();
-    clear();
+    if (!m_update_lock)
+        clear();
 
 }
 
@@ -162,7 +163,8 @@ void Container::setSelected(int pos) {
 }
 
 void Container::exposeEvent(XExposeEvent &event) {
-    clearArea(event.x, event.y, event.width, event.height);
+    if (!m_update_lock)
+        clearArea(event.x, event.y, event.width, event.height);
 }
 
 void Container::repositionItems() {

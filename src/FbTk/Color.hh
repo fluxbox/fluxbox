@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.hh,v 1.4 2003/05/10 13:29:13 fluxgen Exp $
+// $Id: Color.hh,v 1.5 2003/10/09 16:48:09 rathnor Exp $
 
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
@@ -49,11 +49,11 @@ public:
     // TODO
     //Color &operator = (const Color &col_copy);
 	
-    bool isAllocated() const { return m_allocated; }
-    unsigned short red() const { return m_red; }
-    unsigned short green() const { return m_green; }
-    unsigned short blue() const { return m_blue; }
-    unsigned long pixel() const { return m_pixel; }
+    inline bool isAllocated() const { return m_allocated; }
+    inline unsigned short red() const { return m_red; }
+    inline unsigned short green() const { return m_green; }
+    inline unsigned short blue() const { return m_blue; }
+    inline unsigned long pixel() const { return m_pixel; }
 	
 private:
     void free();

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.58 2003/10/06 09:28:35 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.59 2003/10/09 16:48:09 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -238,8 +238,8 @@ void FbWinFrame::setFocus(bool newvalue) {
 
     m_focused = newvalue;
 
-    renderTitlebar();
     renderButtons();
+    renderTitlebar();
     renderHandles();
 }
 
@@ -726,10 +726,10 @@ void FbWinFrame::redrawTitle() {
     }
 
     if (isVisible()) {
-        m_titlebar.clear();
-        m_titlebar.updateTransparent();
         m_label.clear();
         m_label.updateTransparent();
+        m_titlebar.clear();
+        m_titlebar.updateTransparent();
     }
 }
 
@@ -1004,6 +1004,7 @@ void FbWinFrame::setupButton(FbTk::Button &btn) {
 
 void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
                         unsigned int w, unsigned int h) {
+
     Pixmap tmp = pm;
     if (tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         pm = None;
@@ -1051,6 +1052,7 @@ void FbWinFrame::getUnfocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::renderLabelButtons() {
+
     Pixmap label_pm = 0;
     Pixmap not_used_pm = 0;
     FbTk::Color label_color;
@@ -1126,7 +1128,8 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
 }
 
 void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
-   button.setGC(theme().labelTextUnfocusGC());
+
+    button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
     button.setAlpha(theme().alpha());

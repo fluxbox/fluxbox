@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.4 2003/08/18 11:37:15 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.5 2003/10/09 16:48:09 rathnor Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -34,6 +34,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <list>
+#include <set>
 
 namespace FbTk {
 
@@ -114,9 +115,25 @@ private:
         unsigned int count, width, height;
         unsigned long pixel1, pixel2, texture;
     } Cache;
+
+    struct ltCacheEntry
+    {
+        bool operator()(const Cache* s1, const Cache* s2) const
+            {
+                return 
+                    (s1->width  < s2->width  || s1->width == s2->width && 
+                    (s1->height < s2->height || s1->height == s2->height &&
+                     (s1->texture < s2->texture || s1->texture == s2->texture &&
+                      s1->pixel1 < s2->pixel1 || s1->pixel1 == s2->pixel2 &&
+                      (s1->texture & FbTk::Texture::GRADIENT) &&
+                       s1->pixel2 < s2->pixel2)
+                        ));
+            }
+    };
+
 	
     unsigned long cache_max;
-    typedef std::list<Cache *> CacheList;
+    typedef std::set<Cache *, ltCacheEntry> CacheList;
 
     mutable CacheList cache;
     static bool s_timed_cache;

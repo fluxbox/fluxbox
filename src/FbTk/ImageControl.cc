@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.5 2003/08/18 11:37:14 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.6 2003/10/09 16:48:09 rathnor Exp $
 
 #include "ImageControl.hh"
 
@@ -152,6 +152,21 @@ ImageControl::~ImageControl() {
 Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
                                   unsigned long texture_type,
                                   const FbTk::Color &color, const FbTk::Color &color_to) const {
+    Cache tmp;
+    tmp.width = width;
+    tmp.height = height;
+    tmp.texture = texture_type;
+    tmp.pixel1 = color.pixel();
+    tmp.pixel2 = color_to.pixel();
+    CacheList::iterator it = cache.find(&tmp);
+    if (it == cache.end()) {
+        return None;
+    } else {
+        (*it)->count++;
+        return (*it)->pixmap;
+    }
+        
+    /*
     CacheList::iterator it = cache.begin();
     CacheList::iterator it_end = cache.end();
     for (; it != it_end; ++it) {
@@ -170,8 +185,8 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
             }
         }
     }
-
     return None;
+    */
 }
 
 
@@ -187,7 +202,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
     if (pixmap)
         return pixmap; // return cache item
 
-	// render new image
+    // render new image
     TextureRender image(*this, width, height, m_colors, m_num_colors);
     pixmap = image.render(texture);
 
@@ -208,7 +223,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
         else
             tmp->pixel2 = 0l;
 
-        cache.push_back(tmp); 
+        cache.insert(tmp); 
 
         if ((unsigned) cache.size() > cache_max)
             cleanCache();
@@ -355,9 +370,13 @@ void ImageControl::cleanCache() {
         Cache *tmp = (*it);
 
         if (tmp->count <= 0) {
+            CacheList::iterator tmp_it = it;
+            ++tmp_it;
             XFreePixmap(disp, tmp->pixmap);
-            it = cache.erase(it);
+            cache.erase(it);
             delete tmp;
+            tmp=0;
+            it = tmp_it;
             if (it == it_end) break;
         }
     }
