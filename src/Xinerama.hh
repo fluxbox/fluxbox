@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xinerama.hh,v 1.2 2003/06/25 06:11:39 fluxgen Exp $
+// $Id: Xinerama.hh,v 1.3 2003/07/10 11:58:36 fluxgen Exp $
 
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
@@ -64,7 +64,7 @@ private:
 template <typename ItemType>
 class XineramaHeadMenu : public FbMenu {
 public:
-    XineramaHeadMenu(FbTk::MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
+    XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
                      FbTk::XLayer &layer, ItemType *item);
 
 private:
@@ -73,7 +73,7 @@ private:
 
 
 template <typename ItemType>
-XineramaHeadMenu<ItemType>::XineramaHeadMenu(FbTk::MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
+XineramaHeadMenu<ItemType>::XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
                                FbTk::XLayer &layer, ItemType *item):
     FbMenu(tm, screen.screenNumber(), imgctrl, layer), 
     m_object(item) 
