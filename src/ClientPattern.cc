@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.5 2003/11/17 00:29:30 fluxgen Exp $
+// $Id: ClientPattern.cc,v 1.6 2003/12/17 01:19:39 fluxgen Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
@@ -238,7 +238,7 @@ bool ClientPattern::addTerm(const std::string &str, WinProperty prop) {
 std::string ClientPattern::getProperty(WinProperty prop, const WinClient &client) const {
     switch (prop) {
     case TITLE:
-        return client.getTitle();
+        return client.title();
         break;
     case CLASS:
         return client.getWMClassClass();
