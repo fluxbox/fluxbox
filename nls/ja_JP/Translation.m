@@ -19,7 +19,7 @@ $set 3 #Configmenu
 3 ウィンドウ配置
 4 画像ディザ
 5 ウィンドウの内容を表示したまま移動
-6 完全最大化（タスクバー無視）
+6 完全最大化(タスクバー無視)
 7 新規ウィンドウにフォーカス
 8 ワークスペース移動時に最後のウィンドウにフォーカス
 9 クリックでフォーカス
@@ -39,6 +39,7 @@ $set 3 #Configmenu
 23 カーソルオーバーでフォーカス(SemiSloppy)
 24 Slitを越えて最大化
 25 Window内にタブドロップでもタブグループに
+26 Workspace Warping
 
 $set 4 #Icon
 
@@ -182,7 +183,7 @@ $set 15 #main
 1 error: '-rc' オプションは引数を必要とします\n
 2 error: '-display' オプションは引数を必要とします\n
 3 warning: 環境変数 'DISPLAY' を設定できませんでした\n
-4 Fluxkbox %s: (c) 2001 Henrik Kinnunen\n\n\
+4 Fluxbox %s: (c) 2001 Henrik Kinnunen\n\n\
   -display <string>\t\t 指定ディスプレイに接続.\n\
   -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
   -version\t\t\t バージョン情報を表示して終了.\n\

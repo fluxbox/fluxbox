@@ -41,6 +41,7 @@ enum {
 	ConfigmenuSemiSloppyFocus = 0x17,
 	ConfigmenuMaxOverSlit = 0x18,
 	ConfigmenuSloppyWindowGrouping = 0x19,
+	ConfigmenuWorkspaceWarping = 0x1a,
 
 	IconSet = 0x4,
 	IconIcons = 0x1,

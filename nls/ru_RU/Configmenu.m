@@ -50,3 +50,5 @@ $ #MaxOverSlit
 # Максимизировать над докером
 $ #SloppyWindowGrouping
 # Группировка "размытых" окон
+$ #WorkspaceWarping
+# Workspace Warping

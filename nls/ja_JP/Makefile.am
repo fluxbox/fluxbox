@@ -18,10 +18,11 @@ uninstall-local:
 
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
+		rm -f Translation.m; \
 		awk -f ../convert.awk output=Translation.m $(MFILES); \
 	fi
 
 blackbox.cat: Translation.m
 	@if test x$(NLSTEST) = "x-DNLS"; then \
-		$(gencat_cmd) blackbox.cat Translation.m; \
+		LANG=ja_JP $(gencat_cmd) blackbox.cat Translation.m; \
 	fi

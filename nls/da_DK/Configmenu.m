@@ -48,3 +48,5 @@ $ #MaxOverSlit
 # Maximize Over Slit
 $ #SloppyWindowGrouping
 # Sloppy Window Grouping
+$ #WorkspaceWarping
+# Workspace Warping

@@ -39,6 +39,7 @@ $set 3 #Configmenu
 23 Semi Sloppy Focus
 24 Maximizar Sobre Slit
 25 Sloppy Janela Em Grupo
+26 Workspace Warping
 
 $set 4 #Icon
 

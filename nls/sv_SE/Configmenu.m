@@ -50,3 +50,5 @@ $ #MaxOverSlit
 # Maximize Over Slit
 $ #SloppyWindowGrouping
 # Hafsig Fönster Gruppering
+$ #WorkspaceWarping
+# Workspace Warping

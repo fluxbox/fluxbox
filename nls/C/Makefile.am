@@ -36,6 +36,7 @@ uninstall-local:
 
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
+		rm -f Translation.m; \
 		echo -e "//This file is generated from nls/C" > ../blackbox-nls.hh; \
 		echo -e "#ifndef BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
 		echo -e "#define BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \

@@ -39,6 +39,7 @@ $set 3 #Configmenu
 23 Полу Sloppy Фокус
 24 Увеличи върху Slit -а
 25 Sloppy Групиране на прозорци
+26 Workspace Warping
 
 $set 4 #Icon
 

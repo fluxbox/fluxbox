@@ -50,3 +50,5 @@ $ #MaxOverSlit
 # Maximisez au dessus du Slit
 $ #SloppyWindowGrouping
 # Groupement des fenêtres stupide
+$ #WorkspaceWarping
+# Workspace Warping

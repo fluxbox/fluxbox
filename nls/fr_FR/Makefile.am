@@ -24,6 +24,7 @@ uninstall-local:
 
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
+		rm -f Translation.m; \
 		awk -f ../convert.awk output=Translation.m $(MFILES); \
 	fi
 

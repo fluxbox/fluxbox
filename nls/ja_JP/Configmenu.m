@@ -50,3 +50,5 @@ $ #MaxOverSlit
 # Slitを越えて最大化
 $ #SloppyWindowGrouping
 # Window内にタブドロップでもタブグループに
+$ #WorkspaceWarping
+# Workspace Warping

@@ -50,3 +50,5 @@ $ #MaxOverSlit
 # Увеличи върху Slit -а
 $ #SloppyWindowGrouping
 # Sloppy Групиране на прозорци
+$ #WorkspaceWarping
+# Workspace Warping
