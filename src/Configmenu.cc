@@ -22,29 +22,24 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.16 2002/09/01 11:41:22 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.17 2002/10/15 09:49:51 fluxgen Exp $
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
-#ifndef	 _GNU_SOURCE
-#	define _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef		HAVE_CONFIG_H
-# include "../config.h"
-#endif // HAVE_CONFIG_H
+#include "Configmenu.hh"
 
 #include "i18n.hh"
-#include "Configmenu.hh"
 #include "Toolbar.hh"
 #include "Window.hh"
+#include "Screen.hh"
+#include "Tab.hh"
 
 enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP,
 	CMENU_DESKTOP_WHEELING, CMENU_WORKSPACE_WARPING, CMENU_TAB_ROTATE=21};
 
 
-Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
-	screen = scr;
+Configmenu::Configmenu(BScreen *scr) : Basemenu(scr),
+m_focusmenu(scr),
+m_placementmenu(scr),
+m_tabmenu(scr) {
 	
 	I18n *i18n = I18n::instance();
 	
@@ -54,19 +49,16 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	
 	setInternalMenu();
 
-	focusmenu = new Focusmenu(this);
-	placementmenu = new Placementmenu(this);
-	tabmenu = new Tabmenu(this);
 	using namespace FBNLS;
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuFocusModel,
-		"Focus Model"), focusmenu);
+		"Focus Model"), &m_focusmenu);
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuWindowPlacement,
-		"Window Placement"), placementmenu);
+		"Window Placement"), &m_placementmenu);
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuTabPlacement,
-		"Tab Placement"), tabmenu);
+		"Tab Placement"), &m_tabmenu);
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuImageDithering,
 		"Image Dithering"), 1);
@@ -102,25 +94,23 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 		"Desktop MouseWheel Switching"), CMENU_DESKTOP_WHEELING);
 
 	update();
-	setItemSelected(8, screen->doMaxOverSlit());
+	setItemSelected(8, screen()->doMaxOverSlit());
 
-	setItemSelected(3, screen->getImageControl()->doDither());
-	setItemSelected(4, screen->doOpaqueMove());
-	setItemSelected(5, screen->doFullMax());
-	setItemSelected(6, screen->doFocusNew());
-	setItemSelected(7, screen->doFocusLast());
+	setItemSelected(3, screen()->getImageControl()->doDither());
+	setItemSelected(4, screen()->doOpaqueMove());
+	setItemSelected(5, screen()->doFullMax());
+	setItemSelected(6, screen()->doFocusNew());
+	setItemSelected(7, screen()->doFocusLast());
 	setItemSelected(CMENU_USE_TABS, Fluxbox::instance()->useTabs());
 	setItemSelected(CMENU_USE_ICONS, Fluxbox::instance()->useIconBar());
-	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen->isSloppyWindowGrouping());
-	setItemSelected(CMENU_WORKSPACE_WARPING, screen->isWorkspaceWarping());
-	setItemSelected(CMENU_DESKTOP_WHEELING, screen->isDesktopWheeling());
+	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen()->isSloppyWindowGrouping());
+	setItemSelected(CMENU_WORKSPACE_WARPING, screen()->isWorkspaceWarping());
+	setItemSelected(CMENU_DESKTOP_WHEELING, screen()->isDesktopWheeling());
 }
 
 
-Configmenu::~Configmenu(void) {
-	delete focusmenu;
-	delete placementmenu;
-	delete tabmenu;
+Configmenu::~Configmenu() {
+
 }
 
 
@@ -131,48 +121,48 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 		if (item->function())
 			switch(item->function()) {
 			case 1:  // dither
-				screen->getImageControl()->
-				setDither((! screen->getImageControl()->doDither()));
+				screen()->getImageControl()->
+				setDither((! screen()->getImageControl()->doDither()));
 
-				setItemSelected(index, screen->getImageControl()->doDither());
+				setItemSelected(index, screen()->getImageControl()->doDither());
 
 				break;
 
 			case 2:  // opaque move
-				screen->saveOpaqueMove((! screen->doOpaqueMove()));
+				screen()->saveOpaqueMove((! screen()->doOpaqueMove()));
 
-				setItemSelected(index, screen->doOpaqueMove());
+				setItemSelected(index, screen()->doOpaqueMove());
 
 				break;
 
 			case 3:  // full maximization
-				screen->saveFullMax((! screen->doFullMax()));
+				screen()->saveFullMax((! screen()->doFullMax()));
 
-				setItemSelected(index, screen->doFullMax());
+				setItemSelected(index, screen()->doFullMax());
 
 				break;
 			case 4:  // focus new windows
-				screen->saveFocusNew((! screen->doFocusNew()));
+				screen()->saveFocusNew((! screen()->doFocusNew()));
 			
-				setItemSelected(index, screen->doFocusNew());
+				setItemSelected(index, screen()->doFocusNew());
 				break;
 				
 			case 6: // maximize over slit
-				screen->saveMaxOverSlit( !screen->doMaxOverSlit() );
-				setItemSelected(index, screen->doMaxOverSlit());
+				screen()->saveMaxOverSlit( !screen()->doMaxOverSlit() );
+				setItemSelected(index, screen()->doMaxOverSlit());
 				break;	
 
 
 			case 5:  // focus last window on workspace
-				screen->saveFocusLast((! screen->doFocusLast()));
-				setItemSelected(index, screen->doFocusLast());
+				screen()->saveFocusLast((! screen()->doFocusLast()));
+				setItemSelected(index, screen()->doFocusLast());
 				break;
 			case CMENU_USE_TABS: 
 				{
 					Fluxbox *fluxbox = Fluxbox::instance();
 					fluxbox->saveTabs(!fluxbox->useTabs());
 					setItemSelected(index, fluxbox->useTabs());
-					screen->reconfigure();
+					screen()->reconfigure();
 				}
 				break;
 			case CMENU_USE_ICONS:
@@ -180,28 +170,28 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 					Fluxbox *fluxbox = Fluxbox::instance();
 					fluxbox->saveIconBar(!fluxbox->useIconBar());
 					setItemSelected(index, fluxbox->useIconBar());
-					screen->reconfigure();
+					screen()->reconfigure();
 				}
 				break;
 			case CMENU_SLOPPY_WIN_GROUP:
 				{
-					screen->saveSloppyWindowGrouping(!screen->isSloppyWindowGrouping());
-					setItemSelected(index, screen->isSloppyWindowGrouping());
-					screen->reconfigure();
+					screen()->saveSloppyWindowGrouping(!screen()->isSloppyWindowGrouping());
+					setItemSelected(index, screen()->isSloppyWindowGrouping());
+					screen()->reconfigure();
 				}
 				break;
 			case CMENU_WORKSPACE_WARPING:
 				{
-					screen->saveWorkspaceWarping(!screen->isWorkspaceWarping());
-					setItemSelected(index, screen->isWorkspaceWarping());
-					screen->reconfigure();
+					screen()->saveWorkspaceWarping(!screen()->isWorkspaceWarping());
+					setItemSelected(index, screen()->isWorkspaceWarping());
+					screen()->reconfigure();
 				}
 				break;
 			case CMENU_DESKTOP_WHEELING:
 				{
-					screen->saveDesktopWheeling(!screen->isDesktopWheeling());
-					setItemSelected(index, screen->isDesktopWheeling());
-					screen->reconfigure();
+					screen()->saveDesktopWheeling(!screen()->isDesktopWheeling());
+					setItemSelected(index, screen()->isDesktopWheeling());
+					screen()->reconfigure();
 				}
 				break;
 
@@ -213,17 +203,16 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 }
 
 
-void Configmenu::reconfigure(void) {
-	focusmenu->reconfigure();
-	placementmenu->reconfigure();
-	tabmenu->reconfigure();
+void Configmenu::reconfigure() {
+	m_focusmenu.reconfigure();
+	m_placementmenu.reconfigure();
+	m_tabmenu.reconfigure();
 
 	Basemenu::reconfigure();
 }
 
 
-Configmenu::Focusmenu::Focusmenu(Configmenu *cm) : Basemenu(cm->screen) {
-	configmenu = cm;
+Configmenu::Focusmenu::Focusmenu(BScreen *scr) : Basemenu(scr) {
 	I18n *i18n = I18n::instance();
 	using namespace FBNLS;
 	setLabel(i18n->getMessage(
@@ -246,13 +235,13 @@ Configmenu::Focusmenu::Focusmenu(Configmenu *cm) : Basemenu(cm->screen) {
 
 	update();
 
-	setItemSelected(0, !(configmenu->screen->isSloppyFocus() || 
-		configmenu->screen->isSemiSloppyFocus()));
-	setItemSelected(1, configmenu->screen->isSloppyFocus());
-	setItemSelected(2, configmenu->screen->isSemiSloppyFocus());
-	setItemEnabled(3, (configmenu->screen->isSloppyFocus() ||
-		configmenu->screen->isSemiSloppyFocus()));
-	setItemSelected(3, configmenu->screen->doAutoRaise());
+	setItemSelected(0, !(screen()->isSloppyFocus() || 
+		screen()->isSemiSloppyFocus()));
+	setItemSelected(1, screen()->isSloppyFocus());
+	setItemSelected(2, screen()->isSemiSloppyFocus());
+	setItemEnabled(3, (screen()->isSloppyFocus() ||
+		screen()->isSemiSloppyFocus()));
+	setItemSelected(3, screen()->doAutoRaise());
 }
 
 
@@ -263,13 +252,13 @@ void Configmenu::Focusmenu::itemSelected(int button, unsigned int index) {
 		if (item->function()) {
 			switch (item->function()) {
 			case 1: // click to focus
-				configmenu->screen->saveSloppyFocus(False);
-				configmenu->screen->saveSemiSloppyFocus(False);
-				configmenu->screen->saveAutoRaise(False);
+				screen()->saveSloppyFocus(False);
+				screen()->saveSemiSloppyFocus(False);
+				screen()->saveAutoRaise(False);
 
 				if (! Fluxbox::instance()->getFocusedWindow()) {
 					XSetInputFocus(Fluxbox::instance()->getXDisplay(),
-						configmenu->screen->getToolbar()->getWindowID(),
+						screen()->getToolbar()->getWindowID(),
 						RevertToParent, CurrentTime);
 				} else {
 					XSetInputFocus(Fluxbox::instance()->getXDisplay(),
@@ -277,29 +266,29 @@ void Configmenu::Focusmenu::itemSelected(int button, unsigned int index) {
 			 			RevertToParent, CurrentTime);
 				}
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 			break;
 
 			case 2: // sloppy focus
-				configmenu->screen->saveSemiSloppyFocus(False);
-				configmenu->screen->saveSloppyFocus(True);
+				screen()->saveSemiSloppyFocus(False);
+				screen()->saveSloppyFocus(True);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 			break;
 
 			case 3: // semi sloppy focus
-				configmenu->screen->saveSloppyFocus(False);
-				configmenu->screen->saveSemiSloppyFocus(True);
+				screen()->saveSloppyFocus(False);
+				screen()->saveSemiSloppyFocus(True);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 			break;
 
 			case 4: // auto raise with sloppy focus
-				Bool change = ((configmenu->screen->doAutoRaise()) ? False : True);
-				configmenu->screen->saveAutoRaise(change);
+				Bool change = ((screen()->doAutoRaise()) ? False : True);
+				screen()->saveAutoRaise(change);
 
 			break;
 			}
@@ -307,20 +296,20 @@ void Configmenu::Focusmenu::itemSelected(int button, unsigned int index) {
 			Fluxbox::instance()->save_rc();
 			
 			//toggle options
-			setItemSelected(0, !(configmenu->screen->isSloppyFocus() || 
-							configmenu->screen->isSemiSloppyFocus()));
-			setItemSelected(1, configmenu->screen->isSloppyFocus());
-			setItemSelected(2, configmenu->screen->isSemiSloppyFocus());
-			setItemEnabled(3, (configmenu->screen->isSloppyFocus() ||
-						configmenu->screen->isSemiSloppyFocus()));
-			setItemSelected(3, configmenu->screen->doAutoRaise());
+			setItemSelected(0, !(screen()->isSloppyFocus() || 
+							screen()->isSemiSloppyFocus()));
+			setItemSelected(1, screen()->isSloppyFocus());
+			setItemSelected(2, screen()->isSemiSloppyFocus());
+			setItemEnabled(3, (screen()->isSloppyFocus() ||
+						screen()->isSemiSloppyFocus()));
+			setItemSelected(3, screen()->doAutoRaise());
 		}
 	}
 }
 
 
-Configmenu::Placementmenu::Placementmenu(Configmenu *cm) : Basemenu(cm->screen) {
-	configmenu = cm;
+Configmenu::Placementmenu::Placementmenu(BScreen *scr) : Basemenu(scr) {
+
 	I18n *i18n = I18n::instance();
 	using namespace FBNLS;
 	setLabel(i18n->getMessage(
@@ -352,7 +341,7 @@ Configmenu::Placementmenu::Placementmenu(Configmenu *cm) : Basemenu(cm->screen) 
 
 	update();
 
-	switch (configmenu->screen->getPlacementPolicy()) {
+	switch (screen()->getPlacementPolicy()) {
 	case BScreen::ROWSMARTPLACEMENT:
 		setItemSelected(0, true);
 		break;
@@ -366,9 +355,9 @@ Configmenu::Placementmenu::Placementmenu(Configmenu *cm) : Basemenu(cm->screen) 
 		break;
 	}
 
-	bool rl = (configmenu->screen->getRowPlacementDirection() ==
+	bool rl = (screen()->getRowPlacementDirection() ==
 				BScreen::LEFTRIGHT),
-		tb = (configmenu->screen->getColPlacementDirection() ==
+		tb = (screen()->getColPlacementDirection() ==
 				BScreen::TOPBOTTOM);
 
 	setItemSelected(3, rl);
@@ -386,7 +375,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 		if (item->function()) {
 			switch (item->function()) {
 			case BScreen::ROWSMARTPLACEMENT:
-				configmenu->screen->savePlacementPolicy(item->function());
+				screen()->savePlacementPolicy(item->function());
 
 				setItemSelected(0, true);
 				setItemSelected(1, false);
@@ -395,7 +384,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			case BScreen::COLSMARTPLACEMENT:
-				configmenu->screen->savePlacementPolicy(item->function());
+				screen()->savePlacementPolicy(item->function());
 
 				setItemSelected(0, false);
 				setItemSelected(1, true);
@@ -404,7 +393,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			case BScreen::CASCADEPLACEMENT:
-				configmenu->screen->savePlacementPolicy(item->function());
+				screen()->savePlacementPolicy(item->function());
 
 				setItemSelected(0, false);
 				setItemSelected(1, false);
@@ -413,7 +402,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			case BScreen::LEFTRIGHT:
-				configmenu->screen->saveRowPlacementDirection(BScreen::LEFTRIGHT);
+				screen()->saveRowPlacementDirection(BScreen::LEFTRIGHT);
 
 				setItemSelected(3, true);
 				setItemSelected(4, false);
@@ -421,7 +410,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 				break;
 
 			case BScreen::RIGHTLEFT:
-				configmenu->screen->saveRowPlacementDirection(BScreen::RIGHTLEFT);
+				screen()->saveRowPlacementDirection(BScreen::RIGHTLEFT);
 
 				setItemSelected(3, false);
 				setItemSelected(4, true);
@@ -429,7 +418,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 			break;
 
 			case BScreen::TOPBOTTOM:
-			configmenu->screen->saveColPlacementDirection(BScreen::TOPBOTTOM);
+			screen()->saveColPlacementDirection(BScreen::TOPBOTTOM);
 
 			setItemSelected(5, true);
 			setItemSelected(6, false);
@@ -437,7 +426,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 			break;
 
 			case BScreen::BOTTOMTOP:
-			configmenu->screen->saveColPlacementDirection(BScreen::BOTTOMTOP);
+			screen()->saveColPlacementDirection(BScreen::BOTTOMTOP);
 
 			setItemSelected(5, false);
 			setItemSelected(6, true);
@@ -450,8 +439,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 	}
 }
 
-Configmenu::Tabmenu::Tabmenu(Configmenu *cm) : Basemenu(cm->screen) {
-	configmenu = cm;
+Configmenu::Tabmenu::Tabmenu(BScreen *scr) : Basemenu(scr) {
 	I18n *i18n = I18n::instance();
 	using namespace FBNLS;
 
@@ -525,136 +513,136 @@ void Configmenu::Tabmenu::itemSelected(int button, unsigned int index) {
 		
 		switch (item->function()) {
 			case (Tab::PTOP + Tab::ALEFT):
-				configmenu->screen->saveTabPlacement(Tab::PTOP);
-				configmenu->screen->saveTabAlignment(Tab::ALEFT);
+				screen()->saveTabPlacement(Tab::PTOP);
+				screen()->saveTabAlignment(Tab::ALEFT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PTOP + Tab::ACENTER):
-				configmenu->screen->saveTabPlacement(Tab::PTOP);
-				configmenu->screen->saveTabAlignment(Tab::ACENTER);
+				screen()->saveTabPlacement(Tab::PTOP);
+				screen()->saveTabAlignment(Tab::ACENTER);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PTOP + Tab::ARIGHT):
-				configmenu->screen->saveTabPlacement(Tab::PTOP);
-				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
+				screen()->saveTabPlacement(Tab::PTOP);
+				screen()->saveTabAlignment(Tab::ARIGHT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PTOP + Tab::ARELATIVE):
-				configmenu->screen->saveTabPlacement(Tab::PTOP);
-				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
+				screen()->saveTabPlacement(Tab::PTOP);
+				screen()->saveTabAlignment(Tab::ARELATIVE);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PBOTTOM + Tab::ALEFT):
-				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
-				configmenu->screen->saveTabAlignment(Tab::ALEFT);
+				screen()->saveTabPlacement(Tab::PBOTTOM);
+				screen()->saveTabAlignment(Tab::ALEFT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 			case (Tab::PBOTTOM + Tab::ACENTER):
-				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
-				configmenu->screen->saveTabAlignment(Tab::ACENTER);
+				screen()->saveTabPlacement(Tab::PBOTTOM);
+				screen()->saveTabAlignment(Tab::ACENTER);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PBOTTOM + Tab::ARIGHT):
-				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
-				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
+				screen()->saveTabPlacement(Tab::PBOTTOM);
+				screen()->saveTabAlignment(Tab::ARIGHT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PBOTTOM + Tab::ARELATIVE):
-				configmenu->screen->saveTabPlacement(Tab::PBOTTOM);
-				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
+				screen()->saveTabPlacement(Tab::PBOTTOM);
+				screen()->saveTabAlignment(Tab::ARELATIVE);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PLEFT + Tab::ARIGHT):
-				configmenu->screen->saveTabPlacement(Tab::PLEFT);
-				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
+				screen()->saveTabPlacement(Tab::PLEFT);
+				screen()->saveTabAlignment(Tab::ARIGHT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PLEFT + Tab::ACENTER):
-				configmenu->screen->saveTabPlacement(Tab::PLEFT);
-				configmenu->screen->saveTabAlignment(Tab::ACENTER);
+				screen()->saveTabPlacement(Tab::PLEFT);
+				screen()->saveTabAlignment(Tab::ACENTER);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PLEFT + Tab::ALEFT):
-				configmenu->screen->saveTabPlacement(Tab::PLEFT);
-				configmenu->screen->saveTabAlignment(Tab::ALEFT);
+				screen()->saveTabPlacement(Tab::PLEFT);
+				screen()->saveTabAlignment(Tab::ALEFT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PLEFT + Tab::ARELATIVE):
-				configmenu->screen->saveTabPlacement(Tab::PLEFT);
-				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
+				screen()->saveTabPlacement(Tab::PLEFT);
+				screen()->saveTabAlignment(Tab::ARELATIVE);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PRIGHT + Tab::ARIGHT):
-				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
-				configmenu->screen->saveTabAlignment(Tab::ARIGHT);
+				screen()->saveTabPlacement(Tab::PRIGHT);
+				screen()->saveTabAlignment(Tab::ARIGHT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 			case (Tab::PRIGHT + Tab::ACENTER):
-				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
-				configmenu->screen->saveTabAlignment(Tab::ACENTER);
+				screen()->saveTabPlacement(Tab::PRIGHT);
+				screen()->saveTabAlignment(Tab::ACENTER);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PRIGHT + Tab::ALEFT):
-				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
-				configmenu->screen->saveTabAlignment(Tab::ALEFT);
+				screen()->saveTabPlacement(Tab::PRIGHT);
+				screen()->saveTabAlignment(Tab::ALEFT);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case (Tab::PRIGHT + Tab::ARELATIVE):
-				configmenu->screen->saveTabPlacement(Tab::PRIGHT);
-				configmenu->screen->saveTabAlignment(Tab::ARELATIVE);
+				screen()->saveTabPlacement(Tab::PRIGHT);
+				screen()->saveTabAlignment(Tab::ARELATIVE);
 
-				configmenu->screen->reconfigure();
+				screen()->reconfigure();
 
 				break;
 
 			case CMENU_TAB_ROTATE:
-				if (configmenu->screen->isTabRotateVertical())
-					configmenu->screen->saveTabRotateVertical(False);
+				if (screen()->isTabRotateVertical())
+					screen()->saveTabRotateVertical(False);
 				else
-					configmenu->screen->saveTabRotateVertical(True);
+					screen()->saveTabRotateVertical(True);
 				break;
 			}
 			//save resources
@@ -664,42 +652,42 @@ void Configmenu::Tabmenu::itemSelected(int button, unsigned int index) {
 	}
 }
 
-void Configmenu::Tabmenu::setSelected(void) {
-	setItemSelected(0, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
-		configmenu->screen->getTabAlignment() == Tab::ALEFT));
-	setItemSelected(1, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
-		configmenu->screen->getTabAlignment() == Tab::ACENTER));
-	setItemSelected(2, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
-		configmenu->screen->getTabAlignment() == Tab::ARIGHT));
-	setItemSelected(3, (configmenu->screen->getTabPlacement() == Tab::PTOP &&
-		configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
-	setItemSelected(4, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
-		configmenu->screen->getTabAlignment() == Tab::ALEFT));
-	setItemSelected(5, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
-		configmenu->screen->getTabAlignment() == Tab::ACENTER));
-	setItemSelected(6, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
-		configmenu->screen->getTabAlignment() == Tab::ARIGHT));
-	setItemSelected(7, (configmenu->screen->getTabPlacement() == Tab::PBOTTOM &&
-		configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
-	setItemSelected(8, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
-		configmenu->screen->getTabAlignment() == Tab::ARIGHT));
-	setItemSelected(9, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
-		configmenu->screen->getTabAlignment() == Tab::ACENTER));
-	setItemSelected(10, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
-		configmenu->screen->getTabAlignment() == Tab::ALEFT));
-	setItemSelected(11, (configmenu->screen->getTabPlacement() == Tab::PLEFT &&
-		configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
-	setItemSelected(12, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
-		configmenu->screen->getTabAlignment() == Tab::ARIGHT));
-	setItemSelected(13, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
-		configmenu->screen->getTabAlignment() == Tab::ACENTER));
-	setItemSelected(14, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
-		configmenu->screen->getTabAlignment() == Tab::ALEFT));
-	setItemSelected(15, (configmenu->screen->getTabPlacement() == Tab::PRIGHT &&
-		configmenu->screen->getTabAlignment() == Tab::ARELATIVE));
-	setItemEnabled(16, (configmenu->screen->getTabPlacement() == Tab::PLEFT ||
-		configmenu->screen->getTabPlacement() == Tab::PRIGHT));
-	setItemSelected(16, (configmenu->screen->isTabRotateVertical() &&
-		(configmenu->screen->getTabPlacement() == Tab::PLEFT ||
-		configmenu->screen->getTabPlacement() == Tab::PRIGHT))); 
+void Configmenu::Tabmenu::setSelected() {
+	setItemSelected(0, (screen()->getTabPlacement() == Tab::PTOP &&
+		screen()->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(1, (screen()->getTabPlacement() == Tab::PTOP &&
+		screen()->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(2, (screen()->getTabPlacement() == Tab::PTOP &&
+		screen()->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(3, (screen()->getTabPlacement() == Tab::PTOP &&
+		screen()->getTabAlignment() == Tab::ARELATIVE));
+	setItemSelected(4, (screen()->getTabPlacement() == Tab::PBOTTOM &&
+		screen()->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(5, (screen()->getTabPlacement() == Tab::PBOTTOM &&
+		screen()->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(6, (screen()->getTabPlacement() == Tab::PBOTTOM &&
+		screen()->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(7, (screen()->getTabPlacement() == Tab::PBOTTOM &&
+		screen()->getTabAlignment() == Tab::ARELATIVE));
+	setItemSelected(8, (screen()->getTabPlacement() == Tab::PLEFT &&
+		screen()->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(9, (screen()->getTabPlacement() == Tab::PLEFT &&
+		screen()->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(10, (screen()->getTabPlacement() == Tab::PLEFT &&
+		screen()->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(11, (screen()->getTabPlacement() == Tab::PLEFT &&
+		screen()->getTabAlignment() == Tab::ARELATIVE));
+	setItemSelected(12, (screen()->getTabPlacement() == Tab::PRIGHT &&
+		screen()->getTabAlignment() == Tab::ARIGHT));
+	setItemSelected(13, (screen()->getTabPlacement() == Tab::PRIGHT &&
+		screen()->getTabAlignment() == Tab::ACENTER));
+	setItemSelected(14, (screen()->getTabPlacement() == Tab::PRIGHT &&
+		screen()->getTabAlignment() == Tab::ALEFT));
+	setItemSelected(15, (screen()->getTabPlacement() == Tab::PRIGHT &&
+		screen()->getTabAlignment() == Tab::ARELATIVE));
+	setItemEnabled(16, (screen()->getTabPlacement() == Tab::PLEFT ||
+		screen()->getTabPlacement() == Tab::PRIGHT));
+	setItemSelected(16, (screen()->isTabRotateVertical() &&
+		(screen()->getTabPlacement() == Tab::PLEFT ||
+		screen()->getTabPlacement() == Tab::PRIGHT))); 
 }
