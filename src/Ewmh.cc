@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.20 2003/05/10 13:21:36 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.21 2003/05/10 22:56:48 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -50,13 +50,13 @@ void Ewmh::initForScreen(BScreen &screen) {
 
 
     Window wincheck = XCreateSimpleWindow(disp,
-                                          screen.getRootWindow(), 
+                                          screen.rootWindow().window(), 
                                           0, 0, 5, 5, 0, 0, 0);
 
     if (wincheck != None) {
         m_windows.push_back(wincheck);
 		
-        XChangeProperty(disp, screen.getRootWindow(), m_net_supporting_wm_check, XA_WINDOW, 32,
+        XChangeProperty(disp, screen.rootWindow().window(), m_net_supporting_wm_check, XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *) &wincheck, 1);
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
 			PropModeReplace, (unsigned char *) &wincheck, 1);
@@ -86,7 +86,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_supporting_wm_check		
     };
 
-    XChangeProperty(disp, screen.getRootWindow(), 
+    XChangeProperty(disp, screen.rootWindow().window(), 
                     m_net_supported, XA_ATOM, 32,
                     PropModeReplace, 
                     (unsigned char *) &atomsupported, 
@@ -193,7 +193,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     //number of windows to show in client list
     num = win;
     XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.getRootWindow(), 
+                    screen.rootWindow().window(), 
                     m_net_client_list, 
                     XA_CARDINAL, 32,
                     PropModeReplace, (unsigned char *)wl, num);
@@ -213,7 +213,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     }
 	
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
-        XSetTextProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
+        XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
 			 &text, m_net_desktop_names);
         XFree(text.value);
     }
@@ -225,7 +225,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
     size_t workspace = screen.getCurrentWorkspaceID();
     XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.getRootWindow(),
+                    screen.rootWindow().window(),
                     m_net_current_desktop, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&workspace, 1);
 
@@ -233,7 +233,7 @@ void Ewmh::updateCurrentWorkspace(BScreen &screen) {
 
 void Ewmh::updateWorkspaceCount(BScreen &screen) {
     size_t numworkspaces = screen.getCount();
-    XChangeProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
+    XChangeProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
                     m_net_number_of_desktops, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&numworkspaces, 1);
 }

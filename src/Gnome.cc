@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.19 2003/05/08 02:50:38 rathnor Exp $
+// $Id: Gnome.cc,v 1.20 2003/05/10 22:57:37 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -51,9 +51,9 @@ void Gnome::initForScreen(BScreen &screen) {
     Display *disp = FbTk::App::instance()->display();
     // create the GNOME window
     Window gnome_win = XCreateSimpleWindow(disp,
-                                           screen.getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
+                                           screen.rootWindow().window(), 0, 0, 5, 5, 0, 0, 0);
     // supported WM check
-    XChangeProperty(disp, screen.getRootWindow(), 
+    XChangeProperty(disp, screen.rootWindow().window(), 
                     m_gnome_wm_supporting_wm_check, 
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
@@ -71,7 +71,7 @@ void Gnome::initForScreen(BScreen &screen) {
     };
 
     //list atoms that we support
-    XChangeProperty(disp, screen.getRootWindow(), 
+    XChangeProperty(disp, screen.rootWindow().window(), 
                     m_gnome_wm_prot, XA_ATOM, 32, PropModeReplace,
                     (unsigned char *)gnomeatomlist, (sizeof gnomeatomlist)/sizeof gnomeatomlist[0]);
 
@@ -173,7 +173,7 @@ void Gnome::updateClientList(BScreen &screen) {
     //number of windows to show in client list
     num = win;
     XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.getRootWindow(), 
+                    screen.rootWindow().window(), 
                     m_gnome_wm_win_client_list, 
                     XA_CARDINAL, 32,
                     PropModeReplace, (unsigned char *)wl, num);
@@ -195,7 +195,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
     }
 	
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
-        XSetTextProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
+        XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
 			 &text, m_gnome_wm_win_workspace_names);
         XFree(text.value);
     }
@@ -207,7 +207,7 @@ void Gnome::updateWorkspaceNames(BScreen &screen) {
 void Gnome::updateCurrentWorkspace(BScreen &screen) {
     int workspace = screen.getCurrentWorkspaceID();
     XChangeProperty(FbTk::App::instance()->display(), 
-                    screen.getRootWindow(),
+                    screen.rootWindow().window(),
                     m_gnome_wm_win_workspace, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&workspace, 1);
 
@@ -216,7 +216,7 @@ void Gnome::updateCurrentWorkspace(BScreen &screen) {
 
 void Gnome::updateWorkspaceCount(BScreen &screen) {
     int numworkspaces = screen.getCount();
-    XChangeProperty(FbTk::App::instance()->display(), screen.getRootWindow(),
+    XChangeProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
                     m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
                     (unsigned char *)&numworkspaces, 1);
 }

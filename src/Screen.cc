@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.151 2003/05/10 18:15:23 fluxgen Exp $
+// $Id: Screen.cc,v 1.152 2003/05/10 22:52:44 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -512,6 +512,7 @@ BScreen::BScreen(ResourceManager &rm,
     m_root_theme(new 
                  RootTheme(scrn, 
                            *resource.rootcommand)),
+    m_root_window(scrn),
     resource(rm, screenname, altscreenname),
     m_toolbarhandler(0) {
 
@@ -523,7 +524,7 @@ BScreen::BScreen(ResourceManager &rm,
         ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
 
     XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
-    XSelectInput(disp, getRootWindow(), event_mask);
+    rootWindow().setEventMask(event_mask);
     XSync(disp, False);
     XSetErrorHandler((XErrorHandler) old);
 
@@ -539,14 +540,14 @@ BScreen::BScreen(ResourceManager &rm,
                        FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
                        "BScreen::BScreen: managing screen %d "
                        "using visual 0x%lx, depth %d\n"),
-            getScreenNumber(), XVisualIDFromVisual(getVisual()),
-            getDepth());
+            getScreenNumber(), XVisualIDFromVisual(rootWindow().visual()),
+            rootWindow().depth());
 
     Fluxbox * const fluxbox = Fluxbox::instance();
 #ifdef HAVE_GETPID
     pid_t bpid = getpid();
 
-    XChangeProperty(disp, getRootWindow(),
+    XChangeProperty(disp, rootWindow().window(),
                     Fluxbox::instance()->getFluxboxPidAtom(), XA_CARDINAL,
                     sizeof(pid_t) * 8, PropModeReplace,
                     (unsigned char *) &bpid, 1);
@@ -555,7 +556,7 @@ BScreen::BScreen(ResourceManager &rm,
 
     cycling_window = focused_list.end();
 
-    XDefineCursor(disp, getRootWindow(), fluxbox->getSessionCursor());
+    XDefineCursor(disp, rootWindow().window(), fluxbox->getSessionCursor());
 
     image_control =
         new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
@@ -591,13 +592,13 @@ BScreen::BScreen(ResourceManager &rm,
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
     attrib.border_pixel = m_root_theme->borderColor().pixel();
-    attrib.colormap = colormap();
+    attrib.colormap = rootWindow().colormap();
     attrib.save_under = true;
 
     geom_window = 
-        XCreateWindow(disp, getRootWindow(),
-                      0, 0, geom_w, geom_h, rootTheme().borderWidth(), getDepth(),
-                      InputOutput, getVisual(), mask, &attrib);
+        XCreateWindow(disp, rootWindow().window(),
+                      0, 0, geom_w, geom_h, rootTheme().borderWidth(), rootWindow().depth(),
+                      InputOutput, rootWindow().visual(), mask, &attrib);
     geom_visible = false;
 
     if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
@@ -675,7 +676,7 @@ BScreen::BScreen(ResourceManager &rm,
     int i;
     unsigned int nchild;
     Window r, p, *children;
-    XQueryTree(disp, getRootWindow(), &r, &p, &children, &nchild);
+    XQueryTree(disp, rootWindow().window(), &r, &p, &children, &nchild);
 
     // preen the window list of all icon windows... for better dockapp support
     for (i = 0; i < (int) nchild; i++) {
@@ -787,7 +788,7 @@ Pixmap BScreen::rootPixmap() const {
     int real_format;
     unsigned long items_read, items_left;
     unsigned int *data;
-    if (XGetWindowProperty(disp, getRootWindow(),
+    if (XGetWindowProperty(disp, rootWindow().window(),
                            XInternAtom(disp, "_XROOTPMAP_ID", false),
                            0L, 1L, 
                            false, XA_PIXMAP, &real_type,
@@ -2270,15 +2271,12 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
 
 void BScreen::shutdown() {
     Display *disp = FbTk::App::instance()->display();
-    XSelectInput(disp, getRootWindow(), NoEventMask);
+    rootWindow().setEventMask(NoEventMask);
     XSync(disp, False);
 
     for_each(workspacesList.begin(),
              workspacesList.end(),
              mem_fun(&Workspace::shutdown));
-
-
-
 
 #ifdef SLIT
     if (m_slit.get())

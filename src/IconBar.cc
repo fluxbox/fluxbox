@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.32 2003/04/28 16:48:22 rathnor Exp $
+// $Id: IconBar.cc,v 1.33 2003/05/10 22:55:10 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -294,15 +294,16 @@ Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
     attrib.background_pixel = attrib.border_pixel =
         BlackPixel(m_display,
                    screen().getScreenNumber());
-    //        fluxboxwin->getScreen().getWindowStyle()->tab.border_color.pixel();
-    attrib.colormap = fluxboxwin->getScreen().colormap();
+    //        fluxboxwin->screen().getWindowStyle()->tab.border_color.pixel();
+    attrib.colormap = fluxboxwin->screen().rootWindow().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
         ButtonMotionMask | ExposureMask | EnterWindowMask;
 											
     //create iconwindow
     Window iconwin = XCreateWindow(m_display, parent, 0, 0, 1, 1, 0,
-                                   fluxboxwin->getScreen().getDepth(), InputOutput, fluxboxwin->getScreen().getVisual(),
+                                   fluxboxwin->screen().rootWindow().depth(), 
+                                   InputOutput, fluxboxwin->screen().rootWindow().visual(),
                                    attrib_mask, &attrib);
 		
     return iconwin;

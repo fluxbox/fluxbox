@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.47 2003/05/07 22:52:36 fluxgen Exp $
+// $Id: Slit.cc,v 1.48 2003/05/10 22:53:57 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -297,7 +297,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     attrib.background_pixmap = None;
     attrib.background_pixel = attrib.border_pixel =
         screen().rootTheme().borderColor().pixel();
-    attrib.colormap = screen().colormap();
+    attrib.colormap = screen().rootWindow().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = SubstructureRedirectMask | ButtonPressMask |
         EnterWindowMask | LeaveWindowMask;
@@ -306,9 +306,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     frame.width = frame.height = 1;
     Display *disp = FbTk::App::instance()->display();
     frame.window =
-        XCreateWindow(disp, screen().getRootWindow(), frame.x, frame.y,
+        XCreateWindow(disp, screen().rootWindow().window(), frame.x, frame.y,
                       frame.width, frame.height, screen().rootTheme().borderWidth(),
-                      screen().getDepth(), InputOutput, screen().getVisual(),
+                      screen().rootWindow().depth(), InputOutput, screen().rootWindow().visual(),
                       create_mask, &attrib);
 
     FbTk::EventManager::instance()->add(*this, frame.window);
@@ -518,7 +518,7 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
         client->disableEvents();
         // stop events to frame.window temporarly
         frame.window.setEventMask(NoEventMask);
-        XReparentWindow(disp, client->window, screen().getRootWindow(),
+        XReparentWindow(disp, client->window, screen().rootWindow().window(),
 			client->x, client->y);
         XChangeSaveSet(disp, client->window, SetModeDelete);
         // reactivate events to frame.window

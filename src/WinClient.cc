@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.7 2003/05/07 16:21:26 rathnor Exp $
+// $Id: WinClient.cc,v 1.8 2003/05/10 22:59:32 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -194,7 +194,7 @@ void WinClient::updateTransientInfo() {
     if (win == window())
         return;
 	
-    if (win != None && m_win->getScreen().getRootWindow() == win) {
+    if (win != None && m_win->screen().rootWindow() == win) {
         modal = true;
         return; // transient for root window...
     }
