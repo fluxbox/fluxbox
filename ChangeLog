@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/02/13:
+  * Added stringstream.hh to FbTk (Henrik)
+    using FbTk_istringstream from this one.
+    FbCommandFactory.cc, Remember.cc, ClientPattern.cc
 *05/02/09:
   * Fixed portability issues with fbgm (thanx to Dung)
     fluxbox-generate_menu.in
