@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.41 2003/07/29 09:29:45 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.42 2003/08/02 14:26:45 rathnor Exp $
 
 #
 # Portability notes:
@@ -58,10 +58,10 @@ Options:
     -k  Insert a kde menu
     -g  Add a gnome menu
     -B  enable backgroundmenu
-    -r  Don't remove empty menu-entries; for templates.
+    -r  Don't remove empty menu-entries; for templates
 
     -t  Favourite terminal
-    -w  Homepage for console-browsers. Default is fluxbox.org.
+    -w  Homepage for console-browsers. Default is fluxbox.org
     -b  Favourite browser
     -m  Menu-title; default is "Fluxbox"
     -o  Outputfile; default is ~/.fluxbox/menu
@@ -72,9 +72,9 @@ Options:
 
   Only for packagers:
 
-    -p  Package-datadir; /usr/local/share
-    -n  Gnome-datadir
-    -q  KDE-datadir
+    -p  prefix; default is /usr/local
+    -n  Gnome-prefix; /opt, /usr and /usr/local autodetected
+    -q  KDE-prefix; idem dito
 
 
 Files:
@@ -141,8 +141,10 @@ append_menu_end() {
 }
 
 menu_entry() {
-    append "[exec] (`grep -v GenericName $* | grep Name= | cut -d = -f 2`) \
-        {`grep -v TryExec $* | grep Exec= | cut -d = -f 2`}"
+    if [ -f "$1" ]; then
+        append "[exec] (`grep -v GenericName $* 2>/dev/null | grep Name= | cut -d = -f 2`) \
+        {`grep -v TryExec $* 2>/dev/null| grep Exec= | cut -d = -f 2`}"
+    fi
 }
 
 menu_entry_dircheck() {
@@ -152,10 +154,36 @@ menu_entry_dircheck() {
 }
 
 menu_entry_dir() {
-    for b in `ls "$*"/*.desktop 2>/dev/null `; do
+    for b in  "$*"/*.desktop; do
         menu_entry "${b}"
     done
 }
+
+
+# recursively build a menu from the listed directories
+# the dirs are merged
+recurse_dir_menu () {
+    ls "$@"/ 2>/dev/null | sort | uniq | while read name; do
+        for dir in "$@"; do
+            if [ -n "$name" -a -d "$dir/$name" ]; then
+                # recurse
+                append_submenu "${name}"
+                # unfortunately, this is messy since we can't easily expand
+                # them all. Only allow for 3 atm. Add more if needed
+                recurse_dir_menu ${1:+"$1/$name"}  ${2:+"$2/$name"} ${3:+"$3/$name"}
+                append_menu_end
+                break; # found one, it'll pick up all the rest
+            fi
+            # ignore it if it is a file, since menu_entry_dir picks those up
+        done
+    done
+
+    # Make entries for current dir after all submenus
+    for dir in "$@"; do
+        menu_entry_dircheck "${dir}"
+    done
+}
+
 
 normal_find() {
     while [ "$1" ]; do
@@ -537,23 +565,21 @@ if [ ! "${INSTALL}" = "Yes" ];then
 # location with your own menu-entries
 # USERMENU=~/.fluxbox/usermenu
 
-# --- Datadirs
-# These are datadirs; So if fluxbox data is installed in
-#   /usr/share/fluxbox
-# your datadir is: /usr/share
 
-# Data-dir
-# PKGDATADIR=/usr/share
+# --- PREFIX'es
+# These are prefixes; So if fluxbox is installed in /usr/bin/fluxbox
+# your prefix is: /usr
+# fluxbox-generate already looks in /usr, /usr/local and /opt so there should be no need
+# to specify them.
+#
+# PREFIX=/usr
+# GNOME_PREFIX=/opt/gnome
+# KDE_PREFIX=/opt/kde
 
-# Gnome data-dir
-# in case gnome is installed in another datadir.
-# GPKGDATADIR=/opt/gnome/share
-
-# Kde data-dir
-# KPKGDATADIR=/opt/kde/share
 
 # Sepparate the list of background-dirs with semicolumns ':'
 # BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:/usr/local/share/fluxbox/backgrounds/:/usr/share/wallpapers"
+
 
 # --- Boolean variables.
 # Setting a variable to ``no'' won't help. Comment them out if you don't
@@ -587,9 +613,9 @@ while getopts ":Bkhragb:t:p:w:u:n:q:o:m:-:" COMMAND_LINE_ARGUMENT ; do
        t) MY_TERM=${OPTARG} ;;
        b) MY_BROWSER=${OPTARG} ;;
        o) FILENAME=${OPTARG} ;;
-       p) PKGDATADIR=${OPTARG} ;;
-       n) GPKGDATADIR=${OPTARG} ;;
-       q) KPKGDATADIR=${OPTARG} ;;
+       p) PREFIX=${OPTARG} ;;
+       n) GNOME_PREFIX=${OPTARG} ;;
+       q) KDE_PREFIX=${OPTARG} ;;
        m) MENUTITLE=${OPTARG} ;;
        w) HOMEPAGE=${OPTARG} ;;
        u) USERMENU=${OPTARG} ;;
@@ -622,29 +648,30 @@ if [ -w "${FILENAME}" ]; then
     mv ${FILENAME} ${FILENAME}.bak
 fi
 
-# packagedatadir
+# prefix
 PREFIX="${PREFIX:=@PREFIX@}"
-if [ ! -d "${PKGDATADIR}" -o -z "${PKGDATADIR}" ]; then
-    if [ "$PREFIX" = '@PREFIX@' ]; then
-        PKGDATADIR=/usr/local/share
-    else
-        PKGDATADIR=${PREFIX}/share
+if [ ! -d "${PREFIX}" -o -z "${PREFIX}" ]; then
+    PREFIX=/usr/local
+fi
+
+# gnome prefix
+for GNOME_PREFIX in "${GNOME_PREFIX}" /usr /opt /usr/local "${PREFIX}"; do
+    if [ -n "${GNOME_PREFIX}" -a -d "$GNOME_PREFIX/share/gnome" ]; then
+        break;
     fi
-fi
+done
+# Will remain $PREFIX if all else fails
 
-# gnome packagedatadir
-if [ ! -d "${GPKGDATADIR}" -o -z "${GPKGDATADIR}" ]; then
-    GPKGDATADIR=${PKGDATADIR}
-fi
-
-# kde packagedatadir
-if [ ! -d "${KPKGDATADIR}" -o -z "${KPKGDATADIR}" ]; then
-    KPKGDATADIR=${PKGDATADIR}
-fi
+# kde prefix
+for KDE_PREFIX in "${KDE_PREFIX}" /usr /opt /usr/local "${PREFIX}"; do
+    if [ -n "${KDE_PREFIX}" -a -d "$KDE_PREFIX/share/applnk" ]; then
+        break;
+    fi
+done
 
 # directory for the backgrounds
 if [ -z "$BACKGROUND_DIRS" ]; then
-    BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:${PKGDATADIR}/fluxbox/backgrounds/"
+    BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:${PREFIX}/share/fluxbox/backgrounds/"
 fi
 
 # find the default terminal
@@ -833,39 +860,22 @@ append_submenu "${GAMESMENU}"
         find_it et append "[exec] (Enemy Territory) {et}"
 append_menu_end
 
+# We'll only use this once
+ETCAPPLNK=/etc/X11/applnk
 # gnome menu
-if [ -d ${GPKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
+if [ -d "${GNOME_PREFIX}/share/gnome/apps" -a "${GNOMEMENU}" ]; then
     append_submenu "${GNOMEMENUTEXT}"
-    for a in `ls ${GPKGDATADIR}/gnome/apps/` ; do
-        if [ -d ${GPKGDATADIR}/gnome/apps/"${a}" ]; then
-            append_submenu "${a}"
-            menu_entry_dir "${GPKGDATADIR}/gnome/apps/${a}"
-            menu_entry_dircheck "/etc/X11/applnk/${a}"
-            append_menu_end
-        fi
-    done
+    recurse_dir_menu "${GNOME_PREFIX}/share/gnome/apps" ${ETCAPPLNK}
     append_menu_end
+    ETCAPPLNK=
 fi
 
 # kde submenu
-if [ -d ${KPKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
+if [ -d "${KDE_PREFIX}/share/applnk/" -a "${KDEMENU}" ]; then
     append_submenu "${KDEMENUTEXT}"
-    for a in `ls ${KPKGDATADIR}/applnk/` ; do
-        if [ -d ${KPKGDATADIR}/applnk/"${a}" ]; then
-            append_submenu "${a}"
-            for x in ${KPKGDATADIR}/applnk/"${a}"/*; do
-                if [ -d ${KPKGDATADIR}/applnk/"${a}"/"${x}" ]; then
-                    append_submenu "${x}"
-                    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"/"${x}"
-                    append_menu_end
-                fi
-            done
-            menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"
-            append_menu_end
-        fi
-    done
-    menu_entry_dir ${KPKGDATADIR}/applnk/
+    recurse_dir_menu "${KDE_PREFIX}/share/applnk" ${ETCAPPLNK}
     append_menu_end
+    ETCAPPLNK=
 fi
 
 #User menu
@@ -877,7 +887,7 @@ append_submenu "${FBSETTINGSMENU}"
     append "[config] (${CONFIGUREMENU})"
 
     append_menu "[submenu] (${SYSTEMSTYLES}) {${STYLEMENUTITLE}}"
-        append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
+        append "[stylesdir] (${PREFIX}/share/fluxbox/styles)"
     append_menu_end
 
     append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"

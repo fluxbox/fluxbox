@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/03:
+   * Improve inclusion of GNOME and KDE menus (Simon and Han)
+     fluxbox-generate_menu data/Makefile.am
 *03/07/29:
    * Fixed kde dockapp bug (Henrik)
      Screen.cc, fluxbox.cc

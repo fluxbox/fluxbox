@@ -12,4 +12,4 @@ init: init.in
 	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" init.in > init
 
 menu: ../util/fluxbox-generate_menu
-	env FILENAME=menu PKGDATADIR="${prefix}/share" MENUTITLE="Fluxbox-${VERSION}" INSTALL=Yes ../util/fluxbox-generate_menu
+	env FILENAME=menu PREFIX="${prefix}" MENUTITLE="Fluxbox-${VERSION}" INSTALL=Yes ../util/fluxbox-generate_menu
