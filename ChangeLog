@@ -3,6 +3,7 @@ Changes for 0.1.13:
 *+02/09/21:
    * new menu item (Thanks Han)
      fluxbox-generate_menu
+   * Latvian  language support (Thanks Artis Trops)
 *02/09/14:
    * Fixed bug [ 604463 ] mplayer fullscreen fails (Henrik)
      Window.cc
