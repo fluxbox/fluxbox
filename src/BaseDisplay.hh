@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.9 2002/02/04 06:58:50 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.10 2002/02/07 14:44:09 fluxgen Exp $
 
 #ifndef	 _BASEDISPLAY_HH_
 #define	 _BASEDISPLAY_HH_
@@ -101,6 +101,7 @@ public:
 	inline Atom &getGnomeWorkspaceCountAtom() { return gnome_wm_win_workspace_count; }
 	inline Atom &getGnomeWorkspaceNamesAtom() { return gnome_wm_win_workspace_names; }
 	inline Atom &getGnomeStateAtom() { return gnome_wm_win_state; }
+	inline Atom &getGnomeHintsAtom() { return gnome_wm_win_hints; }
 #endif //GNOME
 
 	inline const Atom &getWMChangeStateAtom(void) const
