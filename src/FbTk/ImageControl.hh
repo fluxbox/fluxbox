@@ -22,13 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.1 2003/01/09 21:09:49 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.2 2003/05/16 00:19:51 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
 
 #include "Texture.hh"
 #include "Timer.hh"
+#include "NotCopyable.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -37,7 +38,7 @@
 namespace FbTk {
 
 ///	Holds screen info, color tables and caches textures
-class ImageControl : public TimeoutHandler {
+class ImageControl : public TimeoutHandler, private NotCopyable {
 public:
     ImageControl(int screen_num, bool dither = false, int colors_per_channel = 4,
                   unsigned long cache_timeout = 300000l, unsigned long cache_max = 200l);
