@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.86 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: Workspace.cc,v 1.87 2003/12/14 01:10:39 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -35,7 +35,6 @@
 #include "MenuItem.hh"
 
 #include "FbTk/StringUtil.hh"
-#include "FbTk/SimpleCommand.hh"
 
 // use GNU extensions
 #ifndef  _GNU_SOURCE
@@ -75,24 +74,17 @@ int countTransients(const WinClient &client) {
 
 class ClientMenuItem:public FbTk::MenuItem {
 public:
-    ClientMenuItem(WinClient &client, Workspace &space):
+    ClientMenuItem(WinClient &client):
         FbTk::MenuItem(client.title().c_str(), client.fbwindow() ? &client.fbwindow()->menu() : 0),
-        m_client(client), m_space(space) {
+        m_client(client) {
         
     }
     void click(int button, int time) {
         if (m_client.fbwindow() == 0)
             return;
         FluxboxWindow &win = *m_client.fbwindow();
-        BScreen &scr = win.screen();
-        // determine workspace change
-        for (size_t i=0; i<scr.getCount(); i++) {
-            if (scr.getWorkspace(i) == &m_space) {
-                scr.changeWorkspaceID(i); 
-                break;
-            }
-        }
 
+        win.screen().changeWorkspaceID(win.workspaceNumber()); 
         win.setCurrentClient(m_client);
         win.raiseAndFocus();
     }
@@ -108,7 +100,6 @@ public:
     }
 private:
     WinClient &m_client;
-    Workspace &m_space;
 };
 
 };
@@ -116,14 +107,14 @@ private:
 Workspace::GroupList Workspace::m_groups;
 
 Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, 
-                     const std::string &name, unsigned int i):
+                     const std::string &name, unsigned int id):
     m_screen(scrn),
     m_lastfocus(0),
     m_clientmenu(*scrn.menuTheme(), scrn.imageControl(),
                  *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_layermanager(layermanager),
     m_name(name),
-    m_id(i) {
+    m_id(id) {
 
 
     m_cascade_x = new int[scrn.numHeads() + 1];
@@ -420,7 +411,7 @@ void Workspace::updateClientmenu() {
         FluxboxWindow::ClientList::iterator client_it_end = 
             (*win_it)->clientList().end();
         for (; client_it != client_it_end; ++client_it)
-            m_clientmenu.insert(new ClientMenuItem(*(*client_it), *this));
+            m_clientmenu.insert(new ClientMenuItem(*(*client_it)));
     }
 
     m_clientmenu.update();
