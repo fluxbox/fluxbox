@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.77 2002/09/01 11:44:56 fluxgen Exp $
+// $Id: Window.cc,v 1.78 2002/09/07 10:41:26 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3326,7 +3326,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 		} else if (resizing) {
 			XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 				frame.resize_x, frame.resize_y,
-				frame.resize_w, frame.resize_h);
+				frame.resize_w-1, frame.resize_h-1);
 
 			int gx, gy;
 
@@ -3350,7 +3350,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 			XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 					frame.resize_x, frame.resize_y,
-					frame.resize_w, frame.resize_h);
+					frame.resize_w-1, frame.resize_h-1);
 
 			if (screen->doShowWindowPos())
 				screen->showGeometry(gx, gy);
@@ -3600,7 +3600,7 @@ void FluxboxWindow::startResizing(XMotionEvent *me, bool left) {
 
 	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 		frame.resize_x, frame.resize_y,
-		frame.resize_w, frame.resize_h);
+		frame.resize_w-1, frame.resize_h-1);
 }
 
 void FluxboxWindow::stopResizing(Window win) {
@@ -3608,7 +3608,7 @@ void FluxboxWindow::stopResizing(Window win) {
 	
 	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 		frame.resize_x, frame.resize_y,
-		frame.resize_w, frame.resize_h);
+		frame.resize_w-1, frame.resize_h-1);
 
 	screen->hideGeometry();
 
@@ -3979,7 +3979,7 @@ void FluxboxWindow::right_fixsize(int *gx, int *gy) {
 	int dx = frame.resize_w - client.base_width - (frame.mwm_border_w * 2) -
 		screen->getBorderWidth2x();
 	int dy = frame.resize_h - frame.y_border - client.base_height -
-		frame.handle_h - (screen->getBorderWidth() * 3) - (frame.mwm_border_w * 2);
+		frame.handle_h - (screen->getBorderWidth() * (2+decorations.border)) - (frame.mwm_border_w * 2);
 
 	if (dx < (signed) client.min_width)
 		dx = client.min_width;
@@ -4001,7 +4001,8 @@ void FluxboxWindow::right_fixsize(int *gx, int *gy) {
 
 	frame.resize_w = dx + (frame.mwm_border_w * 2) + screen->getBorderWidth2x();
 	frame.resize_h = dy + frame.y_border + frame.handle_h +
-								(frame.mwm_border_w * 2) +	(screen->getBorderWidth() * 3);
+			(frame.mwm_border_w * 2) +	(screen->getBorderWidth() *
+			(2+decorations.border));
 }
 
 
@@ -4011,7 +4012,7 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
 	int dx = frame.x + frame.width - frame.resize_x - client.base_width -
 		(frame.mwm_border_w * 2);
 	int dy = frame.resize_h - frame.y_border - client.base_height -
-		frame.handle_h - (screen->getBorderWidth() * 3) - (frame.mwm_border_w * 2);
+		frame.handle_h - (screen->getBorderWidth() * (2+decorations.border)) - (frame.mwm_border_w * 2);
 
 	if (dx < (signed) client.min_width) dx = client.min_width;
 	if (dy < (signed) client.min_height) dy = client.min_height;
@@ -4029,7 +4030,8 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
 
 	frame.resize_w = dx + (frame.mwm_border_w * 2) + screen->getBorderWidth2x();
 	frame.resize_x = frame.x + frame.width - frame.resize_w +
-									 screen->getBorderWidth2x();
+			 screen->getBorderWidth2x();
 	frame.resize_h = dy + frame.y_border + frame.handle_h +
-									 (frame.mwm_border_w * 2) + (screen->getBorderWidth() * 3);
+			 (frame.mwm_border_w * 2) + (screen->getBorderWidth() *
+			 (2+decorations.border));
 }
