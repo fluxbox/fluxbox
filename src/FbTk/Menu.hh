@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.27 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: Menu.hh,v 1.28 2003/12/17 00:43:22 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -48,7 +48,7 @@ class ImageControl;
 class Transparent;
 
 ///   Base class for menus
-class Menu: public FbTk::EventHandler {
+class Menu: public FbTk::EventHandler, protected FbTk::Observer {
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
@@ -174,7 +174,10 @@ protected:
     inline Menu *parent() { return m_parent; }
     inline const Menu *parent() const { return m_parent; }
 
+    void update(FbTk::Subject *) { reconfigure(); }
+
 private: 
+
     void openSubmenu();
     void closeMenu();
     void startHide();
@@ -206,17 +209,6 @@ private:
             bevel_h;
     } menu;
 
-    class ThemeObserver:public Observer {
-    public:
-        ThemeObserver(FbTk::Menu &menu):m_menu(menu) { }
-        void update(FbTk::Subject *subj) {
-            m_menu.reconfigure();
-        }
-    private:
-        Menu &m_menu;
-    };
-
-    ThemeObserver m_themeobserver;
     Drawable m_root_pm;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     FbPixmap m_frame_pm;

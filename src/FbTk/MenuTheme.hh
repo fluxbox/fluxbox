@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.12 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.13 2003/12/17 00:43:22 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -112,17 +112,13 @@ public:
     // get resources into menu
     void setMenuMode(MenuMode mode) { m_menumode = mode; }
     MenuMode menuMode() const { return m_menumode; }
-    void setDelayOpen(int usec) { m_delayopen = usec; }
-    void setDelayClose(int usec) { m_delayclose = usec; }
+    void setDelayOpen(int msec) { m_delayopen = msec; }
+    void setDelayClose(int msec) { m_delayclose = msec; }
     int delayOpen() const { return m_delayopen; }
     int delayClose() const { return m_delayclose; }
     
     const FbTk::Color &borderColor() const { return *m_border_color; }
-    FbTk::Subject &themeChangeSig() { return m_theme_change_sig; }
-    /// attach observer
-    void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
-    /// detach observer
-    void removeListener(FbTk::Observer &obs) { m_theme_change_sig.detach(&obs); }
+
 private:
     FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text;
     FbTk::ThemeItem<FbTk::Texture> title, frame, hilite;
@@ -137,12 +133,11 @@ private:
 
     Display *m_display;
     FbTk::GContext t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-    FbTk::Subject m_theme_change_sig;
 
     unsigned char m_alpha;
     MenuMode m_menumode;
-    unsigned int m_delayopen; ///< in usec
-    unsigned int m_delayclose; ///< in usec
+    unsigned int m_delayopen; ///< in msec
+    unsigned int m_delayclose; ///< in msec
     
 };
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.12 2003/12/12 18:18:49 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.13 2003/12/17 00:43:22 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -100,9 +100,6 @@ void MenuTheme::reconfigTheme() {
     h_text_gc.setForeground(*h_text);
     d_text_gc.setForeground(*d_text);
     hilite_gc.setForeground(hilite->color());
-
-    // notify any listeners
-    m_theme_change_sig.notify();
 }
 
 bool MenuTheme::fallback(ThemeItem_base &item) {

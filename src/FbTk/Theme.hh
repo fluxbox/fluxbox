@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.12 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: Theme.hh,v 1.13 2003/12/17 00:43:22 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -106,6 +106,7 @@ public:
     void remove(ThemeItem<T> &item);
     virtual bool fallback(ThemeItem_base &) { return false; }
     FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
+    const FbTk::Subject &reconfigSig() const { return m_reconfig_sig; }
 
     
 private:
