@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.1.10:
 *02/05/29:
+   * Made some cleaning in class FluxboxWindow:
+     Removed unused variable, moved Mwm* defines into enums in
+	 the class, changed (void) to ()  (C++ uses void as default, and (void)
+	 is really anoying to look at when syntax highlight is on) and
+	 removed NAME_* defines since they're no longer in use
    * Fixed "Desktop Wheeling" translation in ru_RU (Thanks Anton Denisov)
    * Added slit order (Thanks Steve Cooper)
    * Fixed language support in fluxbox-generate_menu:
