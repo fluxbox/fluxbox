@@ -3,6 +3,9 @@ Changes for 0.1.8:
 *02/04/09:
    * Added RootMenu action to Keys.cc/hh and fluxbox.cc , this will pop up the 
      Root menu. (Thanks Stanislav Karchebny)
+   * Removed LinkedList.cc/hh
+   * Fixed std::map, std::list, std::vector in class Fluxbox
+   * Clean up in Workspace.hh/cc
 *02/04/08:
    * Fixed a few comments in StringUtil.cc (Thanks Maurits Dijkstra)
    * Clean up in Basemenu.hh/cc
