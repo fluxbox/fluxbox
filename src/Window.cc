@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.227 2003/09/12 23:34:13 fluxgen Exp $
+// $Id: Window.cc,v 1.228 2003/09/14 10:13:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -968,10 +968,14 @@ void FluxboxWindow::reconfigure() {
 
 /// update current client title and title in our frame
 void FluxboxWindow::updateTitleFromClient() {
-
     m_client->updateTitle();
-    m_labelbuttons[m_client]->setText(m_client->title());    
-    m_labelbuttons[m_client]->clear(); // redraw text
+    // compare old title with new and see if we need to update
+    // graphics
+    if (m_labelbuttons[m_client]->text() != m_client->title()) {
+        m_labelbuttons[m_client]->setText(m_client->title());    
+        m_labelbuttons[m_client]->clear(); // redraw text
+        m_labelbuttons[m_client]->updateTransparent();
+    }
 }
 
 /// update icon title from client
@@ -1108,8 +1112,9 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
             new_height = height();
         }
 
-        setFocusFlag(focused);
         frame().moveResize(new_x, new_y, new_width, new_height);
+        setFocusFlag(focused);
+        
 
         shaded = false;
         send_event = true;
@@ -1652,9 +1657,8 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
     installColormap(focus);
 
-    if (focus != frame().focused()) {
+    if (focus != frame().focused())
         frame().setFocus(focus);
-    }   
 
     if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
         && screen().doAutoRaise()) {
@@ -1948,7 +1952,6 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 }
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
-
     // we're only concerned about client window event
     WinClient *client = findClient(re.window);
     if (client == 0) {
