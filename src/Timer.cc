@@ -19,8 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//use GNU extensions
 #ifndef	 _GNU_SOURCE
 #	define _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -29,15 +28,16 @@
 #	include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#include "BaseDisplay.hh"
 #include "Timer.hh"
+#include <sys/types.h>
+#include <unistd.h>
 
 //static var
 BTimer::TimerList BTimer::m_timerlist;
 
 BTimer::BTimer(TimeoutHandler *h):
 m_handler(h),
-m_timing(false) ,
+m_timing(false),
 m_once(false) {
 }
 
