@@ -63,7 +63,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Screen.cc Screen.hh \
 	Slit.cc Slit.hh StringUtil.cc StringUtil.hh \
 	TextButton.hh TextButton.cc \
-	Theme.hh Theme.cc \
 	Toolbar.cc Toolbar.hh \
 	ToolbarHandler.cc ToolbarHandler.hh \
 	ToolbarTheme.hh ToolbarTheme.cc \
