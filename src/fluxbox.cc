@@ -900,13 +900,13 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
 void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
+    BScreen *screen = searchScreen(ue.event);
+    
+    if (ue.event != ue.window && (!screen || !ue.send_event)) {
+        return;
+    }
 
     WinClient *winclient = 0;
-
-    BScreen *screen = searchScreen(ue.event);
-
-    if ( ue.event != ue.window && (screen != 0 || !ue.send_event))
-        return;
 
     if ((winclient = searchWindow(ue.window)) != 0) {
 
@@ -929,6 +929,13 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
                 win = 0;
             }
         }
+
+    // according to http://tronche.com/gui/x/icccm/sec-4.html#s-4.1.4
+    // a XWithdrawWindow is 
+    //   1) unmapping the window (which leads to the upper branch
+    //   2) sends an synthetic unampevent (which is handled below)
+    } else if (screen && ue.send_event) {
+        XDeleteProperty(display(), ue.window, FbAtoms::instance()->getWMStateAtom());
     }
 
 }
