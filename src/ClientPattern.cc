@@ -20,16 +20,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.1 2003/06/12 15:12:19 rathnor Exp $
+// $Id: ClientPattern.cc,v 1.2 2003/06/13 12:01:06 fluxgen Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
 #include "StringUtil.hh"
 #include "WinClient.hh"
 
-//use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
+// use GNU extensions
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 
@@ -40,10 +40,6 @@
 #include <memory>
 
 using namespace std;
-
-/********************************************************
- * ClientPattern *
- ***********/
 
 ClientPattern::ClientPattern():
     m_matchlimit(0),
@@ -161,17 +157,19 @@ std::string ClientPattern::toString() const {
     Terms::const_iterator it_end = m_terms.end();
     for (; it != it_end; ++it) {
         pat.append(" (");
-        if ((*it)->prop == NAME) {
+
+        switch ((*it)->prop) {
+        case NAME:
             // do nothing -> this is the default
-        } else if ((*it)->prop == CLASS) {
+            break;
+        case CLASS:
             pat.append("class=");
-        } else if ((*it)->prop == TITLE) {
+            break;
+        case TITLE:
             pat.append("title=");
-        } else {
-#ifdef DEBUG
-            cerr<<"WARNING: unknown window property, can't save properly"<<endl;
-#endif //DEBUG
+            break;
         }
+
         pat.append((*it)->orig);
         pat.append(")");
     }
@@ -228,8 +226,8 @@ std::string ClientPattern::getProperty(WinProperty prop, const WinClient &client
         return client.getWMClassClass();
         break;
     case NAME:
-    default:
         return client.getWMClassName();
         break;
     }
+    return client.getWMClassName();
 }

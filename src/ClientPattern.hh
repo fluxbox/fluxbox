@@ -21,12 +21,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.hh,v 1.1 2003/06/12 15:12:19 rathnor Exp $
+// $Id: ClientPattern.hh,v 1.2 2003/06/13 12:02:00 fluxgen Exp $
 
 #ifndef CLIENTPATTERN_HH
 #define CLIENTPATTERN_HH
 
 #include "RegExp.hh"
+#include "NotCopyable.hh"
 
 #include <string>
 #include <list>
@@ -37,28 +38,32 @@ class WinClient;
  * This class represents a "pattern" that we can match against a
  * Window based on various properties.
  */
-class ClientPattern {
+class ClientPattern:private FbTk::NotCopyable {
 public:
     ClientPattern();
-    // create the pattern from the given string as it would appear in the 
-    // apps file. the bool value returns the character at which
-    // there was a parse problem, or -1.
+    /**
+     * Create the pattern from the given string as it would appear in the 
+     * apps file. the bool value returns the character at which
+     * there was a parse problem, or -1.
+     */
     explicit ClientPattern(const char * str);
 
     ~ClientPattern();
 
-    // return a string representation of this pattern
+    /// @return a string representation of this pattern
     std::string toString() const;
 
     enum WinProperty { TITLE, CLASS, NAME };
 
-    // does this client match this pattern?
+    /// Does this client match this pattern?
     bool match(const WinClient &win) const;
 
-    // add an expression to match against
-    // The first argument is a regular expression, the second is the member
-    // function that we wish to match against.
-    // returns false if the regexp wasn't valid
+    /**
+     * Add an expression to match against
+     * @param str is a regular expression
+     * @param prop is the member function that we wish to match against
+     * @return false if the regexp wasn't valid
+     */
     bool addTerm(const std::string &str, WinProperty prop);
 
     inline void addMatch() { ++m_nummatches; }
@@ -68,18 +73,21 @@ public:
         return match(win);
     }
 
-    // if there are no terms, then there is assumed to be an error
-    // the column of the error is stored in m_matchlimit
-    inline int error() { return (m_terms.empty())?m_matchlimit:0; }
+    /**
+     * If there are no terms, then there is assumed to be an error
+     * the column of the error is stored in m_matchlimit
+     */
+    inline int error() const { return m_terms.empty() ? m_matchlimit : 0; }
 
     std::string getProperty(WinProperty prop, const WinClient &winclient) const;
 
 private:
-    // This is the type of the actual pattern we want to match against
-    // We have a "term" in the whole expression which is the full pattern
-    // we also need to keep track of the uncompiled regular expression
-    // for final output
-    
+    /**
+     * This is the type of the actual pattern we want to match against
+     * We have a "term" in the whole expression which is the full pattern
+     * we also need to keep track of the uncompiled regular expression
+     * for final output
+     */    
     struct Term {
         Term(const std::string &regstr, bool full_match) :regexp(regstr, full_match){};
         std::string orig;
@@ -87,11 +95,10 @@ private:
         WinProperty prop;
     };
 
-    // our pattern is made up of a sequence of terms
-    // currently we "and" them all
+
     typedef std::list<Term *> Terms;
 
-    Terms m_terms;
+    Terms m_terms; ///< our pattern is made up of a sequence of terms currently we "and" them all
 
     int m_matchlimit, m_nummatches;
 };
