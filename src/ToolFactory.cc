@@ -1,5 +1,5 @@
 // ToolFactory.cc for Fluxbox
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.2 2003/12/04 23:02:23 fluxgen Exp $
+// $Id: ToolFactory.cc,v 1.3 2004/01/11 16:09:50 fluxgen Exp $
 
 #include "ToolFactory.hh"
 
@@ -48,7 +48,7 @@ class ShowMenuAboveToolbar: public FbTk::Command {
 public:
     explicit ShowMenuAboveToolbar(Toolbar &tbar):m_tbar(tbar) { }
     void execute() {
-
+        m_tbar.screen().hideMenus();
         // get last button pos
         const XEvent &event = Fluxbox::instance()->lastEvent();
         int x = event.xbutton.x_root - (m_tbar.menu().width() / 2);
