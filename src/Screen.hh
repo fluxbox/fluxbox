@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.29 2002/04/09 23:20:40 fluxgen Exp $
+// $Id: Screen.hh,v 1.30 2002/04/12 14:58:29 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -70,21 +70,22 @@ public:
 		int scrn);
 	~BScreen();
 
-	inline const bool isToolbarOnTop(void) { return *resource.toolbar_on_top; }
-	inline const bool doToolbarAutoHide(void) { return *resource.toolbar_auto_hide; }
-	inline const bool isSloppyFocus(void) { return resource.sloppy_focus; }
-	inline const bool isSemiSloppyFocus(void) { return resource.semi_sloppy_focus; }
-	inline const bool isRootColormapInstalled(void) { return root_colormap_installed; }
-	inline const bool isScreenManaged(void) { return managed; }
-	inline const bool isTabRotateVertical(void) { return *resource.tab_rotate_vertical; }
-	inline const bool isSloppyWindowGrouping(void) { return *resource.sloppy_window_grouping; }
-	inline const bool doAutoRaise(void) { return resource.auto_raise; }
-	inline const bool doImageDither(void) { return *resource.image_dither; }
-	inline const bool doMaxOverSlit(void) { return *resource.max_over_slit; }
-	inline const bool doOpaqueMove(void) { return *resource.opaque_move; }
-	inline const bool doFullMax(void) { return *resource.full_max; }
-	inline const bool doFocusNew(void) { return *resource.focus_new; }
-	inline const bool doFocusLast(void) { return *resource.focus_last; }
+	inline bool isToolbarOnTop(void) { return *resource.toolbar_on_top; }
+	inline bool doToolbarAutoHide(void) { return *resource.toolbar_auto_hide; }
+	inline bool isSloppyFocus(void) { return resource.sloppy_focus; }
+	inline bool isSemiSloppyFocus(void) { return resource.semi_sloppy_focus; }
+	inline bool isRootColormapInstalled(void) { return root_colormap_installed; }
+	inline bool isScreenManaged(void) { return managed; }
+	inline bool isTabRotateVertical(void) { return *resource.tab_rotate_vertical; }
+	inline bool isSloppyWindowGrouping(void) { return *resource.sloppy_window_grouping; }
+	inline bool isWorkspaceWarping(void) { return *resource.workspace_warping; }
+	inline bool doAutoRaise(void) { return resource.auto_raise; }
+	inline bool doImageDither(void) { return *resource.image_dither; }
+	inline bool doMaxOverSlit(void) { return *resource.max_over_slit; }
+	inline bool doOpaqueMove(void) { return *resource.opaque_move; }
+	inline bool doFullMax(void) { return *resource.full_max; }
+	inline bool doFocusNew(void) { return *resource.focus_new; }
+	inline bool doFocusLast(void) { return *resource.focus_last; }
 
 	inline const GC &getOpGC() const { return theme->getOpGC(); }
 	
@@ -93,11 +94,11 @@ public:
 	inline Rootmenu *getRootmenu(void) { return rootmenu; }
 	inline std::string &getRootCommand(void) { return *resource.rootcommand; }
 #ifdef	 SLIT
-	inline const Bool &isSlitOnTop(void) const { return resource.slit_on_top; }
-	inline const Bool &doSlitAutoHide(void) const { return resource.slit_auto_hide; }
+	inline const bool isSlitOnTop(void) const { return resource.slit_on_top; }
+	inline const bool doSlitAutoHide(void) const { return resource.slit_auto_hide; }
 	inline Slit *getSlit(void) { return slit; }
-	inline const int &getSlitPlacement(void) const { return resource.slit_placement; }
-	inline const int &getSlitDirection(void) const { return resource.slit_direction; }
+	inline const int getSlitPlacement(void) const { return resource.slit_placement; }
+	inline const int getSlitDirection(void) const { return resource.slit_direction; }
 	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
 	inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
 	inline void saveSlitOnTop(Bool t) { resource.slit_on_top = t;  }
@@ -133,15 +134,15 @@ public:
 #ifdef XINERAMA
 	inline const int getToolbarOnHead(void) { return *resource.toolbar_on_head; }
 #endif // XINERAMA
-	inline const int getToolbarWidthPercent(void) { return *resource.toolbar_width_percent; }
-	inline const int getPlacementPolicy(void) const { return resource.placement_policy; }
-	inline const int getEdgeSnapThreshold(void) { return *resource.edge_snap_threshold; }
-	inline const int getRowPlacementDirection(void) const { return resource.row_direction; }
-	inline const int getColPlacementDirection(void) const { return resource.col_direction; }
-	inline const unsigned int getTabWidth(void) { return *resource.tab_width; }
-	inline const unsigned int getTabHeight(void) { return *resource.tab_height; }
-	inline const Tab::Placement getTabPlacement(void) { return *resource.tab_placement; }
-	inline const Tab::Alignment getTabAlignment(void) { return *resource.tab_alignment; }
+	inline int getToolbarWidthPercent(void) { return *resource.toolbar_width_percent; }
+	inline int getPlacementPolicy(void) const { return resource.placement_policy; }
+	inline int getEdgeSnapThreshold(void) { return *resource.edge_snap_threshold; }
+	inline int getRowPlacementDirection(void) const { return resource.row_direction; }
+	inline int getColPlacementDirection(void) const { return resource.col_direction; }
+	inline unsigned int getTabWidth(void) { return *resource.tab_width; }
+	inline unsigned int getTabHeight(void) { return *resource.tab_height; }
+	inline Tab::Placement getTabPlacement(void) { return *resource.tab_placement; }
+	inline Tab::Alignment getTabAlignment(void) { return *resource.tab_alignment; }
 
 	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
 	inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
@@ -173,6 +174,7 @@ public:
 	inline void saveTabAlignment(Tab::Alignment a) { *resource.tab_alignment = a;  }
 	inline void saveTabRotateVertical(bool r) { resource.tab_rotate_vertical = r;   }
 	inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
+	inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
@@ -295,7 +297,8 @@ private:
 		Resource<bool> toolbar_on_top, toolbar_auto_hide,
 			image_dither, opaque_move, full_max,
 			max_over_slit, tab_rotate_vertical,
-			sloppy_window_grouping, focus_last, focus_new;
+			sloppy_window_grouping, workspace_warping,
+			focus_last, focus_new;
 		Resource<std::string> rootcommand;		
 		bool auto_raise, sloppy_focus, semi_sloppy_focus,
 			ordered_dither;
@@ -334,7 +337,7 @@ private:
 
 	void createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory);
 protected:
-	Bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
+	bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
 
 	bool readDatabaseTexture(char *, char *, BTexture *, unsigned long);
 	bool readDatabaseColor(char *, char *, BColor *, unsigned long);
