@@ -27,6 +27,8 @@
 #include "Screen.hh"
 #include "FbAtoms.hh"
 
+#include "FbTk/App.hh"
+
 Netizen::Netizen(const BScreen &scr, Window win):
     m_screen(scr), 
     m_display(FbTk::App::instance()->display()),
