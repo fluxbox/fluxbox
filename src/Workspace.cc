@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.73 2003/06/15 19:34:34 fluxgen Exp $
+// $Id: Workspace.cc,v 1.74 2003/06/16 14:54:18 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -158,46 +158,6 @@ int Workspace::addWindow(FluxboxWindow &w, bool place) {
     if (place)
         placeWindow(w);
 
-
-    //insert window after the currently focused window	
-    //FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
-
-    //if there isn't any window that's focused, just add it to the end of the list
-    /*
-      if (focused == 0) {
-      m_windowlist.push_back(w);
-      //Add client to clientmenu
-      m_clientmenu.insert(w->getTitle().c_str());
-      } else {
-      Windows::iterator it = m_windowlist.begin();
-      size_t client_insertpoint=0;
-      for (; it != m_windowlist.end(); ++it, ++client_insertpoint) {
-      if (*it == focused) {
-      ++it;				
-      break;
-      }
-      }
-
-      m_windowlist.insert(it, w);
-      //Add client to clientmenu
-      m_clientmenu.insert(w->getTitle().c_str(), client_insertpoint);
-		
-
-      }
-    */
-
-    // find focused window position
-    /*    Windows::iterator insert_point_it = m_windowlist.begin();
-          for (;insert_point_it != m_windowlist.end(); ++insert_point_it) {
-          if ((*insert_point_it)->isFocused()) {
-          break;
-          }
-          }
-          // if we found focused window, insert our window directly after it
-          if (insert_point_it != m_windowlist.end())
-          m_windowlist.insert(insert_point_it, w);
-          else // we didn't find it, so we just add it to stack
-    */
     m_windowlist.push_back(&w);
     updateClientmenu();
 
@@ -397,9 +357,19 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 }
 
 bool Workspace::loadGroups(const std::string &filename) {
-    ifstream infile(filename.c_str());
+    string real_filename = filename;
+    // strip trailing whitespace
+    string::size_type first_pos = real_filename.find_first_not_of(" \t");
+    if (first_pos != string::npos) {
+        string::size_type last_pos = real_filename.find_first_of(" \t", last_pos);
+        if (last_pos != string::npos)
+            real_filename.erase(last_pos);
+    }
+
+    ifstream infile(real_filename.c_str());
     if (!infile)
         return false;
+
     m_groups.clear(); // erase old groups
 
     // load new groups
