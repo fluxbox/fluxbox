@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.hh,v 1.4 2004/10/06 19:02:03 akir Exp $
+// $Id: CommandDialog.hh,v 1.5 2004/10/21 10:46:21 akir Exp $
 
 #ifndef RUNCOMMANDDIALOG_HH
 #define RUNCOMMANDDIALOG_HH
@@ -36,9 +36,8 @@ class BScreen;
 
 class CommandDialog: public FbTk::FbWindow, public FbTk::EventHandler {
 public:
-    CommandDialog(BScreen &screen, const std::string &title);
     CommandDialog(BScreen &screen, const std::string &title,
-                  const std::string &pre_command);
+                  const std::string pre_command = "");
     virtual ~CommandDialog();
 
     void setText(const std::string &text);

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.cc,v 1.5 2004/10/06 19:02:03 akir Exp $
+// $Id: CommandDialog.cc,v 1.6 2004/10/21 10:46:21 akir Exp $
 
 #include "CommandDialog.hh"
 
@@ -43,23 +43,9 @@
 #include <stdexcept>
 using namespace std;
 
-CommandDialog::CommandDialog(BScreen &screen, const std::string &title):
-    FbWindow(screen.rootWindow().screenNumber(),
-             0, 0, 200, 1, ExposureMask),
-    m_textbox(*this, screen.winFrameTheme().font(), ""),
-    m_label(*this, screen.winFrameTheme().font(), title),    
-    m_gc(m_textbox),
-    m_screen(screen),
-    m_move_x(0),
-    m_move_y(0),
-    m_pixmap(0) {
-    init();
-
-}
-
-CommandDialog::CommandDialog(BScreen &screen, const std::string &title, const std::string &precommand):
-    FbWindow(screen.rootWindow().screenNumber(),
-             0, 0, 200, 1, ExposureMask),
+CommandDialog::CommandDialog(BScreen &screen, 
+        const std::string &title, const std::string precommand) :
+    FbTk::FbWindow(screen.rootWindow().screenNumber(), 0, 0, 200, 1, ExposureMask),
     m_textbox(*this, screen.winFrameTheme().font(), ""),
     m_label(*this, screen.winFrameTheme().font(), title),    
     m_gc(m_textbox),
