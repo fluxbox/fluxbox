@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.13 2002/01/27 12:45:32 fluxgen Exp $
+// $Id: Screen.hh,v 1.14 2002/02/02 19:51:15 pekdon Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -205,6 +205,8 @@ public:
 	//scroll workspaces
 	void nextWorkspace();
 	void prevWorkspace();
+  void rightWorkspace();
+  void leftWorkspace();
 
 	void removeWorkspaceNames(void);
 	void updateWorkspaceNamesAtom(void);

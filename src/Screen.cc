@@ -1643,3 +1643,19 @@ void BScreen::prevWorkspace(void) {
 	else
 		changeWorkspaceID(getCurrentWorkspaceID()-1);
 }
+
+//-------------- rightWorkspace ---------------
+// Goes to the workspace "right" of the current
+//--------------------------------------------
+void BScreen::rightWorkspace(void) {
+	if (getCurrentWorkspaceID()+1 < getCount())
+		changeWorkspaceID(getCurrentWorkspaceID()+1);
+}
+
+//------------- leftWorkspace ----------------
+// Goes to the workspace "left" of the current
+//--------------------------------------------
+void BScreen::leftWorkspace(void) {
+	if (getCurrentWorkspaceID() > 0)
+		changeWorkspaceID(getCurrentWorkspaceID()-1);
+}

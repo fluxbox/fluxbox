@@ -1,4 +1,9 @@
 Changes for 0.1.7:
+*02/02/02:
+   * Added leftWorkspace and rightWorkspace, now those keybindings
+     actually work. (Claes Nästén)
+   * Fixed small glitch in Tab.cc. (Claes Nästén)
+
 *02/01/27:
    * Clean up in menu loading
    * Moved from old C style file reading to c++ istream

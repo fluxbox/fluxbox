@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.24 2002/01/21 02:04:23 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.25 2002/02/02 19:51:15 pekdon Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -958,15 +958,12 @@ void Fluxbox::process_event(XEvent *e) {
 					case Keys::PREVWORKSPACE:
 						screen->prevWorkspace();
 						break;
-					/*case Keys::grabUpWorkspace:
+					case Keys::LEFTWORKSPACE:
+						screen->leftWorkspace();
 						break;
-					case Keys::grabDownWorkspace:
+					case Keys::RIGHTWORKSPACE:
+						screen->rightWorkspace();
 						break;
-					case Keys::grabLeftWorkspace:
-						break;
-					case Keys::grabRightWorkspace:
-						break;
-					*/
 					case Keys::KILLWINDOW: //kill the current window
 						XKillClient(screen->getBaseDisplay()->getXDisplay(),
 							focused_window->getClientWindow());
