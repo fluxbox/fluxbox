@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/11:
+  * Fixed issues with Strut and multiple heads (Thanks Mathieu De Zutter)
+    Screen.hh/cc, HeadArea.hh/cc, Slit.cc, Toolbar.cc, Ewmh.cc
+    Strut.hh/cc, ToolFactory.cc, fluxbox.cc, FbTk/Menu.hh/cc
   * Fix issues that caused unnecessary X errors (Simon)
     fluxbox.cc Window.cc FbTk/Menu.cc FbTk/FbPixmap.cc FbTk/FbWindow.hh/cc
 *04/09/10:
