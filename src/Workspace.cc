@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.21 2002/06/02 22:57:52 fluxgen Exp $
+// $Id: Workspace.cc,v 1.22 2002/08/04 15:37:37 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -390,10 +390,10 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 	Bool placed = False;
 	int borderWidth4x = screen->getBorderWidth2x() * 2,
 #ifdef		SLIT
-		slit_x = screen->getSlit()->getX() - screen->getBorderWidth(),
-		slit_y = screen->getSlit()->getY() - screen->getBorderWidth(),
-		slit_w = screen->getSlit()->getWidth() + borderWidth4x,
-		slit_h = screen->getSlit()->getHeight() + borderWidth4x,
+		slit_x = screen->getSlit()->x() - screen->getBorderWidth(),
+		slit_y = screen->getSlit()->y() - screen->getBorderWidth(),
+		slit_w = screen->getSlit()->width() + borderWidth4x,
+		slit_h = screen->getSlit()->height() + borderWidth4x,
 #endif // SLIT
 		toolbar_x = screen->getToolbar()->getX() - screen->getBorderWidth(),
 		toolbar_y = screen->getToolbar()->getY() - screen->getBorderWidth(),
