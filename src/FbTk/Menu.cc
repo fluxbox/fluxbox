@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.44 2003/12/10 23:08:06 fluxgen Exp $
+// $Id: Menu.cc,v 1.45 2003/12/10 23:33:15 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -884,11 +884,19 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     }
     
     if (dotext && text) {
-        m_theme.frameFont().drawText(m_frame_pm.drawable(), // drawable
-                                     screenNumber(),
-                                     tgc.gc(),
-                                     text, len, // text string and lenght
-                                     text_x, text_y); // position
+        //!! TODO: this is just temporarly and will be removed
+        // once we've cleaned up the menu code this will be somewhere else...
+        if (strcmp(text, "---") == 0){ // draw separator
+            m_frame_pm.drawRectangle(tgc.gc(),
+                                     item_x + menu.bevel_w + menu.item_h + 1, item_y + (menu.item_h / 2),
+                                     menu.item_w - ((menu.bevel_w + menu.item_h) * 2) - 1, 0);
+        } else { // draw normal text
+            m_theme.frameFont().drawText(m_frame_pm.drawable(), // drawable
+                                         screenNumber(),
+                                         tgc.gc(),
+                                         text, len, // text string and lenght
+                                         text_x, text_y); // position
+        }
     }
 
     if (dosel && item->submenu()) {
