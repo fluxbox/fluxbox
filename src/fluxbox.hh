@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.38 2003/01/12 18:09:22 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.39 2003/01/12 18:49:36 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -87,11 +87,6 @@ public:
     inline void saveIconBar(bool value) { m_rc_iconbar = value; }
 #ifdef HAVE_GETPID
     inline Atom getFluxboxPidAtom() const { return fluxbox_pid; }
-#ifdef KDE
-    //For KDE dock applets
-    inline Atom getKWM1DockwindowAtom() const { return kwm1_dockwindow; } //KDE v1.x
-    inline Atom getKWM2DockwindowAtom() const { return kwm2_dockwindow; } //KDE v2.x
-#endif
 #endif // HAVE_GETPID
 
     FluxboxWindow *searchGroup(Window, FluxboxWindow *);
