@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.76 2002/10/25 20:58:14 fluxgen Exp $
+// $Id: Screen.cc,v 1.77 2002/11/12 14:37:18 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -287,7 +287,7 @@ resource(rm, screenname, altscreenname)
 
 	const char *s =	i18n->getMessage(
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
-		"0: 0000 x 0: 0000");
+		"W: 0000 x H: 0000"); // W is wide!
 	
 	int l = strlen(s);
 
@@ -520,7 +520,7 @@ void BScreen::reconfigure() {
 
 	const char *s = i18n->getMessage(
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
-		"0: 0000 x 0: 0000");
+		"W: 0000 x H: 0000");
 	int l = strlen(s);
 
 	//TODO: repeat from somewhere else?
@@ -1648,7 +1648,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 		theme->getWindowStyle().l_text_focus_gc,
 		label, strlen(label),
 		theme->getBevelWidth(), theme->getBevelWidth() + 
-		theme->getWindowStyle().font.height());	
+		theme->getWindowStyle().font.ascent());	
 }
 
 
