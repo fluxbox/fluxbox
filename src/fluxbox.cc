@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.261 2004/10/19 17:23:08 akir Exp $
+// $Id: fluxbox.cc,v 1.262 2004/10/21 10:18:40 akir Exp $
 
 #include "fluxbox.hh"
 
@@ -158,12 +158,12 @@ void copyFile(const std::string &from, const std::string &to) {
         ofstream to_file(to.c_str());
 
         if (! to_file.good()) {
-            cerr<<"Can't write file: "<<to<<endl;			
+            cerr<<"Can't write file: "<<to<<endl;
         } else if (from_file.good()) {
             to_file<<from_file.rdbuf(); //copy file
         } else {
             cerr<<"Can't copy from "<<from<<" to "<<to<<endl;
-        }		
+        }
 }
 
 } // end anonymous
@@ -173,7 +173,7 @@ static int handleXErrors(Display *d, XErrorEvent *e) {
         last_bad_window = e->resourceid;
 #ifdef DEBUG
     else {
-        // ignore bad window ones, they happen a lot 
+        // ignore bad window ones, they happen a lot
         // when windows close themselves
         char errtxt[128];
 
@@ -199,7 +199,7 @@ Fluxbox::Titlebar Fluxbox::s_titlebar_right[] = {MINIMIZE, MAXIMIZE, CLOSE};
 Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfilename)
     : FbTk::App(dpy_name),
       m_fbatoms(new FbAtoms()),
-      m_resourcemanager(rcfilename, true), 
+      m_resourcemanager(rcfilename, true),
       // TODO: shouldn't need a separate one for screen
       m_screen_rm(m_resourcemanager),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
@@ -208,7 +208,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
               "Session.FocusTabMinWidth"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
-      m_rc_colors_per_channel(m_resourcemanager, 4, 
+      m_rc_colors_per_channel(m_resourcemanager, 4,
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_double_click_interval(m_resourcemanager, 250, "session.doubleClickInterval", "Session.DoubleClickInterval"),
@@ -222,8 +222,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_titlebar_left(m_resourcemanager, 
                          TitlebarList(&s_titlebar_left[0], &s_titlebar_left[1]), 
                          "session.titlebar.left", "Session.Titlebar.Left"),
-      m_rc_titlebar_right(m_resourcemanager, 
-                          TitlebarList(&s_titlebar_right[0], &s_titlebar_right[3]), 
+      m_rc_titlebar_right(m_resourcemanager,
+                          TitlebarList(&s_titlebar_right[0], &s_titlebar_right[3]),
                           "session.titlebar.right", "Session.Titlebar.Right"),
       m_rc_tabs_attach_area(m_resourcemanager, ATTACH_AREA_WINDOW, "session.tabsAttachArea", "Session.TabsAttachArea"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
@@ -245,13 +245,13 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_randr_event_type(0),
       m_RC_PATH("fluxbox"),
       m_RC_INIT_FILE("init") {
-      
+
     _FB_USES_NLS;
     if (s_singleton != 0)
         throw string(_FBTEXT(Fluxbox, FatalSingleton, "Fatal! There can only one instance of fluxbox class.", "Error displayed on weird error where an instance of the Fluxbox class already exists!"));
 
     if (display() == 0) {
-        throw string(_FBTEXT(Fluxbox, NoDisplay, 
+        throw string(_FBTEXT(Fluxbox, NoDisplay,
                              "Can not connect to X server.\nMake sure you started X before you start Fluxbox.",
                              "Error message when no X display appears to exist"));
     }
@@ -270,14 +270,14 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     XSetErrorHandler((XErrorHandler) handleXErrors);
 
     //catch system signals
-    SignalHandler &sigh = SignalHandler::instance();	
+    SignalHandler &sigh = SignalHandler::instance();
     sigh.registerHandler(SIGSEGV, this);
     sigh.registerHandler(SIGFPE, this);
     sigh.registerHandler(SIGTERM, this);
     sigh.registerHandler(SIGINT, this);
     sigh.registerHandler(SIGCHLD, this);
     sigh.registerHandler(SIGHUP, this);
-    sigh.registerHandler(SIGUSR1, this);	
+    sigh.registerHandler(SIGUSR1, this);
     sigh.registerHandler(SIGUSR2, this);
     //
     // setup timer
@@ -298,7 +298,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_have_shape = false;
     m_shape_eventbase = 0;
 #ifdef SHAPE
-    int shape_err; 
+    int shape_err;
     m_have_shape = XShapeQueryExtension(disp, &m_shape_eventbase, &shape_err);
 #endif // SHAPE
 
@@ -326,9 +326,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #endif // REMEMBER
 
     grab();
-	
+
     setupConfigFiles();
-	
+
     if (! XSupportsLocale())
         cerr<<_FBTEXT(Fluxbox, WarningLocale, "Warning: X server does not support locale", "XSupportsLocale returned false")<<endl;
 
@@ -349,7 +349,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                                       scrname, altscrname,
                                       i, getNumberOfLayers());
         if (! screen->isScreenManaged()) {
-            delete screen;			
+            delete screen;
             continue;
         }
         // add to our list
@@ -375,13 +375,13 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #else
         XRRSelectInput(disp, screen->rootWindow().window(),
                        RRScreenChangeNotifyMask);
-#endif // X_RRScreenChangeSelectInput        
+#endif // X_RRScreenChangeSelectInput
 
 #endif // HAVE_RANDR
 
 
 #ifdef USE_TOOLBAR
-        m_toolbars.push_back(new Toolbar(*screen, 
+        m_toolbars.push_back(new Toolbar(*screen,
                                          *screen->layerManager().
                                          getLayer(Fluxbox::instance()->getNormalLayer())));
 #endif // USE_TOOLBAR
@@ -398,7 +398,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
         // initiate atomhandler for screen specific stuff
         for (AtomHandlerContainerIt it= m_atomhandler.begin();
-             it != m_atomhandler.end(); 
+             it != m_atomhandler.end();
              it++) {
             (*it).first->initForScreen(*screen);
         }
@@ -407,7 +407,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 #ifdef SLIT
         if (screen->slit())
             screen->slit()->show();
-#endif // SLIT        
+#endif // SLIT
 
 
     } // end init screens
@@ -417,7 +417,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
     if (m_screen_list.empty()) {
-        throw string(_FBTEXT(Fluxbox, ErrorNoScreens, 
+        throw string(_FBTEXT(Fluxbox, ErrorNoScreens,
                              "Couldn't find screens to manage.\nMake sure you don't have another window manager running.", "Error message when no unmanaged screens found - usually means another window manager is running"));
     }
 
@@ -430,18 +430,18 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     m_reconfigure_wait = m_reread_menu_wait = false;
 
-    // Create keybindings handler and load keys file	
+    // Create keybindings handler and load keys file
     m_key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
     m_resourcemanager.unlock();
     ungrab();
 
 #ifdef DEBUG
-    if (m_resourcemanager.lockDepth() != 0) 
+    if (m_resourcemanager.lockDepth() != 0)
         cerr<<"--- resource manager lockdepth = "<<m_resourcemanager.lockDepth()<<endl;
 #endif //DEBUG
     m_starting = false;
-    // 
+    //
     // For dumping theme items
     // FbTk::ThemeManager::instance().listItems();
     //
@@ -478,7 +478,7 @@ Fluxbox::~Fluxbox() {
         m_screen_list.pop_back();
     }
 
-    clearMenuFilenames();	
+    clearMenuFilenames();
 }
 
 void Fluxbox::eventLoop() {
@@ -488,7 +488,7 @@ void Fluxbox::eventLoop() {
             XEvent e;
             XNextEvent(disp, &e);
 
-            if (last_bad_window != None && e.xany.window == last_bad_window && 
+            if (last_bad_window != None && e.xany.window == last_bad_window &&
                 e.type != DestroyNotify) { // we must let the actual destroys through
 #ifdef DEBUG
                 cerr<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
@@ -527,7 +527,7 @@ void Fluxbox::ungrab() {
 }
 
 /**
- setup the configutation files in 
+ setup the configutation files in
  home directory
 */
 void Fluxbox::setupConfigFiles() {
@@ -544,7 +544,7 @@ void Fluxbox::setupConfigFiles() {
 
     // is file/dir already there?
     if (! stat(dirname.c_str(), &buf)) {
-		
+
         // check if anything with those name exists, if not create new
         if (stat(init_file.c_str(), &buf))
             create_init = true;
@@ -560,12 +560,12 @@ void Fluxbox::setupConfigFiles() {
         _FB_USES_NLS;
         // create directory with perm 700
         if (mkdir(dirname.c_str(), 0700)) {
-            fprintf(stderr, _FBTEXT(Fluxbox, ErrorCreatingDirectory, 
+            fprintf(stderr, _FBTEXT(Fluxbox, ErrorCreatingDirectory,
                                     "Can't create %s directory", "Can't create a directory, one %s for directory name"), dirname.c_str());
             cerr<<endl;
-            return;	
+            return;
         }
-		
+
         //mark creation of files
         create_init = create_keys = create_menu = true;
     }
@@ -590,7 +590,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     m_last_event = *e;
 
     // it is possible (e.g. during moving) for a window
-    // to mask all events to go to it 
+    // to mask all events to go to it
     if ((m_masked == e->xany.window) && m_masked_window) {
         if (e->type == MotionNotify) {
             m_last_time = e->xmotion.time;
@@ -599,7 +599,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         } else if (e->type == ButtonRelease) {
             e->xbutton.window = m_masked_window->fbWindow().window();
         }
-  
+
     }
 
     // update key/mouse screen and last time before we enter other eventhandlers
@@ -626,7 +626,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     // we call FbTk eventhandler
     // so we can get FbTk::Menu::focused() before it sets to 0
 
-    if (e->type == FocusOut && 
+    if (e->type == FocusOut &&
         e->xfocus.mode != NotifyGrab &&
         e->xfocus.detail != NotifyPointer &&
         e->xfocus.detail != NotifyInferior &&
@@ -638,7 +638,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         ScreenList::iterator it = m_screen_list.begin();
         ScreenList::iterator it_end = m_screen_list.end();
         for (; it != it_end; ++it) {
-            if ( (*it)->screenNumber() == 
+            if ( (*it)->screenNumber() ==
                  FbTk::Menu::focused()->fbwindow().screenNumber()) {
                 screen = (*it);
                 break; // found the screen, no more search
@@ -646,7 +646,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
 
         if (screen != 0)
-            revertFocus(*screen);        
+            revertFocus(*screen);
     }
 
     // try FbTk::EventHandler first
@@ -656,13 +656,11 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case ButtonRelease:
     case ButtonPress:
         handleButtonEvent(e->xbutton);
-	break;	
+        break;
     case ConfigureRequest: {
-        WinClient *winclient = (WinClient *) 0;
 
-        if ((winclient = searchWindow(e->xconfigurerequest.window))) {
-            // already handled in FluxboxWindow::handleEvent
-        } else { 
+        if (!searchWindow(e->xconfigurerequest.window)) {
+
             grab();
 
             if (validateWindow(e->xconfigurerequest.window)) {
@@ -682,7 +680,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             }
 
             ungrab();
-        }
+        } // else already handled in FluxboxWindow::handleEvent
 
     }
         break;
@@ -690,7 +688,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
 #ifdef DEBUG
         cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
-        
+
 #endif // DEBUG
 
         WinClient *winclient = searchWindow(e->xmaprequest.window);
@@ -705,7 +703,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
                                      e->xmaprequest.window,
                                      &attr) && attr.screen != 0) {
                 screen_num = XScreenNumberOfScreen(attr.screen);
-            
+
                 // find screen
                 ScreenList::iterator screen_it = find_if(m_screen_list.begin(),
                                                          m_screen_list.end(),
@@ -716,7 +714,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             // try with parent if we failed to find screen num
             if (screen == 0)
                screen = searchScreen(e->xmaprequest.parent);
-           
+
             if (screen == 0) {
                 cerr<<"Fluxbox "<<_FBTEXT(Fluxbox, CantMapWindow, "Warning! Could not find screen to map window on!", "")<<endl;
             } else
@@ -736,12 +734,12 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
-	break;	
+	break;
     case MappingNotify:
         // Update stored modifier mapping
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): MappingNotify"<<endl;
-#endif // DEBUG        
+#endif // DEBUG
 
         FbTk::KeyUtil::instance().init(); // reinitialise the key utils
         // reconfigure keys (if the mapping changes, they don't otherwise update
@@ -751,21 +749,21 @@ void Fluxbox::handleEvent(XEvent * const e) {
     case CreateNotify:
 	break;
     case DestroyNotify: {
-        WinClient *winclient = searchWindow(e->xdestroywindow.window);        
+        WinClient *winclient = searchWindow(e->xdestroywindow.window);
         if (winclient != 0) {
             FluxboxWindow *win = winclient->fbwindow();
             if (win)
                 win->destroyNotifyEvent(e->xdestroywindow);
 
             delete winclient;
-                
+
             if (win && win->numClients() == 0)
                 delete win;
-        } 
+        }
 
     }
         break;
-    case MotionNotify: 
+    case MotionNotify:
         m_last_time = e->xmotion.time;
         break;
     case PropertyNotify: {
@@ -774,8 +772,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
         if (winclient == 0)
             break;
         // most of them are handled in FluxboxWindow::handleEvent
-        // but some special cases like ewmh propertys needs to be checked 
-        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+        // but some special cases like ewmh propertys needs to be checked
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
             if ( (*it).first->propertyNotify(*winclient, e->xproperty.atom))
                 break;
@@ -794,7 +792,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             screen->imageControl().installRootColormap();
 
         }
-			
+
     } break;
     case LeaveNotify:
 
@@ -839,8 +837,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
-        } else if (winclient && winclient == m_focused_window && 
-                   (winclient->fbwindow() == 0 
+        } else if (winclient && winclient == m_focused_window &&
+                   (winclient->fbwindow() == 0
                     || !winclient->fbwindow()->isMoving()))
             // we don't unfocus a moving window
             setFocusedWindow(0);
@@ -850,13 +848,13 @@ void Fluxbox::handleEvent(XEvent * const e) {
         handleClientMessage(e->xclient);
 	break;
     default: {
-        
+
 #ifdef HAVE_RANDR
         if (e->type == m_randr_event_type) {
             // update root window size in screen
             BScreen *scr = searchScreen(e->xany.window);
             if (scr != 0)
-                scr->updateSize(); 
+                scr->updateSize();
         }
 #endif // HAVE_RANDR
 
@@ -877,7 +875,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
         screen->hideMenus();
 
-        // strip num/caps/scroll-lock and 
+        // strip num/caps/scroll-lock and
         // see if we're using any other modifier,
         // if we're we shouldn't show the root menu
         // this could happen if we're resizing aterm for instance
@@ -896,7 +894,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         } else if (be.button == 2) {
             FbCommands::ShowWorkspaceMenuCmd cmd;
             cmd.execute();
-        } else if (be.button == 3) { 
+        } else if (be.button == 3) {
             FbCommands::ShowRootMenuCmd cmd;
             cmd.execute();
         } else if (screen->isDesktopWheeling() && be.button == 4) {
@@ -904,11 +902,11 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         } else if (screen->isDesktopWheeling() && be.button == 5) {
             screen->prevWorkspace(1);
         }
-        
+
     } break;
     case ButtonRelease:
         m_last_time = be.time;
-        break;	
+        break;
     default:
         break;
     }
@@ -916,11 +914,11 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 
 void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 
-		
+
     WinClient *winclient = 0;
-	
+
     BScreen *screen = searchScreen(ue.event);
-	
+
     if ( ue.event != ue.window && (screen != 0 || !ue.send_event))
         return;
 
@@ -935,7 +933,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
             }
 
             // this should delete client and adjust m_focused_window if necessary
-            win->unmapNotifyEvent(ue); 
+            win->unmapNotifyEvent(ue);
 
             winclient = 0; // it's invalid now when win destroyed the client
 
@@ -944,7 +942,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
                 delete win;
                 win = 0;
             }
-        }  
+        }
     }
 
 }
@@ -968,7 +966,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 
     if (ce.format != 32)
         return;
-	
+
     if (ce.message_type == m_fbatoms->getWMChangeStateAtom()) {
         WinClient *winclient = searchWindow(ce.window);
         if (! winclient || !winclient->fbwindow() || ! winclient->validateClient())
@@ -984,7 +982,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         if (screen && ce.data.l[0] >= 0 &&
             ce.data.l[0] < (signed)screen->getCount())
             screen->changeWorkspaceID(ce.data.l[0]);
-				
+
     } else if (ce.message_type == m_fbatoms->getFluxboxChangeWindowFocusAtom()) {
         WinClient *winclient = searchWindow(ce.window);
         if (winclient) {
@@ -1016,9 +1014,9 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
     } else {
         WinClient *winclient = searchWindow(ce.window);
         BScreen *screen = searchScreen(ce.window);
-        // note: we dont need screen nor winclient to be non-null, 
+        // note: we dont need screen nor winclient to be non-null,
         // it's up to the atomhandler to check that
-        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
             (*it).first->checkClientMessage(ce, screen, winclient);
         }
@@ -1030,11 +1028,11 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
  Handles KeyRelease and KeyPress events
 */
 void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
-    
+
     if (keyScreen() == 0 || mouseScreen() == 0)
         return;
 
-    
+
     switch (ke.type) {
     case KeyPress:
         m_key->doAction(ke);
@@ -1048,12 +1046,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
             // mask the mod of the released key out
             // won't mask anything if it isn't a mod
             ke.state &= ~FbTk::KeyUtil::instance().keycodeToModmask(ke.keycode);
-            
+
             if ((m_watch_keyrelease & ke.state) == 0) {
-                
+
                 m_watching_screen->notifyReleasedKeys(ke);
                 XUngrabKeyboard(FbTk::App::instance()->display(), CurrentTime);
-                
+
                 // once they are released, we drop the watch
                 m_watching_screen = 0;
                 m_watch_keyrelease = 0;
@@ -1061,12 +1059,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         }
 
         break;
-    }	
+    }
     default:
         break;
     }
-	
-	
+
+
 }
 
 /// handle system signals
@@ -1108,7 +1106,7 @@ void Fluxbox::handleSignal(int signum) {
             shutdown();
         }
 
-			
+
         fprintf(stderr,
                 _FBTEXT(BaseDisplay, Aborting, "Aborting... dumping core\n", "Aboring and dumping core, end with newline"));
         abort();
@@ -1123,13 +1121,13 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
         FluxboxWindow &win = winsub->win();
         if ((&(win.hintSig())) == changedsub) { // hint signal
-            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
                 if ( (*it).first->update())
                     (*it).first->updateHints(win);
             }
         } else if ((&(win.stateSig())) == changedsub) { // state signal
-            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
                     (*it).first->updateState(win);
@@ -1148,25 +1146,25 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                 // to all workspaces
                 BScreen &scr = win.screen();
                 if (scr.currentWorkspaceID() != win.workspaceNumber()) {
-                    scr.reassociateWindow(&win, 
+                    scr.reassociateWindow(&win,
                                           scr.currentWorkspaceID(),
                                           true);
                 }
             }
         } else if ((&(win.layerSig())) == changedsub) { // layer signal
 
-            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
                     (*it).first->updateLayer(win);
             }
         } else if ((&(win.dieSig())) == changedsub) { // window death signal
-            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
                  it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
                     (*it).first->updateFrameClose(win);
             }
-            // make sure each workspace get this 
+            // make sure each workspace get this
             BScreen &scr = win.screen();
             scr.removeWindow(&win);
             if (m_focused_window == &win.winClient())
@@ -1177,13 +1175,13 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                  it != m_atomhandler.end(); ++it) {
                 if ((*it).first->update())
                     (*it).first->updateWorkspace(win);
-            }            
+            }
         } else {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__LINE__<<"): WINDOW uncought signal from "<<&win<<endl;
 #endif // DEBUG
         }
-		
+
     } else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
@@ -1224,14 +1222,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         WinClient &client = subj->winClient();
 
         // TODO: don't assume it is diesig (need to fix as soon as another signal appears)
-        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); ++it) {
             if ((*it).first->update())
                 (*it).first->updateClientClose(client);
         }
 
         BScreen &screen = client.screen();
-        
+
         screen.removeClient(client);
         // finaly send notify signal
         screen.updateNetizenWindowDel(client.window());
@@ -1257,7 +1255,7 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.workspaceSig().attach(this);
     win.layerSig().attach(this);
     win.dieSig().attach(this);
-    for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
         (*it).first->setupFrame(win);
     }
@@ -1266,7 +1264,7 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
 void Fluxbox::attachSignals(WinClient &winclient) {
     winclient.dieSig().attach(this);
 
-    for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
          it != m_atomhandler.end(); ++it) {
         (*it).first->setupClient(winclient);
     }
@@ -1274,7 +1272,7 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 
 BScreen *Fluxbox::searchScreen(Window window) {
 
-    ScreenList::iterator it = m_screen_list.begin();                              
+    ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
     for (; it != it_end; ++it) {
         if (*it && (*it)->rootWindow() == window)
@@ -1287,7 +1285,7 @@ BScreen *Fluxbox::searchScreen(Window window) {
 
 AtomHandler* Fluxbox::getAtomHandler(const std::string &name) {
     if ( name != "" ) {
-        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++ ) {
             if ( name == (*it).second )
                 return (*it).first;
@@ -1302,7 +1300,7 @@ void Fluxbox::addAtomHandler(AtomHandler *atomh, const std::string &name) {
 void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
 
     for (AtomHandlerContainerIt it= m_atomhandler.begin();
-         it != m_atomhandler.end(); 
+         it != m_atomhandler.end();
          ++it) {
         if ((*it).first == atomh) {
             m_atomhandler.erase(it);
@@ -1377,7 +1375,7 @@ void Fluxbox::shutdown() {
     XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
 
     //send shutdown to all screens
-    for_each(m_screen_list.begin(), 
+    for_each(m_screen_list.begin(),
              m_screen_list.end(), mem_fun(&BScreen::shutdown));
 
     sync(false);
@@ -1388,17 +1386,17 @@ void Fluxbox::shutdown() {
 void Fluxbox::save_rc() {
     _FB_USES_NLS;
     XrmDatabase new_blackboxrc = 0;
-	
+
     char rc_string[1024];
 
     string dbfile(getRcFilename());
-	
+
     if (!dbfile.empty()) {
         m_resourcemanager.save(dbfile.c_str(), dbfile.c_str());
         m_screen_rm.save(dbfile.c_str(), dbfile.c_str());
     } else
         cerr<<_FBTEXT(Fluxbox, BadRCFile, "rc filename is invalid!", "Bad settings file")<<endl;
-	
+
     ScreenList::iterator it = m_screen_list.begin();
     ScreenList::iterator it_end = m_screen_list.end();
 
@@ -1426,7 +1424,7 @@ void Fluxbox::save_rc() {
         }
 
         XrmPutLineResource(&new_blackboxrc, workspaces_string.c_str());
-	
+
     }
 
     XrmDatabase old_blackboxrc = XrmGetFileDatabase(dbfile.c_str());
@@ -1435,13 +1433,13 @@ void Fluxbox::save_rc() {
     XrmPutFileDatabase(old_blackboxrc, dbfile.c_str());
     XrmDestroyDatabase(old_blackboxrc);
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;	
+    cerr<<__FILE__<<"("<<__LINE__<<"): ------------ SAVING DONE"<<endl;
 #endif // DEBUG
 }
 
 /// @return filename of resource file
 string Fluxbox::getRcFilename() {
- 
+
     if (m_rc_file.empty()) { // set default filename
         string defaultfile(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + m_RC_INIT_FILE);
         return defaultfile;
@@ -1472,13 +1470,13 @@ void Fluxbox::load_rc() {
         if (!m_resourcemanager.load(DEFAULT_INITFILE))
             cerr<<_FBTEXT(Fluxbox, CantLoadRCFile, "Failed to load database", "")<<": "<<DEFAULT_INITFILE<<endl;
     }
-	
-    if (m_rc_menufile->empty()) 
+
+    if (m_rc_menufile->empty())
         m_rc_menufile.setDefaultValue();
 
     if (FbTk::Transparent::haveComposite())
         FbTk::Transparent::usePseudoTransparent(*m_rc_pseudotrans);
- 
+
     if (!m_rc_slitlistfile->empty()) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
     } else {
@@ -1492,7 +1490,7 @@ void Fluxbox::load_rc() {
     else if (*m_rc_colors_per_channel > 6)
         *m_rc_colors_per_channel = 6;
 
-    if (m_rc_stylefile->empty()) 
+    if (m_rc_stylefile->empty())
         *m_rc_stylefile = DEFAULTSTYLE;
 
     if (!Workspace::loadGroups(*m_rc_groupfile)) {
@@ -1504,20 +1502,20 @@ void Fluxbox::load_rc(BScreen &screen) {
     //get resource filename
     _FB_USES_NLS;
     string dbfile(getRcFilename());
-	
+
     XrmDatabaseHelper database;
 
     database = XrmGetFileDatabase(dbfile.c_str());
     if (database==0)
         database = XrmGetFileDatabase(DEFAULT_INITFILE);
-		
+
     XrmValue value;
     char *value_type, name_lookup[1024], class_lookup[1024];
     int screen_number = screen.screenNumber();
 
 
     screen.removeWorkspaceNames();
-    
+
     sprintf(name_lookup, "session.screen%d.workspaceNames", screen_number);
     sprintf(class_lookup, "Session.Screen%d.WorkspaceNames", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
@@ -1536,9 +1534,9 @@ void Fluxbox::load_rc(BScreen &screen) {
             else nn = strtok(0, ",");
 
             if (nn)
-                screen.addWorkspaceName(nn);	
+                screen.addWorkspaceName(nn);
             else break;
-			
+
         }
 
         delete [] search;
@@ -1549,7 +1547,7 @@ void Fluxbox::load_rc(BScreen &screen) {
     sprintf(class_lookup, "Session.Screen%d.imageSearchPath", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value) && value.addr) {
-        std::vector<std::string> paths;        
+        std::vector<std::string> paths;
         StringUtil::stringtok(paths, value.addr, ", ");
         for (unsigned int i=0; i<paths.size(); ++i)
             FbTk::Image::addSearchPath(paths[i]);
@@ -1569,11 +1567,11 @@ void Fluxbox::load_rc(BScreen &screen) {
 }
 
 void Fluxbox::loadRootCommand(BScreen &screen)	{
- 
+
     string dbfile(getRcFilename());
 
     XrmDatabaseHelper database(dbfile.c_str());
-    if (!*database) 
+    if (!*database)
         database = XrmGetFileDatabase(DEFAULT_INITFILE);
 
     XrmValue value;
@@ -1581,11 +1579,11 @@ void Fluxbox::loadRootCommand(BScreen &screen)	{
     sprintf(name_lookup, "session.screen%d.rootCommand", screen.screenNumber());
     sprintf(class_lookup, "Session.Screen%d.RootCommand", screen.screenNumber());
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-                       &value)) {										 
+                       &value)) {
         screen.saveRootCommand(value.addr==0 ? "": value.addr);
     } else
-        screen.saveRootCommand("");		
-	
+        screen.saveRootCommand("");
+
 }
 
 void Fluxbox::reload_rc() {
@@ -1609,7 +1607,7 @@ void Fluxbox::real_reconfigure() {
 
     XrmMergeDatabases(new_blackboxrc, &old_blackboxrc);
     XrmPutFileDatabase(old_blackboxrc, dbfile.c_str());
-	
+
     if (old_blackboxrc)
         XrmDestroyDatabase(old_blackboxrc);
 
@@ -1702,8 +1700,8 @@ void Fluxbox::saveMenuFilename(const char *filename) {
     std::list<MenuTimestamp *>::iterator it_end = m_menu_timestamps.end();
     for (; it != it_end; ++it) {
         if ((*it)->filename == filename) {
-            found = true; 
-            break; 
+            found = true;
+            break;
         }
     }
 
@@ -1755,11 +1753,10 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
         cerr<<"title: "<<client->fbwindow()->title()<<endl;
     cerr<<"Current Focused window = "<<m_focused_window<<endl;
     cerr<<"------------------"<<endl;
-#endif // DEBUG    
+#endif // DEBUG
     BScreen *old_screen = 0, *screen = 0;
     WinClient *old_client = 0;
-    Workspace *old_wkspc = 0;
-    
+
     if (m_focused_window != 0) {
         // check if m_focused_window is valid
         bool found = false;
@@ -1781,7 +1778,6 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
             if (old_client->fbwindow()) {
                 FluxboxWindow *old_win = old_client->fbwindow();
-                old_wkspc = old_screen->getWorkspace(old_win->workspaceNumber());
 
                 if (!client || client->fbwindow() != old_win)
                     old_win->setFocusFlag(false);
@@ -1792,7 +1788,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
     if (client && client->fbwindow() && !client->fbwindow()->isIconic()) {
         FluxboxWindow *win = client->fbwindow();
         // make sure we have a valid win pointer with a valid screen
-        ScreenList::iterator winscreen = 
+        ScreenList::iterator winscreen =
             std::find(m_screen_list.begin(), m_screen_list.end(),
                       &client->screen());
         if (winscreen == m_screen_list.end()) {
@@ -1811,9 +1807,9 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (screen != 0) {
         screen->updateNetizenWindowFocus();
-        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++) {
-            (*it).first->updateFocusedWindow(*screen, (m_focused_window ? 
+            (*it).first->updateFocusedWindow(*screen, (m_focused_window ?
                                                        m_focused_window->window() :
                                                        0));
         }
@@ -1821,7 +1817,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (old_screen && old_screen != screen) {
         old_screen->updateNetizenWindowFocus();
-        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
              it != m_atomhandler.end(); it++)
             (*it).first->updateFocusedWindow(*old_screen, 0);
     }
@@ -1832,7 +1828,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
  * This function is called whenever we aren't quite sure what
  * focus is meant to be, it'll make things right ;-)
  * last_focused is set to something if we want to make use of the
- * previously focused window (it must NOT be set focused now, it 
+ * previously focused window (it must NOT be set focused now, it
  *   is probably dying).
  *
  * ignore_event means that it ignores the given event until
@@ -1851,7 +1847,7 @@ void Fluxbox::revertFocus(BScreen &screen) {
         switch (screen.getFocusModel()) {
         case BScreen::SLOPPYFOCUS:
         case BScreen::SEMISLOPPYFOCUS:
-            XSetInputFocus(FbTk::App::instance()->display(), 
+            XSetInputFocus(FbTk::App::instance()->display(),
                            PointerRoot, None, CurrentTime);
             break;
         case BScreen::CLICKTOFOCUS:
@@ -1866,10 +1862,10 @@ void Fluxbox::revertFocus(BScreen &screen) {
  * if full_revert, we fallback to a full revertFocus if we can't find anything
  * local to the client.
  * If unfocus_frame is true, we won't focus anything in the same frame
- * as the client. 
+ * as the client.
  *
  * So, we first prefer to choose a transient parent, then the last
- * client in this window, and if no luck (or unfocus_frame), then 
+ * client in this window, and if no luck (or unfocus_frame), then
  * we just use the normal revertFocus on the screen.
  *
  * assumption: client has focus
@@ -1878,7 +1874,7 @@ void Fluxbox::unfocusWindow(WinClient &client, bool full_revert, bool unfocus_fr
     // go up the transient tree looking for a focusable window
 
     FluxboxWindow *fbwin = client.fbwindow();
-    if (fbwin == 0) 
+    if (fbwin == 0)
         unfocus_frame = false;
 
     WinClient *trans_parent = client.transientFor();
@@ -1899,7 +1895,7 @@ void Fluxbox::unfocusWindow(WinClient &client, bool full_revert, bool unfocus_fr
 
     if (!unfocus_frame) {
         WinClient *last_focus = screen.getLastFocusedWindow(*fbwin, &client);
-        if (last_focus != 0 && 
+        if (last_focus != 0 &&
             fbwin->setCurrentClient(*last_focus, m_focused_window == &client)) {
             return;
         }
@@ -1919,6 +1915,6 @@ void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
     m_watching_screen = &screen;
     m_watch_keyrelease = mods;
     XGrabKeyboard(FbTk::App::instance()->display(),
-                  screen.rootWindow().window(), True, 
+                  screen.rootWindow().window(), True,
                   GrabModeAsync, GrabModeAsync, CurrentTime);
 }
