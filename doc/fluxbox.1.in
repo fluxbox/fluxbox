@@ -536,7 +536,7 @@ As you can see from the last line, keybinds can be chained in a fashion similar
 to emacs keybindings.
 
 Commands are caseinsensitive, workspace numbering starts at "1", some commands
-have synonyms.
+have synonyms, the space between the last key and the :Command is mandatory.
 Possible Operations:
 
 .B window manager commands
