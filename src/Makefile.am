@@ -50,7 +50,8 @@ fluxbox_SOURCES= BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	fluxbox.cc fluxbox.hh \
 	i18n.cc i18n.hh main.cc	Tab.hh Tab.cc Keys.cc Keys.hh\
 	IconBar.cc IconBar.hh Theme.hh Theme.cc \
-	StringUtil.cc StringUtil.hh DrawUtil.cc DrawUtil.hh nl_types_cygnus.h
-								
+	StringUtil.cc StringUtil.hh DrawUtil.cc DrawUtil.hh nl_types_cygnus.h \
+	XrmDatabaseHelper.hh NotCopyable.hh Resource.hh Resource.cc
+
 MAINTAINERCLEANFILES= Makefile.in
 
