@@ -19,17 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.7 2003/08/13 09:53:35 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.8 2003/08/13 15:12:39 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
 
 #include "FbTk/Theme.hh"
-#include "Font.hh"
 #include "Texture.hh"
 #include "Color.hh"
-#include "Text.hh"
-#include "Subject.hh"
+
+#include "BorderTheme.hh"
 
 /// toolbar theme class container
 class ToolbarTheme: public FbTk::Theme {
@@ -39,47 +38,21 @@ public:
 
     void reconfigTheme();
     
-    /**
-       @name colors
-    */
-    ///@{
-    const FbTk::Color &buttonColor() const { return *m_button_color; }
-    const FbTk::Color &borderColor() const { return *m_border_color; }
-    ///@}
-    /**
-       @name textures
-    */
-    ///@{
-    const FbTk::Texture &toolbar() const { return *m_toolbar; }
-    const FbTk::Texture &button() const { return *m_button; }
-    const FbTk::Texture &pressedButton() const { return *m_pressed_button; }
-    ///@}
 
-    /**
-       @name graphic context
-     */
-    ///@{
-    GC buttonPicGC() const { return m_button_pic_gc; }
-    ///@}
+    inline const BorderTheme &border() const { return m_border; }
+    inline const FbTk::Texture &toolbar() const { return *m_toolbar; }
 
-    inline int borderWidth() const { return *m_border_width; }
     inline int bevelWidth() const { return *m_bevel_width; }    
-    inline int buttonBorderWidth() const { return *m_button_border_width; }
     inline bool shape() const { return *m_shape; }
     inline unsigned char alpha() const { return *m_alpha; }
 
 private:
-    // text colors
-    FbTk::ThemeItem<FbTk::Color> m_button_color, m_border_color;
-    // textures
-    FbTk::ThemeItem<FbTk::Texture> m_toolbar,  m_button, m_pressed_button;
+    FbTk::ThemeItem<FbTk::Texture> m_toolbar;
+    BorderTheme m_border;
 
-    FbTk::ThemeItem<int> m_border_width, m_bevel_width, m_button_border_width;
+    FbTk::ThemeItem<int> m_bevel_width;
     FbTk::ThemeItem<bool> m_shape;
     FbTk::ThemeItem<int> m_alpha;
-
-    // graphic context
-    GC m_button_pic_gc;
 
     Display *m_display;
 
