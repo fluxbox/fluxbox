@@ -24,6 +24,8 @@
 
 #include "Timer.hh"
 
+#include "Command.hh"
+
 //use GNU extensions
 #ifndef	_GNU_SOURCE
 #define _GNU_SOURCE
@@ -42,8 +44,12 @@ namespace FbTk {
 
 Timer::TimerList Timer::m_timerlist;
 
-Timer::Timer(TimeoutHandler *h):
-    m_handler(h),
+Timer::Timer():m_timing(false), m_once(false) {
+
+}
+
+Timer::Timer(RefCount<Command> &handler):
+    m_handler(handler),
     m_timing(false),
     m_once(false) {
 }
@@ -67,6 +73,9 @@ void Timer::setTimeout(timeval t) {
     m_timeout.tv_usec = t.tv_usec;
 }
 
+void Timer::setCommand(RefCount<Command> &cmd) {
+    m_handler = cmd;
+}
 
 void Timer::start() {
     gettimeofday(&m_start, 0);
@@ -85,7 +94,8 @@ void Timer::stop() {
 
 
 void Timer::fireTimeout() {
-    if (m_handler) m_handler->timeout();
+    if (*m_handler)
+        m_handler->execute();
 }
 
 void Timer::updateTimers(int fd) {

@@ -25,6 +25,8 @@
 #ifndef	 FBTK_TIMER_HH
 #define	 FBTK_TIMER_HH
 
+#include "RefCount.hh"
+
 #include <ctime> 
 #include <list>
 
@@ -44,42 +46,35 @@
 
 namespace FbTk {
 
-/// Handles timeouts
-/**
-	Inherit this to have a timed object, that calls
-	timeout function when the time is out
-*/
-class TimeoutHandler {
-public:
-    /// called when the time is out
-    virtual void timeout() = 0;
-};
+class Command;
 
 /**
-	Handles TimeoutHandles
+	Handles Timeout
 */
 class Timer {
 public:
-    explicit Timer(TimeoutHandler *handler);
+    Timer();
+    explicit Timer(RefCount<Command> &handler);
     virtual ~Timer();
-
-    inline int isTiming() const { return m_timing; } 
-    inline int doOnce() const { return m_once; }
-
-    inline const timeval &getTimeout() const { return m_timeout; }
-    inline const timeval &getStartTime() const { return m_start; }
 
     inline void fireOnce(bool once) { m_once = once; }
     /// set timeout
     void setTimeout(long val);
     /// set timeout 
     void setTimeout(timeval val);
+    void setCommand(RefCount<Command> &cmd);
     /// start timing
     void start();
     /// stop timing
     void stop();
     /// update all timers
     static void updateTimers(int file_descriptor);
+
+    inline int isTiming() const { return m_timing; } 
+    inline int doOnce() const { return m_once; }
+    
+    inline const timeval &getTimeout() const { return m_timeout; }
+    inline const timeval &getStartTime() const { return m_start; }
 
 protected:
     /// force a timeout
@@ -94,7 +89,7 @@ private:
     typedef std::list<Timer *> TimerList;
     static TimerList m_timerlist; ///< list of all timers
 	
-    TimeoutHandler *m_handler; ///< handler
+    RefCount<Command> m_handler; ///< what to do on a timeout
 	
     bool m_timing; ///< clock running?
     bool m_once;  ///< do timeout only once?
