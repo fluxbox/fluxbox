@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.1 2003/10/13 23:37:41 fluxgen Exp $
+// $Id: ToolFactory.cc,v 1.2 2003/12/04 23:02:23 fluxgen Exp $
 
 #include "ToolFactory.hh"
 
@@ -100,7 +100,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
     } else if (name == "systemtray") {
         return new SystemTray(parent);
     } else if (name == "clock") {
-        return new ClockTool(parent, m_clock_theme, screen());
+        return new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
     } else if (name == "nextworkspace" || 
                name == "prevworkspace") {
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.5 2003/08/15 15:30:18 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.6 2003/12/04 23:02:23 fluxgen Exp $
 
 #include "ClockTool.hh"
 
@@ -29,6 +29,8 @@
 
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
+#include "FbTk/Menu.hh"
+#include "FbTk/MenuItem.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -36,8 +38,68 @@
 
 #include <ctime>
 
+class ClockMenuItem: public FbTk::MenuItem {
+public:
+    ClockMenuItem::ClockMenuItem(ClockTool &tool):
+        FbTk::MenuItem(""), m_tool(tool) { 
+        // determine 12/24 hour format
+        if (m_tool.timeFormat().find("%k") != std::string::npos ||
+            m_tool.timeFormat().find("%H") != std::string::npos ||
+            m_tool.timeFormat().find("%T") != std::string::npos)
+            setLabel("Clock: 24h");
+        else
+            setLabel("Clock: 12h");
+    }
+
+    void click(int button, int time) {
+        std::string newformat = m_tool.timeFormat();
+        size_t pos = newformat.find("%k");
+        std::string newstr;
+        bool clock24hour = true;
+        if (pos != std::string::npos)
+            newstr = "%l";
+        else if ((pos = newformat.find("%H")) != std::string::npos)
+            newstr = "%I";
+        else if ((pos = newformat.find("%T")) != std::string::npos)
+            newstr = "%r";
+        
+        // 12 hour
+        if (newstr.empty()) {
+            clock24hour = false;
+            if ((pos = newformat.find("%l")) != std::string::npos)
+                newstr = "%k";
+            else if ((pos = newformat.find("%I")) != std::string::npos)
+                newstr = "%H";
+            else if ((pos = newformat.find("%r")) != std::string::npos)
+                newstr = "%T";
+            
+        }
+        
+        if (!newstr.empty()) {
+
+            newformat.replace(pos, 2, newstr);
+            if (!clock24hour) { // erase %P/%p (AM|PM / am|pm)
+                pos = newformat.find("%p");
+                if (pos != std::string::npos)
+                    newformat.erase(pos, 2);
+                else if ((pos = newformat.find("%P")) != std::string::npos)
+                    newformat.erase(pos, 2);
+            }
+            if (clock24hour)
+                setLabel("Clock: 24h");
+            else
+                setLabel("Clock: 12h");
+        
+            m_tool.setTimeFormat(newformat);
+        } // else some other strange format...so we don't do anything
+        FbTk::MenuItem::click(button, time);
+    }
+private:
+    ClockTool &m_tool;
+};
+
 ClockTool::ClockTool(const FbTk::FbWindow &parent,
-                     ToolTheme &theme, BScreen &screen):
+                     ToolTheme &theme, BScreen &screen, FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::FIXED),
     m_button(parent, theme.font(), ""),
     m_theme(theme),
@@ -59,7 +121,7 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_timer.start();
 
     m_button.setGC(m_theme.textGC());
-
+    menu.insert(new ClockMenuItem(*this));
     update(0);
 }
 
@@ -90,6 +152,11 @@ void ClockTool::show() {
 
 void ClockTool::hide() {
     m_button.hide();
+}
+
+void ClockTool::setTimeFormat(const std::string &format) {
+    *m_timeformat = format;
+    update(0);
 }
 
 void ClockTool::update(FbTk::Subject *subj) {

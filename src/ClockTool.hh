@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.hh,v 1.3 2003/08/19 16:12:43 fluxgen Exp $
+// $Id: ClockTool.hh,v 1.4 2003/12/04 23:02:23 fluxgen Exp $
 
 #ifndef CLOCKTOOL_HH
 #define CLOCKTOOL_HH
@@ -41,11 +41,12 @@ class BScreen;
 namespace FbTk {
 class ImageControl;
 class Subject;
+class Menu;
 }
 
 class ClockTool:public ToolbarItem, public FbTk::Observer {
 public:
-    ClockTool(const FbTk::FbWindow &parent, ToolTheme &theme, BScreen &screen);
+    ClockTool(const FbTk::FbWindow &parent, ToolTheme &theme, BScreen &screen, FbTk::Menu &menu);
     virtual ~ClockTool();
 
     void move(int x, int y);
@@ -55,9 +56,12 @@ public:
 
     void show();
     void hide();
+    void setTimeFormat(const std::string &format);
+    // accessors
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
+    inline const std::string &timeFormat() const { return *m_timeformat; }
 private:
     void updateTime();
     void update(FbTk::Subject *subj);
