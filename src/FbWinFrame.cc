@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.46 2003/09/11 13:17:14 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.47 2003/09/11 13:35:37 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -38,6 +38,8 @@
 
 #include <algorithm>
 #include <iostream>
+#include <X11/X.h>
+
 using namespace std;
 
 FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
@@ -1140,18 +1142,29 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
 
     // Start with X offset
     switch (win_gravity) {
-    case NorthWest:
-    case North:
-    case NorthEast:
+    case NorthWestGravity:
+    case NorthGravity:
+    case NorthEastGravity:
         // no offset, since the top point is still the same
         break;
-    case SouthWest:
-    case South:
-    case SouthEast:
-    case Static:
-    case Center:
-        // window shifted down by height of titlebar
-        x_offset -= m_titlebar.height() + m_titlebar.borderWidth();
+    case SouthWestGravity:
+    case SouthGravity:
+    case SouthEastGravity:
+        // window shifted down by height of titlebar, and the handle
+        // since that's necessary to get the bottom of the frame
+        // all the way up
+        x_offset = -(m_titlebar.height() + m_titlebar.borderWidth()
+            + m_handle.height() + m_handle.borderWidth());
+        break;
+    case WestGravity:
+    case EastGravity:
+    case CenterGravity:
+        // these centered ones are a little more interesting
+        x_offset = -(m_titlebar.height() + m_titlebar.borderWidth()
+            + m_handle.height() + m_handle.borderWidth()) / 2;
+        break;
+    case StaticGravity:
+        x_offset = -(m_titlebar.height() + m_titlebar.borderWidth());
         break;
     }
 
@@ -1166,6 +1179,6 @@ void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_fra
     y += y_offset;
 
     if (move_frame && (x_offset != 0 || y_offset != 0)) {
-        move(x() + x_offset, y() + y_offset);
+        move(m_window.x() + x_offset, m_window.y() + y_offset);
     }
 }
