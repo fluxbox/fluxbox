@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.hh,v 1.6 2003/02/18 15:08:12 rathnor Exp $
+// $Id: XLayerItem.hh,v 1.7 2003/04/15 23:09:26 rathnor Exp $
 
 #ifndef FBTK_XLAYERITEM_HH
 #define FBTK_XLAYERITEM_HH
@@ -46,6 +46,8 @@ public:
 
     void raise();
     void lower();
+    void tempRaise(); // this raise gets reverted by a restack()
+
     // go above the next item visible in this layer
     void stepUp();
     void stepDown();

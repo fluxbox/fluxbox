@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.122 2003/04/15 14:42:03 fluxgen Exp $
+// $Id: Screen.cc,v 1.123 2003/04/15 23:09:12 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1371,6 +1371,9 @@ void BScreen::nextFocus(int opts) {
             if (!cycling_focus) {
                 cycling_focus = True;
                 cycling_window = focused_list.begin();
+            } else {
+                // already cycling, so restack to put windows back in their proper order
+                m_layermanager.restack();
             }
             // if it is stacked, we want the highest window in the focused list
             // that is on the same workspace
@@ -1392,8 +1395,10 @@ void BScreen::nextFocus(int opts) {
                     (fbwin->isStuck() 
                      || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
                     // either on this workspace, or stuck
-                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) )
+                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) ) {
+                        fbwin->tempRaise();
                         break;
+                    }
                 }
             }
             cycling_window = it;
@@ -1444,6 +1449,9 @@ void BScreen::prevFocus(int opts) {
             if (!cycling_focus) {
                 cycling_focus = True;
                 cycling_window = focused_list.end();
+            } else {
+                // already cycling, so restack to put windows back in their proper order
+                m_layermanager.restack();
             }
             // if it is stacked, we want the highest window in the focused list
             // that is on the same workspace
@@ -1466,8 +1474,10 @@ void BScreen::prevFocus(int opts) {
                     (fbwin->isStuck() 
                      || fbwin->getWorkspaceNumber() == getCurrentWorkspaceID())) {
                     // either on this workspace, or stuck
-                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) )
+                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setInputFocus()) ) {
+                        fbwin->tempRaise();
                         break;
+                    }
                 }
             }
             cycling_window = it;
@@ -2167,6 +2177,7 @@ void BScreen::notifyReleasedKeys(XKeyEvent &ke) {
         WinClient *client = *cycling_window;
         focused_list.erase(cycling_window);
         focused_list.push_front(client);
+        client->fbwindow()->raise();
     }
 }
 

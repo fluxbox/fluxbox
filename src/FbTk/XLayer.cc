@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.6 2003/02/18 15:08:12 rathnor Exp $
+// $Id: XLayer.cc,v 1.7 2003/04/15 23:09:24 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -260,6 +260,27 @@ void XLayer::raise(XLayerItem &item) {
 #endif // DEBUG
 
     itemList().push_front(&item);
+    stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
+    
+}
+
+void XLayer::tempRaise(XLayerItem &item) {
+    // assume it is already in this layer
+
+    if (&item == itemList().front())
+        return; // nothing to do
+
+    iterator it = std::find(itemList().begin(), itemList().end(), &item);
+    if (it != itemList().end())
+        // don't remove it
+#ifdef DEBUG
+    else {
+        cerr<<__FILE__<<"("<<__LINE__<<"): WARNING: raise on item not in layer["<<m_layernum<<"]"<<endl;
+        return;
+    }
+#endif // DEBUG
+
+    // don't add it back to the top
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
     
 }

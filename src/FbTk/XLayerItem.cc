@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.cc,v 1.6 2003/02/18 15:08:12 rathnor Exp $
+// $Id: XLayerItem.cc,v 1.7 2003/04/15 23:09:25 rathnor Exp $
 
 #include "XLayerItem.hh"
 #include "XLayer.hh"
@@ -54,6 +54,10 @@ void XLayerItem::raise() {
 
 void XLayerItem::lower() {
     m_layer->lower(*this);
+}
+
+void XLayerItem::tempRaise() {
+    m_layer->tempRaise(*this); 
 }
 
 void XLayerItem::stepUp() {

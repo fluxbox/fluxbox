@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.137 2003/04/15 21:38:23 fluxgen Exp $
+// $Id: Window.cc,v 1.138 2003/04/15 23:09:13 rathnor Exp $
 
 #include "Window.hh"
 
@@ -150,6 +150,23 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
     for (; it != it_end; ++it) {
         if (!(*it)->isIconic())
             lowerFluxboxWindow(*(*it));
+    }
+}
+
+/// raise window and do the same for each transient it holds
+void tempRaiseFluxboxWindow(FluxboxWindow &win) {
+
+    if (!win.isIconic()) {
+        // don't update netizen, as it is only temporary
+        win.getLayerItem().tempRaise();
+    }
+
+    // for each transient do raise
+    std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic())
+            tempRaiseFluxboxWindow(*(*it));
     }
 }
 
@@ -1409,6 +1426,25 @@ void FluxboxWindow::lower() {
 
     lowerFluxboxWindow(*bottom);
 }
+
+void FluxboxWindow::tempRaise() {
+    if (isIconic())
+        deiconify();
+
+    // get root window
+    FluxboxWindow *win = this;
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+    // if we don't have any root window use this as root
+    if (win == 0) 
+        win = this;
+
+    // raise this window and every transient in it
+    tempRaiseFluxboxWindow(*win);
+}
+
 
 void FluxboxWindow::raiseLayer() {
     // don't let it up to menu layer

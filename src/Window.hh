@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.56 2003/04/15 18:56:42 fluxgen Exp $
+// $Id: Window.hh,v 1.57 2003/04/15 23:09:15 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -155,6 +155,7 @@ public:
     void stick(); 
     void raise();
     void lower();
+    void tempRaise();
     void raiseLayer();
     void lowerLayer();
     void moveToLayer(int layernum);

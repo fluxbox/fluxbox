@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.hh,v 1.3 2003/02/09 14:11:14 rathnor Exp $
+// $Id: XLayer.hh,v 1.4 2003/04/15 23:09:25 rathnor Exp $
 
 
 #ifndef FBTK_XLAYER_HH
@@ -71,6 +71,9 @@ public:
     // bring to top of layer
     void raise(XLayerItem &item);
     void lower(XLayerItem &item);
+
+    // raise it, but don't make it permanent (i.e. restack will revert)
+    void tempRaise(XLayerItem &item);
 
     // send to next layer up
     void raiseLayer(XLayerItem &item);
