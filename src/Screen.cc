@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.149 2003/05/08 01:51:18 rathnor Exp $
+// $Id: Screen.cc,v 1.150 2003/05/08 10:57:20 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -832,6 +832,8 @@ void BScreen::reconfigure() {
     winFrameTheme().font().setAntialias(*resource.antialias);
     m_menutheme->titleFont().setAntialias(*resource.antialias);
     m_menutheme->frameFont().setAntialias(*resource.antialias);
+    if (getToolbar() && getToolbar()->theme().font().isAntialias() != *resource.antialias)
+        getToolbar()->theme().font().setAntialias(*resource.antialias);
 
     // load theme
     std::string theme_filename(Fluxbox::instance()->getStyleFilename());
@@ -888,8 +890,6 @@ void BScreen::reconfigure() {
 
     if (getToolbar()) {
         getToolbar()->setPlacement(*resource.toolbar_placement);
-        if (getToolbar()->theme().font().isAntialias() != *resource.antialias)
-            getToolbar()->theme().font().setAntialias(*resource.antialias);
         getToolbar()->reconfigure();
     }
 
