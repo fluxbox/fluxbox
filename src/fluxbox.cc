@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.60 2002/05/29 06:22:31 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.61 2002/07/13 14:04:46 fluxgen Exp $
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -2437,14 +2437,14 @@ void Fluxbox::timeout(void) {
 	reconfigure_wait = reread_menu_wait = false;
 }
 
-
+// set focused window
 void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 	BScreen *old_screen = 0, *screen = 0;
 	FluxboxWindow *old_win = 0;
 	Toolbar *old_tbar = 0, *tbar = 0;
 	Workspace *old_wkspc = 0, *wkspc = 0;
 
-	if (focused_window!=0) {
+	if (focused_window != 0) {
 		old_win = focused_window;
 		old_screen = old_win->getScreen();
 		
@@ -2455,22 +2455,29 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 		old_wkspc->menu()->setItemSelected(old_win->getWindowNumber(), false);
 		
 	}
-
+	
 	if (win && ! win->isIconic()) {
-		
-		screen = win->getScreen();
-		tbar = screen->getToolbar();
-		wkspc = screen->getWorkspace(win->getWorkspaceNumber());		
-		focused_window = win;
-		win->setFocusFlag(True);
-		wkspc->menu()->setItemSelected(win->getWindowNumber(), true);
-		
+		// make sure we have a valid win pointer with a valid screen
+		ScreenList::iterator winscreen = 
+			std::find(screenList.begin(), screenList.end(),
+				win->getScreen());
+		if (winscreen == screenList.end())
+			focused_window = 0; // the window pointer wasn't valid, mark no window focused
+		else {
+			screen = *winscreen;
+			tbar = screen->getToolbar();
+			wkspc = screen->getWorkspace(win->getWorkspaceNumber());		
+			focused_window = win;     // update focused window
+			win->setFocusFlag(True); // set focus flag
+			// select this window in workspace menu
+			wkspc->menu()->setItemSelected(win->getWindowNumber(), true);
+		}
 	} else
 		focused_window = (FluxboxWindow *) 0;
 
-	if (tbar!=0)
+	if (tbar != 0)
 		tbar->redrawWindowLabel(True);
-	if (screen!=0)
+	if (screen != 0)
 		screen->updateNetizenWindowFocus();
 
 	if (old_tbar && old_tbar != tbar)
