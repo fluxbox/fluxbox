@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.4 2003/04/28 00:34:06 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.5 2003/06/08 13:47:30 rathnor Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -51,7 +51,11 @@ public:
 /// restarts fluxbox
 class RestartFluxboxCmd: public FbTk::Command {
 public:
+    RestartFluxboxCmd(const std::string &cmd);
     void execute();
+private:
+    std::string m_cmd;
+    const int m_screen_num;
 };
 
 /// reconfigures fluxbox

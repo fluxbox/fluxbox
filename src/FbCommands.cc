@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.5 2003/04/28 01:17:39 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.6 2003/06/08 13:47:30 rathnor Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -62,8 +62,15 @@ void ExitFluxboxCmd::execute() {
     Fluxbox::instance()->shutdown();
 }
 
+RestartFluxboxCmd::RestartFluxboxCmd(const std::string &cmd):m_cmd(cmd){
+}
+
 void RestartFluxboxCmd::execute() {
-    Fluxbox::instance()->restart();
+    if (m_cmd.size() == 0) {
+        Fluxbox::instance()->restart();
+    } else {
+        Fluxbox::instance()->restart(m_cmd.c_str());
+    }
 }
 
 void ReconfigureFluxboxCmd::execute() {

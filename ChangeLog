@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
 *03/06/08:
+   * Fix restart command to accept and use an argument again (Simon)
+     Screen.cc FbCommands.hh/cc
    * Fix bug that sometimes left window frames after window closed (Simon)
      fluxbox.cc
 *03/06/06:

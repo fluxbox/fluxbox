@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.178 2003/05/24 13:13:22 rathnor Exp $
+// $Id: Screen.cc,v 1.179 2003/06/08 13:47:30 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1891,7 +1891,7 @@ void BScreen::initMenu() {
     }
 
     if (defaultMenu) {
-        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
+        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd(""));
         FbTk::RefCount<FbTk::Command> exit_fb(new FbCommands::ExitFluxboxCmd());
         FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm", screenNumber()));
         m_rootmenu->setInternalMenu();
@@ -2098,7 +2098,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                            "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
+                        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd(str_cmd));
                         menu.insert(str_label.c_str(), restart_fb);
                     }
                 } // end of restart
