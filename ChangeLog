@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/21:
+  * A few fixes to compile fluxbox with icc and mipspro(irix) (Mathias)
+    still some open issues with mipspro but to solve them i need
+    a mipspro 7.4
+    FbTk/TextureRender.cc fluxbox.hh/cc CommandDialog.cc/hh FbCommands.cc/hh
+    FbMenuParser.cc HeadArea.cc Ewmh.cc ArrowButton.cc WorkspaceNameTool.hh
+    FbTk/ThemeItems.hh IntResMenuItem.cc SlitTheme.hh FbRootWindow.cc
 *04/10/18:
   * Added session.appsFile to the ressources (Mathias)
     fluxbox.cc/hh Remember.cc
