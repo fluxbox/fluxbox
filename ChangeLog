@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/26:
+	* Fixed 2 possible Memleaks (Mathias)
+		Ewmh.cc
   * Re-implement bevels in toolbar, plus numerous toolbar-related theme
     fixes => old styles now look like they used to! (Simon)
     Toolbar.cc ToolbarItem.h ToolTheme.cc ToolbarTheme.cc ToolFactory.cc

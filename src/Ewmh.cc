@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.48 2004/07/21 18:56:34 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.49 2004/08/26 01:51:21 akir Exp $
 
 #include "Ewmh.hh" 
 
@@ -198,6 +198,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
             }
 
         }
+        XFree(data);
     }
 
     setupState(win);
@@ -485,6 +486,8 @@ void Ewmh::updateWorkarea(BScreen &screen) {
                                        PropModeReplace,
                                        (unsigned char *)coords,
                                        4*screen.getCount());
+
+    delete[] coords;
 }
 
 void Ewmh::updateState(FluxboxWindow &win) {
