@@ -25,8 +25,6 @@
 #include "Window.hh"
 #include "LinkedList.hh"
 
-class Fluxbox;
-
 class IconBarObj
 {
 public:	
@@ -38,9 +36,6 @@ private:
 	Window m_iconwin;
 	FluxboxWindow *m_fluxboxwin;
 };
-
-typedef LinkedList<IconBarObj> IconList;
-typedef LinkedListIterator<IconBarObj> IconListIterator;
 
 class IconBar
 {
@@ -55,6 +50,9 @@ public:
 	FluxboxWindow *findWindow(Window w);
 	void exposeEvent(XExposeEvent *ee);
 private:
+	typedef LinkedList<IconBarObj> IconList;
+	typedef LinkedListIterator<IconBarObj> IconListIterator;
+
 	void draw(IconBarObj *obj, int width);
 	void loadTheme(unsigned int width, unsigned int height);
 	void decorate(Window win);
