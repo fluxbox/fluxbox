@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/25:
+  * (Re)added dragNdrop ordering of tabs (thanx Rob Stevens)
+    FbWinFrame.cc/hh Window.cc/hh
 *04/11/24:
   * Fix for hiding menu when menufile changed (Mathias)
     fluxbox.cc/hh FbCommands.cc
