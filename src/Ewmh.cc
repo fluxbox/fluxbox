@@ -19,9 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.49 2004/08/26 01:51:21 akir Exp $
+// $Id: Ewmh.cc,v 1.50 2004/09/10 15:36:04 akir Exp $
 
-#include "Ewmh.hh" 
+#include "Ewmh.hh"
 
 #include "Screen.hh"
 #include "Window.hh"
@@ -53,13 +53,13 @@ void Ewmh::initForScreen(BScreen &screen) {
 
 
     Window wincheck = XCreateSimpleWindow(disp,
-                                          screen.rootWindow().window(), 
+                                          screen.rootWindow().window(),
                                           0, 0, 5, 5, 0, 0, 0);
 
     if (wincheck != None) {
         // store the window so we can delete it later
         m_windows.push_back(wincheck);
-		
+
         screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
                                            PropModeReplace, (unsigned char *) &wincheck, 1);
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
@@ -68,7 +68,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         XChangeProperty(disp, wincheck, m_net_wm_name, XA_STRING, 8,
 			PropModeReplace, (unsigned char *) "Fluxbox", strlen("Fluxbox"));
     }
-	
+
     //set supported atoms
     Atom atomsupported[] = {
         // window properties
@@ -95,7 +95,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_current_desktop,
         m_net_active_window,
         m_net_close_window,
-        m_net_moveresize_window,        
+        m_net_moveresize_window,
         m_net_workarea,
 
         // desktop properties
@@ -103,28 +103,28 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_desktop_names,
         m_net_desktop_viewport,
         m_net_desktop_geometry,
-        
-        m_net_supporting_wm_check		
+
+        m_net_supporting_wm_check
     };
     /* From Extended Window Manager Hints, draft 1.3:
      *
      * _NET_SUPPORTED, ATOM[]/32
      *
      * This property MUST be set by the Window Manager
-     * to indicate which hints it supports. For 
-     * example: considering _NET_WM_STATE both this 
-     * atom and all supported states 
+     * to indicate which hints it supports. For
+     * example: considering _NET_WM_STATE both this
+     * atom and all supported states
      * e.g. _NET_WM_STATE_MODAL, _NET_WM_STATE_STICKY,
-     * would be listed. This assumes that backwards 
-     * incompatible changes will not be made to the 
-     * hints (without being renamed). 
+     * would be listed. This assumes that backwards
+     * incompatible changes will not be made to the
+     * hints (without being renamed).
      */
     screen.rootWindow().changeProperty(m_net_supported, XA_ATOM, 32,
-                                       PropModeReplace, 
-                                       (unsigned char *) &atomsupported, 
+                                       PropModeReplace,
+                                       (unsigned char *) &atomsupported,
                                        (sizeof atomsupported)/sizeof atomsupported[0]);
 
-    // update atoms	
+    // update atoms
 
     updateWorkspaceCount(screen);
     updateCurrentWorkspace(screen);
@@ -152,25 +152,25 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
      *
      * This SHOULD be set by the Client before mapping to a list of atoms
      * indicating the functional type of the window. This property SHOULD
-     * be used by the window manager in determining the decoration, 
-     * stacking position and other behavior of the window. The Client 
+     * be used by the window manager in determining the decoration,
+     * stacking position and other behavior of the window. The Client
      * SHOULD specify window types in order of preference (the first being
-     * most preferable) but MUST include at least one of the basic window 
-     * type atoms from the list below. This is to allow for extension of 
-     * the list of types whilst providing default behavior for Window 
-     * Managers that do not recognize the extensions. 
+     * most preferable) but MUST include at least one of the basic window
+     * type atoms from the list below. This is to allow for extension of
+     * the list of types whilst providing default behavior for Window
+     * Managers that do not recognize the extensions.
      *
      */
-    win.winClient().property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM, 
-                             &ret_type, &fmt, &nitems, &bytes_after, 
-                             &data); 
+    win.winClient().property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
+                             &ret_type, &fmt, &nitems, &bytes_after,
+                             &data);
     if (data) {
         Atom *atoms = (unsigned long *)data;
         for (unsigned long l=0; l<nitems; ++l) {
             /* From Extended Window Manager Hints, draft 1.3:
              *
-             * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature. 
-             * Typically a Window Manager would keep such windows on top 
+             * _NET_WM_WINDOW_TYPE_DOCK indicates a dock or panel feature.
+             * Typically a Window Manager would keep such windows on top
              * of all other windows.
              *
              */
@@ -203,8 +203,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
 
     setupState(win);
 
-    if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL, 
-                                 &ret_type, &fmt, &nitems, &bytes_after, 
+    if (win.winClient().property(m_net_wm_desktop, 0, 1, False, XA_CARDINAL,
+                                 &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
         unsigned int desktop = static_cast<unsigned int>(*data);
         if (desktop == 0xFFFFFFFF && !win.isStuck())
@@ -229,9 +229,9 @@ void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
      *
      * _NET_ACTIVE_WINDOW, WINDOW/32
      *
-     * The window ID of the currently active window or None 
-     * if no window has the focus. This is a read-only 
-     * property set by the Window Manager. 
+     * The window ID of the currently active window or None
+     * if no window has the focus. This is a read-only
+     * property set by the Window Manager.
      *
      */
     screen.rootWindow().changeProperty(m_net_active_window,
@@ -243,14 +243,14 @@ void Ewmh::updateFocusedWindow(BScreen &screen, Window win) {
 void Ewmh::updateClientList(BScreen &screen) {
     size_t num=0;
 
-    BScreen::Workspaces::const_iterator workspace_it = 
+    BScreen::Workspaces::const_iterator workspace_it =
         screen.getWorkspacesList().begin();
-    const BScreen::Workspaces::const_iterator workspace_it_end = 
+    const BScreen::Workspaces::const_iterator workspace_it_end =
         screen.getWorkspacesList().end();
     for (; workspace_it != workspace_it_end; ++workspace_it) {
-        Workspace::Windows::iterator win_it = 
+        Workspace::Windows::iterator win_it =
             (*workspace_it)->windowList().begin();
-        Workspace::Windows::iterator win_it_end = 
+        Workspace::Windows::iterator win_it_end =
             (*workspace_it)->windowList().end();
         for (; win_it != win_it_end; ++win_it) {
             num += (*win_it)->numClients();
@@ -259,7 +259,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     }
     // and count icons
     BScreen::Icons::const_iterator icon_it = screen.getIconList().begin();
-    BScreen::Icons::const_iterator icon_it_end = screen.getIconList().end();		
+    BScreen::Icons::const_iterator icon_it_end = screen.getIconList().end();
     for (; icon_it != icon_it_end; ++icon_it) {
         num += (*icon_it)->numClients();
     }
@@ -275,20 +275,20 @@ void Ewmh::updateClientList(BScreen &screen) {
     workspace_it = screen.getWorkspacesList().begin();
     int win=0;
     for (; workspace_it != workspace_it_end; ++workspace_it) {
-	
+
         // Fill in array of window ID's
-        Workspace::Windows::const_iterator it = 
+        Workspace::Windows::const_iterator it =
             (*workspace_it)->windowList().begin();
-        Workspace::Windows::const_iterator it_end = 
-            (*workspace_it)->windowList().end();		
+        Workspace::Windows::const_iterator it_end =
+            (*workspace_it)->windowList().end();
         for (; it != it_end; ++it) {
             if ((*it)->numClients() == 1) {
                 wl[win++] = (*it)->clientWindow();
             } else {
                 // add every client in fluxboxwindow to list window list
-                std::list<WinClient *>::iterator client_it = 
+                std::list<WinClient *>::iterator client_it =
                     (*it)->clientList().begin();
-                std::list<WinClient *>::iterator client_it_end = 
+                std::list<WinClient *>::iterator client_it_end =
                     (*it)->clientList().end();
                 for (; client_it != client_it_end; ++client_it)
                     wl[win++] = (*client_it)->window();
@@ -313,12 +313,12 @@ void Ewmh::updateClientList(BScreen &screen) {
      * _NET_CLIENT_LIST_STACKING, WINDOW[]/32
      *
      * These arrays contain all X Windows managed by
-     * the Window Manager. _NET_CLIENT_LIST has 
+     * the Window Manager. _NET_CLIENT_LIST has
      * initial mapping order, starting with the oldest
-     * window. _NET_CLIENT_LIST_STACKING has 
+     * window. _NET_CLIENT_LIST_STACKING has
      * bottom-to-top stacking order. These properties
-     * SHOULD be set and updated by the Window 
-     * Manager. 
+     * SHOULD be set and updated by the Window
+     * Manager.
      */
     screen.rootWindow().changeProperty(m_net_client_list,
                                        XA_WINDOW, 32,
@@ -326,7 +326,7 @@ void Ewmh::updateClientList(BScreen &screen) {
     screen.rootWindow().changeProperty(m_net_client_list_stacking,
                                        XA_WINDOW, 32,
                                        PropModeReplace, (unsigned char *)wl, num);
-	
+
     delete [] wl;
 }
 
@@ -335,15 +335,15 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
      *
      * _NET_DESKTOP_NAMES, UTF8_STRING[]
      *
-     * The names of all virtual desktops. 
+     * The names of all virtual desktops.
      * This is a list of NULL-terminated strings in UTF-8
-     * encoding [UTF8]. This property MAY be changed by a 
+     * encoding [UTF8]. This property MAY be changed by a
      * Pager or the Window Manager at any time.
      *
-     * Note: The number of names could be different from 
-     * _NET_NUMBER_OF_DESKTOPS. If it is less than 
+     * Note: The number of names could be different from
+     * _NET_NUMBER_OF_DESKTOPS. If it is less than
      * _NET_NUMBER_OF_DESKTOPS, then the desktops with high
-     *  numbers are unnamed. If it is larger than 
+     *  numbers are unnamed. If it is larger than
      * _NET_NUMBER_OF_DESKTOPS, then the excess names outside
      * of the _NET_NUMBER_OF_DESKTOPS are considered to be
      * reserved in case the number of desktops is increased.
@@ -351,19 +351,19 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
      * Rationale: The name is not a necessary attribute of a
      * virtual desktop. Thus the availability or unavailability
      * of names has no impact on virtual desktop functionality.
-     * Since names are set by users and users are likely to 
-     * preset names for a fixed number of desktops, it 
+     * Since names are set by users and users are likely to
+     * preset names for a fixed number of desktops, it
      * doesn't make sense to shrink or grow this list when the
-     * number of available desktops changes. 
+     * number of available desktops changes.
      *
      */
     XTextProperty text;
     const BScreen::WorkspaceNames &workspacenames = screen.getWorkspaceNames();
     const size_t number_of_desks = workspacenames.size();
-	
-    char *names[number_of_desks];		
-	
-    for (size_t i = 0; i < number_of_desks; i++) {		
+
+    char *names[number_of_desks];
+
+    for (size_t i = 0; i < number_of_desks; i++) {
         names[i] = new char[workspacenames[i].size() + 1]; // +1 for \0
         memset(names[i], 0, workspacenames[i].size());
         strcpy(names[i], workspacenames[i].c_str());
@@ -376,7 +376,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
     }
 
     for (size_t i = 0; i < number_of_desks; i++)
-        delete [] names[i];	
+        delete [] names[i];
 }
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
@@ -386,11 +386,11 @@ void Ewmh::updateCurrentWorkspace(BScreen &screen) {
      *
      * The index of the current desktop. This is always
      * an integer between 0 and _NET_NUMBER_OF_DESKTOPS - 1.
-     * This MUST be set and updated by the Window Manager. 
+     * This MUST be set and updated by the Window Manager.
      *
      */
     unsigned int workspace = screen.currentWorkspaceID();
-    screen.rootWindow().changeProperty(m_net_current_desktop, 
+    screen.rootWindow().changeProperty(m_net_current_desktop,
                                        XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)&workspace, 1);
@@ -407,21 +407,21 @@ void Ewmh::updateWorkspaceCount(BScreen &screen) {
      * desktops.
      */
     unsigned int numworkspaces = screen.getCount();
-    screen.rootWindow().changeProperty(m_net_number_of_desktops, 
-                                       XA_CARDINAL, 32, 
+    screen.rootWindow().changeProperty(m_net_number_of_desktops,
+                                       XA_CARDINAL, 32,
                                        PropModeReplace,
                                        (unsigned char *)&numworkspaces, 1);
 }
 
 void Ewmh::updateViewPort(BScreen &screen) {
     /* From Extended Window Manager Hints, draft 1.3:
-     *     
+     *
      * _NET_DESKTOP_VIEWPORT x, y, CARDINAL[][2]/32
      *
-     * Array of pairs of cardinals that define the 
-     * top left corner of each desktop's viewport. 
+     * Array of pairs of cardinals that define the
+     * top left corner of each desktop's viewport.
      * For Window Managers that don't support large
-     * desktops, this MUST always be set to (0,0). 
+     * desktops, this MUST always be set to (0,0).
      *
      */
     int value[2] = {0, 0}; // we dont support large desktops
@@ -437,11 +437,11 @@ void Ewmh::updateGeometry(BScreen &screen) {
      * _NET_DESKTOP_GEOMETRY width, height, CARDINAL[2]/32
      *
      * Array of two cardinals that defines the common size
-     * of all desktops (this is equal to the screen size 
-     * if the Window Manager doesn't support large 
+     * of all desktops (this is equal to the screen size
+     * if the Window Manager doesn't support large
      * desktops, otherwise it's equal to the virtual size
      * of the desktop). This property SHOULD be set by the
-     * Window Manager. 
+     * Window Manager.
      *
      */
     int value[2] = {screen.width(), screen.height()};
@@ -454,23 +454,23 @@ void Ewmh::updateGeometry(BScreen &screen) {
 
 void Ewmh::updateWorkarea(BScreen &screen) {
     /* From Extended Window Manager Hints, draft 1.3:
-     * 
+     *
      * _NET_WORKAREA, x, y, width, height CARDINAL[][4]/32
      *
-     * This property MUST be set by the Window Manager upon 
-     * calculating the work area for each desktop. Contains a 
-     * geometry for each desktop. These geometries are 
+     * This property MUST be set by the Window Manager upon
+     * calculating the work area for each desktop. Contains a
+     * geometry for each desktop. These geometries are
      * specified relative to the viewport on each desktop and
-     * specify an area that is completely contained within the 
-     * viewport. Work area SHOULD be used by desktop applications 
-     * to place desktop icons appropriately. 
+     * specify an area that is completely contained within the
+     * viewport. Work area SHOULD be used by desktop applications
+     * to place desktop icons appropriately.
      *
      */
 
     /* !!TODO
      * Not sure how to handle xinerama stuff here.
      * So i'm just doing this on the first head.
-     */ 
+     */
     unsigned int *coords = new unsigned int[4*screen.getCount()];
     for (unsigned int i=0; i<screen.getCount()*4; i+=4) {
         // x, y
@@ -499,7 +499,7 @@ void Ewmh::updateLayer(FluxboxWindow &win) {
     /*
     if (win.getLayer() == Fluxbox::instance()->getAboveDockLayer()) {
         // _NET_WM_STATE_BELOW
-        
+
     } else if (win.getLayer() == Fluxbox::instance()->getBottomLayer()) {
         // _NET_WM_STATE_ABOVE
     }
@@ -525,7 +525,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 
 
 // return true if we did handle the atom here
-bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, 
+bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
                               BScreen * screen, WinClient * const winclient) {
     if (ce.message_type == m_net_wm_desktop) {
         // ce.data.l[0] = workspace number
@@ -550,7 +550,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         screen = &fbwin->screen();
         // valid workspace number?
         if (static_cast<unsigned int>(ce.data.l[0]) < screen->getCount())
-            screen->sendToWorkspace(ce.data.l[0], fbwin, false);		
+            screen->sendToWorkspace(ce.data.l[0], fbwin, false);
 
         return true;
     } else if (ce.message_type == m_net_wm_state) {
@@ -577,10 +577,10 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         if (screen == 0)
             return true;
         // ce.data.l[0] = number of workspaces
-		
+
         // no need to alter number of desktops if they are the same
         // or if requested number of workspace is less than zero
-        if (screen->getCount() == static_cast<unsigned int>(ce.data.l[0]) || 
+        if (screen->getCount() == static_cast<unsigned int>(ce.data.l[0]) ||
             ce.data.l[0] < 0)
             return true;
 
@@ -594,28 +594,28 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             }
         } else { // add workspaces to screen until workspace count match the requested size
             while (screen->getCount() != static_cast<unsigned int>(ce.data.l[0])) {
-                screen->addWorkspace();					
+                screen->addWorkspace();
             }
         }
-			
+
         return true;
     } else if (ce.message_type == m_net_current_desktop) {
         if (screen == 0)
             return true;
         // ce.data.l[0] = workspace number
-		
+
         // prevent out of range value
         if (static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
             return true;
         screen->changeWorkspaceID(ce.data.l[0]);
         return true;
     } else if (ce.message_type == m_net_active_window) {
-		
+
         // make sure we have a valid window
         if (winclient == 0)
             return true;
         // ce.window = window to focus
-		
+
         winclient->focus();
         if (winclient->fbwindow())
             winclient->fbwindow()->raise();
@@ -677,7 +677,7 @@ void Ewmh::createAtoms() {
 
     m_net_close_window = XInternAtom(disp, "_NET_CLOSE_WINDOW", False);
     m_net_moveresize_window = XInternAtom(disp, "_NET_MOVERESIZE_WINDOW", False);
-	
+
     // TODO: implement this one
     m_net_wm_moveresize = XInternAtom(disp, "_NET_WM_MOVERESIZE", False);
 
@@ -714,7 +714,7 @@ void Ewmh::createAtoms() {
 
 
 void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
-    // fullscreen implies maximised, above dock layer, 
+    // fullscreen implies maximised, above dock layer,
     // and no decorations (or decorations offscreen)
     WindowState *saved_state = getState(win);
     if (value) {
@@ -762,15 +762,15 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
     }  else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
         if ((value && !win.isMaximized()) ||
             (!value && win.isMaximized()))
-	    	win.maximizeHorizontal();
+        win.maximizeHorizontal();
     } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
         if ((value && !win.isMaximized()) ||
             (!value && win.isMaximized()))
-		win.maximizeVertical();
+        win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
         setFullscreen(win, value);
     } else if (state == m_net_wm_state_hidden ||
-               state == m_net_wm_state_skip_taskbar) {        
+               state == m_net_wm_state_skip_taskbar) {
         win.setFocusHidden(value);
         win.setIconHidden(win.isFocusHidden());
     } else if (state == m_net_wm_state_below) {  // bottom layer
@@ -829,7 +829,7 @@ void Ewmh::updateStrut(WinClient &winclient) {
                                  &ret_type, &fmt, &nitems, &bytes_after,
                                  (unsigned char **) &data) && data) {
 
-            winclient.setStrut(winclient.screen().requestStrut(data[0], data[1], 
+            winclient.setStrut(winclient.screen().requestStrut(data[0], data[1],
                                                                data[2], data[3]));
             winclient.screen().updateAvailableWorkspaceArea();
     }
@@ -840,18 +840,18 @@ void Ewmh::setupState(FluxboxWindow &win) {
      *
      * _NET_WM_STATE, ATOM[]
      *
-     * A list of hints describing the window state. Atoms present in 
-     * the list MUST be considered set, atoms not present in the list 
-     * MUST be considered not set. The Window Manager SHOULD honor 
+     * A list of hints describing the window state. Atoms present in
+     * the list MUST be considered set, atoms not present in the list
+     * MUST be considered not set. The Window Manager SHOULD honor
      * _NET_WM_STATE whenever a withdrawn window requests to be mapped.
-     * A Client wishing to change the state of a window MUST send a 
-     * _NET_WM_STATE client message to the root window (see below). 
-     * The Window Manager MUST keep this property updated to reflect 
-     * the current state of the window. 
-     * 
-     * The Window Manager should remove the property whenever a window 
+     * A Client wishing to change the state of a window MUST send a
+     * _NET_WM_STATE client message to the root window (see below).
+     * The Window Manager MUST keep this property updated to reflect
+     * the current state of the window.
+     *
+     * The Window Manager should remove the property whenever a window
      * is withdrawn, but it should leave the property in place when it
-     * is shutting down, e.g. in response to losing ownership of the 
+     * is shutting down, e.g. in response to losing ownership of the
      * WM_Sn manager selection.
      */
     Atom ret_type;
@@ -859,10 +859,10 @@ void Ewmh::setupState(FluxboxWindow &win) {
     unsigned long nitems, bytes_after;
     unsigned char *data = 0;
 
-    win.winClient().property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM, 
-                             &ret_type, &fmt, &nitems, &bytes_after, 
+    win.winClient().property(m_net_wm_state, 0, 0x7fffffff, False, XA_ATOM,
+                             &ret_type, &fmt, &nitems, &bytes_after,
                              &data);
-    if (data) {        
+    if (data) {
         Atom *states = (Atom *)data;
         for (unsigned long i=0; i < nitems; ++i)
             setState(win, states[i], true);
@@ -871,8 +871,8 @@ void Ewmh::setupState(FluxboxWindow &win) {
     }
 }
 
-Ewmh::WindowState::WindowState(int t_x, int t_y, 
-                               unsigned int t_width, 
+Ewmh::WindowState::WindowState(int t_x, int t_y,
+                               unsigned int t_width,
                                unsigned int t_height,
                                int t_layer, unsigned int t_decor) :
     x(t_x), y(t_y),
