@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.13 2003/09/14 10:22:45 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.14 2003/09/14 17:34:47 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -57,6 +57,7 @@ void WinButton::drawType() {
             FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                 maximizePressedPixmap().
                                                 pixmap().drawable());
+            used = true;
         } else {
             // check focus 
             if (!m_listen_to.isFocused()) {
@@ -77,7 +78,6 @@ void WinButton::drawType() {
         if (used)
             FbTk::FbWindow::clear();
             
-
         // if no pixmap was used, use old style
         if (!used) {            
             if (gc() == 0) // must have valid graphic context
@@ -114,14 +114,11 @@ void WinButton::drawType() {
                 }
             }
 
-            if (used)
-                FbTk::FbWindow::clear();
-            
         } 
 
-        if (!used) {
-            if (gc() == 0) // must have valid graphic context
-                return;
+        if (used) {
+            FbTk::FbWindow::clear();
+        } else if (gc() == 0) { // must have valid graphic context
             FbTk::FbWindow::drawRectangle(gc(),
                                           2, height() - 5, width() - 5, 2);
         }
@@ -149,9 +146,8 @@ void WinButton::drawType() {
                 }
             }
         } else { // not stuck and pressed
-
             if (pressed()) {
-                if (m_theme.stickPressedPixmap().pixmap().drawable() == 0) { 
+                if (m_theme.stickPressedPixmap().pixmap().drawable() != 0) { 
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         stickPressedPixmap().
                                                         pixmap().drawable());
