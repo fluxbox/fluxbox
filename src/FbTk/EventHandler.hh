@@ -1,5 +1,5 @@
 // EventHandler.cc for Fluxbox Window Manager
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventHandler.hh,v 1.3 2002/12/01 13:42:14 rathnor Exp $
+// $Id: EventHandler.hh,v 1.4 2003/04/28 01:47:29 fluxgen Exp $
 
 #ifndef FBTK_EVENTHANDLER_HH
 #define FBTK_EVENTHANDLER_HH
