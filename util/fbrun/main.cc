@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.4 2002/11/13 22:25:59 fluxgen Exp $
+// $Id: main.cc,v 1.5 2002/11/15 14:00:45 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "BaseDisplay.hh"
@@ -66,7 +66,7 @@ void showUsage(const char *progname) {
 int main(int argc, char **argv) {
 	int x = 0, y = 0; // default pos of window
 	size_t width = 200, height = 32; // default size of window
-	bool set_height = false; // use height of font by default
+	bool set_height = false, set_width=false; // use height/width of font by default
 	bool set_pos = false; // set position
 	bool antialias = false; // antialias text
 	string fontname; // font name
@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
 			text = argv[++i];
 		} else if (strcmp(argv[i], "-w") == 0 && i+1 < argc) {
 			width = atoi(argv[++i]);			
+			set_width = true;
 		} else if (strcmp(argv[i], "-h") == 0 && i+1 < argc) {
 			height = atoi(argv[++i]);
 			set_height = true; // mark true else the height of font will be used
@@ -150,7 +151,9 @@ int main(int argc, char **argv) {
 		fbrun.setBackground(xc_background);
 
 		if (set_height)
-			fbrun.resize(width, height);
+			fbrun.resize(fbrun.width(), height);
+		if (set_width)
+			fbrun.resize(width, fbrun.height());
 		if (antialias)
 			fbrun.setAntialias(antialias);
 		// expand and load command history
