@@ -1,7 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
 *03/06/29:
-   * Add chbg support to fbsetbg (Thanks Han)
+   * Add chbg support to fbsetbg (Thanks Han and Michael T. Dean)
      fbsetbg
 *03/06/28:
    * Fix slit netizens (e.g. withdrawn pager)  (Simon)
