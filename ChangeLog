@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/07/19:
+  * Some EMX fixes (Thanks dave_yeo at paralynx com)
+    FbCommands.cc, FbTk/I18n.hh
 *04/07/18:
   * Fixed fallback for toolbar.button.pressed (Henrik)
     ButtonTheme.cc
