@@ -61,7 +61,7 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
 
     disableTitle();
     // build menu
-    updateMenu(0);
+    update(0);
 }
 
 void SendToMenu::update(FbTk::Subject *subj) {
