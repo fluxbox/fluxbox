@@ -1,4 +1,19 @@
 changes for 0.1.8:
+*02/03/18:
+   * Added FbAtoms.hh/cc where all the atoms is.
+     Makes the interface in BaseDisplay cleaner
+   * Fixed std::max/min
+   * Added better window cycling with optional parameters (Thanks Steve Cooper)
+     NextWindow and PrevWindow now takes an integer parameter.
+	 parameter values:
+	 0 or unspecified = Default/current behavior - no skipping
+     1 = Skip: lower tabs
+     2 = Skip: stuck windows
+     3 = Skip: lower tabs/stuck windows
+     4 = Skip: shaded windows
+     5 = Skip: lower tabs/shaded windows
+     6 = Skip: stuck windows/shaded windows
+     7 = Skip: lower tabs/stuck windows/shaded windows
 *02/03/11:
    * Fixed some KDE stuff in Slit.cc (Thanks Tommi Komulainen)
 *02/03/08:
