@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.15 2002/07/23 13:49:01 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.16 2002/08/12 03:27:31 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -132,57 +132,60 @@ void Windowmenu::show(void) {
 
 void Windowmenu::itemSelected(int button, unsigned int index) {
 	BasemenuItem *item = find(index);
-
+	hide();
 	switch (item->function()) {
 	case BScreen::WINDOWSHADE:
-		hide();
-
+		if (window->isIconic())
+			break;
+			
 		window->shade();
 		if (window->hasTab())
 			window->getTab()->shade();
-		break;
+	break;
 
 	case BScreen::WINDOWICONIFY:
-		hide();
-		window->iconify();
-		break;
+		if (!window->isIconic())
+			window->iconify();
+		else
+			window->deiconify(); // restore window
+			
+	break;
 
 	case BScreen::WINDOWMAXIMIZE:
-		hide();
 		window->maximize((unsigned int) button);
-		break;
+	break;
 
 	case BScreen::WINDOWCLOSE:
-		hide();
 		window->close();
-		break;
+	break;
 
 	case BScreen::WINDOWRAISE:
-		hide();
+		if (window->isIconic())
+			break;
+
 		if (window->hasTab())
 			window->getTab()->raise(); //raise tabs
 		screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
-		break;
+	break;
 
 	case BScreen::WINDOWLOWER:
-		hide();
-	 	screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
+	 	if (window->isIconic())
+			break;
+
+		screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
 		if (window->hasTab())
 			window->getTab()->lower(); //lower tabs AND all it's windows
 		break;
 
 	case BScreen::WINDOWSTICK:
-		hide();
 		window->stick();
 		break;
 
 	case BScreen::WINDOWKILL:
-		hide();
 		XKillClient(screen->getBaseDisplay()->getXDisplay(),
 								window->getClientWindow());
 		break;
 	case BScreen::WINDOWTAB:
-		hide();
 		window->setTab(!window->hasTab());
 		break;
 	}
