@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.7 2002/02/07 15:13:19 fluxgen Exp $
+// $Id: Window.hh,v 1.8 2002/02/11 11:47:37 fluxgen Exp $
 
 #ifndef	 _WINDOW_HH_
 #define	 _WINDOW_HH_
@@ -85,7 +85,6 @@ class Tab;
 class FluxboxWindow : public TimeoutHandler {
 public:
 	enum Error{NOERROR=0, XGETWINDOWATTRIB, CANTFINDSCREEN};
-	
 	FluxboxWindow(Window, BScreen * = (BScreen *) 0);
 	virtual ~FluxboxWindow(void);
 
@@ -93,6 +92,7 @@ public:
 		{ return ((transient) ? true : false); }
 	inline const bool hasTransient(void) const
 		{ return ((client.transient) ? true : false); }
+	inline const bool isManaged() const { return managed; }
 	inline const bool &isFocused(void) const { return focused; }
 	inline const bool &isVisible(void) const { return visible; }
 	inline const bool &isIconic(void) const { return iconic; }
