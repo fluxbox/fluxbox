@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.39 2004/06/16 15:38:19 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.40 2004/06/17 00:17:22 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -717,7 +717,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
 
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
 
-    renderButton(*button, false);
+    renderButton(*button, false); // update the attributes, but don't clear it
     m_icon_container.insertItem(button);    
     m_icon_list.push_back(button);
 
@@ -792,6 +792,7 @@ void IconbarTool::addList(std::list<FluxboxWindow *> &winlist) {
     std::list<FluxboxWindow *>::iterator it_end = winlist.end();
     for (; it != it_end; ++it)
         addWindow(**it);
+    renderTheme();
 }
 
 void IconbarTool::timedRender() {
