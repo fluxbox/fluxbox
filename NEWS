@@ -20,6 +20,6 @@ Known bugs and missing features that will be fixed in future version:
     * Send to menu is disabled (keybindings will still work though)
     * Some items in configure menu will close the previous menu that holds 
       clientmenu but not the clientmenu
-    * Iconbar doesn't use vertical alignment when toolbar is vertical
-
+    * Xinerama support is incomplete
+	
 See ChangeLog for more details
