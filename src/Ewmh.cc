@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.32 2003/08/27 21:06:04 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.33 2003/09/23 13:52:05 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -76,9 +76,10 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_wm_state_shaded,
 	m_net_wm_state_maximized_horz,
 	m_net_wm_state_maximized_vert,
-		
+	m_net_wm_state_fullscreen,
+
         m_net_wm_desktop,
-				
+
         // root properties
         m_net_client_list,
         m_net_number_of_desktops,
@@ -130,6 +131,10 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
         XFree(data);
     }
 
+}
+
+void Ewmh::updateFrameClose(FluxboxWindow &win) {
+    clearState(win);
 }
 
 void Ewmh::updateClientList(BScreen &screen) {
@@ -411,6 +416,7 @@ void Ewmh::createAtoms() {
     m_net_wm_state_shaded = XInternAtom(disp, "_NET_WM_STATE_SHADED", False);
     m_net_wm_state_maximized_horz = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
     m_net_wm_state_maximized_vert = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+    m_net_wm_state_fullscreen = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
     
     m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
     m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
@@ -421,8 +427,44 @@ void Ewmh::createAtoms() {
     m_net_wm_ping = XInternAtom(disp, "_NET_WM_PING", False);
 }
 
+
+void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
+    // fullscreen implies maximised, above dock layer, 
+    // and no decorations (or decorations offscreen)
+    WindowState *saved_state = getState(win);
+    if (value) {
+        // fullscreen on
+        if (!saved_state) { // not already fullscreen
+            saved_state = new WindowState(win.x(), win.y(), win.width(),
+                                          win.height(), win.layerNum(), win.decorationMask());
+            saveState(win, saved_state);
+
+            // actually make it fullscreen
+
+            // clear decorations
+            win.setDecorationMask(0);
+
+            // be xinerama aware
+            BScreen &screen = win.screen();
+            int head = screen.getHead(win.fbWindow());
+            win.moveResize(screen.getHeadX(head), screen.getHeadY(head),
+                           screen.getHeadWidth(head), screen.getHeadHeight(head));
+            win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+        }
+    } else { // turn off fullscreen
+        if (saved_state) { // no saved state, can't restore it
+            win.setDecorationMask(saved_state->decor);
+            win.moveResize(saved_state->x, saved_state->y,
+                           saved_state->width, saved_state->height);
+            win.moveToLayer(saved_state->layer);
+            clearState(win);
+            saved_state = 0;
+        }
+    }
+}
+
 // set window state
-void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) const {
+void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
 
     if (state == m_net_wm_state_sticky) { // STICKY
         if (value && !win.isStuck() ||
@@ -440,13 +482,13 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) const {
         if ((value && !win.isMaximized()) ||
             (!value && win.isMaximized()))
 		win.maximizeVertical();
+    } else if (state == m_net_wm_state_fullscreen) { // fullscreen
+        setFullscreen(win, value);
     }
-    
-	
 }
 
 // toggle window state
-void Ewmh::toggleState(FluxboxWindow &win, Atom state) const {
+void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
     if (state == m_net_wm_state_sticky) {
         win.stick();
     } else if (state == m_net_wm_state_shaded){
@@ -455,8 +497,9 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) const {
         win.maximizeHorizontal();
     } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
         win.maximizeVertical();
+    } else if (state == m_net_wm_state_fullscreen) { // fullscreen
+        setFullscreen(win, getState(win) == 0); // toggle current state
     }
-    
 }
 
 
@@ -476,4 +519,39 @@ void Ewmh::updateStrut(WinClient &winclient) {
                 winclient.screen().requestStrut(data[0], data[1], data[2], data[3]));
             winclient.screen().updateAvailableWorkspaceArea();
     }
+}
+
+Ewmh::WindowState::WindowState(int t_x, int t_y, 
+                               unsigned int t_width, 
+                               unsigned int t_height,
+                               int t_layer, unsigned int t_decor) :
+    x(t_x), y(t_y),
+    layer(t_layer),
+    width(t_width),
+    height(t_height),
+    decor(t_decor)
+{}
+
+Ewmh::WindowState *Ewmh::getState(FluxboxWindow &win) {
+    SavedState::iterator it = m_savedstate.find(&win);
+    if (it == m_savedstate.end())
+        return 0;
+    else
+        return it->second;
+}
+
+void Ewmh::clearState(FluxboxWindow &win) {
+    WindowState *state = 0;
+    SavedState::iterator it = m_savedstate.find(&win);
+    if (it == m_savedstate.end())
+        return;
+
+    state = it->second;
+
+    m_savedstate.erase(it);
+    delete state;
+}
+
+void Ewmh::saveState(FluxboxWindow &win, WindowState *state) {
+    m_savedstate[&win] = state;
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.231 2003/09/16 13:11:42 rathnor Exp $
+// $Id: Window.cc,v 1.232 2003/09/23 13:52:05 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1084,8 +1084,8 @@ void FluxboxWindow::getBlackboxHints() {
     }
 }
 
-void FluxboxWindow::move(int x, int y) {
-    moveResize(x, y, frame().width(), frame().height());
+void FluxboxWindow::move(int x, int y, int gravity) {
+    moveResize(x, y, frame().width(), frame().height(), gravity);
 }
 
 void FluxboxWindow::resize(unsigned int width, unsigned int height) {
@@ -1093,7 +1093,11 @@ void FluxboxWindow::resize(unsigned int width, unsigned int height) {
 }
 
 void FluxboxWindow::moveResize(int new_x, int new_y,
-                               unsigned int new_width, unsigned int new_height) {
+                               unsigned int new_width, unsigned int new_height, int gravity) {
+
+    if (gravity != ForgetGravity) {
+        frame().gravityTranslate(new_x, new_y, gravity, false);
+    }
 
     bool send_event = (frame().x() != new_x || frame().y() != new_y);
 

@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/23:
+  * Add support for _NET_WM_STATE_FULLSCREEN (Simon)
+    - fixes mozilla/firebird fullscreen
+    Ewmh.hh/cc Window.hh/cc
 *03/09/22:
   * Fix invisible minimize button for non-pixmap themes (Simon)
     WinButton.cc

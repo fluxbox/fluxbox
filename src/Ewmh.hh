@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.11 2003/08/27 21:06:04 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.12 2003/09/23 13:52:05 rathnor Exp $
 
 #include "AtomHandler.hh"
 
 #include <X11/Xatom.h>
 #include <vector>
+#include <map>
 
 class Ewmh:public AtomHandler {
 public:
@@ -50,16 +51,25 @@ public:
                             BScreen * screen, WinClient * const winclient);
 
     bool propertyNotify(WinClient &winclient, Atom the_property);
-    //ignore these ones
-    void updateFrameClose(FluxboxWindow &win) {}
+    void updateFrameClose(FluxboxWindow &win);
+
+    //ignore this one
     void updateClientClose(WinClient &winclient) {}
+
+    void setFullscreen(FluxboxWindow &win, bool value);
 
 private:
 	
+    typedef struct WindowState {
+        WindowState(int x, int y, unsigned int width, unsigned int height, int layer, unsigned int decor);
+        int x, y, layer;
+        unsigned int width, height, decor;
+    } WindowState;
+
     enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
-	
-    void setState(FluxboxWindow &win, Atom state, bool value) const;
-    void toggleState(FluxboxWindow &win, Atom state) const;
+
+    void setState(FluxboxWindow &win, Atom state, bool value);
+    void toggleState(FluxboxWindow &win, Atom state);
     void createAtoms();
     void updateStrut(WinClient &winclient);
 
@@ -76,6 +86,7 @@ private:
     Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, m_net_wm_window_type,
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
 	m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
+        m_net_wm_state_fullscreen,
         m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
         m_net_wm_handled_icons;
 			
@@ -83,4 +94,11 @@ private:
     Atom m_net_wm_ping;
 
     std::vector<Window> m_windows;
+    typedef std::map<FluxboxWindow *, WindowState *> SavedState;
+    SavedState m_savedstate;
+
+    WindowState *getState(FluxboxWindow &win);
+    void clearState(FluxboxWindow &win);
+    void saveState(FluxboxWindow &win, WindowState *state);
+
 };

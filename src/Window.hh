@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.93 2003/09/12 16:30:21 fluxgen Exp $
+// $Id: Window.hh,v 1.94 2003/09/23 13:52:05 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -206,11 +206,11 @@ public:
     void restore(WinClient *client, bool remap);
     void restore(bool remap);
     /// move frame to x, y
-    void move(int x, int y);
+    void move(int x, int y, int gravity = ForgetGravity);
     /// resize frame to width, height
     void resize(unsigned int width, unsigned int height);
     /// move and resize frame to pox x,y and size width, height
-    void moveResize(int x, int y, unsigned int width, unsigned int height);
+    void moveResize(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity);
 
     void setWorkspace(int n);
     void changeBlackboxHints(const BlackboxHints &bh);
