@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/02:
+  * Make grips children of handle (Simon)
+    - Fixes parentrelative grip texture
+    FbWinFrame.hh/cc
   * Fix updating of window on focus change (Simon)
     FbWinFrame.cc
 *03/09/29:

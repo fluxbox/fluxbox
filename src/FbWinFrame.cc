@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.55 2003/10/02 13:09:24 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.56 2003/10/02 14:14:45 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -57,18 +57,18 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
 	    ButtonPressMask | ButtonReleaseMask |
             ButtonMotionMask | ExposureMask |
             EnterWindowMask | LeaveWindowMask),
-    m_grip_right(m_window, 0, 0, 10, 4,
-                 ButtonPressMask | ButtonReleaseMask |
-                 ButtonMotionMask | ExposureMask |
-                 EnterWindowMask | LeaveWindowMask),
-    m_grip_left(m_window, 0, 0, 10, 4,
-		ButtonPressMask | ButtonReleaseMask |
-		ButtonMotionMask | ExposureMask |
-		EnterWindowMask | LeaveWindowMask),
     m_handle(m_window, 0, 0, 100, 5,
              ButtonPressMask | ButtonReleaseMask |
              ButtonMotionMask | ExposureMask |
              EnterWindowMask | LeaveWindowMask),
+    m_grip_right(m_handle, 0, 0, 10, 4,
+                 ButtonPressMask | ButtonReleaseMask |
+                 ButtonMotionMask | ExposureMask |
+                 EnterWindowMask | LeaveWindowMask),
+    m_grip_left(m_handle, 0, 0, 10, 4,
+		ButtonPressMask | ButtonReleaseMask |
+		ButtonMotionMask | ExposureMask |
+		EnterWindowMask | LeaveWindowMask),
     m_clientarea(m_window, 0, 0, 100, 100,
                  ButtonPressMask | ButtonReleaseMask |
                  ButtonMotionMask | ExposureMask |
@@ -432,9 +432,10 @@ void FbWinFrame::hideHandle() {
 void FbWinFrame::showHandle() {
     if (m_use_handle)
         return;
+
     m_handle.show();
-    m_grip_left.show();
-    m_grip_right.show();
+    m_handle.showSubwindows(); // shows grips
+
     m_use_handle = true;
     m_window.resize(m_window.width(), m_window.height() + m_handle.height() +
                     m_handle.borderWidth());
@@ -640,17 +641,16 @@ void FbWinFrame::reconfigure() {
             // align handle and grips
             const int grip_height = m_handle.height();
             const int grip_width = 20; //TODO
-        
+            const int handle_bw = static_cast<signed>(m_handle.borderWidth());
+
             const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
+            m_handle.moveResize(-handle_bw, ypos,
+                                m_window.width(), grip_height);
         
-            m_grip_left.moveResize(-m_handle.borderWidth(), ypos,
+            m_grip_left.moveResize(-handle_bw, -handle_bw,
                                    grip_width, grip_height);
-        
-            m_handle.moveResize(grip_width, ypos,
-                                m_window.width() - grip_width*2 - m_handle.borderWidth()*2, 
-                                grip_height);
-        
-            m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
+
+            m_grip_right.moveResize(m_handle.width() - grip_width - handle_bw, -handle_bw,
                                     grip_width, grip_height);
         }
     }        
@@ -881,6 +881,10 @@ void FbWinFrame::renderHandles() {
         }                
     }
 
+    m_handle.setAlpha(theme().alpha());
+    m_handle.clear();
+    m_handle.updateTransparent();
+
     m_grip_left.setAlpha(theme().alpha());
     m_grip_left.clear();
     m_grip_left.updateTransparent();
@@ -889,10 +893,6 @@ void FbWinFrame::renderHandles() {
     m_grip_right.clear();
     m_grip_right.updateTransparent();
 
-    m_handle.setAlpha(theme().alpha());
-    m_handle.clear();
-    m_handle.updateTransparent();
-    
 }
 
 void FbWinFrame::renderButtons() {
@@ -939,6 +939,8 @@ void FbWinFrame::init() {
     m_disable_shape = false;
 
     m_current_label = 0; // no focused button at first
+
+    m_handle.showSubwindows();
 
     // clear pixmaps
     m_title_focused_pm = m_title_unfocused_pm = 0;
