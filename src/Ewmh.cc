@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.42 2004/01/21 15:52:21 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.43 2004/02/14 12:15:35 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -93,7 +93,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         m_net_current_desktop,
         m_net_active_window,
         m_net_close_window,
-        m_net_moveresize_window,
+        m_net_moveresize_window,        
         m_net_workarea,
 
         // desktop properties
@@ -494,7 +494,8 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 
 
 // return true if we did handle the atom here
-bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, WinClient * const winclient) {
+bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, 
+                              BScreen * screen, WinClient * const winclient) {
     if (ce.message_type == m_net_wm_desktop) {
         if (screen == 0)
             return true;
@@ -577,11 +578,12 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, W
     } else if (ce.message_type == m_net_close_window) {
         if (winclient == 0)
             return true;
+        cerr<<"We got _NET_CLOSE_WINDOW!"<<endl;
         // ce.window = window to close (which in this case is the win argument)
         winclient->sendClose();
         return true;
     } else if (ce.message_type == m_net_moveresize_window) {
-        if (winclient == 0 && winclient->fbwindow())
+        if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
         // ce.data.l[0] = gravity and flags
         // ce.data.l[1] = x
