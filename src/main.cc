@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.19 2003/07/10 12:01:17 fluxgen Exp $
+// $Id: main.cc,v 1.20 2003/07/11 15:03:02 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -61,46 +61,62 @@ void showInfo(ostream &ostr) {
         NOT<<
 #endif // DEBUG                
         "DEBUG"<<endl<<
+
 #ifndef SLIT
         NOT<<
 #endif // SLIT
         "SLIT"<<endl<<
+
+#ifndef USE_TOOLBAR
+        NOT<<
+#endif // USE_TOOLBAR
+        "TOOLBAR"<<endl<<
+
 #ifndef HAVE_XPM
         NOT<<
 #endif // HAVE_XPM
         "XPM"<<endl<<
+
 #ifndef USE_GNOME
         NOT<<
 #endif // USE_GNOME 
         "GNOME"<<endl<<
+
 #ifndef KDE
         NOT<<
 #endif // KDE
         "KDE"<<endl<<
+
 #ifndef USE_NEWWMSPEC
         NOT<<
 #endif // USE_NEWWMSPEC
         "EWMH"<<endl<<
+
 #ifndef REMEMBER
         NOT<<
 #endif // REMEMBER
         "REMEMBER"<<endl<<
+
 #ifndef SHAPE
         NOT<<
 #endif // SHAPE
         "SHAPE"<<endl<<
+
 #ifndef USE_XFT
         NOT<<
 #endif // USE_XFT
         "XFT"<<endl<<
+
 #ifndef USE_XMB
         NOT<<
 #endif // USE_XMB
         "XMB"<<endl<<
+
 #ifndef XINERAMA
         NOT<<
 #endif // XINERAMA
         "XINERAMA"<<endl<<
+
 #ifndef HAVE_XRENDER
         NOT<<
 #endif // HAVE_XRENDER
