@@ -6,6 +6,18 @@ Changes for 0.9.2:
    * Add UnderMousePlacement policy, plus minor positioning fix (Simon)
      -> Patch originally contributed by "Mike" (lgn@users.sf)
      Screen.hh Workspace.cc fluxbox.cc Window.cc
+   * Fixed so WinButton updates sticky state from FluxboxWindow (Henrik)
+     WinButton.hh/cc, Screen.cc   
+   * Added basic drawable functions to FbWindow  (Henrik)
+      * drawLine, drawRect, fillRect, copyArea
+     FbWindow.hh/cc
+   * Fixed SlitTheme (Henrik)
+     Slit.cc/hh	 
+   * Removed old theme engine (Henrik)
+     Theme.hh/cc
+   * Added RootTheme.hh/cc (Henrik)
+     Screen.hh/cc, Workspace.cc, Slit.cc, IconBar.cc, Toolbar.cc
+	 fluxbox.cc
 *03/04/24:
   * updated fluxbox-generate_menu (Han)
    - decent reply to -- longopts

@@ -100,7 +100,7 @@ Release:      0.9.2
 Approx Date:  5 May, 2003
 Major Features:
  - Integration of Remember patch        (Simon)
- = Transparency                         (Henrik)
+ * Transparency                         (Henrik)
 Minor Features:
  - more keybinding actions              (Both)
  * directional focus movement           (Simon)
@@ -108,7 +108,7 @@ Minor Features:
  * snap to windows                      (Simon)
  - improved command-line help option    (Henrik)
  - pixmap buttons                       (Henrik)
- = Shaped menu/slit/toolbar             (Henrik)
+ + Shaped menu/slit/toolbar             (Henrik)
 Bugfixes/lower priority:
  - Bugs from 0.9.1                      (Both)
  - stop window moving from borders      (Simon)
