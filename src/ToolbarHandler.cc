@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.26 2003/07/25 10:03:55 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.27 2003/08/11 20:51:32 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -191,13 +191,11 @@ void ToolbarHandler::setMode(ToolbarMode newmode, bool initialise) {
     
 
     if (newmode == NONE) {
-        // disableIconBar will clean up
-        m_toolbar->disableIconBar();
+        //!! TODO disable iconbar
     } else {
         // rebuild it
         // be sure the iconbar is on
-        m_toolbar->enableIconBar();
-        m_toolbar->delAllIcons();
+        //!! TODO enable iconbar
     }
 
     if (initialise)
@@ -208,74 +206,27 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
     if (&m_screen != &screen) 
         return;
 
-    if (m_toolbar.get() != 0)
-        m_toolbar->disableUpdates();
-
     switch (mode()) {
     case OFF:
         break;
     case NONE:
         break;
-    case ALLWINDOWS: {
-        BScreen::Workspaces::const_iterator workspace_it = m_screen.getWorkspacesList().begin();
-        BScreen::Workspaces::const_iterator workspace_it_end = m_screen.getWorkspacesList().end();
-        for (; workspace_it != workspace_it_end; ++workspace_it) {
-            Workspace::Windows &wins = (*workspace_it)->windowList();
-            Workspace::Windows::iterator wit = wins.begin();
-            Workspace::Windows::iterator wit_end = wins.end();
-            for (; wit != wit_end; ++wit) {
+    case ALLWINDOWS:
+        //!! TODO: change iconbar mode
 
-                if (!m_toolbar->containsIcon(**wit) && *wit != 0)
-                    m_toolbar->addIcon(*wit);
-/*
-                FluxboxWindow::ClientList::iterator cit = (*wit)->clientList().begin();
-                FluxboxWindow::ClientList::iterator cit_end = (*wit)->clientList().end();
-                for (; cit != cit_end; ++cit)
-                    m_toolbar->addIcon(*(*cit));
-*/
-            }
-        }
-    }
     // fall through and add icons
     case LASTMODE:
-    case ICONS: {
-        BScreen::Icons &iconlist = m_screen.getIconList();
-        BScreen::Icons::iterator iconit = iconlist.begin();
-        BScreen::Icons::iterator iconit_end = iconlist.end();
-        for(; iconit != iconit_end; ++iconit) {
-            if (*iconit == 0)
-                continue;
-            m_toolbar->addIcon(*iconit);
-        }
-    }
+    case ICONS:
+        //!! TODO: update iconbar mode
     break;
-    case WORKSPACE: {
-        Workspace::Windows &wins = m_screen.currentWorkspace()->windowList();
-        Workspace::Windows::iterator wit = wins.begin();
-        Workspace::Windows::iterator wit_end = wins.end();
-        for (; wit != wit_end; ++wit) {
+    case WORKSPACE: 
+        //!! TODO: update iconbar mode
 
-            if (!m_toolbar->containsIcon(**wit) && *wit != 0)
-                m_toolbar->addIcon(*wit);
-        }
-    }
     // fall through and add icons for this workspace
-    case WORKSPACEICONS: {
-        m_current_workspace = m_screen.currentWorkspaceID();
-        
-        BScreen::Icons &wiconlist = m_screen.getIconList();
-        BScreen::Icons::iterator iconit = wiconlist.begin();
-        BScreen::Icons::iterator iconit_end = wiconlist.end();
-        for(; iconit != iconit_end; ++iconit) {
-            if ((*iconit)->workspaceNumber() == m_current_workspace)
-                m_toolbar->addIcon(*iconit);
-        }
-    }
+    case WORKSPACEICONS: 
+        //!! TODO: update iconbar mode
     break;
     }
-
-    if (m_toolbar.get() != 0)
-        m_toolbar->enableUpdates();
 
 }
 
@@ -288,20 +239,14 @@ void ToolbarHandler::setupFrame(FluxboxWindow &win) {
     case NONE:
         break;
     case WORKSPACE:
-        if (win.workspaceNumber() == m_current_workspace)
-            m_toolbar->addIcon(&win);
         break;
     case WORKSPACEICONS:
-        if (win.workspaceNumber() != m_current_workspace) 
-            break;
+        break;
         // else fall through and add the icon
     case LASTMODE:
     case ICONS:
-        if (win.isIconic())
-            m_toolbar->addIcon(&win);
         break;
     case ALLWINDOWS:
-        m_toolbar->addIcon(&win);
         break;
     }
 }
@@ -321,16 +266,10 @@ void ToolbarHandler::updateFrameClose(FluxboxWindow &win) {
         // else fall through and remove the icon
     case LASTMODE:
     case ICONS:
-        if (win.isIconic()) {
-            m_toolbar->delIcon(&win);
-        }
         break;
     case WORKSPACE:
-        if (win.isStuck() || win.workspaceNumber() == m_current_workspace)
-            m_toolbar->delIcon(&win);
         break;
     case ALLWINDOWS:
-        m_toolbar->delIcon(&win);
         break;
     }
 }
@@ -352,15 +291,6 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
         // else fall through and do the same as icons (knowing it is the right ws)
     case LASTMODE:
     case ICONS:
-        // if the window is iconic (it mustn't have been before), then add it
-        // else remove it
-        if (win.isIconic()) {
-            if (!m_toolbar->containsIcon(win)) {
-                m_toolbar->addIcon(&win);
-            }
-        } else {
-            m_toolbar->delIcon(&win);
-        }
         break;
     }
 }
@@ -376,17 +306,9 @@ void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
         return;
     
     if (win.workspaceNumber() == m_current_workspace) {
-        //!! TODO
-        // this shouldn't be needed, but is until Workspaces get fixed so that
-        // you only move between them, you don't 'add' and 'remove'
-        // alternatively, fix reassocaiteWindow so that the iconic stuff is
-        // done elsewhere
-        if (!m_toolbar->containsIcon(win))
-            m_toolbar->addIcon(&win);
+
     } else {
-        // relies on the fact that this runs but does nothing if window isn't contained.
-        if (!win.isStuck())
-            m_toolbar->delIcon(&win);
+
     }
 }
 
@@ -394,13 +316,8 @@ void ToolbarHandler::updateCurrentWorkspace(BScreen &screen) {
     if (&screen != &m_screen || mode() == OFF)
         return;
 
-    m_toolbar->redrawWorkspaceLabel(true);
-    if (mode() != NONE) {
-        m_toolbar->disableUpdates();
-        m_toolbar->delAllIcons(true);
+    if (mode() != NONE)
         initForScreen(m_screen);
-        m_toolbar->enableUpdates();
-    }
 
 }
 
