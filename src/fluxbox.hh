@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.7 2002/01/18 01:23:54 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.8 2002/01/20 02:18:18 fluxgen Exp $
 
 #ifndef	 _FLUXBOX_HH_
 #define	 _FLUXBOX_HH_
@@ -211,13 +211,11 @@ private:
 	} MenuTimestamp;
 
 	struct resource {
-		Time double_click_interval;
-		
+		Time double_click_interval;		
 		timeval auto_raise_delay;
-		//unsigned long cache_life, cache_max;
 	} resource;
 		
-	ResourceManager m_resourcemanager;
+	ResourceManager m_resourcemanager, m_screen_rm;
 	
 	//--- Resources
 	Resource<bool> m_rc_tabs, m_rc_iconbar;
