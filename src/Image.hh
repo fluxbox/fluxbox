@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.14 2002/09/15 09:41:24 fluxgen Exp $
+// $Id: Image.hh,v 1.15 2002/10/13 21:57:07 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -31,6 +31,10 @@
 #include "BaseDisplay.hh"
 #include "Color.hh"
 #include "Texture.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
