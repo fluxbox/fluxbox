@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.5 2002/01/27 13:08:53 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.6 2002/02/11 10:57:23 fluxgen Exp $
 
 // use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -87,6 +87,10 @@
 #	include <process.h>
 #endif //	 HAVE_PROCESS_H						 __EMX__
 
+#ifdef DEBUG
+#include <iostream>
+using namespace std;
+#endif
 // X error handler to handle any and all X errors while the application is
 // running
 static Bool internal_error = False;
@@ -384,34 +388,21 @@ m_server_grabs(0)
 
 	XSetErrorHandler((XErrorHandler) handleXErrors);
 
-	timerList = new LinkedList<BTimer>;
-
-	screenInfoList = new LinkedList<ScreenInfo>;
 	int i;
 	for (i = 0; i < number_of_screens; i++) {
 		ScreenInfo *screeninfo = new ScreenInfo(this, i);
-		screenInfoList->insert(screeninfo);
+		screenInfoList.push_back(screeninfo);
 	}
 }
 
 
 BaseDisplay::~BaseDisplay(void) {
 	
-	while (screenInfoList->count()) {
-		ScreenInfo *si = screenInfoList->first();
-
-		screenInfoList->remove(si);
-	 	delete si;
+	ScreenInfoList::iterator it = screenInfoList.begin();
+	ScreenInfoList::iterator it_end = screenInfoList.end();
+	for (; it != it_end; ++it) {
+		delete (*it);
 	}
-	
-
-	delete screenInfoList;
-
-	// we don't create the BTimers, we don't delete them
-	while (timerList->count())
-		timerList->remove(0);
-
-	delete timerList;
 
 	XCloseDisplay(m_display);
 }
@@ -450,12 +441,12 @@ void BaseDisplay::eventLoop(void) {
 			FD_ZERO(&rfds);
 			FD_SET(xfd, &rfds);
 
-			if (timerList->count()) {
+			if (timerList.size() > 0) {
 				gettimeofday(&now, 0);
 
 				tm.tv_sec = tm.tv_usec = 0l;
 
-				BTimer *timer = timerList->first();
+				BTimer *timer = timerList.front();
 
 				tm.tv_sec = timer->getStartTime().tv_sec +
 					timer->getTimeout().tv_sec - now.tv_sec;
@@ -485,24 +476,33 @@ void BaseDisplay::eventLoop(void) {
 			// check for timer timeout
 			gettimeofday(&now, 0);
 
-			LinkedListIterator<BTimer> it(timerList);
-			for(; it.current(); it++) {
-				tm.tv_sec = it.current()->getStartTime().tv_sec +
-					it.current()->getTimeout().tv_sec;
-				tm.tv_usec = it.current()->getStartTime().tv_usec +
-					it.current()->getTimeout().tv_usec;
+			TimerList::iterator it = timerList.begin();
+			//must check end ...the timer might remove
+			//it self from the list (should be fixed in the future)
+			for(; it != timerList.end(); ++it) {
+	
+				tm.tv_sec = (*it)->getStartTime().tv_sec +
+					(*it)->getTimeout().tv_sec;
+				tm.tv_usec = (*it)->getStartTime().tv_usec +
+					(*it)->getTimeout().tv_usec;
 
 				if ((now.tv_sec < tm.tv_sec) ||
 						(now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec))
 					break;
 
-				it.current()->fireTimeout();
+				(*it)->fireTimeout();
 
 				// restart the current timer so that the start time is updated
-				if (! it.current()->doOnce())
-					it.current()->start();
-				else 
-					it.current()->stop();
+				if (! (*it)->doOnce())
+					(*it)->start();
+				else { 
+					(*it)->stop();
+					// must do this because the stupid cyclic dep 
+					// between BaseDisplay and BTimer, the timer removes
+					// it self from the list
+					it--;
+				}
+					
 			}
 		}
 	}
@@ -535,23 +535,24 @@ void BaseDisplay::ungrab(void) {
 
 
 void BaseDisplay::addTimer(BTimer *timer) {
-	if (! timer) return;
+	assert(timer);
 
-	LinkedListIterator<BTimer> it(timerList);
+	TimerList::iterator it = timerList.begin();
+	TimerList::iterator it_end = timerList.end();
 	int index = 0;
-	for (; it.current(); it++, index++) {
-		if ((it.current()->getTimeout().tv_sec > timer->getTimeout().tv_sec) ||
-				((it.current()->getTimeout().tv_sec == timer->getTimeout().tv_sec) &&
-				(it.current()->getTimeout().tv_usec >= timer->getTimeout().tv_usec)))
+	for (; it != it_end; ++it, ++index) {
+		if (((*it)->getTimeout().tv_sec > timer->getTimeout().tv_sec) ||
+				(((*it)->getTimeout().tv_sec == timer->getTimeout().tv_sec) &&
+				((*it)->getTimeout().tv_usec >= timer->getTimeout().tv_usec))) {
 			break;
+		}
 	}
-
-	timerList->insert(timer, index);
+	timerList.insert(it, timer);
 }
 
 
 void BaseDisplay::removeTimer(BTimer *timer) {
-	timerList->remove(timer);
+	timerList.remove(timer);
 }
 
 
@@ -592,10 +593,10 @@ ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
 		XFree(vinfo_return);
 	}
 
-	if (visual)
+	if (visual) {
 		colormap = XCreateColormap(basedisplay->getXDisplay(), root_window,
 			visual, AllocNone);
-	else {
+	} else {
 		visual = DefaultVisual(basedisplay->getXDisplay(), screen_number);
 		colormap = DefaultColormap(basedisplay->getXDisplay(), screen_number);
 	}
