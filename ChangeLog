@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/29:
+  * Fix to make menuseparators not selectable (Mathias)
+    FbTk/Menu.cc
   * Fix bug #1026929 (Mathias)
     util/fbrun/FbRun.cc
 *04/09/19:
