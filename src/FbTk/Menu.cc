@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.23 2003/05/24 05:49:31 rathnor Exp $
+// $Id: Menu.cc,v 1.24 2003/05/24 12:34:16 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -181,10 +181,7 @@ Menu::~Menu() {
     if (shown && shown->window() == window())
         shown = 0;
 
-    while (!menuitems.empty()) {
-        delete menuitems.back();
-        menuitems.pop_back();
-    }
+    removeAll();
 
     if (menu.title_pixmap)
         m_image_ctrl.removeImage(menu.title_pixmap);
