@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.94 2003/01/07 02:06:06 fluxgen Exp $
+// $Id: Screen.cc,v 1.95 2003/01/09 17:41:02 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -33,16 +33,15 @@
 #include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "Rootmenu.hh"
 #include "Workspacemenu.hh"
 #include "Configmenu.hh"
-#include "Iconmenu.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
 #include "DirHelper.hh"
 #include "WinButton.hh"
 #include "SimpleCommand.hh"
 #include "MenuTheme.hh"
+#include "FbCommands.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -131,6 +130,9 @@ int dcmp(const void *one, const void *two) {
     return (strcmp((*(char **) one), (*(char **) two)));
 }
 
+FbTk::Menu *createMenuFromScreen(BScreen &screen) {
+    return new FbTk::Menu(*screen.menuTheme(), screen.getScreenNumber(), *screen.getImageControl());
+}
 };
 
 //---------- resource manipulators ---------
@@ -235,6 +237,38 @@ getString() {
     return string("BottomCenter");
 }
 
+namespace {
+class AddWorkspaceCmd:public FbTk::Command {
+public:
+    explicit AddWorkspaceCmd(BScreen &scrn):m_screen(scrn) { }
+    void execute() {
+        m_screen.addWorkspace();
+    }
+private:
+    BScreen &m_screen;
+};
+
+class RemoveLastWorkspaceCmd:public FbTk::Command {
+public:
+    explicit RemoveLastWorkspaceCmd(BScreen &scrn):m_screen(scrn) { }
+    void execute() {
+        m_screen.removeLastWorkspace();
+    }
+private:
+    BScreen &m_screen;
+};
+
+void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
+    menu.removeAll(); // clear all items
+    using namespace FbTk;
+
+    RefCount<Command> new_workspace(new AddWorkspaceCmd(scr));
+    RefCount<Command> remove_last(new RemoveLastWorkspaceCmd(scr));
+    menu.insert("New Workspace", new_workspace);
+    menu.insert("Remove Last", remove_last);
+}
+
+};
 
 BScreen::ScreenResource::ScreenResource(ResourceManager &rm, 
                                         const std::string &scrname, const std::string &altscrname):
@@ -275,7 +309,7 @@ BScreen::BScreen(ResourceManager &rm,
                              m_currentworkspace_sig(*this), // current workspace signal
                              theme(0), m_windowtheme(scrn),
                              m_menutheme(new FbTk::MenuTheme(scrn)),
-                             resource(rm, screenname, altscreenname)
+                              resource(rm, screenname, altscreenname)
 {
     Display *disp = BaseDisplay::getXDisplay();
 
@@ -297,9 +331,9 @@ BScreen::BScreen(ResourceManager &rm,
     fprintf(stderr,
             i18n->
             getMessage(
-                FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
-                "BScreen::BScreen: managing screen %d "
-                "using visual 0x%lx, depth %d\n"),
+                       FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
+                       "BScreen::BScreen: managing screen %d "
+                       "using visual 0x%lx, depth %d\n"),
             getScreenNumber(), XVisualIDFromVisual(getVisual()),
             getDepth());
 
@@ -341,8 +375,8 @@ BScreen::BScreen(ResourceManager &rm,
     }
 
     const char *s =	i18n->getMessage(
-        FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
-        "W: 0000 x H: 0000"); // W is wide!
+                                         FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
+                                         "W: 0000 x H: 0000"); // W is wide!
 	
     int l = strlen(s);
 
@@ -388,8 +422,9 @@ BScreen::BScreen(ResourceManager &rm,
         }
     }
 
-    workspacemenu = new Workspacemenu(this);
-    m_iconmenu = new Iconmenu(this);	
+    workspacemenu.reset(new FbTk::Menu(*m_menutheme, scrn, *image_control));
+    setupWorkspacemenu(*this, *workspacemenu);
+
     configmenu = new Configmenu(this);
 
     Workspace *wkspc = (Workspace *) 0;
@@ -404,13 +439,6 @@ BScreen::BScreen(ResourceManager &rm,
         workspacesList.push_back(wkspc);
         workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
     }
-
-    workspacemenu->insert(i18n->
-                          getMessage(
-                              FBNLS::IconSet, FBNLS::IconIcons,
-                              "Icons"),
-                          m_iconmenu);
-    workspacemenu->update();
 
     current_workspace = workspacesList.front();
     workspacemenu->setItemSelected(2, true);
@@ -476,7 +504,7 @@ BScreen::BScreen(ResourceManager &rm,
                 continue;
 
             if (attrib.map_state != IsUnmapped) {
-				FluxboxWindow *win = createWindow(children[i]);
+                FluxboxWindow *win = createWindow(children[i]);
 
                 if (win) {
                     XMapRequestEvent mre;
@@ -530,8 +558,6 @@ BScreen::~BScreen() {
     }
     netizenList.clear();
 
-    delete workspacemenu;
-    delete m_iconmenu;
     delete configmenu;
 
     delete image_control;
@@ -560,7 +586,7 @@ unsigned int BScreen::getMaxBottom() const {
 }
 
 void BScreen::iconUpdate() { 
-    m_iconmenu->update();
+
 }
 
 void BScreen::reconfigure() {
@@ -632,7 +658,6 @@ void BScreen::reconfigure() {
 
     //reconfigure menus
     workspacemenu->reconfigure();
-    m_iconmenu->reconfigure();
 
     configmenu->reconfigure();
 	
@@ -698,8 +723,6 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
     iconList.push_back(w);
 
-    m_iconmenu->insert(w->getIconTitle().c_str());
-    m_iconmenu->update();
     m_toolbar->addIcon(w);
 }
 
@@ -719,8 +742,6 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 	}
     }
 		
-    m_iconmenu->remove(w->getWindowNumber());
-    m_iconmenu->update();
     m_toolbar->delIcon(w);
 	
     Icons::iterator it = iconList.begin();
@@ -1130,8 +1151,6 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
     Window session_stack[(workspace_stack.size() + workspacesList.size() + rootmenuList.size() + 30)];
     int i = 0;	
-    XRaiseWindow(getBaseDisplay()->getXDisplay(), m_iconmenu->windowID());
-    session_stack[i++] = m_iconmenu->windowID();
 
     Workspaces::iterator wit = workspacesList.begin();
     Workspaces::iterator wit_end = workspacesList.end();
@@ -1359,7 +1378,7 @@ void BScreen::initMenu() {
         while (m_rootmenu->numberOfItems())
             m_rootmenu->remove(0);			
     } else
-        m_rootmenu.reset(new Rootmenu(this));
+        m_rootmenu.reset(new FbTk::Menu(*m_menutheme.get(), getScreenNumber(), *getImageControl()));
 
     bool defaultMenu = true;
     Fluxbox * const fb = Fluxbox::instance();
@@ -1383,7 +1402,7 @@ void BScreen::initMenu() {
                             err = StringUtil::getStringBetween(label, line.c_str()+pos, '(', ')');
                             if (err>0) {
                                 m_rootmenu->setLabel(label.c_str());
-                                defaultMenu = parseMenuFile(menu_file, m_rootmenu.get(), row);
+                                defaultMenu = parseMenuFile(menu_file, *m_rootmenu.get(), row);
                             } else
                                 cerr<<"Error in menufile. Line("<<row<<")"<<endl;
                             break;
@@ -1393,8 +1412,8 @@ void BScreen::initMenu() {
             } else {
                 fprintf(stderr,
                         i18n->getMessage(
-                            FBNLS::ScreenSet, FBNLS::ScreenEmptyMenuFile,
-                            "%s: Empty menu file"),
+                                         FBNLS::ScreenSet, FBNLS::ScreenEmptyMenuFile,
+                                         "%s: Empty menu file"),
                         fb->getMenuFilename());
             }
             menu_file.close();
@@ -1403,28 +1422,28 @@ void BScreen::initMenu() {
     }
 
     if (defaultMenu) {
+        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
+        FbTk::RefCount<FbTk::Command> exit_fb(new FbCommands::ExitFluxboxCmd());
+        FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm"));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert(i18n->getMessage(
-            FBNLS::ScreenSet, FBNLS::Screenxterm,
-            "xterm"),
-                         BScreen::EXECUTE,
-                         i18n->getMessage(
-                             FBNLS::ScreenSet, FBNLS::Screenxterm,
-                             "xterm"));
+                                            FBNLS::ScreenSet, FBNLS::Screenxterm,
+                                            "xterm"),
+                           execute_xterm);
         m_rootmenu->insert(i18n->getMessage(
-            FBNLS::ScreenSet, FBNLS::ScreenRestart,
-            "Restart"),
-                         BScreen::RESTART);
+                                            FBNLS::ScreenSet, FBNLS::ScreenRestart,
+                                            "Restart"),
+                           restart_fb);
         m_rootmenu->insert(i18n->getMessage(
-            FBNLS::ScreenSet, FBNLS::ScreenExit,
-            "Exit"),
-                         BScreen::EXIT);
+                                            FBNLS::ScreenSet, FBNLS::ScreenExit,
+                                            "Exit"),
+                           exit_fb);
     } else
         fb->saveMenuFilename(fb->getMenuFilename());
 }
 
 // looks through a menufile and adds correct items to the root-menu.
-bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
+bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
 	
     string line;
 
@@ -1454,69 +1473,73 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 
                 I18n *i18n = I18n::instance();
                 if (str_key == "end") {
-                    return ((menu->numberOfItems() == 0) ? true : false);
+                    return ((menu.numberOfItems() == 0) ? true : false);
                 } else if (str_key == "nop") { 
-                    menu->insert(str_label.c_str());
+                    menu.insert(str_label.c_str());
                 } else if (str_key == "exec") { // exec
                     if (!(str_label.size() && str_cmd.size())) {
                         fprintf(stderr,
                                 i18n->getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenEXECError,
-                                    "BScreen::parseMenuFile: [exec] error, "
-                                    "no menu label and/or command defined\n"));
+                                                 FBNLS::ScreenSet, FBNLS::ScreenEXECError,
+                                                 "BScreen::parseMenuFile: [exec] error, "
+                                                 "no menu label and/or command defined\n"));
                         cerr<<"Row: "<<row<<endl;
-                    } else
-                        menu->insert(str_label.c_str(), BScreen::EXECUTE, str_cmd.c_str());
-
+                    } else {
+                        FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd));
+                        menu.insert(str_label.c_str(), exec_cmd);
+                    }
                 } else if (str_key == "exit") { // exit
                     if (!str_label.size()) {
                         fprintf(stderr,
                                 i18n->getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenEXITError,
-                                    "BScreen::parseMenuFile: [exit] error, "
-                                    "no menu label defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else
-                        menu->insert(str_label.c_str(), BScreen::EXIT);
-                } // end of exit
-                else if (str_key == "style") {	// style
-                    if (!( str_label.size() && str_cmd.size())) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
-                                    "BScreen::parseMenuFile: [style] error, "
-                                    "no menu label and/or filename defined\n"));
+                                                 FBNLS::ScreenSet, FBNLS::ScreenEXITError,
+                                                 "BScreen::parseMenuFile: [exit] error, "
+                                                 "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        // perform shell style ~ home directory expansion
-                        // and insert style
-                        menu->insert(str_label.c_str(), BScreen::SETSTYLE, 
-                                     StringUtil::expandFilename(str_cmd).c_str());
-						
+                        FbTk::RefCount<FbTk::Command> exit_fb_cmd(new FbCommands::ExitFluxboxCmd());
+                        menu.insert(str_label.c_str(), exit_fb_cmd);
                     }
-                } // end of style
-				
-                else if (str_key == "config") {
-                    if (! str_label.size()) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
-                                    "BScreen::parseMenufile: [config] error, "
-                                    "no label defined"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else
-                        menu->insert(str_label.c_str(), configmenu);
-                } // end of config
+                } // end of exit
+                /*else if (str_key == "style") {	// style
+                  if (!( str_label.size() && str_cmd.size())) {
+                  fprintf(stderr,
+                  i18n->
+                  getMessage(
+                  FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
+                  "BScreen::parseMenuFile: [style] error, "
+                  "no menu label and/or filename defined\n"));
+                  cerr<<"Row: "<<row<<endl;
+                  } else {
+                  // perform shell style ~ home directory expansion
+                  // and insert style
+                  menu->insert(str_label.c_str(), BScreen::SETSTYLE, 
+                  StringUtil::expandFilename(str_cmd).c_str());
+						
+                  }
+                  } // end of style
+		*/		
+                /*                else if (str_key == "config") {
+                                  if (! str_label.size()) {
+                                  fprintf(stderr,
+                                  i18n->
+                                  getMessage(
+                                  FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
+                                  "BScreen::parseMenufile: [config] error, "
+                                  "no label defined"));
+                                  cerr<<"Row: "<<row<<endl;
+                                  } else
+                                  menu.insert(str_label.c_str(), configmenu);
+                                  } // end of config
+                */
                 else if ( str_key == "include") { // include
                     if (!str_label.size()) {
                         fprintf(stderr,
                                 i18n->
                                 getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
-                                    "BScreen::parseMenuFile: [include] error, "
-                                    "no filename defined\n"));
+                                           FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
+                                           "BScreen::parseMenuFile: [include] error, "
+                                           "no filename defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {	// start of else 'x'
                         // perform shell style ~ home directory expansion
@@ -1532,9 +1555,9 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
                                     fprintf(stderr,
                                             i18n->
                                             getMessage(
-                                                FBNLS::ScreenSet, FBNLS::ScreenINCLUDEErrorReg,
-                                                "BScreen::parseMenuFile: [include] error: "
-                                                "'%s' is not a regular file\n"), newfile.c_str());
+                                                       FBNLS::ScreenSet, FBNLS::ScreenINCLUDEErrorReg,
+                                                       "BScreen::parseMenuFile: [include] error: "
+                                                       "'%s' is not a regular file\n"), newfile.c_str());
                                     cerr<<"Row: "<<row<<endl;
                                 }
 								
@@ -1554,21 +1577,21 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
                         fprintf(stderr,
                                 i18n->
                                 getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenSUBMENUError,
-                                    "BScreen::parseMenuFile: [submenu] error, "
-                                    "no menu label defined\n"));
+                                           FBNLS::ScreenSet, FBNLS::ScreenSUBMENUError,
+                                           "BScreen::parseMenuFile: [submenu] error, "
+                                           "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        Rootmenu *submenu = new Rootmenu(this);
+                        FbTk::Menu *submenu = createMenuFromScreen(*this);
 
                         if (str_cmd.size())
                             submenu->setLabel(str_cmd.c_str());
                         else
                             submenu->setLabel(str_label.c_str());
 
-                        parseMenuFile(file, submenu, row);						
+                        parseMenuFile(file, *submenu, row);						
                         submenu->update();
-                        menu->insert(str_label.c_str(), submenu);
+                        menu.insert(str_label.c_str(), submenu);
                         rootmenuList.push_back(submenu);
 						
                     }
@@ -1578,15 +1601,17 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
                         fprintf(stderr,
                                 i18n->
                                 getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenRESTARTError,
-                                    "BScreen::parseMenuFile: [restart] error, "
-                                    "no menu label defined\n"));
+                                           FBNLS::ScreenSet, FBNLS::ScreenRESTARTError,
+                                           "BScreen::parseMenuFile: [restart] error, "
+                                           "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        if (str_cmd.size())
-                            menu->insert(str_label.c_str(), BScreen::RESTARTOTHER, str_cmd.c_str());
-                        else
-                            menu->insert(str_label.c_str(), BScreen::RESTART);
+                        /*  if (str_cmd.size())
+                            menu.insert(str_label.c_str(), BScreen::RESTARTOTHER, str_cmd.c_str());
+                            else
+                        */
+                        FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
+                        menu.insert(str_label.c_str(), restart_fb);
                     }
                 } // end of restart
                 else if (str_key == "reconfig") { // reconf
@@ -1594,48 +1619,50 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
                         fprintf(stderr,
                                 i18n->
                                 getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenRECONFIGError,
-                                    "BScreen::parseMenuFile: [reconfig] error, "
-                                    "no menu label defined\n"));
+                                           FBNLS::ScreenSet, FBNLS::ScreenRECONFIGError,
+                                           "BScreen::parseMenuFile: [reconfig] error, "
+                                           "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
-                    } else 
-                        menu->insert(str_label.c_str(), BScreen::RECONFIGURE);
+                    } else {
+                        FbTk::RefCount<FbTk::Command> reconfig_fb_cmd(new FbCommands::ReconfigureFluxboxCmd());
+                        menu.insert(str_label.c_str(), reconfig_fb_cmd);
+                    }
                 } // end of reconf
-                else if (str_key == "stylesdir" || str_key == "stylesmenu") {
-                    bool newmenu = (str_key == "stylesmenu");
-                    if (!( str_label.size() && str_cmd.size()) && newmenu) {
-                        fprintf(stderr,
-                                i18n->
-                                getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRError,
-                                    "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-                                    " error, no directory defined\n"));
-                        cerr<<"Row: "<<row<<endl;
-                    } else { // else 'y'
-                        createStyleMenu(menu, newmenu, str_label.c_str(), 
-                                        (newmenu) ? str_cmd.c_str() : str_label.c_str());
-                    } // end of else 'y' 
-                } // end of stylesdir
+                /*                else if (str_key == "stylesdir" || str_key == "stylesmenu") {
+                                  bool newmenu = (str_key == "stylesmenu");
+                                  if (!( str_label.size() && str_cmd.size()) && newmenu) {
+                                  fprintf(stderr,
+                                  i18n->
+                                  getMessage(
+                                  FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRError,
+                                  "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
+                                  " error, no directory defined\n"));
+                                  cerr<<"Row: "<<row<<endl;
+                                  } else { // else 'y'
+                                  createStyleMenu(menu, newmenu, str_label.c_str(), 
+                                  (newmenu) ? str_cmd.c_str() : str_label.c_str());
+                                  } // end of else 'y' 
+                                  } */// end of stylesdir
                 else if (str_key == "workspaces") {
                     if (!str_label.size()) {
                         fprintf(stderr,
                                 i18n->getMessage(
-                                    FBNLS::ScreenSet, FBNLS::ScreenWORKSPACESError,
-                                    "BScreen:parseMenuFile: [workspaces] error, "
-                                    "no menu label defined\n"));
+                                                 FBNLS::ScreenSet, FBNLS::ScreenWORKSPACESError,
+                                                 "BScreen:parseMenuFile: [workspaces] error, "
+                                                 "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else
-                        menu->insert(str_label.c_str(), workspacemenu);
+                        menu.insert(str_label.c_str(), workspacemenu.get());
                 } // end of work
             }
         }
     }
 
-    return ((menu->numberOfItems() == 0) ? true : false);
+    return ((menu.numberOfItems() == 0) ? true : false);
 }
 
-void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory) {
-
+void BScreen::createStyleMenu(FbTk::Menu &menu, bool newmenu, const char *label, const char *directory) {
+    /*
     // perform shell style ~ home directory expansion
     string stylesdir(StringUtil::expandFilename(directory ? directory : ""));
 
@@ -1684,7 +1711,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
             if (newmenu) {
                 stylesmenu->setLabel(label);
                 menu->insert(label, stylesmenu);
-                rootmenuList.push_back(stylesmenu);
+                //         rootmenuList.push_back(stylesmenu);
             }
 
             Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
@@ -1705,7 +1732,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
                     "BScreen::parseMenuFile: [stylesdir/stylesmenu]"
                     " error, %s does not exist\n"), stylesdir.c_str());
     } // end of 'stat'
-
+    */
 }
 
 void BScreen::shutdown() {
