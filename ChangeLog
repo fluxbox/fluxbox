@@ -1,7 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.1.9:
+*02/05/24:
+   * Fixed bugs and arguments in fluxbox-generate_menu (Thanks Han Boetes)
 *02/05/23:
    * Fixed invalid iterator in Timer.cc
+   * Fixed nls files (Thanks Anton Denisov)
+   * Updated generate_menu to fluxbox-generate_menu and fixed 
+     new items and functionality (Thanks Han Boetes)
 *02/05/21:
    * Moved transient checking into a function in class FluxboxWindow
    * const fixes in Screen.hh
