@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.35 2002/03/18 20:20:09 fluxgen Exp $
+// $Id: Screen.cc,v 1.36 2002/03/19 00:05:49 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1023,9 +1023,9 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	session_stack[i++] = configmenu->getWindowID();
 
 	#ifdef		SLIT
-	session_stack[i++] = slit->getMenu()->getDirectionmenu()->getWindowID();
-	session_stack[i++] = slit->getMenu()->getPlacementmenu()->getWindowID();
-	session_stack[i++] = slit->getMenu()->getWindowID();
+	session_stack[i++] = slit->getMenu().getDirectionmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu().getPlacementmenu()->getWindowID();
+	session_stack[i++] = slit->getMenu().getWindowID();
 	#endif // SLIT
 
 	session_stack[i++] =
