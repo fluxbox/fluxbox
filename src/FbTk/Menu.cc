@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.4 2003/01/10 00:47:59 fluxgen Exp $
+// $Id: Menu.cc,v 1.5 2003/01/12 17:01:02 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -31,6 +31,7 @@
 
 #include "Menu.hh"
 
+#include "MenuItem.hh"
 #include "ImageControl.hh"
 #include "MenuTheme.hh"
 #include "App.hh"
@@ -134,17 +135,16 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     evm.add(*this, menu.frame);
 }
 
-
 Menu::~Menu() {
     menu.window.hide();
    
     if (shown && shown->windowID() == windowID())
         shown = (Menu *) 0;
 
-    //TODO: this looks kind of strange
-    int n = menuitems.size() - 1;
-    for (int i = 0; i < n; ++i)
-        remove(0);
+    while (!menuitems.empty()) {
+        delete menuitems.back();
+        menuitems.pop_back();
+    }
 
     if (menu.title_pixmap)
         m_image_ctrl.removeImage(menu.title_pixmap);
@@ -166,35 +166,25 @@ Menu::~Menu() {
 }
 
 int Menu::insert(const char *label, RefCount<Command> &cmd, int pos) {
-    MenuItem *item = new MenuItem(label, cmd);
-    if (pos < 0)
-        menuitems.push_back(item);
-    else {
-        if ( pos > menuitems.size())
-            pos = menuitems.size();
-        menuitems.insert(menuitems.begin() + pos, item);
-    }
+    return insert(new MenuItem(label, cmd), pos);
 }
+
 int Menu::insert(const char *label, int pos) {
-    MenuItem *item = new MenuItem(label);
-    if (pos == -1)
-        menuitems.push_back(item);
-    else
-        menuitems.insert(menuitems.begin() + pos, item);
+    return insert(new MenuItem(label), pos);
     return menuitems.size();
 }
 
 int Menu::insert(const char *label, Menu *submenu, int pos) {
-    MenuItem *item = new MenuItem(label, submenu);
+    submenu->m_parent = this;
+    return insert(new MenuItem(label, submenu), pos);
+}
+
+int Menu::insert(MenuItem *item, int pos) {
     if (pos == -1) {
         menuitems.push_back(item);
     } else {
         menuitems.insert(menuitems.begin() + pos, item);
-    }
-
-    submenu->m_parent = this;
-
-    return menuitems.size();
+    }    
 }
 
 int Menu::remove(unsigned int index) {
@@ -213,7 +203,7 @@ int Menu::remove(unsigned int index) {
     if (item) {
         menuitems.erase(it);
         if ((! internal_menu) && (item->submenu())) {
-            Menu *tmp = (Menu *) item->submenu();
+            Menu *tmp = item->submenu();
 
             if (! tmp->internal_menu) {
                 delete tmp;				
@@ -289,7 +279,7 @@ void Menu::update() {
         menu.sublevels = 1;
 
         while (menu.item_h * (menuitems.size() + 1) / menu.sublevels +
-               menu.title_h + m_border_width > m_screen_height)           
+               menu.title_h + m_border_width > m_screen_height)
             menu.sublevels++;
 
         if (menu.sublevels < menu.minsub) 
@@ -543,8 +533,10 @@ void Menu::drawSubmenu(unsigned int index) {
             if (! moving)
                 drawItem(index, True);
 		
-            if (! item->submenu()->isVisible())
+            if (! item->submenu()->isVisible()) {
                 item->submenu()->show();
+                item->submenu()->raise();
+            }
 			
             item->submenu()->moving = moving;
             which_sub = index;
@@ -568,18 +560,16 @@ bool Menu::hasSubmenu(unsigned int index) const {
 void Menu::drawItem(unsigned int index, bool highlight, bool clear,
                     int x, int y, unsigned int w, unsigned int h)
 {
-    if (index >= menuitems.size() || menuitems.size() == 0)
+    if (index >= menuitems.size() || menuitems.size() == 0 || 
+        menu.persub == 0)
         return;
 
     MenuItem *item = menuitems[index];
     if (! item) return;
-	
+
     bool dotext = true, dohilite = true, dosel = true;
     const char *text = item->label().c_str();
-    int sbl = 0, i = index - (sbl * menu.persub);
-    if (menu.persub != 0)
-        sbl = index / menu.persub;
-
+    int sbl = index / menu.persub, i = index - (sbl * menu.persub);
     int item_x = (sbl * menu.item_w), item_y = (i * menu.item_h);
     int hilite_x = item_x, hilite_y = item_y, hoff_x = 0, hoff_y = 0;
     int text_x = 0, text_y = 0, len = strlen(text), sel_x = 0, sel_y = 0;
@@ -621,7 +611,7 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
 	
     sel_x += quarter_w;
     sel_y = item_y + quarter_w;
-	
+
     if (clear) {
         XClearArea(m_display, menu.frame.window(), item_x, item_y, menu.item_w, menu.item_h,
                    False);
@@ -829,30 +819,29 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                re.x >= 0 && re.x < (signed) menu.width &&
                re.y >= 0 && re.y < (signed) menu.frame_h) {
 			
-        if (re.button == 3) {
-            hide();
-        } else {
-            int sbl = (re.x / menu.item_w), i = (re.y / menu.item_h),
-                ix = sbl * menu.item_w, iy = i * menu.item_h,
-                w = (sbl * menu.persub) + i,
-                p = (which_sbl * menu.persub) + which_press;
+        
+        
+        int sbl = (re.x / menu.item_w), i = (re.y / menu.item_h),
+            ix = sbl * menu.item_w, iy = i * menu.item_h,
+            w = (sbl * menu.persub) + i,
+            p = (which_sbl * menu.persub) + which_press;
 
-            if (w < static_cast<int>(menuitems.size()) && w >= 0) {
-                drawItem(p, (p == which_sub), True);
+        if (w < static_cast<int>(menuitems.size()) && w >= 0) {
+            drawItem(p, (p == which_sub), True);
 
-                if	(p == w && isItemEnabled(w)) {
-                    if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
-                        re.y > iy && re.y < (signed) (iy + menu.item_h)) {
-                        if (*menuitems[w]->command() != 0)
-                            menuitems[w]->command()->execute();
-                        else
-                            itemSelected(re.button, w);
-                    }
+            if (p == w && isItemEnabled(w)) {
+                if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
+                    re.y > iy && re.y < (signed) (iy + menu.item_h)) {
+                    menuitems[w]->click(re.button, re.time);
+                    itemSelected(re.button, w);
+                    
+                    update(); // update any changed item
                 }
-            } else
-                drawItem(p, false, true);
+            }
+        } else
+            drawItem(p, false, true);
 				
-        }
+        
     }
 }
 
@@ -924,25 +913,23 @@ void Menu::exposeEvent(XExposeEvent &ee) {
         // first... we see in which sub level the expose starts... and how many
         // items down in that sublevel
 
-        int sbl = (ee.x / menu.item_w), id = (ee.y / menu.item_h),
+        unsigned int sbl = (ee.x / menu.item_w), id = (ee.y / menu.item_h),
             // next... figure out how many sublevels over the redraw spans
             sbl_d = ((ee.x + ee.width) / menu.item_w),
             // then we see how many items down to redraw
             id_d = ((ee.y + ee.height) / menu.item_h);
-
         if (id_d > menu.persub) id_d = menu.persub;
 
         // draw the sublevels and the number of items the exposure spans
-        int i, ii;
+        unsigned int i, ii;
         for (i = sbl; i <= sbl_d; i++) {
             // set the iterator to the first item in the sublevel needing redrawing
-            int index = id + i * menu.persub;
+            unsigned int index = id + i * menu.persub;
             if (index < static_cast<int>(menuitems.size()) && index >= 0) {
                 Menuitems::iterator it = menuitems.begin() + index;
                 Menuitems::iterator it_end = menuitems.end();
                 for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
-                    int index = ii + (i * menu.persub);
-                    // redraw the item
+                    unsigned int index = ii + (i * menu.persub);
                     drawItem(index, (which_sub == index), true,
                              ee.x, ee.y, ee.width, ee.height);
                 }
