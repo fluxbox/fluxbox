@@ -23,6 +23,7 @@
 # DEALINGS IN THE SOFTWARE.
 
 
+SUBDIRS= FbTk
 DEFAULT_MENU=$(pkgdatadir)/menu
 DEFAULT_STYLE=$(pkgdatadir)/styles/Clean
 DEFAULT_KEYSFILE=$(pkgdatadir)/keys
@@ -33,38 +34,32 @@ AM_CPPFLAGS= -Wall @CPPFLAGS@ \
 -DDEFAULTMENU=\"$(DEFAULT_MENU)\" \
 -DDEFAULTSTYLE=\"$(DEFAULT_STYLE)\" \
 -DDEFAULTKEYSFILE=\"$(DEFAULT_KEYSFILE)\"\
--DDEFAULT_INITFILE=\"$(pkgdatadir)/init\"
+-DDEFAULT_INITFILE=\"$(pkgdatadir)/init\"\
+-IFbTk
 
 bin_PROGRAMS= fluxbox
 
-if XFT
-xft_SOURCE= XftFontImp.hh XftFontImp.cc
-endif
+
 if NEWWMSPEC
 newwmspec_SOURCE= Ewmh.hh Ewmh.cc
 endif
 if GNOME
 gnome_SOURCE= Gnome.hh Gnome.cc
 endif
-if MULTIBYTE
-xmb_SOURCE= XmbFontImp.hh XmbFontImp.cc
-endif
 
-fluxbox_SOURCES = BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
+fluxbox_SOURCES = AtomHandler.hh BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	Clientmenu.cc Clientmenu.hh Configmenu.cc Configmenu.hh \
-	Iconmenu.cc Iconmenu.hh Image.cc Image.hh  \
-	Netizen.cc Netizen.hh Rootmenu.cc Rootmenu.hh Screen.cc Screen.hh\
-	Slit.cc Slit.hh Timer.cc Timer.hh Toolbar.cc Toolbar.hh \
+	DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
+	FbAtoms.hh FbAtoms.cc fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
+	IconBar.cc IconBar.hh Iconmenu.cc Iconmenu.hh Image.cc Image.hh i18n.cc i18n.hh \
+	Keys.cc Keys.hh main.cc \
+	Netizen.cc Netizen.hh nl_types_cygnus.h \
+	Rootmenu.cc Rootmenu.hh Resource.hh Resource.cc \
+	Screen.cc Screen.hh \
+	Slit.cc Slit.hh StringUtil.cc StringUtil.hh Subject.cc Subject.hh \
+	Tab.hh Tab.cc Theme.hh Theme.cc Timer.cc Timer.hh Toolbar.cc Toolbar.hh Observer.cc Observer.hh\
 	Window.cc Window.hh Windowmenu.cc Windowmenu.hh \
 	Workspace.cc Workspace.hh Workspacemenu.cc Workspacemenu.hh \
-	fluxbox.cc fluxbox.hh \
-	i18n.cc i18n.hh main.cc	Tab.hh Tab.cc Keys.cc Keys.hh \
-	IconBar.cc IconBar.hh Theme.hh Theme.cc \
-	StringUtil.cc StringUtil.hh DrawUtil.cc DrawUtil.hh nl_types_cygnus.h \
-	XrmDatabaseHelper.hh NotCopyable.hh Resource.hh Resource.cc \
-	Font.hh Font.cc FontImp.hh XFontImp.hh XFontImp.cc \
-	FbAtoms.hh FbAtoms.cc Color.hh Color.cc Texture.hh Texture.cc \
-	SignalHandler.hh SignalHandler.cc \
-	EventHandler.hh AtomHandler.hh \
-	Observer.hh Observer.cc Subject.hh Subject.cc \
-	${xft_SOURCE} ${gnome_SOURCE} ${newwmspec_SOURCE} ${xmb_SOURCE}
+	XrmDatabaseHelper.hh	
+
+LDADD=FbTk/.libs/libFbTk.a
