@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.197 2003/06/30 15:31:54 fluxgen Exp $
+// $Id: Screen.cc,v 1.198 2003/06/30 18:04:48 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -565,30 +565,40 @@ Pixmap BScreen::rootPixmap() const {
 }
     
 unsigned int BScreen::maxLeft(int head) const {
+    // we ignore strut if we're doing full maximization
     if (hasXinerama())
-        return getHeadX(head);
-    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? getHeadX(head) : 
+            getHeadX(head) + m_available_workspace_area->left();
+    else
         return doFullMax() ? 0 : m_available_workspace_area->left();
 }
 
 unsigned int BScreen::maxRight(int head) const {
+    // we ignore strut if we're doing full maximization
     if (hasXinerama())
-        return getHeadX(head) + getHeadWidth(head);
-    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? getHeadX(head) + getHeadWidth(head) : 
+            getHeadX(head) + getHeadWidth(head) - m_available_workspace_area->right();
+    else
         return doFullMax() ? width() : width() - m_available_workspace_area->right();
 }
 
 unsigned int BScreen::maxTop(int head) const {
+
+    // we ignore strut if we're doing full maximization
+
     if (hasXinerama())
-        return getHeadY(head);
-    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? getHeadY(head) : getHeadY(head) + m_available_workspace_area->top();
+    else
         return doFullMax() ? 0 : m_available_workspace_area->top();
 }
 
 unsigned int BScreen::maxBottom(int head) const {
+    // we ignore strut if we're doing full maximization
+
     if (hasXinerama())
-        return getHeadY(head) + getHeadHeight(head);
-    else // we ignore strut if we're doing full maximization
+        return doFullMax() ? getHeadY(head) + getHeadHeight(head) :
+            getHeadY(head) + getHeadHeight(head) - m_available_workspace_area->bottom();
+    else
         return doFullMax() ? height() : height() - m_available_workspace_area->bottom();
 }
 
