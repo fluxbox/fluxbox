@@ -17,6 +17,7 @@ dnl Locate required external software
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
+AM_PROG_LIBTOOL
 
 AC_CHECK_PROGS(regex_cmd, sed)
 if test x$regex_cmd = "x"; then
@@ -311,6 +312,7 @@ AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(Makefile
 version.h
 src/Makefile
+src/FbTk/Makefile
 util/Makefile
 util/fbrun/Makefile
 data/Makefile
