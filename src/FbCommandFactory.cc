@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.33 2004/08/29 09:08:29 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.34 2004/08/30 21:29:42 akir Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -78,6 +78,7 @@ FbCommandFactory::FbCommandFactory() {
         "killwindow",
         "leftworkspace",
         "lower",
+        "lowerlayer",
         "macrocmd",
         "maximize",
         "maximizehorizontal",
@@ -103,6 +104,7 @@ FbCommandFactory::FbCommandFactory() {
         "prevworkspace",
         "quit",
         "raise",
+        "raiselayer",
         "reconfigure",
         "reloadstyle",
         "resizeto",
@@ -246,8 +248,12 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new MoveCmd(0,atoi(arguments.c_str()));
     else if (command == "raise")
         return new CurrentWindowCmd(&FluxboxWindow::raise);
+    else if (command == "raiselayer")
+        return new CurrentWindowCmd(&FluxboxWindow::raiseLayer);
     else if (command == "lower")
         return new CurrentWindowCmd(&FluxboxWindow::lower);
+    else if (command == "lowerlayer")
+        return new CurrentWindowCmd(&FluxboxWindow::lowerLayer);
     else if (command == "close")
         return new CurrentWindowCmd(&FluxboxWindow::close);
     else if (command == "shade" || command == "shadewindow")
