@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/02:
+  * Fixed restart/memory problems with Imlib2 (Mathias)
+    FbTk/Image.cc FbTk/ImageImlib2.cc
 *04/12/30:
   * Fixed "remove last workspace" bug (Henrik)
     Screen.cc
