@@ -1,5 +1,5 @@
 // XFontImp.hh for FbTk fluxbox toolkit
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,14 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.3 2002/12/09 22:10:01 fluxgen Exp $
+// $Id: XFontImp.hh,v 1.4 2003/01/05 23:39:50 fluxgen Exp $
 
 #ifndef FBTK_XFONTIMP_HH
 #define FBTK_XFONTIMP_HH
 
 #include "FontImp.hh"
+
+#include <X11/Xlib.h>
+
 namespace FbTk {
 
+/// regular X font implementation for FbTk
 class XFontImp:public FbTk::FontImp {
 public:
     explicit XFontImp(const char *filename = 0);

@@ -1,5 +1,5 @@
 // XftFontImp.hh  Xft font implementation for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,15 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.hh,v 1.2 2002/12/01 13:42:15 rathnor Exp $
+//$Id: XftFontImp.hh,v 1.3 2003/01/05 23:39:49 fluxgen Exp $
 
-#ifndef XFTFONTIMP_HH
-#define XFTFONTIMP_HH
+#ifndef FBTK_XFTFONTIMP_HH
+#define FBTK_XFTFONTIMP_HH
 
 #include "FontImp.hh"
+
 #include <X11/Xft/Xft.h>
+
 namespace FbTk {
 
+/// Handles Xft font drawing
 class XftFontImp:public FbTk::FontImp {
 public:
     XftFontImp(const char *fontname, bool utf8);
@@ -46,4 +49,4 @@ private:
 
 }; // end namespace FbTk
 
-#endif // XFTFONTIMP_HH
+#endif // FBTK_XFTFONTIMP_HH
