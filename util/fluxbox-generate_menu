@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.51 2003/09/12 22:33:25 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.52 2003/09/22 18:45:31 fluxgen Exp $
 
 #
 # Portability notes:
@@ -972,7 +972,7 @@ append_submenu "${FBSETTINGSMENU}"
         find_it startwindowmaker append "[restart] (windowmaker) {startwindowmaker}" ||\
             find_it wmaker append "[restart] (windowmaker) {wmaker}"
     append_menu_end
-
+    find_it xlock append "[exec] (Lock Screen) {xlock}"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
     append "[exit] (${EXITITEM})"
