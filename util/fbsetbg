@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.16 2003/08/26 20:32:27 fluxgen Exp $
+# $Id: fbsetbg,v 1.17 2003/09/03 11:55:29 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -180,9 +180,9 @@ case $WPSETTER in
     xsri)
         full='--center-x --center-y --scale-width=100 --scale-height=100'
         tile='--tile'
-        center='--center-x --center-y'
-        aspect=$full
-        debugstory="This is a RedHat specific app. I can't find docs about it."
+        center='--center-x --center-y --color=black'
+        aspect='--center-x --center-y --scale-width=100 --scale-height=100 --keep-aspect --color=black'
+        debugstory=$standardok
         ;;
     display)
         full="`xwininfo -root|grep geom` -window root"
