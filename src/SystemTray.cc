@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.14 2004/09/01 00:05:52 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.15 2004/09/01 08:46:55 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -260,11 +260,18 @@ void SystemTray::addClient(Window win) {
     if (it != m_clients.end())
         return;
 
-    FbTk::FbWindow *traywin = new TrayWindow(win);
-    if (traywin->screenNumber() != window().screenNumber()) {
-        delete traywin;
+    // make sure we have the same screen number
+    XWindowAttributes attr;
+    attr.screen = 0;
+    if (XGetWindowAttributes(FbTk::App::instance()->display(),
+                             win, &attr) != 0 && 
+        attr.screen != 0 && 
+        XScreenNumberOfScreen(attr.screen) != window().screenNumber()) {
         return;
     }
+
+    FbTk::FbWindow *traywin = new TrayWindow(win);
+
 #ifdef DEBUG
     cerr<<"SystemTray::"<<__FUNCTION__<<": 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
