@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.14 2004/01/11 16:08:07 fluxgen Exp $
+// $Id: IconButton.cc,v 1.15 2004/01/13 12:27:51 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -77,10 +77,13 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
 
     FbTk::RefCount<FbTk::Command> focus(new FbTk::SimpleCommand<FluxboxWindow>(m_win, &FluxboxWindow::raiseAndFocus));
     FbTk::RefCount<FbTk::Command> hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
-    FbTk::MacroCommand *focus_macro = new FbTk::MacroCommand();
-    focus_macro->add(hidemenus);
-    focus_macro->add(focus);
-    FbTk::RefCount<FbTk::Command> focus_cmd(focus_macro);
+    //!! TODO: There're some issues with MacroCommand when
+    //         this object dies when the last macrocommand is executed (focused cmd)
+    //         In iconbar mode Icons
+    //    FbTk::MacroCommand *focus_macro = new FbTk::MacroCommand();
+    //    focus_macro->add(hidemenus);
+    //    focus_macro->add(focus);
+    FbTk::RefCount<FbTk::Command> focus_cmd(focus);
     FbTk::RefCount<FbTk::Command> menu_cmd(new ::ShowMenu(m_win));
     setOnClick(focus_cmd, 1);
     setOnClick(menu_cmd, 3);
@@ -94,6 +97,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
 IconButton::~IconButton() {
 
 }
+
 
 void IconButton::exposeEvent(XExposeEvent &event) {
     if (m_icon_window == event.window)
