@@ -16,11 +16,13 @@ Contributors:
         and some code.
     Cleas Nästén <pekdon(at)gmx.net>
       - suggestions, bug reports, beta testing and 
-        Tab placement/alignment and Xinerama code.
+        in version 0.1.x: Tab placement/alignment and Xinerama code.
     Johan Andersson <xfs(at)linux.se>
       - suggestions, bug reports and beta testing
     Oliwier Ptak  <aleczapka(at)gmx.net>
       - suggestions, styles and webpage
+    Matt Hope <dopey(at)debian.org>
+	  - debian package maintainer, some minor fixes	  
     Paul W Brannan <pbrannan(at)atdesk.com>
       - consulting, code clean up
     Rando Christensen <rando(at)babblica.net>
