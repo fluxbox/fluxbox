@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.234 2004/03/03 12:53:06 rathnor Exp $
+// $Id: fluxbox.cc,v 1.235 2004/03/21 09:00:25 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1321,7 +1321,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             if (win.isIconic()) {
                 Workspace *space = win.screen().getWorkspace(win.workspaceNumber());
                 if (space != 0)
-                    space->removeWindow(&win);
+                    space->removeWindow(&win, true);
                 win.screen().addIcon(&win);
             }
 
@@ -1409,8 +1409,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         // finaly send notify signal
         screen.updateNetizenWindowDel(client.window());
 
-        if (m_focused_window == &client) 
-            revertFocus(screen);
+        // At this point, we trust that this client is no longer in the
+        // client list of its frame (but it still has reference to the frame)
+        // We also assume that any remaining active one is the last focused one
+
+        // This is where we revert focus on window close
+        // NOWHERE ELSE!!!
+        if (m_focused_window == &client)
+            unfocusWindow(client);
 
         // failed to revert focus?
         if (m_focused_window == &client)
@@ -1992,6 +1998,54 @@ void Fluxbox::revertFocus(BScreen &screen) {
     }
 }
 
+/*
+ * Like revertFocus, but specifically related to this window (transients etc)
+ * if full_revert, we fallback to a full revertFocus if we can't find anything
+ * local to the client.
+ * If unfocus_frame is true, we won't focus anything in the same frame
+ * as the client. 
+ *
+ * So, we first prefer to choose a transient parent, then the last
+ * client in this window, and if no luck (or unfocus_frame), then 
+ * we just use the normal revertFocus on the screen.
+ *
+ * assumption: client has focus
+ */
+void Fluxbox::unfocusWindow(WinClient &client, bool full_revert, bool unfocus_frame) {
+    // go up the transient tree looking for a focusable window
+
+    FluxboxWindow *fbwin = client.fbwindow();
+    if (fbwin == 0) 
+        unfocus_frame = false;
+
+    WinClient *trans_parent = client.transientFor();
+    while (trans_parent) {
+        if (trans_parent->fbwindow() && // can't focus if no fbwin
+            (!unfocus_frame || trans_parent->fbwindow() != fbwin) && // can't be this window
+            trans_parent->fbwindow()->isVisible() &&
+            trans_parent->fbwindow()->setCurrentClient(*trans_parent, m_focused_window == &client)) {
+            return;
+        }
+        trans_parent = trans_parent->transientFor();
+    }
+
+    if (fbwin == 0)
+        return; // nothing more we can do
+
+    BScreen &screen = fbwin->screen();
+
+    if (!unfocus_frame) {
+        WinClient *last_focus = screen.getLastFocusedWindow(*fbwin, &client);
+        if (last_focus != 0 && 
+            fbwin->setCurrentClient(*last_focus, m_focused_window == &client)) {
+            return;
+        }
+    }
+
+    if (full_revert && m_focused_window == &client)
+        revertFocus(screen);
+
+}
 
 
 void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {

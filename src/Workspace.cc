@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.94 2004/03/15 23:36:13 rathnor Exp $
+// $Id: Workspace.cc,v 1.95 2004/03/21 09:00:25 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -167,8 +167,11 @@ void Workspace::addWindow(FluxboxWindow &w, bool place) {
 
 }
 
-
-int Workspace::removeWindow(FluxboxWindow *w) {
+// still_alive is true if the window will continue to exist after
+// this event. Particularly, this isn't the removeWindow for 
+// the destruction of the window. Because if so, the focus revert
+// is done in another place
+int Workspace::removeWindow(FluxboxWindow *w, bool still_alive) {
 
     if (w == 0)
         return -1;
@@ -180,27 +183,8 @@ int Workspace::removeWindow(FluxboxWindow *w) {
         m_lastfocus = 0;
     }
 
-    if (w->isFocused()) {
-        if (screen().isSloppyFocus()) {
-            Fluxbox::instance()->revertFocus(screen());
-        } else {
-            // go up the transient tree looking for a focusable window
-            WinClient *client = 0;
-            if (w->numClients() > 0) {
-                client = w->winClient().transientFor();
-                while (client) {
-                    if (client->fbwindow() &&
-                        client->fbwindow() != w && // can't be this window
-                        client->fbwindow()->isVisible() &&
-                        client->fbwindow()->setCurrentClient(*client, true))
-                        break;
-                    client = client->transientFor();
-                }
-            }
-            if (client == 0) // we were unsuccessful
-                Fluxbox::instance()->revertFocus(screen());
-        }
-    }
+    if (w->isFocused() && still_alive)
+        Fluxbox::instance()->unfocusWindow(w->winClient(), true, true);
 	
     // we don't remove it from the layermanager, as it may be being moved
     Windows::iterator erase_it = remove(m_windowlist.begin(), 

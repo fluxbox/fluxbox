@@ -62,7 +62,7 @@ public:
     void reconfigure();
     void shutdown();
     void addWindow(FluxboxWindow &win, bool place = false);
-    int removeWindow(FluxboxWindow *win);
+    int removeWindow(FluxboxWindow *win, bool still_alive);
     void updateClientmenu();
 
     BScreen &screen() { return m_screen; }

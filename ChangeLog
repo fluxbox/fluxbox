@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/21:
+  * A number of small fixes (Simon)
+    - Fix up focus+highlights on tab close
+    - Centralise focus fallbacks (fluxbox::unfocusWindow)
+      - we now prefer the last focused window in the current tabgroup to 
+        the actual last focused window on the whole screen.
+    fluxbox.hh/cc Screen.hh/cc Window.hh/cc Workspace.hh/cc FbWinFrame.cc
 *04/03/19:
   * fluxbox-generate_menu:  (Han)
     removes the reload-menu code which is obsolete  

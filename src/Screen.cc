@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.269 2004/03/18 14:45:56 fluxgen Exp $
+// $Id: Screen.cc,v 1.270 2004/03/21 09:00:24 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -937,7 +937,7 @@ void BScreen::removeWindow(FluxboxWindow *win) {
     if (win->isIconic())
         removeIcon(win);
     else
-        getWorkspace(win->workspaceNumber())->removeWindow(win);
+        getWorkspace(win->workspaceNumber())->removeWindow(win, false);
 }
 
 
@@ -951,13 +951,6 @@ void BScreen::removeClient(WinClient &client) {
     focused_list.remove(&client);
     if (cyc == &client) {
         cycling_window = focused_list.end();
-    } else if (focused == &client) {
-        // if we are focused, then give our focus to our transient parent
-        // or revert normally
-        if (client.transientFor() && client.transientFor()->fbwindow())
-            client.transientFor()->fbwindow()->setInputFocus();
-        else
-            Fluxbox::instance()->revertFocus(focused->screen());
     }
 
     if (cycling_last == &client)
@@ -1471,7 +1464,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         // gets updated
         m_clientlist_sig.notify(); 
     } else if (ignore_sticky || ! w->isStuck()) {
-        getWorkspace(w->workspaceNumber())->removeWindow(w);
+        getWorkspace(w->workspaceNumber())->removeWindow(w, true);
         getWorkspace(wkspc_id)->addWindow(*w);
         // see comment above
         m_clientlist_sig.notify();
@@ -2544,8 +2537,25 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
     return 0;
 }
 
+/**
+ * Used to find out which window was last active in the given group
+ * If ignore_client is given, it excludes that client.
+ * Stuck, iconic etc don't matter within a group
+ */
+WinClient *BScreen::getLastFocusedWindow(FluxboxWindow &group, WinClient *ignore_client) {
+    if (focused_list.empty()) return 0;
+
+    FocusedWindows::iterator it = focused_list.begin();    
+    FocusedWindows::iterator it_end = focused_list.end();
+    for (; it != it_end; ++it) {
+        if (((*it)->fbwindow() == &group) &&
+            (*it) != ignore_client)
+            return *it;
+    }
+    return 0;
+}
+
 void BScreen::updateSize() {
-    cerr<<"update Size"<<endl;
     // force update geometry
     rootWindow().updateGeometry();
 

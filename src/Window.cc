@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.270 2004/03/08 12:20:31 rathnor Exp $
+// $Id: Window.cc,v 1.271 2004/03/21 09:00:25 rathnor Exp $
 
 #include "Window.hh"
 
@@ -784,15 +784,11 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     
     // if it is our active client, deal with it...
     if (m_client == &client) {
-    // set next client to be focused
-    // if the client we're about to remove is the last client then set prev client
-        if (&client == m_clientlist.back())
-            prevClient();
-        else
-            nextClient();
+        WinClient *next_client = screen().getLastFocusedWindow(*this, m_client);
+        if (next_client != 0)
+            setCurrentClient(*next_client, false);
     }
 
-    client.m_win = 0;
     m_clientlist.remove(&client);
 
     if (m_client == &client) {
@@ -815,12 +811,12 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     }
 
     m_labelbuttons.erase(&client);
-
     frame().reconfigure();
+    updateClientLeftWindow();    
 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"] numClients = "<<numClients()<<endl;
-#endif // DEBUG   
+#endif // DEBUG
 
     return true;
 }
@@ -905,6 +901,9 @@ void FluxboxWindow::moveClientRight() {
 
 /// Update LEFT window atom on all clients.
 void FluxboxWindow::updateClientLeftWindow() {
+    if (clientList().empty())
+        return;
+
     // It should just update the affected clients but that
     // would require more complex code and we're assuming
     // the user dont have alot of windows grouped so this 
@@ -929,8 +928,11 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
     m_client = &client;
     m_client->raise();
+
+    // frame focused doesn't necessarily mean input focused
+    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
+
     if (setinput && setInputFocus()) {
-        frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
         return true;
     }
 
@@ -1242,7 +1244,6 @@ bool FluxboxWindow::setInputFocus() {
     } else {
         ret = m_client->sendFocus(); 
     }
-
                                                   
     return ret;
 }
@@ -1296,10 +1297,7 @@ void FluxboxWindow::iconify() {
         }
     }
 
-    WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
-    if (focused_client && focused_client->fbwindow() == this)
-        Fluxbox::instance()->revertFocus(screen());
-
+    // focus revert is done elsewhere (based on signal)
 }
 
 void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.109 2004/02/20 09:07:27 fluxgen Exp $
+// $Id: Window.hh,v 1.110 2004/03/21 09:00:25 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -281,6 +281,7 @@ public:
     inline bool isResizing() const { return resizing; }
     bool isGroupable() const;
     inline int numClients() const { return m_clientlist.size(); }
+    inline bool empty() const { return m_clientlist.empty(); }
     inline ClientList &clientList() { return m_clientlist; }
     inline const ClientList &clientList() const { return m_clientlist; }
     inline WinClient &winClient() { return *m_client; }
@@ -370,6 +371,7 @@ public:
     };
 
     bool oplock; ///< Used to help stop transient loops occurring by locking a window during certain operations
+
 private:
     static const int PropBlackboxAttributesElements = 8;
 

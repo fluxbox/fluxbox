@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.83 2004/02/10 18:45:57 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.84 2004/03/21 09:00:25 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -157,6 +157,8 @@ public:
 
     void setFocusedWindow(WinClient *w);
     void revertFocus(BScreen &screen);
+    // like revertFocus, but specifically related to this window (transients etc)
+    void unfocusWindow(WinClient &client, bool full_revert = true, bool unfocus_frame = false);
     void shutdown();
     void load_rc(BScreen &scr);
     void loadRootCommand(BScreen &scr);

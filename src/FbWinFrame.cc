@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.76 2004/02/28 16:54:04 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.77 2004/03/21 09:00:24 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -301,10 +301,11 @@ void FbWinFrame::removeLabelButton(FbTk::TextButton &btn) {
     if (erase_it == m_labelbuttons.end())
         return;
 
+    if (&btn == m_current_label)
+        m_current_label = 0;
+
     m_labelbuttons.erase(erase_it);
 
-    if (*erase_it == m_current_label)
-        m_current_label = 0;
 }
 
 
