@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.7 2003/06/06 02:18:34 rathnor Exp $
+# $Id: fbsetbg,v 1.8 2003/06/29 08:22:24 rathnor Exp $
 
 #
 # Portability notes:
@@ -39,7 +39,7 @@
 #
 
 # The wallpapersetter is selected in this order
-wpsetters='Esetroot wmsetbg display qiv xv xsri xli xsetbg' # broken icewmbg'
+wpsetters='chbg Esetroot wmsetbg display qiv xv xsri xli xsetbg' # broken icewmbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 
 
@@ -144,6 +144,12 @@ xchat won't work right with it. Consider using wmsetbg (from windowmaker)
 or Esetroot (from Eterm)"
 
 case $WPSETTER in
+    chbg)
+        full='-once -mode maximize'
+        tile='-once -mode tile'
+        center='-once -mode center'
+        aspect='-once -mode smart -max_grow 100 -max_size 100'
+        debugstory="chbg is a nice app. You won't have any problems."
     xsri)
 	full='--center-x --center-y --scale-width=100 --scale-width=100'
 	tile='--tile'
