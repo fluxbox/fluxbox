@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.186 2003/06/20 01:30:08 fluxgen Exp $
+// $Id: Screen.cc,v 1.187 2003/06/20 01:48:06 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -523,6 +523,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     initXinerama();
 
+    // setup error handler to catch "screen already managed by other wm"
     XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
 
     rootWindow().setEventMask(ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
@@ -550,11 +551,13 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
     Fluxbox *fluxbox = Fluxbox::instance();
+    // setup image cache engine
     m_image_control.reset(new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
                                                  fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
     root_colormap_installed = true;
 
+    // load this screens resources
     fluxbox->load_rc(*this);
 
     FbTk::Menu::setAlpha(*resource.menu_alpha);
@@ -563,12 +566,16 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // setup windowtheme, toolbartheme for antialias
     // before we load the theme
+
     winFrameTheme().font().setAntialias(*resource.antialias);
     menuTheme()->titleFont().setAntialias(*resource.antialias);
     menuTheme()->frameFont().setAntialias(*resource.antialias);
 
     // load database for theme engine
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
+
+
+    // create geometry window 
 
     const char *s = i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
                                      "W: 0000 x H: 0000");
@@ -591,6 +598,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     renderGeomWindow();
 
+
+    // setup workspaces and workspace menu
+
     workspacemenu.reset(createMenuFromScreen(*this));
     workspacemenu->setInternalMenu();
 
@@ -608,16 +618,21 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         m_workspaces_list.push_back(wkspc);
     }
 
+    setupWorkspacemenu(*this, *workspacemenu);
+
     m_current_workspace = m_workspaces_list.front();
 
 #ifdef SLIT
     m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
                  Fluxbox::instance()->getSlitlistFilename().c_str()));
+    //!! TODO: we shouldn't do this more than once, but since slit handles it's own resources 
+    // we must do this.
+    fluxbox->load_rc(*this);
 #endif // SLIT
 
-    m_toolbarhandler.reset(new ToolbarHandler(*this, toolbarMode()));
+    // create toolbarhandler for toolbar
 
-    setupWorkspacemenu(*this, *workspacemenu);
+    m_toolbarhandler.reset(new ToolbarHandler(*this, toolbarMode()));
 
     m_configmenu.reset(createMenuFromScreen(*this));
     setupConfigmenu(*m_configmenu.get());
