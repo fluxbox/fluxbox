@@ -50,10 +50,15 @@ A few extra notes:
    the rootCommand option in a theme- keeping your background the same, no
    matter what the theme says it should be.
  
+This software is OSI Certified Open Source Software.
+OSI Certified is a certification mark of the Open Source Initiative.
+
 Thanks:
+
 Blackbox team
 aleczapka, skarin, Perc, xfs, skypher and skywarper for buggtesting
 skypher of openprojects for buggtesting and providing fluxbox with themes: 
 Clean CleanColor Makro, Carbondioxide and MerleyKay.
 People at #fluxbox@openprojects.net
 And for the people who send bugfixes/patches
+
