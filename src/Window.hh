@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.102 2003/12/16 23:28:36 fluxgen Exp $
+// $Id: Window.hh,v 1.103 2003/12/17 01:21:49 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -51,7 +51,7 @@ class TextButton;
 class MenuTheme;
 class ImageControl;
 class XLayer;
-};
+}
 
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow: public FbTk::EventHandler {
@@ -433,7 +433,7 @@ private:
     Decoration m_old_decoration;
 
     ClientList m_clientlist;
-    WinClient *m_client;
+    WinClient *m_client; ///< current client
     typedef std::map<WinClient *, FbTk::TextButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
 
