@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.284 2004/04/30 13:48:58 rathnor Exp $
+// $Id: Window.cc,v 1.285 2004/05/02 21:08:28 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -31,23 +31,20 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "FbWinFrameTheme.hh"
-#include "MenuTheme.hh"
 #include "FbAtoms.hh"
 #include "RootTheme.hh"
 #include "Workspace.hh"
-#include "LayerMenu.hh"
 #include "FbWinFrame.hh"
 #include "WinButton.hh"
 #include "WinButtonTheme.hh"
-#include "SendToMenu.hh"
 #include "Remember.hh"
+#include "MenuCreator.hh"
 
-#include "FbTk/StringUtil.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/Compose.hh"
 #include "FbTk/EventManager.hh"
-#include "FbTk/MultiButtonMenuItem.hh"
 #include "FbTk/KeyUtil.hh"
+#include "FbTk/SimpleCommand.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -250,10 +247,6 @@ private:
 
 };
 
-template <>
-void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
-    m_object->moveToLayer(m_layernum);
-}
 
 int FluxboxWindow::s_num_grabs = 0;
 
@@ -275,8 +268,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_attaching_tab(0),
     m_screen(client.screen()),
     display(FbTk::App::instance()->display()),
-    m_windowmenu(client.screen().menuTheme(), client.screen().imageControl(),
-                 *client.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+    m_windowmenu(MenuCreator::createMenu("", client.screenNumber())),
     m_button_grab_x(0), m_button_grab_y(0),
     m_last_move_x(0), m_last_move_y(0),
     m_last_resize_h(1), m_last_resize_w(1),
@@ -568,14 +560,14 @@ void FluxboxWindow::init() {
     setState(m_current_state);
 
     // add extra menus
-    addExtraMenu("Send To...", new SendToMenu(*this));
+    /*    addExtraMenu("Send To...", new SendToMenu(*this));
     addExtraMenu("Layer...",
                  new LayerMenu<FluxboxWindow>(screen().menuTheme(), 
                                               screen().imageControl(), 
                                               *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                               this,
                                               false));
-
+    */
     // the layermenu will get deleted as an extra menu
     // don't call setupWindow here as the addExtraMenu call should
 
@@ -1020,7 +1012,7 @@ void FluxboxWindow::reconfigure() {
 
     frame().reconfigure();
 
-    m_windowmenu.reconfigure();
+    menu().reconfigure();
 	
 }
 
@@ -1277,7 +1269,7 @@ void FluxboxWindow::hide() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
 #endif // DEBUG
-    m_windowmenu.hide();
+    menu().hide();
     frame().hide();
 }
 
@@ -1390,7 +1382,7 @@ void FluxboxWindow::withdraw() {
 
     frame().hide();
 
-    m_windowmenu.hide();
+    menu().hide();
 }
 
 /**
@@ -1969,19 +1961,19 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
     int head = screen().getHead(menu_x, menu_y);
 
     // but not under screen
-    if (menu_y + m_windowmenu.height() >= screen().maxBottom(head))
-        menu_y = screen().maxBottom(head) - m_windowmenu.height() - 1 - m_windowmenu.fbwindow().borderWidth();
+    if (menu_y + menu().height() >= screen().maxBottom(head))
+        menu_y = screen().maxBottom(head) - menu().height() - 1 - menu().fbwindow().borderWidth();
 
     if (menu_x < static_cast<signed>(screen().maxLeft(head)))
         menu_x = screen().maxLeft(head);
-    else if (menu_x + static_cast<signed>(m_windowmenu.width()) >= static_cast<signed>(screen().maxRight(head)))
-        menu_x = screen().maxRight(head) - m_windowmenu.width() - 1;
+    else if (menu_x + static_cast<signed>(menu().width()) >= static_cast<signed>(screen().maxRight(head)))
+        menu_x = screen().maxRight(head) - menu().width() - 1;
 
 
-    m_windowmenu.move(menu_x, menu_y);
-    m_windowmenu.show();		
-    m_windowmenu.raise();
-    m_windowmenu.grabInputFocus();
+    menu().move(menu_x, menu_y);
+    menu().show();		
+    menu().raise();
+    menu().grabInputFocus();
 }
 
 /**
@@ -1989,8 +1981,8 @@ void FluxboxWindow::showMenu(int menu_x, int menu_y) {
    if it's already visible it'll be hidden
  */
 void FluxboxWindow::popupMenu() {
-    if (m_windowmenu.isVisible()) {
-        m_windowmenu.hide(); 
+    if (menu().isVisible()) {
+        menu().hide(); 
         return;
     }
 
@@ -2838,8 +2830,8 @@ void FluxboxWindow::startMoving(Window win) {
                 ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
                 screen().rootWindow().window(), frame().theme().moveCursor(), CurrentTime);
 
-    if (m_windowmenu.isVisible())
-        m_windowmenu.hide();
+    if (menu().isVisible())
+        menu().hide();
 
     fluxbox->maskWindowEvents(screen().rootWindow().window(), this);
 
@@ -3504,34 +3496,21 @@ void FluxboxWindow::setupWindow() {
     menu().removeAll(); // clear old items
     menu().disableTitle(); // not titlebar
     
-    // set new menu items
-    menu().insert("Shade", shade_cmd);
-    menu().insert("Stick", stick_cmd);
-    // create maximize item with:
-    // button1: Maximize normal
-    // button2: Maximize Vertical
-    // button3: Maximize Horizontal
-    FbTk::MultiButtonMenuItem *maximize_item = new FbTk::MultiButtonMenuItem(3, "Maximize");
-    maximize_item->setCommand(1, maximize_cmd);
-    maximize_item->setCommand(2, maximize_vert_cmd);
-    maximize_item->setCommand(3, maximize_horiz_cmd);
-    menu().insert(maximize_item);
-    menu().insert("Iconify", iconify_cmd);
-    menu().insert("Raise", raise_cmd);
-    menu().insert("Lower", lower_cmd);
-
-
-
-    ExtraMenus::iterator it = m_extramenus.begin();
-    ExtraMenus::iterator it_end = m_extramenus.end();
-    for (; it != it_end; ++it) {
-        it->second->disableTitle(); // be sure there is no title
-        menu().insert(it->first, it->second);
+    if (!screen().windowMenuFilename().empty()) {
+        MenuCreator::createFromFile(screen().windowMenuFilename(), menu(), *this);
+    } else {
+        MenuCreator::createWindowMenuItem("shade", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("stick", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("maximize", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("iconify", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("raise", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("lower", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("sendto", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("layer", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("extramenus", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("separator", "", menu(), *this);
+        MenuCreator::createWindowMenuItem("close", "", menu(), *this);
     }
-
-
-    menu().insert("---");
-    menu().insert("Close", close_cmd);
 
     menu().reconfigure(); // update graphics
 }
