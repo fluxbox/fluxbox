@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/18:
+  * nl_NL locales (Thanks Han Boetes)
+  configure.in, nls/Makefile.am, nls/nl_NL/*, util/fluxbox-generate_menu.in
 *03/12/17:
   * Fixed some icc warnings (Henrik)
     ...
