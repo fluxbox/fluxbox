@@ -1,24 +1,4 @@
-* make a function for menus to be moved so they're totaly visible... (see note/code in Toolbar::buttonReleaseEvent)
-* Clean up in BImage class, some of those functions are huge, and needs
-  to be smaller. 
-  - also make the class more independent so it could be movable to other
-    applications, such as config tools.
-
-* better group handling - possibly a structure to hold information about a
-  tabgroup, so you can set a win property with a unique identifier and
-  ordering, so that groups can be reconstructed on restart, and also set
-  on launch somehow. Possibly related would be fixing it so it remembers
-  which member of a tabgroup is the focused one, and set that
-  appropriately when necessary (eg currently, unsticking a group will
-  revert the focus to the "first" window in the group, instead of the
-  focused one).
-
-
-* toolbar -> separate application 
-* Some kind of resource class instead of the Screen and Fluxbox class
-  with all the resources?
-
-
+--------- Code:
 * Screen.cc:
 	fix toupper for str_key in in Menu loading
 	nls for "error on row" in Menu loading ?? 
@@ -26,12 +6,26 @@
 	Tab <-> Window
 	Workspace <-> Window
 	and more 
+
+* Toolbar.cc:
+  Fix placement with bitmap or aligment in menu
+
+* Fix some kind of Theme listener class for listening on theme reloads/changes
+* Make a function for menus to be moved so they're totaly visible all the time
+* Check FluxboxWindow::toggleDecor
+  Needs cleaning and check functions that uses this one. Should function 
+  struct really be affected by this function.
+* Some kind of Config class instead of the Screen and Fluxbox class
+  with all the resources/config values
+
+
+--------- Features:
+
 * Fix configurable toolbar
   so the user can configure toolbar in a config file
 * Finnish (Finland) translation
 * Wheel-config support
 * Separator in the menus
-* Clean up in the global namespace
 * "Iconify group"/group commands in Windowmenu
 * Call and navigate menus from the keyboard (bind a menu to a key
   and use arrows to navigate)
@@ -43,6 +37,14 @@
   emacs), needed for the next wish:
 * "Goto Frame" as Emacs C-x b, that show completions in the bar
 * mouse button configure
-* Check FluxboxWindow::toggleDecor
-  Needs cleaning and check functions that uses this one. Should function struct really be affected by this function.
+* better group handling - possibly a structure to hold information about a
+  tabgroup, so you can set a win property with a unique identifier and
+  ordering, so that groups can be reconstructed on restart, and also set
+  on launch somehow. Possibly related would be fixing it so it remembers
+  which member of a tabgroup is the focused one, and set that
+  appropriately when necessary (eg currently, unsticking a group will
+  revert the focus to the "first" window in the group, instead of the
+  focused one).
+
+
 
