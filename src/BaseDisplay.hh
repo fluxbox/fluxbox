@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.19 2002/04/04 14:27:56 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.20 2002/05/17 10:51:48 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -79,9 +79,9 @@ public:
 
 	inline ScreenInfo *getScreenInfo(int s)	{ return screenInfoList[s]; }
 
-	inline const bool hasShapeExtensions(void) const { return shape.extensions; }
-	inline const bool doShutdown(void) const { return m_shutdown; }
-	inline const bool isStartup(void) const { return m_startup; }
+	inline bool hasShapeExtensions(void) const { return shape.extensions; }
+	inline bool doShutdown(void) const { return m_shutdown; }
+	inline bool isStartup(void) const { return m_startup; }
 
 	inline const Cursor &getSessionCursor(void) const { return cursor.session; }
 	inline const Cursor &getMoveCursor(void) const { return cursor.move; }
@@ -93,8 +93,8 @@ public:
 	inline const char *getXDisplayName(void) const	{ return const_cast<const char *>(m_display_name); }
 	inline const char *getApplicationName(void) const { return const_cast<const char *>(m_app_name); }
 
-	inline const int getNumberOfScreens(void) const { return number_of_screens; }
-	inline const int getShapeEventBase(void) const	{ return shape.event_basep; }
+	inline int getNumberOfScreens(void) const { return number_of_screens; }
+	inline int getShapeEventBase(void) const	{ return shape.event_basep; }
 
 	inline void shutdown(void) { m_shutdown = true; }
 	inline void run(void) { m_startup = m_shutdown = false; }
@@ -156,11 +156,11 @@ public:
 	inline const Window &getRootWindow(void) const { return root_window; }
 	inline const Colormap &getColormap(void) const { return colormap; }
 
-	inline const int getDepth(void) const { return depth; }
-	inline const int getScreenNumber(void) const { return screen_number; }
+	inline int getDepth(void) const { return depth; }
+	inline int getScreenNumber(void) const { return screen_number; }
 
-	inline const unsigned int getWidth(void) const { return width; }
-	inline const unsigned int getHeight(void) const { return height; }
+	inline unsigned int getWidth(void) const { return width; }
+	inline unsigned int getHeight(void) const { return height; }
 
 #ifdef XINERAMA
 	inline bool hasXinerama(void) const { return m_hasXinerama; }
