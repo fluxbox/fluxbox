@@ -1,4 +1,4 @@
-$ codeset=ISO-8859-1
+$ codeset=ISO-8859-15
 
 $set 1 #Align
 
@@ -29,11 +29,11 @@ $set 4 #Configmenu
 1 Lettertypes bijwerken
 2 Automatisch verhogen
 4 Klik om Focus te krijgen
-7 Focus Vensters na Werkveldwissel
+7 Focus Vensters na werkveldwissel
 8 Focussoort
 9 Nieuwe vensters focussen
 10 Volledig maximaliseren
-11 Plaatjes-afvlakking
+11 Plaatjes afvlakking
 12 Venster ondoorzichtig verplaatsen
 13 Bijna altijd muis focus
 14 Muis focus
@@ -56,11 +56,11 @@ $set 9 #Keys
 
 $set 10 #Menu
 
-3 Exit
+3 Afsluiten
 4 Iconen
 7 Plaats
-9 Restart
-10 xterm
+9 Herstart
+10 Xterm
 
 $set 11 #Remember
 
@@ -73,9 +73,9 @@ $set 12 #Screen
 
 $set 13 #Slit
 
-4 Slit-Richting
-7 Slit-Plaatsing
-8 Slit
+4 Spleet-Richting
+7 Spleet-Plaatsing
+8 Spleet
 
 $set 14 #Toolbar
 
@@ -85,7 +85,7 @@ $set 14 #Toolbar
 
 $set 15 #Window
 
-1 Unbenannt
+1 Naamloos
 
 $set 16 #Windowmenu
 
@@ -129,7 +129,7 @@ $set 19 #main
 -version\t\t\ttoon versienummer.\n\
 -info\t\t\t\ttoon bruikbare informatie.\n\
 -log <filename>\t\t\tlog uitvoer naar bestand.\n\
--help\t\t\t\ttoon alleen deze helptext.\n\n
+-help\t\t\t\ttoon deze hulptekst.\n\n
 
 $set 13 #mainWarnDisplay
 
