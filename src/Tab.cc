@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.24 2002/04/14 22:27:57 fluxgen Exp $
+// $Id: Tab.cc,v 1.25 2002/04/28 08:49:31 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -63,7 +63,8 @@ Tab::Tab(FluxboxWindow *win, Tab *prev, Tab *next) {
 	
 	if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
 			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
-			m_win->getScreen()->isTabRotateVertical()) {
+			m_win->getScreen()->isTabRotateVertical() &&
+			!m_win->isShaded()) {
 		m_size_w = m_win->getScreen()->getTabHeight();
 		m_size_h = m_win->getScreen()->getTabWidth();
 	} else {
