@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.33 2002/10/13 21:51:12 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.34 2002/10/15 17:13:24 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -788,10 +788,10 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
 						&ink, &logical);
 						l = logical.width;
 				} else {
-					l = XTextWidth(screen->getWindowStyle()->font.fontstruct,
+					l = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
 							screen->getCurrentWorkspace()->name().c_str(), dlen);
 				}
-				
+	
 				l += (frame.bevel_w * 4);
 	
 				if (l < frame.workspace_label_w)
@@ -1171,9 +1171,9 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 
 			if (i18n->multibyte()) {
 				XmbDrawString(display, frame.workspace_label,
-					screen->getWindowStyle()->font.set,
+					screen->getToolbarStyle()->font.set,
 					screen->getWindowStyle()->l_text_focus_gc, x, 1 -
-					screen->getWindowStyle()->font.set_extents->max_ink_extent.y,
+					screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
 					new_workspace_name.c_str(), l);
 			} else {
 				XDrawString(display, frame.workspace_label,
