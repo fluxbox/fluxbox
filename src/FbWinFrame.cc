@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.21 2003/04/16 12:26:21 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.22 2003/04/16 22:15:22 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -774,7 +774,7 @@ void FbWinFrame::init() {
     m_handle_focused_pm = 
         m_handle_unfocused_pm = 0;
     m_grip_unfocused_pm = m_grip_focused_pm = 0;
-
+    m_clientarea.setBorderWidth(0);
     m_shaded = false;
     m_label.show();
 
