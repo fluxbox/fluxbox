@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.26 2002/08/24 19:06:06 fluxgen Exp $
+// $Id: Theme.cc,v 1.27 2002/09/14 16:39:16 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -851,11 +851,8 @@ bool Theme::readDatabaseColor(char *rname, char *rclass, FbTk::Color *color,
 
 	if (XrmGetResource(m_database, rname, rclass, &value_type,
 			&value)) {
-		m_imagecontrol->parseColor(color, value.addr);
+		color->setFromString(value.addr, m_screennum);
 	} else {
-		// parsing with no color string just deallocates the color, if it has
-		// been previously allocated
-		m_imagecontrol->parseColor(color);
 		color->setPixel(default_pixel);
 		return false; 
 	}
