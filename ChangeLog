@@ -1,4 +1,27 @@
 (Format: Year/Month/Day)
+Changes for 0.9.6:
+*03/08/28:
+   * Fixed pixmap bug when changing between non-pixmap themes and pixmap themes (Henrik)
+     Theme.cc
+   * Fixed so Theme items calls setDefaultValue in constructor (Henrik)
+     This should fix init values.
+     Theme.hh
+   * Fixed empty window bug in SystemTray (Henrik)
+     SystemTray.cc
+   * Fixed configurable tools in toolbar (Henrik)
+     * New resource item:
+       * session.screen<num>.toolbar.tools: <toolname>, <toolname2>
+       example: session.screen0.toolbar.tools: clock, iconbar, workspacename
+       Valid toolnames are:
+       * workspacename
+       * clock
+       * iconbar
+       * systemtray
+     Toolbar.hh/cc
+   * Fixed toolbar height bug crash (Henrik)
+     ToolbarTheme.cc
+
+---------------------------------------------------------------------------
 Changes for 0.9.5:
 *03/08/27:
    * Added support for _NET_WM_STATE_MAXIMIZE_{HORZ/VERT} (Thanks stephan wezel <s.wezel<at>web <dot> de>)
