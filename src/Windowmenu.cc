@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.11 2002/04/08 22:35:16 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.12 2002/04/09 23:19:02 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -239,7 +239,7 @@ void Windowmenu::SendtoWorkspacemenu::update(void) {
 			remove(0);
 	}
 	for (i = 0; i < windowmenu->screen->getCount(); ++i)
-		insert(windowmenu->screen->getWorkspace(i)->getName());
+		insert(windowmenu->screen->getWorkspace(i)->name().c_str());
 
 	Basemenu::update();
 }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.22 2002/04/03 23:01:04 fluxgen Exp $
+// $Id: Tab.cc,v 1.23 2002/04/09 23:15:36 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -286,7 +286,7 @@ void Tab::stick() {
 			win->stuck = false;
 			if (!win->isIconic()) {
 				BScreen *screen = win->getScreen();
-				screen->reassociateWindow(win, screen->getCurrentWorkspace()->getWorkspaceID(), true);
+				screen->reassociateWindow(win, screen->getCurrentWorkspace()->workspaceID(), true);
 			}
 
 		} else {

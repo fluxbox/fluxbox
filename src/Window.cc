@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.41 2002/04/08 22:32:07 fluxgen Exp $
+// $Id: Window.cc,v 1.42 2002/04/09 23:17:11 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1952,8 +1952,8 @@ void FluxboxWindow::iconify(void) {
 
 void FluxboxWindow::deiconify(bool reassoc, bool raise) {
 	if (iconic || reassoc) {
-		screen->reassociateWindow(this, screen->getCurrentWorkspace()->getWorkspaceID(), false);
-	} else if (workspace_number != screen->getCurrentWorkspace()->getWorkspaceID())
+		screen->reassociateWindow(this, screen->getCurrentWorkspace()->workspaceID(), false);
+	} else if (workspace_number != screen->getCurrentWorkspace()->workspaceID())
 		return;
 
 	setState(NormalState);
@@ -2376,7 +2376,7 @@ void FluxboxWindow::stick(void) {
 		stuck = false;
 
 		if (! iconic)
-			screen->reassociateWindow(this, screen->getCurrentWorkspace()->getWorkspaceID(), true);
+			screen->reassociateWindow(this, screen->getCurrentWorkspace()->workspaceID(), true);
 
 		
 	} else {

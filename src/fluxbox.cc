@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.48 2002/04/09 12:09:03 cout Exp $
+// $Id: fluxbox.cc,v 1.49 2002/04/09 23:14:25 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -610,9 +610,8 @@ void Fluxbox::process_event(XEvent *e) {
 
 		if (iskdedockapp) {
 			XSelectInput(getXDisplay(), e->xmaprequest.window, StructureNotifyMask);
-			std::list<BScreen *>::iterator it = screenList.begin();
-			std::list<BScreen *>::iterator it_end = screenList.end();
-			for (; (*it) == screenList->last(); ++it) {
+			std::list<BScreen *>::iterator it = screenList.begin();			
+			for (; (*it) == screenList.back(); ++it) {
 				(*it)->getSlit()->addClient(e->xmaprequest.window);
 			}
 			return;
@@ -1850,8 +1849,8 @@ void Fluxbox::save_rc(void) {
 		string workspaces_string(rc_string);
 
 		for (unsigned int workspace=0; workspace < screen->getCount(); workspace++) {
-			if (screen->getWorkspace(workspace)->getName()!=0)
-				workspaces_string.append(screen->getWorkspace(workspace)->getName());
+			if (screen->getWorkspace(workspace)->name().size()!=0)
+				workspaces_string.append(screen->getWorkspace(workspace)->name());
 			else
 				workspaces_string.append("Null");
 			workspaces_string.append(",");
@@ -2402,7 +2401,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 		old_wkspc = old_screen->getWorkspace(old_win->getWorkspaceNumber());
 
 		old_win->setFocusFlag(False);
-		old_wkspc->getMenu()->setItemSelected(old_win->getWindowNumber(), False);
+		old_wkspc->menu()->setItemSelected(old_win->getWindowNumber(), false);
 		
 	}
 
@@ -2413,7 +2412,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 		wkspc = screen->getWorkspace(win->getWorkspaceNumber());		
 		focused_window = win;
 		win->setFocusFlag(True);
-		wkspc->getMenu()->setItemSelected(win->getWindowNumber(), True);
+		wkspc->menu()->setItemSelected(win->getWindowNumber(), true);
 		
 	} else
 		focused_window = (FluxboxWindow *) 0;

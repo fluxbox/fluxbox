@@ -21,6 +21,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Workspacemenu.cc,v 1.6 2002/04/09 23:19:17 fluxgen Exp $
+
 //use GNU extension
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -63,7 +65,7 @@ void Workspacemenu::itemSelected(int button, unsigned int index) {
       screen->addWorkspace();
     else if (index == 1)
       screen->removeLastWorkspace();
-    else if ((screen->getCurrentWorkspace()->getWorkspaceID() !=
+    else if ((screen->getCurrentWorkspace()->workspaceID() !=
 	      (index - 2)) && ((index - 2) < screen->getCount()))
       screen->changeWorkspaceID(index - 2);
 

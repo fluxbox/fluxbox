@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.44 2002/04/08 22:26:25 fluxgen Exp $
+// $Id: Screen.cc,v 1.45 2002/04/09 23:15:21 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -371,12 +371,12 @@ resource(rm, screenname, altscreenname)
 		for (int i = 0; i < *resource.workspaces; ++i) {
 			wkspc = new Workspace(this, workspacesList.size());
 			workspacesList.push_back(wkspc);
-			workspacemenu->insert(wkspc->getName(), wkspc->getMenu());
+			workspacemenu->insert(wkspc->name().c_str(), wkspc->menu());
 		}
 	} else {
 		wkspc = new Workspace(this, workspacesList.size());
 		workspacesList.push_back(wkspc);
-		workspacemenu->insert(wkspc->getName(), wkspc->getMenu());
+		workspacemenu->insert(wkspc->name().c_str(), wkspc->menu());
 	}
 
 	workspacemenu->insert(i18n->
@@ -720,8 +720,8 @@ int BScreen::addWorkspace(void) {
 	Workspace *wkspc = new Workspace(this, workspacesList.size());
 	workspacesList.push_back(wkspc);
 	//add workspace to workspacemenu
-	workspacemenu->insert(wkspc->getName(), wkspc->getMenu(),
-		wkspc->getWorkspaceID() + 2); //+2 so we add it after "remove last"
+	workspacemenu->insert(wkspc->name().c_str(), wkspc->menu(),
+		wkspc->workspaceID() + 2); //+2 so we add it after "remove last"
 		
 	workspacemenu->update();
 	saveWorkspaces(workspacesList.size());
@@ -739,12 +739,12 @@ int BScreen::removeLastWorkspace(void) {
 	if (workspacesList.size() > 1) {
 		Workspace *wkspc = workspacesList.back();
 
-		if (current_workspace->getWorkspaceID() == wkspc->getWorkspaceID())
-			changeWorkspaceID(current_workspace->getWorkspaceID() - 1);
+		if (current_workspace->workspaceID() == wkspc->workspaceID())
+			changeWorkspaceID(current_workspace->workspaceID() - 1);
 
 		wkspc->removeAll();
 
-		workspacemenu->remove(wkspc->getWorkspaceID()+2); // + 2 is where workspaces starts
+		workspacemenu->remove(wkspc->workspaceID()+2); // + 2 is where workspaces starts
 		workspacemenu->update();
 		
 		//remove last workspace
@@ -766,12 +766,12 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 	if (! current_workspace || id >= workspacesList.size())
 		return;
 	
-	if (id != current_workspace->getWorkspaceID()) {
+	if (id != current_workspace->workspaceID()) {
 		XSync(fluxbox->getXDisplay(), true);
 		
 		current_workspace->hideAll();
 
-		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2, false);
+		workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
 
 		if (fluxbox->getFocusedWindow() &&
 				fluxbox->getFocusedWindow()->getScreen() == this &&
@@ -784,7 +784,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
 		current_workspace = getWorkspace(id);
 
-		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2, true);
+		workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
 		toolbar->redrawWorkspaceLabel(true);
 
 		current_workspace->showAll();
@@ -803,7 +803,7 @@ void BScreen::sendToWorkspace(unsigned int id, bool changeWS) {
 	if (! current_workspace || id >= workspacesList.size())
 		return;
 
-	if (id != current_workspace->getWorkspaceID()) {
+	if (id != current_workspace->workspaceID()) {
 		XSync(fluxbox->getXDisplay(), True);
 
 		win = fluxbox->getFocusedWindow();
@@ -840,12 +840,12 @@ void BScreen::addNetizen(Netizen *n) {
 	for (; it != it_end; ++it) {
 		for (int i = 0; i < (*it)->getCount(); ++i) {
 			n->sendWindowAdd((*it)->getWindow(i)->getClientWindow(),
-											 (*it)->getWorkspaceID());
+				(*it)->workspaceID());
 		}
 	}
 
 	Window f = ((fluxbox->getFocusedWindow()) ?
-							fluxbox->getFocusedWindow()->getClientWindow() : None);
+		fluxbox->getFocusedWindow()->getClientWindow() : None);
 	n->sendWindowFocus(f);
 }
 
@@ -990,7 +990,7 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	Workspaces::iterator wit = workspacesList.begin();
 	Workspaces::iterator wit_end = workspacesList.end();
 	for (; wit != wit_end; ++wit) {
-		session_stack[i++] = (*wit)->getMenu()->windowID();
+		session_stack[i++] = (*wit)->menu()->windowID();
 	}
 
 	session_stack[i++] = workspacemenu->windowID();
@@ -1074,7 +1074,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 	if (! w) return;
 
 	if (wkspc_id >= workspaceNames.size())
-		wkspc_id = current_workspace->getWorkspaceID();
+		wkspc_id = current_workspace->workspaceID();
 
 	if (w->getWorkspaceNumber() == wkspc_id)
 		return;

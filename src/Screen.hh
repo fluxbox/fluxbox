@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.28 2002/04/09 12:13:44 fluxgen Exp $
+// $Id: Screen.hh,v 1.29 2002/04/09 23:20:40 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -121,7 +121,7 @@ public:
 	inline const unsigned int getFrameWidth(void) const { return theme->getFrameWidth(); }
 	inline const unsigned int getBorderWidth(void) const { return theme->getBorderWidth(); }
 	inline const unsigned int getBorderWidth2x(void) const { return theme->getBorderWidth()*2; }
-	inline const unsigned int getCurrentWorkspaceID() const { return current_workspace->getWorkspaceID(); }
+	inline const unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
 
     typedef std::vector<FluxboxWindow *> Icons;
 	inline const unsigned int getCount(void) const { return workspacesList.size(); }
