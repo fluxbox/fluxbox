@@ -19,10 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.5 2002/11/15 14:00:45 fluxgen Exp $
+// $Id: main.cc,v 1.6 2002/11/26 17:04:23 fluxgen Exp $
 
 #include "FbRun.hh"
-#include "BaseDisplay.hh"
+#include "App.hh"
 #include "StringUtil.hh"
 
 #include <string>
@@ -30,21 +30,8 @@
 
 using namespace std;
 
-class App:public BaseDisplay {
-public:
-	App(const char *displaystr):BaseDisplay("FbRun", displaystr) { }
-	FbRun &fbrun() { return m_fbrun; }
-	void handleEvent(XEvent * const ev) {
-		m_fbrun.handleEvent(ev);
-		if (m_fbrun.end())
-			shutdown();
-	}
-private:
-	FbRun m_fbrun;
-};
-
 void showUsage(const char *progname) {
-	cerr<<"fbrun 1.1.1 : (c) 2002 Henrik Kinnunen"<<endl;
+	cerr<<"fbrun 1.1.2 : (c) 2002 Henrik Kinnunen"<<endl;
 	cerr<<"Usage: "<<
 		progname<<" [arguments]"<<endl<<
 		"Arguments: "<<endl<<
@@ -117,10 +104,11 @@ int main(int argc, char **argv) {
 
 	try {
 		
-		App application(display_name.c_str());
-		Display *disp = application.getXDisplay();
+		FbTk::App application(display_name.c_str());
+		Display *disp = application.display();
 				
-		FbRun &fbrun = application.fbrun();
+		FbRun fbrun;
+
 		if (fontname.size() != 0) {
 			if (!fbrun.loadFont(fontname.c_str())) {
 				cerr<<"Failed to load font: "<<fontname<<endl;
@@ -167,8 +155,14 @@ int main(int argc, char **argv) {
 		
 		if (set_pos)
 			fbrun.move(x, y);
-
-		application.eventLoop();
+		
+		XEvent ev;
+		
+		// main loop
+		while (!fbrun.end()) {
+			XNextEvent(disp, &ev);
+			fbrun.handleEvent(&ev);
+		}	
 
 	} catch (string errstr) {
 		cerr<<"Error: "<<errstr<<endl;
