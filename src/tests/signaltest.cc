@@ -1,5 +1,5 @@
 // signaltest.cc for testing signal handler in fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

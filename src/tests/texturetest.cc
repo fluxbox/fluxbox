@@ -1,3 +1,6 @@
+// texturetest.cc a test app for Textures
+// Copyright (c) 2004 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+
 #include "ImageControl.hh"
 #include "Color.hh"
 #include "GContext.hh"

@@ -1,3 +1,7 @@
+// testLayers.cc a test app for Layers
+// Copyright (c) 2003 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+
+
 #include "App.hh"
 #include "FbWindow.hh"
 #include "Color.hh"
