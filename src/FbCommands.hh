@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.5 2003/06/08 13:47:30 rathnor Exp $
+// $Id: FbCommands.hh,v 1.6 2003/06/22 14:16:25 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -44,6 +44,12 @@ private:
 
 /// exit fluxbox
 class ExitFluxboxCmd: public FbTk::Command {
+public:
+    void execute();
+};
+
+/// saves resources
+class SaveResources: public FbTk::Command {
 public:
     void execute();
 };
