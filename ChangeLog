@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *04/01/02:
+  * Added new styles Emerge (from Nuno Alexandre) and 
+    BlueFlux (from Lauri Hakkarainen)
+  * Removed styles: Clean (CleanColor renamed to Clean), Rancor and Blue  (Henrik)
   * fbsetbg trivial: (Thanks Han) 
     Add support for random_number, provided by:  
     http://www.xs4all.nl/~hanb/software/arc4random.tar.bz2

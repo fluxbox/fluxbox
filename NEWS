@@ -53,6 +53,7 @@ News in 0.9.7:
     * Added resource session.useMod1 <boolean> to disable/enable mod1
       for Resize/Move window with mod1 + button
 Bug fixes: 
+    * Fixed slit and toolbar autohide bug
     * Fixed image cache bug
     * Fixed some icc warnings
     * Fixed mozilla focus issue
