@@ -1,11 +1,24 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/28:
+   * Minor fix in bsetbg (Thanks Han)
+   * Fixed bug [ 582574 ] borderless windows cant be horiz resized. 
+     (Thanks Simon Bowden)
+     Window.cc
+   * Fixed [ 600811 ] undefined keys messes up
+     Keys.cc
+*02/08/24:
+   * Fixed workspace name and the reassociation bug (Thanks Simon Bowden)
+   * Fixed bug [ 598490 ] misplaced parentrelative gives redrw prb
+   * Fixed bug [ 586830 ], the clock now updates once per second.
+*02/08/20:
+   * New fluxbox util: fbrun
 *02/08/18:
    * Added FbTk::EventHandler, a generic eventhandler
    * Changed FbTk::SignalHandler to use FbTk::EventHandler with FbTk::SignalEvent
    * Moved some functions from BaseDisplay to Fluxbox, and
      made BaseDisplay singleton type with FbTk::EventHandler<XEvent>
-
+   * Cleaning in fluxbox-generate_menu (Thanks Han)
 *02/08/16:
    * Minor cleaning in Window.cc
 *02/08/14:
