@@ -22,26 +22,27 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.18 2002/08/14 21:41:21 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.19 2002/08/17 22:11:23 fluxgen Exp $
+
+
+
+#include "BaseDisplay.hh"
+#include "i18n.hh"
+#include "Timer.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
-
-#include "BaseDisplay.hh"
-#include "i18n.hh"
-#include "Timer.hh"
-
 #include <X11/Xutil.h>
-#include <X11/cursorfont.h>
 
-#ifdef		SHAPE
-#	include <X11/extensions/shape.h>
+#ifdef	SHAPE
+#include <X11/extensions/shape.h>
 #endif // SHAPE
 
 #ifdef HAVE_FCNTL_H
@@ -87,16 +88,13 @@
 #	include <process.h>
 #endif //	 HAVE_PROCESS_H						 __EMX__
 
-#ifdef DEBUG
 #include <iostream>
 using namespace std;
-#endif
+
 // X error handler to handle any and all X errors while the application is
 // running
 static Bool internal_error = False;
 static Window last_bad_window = None;
-
-BaseDisplay *base_display;
 
 #ifdef DEBUG
 static int handleXErrors(Display *d, XErrorEvent *e) {
@@ -108,7 +106,7 @@ static int handleXErrors(Display *d, XErrorEvent *e) {
 		getMessage(
 			FBNLS::BaseDisplaySet, FBNLS::BaseDisplayXError,
 			 "%s:	X error: %s(%d) opcodes %d/%d\n	resource 0x%lx\n"),
-			base_display->getApplicationName(), errtxt, e->error_code,
+			BaseDisplay::instance()->getApplicationName(), errtxt, e->error_code,
 			e->request_code, e->minor_code, e->resourceid);
 
 #else // !DEBUG
@@ -137,15 +135,20 @@ void bexec(const char *command, char *displaystring) {
 #endif // !__EMX__
 
 
+BaseDisplay *BaseDisplay::s_singleton = 0;
+
 BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):
 m_startup(true), m_shutdown(false), 
 m_display_name(XDisplayName(dpy_name)), m_app_name(app_name),
 m_server_grabs(0)
 {
-
+	if (s_singleton != 0)
+		throw string("Can't create more than one instance of BaseDisplay!");
+	
+	s_singleton = this;
+	
 	last_bad_window = None;
 	I18n *i18n = I18n::instance();
-	::base_display = this;
 
 	if (! (m_display = XOpenDisplay(dpy_name))) {
 		fprintf(stderr,
@@ -175,33 +178,37 @@ m_server_grabs(0)
 	shape.extensions = False;
 #endif // SHAPE
 
-	cursor.session = XCreateFontCursor(m_display, XC_left_ptr);
-	cursor.move = XCreateFontCursor(m_display, XC_fleur);
-	cursor.ll_angle = XCreateFontCursor(m_display, XC_ll_angle);
-	cursor.lr_angle = XCreateFontCursor(m_display, XC_lr_angle);
-
+	
 	XSetErrorHandler((XErrorHandler) handleXErrors);
 
-	int i;
-	for (i = 0; i < number_of_screens; i++) {
+	for (int i = 0; i < number_of_screens; i++) {
 		ScreenInfo *screeninfo = new ScreenInfo(this, i);
 		screenInfoList.push_back(screeninfo);
 	}
 }
 
 
-BaseDisplay::~BaseDisplay(void) {
+BaseDisplay::~BaseDisplay() {
 	
 	ScreenInfoList::iterator it = screenInfoList.begin();
 	ScreenInfoList::iterator it_end = screenInfoList.end();
 	for (; it != it_end; ++it) {
 		delete (*it);
 	}
-
+	
 	XCloseDisplay(m_display);
+
+	s_singleton = 0;
 }
 
-void BaseDisplay::eventLoop(void) {
+BaseDisplay *BaseDisplay::instance() {
+	if (s_singleton == 0)
+		throw string("BaseDisplay not created!");
+	
+	return s_singleton;
+}
+
+void BaseDisplay::eventLoop() {
 	run();
 
 	while ((! m_shutdown) && (! internal_error)) {
@@ -210,17 +217,17 @@ void BaseDisplay::eventLoop(void) {
 			XNextEvent(m_display, &e);
 
 			if (last_bad_window != None && e.xany.window == last_bad_window) {
-			#ifdef DEBUG
+#ifdef DEBUG
 			fprintf(stderr,
 				I18n::instance()->
 					getMessage(
 					FBNLS::BaseDisplaySet, FBNLS::BaseDisplayBadWindowRemove,
 					"BaseDisplay::eventLoop(): removing bad window "
 					"from event queue\n"));
-			#endif // DEBUG
+#endif // DEBUG
 			} else {
 				last_bad_window = None;
-				process_event(&e);
+				handleEvent(&e);
 			}
 		} else {
 			BTimer::updateTimers(ConnectionNumber(m_display)); //handle all timers
@@ -240,13 +247,13 @@ bool BaseDisplay::validateWindow(Window window) {
 }
 
 
-void BaseDisplay::grab(void) {
+void BaseDisplay::grab() {
 	if (! m_server_grabs++)
 		XGrabServer(m_display);
 }
 
 
-void BaseDisplay::ungrab(void) {
+void BaseDisplay::ungrab() {
 	if (! --m_server_grabs)
 		XUngrabServer(m_display);
 	if (m_server_grabs < 0)

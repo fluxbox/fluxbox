@@ -22,12 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.25 2002/08/14 21:21:30 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.26 2002/08/17 22:10:03 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
 
 #include "NotCopyable.hh"
+#include "EventHandler.hh"
 
 #include <X11/Xlib.h>
 
@@ -48,12 +49,16 @@ class ScreenInfo;
 
 /// obsolete
 void bexec(const char *command, char *displaystring);
-
-class BaseDisplay:private NotCopyable
+/**
+	Singleton class to manage display connection
+*/
+class BaseDisplay:private NotCopyable, FbTk::EventHandler<XEvent>
 {
 public:
 	BaseDisplay(const char *app_name, const char *display_name = 0);
 	virtual ~BaseDisplay();
+	static BaseDisplay *instance();
+
 	/**
 		obsolete
 		@see FluxboxWindow
@@ -86,11 +91,7 @@ public:
 	inline bool doShutdown() const { return m_shutdown; }
 	inline bool isStartup() const { return m_startup; }
 
-	inline const Cursor &getSessionCursor() const { return cursor.session; }
-	inline const Cursor &getMoveCursor() const { return cursor.move; }
-	inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
-	inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
-
+	
 	inline Display *getXDisplay() { return m_display; }
 
 	inline const char *getXDisplayName() const	{ return m_display_name; }
@@ -119,13 +120,7 @@ public:
 		BaseDisplay &m_bd;
 	};
 
-protected:	
-	virtual void process_event(XEvent *) = 0;
-
 private:
-	struct cursor {
-		Cursor session, move, ll_angle, lr_angle;
-	} cursor;
 
 	struct shape {
 		Bool extensions;
@@ -139,8 +134,9 @@ private:
     ScreenInfoList screenInfoList;    
 
 	const char *m_display_name, *m_app_name;
-	int number_of_screens, m_server_grabs, colors_per_channel;
+	int number_of_screens, m_server_grabs;
 
+	static BaseDisplay *s_singleton;
 };
 
 
