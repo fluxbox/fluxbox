@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.8 2002/01/10 14:24:09 fluxgen Exp $
+//$Id: Keys.cc,v 1.9 2002/01/21 01:48:47 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -76,53 +76,53 @@
 using namespace std;
 
 Keys::t_actionstr Keys::m_actionlist[] = {
-		{"Minimize", ICONIFY},
-		{"Raise", RAISE},
-		{"Lower", LOWER},
-		{"Close", CLOSE},
-		{"AbortKeychain", ABORTKEYCHAIN},
-		{"Workspace1", WORKSPACE1},
-		{"Workspace2", WORKSPACE2},
-		{"Workspace3", WORKSPACE3},
-		{"Workspace4", WORKSPACE4},
-		{"Workspace5", WORKSPACE5},
-		{"Workspace6", WORKSPACE6},
-		{"Workspace7", WORKSPACE7},
-		{"Workspace8", WORKSPACE8},
-		{"Workspace9", WORKSPACE9},
-		{"Workspace10", WORKSPACE10},
-		{"Workspace11", WORKSPACE11},
-		{"Workspace12",  WORKSPACE12},
-		{"NextWorkspace", NEXTWORKSPACE},
-		{"PrevWorkspace", PREVWORKSPACE},
-		{"LeftWorkspace", LEFTWORKSPACE},
-		{"RightWorkspace", RIGHTWORKSPACE},
-		{"KillWindow", KILLWINDOW},
-		{"NextWindow", NEXTWINDOW},
-		{"PrevWindow", PREVWINDOW},
-		{"NextTab", NEXTTAB},
-		{"PrevTab", PREVTAB},
-		{"ShadeWindow", SHADE},
-		{"MaximizeWindow", MAXIMIZE},
-		{"StickWindow", STICK},
-		{"ExecCommand", EXECUTE},
-		{"MaximizeVertical", VERTMAX},
-		{"MaximizeHorizontal", HORIZMAX},
-		{"NudgeRight", NUDGERIGHT},
-		{"NudgeLeft", NUDGELEFT},
-		{"NudgeUp", NUDGEUP},
-		{"NudgeDown", NUDGEDOWN},
-		{"BigNudgeRight", BIGNUDGERIGHT},
-		{"BigNudgeLeft", BIGNUDGELEFT},
-		{"BigNudgeUp", BIGNUDGEUP},
-		{"BigNudgeDown", BIGNUDGEDOWN},
-		{"HorizontalIncrement", HORIZINC},
-		{"VerticalIncrement", VERTINC},
-		{"HorizontalDecrement", HORIZDEC},
-		{"VerticalDecrement", VERTDEC},
-		{"ToggleDecor", TOGGLEDECOR},	
-		{0, LASTKEYGRAB}
-		};	
+	{"Minimize", ICONIFY},
+	{"Raise", RAISE},
+	{"Lower", LOWER},
+	{"Close", CLOSE},
+	{"AbortKeychain", ABORTKEYCHAIN},
+	{"Workspace1", WORKSPACE1},
+	{"Workspace2", WORKSPACE2},
+	{"Workspace3", WORKSPACE3},
+	{"Workspace4", WORKSPACE4},
+	{"Workspace5", WORKSPACE5},
+	{"Workspace6", WORKSPACE6},
+	{"Workspace7", WORKSPACE7},
+	{"Workspace8", WORKSPACE8},
+	{"Workspace9", WORKSPACE9},
+	{"Workspace10", WORKSPACE10},
+	{"Workspace11", WORKSPACE11},
+	{"Workspace12",  WORKSPACE12},
+	{"NextWorkspace", NEXTWORKSPACE},
+	{"PrevWorkspace", PREVWORKSPACE},
+	{"LeftWorkspace", LEFTWORKSPACE},
+	{"RightWorkspace", RIGHTWORKSPACE},
+	{"KillWindow", KILLWINDOW},
+	{"NextWindow", NEXTWINDOW},
+	{"PrevWindow", PREVWINDOW},
+	{"NextTab", NEXTTAB},
+	{"PrevTab", PREVTAB},
+	{"ShadeWindow", SHADE},
+	{"MaximizeWindow", MAXIMIZE},
+	{"StickWindow", STICK},
+	{"ExecCommand", EXECUTE},
+	{"MaximizeVertical", VERTMAX},
+	{"MaximizeHorizontal", HORIZMAX},
+	{"NudgeRight", NUDGERIGHT},
+	{"NudgeLeft", NUDGELEFT},
+	{"NudgeUp", NUDGEUP},
+	{"NudgeDown", NUDGEDOWN},
+	{"BigNudgeRight", BIGNUDGERIGHT},
+	{"BigNudgeLeft", BIGNUDGELEFT},
+	{"BigNudgeUp", BIGNUDGEUP},
+	{"BigNudgeDown", BIGNUDGEDOWN},
+	{"HorizontalIncrement", HORIZINC},
+	{"VerticalIncrement", VERTINC},
+	{"HorizontalDecrement", HORIZDEC},
+	{"VerticalDecrement", VERTDEC},
+	{"ToggleDecor", TOGGLEDECOR},	
+	{0, LASTKEYGRAB}
+	};	
 
 Keys::Keys(Display *display, char *filename):
 m_abortkey(0),
@@ -277,17 +277,6 @@ bool Keys::load(char *filename) {
 					//add the keychain to list										
 					if (!mergeTree(current_key))
 						cerr<<"Keys: Failed to merge keytree!"<<endl;
-		
-					#ifdef DEBUG
-				  if (m_actionlist[i].action == Keys::EXECUTE) {
-						
-						cerr<<"line:"<<line<<endl;
-						cerr<<"buffer:"<<const_cast<char *>(StringUtil::strcasestr(linebuffer.get(), 
-							getActionStr(Keys::EXECUTE)) + strlen(getActionStr(Keys::EXECUTE)))<<endl;
-						cerr<<"command:"<<last_key->execcommand<<endl;
-		
-					}
-					#endif
 				
 					//clear keypointers now that we have them in m_keylist					
 					delete current_key;
@@ -308,10 +297,7 @@ bool Keys::load(char *filename) {
 			}	
 		}
 	}
-	
-	#ifdef DEBUG
-	showTree(); //who keybinding tree
-	#endif
+
 	return true;
 }
 
@@ -320,53 +306,49 @@ bool Keys::load(char *filename) {
 // and with numlock,capslock and scrollock
 //----------------------------------------
 void Keys::grabKey(unsigned int key, unsigned int mod) {
-	
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): keycode "<<key<<" mod "<<hex<<mod<<dec<<endl;
-	#endif	
-	
+
 	for (int screen=0; screen<ScreenCount(m_display); screen++) {
 		
 		Window root = RootWindow(m_display, screen);
 		
 		XGrabKey(m_display, key, mod,
-							root, True,
-							GrabModeAsync, GrabModeAsync);
+			root, True,
+			GrabModeAsync, GrabModeAsync);
 						
 		// Grab with numlock, capslock and scrlock	
 
 		//numlock	
 		XGrabKey(m_display, key, mod|Mod2Mask,
-							root, True,
-							GrabModeAsync, GrabModeAsync);		
+			root, True,
+			GrabModeAsync, GrabModeAsync);		
 		//scrolllock
 		XGrabKey(m_display, key, mod|Mod5Mask,
-						root, True,
-						GrabModeAsync, GrabModeAsync);	
+			root, True,
+			GrabModeAsync, GrabModeAsync);	
 		//capslock
 		XGrabKey(m_display, key, mod|LockMask,
-							root, True,
-							GrabModeAsync, GrabModeAsync);
+			root, True,
+			GrabModeAsync, GrabModeAsync);
 	
 		//capslock+numlock
 		XGrabKey(m_display, key, mod|LockMask|Mod2Mask,
-							root, True,
-							GrabModeAsync, GrabModeAsync);
+			root, True,
+			GrabModeAsync, GrabModeAsync);
 
 		//capslock+scrolllock
 		XGrabKey(m_display, key, mod|LockMask|Mod5Mask,
-							root, True,
-							GrabModeAsync, GrabModeAsync);						
+			root, True,
+			GrabModeAsync, GrabModeAsync);						
 	
 		//capslock+numlock+scrolllock
 		XGrabKey(m_display, key, mod|Mod2Mask|Mod5Mask|LockMask,
-							root, True,
-							GrabModeAsync, GrabModeAsync);						
+			root, True,
+			GrabModeAsync, GrabModeAsync);						
 
 		//numlock+scrollLock
 		XGrabKey(m_display, key, mod|Mod2Mask|Mod5Mask,
-							root, True,
-							GrabModeAsync, GrabModeAsync);
+			root, True,
+			GrabModeAsync, GrabModeAsync);
 	
 	}
 			
@@ -387,14 +369,14 @@ unsigned int Keys::getModifier(const char *modstr) {
 			return  (strcasecmp(string, modstr) == 0 && mask !=0);
 		}
 	} modlist[] = {
-			{"SHIFT", ShiftMask},
-			{"CONTROL", ControlMask},
-			{"MOD1", Mod1Mask},
-			{"MOD2", Mod2Mask},
-			{"MOD3", Mod3Mask},
-			{"MOD4", Mod4Mask},
-			{"MOD5", Mod5Mask},
-			{0, 0}
+		{"SHIFT", ShiftMask},
+		{"CONTROL", ControlMask},
+		{"MOD1", Mod1Mask},
+		{"MOD2", Mod2Mask},
+		{"MOD3", Mod3Mask},
+		{"MOD4", Mod4Mask},
+		{"MOD5", Mod5Mask},
+		{0, 0}
 		};
 		
 	for (unsigned int i=0; modlist[i].string!=0; i++) {
@@ -413,7 +395,7 @@ unsigned int Keys::getKey(const char *keystr) {
 	if (!keystr)
 		return 0;
 	return XKeysymToKeycode(m_display,
-							 XStringToKeysym(keystr));
+		XStringToKeysym(keystr));
 }
 
 //--------- getAction -----------------
