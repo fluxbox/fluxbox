@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/02:
+  * Missing include of math.h for sqrt (Simon)
+    WorkspaceCmd.cc
 *03/12/01:
   * Fixed shadow bug with other options (Henrik)
     Font.cc
