@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.54 2002/06/02 22:48:38 fluxgen Exp $
+// $Id: Screen.cc,v 1.55 2002/07/10 14:51:32 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1119,8 +1119,8 @@ void BScreen::nextFocus(int opts) {
 	const int num_windows = getCurrentWorkspace()->getCount();
 	
 	if ((focused = fluxbox->getFocusedWindow())) {
-		if (focused->getScreen()->getScreenNumber() ==
-			getScreenNumber()) {
+		if (focused->getScreen()->getScreenNumber() == 
+				getScreenNumber()) {
 			have_focused = true;
 			focused_window_number = focused->getWindowNumber();
 		}
@@ -1130,7 +1130,8 @@ void BScreen::nextFocus(int opts) {
 		Workspace *wksp = getCurrentWorkspace();
 		Workspace::Windows wins = wksp->getWindowList();
 		Workspace::Windows::iterator it = wins.begin();
-		for (; *it != focused; ++it);
+		for (; *it != focused; ++it); //get focused window iterator
+
 		do {
 			++it;
 			if (it == wins.end())
@@ -1142,6 +1143,7 @@ void BScreen::nextFocus(int opts) {
 
 		if (*it != focused)
 			wksp->raiseWindow(*it);
+
 	} else if (num_windows >= 1) {
 		FluxboxWindow *next = current_workspace->getWindow(0);
 		//don't raise next window if input focus fails
