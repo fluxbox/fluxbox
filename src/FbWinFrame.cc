@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.5 2003/01/12 20:31:54 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.6 2003/02/15 01:54:54 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -63,7 +63,9 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int 
     m_bevel(1),
     m_use_titlebar(true), 
     m_use_handle(true),
-    m_button_pm(0) {
+    m_button_pm(0),
+    m_themelistener(*this) {
+    theme.addListener(m_themelistener);
     init();
 }
 /*

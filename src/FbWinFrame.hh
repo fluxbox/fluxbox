@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.3 2003/01/09 22:00:34 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.4 2003/02/15 01:54:18 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -32,6 +32,7 @@
 #include "FbWinFrameTheme.hh"
 #include "RefCount.hh"
 #include "Command.hh"
+#include "Observer.hh"
 
 #include <vector>
 #include <string>
@@ -46,11 +47,13 @@ class FbWinFrame:public FbTk::EventHandler {
 public:
 
     /// create a top level window
-    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, int screen_num, int x, int y,
+    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+               int screen_num, int x, int y,
                unsigned int width, unsigned int height);
 
     /// create a frame window inside another FbWindow, NOT IMPLEMENTED!
-    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, const FbTk::FbWindow &parent,
+    FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, 
+               const FbTk::FbWindow &parent,
                int x, int y, 
                unsigned int width, unsigned int height);
 
@@ -236,7 +239,18 @@ private:
         FbTk::RefCount<FbTk::Command> click_pressed; ///< what to do when we press mouse button
         FbTk::RefCount<FbTk::Command> double_click; ///< what to do when we double click
     };
-    MouseButtonAction m_commands[5]; ///< hardcoded to five ...TODO, change this
+    MouseButtonAction m_commands[5]; ///< hardcoded to five ... //!! TODO, change this
+
+    class ThemeListener: public FbTk::Observer {
+    public:
+        ThemeListener(FbWinFrame &frame):m_frame(frame) { }
+        void update(FbTk::Subject *subj) {
+            m_frame.reconfigure();
+        }
+    private:
+        FbWinFrame &m_frame;
+    };
+    ThemeListener m_themelistener;
 };
 
 #endif // FBWINFRAME_HH
