@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.36 2002/11/26 16:07:29 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.37 2002/11/27 22:06:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -307,54 +307,58 @@ void Basemenu::update() {
 	if (menu.height < 1) menu.height = 1;
 
 	Pixmap tmp;
-	FbTk::Texture *texture;
 	if (title_vis) {
 		tmp = menu.title_pixmap;
-		texture = &(m_screen->getMenuStyle()->title);
-		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+		const FbTk::Texture &tex = m_screen->getMenuStyle()->title;
+		if (tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			menu.title_pixmap = None;
-			XSetWindowBackground(m_display, menu.title,
-				 texture->color().pixel());
+			XSetWindowBackground(m_display, menu.title, tex.color().pixel());
 		} else {
 			menu.title_pixmap =
-				m_image_ctrl->renderImage(menu.width, menu.title_h, texture);
+				m_image_ctrl->renderImage(menu.width, menu.title_h, tex);
 			XSetWindowBackgroundPixmap(m_display, menu.title, menu.title_pixmap);
 		}
-		if (tmp) m_image_ctrl->removeImage(tmp);
+
+		if (tmp) 
+			m_image_ctrl->removeImage(tmp);
+
 		XClearWindow(m_display, menu.title);
 	}
 
 	tmp = menu.frame_pixmap;
-	texture = &(m_screen->getMenuStyle()->frame);
-	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+	const FbTk::Texture &frame_tex = m_screen->getMenuStyle()->frame;
+	if (frame_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		menu.frame_pixmap = None;
-		XSetWindowBackground(m_display, menu.frame,
-			 texture->color().pixel());
+		XSetWindowBackground(m_display, menu.frame, frame_tex.color().pixel());
 	} else {
 		menu.frame_pixmap =
-			m_image_ctrl->renderImage(menu.width, menu.frame_h, texture);
+			m_image_ctrl->renderImage(menu.width, menu.frame_h, frame_tex);
 		XSetWindowBackgroundPixmap(m_display, menu.frame, menu.frame_pixmap);
 	}
-	if (tmp) m_image_ctrl->removeImage(tmp);
+
+	if (tmp)
+		m_image_ctrl->removeImage(tmp);
 
 	tmp = menu.hilite_pixmap;
-	texture = &(m_screen->getMenuStyle()->hilite);
-	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
+	const FbTk::Texture &hilite_tex = m_screen->getMenuStyle()->hilite;
+	if (hilite_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
 		menu.hilite_pixmap = None;
 	else
 		menu.hilite_pixmap =
-			m_image_ctrl->renderImage(menu.item_w, menu.item_h, texture);
-	if (tmp) m_image_ctrl->removeImage(tmp);
+			m_image_ctrl->renderImage(menu.item_w, menu.item_h, hilite_tex);
+	if (tmp)
+		m_image_ctrl->removeImage(tmp);
 
 	tmp = menu.sel_pixmap;
-	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
+	if (hilite_tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
 		menu.sel_pixmap = None;
 	else {
 		int hw = menu.item_h / 2;
 		menu.sel_pixmap =
-			m_image_ctrl->renderImage(hw, hw, texture);
+			m_image_ctrl->renderImage(hw, hw, hilite_tex);
 	}
-	if (tmp) m_image_ctrl->removeImage(tmp);
+	if (tmp) 
+		m_image_ctrl->removeImage(tmp);
 
 	XResizeWindow(m_display, menu.window, menu.width, menu.height);
 
