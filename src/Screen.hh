@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.133 2004/01/16 11:58:45 fluxgen Exp $
+// $Id: Screen.hh,v 1.134 2004/01/19 18:28:58 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -136,7 +136,7 @@ public:
 
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }
-    inline unsigned int screenNumber() const { return rootWindow().screenNumber(); }
+    inline int screenNumber() const { return rootWindow().screenNumber(); }
 
     /// @return number of workspaces
     inline unsigned int getCount() const { return m_workspaces_list.size(); }
@@ -162,6 +162,8 @@ public:
     FbTk::Subject &workspaceCountSig() { return m_workspacecount_sig; }
     /// workspace names signal 
     FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
+    /// workspace area signal
+    FbTk::Subject &workspaceAreaSig() { return m_workspace_area_sig; }
     /// current workspace signal
     FbTk::Subject &currentWorkspaceSig() { return m_currentworkspace_sig; }
     /// reconfigure signal
@@ -360,6 +362,7 @@ private:
         m_iconlist_sig, ///< notify if a window gets iconified/deiconified
         m_workspacecount_sig, ///< workspace count signal
         m_workspacenames_sig, ///< workspace names signal 
+        m_workspace_area_sig, ///< workspace area changed signal
         m_currentworkspace_sig, ///< current workspace signal
         m_reconfigure_sig, ///< reconfigure signal
         m_resize_sig; ///< resize signal

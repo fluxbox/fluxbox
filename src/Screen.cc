@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.261 2004/01/16 11:47:07 fluxgen Exp $
+// $Id: Screen.cc,v 1.262 2004/01/19 18:29:43 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -386,6 +386,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_iconlist_sig(*this), // icon list signal
     m_workspacecount_sig(*this), // workspace count signal
     m_workspacenames_sig(*this), // workspace names signal 
+    m_workspace_area_sig(*this), // workspace area signal
     m_currentworkspace_sig(*this), // current workspace signal
     m_reconfigure_sig(*this), // reconfigure signal
     m_resize_sig(*this),
@@ -1078,10 +1079,10 @@ void BScreen::changeWorkspaceID(unsigned int id) {
     // This is a little tricks to reduce flicker 
     // this way we can set focus pixmap on frame before we show it
     // and using ExposeEvent to redraw without flicker
-    /*
-      WinClient *win = getLastFocusedWindow(currentWorkspaceID());
-      if (win && win->fbwindow())
-      win->fbwindow()->setFocusFlag(true);
+    /*    
+    WinClient *win = getLastFocusedWindow(currentWorkspaceID());
+    if (win && win->fbwindow())
+        win->fbwindow()->setFocusFlag(true);
     */
 
     currentWorkspace()->showAll();
@@ -1095,6 +1096,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         focused->resumeMoving();
 
     updateNetizenCurrentWorkspace();
+    FbTk::App::instance()->sync(false);
 
 }
 
@@ -1210,8 +1212,6 @@ void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
     for (; it != it_end; ++it) {
         (*it)->sendWindowAdd(w, p);
     }
-
-    m_clientlist_sig.notify();
 	
 }
 
@@ -1355,6 +1355,8 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         win->show();
     }
 
+    m_clientlist_sig.notify();
+
     FbTk::App::instance()->sync(false);
     return win;
 }
@@ -1378,6 +1380,8 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // winclient actions should have been setup when the WinClient was created
     if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck())
         win->show();      
+
+    m_clientlist_sig.notify();
 
     return win;
 }
@@ -1418,18 +1422,23 @@ private:
     Strut &m_max_area;
 };
 
-}; // end anonymous namespace
+} // end anonymous namespace
 
 void BScreen::updateAvailableWorkspaceArea() {
     // find max of left, right, top and bottom and set avaible workspace area
 
     // clear old area
+    Strut oldarea = *(m_available_workspace_area.get());
     m_available_workspace_area.reset(new Strut(0, 0, 0, 0));
     
     // calculate max area
     for_each(m_strutlist.begin(),
              m_strutlist.end(),
              MaxArea(*m_available_workspace_area.get()));
+
+    // only notify if the area changed
+    if (oldarea == *(m_available_workspace_area.get()))
+        m_workspace_area_sig.notify();
 }
 
 void BScreen::addWorkspaceName(const char *name) {
@@ -2390,7 +2399,8 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
             (opts & CYCLESKIPSTUCK) != 0 && win->isStuck() || // skip if stuck
             // skip if not active client (i.e. only visit each fbwin once)
             (opts & CYCLEGROUPS) != 0 && win->winClient().window() != winclient.window() ||
-            (opts & CYCLESKIPSHADED) != 0 && win->isShaded() // skip if shaded
+            (opts & CYCLESKIPSHADED) != 0 && win->isShaded() || // skip if shaded
+            win->isHidden()
             ); 
 }
 
