@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.2 2003/04/28 14:45:13 fluxgen Exp $
+# $Id: fbsetbg,v 1.3 2003/04/29 11:26:34 rathnor Exp $
 
 #
 # Portability notes:
@@ -38,8 +38,9 @@
 # compensate for that.
 #
 
-wpsetters='wmsetbg Esetroot xli xsetbg display qiv xv xsri'
+wpsetters='Esetroot wmsetbg display qiv xv xsri xli xsetbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
+
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -82,7 +83,7 @@ EOF
 display_tips(){
 cat<<EOF
 
-To replace all occurances of bsetbg in a file use this command:
+To replace all occurrences of bsetbg in a file use this command:
 
   perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,'
 
@@ -114,75 +115,20 @@ message() {
 }
 
 remembercommand() {
-        echo $option > $lastwallpaper
-        echo $wallpaper >> $lastwallpaper
+    #if the $wallpaper path is absolute
+    echo $option > $lastwallpaper
+    case $wallpaper in
+        /*) echo      $wallpaper >> $lastwallpaper ;;
+        *)  echo $PWD/$wallpaper >> $lastwallpaper ;;
+    esac
 }
 
 debugfbsetbg (){
-
-    standardrant (){
-        cat <<EOF
-
-$WPSETTER sets the 'wrong' wallpaper. transparant apps like aterm and
-xchat wont work right with it. Consider using wmsetbg (from windowmaker)
-or Esetroot (from Eterm)
-
-EOF
-    }
-
-    for wpsetter in $wpsetters; do
-        if find_it $wpsetter; then
-            WPSETTER=$wpsetter
-            break
-        fi
-    done
-
-    case $WPSETTER in
-        xsri)
-            echo "This is a RedHat specific app. I can't find docs about it."
-            ;;
-        display)
-            standardrant
-            ;;
-        Esetroot)
-            echo 'Esetroot is a nice app :)'
-            echo "You won't have any problems."
-            ;;
-        wmsetbg)
-            echo 'wmsetbg is my favourite :)'
-            echo "You won't have any problems."
-            ;;
-        xsetbg)
-            standardrant
-            echo 'Is actually xli'
-            echo 'fillscreen option (-f) is broken, defaults to (-a)'
-	    ;;
-        xli)
-            standardrant
-            echo 'fillscreen option (-f) is broken, defaults to (-a)'
-            ;;
-        qiv)
-            standardrant
-            ;;
-        xv)
-            standardrant
-            ;;
-        '')
-            cat <<EOF
-
-I Can't find and app to set the wallpaper with. You can install one in
-many many ways but I will give you some simple advice: install Eterm and
-your set. Eterm provides Esetroot and thats a great wallpapersetter. I
-recommend you install the package provided by your distro.
-
-EOF
-    esac
+    echo
+    echo $debugstory
+    echo
     exit 0
 }
-
-if [ $1 = -d ];then
-    debugfbsetbg
-fi
 
 # Find the default wallpapersetter
 # The precise order is up for debate.
@@ -193,79 +139,93 @@ for wpsetter in $wpsetters; do
     fi
 done
 
+standardrant="$WPSETTER sets the 'wrong' wallpaper. Transparant apps like aterm and
+xchat won't work right with it. Consider using wmsetbg (from windowmaker)
+or Esetroot (from Eterm)"
+
 case $WPSETTER in
     xsri)
 	full='--center-x --center-y --scale-width=100 --scale-width=100'
 	tile='--tile'
 	center='--center-x --center-y'
         aspect=$full
+        debugstory="This is a RedHat specific app. I can't find docs about it."
         ;;
     display)
         full='`xwininfo -root|grep geom` -window root'
         tile='-window root'
         center='-backdrop -window root'
         aspect=$full
+        debugstory=$standardrant
         ;;
     Esetroot)
         full='-scale'
         tile=''
         center='-c'
         aspect='-fit'
+        debugstory="Esetroot is a nice app. You won't have any problems."
         ;;
     wmsetbg)
         full='-s -S'
         tile='-t'
         center='-b black -e'
         aspect='-b black -a'
+        debugstory="wmsetbg is a nice app. You won't have any problems."
         ;;
     xsetbg)
 	tile='-border black'
 	center='-center -border black'
         aspect='-fullscreen -border black'
 	full=$aspect #broken
+        debugstory="xsetbg is actually xli. The fillscreen option (-f) is broken, defaults to (-a). $standardrant"
 	;;
     xli)
 	tile='-onroot -quiet -border black'
 	center='-center -onroot -quiet -border black'
         aspect='-fullscreen -onroot -quiet -border black'
 	full=$aspect #broken
+        debugstory='The fillscreen option (-f) is broken, defaults to (-a). $standardrant'
         ;;
     qiv)
         full='--root_s'
         tile='--root_t'
         center='--root'
         aspect='-m --root'
+        debugstory=$standardrant
         ;;
     xv)
         full='-max -smooth -root -quit'
         tile='-root -quit'
         center='-rmode 5 -root -quit'
         aspect='-maxpect -smooth -root -quit'
+        debugstory=$standardrant
         ;;
     '')
-            message "Can't find and app to set the wallpaper with.
-Use fbsetbg -d to find out what to do next"
-            exit 1
+        message "I can't find an app to set the wallpaper with. You can install one in
+many many ways but I will give you some simple advice: install Eterm and
+you're set. Eterm provides Esetroot and thats a great wallpaper setter. I
+recommend you install the package provided by your distro."
+        exit 1
+        ;;
 esac
 
 #Get options.
-getopts ":a:f:c:t:Tlh-" COMMAND_LINE_ARGUMENT
+getopts ":a:f:c:t:Tdlh-" COMMAND_LINE_ARGUMENT
 case "${COMMAND_LINE_ARGUMENT}" in
+    d) debugfbsetbg
+        exit 0
+        ;;
     a) option=$aspect
         wallpaper=$OPTARG
-        remembercommand
         ;;
     f) option=$full
         wallpaper=$OPTARG
-        remembercommand
         ;;
     c) option=$center
         wallpaper=$OPTARG
-        remembercommand
         ;;
     t) option=$tile
         wallpaper=$OPTARG
-        remembercommand
         ;;
     l)
         if [ -r $lastwallpaper ];then
@@ -300,3 +260,4 @@ fi
 $WPSETTER $option "$wallpaper" || message "Something went wrong while setting the wallpaper
 Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
 #remember previous wallpaper
+remembercommand
