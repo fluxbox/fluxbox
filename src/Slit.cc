@@ -910,11 +910,17 @@ void Slit::clientUp(SlitClient* client) {
     if (!client || m_client_list.size() < 2)
         return;
     
+    if (client == m_client_list.front()) {
+        cycleClientsUp();
+        return;
+    }
+    
     SlitClients::iterator it = m_client_list.begin();
-
     for(it++; it != m_client_list.end(); it++) {
         if ((*it) == client) {
-            swap(*it, *(it--));
+            SlitClients::iterator prev = it;
+            prev--;
+            iter_swap(it, prev);
             reconfigure();
             break;
         }
@@ -924,11 +930,18 @@ void Slit::clientUp(SlitClient* client) {
 void Slit::clientDown(SlitClient* client) {
     if (!client || m_client_list.size() < 2)
         return;
-
+    
+    if (client == m_client_list.back()) {
+        cycleClientsDown();
+        return;
+    }
+    
     SlitClients::reverse_iterator it = m_client_list.rbegin();
     for(it++; it != m_client_list.rend(); it++) {
         if ((*it) == client) {
-            swap(*it, *(it--));
+            SlitClients::reverse_iterator next = it;
+            next--;
+            iter_swap(it, next);
             reconfigure();
             break;
         }
@@ -1161,7 +1174,7 @@ void Slit::updateClientmenu() {
                                      "Save SlitList", "Saves the current order in the slit"), 
                              savecmd);
 
-    m_clientlist_menu.update();
+    m_clientlist_menu.updateMenu();
 }
 
 void Slit::saveClientList() {
@@ -1258,7 +1271,7 @@ void Slit::setupMenu() {
                                           *this,
                                           save_and_reconfigure));
     m_slitmenu.insert(_FBTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
-    m_slitmenu.update();
+    m_slitmenu.updateMenu();
 
     // setup sub menu
     m_placement_menu.setLabel(_FBTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
@@ -1300,7 +1313,7 @@ void Slit::setupMenu() {
     }
 
     // finaly update sub menu
-    m_placement_menu.update();
+    m_placement_menu.updateMenu();
 }
 
 void Slit::moveToLayer(int layernum) {
