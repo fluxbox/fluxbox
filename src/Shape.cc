@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.7 2003/10/06 06:22:42 rathnor Exp $
+// $Id: Shape.cc,v 1.8 2004/01/09 02:17:46 fluxgen Exp $
 
 #include "Shape.hh"
 #include "FbTk/FbWindow.hh"
@@ -57,7 +57,9 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
 
     Display *disp = FbTk::App::instance()->display();
     const size_t data_size = win_width * win_height;
-    char *data = new char[data_size];
+    // we use calloc here so we get consistent C alloc/free with XDestroyImage
+    // and no warnings in valgrind :)
+    char *data = (char *)calloc(data_size, sizeof (char));
     memset(data, 0xFF, data_size);
     
     XImage *ximage = XCreateImage(disp,
