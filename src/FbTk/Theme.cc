@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.16 2003/08/28 15:46:13 fluxgen Exp $
+// $Id: Theme.cc,v 1.17 2003/08/28 23:06:27 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -78,16 +78,18 @@ void ThemeItem<FbTk::Font>::setDefaultValue() {
 template <>
 void ThemeItem<FbTk::Font>::setFromString(const char *str) {
     if (m_value.load(str) == false) {
-        cerr<<"FbTk::Theme: Error loading font "<<
-            ((m_value.isAntialias() || m_value.utf8()) ? "(" : "")<<
+        if (FbTk::ThemeManager::instance().verbose()) {
+            cerr<<"FbTk::Theme: Error loading font "<<
+                ((m_value.isAntialias() || m_value.utf8()) ? "(" : "")<<
 
-            (m_value.isAntialias() ? "antialias" : "")<<
-            (m_value.utf8() ? " utf8" : "")<<
+                (m_value.isAntialias() ? "antialias" : "")<<
+                (m_value.utf8() ? " utf8" : "")<<
 
-            ((m_value.isAntialias() || m_value.utf8()) ? ") " : "")<<
-            "for \""<<name()<<"\" or \""<<altName()<<"\": "<<str<<endl;
+                ((m_value.isAntialias() || m_value.utf8()) ? ") " : "")<<
+                "for \""<<name()<<"\" or \""<<altName()<<"\": "<<str<<endl;
 
-        cerr<<"FbTk::Theme: Setting default value"<<endl;
+            cerr<<"FbTk::Theme: Setting default value"<<endl;
+        }
         setDefaultValue();
     }
     
@@ -131,7 +133,8 @@ void ThemeItem<FbTk::Texture>::load() {
 
     std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name, m_tm.screenNum()));
     if (pm.get() == 0) {
-        cerr<<"Resource("<<name()+".pixmap"<<"): Failed to load image: "<<pixmap_name<<endl;
+        if (FbTk::ThemeManager::instance().verbose())
+            cerr<<"Resource("<<name()+".pixmap"<<"): Failed to load image: "<<pixmap_name<<endl;
         m_value.pixmap() = 0;
     } else
         m_value.pixmap() = pm->pixmap().release();
@@ -175,7 +178,8 @@ void ThemeItem<FbTk::Color>::setDefaultValue() {
 template <>
 void ThemeItem<FbTk::Color>::setFromString(const char *str) {
     if (!m_value.setFromString(str, m_tm.screenNum())) {
-        cerr<<"FbTk::Theme: Error loading color value for \""<<name()<<"\" or \""<<altName()<<"\"."<<endl;
+        if (FbTk::ThemeManager::instance().verbose())
+            cerr<<"FbTk::Theme: Error loading color value for \""<<name()<<"\" or \""<<altName()<<"\"."<<endl;
         setDefaultValue();
     }
 }
@@ -185,19 +189,11 @@ template <>
 void ThemeItem<FbTk::Color>::load() { }
 
 Theme::Theme(int screen_num):m_screen_num(screen_num) {
-
-    if (!ThemeManager::instance().registerTheme(*this)) {
-        // should it be fatal or not?
-        cerr<<"FbTk::Theme Warning: Failed to register Theme"<<endl;
-    }
+    ThemeManager::instance().registerTheme(*this);
 }
 
 Theme::~Theme() {
-    if (!ThemeManager::instance().unregisterTheme(*this)) {
-#ifdef DEBUG
-        cerr<<"Warning: Theme not registered!"<<endl;
-#endif // DEBUG
-    }
+    ThemeManager::instance().unregisterTheme(*this);
 }
 
 ThemeManager &ThemeManager::instance() {
@@ -206,7 +202,8 @@ ThemeManager &ThemeManager::instance() {
 }
 
 ThemeManager::ThemeManager():
-    m_max_screens(ScreenCount(FbTk::App::instance()->display())) {
+    m_max_screens(ScreenCount(FbTk::App::instance()->display())),
+    m_verbose(false) {
 
 }
 
@@ -255,8 +252,8 @@ void ThemeManager::loadTheme(Theme &tm) {
         if (!loadItem(*resource)) {
             // try fallback resource in theme
             if (!tm.fallback(*resource)) {
-                cerr<<"Failed to read theme item: "<<resource->name()<<endl;
-                cerr<<"Setting default value"<<endl;
+                if (verbose())
+                    cerr<<"Failed to read theme item: "<<resource->name()<<endl;
                 resource->setDefaultValue();                
             }
         }
@@ -295,22 +292,22 @@ std::string ThemeManager::resourceValue(const std::string &name, const std::stri
 }
 
 /*
-void ThemeManager::listItems() {
-    ThemeList::iterator it = m_themelist.begin();
-    ThemeList::iterator it_end = m_themelist.end();
-    for (; it != it_end; ++it) {
-        std::list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
-        std::list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
-        for (; item != item_end; ++item) {
-            cerr<<(*item)->name()<<":"<<endl;
-            if (typeid(**item) == typeid(ThemeItem<Texture>)) {
-                cerr<<(*item)->name()<<".pixmap:"<<endl;
-                cerr<<(*item)->name()<<".color:"<<endl;
-                cerr<<(*item)->name()<<".colorTo:"<<endl;
-            }
-        }
-    }
+  void ThemeManager::listItems() {
+  ThemeList::iterator it = m_themelist.begin();
+  ThemeList::iterator it_end = m_themelist.end();
+  for (; it != it_end; ++it) {
+  std::list<ThemeItem_base *>::iterator item = (*it)->itemList().begin();
+  std::list<ThemeItem_base *>::iterator item_end = (*it)->itemList().end();
+  for (; item != item_end; ++item) {
+  cerr<<(*item)->name()<<":"<<endl;
+  if (typeid(**item) == typeid(ThemeItem<Texture>)) {
+  cerr<<(*item)->name()<<".pixmap:"<<endl;
+  cerr<<(*item)->name()<<".color:"<<endl;
+  cerr<<(*item)->name()<<".colorTo:"<<endl;
+  }
+  }
+  }
              
-}
+  }
 */
 }; // end namespace FbTk

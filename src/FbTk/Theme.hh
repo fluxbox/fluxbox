@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.8 2003/08/28 14:19:27 fluxgen Exp $
+// $Id: Theme.hh,v 1.9 2003/08/28 23:05:29 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -106,6 +106,8 @@ public:
     void remove(ThemeItem<T> &item);
     virtual bool fallback(ThemeItem_base &base) { return false; }
     FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
+
+    
 private:
     const int m_screen_num;
     typedef std::list<ThemeItem_base *> ItemList;
@@ -121,11 +123,15 @@ private:
 class ThemeManager {
 public:
     static ThemeManager &instance();
+
     bool load(const std::string &filename);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
     bool loadItem(ThemeItem_base &resource);
     bool loadItem(ThemeItem_base &resource, const std::string &name, const std::string &altname);
+
+    bool verbose() const { return m_verbose; }
+    void setVerbose(bool value) { m_verbose = value; }
 private:
     ThemeManager();
     ~ThemeManager() { }
@@ -141,6 +147,7 @@ private:
     ThemeList m_themelist;
     const int m_max_screens;
     XrmDatabaseHelper m_database;
+    bool m_verbose;
 };
 
 
