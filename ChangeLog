@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/21:
+  * Fixed "mozilla" input focus bug (Henrik)
+    We must assume Passive when no input hint is set
+    WinClient.cc
 *03/12/20:
   * Fixed toolbar and slit autohide bug (Henrik)
     Toolbar.cc, Slit.cc
