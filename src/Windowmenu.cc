@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.18 2002/09/06 16:59:29 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.19 2002/09/10 11:06:26 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -44,9 +44,11 @@
 #endif // STDC_HEADERS
 
 
-Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()),
+Windowmenu::Windowmenu(FluxboxWindow &win) : Basemenu(win.getScreen()),
 window(win),
-screen(window->getScreen()){
+screen(win.getScreen()),
+sendToMenu(this),
+sendGroupToMenu(this) {
 
 	setTitleVisibility(False);
 	setMovable(False);
@@ -54,18 +56,16 @@ screen(window->getScreen()){
 	
 	I18n *i18n = I18n::instance();
 	
-	sendToMenu = new SendtoWorkspacemenu(this);
-	sendGroupToMenu = new SendGroupToWorkspacemenu(this);
 	using namespace FBNLS;	
 	insert(i18n->getMessage(
 		WindowmenuSet, WindowmenuSendTo,
 		"Send To ..."),
-	 sendToMenu);
+	 &sendToMenu);
 	 
 	insert(i18n->getMessage(
 		WindowmenuSet, WindowmenuSendGroupTo,
 		"Send Group To ..."),
-	sendGroupToMenu);
+	&sendGroupToMenu);
 	 
 	insert(i18n->getMessage(
 		WindowmenuSet, WindowmenuShade,
@@ -106,25 +106,27 @@ screen(window->getScreen()){
 
 	update();
 
-	setItemEnabled(2, window->hasTitlebar());
-	setItemEnabled(3, window->isIconifiable());
-	setItemEnabled(4, window->isMaximizable());
-	setItemEnabled(9, window->isClosable());
+	setItemEnabled(2, window.hasTitlebar());
+	setItemEnabled(3, window.isIconifiable());
+	setItemEnabled(4, window.isMaximizable());
+	setItemEnabled(9, window.isClosable());
 	setItemEnabled(10, true); //we should always be able to enable the tab
 
 }
 
 
-Windowmenu::~Windowmenu(void) {
-	delete sendToMenu;
-	delete sendGroupToMenu;
+Windowmenu::~Windowmenu() {
+
 }
 
 
-void Windowmenu::show(void) {
-	if (isItemEnabled(2)) setItemSelected(2, window->isShaded());
-	if (isItemEnabled(4)) setItemSelected(4, window->isMaximized());
-	if (isItemEnabled(7)) setItemSelected(7, window->isStuck());
+void Windowmenu::show() {
+	if (isItemEnabled(2)) 
+		setItemSelected(2, window.isShaded());
+	if (isItemEnabled(4)) 
+		setItemSelected(4, window.isMaximized());
+	if (isItemEnabled(7)) 
+		setItemSelected(7, window.isStuck());
 
 	Basemenu::show();
 }
@@ -135,71 +137,71 @@ void Windowmenu::itemSelected(int button, unsigned int index) {
 	hide();
 	switch (item->function()) {
 	case BScreen::WINDOWSHADE:
-		if (window->isIconic())
+		if (window.isIconic())
 			break;
 			
-		window->shade();
-		if (window->hasTab())
-			window->getTab()->shade();
+		window.shade();
+		if (window.hasTab())
+			window.getTab()->shade();
 	break;
 
 	case BScreen::WINDOWICONIFY:
-		if (!window->isIconic())
-			window->iconify();
+		if (!window.isIconic())
+			window.iconify();
 		else
-			window->deiconify(); // restore window
+			window.deiconify(); // restore window
 			
 	break;
 
 	case BScreen::WINDOWMAXIMIZE:
-		window->maximize((unsigned int) button);
+		window.maximize((unsigned int) button);
 	break;
 
 	case BScreen::WINDOWCLOSE:
-		window->close();
+		window.close();
 	break;
 
 	case BScreen::WINDOWRAISE:
-		if (window->isIconic())
+		if (window.isIconic())
 			break;
 
-		if (window->hasTab())
-			window->getTab()->raise(); //raise tabs
-		screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
+		if (window.hasTab())
+			window.getTab()->raise(); //raise tabs
+		screen->getWorkspace(window.getWorkspaceNumber())->raiseWindow(&window);
 	break;
 
 	case BScreen::WINDOWLOWER:
-	 	if (window->isIconic())
+	 	if (window.isIconic())
 			break;
 
-		screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
-		if (window->hasTab())
-			window->getTab()->lower(); //lower tabs AND all it's windows
+		screen->getWorkspace(window.getWorkspaceNumber())->lowerWindow(&window);
+		if (window.hasTab())
+			window.getTab()->lower(); //lower tabs AND all it's windows
 		break;
 
 	case BScreen::WINDOWSTICK:
-		window->stick();
+		window.stick();
 		break;
 
 	case BScreen::WINDOWKILL:
-		XKillClient(screen->getBaseDisplay()->getXDisplay(),
-								window->getClientWindow());
+		XKillClient(BaseDisplay::getXDisplay(),
+			window.getClientWindow());
 		break;
 	case BScreen::WINDOWTAB:
-		window->setTab(!window->hasTab());
+		window.setTab(!window.hasTab());
 		break;
 	}
 }
 
 
-void Windowmenu::reconfigure(void) {
-	setItemEnabled(1, window->hasTitlebar());
-	setItemEnabled(2, window->isIconifiable());
-	setItemEnabled(3, window->isMaximizable());
-	setItemEnabled(8, window->isClosable());
+void Windowmenu::reconfigure() {
+	setItemEnabled(1, window.hasTitlebar());
+	setItemEnabled(2, window.isIconifiable());
+	setItemEnabled(3, window.isMaximizable());
+	setItemEnabled(8, window.isClosable());
 
-	sendToMenu->reconfigure();
-	sendGroupToMenu->reconfigure();
+	sendToMenu.reconfigure();
+	sendGroupToMenu.reconfigure();
 	
 	Basemenu::reconfigure();
 }
@@ -218,7 +220,8 @@ Windowmenu::SendtoWorkspacemenu::SendtoWorkspacemenu(Windowmenu *w)
 
 
 void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int index) {
-	if (button > 2) return;
+	if (button > 2)
+		return;
 
 	if (index <= windowmenu->screen->getCount()) {
 		
@@ -226,20 +229,12 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int inde
 		if (index == windowmenu->screen->getCurrentWorkspaceID())
 			return;
 
-		// if the window is stuck then unstick it
-		if (windowmenu->window->isStuck())
-			windowmenu->window->stick();
-		
-		// if the window is iconic, deiconify it
-		if (windowmenu->window->isIconic())
-			windowmenu->window->deiconify();
-
 		if (button == 1) { // send to workspace without changing workspace
 			windowmenu->screen->sendToWorkspace(index,
-				windowmenu->window, false);
+				&windowmenu->window, false);
 		} else if (button == 2) { // send to workspace and change workspace
 			windowmenu->screen->sendToWorkspace(index,
-				windowmenu->window, true);
+				&windowmenu->window, true);
 		}
 	}
 
@@ -247,7 +242,7 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int inde
 }
 
 
-void Windowmenu::SendtoWorkspacemenu::update(void) {
+void Windowmenu::SendtoWorkspacemenu::update() {
 	unsigned int i, r = numberOfItems();
 
 	if (numberOfItems() != 0) {
@@ -261,7 +256,7 @@ void Windowmenu::SendtoWorkspacemenu::update(void) {
 }
 
 
-void Windowmenu::SendtoWorkspacemenu::show(void) {
+void Windowmenu::SendtoWorkspacemenu::show() {
 	update();
 
 	Basemenu::show();
@@ -274,17 +269,17 @@ void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int
 	if (index <= getWindowMenu()->screen->getCount()) {
 		if (index == getWindowMenu()->screen->getCurrentWorkspaceID())
 			return;
-		if (getWindowMenu()->window->isStuck())
-			getWindowMenu()->window->stick();
+		if (getWindowMenu()->window.isStuck())
+			getWindowMenu()->window.stick();
 		
 		// if the window is iconic, deiconify it
-		if (getWindowMenu()->window->isIconic())
-			getWindowMenu()->window->deiconify();
+		if (getWindowMenu()->window.isIconic())
+			getWindowMenu()->window.deiconify();
 
 		if (button == 1) {
 			// TODO: use reassociateGroup from BScreen instead
-			if (getWindowMenu()->window->hasTab()) {
-				for (Tab *first = Tab::getFirst(getWindowMenu()->window->getTab());
+			if (getWindowMenu()->window.hasTab()) {
+				for (Tab *first = Tab::getFirst(getWindowMenu()->window.getTab());
 						first!=0; first=first->next()) {
 					first->withdraw();
 					first->getWindow()->withdraw();
@@ -292,8 +287,8 @@ void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int
 					
 				}
 			} else	{
-				getWindowMenu()->window->withdraw();
-				getWindowMenu()->screen->reassociateWindow(getWindowMenu()->window, index, True);
+				getWindowMenu()->window.withdraw();
+				getWindowMenu()->screen->reassociateWindow(&getWindowMenu()->window, index, True);
 			}
 					
 		}
@@ -304,7 +299,8 @@ void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int
 	hide();
 }
 
-Windowmenu::SendGroupToWorkspacemenu::SendGroupToWorkspacemenu(Windowmenu *w):SendtoWorkspacemenu(w)
+Windowmenu::SendGroupToWorkspacemenu::
+	SendGroupToWorkspacemenu(Windowmenu *w):SendtoWorkspacemenu(w)
 {
 
 }
