@@ -1,8 +1,24 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
 *03/02/22:
+   * s/""/'' so the shell does not have to expand the contents of the string
+     in fluxbox_generatemenu (Han)
+   * Added portability notes in fluxbox_generatemenu (Han)
+   * Added file utils menu item in fluxbox_generatemenu (Han)
+   * Fixed a resize bug (Henrik)
+     Window.cc
+   * Fixed bug in menu bullet type (Henrik)
+     FbTk/MenuTheme.cc
    * Fixed sloppy focus to use new event handler model (Simon)
      Screen.hh/cc Window.hh/cc fluxbox.hh/cc   
+   * Fixed auto hide bug in Toolbar (Henrik)
+     Toolbar.cc
+   * Fixed default white color bug in Theme (Henrik)
+     FbTk/Theme.cc
+   * Added toolbar placement menu and fixed resource saving for toolbar placement (Henrik)
+	 Toolbar.cc, Screen.cc/hh
+   * Fixed vertical text for icons in Iconbar (Henrik)
+     IconBar.hh/cc, Toolbar.cc
 *03/02/20:
    * Fixed a size bug without titlebar (Henrik)
      Window.cc, FbWinFrame.cc
