@@ -87,7 +87,6 @@ private:
                        (tm, 
                         string("texture") + value, 
                         string("Texture") + value));
-            cerr<<"Theme: "<<text->name()<<endl;
             // load new style
             ThemeManager::instance().load("test.theme");
 
