@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.1 2003/07/10 12:04:46 fluxgen Exp $
+// $Id: Shape.cc,v 1.2 2003/07/10 14:47:53 fluxgen Exp $
 
 #include "Shape.hh"
 #include "FbWindow.hh"
@@ -47,7 +47,7 @@ Pixmap createShape(FbTk::FbWindow &win, int place) {
     static char bottom_left_bits[] = { 0xff, 0xff, 0xfe, 0xfe, 0xfe, 0xfc, 0xf8, 0xc0 };
     static char bottom_right_bits[] = { 0xff, 0xff, 0x7f, 0x7f, 0x7f, 0x3f, 0x1f, 0x03 };
 
-    const int win_width = win.width() + 2*win.borderWidth();
+    const int win_width = win.width() + 2*win.borderWidth() + 1;
     const int win_height = win.height() + 2*win.borderWidth();
     const int pixmap_width = min(8, win_width);
     const int pixmap_height = min(8, win_height);
@@ -170,7 +170,7 @@ void Shape::update() {
     XShapeCombineMask(FbTk::App::instance()->display(),
                       m_win->window(),
                       ShapeBounding,
-                      -1, 0,
+                      -2, 0,
                       m_shape,
                       ShapeSet);
 
