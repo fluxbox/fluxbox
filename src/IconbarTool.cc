@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.4 2003/08/12 11:09:46 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.5 2003/08/12 12:16:28 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -30,14 +30,6 @@
 #include "Window.hh"
 #include "IconButton.hh"
 #include "Workspace.hh"
-
-#include <iostream>
-using namespace std;
-class ShowTextCmd: public FbTk::Command {
-    void execute() {
-        cerr<<"ShowTextCmd"<<endl;
-    }
-};
 
 IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::RELATIVE),
@@ -58,10 +50,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
 }
 
 IconbarTool::~IconbarTool() {
-    while (!m_icon_list.empty()) {
-        delete m_icon_list.back();
-        m_icon_list.pop_back();
-    }
+    deleteIcons();
 
     // remove cached images
     if (m_focused_pm)
@@ -106,26 +95,41 @@ unsigned int IconbarTool::height() const {
 }
 
 void IconbarTool::update(FbTk::Subject *subj) {
+    // ignore updates if we're shutting down
+    if (m_screen.isShuttingdown())
+        return;
 
     // just focus signal?
     if (subj != 0 && typeid(*subj) == typeid(FluxboxWindow::WinSubject)) {
         // we handle everything except die signal here
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
         if (subj != &(winsubj->win().dieSig())) {
-            renderButton(winsubj->win());
+            renderWindow(winsubj->win());
             return;
+        } else {
+            // got window die signal, lets find and remove the window
+            IconList::iterator it = m_icon_list.begin();
+            IconList::iterator it_end = m_icon_list.end();
+            for (; it != it_end; ++it) {
+                if (&(*it)->win() == &winsubj->win())
+                    break;
+            }
+            // did we find it?
+            if (it == m_icon_list.end())
+                return;
+            // remove from list and render theme again
+            delete *it;
+            m_icon_list.erase(it);
+            m_icon_container.removeItem(m_icon_container.find(*it));
+            renderTheme();
+            return; // we don't need to update the entire list
         }
     }
 
     // ok, we got some signal that we need to update our iconbar container
 
     // remove all clients and add them again...the only way to do it now
-    m_icon_container.removeAll();
-
-    while (!m_icon_list.empty()) {
-        delete m_icon_list.back();
-        m_icon_list.pop_back();
-    }
+    deleteIcons();
 
     // get current workspace and all it's clients
     Workspace &space = *m_screen.currentWorkspace();
@@ -152,7 +156,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
     renderTheme();
 }
 
-void IconbarTool::renderButton(FluxboxWindow &win) {
+void IconbarTool::renderWindow(FluxboxWindow &win) {
     
     IconList::iterator icon_it = m_icon_list.begin();
     IconList::iterator icon_it_end = m_icon_list.end();
@@ -160,33 +164,11 @@ void IconbarTool::renderButton(FluxboxWindow &win) {
         if (&(*icon_it)->win() == &win)
             break;
     }
+
     if (icon_it == m_icon_list.end())
         return;
 
-    IconButton &button = *(*icon_it);
-    
-    if (button.win().isFocused()) { // focused texture
-        button.setGC(m_theme.focusedText().textGC());     
-        button.setFont(m_theme.focusedText().font());
-        button.setJustify(m_theme.focusedText().justify());
-
-        if (m_focused_pm != 0)
-            button.setBackgroundPixmap(m_focused_pm);
-        else
-            button.setBackgroundColor(m_theme.focusedTexture().color());            
-
-
-    } else { // unfocused
-        button.setGC(m_theme.unfocusedText().textGC());
-        button.setFont(m_theme.unfocusedText().font());
-        button.setJustify(m_theme.unfocusedText().justify());
-
-        if (m_unfocused_pm != 0)
-            button.setBackgroundPixmap(m_unfocused_pm);
-        else
-            button.setBackgroundColor(m_theme.unfocusedTexture().color());
-    }
-    
+    renderButton(*(*icon_it));
 }
 
 void IconbarTool::renderTheme() {
@@ -230,32 +212,38 @@ void IconbarTool::renderTheme() {
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
     IconList::iterator icon_it_end = m_icon_list.end();
-    for (; icon_it != icon_it_end; ++icon_it) {
+    for (; icon_it != icon_it_end; ++icon_it)
+        renderButton(*(*icon_it));
+}
 
-        IconButton &button = *(*icon_it);
+void IconbarTool::renderButton(IconButton &button) {
 
-        if (button.win().isFocused()) { // focused texture
-            button.setGC(m_theme.focusedText().textGC());     
-            button.setFont(m_theme.focusedText().font());
-            button.setJustify(m_theme.focusedText().justify());
+    if (button.win().isFocused()) { // focused texture
+        button.setGC(m_theme.focusedText().textGC());     
+        button.setFont(m_theme.focusedText().font());
+        button.setJustify(m_theme.focusedText().justify());
 
-            if (m_focused_pm != 0)
-                button.setBackgroundPixmap(m_focused_pm);
-            else
-                button.setBackgroundColor(m_theme.focusedTexture().color());            
+        if (m_focused_pm != 0)
+            button.setBackgroundPixmap(m_focused_pm);
+        else
+            button.setBackgroundColor(m_theme.focusedTexture().color());            
 
+    } else { // unfocused
+        button.setGC(m_theme.unfocusedText().textGC());
+        button.setFont(m_theme.unfocusedText().font());
+        button.setJustify(m_theme.unfocusedText().justify());
 
-        } else { // unfocused
-            button.setGC(m_theme.unfocusedText().textGC());
-            button.setFont(m_theme.unfocusedText().font());
-            button.setJustify(m_theme.unfocusedText().justify());
+        if (m_unfocused_pm != 0)
+            button.setBackgroundPixmap(m_unfocused_pm);
+        else
+            button.setBackgroundColor(m_theme.unfocusedTexture().color());
+    }
+}
 
-            if (m_unfocused_pm != 0)
-                button.setBackgroundPixmap(m_unfocused_pm);
-            else
-                button.setBackgroundColor(m_theme.unfocusedTexture().color());
-        }
-
-        button.clear();
+void IconbarTool::deleteIcons() {
+    m_icon_container.removeAll();
+    while (!m_icon_list.empty()) {
+        delete m_icon_list.back();
+        m_icon_list.pop_back();
     }
 }
