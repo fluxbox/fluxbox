@@ -1174,7 +1174,7 @@ void Slit::updateClientmenu() {
                                      "Save SlitList", "Saves the current order in the slit"), 
                              savecmd);
 
-    m_clientlist_menu.updateMenu();
+    m_clientlist_menu.update();
 }
 
 void Slit::saveClientList() {
@@ -1271,7 +1271,7 @@ void Slit::setupMenu() {
                                           *this,
                                           save_and_reconfigure));
     m_slitmenu.insert(_FBTEXT(Slit, ClientsMenu, "Clients", "Slit client menu"), &m_clientlist_menu);
-    m_slitmenu.updateMenu();
+    m_slitmenu.update();
 
     // setup sub menu
     m_placement_menu.setLabel(_FBTEXT(Slit, Placement, "Slit Placement", "Slit Placement"));
@@ -1313,7 +1313,7 @@ void Slit::setupMenu() {
     }
 
     // finaly update sub menu
-    m_placement_menu.updateMenu();
+    m_placement_menu.update();
 }
 
 void Slit::moveToLayer(int layernum) {
