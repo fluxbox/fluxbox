@@ -1,3 +1,6 @@
+// Timer.hh for fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Timer.hh for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -13,73 +16,72 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL 
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
-  
-#ifndef   TIMER_HH
-#define   TIMER_HH
+	
+#ifndef	 TIMER_HH
+#define	 TIMER_HH
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
 #endif //HAVE_CONFIG_H
 
-#ifdef    TIME_WITH_SYS_TIME
-#  include <sys/time.h>
-#  include <time.h> 
+#ifdef		TIME_WITH_SYS_TIME
+#	include <sys/time.h>
+#	include <time.h> 
 #else // !TIME_WITH_SYS_TIME 
-#  ifdef    HAVE_SYS_TIME_H
+#	ifdef		HAVE_SYS_TIME_H
 #include <sys/time.h>
-#  else // !HAVE_SYS_TIME_H
-#    include <time.h>
-#  endif // HAVE_SYS_TIME_H
+#	else // !HAVE_SYS_TIME_H
+#		include <time.h>
+#	endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-// forward declaration
-class BTimer;
-class TimeoutHandler;
-
-#include "BaseDisplay.hh"
-
+#include <list>
 
 class TimeoutHandler {
 public:
-  virtual void timeout(void) = 0;
+	virtual void timeout(void) = 0;
 };
 
 
 class BTimer {
-  friend class BaseDisplay;
-private:
-  BaseDisplay *display;
-  TimeoutHandler *handler;
-  int timing, once;
-
-  timeval _start, _timeout;
-
-
-protected:
-  void fireTimeout(void);
-
-
 public:
-  BTimer(BaseDisplay *, TimeoutHandler *);
-  virtual ~BTimer(void);
+	explicit BTimer(TimeoutHandler *);
+	virtual ~BTimer(void);
 
-  inline const int &isTiming(void) const { return timing; } 
-  inline const int &doOnce(void) const { return once; }
+	inline const int isTiming(void) const { return m_timing; } 
+	inline const int doOnce(void) const { return m_once; }
 
-  inline const timeval &getTimeout(void) const { return _timeout; }
-  inline const timeval &getStartTime(void) const { return _start; }
+	inline const timeval &getTimeout(void) const { return m_timeout; }
+	inline const timeval &getStartTime(void) const { return m_start; }
 
-  inline void fireOnce(int o) { once = o; }
+	inline void fireOnce(bool once) { m_once = once; }
 
-  void setTimeout(long);
-  void setTimeout(timeval);
-  void start(void);
-  void stop(void);
+	void setTimeout(long);
+	void setTimeout(timeval);
+	void start(void);
+	void stop(void);
+	static void updateTimers(int fd);
+protected:
+	void fireTimeout(void);
+
+private:
+	static void addTimer(BTimer *timer);
+	static void removeTimer(BTimer *timer);
+	
+	typedef std::list<BTimer *> TimerList;
+    static TimerList m_timerlist;
+	
+	TimeoutHandler *m_handler;
+	
+	bool m_timing, m_once;
+
+	timeval m_start, m_timeout;
+
 };
 
 
