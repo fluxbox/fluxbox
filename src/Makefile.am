@@ -57,7 +57,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	IconBar.cc IconBar.hh \
 	i18n.cc i18n.hh \
 	Keys.cc Keys.hh main.cc \
-	Netizen.cc Netizen.hh nl_types_cygnus.h \
+	Netizen.cc Netizen.hh \
 	Resource.hh Resource.cc \
 	RootTheme.hh RootTheme.cc \
 	Screen.cc Screen.hh \
