@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.cc,v 1.3 2003/08/11 14:34:46 fluxgen Exp $
+// $Id: TextButton.cc,v 1.4 2003/08/13 10:12:36 fluxgen Exp $
 
 #include "TextButton.hh"
 #include "Font.hh"
@@ -80,10 +80,12 @@ void TextButton::drawText(int x_offset, int y_offset) {
                                     text().c_str(), text().size(),
                                     textlen // return new text len
                                     );
+
     // center text by default
     int center_pos = height()/2 + font().ascent()/2;
-    font().drawText(window().window(), // drawable
-                    window().screenNumber(),
+
+    font().drawText(window(), // drawable
+                    screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
                     align_x + x_offset, center_pos + y_offset); // position
