@@ -44,10 +44,9 @@ News in 0.9.4:
       --enable-toolbar (default)
     * Emacs style keybindings in fbrun
     * Group persistence over a restart
-    * Maximization stop on slit and toolbar
+    * Maximization stop on slit and toolbar (check Maximize Over menu items)
     * Support for _NET_WM_STRUT
     * Regular expression support for remember
-
 Bug fixes: 
     * Toggle maximize vertical/horizontal
     * Slit/Toolbar autohide bug

@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
 *03/07/10:
+   * Added new toolbar theme item (Henrik)
+     * toolbar.button.borderWidth: <integer>
    * Add [startup] to Remember (Simon)
        Can now add entries to apps file like:
          [startup] {xterm}
@@ -8,15 +10,15 @@ Changes for 0.9.4:
        Can also give a screen option:
          [startup] (screen=1) {xterm}
        will start it on screen 1 rather than the default 0.
-   * Added new shape theme items (Henrik)
-      * toolbar.shape: <bool> this will make the toolbar shape the corners that are towards center
-	    of the screen
-      * menu.shape: <shape items> 
-	  * window.shape: <shape items>
-	  Where shape items can be TopLeft TopRight BottomLeft and BottomRight
-	  example: menu.shape: TopRight BottomLeft
-	 ToolbarTheme.hh/cc, Toolbar.cc/hh, FbTk/Menu.hh, FbMenu.hh/cc, Screen.hh/cc,
-	 MenuTheme.hh/cc, FbWinFrameTheme.hh/cc, FbWinFrame.cc/hh
+   * Added new rounded theme items (Henrik)
+      * toolbar.shaped: <bool> this will make the toolbar shape the corners that are towards center
+        of the screen
+      * menu.roundCorners: <shape items> 
+      * window.roundCorners: <shape items>
+      Where shape items can be TopLeft TopRight BottomLeft and BottomRight
+      example: menu.roundCorners: TopRight BottomLeft
+     ToolbarTheme.hh/cc, Toolbar.cc/hh, FbTk/Menu.hh, FbMenu.hh/cc, Screen.hh/cc,
+     MenuTheme.hh/cc, FbWinFrameTheme.hh/cc, FbWinFrame.cc/hh
    * Applied patch that keeps the fbrun_history clean by not allowing
      duplicates to get placed in the history. (Thanks David J Burger <dburger<(a|T)>hawaii.edu>)
      FbRun.cc
@@ -48,10 +50,10 @@ Changes for 0.9.4:
    * Added keyboard navigation for menus (Henrik)
      (click on title to get input focus, unless you're using RootMenu in keys)
      Use keys:
-	   Up/Down:  select menu item
-	   Left/Right: go in/out from submenus
-	   Escape: close menu and return focus to windows
-	   Enter: run/execute/toggle menu item
+       Up/Down:  select menu item
+       Left/Right: go in/out from submenus
+       Escape: close menu and return focus to windows
+       Enter: run/execute/toggle menu item
      Menu.hh/cc, fluxbox.cc
    * Fixed reconfigure toolbar on screen reconfig signal (Henrik)
      Screen.hh/cc, Toolbar.cc
@@ -119,7 +121,7 @@ Changes for 0.9.4:
      WinClient.cc, Slit.cc, SlitClient.cc
    * New resource name session.screen<num>.slit.maxOver: <bool>   (Henrik)
      This will prevent windows from maximize over the slit
-     Slit.cc	
+     Slit.cc
 *03/06/20:
    * Moved SlitTheme and SlitClient out from Slit.cc into new files (Henrik)
      SlitClient.hh/cc, SlitTheme.hh
@@ -130,7 +132,7 @@ Changes for 0.9.4:
      Toolbar.hh/cc, Slit.hh/cc
    * Fixed _NET_WM_STRUT support (Henrik)
      Ewmh.hh/cc, AtomHandler.hh, Gnome.hh, Remember.hh, ToolbarHandler.hh
-	 Screen.hh/cc, fluxbox.cc, Window.hh/cc
+     Screen.hh/cc, fluxbox.cc, Window.hh/cc
    * Added Strut.hh which contains left, right, top and bottom (Henrik)
 *03/06/16:
    * Fixed trailing whitespace in group file loading (Henrik)
@@ -163,7 +165,7 @@ Changes for 0.9.4:
        will match anything with gaim in the title ("gaim", "the gaim 
        window", etc.
      RegExp.hh/cc ClientPattern.hh/cc configure.in Makefile.am Remember.hh/cc
-	 WinClient.hh/cc StringUtil.hh/cc
+     WinClient.hh/cc StringUtil.hh/cc
 *03/06/12:
    * Renamed i18n.hh/cc to I18n.hh/cc (Henrik)
 *03/06/11:
@@ -216,7 +218,7 @@ Changes for 0.9.3:
 *03/05/18:
    * Moved Resource.hh/cc, DirHelper.hh/cc and 
      XrmDatabaseHelper.hh to FbTk (Henrik)
-	 Screen.hh/cc, fluxbox.hh/cc, IntResMenuItem.hh/cc
+     Screen.hh/cc, fluxbox.hh/cc, IntResMenuItem.hh/cc
 *03/05/17:
    * Fixed autohide bug in toolbar (Thanks MrChuoi)
      Toolbar.cc, ArrowButton.hh/cc
@@ -229,7 +231,7 @@ Changes for 0.9.3:
 *03/05/16:
    * Fixed logging file and better info message (Henrik)
      New argument to fluxbox -log <filename>
-	 main.cc
+     main.cc
 *03/05/14:
    * Fixed Shape events, this fixes some decor issues with gkrellm and xmms (Henrik)
      Window.cc/hh, fluxbox.cc/hh
