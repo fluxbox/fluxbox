@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.202 2003/12/03 00:30:22 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.203 2003/12/03 00:49:20 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -982,6 +982,14 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         if (screen->slit())
             screen->slit()->menu().hide();
 #endif // SLIT
+
+#ifdef USE_TOOLBAR
+        // hide toolbar that matches screen
+        for (int toolbar = 0; toolbar < m_toolbars.size(); ++toolbar) {
+            if (&(m_toolbars[toolbar]->screen()) == screen)
+                m_toolbars[toolbar]->menu().hide();
+        }
+#endif // USE_TOOLBAR
 
         if (be.button == 1) {
             if (! screen->isRootColormapInstalled())
