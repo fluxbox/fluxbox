@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.81 2002/09/08 20:06:58 fluxgen Exp $
+// $Id: Window.cc,v 1.82 2002/09/08 23:47:03 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -344,10 +344,12 @@ FluxboxWindow::~FluxboxWindow() {
 		XUngrabPointer(display, CurrentTime);
 	}
 	
-	if (iconic)
+	if (!iconic) {
+		Workspace *workspace = screen->getWorkspace(workspace_number);
+		if (workspace)
+			workspace->removeWindow(this);
+	} else //it's iconic
 		screen->removeIcon(this);
-
-	screen->removeWindow(this);
 	
 	if (windowmenu) {
 		delete windowmenu;
