@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.34 2004/05/24 13:09:32 rathnor Exp $
+// $Id: FbWindow.cc,v 1.35 2004/06/07 20:24:38 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -249,6 +249,13 @@ void FbWindow::setAlpha(unsigned char alpha) {
 #endif // HAVE_XRENDER
 }
 
+unsigned char FbWindow::alpha() const {
+#ifdef HAVE_XRENDER
+    if (m_transparent.get())
+        return m_transparent->alpha();
+#endif // HAVE_XRENDER
+    return 255;
+}
 
 FbWindow &FbWindow::operator = (const FbWindow &win) {
     m_parent = win.parent();
