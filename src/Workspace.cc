@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.33 2002/10/22 14:47:22 fluxgen Exp $
+// $Id: Workspace.cc,v 1.34 2002/10/29 16:00:20 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -480,10 +480,10 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 		slit_w = screen->getSlit()->width() + borderWidth4x,
 		slit_h = screen->getSlit()->height() + borderWidth4x,
 #endif // SLIT
-		toolbar_x = screen->getToolbar()->getX() - screen->getBorderWidth(),
-		toolbar_y = screen->getToolbar()->getY() - screen->getBorderWidth(),
-		toolbar_w = screen->getToolbar()->getWidth() + borderWidth4x,
-		toolbar_h = screen->getToolbar()->getHeight() + borderWidth4x,
+		toolbar_x = screen->getToolbar()->x() - screen->getBorderWidth(),
+		toolbar_y = screen->getToolbar()->y() - screen->getBorderWidth(),
+		toolbar_w = screen->getToolbar()->width() + borderWidth4x,
+		toolbar_h = screen->getToolbar()->height() + borderWidth4x,
 		place_x = 0, place_y = 0, change_x = 1, change_y = 1;
 
 	if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
