@@ -20,11 +20,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.5 2003/10/09 16:48:09 rathnor Exp $
+// $Id: Container.cc,v 1.6 2003/10/26 21:05:03 fluxgen Exp $
 
-#include "FbTk/Button.hh"
 #include "Container.hh"
 
+#include "FbTk/Button.hh"
 #include "FbTk/EventManager.hh"
 
 Container::Container(const FbTk::FbWindow &parent):
@@ -190,5 +190,5 @@ void Container::repositionItems() {
 
 
 unsigned int Container::maxWidthPerClient() const {
-    return (size() == 0 ? width() : (width() + size()*m_item_list.front()->borderWidth())/size()); 
+    return (size() == 0 ? width() : (width() + size()*m_item_list.front()->borderWidth())/size());
 }
