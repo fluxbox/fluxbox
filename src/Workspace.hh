@@ -88,7 +88,7 @@ public:
     bool isCurrent() const;
     bool isLastWindow(FluxboxWindow *window) const;
     int numberOfWindows() const;
-    void checkGrouping(FluxboxWindow &win);
+    bool checkGrouping(FluxboxWindow &win);
     static bool loadGroups(const std::string &filename);
 protected:
     void placeWindow(FluxboxWindow &win);

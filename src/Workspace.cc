@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.71 2003/06/12 14:30:00 fluxgen Exp $
+// $Id: Workspace.cc,v 1.72 2003/06/13 20:50:49 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -340,7 +340,7 @@ private:
 };
 
 //Note: this function doesn't check if the window is groupable
-void Workspace::checkGrouping(FluxboxWindow &win) {
+bool Workspace::checkGrouping(FluxboxWindow &win) {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): Checking grouping. ("<<win.instanceName()<<"/"<<
         win.className()<<")"<<endl;	
@@ -349,7 +349,7 @@ void Workspace::checkGrouping(FluxboxWindow &win) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): window can't use a tab"<<endl;
 #endif // DEBUG
-        return;
+        return false;
     }
 
     // go throu every group and search for matching win instancename
@@ -370,18 +370,25 @@ void Workspace::checkGrouping(FluxboxWindow &win) {
 #ifdef DEBUG
                 cerr<<__FILE__<<" check group with : "<<(*wit)->instanceName()<<endl;
 #endif // DEBUG
-                if (find_if((*g).begin(), (*g).end(), FindInGroup(*(*wit))) != (*g).end()) {
+                if (find_if((*g).begin(), 
+                            (*g).end(), 
+                            FindInGroup(*(*wit))) != (*g).end()) {
                     // make sure the window is groupable
-                    if ( !(*wit)->isGroupable())
+                    if ( !(*wit)->isGroupable() && (*wit)->winClient().fbwindow() == &win)
                         break; // try next name
-                    cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO attach client here!"<<endl;
-                    return; // grouping done
+#ifdef DEBUG
+                    cerr<<__FILE__<<"("<<__FUNCTION__<<"): window ("<<*wit<<") attaching window ("<<&win<<")"<<endl;
+#endif // DEBUG
+                    (*wit)->attachClient(win.winClient());
+                    return true; // grouping done
                 }
             }
 
         }
 
     }
+
+    return false;
 }
 
 bool Workspace::loadGroups(const std::string &filename) {
