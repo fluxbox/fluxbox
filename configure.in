@@ -100,21 +100,23 @@ AC_ARG_ENABLE(
   AC_DEFINE(SLIT, 1, " compile with slit")
 )
 
-
-dnl Check for the new WM Spec
-AC_MSG_CHECKING([whether to include the new WM Spec (DOES NOTHING)])
+AC_MSG_CHECKING([whether to include the new WM Spec])
 AC_ARG_ENABLE(
-  newspec,
-[  --enable-newspec        include code for the new WM Spec (DOES NOTHING)
-                          [default=no]],
+  newwmspec,
+[  --enable-newwmspec        include code for the new WM Spec [default=yes]],
   if test x$enableval = "xyes"; then
-    AC_MSG_RESULT([yes])
-	AC_DEFINE(NEWWMSPEC, 1, "Extended Window Manager Hints")
+	AC_MSG_RESULT([yes])
+	NEWWMSPEC=true
+    AC_DEFINE(USE_NEWWMSPEC, 1, " use extened window manager hints")
   else
     AC_MSG_RESULT([no])
+	NEWWMSPEC=false
   fi,
-  AC_MSG_RESULT([no])
+  AC_MSG_RESULT([yes])
+  AC_DEFINE(USE_NEWWMSPEC, 1, " use extened window manager hints")
+  NEWWMSPEC=true
 )
+AM_CONDITIONAL(NEWWMSPEC, test x$NEWWMSPEC = xtrue)
 
 
 dnl Check for Interlacing
@@ -218,37 +220,64 @@ dnl Check GNOME
 AC_MSG_CHECKING([whether to have GNOME support])
 AC_ARG_ENABLE(
   gnome,
-[  --enable-gnome            GNOME support [default=no]],
+[  --enable-gnome            GNOME support [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-	AC_DEFINE(GNOME, 1, "Gnome 1 support")
+	AC_DEFINE(USE_GNOME, 1, "Gnome 1 support")
+	GNOME=true
   else
     AC_MSG_RESULT([no])
+	GNOME=false
   fi,
-  AC_MSG_RESULT([no])
+  AC_MSG_RESULT([yes])
+ AC_DEFINE(USE_GNOME, 1, "Gnome 1 support")
+ GNOME=true
 )
-
+AM_CONDITIONAL(GNOME, test x$GNOME = xtrue)
 
 AC_MSG_CHECKING([whether to have Xft support])
 AC_ARG_ENABLE(
   xft,
-[  --enable-xft            Xft (antialias) support [default=no]],
+[  --enable-xft            Xft (antialias) support [default=yes]],
   if test x$enableval = "xyes"; then
-    AC_MSG_RESULT([yes])
 	AC_CHECK_LIB(Xft, XftFontOpen,
 		LIBS="$LIBS -lXft"
 		XFT=true
 		AC_DEFINE(USE_XFT, 1, "antialias support"),
-	    AC_MSG_ERROR([Could not find XftFontOpen in -lXft.])
+		AC_MSG_RESULT([no])
+		XFT=false
 	)
   else
     AC_MSG_RESULT([no])
 	XFT=false
   fi,
-  AC_MSG_RESULT([no])
-  XFT=false
+  AC_CHECK_LIB(Xft, XftFontOpen,
+		LIBS="$LIBS -lXft"
+		XFT=true
+		AC_DEFINE(USE_XFT, 1, "antialias support"),
+		AC_MSG_RESULT([no])
+		XFT=false
+	)
 )
- AM_CONDITIONAL(XFT, test x$XFT = xtrue)
+AM_CONDITIONAL(XFT, test x$XFT = xtrue)
+
+AC_MSG_CHECKING([whether to have Xmb (multibyte font, utf-8) support])
+AC_ARG_ENABLE(
+  xmb,
+[  --enable-xmb            Xmb (multibyte font, utf-8) support [default=yes]],
+  if test x$enableval = "xyes"; then
+	AC_MSG_RESULT([yes])
+	AC_DEFINE(USE_XMB, 1, "multibyte support")
+	MULTIBYTE=true
+  else
+    AC_MSG_RESULT([no])
+	MULTIBYTE=false
+  fi,  
+  AC_MSG_RESULT([yes])
+  AC_DEFINE(USE_XMB, 1, "multibyte support")
+  MULTIBYTE=true
+)
+AM_CONDITIONAL(MULTIBYTE, test x$MULTIBYTE = xtrue)
 
 dnl Check for Xinerama support
 
@@ -305,9 +334,9 @@ nls/pt_BR/Makefile
 nls/ru_RU/Makefile
 nls/sv_SE/Makefile
 nls/tr_TR/Makefile
-nls/it_IT/Makefile
 nls/pt_PT/Makefile
 nls/bg_BG/Makefile
 nls/ja_JP/Makefile
 nls/lv_LV/Makefile
+nls/it_IT/Makefile
 )
