@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.23 2003/08/30 01:03:12 fluxgen Exp $
+// $Id: Menu.hh,v 1.24 2003/12/08 16:39:44 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -130,28 +130,28 @@ public:
        @name accessors
     */
     //@{
-    bool isTorn() const { return torn; }
-    bool isVisible() const { return visible; }
-    int screenNumber() const { return m_screen_num; }
-    Window window() const { return menu.window.window(); }
-    FbWindow &fbwindow() { return menu.window; }
-    const FbWindow &fbwindow() const { return menu.window; }
-    FbWindow &titleWindow() { return menu.title; }
-    FbWindow &frameWindow() { return menu.frame; }
-    const std::string &label() const { return menu.label; }  
-    int x() const { return menu.x; }
-    int y() const { return menu.y; }
-    unsigned int width() const { return menu.width; }
-    unsigned int height() const { return menu.height; }
-    unsigned int numberOfItems() const { return menuitems.size(); }
-    int currentSubmenu() const { return which_sub; } 
-    unsigned int titleHeight() const { return menu.title_h; }
+    inline bool isTorn() const { return torn; }
+    inline bool isVisible() const { return visible; }
+    inline int screenNumber() const { return m_screen_num; }
+    inline Window window() const { return menu.window.window(); }
+    inline FbWindow &fbwindow() { return menu.window; }
+    inline const FbWindow &fbwindow() const { return menu.window; }
+    inline FbWindow &titleWindow() { return menu.title; }
+    inline FbWindow &frameWindow() { return menu.frame; }
+    inline const std::string &label() const { return menu.label; }  
+    inline int x() const { return menu.x; }
+    inline int y() const { return menu.y; }
+    inline unsigned int width() const { return menu.width; }
+    inline unsigned int height() const { return menu.height; }
+    inline unsigned int numberOfItems() const { return menuitems.size(); }
+    inline int currentSubmenu() const { return which_sub; } 
+    inline unsigned int titleHeight() const { return menu.title_h; }
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
-    const MenuTheme &theme() const { return m_theme; }
+    inline const MenuTheme &theme() const { return m_theme; }
     inline unsigned char alpha() const { return m_theme.alpha(); }
-    static Menu *focused() { return s_focused; }
+    inline static Menu *focused() { return s_focused; }
     /// @return menuitem at index
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
     inline MenuItem *find(unsigned int index) { return menuitems[index]; }
