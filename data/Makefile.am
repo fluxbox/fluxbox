@@ -1,6 +1,6 @@
 # data/Makefile.am for Fluxbox - an X11 Window manager
 
-DEFAULT _STYLE = @DEFAULT_STYLE@
+DEFAULT_STYLE = @DEFAULT_STYLE@
 
 SUBDIRS= 		styles
 CLEANFILES= 		menu menu.in menu.pre menu.bak init
