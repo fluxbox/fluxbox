@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.40 2004/09/02 08:58:06 akir Exp $
+// $Id: Remember.cc,v 1.41 2004/09/02 09:52:26 akir Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -79,14 +79,19 @@ public:
         m_win(fbwin), m_attrib(attrib) {}
 
     bool isSelected() const {
-        return m_remember.isRemembered(m_win.winClient(), m_attrib);
+        if (m_win.numClients()) // ensure it HAS clients
+            return m_remember.isRemembered(m_win.winClient(), m_attrib);
+        else
+            return false;
     }
 
     bool isEnabled() const {
         if (m_attrib != Remember::REM_JUMPWORKSPACE) 
             return true;
-        else 
+        else if (m_win.numClients())
             return (m_remember.isRemembered(m_win.winClient(), Remember::REM_WORKSPACE));
+        else
+            return false;
     }
 
     void click(int button, int time) {
