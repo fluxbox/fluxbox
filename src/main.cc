@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.26 2004/01/11 13:12:02 fluxgen Exp $
+// $Id: main.cc,v 1.27 2004/01/11 16:14:41 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
                               "	-info\t\t\t\tdisplay some useful information.\n"
                               "\t-log <filename>\t\t\tlog output to file.\n"
                               "	-help\t\t\t\tdisplay this help text and exit.\n\n"),
-                   __fluxbox_version, "2001-2003");
+                   __fluxbox_version, "2001-2004");
             exit(0);
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
             showInfo(cout);
