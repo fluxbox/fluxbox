@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.78 2003/08/15 13:50:42 fluxgen Exp $
+// $Id: Slit.cc,v 1.79 2003/08/29 10:30:46 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -260,9 +260,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)), //KDE v2.x
 
       m_layeritem(0),
-      m_slit_theme(new SlitTheme(*this)),
+      m_slit_theme(new SlitTheme(scr.rootWindow().screenNumber())),
       m_strut(0),
-
       // resources
       // lock in first resource
       m_rc_auto_hide(scr.resourceManager().lock(), false, 
@@ -281,6 +280,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
       m_rc_layernum(scr.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
                     scr.name() + ".slit.layer", scr.altName() + ".Slit.Layer") {
 
+    // attach to theme and root window change signal
+    m_slit_theme->reconfigSig().attach(this);
+    scr.resizeSig().attach(this);
 
     frame.pixmap = None;
     // setup timer
@@ -1080,6 +1082,10 @@ void Slit::exposeEvent(XExposeEvent &ev) {
                          ev.width, ev.height);
         
     }
+}
+
+void Slit::update(FbTk::Subject *subj) {
+    reconfigure();
 }
 
 void Slit::clearWindow() {

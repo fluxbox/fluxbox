@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.37 2003/08/11 16:02:38 fluxgen Exp $
+/// $Id: Slit.hh,v 1.38 2003/08/29 10:30:46 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -47,7 +47,7 @@ class FbMenu;
 class Strut;
 
 /// Handles dock apps
-class Slit: public FbTk::EventHandler {
+class Slit: public FbTk::EventHandler, public FbTk::Observer {
 public:
     
     /**
@@ -88,6 +88,8 @@ public:
     void configureRequestEvent(XConfigureRequestEvent &event);
     void exposeEvent(XExposeEvent &event);
     //@}
+
+    void update(FbTk::Subject *subj);
 	
     void moveToLayer(int layernum);
     void toggleHidden();
