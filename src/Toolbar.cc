@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.74 2003/04/25 11:19:45 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.75 2003/04/25 16:08:45 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -840,7 +840,6 @@ void Toolbar::edit() {
 
     frame.workspace_label.clear();
     Fluxbox * const fluxbox = Fluxbox::instance();
-    fluxbox->setNoFocus(true);
     if (fluxbox->getFocusedWindow())	//disable focus on current focused window
         fluxbox->getFocusedWindow()->setFocusFlag(false);
 
@@ -993,7 +992,7 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
     if (ks == XK_Return || ks == XK_Escape) {			
         editing = false;
         Fluxbox * const fluxbox = Fluxbox::instance();			
-        fluxbox->setNoFocus(false);
+
         if (fluxbox->getFocusedWindow()) {
             fluxbox->getFocusedWindow()->setInputFocus();
             fluxbox->getFocusedWindow()->setFocusFlag(true);
