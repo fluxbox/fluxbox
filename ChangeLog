@@ -1,7 +1,11 @@
 Changes for 0.1.6:
+*01/12/19:
+   * Moved some structs from file scope of BaseDisplay.hh in to class BaseDisplay (me)
+   * Fixed redraw bugg when changing workspace (me)
 *01/12/17:
    * Fixed errorchecking in Misc::DrawString and Misc::DrawRotString (me)
    * Fixed tabcycling (Thanks Mike Walker)
+   * Moved expandFilename from class Fluxbox to class Misc (me)
 *01/12/14
     * Moved Tab width and height functions to screen, new syntax is
       session.screenX.tab.width (Claes Nästén) 
