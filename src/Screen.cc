@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.164 2003/05/13 21:12:18 fluxgen Exp $
+// $Id: Screen.cc,v 1.165 2003/05/14 12:08:19 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1023,6 +1023,10 @@ void BScreen::removeClient(WinClient &client) {
         else
             Fluxbox::instance()->revertFocus(focused->screen());
     }
+    // update client lists
+    for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
+             mem_fun(&Workspace::updateClientmenu));
+
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {
