@@ -1,0 +1,107 @@
+toolbar:			flat solid
+toolbar.color:			#980806
+
+toolbar.button:			raised crossdiagonal gradient bevel2
+toolbar.button.color:		#a8a6a6
+toolbar.button.colorTo:		black
+toolbar.button.picColor:	white
+
+toolbar.button.pressed:		flat solid
+toolbar.button.pressed.color:	grey20
+
+toolbar.label:			raised diagonal gradient bevel2
+toolbar.label.color:		#a8a6a6
+toolbar.label.colorTo:		black
+toolbar.label.textColor:	white
+
+toolbar.windowLabel:		raised crossdiagonal gradient bevel2
+toolbar.windowLabel.color:	#a8a6a6
+toolbar.windowLabel.colorTo:	black
+toolbar.windowLabel.textColor:	white
+
+toolbar.clock:			raised crossdiagonal gradient bevel2
+toolbar.clock.color:		black
+toolbar.clock.colorTo:		#a8a6a6
+toolbar.clock.textColor:	white
+
+toolbar.justify:		center
+toolbar.font:			lucidasans-10
+
+menu.title:			raised crossdiagonal gradient
+menu.title.color:		#980806
+menu.title.colorTo:		black
+menu.title.textColor:		white
+menu.title.font:		lucidasans-10
+menu.title.justify:		right
+
+menu.frame:			flat crossdiagonal gradient bevel2
+menu.frame.color:		black
+menu.frame.colorTo:		#a8a6a6
+menu.frame.textColor:		white
+menu.frame.disableColor:	grey20
+menu.frame.font:		lucidasans-10
+menu.frame.justify:		left
+
+menu.bullet.position:		right
+menu.bullet:			round
+
+menu.hilite:			raised crossdiagonal gradient bevel1
+menu.hilite.color:		#a8a6a6
+menu.hilite.colorTo:		black
+menu.hilite.textColor:		white
+
+window.title.focus:		flat solid
+window.title.focus.color:	#980806
+
+window.title.unfocus:		flat solid
+window.title.unfocus.color:	black
+
+window.label.focus:		raised crossdiagonal gradient bevel1
+window.label.focus.color:	black
+window.label.focus.colorTo:	#a8a6a6
+window.label.focus.textColor:	white
+
+window.label.unfocus:		flat solid
+window.label.unfocus.color:	black
+window.label.unfocus.textColor:	grey60
+
+window.button.focus:		raised crossdiagonal gradient bevel2
+window.button.focus.color:	#a8a6a6
+window.button.focus.colorTo:	black
+window.button.focus.picColor:	white
+
+window.button.unfocus:		flat solid
+window.button.unfocus.color:	black
+window.button.unfocus.picColor:	black
+window.button.pressed:		flat crossdiagonal gradient
+window.button.pressed.color:	grey40
+window.button.pressed.colorTo:	grey20
+
+window.handle.focus:		raised crossdiagonal gradient
+window.handle.focus.color:	#980806
+window.handle.focus.colorTo:	black
+window.handle.unfocus:		flat solid
+window.handle.unfocus.color:	black
+
+window.grip.focus:		raised crossdiagonal gradient
+window.grip.focus.color:	#a8a6a6
+window.grip.focus.colorTo:	black
+window.grip.unfocus:		flat solid
+window.grip.unfocus.color:	black
+
+window.frame.focusColor:	#980806
+window.frame.unfocusColor:	black
+
+window.font:			lucidasans-10
+window.justify:			center
+
+borderColor:			black
+
+bevelWidth:			1
+borderWidth:			1
+handleWidth:			4
+
+*textColor:			white
+*Font:				lucidasans-10
+
+rootCommand:			bsetroot -gradient interlacedflatcrossdiagonalgradient -from rgb:4c/04/03 -to black

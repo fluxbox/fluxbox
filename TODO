@@ -1,0 +1,37 @@
+TODO for Fluxbox 0.2.0
+* sloppy focus - auto-raise
+- Fix configurable toolbar
+	so the user can configure toolbar in a config file
+
+- Fix so config file is created @ $HOME if first use
+	and config files is copied and configured
+
+- Fix so toolbar dont hide if its autohide and
+	you are in "change workspace mode"
+
+- grabKillWindow to keygrabber grabCloseWindow
+
+* Fluxbox::real_reconfigure ...check "session.styleFile %s"
+* grabRootmenu
+* wheel-config support
+* separator in the menus
+* slit-maximize-stop
+(* restructure BImageControl::parseTexture)
+* slit.onTop and slit.placement "bugg" when changin in configurefile
+* fix "move group to..." without tab bugg.
+* 0,0-pos fix
+* reconfigure tar upp nya dekorationer
+
+07:39AM <dopey> also, (2) fluxbox wont currently build on linux-hppa, needs the config.{sub,
+          guess} updated from ftp://ftp.gnu.org/pub/gnu/config/
+
+* Create fbrun style app
+* Add wheelscroll-workspace-change configuration (reversed order or
+  regular)- Add "system menu" for minimized apps in the toolbar.
+  (Close, Kill, Send to, etc)
+	
+*  HUP the window manager, so it re-reads the
+          .fluxbox/init - rather than having to kill the window manager to change those
+          settings (like the key map)
+
+* "Iconify group" in Windowmenu

@@ -1,0 +1,63 @@
+-- AUTHORS for Fluxbox 
+Author:
+    Henrik Kinnunen <fluxgen@linuxmail.org>
+
+Contributors:
+    Joel Carlbark <skypher@linuxmail.org>
+      - suggestions, bug reports, beta testing, styles
+        and some code.
+    Cleas Nästén <pekdon@gmx.net>
+      - suggestions, bug reports, beta testing and 
+        Tab placement/alignment code.
+    Johan Andersson <xfs@linux.se>
+      - suggestions, bug reports and beta testing
+    Oliwier Ptak  <aleczapka@gmx.net>
+      - suggestions, styles and webpage
+
+-- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
+
+Author:
+        Brad Hughes <bhughes@trolltech.com>
+
+Co-author:
+        Jeff Raven <jraven@psu.edu>
+
+Contributors:
+        Jeffrey Sean Connell <ankh@canuck.gen.nz>
+          - debugger class code (ommited from sources)
+        Frank Belew <frb@umr.edu>
+          - dgradient code
+        Scott Garner <mrfab@arn.net>
+          - suggestions, bug reports and beta testing (*the* beta moron)
+        David Doan <ddoan@usa.net>
+         - testing of 8bpp code
+        Mark Seward <illuzion@paradise.net.nz>
+         - beta testing, bug reports and 32bpp testing
+        Keith Bolland <prime@strip.net.nz>
+         - beta testing, bug reports and suggestions
+        James Spooner <spoons@xtra.co.nz>
+         - beta testing, bug reports
+        Fred Knieper <derf@tamu.edu>
+         - beta testing, bug reports
+        Steve Udell <hettar@teleport.com>
+         - beta testing, bug reports, questions (very good ones)
+        Gregory Barlow <barlowg@ncssm-server.ncssm.edu>
+        - bug reports and patches/suggestions (original middle click advocate)
+        Dyon Balding <dyon.balding@eng.monash.edu.au>
+        - patch for Smart(er)Placement window placement
+        Mike Cole <mike@mydot.com>
+        - co-author/hacker of Image.cc (local LUG buddy)
+        John Kennis <jkennis@chello.nl>
+        - author of bbtools/beta testing/bug reports
+  Wilbert Berendsen <wbsoft@xs4all.nl>
+  - author of blackbox/bsetroot manpages
+
+I would also like to thank the creators of WindowMaker.  Reading the existing
+code has helped me immensely, and the BImage class follows the RImage data type
+very closely (the 8bpp code and dithering code was based off of WindowMaker's
+wrlib).
+
+I recently stumbled upon a library called ccmalloc (which is included in the
+source tarball with blackbox) that has helped me immensely.  Many thanks to
+Armin Biere <armin@ira.uka.de> for this debugging aid.
+

@@ -1,0 +1,145 @@
+! Blue for Fluxbox by Fluxgen
+! http://fluxbox.sourceforge.net
+! Oct 31 2001
+
+! Miscellaneous settings...
+style.name:	        Blue
+style.author:	    Henrik Kinnunen
+style.date:	       Wed Oct 31 2001
+style.credits:	   
+style.comments:		
+
+
+! Toolbar settings...
+toolbar.button:	                Raised Bevel1 Gradient Diagonal
+toolbar.button.color:	        gray
+toolbar.button.colorTo:	      gray
+toolbar.button.picColor:	    black
+
+toolbar.button.pressed:	        Sunken Bevel1 Gradient Diagonal
+toolbar.button.pressed.color:		gray
+toolbar.button.pressed.colorTo:	gray
+
+toolbar.label:	                parentrelative
+toolbar.label.color:	        gray
+toolbar.label.textColor:	    black
+
+toolbar.windowLabel:	        Sunken Bevel1 Gradient PipeCross
+toolbar.windowLabel.color:	  gray
+toolbar.windowLabel.colorTo:	gray
+toolbar.windowLabel.textColor:	black
+
+toolbar.clock:	              Sunken
+toolbar.clock.color:	        gray
+toolbar.clock.textColor:	    #000000
+
+toolbar:	                    Sunken Bevel1 Gradient Pyramid
+toolbar.color:	              gray
+toolbar.colorTo:	            gray
+toolbar.textColor:	          black
+toolbar.justify:	            Center
+
+
+! Menu settings...
+menu.frame:	                    Flat Gradient Vertical
+menu.frame.color:	            lightblue
+menu.frame.colorTo:	          blue
+menu.frame.textColor:	        #000000
+menu.frame.justify:	            Left
+
+menu.title:	                 Raised Bevel1 Gradient CrossDiagonal
+menu.title.font:	            -adobe-helvetica-bold-r-normal--12-*
+menu.title.color:	            Lightblue
+menu.title.colorTo:	          blue
+menu.title.textColor:	        black
+menu.title.justify:	          center
+
+menu.hilite:	                Sunken Bevel1 Gradient PipeCross
+menu.hilite.color:	            #7f7f7f
+menu.hilite.colorTo:	        #FFFFFF
+menu.hilite.textColor:	        #000000
+
+menu.bullet:	                Triangle
+menu.bullet.position:	        Right
+menu.frame.disableColor:	    #ffffff
+
+! Window settings...
+window.button.focus:	        Raised Bevel1 Gradient Elliptic
+window.button.focus.color:	    #9d9d9d
+window.button.focus.colorTo:	#535353
+window.button.focus.picColor:	#000000
+
+window.button.unfocus:	        Flat Gradient Diagonal
+window.button.unfocus.color:	#5e5e5e
+window.button.unfocus.colorTo:	#414141
+window.button.unfocus.picColor:	#000000
+
+window.grip.focus:	            Raised Bevel2 Gradient Rectangle
+window.grip.focus.color:	    Lightblue
+window.grip.focus.colorTo:	  Lightblue
+
+window.grip.unfocus:	        Flat Gradient Vertical
+window.grip.unfocus.color:	  DarkBlue
+window.grip.unfocus.colorTo:	DarkBlue
+
+window.handle.focus:	        Raised Bevel1 Gradient Rectangle
+window.handle.focus.color:	  LightBlue
+window.handle.focus.colorTo:	Blue
+
+window.handle.unfocus:	        Flat Gradient Vertical
+window.handle.unfocus.color:	DarkBlue
+window.handle.unfocus.colorTo:	DarkBlue
+
+window.label.focus:	            parentrelative
+window.label.focus.color:	    blue
+window.label.focus.colorTo:	  blue
+window.label.focus.textColor:	black
+window.label.focus.justify:	  Left
+
+window.font:	                -adobe-helvetica-bold-r-normal--12-*
+window.justify:	              Left
+window.label.unfocus:	        Sunken Bevel1 Solid Diagonal
+window.label.unfocus.color:	   #70707F
+window.label.unfocus.colorTo:	#ffffff
+window.label.unfocus.textColor:	white
+
+window.title.focus:	            Raised Bevel1 Gradient CrossDiagonal
+window.title.focus.color:	    Lightblue
+window.title.focus.colorTo:	  blue
+
+window.title.unfocus:	        Raised Bevel2 Gradient Vertical
+window.title.unfocus.color:	    #4d4d4d
+window.title.unfocus.colorTo:	#55484e
+! ----------- tab
+window.tab.font:	               -adobe-helvetica-bold-r-normal--10-*
+window.tab.justify:	             Left
+window.tab.label.unfocus:	        Sunken Bevel1 Solid Diagonal
+window.tab.label.unfocus.color:	  DarkBlue
+window.tab.label.unfocus.colorTo:	black
+window.tab.label.unfocus.textColor:	Lightblue
+window.tab.label.focus:	           Raised Bevel1 Gradient CrossDiagonal 
+window.tab.label.focus.color:	    LightBlue
+window.tab.label.focus.colorTo:	  blue
+window.tab.label.focus.textColor:	black
+window.tab.borderWidth:	                1
+window.tab.borderColor:	                black
+! -----------
+
+
+
+window.button.pressed:	        Raised Bevel2 Gradient Diagonal
+window.button.pressed.color:	#000000
+window.button.pressed.colorTo:	#808080
+
+window.frame.focusColor:	    #4f4f4f
+window.frame.unfocusColor:	    #000000
+handleWidth:	                4
+frameWidth:	                    1
+bevelWidth:	                    1
+borderWidth:	                1
+borderColor:	                blue
+
+
+rootCommand:     bsetroot -gradient flatverticalgradient  -from lightblue -to blue
+
+*Font: -adobe-helvetica-medium-r-normal--12-*

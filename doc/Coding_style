@@ -1,0 +1,45 @@
+The coding style is almost the same as i blackbox.
+Instead of 2 spaces there is tab.
+It might look strange now in some places, that is because
+the code hasnt been "translated" to tab 100% yet.
+Use a tab size of 2 and you will be fine.
+
+note if-statement:
+
+	if ( stuff ) 
+		function(stuff, more stuff, 
+			more, even more);
+	else
+		morefunction( stuff, more stuff
+			stuff, 
+			stuff,
+			stuff);
+			
+if the functionline needs to be split up, like above, right after a if-statement
+use { and }, so its clear when the if-statement ends.
+It should look like this
+
+	if ( stuff ) {
+		function(stuff, more stuff, 
+			more, even more);
+	} else {
+		morefunction( stuff, more stuff
+			stuff, 
+			stuff,
+			stuff);
+	}
+	
+The includeguards:
+_FILENAME_HH_ 
+
+
+Function comments:
+//------------ function name --------
+// This do that and that
+// Returns this on success else
+// this on failure.
+// TODO: if there is something to do.
+//-----------------------------------
+type classname::function(...) {
+
+}

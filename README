@@ -1,0 +1,35 @@
+Fluxbox builds on Blackbox source but has different goals.
+For copyright see COPYING
+
+Compile and Install:
+
+# ./configure 
+# make 
+and then as root
+# make install
+
+for KDE slitsupport: 
+ ./configure --enable-kde
+
+To disable tabs and/or iconbar just  change it in configure menu.
+
+To use your own configuration:
+Create a directorory, in your homedir, called .fluxbox
+and copy: init, titlebar and menu from fluxbox datapath.
+Dont forget to change session.menuFile and session.titlebarFile
+in the file init.
+
+You can use your old blackbox configuration file too. Just copy
+.blackboxrc to ~/.fluxbox/init . The same goes for menu file.
+The bbkeys config file can be selected in the file init:
+session.keyFile: <filename here>
+You can also use the Blackbox themes in Fluxbox.
+If there isn't any format for the tab in the theme then
+the tab will have the same theme as the titlebar.
+
+Thanks:
+Blackbox team
+#linux.se@dalnet, #linux.se@openproject.net
+skypher of openprojects for buggtesting and providing fluxbox with themes: 
+Clean CleanColor Makro, Carbondioxide and MerleyKay.
+skarin, Perc, xfs, skypher and skywarper for buggtesting

@@ -1,0 +1,204 @@
+Changes for 0.1.5:
+*01/12/09
+   * Added execCommand to keybindings
+	 * Added new theme qnx-photon
+   * Fixed util/Makefile.am
+   * Buggfix in Tab::insert
+*01/12/08:
+   * Fixed "Move Group to..."-bugg  (me)
+   * Updated AUTHORS (me)
+   * Fixed ungrabbing keys in Keys::load (me)
+   * Added rootCommand override (Joel Carlbark)
+   * Updated Tab code (Cleas Nästén)
+   * Moved some structs and enums in to the classes
+     to clean up the global namespace. (me)
+   * Added grabNextTab, grabPrevTab, grabAbortKeychain (me)
+   * Added mergeTree in class Keys (me)
+   * Added Italian nls (Thanks Giuseppe Ciotta <giuseppe.ciotta@libero.it>)
+   * Changed name on the includeguards (me)
+   * Updated the doc/Coding_style (me)
+   * Added "none" to titlebar config
+     so users can create a titlebar without buttons (Joel Carlbark)
+   * Fixed reversed justify in menustyle (me)
+*01/12/05:
+   * Updated Tab code (Claes Nästén)
+*01/12/03:
+   * Added "tab" in Windowmenu.cc (me)
+   * Updated Tab code (Claes Nästén)
+*01/12/01:
+   * Fixed chained keybinding so we can do "emacs-keybindingstyle" (me)
+*01/11/30:
+   * Fixed position code for tabs (me)
+   * Fixed tabconfigmenu bugg (me)
+   * Added new keybinding code (me)
+   * Removed old bbkeys code (me)
+*01/11/29:
+   * applied Tab position patch (Claes Nästén)
+   * Fixed transient_for-bugg, Fluxbox::~FluxboxWindow (me)
+     client.transient_for didn't got focus and caused the (me)
+     Fluxbox::focused_window to be a badpointer since 
+     the focused_window was pointing to an already destroyed
+     FluxboxWindow. (me)
+*01/11/27:
+   * Added alignment for tabs in Tab.cc  (me)
+*01/11/22:
+   * Added wheelscroll to change tab on titlebar. Window.cc/.hh (me)
+*01/11/20:   
+   * Screen.hh/cc Added updateWorkspaceNamesAtom
+     updates the gnome atom _WIN_WORKSPACE_NAMES (me)
+*01/11/18:
+   * Window.cc Fixed "invalid pixmap" error (me) 
+*01/11/17:
+   * Gnome _WIN_WORKSPACE (me)
+   * Gnome _WIN_WORKSPACE_COUNT (me)
+   * Gnome _WIN_CLIENT_LIST  (me)
+*01/11/15:
+   * Added --enable-gnome to configure.in (me)
+*01/11/14:
+   * Added Gnome atoms (BaseDisplay.cc/hh) (me)
+*01/11/13:
+   * Fixed grabs for window. No we can Alt+Move window with 
+     Numlock, Capslock and Scrolllock on. (me)
+   * Fixed nls for "Use Icons" and "Use Tabs" (Claes Nästén)
+   * Removed BScreen::LoadStyle() (me)
+*01/11/12:
+   * Tab::draw, DrawString  (me)
+   * FluxboxWindow::redrawLabel,  DrawString (me)
+   * Moved strcasestr to misc.hh/cc (me)
+   * Added DrawString function in misc.hh/cc (me)
+   * Added misc.cc/hh  (me)
+*01/11/11:
+   * Theme.cc/.hh added to source, handles all theme loading (me)
+*01/11/09:
+   * Fixed bugg in Fluxbox::getRcFilename() (me)
+*01/11/07: 
+   * Removed a not working wheelscroll on rootwindow in fluxbox.cc (me)
+   * Moved wheelscroll in Toolbar.cc from pressEvent to releaseEvent (me)
+   * Fixed some nls in data (me)
+*01/11/06: 
+   * Fixed syntaxerror in Makro and CleanColor theme (me)
+   * First part of restructure for themes (me)
+*01/11/05:
+   * Clean up in IconBar.cc (me)
+*01/11/04:
+   * Fixed so it compiles with gcc 3.0.x (me)
+
+Changes for 0.1.4:
+*01/11/03: Added new theme: Carbondioxide by skypher
+*01/11/03: Fixed bsetbg in utils/Makefile.am 
+*01/11/02: Clean up
+*01/11/02: Added session.iconbar to config file
+*01/11/02: Changed the generate_menu skript to clean sh
+*01/11/02: Updated skyphers theme (Clean, CleanColor, MerleyKay, Makro)
+*01/11/02: Fixed parentrelative in tabs
+*01/11/02: Fixed so the tab disconnects when it iconifies
+*01/11/02: Added "Use Iconbar" to configmenu
+*01/11/01: Added iconbar to the toolbar (new files IconBar.cc/.hh)
+*01/10/31: Added border to tabs
+*01/10/31: Removed workspace change when wheelscroll on titlebar
+*01/10/31: Fixed so shade is correct when linkin tabs
+*01/10/31: Fixed default color/texture for tab to be the same as titlebar
+           if the theme is a blackbox theme.
+*01/10/29: Added KDE support (thanks Dan Williams for the blackbox patch)
+*01/10/29: Fixed reconfigure-bugg for tabs
+*01/10/28: Added "Use Tabs" in configure menu
+*01/10/28: Added theme support for tabs
+*01/10/28: Fixed the move bugg when moving a tablist
+
+Changes for 0.1.3:
+
+* Default focusmode is ClickToFocus
+  changed in fluxbox.cc
+
+* fluxbox.hh
+  added resource.tabs
+ 
+* fluxbox.cc
+  added enterNotify for tabs
+  added load/save in load_rc() save_rc() for resource.tabs
+
+* blackbox-nls.hh
+  added WindowmenuSendGroupTo
+
+* Windowmenu.hh,.cc
+  added sendGroupTo() so we can send a hole
+  list to another workspace
+
+* Tab.hh,.cc:
+  Added functions: iconify, deiconfigy, withdraw, 
+                   disconnect, insert, shade
+                   EnterNotifyMask for tabwindow
+
+* fluxbox.cc: getRcFilename
+  fixed correct lenght on dbfile
+
+* Window.cc: motionNotifyEvent
+  removed unnecessary 'else if'-statement
+
+* Screen.cc: LoadStyle()
+  changed exit to throw
+
+* Screen.cc: prevWorkspace, nextWorkspace
+  fixed revers workspace change.
+
+Changes for Fluxbox 0.1.2:
+
+* Added doc/Coding_style
+
+* FluxboxWindow.cc: FluxboxWindow::buttonPressEvent 
+  fixed so the shade button is drawn in pressed mode.   
+
+* CleanColor theme: error fixed.
+
+* default theme is now: Clean
+
+* fluxbox.hh,.cc: execCommand removed
+  uses bexec from BaseDisplay.hh, to grabExecute in process_event, instead.
+
+* Window.cc: FluxboxWindow::FluxboxWindow
+  Changed event_mask for XGrabButton frame.plate from 0 to AnyModifier
+  and ungrabs Mod1-3.
+  This should fix the focus "bugg" when num lock, caps lock or scroll lock 
+  are pressed.
+
+* fluxbox.cc: Fluxbox::process_event
+  fixed an error check on getAction in
+  KeyPress case.
+
+* I18n class is now singleton type
+
+* Changed name on:
+  Blackbox class to Fluxbox
+  BlackboxWindow to FluxboxWindow
+
+* Changed name on file blackbox.cc and blackbox.hh to
+  fluxbox.cc and fluxbox.hh
+
+Changes from Blackbox 0.61.1 to Fluxbox 0.1.1:
+
+* Integrated bbkeys in code.
+  "session.keyFile: thekeyfile" in the file init 
+
+* "make dist" now creates a "functional" tarball
+
+* Escape cancels edit workspace name
+  and return to old name
+
+* New coding style
+  using tab instead of space for ident
+
+* Variable titlebar
+  The buttons on the titlebar can now be configured.
+
+* Wheelscroll 
+  Wheelscroll function on titlebar and toolbar changes workspace
+
+* Config path
+  The config path is now ~/.fluxbox
+
+* Toolbar.cc: ~Toolbar
+  memory leak fix
+  It didnt remove some windows in ToolbarSearch.
+
+* Blackbox class now singleton type
+
