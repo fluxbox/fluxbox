@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.12 2003/04/29 08:51:27 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.13 2003/05/10 13:24:59 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -33,15 +33,28 @@ namespace FbTk {
 class Color;
 
 ///   Wrapper for X window
+/**
+ * Example:
+ * FbWindow window(0, 10, 10, 100, 100, ExposeMask | ButtonPressMask); \n
+ * this will create a window on screen 0, position 10 10, size 100 100 \n
+ * and with eventmask Expose and ButtonPress. \n
+ * You need to register it to some eventhandler so you can catch events: \n
+ * EventManager::instance()->add(your_eventhandler, window); \n
+ * @see EventHandler
+ * @see EventManager
+ */
 class FbWindow: public FbDrawable {
 public:
     FbWindow();
+
     FbWindow(const FbWindow &win_copy);
+
     FbWindow(int screen_num,
              int x, int y, unsigned int width, unsigned int height, long eventmask, 
              bool overrride_redirect = false,
              int depth = CopyFromParent, 
              int class_type = InputOutput);
+
     FbWindow(const FbWindow &parent,
              int x, int y, 
              unsigned int width, unsigned int height, 
@@ -55,7 +68,7 @@ public:
     void setBackgroundPixmap(Pixmap bg_pixmap);
     void setBorderColor(const FbTk::Color &border_color);
     void setBorderWidth(unsigned int size);
-    /// set window name (for title)
+    /// set window name (title)
     void setName(const char *name);
     void setEventMask(long mask);
     /// clear window with background pixmap or color
@@ -72,15 +85,18 @@ public:
     virtual void lower();
     virtual void raise();
 
-
+    /// @return parent FbWindow
     const FbWindow *parent() const { return m_parent; }
+    /// @return real X window
     inline Window window() const { return m_window; }
+    /// @return drawable (the X window)
     inline Drawable drawable() const { return window(); }
     int x() const { return m_x; }
     int y() const { return m_y; }
     unsigned int width() const { return m_width; }
     unsigned int height() const { return m_height; }
     unsigned int borderWidth() const { return m_border_width; }
+    int depth() const { return m_depth; }
     int screenNumber() const;
     /// compare X window
     bool operator == (Window win) const { return m_window == win; }	
@@ -90,7 +106,9 @@ public:
     bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
 
 protected:
+    /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
+
 private:
     void updateGeometry();
     void create(Window parent, int x, int y, unsigned int width, unsigned int height,
@@ -98,18 +116,20 @@ private:
                 bool override_redirect, 
                 int depth, 
                 int class_type);
-    static Display *s_display;
-    const FbWindow *m_parent;    
-    int m_screen_num;
+    static Display *s_display; ///< display connection
+    const FbWindow *m_parent; ///< parent FbWindow
+    int m_screen_num;  ///< screen num on which this window exist
     Window m_window; ///< the X window
     int m_x, m_y; ///< position of window
     unsigned int m_width, m_height;  ///< size of window
-    unsigned int m_border_width; // border size
+    unsigned int m_border_width; ///< border size
+    int m_depth; ///< bit depth
     bool m_destroy; ///< wheter the x window was created before
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
 
+/// helper class for some STL routines
 class ChangeProperty {
 public:
     ChangeProperty(Display *disp, Atom prop, int mode,
