@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.101 2003/02/23 21:41:49 rathnor Exp $
+// $Id: fluxbox.cc,v 1.102 2003/03/01 07:30:42 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -480,7 +480,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc
     timer.fireOnce(True);
 
     //create keybindings handler and load keys file	
-    key.reset(new Keys(getXDisplay(), StringUtil::expandFilename(*m_rc_keyfile).c_str()));
+    key.reset(new Keys(StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
     ungrab();
 }
