@@ -1,10 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/01/23:
+   * Added polish locales to fluxbox-generate_menu (thanks Adam Byrtek)
 *03/01/16:
    * Added new Layering code into FbTk (Simon)
      FbTk/... Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh 
      XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh
 *03/01/12:
+   * Added RootTheme which redraws the background
+     Screen.hh/cc
+   * Fixed button GC for title bar buttons
+     FbWinFrame.cc
    * BoolMenuItem, for changing bool values from menu
      BoolMenuItem.hh/cc
    * Fixed optional visability for SlitClients,
