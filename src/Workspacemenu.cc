@@ -21,28 +21,26 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspacemenu.cc,v 1.6 2002/04/09 23:19:17 fluxgen Exp $
+// $Id: Workspacemenu.cc,v 1.7 2002/05/07 14:05:00 fluxgen Exp $
 
 //use GNU extension
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#include "i18n.hh"
-#include "fluxbox.hh"
-#include "Screen.hh"
-#include "Toolbar.hh"
 #include "Workspacemenu.hh"
+
+#include "i18n.hh"
+#include "Screen.hh"
 #include "Workspace.hh"
 #include <iostream>
 #include <cassert>
 
 Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
-	screen = scrn;
 	
 	setInternalMenu();
 	I18n *i18n = I18n::instance();
@@ -60,17 +58,18 @@ Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
 
 
 void Workspacemenu::itemSelected(int button, unsigned int index) {
-  if (button == 1) {
-    if (index == 0)
-      screen->addWorkspace();
-    else if (index == 1)
-      screen->removeLastWorkspace();
-    else if ((screen->getCurrentWorkspace()->workspaceID() !=
-	      (index - 2)) && ((index - 2) < screen->getCount()))
-      screen->changeWorkspaceID(index - 2);
-
-    if (! (screen->getWorkspacemenu()->isTorn() || isTorn()))
-      hide();
-  }
+	if (button == 1) {
+		if (index == 0)
+			screen()->addWorkspace();
+		else if (index == 1)
+			screen()->removeLastWorkspace();
+		else if ((screen()->getCurrentWorkspace()->workspaceID() !=
+			(index - 2)) && ((index - 2) < screen()->getCount())) {
+			screen()->changeWorkspaceID(index - 2);
+		}
+	
+		if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
+			hide();
+	}
 }
 

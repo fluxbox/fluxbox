@@ -1,3 +1,5 @@
+// Clientmenu.cc for Fluxbox
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // Clientmenu.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,14 +21,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
+//use GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
+#ifdef		HAVE_CONFIG_H
+#	include "../config.h"
 #endif // HAVE_CONFIG_H
 
 #include "fluxbox.hh"
@@ -37,27 +38,29 @@
 #include "Workspacemenu.hh"
 
 
-Clientmenu::Clientmenu(Workspace *ws) : Basemenu(ws->getScreen()) {
-  wkspc = ws;
-  screen = wkspc->getScreen();
-
-  setInternalMenu();
+Clientmenu::Clientmenu(Workspace *ws) : Basemenu(ws->getScreen()),
+m_wkspc(ws) {
+	setInternalMenu();
 }
 
 
 void Clientmenu::itemSelected(int button, unsigned int index) {
-  if (button > 2) return;
+	if (button > 2)
+		return;
+	//get the window with index of the item we selected
+	FluxboxWindow *win = m_wkspc->getWindow(index);
+	if (win) {
+		if (button == 1) {
+			if (! m_wkspc->isCurrent())
+				m_wkspc->setCurrent();
+		} else if (button == 2) {
+			if (! m_wkspc->isCurrent())
+				win->deiconify(true, false);
+		}
+		m_wkspc->raiseWindow(win);
+		win->setInputFocus();
+	}
 
-  FluxboxWindow *win = wkspc->getWindow(index);
-  if (win) {
-    if (button == 1) {
-      if (! wkspc->isCurrent()) wkspc->setCurrent();
-    } else if (button == 2) {
-      if (! wkspc->isCurrent()) win->deiconify(True, False);
-    }
-    wkspc->raiseWindow(win);
-    win->setInputFocus();
-  }
-
-  if (! (screen->getWorkspacemenu()->isTorn() || isTorn())) hide();
+	if (! (screen()->getWorkspacemenu()->isTorn() || isTorn()))
+		hide();
 }

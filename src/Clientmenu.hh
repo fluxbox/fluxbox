@@ -19,29 +19,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   CLIENTMENU_HH
-#define   CLIENTMENU_HH
+#ifndef	 CLIENTMENU_HH
+#define	 CLIENTMENU_HH
 
-// forward declarations
-class Clientmenu;
-class Workspace;
 
 #include "Basemenu.hh"
 
+// forward declarations
+class Workspace;
 
 
 class Clientmenu : public Basemenu {
-private:
-  BScreen *screen;
-  Workspace *wkspc;
-
-
-protected:
-  virtual void itemSelected(int button, unsigned int index);
-
-
 public:
-  Clientmenu(Workspace *);
+	Clientmenu(Workspace *wrksp);
+	
+protected:
+	virtual void itemSelected(int button, unsigned int index);
+	
+private:
+	Workspace *m_wkspc;
 };
 
 
