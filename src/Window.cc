@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.68 2002/08/12 17:32:52 fluxgen Exp $
+// $Id: Window.cc,v 1.69 2002/08/14 22:52:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -186,13 +186,13 @@ tab(0)
 	getWMHints();
 	getWMNormalHints();
 
-	#ifdef SLIT
+#ifdef SLIT
 
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
 		return;
 	}
-	#endif // SLIT
+#endif // SLIT
 
 	managed = true; //mark for usage
 
@@ -791,23 +791,20 @@ void FluxboxWindow::updateGnomeAtoms()  const {
 }
 
 void FluxboxWindow::updateGnomeStateAtom()  const {
-	const BaseDisplay *bd = screen->getBaseDisplay();
 	int val = getGnomeWindowState();
-	XChangeProperty(display, client.window, bd->getGnomeStateAtom(),
+	XChangeProperty(display, client.window, FbAtoms::instance()->getGnomeStateAtom(),
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
 }
 
 void FluxboxWindow::updateGnomeLayerAtom()  const {
-	const BaseDisplay *bd = screen->getBaseDisplay();
 	int val = getGnomeLayer();
-	XChangeProperty(display, client.window, bd->getGnomeLayerAtom(),
+	XChangeProperty(display, client.window, FbAtoms::instance()->getGnomeLayerAtom(),
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
 }
 
 void FluxboxWindow::updateGnomeWorkspaceAtom() const {
-	const BaseDisplay *bd = screen->getBaseDisplay();
 	int val = workspace_number; 
-	XChangeProperty(display, client.window, bd->getGnomeWorkspaceAtom(), 
+	XChangeProperty(display, client.window, FbAtoms::instance()->getGnomeWorkspaceAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
 }
 
@@ -850,23 +847,23 @@ int FluxboxWindow::getGnomeLayer() const {
 }
 
 bool FluxboxWindow::handleGnomePropertyNotify(Atom atom) {
-	BaseDisplay *bd = screen->getBaseDisplay();
+	FbAtoms *fba = FbAtoms::instance();
 	
-	if (atom == bd->getGnomeStateAtom()) {
+	if (atom == fba->getGnomeStateAtom()) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): gnome state"<<endl;
 		#endif
 		loadGnomeStateAtom();
-	} else  if (atom == bd->getGnomeWorkspaceAtom()) {
+	} else  if (atom == fba->getGnomeWorkspaceAtom()) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): gnome workspace"<<endl;
 		#endif		
-	} else if (atom == bd->getGnomeHintsAtom()) {
+	} else if (atom == fba->getGnomeHintsAtom()) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): gnome hints"<<endl;
 		#endif
 		loadGnomeHintsAtom();
-	} else if (atom == bd->getGnomeLayerAtom()){
+	} else if (atom == fba->getGnomeLayerAtom()){
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): gnome layer"<<endl;
 		#endif
@@ -958,9 +955,9 @@ void FluxboxWindow::loadGnomeStateAtom() {
 	int fmt;
 	unsigned long nitems, bytes_after;
 	long flags, *data = 0;
-	BaseDisplay *bd = screen->getBaseDisplay();
-	if (XGetWindowProperty (bd->getXDisplay(), getClientWindow(), 
-			bd->getGnomeStateAtom(), 0, 1, False, XA_CARDINAL, 
+
+	if (XGetWindowProperty (display, getClientWindow(), 
+			FbAtoms::instance()->getGnomeStateAtom(), 0, 1, False, XA_CARDINAL, 
 			&ret_type, &fmt, &nitems, &bytes_after, 
 			(unsigned char **) &data) ==  Success && data) {
 		flags = *data;
@@ -977,9 +974,9 @@ void FluxboxWindow::loadGnomeHintsAtom() {
 	int fmt;
 	unsigned long nitems, bytes_after;
 	long *data = 0;
-	BaseDisplay *bd = screen->getBaseDisplay();
-	if (XGetWindowProperty (bd->getXDisplay(), getClientWindow(), 
-			bd->getGnomeHintsAtom(), 0, 1, False, XA_CARDINAL, 
+
+	if (XGetWindowProperty (display, getClientWindow(), 
+			FbAtoms::instance()->getGnomeHintsAtom(), 0, 1, False, XA_CARDINAL, 
 			&ret_type, &fmt, &nitems, &bytes_after, 
 			(unsigned char **) &data) ==  Success && data) {
 		gnome_hints = static_cast<int>(*data);
@@ -997,9 +994,9 @@ void FluxboxWindow::loadGnomeLayerAtom() {
 	int fmt;
 	unsigned long nitems, bytes_after;
 	long *data = 0;
-	BaseDisplay *bd = screen->getBaseDisplay();
-	if (XGetWindowProperty (bd->getXDisplay(), getClientWindow(), 
-			bd->getGnomeLayerAtom(), 0, 1, False, XA_CARDINAL, 
+
+	if (XGetWindowProperty (display, getClientWindow(), 
+			FbAtoms::instance()->getGnomeLayerAtom(), 0, 1, False, XA_CARDINAL, 
 			&ret_type, &fmt, &nitems, &bytes_after, 
 			(unsigned char **) &data) ==  Success && data) {
 		setGnomeLayer(static_cast<int>(*data));
@@ -1659,16 +1656,19 @@ void FluxboxWindow::getBlackboxHints() {
 
 
 void FluxboxWindow::configure(int dx, int dy,
-							 unsigned int dw, unsigned int dh) {
+	unsigned int dw, unsigned int dh) {
+
 	//we don't want negative size
-	if (dw <0 || dh<0)
+	if (dw < 0 || dh < 0)
 		return;
 
 	bool send_event = (frame.x != dx || frame.y != dy);
 
 	if ((dw != frame.width) || (dh != frame.height)) {
-		if ((((signed) frame.width) + dx) < 0) dx = 0;
-		if ((((signed) frame.height) + dy) < 0) dy = 0;
+		if ((((signed) frame.width) + dx) < 0) 
+			dx = 0;
+		if ((((signed) frame.height) + dy) < 0) 
+			dy = 0;
 
 		frame.x = dx;
 		frame.y = dy;
@@ -1748,10 +1748,11 @@ void FluxboxWindow::configure(int dx, int dy,
 
 
 bool FluxboxWindow::setInputFocus() {
-	#ifdef GNOME
+#ifdef GNOME
 	if (gnome_hints & WIN_HINTS_SKIP_FOCUS)
 		return false;
-	#endif
+#endif // GNOME
+
 	if (((signed) (frame.x + frame.width)) < 0) {
 		if (((signed) (frame.y + frame.y_border)) < 0)
 			configure(screen->getBorderWidth(), screen->getBorderWidth(),
@@ -1786,10 +1787,10 @@ bool FluxboxWindow::setInputFocus() {
 		return client.transient->setInputFocus();
 	else {
 		if (! focused) {
-			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE)
+			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
 				XSetInputFocus(display, client.window,
-											RevertToPointerRoot, CurrentTime);
-			else
+					RevertToPointerRoot, CurrentTime);
+			} else
 				return false;
 
 			fluxbox->setFocusedWindow(this);
