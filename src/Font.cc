@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.5 2002/04/26 09:32:20 fluxgen Exp $
+//$Id: Font.cc,v 1.6 2002/05/02 07:19:02 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -164,9 +164,9 @@ XFontSet Font::createFontSet(Display *display, const char *fontname) {
 	}
 
 	getFontElement(fontname, weight, FONT_ELEMENT_SIZE,
-		 "-medium-", "-bold-", "-demibold-", "-regular-", NULL);
+		 "-medium-", "-bold-", "-demibold-", "-regular-", 0);
 	getFontElement(fontname, slant, FONT_ELEMENT_SIZE,
-		 "-r-", "-i-", "-o-", "-ri-", "-ro-", NULL);
+		 "-r-", "-i-", "-o-", "-ri-", "-ro-", 0);
 	getFontSize(fontname, &pixel_size);
 
 	if (! strcmp(weight, "*")) 
@@ -207,7 +207,7 @@ const char *Font::getFontElement(const char *pattern, char *buf, int bufsiz, ...
 	va_start(va, bufsiz);
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
-	while((v = va_arg(va, char *)) != NULL) {
+	while((v = va_arg(va, char *)) != 0) {
 		p = StringUtil::strcasestr(pattern, v);
 		if (p) {
 			std::strncpy(buf, p+1, bufsiz-2);
@@ -219,7 +219,7 @@ const char *Font::getFontElement(const char *pattern, char *buf, int bufsiz, ...
 	}
 	va_end(va);
 	std::strncpy(buf, "*", bufsiz);
-	return NULL;
+	return 0;
 }
 
 const char *Font::getFontSize(const char *pattern, int *size) {
@@ -229,22 +229,22 @@ const char *Font::getFontSize(const char *pattern, int *size) {
 
 	for (p=pattern; 1; p++) {
 		if (!*p) {
-			if (p2!=NULL && n>1 && n<72) {
+			if (p2!=0 && n>1 && n<72) {
 				*size = n; return p2+1;
 			} else {
-				*size = 16; return NULL;
+				*size = 16; return 0;
 			}
 		} else if (*p=='-') {
-			if (n>1 && n<72 && p2!=NULL) {
+			if (n>1 && n<72 && p2!=0) {
 				*size = n;
 				return p2+1;
 			}
 			p2=p; n=0;
-		} else if (*p>='0' && *p<='9' && p2!=NULL) {
+		} else if (*p>='0' && *p<='9' && p2!=0) {
 			n *= 10;
 			n += *p-'0';
 		} else {
-			p2=NULL; n=0;
+			p2=0; n=0;
 		}
 	}
 }
