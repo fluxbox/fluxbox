@@ -99,6 +99,8 @@
 #endif // FONT_ELEMENT_SIZE
 
 #include <iostream>
+#include <memory>
+
 using namespace std;
 
 static Bool running = True;
@@ -125,15 +127,113 @@ static int dcmp(const void *one, const void *two) {
 	return (strcmp((*(char **) one), (*(char **) two)));
 }
 
-BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn),
-rootcommand("")
+//---------- resource manipulators ---------
+template<>
+void Resource<Tab::Alignment>::
+setFromString(const char *strval) {	
+	m_value = Tab::getTabAlignmentNum(strval);
+}
+
+template<>
+void Resource<Tab::Placement>::
+setFromString(const char *strval) {	
+	m_value = Tab::getTabPlacementNum(strval);
+}
+
+template<>
+void Resource<Toolbar::Placement>::
+setFromString(const char *strval) {
+	if (strcasecmp(strval, "TopLeft")==0)
+		m_value = Toolbar::TOPLEFT;
+	else if (strcasecmp(strval, "BottomLeft")==0)
+		m_value = Toolbar::BOTTOMLEFT;
+	else if (strcasecmp(strval, "TopCenter")==0)
+		m_value = Toolbar::TOPCENTER;
+	else if (strcasecmp(strval, "BottomCenter")==0)
+		m_value = Toolbar::BOTTOMCENTER;
+	else if (strcasecmp(strval, "TopRight")==0)
+		m_value = Toolbar::TOPRIGHT;
+	else if (strcasecmp(strval, "BottomRight")==0)
+		m_value = Toolbar::BOTTOMRIGHT;
+	else
+		setDefaultValue();
+}
+
+//--------- resource accessors --------------
+template<>
+string Resource<Tab::Alignment>::
+getString() {
+	return Tab::getTabAlignmentString(m_value);
+}
+
+template<>
+string Resource<Tab::Placement>::
+getString() {
+	return Tab::getTabPlacementString(m_value);
+}
+
+template<>
+string Resource<Toolbar::Placement>::
+getString() {
+	switch (m_value) {
+		case Toolbar::TOPLEFT:
+			return string("TopLeft");
+			break;
+		case Toolbar::BOTTOMLEFT:
+			return string("BottomLeft");
+			break;
+		case Toolbar::TOPCENTER:
+			return string("TopCenter");
+			break;			
+		case Toolbar::BOTTOMCENTER:
+			return string("BottomCenter");
+			break;
+		case Toolbar::TOPRIGHT:
+			return string("TopRight");
+			break;
+		case Toolbar::BOTTOMRIGHT:
+			return string("BottomRight");
+			break;
+	}
+	//default string
+	return string("BottomCenter");
+}
+
+
+BScreen::ScreenResource::ScreenResource(ResourceManager &rm, 
+	const std::string &scrname, const std::string &altscrname):
+toolbar_on_top(rm, false, scrname+".toolbar.onTop", altscrname+".Toolbar.OnTop"),
+toolbar_auto_hide(rm, false, scrname+".toolbar.autoHide", altscrname+".Toolbar.AutoHide"),
+image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
+opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
+full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
+max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
+tab_rotate_vertical(rm, true, scrname+".tab.rotatevertical", altscrname+".Tab.RotateVertical"),
+sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
+rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
+workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
+toolbar_width_percent(rm, 65, scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
+edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
+tab_width(rm, 64, scrname+".tab.width", altscrname+".Tab.Width"),
+tab_height(rm, 16, scrname+".tab.height", altscrname+".Tab.Height"),
+tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
+tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
+toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
-	theme = 0;
+
+};
+
+BScreen::BScreen(ResourceManager &rm, Fluxbox *b, 
+	const string &screenname, const string &altscreenname,
+	int scrn) : ScreenInfo(b, scrn),
+theme(0),
+resource(rm, screenname, altscreenname)
+{
 	fluxbox = b;
 
 	event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
-			SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
-			ButtonPressMask | ButtonReleaseMask;
+		SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
+		ButtonPressMask | ButtonReleaseMask;
 
 	XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), event_mask);
@@ -149,11 +249,11 @@ rootcommand("")
 	fprintf(stderr,
 		i18n->
 		getMessage(
-#ifdef		NLS
+		#ifdef NLS
 				ScreenSet, ScreenManagingScreen,
-#else // !NLS
+		#else // !NLS
 				0, 0,
-#endif // NLS
+		#endif // NLS
 				"BScreen::BScreen: managing screen %d "
 				"using visual 0x%lx, depth %d\n"),
 		getScreenNumber(), XVisualIDFromVisual(getVisual()),
@@ -161,22 +261,22 @@ rootcommand("")
 
 	rootmenu = 0;
 		
-#ifdef		HAVE_STRFTIME
+	#ifdef HAVE_STRFTIME
 	resource.strftime_format = 0;
-#endif // HAVE_STRFTIME
+	#endif // HAVE_STRFTIME
 
-#ifdef		HAVE_GETPID
+	#ifdef HAVE_GETPID
 	pid_t bpid = getpid();
 
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
 			fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
 			sizeof(pid_t) * 8, PropModeReplace,
 			(unsigned char *) &bpid, 1);
-#endif // HAVE_GETPID
+	#endif // HAVE_GETPID
 
 
 	XDefineCursor(getBaseDisplay()->getXDisplay(), getRootWindow(),
-			fluxbox->getSessionCursor());
+		fluxbox->getSessionCursor());
 
 	workspaceNames = new LinkedList<char>;
 	workspacesList = new LinkedList<Workspace>;
@@ -192,40 +292,41 @@ rootcommand("")
 
 	fluxbox->load_rc(this);
 
-	image_control->setDither(resource.image_dither);
+	image_control->setDither(*resource.image_dither);
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
-#ifdef GNOME
+	#ifdef GNOME
 	/* create the GNOME window */
-  Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
-			getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
+	Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
+		getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
 
-  /* supported WM check */
-  XChangeProperty(getBaseDisplay()->getXDisplay(),
-			getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
-			XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+	/* supported WM check */
+	 XChangeProperty(getBaseDisplay()->getXDisplay(),
+		getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
-  XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
+	XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
 		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 	 
 	Atom gnomeatomlist[1] = {getBaseDisplay()->getGnomeWorkspaceAtom()};
 
-  XChangeProperty(getBaseDisplay()->getXDisplay(),
+	XChangeProperty(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), getBaseDisplay()->getGnomeProtAtom(),
 		XA_ATOM, 32, PropModeReplace,
 		(unsigned char *)gnomeatomlist, 1);
-#endif 
+	#endif 
 
 
 	const char *s =	i18n->getMessage(
-#ifdef		NLS
-						ScreenSet, ScreenPositionLength,
-#else // !NLS
-						0, 0,
-#endif // NLS
-						"0: 0000 x 0: 0000");
+	#ifdef		NLS
+		ScreenSet, ScreenPositionLength,
+	#else // !NLS
+		0, 0,
+	#endif // NLS
+		"0: 0000 x 0: 0000");
+	
 	int l = strlen(s);
 
 	if (i18n->multibyte()) {
@@ -236,7 +337,7 @@ rootcommand("")
 		geom_h = theme->getWindowStyle().font.set_extents->max_ink_extent.height;
 	} else {
 		geom_h = theme->getWindowStyle().font.fontstruct->ascent +
-			 theme->getWindowStyle().font.fontstruct->descent;
+			theme->getWindowStyle().font.fontstruct->descent;
 
 		geom_w = XTextWidth(theme->getWindowStyle().font.fontstruct, s, l);
 	}
@@ -287,8 +388,8 @@ rootcommand("")
 	configmenu = new Configmenu(this);
 
 	Workspace *wkspc = (Workspace *) 0;
-	if (resource.workspaces != 0) {
-		for (int i = 0; i < resource.workspaces; ++i) {
+	if (*resource.workspaces != 0) {
+		for (int i = 0; i < *resource.workspaces; ++i) {
 			wkspc = new Workspace(this, workspacesList->count());
 			workspacesList->insert(wkspc);
 			workspacemenu->insert(wkspc->getName(), wkspc->getMenu());
@@ -1597,8 +1698,8 @@ void BScreen::shutdown(void) {
 void BScreen::showPosition(int x, int y) {
 	if (! geom_visible) {
 		XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
-											(getWidth() - geom_w) / 2,
-											(getHeight() - geom_h) / 2, geom_w, geom_h);
+			(getWidth() - geom_w) / 2,
+			(getHeight() - geom_h) / 2, geom_w, geom_h);
 		XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
 		XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
