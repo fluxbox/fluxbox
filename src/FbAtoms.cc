@@ -1,5 +1,3 @@
-// BaseDisplay.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // FbAtom.cc
 // Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
@@ -21,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbAtoms.cc,v 1.1 2002/03/18 15:23:08 fluxgen Exp $
+// $Id: FbAtoms.cc,v 1.2 2002/03/18 20:29:16 fluxgen Exp $
 
 #include "FbAtoms.hh"
 
