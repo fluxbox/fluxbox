@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.76 2002/10/11 10:23:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.77 2002/10/15 20:41:08 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -324,7 +324,7 @@ key(0)
 		abort();
 	}
 	
-	//setup signals
+	//setup system signals
 	SignalHandler *sigh = SignalHandler::instance();
 	
 	sigh->registerHandler(SIGSEGV, this);
@@ -343,8 +343,8 @@ key(0)
 	cursor.lr_angle = XCreateFontCursor(getXDisplay(), XC_lr_angle);
 	
 	// setup atom handlers
-	m_atomhandler.push_back(new Gnome());
-//	m_atomhandler.push_back(new Ewmh());
+	m_atomhandler.push_back(new Gnome()); // for gnome 1 atom support
+//	m_atomhandler.push_back(new Ewmh()); // for Extended window manager atom support
 
 	//singleton pointer
 	singleton = this;
@@ -353,10 +353,10 @@ key(0)
 	setupConfigFiles();
 	
 	if (! XSupportsLocale())
-		fprintf(stderr, "X server does not support locale\n");
+		cerr<<"Warning: X server does not support locale"<<endl;
 
 	if (XSetLocaleModifiers("") == 0)
-		fprintf(stderr, "cannot set locale modifiers\n");
+		cerr<<"Warning: cannot set locale modifiers"<<endl;
 
 // Set default values to member variables
 
@@ -389,6 +389,8 @@ key(0)
 			delete screen;			
 			continue;
 		}
+		screenList.push_back(screen);
+		
 		// attach screen signals to this
 		screen->currentWorkspaceSig().attach(this);
 		screen->workspaceCountSig().attach(this);
@@ -397,10 +399,10 @@ key(0)
 		
 		// initiate atomhandler for screen specific stuff
 		for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
-			m_atomhandler[i]->initForScreen(*screen);
+			m_atomhandler[atomh]->initForScreen(*screen);
 		}
 
-		screenList.push_back(screen);
+		
 	}
 
 	I18n *i18n = I18n::instance();
@@ -423,7 +425,7 @@ key(0)
 	timer.fireOnce(True);
 
 	//create keybindings handler and load keys file	
-	key = new Keys(getXDisplay(), StringUtil::expandFilename(*m_rc_keyfile).c_str());
+	key = auto_ptr<Keys>(new Keys(getXDisplay(), StringUtil::expandFilename(*m_rc_keyfile).c_str()));
 
 	ungrab();
 }
@@ -447,8 +449,6 @@ Fluxbox::~Fluxbox() {
 		delete ts;
 	}
 	
-	delete key;
-	key = 0;
 }
 
 //---------- setupConfigFiles -----------
@@ -486,9 +486,9 @@ void Fluxbox::setupConfigFiles() {
 			createMenu = true;
 
 	} else {
-		#ifdef DEBUG
+#ifdef DEBUG
 		cerr <<__FILE__<<"("<<__LINE__<<"): Creating dir: " << dirname.c_str() << endl;
-		#endif // DEBUG
+#endif // DEBUG
 
 		// create directory with perm 700
 		if (mkdir(dirname.c_str(), 0700)) {
@@ -1334,9 +1334,9 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 					DisplayString(getXDisplay()));
 				sprintf(displaystring + strlen(displaystring) - 1, "%d",
 					screen->getScreenNumber());		
-				#ifdef DEBUG
+#ifdef DEBUG
 				cerr<<__FILE__<<"("<<__LINE__<<"): Executing:"<<key->getExecCommand().c_str()<<endl;
-				#endif						
+#endif // DEBUG
 						
 				bexec(key->getExecCommand().c_str(), displaystring);
 				#else
@@ -1554,6 +1554,7 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
 
 }
 
+// handle system signals here
 void Fluxbox::handleEvent(SignalEvent * const sig) {
 	I18n *i18n = I18n::instance();
 	static int re_enter = 0;
@@ -1607,7 +1608,7 @@ void Fluxbox::handleEvent(SignalEvent * const sig) {
 
 
 void Fluxbox::update(FbTk::Subject *changedsub) {
-
+//TODO: fix signaling, this does not look good
 	if (typeid(*changedsub) == typeid(FluxboxWindow)) {
 		FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
 		FluxboxWindow &win = winsub->win();
@@ -1768,7 +1769,7 @@ void Fluxbox::saveTabSearch(Window window, Tab *data) {
 	tabSearch[window] = data;
 }
 
-#ifdef		SLIT
+#ifdef SLIT
 void Fluxbox::saveSlitSearch(Window window, Slit *data) {
 	slitSearch[window] = data;
 }
@@ -1818,7 +1819,7 @@ void Fluxbox::restart(const char *prog) {
 }
 
 
-void Fluxbox::shutdown(void) {
+void Fluxbox::shutdown() {
 	BaseDisplay::shutdown();
 
 	XSetInputFocus(getXDisplay(), PointerRoot, None, CurrentTime);
@@ -1838,7 +1839,7 @@ void Fluxbox::shutdown(void) {
 //------ save_rc --------
 //saves resources
 //----------------------
-void Fluxbox::save_rc(void) {
+void Fluxbox::save_rc() {
 
 	XrmDatabase new_blackboxrc = 0;
 	
@@ -2024,7 +2025,7 @@ void Fluxbox::getDefaultDataFilename(char *name, string &filename) {
 	filename = string(getenv("HOME")+string("/.")+RC_PATH+string("/")+name);
 }
 
-void Fluxbox::load_rc(void) {
+void Fluxbox::load_rc() {
 	XrmDatabaseHelper database;
 	
 	//get resource filename
@@ -2432,7 +2433,7 @@ void Fluxbox::real_reconfigure() {
 //------------- reconfigureTabs ----------
 // Reconfigure all tabs size and increase steps
 // ---------------------------------------
-void Fluxbox::reconfigureTabs(void) {
+void Fluxbox::reconfigureTabs() {
 	//tab reconfiguring
 	TabList::iterator it = tabSearch.begin();
 	TabList::iterator it_end = tabSearch.end();
@@ -2453,7 +2454,7 @@ void Fluxbox::reconfigureTabs(void) {
 	}
 }
 
-void Fluxbox::checkMenu(void) {
+void Fluxbox::checkMenu() {
 	Bool reread = False;
 	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
 	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
@@ -2471,14 +2472,14 @@ void Fluxbox::checkMenu(void) {
 }
 
 
-void Fluxbox::rereadMenu(void) {
+void Fluxbox::rereadMenu() {
 	reread_menu_wait = True;
 
 	if (! timer.isTiming()) timer.start();
 }
 
 
-void Fluxbox::real_rereadMenu(void) {
+void Fluxbox::real_rereadMenu() {
 	std::list<MenuTimestamp *>::iterator it = menuTimestamps.begin();
 	std::list<MenuTimestamp *>::iterator it_end = menuTimestamps.end();
 	for (; it != it_end; ++it) {
@@ -2524,7 +2525,7 @@ void Fluxbox::saveMenuFilename(const char *filename) {
 }
 
 
-void Fluxbox::timeout(void) {
+void Fluxbox::timeout() {
 	if (reconfigure_wait)
 		real_reconfigure();
 
