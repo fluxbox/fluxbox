@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ButtonTool.hh,v 1.1 2003/10/13 23:38:17 fluxgen Exp $
+// $Id: ButtonTool.hh,v 1.2 2004/08/29 08:33:12 rathnor Exp $
 
 #ifndef BUTTONTOOL_HH
 #define BUTTONTOOL_HH
@@ -42,6 +42,7 @@ public:
 
 protected:
     void renderTheme();
+    void updateSizing();
     Pixmap m_cache_pm, m_cache_pressed_pm;
     FbTk::ImageControl &m_image_ctrl;
 };

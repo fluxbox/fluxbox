@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/29:
+  * More random render fixes (Simon)
+    (font alignment in menu, menu optimisation, toolbar font/render)
+    FbTk/Menu.cc FbTk/MenuItem.cc FbTk/XftFontImp.cc 
+    TextTheme.cc Toolbar.cc ToolbarItem.hh <ToolbarTools>.hh/cc 
 *04/08/28:
   * Some more menu rendering fixes (Simon)
     Thanks Florian Pigorsch for nice bug reports + debugging

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.hh,v 1.4 2003/12/04 23:02:23 fluxgen Exp $
+// $Id: ClockTool.hh,v 1.5 2004/08/29 08:33:12 rathnor Exp $
 
 #ifndef CLOCKTOOL_HH
 #define CLOCKTOOL_HH
@@ -66,6 +66,7 @@ private:
     void updateTime();
     void update(FbTk::Subject *subj);
     void renderTheme();
+    void updateSizing();
 
     FbTk::TextButton m_button;
     

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.74 2004/08/28 19:03:09 rathnor Exp $
+// $Id: Menu.cc,v 1.75 2004/08/29 08:33:13 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -777,12 +777,14 @@ void Menu::redrawTitle() {
                              0, 0,
                              m_title_pm.width(), m_title_pm.height());
 
+    // difference between height based on font, and style-set height
+    int height_offset = theme().titleHeight() - (font.height() + 2*theme().bevelWidth());
     menu.title.updateTransparent();
     font.drawText(m_real_title_pm.drawable(), // drawable
                   screenNumber(),
                   theme().titleTextGC().gc(), // graphic context
-                  text, len,  // text string with lenght
-                  dx, theme().titleHeight()/2 + (font.ascent() - theme().bevelWidth())/2);  // position
+                  text, len,  // text string with length
+                  dx, font.ascent() + theme().bevelWidth() + height_offset/2);  // position
 }
 
 
@@ -1196,6 +1198,9 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         int sbl = (me.x / menu.item_w), 
             i = (me.y / theme().itemHeight()),
             w = (sbl * menu.persub) + i;
+
+        if (w == m_active_index)
+            return;
        
         if (validIndex(m_active_index) && w != m_active_index) {
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ButtonTool.cc,v 1.4 2004/08/26 15:09:33 rathnor Exp $
+// $Id: ButtonTool.cc,v 1.5 2004/08/29 08:33:12 rathnor Exp $
 
 #include "ButtonTool.hh"
 
@@ -46,6 +46,11 @@ ButtonTool::~ButtonTool() {
     if (m_cache_pressed_pm)
         m_image_ctrl.removeImage(m_cache_pressed_pm);
 
+}
+
+void ButtonTool::updateSizing() {
+    FbTk::Button &btn = static_cast<FbTk::Button &>(window());
+    btn.setBorderWidth(theme().border().width());
 }
 
 void ButtonTool::renderTheme() {

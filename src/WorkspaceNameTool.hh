@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.hh,v 1.4 2003/08/23 15:45:38 fluxgen Exp $
+// $Id: WorkspaceNameTool.hh,v 1.5 2004/08/29 08:33:13 rathnor Exp $
 
 #ifndef WORKSPACENAMETOOL_HH
 #define WORKSPACENAMETOOL_HH
@@ -54,6 +54,7 @@ public:
     const FbTk::Button &button() const { return m_button; }
 private:
     void renderTheme();
+    void updateSizing();
     FbTk::TextButton m_button;
     const ToolTheme &m_theme;
     BScreen &m_screen;

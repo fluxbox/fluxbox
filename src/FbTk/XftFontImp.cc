@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.3 2004/08/10 11:57:35 fluxgen Exp $
+//$Id: XftFontImp.cc,v 1.4 2004/08/29 08:33:13 rathnor Exp $
 
 #include "XftFontImp.hh"
 #include "App.hh"
@@ -157,7 +157,10 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
 unsigned int XftFontImp::height() const {
     if (m_xftfont == 0)
         return 0;
-    return m_xftfont->height;
+    return m_xftfont->height; 
+    //m_xftfont->ascent + m_xftfont->descent;
+    // curiously, fonts seem to have a smaller height, but the "height"
+    // is specified within the actual font, so it must be right, right?
 }
 
 }; // end namespace FbTk

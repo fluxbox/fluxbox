@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.cc,v 1.6 2003/08/27 18:05:12 fluxgen Exp $
+// $Id: TextTheme.cc,v 1.7 2004/08/29 08:33:12 rathnor Exp $
 
 #include "TextTheme.hh"
 
@@ -28,7 +28,7 @@
 
 #include <X11/Xlib.h>
 
-TextTheme::TextTheme(FbTk::Theme &theme, 
+TextTheme::TextTheme(FbTk::Theme &theme,
                      const std::string &name, const std::string &altname):
     m_font(theme, name + ".font", altname + ".Font"),
     m_text_color(theme, name + ".textColor", altname + ".TextColor"),
@@ -49,6 +49,7 @@ TextTheme::~TextTheme() {
 void TextTheme::update() {
     m_text_gc.setForeground(*m_text_color);
 }
+    
 
 void TextTheme::setAntialias(bool value) {
     font().setAntialias(value);

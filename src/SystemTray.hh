@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.hh,v 1.5 2004/08/25 17:16:40 rathnor Exp $
+// $Id: SystemTray.hh,v 1.6 2004/08/29 08:33:12 rathnor Exp $
 
 #ifndef SYSTEMTRAY_HH
 #define SYSTEMTRAY_HH
@@ -66,6 +66,7 @@ public:
     const FbTk::FbWindow &window() const { return m_window; }
 
     inline void renderTheme() {}
+    inline void updateSizing() {}
 
 private:
     typedef std::list<FbTk::FbWindow *> ClientList;

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.14 2004/06/16 15:38:19 rathnor Exp $
+// $Id: IconbarTool.hh,v 1.15 2004/08/29 08:33:12 rathnor Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -78,6 +78,8 @@ public:
 private:
     /// @return button associated with window
     IconButton *findButton(FluxboxWindow &win);
+
+    void updateSizing();
 
     /// render single button that holds win
     void renderWindow(FluxboxWindow &win);

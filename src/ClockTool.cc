@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.12 2004/08/25 17:16:40 rathnor Exp $
+// $Id: ClockTool.cc,v 1.13 2004/08/29 08:33:12 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -244,6 +244,11 @@ void ClockTool::updateTime() {
     }
 
     m_button.clear();
+}
+
+// Just change things that affect the size
+void ClockTool::updateSizing() {
+    m_button.setBorderWidth(m_theme.border().width());
 }
 
 void ClockTool::renderTheme() {

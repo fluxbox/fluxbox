@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.42 2004/08/25 17:16:40 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.43 2004/08/29 08:33:12 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -543,10 +543,9 @@ void IconbarTool::renderWindow(FluxboxWindow &win) {
     renderButton(*button);
 }
 
+void IconbarTool::updateSizing() {
+    m_icon_container.setBorderWidth(m_theme.border().width());
 
-void IconbarTool::renderTheme() {
-
-    // update button sizes before we get max width per client!
     IconList::iterator icon_it = m_icon_list.begin();
     const IconList::iterator icon_it_end = m_icon_list.end(); 
     for (; icon_it != icon_it_end; ++icon_it) {
@@ -555,6 +554,13 @@ void IconbarTool::renderTheme() {
         else // unfocused
             (*icon_it)->setBorderWidth(m_theme.unfocusedBorder().width());
     }    
+
+}
+
+void IconbarTool::renderTheme() {
+
+    // update button sizes before we get max width per client!
+    updateSizing();
     
     Pixmap tmp = m_focused_pm;
     Pixmap err_tmp = m_focused_err_pm;
@@ -616,7 +622,8 @@ void IconbarTool::renderTheme() {
     m_icon_container.setAlpha(m_theme.alpha());
 
     // update buttons
-    icon_it = m_icon_list.begin();
+    IconList::iterator icon_it = m_icon_list.begin();
+    const IconList::iterator icon_it_end = m_icon_list.end(); 
     for (; icon_it != icon_it_end; ++icon_it) {
         renderButton(*(*icon_it));
     }

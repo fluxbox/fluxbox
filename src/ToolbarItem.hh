@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarItem.hh,v 1.5 2004/08/25 17:16:40 rathnor Exp $
+// $Id: ToolbarItem.hh,v 1.6 2004/08/29 08:33:13 rathnor Exp $
 
 #ifndef TOOLBARITEM_HH
 #define TOOLBARITEM_HH
@@ -56,6 +56,9 @@ public:
     // Tools should NOT listen to theme changes - they'll get notified by 
     // the toolbar instead. Otherwise there are ordering problems.
     virtual void renderTheme() = 0;
+
+    // just update theme items that affect the size
+    virtual void updateSizing() = 0;
 
     FbTk::Subject &resizeSig() { return m_resize_sig; }
 

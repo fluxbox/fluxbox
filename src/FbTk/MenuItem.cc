@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.5 2004/08/03 21:31:31 fluxgen Exp $
+// $Id: MenuItem.cc,v 1.6 2004/08/29 08:33:13 rathnor Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -91,7 +91,8 @@ void MenuItem::draw(FbDrawable &draw,
 
     int text_w = theme.frameFont().textWidth(label().c_str(), label().size());
     
-    text_y = y - theme.bevelWidth()/2 + theme.frameFont().ascent()/2 + height/2;
+    int height_offset = theme.itemHeight() - (theme.frameFont().height() + 2*theme.bevelWidth());
+    text_y = y + theme.bevelWidth() + theme.frameFont().ascent() + height_offset/2; ///2 + height/2;
 
     switch(theme.frameFontJustify()) {
     case FbTk::LEFT:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.148 2004/08/25 17:16:40 rathnor Exp $
+// $Id: Toolbar.cc,v 1.149 2004/08/29 08:33:12 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -227,6 +227,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_theme.reconfigSig().attach(this);
     // listen to screen size changes
     screen().resizeSig().attach(this);
+    screen().reconfigureSig().attach(this); // get this on antialias change
 
     moveToLayer((*m_rc_layernum).getNum());
 
@@ -453,11 +454,15 @@ void Toolbar::reconfigure() {
 
     ItemList::iterator item_it = m_item_list.begin();
     ItemList::iterator item_it_end = m_item_list.end();
-    for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
-        (*item_it)->renderTheme();
+    for (; item_it != item_it_end; ++item_it) {
+        (*item_it)->updateSizing();
     }
 
     rearrangeItems();
+
+    for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+        (*item_it)->renderTheme();
+    }
 
     menu().reconfigure();
     // we're done with all resizing and stuff now we can request a new 
@@ -568,11 +573,11 @@ void Toolbar::update(FbTk::Subject *subj) {
     // either screen reconfigured, theme was reloaded
     // or a tool resized itself
 
-    if (typeid(*subj) == typeid(ToolbarItem::ToolbarItemSubject)) {
+    if (typeid(*subj) == typeid(ToolbarItem::ToolbarItemSubject))
         rearrangeItems();
-    } else {
+    else
         reconfigure();
-    }
+
 }
 
 void Toolbar::setPlacement(Toolbar::Placement where) {
