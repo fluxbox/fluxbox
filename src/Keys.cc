@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.33 2003/06/30 19:42:20 fluxgen Exp $
+//$Id: Keys.cc,v 1.34 2003/06/30 20:59:28 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -194,19 +194,22 @@ bool Keys::load(const char *filename) {
                 const char *str = 
                     FbTk::StringUtil::strcasestr(linebuffer.c_str(),
                                                  val[argc].c_str() + 1); // +1 to skip ':'
-
-                // +1 to remove the first ':'
-                last_key->m_command = CommandParser::instance().parseLine(str);
-
-                if (*last_key->m_command == 0) {
+                if (str == 0) {
                     cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
                     cerr<<"> "<<linebuffer<<endl;
                 } else {
-                     // Add the keychain to list
-                    if (!mergeTree(current_key))
-                        cerr<<"Keys: Failed to merge keytree!"<<endl;
+
+                    last_key->m_command = CommandParser::instance().parseLine(str);
+
+                    if (*last_key->m_command == 0) {
+                        cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
+                        cerr<<"> "<<linebuffer<<endl;
+                    } else {
+                        // Add the keychain to list
+                        if (!mergeTree(current_key))
+                            cerr<<"Keys: Failed to merge keytree!"<<endl;
+                    }
                 }
-                
                 delete current_key;
                 current_key = 0;
                 last_key = 0;
