@@ -20,12 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.22 2003/07/25 10:03:55 rathnor Exp $
+// $Id: main.cc,v 1.23 2003/08/28 23:18:37 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
 #include "version.h"
 #include "defaults.hh"
+#include "FbTk/Theme.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -201,6 +202,8 @@ int main(int argc, char **argv) {
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
             showInfo(cout);
             exit(0);
+        } else if (strcmp(argv[i], "-verbose") == 0) {
+            FbTk::ThemeManager::instance().setVerbose(true);
         }
     }
 
