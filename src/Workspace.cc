@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.23 2002/08/11 22:35:40 fluxgen Exp $
+// $Id: Workspace.cc,v 1.24 2002/08/16 11:02:41 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -135,18 +135,20 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 	stackingList.remove(w);
 
 	if (w->isFocused()) {
-		if (screen->isSloppyFocus())
-			Fluxbox::instance()->setFocusedWindow((FluxboxWindow *) 0);
-		else if (w->isTransient() && w->getTransientFor() &&
-				w->getTransientFor()->isVisible())
+		if (screen->isSloppyFocus()) {
+			Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
+		} else if (w->isTransient() && w->getTransientFor() &&
+				w->getTransientFor()->isVisible()) {
+			if (w->getTransientFor() == w) // FATAL ERROR, this should not happend
+				abort();
 			w->getTransientFor()->setInputFocus();
-		else {
+		} else {
 			FluxboxWindow *top = 0;
 			if (stackingList.size()!=0)
 				top = stackingList.front();
 
 			if (!top || !top->setInputFocus()) {
-				Fluxbox::instance()->setFocusedWindow((FluxboxWindow *) 0);
+				Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
 				XSetInputFocus(Fluxbox::instance()->getXDisplay(),
 					screen->getToolbar()->getWindowID(),
 					RevertToParent, CurrentTime);						
@@ -155,7 +157,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 	}
 	
 	if (lastfocus == w)
-		lastfocus = (FluxboxWindow *) 0;
+		lastfocus = 0;
 
 	//could be faster?
 	Windows::iterator it = windowList.begin();
@@ -447,10 +449,10 @@ void Workspace::setName(const std::string &name) {
 // on the workspace and then
 // clears the windowList
 //-------------------------------
-void Workspace::shutdown(void) {
-
+void Workspace::shutdown() {
+	// note: when the window dies it'll remove it self from the list
 	while (!windowList.empty()) {
-		windowList.back()->restore();
+		windowList.back()->restore(true); // restore with remap
 		delete windowList.back(); //delete window (the window removes it self from windowList)
 	}
 }
