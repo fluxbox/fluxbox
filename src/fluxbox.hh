@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.30 2002/10/15 20:49:00 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.31 2002/10/19 14:15:07 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -64,13 +64,13 @@
 #endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
+#include <list>
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <map>
-#include <list>
 
 class AtomHandler;
-
 
 /**
 	main class for the window manager.
