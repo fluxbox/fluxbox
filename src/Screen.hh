@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.65 2003/02/03 13:50:35 fluxgen Exp $
+// $Id: Screen.hh,v 1.66 2003/02/09 14:11:12 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -277,15 +277,8 @@ public:
     void showGeometry(unsigned int, unsigned int);
     void hideGeometry();
 
-    void raise(FbTk::XLayerItem &item);
-    void lower(FbTk::XLayerItem &item);
     void setLayer(FbTk::XLayerItem &item, int layernum);
-    void removeLayerItem(FbTk::XLayerItem *item);
-    void raiseWindow(FluxboxWindow *win);
-    void lowerWindow(FluxboxWindow *win);
-    void raiseWindowLayer(FluxboxWindow *win);
-    void lowerWindowLayer(FluxboxWindow *win);
-    void moveWindowToLayer(FluxboxWindow *win, int layernum);
+    // remove? no, items are never removed from their layer until they die
 
     FluxboxWindow* useAutoGroupWindow();
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.94 2003/02/03 13:57:08 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.95 2003/02/09 14:11:13 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -702,7 +702,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             win = tab->getWindow();
             if (win->getScreen()->isSloppyFocus() && (! win->isFocused()) &&
                 (! no_focus)) {
-                win->getScreen()->raiseWindow(win);
+                win->raise();
 					
                 grab();
 
@@ -1122,10 +1122,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
                         if (tab->next()) {
-                            screen->raiseWindow(tab->next()->getWindow());
+                            tab->next()->getWindow()->raise();
                             tab->next()->getWindow()->setInputFocus();
                         } else {
-                            screen->raiseWindow(tab->first()->getWindow());
+                            tab->first()->getWindow()->raise();
                             tab->first()->getWindow()->setInputFocus();
                         }	
                     }
@@ -1134,10 +1134,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
                         if (tab->prev()) {
-                            screen->raiseWindow(tab->prev()->getWindow());
+                            tab->prev()->getWindow()->raise();
                             tab->prev()->getWindow()->setInputFocus();
                         } else {
-                            screen->raiseWindow(tab->last()->getWindow());
+                            tab->last()->getWindow()->raise();
                             tab->last()->getWindow()->setInputFocus();
                         }
                     }
@@ -1145,14 +1145,14 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                 case Keys::FIRSTTAB:
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
-                        screen->raiseWindow(tab->first()->getWindow());
+                        tab->first()->getWindow()->raise();
                         tab->first()->getWindow()->setInputFocus();
                     }
                     break;
                 case Keys::LASTTAB:
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
-                        screen->raiseWindow(tab->last()->getWindow());
+                        tab->last()->getWindow()->raise();
                         tab->last()->getWindow()->setInputFocus();
                     }
                     break;
@@ -1250,16 +1250,16 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
         focused_window->lower();
         break;
     case Keys::RAISELAYER:
-        focused_window->getScreen()->raiseWindowLayer(focused_window);
+        focused_window->raiseLayer();
         break;
     case Keys::LOWERLAYER:
-        focused_window->getScreen()->lowerWindowLayer(focused_window);
+        focused_window->lowerLayer();
         break;
     case Keys::TOPLAYER:
-        focused_window->getScreen()->moveWindowToLayer(focused_window,getBottomLayer());
+        focused_window->moveToLayer(getBottomLayer());
         break;
     case Keys::BOTTOMLAYER:
-        focused_window->getScreen()->moveWindowToLayer(focused_window,getTopLayer());
+        focused_window->moveToLayer(getTopLayer());
         break;
     case Keys::CLOSE:
         focused_window->close();

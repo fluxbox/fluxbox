@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.45 2003/02/03 13:56:12 fluxgen Exp $
+// $Id: Workspace.cc,v 1.46 2003/02/09 14:11:13 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -138,8 +138,6 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
     m_clientmenu.insert(w->getTitle().c_str());
     m_windowlist.push_back(w);
 	
-    w->raise();
-
     //update menugraphics
     m_clientmenu.update();
 	
@@ -435,7 +433,6 @@ void Workspace::setName(const std::string &name) {
 void Workspace::shutdown() {
     // note: when the window dies it'll remove it self from the list
     while (!m_windowlist.empty()) {
-        cerr<<m_windowlist.size()<<endl;
         m_windowlist.back()->restore(true); // restore with remap
         delete m_windowlist.back(); //delete window (the window removes it self from m_windowlist)
     }

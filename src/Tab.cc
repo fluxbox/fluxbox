@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.53 2003/02/02 16:32:38 rathnor Exp $
+// $Id: Tab.cc,v 1.54 2003/02/09 14:11:12 rathnor Exp $
 
 #include "Tab.hh"
 
@@ -173,7 +173,7 @@ void Tab::lower() {
     do { 
         XLowerWindow(m_display, current->m_tabwin); //lower tabwin and tabs window
         win = current->getWindow(); 
-        win->getScreen()->lowerWindow(win);
+        win->lower();
 
         current = current->next(); //get next
         if (current == 0)

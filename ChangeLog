@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*10/02/03:
+   * More fiddling of Layer code, cleaning up (Henrik + Simon)
+     FbTk/MultLayers.hh/cc FbTk/XLayer.hh/cc FbTk/XLayerItem.hh/cc 
+     Gnome.cc Screen.hh/cc Tab.cc Window.hh/cc Workspace.cc fluxbox.cc
 *03/02/03:
    * Integration of new Layering code, plus updates to the code (Simon)
    - new KeyActions: Raise/LowerLayer, AlwaysOnTop/Bottom, Top/BottomLayer

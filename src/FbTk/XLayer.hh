@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.hh,v 1.2 2003/02/02 16:32:41 rathnor Exp $
+// $Id: XLayer.hh,v 1.3 2003/02/09 14:11:14 rathnor Exp $
 
 
 #ifndef FBTK_XLAYER_HH
@@ -61,12 +61,21 @@ public:
     iterator insert(XLayerItem &item, unsigned int pos=0);
     void remove(XLayerItem &item);
 
+    // move highest to bottom
     void cycleUp();
     void cycleDown();
-    void raise(XLayerItem &item);
-    void lower(XLayerItem &item);
+    // just go above the next window up in the current layer (not all the way to the top)
     void stepUp(XLayerItem &item);
     void stepDown(XLayerItem &item);
+
+    // bring to top of layer
+    void raise(XLayerItem &item);
+    void lower(XLayerItem &item);
+
+    // send to next layer up
+    void raiseLayer(XLayerItem &item);
+    void lowerLayer(XLayerItem &item);
+    void moveToLayer(XLayerItem &item, int layernum);
 
 private:
     MultLayers &m_manager;

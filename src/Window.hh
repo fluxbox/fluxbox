@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.44 2003/02/03 13:53:48 fluxgen Exp $
+// $Id: Window.hh,v 1.45 2003/02/09 14:11:13 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -126,8 +126,11 @@ public:
     void shade();
     /// toggles sticky
     void stick(); 
-    void lower();
     void raise();
+    void lower();
+    void raiseLayer();
+    void lowerLayer();
+    void moveToLayer(int layernum);
 
     void reconfigure();
     void installColormap(bool);
@@ -332,10 +335,6 @@ private:
     Time lastButtonPressTime;
     FbTk::Menu m_windowmenu;
     
-
-    FbTk::XLayerItem m_layeritem;
-    int m_layernum;
-
     timeval lastFocusTime;
 	
     int button_grab_x, button_grab_y; // handles last button press event for move
@@ -387,6 +386,9 @@ private:
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
     FbWinFrame m_frame;
+
+    FbTk::XLayerItem m_layeritem;
+    int m_layernum;
 
     enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 

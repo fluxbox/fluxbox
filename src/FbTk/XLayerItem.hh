@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.hh,v 1.4 2003/02/03 13:42:47 fluxgen Exp $
+// $Id: XLayerItem.hh,v 1.5 2003/02/09 14:11:14 rathnor Exp $
 
 #ifndef FBTK_XLAYERITEM_HH
 #define FBTK_XLAYERITEM_HH
@@ -45,19 +45,39 @@ public:
 
     void raise();
     void lower();
+    // go above the next item visible in this layer
     void stepUp();
     void stepDown();
-    //!! we don't need this?
+
+    // send to next layer up
+    void raiseLayer();
+    void lowerLayer();
+    void moveToLayer(int layernum);
+
+    // this is needed for step and cycle functions
+    // (you need to know the next one visible, otherwise nothing may appear to happen)
+    // not yet implemented
     bool visible() const { return true; } 
 
     const XLayer &getLayer() const { return *m_layer; }
     XLayer &getLayer() { return *m_layer; }
-    Window window() const { return m_window; }
+    int getLayerNum() { return m_layer->getLayerNum(); }
+
+    // an XLayerItem holds several windows that are equivalent in a layer 
+    // (i.e. if one is raised, then they should all be).
+    void addWindow(Window win);
+    void removeWindow(Window win);
+
+    // using this you can bring one window to the top of this item (equivalent to add then remove)
+    void bringToTop(Window win);
+
+    Windows &getWindows() { return m_windows; }
+    size_t numWindows() const { return m_windows.size(); }
 
 private:
     XLayer *m_layer;
     XLayer::iterator m_layeriterator;
-    Window m_window;
+    Windows m_windows;
 };
 
 };

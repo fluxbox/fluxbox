@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.cc,v 1.4 2003/02/03 13:46:13 fluxgen Exp $
+// $Id: MultLayers.cc,v 1.5 2003/02/09 14:11:13 rathnor Exp $
 
 #include "MultLayers.hh"
 #include "XLayer.hh"
@@ -97,11 +97,39 @@ void MultLayers::addToTop(XLayerItem &item, int layernum) {
     restack();
 }
 
+
+// raise the whole layer
+void MultLayers::raise(XLayer &layer) {
+    int layernum = layer.getLayerNum();
+    if (layernum >= (m_layers.size() - 1))
+        // already on top
+        return;
+    
+    // not yet implemented
+}
+
+// lower the whole layer
+void MultLayers::lower(XLayer &layer) {
+    int layernum = layer.getLayerNum();
+    if (layernum == 0)
+        // already on bottom
+        return;
+    
+    // not yet implemented
+}
+
 /* raise the item one level */
-void MultLayers::raise(XLayerItem &item) {
+void MultLayers::raiseLayer(XLayerItem &item) {
     // get the layer it is in
     XLayer &curr_layer = item.getLayer();
     moveToLayer(item, curr_layer.getLayerNum()-1);
+}
+
+/* raise the item one level */
+void MultLayers::lowerLayer(XLayerItem &item) {
+    // get the layer it is in
+    XLayer &curr_layer = item.getLayer();
+    moveToLayer(item, curr_layer.getLayerNum()+1);
 }
 
 void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
@@ -119,28 +147,34 @@ void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
         layernum = m_layers.size()-1;
     // remove item from old layer and insert it into the 
     item.setLayer(*m_layers[layernum]);
-    curr_layer.remove(item);
-    m_layers[layernum]->insert(item);
 }
 
 void MultLayers::restack() {
-    size_t winlist_size=0;
-    for (size_t layer=0; layer < m_layers.size(); layer++) {
-        winlist_size += m_layers[layer]->countWindows();
+
+    int layernum=0, winnum=0, size=0;
+    for (; layernum < m_layers.size(); layernum++) {
+        size += m_layers[layernum]->countWindows();
     }
 
-    Window *winlist = new Window[winlist_size];
-    for (size_t layer=0, window=0; layer < m_layers.size(); layer++) {
+    Window *winlist = new Window[size];
+    for (layernum=0; layernum < m_layers.size(); layernum++) {
 
-        XLayer::ItemList::iterator item_it = m_layers[layer]->getItemList().begin();
-        XLayer::ItemList::iterator item_it_end = m_layers[layer]->getItemList().end();
-        for (; item_it != item_it_end; ++item_it, window++)
-            winlist[window] = (*item_it)->window();
+        XLayer::ItemList::iterator it = m_layers[layernum]->getItemList().begin();
+        XLayer::ItemList::iterator it_end = m_layers[layernum]->getItemList().end();
+        
+        // add all windows from each layeritem in each layer
+        for (; it != it_end; ++it) {
+            XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
+            XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
+            for (; wit != wit_end; ++wit, winnum++) {
+                winlist[winnum] = (*wit);
+            }
+        }
     }
 
-    XRestackWindows(FbTk::App::instance()->display(), winlist, winlist_size);
+    XRestackWindows(FbTk::App::instance()->display(), winlist, size);
 
-    delete[] winlist;
+    delete [] winlist;
 }
 
 int MultLayers::size() {

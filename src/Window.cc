@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.114 2003/02/03 13:55:08 fluxgen Exp $
+// $Id: Window.cc,v 1.115 2003/02/09 14:11:13 rathnor Exp $
 
 #include "Window.hh"
 
@@ -112,11 +112,12 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     display(0),
     lastButtonPressTime(0),
     m_windowmenu(menutheme, screen_num, imgctrl),
-    m_layeritem(getFrameWindow(), layer),
-    m_layernum(4),
     old_decoration(DECOR_NORMAL),
     tab(0),
-    m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100) {
+    m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100),
+    m_layeritem(getFrameWindow(), layer),
+    m_layernum(layer.getLayerNum())
+ {
 
 
 
@@ -156,10 +157,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     client.transient_for = 0;
     client.mwm_hint = 0;
     client.blackbox_hint = 0;
-    Fluxbox *fluxbox = Fluxbox::instance();
-    
-    // default to normal layer
-    m_layernum = fluxbox->getNormalLayer();
 
     getBlackboxHints();
     if (! client.blackbox_hint) {
@@ -189,6 +186,8 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 
     m_frame.move(wattrib.x, wattrib.y);
     m_frame.resizeForClient(wattrib.width, wattrib.height);
+
+    Fluxbox *fluxbox = Fluxbox::instance();
 
     timer.setTimeout(fluxbox->getAutoRaiseDelay());
     timer.fireOnce(true);
@@ -263,7 +262,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 
     restoreAttributes(place_window);
 
-    screen->moveWindowToLayer(this, m_layernum);
+    moveToLayer(m_layernum);
     screen->getWorkspace(workspace_number)->addWindow(this, place_window);
 
     moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
@@ -1178,18 +1177,152 @@ void FluxboxWindow::stick() {
     setState(current_state);
 }
 
+void FluxboxWindow::raise() {
+    if (isIconic())
+        deiconify();
+
+    FluxboxWindow *win = this;
+
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+  
+    if (win == 0) 
+        win = this;
+
+    if (!win->isIconic()) {
+        screen->updateNetizenWindowRaise(win->getClientWindow());
+        win->getLayerItem().raise();
+    }
+
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            screen->updateNetizenWindowRaise((*it)->getClientWindow());
+            (*it)->getLayerItem().raise();
+        }
+    }
+}
+
 void FluxboxWindow::lower() {
     if (isIconic())
         deiconify();
 
-    screen->lowerWindow(this);
+    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = this;
+
+    while (bottom->getTransientFor()) {
+        bottom = bottom->getTransientFor();
+        assert(bottom != bottom->getTransientFor());
+    }
+
+    win = bottom;
+
+    if (!win->isIconic()) {
+        screen->updateNetizenWindowLower(win->getClientWindow());
+        win->getLayerItem().lower();
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            screen->updateNetizenWindowLower((*it)->getClientWindow());
+            (*it)->getLayerItem().lower();
+        }
+    }
+   
 }
 
-void FluxboxWindow::raise() {
-    if (isIconic())
-        deiconify();
-    screen->raiseWindow(this);
+void FluxboxWindow::raiseLayer() {
+    // don't let it up to menu layer
+    if (getLayerNum() == (Fluxbox::instance()->getMenuLayer()+1))
+        return;
+
+    FluxboxWindow *win = this;
+        
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+
+    if (!win->isIconic()) {
+        screen->updateNetizenWindowRaise(win->getClientWindow());
+        win->getLayerItem().raiseLayer();
+        win->setLayerNum(win->getLayerItem().getLayerNum());
+    }
+
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            screen->updateNetizenWindowRaise((*it)->getClientWindow());
+            (*it)->getLayerItem().raiseLayer();
+            (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
+        }
+    }
 }
+
+void FluxboxWindow::lowerLayer() {
+    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = this;
+    
+    while (bottom->getTransientFor()) {
+        bottom = bottom->getTransientFor();
+        assert(bottom != bottom->getTransientFor());
+    }
+    
+    win = bottom;
+    
+    if (!win->isIconic()) {
+        screen->updateNetizenWindowLower(win->getClientWindow());
+        win->getLayerItem().lowerLayer();
+        win->setLayerNum(win->getLayerItem().getLayerNum());
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            screen->updateNetizenWindowLower((*it)->getClientWindow());
+            (*it)->getLayerItem().lowerLayer();
+            (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
+        }
+    }
+
+}
+
+void FluxboxWindow::moveToLayer(int layernum) {
+    Fluxbox * fluxbox = Fluxbox::instance();
+
+    FluxboxWindow *win = this;
+
+    // don't let it set its layer into menu area
+    if (layernum <= fluxbox->getMenuLayer()) {
+        layernum = fluxbox->getMenuLayer() + 1;
+    }
+
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+
+    if (!win->isIconic()) {
+        screen->updateNetizenWindowRaise(win->getClientWindow());
+        win->getLayerItem().moveToLayer(layernum);
+        win->setLayerNum(win->getLayerItem().getLayerNum());
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            screen->updateNetizenWindowRaise((*it)->getClientWindow());
+            (*it)->getLayerItem().moveToLayer(layernum);
+            (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
+
+        }
+    }
+}
+
+
 
 void FluxboxWindow::setFocusFlag(bool focus) {
     focused = focus;
@@ -2325,7 +2458,7 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
 
     if (net.flags & BaseDisplay::ATTRIB_STACK) {
         if ((unsigned int) m_layernum != net.stack) {
-            screen->moveWindowToLayer(this, net.stack);
+            moveToLayer(net.stack);
         }
     }
 

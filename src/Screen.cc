@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.102 2003/02/03 13:52:31 fluxgen Exp $
+// $Id: Screen.cc,v 1.103 2003/02/09 14:11:12 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1087,7 +1087,7 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 FluxboxWindow *BScreen::createWindow(Window client) {
     FluxboxWindow *win = new FluxboxWindow(client, this, getScreenNumber(), *getImageControl(), 
                                            winFrameTheme(), *menuTheme(),
-                                           *layerManager().getLayer(0));
+                                           *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
  
 #ifdef SLIT
     if (win->initialState() == WithdrawnState)
@@ -1326,7 +1326,7 @@ void BScreen::nextFocus(int opts) {
         } while (*it != focused);
 
         if (*it != focused && it != wins.end())
-            raiseWindow(*it);
+            (*it)->raise();
 
     }
 
@@ -1369,7 +1369,7 @@ void BScreen::prevFocus(int opts) {
         } while (*it != focused);
 
         if (*it != focused && it != wins.end())
-            raiseWindow(*it);
+            (*it)->raise();
 
     }
 }
@@ -1390,7 +1390,7 @@ void BScreen::raiseFocus() {
         }
 
     if ((getCurrentWorkspace()->getCount() > 1) && have_focused)
-        raiseWindow(fb->getFocusedWindow());
+        fb->getFocusedWindow()->raise();
 }
 
 void BScreen::initMenu() {
@@ -1938,154 +1938,8 @@ void BScreen::hideGeometry() {
     }
 }
 
-void BScreen::raise(FbTk::XLayerItem &item) {
-    item.raise();
-}
-
-void BScreen::lower(FbTk::XLayerItem &item) {
-    item.lower();
-}
-
 void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
     m_layermanager.moveToLayer(item, layernum);
-}
-
-
-void BScreen::raiseWindow(FluxboxWindow *w) {
-    if (w == 0)
-        return;
-
-    FluxboxWindow *win = w;
-
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
-
-    if (win == 0)
-        win = w;
-
-    if (!win->isIconic()) {
-        updateNetizenWindowRaise(win->getClientWindow());
-        win->getLayerItem().raise();
-    }
-
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            updateNetizenWindowRaise((*it)->getClientWindow());
-            (*it)->getLayerItem().raise();
-        }
-    }
-}
-
-void BScreen::lowerWindow(FluxboxWindow *w) {
-    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
-
-    while (bottom->getTransientFor()) {
-        bottom = bottom->getTransientFor();
-        assert(bottom != bottom->getTransientFor());
-    }
-
-    win = bottom;
-
-    if (!win->isIconic()) {
-        updateNetizenWindowLower(win->getClientWindow());
-        win->getLayerItem().lower();
-    }
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            updateNetizenWindowLower((*it)->getClientWindow());
-            (*it)->getLayerItem().lower();
-        }
-    }
-
-}
-
-void BScreen::raiseWindowLayer(FluxboxWindow *w) {
-    FluxboxWindow *win = w;
-
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
-
-    if (!win->isIconic()) {
-        updateNetizenWindowRaise(win->getClientWindow());
-        win->getLayerItem().raise();
-        win->setLayerNum(win->getLayerNum()-1);
-    }
-
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            updateNetizenWindowRaise((*it)->getClientWindow());
-            (*it)->getLayerItem().raise();
-            (*it)->setLayerNum((*it)->getLayerNum()-1);
-        }
-    }
-}
-
-void BScreen::lowerWindowLayer(FluxboxWindow *w) {
-    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
-
-    while (bottom->getTransientFor()) {
-        bottom = bottom->getTransientFor();
-        assert(bottom != bottom->getTransientFor());
-    }
-
-    win = bottom;
-
-    if (!win->isIconic()) {
-        updateNetizenWindowLower(win->getClientWindow());
-        win->getLayerItem().lower();
-        win->setLayerNum(win->getLayerNum()+1);
-    }
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            updateNetizenWindowLower((*it)->getClientWindow());
-            (*it)->getLayerItem().lower();
-            (*it)->setLayerNum((*it)->getLayerNum()+1);
-        }
-    }
-
-}
-
-void BScreen::moveWindowToLayer(FluxboxWindow *win, int layernum) {
-    Fluxbox * fluxbox = Fluxbox::instance();
-
-    // don't let it set its layer into menu area
-    if (layernum <= fluxbox->getMenuLayer()) {
-        layernum = fluxbox->getMenuLayer() + 1;
-    }
-
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
-
-    if (!win->isIconic()) {
-        updateNetizenWindowRaise(win->getClientWindow());
-        //!! TODO
-        //anager->moveToLayer(*win->getLayerItem(),layernum);
-        win->setLayerNum(layernum);
-    }
-    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
-    for (; it != it_end; ++it) {
-        if (!(*it)->isIconic()) {
-            updateNetizenWindowRaise((*it)->getClientWindow());
-            //!! TODO
-            //m_layermanager->moveToLayer(*(*it)->getLayerItem(), layernum);
-            (*it)->setLayerNum(layernum);
-        }
-    }
 }
 
 
