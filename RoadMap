@@ -20,7 +20,6 @@ Some of the interesting new features beyond 0.1.14 that we'd like to work toward
 Some minor ones (mainly bugfixes or small things) that I feel like noting are
 (many of these based on feature requests or bug reports from sourceforge):
 
-- (optional) Unique per-workspace backgrounds
 - Key bindings for:
   -> restart
   -> specific tab numbers
@@ -49,8 +48,15 @@ Some lower priority ones ("thoughts"/maybes):
 - mouse button "keys"
 - ability to specify keybinding actions for titlebar buttons (i.e. configurable actions for titlebar buttons).
 
+Notes:
+ - (optional) Unique per-workspace backgrounds
+   => To be made into separate application, if time permits will try to 
+      get this done before 1.0.0rc1
+
 Known Bugs (to be looked at at some time):
  - Focus acts sloppy on window close/warp, or when decoration-less window is "focused"
+
+Fixed known bugs:
  - Doesn't redraw properly after unshade
 
 ----------------------------------------------------------
@@ -96,11 +102,10 @@ Major Features:
  - Integration of Remember patch        (Simon)
  - Transparency                         (Henrik)
 Minor Features:
- - per workspace backgrounds            (Simon)
  - more keybinding actions              (Both)
  - directional focus movement           (?)
  - fix up focus issues                  (Simon)
- - snap to windows                      (Simon)
+ = snap to windows                      (Simon)
  - improved command-line help option    (Henrik)
  - pixmap buttons                       (Henrik)
  = Shaped menu/slit/toolbar             (Henrik)
@@ -130,6 +135,9 @@ Minor Features:
  None
 Bugfixes/lower priority:
  - Fixes for 0.9.3 and previous
+
+Other:
+ - app (fbev?) for per workspace backgrounds, among other things
 
 ----------------------------------------------------------
 
