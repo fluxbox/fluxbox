@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.96 2004/06/07 21:36:06 fluxgen Exp $
+// $Id: Slit.cc,v 1.97 2004/08/30 11:34:56 akir Exp $
 
 #include "Slit.hh"
 
@@ -481,8 +481,10 @@ void Slit::addClient(Window w) {
         }
         
         XFree((void *) proto);
+#ifdef DEBUG
     } else {
         cerr<<"Warning: Failed to read WM Protocols. "<<endl;
+#endif // DEBUG
     }
 
     XWindowAttributes attrib;
