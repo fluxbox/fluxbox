@@ -40,7 +40,7 @@
 #include "Window.hh"
 #include "Windowmenu.hh"
 #include "Workspace.hh"
-
+#include "misc.hh"
 
 #ifdef		SLIT
 #	include "Slit.hh"
@@ -59,8 +59,8 @@
 #	endif // HAVE_STDIO_H
 #endif // DEBUG
 
-#include "misc.hh"
 
+#include <iostream>
 using namespace std;
 
 FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
@@ -1818,19 +1818,69 @@ void FluxboxWindow::withdraw(void) {
 void FluxboxWindow::maximize(unsigned int button) {
 	if (! maximized) {
 		int dx, dy;
-		unsigned int dw, dh;
+		unsigned int dw, dh, slitModL = 0, slitModR = 0, slitModT = 0, slitModB = 0;
+#ifdef	SLIT
+		Slit* mSlt = screen->getSlit();
 
+		if(screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->getWidth() > 1))
+		{
+			switch(screen->getSlitDirection())
+			{
+			case Slit::Vertical:
+				switch(screen->getSlitPlacement())
+				{
+				case Slit::TopRight:
+				case Slit::CenterRight:
+				case Slit::BottomRight:
+					slitModR = mSlt->getWidth() + screen->getBevelWidth();
+					break;
+				default:
+					slitModL = mSlt->getWidth() + screen->getBevelWidth();
+					break;
+				}
+			break;
+			case Slit::Horizontal:
+				switch(screen->getSlitPlacement())
+				{
+				case Slit::TopLeft:
+				case Slit::TopCenter:
+				case Slit::TopRight:
+					slitModT = mSlt->getHeight() + screen->getBevelWidth();
+					switch (screen->getToolbarPlacement()) {
+					case Toolbar::TopLeft:
+					case Toolbar::TopCenter:
+					case Toolbar::TopRight:
+						slitModT -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
+						break;
+					}				
+					break;
+				default:
+					slitModB = mSlt->getHeight() + screen->getBevelWidth();
+					switch (screen->getToolbarPlacement()) {
+					case Toolbar::BottomLeft:
+					case Toolbar::BottomCenter:
+					case Toolbar::BottomRight:
+						slitModB -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
+						break;
+					}	
+					break;
+				}	
+				break;
+			}
+		}		
+#endif // SLIT
+	
 		blackbox_attrib.premax_x = frame.x;
 		blackbox_attrib.premax_y = frame.y;
 		blackbox_attrib.premax_w = frame.width;
 		blackbox_attrib.premax_h = frame.height;
 
-		dw = screen->getWidth();
+		dw = screen->getWidth() - slitModL - slitModR;
 		dw -= screen->getBorderWidth2x();
 		dw -= frame.mwm_border_w * 2;
 		dw -= client.base_width;
 
-		dh = screen->getHeight();
+		dh = screen->getHeight() - slitModT - slitModB;
 		dh -= screen->getBorderWidth2x();
 		dh -= frame.mwm_border_w * 2;
 		dh -= ((frame.handle_h + screen->getBorderWidth()) * decorations.handle);
@@ -1857,12 +1907,12 @@ void FluxboxWindow::maximize(unsigned int button) {
 		dh += (frame.handle_h + screen->getBorderWidth());
 		dh += frame.mwm_border_w * 2;
 
-		dx = ((screen->getWidth() - dw) / 2) - screen->getBorderWidth();
+		dx = ((screen->getWidth()+ slitModL - slitModR - dw) / 2) - screen->getBorderWidth();
 
 		if (screen->doFullMax()) {
 			dy = ((screen->getHeight() - dh) / 2) - screen->getBorderWidth();
 		} else {
-			dy = (((screen->getHeight() - (screen->getToolbar()->getExposedHeight()))
+			dy = (((screen->getHeight() + slitModT - slitModB - (screen->getToolbar()->getExposedHeight()))
 			 - dh) / 2) - screen->getBorderWidth2x();
 
 			switch (screen->getToolbarPlacement()) {
