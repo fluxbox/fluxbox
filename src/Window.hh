@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.62 2003/04/26 05:42:36 rathnor Exp $
+// $Id: Window.hh,v 1.63 2003/04/26 14:05:47 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -65,7 +65,7 @@ class XLayer;
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow : public FbTk::TimeoutHandler, public FbTk::EventHandler {
 public:
-    /// decoration bit
+    /// Represents certain "preset" sets of decorations.
     enum Decoration {
         DECOR_NONE=0, ///< no decor at all
         DECOR_NORMAL, ///< normal normal
@@ -204,6 +204,11 @@ public:
     void setDecoration(Decoration decoration);
     void toggleDecoration();
 	
+    /** 
+       This enumeration represents individual decoration 
+       attributes, they can be OR-d together to get a mask.
+       Useful for saving.
+    */
     enum DecorationMask {
         DECORM_TITLEBAR = (1<<0),
         DECORM_HANDLE   = (1<<1),
