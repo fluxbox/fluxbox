@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.148 2003/05/08 01:04:05 fluxgen Exp $
+// $Id: Screen.cc,v 1.149 2003/05/08 01:51:18 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -2447,7 +2447,9 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
     for (; it != it_end; ++it)
         if ((*it)->fbwindow() &&
             (((int)(*it)->fbwindow()->getWorkspaceNumber()) == workspace 
-             || (*it)->fbwindow()->isStuck()))
+             && (!(*it)->fbwindow()->isStuck() || (*it)->fbwindow()->isFocused())))
+            // only give focus to a stuck window if it is currently focused
+            // otherwise they tend to override normal workspace focus
             return *it;
     return 0;
 }
