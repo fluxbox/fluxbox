@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.31 2003/06/18 13:49:43 fluxgen Exp $
+/// $Id: Slit.hh,v 1.32 2003/06/20 01:26:16 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -59,13 +59,14 @@ public:
     */
     enum Placement { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
            TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
+
     Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
     inline bool isHidden() const { return m_hidden; }
-    inline bool doAutoHide() const { return m_do_auto_hide; }
-    inline Direction direction() const { return m_direction; }
-    inline Placement placement() const { return m_placement; }
+    inline bool doAutoHide() const { return *m_rc_auto_hide; }
+    inline Direction direction() const { return *m_rc_direction; }
+    inline Placement placement() const { return *m_rc_placement; }
     FbTk::Menu &menu() { return m_slitmenu; }
 
     inline const FbTk::FbWindow &window() const { return frame.window; }
@@ -122,8 +123,6 @@ private:
     void updateStrut();
 
     bool m_hidden, m_do_auto_hide;
-    Direction m_direction;
-    Placement m_placement;
 
     BScreen &m_screen;
     FbTk::Timer m_timer;
@@ -151,6 +150,12 @@ private:
     std::auto_ptr<FbTk::Transparent> m_transp;
     static unsigned int s_eventmask;
     Strut *m_strut;
+
+    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over;
+    FbTk::Resource<Slit::Placement> m_rc_placement;
+    FbTk::Resource<Slit::Direction> m_rc_direction;
+    FbTk::Resource<int> m_rc_alpha, m_rc_on_head;
+    FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
 };
 
 
