@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.3 2002/02/17 18:57:47 fluxgen Exp $
+// $Id: Resource.hh,v 1.4 2002/04/04 14:26:47 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -36,8 +36,8 @@ public:
 	virtual void setDefaultValue()=0;
 	
 	virtual std::string getString()=0;
-	inline std::string& getAltName() { return m_altname; }
-	inline std::string& getName() { return m_name; }
+	inline const std::string& getAltName() const { return m_altname; }
+	inline const std::string& getName() const { return m_name; }
 	
 protected:	
 	Resource_base(const std::string &name, const std::string &altname):
