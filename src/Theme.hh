@@ -46,81 +46,81 @@
 #define _THEME_HH_
 
 
+#ifndef _IMAGE_HH_
 #include "Image.hh"
+#endif //_IMAGE_HH_
+
+#ifndef _MISC_HH_
+#include "misc.hh"
+#endif //_MISC_HH_
+
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-#include "Rotated.hh" // TODO: should bake this into misc.hh some day
 
-typedef struct FFont 
-{
-	enum FontJustify {Left=0, Right, Center};
-	
-	XFontSet set;
-	XFontSetExtents *set_extents;
-	XFontStruct *fontstruct;
-	FontJustify justify;
-} FFont;
-
-typedef struct LabelStyle
-{
-	BTexture l_focus, l_unfocus,
-		t_focus, t_unfocus;	
-	GC l_text_focus_gc, l_text_unfocus_gc;
-	FFont font;
-	BColor l_text_focus, l_text_unfocus;
-} LabelStyle;
-
-typedef struct WindowStyle:public LabelStyle {
-	BColor f_focus, f_unfocus, b_pic_focus,
-		b_pic_unfocus;
-	BTexture h_focus, h_unfocus,
-		b_focus, b_unfocus, b_pressed, g_focus, g_unfocus;
-	GC b_pic_focus_gc, b_pic_unfocus_gc;
-
-	struct t_tab:public LabelStyle {
-		BColor border_color;
-		unsigned int border_width;
-		unsigned int border_width_2x;
-		XRotFontStruct *rot_font;
-	} tab;
-	
-} WindowStyle;
-
-typedef struct ToolbarStyle {
-	BColor l_text, w_text, c_text, b_pic;
-	BTexture toolbar, label, window, button, pressed, clock;
-	GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
-	FFont font;
-
-} ToolbarStyle;
-
-typedef struct MenuStyle {
-	BColor t_text, f_text, h_text, d_text;
-	BTexture title, frame, hilite;
-	GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-	FFont titlefont, framefont;
-	int bullet, bullet_pos;
-} MenuStyle;
-
-//singleton class
 class Theme
 {
 public:	
+		
 	Theme(Display *display, Colormap colormap, int screennum, BImageControl *ic, const char *filename);
 	~Theme();	
+	
+	
+	typedef struct MenuStyle {
+		BColor t_text, f_text, h_text, d_text;
+		BTexture title, frame, hilite;
+		GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
+		Misc::Font titlefont, framefont;
+		int bullet, bullet_pos;
+	} MenuStyle;
+	
+	typedef struct LabelStyle
+	{
+		BTexture l_focus, l_unfocus,
+			t_focus, t_unfocus;	
+		GC l_text_focus_gc, l_text_unfocus_gc;
+		Misc::Font font;
+		BColor l_text_focus, l_text_unfocus;
+	} LabelStyle;
 
+	
+	typedef struct WindowStyle:public LabelStyle {
+		BColor f_focus, f_unfocus, b_pic_focus,
+			b_pic_unfocus;
+		BTexture h_focus, h_unfocus,
+			b_focus, b_unfocus, b_pressed, g_focus, g_unfocus;
+		GC b_pic_focus_gc, b_pic_unfocus_gc;
+
+		struct t_tab:public LabelStyle {
+			BColor border_color;
+			unsigned int border_width;
+			unsigned int border_width_2x;
+			Misc::XRotFontStruct *rot_font;
+		} tab;
+	
+	} WindowStyle;
+
+	
+	typedef struct ToolbarStyle {
+		BColor l_text, w_text, c_text, b_pic;
+		BTexture toolbar, label, window, button, pressed, clock;
+		GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
+		Misc::Font font;
+
+	} ToolbarStyle;
+	
 	void load(const char *filename);
 	void reconfigure();
-	inline WindowStyle *getWindowStyle(void) { return &m_windowstyle; }
-	inline MenuStyle *getMenuStyle(void) { return &m_menustyle; }
-	inline ToolbarStyle *getToolbarStyle(void) { return &m_toolbarstyle; }
-	inline const unsigned int & getBevelWidth(void) const { return m_bevel_width; }
-	inline const unsigned int & getBorderWidth(void) const { return m_border_width; }
-	inline const unsigned int & getHandleWidth(void) const { return m_handle_width; }
-	inline const unsigned int & getFrameWidth(void) const { return m_frame_width; }
+	inline WindowStyle &getWindowStyle(void) { return m_windowstyle; }
+	inline MenuStyle &getMenuStyle(void) { return m_menustyle; }
+	inline ToolbarStyle &getToolbarStyle(void) { return m_toolbarstyle; }
+	inline unsigned int getBevelWidth(void) const { return m_bevel_width; }
+	inline unsigned int getBorderWidth(void) const { return m_border_width; }
+	inline unsigned int getHandleWidth(void) const { return m_handle_width; }
+	inline unsigned int getFrameWidth(void) const { return m_frame_width; }
 	inline const GC &getOpGC(void) const { return m_opgc; }
-	inline const BColor & getBorderColor(void) const { return m_border_color; }
+	inline const BColor &getBorderColor(void) const { return m_border_color; }
+
 private:
 	
 	void loadMenuStyle();
@@ -155,7 +155,8 @@ private:
 	Display *m_display;	 
 	XrmDatabase m_database;
 	Colormap m_colormap;
-	int m_screennum;
+	int m_screennum;	
+
 };
 
 
