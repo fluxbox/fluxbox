@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/28:
+  * Fixed window snaping to screen objects (Henrik)
+    Window.cc
 *04/03/22:
   * Added screen resources to define line style for resize/move (Thanks Mathias Gumz)
     session.screen<num>.overlay.lineWidth: <integer>
