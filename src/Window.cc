@@ -605,7 +605,6 @@ void FluxboxWindow::init() {
 void FluxboxWindow::shape() {
 #ifdef SHAPE
     if (m_shaped) {
-        if (isFullscreen())
         XShapeCombineShape(display,
                            frame().window().window(), ShapeBounding,
                            0, frame().clientArea().y(), // xOff, yOff
