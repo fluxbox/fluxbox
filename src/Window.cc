@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.32 2002/03/18 19:58:06 fluxgen Exp $
+// $Id: Window.cc,v 1.33 2002/03/19 00:15:58 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -69,7 +69,7 @@ moving(false), resizing(false), shaded(false), maximized(false),
 visible(false), iconic(false), transient(false), focused(false),
 stuck(false), modal(false), send_focus_message(false), managed(false),
 screen(0),
-timer(0),
+timer(this),
 display(0),
 lastButtonPressTime(0),
 windowmenu(0),
@@ -185,9 +185,9 @@ tab(0)
 	client.height = wattrib.height;
 	client.old_bw = wattrib.border_width;
 
-	timer = new BTimer(fluxbox, this);
-	timer->setTimeout(fluxbox->getAutoRaiseDelay());
-	timer->fireOnce(true);
+
+	timer.setTimeout(fluxbox->getAutoRaiseDelay());
+	timer.fireOnce(true);
 
 	getBlackboxHints();
 	if (! client.blackbox_hint)
@@ -403,12 +403,6 @@ FluxboxWindow::~FluxboxWindow(void) {
 		screen->getWorkspace(workspace_number)->removeWindow(this);
 	else if (iconic)
 		screen->removeIcon(this);
-	
-	if (timer) {
-		if (timer->isTiming()) timer->stop();
-		delete timer;
-		timer = 0;
-	}
 
 	if (windowmenu)
 		delete windowmenu;
@@ -1947,7 +1941,7 @@ bool FluxboxWindow::setInputFocus(void) {
 
 			if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus())
 					&& screen->doAutoRaise())
-				timer->start();
+				timer.start();
 
 			ret = true;
 		}
@@ -2439,8 +2433,8 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 	}
 
 	if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus()) &&
-			screen->doAutoRaise() && timer!=0 )
-		timer->stop();
+			screen->doAutoRaise())
+		timer.stop();
 }
 
 

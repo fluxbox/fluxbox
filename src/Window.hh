@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.12 2002/03/18 19:58:06 fluxgen Exp $
+// $Id: Window.hh,v 1.13 2002/03/19 00:15:58 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -223,7 +223,7 @@ private:
 	bool moving, resizing, shaded, maximized, visible, iconic, transient,
 		focused, stuck, modal, send_focus_message, managed;
 	BScreen *screen;
-	BTimer *timer;
+	BTimer timer;
 	Display *display;
 	BaseDisplay::BlackboxAttributes blackbox_attrib;
 
