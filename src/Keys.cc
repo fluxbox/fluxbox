@@ -19,13 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.31 2003/06/15 11:38:35 rathnor Exp $
+//$Id: Keys.cc,v 1.32 2003/06/30 14:57:14 fluxgen Exp $
 
 
 #include "Keys.hh"
 
 #include "StringUtil.hh"
 #include "App.hh"
+#include "Command.hh"
+#include "CommandParser.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -68,80 +70,6 @@
 #include <memory>
 
 using namespace std;
-
-Keys::t_actionstr Keys::m_actionlist[] = {
-    {"Minimize", ICONIFY},
-    {"Raise", RAISE},
-    {"Lower", LOWER},
-    {"RaiseLayer", RAISELAYER},
-    {"LowerLayer", LOWERLAYER},
-    {"TopLayer", TOPLAYER},
-    {"BottomLayer", BOTTOMLAYER},
-    {"AlwaysOnTop", TOPLAYER},
-    {"AlwaysOnBottom", BOTTOMLAYER},
-    {"Close", CLOSE},
-    {"AbortKeychain", ABORTKEYCHAIN},
-    {"Workspace", WORKSPACE},
-    {"Workspace1", WORKSPACE1},
-    {"Workspace2", WORKSPACE2},
-    {"Workspace3", WORKSPACE3},
-    {"Workspace4", WORKSPACE4},
-    {"Workspace5", WORKSPACE5},
-    {"Workspace6", WORKSPACE6},
-    {"Workspace7", WORKSPACE7},
-    {"Workspace8", WORKSPACE8},
-    {"Workspace9", WORKSPACE9},
-    {"Workspace10", WORKSPACE10},
-    {"Workspace11", WORKSPACE11},
-    {"Workspace12",  WORKSPACE12},
-    {"SendToWorkspace", SENDTOWORKSPACE},
-    {"NextWorkspace", NEXTWORKSPACE},
-    {"PrevWorkspace", PREVWORKSPACE},
-    {"LeftWorkspace", LEFTWORKSPACE},
-    {"RightWorkspace", RIGHTWORKSPACE},
-    {"KillWindow", KILLWINDOW},
-    {"NextWindow", NEXTWINDOW},
-    {"PrevWindow", PREVWINDOW},
-    {"NextGroup", NEXTGROUP},
-    {"PrevGroup", PREVGROUP},
-    {"NextTab", NEXTTAB},
-    {"PrevTab", PREVTAB},
-    {"FirstTab", FIRSTTAB},
-    {"LastTab", LASTTAB},
-    {"MoveTabPrev", MOVETABPREV},
-    {"MoveTabNext", MOVETABNEXT},
-    {"AttachLast", ATTACHLAST},
-    {"DetachClient", DETACHCLIENT},
-    {"FocusUp", FOCUSUP},
-    {"FocusDown", FOCUSDOWN},
-    {"FocusLeft", FOCUSLEFT},
-    {"FocusRight", FOCUSRIGHT},
-    {"ShadeWindow", SHADE},
-    {"MaximizeWindow", MAXIMIZE},
-    {"StickWindow", STICK},
-    {"ExecCommand", EXECUTE},
-    {"MaximizeVertical", VERTMAX},
-    {"MaximizeHorizontal", HORIZMAX},
-    {"NudgeRight", NUDGERIGHT},
-    {"NudgeLeft", NUDGELEFT},
-    {"NudgeUp", NUDGEUP},
-    {"NudgeDown", NUDGEDOWN},
-    {"BigNudgeRight", BIGNUDGERIGHT},
-    {"BigNudgeLeft", BIGNUDGELEFT},
-    {"BigNudgeUp", BIGNUDGEUP},
-    {"BigNudgeDown", BIGNUDGEDOWN},
-    {"HorizontalIncrement", HORIZINC},
-    {"VerticalIncrement", VERTINC},
-    {"HorizontalDecrement", HORIZDEC},
-    {"VerticalDecrement", VERTDEC},
-    {"ToggleDecor", TOGGLEDECOR},	
-    {"ToggleTab", TOGGLETAB}, 
-    {"RootMenu", ROOTMENU},
-    {"Reconfigure", RECONFIGURE},
-    {"Restart", RESTART},
-    {"Quit", QUIT},
-    {0, LASTKEYGRAB}
-};	
 
 Keys::Keys(const char *filename):
     m_capslock_mod(0),
@@ -232,7 +160,7 @@ bool Keys::load(const char *filename) {
 		
         for (unsigned int argc=0; argc<val.size(); argc++) {
 
-            if (val[argc][0] != ':') {
+            if (val[argc][0] != ':') { // parse key(s)
                 keyarg++;
                 if (keyarg==1) //first arg is modifier
                     mod = getModifier(val[argc].c_str());
@@ -260,127 +188,28 @@ bool Keys::load(const char *filename) {
                     }
                 }			
 
-            } else {
-				
-                unsigned int i=0;
+            } else { // parse command line
 
-                for (i=0; i< LASTKEYGRAB; i++) {
-                    // +1 on the val[argc] because we dont want to compare the ':'
-                    if (strcasecmp(m_actionlist[i].string, val[argc].c_str()+1) == 0) {
-                        break;	
-                    }
-                }
+                // +1 to remove the first ':'
+                last_key->m_command = CommandParser::instance().parseLine(val[argc].c_str() + 1);
 
-                if (i < LASTKEYGRAB ) {
-                    if (!current_key) {
-                        cerr<<"Error on line: "<<line<<endl;
-                        cerr<<linebuffer<<endl;
-                        delete current_key;
-                        current_key = 0;
-                        last_key = 0;
-                        break; //break out and read next line
-                    }
-
-                    //special case for grabAbortKeychain
-                    if (m_actionlist[i].action == ABORTKEYCHAIN) {
-                        if (last_key!=current_key)
-                            cerr<<"Keys: "<<m_actionlist[i].string<<" cant be in chained mode"<<endl;
-                        else if (m_abortkey)
-                            cerr<<"Keys: "<<m_actionlist[i].string<<" is already bound."<<endl;
-                        else
-                            m_abortkey = new t_key(current_key->key, current_key->mod, ABORTKEYCHAIN);
-
-                        delete current_key;
-                        current_key = 0;
-                        last_key = 0;
-                        break; //break out and read next line
-                    }
-					
-                    last_key->action = m_actionlist[i].action;
-
-                    switch(last_key->action) {
-                    case Keys::RESTART:
-                    case Keys::EXECUTE: {
-                        // skip past the command
-                        const char *str = 
-                            FbTk::StringUtil::strcasestr(
-                                linebuffer.c_str(),
-                                getActionStr(last_key->action))
-                            + strlen(getActionStr(last_key->action));
-
-                        int i=0;
-                        // skip past any trailing whitespace
-                        while (str[i] == ' ' || str[i] == '\t') 
-                            ++i;
-
-                        last_key->execcommand = str + i;
-                    } break;
-                    case WORKSPACE:
-                    case SENDTOWORKSPACE:
-                        if (argc + 1 < val.size())
-                            last_key->param = atoi( val[argc+1].c_str());
-                        else
-                            last_key->param = 0;
-                        break;
-                    case NEXTGROUP:
-                    case PREVGROUP:
-                        if (argc + 1 < val.size())
-                            last_key->param = atoi( val[argc+1].c_str()) ^ 1;
-                        else
-                            last_key->param = 1;
-                        break;
-                    case NEXTWINDOW:
-                    case PREVWINDOW:
-                        if (argc + 1 < val.size())
-                            last_key->param = atoi( val[argc+1].c_str());
-                        else
-                            last_key->param = 0;
-                        break;
-                    case LEFTWORKSPACE:
-                    case RIGHTWORKSPACE:
-                    case NEXTWORKSPACE:
-                    case PREVWORKSPACE:
-                        if (argc + 1 < val.size())
-                            last_key->param = atoi( val[argc+1].c_str());
-                        else
-                            last_key->param = 1;
-                        break;
-                    case NUDGERIGHT:
-                    case NUDGELEFT:
-                    case NUDGEUP:
-                    case NUDGEDOWN:
-                        if (argc + 1 < val.size())
-                            last_key->param = atoi( val[argc+1].c_str());
-                        else
-                            last_key->param = 2;
-                        break;
-                    default:
-                        break;
-                    }
-
-                    //add the keychain to list										
+                if (*last_key->m_command == 0) {
+                    cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
+                    cerr<<"> "<<linebuffer<<endl;
+                } else {
+                     // Add the keychain to list
                     if (!mergeTree(current_key))
                         cerr<<"Keys: Failed to merge keytree!"<<endl;
-				
-                    //clear keypointers now that we have them in m_keylist					
-                    delete current_key;
-                    current_key = 0;
-                    last_key = 0;
-					
-                }	else { //destroy list if no action is found
-#ifdef DEBUG
-                    cerr<<"Didnt find action="<<val[argc]<<endl;
-#endif // DEBUG			
-                    //destroy current_key ... this will also destroy the last_key										
-                    delete current_key;
-                    current_key = 0;
-                    last_key = 0;
                 }
-				
-                break; //dont process this linebuffer more
+                
+                delete current_key;
+                current_key = 0;
+                last_key = 0;
+
+                break; // dont process this linebuffer more
             }  // end if
         } // end for
-    } // end while
+    } // end while eof
 
     return true;
 }
@@ -484,15 +313,10 @@ unsigned int Keys::getKey(const char *keystr) {
 /**
  @return the KeyAction of the XKeyEvent
 */
-Keys::KeyAction Keys::getAction(XKeyEvent *ke) {	
+void Keys::doAction(XKeyEvent &ke) {
     static t_key *next_key = 0;
-    //remove numlock, capslock and scrolllock
-    ke->state = cleanMods(ke->state);
-	
-    if (m_abortkey && *m_abortkey==ke) { //abort current keychain
-        next_key = 0;		
-        return m_abortkey->action;
-    }
+    // Remove numlock, capslock and scrolllock
+    ke.state = cleanMods(ke.state);
 	
     if (!next_key) {
 	
@@ -502,11 +326,8 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
                     next_key = m_keylist[i];
                     break; //end for-loop 
                 } else {
-                    if (m_keylist[i]->action == Keys::EXECUTE ||
-                        m_keylist[i]->action == Keys::RESTART)
-                        m_execcmdstring = m_keylist[i]->execcommand; //update execcmdstring if action is grabExecute
-                    m_param = m_keylist[i]->param;
-                    return m_keylist[i]->action;
+                    if (*m_keylist[i]->m_command != 0)
+                        m_keylist[i]->m_command->execute();
                 }
             }
         }
@@ -518,23 +339,17 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
                 next_key = temp_key;								
             } else {
                 next_key = 0;
-                if (temp_key->action == Keys::EXECUTE ||
-                    temp_key->action == Keys::RESTART)
-                    m_execcmdstring = temp_key->execcommand; //update execcmdstring if action is grabExecute
-                return temp_key->action;
+                if (*temp_key->m_command != 0)
+                    temp_key->m_command->execute();
             }
         }  else  {
             temp_key = next_key;		
             next_key = 0;
-            if (temp_key->action == Keys::EXECUTE ||
-                temp_key->action == Keys::RESTART)
-                m_execcmdstring = temp_key->execcommand; //update execcmdstring if action is grabExecute
-            return temp_key->action;				
-        }
-		
+            if (*temp_key->m_command != 0)
+                temp_key->m_command->execute();
+                
+        }		
     }
-	
-    return Keys::LASTKEYGRAB;
 }
 
 /**
@@ -547,51 +362,6 @@ bool Keys::reconfigure(const char *filename) {
 }
 
 /**
- Tries to find the action for the key
- @return actionstring on success else 0 on failure
-*/
-const char *Keys::getActionStr(KeyAction action) {
-    for (unsigned int i=0; m_actionlist[i].string!=0 ; i++) {
-        if (m_actionlist[i].action == action) 
-            return m_actionlist[i].string;
-    }
-	
-    return 0;
-}
-
-#ifdef DEBUG
-/*
- Debug function that show the
- keytree. Starts with the rootlist
-*/
-void Keys::showTree() {
-    for (unsigned int i=0; i<m_keylist.size(); i++) {
-        if (m_keylist[i]) {
-            cerr<<i<<" ";
-            showKeyTree(m_keylist[i]);	
-        } else
-            cerr<<"Null @ "<<i<<endl;
-    }
-}
-
-/**
- Debug function to show t_key tree
-*/
-void Keys::showKeyTree(t_key *key, unsigned int w) {	
-    for (unsigned int i=0; i<w+1; i++)
-        cerr<<"-";	
-    if (!key->keylist.empty()) {
-        for (unsigned int i=0; i<key->keylist.size(); i++) {
-            cerr<<"( "<<(int)key->key<<" "<<(int)key->mod<<" )";
-            showKeyTree(key->keylist[i], 4);		
-            cerr<<endl;
-        }
-    } else
-        cerr<<"( "<<(int)key->key<<" "<<(int)key->mod<<" ) {"<<getActionStr(key->action)<<"}"<<endl;
-}
-#endif //DEBUG
-
-/**
  Merges two chains and binds new keys
  @return true on success else false.
 */
@@ -601,7 +371,7 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
         for (; baselist_i<m_keylist.size(); baselist_i++) {
             if (m_keylist[baselist_i]->mod == newtree->mod && 
                 m_keylist[baselist_i]->key == newtree->key) {
-                if (newtree->keylist.size() && m_keylist[baselist_i]->action == LASTKEYGRAB) {
+                if (newtree->keylist.size() && *m_keylist[baselist_i]->m_command == 0) {
                     //assumes the newtree only have one branch
                     return mergeTree(newtree->keylist[0], m_keylist[baselist_i]);
                 } else
@@ -642,19 +412,16 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
     return false;
 }
 
-Keys::t_key::t_key(unsigned int key_, unsigned int mod_, KeyAction action_) {
-    action = action_;
+Keys::t_key::t_key(unsigned int key_, unsigned int mod_, FbTk::RefCount<FbTk::Command> command) {
     key = key_;
     mod = mod_;	
-    param = 0;
+    m_command = command;
 }
 
 Keys::t_key::t_key(t_key *k) {
-    action = k->action;
     key = k->key;
     mod = k->mod;
-    execcommand = k->execcommand;
-    param = k-> param;
+    m_command = k->m_command;
 }
 
 Keys::t_key::~t_key() {	
@@ -665,6 +432,7 @@ Keys::t_key::~t_key() {
             keylist.pop_back();
         }
     }
+
 }
 
 /**

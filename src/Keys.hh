@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.25 2003/06/15 11:38:35 rathnor Exp $
+// $Id: Keys.hh,v 1.26 2003/06/30 14:57:14 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -29,47 +29,14 @@
 #include <X11/Xlib.h>
 
 #include "NotCopyable.hh"
+#include "RefCount.hh"
+namespace FbTk {
+class Command;
+};
 
 class Keys:private FbTk::NotCopyable  {
 public:
-    /**
-       Key actions
-    */
-    enum KeyAction{
-        ICONIFY=0,
-        RAISE, LOWER, 
-        RAISELAYER, LOWERLAYER, TOPLAYER, BOTTOMLAYER,
-        ALWAYSONTOP, ALWAYSONBOTTOM, // aliases for TOPLAYER, etc
-        CLOSE,
-        ABORTKEYCHAIN,
-        WORKSPACE,
-        WORKSPACE1, WORKSPACE2,  WORKSPACE3,  WORKSPACE4,	
-        WORKSPACE5, WORKSPACE6,	 WORKSPACE7,  WORKSPACE8,	
-        WORKSPACE9, WORKSPACE10, WORKSPACE11, WORKSPACE12,	
-        SENDTOWORKSPACE, // Send window to a workspace
-        NEXTWORKSPACE, PREVWORKSPACE,
-        LEFTWORKSPACE, RIGHTWORKSPACE,
-        KILLWINDOW, NEXTWINDOW,	PREVWINDOW,
-        NEXTGROUP, PREVGROUP,
-        NEXTTAB, PREVTAB, FIRSTTAB, LASTTAB, MOVETABPREV, MOVETABNEXT,
-        ATTACHLAST, DETACHCLIENT,
-        FOCUSUP, FOCUSDOWN, FOCUSLEFT, FOCUSRIGHT,
-        SHADE, MAXIMIZE, 
-        STICK,       // Make Sticky
-        EXECUTE,	// Run command
-        VERTMAX,    // Maximize vertical
-        HORIZMAX,	// Maximize horizontal
-        NUDGERIGHT, NUDGELEFT,NUDGEUP, NUDGEDOWN,	
-        BIGNUDGERIGHT, BIGNUDGELEFT, BIGNUDGEUP, BIGNUDGEDOWN,
-        HORIZINC, VERTINC, HORIZDEC, VERTDEC,
-        TOGGLEDECOR,// toggle visibility of decor (title, frame, handles)
-        TOGGLETAB,  // toggle visibilty of tab
-        ROOTMENU,   // pop up rootmenu
-        RECONFIGURE, // reload configuration
-        RESTART,   // restart fluxbox
-        QUIT,  // Die, quit, logout, shutdown
-        LASTKEYGRAB //mark end of keygrabbs
-    };
+
     /**
        Constructor
        @param display display connection
@@ -96,29 +63,14 @@ public:
     */
     bool load(const char *filename=0);
     /**
-       Determine action from XKeyEvent
-       @return KeyAction value
+       do action from XKeyEvent
     */
-    KeyAction getAction(XKeyEvent *ke);
+    void doAction(XKeyEvent &ke);
     /**
        Reload configuration from filename
        @return true on success, else false
     */
     bool reconfigure(const char *filename);
-    /**
-       Get string value of the KeyAction enum value
-       @return string of action
-    */
-    const char *getActionStr(KeyAction action);
-    /**
-       Get command to execute (key action EXECUTE/RESTART)
-       @return string to command
-    */
-    const std::string &getExecCommand() { return m_execcmdstring; }
-    /**
-       @return number of parameters
-    */
-    int getParam() const { return m_param; }
 
 private:
     void deleteTree();
@@ -144,7 +96,8 @@ private:
 	
     class t_key {	
     public:
-        t_key(unsigned int key, unsigned int mod, KeyAction action_ = Keys::LASTKEYGRAB);
+        t_key(unsigned int key, unsigned int mod, 
+              FbTk::RefCount<FbTk::Command> command = FbTk::RefCount<FbTk::Command>(0));
         t_key(t_key *k);
         ~t_key();
 		
@@ -155,25 +108,24 @@ private:
             }			
             return 0;
         }
-        inline t_key *find(XKeyEvent *ke) {
+        inline t_key *find(XKeyEvent &ke) {
             for (unsigned int i=0; i<keylist.size(); i++) {
-                if (keylist[i]->key == ke->keycode && keylist[i]->mod == ke->state)
+                if (keylist[i]->key == ke.keycode && keylist[i]->mod == ke.state)
                     return keylist[i];				
             }			
             return 0;
         }
 			
-        inline bool operator == (XKeyEvent *ke) {
-            return (mod == ke->state && key == ke->keycode);
+        inline bool operator == (XKeyEvent &ke) const {
+            return (mod == ke.state && key == ke.keycode);
         }
 		
-        KeyAction action;
+        FbTk::RefCount<FbTk::Command> m_command;
         unsigned int key;
         unsigned int mod;
         std::vector<t_key *> keylist;
-        std::string execcommand;
-        int param;              // parameter to comands
     };
+
     /**
        merge two linked list
        @return true on success, else false
@@ -187,15 +139,8 @@ private:
     void showKeyTree(t_key *key, unsigned int w=0);
 #endif //DEBUG
 
-    struct t_actionstr{
-        const char *string;
-        KeyAction action;
-    };
-
     int m_capslock_mod, m_numlock_mod, m_scrolllock_mod; ///< modifiers
 		
-    static t_actionstr m_actionlist[];
-	
     std::vector<t_key *> m_keylist;	
     t_key *m_abortkey;           ///< abortkey for keygrabbing chain
     std::string m_execcmdstring; ///< copy of the execcommandstring
