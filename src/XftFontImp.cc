@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.1 2002/10/14 18:14:20 fluxgen Exp $
+//$Id: XftFontImp.cc,v 1.2 2002/10/16 23:13:15 fluxgen Exp $
 
 #include "XftFontImp.hh"
 #include "BaseDisplay.hh"
 
-XftFontImp::XftFontImp(const char *name):m_xftfont(0) {
+XftFontImp::XftFontImp(const char *name, bool utf8):m_xftfont(0),
+m_utf8mode(utf8) {
 	if (name != 0)
 		load(name);
 }
@@ -83,30 +84,51 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
 		&rendcol, &xftcolor);
 
 	// draw string
-	XftDrawString8 (draw,
-		&xftcolor,
-		m_xftfont,
-		x, y,
-		(XftChar8 *)(text), len);
+#ifdef X_HAVE_UTF8_STRING
+	if (m_utf8mode) {
+		XftDrawStringUtf8(draw,
+			&xftcolor,
+			m_xftfont,
+			x, y,
+			(XftChar8 *)(text), len);
+	} else 
+#endif // X_HAVE_UTF8_STRING
+	{
+		XftDrawString8(draw,
+			&xftcolor,
+			m_xftfont,
+			x, y,
+			(XftChar8 *)(text), len);
+	}
 
 	XftColorFree(disp, DefaultVisual(disp, screen), 
 		DefaultColormap(disp, screen), &xftcolor);
 	XftDrawDestroy(draw);
 }
 
-unsigned int XftFontImp::textWidth(const char *text, unsigned int len) const {
+unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) const {
 	if (m_xftfont == 0)
 		return 0;
 	XGlyphInfo ginfo;
-	XftTextExtents8(BaseDisplay::getXDisplay(),
-		m_xftfont,
-		(XftChar8 *)text, len,
-		&ginfo);
+#ifdef X_HAVE_UTF8_STRING
+	if (m_utf8mode) {
+		XftTextExtentsUtf8(BaseDisplay::getXDisplay(),
+			m_xftfont,
+			(XftChar8 *)text, len,
+			&ginfo);
+	} else 
+#endif  //X_HAVE_UTF8_STRING
+	{
+		XftTextExtents8(BaseDisplay::getXDisplay(),
+			m_xftfont,
+			(XftChar8 *)text, len,
+			&ginfo);
+	}
 	return ginfo.xOff;
 }
 
 unsigned int XftFontImp::height() const {
 	if (m_xftfont == 0)
 		return 0;
-	return m_xftfont->ascent + m_xftfont->descent;
+	return m_xftfont->height;
 }
