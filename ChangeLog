@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/02:
+  * Fix updating of window on focus change (Simon)
+    FbWinFrame.cc
 *03/09/29:
   * Fix aterm not updating on opaque move (Thanks Mathias Gumz)
     Window.cc
