@@ -170,14 +170,10 @@ Middle clicking on border or titlebar will immediately lower the window.
 Right clicking on border or titlebar pops up the window menu,
 containing these commands:
 .TP
-.B Send To... (not in 0.9.6)
+.B Send To... (in 0.9.7)
 Send window to another workspace.
 When you select the workspace with the middle button, Fluxbox will
 send you along with the application to the selected workspace
-.TP
-.B Send Group To... (not in 0.9.6)
-Sends a window, along with all windows currently grouped with it, to
-another workspace. Follows the same rules as Send To...
 .TP
 .B Shade
 Shade the window (display titlebar only)
