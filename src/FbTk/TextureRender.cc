@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.13 2004/10/06 19:19:43 akir Exp $
+// $Id: TextureRender.cc,v 1.14 2004/10/21 10:03:43 akir Exp $
 
 #include "TextureRender.hh"
 
@@ -40,6 +40,14 @@
   #include <stdio.h>
 #endif
 using namespace std;
+
+// mipspro has no new(nothrow)
+#if defined sgi && ! defined GCC
+#define FB_new_nothrow new
+#else
+#warning yeah, thats the way
+#define FB_new_nothrow new(std::nothrow)
+#endif
 
 namespace FbTk {
 
@@ -98,28 +106,34 @@ Pixmap TextureRender::render(const FbTk::Texture &texture) {
 }
 
 void TextureRender::allocateColorTables() {
-    red = new(nothrow) unsigned char[width * height];
 
     _FB_USES_NLS;
+
+    const size_t size = width * height;
+    red = FB_new_nothrow unsigned char[size];
+
     if (red == 0) {
         char sbuf[128];
-        sprintf(sbuf, "%d", width*height);
-        throw string("TextureRender::TextureRender(): " + string(_FBTKTEXT(Error, OutOfMemoryRed, "Out of memory while allocating red buffer.", "")) + string(sbuf));
+        sprintf(sbuf, "%d", size);
+        throw std::string("TextureRender::TextureRender(): " + 
+              std::string(_FBTKTEXT(Error, OutOfMemoryRed, "Out of memory while allocating red buffer.", "")) + string(sbuf));
     }
 
 
-    green = new(nothrow) unsigned char[width * height];
+    green = FB_new_nothrow unsigned char[size];
     if (green == 0) {
         char sbuf[128];
-        sprintf(sbuf, "%d", width*height);
-        throw string("TextureRender::TextureRender(): " +string(_FBTKTEXT(Error, OutOfMemoryGreen, "Out of memory while allocating green buffer.", ""))+ string(sbuf));
+        sprintf(sbuf, "%d", size);
+        throw std::string("TextureRender::TextureRender(): " + 
+              std::string(_FBTKTEXT(Error, OutOfMemoryGreen, "Out of memory while allocating green buffer.", ""))+ string(sbuf));
     }
 
-    blue = new(nothrow) unsigned char[width * height];
+    blue = FB_new_nothrow unsigned char[size];
     if (blue == 0) {
         char sbuf[128];
-        sprintf(sbuf, "%d", width*height);
-        throw string("TextureRender::TextureRender(): " +string(_FBTKTEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
+        sprintf(sbuf, "%d", size);
+        throw std::string("TextureRender::TextureRender(): " +
+              std::string(_FBTKTEXT(Error, OutOfMemoryBlue, "Out of memory while allocating blue buffer.", ""))+ string(sbuf));
     }
 
 
