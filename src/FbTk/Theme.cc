@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.23 2003/12/29 11:04:09 fluxgen Exp $
+// $Id: Theme.cc,v 1.24 2004/01/02 22:55:35 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -51,13 +51,18 @@ ThemeManager &ThemeManager::instance() {
 }
 
 ThemeManager::ThemeManager():
-    m_max_screens(ScreenCount(FbTk::App::instance()->display())),
+    // max_screens: we initialize this later so we can set m_verbose 
+    // without having a display connection
+    m_max_screens(-1), 
     m_verbose(false),
     m_themelocation("") {
 
 }
 
 bool ThemeManager::registerTheme(Theme &tm) {
+    if (m_max_screens < 0)
+        m_max_screens = ScreenCount(FbTk::App::instance()->display());
+
     // valid screen num?
     if (m_max_screens < tm.screenNum() || tm.screenNum() < 0)
         return false;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.14 2003/12/29 11:04:09 fluxgen Exp $
+// $Id: Theme.hh,v 1.15 2004/01/02 22:55:15 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -147,7 +147,7 @@ private:
     /// map each theme manager to a screen
     typedef std::list<FbTk::Theme *> ThemeList;
     ThemeList m_themelist;
-    const int m_max_screens;
+    int m_max_screens;
     XrmDatabaseHelper m_database;
     bool m_verbose;
 
