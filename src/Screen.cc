@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.196 2003/06/27 15:05:19 rathnor Exp $
+// $Id: Screen.cc,v 1.197 2003/06/30 15:31:54 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -55,6 +55,7 @@
 #include "FbWindow.hh"
 #include "Strut.hh"
 #include "SlitTheme.hh"
+#include "CommandParser.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1926,7 +1927,14 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                         cerr<<"Row: "<<row<<endl;
                     } else
                         menu.insert(str_label.c_str(), workspacemenu.get());
-                } // end of work
+                } // end of workspaces
+                else { // ok, if we didn't find any special menu item we try with command parser
+                    // we need to attach command with arguments so command parser can parse it
+                    string line = str_key + " " + str_cmd;
+                    FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
+                    if (*command != 0)
+                        menu.insert(str_label.c_str(), command);
+                }
             }
         }
     }
