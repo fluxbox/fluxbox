@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/29:
+   * Added icon menu to workspace menu (Henrik)
+     Screen.cc/hh, IconMenuItem.hh, 
    * Change:    (Simon)
      - Fluxbox::window search
      - Fluxbox::m_focused_window
