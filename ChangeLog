@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *04/01/02:
+  * Fixed bug in ThemeItem<int>::setFromString   (Henrik)
+    It didn't check if sscanf returned error
+    ThemeItems.hh
   * Fixed image cache bug (Henrik)
     ImageControl.hh
   * Fixed active/unfocus fallback bug (Henrik)
