@@ -1,5 +1,5 @@
 // FbWindow.cc for FbTk - fluxbox toolkit
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.12 2003/04/29 08:51:59 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.13 2003/04/29 09:00:13 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
