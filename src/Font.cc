@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.8 2002/08/20 02:22:29 fluxgen Exp $
+//$Id: Font.cc,v 1.9 2002/08/20 15:19:25 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -33,11 +33,16 @@
 #define _GNU_SOURCE
 #endif //_GNU_SOURCE
 
+#ifndef __USE_GNU
+#define __USE_GNU
+#endif //__USE_GNU
+
 #include <cstdarg>
 #include <iostream> 
 #include <cassert>
 #include <string>
 #include <cstdio>
+#include <string.h>
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
