@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.12 2002/01/21 02:12:11 fluxgen Exp $
+// $Id: Screen.hh,v 1.13 2002/01/27 12:45:32 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -82,6 +82,8 @@
 
 #include <stdio.h>
 #include <string>
+#include <fstream>
+
 
 class BScreen : public ScreenInfo {
 public:
@@ -314,7 +316,7 @@ private:
 
 
 protected:
-	Bool parseMenuFile(FILE *, Rootmenu *);
+	Bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
 
 	bool readDatabaseTexture(char *, char *, BTexture *, unsigned long);
 	bool readDatabaseColor(char *, char *, BColor *, unsigned long);
