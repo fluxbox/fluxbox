@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/02/28:
+  * Improved rendering speed when changing workspace or creating new window (Henrik)
+    FbWinFrame.cc
+  * Fixed bug in StringUtil::removeTrailingWhitespace (Thanks Mathias Gumz)
+    StringUtil.cc
   * Fixed infinite loop in fbrun (Thanks Mathias Gumz)
     FbRun.cc
   * Added improved checking for compiler and compiler version (Henrik)
