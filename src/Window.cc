@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.27 2002/02/16 02:14:54 pekdon Exp $
+// $Id: Window.cc,v 1.28 2002/02/16 11:25:41 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -171,7 +171,6 @@ tab(0)
 
 	if (!screen)
 		return;
-
 
 	image_ctrl = screen->getImageControl();
 
@@ -331,29 +330,7 @@ tab(0)
 	
 	associateClientWindow();
 
-
-	XGrabButton(display, Button1, AnyModifier, 
-		frame.plate, True, ButtonPressMask,
-		GrabModeSync, GrabModeSync, None, None);		
-	XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
-		
-
-	XGrabButton(display, Button1, Mod1Mask, frame.window, True,
-		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-		GrabModeAsync, None, fluxbox->getMoveCursor());
-
-	//----grab with "all" modifiers
-	grabButton(display, Button1, frame.window, fluxbox->getMoveCursor());
-	
-	XGrabButton(display, Button2, Mod1Mask, frame.window, True,
-		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);	
-		
-	XGrabButton(display, Button3, Mod1Mask, frame.window, True,
-		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-		GrabModeAsync, None, fluxbox->getLowerRightAngleCursor());
-	
-	//---grab with "all" modifiers
-	grabButton(display, Button3, frame.window, fluxbox->getLowerRightAngleCursor());
+	grabButtons();
 				
 	positionWindows();
 
@@ -406,8 +383,11 @@ tab(0)
 
 
 FluxboxWindow::~FluxboxWindow(void) {
+	if (screen==0) //the window wasn't created 
+		return;
+
 	#ifdef GNOME
-	XDeleteProperty (display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom());
+	XDeleteProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom());	
 	#endif
 
 	Fluxbox *fluxbox = Fluxbox::instance();
@@ -850,6 +830,32 @@ void FluxboxWindow::decorateLabel(void) {
 	if (tmp) image_ctrl->removeImage(tmp);
 }
 
+void FluxboxWindow::grabButtons() {
+	Fluxbox *fluxbox = Fluxbox::instance();
+
+	XGrabButton(display, Button1, AnyModifier, 
+		frame.plate, True, ButtonPressMask,
+		GrabModeSync, GrabModeSync, None, None);		
+	XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
+		
+
+	XGrabButton(display, Button1, Mod1Mask, frame.window, True,
+		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+		GrabModeAsync, None, fluxbox->getMoveCursor());
+
+	//----grab with "all" modifiers
+	grabButton(display, Button1, frame.window, fluxbox->getMoveCursor());
+	
+	XGrabButton(display, Button2, Mod1Mask, frame.window, True,
+		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);	
+		
+	XGrabButton(display, Button3, Mod1Mask, frame.window, True,
+		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+		GrabModeAsync, None, fluxbox->getLowerRightAngleCursor());
+	
+	//---grab with "all" modifiers
+	grabButton(display, Button3, frame.window, fluxbox->getLowerRightAngleCursor());
+}
 void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventProc released, ButtonDrawProc draw) {
 	Button b;
 	b.win = createChildWindow(frame.title);
@@ -883,13 +889,13 @@ long FluxboxWindow::getGnomeWindowState() {
 	if (isShaded())
 		state |= BaseDisplay::WIN_STATE_SHADED;
 	/*TODO: states:
-		WIN_STATE_MAXIMIZED_VERT  = (1<<2), // window in maximized V state
-		WIN_STATE_MAXIMIZED_HORIZ = (1<<3), // window in maximized H state
-		WIN_STATE_HIDDEN          = (1<<4), // not on taskbar but window visible		
-		WIN_STATE_HID_WORKSPACE   = (1<<6), // not on current desktop
-		WIN_STATE_HID_TRANSIENT   = (1<<7), // owner of transient is hidden
-		WIN_STATE_FIXED_POSITION  = (1<<8), // window is fixed in position even
-		WIN_STATE_ARRANGE_IGNORE  = (1<<9) // ignore for auto arranging
+		WIN_STATE_MAXIMIZED_VERT   // window in maximized V state
+		WIN_STATE_MAXIMIZED_HORIZ // window in maximized H state
+		WIN_STATE_HIDDEN          // not on taskbar but window visible		
+		WIN_STATE_HID_WORKSPACE   // not on current desktop
+		WIN_STATE_HID_TRANSIENT   // owner of transient is hidden
+		WIN_STATE_FIXED_POSITION  // window is fixed in position even
+		WIN_STATE_ARRANGE_IGNORE  // ignore for auto arranging
 	*/
 	return state;
 }
@@ -1417,7 +1423,7 @@ void FluxboxWindow::getWMNormalHints(void) {
 			client.max_aspect_y = sizehint.max_aspect.y;
 		} else
 			client.min_aspect_x = client.min_aspect_y =
-	client.max_aspect_x = client.max_aspect_y = 1;
+				client.max_aspect_x = client.max_aspect_y = 1;
 
 		if (sizehint.flags & PBaseSize) {
 			client.base_width = sizehint.base_width;
@@ -1752,7 +1758,6 @@ void FluxboxWindow::setTab(bool flag) {
 // Unmaps the window and removes it from workspace list
 //--------------------------------------
 void FluxboxWindow::iconify(void) {
-
 
 	if (iconic)
 		return;
@@ -2580,8 +2585,13 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 	}
 }
 
-
-void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
+//------------------- unmapNotify ------------------
+// Unmaps frame window and client window if 
+// event.window == client.window
+// Returns true if *this should die
+// else false
+//-------------------------------------------------
+bool FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 	if (ue->window == client.window) {
 		#ifdef DEBUG
 		fprintf(stderr,
@@ -2599,7 +2609,7 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
 		if (! validateClient())
-			return;
+			return false;
 
 		XChangeSaveSet(display, client.window, SetModeDelete);
 		XSelectInput(display, client.window, NoEventMask);
@@ -2613,17 +2623,17 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 		XEvent dummy;
 		if (! XCheckTypedWindowEvent(display, client.window, ReparentNotify,
 				 &dummy)) {
-#ifdef		DEBUG
+			#ifdef DEBUG
 			fprintf(stderr,
 				I18n::instance()->getMessage(
-#ifdef		NLS
+			#ifdef NLS
 						 WindowSet, WindowUnmapNotifyReparent,
-#else // !NLS
+			#else // !NLS
 						 0, 0,
-#endif // NLS
+			#endif // NLS
 						 "FluxboxWindow::unmapNotifyEvent(): reparent 0x%lx to "
 						 "root.\n"), client.window);
-#endif // DEBUG
+			#endif // DEBUG
 			restoreGravity();
 			XReparentWindow(display, client.window, screen->getRootWindow(),
 				client.x, client.y);
@@ -2633,8 +2643,10 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 
 		fluxbox->ungrab();
 
-		delete this;
+		return true;
 	}
+
+	return false;
 }
 
 //----------- destroyNotifyEvent -------------
