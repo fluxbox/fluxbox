@@ -234,13 +234,13 @@ void Gnome::updateCurrentWorkspace(BScreen &screen) {
 }
 
 void Gnome::updateWorkspaceCount(BScreen &screen) {
-    int numworkspaces = screen.getCount();
+    long numworkspaces = screen.getCount();
     screen.rootWindow().changeProperty(m_gnome_wm_win_workspace_count, XA_CARDINAL, 32, PropModeReplace,
                                        (unsigned char *)&numworkspaces, 1);
 }
 
 void Gnome::updateWorkspace(FluxboxWindow &win) {
-    int val = win.workspaceNumber();
+    long val = win.workspaceNumber();
     if (win.isStuck()) {
         val = -1;
     }
@@ -259,7 +259,7 @@ void Gnome::updateWorkspace(FluxboxWindow &win) {
 
 void Gnome::updateState(FluxboxWindow &win) {
     //translate to gnome win state
-    int state=0;
+    long state=0;
     if (win.isStuck())
         state |= WIN_STATE_STICKY;
     if (win.isIconic())
@@ -279,7 +279,7 @@ void Gnome::updateState(FluxboxWindow &win) {
 void Gnome::updateLayer(FluxboxWindow &win) {
     //TODO - map from flux layers to gnome ones
     // our layers are in the opposite direction to GNOME
-    int layernum = Fluxbox::instance()->getDesktopLayer() - win.layerNum();
+    long layernum = Fluxbox::instance()->getDesktopLayer() - win.layerNum();
 
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();

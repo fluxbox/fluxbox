@@ -288,7 +288,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num) {
     Atom real_type;
     int real_format;
     unsigned long items_read, items_left;
-    unsigned int *data;
+    unsigned long *data;
 
     unsigned int prop = 0;
     static const char* prop_ids[] = {

@@ -143,13 +143,13 @@ public:
 
     typedef struct _blackbox_hints {
         unsigned long flags, attrib, workspace, stack;
-        int decoration;
+        long decoration;
     } BlackboxHints;
 
     typedef struct _blackbox_attributes {
         unsigned long flags, attrib, workspace, stack;
-        int premax_x, premax_y;
-        unsigned int premax_w, premax_h;
+        long premax_x, premax_y;
+        unsigned long premax_w, premax_h;
     } BlackboxAttributes;
 
     typedef std::list<WinClient *> ClientList;
