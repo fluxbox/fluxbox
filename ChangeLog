@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/01:
+  * Fix for #1057499 and #1046472 (Mathias)
+    FbTk/Font.cc
 *04/10/28:
   * Fix for #1052095 (Mathias)
     the windowmenu didnt close, when the current tab changed somehow
