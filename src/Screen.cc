@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.87 2002/11/30 20:15:27 fluxgen Exp $
+// $Id: Screen.cc,v 1.88 2002/11/30 20:55:23 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -292,7 +292,7 @@ resource(rm, screenname, altscreenname)
 
 	image_control->setDither(*resource.image_dither);
 	theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
-			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
+			fluxbox->getStyleFilename(), getRootCommand().c_str());
 
 	theme->reconfigure(*resource.antialias);
 	// special case for tab rotated
