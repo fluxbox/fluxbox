@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.6 2003/03/03 21:51:00 rathnor Exp $
+// $Id: Ewmh.hh,v 1.7 2003/06/18 13:33:15 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -48,6 +48,7 @@ public:
     bool checkClientMessage(const XClientMessageEvent &ce, 
                             BScreen * screen, FluxboxWindow * const win);
 
+    bool propertyNotify(FluxboxWindow &win, Atom the_property);
     //ignore these ones
     void updateWindowClose(FluxboxWindow &win) {}
 
@@ -58,6 +59,7 @@ private:
     void setState(FluxboxWindow &win, Atom state, bool value) const;
     void toggleState(FluxboxWindow &win, Atom state) const;
     void createAtoms();
+    void updateStrut(FluxboxWindow &win);
 
     // root window properties
     Atom m_net_supported, m_net_client_list, m_net_client_list_stacking,

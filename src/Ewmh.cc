@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.26 2003/05/19 22:40:16 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.27 2003/06/18 13:34:30 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -68,6 +68,7 @@ void Ewmh::initForScreen(BScreen &screen) {
     //set supported atoms
     Atom atomsupported[] = {
         // window properties
+        m_net_wm_strut,
         m_net_wm_state,
         // states that we support:
         m_net_wm_state_sticky,
@@ -121,6 +122,9 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
 
         XFree(data);
     }
+
+    updateStrut(win);
+
 }
 
 void Ewmh::updateClientList(BScreen &screen) {
@@ -284,6 +288,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
             toggleState(*win, ce.data.l[1]);
             toggleState(*win, ce.data.l[2]);
         }
+
         return true;
     } else if (ce.message_type == m_net_number_of_desktops) {
         if (screen == 0)
@@ -355,6 +360,15 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, F
 }
 
 
+bool Ewmh::propertyNotify(FluxboxWindow &win, Atom the_property) {
+    if (the_property == m_net_wm_strut) {
+        updateStrut(win);
+        return true;
+    }
+
+    return false;
+}
+
 void Ewmh::createAtoms() {
     Display *disp = FbTk::App::instance()->display();
     m_net_supported = XInternAtom(disp, "_NET_SUPPORTED", False);
@@ -418,3 +432,21 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) const {
         win.shade();
 }
 
+
+void Ewmh::updateStrut(FluxboxWindow &win) {
+    Atom ret_type = 0;
+    int fmt = 0;
+    unsigned long nitems = 0, bytes_after = 0;
+    long *data = 0;
+    if (win.winClient().property(m_net_wm_strut, 0, 4, False, XA_CARDINAL,
+                                 &ret_type, &fmt, &nitems, &bytes_after,
+                                 (unsigned char **) &data) && data) {
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): Strut: "<<data[0]<<", "<<data[1]<<", "<<
+            data[2]<<", "<<data[3]<<endl;
+#endif // DEBUG
+        win.setStrut(win.screen().requestStrut(data[0], data[1], data[2], data[3]));
+        win.screen().updateAvailableWorkspaceArea();
+    }
+
+}
