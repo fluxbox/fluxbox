@@ -95,6 +95,7 @@ RefCount<Pointer> &RefCount<Pointer>::operator = (Pointer *p) {
     m_data = p; // set data pointer
     m_refcount = new unsigned int(0); // create new counter
     incRefCount();
+    return *this;
 }
 
 template <typename Pointer>
