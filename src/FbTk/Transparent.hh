@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.hh,v 1.2 2003/05/07 09:30:53 fluxgen Exp $
+// $Id: Transparent.hh,v 1.3 2003/05/13 21:16:27 fluxgen Exp $
 
 #ifndef FBTK_TRANSPARENT_HH
 #define FBTK_TRANSPARENT_HH
@@ -45,7 +45,11 @@ public:
     void render(int src_x, int src_y,
                 int dest_x, int dest_y,
                 unsigned int width, unsigned int height) const;
+
     unsigned char alpha() const { return m_alpha; }
+    Drawable dest() const { return m_dest; }
+    Drawable source() const { return m_source; }
+
 private:
     void freeAlpha();
     void allocAlpha(unsigned char newval);
