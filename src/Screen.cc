@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.163 2003/05/13 14:03:27 fluxgen Exp $
+// $Id: Screen.cc,v 1.164 2003/05/13 21:12:18 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -485,7 +485,8 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     slit_auto_hide(rm, false, scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
     slit_placement(rm, Slit::BOTTOMRIGHT,
                    scrname+".slit.placement", altscrname+".Slit.Placement"),
-    slit_direction(rm, Slit::VERTICAL, scrname+".slit.direction", altscrname+".Slit.Direction")
+    slit_direction(rm, Slit::VERTICAL, scrname+".slit.direction", altscrname+".Slit.Direction"),
+    slit_alpha(rm, 255, scrname+".slit.alpha", altscrname+".Slit.Alpha")
 
 {
 

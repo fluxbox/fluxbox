@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.51 2003/05/13 13:28:28 fluxgen Exp $
+// $Id: Slit.cc,v 1.52 2003/05/13 21:09:43 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -49,6 +49,8 @@
 #include "RootTheme.hh"
 #include "FbTk/Theme.hh"
 #include "FbMenu.hh"
+#include "Transparent.hh"
+#include "IntResMenuItem.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -318,6 +320,9 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                       create_mask, &attrib);
 
     FbTk::EventManager::instance()->add(*this, frame.window);
+    m_transp.reset(new FbTk::Transparent(screen().rootPixmap(), frame.window.drawable(), 
+                                         *screen().slitAlphaResource(), 
+                                         screen().getScreenNumber()));
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
 
@@ -470,7 +475,7 @@ void Slit::addClient(Window w) {
     FbTk::EventManager::instance()->add(*this, client->icon_window);
 
     frame.window.show();
-    frame.window.clear();
+    clearWindow();
     reconfigure();
 
     updateClientmenu();
@@ -557,6 +562,8 @@ void Slit::removeClient(Window w, bool remap) {
 
 
 void Slit::reconfigure() {
+    m_transp->setAlpha(*screen().slitAlphaResource());
+
     frame.width = 0;
     frame.height = 0;
 
@@ -654,8 +661,7 @@ void Slit::reconfigure() {
     if (tmp) 
         image_ctrl->removeImage(tmp);
 
-    frame.window.clear();
-
+    clearWindow();
     int x, y;
 
     switch (direction()) {
@@ -1064,7 +1070,21 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
 }
 
 void Slit::exposeEvent(XExposeEvent &ev) {
+    clearWindow();
+}
+
+void Slit::clearWindow() {
     frame.window.clear();
+    if (frame.pixmap != 0) {
+        if (screen().rootPixmap() != m_transp->source())
+            m_transp->setSource(screen().rootPixmap(), screen().getScreenNumber());
+
+        m_transp->render(frame.window.x(), frame.window.y(),
+                         0, 0,
+                         frame.window.width(), frame.window.height());
+        
+    }
+
 }
 
 void Slit::timeout() {
@@ -1162,12 +1182,20 @@ void Slit::setupMenu() {
     using namespace FbTk;
 
     FbTk::MacroCommand *s_a_reconf_macro = new FbTk::MacroCommand();
+    FbTk::MacroCommand *s_a_reconf_slit_macro = new FbTk::MacroCommand();
     FbTk::RefCount<FbTk::Command> saverc_cmd(new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), 
                                                                               &Fluxbox::save_rc));
     FbTk::RefCount<FbTk::Command> reconf_cmd(new FbCommands::ReconfigureFluxboxCmd());
+    FbTk::RefCount<FbTk::Command> reconf_slit_cmd(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
+
     s_a_reconf_macro->add(saverc_cmd);
     s_a_reconf_macro->add(reconf_cmd);
+
+    s_a_reconf_slit_macro->add(saverc_cmd);
+    s_a_reconf_slit_macro->add(reconf_slit_cmd);
+
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
+    FbTk::RefCount<FbTk::Command> save_and_reconfigure_slit(s_a_reconf_slit_macro);
 
     // setup base menu
     m_slitmenu.setLabel("Slit");
@@ -1182,7 +1210,13 @@ void Slit::setupMenu() {
                                                         CommonSet, CommonAutoHide,
                                                         "Auto hide"),
                                        screen().doSlitAutoHide(),
-                                       save_and_reconfigure));
+                                       save_and_reconfigure_slit));
+
+    FbTk::MenuItem *alpha_menuitem = new IntResMenuItem("Alpha", 
+                                                        screen().slitAlphaResource(),
+                                                        0, 255);
+    alpha_menuitem->setCommand(save_and_reconfigure_slit);
+    m_slitmenu.insert(alpha_menuitem);
 
     m_slitmenu.insert(new SlitDirMenuItem(i18n->getMessage(
                                                            SlitSet, SlitSlitDirection,

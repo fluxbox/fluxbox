@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.27 2003/05/11 17:42:51 fluxgen Exp $
+/// $Id: Slit.hh,v 1.28 2003/05/13 21:09:43 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -111,6 +111,7 @@ public:
 
 
 private:
+    void clearWindow();
     void setupMenu();
 	
     void removeClient(SlitClient *client, bool remap, bool destroy);
@@ -144,6 +145,7 @@ private:
 
     std::auto_ptr<FbTk::XLayerItem> m_layeritem;
     std::auto_ptr<SlitTheme> m_slit_theme;
+    std::auto_ptr<FbTk::Transparent> m_transp;
 };
 
 

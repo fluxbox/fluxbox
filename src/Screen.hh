@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.95 2003/05/13 14:02:48 fluxgen Exp $
+// $Id: Screen.hh,v 1.96 2003/05/13 21:12:17 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -111,10 +111,11 @@ public:
 
     inline Slit::Placement getSlitPlacement() const { return *resource.slit_placement; }
     inline Slit::Direction getSlitDirection() const { return *resource.slit_direction; }
+    inline Resource<int> &slitAlphaResource() { return resource.slit_alpha; }
     inline void saveSlitPlacement(Slit::Placement p) { resource.slit_placement = p;  }
     inline void saveSlitDirection(Slit::Direction d) { resource.slit_direction = d;  }
     inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
-
+    
     inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
     inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 
@@ -411,6 +412,7 @@ private:
         Resource<bool> slit_auto_hide;
         Resource<Slit::Placement> slit_placement;
         Resource<Slit::Direction> slit_direction;
+        Resource<int> slit_alpha;
 
         unsigned int slit_on_head;
 
