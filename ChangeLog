@@ -1,6 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/10:
+  * Added Tab command, which goes to a specific tab number 
+    action:
+    Tab <number>
+    ex:
+    Mod1 1 :Tab 1
+    Mod2 3 :Tab 3
+    (Thanks Steeve Lennmark <steeve dot lennmark at mediasvar dot se>)
+    CurrentWindowCmd.hh/cc, FbCommandFactory.cc    
   * Close #1080323, missing header (Mathias)
     FbTk/FbPixmap.cc
   * Fix issue with maximizing shaded windows, #1082671 (Mathias)
@@ -13,6 +21,7 @@ Changes for 0.9.12
     ClockTool.cc
   * SlitClientMenu had with wheelup/down sometimes (Mathias)
     Slit.cc
+-------------------------------------------------------------    
 Changes for 0.9.11
 *04/12/02:
   * New features for the Slit (Mathias)
@@ -103,7 +112,7 @@ Changes for 0.9.11
 *04/10/22:
   * Fix for #1039658 (Mathias)
     FbWinFrame.cc
-  * Added new ressources: (Mathias + SemiFollow from Erik Postma,thanx)
+  * Added new resources: (Mathias + SemiFollow from Erik Postma,thanx)
     - session.*.iconbar.wheelMode: <mode>
         On     - enable mousewheeling on the iconbuttons
         Off    - disables mousewheeling on the iconbuttons
@@ -125,7 +134,7 @@ Changes for 0.9.11
     FbMenuParser.cc HeadArea.cc Ewmh.cc ArrowButton.cc WorkspaceNameTool.hh
     FbTk/ThemeItems.hh IntResMenuItem.cc SlitTheme.hh FbRootWindow.cc
 *04/10/18:
-  * Added session.appsFile to the ressources (Mathias)
+  * Added session.appsFile to the resources (Mathias)
     fluxbox.cc/hh Remember.cc
   * Fixed a problem when system-date is set back (Mathias)
     FbTk/Timer.cc
