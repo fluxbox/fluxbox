@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.1 2002/12/25 11:41:53 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.2 2003/01/09 16:47:06 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -79,6 +79,9 @@ public:
     BulletType bullet() const { return *m_bullet; }
     FbTk::Justify bulletPos() const { return *bullet_pos; }
 
+    unsigned int borderWidth() const { return *m_border_width; }
+    unsigned int bevelWidth() const { return *m_bevel_width; }
+    const FbTk::Color &borderColor() const { return *m_border_color; }
 private:
     FbTk::ThemeItem<FbTk::Color> t_text, f_text, h_text, d_text;
     FbTk::ThemeItem<FbTk::Texture> title, frame, hilite;
@@ -86,6 +89,10 @@ private:
     FbTk::ThemeItem<FbTk::Justify> framefont_justify, titlefont_justify;
     FbTk::ThemeItem<FbTk::Justify> bullet_pos; 
     FbTk::ThemeItem<BulletType> m_bullet;
+    FbTk::ThemeItem<unsigned int> m_border_width;
+    FbTk::ThemeItem<unsigned int> m_bevel_width;
+    FbTk::ThemeItem<FbTk::Color> m_border_color;
+
 
     Display *m_display;
     GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;

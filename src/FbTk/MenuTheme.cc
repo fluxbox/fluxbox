@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.1 2002/12/25 11:42:05 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.2 2003/01/09 16:51:52 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -47,6 +47,9 @@ MenuTheme::MenuTheme(int screen_num):
     titlefont_justify(*this, "menu.title.justify", "Menu.Title.Justify"),
     bullet_pos(*this, "menu.bulletPos", "Menu.BulletPos"),
     m_bullet(*this, "menu.bullet", "Menu.Bullet"),
+    m_border_width(*this, "borderWidth", "BorderWidth"),
+    m_bevel_width(*this, "bevelWidth", "BevelWidth"),
+    m_border_color(*this, "borderColor", "BorderColor"),
     m_display(FbTk::App::instance()->display()) { 
 	
     Window rootwindow = RootWindow(m_display, screen_num);
@@ -131,5 +134,20 @@ template <>
 void ThemeItem<MenuTheme::BulletType>::load() {
     // do nothing, we don't have anything extra to load
 }
+
+template <>
+void ThemeItem<unsigned int>::setDefaultValue() {
+    m_value = 0;
+}
+
+template <>
+void ThemeItem<unsigned int>::setFromString(const char *str) {
+    sscanf(str, "%d", &m_value);
+}
+
+template <>
+void ThemeItem<unsigned int>::load() {
+}
+
 
 }; // end namespace  FbTk
