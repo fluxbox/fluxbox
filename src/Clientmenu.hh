@@ -22,24 +22,21 @@
 #ifndef	 CLIENTMENU_HH
 #define	 CLIENTMENU_HH
 
-
 #include "Basemenu.hh"
 
-// forward declarations
 class Workspace;
 
-
-class Clientmenu : public Basemenu {
+class Clientmenu: public Basemenu {
 public:
-	Clientmenu(Workspace *wrksp);
+	explicit Clientmenu(Workspace &wrksp);
 	
 protected:
 	virtual void itemSelected(int button, unsigned int index);
 	
 private:
-	Workspace *m_wkspc;
+	Workspace &m_wkspc;
 };
 
 
-#endif // _CLIENTMENU_HH_
+#endif // CLIENTMENU_HH
 
