@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.4 2002/03/27 18:47:44 fluxgen Exp $
+//$Id: Font.cc,v 1.5 2002/04/26 09:32:20 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -42,6 +42,7 @@
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
+#include "i18n.hh"
 
 namespace FbTk
 {
@@ -53,6 +54,8 @@ m_display(display) {
 	m_font.fontstruct = 0;
 	m_font.set_extents = 0;
 	m_font.set = 0;
+	//TODO: should only be done once
+	m_multibyte = I18n::instance()->multibyte();
 	if (name!=0) {
 		load(name);
 	}
