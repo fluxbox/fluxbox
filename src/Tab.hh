@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.11 2002/02/17 18:52:02 fluxgen Exp $
+// $Id: Tab.hh,v 1.12 2002/05/02 07:08:24 fluxgen Exp $
 
 #ifndef TAB_HH
 #define TAB_HH
@@ -63,6 +63,8 @@ public:
 	void shade();
 	//position tab to follow (FluxboxWindow *) m_win 
 	void setPosition();	
+	void moveNext();
+	void movePrev();
 	//event handlers
 	void buttonReleaseEvent(XButtonEvent *be);
 	void buttonPressEvent(XButtonEvent *be);
@@ -76,7 +78,7 @@ public:
 	static Tab::Placement getTabPlacementNum(const char *string);
 	static const char *getTabAlignmentString(Tab::Alignment alignment);
 	static Tab::Alignment getTabAlignmentNum(const char *string);
-	//TODO: do these have to be public?
+
 	void resizeGroup(void); // used when (un)shading windows
 	void calcIncrease(void);
 	inline bool configured() { return m_configured; }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.25 2002/04/28 08:49:31 fluxgen Exp $
+// $Id: Tab.cc,v 1.26 2002/05/02 07:09:22 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -536,6 +536,21 @@ void Tab::setPosition() {
 	
 	m_stoptabs = false;//thaw tablist
 }
+
+//Moves the tab to the left
+void Tab::movePrev() {
+	insert(m_prev);
+}
+
+//Moves the tab to the next tab if m_next != 0
+void Tab::moveNext() {
+	if(m_next == 0)
+		return;
+	Tab *tmp = m_next; 
+	disconnect();
+	tmp->insert(this);
+}
+
 
 //------------- calcIncrease ----------------
 // calculates m_inc_x and m_inc_y for tabs
