@@ -235,6 +235,7 @@ if test "x$XFT" = "xtrue" ; then
 		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
 		AC_MSG_RESULT(yes),
 		AC_MSG_RESULT(no)
+                XFT=false
 		)
 fi
 
