@@ -4,7 +4,7 @@ styledir = $(pkgdatadir)/styles
 MAINTAINERCLEANFILES = Makefile.in
 
 style_DATA = Makro MerleyKay Clean Artwiz Cthulhain Flux Minimal \
-	Nyz Operation Outcomes Rampage Rancor Results Shade Spiff LemonSpace \
+	Nyz Operation Outcomes Rampage Results Shade Spiff LemonSpace \
 	Twice Carbondioxide qnx-photon BlueNight Meta
 EXTRA_DIST=$(style_DATA)
 
