@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/08/19:
+   * Added ResizeVertical and ResizeHorizontal  (Thanks Mathias Gumz)
+     CurrentWindowCmd.hh/cc, FbCommandFactory.cc
    * Fixed fallback option for theme items (Henrik)
      So the toolbar should look better in old themes
      ToolTheme.cc/hh, IconbarTheme.hh/cc, Theme.hh/cc,
