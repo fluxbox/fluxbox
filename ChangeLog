@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/03:
+  * Fixed pixmap filename expansion for menu pixmaps (Thanks Mathias Gumz)
+    FbTk/MenuItem.cc
+  * Fixed so menu separators are unclickable (Thanks Mathias Gumz)
+    FbTk/Menu.hh/cc
+  * Fixed menu move bug (Thanks Mathias Gumz)
+    FbTk/Menu.cc
 *04/07/19:
   * Some EMX fixes (Thanks dave_yeo at paralynx com)
     FbCommands.cc, FbTk/I18n.hh
