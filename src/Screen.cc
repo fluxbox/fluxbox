@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.199 2003/07/01 12:39:09 fluxgen Exp $
+// $Id: Screen.cc,v 1.200 2003/07/03 13:57:58 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -177,6 +177,25 @@ private:
 
 
 namespace {
+
+class StyleMenuItem: public FbTk::MenuItem {
+public:
+    StyleMenuItem(const std::string &label, const std::string &filename):FbTk::MenuItem(label.c_str()), 
+                                                                         m_filename(FbTk::StringUtil::
+                                                                                    expandFilename(filename)) {
+        // perform shell style ~ home directory expansion
+        // and insert style      
+        FbTk::RefCount<FbTk::Command> 
+            setstyle_cmd(new FbCommands::
+                         SetStyleCmd(m_filename));
+        setCommand(setstyle_cmd);
+    }
+    bool isSelected() const {
+        return Fluxbox::instance()->getStyleFilename() == m_filename;
+    }
+private:
+    const std::string m_filename;
+};
 
 class AddWorkspaceCmd:public FbTk::Command {
 public:
@@ -1745,21 +1764,13 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                     if (!( str_label.size() && str_cmd.size())) {
                         fprintf(stderr,
                                 i18n->
-                                getMessage(
-                                           FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
+                                getMessage(FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
                                            "BScreen::parseMenuFile: [style] error, "
                                            "no menu label and/or filename defined\n"));
                         cerr<<"Row: "<<row<<endl;
-                    } else {
-                        // perform shell style ~ home directory expansion
-                        // and insert style                        
-                        FbTk::RefCount<FbTk::Command> 
-                            setstyle_cmd(new FbCommands::
-                                         SetStyleCmd(FbTk::StringUtil::
-                                                     expandFilename(str_cmd)));
-                        menu.insert(str_label.c_str(), setstyle_cmd);
-						
-                    }
+                    } else
+                        menu.insert(new StyleMenuItem(str_label, str_cmd));						
+
                 } else if (str_key == "config") {
                     if (! str_label.size()) {
                         fprintf(stderr,
@@ -2055,9 +2066,8 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
                 strncpy(style + slen + 1, filelist[file_index].c_str(), nlen + 1);
 
                 if ( !stat(style, &statbuf) && S_ISREG(statbuf.st_mode)) {
-                    FbTk::RefCount<FbTk::Command> setstyle_cmd(new FbCommands::
-                                                               SetStyleCmd(style));
-                    menu.insert(filelist[file_index].c_str(), setstyle_cmd);
+                    FbTk::MenuItem *item = new StyleMenuItem(filelist[file_index], style);
+                    menu.insert(item);
                 }
             } 
             // update menu graphics
