@@ -42,7 +42,8 @@ class BScreen;
 class Workspace:private NotCopyable {
 public:
 	typedef std::vector<FluxboxWindow *> Windows;
-	
+	typedef std::vector<Window> Stack;
+
 	Workspace(BScreen *screen, unsigned int workspaceid = 0);
 	~Workspace();
 	
@@ -98,7 +99,9 @@ protected:
 	void placeWindow(FluxboxWindow *win);
 
 private:
-	
+
+	void raiseAndFillStack(Stack::iterator &it, const FluxboxWindow &win);
+	void lowerAndFillStack(Stack::iterator &it, const FluxboxWindow &win);
 
 	BScreen *screen;
 	FluxboxWindow *lastfocus;
