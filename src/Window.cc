@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.251 2003/12/10 23:32:41 fluxgen Exp $
+// $Id: Window.cc,v 1.252 2003/12/12 14:59:16 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3426,10 +3426,6 @@ void FluxboxWindow::setupWindow() {
     menu.insert("Iconify", iconify_cmd);
     menu.insert("Raise", raise_cmd);
     menu.insert("Lower", lower_cmd);
-    CommandRef next_client_cmd(new WindowCmd(*this, &FluxboxWindow::nextClient));
-    CommandRef prev_client_cmd(new WindowCmd(*this, &FluxboxWindow::prevClient));
-    menu.insert("Next Client", next_client_cmd);
-    menu.insert("Prev Client", prev_client_cmd);
 
     menu.insert("Send To...", new SendToMenu(*this));
 
