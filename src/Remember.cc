@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.10 2003/04/28 12:58:08 rathnor Exp $
+// $Id: Remember.cc,v 1.11 2003/05/08 10:55:33 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -101,7 +101,7 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
                                   screen.getScreenNumber(), 
                                   *screen.getImageControl(), 
                                   *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
-
+    menu->disableTitle();
     // TODO: nls
     menu->insert(new RememberMenuItem("Workspace", remember, win,
                                       Remember::REM_WORKSPACE));
