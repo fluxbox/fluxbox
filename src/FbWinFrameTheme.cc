@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.11 2003/08/27 17:52:08 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.12 2003/09/12 23:37:12 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -58,9 +58,10 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_font(*this, "window.font", "Window.Font"),
     m_textjustify(*this, "window.justify", "Window.Justify"),
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
-
     m_alpha(*this, "window.alpha", "Window.Alpha"),
     m_title_height(*this, "window.title.height", "Window.Title.Height"),
+    m_bevel_width(*this, "window.bevelWidth", "Window.BevelWidth"),
+    m_handle_width(*this, "window.handleWidth", "Window.handleWidth"),
     m_border(*this, "window", "Window"), // for window.border*
     m_label_text_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_label_text_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
@@ -89,6 +90,10 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
     else if (item.name() == "window.borderColor")
         return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
+    else if (item.name() == "window.bevelWidth")
+        return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "bevelWidth");
+    else if (item.name() == "window.handleWidth")
+        return FbTk::ThemeManager::instance().loadItem(item, "handleWidth", "HandleWidth");
 
     return false;
 }
@@ -98,6 +103,16 @@ void FbWinFrameTheme::reconfigTheme() {
         *m_alpha = 255;
     else if (*m_alpha < 0)
         *m_alpha = 0;
+
+    if (*m_bevel_width > 20)
+        *m_bevel_width = 20;
+    else if (*m_bevel_width < 0)
+        *m_bevel_width = 0;
+
+    if (*m_handle_width > 200)
+        *m_handle_width = 200;
+    else if (*m_handle_width < 0)
+        *m_handle_width = 1;
 
     m_label_text_focus_gc.setForeground(*m_label_focus_color);
     m_label_text_unfocus_gc.setForeground(*m_label_unfocus_color);
