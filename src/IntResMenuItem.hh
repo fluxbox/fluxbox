@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IntResMenuItem.hh,v 1.1 2003/02/17 12:45:58 fluxgen Exp $
+// $Id: IntResMenuItem.hh,v 1.2 2003/05/18 21:59:14 fluxgen Exp $
 
 #ifndef INTRESMENUITEM_HH
 #define INTRESMENUITEM_HH
@@ -30,7 +30,7 @@
 /// Changes an resource integer value between min and max
 class IntResMenuItem: public FbTk::MenuItem {
 public:
-    IntResMenuItem(const char *label, Resource<int> &res, int min_val, int max_val);
+    IntResMenuItem(const char *label, FbTk::Resource<int> &res, int min_val, int max_val);
 
     void click(int button, int time);
 
@@ -38,7 +38,7 @@ private:
     std::string m_org_label; ///< original label
     const int m_max; ///< maximum value the integer can have
     const int m_min; ///< minimum value the integer can have
-    Resource<int> &m_res; ///< resource item to be changed
+    FbTk::Resource<int> &m_res; ///< resource item to be changed
 };
 
 #endif // INTRESMENUITEM_HH

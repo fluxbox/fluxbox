@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.150 2003/05/15 23:30:03 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.151 2003/05/18 22:04:06 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -155,8 +155,9 @@ char *basename (char *s) {
 //-----------------------------------------------------------------
 //---- accessors for int, bool, and some enums with Resource ------
 //-----------------------------------------------------------------
+
 template<>
-void Resource<int>::
+void FbTk::Resource<int>::
 setFromString(const char* strval) {
     int val;
     if (sscanf(strval, "%d", &val)==1)
@@ -164,13 +165,13 @@ setFromString(const char* strval) {
 }
 
 template<>
-void Resource<std::string>::
+void FbTk::Resource<std::string>::
 setFromString(const char *strval) {
     *this = strval;
 }
 
 template<>
-void Resource<bool>::
+void FbTk::Resource<bool>::
 setFromString(char const *strval) {
     if (strcasecmp(strval, "true")==0)
         *this = true;
@@ -179,7 +180,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-void Resource<Fluxbox::FocusModel>::
+void FbTk::Resource<Fluxbox::FocusModel>::
 setFromString(char const *strval) {
     // auto raise options here for backwards read compatibility
     // they are not supported for saving purposes. Nor does the "AutoRaise" 
@@ -197,7 +198,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-void Resource<Fluxbox::TitlebarList>::
+void FbTk::Resource<Fluxbox::TitlebarList>::
 setFromString(char const *strval) {
     vector<std::string> val;
     StringUtil::stringtok(val, strval);
@@ -222,7 +223,7 @@ setFromString(char const *strval) {
 }
 
 template<>
-void Resource<unsigned int>::
+void FbTk::Resource<unsigned int>::
 setFromString(const char *strval) {	
     if (sscanf(strval, "%ul", &m_value) != 1)
         setDefaultValue();
@@ -232,13 +233,13 @@ setFromString(const char *strval) {
 //---- manipulators for int, bool, and some enums with Resource ---
 //-----------------------------------------------------------------
 template<>
-std::string Resource<bool>::
+std::string FbTk::Resource<bool>::
 getString() {				
     return std::string(**this == true ? "true" : "false");
 }
 
 template<>
-std::string Resource<int>::
+std::string FbTk::Resource<int>::
 getString() {
     char strval[256];
     sprintf(strval, "%d", **this);
@@ -246,11 +247,11 @@ getString() {
 }
 
 template<>
-std::string Resource<std::string>::
+std::string FbTk::Resource<std::string>::
 getString() { return **this; }
 
 template<>
-std::string Resource<Fluxbox::FocusModel>::
+std::string FbTk::Resource<Fluxbox::FocusModel>::
 getString() {
     switch (m_value) {
     case Fluxbox::SLOPPYFOCUS:
@@ -265,7 +266,7 @@ getString() {
 }
 
 template<>
-std::string Resource<Fluxbox::TitlebarList>::
+std::string FbTk::Resource<Fluxbox::TitlebarList>::
 getString() {
     string retval;
     int size=m_value.size();
@@ -299,7 +300,7 @@ getString() {
 }
 
 template<>
-string Resource<unsigned int>::
+string FbTk::Resource<unsigned int>::
 getString() {
     char tmpstr[128];
     sprintf(tmpstr, "%ul", m_value);
@@ -307,7 +308,7 @@ getString() {
 }
 
 template<>
-void Resource<Fluxbox::Layer>::
+void FbTk::Resource<Fluxbox::Layer>::
 setFromString(const char *strval) {
     int tempnum = 0;
     if (sscanf(strval, "%d", &tempnum) == 1)
@@ -332,7 +333,7 @@ setFromString(const char *strval) {
 
 
 template<>
-string Resource<Fluxbox::Layer>::
+string FbTk::Resource<Fluxbox::Layer>::
 getString() {
 
     if (m_value.getNum() == Fluxbox::instance()->getMenuLayer()) 

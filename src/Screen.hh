@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.98 2003/05/15 23:25:36 fluxgen Exp $
+// $Id: Screen.hh,v 1.99 2003/05/18 22:00:04 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -69,7 +69,7 @@ public:
     typedef std::vector<Workspace *> Workspaces;
     typedef std::vector<std::string> WorkspaceNames;
 	
-    BScreen(ResourceManager &rm,
+    BScreen(FbTk::ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
             int scrn, int number_of_layers);
     ~BScreen();
@@ -111,7 +111,7 @@ public:
 
     inline Slit::Placement getSlitPlacement() const { return *resource.slit_placement; }
     inline Slit::Direction getSlitDirection() const { return *resource.slit_direction; }
-    inline Resource<int> &slitAlphaResource() { return resource.slit_alpha; }
+    inline FbTk::Resource<int> &slitAlphaResource() { return resource.slit_alpha; }
     inline void saveSlitPlacement(Slit::Placement p) { resource.slit_placement = p;  }
     inline void saveSlitDirection(Slit::Direction d) { resource.slit_direction = d;  }
     inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
@@ -178,8 +178,8 @@ public:
     inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
 
     inline int getToolbarWidthPercent() const { return *resource.toolbar_width_percent; }
-    inline Resource<int> &getToolbarWidthPercentResource() { return resource.toolbar_width_percent; }
-    inline const Resource<int> &getToolbarWidthPercentResource() const { return resource.toolbar_width_percent; }
+    inline FbTk::Resource<int> &getToolbarWidthPercentResource() { return resource.toolbar_width_percent; }
+    inline const FbTk::Resource<int> &getToolbarWidthPercentResource() const { return resource.toolbar_width_percent; }
     inline ToolbarHandler::ToolbarMode toolbarMode() const { return *resource.toolbar_mode; }
     inline int getPlacementPolicy() const { return resource.placement_policy; }
     inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
@@ -388,31 +388,31 @@ private:
     FbRootWindow m_root_window;
 
     struct ScreenResource {
-        ScreenResource(ResourceManager &rm, const std::string &scrname,
+        ScreenResource(FbTk::ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
 
-        Resource<bool> toolbar_auto_hide,
+        FbTk::Resource<bool> toolbar_auto_hide,
             image_dither, opaque_move, full_max,
             max_over_slit,
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
             antialias, auto_raise, click_raises;
-        Resource<std::string> rootcommand;		
-        Resource<Fluxbox::FocusModel> focus_model;
+        FbTk::Resource<std::string> rootcommand;		
+        FbTk::Resource<Fluxbox::FocusModel> focus_model;
         bool ordered_dither;
-        Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold, 
+        FbTk::Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold, 
             menu_alpha;
-        Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;
+        FbTk::Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;
         int placement_policy, row_direction, col_direction;
 
-        Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
-        Resource<int> toolbar_on_head;
-        Resource<Toolbar::Placement> toolbar_placement;
-        Resource<bool> slit_auto_hide;
-        Resource<Slit::Placement> slit_placement;
-        Resource<Slit::Direction> slit_direction;
-        Resource<int> slit_alpha;
+        FbTk::Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
+        FbTk::Resource<int> toolbar_on_head;
+        FbTk::Resource<Toolbar::Placement> toolbar_placement;
+        FbTk::Resource<bool> slit_auto_hide;
+        FbTk::Resource<Slit::Placement> slit_placement;
+        FbTk::Resource<Slit::Direction> slit_direction;
+        FbTk::Resource<int> slit_alpha;
 
         unsigned int slit_on_head;
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.59 2003/05/14 14:35:39 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.60 2003/05/18 22:02:55 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -227,18 +227,18 @@ private:
     
     std::auto_ptr<FbAtoms> m_fbatoms;
 
-    ResourceManager m_resourcemanager, m_screen_rm;
+    FbTk::ResourceManager m_resourcemanager, m_screen_rm;
 	
     //--- Resources
-    Resource<bool> m_rc_tabs, m_rc_ignoreborder;
-    Resource<int> m_rc_colors_per_channel, m_rc_numlayers;
-    Resource<std::string> m_rc_stylefile, 
+    FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;
+    FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers;
+    FbTk::Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile;
 
 	
-    Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
-    Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
+    FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
+    FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
 
 	
     std::map<Window, FluxboxWindow *> m_window_search;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IntResMenuItem.cc,v 1.1 2003/02/17 12:45:59 fluxgen Exp $
+// $Id: IntResMenuItem.cc,v 1.2 2003/05/18 21:59:14 fluxgen Exp $
 
 #include "IntResMenuItem.hh"
 #include <cstdio>
@@ -36,7 +36,7 @@ std::string appendIntValue(const std::string &label, int value) {
 
 };
 
-IntResMenuItem::IntResMenuItem(const char *label, Resource<int> &res, int min_val, int max_val):
+IntResMenuItem::IntResMenuItem(const char *label, FbTk::Resource<int> &res, int min_val, int max_val):
     FbTk::MenuItem(label), m_org_label(FbTk::MenuItem::label()),
         m_max(max_val), m_min(min_val), m_res(res) { 
         setLabel(appendIntValue(m_org_label, *m_res).c_str());
