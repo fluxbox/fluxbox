@@ -310,13 +310,13 @@ void Workspace::setName(char *new_name) {
 	} else {
 		name = new char[128];
 		sprintf(name, I18n::instance()->
-						getMessage(
+			getMessage(
 #ifdef		NLS
-						WorkspaceSet, WorkspaceDefaultNameFormat,
+			WorkspaceSet, WorkspaceDefaultNameFormat,
 #else // !NLS
-						0, 0,
+			0, 0,
 #endif // NLS
-						"Workspace %d"), id + 1);
+			"Workspace %d"), id + 1);
 	}
 	
 	screen->updateWorkspaceNamesAtom();
@@ -459,30 +459,30 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 				}
 
 				if ((toolbar_x < test_x + win_w &&
-						 toolbar_x + toolbar_w > test_x &&
-						 toolbar_y < test_y + win_h &&
-						 toolbar_y + toolbar_h > test_y)
+						toolbar_x + toolbar_w > test_x &&
+						toolbar_y < test_y + win_h &&
+						toolbar_y + toolbar_h > test_y)
 #ifdef		SLIT
-						 ||
+						||
 						(slit_x < test_x + win_w &&
-						 slit_x + slit_w > test_x &&
-						 slit_y < test_y + win_h &&
-						 slit_y + slit_h > test_y)
+						slit_x + slit_w > test_x &&
+						slit_y < test_y + win_h &&
+						slit_y + slit_h > test_y)
 #endif // SLIT
-				 )
-				 placed = False;
+						)
+					placed = False;
 
-			 if (placed) {
-				 place_x = test_x;
-				 place_y = test_y;
+			if (placed) {
+				place_x = test_x;
+				place_y = test_y;
 
-				 break;
-			 }
+				break;
+			}
 
-			 test_y += change_y;
-		 }
+			test_y += change_y;
+		}
 
-		 test_x += change_x;
+		test_x += change_x;
 	 }
 
 	 break; }
@@ -490,7 +490,7 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 
 	if (! placed) {
 		if (((unsigned) cascade_x > (screen->getWidth() / 2)) ||
-	((unsigned) cascade_y > (screen->getHeight() / 2)))
+				((unsigned) cascade_y > (screen->getHeight() / 2)))
 			cascade_x = cascade_y = 32;
 
 		place_x = cascade_x;
