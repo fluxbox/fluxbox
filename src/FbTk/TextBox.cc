@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.7 2004/01/21 12:32:53 fluxgen Exp $
+// $Id: TextBox.cc,v 1.8 2004/03/18 14:33:09 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -215,8 +215,14 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
             case XK_k:
                 killToEnd();
                 break;
+            case XK_c:
+                cursorHome();
+                m_text.clear();
+                adjustStartPos();
+                adjustEndPos();
+                break;
             }
-        } else if (event.state == ShiftMask) {
+        } else if (event.state == ShiftMask || event.state == 0x2000) {
             if (isprint(keychar[0])) {
                 std::string val;
                 val += keychar[0];
