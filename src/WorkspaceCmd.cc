@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.5 2003/09/20 10:46:01 grubert Exp $
+// $Id: WorkspaceCmd.cc,v 1.6 2003/10/14 00:21:16 fluxgen Exp $
 
 #include "WorkspaceCmd.hh"
 
@@ -51,8 +51,8 @@ void NextWindowCmd::execute() {
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->nextFocus(m_option);
             }
-        }
-
+        } else
+            screen->nextFocus(m_option);
     }
 }
 
@@ -72,7 +72,8 @@ void PrevWindowCmd::execute() {
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->prevFocus(m_option);
             }
-        }
+        } else
+            screen->nextFocus(m_option);
     }
 }
 
