@@ -41,7 +41,7 @@ class FluxboxWindow;
 /**
 	Handles a single workspace
 */
-class Workspace:private NotCopyable {
+class Workspace:private FbTk::NotCopyable {
 public:
 	typedef std::vector<FluxboxWindow *> Windows;
 	typedef std::vector<Window> Stack;
