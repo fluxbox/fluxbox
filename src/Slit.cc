@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.40 2003/04/16 16:18:02 rathnor Exp $
+// $Id: Slit.cc,v 1.41 2003/04/25 10:46:07 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -46,6 +46,8 @@
 #include "LayerMenu.hh"
 #include "fluxbox.hh"
 #include "XLayer.hh"
+#include "RootTheme.hh"
+#include "FbTk/Theme.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -238,20 +240,34 @@ private:
 
 }; // End anonymous namespace
 
+class SlitTheme:public FbTk::Theme {
+public:
+    explicit SlitTheme(Slit &slit):FbTk::Theme(slit.screen().getScreenNumber()), 
+                          m_slit(slit),
+                          m_texture(*this, "slit", "Slit") { }
+    void reconfigTheme() {
+        m_slit.reconfigure();
+    }
+    const FbTk::Texture &texture() const { return *m_texture; }
+private:
+    Slit &m_slit;
+    FbTk::ThemeItem<FbTk::Texture> m_texture;
+};
+
 Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     : m_screen(scr), timer(this), 
-    slitmenu(*scr.menuTheme(), 
-             scr.getScreenNumber(), 
-             *scr.getImageControl()),
-    placement_menu(*scr.menuTheme(),
-                   scr.getScreenNumber(),
-                   *scr.getImageControl()),
-    clientlist_menu(*scr.menuTheme(),
-                    scr.getScreenNumber(),
-                    *scr.getImageControl()),
-    slit_layermenu(0),
-    m_layeritem(0)
-{
+      slitmenu(*scr.menuTheme(), 
+               scr.getScreenNumber(), 
+               *scr.getImageControl()),
+      placement_menu(*scr.menuTheme(),
+                     scr.getScreenNumber(),
+                     *scr.getImageControl()),
+      clientlist_menu(*scr.menuTheme(),
+                      scr.getScreenNumber(),
+                      *scr.getImageControl()),
+      slit_layermenu(0),
+      m_layeritem(0),
+      m_slit_theme(new SlitTheme(*this)) {
 
     slit_layermenu.reset(new LayerMenu<Slit>(*scr.menuTheme(),
                                    scr.getScreenNumber(),
@@ -275,7 +291,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
         CWColormap | CWOverrideRedirect | CWEventMask;
     attrib.background_pixmap = None;
     attrib.background_pixel = attrib.border_pixel =
-        screen().getBorderColor()->pixel();
+        screen().rootTheme().borderColor().pixel();
     attrib.colormap = screen().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = SubstructureRedirectMask | ButtonPressMask |
@@ -286,7 +302,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     Display *disp = FbTk::App::instance()->display();
     frame.window =
         XCreateWindow(disp, screen().getRootWindow(), frame.x, frame.y,
-                      frame.width, frame.height, screen().getBorderWidth(),
+                      frame.width, frame.height, screen().rootTheme().borderWidth(),
                       screen().getDepth(), InputOutput, screen().getVisual(),
                       create_mask, &attrib);
 
@@ -544,7 +560,7 @@ void Slit::reconfigure() {
     // Need to count windows because not all client list entries
     // actually correspond to mapped windows.
     int num_windows = 0;
-
+    const int bevel_width = screen().rootTheme().bevelWidth();
     switch (direction()) {
     case VERTICAL: 
         {
@@ -554,7 +570,8 @@ void Slit::reconfigure() {
                 //client created window?
                 if ((*it)->window != None && (*it)->visible) {
                     num_windows++;
-                    frame.height += (*it)->height + screen().getBevelWidth();
+                    frame.height += (*it)->height + 
+                        bevel_width;
 					
                     //frame width < client window?
                     if (frame.width < (*it)->width) 
@@ -566,12 +583,12 @@ void Slit::reconfigure() {
         if (frame.width < 1)
             frame.width = 1;
         else
-            frame.width += (screen().getBevelWidth() * 2);
+            frame.width += (bevel_width * 2);
 
         if (frame.height < 1)
             frame.height = 1;
         else
-            frame.height += screen().getBevelWidth();
+            frame.height += bevel_width;
 
         break;
 
@@ -583,7 +600,7 @@ void Slit::reconfigure() {
                 //client created window?
                 if ((*it)->window != None && (*it)->visible) {
                     num_windows++;
-                    frame.width += (*it)->width + screen().getBevelWidth();
+                    frame.width += (*it)->width + bevel_width;
                     //frame height < client height?
                     if (frame.height < (*it)->height)
                         frame.height = (*it)->height;
@@ -594,12 +611,12 @@ void Slit::reconfigure() {
         if (frame.width < 1)
             frame.width = 1;
         else
-            frame.width += screen().getBevelWidth();
+            frame.width += bevel_width;
 
         if (frame.height < 1)
             frame.height = 1;
         else
-            frame.height += (screen().getBevelWidth() * 2);
+            frame.height += bevel_width*2;
 
         break;
     }
@@ -607,8 +624,8 @@ void Slit::reconfigure() {
     reposition();
     Display *disp = FbTk::App::instance()->display();
 
-    frame.window.setBorderWidth(screen().getBorderWidth());
-    frame.window.setBorderColor(*screen().getBorderColor());
+    frame.window.setBorderWidth(screen().rootTheme().borderWidth());
+    frame.window.setBorderColor(screen().rootTheme().borderColor());
     //did we actually use slit slots
     if (num_windows == 0)
         frame.window.hide();
@@ -617,7 +634,7 @@ void Slit::reconfigure() {
 
     Pixmap tmp = frame.pixmap;
     FbTk::ImageControl *image_ctrl = screen().getImageControl();
-    const FbTk::Texture &texture = screen().getTheme()->getSlitTexture();
+    const FbTk::Texture &texture = m_slit_theme->texture();
     if (texture.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.pixmap = None;
         frame.window.setBackgroundColor(texture.color());
@@ -637,7 +654,7 @@ void Slit::reconfigure() {
     switch (direction()) {
     case VERTICAL:
         x = 0;
-        y = screen().getBevelWidth();
+        y = bevel_width;
 
         {
             SlitClients::iterator it = clientList.begin();
@@ -682,14 +699,14 @@ void Slit::reconfigure() {
                 XSendEvent(disp, (*it)->window, False, StructureNotifyMask,
                            &event);
 
-                y += (*it)->height + screen().getBevelWidth();
-            }
+                y += (*it)->height + bevel_width;
+            } // end for
         }
 
         break;
 
     case HORIZONTAL:
-        x = screen().getBevelWidth();
+        x = bevel_width;
         y = 0;
 
         {
@@ -728,8 +745,8 @@ void Slit::reconfigure() {
                 event.xconfigure.display = disp;
                 event.xconfigure.event = (*it)->window;
                 event.xconfigure.window = (*it)->window;
-                event.xconfigure.x = frame.x + x + screen().getBorderWidth();
-                event.xconfigure.y = frame.y + y + screen().getBorderWidth();
+                event.xconfigure.x = frame.x + x + screen().rootTheme().borderWidth();
+                event.xconfigure.y = frame.y + y + screen().rootTheme().borderWidth();
                 event.xconfigure.width = (*it)->width;
                 event.xconfigure.height = (*it)->height;
                 event.xconfigure.border_width = 0;
@@ -739,7 +756,7 @@ void Slit::reconfigure() {
                 XSendEvent(disp, (*it)->window, False, StructureNotifyMask,
                            &event);
 
-                x += (*it)->width + screen().getBevelWidth();
+                x += (*it)->width + bevel_width;
             }
         }
 
@@ -759,6 +776,8 @@ void Slit::reposition() {
 
     head_w = screen().getWidth();
     head_h = screen().getHeight();
+    int border_width = screen().rootTheme().borderWidth();
+    int bevel_width = screen().rootTheme().bevelWidth();
 
     // place the slit in the appropriate place
     switch (placement()) {
@@ -766,35 +785,35 @@ void Slit::reposition() {
         frame.x = head_x;
         frame.y = head_y;
         if (direction() == VERTICAL) {
-            frame.x_hidden = screen().getBevelWidth() -
-                screen().getBorderWidth() - frame.width;
+            frame.x_hidden = bevel_width -
+                border_width - frame.width;
             frame.y_hidden = head_y;
         } else {
             frame.x_hidden = head_x;
-            frame.y_hidden = screen().getBevelWidth() -
-                screen().getBorderWidth() - frame.height;
+            frame.y_hidden = bevel_width -
+                border_width - frame.height;
         }
         break;
 
     case CENTERLEFT:
         frame.x = head_x;
         frame.y = head_y + (head_h - frame.height) / 2;
-        frame.x_hidden = head_x + screen().getBevelWidth() -
-            screen().getBorderWidth() - frame.width;
+        frame.x_hidden = head_x + bevel_width -
+            border_width - frame.width;
         frame.y_hidden = frame.y;
         break;
 
     case BOTTOMLEFT:
         frame.x = head_x;
-        frame.y = head_h - frame.height - screen().getBorderWidth2x();
+        frame.y = head_h - frame.height - border_width*2;
         if (direction() == VERTICAL) {
-            frame.x_hidden = head_x + screen().getBevelWidth() -
-                screen().getBorderWidth() - frame.width;
+            frame.x_hidden = head_x + bevel_width -
+                border_width - frame.width;
             frame.y_hidden = frame.y;
         } else {
             frame.x_hidden = head_x;
             frame.y_hidden = head_y + head_h -
-                screen().getBevelWidth() - screen().getBorderWidth();
+                bevel_width - border_width;
         }
         break;
 
@@ -802,52 +821,52 @@ void Slit::reposition() {
         frame.x = head_x + ((head_w - frame.width) / 2);
         frame.y = head_y;
         frame.x_hidden = frame.x;
-        frame.y_hidden = head_y + screen().getBevelWidth() -
-            screen().getBorderWidth() - frame.height;
+        frame.y_hidden = head_y + bevel_width -
+            border_width - frame.height;
         break;
 
     case BOTTOMCENTER:
         frame.x = head_x + ((head_w - frame.width) / 2);
-        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
+        frame.y = head_y + head_h - frame.height - border_width*2;
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h -
-            screen().getBevelWidth() - screen().getBorderWidth();
+            bevel_width - border_width;
         break;
 
     case TOPRIGHT:
-        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         if (direction() == VERTICAL) {
             frame.x_hidden = head_x + head_w -
-                screen().getBevelWidth() - screen().getBorderWidth();
+                bevel_width - border_width;
             frame.y_hidden = head_y;
         } else {
             frame.x_hidden = frame.x;
-            frame.y_hidden = head_y + screen().getBevelWidth() -
-                screen().getBorderWidth() - frame.height;
+            frame.y_hidden = head_y + bevel_width -
+                border_width - frame.height;
         }
         break;
 
     case CENTERRIGHT:
     default:
-        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y + ((head_h - frame.height) / 2);
         frame.x_hidden = head_x + head_w -
-            screen().getBevelWidth() - screen().getBorderWidth();
+            bevel_width - border_width;
         frame.y_hidden = frame.y;
         break;
 
     case BOTTOMRIGHT:
-        frame.x = head_x + head_w - frame.width - screen().getBorderWidth2x();
-        frame.y = head_y + head_h - frame.height - screen().getBorderWidth2x();
+        frame.x = head_x + head_w - frame.width - border_width*2;
+        frame.y = head_y + head_h - frame.height - border_width*2;
         if (direction() == VERTICAL) {
             frame.x_hidden = head_x + head_w - 
-                screen().getBevelWidth() - screen().getBorderWidth();
+                bevel_width - border_width;
             frame.y_hidden = frame.y;
         } else {
             frame.x_hidden = frame.x;
             frame.y_hidden = head_y + head_h - 
-                screen().getBevelWidth() - screen().getBorderWidth();
+                bevel_width - border_width;
         }
         break;
     }
