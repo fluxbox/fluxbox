@@ -1400,7 +1400,8 @@ void Toolbarmenu::Placementmenu::itemSelected(int button, int index) {
 		if (! item)
 			return;
 
-		toolbarmenu->toolbar->screen->saveToolbarPlacement(item->function());
+		toolbarmenu->toolbar->screen->saveToolbarPlacement(
+			static_cast<Toolbar::Placement>(item->function()));
 		hide();
 		toolbarmenu->toolbar->reconfigure();
 
