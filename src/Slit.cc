@@ -19,18 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.21 2002/09/08 19:48:03 fluxgen Exp $
+// $Id: Slit.cc,v 1.22 2002/10/13 21:47:54 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef		SLIT
+#ifdef	SLIT
 
 #include <X11/keysym.h>
 
