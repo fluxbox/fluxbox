@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.26 2002/08/31 10:40:50 fluxgen Exp $
+// $Id: Workspace.cc,v 1.27 2002/09/08 19:38:48 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -55,6 +55,23 @@
 
 using namespace std;
 
+namespace { // anonymous
+
+int countTransients(const FluxboxWindow &win) {
+	if (win.getTransients().size() == 0)
+		return 0;
+	// now go throu the entire tree and count transients
+	size_t ret = win.getTransients().size();	
+	std::list<FluxboxWindow *>::const_iterator it = win.getTransients().begin();
+	std::list<FluxboxWindow *>::const_iterator it_end = win.getTransients().end();
+	for (; it != it_end; ++it)
+		ret += countTransients(*(*it));
+
+	return ret;
+}
+
+};
+
 Workspace::GroupList Workspace::m_groups;
 
 Workspace::Workspace(BScreen *scrn, unsigned int i):
@@ -76,7 +93,7 @@ Workspace::~Workspace() {
 
 
 int Workspace::addWindow(FluxboxWindow *w, bool place) {
-	if (! w)
+	if (w == 0)
 		return -1;
 
 	if (place)
@@ -129,7 +146,7 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 
 
 int Workspace::removeWindow(FluxboxWindow *w) {
-	if (! w) 
+	if (w == 0)
 		return -1;
 
 	stackingList.remove(w);
@@ -193,7 +210,11 @@ void Workspace::showAll(void) {
 	WindowStack::iterator it = stackingList.begin();
 	WindowStack::iterator it_end = stackingList.end();
 	for (; it != it_end; ++it) {
-		(*it)->deiconify(False, False);
+		if ((*it) == 0) {
+			stackingList.erase(it);
+		} else {
+			(*it)->deiconify(False, False);
+		}
 	}
 }
 
@@ -218,52 +239,28 @@ void Workspace::removeAll(void) {
 
 
 void Workspace::raiseWindow(FluxboxWindow *w) {
-	FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
+	FluxboxWindow *win = w;
 
-	while (bottom->isTransient() && bottom->getTransientFor() &&
-			bottom->getTransientFor() != bottom) { //prevent infinite loop
-#ifdef DEBUG
-		assert(bottom != bottom->getTransientFor());		
-#endif // DEBUG
-		bottom = bottom->getTransientFor();
-		
-	}
+	while (win->isTransient() && win->getTransientFor())
+		win = win->getTransientFor();
+	
+	int i = 1 + countTransients(*win);
 
-	int i = 1;
-	win = bottom;
-	while (win->hasTransient() && win->getTransient() &&
-			win->getTransient() != win) {//prevent infinite loop
-#ifdef DEBUG
-		assert(win != win->getTransient());
-#endif // DEBUG
-		win = win->getTransient();
-		i++;
-	}
+	Stack nstack(i);
+	Stack::iterator stackit = nstack.begin();
+	
+	*(stackit++) = win->getFrameWindow();
+	screen->updateNetizenWindowRaise(win->getClientWindow());
+	if (! win->isIconic()) {
+		Workspace *wkspc = screen->getWorkspace(win->getWorkspaceNumber());
+		wkspc->stackingList.remove(win);
+		wkspc->stackingList.push_front(win);
+	}	
+	
+	raiseAndFillStack(stackit, *win);
 
-	Window *nstack = new Window[i], *curr = nstack;
-	Workspace *wkspc;
-
-	win = bottom;
-	while (1) {
-		*(curr++) = win->getFrameWindow();
-		screen->updateNetizenWindowRaise(win->getClientWindow());
-
-		if (! win->isIconic()) {
-			wkspc = screen->getWorkspace(win->getWorkspaceNumber());
-			wkspc->stackingList.remove(win);
-			wkspc->stackingList.push_front(win);
-		}
-
-		if (! win->hasTransient() || ! win->getTransient() ||
-			win->getTransient() == win) //prevent infinite loop
-			break;
-		
-		win = win->getTransient();
-	}
-
-	screen->raiseWindows(nstack, i);
-
-	delete [] nstack;
+	screen->raiseWindows(nstack);
+	
 }
 
 void Workspace::lowerWindow(FluxboxWindow *w) {
@@ -273,43 +270,24 @@ void Workspace::lowerWindow(FluxboxWindow *w) {
 			&& bottom->getTransientFor() != bottom) //prevent infinite loop
 		bottom = bottom->getTransientFor();
 
-	int i = 1;
+	int i = 1 + countTransients(*w);
 	win = bottom;
-	while (win->hasTransient() && win->getTransient() && 
-			win->getTransient() != win) { //prevent infinite loop
-		win = win->getTransient();
 
-		i++;
+	Stack st(i);
+	Stack::iterator stackit = st.begin();
+	lowerAndFillStack(stackit, *win);
+	(*stackit) = win->getFrameWindow();
+
+	screen->updateNetizenWindowLower(win->getClientWindow());
+	if (! win->isIconic()) {
+		Workspace *wkspc = screen->getWorkspace(win->getWorkspaceNumber());
+		wkspc->stackingList.remove(win);
+		wkspc->stackingList.push_back(win);
 	}
 
-	Window *nstack = new Window[i], *curr = nstack;
-	Workspace *wkspc;
+	XLowerWindow(BaseDisplay::getXDisplay(), st.front());
+	XRestackWindows(BaseDisplay::getXDisplay(), &st[0], st.size());
 
-	while (True) {
-		*(curr++) = win->getFrameWindow();
-		screen->updateNetizenWindowLower(win->getClientWindow());
-
-		if (! win->isIconic()) {
-			wkspc = screen->getWorkspace(win->getWorkspaceNumber());
-			wkspc->stackingList.remove(win);
-			wkspc->stackingList.push_back(win);
-		}
-
-		if (! win->getTransientFor() || 
-			win->getTransientFor() == win)//prevent infinite loop
-			break;
-
-		win = win->getTransientFor();
-	}
-
-	Fluxbox::instance()->grab();
-
-	XLowerWindow(screen->getBaseDisplay()->getXDisplay(), *nstack);
-	XRestackWindows(screen->getBaseDisplay()->getXDisplay(), nstack, i);
-
-	Fluxbox::instance()->ungrab();
-
-	delete [] nstack;
 }
 
 
@@ -583,19 +561,21 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 					if ((*it)->hasTab()) {
 						if (! (*it)->isShaded()) { // not shaded window
 							switch(screen->getTabPlacement()) {
-							case Tab::PTOP:
-								curr_y -= screen->getTabHeight();
-							case Tab::PBOTTOM:
-								curr_h += screen->getTabHeight();
+								case Tab::PTOP:
+									curr_y -= screen->getTabHeight();
+								case Tab::PBOTTOM:
+									curr_h += screen->getTabHeight();
 								break;
-							case Tab::PLEFT:
-								curr_x -= (screen->isTabRotateVertical())
-									? screen->getTabHeight()
-									: screen->getTabWidth();
-							case Tab::PRIGHT:
-								curr_w += (screen->isTabRotateVertical())
-									? screen->getTabHeight()
-									: screen->getTabWidth();
+								case Tab::PLEFT:
+									curr_x -= (screen->isTabRotateVertical())
+										? screen->getTabHeight()
+										: screen->getTabWidth();
+								case Tab::PRIGHT:
+									curr_w += (screen->isTabRotateVertical())
+										? screen->getTabHeight()
+										: screen->getTabWidth();
+								break;
+								case Tab::PNONE:
 								break;
 							}
 						} else { // shaded window
@@ -808,4 +788,56 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 	}
 
 	win->configure(place_x, place_y, win->getWidth(), win->getHeight());
+}
+
+
+void Workspace::raiseAndFillStack(Stack::iterator &stackit, const FluxboxWindow &w) {
+	if (w.getTransients().empty())
+		return;
+
+	std::list<FluxboxWindow *>::const_iterator it = w.getTransients().begin();
+	std::list<FluxboxWindow *>::const_iterator it_end = w.getTransients().end();
+	for (; it != it_end; ++it) {		
+		*stackit++ = (*it)->getFrameWindow();
+		
+		screen->updateNetizenWindowRaise((*it)->getClientWindow());
+
+		if (! (*it)->isIconic()) {
+			Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
+			wkspc->stackingList.remove((*it));
+			wkspc->stackingList.push_front((*it));
+		}
+
+		
+	}
+	
+	it = w.getTransients().begin();
+	for (; it != it_end; ++it)
+		raiseAndFillStack(stackit, *(*it));
+	
+
+}
+
+void Workspace::lowerAndFillStack(Stack::iterator &stackit, const FluxboxWindow &win) {
+	if (win.getTransients().empty()) // nothing to lower and stack
+		return;
+
+	std::list<FluxboxWindow *>::const_reverse_iterator it = win.getTransients().rbegin();
+	std::list<FluxboxWindow *>::const_reverse_iterator it_end = win.getTransients().rend();
+	for (; it != it_end; ++it)
+		lowerAndFillStack(stackit, *(*it));
+	
+	it = win.getTransients().rbegin();
+	
+	for (; it != it_end; ++it) {
+		(*stackit) = (*it)->getFrameWindow();
+		++stackit;
+		screen->updateNetizenWindowLower((*it)->getClientWindow());
+		if (! (*it)->isIconic()) {
+			Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
+			wkspc->stackingList.remove((*it));
+			wkspc->stackingList.push_back((*it));
+		}
+	}
+
 }
