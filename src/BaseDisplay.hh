@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.21 2002/05/17 11:55:31 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.22 2002/07/19 21:14:11 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -154,7 +154,7 @@ public:
 
 	inline Visual *getVisual(void) { return visual; }
 	inline const Window &getRootWindow(void) const { return root_window; }
-	inline const Colormap &getColormap(void) const { return colormap; }
+	inline const Colormap &colormap(void) const { return m_colormap; }
 
 	inline int getDepth(void) const { return depth; }
 	inline int getScreenNumber(void) const { return screen_number; }
@@ -177,7 +177,7 @@ private:
 	BaseDisplay *basedisplay;
 	Visual *visual;
 	Window root_window;
-	Colormap colormap;
+	Colormap m_colormap;
 
 	int depth, screen_number;
 	unsigned int width, height;
