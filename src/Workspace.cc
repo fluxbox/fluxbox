@@ -1,3 +1,6 @@
+// Workspace.cc for Fluxbox
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Workspace.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -19,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.8 2002/02/09 11:48:18 fluxgen Exp $
+// $Id: Workspace.cc,v 1.9 2002/02/09 16:41:53 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -57,13 +60,9 @@ Workspace::Workspace(BScreen *scrn, int i):
 screen(scrn),
 lastfocus(0),
 name(""),
+id(i),
 cascade_x(32), cascade_y(32)
 {
-	screen = scrn;
-
-	cascade_x = cascade_y = 32;
-
-	id = i;
 
 	clientmenu = new Clientmenu(this);
 
@@ -117,10 +116,11 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 				w->getTransientFor()->isVisible())
 			w->getTransientFor()->setInputFocus();
 		else {
-			
-			FluxboxWindow *top = stackingList.front();
-			
-			if (! top && ! top->setInputFocus()) {				
+			FluxboxWindow *top = 0;
+			if (stackingList.size()!=0)
+				top = stackingList.front();
+
+			if (!top || !top->setInputFocus()) {
 				Fluxbox::instance()->setFocusedWindow((FluxboxWindow *) 0);
 				XSetInputFocus(Fluxbox::instance()->getXDisplay(),
 					screen->getToolbar()->getWindowID(),
