@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.19 2003/04/15 14:36:12 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.20 2003/04/16 10:56:37 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -502,24 +502,25 @@ void FbWinFrame::reconfigure() {
                                 m_window.width(), client_height);
         
         
-        if (!m_use_handle) // no need to do anything more
-            return;
+        if (m_use_handle) {
+
         
-        // align handle and grips
-        const int grip_height = m_handle.height();
-        const int grip_width = 20; //TODO
+            // align handle and grips
+            const int grip_height = m_handle.height();
+            const int grip_width = 20; //TODO
         
-        const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
+            const int ypos = m_window.height() - grip_height - m_handle.borderWidth();
         
-        m_grip_left.moveResize(-m_handle.borderWidth(), ypos,
-                               grip_width, grip_height);
+            m_grip_left.moveResize(-m_handle.borderWidth(), ypos,
+                                   grip_width, grip_height);
         
-        m_handle.moveResize(grip_width, ypos,
-                            m_window.width() - grip_width*2 - m_handle.borderWidth()*2, 
-                            grip_height);
+            m_handle.moveResize(grip_width, ypos,
+                                m_window.width() - grip_width*2 - m_handle.borderWidth()*2, 
+                                grip_height);
         
-        m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
-                                grip_width, grip_height);
+            m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
+                                    grip_width, grip_height);
+        }
     }        
 
     // render the theme
@@ -550,14 +551,19 @@ void FbWinFrame::redrawTitle() {
 
     int button_width = label().width()/m_labelbuttons.size();
     //!! TODO: bevel
+    int border_width =  m_labelbuttons.size() != 0 ? 
+        m_labelbuttons.front()->window().borderWidth() : 0;
+
     ButtonList::iterator btn_it = m_labelbuttons.begin();
     ButtonList::iterator btn_it_end = m_labelbuttons.end();
     for (unsigned int last_x = 0;
          btn_it != btn_it_end; 
-         ++btn_it, last_x += button_width) {
-        (*btn_it)->moveResize(last_x, 0,
-                              button_width, label().height());
-        (*btn_it)->setGC(theme().labelTextFocusGC());        
+         ++btn_it, last_x += button_width + border_width) {
+        // since we add border width pixel we should remove
+        // the same size for inside width so we can fit all buttons into label
+        (*btn_it)->moveResize(last_x - border_width, - border_width,
+                              button_width, 
+                              label().height() + border_width);
         (*btn_it)->clear();        
     }
         
@@ -680,6 +686,8 @@ void FbWinFrame::renderTitlebar() {
     ButtonList::iterator btn_it = m_labelbuttons.begin();
     ButtonList::iterator btn_it_end = m_labelbuttons.end();        
     for (; btn_it != btn_it_end; ++btn_it) {
+        (*btn_it)->setGC(theme().labelTextFocusGC());
+        (*btn_it)->window().setBorderWidth(1);
         if (labelpm)
             (*btn_it)->setBackgroundPixmap(labelpm);        
         else
