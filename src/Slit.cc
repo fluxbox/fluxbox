@@ -177,9 +177,9 @@ public:
         return m_client.visible();
     }
     void click(int button, int time) {
-        if (button == 4) { // wheel up
+        if (button == 4 || button == 2) { // wheel up
             m_slit.clientUp(&m_client);
-        } else if (button == 5) { // wheel down
+        } else if (button == 5 || button == 3) { // wheel down
             m_slit.clientDown(&m_client);
         } else {
             m_client.setVisible(!m_client.visible());
