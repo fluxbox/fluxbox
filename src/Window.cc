@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.121 2003/02/19 14:53:38 fluxgen Exp $
+// $Id: Window.cc,v 1.122 2003/02/20 23:17:36 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -483,8 +483,9 @@ void FluxboxWindow::positionWindows() {
     if (decorations.titlebar) {
         m_frame.titlebar().setBorderWidth(screen->getBorderWidth());
         m_frame.showTitlebar();
-    } else
+    } else {
         m_frame.hideTitlebar();
+    }
 
     if (decorations.handle) {
         m_frame.handle().setBorderWidth(screen->getBorderWidth());
@@ -831,7 +832,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         if (tab)
             tab->resize();
 
-        positionWindows();
+        //positionWindows();
         setFocusFlag(focused);
         shaded = false;
         send_event = true;
@@ -1636,10 +1637,12 @@ void FluxboxWindow::popupMenu() {
         m_windowmenu.hide(); 
         return;
     }
+    // move menu directly under titlebar
+    int diff_y = m_frame.titlebar().height() + m_frame.titlebar().borderWidth();
+    if (!decorations.titlebar) // if we don't have any titlebar
+        diff_y = 0;
 
-    m_windowmenu.move(m_last_button_x, 
-                      m_frame.y() + m_frame.titlebar().height() + 
-                      m_frame.titlebar().borderWidth()*2);
+    m_windowmenu.move(m_last_button_x, m_frame.y() + diff_y);
     m_windowmenu.show();
     m_windowmenu.raise();
 }
@@ -1655,7 +1658,7 @@ void FluxboxWindow::restoreGravity() {
         client.x = m_frame.x();
         break;
 
-        // handle Eastward gravity
+    // handle Eastward gravity
     case NorthEastGravity:
     case EastGravity:
     case SouthEastGravity:
@@ -1917,9 +1920,10 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
         upsize();
 
         // reconfigure if the old values changed
-        if ((x != m_frame.x()) || (y != m_frame.y()) ||
-            (w != m_frame.width()) || (h != m_frame.height()))
-            reconfigure();
+        if (x != m_frame.x() || y != m_frame.y() ||
+            w != m_frame.width() || h != m_frame.height()) {
+            moveResize(x, y, w, h);
+        }
 
         break; 
     }
@@ -1927,9 +1931,10 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
     default:
         if (atom == FbAtoms::instance()->getWMProtocolsAtom()) {
             getWMProtocols();
+            //!!TODO  check this area            
             // reset window actions
             screen->setupWindowActions(*this);
-            //!!TODO  check this area
+            
         } 
         break;
     }
@@ -1946,9 +1951,6 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (cr.window != client.window)
         return;
 
-    if (! validateClient())
-        return;
-
     int cx = m_frame.x(), cy = m_frame.y();
     unsigned int cw = m_frame.width(), ch = m_frame.height();
 
@@ -1959,7 +1961,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         cx = cr.x;
 
     if (cr.value_mask & CWY)
-        cy = cr.y - m_frame.titlebar().height();
+        cy = cr.y - (decorations.titlebar ? m_frame.titlebar().height() : 0);
 
     if (cr.value_mask & CWWidth)
         cw = cr.width;
@@ -1967,13 +1969,14 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (cr.value_mask & CWHeight)
         ch = cr.height;
 
-    if (m_frame.x() != cx || m_frame.y() != cy ||
-        m_frame.width() != cw || m_frame.height() != ch) {
-        // the request is for client window so we resize the frame to it first
+
+    // the request is for client window so we resize the frame to it first
+    if (frame().width() != cw || frame().height() != ch)
         frame().resizeForClient(cw, ch);
+    if (frame().x() != cx || frame().y() != cy)
         move(cx, cy);
 
-    }
+
 
     if (cr.value_mask & CWStackMode) {
         switch (cr.detail) {
