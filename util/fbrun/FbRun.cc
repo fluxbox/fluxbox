@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.8 2002/11/27 21:56:56 fluxgen Exp $
+// $Id: FbRun.cc,v 1.9 2002/12/05 00:07:39 fluxgen Exp $
 
 #include "FbRun.hh"
 
 #include "App.hh"
 #include "EventManager.hh"
+#include "Color.hh"
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -37,248 +38,208 @@
 
 using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
-m_font("fixed"),
-m_win(None),
-m_display(FbTk::App::instance()->display()),
-m_bevel(4),
-m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
-m_end(false),
-m_current_history_item(0) {
-	createWindow(x, y, width + m_bevel, m_font.height());
+    m_font("fixed"),
+    m_win((int)0, x, y,  //screen num and position
+          width + m_bevel, m_font.height(),  // size
+          KeyPressMask|ExposureMask), // eventmask
+    m_display(FbTk::App::instance()->display()),
+    m_bevel(4),
+    m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
+    m_end(false),
+    m_current_history_item(0) {
+    // setting nomaximize in local resize
+    resize(width, m_font.height());
+    FbTk::EventManager::instance()->registerEventHandler(*this, m_win.window());
 }
 
 FbRun::~FbRun() {
-	hide();
-	FbTk::EventManager::instance()->unregisterEventHandler(m_win);
-	XDestroyWindow(m_display, m_win);
+    hide();
+    FbTk::EventManager::instance()->unregisterEventHandler(m_win.window());
 }
 
 void FbRun::run(const std::string &command) {
-	//fork and execute program
-	if (!fork()) {
-		setsid();
-		execl("/bin/sh", "/bin/sh", "-c", command.c_str(), 0);
-		exit(0); //exit fork
-	}
+    //fork and execute program
+    if (!fork()) {
+        setsid();
+        execl("/bin/sh", "/bin/sh", "-c", command.c_str(), 0);
+        exit(0); //exit child
+    }
 
-	hide(); // hide gui
+    hide(); // hide gui
 	
-	// save command history to file
-	if (m_runtext.size() != 0) { // no need to save empty command
-		// open file in append mode
-		ofstream outfile(m_history_file.c_str(), ios::app);
-		if (outfile)
-			outfile<<m_runtext<<endl;
-		else 
-			cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
-	}
-	FbTk::App::instance()->end(); // end application
-	m_end = true; // mark end of processing
+    // save command history to file
+    if (m_runtext.size() != 0) { // no need to save empty command
+        // open file in append mode
+        ofstream outfile(m_history_file.c_str(), ios::app);
+        if (outfile)
+            outfile<<m_runtext<<endl;
+        else 
+            cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
+    }
+    FbTk::App::instance()->end(); // end application
+    m_end = true; // mark end of processing
 }
 
 bool FbRun::loadHistory(const char *filename) {
-	if (filename == 0)
-		return false;
-	ifstream infile(filename);
-	if (!infile) {
-		//even though we fail to load file, we should try save to it
-		m_history_file = filename;
-		return false;
-	}
-	// clear old history and load new one from file
-	m_history.clear();
-	// each line is a command
-	string line;
-	while (!infile.eof()) {
-		getline(infile, line);
-		if (line.size()) // don't add empty lines
-			m_history.push_back(line);
-	}
-	// set no current histor to display
-	m_current_history_item = m_history.size();
-	// set history file
-	m_history_file = filename;
-	return true;
+    if (filename == 0)
+        return false;
+    ifstream infile(filename);
+    if (!infile) {
+        //even though we fail to load file, we should try save to it
+        m_history_file = filename;
+        return false;
+    }
+    // clear old history and load new one from file
+    m_history.clear();
+    // each line is a command
+    string line;
+    while (!infile.eof()) {
+        getline(infile, line);
+        if (line.size()) // don't add empty lines
+            m_history.push_back(line);
+    }
+    // set no current histor to display
+    m_current_history_item = m_history.size();
+    // set history file
+    m_history_file = filename;
+    return true;
 }
 
 bool FbRun::loadFont(const string &fontname) {
-	if (!m_font.load(fontname.c_str()))
-		return false;
+    if (!m_font.load(fontname.c_str()))
+        return false;
 
-	// resize to fit new font height
-	resize(m_width, m_font.height() + m_bevel);
-	return true;
+    // resize to fit new font height
+    resize(m_win.width(), m_font.height() + m_bevel);
+    return true;
 }
 
-void FbRun::setForeground(const XColor &color) {
-	XSetForeground(m_display, m_gc, color.pixel);
-	redrawLabel();
+void FbRun::setForeground(const FbTk::Color &color) {
+    XSetForeground(m_display, m_gc, color.pixel());
+    redrawLabel();
 }
 
-void FbRun::setBackground(const XColor &color) {
-	XSetWindowBackground(m_display, m_win, color.pixel);
-	redrawLabel();
+void FbRun::setBackground(const FbTk::Color &color) {
+    m_win.setBackgroundColor(color);
+    redrawLabel();
 }
 
 
 void FbRun::setText(const string &text) {
-	m_runtext = text;
-	redrawLabel();
+    m_runtext = text;
+    redrawLabel();
 }
 
 void FbRun::setTitle(const string &title) {
-	assert(m_win);
-	XStoreName(m_display, m_win, const_cast<char *>(title.c_str()));	
+    m_win.setName(title.c_str());
 }
 
 void FbRun::move(int x, int y) {
-	XMoveWindow(m_display, m_win, x, y);
+    m_win.move(x, y);
 }
 
 void FbRun::resize(size_t width, size_t height) {
-	assert(m_win);
-	XResizeWindow(m_display, m_win, width, height);
-	m_width = width;
-	m_height = height;
-	setNoMaximize();
+    m_win.resize(width, height);	
+    setNoMaximize();
 }
 
 void FbRun::show() {
-	assert(m_win);
-	XMapWindow(m_display, m_win);
+    m_win.show();
 }
 
 void FbRun::hide() {
-	assert(m_win);
-	XUnmapWindow(m_display, m_win);
+    m_win.hide();
 }
 
 void FbRun::redrawLabel() {
-	assert(m_win);
-
-	XClearWindow(m_display, m_win);
-	drawString(m_bevel/2, m_font.ascent() + m_bevel/2,
-		m_runtext.c_str(), m_runtext.size());
+    m_win.clear();
+    drawString(m_bevel/2, m_font.ascent() + m_bevel/2,
+               m_runtext.c_str(), m_runtext.size());
 
 }
 
 void FbRun::drawString(int x, int y,
-	const char *text, size_t len) {
-	assert(m_win);
-	assert(m_gc);
-	// check right boundary
-	// and adjust text drawing
-	size_t text_width = m_font.textWidth(text, len);
-	size_t startpos = 0;
-	if (text_width > m_width) {
-		for (; startpos < len; ++startpos) {
-			if (m_font.textWidth(text+startpos, len-startpos) < m_width)
-				break;
-		}		
-	}
+                       const char *text, size_t len) {
+    assert(m_gc);
 
-	m_font.drawText(m_win, DefaultScreen(m_display), m_gc, text + startpos, len-startpos, x, y);
-}
+    // check right boundary and adjust text drawing
+    size_t text_width = m_font.textWidth(text, len);
+    size_t startpos = 0;
+    if (text_width > m_win.width()) {
+        for (; startpos < len; ++startpos) {
+            if (m_font.textWidth(text+startpos, len-startpos) < m_win.width())
+                break;
+        }		
+    }
 
-
-void FbRun::createWindow(int x, int y, size_t width, size_t height) {
-	m_win = XCreateSimpleWindow(m_display, // display
-		DefaultRootWindow(m_display), // parent windows
-		x, y,
-		width, height,
-		1,  // border_width
-		0,  // border
-		WhitePixel(m_display, DefaultScreen(m_display))); // background
-
-	if (m_win == None)
-		throw string("Failed to create FbRun window!");
-
-	XSelectInput(m_display, m_win, KeyPressMask|ExposureMask);
-	
-	FbTk::EventManager::instance()->registerEventHandler(*this, m_win);
-	
-	setNoMaximize();
-
-	m_width = width;
-	m_height = height;
-
+    m_font.drawText(m_win.window(), DefaultScreen(m_display), m_gc, text + startpos, len-startpos, x, y);
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
-	KeySym ks;
-	char keychar[1];
-	XLookupString(&ke, keychar, 1, &ks, 0);
-	if (ks == XK_Escape) {
-		m_end = true;
-		hide();
-		return; // no more processing
-	} else if (ks == XK_Return) {
-		run(m_runtext);
-		m_runtext = ""; // clear text
-	} else if (ks == XK_BackSpace) {
-		if (m_runtext.size() != 0) { // we can't erase what we don't have ;)
-			m_runtext.erase(m_runtext.size()-1);
-			redrawLabel();
-		}
-	} else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
-		m_runtext+=keychar[0]; // append character
-		redrawLabel(); 
-	} else if (IsCursorKey(ks)) {
+    KeySym ks;
+    char keychar[1];
+    XLookupString(&ke, keychar, 1, &ks, 0);
+    if (ks == XK_Escape) {
+        m_end = true;
+        hide();
+        FbTk::App::instance()->end(); // end program
+        return; // no more processing
+    } else if (ks == XK_Return) {
+        run(m_runtext);
+        m_runtext = ""; // clear text
+    } else if (ks == XK_BackSpace) {
+        if (m_runtext.size() != 0) { // we can't erase what we don't have ;)
+            m_runtext.erase(m_runtext.size()-1);
+            redrawLabel();
+        }
+    } else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
+        m_runtext+=keychar[0]; // append character
+        redrawLabel(); 
+    } else if (IsCursorKey(ks)) {
 		
-		switch (ks) {
-		case XK_Up:
-			prevHistoryItem();
-		break;
-		case XK_Down:
-			nextHistoryItem();
-		break;
-		}
-		redrawLabel();
-	}
+        switch (ks) {
+        case XK_Up:
+            prevHistoryItem();
+            break;
+        case XK_Down:
+            nextHistoryItem();
+            break;
+        }
+        redrawLabel();
+    }
 }
 
 void FbRun::exposeEvent(XExposeEvent &ev) {
-	redrawLabel();
+    redrawLabel();
 }
 
-void FbRun::getSize(size_t &width, size_t &height) {
-	XWindowAttributes attr;
-	XGetWindowAttributes(m_display, m_win, &attr);
-	width = attr.width;
-	height = attr.height;
-}
 
 void FbRun::setNoMaximize() {
-
-	size_t width, height;
-
-	getSize(width, height);
-
-	// we don't need to maximize this window
-	XSizeHints sh;
-	sh.flags = PMaxSize | PMinSize;
-	sh.max_width = width;
-	sh.max_height = height;
-	sh.min_width = width;
-	sh.min_height = height;
-	XSetWMNormalHints(m_display, m_win, &sh);
+    // we don't need to maximize this window
+    XSizeHints sh;
+    sh.flags = PMaxSize | PMinSize;
+    sh.max_width = m_win.width();
+    sh.max_height = m_win.height();
+    sh.min_width = m_win.width();
+    sh.min_height = m_win.height();
+    XSetWMNormalHints(m_display, m_win.window(), &sh);
 }
 
 void FbRun::prevHistoryItem() {
 
-	if (m_current_history_item > 0 && m_history.size() > 0)
-		m_current_history_item--;
-	if (m_current_history_item < m_history.size())
-		m_runtext = m_history[m_current_history_item];
+    if (m_current_history_item > 0 && m_history.size() > 0)
+        m_current_history_item--;
+    if (m_current_history_item < m_history.size())
+        m_runtext = m_history[m_current_history_item];
 }
 
 void FbRun::nextHistoryItem() {
-	m_current_history_item++;
-	if (m_current_history_item >= m_history.size()) {
-		m_current_history_item = m_history.size();
-		m_runtext = "";
-		return;
-	} else 
-		m_runtext = m_history[m_current_history_item];
+    m_current_history_item++;
+    if (m_current_history_item >= m_history.size()) {
+        m_current_history_item = m_history.size();
+        m_runtext = "";
+        return;
+    } else 
+        m_runtext = m_history[m_current_history_item];
 
 }

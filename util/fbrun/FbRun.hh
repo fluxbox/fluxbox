@@ -19,79 +19,79 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.7 2002/11/27 21:56:02 fluxgen Exp $
+// $Id: FbRun.hh,v 1.8 2002/12/05 00:07:38 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
 
 #include "EventHandler.hh"
 #include "Font.hh"
+#include "FbWindow.hh"
 
 #include <string>
 #include <vector>
 
 /**
-	Creates and managed a run window
+   Creates and managed a run window
 */
 class FbRun: public FbTk::EventHandler {
 public:
-	FbRun(int x = 0, int y = 0, size_t width = 200);
-	~FbRun();
-	void handleEvent(XEvent * const ev);
-	void setText(const std::string &text);
-	void setTitle(const std::string &title);
-	void move(int x, int y);
-	void resize(size_t width, size_t height);
-	size_t height() const { return m_height; }
-	size_t width() const { return m_width; }
-	/// hide window
-	void hide();
-	/// show window
-	void show();
-	/// load and reconfigure for new font
-	bool loadFont(const std::string &fontname);
-	void setForeground(const XColor &color);
-	void setBackground(const XColor &color);
-	void setAntialias(bool val) { m_font.setAntialias(val); }
-	const FbTk::Font &font() const { return m_font; }
-	/// execute command and exit
-	void run(const std::string &execstring);
-	/// is this application done?
-	bool end() const { return m_end; }
-	/**
-	  loads history file.
-	  @return true on success, else false
-	*/
-	bool loadHistory(const char *filename);
-	/**
-		@name events
-	*/
-	///@{
-	void exposeEvent(XExposeEvent &ev);
-	void keyPressEvent(XKeyEvent &ev);
-	///@}
+    FbRun(int x = 0, int y = 0, size_t width = 200);
+    ~FbRun();
+    void handleEvent(XEvent * const ev);
+    void setText(const std::string &text);
+    void setTitle(const std::string &title);
+    void move(int x, int y);
+    void resize(size_t width, size_t height);
+    size_t height() const { return m_win.height(); }
+    size_t width() const { return m_win.width(); }
+    /// hide window
+    void hide();
+    /// show window
+    void show();
+    /// load and reconfigure for new font
+    bool loadFont(const std::string &fontname);
+    void setForeground(const FbTk::Color &color);
+    void setBackground(const FbTk::Color &color);
+    void setAntialias(bool val) { m_font.setAntialias(val); }
+    const FbTk::Font &font() const { return m_font; }
+    /// execute command and exit
+    void run(const std::string &execstring);
+    /// is this application done?
+    bool end() const { return m_end; }
+    /**
+       loads history file.
+       @return true on success, else false
+    */
+    bool loadHistory(const char *filename);
+    /**
+       @name events
+    */
+    ///@{
+    void exposeEvent(XExposeEvent &ev);
+    void keyPressEvent(XKeyEvent &ev);
+    ///@}
 	
 private:
-	void nextHistoryItem();
-	void prevHistoryItem();
-	void drawString(int x, int y, const char *text, size_t len);
-	void getSize(size_t &width, size_t &height);
-	void createWindow(int x, int y, size_t width, size_t height);	
-	void redrawLabel();	
-	/// set no maximizable for this window
-	void setNoMaximize();
+    void nextHistoryItem();
+    void prevHistoryItem();
+    void drawString(int x, int y, const char *text, size_t len);
+    void getSize(size_t &width, size_t &height);
+    void createWindow(int x, int y, size_t width, size_t height);	
+    void redrawLabel();	
+    /// set no maximizable for this window
+    void setNoMaximize();
 
-	FbTk::Font m_font; ///< font used to draw command text
-	Window m_win;  ///< toplevel window 
-	Display *m_display;  ///< display connection
-	std::string m_runtext; ///< command to execute
-	size_t m_width, m_height; ///< size of window
-	int m_bevel; ///< distance to window edge from font in pixels
-	GC m_gc; ///< graphic context
-	bool m_end; ///< marks when this object is done
-	std::vector<std::string> m_history; ///< history list of commands
-	size_t m_current_history_item; ///< holds current position in command history
-	std::string m_history_file; ///< holds filename for command history file
+    FbTk::Font m_font; ///< font used to draw command text
+    FbTk::FbWindow m_win;  ///< toplevel window 
+    Display *m_display;  ///< display connection
+    std::string m_runtext; ///< command to execute
+    int m_bevel; ///< distance to window edge from font in pixels
+    GC m_gc; ///< graphic context
+    bool m_end; ///< marks when this object is done
+    std::vector<std::string> m_history; ///< history list of commands
+    size_t m_current_history_item; ///< holds current position in command history
+    std::string m_history_file; ///< holds filename for command history file
 };
 
 #endif // FBRUN_HH
