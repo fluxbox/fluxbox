@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.13 2003/08/11 14:52:10 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.14 2003/08/26 23:52:09 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "FbTk/Theme.hh"
 #include "Screen.hh"
 #include "Menu.hh"
+#include "SetWorkspaceName.hh"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -111,6 +112,16 @@ void ShowRootMenuCmd::execute() {
         screen->getRootmenu()->show();
         screen->getRootmenu()->grabInputFocus();
     }
+}
+
+void SetWorkspaceNameCmd::execute() {
+
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    SetWorkspaceName *win = new SetWorkspaceName(*screen);
+    win->show();
 }
 
 }; // end namespace FbCommands
