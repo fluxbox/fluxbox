@@ -159,10 +159,6 @@ Clicking the workspace name brings up the toolbar menu.
 Using the wheel on workspace name or the clock switches the workspace, this
 could also be enabled for the whole desktop in the fluxbox menu.
 .PP
-When 
-.B desktop warping
-is enabled, dragging a window outside the desktop will change to the next desktop.
-.PP
 Using the toolbar menu you can enter a name for the current workspace (when finished,
 press Enter).
 One can choose the toolbar's position, in which layer it should be see LAYERs below
@@ -1254,5 +1250,8 @@ and
 .nh
 Numerous other languages could be available if someone jumps in.
 .SH SEE ALSO
-.IR bsetroot (1) \" not there, yet ;-(
+.IR bsetroot (1) 
+.IR bsetroot fbrun(1) 
+.IR bsetroot fbsetbg(1) 
+.IR bsetroot fluxstyle(1) 
 
