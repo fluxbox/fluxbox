@@ -20,12 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.6 2003/12/04 23:02:23 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.7 2003/12/06 16:49:06 fluxgen Exp $
 
 #include "ClockTool.hh"
 
 #include "ToolTheme.hh"
 #include "Screen.hh"
+#include "CommandParser.hh"
 
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
@@ -40,7 +41,7 @@
 
 class ClockMenuItem: public FbTk::MenuItem {
 public:
-    ClockMenuItem::ClockMenuItem(ClockTool &tool):
+    explicit ClockMenuItem::ClockMenuItem(ClockTool &tool):
         FbTk::MenuItem(""), m_tool(tool) { 
         // determine 12/24 hour format
         if (m_tool.timeFormat().find("%k") != std::string::npos ||
@@ -85,12 +86,17 @@ public:
                 else if ((pos = newformat.find("%P")) != std::string::npos)
                     newformat.erase(pos, 2);
             }
-            if (clock24hour)
+
+        
+            m_tool.setTimeFormat(newformat);
+
+            if (m_tool.timeFormat().find("%k") != std::string::npos ||
+                m_tool.timeFormat().find("%H") != std::string::npos ||
+                m_tool.timeFormat().find("%T") != std::string::npos)
                 setLabel("Clock: 24h");
             else
                 setLabel("Clock: 12h");
         
-            m_tool.setTimeFormat(newformat);
         } // else some other strange format...so we don't do anything
         FbTk::MenuItem::click(button, time);
     }
@@ -121,7 +127,10 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_timer.start();
 
     m_button.setGC(m_theme.textGC());
-    menu.insert(new ClockMenuItem(*this));
+    FbTk::RefCount<FbTk::Command> saverc(CommandParser::instance().parseLine("saverc"));
+    FbTk::MenuItem *item = new ClockMenuItem(*this);
+    item->setCommand(saverc);
+    menu.insert(item);
     update(0);
 }
 
