@@ -20,10 +20,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarItem.hh,v 1.3 2003/10/31 10:37:09 rathnor Exp $
+// $Id: ToolbarItem.hh,v 1.4 2004/06/20 10:29:51 rathnor Exp $
 
 #ifndef TOOLBARITEM_HH
 #define TOOLBARITEM_HH
+
+#include "FbTk/Subject.hh"
 
 /// An item in the toolbar that has either fixed or realive size to the toolbar
 class ToolbarItem {
@@ -50,11 +52,17 @@ public:
     // some items might be there, but effectively empty, so shouldn't appear
     virtual bool active() { return true; }
 
+    FbTk::Subject &resizeSig() { return m_resize_sig; }
+
     void setType(Type type) { m_type = type; }
     Type type() const { return m_type; }
 
+    class ToolbarItemSubject : public FbTk::Subject {};
+
 private:
     Type m_type;
+
+    ToolbarItemSubject m_resize_sig;
 };
 
 #endif // TOOLBARITEM_HH

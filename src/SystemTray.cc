@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.10 2004/05/04 14:33:37 rathnor Exp $
+// $Id: SystemTray.cc,v 1.11 2004/06/20 10:29:51 rathnor Exp $
 
 #include "SystemTray.hh"
 
@@ -63,6 +63,9 @@ public:
         // if not kde dockapp...
         if (!winclient.screen().isKdeDockapp(winclient.window()))
             return;
+        // if not our screen...
+        if (winclient.screenNumber() != m_tray.window().screenNumber())
+            return;
         winclient.setEventMask(StructureNotifyMask |
                                SubstructureNotifyMask | EnterWindowMask);
         m_tray.addClient(winclient.window());
@@ -95,6 +98,9 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
              SubstructureNotifyMask | SubstructureRedirectMask) {
 
     FbTk::EventManager::instance()->add(*this, m_window);
+
+    // just try to blend in... (better than defaulting to white)
+    m_window.setBackgroundPixmap(ParentRelative);
 
     // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
     char intbuff[16];    
@@ -151,15 +157,26 @@ void SystemTray::move(int x, int y) {
 void SystemTray::resize(unsigned int width, unsigned int height) {
     if (width != m_window.width() ||
         height != m_window.height()) {
-        m_window.resize(SystemTray::width(), height);
-        rearrangeClients();
+        m_window.resize(width, height);
+        if (!m_clients.empty()) {
+            rearrangeClients();
+            resizeSig().notify();
+        }
     }
 }
 
 void SystemTray::moveResize(int x, int y,
                             unsigned int width, unsigned int height) {
-    move(x, y);
-    resize(width, height);
+    if (width != m_window.width() ||
+        height != m_window.height()) {
+        m_window.moveResize(x, y, width, height);
+        if (!m_clients.empty()) {
+            rearrangeClients();
+            resizeSig().notify();
+        }
+    } else {
+        move(x, y);
+    }
 }
 
 void SystemTray::hide() {
@@ -241,8 +258,6 @@ void SystemTray::addClient(Window win) {
     traywin->reparent(m_window, 0, 0);
     traywin->show();
 
-    resize(width(), m_clients.size()*height());
-    
     rearrangeClients();
 }
 
@@ -260,9 +275,8 @@ void SystemTray::removeClient(Window win) {
     resize(width(), height());
     rearrangeClients();
     if (m_clients.empty()) {
-        // so we send configurenotify signal to parent
-        m_window.resize(1, 1);
-        hide();
+        // so we send notify signal to parent
+        resizeSig().notify();
     }
 }
 
@@ -281,11 +295,13 @@ void SystemTray::handleEvent(XEvent &event) {
     } else if (event.type == ConfigureNotify) {
         // we got configurenotify from an client
         // check and see if we need to update it's size
+        // we don't let them be their size, we enforce ours (mwahaha)
         ClientList::iterator it = findClient(event.xconfigure.window);
         if (it != m_clients.end()) {
             if (static_cast<unsigned int>(event.xconfigure.width) != (*it)->width() ||
-                static_cast<unsigned int>(event.xconfigure.height) != (*it)->height())
+                static_cast<unsigned int>(event.xconfigure.height) != (*it)->height()) {
                 (*it)->resize((*it)->width(), (*it)->height());
+            }
         }
     }
 }
@@ -302,6 +318,8 @@ void SystemTray::rearrangeClients() {
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): "<<(*client_it)->width()<<", "<<(*client_it)->height()<<endl;
 #endif // DEBUG
     }
+
+    resize(next_x, height());
 }
 
 void SystemTray::removeAllClients() {

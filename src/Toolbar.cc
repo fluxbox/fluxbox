@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.144 2004/06/16 15:38:19 rathnor Exp $
+// $Id: Toolbar.cc,v 1.145 2004/06/20 10:29:51 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -405,6 +405,7 @@ void Toolbar::reconfigure() {
                 if (item == 0)
                     continue;
                 m_item_list.push_back(item);
+                item->resizeSig().attach(this);
 
             }
             // show all items
@@ -564,9 +565,14 @@ void Toolbar::handleEvent(XEvent &event) {
 
 void Toolbar::update(FbTk::Subject *subj) {
 
-    // either screen reconfigured or theme was reloaded
-    
-    reconfigure();
+    // either screen reconfigured, theme was reloaded
+    // or a tool resized itself
+
+    if (typeid(*subj) == typeid(ToolbarItem::ToolbarItemSubject)) {
+        rearrangeItems();
+    } else {
+        reconfigure();
+    }
 }
 
 void Toolbar::setPlacement(Toolbar::Placement where) {
@@ -921,6 +927,8 @@ void Toolbar::rearrangeItems() {
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
         if (!(*item_it)->active()) {
             (*item_it)->hide();
+            // make sure it still gets told the toolbar height
+            (*item_it)->resize(1, height());  // width of 0 changes to 1 anyway
             continue;
         }
         int borderW = (*item_it)->borderWidth();
@@ -931,7 +939,6 @@ void Toolbar::rearrangeItems() {
             next_x += last_bw;
         last_bw = borderW;
 
-        (*item_it)->show();
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
             int extra = 0;
             if (rounding_error != 0) { // distribute rounding error over all relatives
@@ -944,6 +951,7 @@ void Toolbar::rearrangeItems() {
             (*item_it)->moveResize(next_x - borderW, -borderW,
                                    (*item_it)->width(), height()); 
         }
+        (*item_it)->show();
         next_x += (*item_it)->width();
     }
     // unlock
