@@ -684,6 +684,7 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         frame.x = head_x + head_w - frame.width - border_width*2;
         frame.y = head_y;
         frame.x_hidden = frame.x;
+        frame.y_hidden = head_y + bevel_width - border_width - frame.height;
         if (m_shape.get())
             m_shape->setPlaces(Shape::BOTTOMRIGHT | Shape::BOTTOMLEFT);
         break;
