@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.151 2003/05/18 22:04:06 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.152 2003/06/08 00:13:41 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -576,7 +576,8 @@ void Fluxbox::eventLoop() {
             XEvent e;
             XNextEvent(display(), &e);
 
-            if (last_bad_window != None && e.xany.window == last_bad_window) {
+            if (last_bad_window != None && e.xany.window == last_bad_window && 
+                e.type != DestroyNotify) { // we must let the actual destroys through
 #ifdef DEBUG
                 cerr<<"Fluxbox::eventLoop(): removing bad window from event queue"<<endl;
 #endif // DEBUG

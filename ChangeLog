@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/06/08:
+   * Fix bug that sometimes left window frames after window closed (Simon)
+     fluxbox.cc
 *03/06/06:
    * Fixes and improvements from Han (Simon, thanks Han)
      fluxbox-generate_menu fbsetbg
