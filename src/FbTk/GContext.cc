@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.cc,v 1.2 2003/09/10 21:27:02 fluxgen Exp $
+// $Id: GContext.cc,v 1.3 2003/09/11 19:57:38 fluxgen Exp $
 
 #include "GContext.hh"
 
@@ -33,8 +33,8 @@ namespace FbTk {
 
 GContext::GContext(const FbTk::FbDrawable &drawable): 
     m_gc(XCreateGC(FbTk::App::instance()->display(),
-                     drawable.drawable(),
-                     0, 0)) {
+                   drawable.drawable(),
+                   0, 0)) {
     setGraphicsExposure(false);
 }
 
@@ -73,6 +73,9 @@ void GContext::setFont(const FbTk::Font &font) {
     //!! TODO
 }
 
+void GContext::setFont(int fid) {
+    XSetFont(FbTk::App::instance()->display(), m_gc, fid);
+}
 void GContext::setClipMask(const FbTk::FbPixmap &mask) {
     XSetClipMask(FbTk::App::instance()->display(), m_gc,
                  mask.drawable());
@@ -87,5 +90,16 @@ void GContext::setGraphicsExposure(bool flag) {
     XSetGraphicsExposures(FbTk::App::instance()->display(), m_gc, 
                           flag);
 }
+
+void GContext::setFunction(int func) {
+    XSetFunction(FbTk::App::instance()->display(), m_gc,
+                 func);
+}
+
+void GContext::setSubwindowMode(int mode) {
+    XSetSubwindowMode(FbTk::App::instance()->display(), m_gc,
+                      mode);
+}
+
 
 } // end namespace FbTk

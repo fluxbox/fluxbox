@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.2 2003/09/10 21:27:02 fluxgen Exp $
+// $Id: GContext.hh,v 1.3 2003/09/11 19:57:38 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -47,11 +47,16 @@ public:
     void setForeground(long pixel_value);
     void setBackground(const FbTk::Color &color);
     void setBackground(long pixel_value);
+    /// not implemented
     void setFont(const FbTk::Font &font);
+    /// set font id
+    void setFont(int fid);
     void setClipMask(const FbTk::FbPixmap &pm);
     void setClipOrigin(int x, int y);
     void setGraphicsExposure(bool value);
-    
+    void setFunction(int func);
+    void setSubwindowMode(int mode);
+
     GC gc() const { return m_gc; }
 
 private:
