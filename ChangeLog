@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/17:
+   * Fixed autohide bug in toolbar (Thanks MrChuoi)
+     Toolbar.cc, ArrowButton.hh/cc
+   * Fixed slit client bug (Thanks MrChuoi)
+     Slit.cc
+   * Fixed cursor for grips (Thanks MrChuoi)
+     Window.cc
+   * Fixed minor bug in FbTk::EventManager (Thanks MrChuoi)
+     FbTk/EventManager.cc
 *03/05/16:
    * Fixed logging file and better info message (Henrik)
      New argument to fluxbox -log <filename>
