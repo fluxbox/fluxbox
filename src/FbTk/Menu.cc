@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.25 2003/07/02 05:26:14 fluxgen Exp $
+// $Id: Menu.cc,v 1.26 2003/07/03 12:23:28 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1259,6 +1259,33 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     }
 }
 
+void Menu::enterSubmenu() {
+    if (which_press < 0 || which_press >= menuitems.size())
+        return;
+
+    Menu *submenu = menuitems[which_press]->submenu();
+    if (submenu == 0)
+        return;
+
+    submenu->grabInputFocus();
+    submenu->which_press = -1; // so we land on 0 after nextItem()
+    submenu->nextItem();
+}
+
+void Menu::enterParent() {
+    if (which_press < 0 || which_press >= menuitems.size() || parent() == 0)
+        return;
+
+    Menu *submenu = menuitems[which_press]->submenu();
+    if (submenu)
+        submenu->menu.window.hide();
+
+    drawItem(which_press, false, true, true);
+    which_press = -1; // dont select any in this 
+    // return focus to parent but keep this window open
+    parent()->grabInputFocus();
+}
+
 void Menu::keyPressEvent(XKeyEvent &event) {
     KeySym ks;
     char keychar[1];
@@ -1276,27 +1303,39 @@ void Menu::keyPressEvent(XKeyEvent &event) {
     case XK_Down:
         nextItem();
         break;
-    case XK_Left:
-        if (which_press >= 0 && which_press < menuitems.size() &&
-            m_parent != 0) {
-            if (menuitems[which_press]->submenu())
-                menuitems[which_press]->submenu()->menu.window.hide();
-            drawItem(which_press, false, true, true);
-            m_parent->grabInputFocus();
+    case XK_Left: // enter submenu or leave this menu and enter parent
+        // if we have a submenu we should determine if 
+        // we should open it or close this and enter parent depending on which
+        // side the parent is. 
+        // if parent on the left -> enter parent
+        // if parent on the right -> enter submenu of this item
+        if (which_press >= 0 && which_press < menuitems.size()) {
+            Menu *submenu = menuitems[which_press]->submenu();
+            if (parent() && parent()->x() < x()) // parent on the left
+                enterParent();
+            else if (submenu) // else parent on the right and submenu on the left
+                enterSubmenu();
         }
         break;
-    case XK_Right:
-        if (which_press >= 0 && which_press < menuitems.size() &&
-            menuitems[which_press]->submenu()) {
-            menuitems[which_press]->submenu()->grabInputFocus();
-            menuitems[which_press]->submenu()->which_press = -1;
-            menuitems[which_press]->submenu()->nextItem();
+    case XK_Right: // enter submenu or leave this menu and enter parent
+        // if we have a submenu we should determine if 
+        // we should open it or close this and enter parent depending on which
+        // side the parent is.
+        // if parent on the left -> enter submenu of this item
+        // parent on the right -> leave this menu and enter parent
+        if (which_press >= 0 && which_press < menuitems.size()) {
+            Menu *submenu = menuitems[which_press]->submenu();
+            if (parent() && parent()->x() > x()) // parent on the right
+                enterParent();
+            else if (submenu) // else parent on the left and submenu on the right
+                enterSubmenu();
         }
         break;
-    case XK_Escape:
+    case XK_Escape: // close menu
         hide();
         break;
     case XK_Return:
+        // send fake button 1 click
         if (which_press >= 0 && which_press < menuitems.size()) {
             menuitems[which_press]->click(1, event.time);
             itemSelected(1, which_press);

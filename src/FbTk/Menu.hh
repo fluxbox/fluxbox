@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.16 2003/07/02 05:26:45 fluxgen Exp $
+// $Id: Menu.hh,v 1.17 2003/07/03 12:23:28 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -89,6 +89,8 @@ public:
     void nextItem();
     /// select previous item
     void prevItem();
+    void enterSubmenu();
+    void enterParent();
 
     void disableTitle();
     void enableTitle();
