@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.16 2002/12/14 08:27:54 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.17 2002/12/14 23:58:13 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -37,12 +37,15 @@ Options:
 
     -k  Insert a kde menu
     -g  Add a gnome menu
+    -B  enable backgroundmenu
+
     -m  Menu-title; default is "Fluxbox"
     -r  Don't remove empty menu-entries; Better for templates.
     -o  Outputfile; default is ~/.fluxbox/menu
     -t  Favourite terminal
     -b  Favourite browser
     -w  Homepage for console-browsers. Default is fluxbox.org.
+
 
     -h  Display this help
     -a  Display the authors of this script
@@ -94,7 +97,7 @@ find_it() {
 }
 
 append() {
-    echo "	$*" >> ${FILENAME}
+    echo "      $*" >> ${FILENAME}
 }
 
 append_menu() {
@@ -150,8 +153,9 @@ mv -f ${FILENAME}.tmp ${FILENAME}
 options="$@"
 
 # Get options.
-while getopts ":khragb:t:p:w:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
+while getopts ":Bkhragb:t:p:w:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
    case "${COMMAND_LINE_ARGUMENT}" in
+      B) BACKGROUNDMENUITEM=yes ;;
       k) KDEMENU=yes ;;
       g) GNOMEMENU=yes ;;
       t) MY_TERM=${OPTARG};;
@@ -261,6 +265,8 @@ fi
 
 
 # menu defaults (if translation forget to set one of them)
+BACKGROUNDMENU="Backgrounds"
+BACKGROUNDMENUTITLE="Set the Background"
 BROWSERMENU="Browsers"
 CONFIGUREMENU="Configure"
 EDITORMENU="Editors"
@@ -287,6 +293,8 @@ XUTILSMENU="X-utils"
 case ${LC_ALL} in
         ru_RU*) #Russian locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Backgrounds"
+                #BACKGROUNDMENUTITLE="Set the Background"
                 BROWSERMENU="‚“¡’⁄≈“Ÿ"
                 CONFIGUREMENU="Ó¡”‘“œ À¡"
                 EDITORMENU="Ú≈ƒ¡À‘œ“Ÿ"
@@ -308,6 +316,8 @@ case ${LC_ALL} in
         ;;
         sv_SE*) #Swedish locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Backgrounds"
+                #BACKGROUNDMENUTITLE="Set the Background"
                 BROWSERMENU="Browsers"
                 CONFIGUREMENU="Konfiguration"
                 EDITORMENU="Editorer"
@@ -329,6 +339,8 @@ case ${LC_ALL} in
         ;;
         nl_NL*) #Nederlandse locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Achtergrond"
+                #BACKGROUNDMENUTITLE="Kies een achtergrond"
                 BROWSERMENU="Browsers"
                 CONFIGUREMENU="Instellingen"
                 EDITORMENU="Editors"
@@ -340,16 +352,18 @@ case ${LC_ALL} in
                 MISCMENU="Onregelmatig"
                 MUSICMENU="Muziek"
                 NETMENU="Net"
-                RELOADITEM="Vernieuwen"
+                RELOADITEM="Vernieuw instellingen"
                 RESTARTITEM="Restart"
                 STYLEMENU="Stylen"
-                STYLEMENUTITLE="Kies een styl..."
+                STYLEMENUTITLE="Kies een styl"
                 TERMINALMENU="Terminals"
                 WORKSPACEMENU="Werkveld Lijst"
                 XUTILSMENU="X-utils"
         ;;
         fi_FI*) #Finnish locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Backgrounds"
+                #BACKGROUNDMENUTITLE="Set the Background"
                 BROWSERMENU="Selaimet"
                 CONFIGUREMENU="Konfigurointi"
                 EDITORMENU="Editorit"
@@ -371,6 +385,8 @@ case ${LC_ALL} in
         ;;
         ja_JP*) #Japanese locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Backgrounds"
+                #BACKGROUNDMENUTITLE="Set the Background"
                 BROWSERMENU="•÷•È•¶•∂"
                 CONFIGUREMENU="¿ﬂƒÍ"
                 EDITORMENU="•®•«•£•ø"
@@ -392,6 +408,8 @@ case ${LC_ALL} in
         ;;
         fr_FR*) # french locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Backgrounds"
+                #BACKGROUNDMENUTITLE="Set the Background"
                 BROWSERMENU="Navigateurs"
                 CONFIGUREMENU="Configurer"
                 EDITORMENU="Editeurs"
@@ -413,6 +431,8 @@ case ${LC_ALL} in
         ;;
         it_IT*) # italian locales
                 #OFFICEMENU="Office"
+                #BACKGROUNDMENU="Backgrounds"
+                #BACKGROUNDMENUTITLE="Set the Background"
                 BROWSERMENU="Browsers"
                 CONFIGUREMENU="Configurazione"
                 EDITORMENU="Editori"
@@ -584,8 +604,15 @@ fi
             append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
                 append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
                 append "[stylesdir] (~/.fluxbox/styles)"
-
             append_menu_end
+
+            if [ $BACKGROUNDMENUITEM="yes" ];then
+                append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
+                for i in ~/.fluxbox/backgrounds/* ; do
+                    append "[exec] (`basename "$i"`) {bsetbg -f $i }"
+                done
+                append_menu_end
+            fi
 
             append "[workspaces]   (${WORKSPACEMENU})"
 
@@ -600,7 +627,7 @@ fi
                 find_it xmessage append \
                     "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
             find_it fbrun append "[exec] (Run) {fbrun}"
-	    find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu $options}"
+            find_it fluxbox-generate_menu append "[exec] (Regen menu) {fluxbox-generate_menu $options}"
         append_menu_end
 
             append "[reconfig] (${RELOADITEM})"
