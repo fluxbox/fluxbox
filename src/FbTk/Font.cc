@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.11 2004/08/18 16:30:33 rathnor Exp $
+//$Id: Font.cc,v 1.12 2004/08/25 10:03:09 akir Exp $
 
 
 #include "StringUtil.hh"
@@ -94,10 +94,13 @@ char* recode(iconv_t cd,
                     const char *msg, size_t size) {
 
     // If empty message, yes this can happen, return
-    if(strlen(msg) == 0) 
+    if(strlen(msg) == 0 || size == 0) 
         return 0;
 
-    size_t inbytesleft = strlen(msg);
+    if(strlen(msg) < size)
+        size = strlen(msg);
+    
+    size_t inbytesleft = size;
     size_t outbytesleft = 4*inbytesleft;
     char *new_msg = new char[outbytesleft];
     char *new_msg_ptr = new_msg;

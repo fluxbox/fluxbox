@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/25:
+	* Fix to draw Cursors in Textboxes correctly again (Mathias)
 *04/08/22:
   * Preliminary basic support for icons in fluxbox-generate_menu (Han)
     - put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm
