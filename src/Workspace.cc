@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.18 2002/04/09 23:18:12 fluxgen Exp $
+// $Id: Workspace.cc,v 1.19 2002/05/07 13:57:09 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -43,13 +43,8 @@
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
 
-#ifdef		HAVE_STDIO_H
-#	include <stdio.h>
-#endif // HAVE_STDIO_H
-
-#ifdef		STDC_HEADERS
-#	include <string.h>
-#endif // STDC_HEADERS
+#include <stdio.h>
+#include <string.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -58,15 +53,15 @@
 #include <iostream>
 using namespace std;
 
+
 Workspace::Workspace(BScreen *scrn, unsigned int i):
 screen(scrn),
 lastfocus(0),
+m_clientmenu(this),
 m_name(""),
 m_id(i),
 cascade_x(32), cascade_y(32)
 {
-
-	clientmenu = new Clientmenu(this);
 
 	char *tmp;
 	screen->getNameOfWorkspace(m_id, &tmp);
@@ -78,7 +73,7 @@ cascade_x(32), cascade_y(32)
 
 
 Workspace::~Workspace() {
-	delete clientmenu;
+
 }
 
 
@@ -96,23 +91,34 @@ const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 
 	//insert window after the currently focused window	
 	FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
+
 	//if there isn't any window that's focused, just add it to the end of the list
 	if (focused == 0) {
 		windowList.push_back(w);
+		//Add client to clientmenu
+		m_clientmenu.insert(w->getTitle().c_str());
 	} else {
 		Windows::iterator it = windowList.begin();
-		for (; it != windowList.end(); ++it) {
+		size_t client_insertpoint=0;
+		for (; it != windowList.end(); ++it, ++client_insertpoint) {
 			if (*it == focused) {
-				++it;
+				++it;				
 				break;
 			}
 		}
+
 		windowList.insert(it, w);
+		//Add client to clientmenu
+		m_clientmenu.insert(w->getTitle().c_str(), client_insertpoint);
+		
+
 	}
-
-	clientmenu->insert(w->getTitle().c_str());
-	clientmenu->update();
-
+	
+	
+	
+	//update menugraphics
+	m_clientmenu.update();
+	
 	screen->updateNetizenWindowAdd(w->getClientWindow(), m_id);
 
 	raiseWindow(w);
@@ -159,8 +165,8 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 		}
 	}
 
-	clientmenu->remove(w->getWindowNumber());
-	clientmenu->update();
+	m_clientmenu.remove(w->getWindowNumber());
+	m_clientmenu.update();
 
 	screen->updateNetizenWindowDel(w->getClientWindow());
 
@@ -294,7 +300,7 @@ void Workspace::lowerWindow(FluxboxWindow *w) {
 
 
 void Workspace::reconfigure(void) {
-	clientmenu->reconfigure();
+	m_clientmenu.reconfigure();
 
 	Windows::iterator it = windowList.begin();
 	Windows::iterator it_end = windowList.end();
@@ -305,10 +311,15 @@ void Workspace::reconfigure(void) {
 }
 
 
-FluxboxWindow *Workspace::getWindow(unsigned int index) const{
+const FluxboxWindow *Workspace::getWindow(unsigned int index) const {
 	if (index < windowList.size())
 		return windowList[index];
+	return 0;
+}
 
+FluxboxWindow *Workspace::getWindow(unsigned int index) {
+	if (index < windowList.size())
+		return windowList[index];
 	return 0;
 }
 
@@ -319,7 +330,7 @@ const int Workspace::getCount(void) const {
 
 
 void Workspace::update(void) {
-	clientmenu->update();
+	m_clientmenu.update();
 	screen->getToolbar()->redrawWindowLabel(True);
 }
 
@@ -353,8 +364,8 @@ void Workspace::setName(const char *name) {
 	
 	screen->updateWorkspaceNamesAtom();
 	
-	clientmenu->setLabel(m_name.c_str());
-	clientmenu->update();
+	m_clientmenu.setLabel(m_name.c_str());
+	m_clientmenu.update();
 }
 
 //------------ shutdown ---------
