@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.11 2003/08/27 20:13:32 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.12 2003/08/28 13:57:16 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -56,7 +56,7 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     *m_bevel_width = 0;
     *m_alpha = 255;
     *m_shape = false;
-
+    *m_height = 0;
 }
 
 ToolbarTheme::~ToolbarTheme() {
