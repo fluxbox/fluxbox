@@ -1,5 +1,5 @@
 // SystemTray.cc
-// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -24,6 +24,7 @@
 #include "SystemTray.hh"
 
 #include "FbTk/EventManager.hh"
+#include "FbTk/ImageControl.hh"
 
 #include "AtomHandler.hh"
 #include "fluxbox.hh"
@@ -49,7 +50,7 @@ public:
     SystemTrayHandler(SystemTray &tray):m_tray(tray) {
     }
     // client message is the only thing we care about
-    bool checkClientMessage(const XClientMessageEvent &ce, 
+    bool checkClientMessage(const XClientMessageEvent &ce,
                             BScreen * screen, WinClient * const winclient) {
         // must be on the same screen
         if ((screen && screen->screenNumber() != m_tray.window().screenNumber()) ||
@@ -60,11 +61,11 @@ public:
 
     void initForScreen(BScreen &screen) { };
     void setupFrame(FluxboxWindow &win) { };
-    void setupClient(WinClient &winclient) { 
+    void setupClient(WinClient &winclient) {
         // must be on the same screen
         if (winclient.screenNumber() != m_tray.window().screenNumber())
             return;
-            
+
         // we dont want a managed window
         if (winclient.fbwindow() != 0)
             return;
@@ -100,23 +101,25 @@ private:
     SystemTray &m_tray;
 };
 
-SystemTray::SystemTray(const FbTk::FbWindow &parent):
+SystemTray::SystemTray(const FbTk::FbWindow& parent, ButtonTheme& theme, BScreen& screen):
     ToolbarItem(ToolbarItem::FIXED),
-    m_window(parent, 0, 0, 1, 1, ExposureMask | ButtonPressMask | ButtonReleaseMask | 
-             SubstructureNotifyMask | SubstructureRedirectMask) {
+    m_window(parent, 0, 0, 1, 1, ExposureMask | ButtonPressMask | ButtonReleaseMask |
+             SubstructureNotifyMask | SubstructureRedirectMask),
+    m_theme(theme),
+    m_screen(screen),
+    m_pixmap(0) {
 
     FbTk::EventManager::instance()->add(*this, m_window);
+    m_theme.reconfigSig().attach(this);
 
-    // just try to blend in... (better than defaulting to white)
-    m_window.setBackgroundPixmap(ParentRelative);
+    Fluxbox* fluxbox = Fluxbox::instance();
+    Display *disp = fluxbox->display();
 
     // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
     char intbuff[16];
     sprintf(intbuff, "%d", m_window.screenNumber());
     std::string atom_name("_NET_SYSTEM_TRAY_S");
     atom_name += intbuff; // append number
-
-    Display *disp = FbTk::App::instance()->display();
 
     // get selection owner and see if it's free
     Atom tray_atom = XInternAtom(disp, atom_name.c_str(), False);
@@ -134,11 +137,14 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
 #endif // DEBUG
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_window.window(), CurrentTime);
+
     m_handler.reset(new SystemTrayHandler(*this));
-    Fluxbox::instance()->addAtomHandler(m_handler.get(), atom_name);
-    Window root_window = RootWindow(disp, m_window.screenNumber());
+
+    fluxbox->addAtomHandler(m_handler.get(), atom_name);
+
 
     // send selection owner msg
+    Window root_window = m_screen.rootWindow().window();
     XEvent ce;
     ce.xclient.type = ClientMessage;
     ce.xclient.message_type = XInternAtom(disp, "MANAGER", False);
@@ -153,12 +159,17 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
 
     XSendEvent(disp, root_window, false, StructureNotifyMask, &ce);
 
+    update(0);
 }
 
 SystemTray::~SystemTray() {
     // remove us, else fluxbox might delete the memory too
     Fluxbox::instance()->removeAtomHandler(m_handler.get());
     removeAllClients();
+
+    if (m_pixmap)
+        m_screen.imageControl().removeImage(m_pixmap);
+
     // ~FbWindow cleans EventManager
 }
 
@@ -196,11 +207,13 @@ void SystemTray::hide() {
 }
 
 void SystemTray::show() {
+
+    update(0);
     m_window.show();
 }
 
 unsigned int SystemTray::width() const {
-    return m_clients.size()*height();
+    return m_clients.size()* (height() - 2 * m_theme.border().width());
 }
 
 unsigned int SystemTray::height() const {
@@ -216,7 +229,7 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
     //    static const int SYSTEM_TRAY_BEGIN_MESSAGE =  1;
     //    static const int SYSTEM_TRAY_CANCEL_MESSAGE = 2;
 
-    if (event.message_type == 
+    if (event.message_type ==
         XInternAtom(FbTk::App::instance()->display(), "_NET_SYSTEM_TRAY_OPCODE", False)) {
 
         int type = event.data.l[1];
@@ -264,8 +277,8 @@ void SystemTray::addClient(Window win) {
     XWindowAttributes attr;
     attr.screen = 0;
     if (XGetWindowAttributes(FbTk::App::instance()->display(),
-                             win, &attr) != 0 && 
-        attr.screen != 0 && 
+                             win, &attr) != 0 &&
+        attr.screen != 0 &&
         XScreenNumberOfScreen(attr.screen) != window().screenNumber()) {
         return;
     }
@@ -313,12 +326,13 @@ void SystemTray::removeClient(Window win) {
 
 void SystemTray::exposeEvent(XExposeEvent &event) {
     m_window.clear();
+    update(0);
 }
 
 void SystemTray::handleEvent(XEvent &event) {
     if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window);
-    } else if (event.type == UnmapNotify && event.xany.send_event) { 
+    } else if (event.type == UnmapNotify && event.xany.send_event) {
         // we ignore server-generated events, which can occur
         // on restart. The ICCCM says that a client must send
         // a synthetic event for the withdrawn state
@@ -326,7 +340,7 @@ void SystemTray::handleEvent(XEvent &event) {
     } else if (event.type == ConfigureNotify) {
         // we got configurenotify from an client
         // check and see if we need to update it's size
-        // and we must reposition and resize them to fit 
+        // and we must reposition and resize them to fit
         // our toolbar
         ClientList::iterator it = findClient(event.xconfigure.window);
         if (it != m_clients.end()) {
@@ -345,15 +359,19 @@ void SystemTray::handleEvent(XEvent &event) {
 }
 
 void SystemTray::rearrangeClients() {
-    // move and resize clients    
+    // move and resize clients
     ClientList::iterator client_it = m_clients.begin();
     ClientList::iterator client_it_end = m_clients.end();
     int next_x = 0;
-    for (; client_it != client_it_end; ++client_it, next_x += height()) {
-        (*client_it)->moveResize(next_x, 0, height(), height());
+    const unsigned int h = height();
+    const unsigned int b = m_theme.border().width();
+    for (; client_it != client_it_end;
+         ++client_it, next_x += h - 2 * b) {
+        (*client_it)->moveResize(next_x, b, h - b, h - b);
     }
 
     resize(next_x, height());
+    update(0);
 }
 
 void SystemTray::removeAllClients() {
@@ -364,5 +382,36 @@ void SystemTray::removeAllClients() {
         m_clients.back()->hide();
         delete m_clients.back();
         m_clients.pop_back();
+    }
+}
+
+void SystemTray::update(FbTk::Subject* subject) {
+
+    if (!m_theme.texture().usePixmap()) {
+        m_window.setBackgroundColor(m_theme.texture().color());
+    }
+    else {
+        if(m_pixmap)
+            m_screen.imageControl().removeImage(m_pixmap);
+        m_pixmap = m_screen.imageControl().renderImage(width(), height(),
+                                                       m_theme.texture());
+        m_window.setBackgroundPixmap(m_pixmap);
+    }
+
+    // "themereconfigure"
+    if (subject) {
+        ClientList::iterator client_it = m_clients.begin();
+        ClientList::iterator client_it_end = m_clients.end();
+        int next_x = 0;
+        const unsigned int h = height();
+        const unsigned int b = m_theme.border().width();
+        for (; client_it != client_it_end;
+             ++client_it, next_x += h - 2 * b) {
+
+            // maybe not the best solution (yet), force a refresh of the
+            // background of the client
+            (*client_it)->hide();
+            (*client_it)->show();
+        }
     }
 }

@@ -1,5 +1,5 @@
 // SystemTray.hh
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -27,8 +27,11 @@
 
 #include "FbTk/FbWindow.hh"
 #include "FbTk/EventHandler.hh"
+#include "FbTk/Observer.hh"
 
 #include "ToolbarItem.hh"
+#include "ButtonTheme.hh"
+#include "Screen.hh"
 
 #include <X11/Xlib.h>
 
@@ -36,10 +39,10 @@
 
 class AtomHandler;
 
-class SystemTray: public ToolbarItem, public FbTk::EventHandler {
+class SystemTray: public ToolbarItem, public FbTk::EventHandler, public FbTk::Observer {
 public:
 
-    explicit SystemTray(const FbTk::FbWindow &parent);
+    explicit SystemTray(const FbTk::FbWindow &parent, ButtonTheme &theme, BScreen& screen);
     virtual ~SystemTray();
 
     void move(int x, int y);
@@ -69,6 +72,9 @@ public:
     inline void updateSizing() {}
 
 private:
+
+    void update(FbTk::Subject *subj);
+    
     typedef std::list<FbTk::FbWindow *> ClientList;
     ClientList::iterator findClient(Window win);
 
@@ -76,6 +82,9 @@ private:
     void removeAllClients();
 
     FbTk::FbWindow m_window;
+    ButtonTheme& m_theme;
+    BScreen& m_screen;
+    Pixmap m_pixmap;
 
     std::auto_ptr<AtomHandler> m_handler;
 

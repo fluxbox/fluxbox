@@ -1,5 +1,5 @@
 // ToolFactory.cc for Fluxbox
-// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -77,6 +77,8 @@ ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
     m_clock_theme(screen.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
     m_button_theme(new ButtonTheme(screen.screenNumber(), "toolbar.button", "Toolbar.Button", 
                                    "toolbar.clock", "Toolbar.Clock")),
+    m_systray_theme(new ButtonTheme(screen.screenNumber(), "toolbar.systray", "Toolbar.Systray",
+                                    "toolbar.clock", "Toolbar.Systray")),
     m_workspace_theme(new WorkspaceNameTheme(screen.screenNumber(), "toolbar.workspace", "Toolbar.Workspace")),
     m_iconbar_theme(screen.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar") {
 
@@ -97,10 +99,9 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         witem->button().setOnClick(showmenu);
         item = witem;
     } else if (name == "iconbar") {
-        item = new IconbarTool(parent, m_iconbar_theme, 
-                               screen(), tbar.menu());
+        item = new IconbarTool(parent, m_iconbar_theme, screen(), tbar.menu());
     } else if (name == "systemtray") {
-        item = new SystemTray(parent);
+        item = new SystemTray(parent, dynamic_cast<ButtonTheme &>(*m_systray_theme), screen());
     } else if (name == "clock") {
         item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
     } else if (name == "nextworkspace" || 
