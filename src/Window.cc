@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.295 2004/08/10 19:18:48 fluxgen Exp $
+// $Id: Window.cc,v 1.296 2004/08/13 12:39:02 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -301,7 +301,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
 
 FluxboxWindow::~FluxboxWindow() {
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<")"<<endl;
+    cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<", "<<title()<<")"<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): num clients = "<<numClients()<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): curr client = "<<m_client<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
@@ -2031,6 +2031,9 @@ bool FluxboxWindow::isLowerTab() const {
 void FluxboxWindow::handleEvent(XEvent &event) {
     switch (event.type) {
     case ConfigureRequest:
+#ifdef DEBUG
+        cerr<<"ConfigureRequest("<<title()<<")"<<endl;
+#endif // DEBUG
         configureRequestEvent(event.xconfigurerequest);
         break;
     case MapNotify:
@@ -2041,6 +2044,9 @@ void FluxboxWindow::handleEvent(XEvent &event) {
         //        mapRequestEvent(event.xmaprequest);
         //break;
     case PropertyNotify: {
+#ifdef DEBUG
+        cerr<<"PropertyNotify("<<title()<<")"<<endl;
+#endif // DEBUG
         WinClient *client = findClient(event.xproperty.window);
         if (client) {
             propertyNotifyEvent(*client, event.xproperty.atom);
@@ -2052,6 +2058,9 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 #ifdef SHAPE
         if (Fluxbox::instance()->haveShape() && 
             event.type == Fluxbox::instance()->shapeEventbase() + ShapeNotify) {
+#ifdef DEBUG
+            cerr<<"ShapeNotify("<<title()<<")"<<endl;
+#endif // DEBUG
             XShapeEvent *shape_event = (XShapeEvent *)&event;
 
             if (shape_event->kind != ShapeBounding)
@@ -2243,13 +2252,29 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         break;
 
     case XA_WM_NORMAL_HINTS: {
+#ifdef DEBUG
+        cerr<<"XA_WM_NORMAL_HINTS("<<title()<<")"<<endl;
+#endif // DEBUG
+        int old_max_width = client.max_width;
+        int old_min_width = client.min_width;
+        int old_min_height = client.min_height;
+        int old_max_height = client.max_height;
+        bool changed = false;
         client.updateWMNormalHints();
 
         if ((client.normal_hint_flags & PMinSize) &&
-            (client.normal_hint_flags & PMaxSize)) {
-
+            (client.normal_hint_flags & PMaxSize) &&
+            (client.min_width != old_min_width || 
+             client.max_width != old_max_width ||
+             client.min_height != old_min_height ||
+             client.max_height != old_max_height)) {
             if (client.max_width != 0 && client.max_width <= client.min_width &&
                 client.max_height != 0 && client.max_height <= client.min_height) {
+                if (decorations.maximize || 
+                    decorations.handle ||
+                    functions.resize ||
+                    functions.maximize)
+                    changed = true;
                 decorations.maximize = false;
                 decorations.handle = false;
                 functions.resize=false;
@@ -2257,25 +2282,26 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
             } else {
                 // TODO: is broken while handled by FbW, needs to be in WinClient
                 if (! client.isTransient()) {
+                    if (!decorations.maximize ||
+                        !decorations.handle ||
+                        !functions.maximize)
+                        changed = true;
                     decorations.maximize = true;
                     decorations.handle = true;
                     functions.maximize = true;	        
                 }
+                if (!functions.resize)
+                    changed = true;
                 functions.resize = true;
             }
-            setupWindow();
+
+            if (changed)
+                setupWindow();
     	}
 
-        // save old values
-        int x = frame().x(), y = frame().y();
-        unsigned int w = frame().width(), h = frame().height();
-
-
-        // reconfigure if the old values changed
-        if (x != frame().x() || y != frame().y() ||
-            w != frame().width() || h != frame().height()) {
-            moveResize(x, y, w, h);
-        }
+        moveResize(frame().x(), frame().y(),
+                   frame().width(), frame().height());
+                   
 
         break; 
     }
@@ -2309,6 +2335,7 @@ void FluxboxWindow::exposeEvent(XExposeEvent &ee) {
 }
 
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
+
     WinClient *client = findClient(cr.window);
     if (client == 0)
         return;
@@ -2345,7 +2372,6 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
             frame().moveResizeForClient(cx, cy, cw, ch);
         else 
             frame().resizeForClient(cw, ch);
-
     } else if (frame().x() != cx || frame().y() != cy) {
         frame().move(cx, cy);
     } 
