@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.26 2002/02/11 11:07:33 fluxgen Exp $
+// $Id: Window.cc,v 1.27 2002/02/16 02:14:54 pekdon Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -2042,6 +2042,8 @@ void FluxboxWindow::maximize(unsigned int button) {
 			blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
 			blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
 			shaded = false;
+			if (hasTab())
+				getTab()->shade();
 		}
 
 		maximized = true;
@@ -2051,8 +2053,15 @@ void FluxboxWindow::maximize(unsigned int button) {
 			tab->raise();
 		screen->getWorkspace(workspace_number)->raiseWindow(this);
 		setState(current_state);
+
 	} else {
 		maximized = false;
+
+		if (isShaded()) {
+			shade();
+			if (hasTab())
+				getTab()->shade();
+		}
 
 		blackbox_attrib.flags &= ! (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT);
 		blackbox_attrib.attrib &= ! (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT);
@@ -2066,6 +2075,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 		redrawAllButtons();
 		setState(current_state);
 	}
+
 	if (tab) //resize all the windows in the tab group
 		tab->resize();
 }
