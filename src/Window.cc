@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.165 2003/05/08 15:14:50 rathnor Exp $
+// $Id: Window.cc,v 1.166 2003/05/10 14:27:57 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -212,6 +212,9 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
     m_object->moveToLayer(m_layernum);
 }
 
+
+//int FluxboxWindow::PropBlackboxHintsElements = 5;
+//int FluxboxWindow::PropBlackboxAttributesElements = 8;
 
 FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme, 
@@ -1050,33 +1053,33 @@ void FluxboxWindow::getBlackboxHints() {
                            (unsigned char **) &m_client->blackbox_hint) == Success &&
         m_client->blackbox_hint) {
 
-        if (num == PropBlackboxHintsElements) {
-            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_SHADED)
-                shaded = (m_client->blackbox_hint->attrib & BaseDisplay::ATTRIB_SHADED);
+        if (num == (unsigned)PropBlackboxHintsElements) {
+            if (m_client->blackbox_hint->flags & ATTRIB_SHADED)
+                shaded = (m_client->blackbox_hint->attrib & ATTRIB_SHADED);
 
-            if ((m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
-                (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT))
+            if ((m_client->blackbox_hint->flags & ATTRIB_MAXHORIZ) &&
+                (m_client->blackbox_hint->flags & ATTRIB_MAXVERT))
                 maximized = ((m_client->blackbox_hint->attrib &
-                              (BaseDisplay::ATTRIB_MAXHORIZ | 
-                               BaseDisplay::ATTRIB_MAXVERT)) ? 1 : 0);
-            else if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT)
+                              (ATTRIB_MAXHORIZ | 
+                               ATTRIB_MAXVERT)) ? 1 : 0);
+            else if (m_client->blackbox_hint->flags & ATTRIB_MAXVERT)
                 maximized = ((m_client->blackbox_hint->attrib & 
-                              BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
-            else if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ)
+                              ATTRIB_MAXVERT) ? 2 : 0);
+            else if (m_client->blackbox_hint->flags & ATTRIB_MAXHORIZ)
                 maximized = ((m_client->blackbox_hint->attrib & 
-                              BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
+                              ATTRIB_MAXHORIZ) ? 3 : 0);
 
-            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_OMNIPRESENT)
+            if (m_client->blackbox_hint->flags & ATTRIB_OMNIPRESENT)
                 stuck = (m_client->blackbox_hint->attrib & 
-                         BaseDisplay::ATTRIB_OMNIPRESENT);
+                         ATTRIB_OMNIPRESENT);
 
-            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_WORKSPACE)
+            if (m_client->blackbox_hint->flags & ATTRIB_WORKSPACE)
                 workspace_number = m_client->blackbox_hint->workspace;
 
-            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_STACK)
+            if (m_client->blackbox_hint->flags & ATTRIB_STACK)
                 workspace_number = m_client->blackbox_hint->stack;
 
-            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
+            if (m_client->blackbox_hint->flags & ATTRIB_DECORATION) {
                 old_decoration = static_cast<Decoration>(m_client->blackbox_hint->decoration);
                 setDecoration(old_decoration);
             }
@@ -1363,7 +1366,7 @@ void FluxboxWindow::setWorkspace(int n) {
 
     workspace_number = n;
 
-    blackbox_attrib.flags |= BaseDisplay::ATTRIB_WORKSPACE;
+    blackbox_attrib.flags |= ATTRIB_WORKSPACE;
     blackbox_attrib.workspace = workspace_number;
 
     // notify workspace change
@@ -1376,7 +1379,7 @@ void FluxboxWindow::setWorkspace(int n) {
 void FluxboxWindow::setLayerNum(int layernum) {
     m_layernum = layernum;
 
-    blackbox_attrib.flags |= BaseDisplay::ATTRIB_STACK;
+    blackbox_attrib.flags |= ATTRIB_STACK;
     blackbox_attrib.stack = layernum;
     saveBlackboxHints();
 
@@ -1396,14 +1399,14 @@ void FluxboxWindow::shade() {
 
     if (shaded) {
         shaded = false;
-        blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
-        blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
+        blackbox_attrib.flags ^= ATTRIB_SHADED;
+        blackbox_attrib.attrib ^= ATTRIB_SHADED;
 
         setState(NormalState);
     } else {
         shaded = true;
-        blackbox_attrib.flags |= BaseDisplay::ATTRIB_SHADED;
-        blackbox_attrib.attrib |= BaseDisplay::ATTRIB_SHADED;
+        blackbox_attrib.flags |= ATTRIB_SHADED;
+        blackbox_attrib.attrib |= ATTRIB_SHADED;
         // shading is the same as iconic
         setState(IconicState);
     }
@@ -1414,16 +1417,16 @@ void FluxboxWindow::shade() {
 void FluxboxWindow::stick() {
 
     if (stuck) {
-        blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
-        blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
+        blackbox_attrib.flags ^= ATTRIB_OMNIPRESENT;
+        blackbox_attrib.attrib ^= ATTRIB_OMNIPRESENT;
 
         stuck = false;
 
     } else {
         stuck = true;
 
-        blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
-        blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
+        blackbox_attrib.flags |= ATTRIB_OMNIPRESENT;
+        blackbox_attrib.attrib |= ATTRIB_OMNIPRESENT;
 
     }
  
@@ -1774,13 +1777,13 @@ void FluxboxWindow::restoreAttributes() {
     unsigned long ulfoo, nitems;
     FbAtoms *fbatoms = FbAtoms::instance();
 	
-    BaseDisplay::BlackboxAttributes *net;
+    BlackboxAttributes *net;
     if (XGetWindowProperty(display, m_client->window(),
                            fbatoms->getFluxboxAttributesAtom(), 0l,
                            PropBlackboxAttributesElements, false,
                            fbatoms->getFluxboxAttributesAtom(), &atom_return, &foo,
                            &nitems, &ulfoo, (unsigned char **) &net) ==
-        Success && net && nitems == PropBlackboxAttributesElements) {
+        Success && net && nitems == (unsigned)PropBlackboxAttributesElements) {
         blackbox_attrib.flags = net->flags;
         blackbox_attrib.attrib = net->attrib;
         blackbox_attrib.workspace = net->workspace;
@@ -1794,8 +1797,8 @@ void FluxboxWindow::restoreAttributes() {
     } else
         return;
 
-    if (blackbox_attrib.flags & BaseDisplay::ATTRIB_SHADED &&
-        blackbox_attrib.attrib & BaseDisplay::ATTRIB_SHADED) {
+    if (blackbox_attrib.flags & ATTRIB_SHADED &&
+        blackbox_attrib.attrib & ATTRIB_SHADED) {
         int save_state =
             ((current_state == IconicState) ? NormalState : current_state);
 
@@ -1812,29 +1815,29 @@ void FluxboxWindow::restoreAttributes() {
     } else if (current_state == WithdrawnState)
         current_state = NormalState;
 
-    if (blackbox_attrib.flags & BaseDisplay::ATTRIB_OMNIPRESENT &&
-        blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) {
+    if (blackbox_attrib.flags & ATTRIB_OMNIPRESENT &&
+        blackbox_attrib.attrib & ATTRIB_OMNIPRESENT) {
         stuck = true;
 
         current_state = NormalState;
     }
 
-    if (blackbox_attrib.flags & BaseDisplay::ATTRIB_STACK) {
+    if (blackbox_attrib.flags & ATTRIB_STACK) {
         //!! TODO check value?
         m_layernum = blackbox_attrib.stack;
     }
 
-    if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) ||
-        (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)) {
+    if ((blackbox_attrib.flags & ATTRIB_MAXHORIZ) ||
+        (blackbox_attrib.flags & ATTRIB_MAXVERT)) {
         int x = blackbox_attrib.premax_x, y = blackbox_attrib.premax_y;
         unsigned int w = blackbox_attrib.premax_w, h = blackbox_attrib.premax_h;
         maximized = false;
-        if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
-            (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT))
+        if ((blackbox_attrib.flags & ATTRIB_MAXHORIZ) &&
+            (blackbox_attrib.flags & ATTRIB_MAXVERT))
             maximized = true;
-        else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)
+        else if (blackbox_attrib.flags & ATTRIB_MAXVERT)
             maximizeVertical();
-        else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ)
+        else if (blackbox_attrib.flags & ATTRIB_MAXHORIZ)
             maximizeHorizontal();
 
         blackbox_attrib.premax_x = x;
@@ -3071,34 +3074,34 @@ unsigned int FluxboxWindow::getClientHeight() const { return m_client->height();
 unsigned int FluxboxWindow::getClientWidth() const { return m_client->width(); }
 int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
-void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
-    if ((net.flags & BaseDisplay::ATTRIB_SHADED) &&
-        ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_SHADED) !=
-         (net.attrib & BaseDisplay::ATTRIB_SHADED)))
+void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
+    if ((net.flags & ATTRIB_SHADED) &&
+        ((blackbox_attrib.attrib & ATTRIB_SHADED) !=
+         (net.attrib & ATTRIB_SHADED)))
         shade();
 
-    if ((net.flags & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)) &&
-        ((blackbox_attrib.attrib & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)) !=
-         (net.attrib & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)))) {
+    if ((net.flags & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) &&
+        ((blackbox_attrib.attrib & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) !=
+         (net.attrib & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)))) {
         if (maximized) {
             maximize();
         } else {
-            if ((net.flags & BaseDisplay::ATTRIB_MAXHORIZ) && (net.flags & BaseDisplay::ATTRIB_MAXVERT))
+            if ((net.flags & ATTRIB_MAXHORIZ) && (net.flags & ATTRIB_MAXVERT))
             	maximize();
-            else if (net.flags & BaseDisplay::ATTRIB_MAXVERT)
+            else if (net.flags & ATTRIB_MAXVERT)
                 maximizeVertical();
-            else if (net.flags & BaseDisplay::ATTRIB_MAXHORIZ)
+            else if (net.flags & ATTRIB_MAXHORIZ)
                 maximizeHorizontal();
 
         }
     }
     
-    if ((net.flags & BaseDisplay::ATTRIB_OMNIPRESENT) &&
-        ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) !=
-         (net.attrib & BaseDisplay::ATTRIB_OMNIPRESENT)))
+    if ((net.flags & ATTRIB_OMNIPRESENT) &&
+        ((blackbox_attrib.attrib & ATTRIB_OMNIPRESENT) !=
+         (net.attrib & ATTRIB_OMNIPRESENT)))
         stick();
 
-    if ((net.flags & BaseDisplay::ATTRIB_WORKSPACE) &&
+    if ((net.flags & ATTRIB_WORKSPACE) &&
         (workspace_number !=  net.workspace)) {
 
         screen.reassociateWindow(this, net.workspace, true);
@@ -3109,13 +3112,13 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
             deiconify();
     }
 
-    if (net.flags & BaseDisplay::ATTRIB_STACK) {
+    if (net.flags & ATTRIB_STACK) {
         if ((unsigned int) m_layernum != net.stack) {
             moveToLayer(net.stack);
         }
     }
 
-    if (net.flags & BaseDisplay::ATTRIB_DECORATION) {
+    if (net.flags & ATTRIB_DECORATION) {
         old_decoration = static_cast<Decoration>(net.decoration);
         setDecoration(old_decoration);
     }

@@ -22,12 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.67 2003/05/07 16:21:26 rathnor Exp $
+// $Id: Window.hh,v 1.68 2003/05/10 14:23:29 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
 
-#include "BaseDisplay.hh"
 #include "Timer.hh"
 #include "Menu.hh"
 #include "Subject.hh"
@@ -99,6 +98,31 @@ public:
         MwmDecorIconify     = (1l << 5), /// iconify
         MwmDecorMaximize    = (1l << 6)  /// maximize
     };
+
+    /// attributes for BlackboxHints
+    enum Attrib {
+        ATTRIB_SHADED = 0x01,
+        ATTRIB_MAXHORIZ = 0x02,
+        ATTRIB_MAXVERT = 0x04,
+        ATTRIB_OMNIPRESENT = 0x08,
+        ATTRIB_WORKSPACE = 0x10,
+        ATTRIB_STACK = 0x20,		
+        ATTRIB_DECORATION = 0x40
+    };	
+
+    static const int PropBlackboxHintsElements = 5;
+    static const int PropBlackboxAttributesElements = 8;
+
+    typedef struct _blackbox_hints {
+        unsigned long flags, attrib, workspace, stack;
+        int decoration;
+    } BlackboxHints;
+
+    typedef struct _blackbox_attributes {
+        unsigned long flags, attrib, workspace, stack;
+        int premax_x, premax_y;
+        unsigned int premax_w, premax_h;
+    } BlackboxAttributes;
 
     typedef std::list<WinClient *> ClientList;
 
@@ -174,7 +198,7 @@ public:
     void moveResize(int x, int y, unsigned int width, unsigned int height);
 
     void setWorkspace(int n);
-    void changeBlackboxHints(const BaseDisplay::BlackboxHints &bh);
+    void changeBlackboxHints(const BlackboxHints &bh);
     void restoreAttributes();
     void showMenu(int mx, int my);
     // popup menu on last button press position
@@ -388,7 +412,7 @@ private:
     BScreen &screen; /// screen on which this window exist
     FbTk::Timer timer;
     Display *display; /// display connection
-    BaseDisplay::BlackboxAttributes blackbox_attrib;
+    BlackboxAttributes blackbox_attrib;
 
     Time lastButtonPressTime;
     FbTk::Menu m_windowmenu;
