@@ -37,3 +37,5 @@
 * "Goto Frame" as Emacs C-x b, that show completions in the bar
   (I really like the emacs's "ido.el" package behavior, which I recommend
    to any emacs user)
+* mouse button configure
+  
