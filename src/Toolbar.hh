@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.34 2003/06/22 19:38:38 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.35 2003/06/23 13:16:50 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -73,11 +73,11 @@ public:
     void delIcon(FluxboxWindow *w);
     /// remove all icons
     void delAllIcons();
-
     void enableIconBar();
     void disableIconBar();
+    void raise();
+    void lower();
 
-    bool containsIcon(const FluxboxWindow &win) const;
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
     inline FbTk::Menu &placementMenu() { return m_placementmenu; }
@@ -91,25 +91,28 @@ public:
     FbTk::XLayerItem &layerItem() { return m_layeritem; }
 
     /// are we in workspacename editing?
-    inline bool isEditing() const { return editing; }
+    inline bool isEditing() const { return m_editing; }
     /// are we hidden?
-    inline bool isHidden() const { return hidden; }
+    inline bool isHidden() const { return m_hidden; }
     /// do we auto hide the toolbar?
-    inline bool doAutoHide() const { return do_auto_hide; }
+    inline bool doAutoHide() const { return *m_rc_auto_hide; }
     ///	@return X window of the toolbar
     inline const FbTk::FbWindow &window() const { return frame.window; }
     inline BScreen &screen() { return m_screen; }
     inline const BScreen &screen() const { return m_screen; }
     inline unsigned int width() const { return frame.width; }
     inline unsigned int height() const { return frame.height; }
-    inline unsigned int exposedHeight() const { return ((do_auto_hide) ? frame.bevel_w : frame.height); }
-    inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
-    inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
+    inline unsigned int exposedHeight() const { return doAutoHide() ? frame.bevel_w : frame.height; }
+    inline int x() const { return isHidden() ? frame.x_hidden : frame.x; }
+    inline int y() const { return isHidden() ? frame.y_hidden : frame.y; }
+    inline Placement placement() const { return *m_rc_placement; }
     /// @return pointer to iconbar if it got one, else 0
     inline const IconBar *iconBar()  const { return m_iconbar.get(); }
     inline const ToolbarTheme &theme() const { return m_theme; }
     inline ToolbarTheme &theme() { return m_theme; }
     bool isVertical() const;
+    bool containsIcon(const FluxboxWindow &win) const;
+
     /**
        @name eventhandlers
     */
@@ -134,13 +137,12 @@ public:
 
 		
 private:
+    void setupMenus();
     void clearStrut();
     void updateStrut();
 
-    bool editing;      ///< edit workspace label mode
-    bool hidden;       ///< hidden state
-    bool do_auto_hide; ///< do we auto hide	
-    Display *display;  ///< display connection
+    bool m_editing;      ///< edit workspace label mode
+    bool m_hidden;       ///< hidden state
 
     /// Toolbar frame
     struct Frame {
@@ -174,10 +176,10 @@ private:
     LayerMenu<Toolbar> m_layermenu;
     std::auto_ptr<IconBar> m_iconbar;
 	
-    std::string new_workspace_name; ///< temp variable in edit workspace name mode
+    std::string m_new_workspace_name; ///< temp variable in edit workspace name mode
 
     ToolbarTheme m_theme;
-    Placement m_place;
+
     //!! TODO this is just temporary
     class ThemeListener: public FbTk::Observer {
     public:
@@ -194,6 +196,12 @@ private:
     FbTk::XLayerItem m_layeritem;
 
     Strut *m_strut; ///< created and destroyed by BScreen
+    // resources
+    FbTk::Resource<bool> m_rc_auto_hide;
+    FbTk::Resource<int> m_rc_width_percent;
+    FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
+    FbTk::Resource<int> m_rc_on_head;
+    FbTk::Resource<Placement> m_rc_placement;
 };
 
 
