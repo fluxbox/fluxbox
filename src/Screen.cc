@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.258 2004/01/03 00:28:02 fluxgen Exp $
+// $Id: Screen.cc,v 1.259 2004/01/10 02:58:01 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -626,6 +626,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 BScreen::~BScreen() {
     if (! managed)
         return;
+
+    if (m_rootmenu.get() != 0)
+        m_rootmenu->removeAll();
 
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
