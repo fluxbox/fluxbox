@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.7 2003/08/23 15:44:06 fluxgen Exp $
+// $Id: EventManager.cc,v 1.8 2003/08/27 00:21:54 fluxgen Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -70,7 +70,6 @@ void EventManager::unregisterEventHandler(Window win) {
 }
 
 void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
-    
     EventHandler *evhand = 0;
     if (parent)
         evhand = m_parent[win];
@@ -80,7 +79,7 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
     if (evhand == 0)
         return;
 
-    switch (ev.xany.type) {
+    switch (ev.type) {
     case KeyPress:
         evhand->keyPressEvent(ev.xkey);
 	break;
