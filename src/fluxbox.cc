@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.38 2002/03/01 15:28:56 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.39 2002/03/01 16:58:51 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -400,7 +400,9 @@ key(0)
 	timer->fireOnce(True);
 
 	//create keybindings handler and load keys file
-	key = new Keys(getXDisplay(), const_cast<char *>((*m_rc_keyfile).c_str()));
+	char *keyfilename = StringUtil::expandFilename((*m_rc_keyfile).c_str());
+	key = new Keys(getXDisplay(), const_cast<char *>(keyfilename));
+	delete keyfilename;
 
 	ungrab();
 }
@@ -2363,7 +2365,9 @@ void Fluxbox::real_reconfigure(void) {
 	}
 	
 	//reconfigure keys
-	key->reconfigure(const_cast<char *>(m_rc_keyfile->c_str()));
+	char *keyfilename = StringUtil::expandFilename(m_rc_keyfile->c_str());	
+	key->reconfigure(keyfilename);
+	delete keyfilename;
 
 	//reconfigure tabs
 	reconfigureTabs();
