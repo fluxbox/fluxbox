@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.19 2003/08/27 14:04:12 fluxgen Exp $
+// $Id: FbRun.cc,v 1.20 2003/09/06 15:50:25 fluxgen Exp $
 
 #include "FbRun.hh"
 
 #include "App.hh"
 #include "EventManager.hh"
 #include "Color.hh"
+#include "KeyUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -204,6 +205,10 @@ void FbRun::redrawLabel() {
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
+    // strip numlock and scrolllock mask
+    ke.state &= ~FbTk::KeyUtil::numlockMod();
+    ke.state &= ~FbTk::KeyUtil::scrolllockMod();
+
     FbTk::TextBox::keyPressEvent(ke);
     KeySym ks;
     char keychar[1];
