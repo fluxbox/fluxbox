@@ -45,6 +45,7 @@ class Application {
 public:
     Application(bool grouped);
     inline void forgetWorkspace() { workspace_remember = false; }
+    inline void forgetHead() { head_remember = false; }
     inline void forgetDimensions() { dimensions_remember = false; }
     inline void forgetPosition() { position_remember = false; }
     inline void forgetShadedstate() { shadedstate_remember = false; }
@@ -56,10 +57,12 @@ public:
     inline void forgetJumpworkspace() { jumpworkspace_remember = false; }
     inline void forgetLayer() { layer_remember = false; }
     inline void forgetSaveOnClose() { save_on_close_remember = false; }
-    
-    inline void rememberWorkspace(int ws) 
+
+    inline void rememberWorkspace(int ws)
         { workspace = ws; workspace_remember = true; }
-    inline void rememberDimensions(int width, int height) 
+    inline void rememberHead(int h)
+        { head = h; head_remember = true; }
+    inline void rememberDimensions(int width, int height)
         { w = width; h = height; dimensions_remember = true; }
     inline void rememberFocusHiddenstate(bool state)
         { focushiddenstate= state; focushiddenstate_remember= true; }
@@ -85,6 +88,9 @@ public:
 
     bool workspace_remember;
     unsigned int workspace;
+
+    bool head_remember;
+    int head;
 
     bool dimensions_remember;
     int w,h; // width, height
@@ -153,6 +159,7 @@ public:
         REM_STUCKSTATE,
         //REM_TABSTATE, ... external tabs disabled atm
         REM_WORKSPACE,
+        REM_HEAD,
         REM_LASTATTRIB // not actually used
     };
 
@@ -176,7 +183,7 @@ public:
     // We keep track of which app is assigned to a winclient
     // particularly useful to update counters etc on windowclose
     typedef std::map<WinClient *, Application *> Clients;
-    
+
     // we have to remember any startups we did so that they are saved again
     typedef std::list<std::string> Startups;
 
@@ -194,7 +201,7 @@ public:
     void forgetAttrib(WinClient &win, Attribute attrib);
 
     // Functions relating to AtomHandler
-    
+
     // Functions we actually use
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);

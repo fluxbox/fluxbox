@@ -42,6 +42,10 @@ void KillWindowCmd::real_execute() {
     winclient().sendClose(true);
 }
 
+void SetHeadCmd::real_execute() {
+    fbwindow().screen().setOnHead(fbwindow(), m_head);
+}
+
 void SendToWorkspaceCmd::real_execute() {
     if (m_workspace_num >= 0 && m_workspace_num < fbwindow().screen().getNumberOfWorkspaces())
         fbwindow().screen().sendToWorkspace(m_workspace_num, &fbwindow());

@@ -59,7 +59,7 @@
 #ifdef HAVE_SSTREAM
 #include <sstream>
 #define FB_istringstream istringstream
-#elif HAVE_STRSTREAM 
+#elif HAVE_STRSTREAM
 #include <strstream>
 #define FB_istringstream istrstream
 #else
@@ -75,9 +75,9 @@ public:
     RememberMenuItem(const char *label, Remember &remember,
                      FluxboxWindow &fbwin,
                      Remember::Attribute attrib) :
-        FbTk::MenuItem(label), m_remember(remember), 
+        FbTk::MenuItem(label), m_remember(remember),
         m_win(fbwin), m_attrib(attrib) {
-        setToggleItem(true);        
+        setToggleItem(true);
     }
 
     bool isSelected() const {
@@ -88,7 +88,7 @@ public:
     }
 
     bool isEnabled() const {
-        if (m_attrib != Remember::REM_JUMPWORKSPACE) 
+        if (m_attrib != Remember::REM_JUMPWORKSPACE)
             return true;
         else if (m_win.numClients())
             return (m_remember.isRemembered(m_win.winClient(), Remember::REM_WORKSPACE));
@@ -126,17 +126,19 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win, bool enab
         menu->updateMenu();
         return menu;
     }
-    
+
     _FB_USES_NLS;
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Workspace, "Workspace", "Remember Workspace"), 
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Workspace, "Workspace", "Remember Workspace"),
                                       remember, win, Remember::REM_WORKSPACE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, JumpToWorkspace, "Jump to workspace", "Change active workspace to remembered one on open"),
                                       remember, win, Remember::REM_JUMPWORKSPACE));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - windth width and height"),
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Head, "Head", "Remember Head"),
+                                      remember, win, Remember::REM_HEAD));
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Dimensions, "Dimensions", "Remember Dimensions - with width and height"),
                                       remember, win, Remember::REM_DIMENSIONS));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"), 
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Position, "Position", "Remember position - window co-ordinates"),
                                       remember, win, Remember::REM_POSITION));
-    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Sticky, "Sticky", "Remember Sticky"), 
+    menu->insert(new RememberMenuItem(_FBTEXT(Remember, Sticky, "Sticky", "Remember Sticky"),
                                       remember, win, Remember::REM_STUCKSTATE));
     menu->insert(new RememberMenuItem(_FBTEXT(Remember, Decorations, "Decorations", "Remember window decorations"),
                                       remember, win, Remember::REM_DECOSTATE));
@@ -160,8 +162,8 @@ bool handleStartupItem(const string &line, int offset) {
 
     // accept some options, for now only "screen=NN"
     // these option are given in parentheses before the command
-    next = FbTk::StringUtil::getStringBetween(str, 
-                                              line.c_str() + offset, 
+    next = FbTk::StringUtil::getStringBetween(str,
+                                              line.c_str() + offset,
                                               '(', ')');
     if (next > 0) {
         // there are some options
@@ -187,8 +189,8 @@ bool handleStartupItem(const string &line, int offset) {
         next = 0;
     }
 
-    next = FbTk::StringUtil::getStringBetween(str, 
-                                              line.c_str() + offset + next, 
+    next = FbTk::StringUtil::getStringBetween(str,
+                                              line.c_str() + offset + next,
                                               '{', '}');
 
     if (next <= 0) {
@@ -212,17 +214,18 @@ Application::Application(bool grouped)
     : is_grouped(grouped),
       group(0)
 {
-    decostate_remember = 
+    decostate_remember =
         dimensions_remember =
-        focushiddenstate_remember = 
+        focushiddenstate_remember =
         iconhiddenstate_remember =
-        jumpworkspace_remember = 
-        layer_remember  = 
+        jumpworkspace_remember =
+        layer_remember  =
         position_remember =
         shadedstate_remember =
-        stuckstate_remember = 
+        stuckstate_remember =
         tabstate_remember =
-        workspace_remember = 
+        workspace_remember =
+        head_remember =
         save_on_close_remember = false;
 }
 
@@ -264,7 +267,7 @@ Application* Remember::find(WinClient &winclient) {
         return wc_it->second;
     else {
         Patterns::iterator it = m_pats.begin();
-        for (; it != m_pats.end(); it++) 
+        for (; it != m_pats.end(); it++)
             if (it->first->match(winclient)) {
                 it->first->addMatch();
                 m_clients[&winclient] = it->second;
@@ -304,8 +307,8 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 continue;  //the line is commented or blank
             int parse_pos = 0, err = 0;
             string str_key, str_option, str_label;
-            err = FbTk::StringUtil::getStringBetween(str_key, 
-                                                     line.c_str(), 
+            err = FbTk::StringUtil::getStringBetween(str_key,
+                                                     line.c_str(),
                                                      '[', ']');
             if (err > 0) {
                 int tmp;
@@ -317,8 +320,8 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             }
             if (err > 0 ) {
                 parse_pos += err;
-                err = FbTk::StringUtil::getStringBetween(str_label, 
-                                                         line.c_str() + parse_pos, 
+                err = FbTk::StringUtil::getStringBetween(str_label,
+                                                         line.c_str() + parse_pos,
                                                          '{', '}');
                 if (err>0) {
                     parse_pos += err;
@@ -333,6 +336,9 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 FB_istringstream iss(str_label.c_str());
                 iss >> w;
                 app.rememberWorkspace(w);
+            } else if (str_key == "Head") {
+                int h = atoi(str_label.c_str());
+                app.rememberHead(h);
             } else if (str_key == "Layer") {
                 unsigned int l;
                 if (str_label == "DESKTOP") {
@@ -366,7 +372,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 unsigned int y= 0;
                 // more info about the parameter
                 // in ::rememberPosition
-                
+
                 if ( str_option.length() )
                     {
                         if      ( str_option == "UPPERLEFT"  ) r= POS_UPPERLEFT;
@@ -389,9 +395,9 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             } else if (str_key == "Tab") {
                 app.rememberTabstate((str_label=="yes"));
             } else if (str_key == "FocusHidden") {
-                app.rememberFocusHiddenstate((str_label=="yes")); 
+                app.rememberFocusHiddenstate((str_label=="yes"));
             } else if (str_key == "IconHidden") {
-                app.rememberIconHiddenstate((str_label=="yes")); 
+                app.rememberIconHiddenstate((str_label=="yes"));
             } else if (str_key == "Hidden") {
                 app.rememberIconHiddenstate((str_label=="yes"));
                 app.rememberFocusHiddenstate((str_label=="yes"));
@@ -402,7 +408,7 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                     app.rememberDecostate((unsigned int) 0xfffffff);
                 } else if (str_label == "TINY") {
                     app.rememberDecostate((unsigned int)
-                                          FluxboxWindow::DECORM_TITLEBAR 
+                                          FluxboxWindow::DECORM_TITLEBAR
                                           | FluxboxWindow::DECORM_ICONIFY
                                           | FluxboxWindow::DECORM_MENU
                                           );
@@ -468,8 +474,8 @@ void Remember::load() {
                     continue;
                 string key;
                 int err=0;
-                int pos = FbTk::StringUtil::getStringBetween(key, 
-                                                             line.c_str(), 
+                int pos = FbTk::StringUtil::getStringBetween(key,
+                                                             line.c_str(),
                                                              '[', ']');
 
                 if (pos > 0 && key == "app") {
@@ -502,7 +508,7 @@ void Remember::load() {
                         m_pats.push_back(make_pair(grouped_pats.front(), app));
                         grouped_pats.pop_front();
                     }
-                    
+
                     // we hit end... probably don't have attribs for the group
                     // so finish it off with an empty application
                     // otherwise parse the app
@@ -512,7 +518,7 @@ void Remember::load() {
                     in_group = false;
                 } else
                     cerr<<"Error in apps file on line "<<row<<"."<<endl;
-                
+
             }
         } else {
 #ifdef DEBUG
@@ -566,6 +572,9 @@ void Remember::save() {
         if (a.workspace_remember) {
             apps_file << "  [Workspace]\t{" << a.workspace << "}" << endl;
         }
+        if (a.head_remember) {
+            apps_file << "  [Head]\t{" << a.head << "}" << endl;
+        }
         if (a.dimensions_remember) {
             apps_file << "  [Dimensions]\t{" << a.w << " " << a.h << "}" << endl;
         }
@@ -581,22 +590,22 @@ void Remember::save() {
         if (a.decostate_remember) {
             switch (a.decostate) {
             case (0) :
-                apps_file << "  [Deco]\t{NONE}" << endl; 
+                apps_file << "  [Deco]\t{NONE}" << endl;
                 break;
             case (0xffffffff):
             case (FluxboxWindow::DECORM_LAST - 1):
                 apps_file << "  [Deco]\t{NORMAL}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_TITLEBAR 
+            case (FluxboxWindow::DECORM_TITLEBAR
                   | FluxboxWindow::DECORM_ICONIFY
                   | FluxboxWindow::DECORM_MENU):
                 apps_file << "  [Deco]\t{TOOL}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_TITLEBAR 
+            case (FluxboxWindow::DECORM_TITLEBAR
                   | FluxboxWindow::DECORM_MENU):
                 apps_file << "  [Deco]\t{TINY}" << endl;
                 break;
-            case (FluxboxWindow::DECORM_BORDER 
+            case (FluxboxWindow::DECORM_BORDER
                   | FluxboxWindow::DECORM_MENU):
                 apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
@@ -608,7 +617,7 @@ void Remember::save() {
 
         if (a.focushiddenstate_remember || a.iconhiddenstate_remember) {
             if (a.focushiddenstate_remember && a.iconhiddenstate_remember &&
-                a.focushiddenstate && a.iconhiddenstate) 
+                a.focushiddenstate && a.iconhiddenstate)
                 apps_file << "  [Hidden]\t{" << ((a.focushiddenstate)?"yes":"no") << "}" << endl;
             else if (a.focushiddenstate_remember) {
                 apps_file << "  [FocusHidden]\t{" << ((a.focushiddenstate)?"yes":"no") << "}" << endl;
@@ -638,6 +647,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     switch (attrib) {
     case REM_WORKSPACE:
         return app->workspace_remember;
+        break;
+    case REM_HEAD:
+        return app->head_remember;
         break;
     case REM_DIMENSIONS:
         return app->dimensions_remember;
@@ -690,6 +702,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_WORKSPACE:
         app->rememberWorkspace(win->workspaceNumber());
         break;
+    case REM_HEAD:
+        app->rememberHead(win->screen().getHead(win->fbWindow()));
+        break;
     case REM_DIMENSIONS:
         app->rememberDimensions(win->width(), win->height());
         break;
@@ -741,6 +756,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
     case REM_WORKSPACE:
         app->forgetWorkspace();
         break;
+    case REM_HEAD:
+        app->forgetHead();
+        break;
     case REM_DIMENSIONS:
         app->forgetDimensions();
         break;
@@ -790,11 +808,11 @@ void Remember::setupFrame(FluxboxWindow &win) {
     win.addExtraMenu(_FBTEXT(Remember, MenuItemName, "Remember...", "Remember item in menu"),
                      createRememberMenu(*this, win, (winclient.transientFor() == 0)));
 
-    if (winclient.transientFor()) 
+    if (winclient.transientFor())
         return;
 
     Application *app = find(winclient);
-    if (app == 0) 
+    if (app == 0)
         return; // nothing to do
 
     if (app->is_grouped && app->group == 0)
@@ -804,9 +822,13 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     if (app->workspace_remember) {
         // TODO: fix placement to initialise properly
-        screen.reassociateWindow(&win, app->workspace, true); 
+        screen.reassociateWindow(&win, app->workspace, true);
         if (app->jumpworkspace_remember)
             screen.changeWorkspaceID(app->workspace);
+    }
+
+    if (app->head_remember) {
+        win.screen().setOnHead<FluxboxWindow>(win, app->head);
     }
 
     if (app->decostate_remember)
@@ -815,30 +837,36 @@ void Remember::setupFrame(FluxboxWindow &win) {
 
     if (app->dimensions_remember)
         win.resize(app->w, app->h);
-    
+
+    int head = screen.getHead(win.fbWindow());
+
     if (app->position_remember) {
+
         switch (app->refc) {
           default:
           case POS_UPPERLEFT: // upperleft corner
-        win.move(app->x, app->y);
+              win.move(screen.getHeadX(head) + app->x,
+                       screen.getHeadY(head) + app->y);
               break;
           case POS_UPPERRIGHT: // upperright corner
-              win.move(screen.width() - win.width() - app->x, app->y);
+              win.move(screen.getHeadX(head) + screen.getHeadWidth(head) - win.width() - app->x,
+                       screen.getHeadY(head) + app->y);
               break;
           case POS_LOWERLEFT: // lowerleft corner
-              win.move(app->x, screen.height() - win.height() - app->y);
+              win.move(screen.getHeadX(head) + app->x,
+                       screen.getHeadHeight(head) - win.height() - app->y);
               break;
           case POS_LOWERRIGHT: // lowerright corner
-              win.move(screen.width() - win.width() - app->x,
-                       screen.height() - win.height() - app->y);
+              win.move(screen.getHeadWidth(head) - win.width() - app->x,
+                       screen.getHeadHeight(head) - win.height() - app->y);
               break;
           case POS_CENTER: // center of the screen, windows topleft corner is on the center
-                win.move((screen.width() / 2) + app->x,
-                         (screen.height() / 2) + app->y);
+                win.move((screen.getHeadWidth(head) / 2) + app->x,
+                         (screen.getHeadHeight(head) / 2) + app->y);
               break;
           case POS_WINCENTER: // the window is centered REALLY upon the center
-                win.move((screen.width() / 2) - ( win.width() / 2 ) + app->x,
-                         (screen.height() / 2) - ( win.height() / 2 ) + app->y);
+                win.move((screen.getHeadWidth(head) / 2) - ( win.width() / 2 ) + app->x,
+                         (screen.getHeadHeight(head) / 2) - ( win.height() / 2 ) + app->y);
               break;
         };
     }
@@ -870,7 +898,7 @@ void Remember::setupFrame(FluxboxWindow &win) {
 void Remember::setupClient(WinClient &winclient) {
 
     Application *app = find(winclient);
-    if (app == 0) 
+    if (app == 0)
         return; // nothing to do
 
     if (winclient.fbwindow() == 0 && app->is_grouped && app->group) {

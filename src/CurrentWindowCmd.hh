@@ -60,6 +60,15 @@ protected:
     void real_execute();
 };
 
+class SetHeadCmd : public WindowHelperCmd {
+public:
+    explicit SetHeadCmd(int head) : m_head(head) { }
+protected:
+    void real_execute();
+private:
+    const int m_head;
+};
+
 class SendToWorkspaceCmd: public WindowHelperCmd {
 public:
     explicit SendToWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }

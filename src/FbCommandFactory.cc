@@ -118,6 +118,7 @@ FbCommandFactory::FbCommandFactory() {
         "rootmenu",
         "saverc",
         "setenv",
+        "sethead",
         "sendtoworkspace",
         "sendtonextworkspace",
         "sendtoprevworkspace",
@@ -279,6 +280,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new CurrentWindowCmd(&FluxboxWindow::stick);
     else if (command == "toggledecor")
         return new CurrentWindowCmd(&FluxboxWindow::toggleDecoration);
+    else if (command == "sethead")
+        return new SetHeadCmd(atoi(arguments.c_str()));
     else if (command == "sendtoworkspace")
         return new SendToWorkspaceCmd(atoi(arguments.c_str()) - 1); // make 1-indexed to user
     else if (command == "sendtonextworkspace")

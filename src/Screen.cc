@@ -2372,7 +2372,7 @@ pair<int,int> BScreen::clampToHead(int head, int x, int y, int w, int h) const {
 // this can be gone and a consistent interface for the two used
 // on the actual objects
 
-
+/* FIXME: dead code?
 #ifdef SLIT
 template <>
 int BScreen::getOnHead<Slit>(Slit &slit) {
@@ -2385,3 +2385,14 @@ void BScreen::setOnHead<Slit>(Slit &slit, int head) {
     slit.reconfigure();
 }
 #endif // SLIT
+*/
+
+template<>
+void BScreen::setOnHead<FluxboxWindow>(FluxboxWindow& win, int head) {
+    if (head > 0 && head <= numHeads()) {
+        int current_head = getHead(win.fbWindow());
+        win.move(getHeadX(head) + win.frame().x() - getHeadX(current_head),
+                 getHeadY(head) + win.frame().y() - getHeadY(current_head));
+    }
+}
+
