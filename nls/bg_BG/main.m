@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # внимание: не мога да наглася променливата на средата 'DISPLAY'\n
 $ #Usage
-# Fluxkbox %s: (c) 2001 Henrik Kinnunen\n\n\
+# Fluxkbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\tuse display connection.\n\
   -rc <string>\t\t\tползвай заместващ ресурсен файл.\n\
   -version\t\t\tпокажи версията и излез.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tпокажи този помощен текст и излез.\n\n
 $ #CompileOptions
 # Избрани възможности по време на компилацията:\n\

@@ -36,11 +36,11 @@ $set 3 #Configmenu
 20 Icons
 21 Posicionamento da Tab
 22 Rodar Tabs Verticais
-23 Semi Sloppy Focus
+23 Semi Focus Desordenado
 24 Maximizar Sobre Slit
-25 Sloppy Janela Em Grupo
-26 Workspace Warping
-27 Desktop Wheeling
+25 Janela Em Grupo Desordenada
+26 Alternando Workspace
+27 Rodando Area Trabalho
 
 $set 4 #Icon
 

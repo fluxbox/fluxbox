@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # warning: 環境変数 'DISPLAY' を設定できませんでした\n
 $ #Usage
-# Fluxbox %s: (c) 2001 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\t 指定ディスプレイに接続.\n\
   -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
   -version\t\t\t バージョン情報を表示して終了.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\t このヘルプを表示して終了.\n\n
 $ #CompileOptions
 # コンパイル時のオプション:\n\

@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # hoiatus: ei saanud määrata keskonna muutujat 'DISPLAY'\n
 $ #Usage
-# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\tkasuta displei ühendust.\n\
   -rc <string>\t\t\tkasuta alternatiivseid resursse.\n\
   -version\t\t\tnäita versiooninumber ja välju.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tnäita seda abiteksti ja välju.\n\n
 $ #CompileOptions
 # Kompileerimisoptsioonid:\n\

@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # advarsel: kunne ikke sætte variablen 'DISPLAY'\n
 $ #Usage
-# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <string>\t\tbrug skærm tilslutning.\n\
   -rc <string>\t\t\tbrug alternativ resource fil.\n\
   -version\t\t\tvis versionsnummer og afslut.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tvis denne hjælp og afslut.\n\n
 $ #CompileOptions
 # Kompileret med:\n\

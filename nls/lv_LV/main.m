@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # brîdinâjums: nevarçju iestatît vides mainîgo 'DISPLAY'\n
 $ #Usage
-# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <virkne>\t\tlietot displeja savienojumu.\n\
   -rc <virkne>\t\t\tlietot citu resersu failu.\n\
   -version\t\t\tparâdît versiju un iziet.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tparâdît ðo palîdzîbas tekstu un iziet.\n\n
 $ #CompileOptions
 # Kompilâcijas laika opcijas:\n\

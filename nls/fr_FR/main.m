@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # Attention: impossible d'attribuer la variable d'environnement 'DISPLAY'\n
 $ #Usage
-# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <chaîne>\t\tutilise la connexion à l'affichage.\n\
   -rc <chaîne>\t\t\tutilise un autre fichier de configuration.\n\
   -version\t\t\taffiche la version et quitte.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\taffiche ce texte d'aide et quitte.\n\n
 $ #CompileOptions
 # Options de compilation:\n\

@@ -7,10 +7,12 @@ $ #DISPLAYRequiresArg
 $ #WarnDisplaySet
 # uyarý : 'DISPLAY' deðiþkeni atanamadý\n
 $ #Usage
-# Fluxbox %s: (c) 2001-2002 Henrik Kinnunen\n\n\
+# Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
   -display <metin>\t\tekran baðlantýsý kullan.\n\
   -rc <metin>\t\t\talternatif bir ayar kaynak dosyasý kullan.\n\
   -version\t\t\tsürümü göster.\n\
+  -info\t\t\t\tdisplay some useful information.\n\
+  -log <filename>\t\t\tlog output to file.\n\
   -help\t\t\t\tyardým ekraný.\n\n
 $ #CompileOptions
 # Derleme seçenekleri :\n\
