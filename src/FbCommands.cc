@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.10 2003/06/30 15:00:32 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.11 2003/07/01 20:24:19 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "FbTk/Theme.hh"
 #include "Screen.hh"
+#include "Menu.hh"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -103,6 +104,17 @@ void SetStyleCmd::execute() {
     Fluxbox::instance()->save_rc();
     FbTk::ThemeManager::instance().load(m_filename.c_str());
 
+}
+
+void ShowRootMenuCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    if (screen->getRootmenu()) {
+        screen->getRootmenu()->show();
+        screen->getRootmenu()->grabInputFocus();
+    }
 }
 
 }; // end namespace FbCommands
