@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.11 2004/04/28 14:59:12 rathnor Exp $
+// $Id: WorkspaceCmd.cc,v 1.12 2004/08/10 12:08:31 fluxgen Exp $
 
 #include "WorkspaceCmd.hh"
 
@@ -50,7 +50,8 @@ void NextWindowCmd::execute() {
             else {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
-                if (!fb->watchingScreen() && !(m_option & BScreen::CYCLELINEAR))
+                if (!fb->watchingScreen() && 
+                    !(m_option & BScreen::CYCLELINEAR))
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->nextFocus(m_option);
             }
@@ -71,7 +72,8 @@ void PrevWindowCmd::execute() {
             else {
                 // if stacked cycling, then set a watch for 
                 // the release of exactly these modifiers
-                if (!fb->watchingScreen() && !(m_option & BScreen::CYCLELINEAR))
+                if (!fb->watchingScreen() 
+                    && !(m_option & BScreen::CYCLELINEAR))
                     Fluxbox::instance()->watchKeyRelease(*screen, mods);
                 screen->prevFocus(m_option);
             }
@@ -141,7 +143,7 @@ void ArrangeWindowsCmd::execute() {
     const unsigned int max_heigth = screen->maxBottom(head) - screen->maxTop(head);
 
 	// try to get the same number of rows as columns.
-	unsigned int rows = int(sqrt(win_count));  // truncate to lower
+	unsigned int rows = int(sqrt((float)win_count));  // truncate to lower
 	unsigned int cols = int(0.99 + float(win_count) / float(rows));
 	if (max_width<max_heigth) {	// rotate
 		unsigned int tmp;
