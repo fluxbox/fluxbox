@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.7 2003/09/29 14:01:48 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.8 2003/10/25 22:06:53 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -38,9 +38,9 @@ namespace FbTk {
 namespace StringUtil {
 
 /**
- Takes a pointer to string *s as an argument,
- creates a new string n, copies s to n and
- returns a pointer to n.
+   Takes a pointer to string *s as an argument,
+   creates a new string n, copies s to n and
+   returns a pointer to n.
 */
 char *strdup(const char *s) {
     int l = strlen(s) + 1;
@@ -50,9 +50,9 @@ char *strdup(const char *s) {
 }
 
 /**
- Tries to find a string in another and
- ignoring the case of the characters
- Returns 0 on success else pointer to str.
+   Tries to find a string in another and
+   ignoring the case of the characters
+   Returns 0 on success else pointer to str.
 */
 const char *strcasestr(const char *str, const char *ptn) {
     const char *s2, *p2;
@@ -70,8 +70,8 @@ const char *strcasestr(const char *str, const char *ptn) {
 }
 
 /**
- if ~ then expand it to home of user
- returns expanded filename 
+   if ~ then expand it to home of user
+   returns expanded filename 
 */
 string expandFilename(const std::string &filename) {
     string retval;
@@ -89,7 +89,7 @@ string expandFilename(const std::string &filename) {
 }
 
 /**
-@return string from last "." to end of string
+   @return string from last "." to end of string
 */
 string findExtension(const std::string &filename) {
     //get start of extension
@@ -101,14 +101,14 @@ string findExtension(const std::string &filename) {
 }
 
 /**
- Parses a string between "first" and "last" characters
- and ignoring ok_chars as whitespaces. The value is
- returned in "out".
- Returns negative value on error and this value is the position 
- in the in-string where the error occured.
- Returns positive value on success and this value is
- for the position + 1 in the in-string where the "last"-char value
- was found.
+   Parses a string between "first" and "last" characters
+   and ignoring ok_chars as whitespaces. The value is
+   returned in "out".
+   Returns negative value on error and this value is the position 
+   in the in-string where the error occured.
+   Returns positive value on success and this value is
+   for the position + 1 in the in-string where the "last"-char value
+   was found.
 */
 int getStringBetween(std::string& out, const char *instr, const char first, const char last,
                      const char *ok_chars, bool allow_nesting) {
@@ -183,6 +183,19 @@ string::size_type removeFirstWhitespace(std::string &str) {
     if (first_pos != string::npos)
         str.erase(0, first_pos);
     return first_pos;
+}
+
+
+string::size_type removeTrailingWhitespace(std::string &str) {
+    // strip trailing whitespace
+    string::size_type first_pos = str.find_first_not_of(" \t");
+    if (first_pos != string::npos) {	
+        string::size_type last_pos = str.find_first_of(" \t", first_pos);
+        while (last_pos != string::npos) {
+            str.erase(last_pos);
+            last_pos = str.find_first_of(" \t", last_pos);
+        }
+    }
 }
 
 }; // end namespace StringUtil
