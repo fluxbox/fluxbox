@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.28 2002/02/16 11:25:41 fluxgen Exp $
+// $Id: Window.cc,v 1.29 2002/02/17 18:48:22 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -74,6 +74,9 @@ display(0),
 lastButtonPressTime(0),
 windowmenu(0),
 tab(0)
+#ifdef GNOME
+,gnome_hints(0)
+#endif
 {
 
 	#ifdef DEBUG
@@ -385,10 +388,6 @@ tab(0)
 FluxboxWindow::~FluxboxWindow(void) {
 	if (screen==0) //the window wasn't created 
 		return;
-
-	#ifdef GNOME
-	XDeleteProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom());	
-	#endif
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
@@ -856,6 +855,7 @@ void FluxboxWindow::grabButtons() {
 	//---grab with "all" modifiers
 	grabButton(display, Button3, frame.window, fluxbox->getLowerRightAngleCursor());
 }
+
 void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventProc released, ButtonDrawProc draw) {
 	Button b;
 	b.win = createChildWindow(frame.title);
@@ -867,27 +867,46 @@ void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventP
 	b.released = released;
 	buttonlist.push_back(b);
 }
+
 #ifdef GNOME
+//TODO
 void FluxboxWindow::updateGnomeAtoms() {
-	int val = workspace_number; 
-	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), 
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
-	long state = getGnomeWindowState();
-	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeStateAtom(),
-		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): 0x"<<hex<<screen->getBaseDisplay()->getGnomeStateAtom()<<dec<<endl;
-	#endif
+	updateGnomeWorkspaceAtom();
+	updateGnomeStateAtom();
+	updateGnomeLayerAtom();
+	updateGnomeWorkspaceAtom();
 }
 
-long FluxboxWindow::getGnomeWindowState() {
-	long state=0;
+void FluxboxWindow::updateGnomeStateAtom() {
+	BaseDisplay *bd = screen->getBaseDisplay();
+	int val = getGnomeWindowState();
+	XChangeProperty(display, client.window, bd->getGnomeStateAtom(),
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
+}
+
+void FluxboxWindow::updateGnomeLayerAtom() {
+	BaseDisplay *bd = screen->getBaseDisplay();
+	int val = getGnomeLayer();
+	XChangeProperty(display, client.window, bd->getGnomeLayerAtom(),
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
+}
+
+void FluxboxWindow::updateGnomeWorkspaceAtom() {
+	BaseDisplay *bd = screen->getBaseDisplay();
+	int val = workspace_number; 
+	XChangeProperty(display, client.window, bd->getGnomeWorkspaceAtom(), 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
+}
+
+//TODO
+int FluxboxWindow::getGnomeWindowState() {
+	int state=0;
 	if (isStuck())
-		state |= BaseDisplay::WIN_STATE_STICKY;
+		state |= WIN_STATE_STICKY;
 	if (isIconic())
-		state |= BaseDisplay::WIN_STATE_MINIMIZED;
+		state |= WIN_STATE_MINIMIZED;
 	if (isShaded())
-		state |= BaseDisplay::WIN_STATE_SHADED;
+		state |= WIN_STATE_SHADED;
 	/*TODO: states:
 		WIN_STATE_MAXIMIZED_VERT   // window in maximized V state
 		WIN_STATE_MAXIMIZED_HORIZ // window in maximized H state
@@ -899,7 +918,147 @@ long FluxboxWindow::getGnomeWindowState() {
 	*/
 	return state;
 }
+
+//TODO
+int FluxboxWindow::getGnomeLayer() {
+	return WIN_LAYER_NORMAL;
+}
+
+bool FluxboxWindow::handleGnomePropertyNotify(Atom atom) {
+	BaseDisplay *bd = screen->getBaseDisplay();
+	
+	if (atom == bd->getGnomeStateAtom()) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): gnome state"<<endl;
+		#endif
+		loadGnomeStateAtom();
+	} else  if (atom == bd->getGnomeWorkspaceAtom()) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): gnome workspace"<<endl;
+		#endif		
+	} else if (atom == bd->getGnomeHintsAtom()) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): gnome hints"<<endl;
+		#endif
+		loadGnomeHintsAtom();
+	} else if (atom == bd->getGnomeLayerAtom()){
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): gnome layer"<<endl;
+		#endif
+	
+	} else
+		return false;
+
+	return true;
+}
+
+//TODO
+void FluxboxWindow::setGnomeState(int state) {
+	#ifdef DEBUG
+	cerr<<"state=0x"<<hex<<state<<dec<<endl;
+	#endif
+
+	if ( state & WIN_STATE_STICKY) {
+		cerr<<"Sticky"<<endl;
+		if (!isStuck())
+			stick();
+	} else if (isStuck())
+		stick();
+			
+	if (state & WIN_STATE_MINIMIZED) {
+		cerr<<"Minimized"<<endl;
+		if (isIconic())
+			iconify();
+	} else if (isIconic())
+		deiconify(true, true);
+	/* TODO	
+	if (state & WIN_STATE_MAXIMIZED_VERT)
+		cerr<<"Maximize Vert"<<endl;
+	if (state & WIN_STATE_MAXIMIZED_HORIZ)
+		cerr<<"Maximize Horiz"<<endl;
+	if (state & WIN_STATE_HIDDEN)
+		cerr<<"Hidden"<<endl;
+	if (state & WIN_STATE_SHADED) {
+		cerr<<"Shaded"<<endl;
+		if (!isShaded()) shade();
+	} else if (isShaded())
+		shade();
+
+	if (state & WIN_STATE_HID_WORKSPACE)
+		cerr<<"HID Workspace"<<endl;
+	if (state & WIN_STATE_HID_TRANSIENT)
+		cerr<<"HID Transient"<<endl;
+	if (state & WIN_STATE_FIXED_POSITION)
+		cerr<<"Fixed Position"<<endl;
+	if (state & WIN_STATE_ARRANGE_IGNORE)
+		cerr<<"Arrange Ignore"<<endl;			
+	*/
+}
+//------------ loadGnomeAtoms ------------
+// Loads the values from the atoms
+//----------------------------------------
+void FluxboxWindow::loadGnomeAtoms() {
+	loadGnomeStateAtom();
+	loadGnomeHintsAtom();
+}
+//----------- loadGnomeStateAtom -------
+// Gets gnome state from the atom
+//----------------------------------------
+void FluxboxWindow::loadGnomeStateAtom() {
+	Atom ret_type;
+	int fmt;
+	unsigned long nitems, bytes_after;
+	long flags, *data = 0;
+	BaseDisplay *bd = screen->getBaseDisplay();
+	if (XGetWindowProperty (bd->getXDisplay(), getClientWindow(), 
+			bd->getGnomeStateAtom(), 0, 1, False, XA_CARDINAL, 
+			&ret_type, &fmt, &nitems, &bytes_after, 
+			(unsigned char **) &data) ==  Success && data) {
+		flags = *data;
+		setGnomeState(flags);
+		XFree (data);
+	}
+}
+
+//--------- loadGnomeHintsAtom ---------
+// Gets the gnome hint from the atom
+//----------------------------------------
+void FluxboxWindow::loadGnomeHintsAtom() {
+	Atom ret_type;
+	int fmt;
+	unsigned long nitems, bytes_after;
+	long *data = 0;
+	BaseDisplay *bd = screen->getBaseDisplay();
+	if (XGetWindowProperty (bd->getXDisplay(), getClientWindow(), 
+			bd->getGnomeHintsAtom(), 0, 1, False, XA_CARDINAL, 
+			&ret_type, &fmt, &nitems, &bytes_after, 
+			(unsigned char **) &data) ==  Success && data) {
+		gnome_hints = static_cast<int>(*data);
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): gnome hints:0x"<<hex<<gnome_hints<<dec<<endl;
+		#endif
+		XFree (data);
+	}
+}
+
 #endif //!GNOME
+
+#ifdef NEWWMSPEC
+//TODO!! 
+
+void FluxboxWindow::updateNETWMAtoms() {
+
+}
+
+int FluxboxWindow::getNETWMWindowState() {
+
+}
+
+void FluxboxWindow::loadNETWMWorkspaceAtom() {
+
+}
+
+#endif //!NEWWMSPEC
 
 Window FluxboxWindow::findTitleButton(int type) {
 	for (unsigned int i=0; i<buttonlist.size(); i++) {
@@ -1667,6 +1826,10 @@ void FluxboxWindow::configure(int dx, int dy,
 
 
 bool FluxboxWindow::setInputFocus(void) {
+	#ifdef GNOME
+	if (gnome_hints & WIN_HINTS_SKIP_FOCUS)
+		return false;
+	#endif
 	if (((signed) (frame.x + frame.width)) < 0) {
 		if (((signed) (frame.y + frame.y_border)) < 0)
 			configure(screen->getBorderWidth(), screen->getBorderWidth(),
@@ -1848,9 +2011,7 @@ void FluxboxWindow::close(void) {
 void FluxboxWindow::withdraw(void) {
 	visible = false;
 	iconic = false;
-//
-// setState(WithdrawnState);
-//
+
 	XUnmapWindow(display, frame.window);
 
 	XSelectInput(display, client.window, NoEventMask);
@@ -2091,11 +2252,14 @@ void FluxboxWindow::setWorkspace(int n) {
 
 	blackbox_attrib.flags |= BaseDisplay::ATTRIB_WORKSPACE;
 	blackbox_attrib.workspace = workspace_number;
+	#ifdef GNOME
+	updateGnomeWorkspaceAtom();
+	#endif
 }
 
 
 void FluxboxWindow::shade(void) {
-	if (decorations.titlebar)
+	if (decorations.titlebar) {
 		if (shaded) {
 			XResizeWindow(display, frame.window, frame.width, frame.height);
 			shaded = false;
@@ -2111,6 +2275,10 @@ void FluxboxWindow::shade(void) {
 
 			setState(IconicState);
 		}
+		#ifdef GNOME
+		updateGnomeStateAtom();
+		#endif
+	}
 }
 
 
@@ -2138,6 +2306,9 @@ void FluxboxWindow::stick(void) {
 	//find a STICK button in window
 	redrawAllButtons();
 	setState(current_state);
+	#ifdef GNOME
+	updateGnomeStateAtom();
+	#endif
 }
 
 
@@ -2557,7 +2728,9 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
 
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
-	
+	#ifdef GNOME
+	loadGnomeAtoms();
+	#endif
 	if ((ne->window == client.window) && (! ne->override_redirect) && (visible)) {
 		Fluxbox *fluxbox = Fluxbox::instance();
 		BaseDisplay::GrabGuard gg(*fluxbox);
@@ -2786,8 +2959,16 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 				if (windowmenu)
 					windowmenu->reconfigure();
 			}
+		} else {
+			bool val = false;
+			#ifdef GNOME
+			val = handleGnomePropertyNotify(atom);
+			#endif
+			#ifdef NEWWMSPEC
+			if (!val)
+				handleNETWMPropertyNotify(atom);
+			#endif
 		}
-
 		break;
 	}
 
