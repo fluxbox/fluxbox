@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.55 2003/02/18 15:11:09 rathnor Exp $
+// $Id: Tab.cc,v 1.56 2003/04/09 13:18:36 fluxgen Exp $
 
 #include "Tab.hh"
 
+#include "Window.hh"
 #include "i18n.hh"
 #include "DrawUtil.hh"
 #include "Screen.hh"
