@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/01/21:
+  * Added support for:             (Henrik)
+    _NET_WM_WINDOW_TYPE
+    _NET_WM_WINDOW_TYPE_DOCK
+    Ewmh.hh/cc
   * Fixed so one can navigate in menu with      (Henrik)
     even if numlock, capslock or scrollock is on
     Menu.cc
