@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.19 2002/11/30 20:14:04 fluxgen Exp $
+// $Id: Theme.hh,v 1.20 2002/11/30 20:57:35 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -37,8 +37,6 @@
 
 #include <string>
 
-class BImageControl;
-
 /**
 	Main theme class, holds themes for 
 	Window, toolbar, slit, menu and the rootCommand, for a specific screen.
@@ -47,7 +45,7 @@ class Theme {
 public:	
 		
 	Theme(Display *display, Window rootwindow, Colormap colormap, 
-		int screennum, BImageControl *ic, const char *filename, const char *rootcommand);
+		int screennum, const char *filename, const char *rootcommand);
 	~Theme();	
 	
 	

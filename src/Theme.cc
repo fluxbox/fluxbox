@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.36 2002/11/30 20:14:04 fluxgen Exp $
+// $Id: Theme.cc,v 1.37 2002/11/30 20:58:13 fluxgen Exp $
 
 
 #include "Theme.hh"
@@ -54,7 +54,7 @@ extern void bexec(const char *command, char *displaystring);
 using namespace std;
 
 Theme::Theme(Display *display, Window rootwindow, Colormap colormap, 
-	int screennum, BImageControl *ic, const char *filename, const char *rootcommand):
+	int screennum, const char *filename, const char *rootcommand):
 m_display(display),
 m_colormap(colormap),
 m_screennum(screennum),
