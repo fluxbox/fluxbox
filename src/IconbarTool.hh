@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.16 2004/09/12 14:56:18 rathnor Exp $
+// $Id: IconbarTool.hh,v 1.17 2004/10/10 16:11:25 akir Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -119,6 +119,7 @@ private:
     FbTk::Resource<Mode> m_rc_mode;
     FbTk::Resource<Container::Alignment> m_rc_alignment; ///< alignment of buttons
     FbTk::Resource<int> m_rc_client_width; ///< size of client button in LEFT/RIGHT mode
+    FbTk::Resource<unsigned int> m_rc_client_padding; ///< padding of the text
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
     FbTk::Timer m_focus_timer; ///< so we can update current window without flicker while changing attached clients
     FbMenu m_menu;

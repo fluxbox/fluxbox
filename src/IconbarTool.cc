@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.47 2004/10/10 12:00:37 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.48 2004/10/10 16:11:25 akir Exp $
 
 #include "IconbarTool.hh"
 
@@ -279,6 +279,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
                    screen.name() + ".iconbar.alignment", screen.altName() + ".Iconbar.Alignment"),
     m_rc_client_width(screen.resourceManager(), 70,
                    screen.name() + ".iconbar.iconWidth", screen.altName() + ".Iconbar.IconWidth"),
+    m_rc_client_padding(screen.resourceManager(), 10,
+                   screen.name() + ".iconbar.iconTextPadding", screen.altName() + ".Iconbar.IconTextPadding"),
     m_rc_use_pixmap(screen.resourceManager(), true,
                     screen.name() + ".iconbar.usePixmap", screen.altName() + ".Iconbar.UsePixmap"),
     m_menu(screen.menuTheme(), screen.imageControl(),
@@ -734,6 +736,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
 #endif // DEBUG
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
+    button->setTextPadding(*m_rc_client_padding);
 
     renderButton(*button, false); // update the attributes, but don't clear it
     m_icon_container.insertItem(button);    
