@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.2 2002/11/26 19:48:17 fluxgen Exp $
+// $Id: XFontImp.cc,v 1.3 2002/11/26 19:56:48 fluxgen Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <new>
+#include <cstdio>
 using namespace std;
 
 namespace FbTk {
