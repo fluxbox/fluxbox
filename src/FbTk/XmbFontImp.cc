@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.7 2004/02/10 19:03:42 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.8 2004/08/10 11:57:35 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
@@ -186,13 +186,6 @@ XFontSet createFontSet(const char *fontname) {
 namespace FbTk {
 
 XmbFontImp::XmbFontImp(const char *filename, bool utf8):m_fontset(0), m_utf8mode(utf8) {
-#ifdef DEBUG
-#ifdef X_HAVE_UTF8_STRING
-    cerr<<"Using utf8 = "<<utf8<<endl;
-#else // X_HAVE_UTF8_STRING
-    cerr<<"Using uft8 = false"<<endl;
-#endif //X_HAVE_UTF8_STRING
-#endif // DEBUG
     if (filename != 0)
         load(filename);
 }
@@ -238,18 +231,19 @@ void XmbFontImp::drawText(Drawable w, int screen, GC gc, const char *text,
 unsigned int XmbFontImp::textWidth(const char * const text, unsigned int len) const {
     if (m_fontset == 0)
         return 0;
+
     XRectangle ink, logical;
 #ifdef X_HAVE_UTF8_STRING
     if (m_utf8mode) {
         Xutf8TextExtents(m_fontset, text, len,
                          &ink, &logical);
-    } else 
+        if (logical.width != 0)
+            return logical.width;
+    }
 #endif // X_HAVE_UTF8_STRING
-	{
-            XmbTextExtents(m_fontset, text, len,
-                           &ink, &logical);
-	}
 
+    XmbTextExtents(m_fontset, text, len,
+                   &ink, &logical);
     return logical.width;
 }
 

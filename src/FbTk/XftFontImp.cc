@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.2 2002/12/01 13:42:15 rathnor Exp $
+//$Id: XftFontImp.cc,v 1.3 2004/08/10 11:57:35 fluxgen Exp $
 
 #include "XftFontImp.hh"
 #include "App.hh"
@@ -27,6 +27,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif //HAVE_CONFIG_H
+
 namespace FbTk {
 
 XftFontImp::XftFontImp(const char *name, bool utf8):m_xftfont(0),
@@ -93,20 +94,33 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
     // draw string
 #ifdef HAVE_XFT_UTF8_STRING
     if (m_utf8mode) {
-        XftDrawStringUtf8(draw,
-                          &xftcolor,
-                          m_xftfont,
-                          x, y,
-                          (XftChar8 *)(text), len);
-    } else 
-#endif // HAVE_XFT_UTF8_STRING
-	{
-            XftDrawString8(draw,
-                           &xftcolor,
+        // check the string size,
+        // if the size is zero we use the XftDrawString8 function instead.
+        XGlyphInfo ginfo;
+        XftTextExtentsUtf8(App::instance()->display(),
                            m_xftfont,
-                           x, y,
-                           (XftChar8 *)(text), len);
-	}
+                           (XftChar8 *)text, len,
+                           &ginfo);
+        if (ginfo.xOff != 0) {
+            XftDrawStringUtf8(draw,
+                              &xftcolor,
+                              m_xftfont,
+                              x, y,
+                              (XftChar8 *)(text), len);
+            XftColorFree(disp, DefaultVisual(disp, screen), 
+                         DefaultColormap(disp, screen), &xftcolor);
+            XftDrawDestroy(draw);
+            return;
+        }
+    }
+#endif // HAVE_XFT_UTF8_STRING
+    
+    XftDrawString8(draw,
+                   &xftcolor,
+                   m_xftfont,
+                   x, y,
+                   (XftChar8 *)(text), len);
+
 
     XftColorFree(disp, DefaultVisual(disp, screen), 
                  DefaultColormap(disp, screen), &xftcolor);
@@ -116,21 +130,27 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
 unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) const {
     if (m_xftfont == 0)
         return 0;
+
     XGlyphInfo ginfo;
+
 #ifdef HAVE_XFT_UTF8_STRING
     if (m_utf8mode) {
         XftTextExtentsUtf8(App::instance()->display(),
                            m_xftfont,
                            (XftChar8 *)text, len,
                            &ginfo);
-    } else 
+        if (ginfo.xOff != 0)
+            return ginfo.xOff;
+
+        // the utf8 failed, try normal extents
+    }
 #endif  //HAVE_XFT_UTF8_STRING
-	{
-            XftTextExtents8(App::instance()->display(),
-                            m_xftfont,
-                            (XftChar8 *)text, len,
-                            &ginfo);
-	}
+
+    XftTextExtents8(App::instance()->display(),
+                    m_xftfont,
+                    (XftChar8 *)text, len,
+                    &ginfo);
+
     return ginfo.xOff;
 }
 
