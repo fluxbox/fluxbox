@@ -671,10 +671,10 @@ void BScreen::changeWorkspaceID(int id) {
 
 		current_workspace->showAll();
 
-		if (resource.focus_last && current_workspace->getLastFocusedWindow()) {
-			XSync(fluxbox->getXDisplay(), False);
+		if (resource.focus_last && current_workspace->getLastFocusedWindow())
 			current_workspace->getLastFocusedWindow()->setInputFocus();
-		}
+		
+		XSync(fluxbox->getXDisplay(), True);
 	}
 
 	updateNetizenCurrentWorkspace();
