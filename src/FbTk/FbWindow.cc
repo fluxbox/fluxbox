@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.16 2003/05/10 23:11:33 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.17 2003/05/13 14:07:24 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -70,6 +70,7 @@ FbWindow::FbWindow(const FbWindow &parent,
 };
 
 FbWindow::FbWindow(Window client):m_parent(0), m_window(0),
+                                  m_screen_num(0),
                                   m_destroy(false) { // don't destroy this window
 
     setNew(client);
