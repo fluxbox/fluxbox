@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.4 2002/08/04 15:55:13 fluxgen Exp $
+//$Id: Font.hh,v 1.5 2002/10/13 22:24:14 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -27,16 +27,19 @@
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-namespace FbTk
-{
+#include <string>
+#include <memory>
+
+namespace FbTk {
+
+class FontImp;
 
 /**
-	Handles loading of font.	
+	Handles the client to fontimp bridge.
 */
-class Font
-{
+class Font {
 public:
-	Font(Display *display, const char *name=0);
+	Font(const char *name=0, bool antialias = false);
 	virtual ~Font();
 	/** 
 		Load a font
@@ -44,23 +47,12 @@ public:
 		loaded font
 	*/
 	bool load(const char *name);
-	/**
-		Loads a font from database
-		@return true on success, else false and it'll fall back on the last
-		loaded font
-		@see load(const char *name)
-	*/
-	bool loadFromDatabase(XrmDatabase &database, const char *rname, const char *rclass);
-	/// @return true if a font is loaded, else false
-	inline bool isLoaded() const { return m_loaded; }
-	/// @return XFontStruct of  font, note: can be 0
-	inline const XFontStruct *fontStruct() const { return m_font.fontstruct; }
-	/// @return XFontSet of font, note: check isLoaded
-	inline const XFontSet &fontSet() const { return m_font.set; }
-	/// @return XFontSetExtents of font, note: can be 0
-	inline const XFontSetExtents *fontSetExtents() const { return m_font.set_extents; }
+
 	/// @return true if multibyte is enabled, else false
-	static inline bool multibyte() { return m_multibyte; }
+	static bool multibyte() { return m_multibyte; }
+	/// @return true if utf-8 mode is enabled, else false
+	static bool utf8() { return m_utf8mode; }
+	void setAntialias(bool flag);
 	/**
 		@param text text to check size
 		@param size length of text in bytes
@@ -68,24 +60,13 @@ public:
 	*/
 	unsigned int textWidth(const char *text, unsigned int size) const;
 	unsigned int height() const;
-	/// @return display connection
-	Display *display() const { return m_display; }
+	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
 private:
-	void freeFont();
-	static XFontSet createFontSet(Display *display, const char *fontname);
-	static const char *getFontSize(const char *pattern, int *size);
-	static const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...);
-
-	struct FontType
-	{
-		XFontSet set;
-		XFontSetExtents *set_extents;
-		XFontStruct *fontstruct;
-	} m_font;
-
-	bool m_loaded;
+	
+	std::auto_ptr<FontImp> m_fontimp;
+	std::string m_fontstr;
 	static bool m_multibyte;
-	Display *m_display;
+	static bool m_utf8mode;
 };
 
 }; //end namespace FbTk
