@@ -1,14 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/01/21:
+  * Fixed window size bug (Henrik)
+    FbWinFrame::hideHandle and hideTitlebar could've
+    caused window to have negative size
+    FbWinFrame.cc    
   * Fixed cursor bug in fbrun (Thanks Mathias Gumz (gumz<at>cs.uni-magdeburg.de))
     TextBox.cc
   * Added support for:             (Henrik)
     _NET_WM_WINDOW_TYPE
     _NET_WM_WINDOW_TYPE_DOCK
     Ewmh.hh/cc
-  * Fixed so one can navigate in menu with      (Henrik)
-    even if numlock, capslock or scrollock is on
+  * Fixed so one can navigate in menu even if     (Henrik)
+    numlock, capslock or scrollock are on
     Menu.cc
 *04/01/19:
   * Fixed minor bug in ResourceManager (Henrik)
