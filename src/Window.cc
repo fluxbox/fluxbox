@@ -143,7 +143,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	client.title_len = 0;
 	client.icon_title = 0;
 	client.mwm_hint = (MwmHints *) 0;
-	client.blackbox_hint = (BlackboxHints *) 0;
+	client.blackbox_hint = 0;
 
 	windowmenu = 0;
 	lastButtonPressTime = 0;
@@ -1473,28 +1473,28 @@ void FluxboxWindow::getBlackboxHints(void) {
 												 (unsigned char **) &client.blackbox_hint) == Success &&
 			client.blackbox_hint)
 		if (num == PropBlackboxHintsElements) {
-			if (client.blackbox_hint->flags & AttribShaded)
-				shaded = (client.blackbox_hint->attrib & AttribShaded);
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_SHADED)
+				shaded = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_SHADED);
 
-			if ((client.blackbox_hint->flags & AttribMaxHoriz) &&
-					(client.blackbox_hint->flags & AttribMaxVert))
+			if ((client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
+					(client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT))
 				maximized = ((client.blackbox_hint->attrib &
-											(AttribMaxHoriz | AttribMaxVert)) ?	1 : 0);
-			else if (client.blackbox_hint->flags & AttribMaxVert)
-				maximized = ((client.blackbox_hint->attrib & AttribMaxVert) ? 2 : 0);
-			else if (client.blackbox_hint->flags & AttribMaxHoriz)
-				maximized = ((client.blackbox_hint->attrib & AttribMaxHoriz) ? 3 : 0);
+											(BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?	1 : 0);
+			else if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT)
+				maximized = ((client.blackbox_hint->attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+			else if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ)
+				maximized = ((client.blackbox_hint->attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 
-			if (client.blackbox_hint->flags & AttribOmnipresent)
-				stuck = (client.blackbox_hint->attrib & AttribOmnipresent);
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_OMNIPRESENT)
+				stuck = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_OMNIPRESENT);
 
-			if (client.blackbox_hint->flags & AttribWorkspace)
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_WORKSPACE)
 				workspace_number = client.blackbox_hint->workspace;
 
 
-			if (client.blackbox_hint->flags & AttribDecoration) {
+			if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
 				switch (client.blackbox_hint->decoration) {
-				case DecorNone:
+				case BaseDisplay::DECOR_NONE:
 					decorations.titlebar = decorations.border = decorations.handle =
 						decorations.iconify = decorations.maximize =
 						decorations.menu = false;
@@ -1504,7 +1504,7 @@ void FluxboxWindow::getBlackboxHints(void) {
 					break;
 
 				default:
-				case DecorNormal:
+				case BaseDisplay::DECOR_NORMAL:
 					decorations.titlebar = decorations.border = decorations.handle =
 						decorations.iconify = decorations.maximize =
 						decorations.menu = true;
@@ -1513,7 +1513,7 @@ void FluxboxWindow::getBlackboxHints(void) {
 
 					break;
 
-				case DecorTiny:
+				case BaseDisplay::DECOR_TINY:
 					decorations.titlebar = decorations.iconify = decorations.menu =
 						functions.move = functions.iconify = true;
 					decorations.border = decorations.handle = decorations.maximize =
@@ -1521,7 +1521,7 @@ void FluxboxWindow::getBlackboxHints(void) {
 
 					break;
 
-				case DecorTool:
+				case BaseDisplay::DECOR_TOOL:
 					decorations.titlebar = decorations.menu = functions.move = true;
 					decorations.iconify = decorations.border = decorations.handle =
 						decorations.maximize = functions.resize = functions.maximize =
@@ -1916,27 +1916,27 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		switch(button) {
 		case 1:
-			blackbox_attrib.flags |= AttribMaxHoriz | AttribMaxVert;
-			blackbox_attrib.attrib |= AttribMaxHoriz | AttribMaxVert;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT;
 
 			break;
 
 		case 2:
-			blackbox_attrib.flags |= AttribMaxVert;
-			blackbox_attrib.attrib |= AttribMaxVert;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_MAXVERT;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_MAXVERT;
 
 			break;
 
 		case 3:
-			blackbox_attrib.flags |= AttribMaxHoriz;
-			blackbox_attrib.attrib |= AttribMaxHoriz;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_MAXHORIZ;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_MAXHORIZ;
 
 			break;
 		}
 
 		if (shaded) {
-			blackbox_attrib.flags ^= AttribShaded;
-			blackbox_attrib.attrib ^= AttribShaded;
+			blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
+			blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
 			shaded = false;
 		}
 
@@ -1950,8 +1950,8 @@ void FluxboxWindow::maximize(unsigned int button) {
 	} else {
 		maximized = false;
 
-		blackbox_attrib.flags &= ! (AttribMaxHoriz | AttribMaxVert);
-		blackbox_attrib.attrib &= ! (AttribMaxHoriz | AttribMaxVert);
+		blackbox_attrib.flags &= ! (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT);
+		blackbox_attrib.attrib &= ! (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT);
 
 		configure(blackbox_attrib.premax_x, blackbox_attrib.premax_y,
 				blackbox_attrib.premax_w, blackbox_attrib.premax_h);
@@ -1970,7 +1970,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 void FluxboxWindow::setWorkspace(int n) {
 	workspace_number = n;
 
-	blackbox_attrib.flags |= AttribWorkspace;
+	blackbox_attrib.flags |= BaseDisplay::ATTRIB_WORKSPACE;
 	blackbox_attrib.workspace = workspace_number;
 }
 
@@ -1980,15 +1980,15 @@ void FluxboxWindow::shade(void) {
 		if (shaded) {
 			XResizeWindow(display, frame.window, frame.width, frame.height);
 			shaded = false;
-			blackbox_attrib.flags ^= AttribShaded;
-			blackbox_attrib.attrib ^= AttribShaded;
+			blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
+			blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
 
 			setState(NormalState);
 		} else {
 			XResizeWindow(display, frame.window, frame.width, frame.title_h);
 			shaded = true;
-			blackbox_attrib.flags |= AttribShaded;
-			blackbox_attrib.attrib |= AttribShaded;
+			blackbox_attrib.flags |= BaseDisplay::ATTRIB_SHADED;
+			blackbox_attrib.attrib |= BaseDisplay::ATTRIB_SHADED;
 
 			setState(IconicState);
 		}
@@ -2000,8 +2000,8 @@ void FluxboxWindow::stick(void) {
 	if (tab) //if it got a tab then do tab's stick on all of the objects in the list
 		tab->stick(); //this window will stick too.
 	else if (stuck) {
-		blackbox_attrib.flags ^= AttribOmnipresent;
-		blackbox_attrib.attrib ^= AttribOmnipresent;
+		blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
+		blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 
 		stuck = false;
 
@@ -2012,8 +2012,8 @@ void FluxboxWindow::stick(void) {
 	} else {
 		stuck = true;
 
-		blackbox_attrib.flags |= AttribOmnipresent;
-		blackbox_attrib.attrib |= AttribOmnipresent;
+		blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
+		blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 
 	}
 	
@@ -2232,7 +2232,7 @@ void FluxboxWindow::restoreAttributes(void) {
 	unsigned long ulfoo, nitems;
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
-	BlackboxAttributes *net;
+	BaseDisplay::BlackboxAttributes *net;
 	if (XGetWindowProperty(display, client.window,
 			 fluxbox->getFluxboxAttributesAtom(), 0l,
 			 PropBlackboxAttributesElements, false,
@@ -2252,8 +2252,8 @@ void FluxboxWindow::restoreAttributes(void) {
 	} else
 		return;
 
-	if (blackbox_attrib.flags & AttribShaded &&
-			blackbox_attrib.attrib & AttribShaded) {
+	if (blackbox_attrib.flags & BaseDisplay::ATTRIB_SHADED &&
+			blackbox_attrib.attrib & BaseDisplay::ATTRIB_SHADED) {
 		int save_state =
 			((current_state == IconicState) ? NormalState : current_state);
 
@@ -2273,29 +2273,29 @@ void FluxboxWindow::restoreAttributes(void) {
 	} else if (current_state == WithdrawnState)
 		current_state = NormalState;
 
-	if (blackbox_attrib.flags & AttribOmnipresent &&
-			blackbox_attrib.attrib & AttribOmnipresent) {
+	if (blackbox_attrib.flags & BaseDisplay::ATTRIB_OMNIPRESENT &&
+			blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) {
 		stuck = false;
 		stick();
 
 		current_state = NormalState;
 	}
 
-	if ((blackbox_attrib.flags & AttribMaxHoriz) ||
-			(blackbox_attrib.flags & AttribMaxVert)) {
+	if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) ||
+			(blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)) {
 		int x = blackbox_attrib.premax_x, y = blackbox_attrib.premax_y;
 		unsigned int w = blackbox_attrib.premax_w, h = blackbox_attrib.premax_h;
 		maximized = false;
 
 		int m;
-		if ((blackbox_attrib.flags & AttribMaxHoriz) &&
-				(blackbox_attrib.flags & AttribMaxVert))
-			m = ((blackbox_attrib.attrib & (AttribMaxHoriz | AttribMaxVert)) ?
+		if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
+				(blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT))
+			m = ((blackbox_attrib.attrib & (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?
 					 1 : 0);
-		else if (blackbox_attrib.flags & AttribMaxVert)
-			m = ((blackbox_attrib.attrib & AttribMaxVert) ? 2 : 0);
-		else if (blackbox_attrib.flags & AttribMaxHoriz)
-			m = ((blackbox_attrib.attrib & AttribMaxHoriz) ? 3 : 0);
+		else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)
+			m = ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+		else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ)
+			m = ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 		else
 			m = 0;
 
@@ -3128,37 +3128,37 @@ void FluxboxWindow::timeout(void) {
 }
 
 
-void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
-	if ((net->flags & AttribShaded) &&
-			((blackbox_attrib.attrib & AttribShaded) !=
-			(net->attrib & AttribShaded)))
+void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
+	if ((net->flags & BaseDisplay::ATTRIB_SHADED) &&
+			((blackbox_attrib.attrib & BaseDisplay::ATTRIB_SHADED) !=
+			(net->attrib & BaseDisplay::ATTRIB_SHADED)))
 		shade();
 
-	if ((net->flags & (AttribMaxVert | AttribMaxHoriz)) &&
-			((blackbox_attrib.attrib & (AttribMaxVert | AttribMaxHoriz)) !=
-				(net->attrib & (AttribMaxVert | AttribMaxHoriz)))) {
+	if ((net->flags & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)) &&
+			((blackbox_attrib.attrib & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)) !=
+				(net->attrib & (BaseDisplay::ATTRIB_MAXVERT | BaseDisplay::ATTRIB_MAXHORIZ)))) {
 		if (maximized) {
 			maximize(0);
 		} else {
 			int m = 0;
 
-			if ((net->flags & AttribMaxHoriz) && (net->flags & AttribMaxVert))
-				m = ((net->attrib & (AttribMaxHoriz | AttribMaxVert)) ?	1 : 0);
-			else if (net->flags & AttribMaxVert)
-				m = ((net->attrib & AttribMaxVert) ? 2 : 0);
-			else if (net->flags & AttribMaxHoriz)
-				m = ((net->attrib & AttribMaxHoriz) ? 3 : 0);
+			if ((net->flags & BaseDisplay::ATTRIB_MAXHORIZ) && (net->flags & BaseDisplay::ATTRIB_MAXVERT))
+				m = ((net->attrib & (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?	1 : 0);
+			else if (net->flags & BaseDisplay::ATTRIB_MAXVERT)
+				m = ((net->attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+			else if (net->flags & BaseDisplay::ATTRIB_MAXHORIZ)
+				m = ((net->attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 
 			maximize(m);
 		}
 	}
 
-	if ((net->flags & AttribOmnipresent) &&
-			((blackbox_attrib.attrib & AttribOmnipresent) !=
-			(net->attrib & AttribOmnipresent)))
+	if ((net->flags & BaseDisplay::ATTRIB_OMNIPRESENT) &&
+			((blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) !=
+			(net->attrib & BaseDisplay::ATTRIB_OMNIPRESENT)))
 		stick();
 
-	if ((net->flags & AttribWorkspace) &&
+	if ((net->flags & BaseDisplay::ATTRIB_WORKSPACE) &&
 			(workspace_number != (signed) net->workspace)) {
 		screen->reassociateWindow(this, net->workspace, true);
 
@@ -3168,9 +3168,9 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 			deiconify();
 	}
 
-	if (net->flags & AttribDecoration) {
+	if (net->flags & BaseDisplay::ATTRIB_DECORATION) {
 		switch (net->decoration) {
-		case DecorNone:
+		case BaseDisplay::DECOR_NONE:
 			decorations.titlebar = decorations.border = decorations.handle =
 				decorations.iconify = decorations.maximize =
 				decorations.menu = false;
@@ -3180,7 +3180,7 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 			break;
 
 		default:
-		case DecorNormal:
+		case BaseDisplay::DECOR_NORMAL:
 			decorations.titlebar = decorations.border = decorations.handle =
 				decorations.iconify = decorations.maximize =
 				decorations.menu = true;
@@ -3189,7 +3189,7 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 
 			break;
 
-		case DecorTiny:
+		case BaseDisplay::DECOR_TINY:
 			decorations.titlebar = decorations.iconify = decorations.menu =
 				functions.move = functions.iconify = true;
 			decorations.border = decorations.handle = decorations.maximize =
@@ -3197,7 +3197,7 @@ void FluxboxWindow::changeBlackboxHints(BlackboxHints *net) {
 
 			break;
 
-		case DecorTool:
+		case BaseDisplay::DECOR_TOOL:
 			decorations.titlebar = decorations.menu = functions.move = true;
 			decorations.iconify = decorations.border = decorations.handle =
 				decorations.maximize = functions.resize = functions.maximize =
