@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.4 2003/05/10 14:16:38 fluxgen Exp $
+// $Id: WinClient.hh,v 1.5 2003/05/14 12:07:05 fluxgen Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -30,6 +30,8 @@
 
 #include <X11/Xutil.h>
 #include <string>
+
+class BScreen;
 
 /// Holds client window info 
 class WinClient:public FbTk::FbWindow {
@@ -48,7 +50,8 @@ public:
     bool getWMIconName(XTextProperty &textprop) const;
     void updateTitle();
     void updateIconTitle();
-
+    BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
     /// notifies when this client dies
     FbTk::Subject &dieSig() { return m_diesig; }
 
@@ -109,6 +112,7 @@ private:
     bool modal;
     std::string m_title, m_icon_title;
     WinClientSubj m_diesig;
+    BScreen &m_screen;
 };
 
 #endif // WINCLIENT_HH

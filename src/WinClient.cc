@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.8 2003/05/10 22:59:32 fluxgen Exp $
+// $Id: WinClient.cc,v 1.9 2003/05/14 12:07:06 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -56,12 +56,17 @@ WinClient::WinClient(Window win, FluxboxWindow &fbwin):FbTk::FbWindow(win),
                      m_win(&fbwin),
                      modal(false),
                      m_title(""), m_icon_title(""),
-                     m_diesig(*this) { }
+                     m_diesig(*this), m_screen(fbwin.screen()) { }
 
 WinClient::~WinClient() {
 #ifdef DEBUG
     cerr<<__FILE__<<"(~"<<__FUNCTION__<<")[this="<<this<<"]"<<endl;
 #endif // DEBUG
+
+    FbTk::EventManager::instance()->remove(window());
+
+    if (m_win != 0)
+        m_win->removeClient(*this);
 
     // this takes care of any focus issues
     m_diesig.notify();
@@ -93,11 +98,7 @@ WinClient::~WinClient() {
     if (window())
         fluxbox->removeWindowSearch(window());
 
-    if (m_win != 0)
-        m_win->removeClient(*this);
-    FbTk::EventManager::instance()->remove(window());
     m_win = 0;
-
 }
 
 void WinClient::updateRect(int x, int y, 
