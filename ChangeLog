@@ -1,5 +1,22 @@
 (Format: Year/Month/Day)
 Changes for 0.1.9:
+*02/05/07:
+   * Fixed a minor bug in DrawUtil.cc (Thanks Sang-Hoon RHEE)
+   * Fixed bug [ 552723 ] removing decorations while shaded. (Thanks Joel Carlbark)
+   * const iterators in Screen::updateGnomeList
+   * fixed some const in Workspace and moved clientmenu from pointer to regular
+   * Minor clean up in Workspacemenu.cc/hh, Clientmenu.cc/hh, Netizen.hh/cc
+   * const fixes in FbAtoms.hh
+   * Added options direct to CXXFLAGS in configure.in, so we don't need to 
+     add them in every Makefile.am-file.
+   * Updated src/Makefile.am and util/Makefile.am (see above)	 
+*02/05/03:
+   * Fixed so settins for tool bar saves when you change them i the menu
+     in Toolbar.cc
+*02/05/02:
+   * Added FirstTab, LastTab, MoveTabPrev and MoveTabNext keybindings (Thanks Phil Dier)
+   * Fixed ScreenList in fluxbox.cc
+   * Removed "NULL" from Font.cc
 *02/04/28:
    * Fixed shade bug while vertical rotated tabs and tabs off (Thanks signal9)
    * Fluxbox doesn't save on exit anymore so restart of fluxbox will reread 
@@ -11,6 +28,7 @@ Changes for 0.1.9:
    * Fixed m_multibyte in Font.cc (Thanks kita)
 *02/04/20:
    * Fixed menu.font string in Theme.cc
+
 --------------------------------------------------------------
 Changes for 0.1.8:
 *02/04/19:
