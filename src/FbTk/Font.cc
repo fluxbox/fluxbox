@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.3 2002/12/08 19:12:07 fluxgen Exp $
+//$Id: Font.cc,v 1.4 2003/01/05 23:00:19 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -54,6 +54,7 @@
 #include <iostream> 
 #include <cstring>
 #include <cstdlib>
+#include <typeinfo>
 using namespace std;
 
 #ifdef HAVE_SETLOCALE
