@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.hh,v 1.2 2003/05/10 13:28:11 fluxgen Exp $
+// $Id: FbDrawable.hh,v 1.3 2003/09/06 15:39:06 fluxgen Exp $
 #ifndef FBTK_FBDRAWABLE_HH
 #define FBTK_FBDRAWABLE_HH
 
@@ -48,6 +48,8 @@ public:
                              int shape, int mode);
 
     virtual void drawPoint(GC gc, int x, int y);
+
+    virtual XImage *image(int x, int y, unsigned int width, unsigned int height) const;
 
     /// X drawable
     virtual Drawable drawable() const = 0;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.cc,v 1.1 2003/04/29 08:49:36 fluxgen Exp $
+// $Id: FbDrawable.cc,v 1.2 2003/09/06 15:39:06 fluxgen Exp $
 
 #include "FbDrawable.hh"
 
@@ -84,6 +84,13 @@ void FbDrawable::drawPoint(GC gc, int x, int y) {
     if (drawable() == 0 || gc == 0)
         return;    
     XDrawPoint(FbTk::App::instance()->display(), drawable(), gc, x, y);
+}
+
+XImage *FbDrawable::image(int x, int y, unsigned int width, unsigned int height) const {
+    return XGetImage(FbTk::App::instance()->display(), drawable(), 
+                     x, y, width, height, 
+                     AllPlanes, // plane mask
+                     ZPixmap);
 }
 
 }; // end namespace FbTk
