@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.14 2002/10/13 22:34:03 fluxgen Exp $
+// $Id: Theme.hh,v 1.15 2002/10/15 10:52:18 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -105,7 +105,7 @@ public:
 	inline GC getOpGC() const { return m_opgc; }
 	inline const FbTk::Color &getBorderColor() const { return m_border_color; }
 	void load(const char *filename);
-	void reconfigure();
+	void reconfigure(bool antialias = false);
 	
 	inline void setRootCommand(const std::string &command) { m_rootcommand = command; }
 	
