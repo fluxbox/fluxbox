@@ -60,6 +60,10 @@ find_it() {
 	which $1 > /dev/null 2> /dev/null && shift && $*
 }
 
+find_term() {
+	if find_it $1; then DEFAULT_TERM=$1; fi
+}
+
 append() {
 	echo "	$*" >> ${FILENAME}
 }
@@ -131,6 +135,17 @@ fi
 # menutitle
 if [ -z "${MENUTITLE}" ]; then
 	MENUTITLE="Fluxbox"
+fi
+
+if find_it xterm; then
+	DEFAULT_TERM=xterm
+else
+	for term in konsole gnome-terminal Eterm wterm aterm rxvt; do
+		find_term $term
+		if [ -nz $DEFAULT_TERM ]; then
+			break
+		fi
+	done
 fi
 
 # menu defaults (if translation forget to set one of them)
@@ -255,7 +270,7 @@ case ${LC_ALL} in
 		STYLEMENUTITLE="スタイル選択..."
 		WORKSPACEMENU="ワークスペース"
 	;;
-	fr_FR) # french		
+	fr_FR) # french	locales
 		BROWSERMENU="Navigateurs"
 		EDITORMENU="Editeurs"
 		NETMENU="Net"
@@ -275,6 +290,26 @@ case ${LC_ALL} in
 		STYLEMENUTITLE="Choisir un style..."
 		WORKSPACEMENU="Liste des bureaux"
 	;;
+	it_IT|it_IT@euro) # italian locales
+		BROWSERMENU="Browsers"
+		EDITORMENU="Editori"
+		NETMENU="Internet"
+		GRAPHICMENU="Grafica"
+		MUSICMENU="Musica"
+		TERMINALMENU="Terminali"
+		MISCMENU="Varie"
+		XUTILSMENU="X-utils"
+		FBSETTINGSMENU="Preferenze"
+		KDEMENUTEXT="menu KDE"
+		GNOMEMENUTEXT="menu Gnome"
+		RESTARTITEM="Riavvia"
+		EXITITEM="Esci"
+		CONFIGUREMENU="Configurazione"
+		RELOADITEM="Rileggi la configurazione"
+		STYLEMENU="Scegli uno stile..."
+		STYLEMENUTITLE="Scegli uno stile..."
+		WORKSPACEMENU="Aree di lavoro"
+	;;
 	*)
 	;;
 esac
@@ -283,7 +318,7 @@ esac
 
 echo "[begin] (${MENUTITLE})" > ${FILENAME}
 
-find_it xterm           append "[exec]   (xterm) {xterm}"
+append "[exec]    (${DEFAULT_TERM}) {${DEFAULT_TERM}}"
 find_it nedit           append "[exec]   (nedit) {nedit}"
 
 
@@ -293,9 +328,9 @@ append_submenu ${BROWSERMENU}
 	find_it galeon      append "[exec]   (galeon) {galeon}"
 	find_it mozilla     append "[exec]   (mozilla) {mozilla}"
 	find_it konqueror   append "[exec]   (konqueror) {konqueror}"
-	find_it links       append "[exec]   (links) {xterm -title links -e links fluxbox.sf.net}"
-        find_it w3m         append "[exec]   (w3m) {xterm -title w3m -e w3m}"
-	find_it lynx        append "[exec]   (lynx) {xterm -title lynx -e lynx}"
+	find_it links       append "[exec]   (links) {${DEFAULT_TERM} -title links -e links fluxbox.sf.net}"
+        find_it w3m         append "[exec]   (w3m) {${DEFAULT_TERM} -title w3m -e w3m}"
+	find_it lynx        append "[exec]   (lynx) {${DEFAULT_TERM} -title lynx -e lynx}"
 	find_it dillo       append "[exec]   (dillo) {dillo}"
 append_menu_end
 
@@ -319,19 +354,20 @@ append_submenu ${NETMENU}
 	find_it kmail    	append "[exec]   (kmail) {kmail}"
 	find_it gnomemeeting    append "[exec]   (gnomemeeting) {gnomemeeting}"
 	find_it evolution   append "[exec]   (evolution) {evolution}"
-	find_it mutt        append "[exec]   (mutt) {xterm -title mutt -e mutt}"
+	find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -title mutt -e mutt}"
 	
 	find_it gftp        append "[exec]   (gftp) {gftp}"
 	find_it pan         append "[exec]   (pan)  {pan}"
 	find_it xchat       append "[exec]   (xchat) {xchat}"
-	find_it irssi       append "[exec]   (irssi) {xterm -title irssi -e irssi}"
-	find_it BitchX      append "[exec]   (BitchX) {xterm -title BitchX -e BitchX -N}"
-	find_it bitchx      append "[exec]   (BitchX) {xterm -title BitchX -e bitchx -N}"
-	find_it ircii       append "[exec]   (ircii) {xterm -title ircii -e ircii -s}"
+	find_it irssi       append "[exec]   (irssi) {${DEFAULT_TERM} -title irssi -e irssi}"
+	find_it BitchX      append "[exec]   (BitchX) {${DEFAULT_TERM} -title BitchX -e BitchX -N}"
+	find_it bitchx      append "[exec]   (BitchX) {${DEFAULT_TERM} -title BitchX -e bitchx -N}"
+	find_it ircii       append "[exec]   (ircii) {${DEFAULT_TERM} -title ircii -e ircii -s}"
 append_menu_end
 
 append_submenu ${GRAPHICMENU}
 	find_it gimp        append "[exec]   (gimp) {gimp}"
+	find_it gimp-1.3    append "[exec]   (gimp 1.3) {gimp-1.3}"
 	find_it xv          append "[exec]   (xv) {xv}"
 	find_it gqview      append "[exec]   (gqview) {gqview}"
 	find_it xpaint      append "[exec]   (xpaint) {xpaint}"
@@ -350,12 +386,12 @@ append_submenu ${MUSICMENU}
 	find_it kmidi       append "[exec]   (kmidi) {kmidi}"
 	find_it xplaycd     append "[exec]   (xplaycd) {xplaycd}"
 	find_it soundtracker append "[exec]   (soundtracker) {soundtracker}"
-	find_it cplay       append "[exec]   (cplay) {xterm -title cplay -e /usr/local/bin/cplay}"
+	find_it cplay       append "[exec]   (cplay) {${DEFAULT_TERM} -title cplay -e /usr/local/bin/cplay}"
 	find_it grip        append "[exec]   (grip) {grip}"
 append_menu_end
 
 append_submenu ${TERMINALMENU}
-	append "[exec] (xterm) {xterm}"
+	find_it xterm       append "[exec] (xterm) {xterm}"
 	find_it gnome-terminal append "[exec] (gnome-terminal) {gnome-terminal}"
 	find_it Eterm       append "[exec] (Eterm) {Eterm}"
 	find_it konsole     append "[exec] (konsole) {konsole}"
@@ -376,7 +412,7 @@ append_submenu ${MISCMENU}
 	find_it kpackage    append "[exec] (kpackage) {kpackage}"
 	find_it xgdb        append "[exec] (xgdb) {xgdb}"
 	find_it ddd         append "[exec] (ddd) {ddd}"
-	find_it xterm       append "[exec] (tail access_log) {xterm -title access_log -e tail -f /var/log/access_log}"
+	find_it ${DEFAULT_TERM}      append "[exec] (tail access_log) {${DEFAULT_TERM} -title access_log -e tail -f /var/log/access_log}"
 append_menu_end
 
 
@@ -434,8 +470,8 @@ append_submenu ${FBSETTINGSMENU}
 	append "[workspaces]   (${WORKSPACEMENU})"
 
 	append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
-		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
 		append "[stylesdir] (~/.fluxbox/styles)"
+		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
 	append_menu_end
 
 	append "[config] (${CONFIGUREMENU})"
