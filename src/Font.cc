@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.13 2002/10/15 10:56:49 fluxgen Exp $
+//$Id: Font.cc,v 1.14 2002/10/15 16:34:14 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -38,6 +38,8 @@
 #include "XFontImp.hh"
 #include "XmbFontImp.hh"
 
+#include "StringUtil.hh"
+
 //use gnu extensions
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -47,18 +49,16 @@
 #define __USE_GNU
 #endif //__USE_GNU
 
-#include <cstdarg>
 #include <iostream> 
-#include <cassert>
-#include <string>
-#include <cstdio>
-#include <string.h>
+#include <cstring>
+#include <cstdlib>
+using namespace std;
 
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
 
-#include "StringUtil.hh"
+
 
 namespace FbTk {
 
@@ -109,7 +109,7 @@ Font::~Font() {
 }
 
 void Font::setAntialias(bool flag) {
-
+	bool loaded = m_fontimp->loaded();
 #ifdef USE_XFT
 	if (flag && !isAntialias()) {
 		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp(m_fontstr.c_str()));
@@ -121,6 +121,11 @@ void Font::setAntialias(bool flag) {
 		else {
 			m_fontimp = std::auto_ptr<FontImp>(new XFontImp(m_fontstr.c_str()));
 		}
+	}
+
+	if (m_fontimp->loaded() != loaded) { // if the new font failed to load, fall back to 'fixed'
+		if (!m_fontimp->load("fixed")) // if that failes too, output warning
+			cerr<<"Warning: can't load fallback font 'fixed'."<<endl;
 	}
 
 	m_antialias = flag;
