@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.67 2003/05/19 15:32:47 rathnor Exp $
+// $Id: Workspace.cc,v 1.68 2003/05/20 11:03:11 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -479,7 +479,14 @@ void Workspace::placeWindow(FluxboxWindow &win) {
 
     bool placed = false;
 
-    int place_x = 0, place_y = 0, change_x = 1, change_y = 1;
+    // restrictions
+    int head = (signed) screen().getCurrHead();
+    int head_left = (signed) screen().maxLeft(head);
+    int head_right = (signed) screen().maxRight(head);
+    int head_top = (signed) screen().maxTop(head);
+    int head_bot = (signed) screen().maxBottom(head);
+
+    int place_x = head_left, place_y = head_top, change_x = 1, change_y = 1;
 
     if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
         change_y = -1;
@@ -494,7 +501,7 @@ void Workspace::placeWindow(FluxboxWindow &win) {
 
     switch (screen().getPlacementPolicy()) {
     case BScreen::UNDERMOUSEPLACEMENT: {
-        int root_x, root_y, min_y, min_x, max_y, max_x, ignore_i;
+        int root_x, root_y, ignore_i;
 
         unsigned int ignore_ui;
 
@@ -508,24 +515,19 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         test_x = root_x - (win_w / 2);
         test_y = root_y - (win_h / 2);
 
-        min_x = (int) screen().maxLeft(win.frame().window());
-        min_y = (int) screen().maxTop(win.frame().window());
-        max_x = (int) screen().maxRight(win.frame().window()) - win_w;
-        max_y = (int) screen().maxBottom(win.frame().window()) - win_h;
-
         // keep the window inside the screen
 
-        if (test_x < min_x)
-            test_x = min_x;
+        if (test_x < head_left)
+            test_x = head_left;
 
-        if (test_x > max_x)
-            test_x = max_x;
+        if (test_x > head_right)
+            test_x = head_right;
 
-        if (test_y < min_y)
-            test_y = min_y;
+        if (test_y < head_top)
+            test_y = head_top;
 
-        if (test_y > max_y)
-            test_y = max_y;
+        if (test_y > head_bot)
+            test_y = head_bot;
 
         place_x = test_x;
         place_y = test_y;
@@ -540,21 +542,21 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         test_y = 0;
 
         if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
-            test_y = screen().height() - win_h - test_y;
+            test_y = head_bot - win_h - test_y;
 
 
         while (((screen().getColPlacementDirection() == BScreen::BOTTOMTOP) ?
-                test_y > 0 : test_y + win_h < (signed) screen().height()) && 
+                test_y > 0 : test_y + win_h < head_bot) && 
                ! placed) {
 
             test_x = 0;
 
             if (screen().getRowPlacementDirection() == BScreen::RIGHTLEFT)
-                test_x = screen().width() - win_w - test_x;
+                test_x = head_right - win_w - test_x;
 
 
             while (((screen().getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-                    test_x > 0 : test_x + win_w < (signed) screen().width()) && ! placed) {
+                    test_x > 0 : test_x + win_w < head_right) && ! placed) {
 
                 placed = true;
 
@@ -596,23 +598,21 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     } // end case ROWSMARTPLACEMENT
 
     case BScreen::COLSMARTPLACEMENT: {
-        test_x = 0;
+        test_x = head_left;
 
         if (screen().getRowPlacementDirection() == BScreen::RIGHTLEFT)
-
-            test_x = screen().width() - win_w - test_x;
-
+            test_x = head_right - win_w;
 
         while (((screen().getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-                test_x > 0 : test_x + win_w < (signed) screen().width()) && 
+                test_x > head_left : test_x + win_w < head_right) && 
                !placed) {
 
-            test_y = 0;
+            test_y = head_top;
             if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
-                test_y = screen().height() - win_h - test_y;
+                test_y = head_bot - win_h;
 
             while (((screen().getColPlacementDirection() == BScreen::BOTTOMTOP) ?
-                    test_y > 0 : test_y + win_h < (signed) screen().height()) && 
+                    test_y > head_top : test_y + win_h < head_bot) && 
                    !placed) {
                 placed = True;
 
@@ -657,8 +657,8 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     // cascade placement or smart placement failed
     if (! placed) {
 
-        if (((unsigned) m_cascade_x > (screen().width() / 2)) ||
-            ((unsigned) m_cascade_y > (screen().height() / 2)))
+        if ((m_cascade_x > ((head_left + head_right) / 2)) ||
+            (m_cascade_y > ((head_top + head_bot) / 2)))
             m_cascade_x = m_cascade_y = 32;
 
         place_x = m_cascade_x;
@@ -668,10 +668,10 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         m_cascade_y += win.titleHeight();
     }
 
-    if (place_x + win_w > (signed) screen().width())
-        place_x = (((signed) screen().width()) - win_w) / 2;
-    if (place_y + win_h > (signed) screen().height())
-        place_y = (((signed) screen().height()) - win_h) / 2;
+    if (place_x + win_w > head_right)
+        place_x = (head_right - win_w) / 2;
+    if (place_y + win_h > head_bot)
+        place_y = (head_bot - win_h) / 2;
 
 
     win.moveResize(place_x, place_y, win.width(), win.height());

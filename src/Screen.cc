@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.174 2003/05/19 22:45:17 fluxgen Exp $
+// $Id: Screen.cc,v 1.175 2003/05/20 11:03:10 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -808,47 +808,31 @@ Pixmap BScreen::rootPixmap() const {
 
 }
     
-unsigned int BScreen::maxLeft(const FbTk::FbWindow &win) const {
-    if (hasXinerama()) {
-        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
-        // we MUST use a head, we use the center of the window, or if that
-        // isn't in a head, then the mouse's head
-        if (head == 0) head = getCurrHead();
+unsigned int BScreen::maxLeft(int head) const {
+    if (hasXinerama())
         return getHeadX(head);
-    } else
+    else
         return 0;
 }
 
-unsigned int BScreen::maxRight(const FbTk::FbWindow &win) const {
-    if (hasXinerama()) {
-        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
-        // we MUST use a head, we use the center of the window, or if that
-        // isn't in a head, then the mouse's head
-        if (head == 0) head = getCurrHead();
+unsigned int BScreen::maxRight(int head) const {
+    if (hasXinerama())
         return getHeadX(head) + getHeadWidth(head);
-    } else
+    else
         return width();
 }
 
-unsigned int BScreen::maxTop(const FbTk::FbWindow &win) const {
-    if (hasXinerama()) {
-        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
-        // we MUST use a head, we use the center of the window, or if that
-        // isn't in a head, then the mouse's head
-        if (head == 0) head = getCurrHead();
+unsigned int BScreen::maxTop(int head) const {
+    if (hasXinerama())
         return getHeadY(head);
-    } else
+    else
         return 0;
 }
 
-unsigned int BScreen::maxBottom(const FbTk::FbWindow &win) const {
-    if (hasXinerama()) {
-        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
-        // we MUST use a head, we use the center of the window, or if that
-        // isn't in a head, then the mouse's head
-        if (head == 0) head = getCurrHead();
+unsigned int BScreen::maxBottom(int head) const {
+    if (hasXinerama())
         return getHeadY(head) + getHeadHeight(head);
-    } else
+    else
         return height();
 }
 
@@ -2604,6 +2588,14 @@ int BScreen::getHead(int x, int y) const {
 #endif // XINERAMA
     return 0;
 }
+
+int BScreen::getHead(FbTk::FbWindow &win) const {
+    if (hasXinerama())
+        return getHead(win.x() + win.width()/2, win.y() + win.height()/2);
+    else 
+        return 0;
+}
+
 
 int BScreen::getCurrHead() const {
     if (!hasXinerama()) return 0;

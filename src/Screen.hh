@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.102 2003/05/19 22:45:51 fluxgen Exp $
+// $Id: Screen.hh,v 1.103 2003/05/20 11:03:10 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -137,10 +137,10 @@ public:
     /*
       maximum screen bounds for given window
     */
-    unsigned int maxLeft(const FbTk::FbWindow &win) const;
-    unsigned int maxRight(const FbTk::FbWindow &win) const;
-    unsigned int maxTop(const FbTk::FbWindow &win) const;
-    unsigned int maxBottom(const FbTk::FbWindow &win) const;
+    unsigned int maxLeft(int head) const;
+    unsigned int maxRight(int head) const;
+    unsigned int maxTop(int head) const;
+    unsigned int maxBottom(int head) const;
 
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }
@@ -304,6 +304,7 @@ public:
     void initXinerama();
 
     int getHead(int x, int y) const;
+    int getHead(FbTk::FbWindow &win) const;
     int getCurrHead() const;
     int getHeadX(int head) const;
     int getHeadY(int head) const;

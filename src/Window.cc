@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.182 2003/05/19 22:43:48 fluxgen Exp $
+// $Id: Window.cc,v 1.183 2003/05/20 11:03:10 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1381,16 +1381,17 @@ void FluxboxWindow::maximize() {
 
     if (!maximized) {
         // save old values
+        int head = screen().getHead(frame().window());
         m_old_width = frame().width();
         m_old_height = frame().height();
         m_old_pos_x = frame().x();
         m_old_pos_y = frame().y();
-        unsigned int left_x = screen().maxLeft(frame().window());
-        unsigned int max_width = screen().maxRight(frame().window());
-        unsigned int max_top = screen().maxTop(frame().window());
+        unsigned int left_x = screen().maxLeft(head);
+        unsigned int max_width = screen().maxRight(head);
+        unsigned int max_top = screen().maxTop(head);
         moveResize(left_x, max_top, 
                    max_width - left_x - 2*frame().window().borderWidth(), 
-                   screen().maxBottom(frame().window()) - max_top - 2*frame().window().borderWidth());
+                   screen().maxBottom(head) - max_top - 2*frame().window().borderWidth());
     } else { // demaximize, restore to old values
         moveResize(m_old_pos_x, m_old_pos_y,
                    m_old_width, m_old_height);
@@ -1400,8 +1401,9 @@ void FluxboxWindow::maximize() {
 }
 
 void FluxboxWindow::maximizeHorizontal() {
-    unsigned int left_x = screen().maxLeft(frame().window());
-    unsigned int max_width = screen().maxRight(frame().window());
+    int head = screen().getHead(frame().window());
+    unsigned int left_x = screen().maxLeft(head);
+    unsigned int max_width = screen().maxRight(head);
     moveResize(left_x, frame().y(), 
                max_width - left_x - 2*frame().window().borderWidth(), frame().height());
 
@@ -1411,10 +1413,11 @@ void FluxboxWindow::maximizeHorizontal() {
  Maximize window horizontal
  */
 void FluxboxWindow::maximizeVertical() {
-    unsigned int max_top = screen().maxTop(frame().window());
+    int head = screen().getHead(frame().window());
+    unsigned int max_top = screen().maxTop(head);
     moveResize(frame().x(), max_top,
                frame().width(),
-               screen().maxBottom(frame().window()) - max_top - 2*frame().window().borderWidth());
+               screen().maxBottom(head) - max_top - 2*frame().window().borderWidth());
 }
 
 
@@ -2899,17 +2902,15 @@ inline void snapToWindow(int &xlimit, int &ylimit,
 }
 
 /*
- * Do Whatever snapping magic is necessary, and return using the left and top variables
- * to indicate the new x,y position
+ * Do Whatever snapping magic is necessary, and return using the orig_left 
+ * and orig_top variables to indicate the new x,y position
  */
 void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     /*
-     * Snap to screen edge
+     * Snap to screen/head edges
      * Snap to windows
      * Snap to toolbar
      * Snap to slit
-     * TODO:
-     * Xinerama screen edge?
      */
 
     if (screen().getEdgeSnapThreshold() == 0) return;
@@ -2928,9 +2929,20 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     int bottom = orig_top + height() + 2*borderW;
 
     /////////////////////////////////////
-    // begin by checking the screen edges
+    // begin by checking the screen (or Xinerama head) edges
 
-    snapToWindow(dx, dy, left, right, top, bottom, 0, screen().width(), 0, screen().height());
+    if (screen().hasXinerama()) {
+        // head "0" == whole screen width + height, which we skip since the
+        // sum of all the heads covers those edges
+        for (int h = 1; h <= screen().numHeads(); h++) {
+            snapToWindow(dx, dy, left, right, top, bottom, 
+                         screen().maxLeft(h),
+                         screen().maxRight(h),
+                         screen().maxTop(h),
+                         screen().maxBottom(h));
+        }
+    } else
+        snapToWindow(dx, dy, left, right, top, bottom, 0, screen().width(), 0, screen().height());
     
     /////////////////////////////////////
     // now check window edges
