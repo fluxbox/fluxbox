@@ -20,14 +20,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandParser.hh,v 1.1 2003/06/30 14:44:43 fluxgen Exp $
+// $Id: CommandParser.hh,v 1.2 2003/07/01 09:01:20 fluxgen Exp $
 
 #ifndef COMMANDPARSER_HH
 #define COMMANDPARSER_HH
 
 #include <string>
 #include <map>
-#include <ostream>
 
 #include "RefCount.hh"
 
@@ -54,8 +53,7 @@ public:
 
     /// @return parses and returns a command matching the line
     FbTk::Command *parseLine(const std::string &line);
-    /// lists all commands to an ostream
-    void showCommands(std::ostream &the_stream) const;
+
     /// @return instance of command parser
     static CommandParser &instance();
 private:

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandParser.cc,v 1.2 2003/07/01 01:49:09 rathnor Exp $
+// $Id: CommandParser.cc,v 1.3 2003/07/01 09:04:52 fluxgen Exp $
 
 #include "CommandParser.hh"
 
@@ -28,8 +28,8 @@
 
 #include <vector>
 #include <iostream>
-#include <iterator>
 using namespace std;
+
 namespace {
 
 string::size_type removeFirstWhitespace(std::string &str) {
@@ -60,7 +60,7 @@ CommandParser &CommandParser::instance() {
 }
 
 FbTk::Command *CommandParser::parseLine(const std::string &line) {
-    
+
     // parse arguments and command
     string command = line;
     string arguments;
@@ -70,7 +70,7 @@ FbTk::Command *CommandParser::parseLine(const std::string &line) {
         // ok we have arguments, parsing them here
         arguments = command.substr(second_pos);
         removeFirstWhitespace(arguments);
-        command.erase(second_pos); // remove argument from command                
+        command.erase(second_pos); // remove argument from command
     }
 
     // now we have parsed command and arguments
@@ -82,21 +82,10 @@ FbTk::Command *CommandParser::parseLine(const std::string &line) {
     command = FbTk::StringUtil::toLower(command);
 
     // we didn't find any matching command in default commands,
-    // so we search in the command creators modules for a matching command string
+    // so we search in the command creators modules for a 
+    // matching command string
     return toCommand(command, arguments);
 
-}
-
-ostream &operator << (ostream &the_stream, const CommandParser::CommandFactoryMap::value_type &value) {
-    the_stream<<value.first;
-    return the_stream;
-}
-
-void CommandParser::showCommands(std::ostream &the_stream) const {
-    // copy command strings to stream
-    copy(m_commandfactorys.begin(),
-         m_commandfactorys.end(),
-         ostream_iterator<CommandFactoryMap::value_type>(the_stream, "\n"));
 }
 
 FbTk::Command *CommandParser::toCommand(const std::string &command_str, const std::string &arguments) {
@@ -115,7 +104,8 @@ void CommandParser::associateCommand(const std::string &command, CommandFactory 
 }
 
 void CommandParser::removeAssociation(CommandFactory &factory) {
-    std::vector<std::string> commands; // commands that are associated with the factory
+    // commands that are associated with the factory
+    std::vector<std::string> commands; 
     // find associations
     CommandFactoryMap::iterator factory_it = m_commandfactorys.begin();
     const CommandFactoryMap::iterator factory_it_end = m_commandfactorys.end();
