@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.117 2003/02/16 17:57:53 rathnor Exp $
+// $Id: Window.cc,v 1.118 2003/02/17 09:56:00 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1136,26 +1136,28 @@ void FluxboxWindow::setLayerNum(int layernum) {
 }
 
 void FluxboxWindow::shade() {
-    if (decorations.titlebar) {
-        // toggle shade on tab and frame
-        m_frame.shade();
-        if (tab)
-            tab->shade();
+    if (!decorations.titlebar)
+        return;
 
-        if (shaded) {
-            shaded = false;
-            blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
-            blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
+    // toggle shade on tab and frame
+    m_frame.shade();
+    if (tab)
+        tab->shade();
 
-            setState(NormalState);
-        } else {
-            shaded = true;
-            blackbox_attrib.flags |= BaseDisplay::ATTRIB_SHADED;
-            blackbox_attrib.attrib |= BaseDisplay::ATTRIB_SHADED;
+    if (shaded) {
+        shaded = false;
+        blackbox_attrib.flags ^= BaseDisplay::ATTRIB_SHADED;
+        blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_SHADED;
 
-            setState(IconicState);
-        }
+        setState(NormalState);
+    } else {
+        shaded = true;
+        blackbox_attrib.flags |= BaseDisplay::ATTRIB_SHADED;
+        blackbox_attrib.attrib |= BaseDisplay::ATTRIB_SHADED;
+
+        setState(IconicState);
     }
+
 }
 
 
