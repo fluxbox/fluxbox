@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.14 2002/05/17 11:55:41 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.15 2002/07/19 21:16:53 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -388,11 +388,11 @@ ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
 	}
 
 	if (visual) {
-		colormap = XCreateColormap(basedisplay->getXDisplay(), root_window,
+		m_colormap = XCreateColormap(basedisplay->getXDisplay(), root_window,
 			visual, AllocNone);
 	} else {
 		visual = DefaultVisual(basedisplay->getXDisplay(), screen_number);
-		colormap = DefaultColormap(basedisplay->getXDisplay(), screen_number);
+		m_colormap = DefaultColormap(basedisplay->getXDisplay(), screen_number);
 	}
 
 #ifdef XINERAMA
