@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.13 2004/09/09 14:29:10 akir Exp $
+// $Id: FbPixmap.cc,v 1.14 2004/09/10 15:46:08 akir Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -32,17 +32,18 @@ using namespace std;
 
 namespace FbTk {
 
-FbPixmap::FbPixmap():m_pm(0), 
-                     m_width(0), m_height(0), 
-                     m_depth(0) { }
+FbPixmap::FbPixmap():m_pm(0),
+                     m_width(0), m_height(0),
+                     m_depth(0) {
+}
 
-FbPixmap::FbPixmap(const FbPixmap &the_copy):m_pm(0), 
-                                             m_width(0), m_height(0), 
-                                             m_depth(0) {
+FbPixmap::FbPixmap(const FbPixmap &the_copy):FbDrawable(), m_pm(0),
+                                             m_width(0), m_height(0),
+                                             m_depth(0){
     copy(the_copy);
 }
 
-FbPixmap::FbPixmap(Pixmap pm):m_pm(0), 
+FbPixmap::FbPixmap(Pixmap pm):m_pm(0),
                               m_width(0), m_height(0),
                               m_depth(0) {
     if (pm == 0)
@@ -51,19 +52,19 @@ FbPixmap::FbPixmap(Pixmap pm):m_pm(0),
     (*this) = pm;
 }
 
-FbPixmap::FbPixmap(const FbDrawable &src, 
+FbPixmap::FbPixmap(const FbDrawable &src,
                    unsigned int width, unsigned int height,
-                   int depth):m_pm(0), 
-                              m_width(0), m_height(0), 
+                   int depth):m_pm(0),
+                              m_width(0), m_height(0),
                               m_depth(0) {
 
     create(src.drawable(), width, height, depth);
 }
 
-FbPixmap::FbPixmap(Drawable src, 
+FbPixmap::FbPixmap(Drawable src,
                    unsigned int width, unsigned int height,
-                   int depth):m_pm(0), 
-                              m_width(0), m_height(0), 
+                   int depth):m_pm(0),
+                              m_width(0), m_height(0),
                               m_depth(0) {
 
     create(src, width, height, depth);
@@ -88,8 +89,8 @@ FbPixmap &FbPixmap::operator = (Pixmap pm) {
     // get width, height and depth for the pixmap
     Window root;
     int x, y;
-    unsigned int border_width, bpp;    
-    XGetGeometry(FbTk::App::instance()->display(),
+    unsigned int border_width, bpp;
+    XGetGeometry(s_display,
                  pm,
                  &root,
                  &x, &y,
@@ -113,20 +114,20 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
         the_copy.depth() != depth() ||
         drawable() == 0)
         create_new = true;
-    
-    if (create_new)    
+
+    if (create_new)
         free();
 
     if (the_copy.drawable() != 0) {
         if (create_new) {
-            create(the_copy.drawable(), 
+            create(the_copy.drawable(),
                    the_copy.width(), the_copy.height(),
                    the_copy.depth());
         }
-        
+
         if (drawable()) {
             GContext gc(drawable());
-                        
+
             copyArea(the_copy.drawable(),
                      gc.gc(),
                      0, 0,
@@ -147,7 +148,7 @@ void FbPixmap::copy(Pixmap pm) {
     unsigned int border_width, bpp;
     unsigned int new_width, new_height;
 
-    XGetGeometry(FbTk::App::instance()->display(),
+    XGetGeometry(s_display,
                  pm,
                  &root,
                  &x, &y,
@@ -156,25 +157,21 @@ void FbPixmap::copy(Pixmap pm) {
                  &bpp);
     // create new pixmap and copy area
     create(root, new_width, new_height, bpp);
-    
-    Display *disp = FbTk::App::instance()->display();
 
-    GC gc = XCreateGC(disp, drawable(), 0, 0);
+    GC gc = XCreateGC(s_display, drawable(), 0, 0);
 
-    XCopyArea(disp, pm, drawable(), gc, 
+    XCopyArea(s_display, pm, drawable(), gc,
               0, 0,
               width(), height(),
               0, 0);
 
-    XFreeGC(disp, gc);
+    XFreeGC(s_display, gc);
 }
 
 void FbPixmap::rotate() {
 
-    Display *dpy = FbTk::App::instance()->display();
-
     // make an image copy
-    XImage *src_image = XGetImage(dpy, drawable(),
+    XImage *src_image = XGetImage(s_display, drawable(),
                                   0, 0, // pos
                                   width(), height(), // size
                                   ~0, // plane mask
@@ -185,11 +182,11 @@ void FbPixmap::rotate() {
     GContext gc(drawable());
 
     // copy new area
-    for (int y = 0; y < static_cast<signed>(height()); ++y) {
-        for (int x = 0; x < static_cast<signed>(width()); ++x) {
+    for (unsigned int y = 0; y < height(); ++y) {
+        for (unsigned int x = 0; x < width(); ++x) {
             gc.setForeground(XGetPixel(src_image, x, y));
             // revers coordinates
-            XDrawPoint(dpy, new_pm.drawable(), gc.gc(), y, x);
+            XDrawPoint(s_display, new_pm.drawable(), gc.gc(), y, x);
         }
     }
 
@@ -204,14 +201,12 @@ void FbPixmap::rotate() {
 }
 
 void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
-    
-    if (drawable() == 0 || 
+
+    if (drawable() == 0 ||
         (dest_width == width() && dest_height == height()))
         return;
 
-    Display *dpy = FbTk::App::instance()->display();
-
-    XImage *src_image = XGetImage(dpy, drawable(),
+    XImage *src_image = XGetImage(s_display, drawable(),
                                   0, 0, // pos
                                   width(), height(), // size
                                   ~0, // plane mask
@@ -229,13 +224,13 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
 
     // start scaling
     float src_x = 0, src_y = 0;
-    for (int tx=0; tx < static_cast<signed>(dest_width); ++tx, src_x += zoom_x) {
+    for (unsigned int tx=0; tx < dest_width; ++tx, src_x += zoom_x) {
         src_y = 0;
-        for (int ty=0; ty < static_cast<signed>(dest_height); ++ty, src_y += zoom_y) {	
+        for (unsigned int ty=0; ty < dest_height; ++ty, src_y += zoom_y) {
             gc.setForeground(XGetPixel(src_image,
                                        static_cast<int>(src_x),
                                        static_cast<int>(src_y)));
-            XDrawPoint(dpy, new_pm.drawable(), gc.gc(), tx, ty);
+            XDrawPoint(s_display, new_pm.drawable(), gc.gc(), tx, ty);
         }
     }
 
@@ -251,23 +246,23 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
 }
 
 void FbPixmap::tile(unsigned int dest_width, unsigned int dest_height) {
-    if (drawable() == 0 || 
+    if (drawable() == 0 ||
         (dest_width == width() && dest_height == height()))
         return;
- 
+
     FbPixmap new_pm(drawable(), width(), height(), depth());
 
     new_pm.copy(m_pm);
 
     resize(dest_width, dest_height);
-    
+
     FbTk::GContext gc(*this);
-    
+
     gc.setTile(new_pm);
     gc.setFillStyle(FillTiled);
 
     fillRectangle(gc.gc(), 0, 0, dest_width, dest_height);
-    
+
 }
 
 
@@ -287,45 +282,60 @@ Pixmap FbPixmap::release() {
 }
 
 Pixmap FbPixmap::getRootPixmap(int screen_num) {
-    
-    Pixmap root_pm = 0;
-    // get root pixmap for transparency
-    Display *disp = FbTk::App::instance()->display();
+
     Atom real_type;
     int real_format;
     unsigned long items_read, items_left;
     unsigned int *data;
-    if (XGetWindowProperty(disp, RootWindow(disp, screen_num), 
-                           XInternAtom(disp, "_XROOTPMAP_ID", false),
-                           0L, 1L, 
-                           false, XA_PIXMAP, &real_type,
-                           &real_format, &items_read, &items_left, 
-                           (unsigned char **) &data) == Success && 
-        items_read) { 
-        root_pm = (Pixmap) (*data);                  
-        XFree(data);
-/* TODO: analyze why this doesnt work
-    } else if (XGetWindowProperty(disp, RootWindow(disp, screen_num),
-                                  XInternAtom(disp, "_XSETROOT_ID", false),
-                                              0L, 1L,
-                                              false, XA_PIXMAP, &real_type,
-                                              &real_format, &items_read, &items_left,
-                                              (unsigned char **) &data) == Success &&
-               items_read) {
-        root_pm = (Pixmap) (*data);
-        XFree(data);
-*/
+
+    unsigned int prop = 0;
+    static const char* prop_ids[] = {
+      "_XROOTPMAP_ID",
+      "_XSETROOT_ID",
+      0
+    };
+    static bool print_error = true; // print error_message only once
+    static const char* error_message = { "\n\n !!! WARNING WARNING WARNING WARNING !!!!!\n"
+        "   if you experience problems with transparency:\n"
+        "   you are using a wallpapersetter that \n"
+        "   uses _XSETROOT_ID .. which we do not support.\n"
+        "   consult 'fbsetbg -i' or try any other wallpapersetter\n"
+        "   that uses _XROOTPMAP_ID !\n"
+        " !!! WARNING WARNING WARNING WARNING !!!!!!\n\n"
+    };
+
+    Pixmap root_pm = None;
+
+    for (prop = 0; prop_ids[prop]; prop++) {
+        if (XGetWindowProperty(s_display,
+                               RootWindow(s_display, screen_num),
+                               XInternAtom(s_display, prop_ids[prop], False),
+                               0L, 4,
+                               False, XA_PIXMAP,
+                               &real_type, &real_format,
+                               &items_read, &items_left,
+                               (unsigned char **) &data) == Success &&
+            real_format == 32 && items_read == 1) {
+
+            if (strcmp(prop_ids[prop], "_XSETROOT_ID") == 0) {
+                if (print_error) {
+                    fprintf(stderr, "%s", error_message);
+                    print_error = false;
+                }
+            } else
+                root_pm = (Pixmap) (*data);
+
+            XFree(data);
+            break;
+        }
     }
-    
 
-    return root_pm; 
-
-
+    return root_pm;
 }
 
 void FbPixmap::free() {
     if (m_pm != 0) {
-        XFreePixmap(FbTk::App::instance()->display(), m_pm);
+        XFreePixmap(s_display, m_pm);
         m_pm = 0;
     }
     m_width = 0;
@@ -333,13 +343,13 @@ void FbPixmap::free() {
     m_depth = 0;
 }
 
-void FbPixmap::create(Drawable src, 
-                      unsigned int width, unsigned int height, 
+void FbPixmap::create(Drawable src,
+                      unsigned int width, unsigned int height,
                       int depth) {
     if (src == 0)
         return;
 
-    m_pm = XCreatePixmap(FbTk::App::instance()->display(),
+    m_pm = XCreatePixmap(s_display,
                          src, width, height, depth);
     if (m_pm == 0)
         return;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.38 2004/09/09 14:29:10 akir Exp $
+// $Id: FbWindow.cc,v 1.39 2004/09/10 15:46:08 akir Exp $
 
 #include "FbWindow.hh"
 #include "FbPixmap.hh"
@@ -44,14 +44,10 @@
 
 namespace FbTk {
 
-Display *FbWindow::s_display = 0;
-
-FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
+FbWindow::FbWindow():FbDrawable(), m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
                      m_width(0), m_height(0), m_border_width(0), m_depth(0), m_destroy(true),
-                     m_buffer_pm(0) {
+                     m_buffer_pm(0){
 
-    if (s_display == 0)
-        s_display = App::instance()->display();
 }
 
 FbWindow::FbWindow(const FbWindow& the_copy):m_parent(the_copy.parent()), 
@@ -61,9 +57,6 @@ FbWindow::FbWindow(const FbWindow& the_copy):m_parent(the_copy.parent()),
                                              m_border_width(the_copy.borderWidth()), 
                                              m_depth(the_copy.depth()), m_destroy(true),
                                              m_buffer_pm(0) {
-    if (s_display == 0)
-        s_display = App::instance()->display();
-
     the_copy.m_window = 0;
 }
 
@@ -75,12 +68,13 @@ FbWindow::FbWindow(int screen_num,
                    bool save_unders,
                    int depth,
                    int class_type):
+    FbDrawable(),
     m_parent(0),
     m_screen_num(screen_num),
     m_destroy(true),
     m_buffer_pm(0) {
 	
-    create(RootWindow(FbTk::App::instance()->display(), screen_num), 
+    create(RootWindow(s_display, screen_num), 
            x, y, width, height, eventmask,
            override_redirect, save_unders, depth, class_type);
 };
@@ -102,7 +96,7 @@ FbWindow::FbWindow(const FbWindow &parent,
 	
 };
 
-FbWindow::FbWindow(Window client):m_parent(0), 
+FbWindow::FbWindow(Window client):FbDrawable(), m_parent(0), 
                                   m_screen_num(0),
                                   m_window(0),
                                   m_x(0), m_y(0),
@@ -111,9 +105,6 @@ FbWindow::FbWindow(Window client):m_parent(0),
                                   m_depth(0),
                                   m_destroy(false),  // don't destroy this window
                                   m_buffer_pm(0) {
-
-    if (s_display == 0)
-        s_display = App::instance()->display();
 
     setNew(client);
 }
@@ -258,8 +249,6 @@ FbWindow &FbWindow::operator = (Window win) {
 }
 
 void FbWindow::setNew(Window win) {
-    if (s_display == 0)
-        s_display = App::instance()->display();
 
     if (m_window != 0 && m_destroy)
         XDestroyWindow(s_display, m_window);
@@ -422,9 +411,6 @@ void FbWindow::create(Window parent, int x, int y,
                       long eventmask, bool override_redirect,
                       bool save_unders, int depth, int class_type) {
                      
-
-    if (s_display == 0)
-        s_display = FbTk::App::instance()->display();
 
     m_border_width = 0;
 

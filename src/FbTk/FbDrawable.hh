@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.hh,v 1.4 2003/12/16 17:06:49 fluxgen Exp $
+// $Id: FbDrawable.hh,v 1.5 2004/09/10 15:46:08 akir Exp $
 #ifndef FBTK_FBDRAWABLE_HH
 #define FBTK_FBDRAWABLE_HH
 
@@ -30,6 +30,7 @@ namespace FbTk {
 /// Basic drawing functions for X drawables
 class FbDrawable {
 public:
+    FbDrawable();
     virtual ~FbDrawable() { }
     virtual void copyArea(Drawable src, GC gc,
                           int src_x, int src_y,
@@ -55,6 +56,8 @@ public:
     virtual Drawable drawable() const = 0;
     virtual unsigned int width() const = 0;
     virtual unsigned int height() const = 0;
+protected:
+    static Display *s_display; // display connection // display connection
 };
 
 } // end namespace FbTk

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.32 2004/06/13 00:32:40 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.33 2004/09/10 15:46:08 akir Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -179,7 +179,6 @@ private:
                 bool save_unders,
                 int depth, 
                 int class_type);
-    static Display *s_display; ///< display connection
     const FbWindow *m_parent; ///< parent FbWindow
     int m_screen_num;  ///< screen num on which this window exist
     mutable Window m_window; ///< the X window

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.cc,v 1.2 2003/09/06 15:39:06 fluxgen Exp $
+// $Id: FbDrawable.cc,v 1.3 2004/09/10 15:46:08 akir Exp $
 
 #include "FbDrawable.hh"
 
@@ -27,13 +27,22 @@
 
 namespace FbTk {
 
+Display *FbDrawable::s_display = 0;
+
+FbDrawable::FbDrawable() {
+
+    if (s_display == 0) {
+        s_display = FbTk::App::instance()->display();
+    }
+}
+
 void FbDrawable::copyArea(Drawable src, GC gc,
                         int src_x, int src_y,
                         int dest_x, int dest_y,
                         unsigned int width, unsigned int height) {
     if (drawable() == 0 || src == 0 || gc == 0)
         return;
-    XCopyArea(FbTk::App::instance()->display(),
+    XCopyArea(s_display,
               src, drawable(), gc,
               src_x, src_y,
               width, height,
@@ -44,7 +53,7 @@ void FbDrawable::fillRectangle(GC gc, int x, int y,
                              unsigned int width, unsigned int height) {
     if (drawable() == 0 || gc == 0)
         return;
-    XFillRectangle(FbTk::App::instance()->display(),
+    XFillRectangle(s_display,
                    drawable(), gc,
                    x, y,
                    width, height);
@@ -54,7 +63,7 @@ void FbDrawable::drawRectangle(GC gc, int x, int y,
                              unsigned int width, unsigned int height) {
     if (drawable() == 0 || gc == 0)
         return;
-    XDrawRectangle(FbTk::App::instance()->display(),
+    XDrawRectangle(s_display,
                    drawable(), gc,
                    x, y,
                    width, height);
@@ -64,7 +73,7 @@ void FbDrawable::drawLine(GC gc, int start_x, int start_y,
                         int end_x, int end_y) {
     if (drawable() == 0 || gc == 0)
         return;
-    XDrawLine(FbTk::App::instance()->display(),
+    XDrawLine(s_display,
               drawable(),
               gc,
               start_x, start_y,
@@ -75,7 +84,7 @@ void FbDrawable::fillPolygon(GC gc, XPoint *points, int npoints,
                            int shape, int mode) {
     if (drawable() == 0 || gc == 0 || points == 0 || npoints == 0)
         return;
-    XFillPolygon(FbTk::App::instance()->display(),
+    XFillPolygon(s_display,
                  drawable(), gc, points, npoints,
                  shape, mode);
 }
@@ -83,11 +92,11 @@ void FbDrawable::fillPolygon(GC gc, XPoint *points, int npoints,
 void FbDrawable::drawPoint(GC gc, int x, int y) {
     if (drawable() == 0 || gc == 0)
         return;    
-    XDrawPoint(FbTk::App::instance()->display(), drawable(), gc, x, y);
+    XDrawPoint(s_display, drawable(), gc, x, y);
 }
 
 XImage *FbDrawable::image(int x, int y, unsigned int width, unsigned int height) const {
-    return XGetImage(FbTk::App::instance()->display(), drawable(), 
+    return XGetImage(s_display, drawable(), 
                      x, y, width, height, 
                      AllPlanes, // plane mask
                      ZPixmap);
