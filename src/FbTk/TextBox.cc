@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.8 2004/03/18 14:33:09 fluxgen Exp $
+// $Id: TextBox.cc,v 1.9 2004/04/19 18:57:30 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -217,7 +217,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 break;
             case XK_c:
                 cursorHome();
-                m_text.clear();
+                m_text = "";
                 adjustStartPos();
                 adjustEndPos();
                 break;
