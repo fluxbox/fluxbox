@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.215 2003/12/30 20:56:40 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.216 2003/12/31 00:35:21 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -392,6 +392,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
       m_rc_auto_raise_delay(m_resourcemanager, 250, "session.autoRaiseDelay", "Session.AutoRaiseDelay"),
+      m_rc_use_mod1(m_resourcemanager, true, "session.useMod1", "Session.UseMod1"),
       m_focused_window(0), m_masked_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
@@ -957,6 +958,13 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                 m_toolbars[toolbar]->menu().hide();
         }
 #endif // USE_TOOLBAR
+
+        // strip num/caps/scroll-lock and 
+        // see if we're using any other modifier,
+        // if we're we shouldn't show the root menu
+        // this could happen if we're resizing aterm for instance
+        if (FbTk::KeyUtil::instance().cleanMods(be.state) != 0)
+            return;
 
         if (be.button == 1) {
             if (! screen->isRootColormapInstalled())

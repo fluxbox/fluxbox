@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.80 2003/12/30 20:56:40 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.81 2003/12/31 00:35:21 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -148,6 +148,7 @@ public:
 
     inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
     inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
+    inline bool useMod1() const { return *m_rc_use_mod1; }
 
     inline void maskWindowEvents(Window w, FluxboxWindow *bw)
         { m_masked = w; m_masked_window = bw; }
@@ -246,7 +247,8 @@ private:
     FbTk::Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
     FbTk::Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
     FbTk::Resource<time_t> m_rc_auto_raise_delay;
-	
+    FbTk::Resource<bool> m_rc_use_mod1; /// temporary!, to disable mod1 for resize/move
+
     std::map<Window, WinClient *> m_window_search;
     std::map<Window, FluxboxWindow *> m_window_search_group;
     // A window is the group leader, which can map to several
