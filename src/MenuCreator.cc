@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.3 2004/05/02 22:28:45 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.4 2004/05/03 15:38:26 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -55,13 +55,13 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
     m_object->moveToLayer(m_layernum);
 }
 
-static FbTk::Menu *createStyleMenu(FbTk::Menu &parent, const std::string &label, 
+static void createStyleMenu(FbTk::Menu &parent, const std::string &label, 
                                    const std::string &directory) {
     // perform shell style ~ home directory expansion
     string stylesdir(FbTk::StringUtil::expandFilename(directory));
 
     if (!FbTk::Directory::isDirectory(stylesdir))
-        return 0;
+        return;
 
     FbTk::Directory dir(stylesdir.c_str());
 
@@ -87,6 +87,7 @@ static FbTk::Menu *createStyleMenu(FbTk::Menu &parent, const std::string &label,
     // update menu graphics
     parent.update();
     Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
+
 }
 
 static void translateMenuItem(Parser &parse,
@@ -280,7 +281,8 @@ bool getStart(FbMenuParser &parser, std::string &label) {
 }
 
 FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_number) {
-    FbMenuParser parser(filename);
+    std::string real_filename = FbTk::StringUtil::expandFilename(filename);
+    FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return 0;
 
