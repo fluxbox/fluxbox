@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.27 2003/07/03 12:47:22 fluxgen Exp $
+// $Id: Menu.cc,v 1.28 2003/07/10 11:57:37 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -83,7 +83,6 @@ Menu *Menu::s_focused = 0;
 Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_theme(tm),
     m_screen_num(screen_num),
-    m_prev_focused_window(0),
     m_image_ctrl(imgctrl),
     m_display(FbTk::App::instance()->display()),
     m_parent(0),
@@ -1035,11 +1034,9 @@ bool Menu::isItemEnabled(unsigned int index) const {
 
 void Menu::handleEvent(XEvent &event) {
     if (event.type == FocusOut) {
-        cerr<<"Focus out"<<endl;
         if (s_focused == this)
             s_focused = 0;
     } else if (event.type == FocusIn) {
-        cerr<<"Focus in"<<endl;
         if (s_focused != this)
             s_focused = this; 
     }

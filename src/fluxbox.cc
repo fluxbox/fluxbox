@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.169 2003/07/04 14:06:20 rathnor Exp $
+// $Id: fluxbox.cc,v 1.170 2003/07/10 12:00:49 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -877,7 +877,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
     } break;
     case FocusIn: {
-
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
             break;
@@ -888,9 +887,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 	
     } break;
     case FocusOut:{
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out!"<<endl;
-#endif // DEBUG
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
             break;
