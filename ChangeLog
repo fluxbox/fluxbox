@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.1.9:
+*02/05/21:
+   * Moved transient checking into a function in class FluxboxWindow
 *02/05/19:
    * Removed titlebar from src/Makefile.am and doc/fluxbox.1.in (Thanks Matt Hope)
    * Added configurable geometry show (Thanks Rando Christensen)
