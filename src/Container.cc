@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.11 2004/01/13 14:41:32 rathnor Exp $
+// $Id: Container.cc,v 1.12 2004/01/14 23:05:14 fluxgen Exp $
 
 #include "Container.hh"
 
@@ -206,12 +206,13 @@ void Container::repositionItems() {
     }
 
     for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
-          if (rounding_error != 0) {
-              --rounding_error;
-              extra = 1;
-          } else {
-              extra = 0;
-          }
+        // we only need to do error stuff with alignment RELATIVE
+        if (rounding_error != 0 && alignment() == RELATIVE) {
+            --rounding_error;
+            extra = 1;
+        } else {
+            extra = 0;
+        }
         // resize each clients including border in size
         (*it)->moveResize(next_x,
                           -borderW,
