@@ -24,8 +24,8 @@
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
-#include "StringUtil.hh"
 #include "WinClient.hh"
+#include "FbTk/StringUtil.hh"
 #include "FbTk/App.hh"
 
 // use GNU extensions

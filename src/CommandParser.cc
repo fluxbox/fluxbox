@@ -23,22 +23,14 @@
 // $Id$
 
 #include "CommandParser.hh"
-
-#include "StringUtil.hh"
+#include "FbTk/StringUtil.hh"
 
 #include <vector>
-using namespace std;
 
-namespace {
-
-string::size_type removeFirstWhitespace(std::string &str) {
-    string::size_type first_pos = str.find_first_not_of(" \t");
-    if (first_pos != string::npos)
-        str.erase(0, first_pos);
-    return first_pos;
-}
-
-}; // end anonymous namespace
+using std::string;
+using std::vector;
+using FbTk::StringUtil::removeFirstWhitespace;
+using FbTk::StringUtil::toLower;
 
 CommandFactory::CommandFactory() {
 
@@ -49,7 +41,7 @@ CommandFactory::~CommandFactory() {
     CommandParser::instance().removeAssociation(*this);
 }
 
-void CommandFactory::addCommand(const std::string &command_name) {
+void CommandFactory::addCommand(const string &command_name) {
     CommandParser::instance().associateCommand(command_name, *this);
 }
 
@@ -58,7 +50,7 @@ CommandParser &CommandParser::instance() {
     return singleton;
 }
 
-FbTk::Command *CommandParser::parseLine(const std::string &line) {
+FbTk::Command *CommandParser::parseLine(const string &line) {
 
     // parse arguments and command
     string command = line;
@@ -74,7 +66,7 @@ FbTk::Command *CommandParser::parseLine(const std::string &line) {
 
     // now we have parsed command and arguments
 
-    command = FbTk::StringUtil::toLower(command);
+    command = toLower(command);
 
     // we didn't find any matching command in default commands,
     // so we search in the command creators modules for a 
@@ -100,7 +92,7 @@ void CommandParser::associateCommand(const std::string &command, CommandFactory 
 
 void CommandParser::removeAssociation(CommandFactory &factory) {
     // commands that are associated with the factory
-    std::vector<std::string> commands; 
+    vector<string> commands; 
     // find associations
     CommandFactoryMap::iterator factory_it = m_commandfactorys.begin();
     const CommandFactoryMap::iterator factory_it_end = m_commandfactorys.end();
