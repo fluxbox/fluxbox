@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.53 2003/04/16 14:43:06 rathnor Exp $
+// $Id: Workspace.cc,v 1.54 2003/04/25 09:07:13 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -528,13 +528,53 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     if (screen.getRowPlacementDirection() == BScreen::RIGHTLEFT)
         change_x = -1;
 
-
     int win_w = win.getWidth() + screen.getBorderWidth2x(),
         win_h = win.getHeight() + screen.getBorderWidth2x();
 
     int test_x, test_y, curr_x, curr_y, curr_w, curr_h;
 
     switch (screen.getPlacementPolicy()) {
+    case BScreen::UNDERMOUSEPLACEMENT: {
+        int root_x, root_y, min_y, min_x, max_y, max_x, ignore_i;
+
+        unsigned int ignore_ui;
+
+        Window ignore_w;
+
+        XQueryPointer(screen.getBaseDisplay()->getXDisplay(),
+            screen.getRootWindow(), &ignore_w, &ignore_w, &root_x, &root_y,
+            &ignore_i, &ignore_i, &ignore_ui);
+
+        test_x = root_x - (win_w / 2);
+        test_y = root_y - (win_h / 2);
+
+        min_x = (int) screen.getMaxLeft();
+        min_y = (int) screen.getMaxTop();
+        max_x = (int) screen.getMaxRight() - win_w;
+        max_y = (int) screen.getMaxBottom() - win_h;
+
+        // keep the window inside the screen
+
+        if (test_x < min_x)
+            test_x = min_x;
+
+        if (test_x > max_x)
+            test_x = max_x;
+
+        if (test_y < min_y)
+            test_y = min_y;
+
+        if (test_y > max_y)
+            test_y = max_y;
+
+        place_x = test_x;
+        place_y = test_y;
+
+        placed = true;
+
+        break; 
+    } // end case UNDERMOUSEPLACEMENT
+
     case BScreen::ROWSMARTPLACEMENT: {
 
         test_y = 0;

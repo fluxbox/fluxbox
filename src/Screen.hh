@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.82 2003/04/20 13:45:07 fluxgen Exp $
+// $Id: Screen.hh,v 1.83 2003/04/25 09:07:08 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -309,8 +309,8 @@ public:
     FluxboxWindow *createWindow(WinClient &client);
     void setupWindowActions(FluxboxWindow &win);
 
-    enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT, LEFTRIGHT,
-           RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
+    enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
+           UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
     enum { LEFTJUSTIFY = 1, RIGHTJUSTIFY, CENTERJUSTIFY };
 
     /// obsolete

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.115 2003/04/20 12:21:35 rathnor Exp $
+// $Id: fluxbox.cc,v 1.116 2003/04/25 09:07:14 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1776,6 +1776,10 @@ void Fluxbox::save_rc() {
             placement = "ColSmartPlacement";
             break;
 
+        case BScreen::UNDERMOUSEPLACEMENT:
+            placement = "UnderMousePlacement";
+            break;
+
         default:
         case BScreen::ROWSMARTPLACEMENT:
             placement = "RowSmartPlacement";
@@ -2021,6 +2025,8 @@ void Fluxbox::load_rc(BScreen &screen) {
             screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
         else if (! strncasecmp(value.addr, "ColSmartPlacement", value.size))
             screen.savePlacementPolicy(BScreen::COLSMARTPLACEMENT);
+        else if (! strncasecmp(value.addr, "UnderMousePlacement", value.size))
+            screen.savePlacementPolicy(BScreen::UNDERMOUSEPLACEMENT);
         else
             screen.savePlacementPolicy(BScreen::CASCADEPLACEMENT);
     } else

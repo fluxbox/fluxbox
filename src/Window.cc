@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.144 2003/04/20 02:47:14 rathnor Exp $
+// $Id: Window.cc,v 1.145 2003/04/25 09:07:09 rathnor Exp $
 
 #include "Window.hh"
 
@@ -409,9 +409,6 @@ void FluxboxWindow::init() {
 
     upsize();
 
-    m_frame.move(wattrib.x, wattrib.y);
-    m_frame.resizeForClient(wattrib.width, wattrib.height);
-
     bool place_window = true;
     if (fluxbox->isStartup() || transient ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
@@ -444,15 +441,19 @@ void FluxboxWindow::init() {
 
     restoreAttributes();
 
+    m_frame.move(wattrib.x, wattrib.y);
+    m_frame.resizeForClient(wattrib.width, wattrib.height);
+
     // if we're a transient then we should be on the same layer as our parent
     if (isTransient())
         getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());       
     else // if no parent then set default layer
         moveToLayer(m_layernum);
     
-    screen.getWorkspace(workspace_number)->addWindow(*this, place_window);
+    if (!place_window)
+        moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
 
-    moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
+    screen.getWorkspace(workspace_number)->addWindow(*this, place_window);
 
     if (shaded) { // start shaded
         shaded = false;
@@ -471,7 +472,6 @@ void FluxboxWindow::init() {
     }
 
     setState(current_state);
-    m_frame.resizeForClient(wattrib.width, wattrib.height);
     m_frame.reconfigure();
     sendConfigureNotify();
     // no focus default
