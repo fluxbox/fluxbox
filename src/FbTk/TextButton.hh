@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.hh,v 1.1 2003/08/18 12:15:38 fluxgen Exp $
+// $Id: TextButton.hh,v 1.2 2003/09/10 21:36:37 fluxgen Exp $
 
 #ifndef FBTK_TEXTBUTTON_HH
 #define FBTK_TEXTBUTTON_HH
 
 #include "Button.hh"
 #include "Text.hh"
+#include "FbPixmap.hh"
 
 #include <string>
 
@@ -43,8 +44,17 @@ public:
     void setText(const std::string &text);
     void setFont(const FbTk::Font &font);
     void setBevel(int bevel);
+
+    void resize(unsigned int width, unsigned int height);
+    void moveResize(int x, int y,
+                    unsigned int width, unsigned int height);
+
     /// clears window and redraw text
     void clear();
+    /// clears area and redraws text
+    void clearArea(int x, int y,
+                   unsigned int width, unsigned int height,
+                   bool exposure = false);
 
     inline FbTk::Justify justify() const { return m_justify; }
     inline const std::string &text() const { return m_text; }
@@ -53,9 +63,10 @@ public:
     int bevel() const { return m_bevel; }
 
 protected:
-    void drawText(int x_offset = 0, int y_offset = 0);
+    virtual void drawText(int x_offset = 0, int y_offset = 0);
 
 private:
+    FbTk::FbPixmap m_buffer; ///< for background buffer
     const FbTk::Font *m_font;
     std::string m_text;
     FbTk::Justify m_justify;

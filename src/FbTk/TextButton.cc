@@ -19,13 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.cc,v 1.1 2003/08/18 12:15:39 fluxgen Exp $
+// $Id: TextButton.cc,v 1.2 2003/09/10 21:36:37 fluxgen Exp $
 
 #include "TextButton.hh"
 #include "Font.hh"
-
-#include <iostream>
-using namespace std;
+#include "GContext.hh"
 
 namespace FbTk {
 
@@ -35,8 +33,26 @@ TextButton::TextButton(const FbTk::FbWindow &parent,
     FbTk::Button(parent, 0, 0, 10, 10),
     m_font(&font),
     m_text(text),
-    m_justify(FbTk::LEFT), m_bevel(1) {
+    m_justify(FbTk::LEFT), m_bevel(1),
+    m_buffer(drawable(), width(), height(), depth()) {
 
+}
+
+void TextButton::resize(unsigned int width, unsigned int height) {
+     m_buffer.resize(width, height);
+
+    if (backgroundPixmap() != ParentRelative)
+        FbWindow::setBackgroundPixmap(m_buffer.drawable());
+    Button::resize(width, height);
+}
+
+void TextButton::moveResize(int x, int y,
+                            unsigned int width, unsigned int height) {
+    m_buffer.resize(width, height);
+    
+    if (backgroundPixmap() != ParentRelative)
+        FbWindow::setBackgroundPixmap(m_buffer.drawable());
+    Button::moveResize(x, y, width, height);
 }
 
 void TextButton::setJustify(FbTk::Justify just) {
@@ -52,7 +68,6 @@ void TextButton::setFont(const FbTk::Font &font) {
     if (&font == m_font)
         return;
     m_font = &font;
-    clear(); // redraw text with new font
 }
 
 /// set bevel and redraw text
@@ -64,8 +79,45 @@ void TextButton::setBevel(int bevel) {
 
 /// clear window and redraw text 
 void TextButton::clear() {
-    FbTk::Button::clear();
-    drawText();
+    TextButton::clearArea(0, 0,
+                          width(), height());
+}
+
+void TextButton::clearArea(int x, int y,
+                           unsigned int width, unsigned int height,
+                           bool exposure) {
+
+    if (backgroundPixmap() != ParentRelative) {
+
+        if (backgroundPixmap()) {
+            m_buffer.copyArea(backgroundPixmap(),
+                              gc(),
+                              x, y,
+                              x, y,
+                              width, height);
+
+        } else { // fill with background color
+            FbTk::GContext gc(drawable());        
+            gc.setForeground(backgroundColor());
+            m_buffer.fillRectangle(gc.gc(),
+                                   x, y,
+                                   width, height);
+        }
+
+        drawText();
+
+        FbWindow::setBackgroundPixmap(m_buffer.drawable());     
+
+        Button::clearArea(x, y, width, height, exposure);
+
+    } else { // parent relative 
+        FbWindow::setBackgroundPixmap(backgroundPixmap());     
+        Button::clearArea(x, y, width, height, exposure);
+        drawText();
+    }   
+
+    
+
 }
 
 unsigned int TextButton::textWidth() const {
@@ -80,13 +132,12 @@ void TextButton::drawText(int x_offset, int y_offset) {
                                     justify(),
                                     font(),
                                     text().c_str(), text().size(),
-                                    textlen // return new text len
-                                    );
+                                    textlen); // return new text len
 
     // center text by default
     int center_pos = height()/2 + font().ascent()/2;
 
-    font().drawText(window(), // drawable
+    font().drawText(backgroundPixmap() == ParentRelative ? window() : m_buffer.drawable(),
                     screenNumber(),
                     gc(), // graphic context
                     text().c_str(), textlen, // string and string size
