@@ -1,6 +1,21 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *04/12/21:
+  * Added Imlib2 support to fluxbox (Mathias)
+    allows us to load other image-formats than just xpm, but we need
+    the help of an external (popular) library for that:
+
+       http://www.enlightenment.org/pages/imlib2.html
+
+     to have imlib2 support, you have to ./configure --enable-imlib2
+
+    FbTk/Image.cc/hh configure.in Makefile.am FbTk/Makefile.am
+    xft.m4 -> acinclude.m4 + ac_path_generic.m4
+
+    Added FbTk/ImageImlib2.cc/hh
+
+  * Cleaner code for global Font- and Imagestuff (Mathias)
+    fluxbox.cc FbTk/Font.cc/hh FbTk/Image.cc/hh FbTk/App.cc
   * Fixed problems with gtk2-fullscreen-mode (gimp2, galeon etc) (Mathias)
     - synchronize _NET_WM_STATE in Ewmh-Handler
     - disable shape (aka round corners) in fullscreen-mode
