@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.6 2003/08/28 23:51:26 fluxgen Exp $
+// $Id: IconbarTheme.cc,v 1.7 2003/08/29 00:48:41 fluxgen Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -69,6 +69,7 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
         tmp_item.load();
         // copy texture
         *m_focused_texture = *tmp_item;
+        return true;
     } else if (&m_unfocused_texture == &item) {
         // special case for textures since they're using .load()
         FbTk::ThemeItem<FbTk::Texture> tmp_item(m_unfocused_texture.theme(),
@@ -76,7 +77,7 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
         tmp_item.load();
         // copy texture
         *m_unfocused_texture = *tmp_item;
-
+        return true;
     } else if (&m_empty_texture == &item) {
         return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) ? 
                 true : 

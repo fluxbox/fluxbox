@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.cc,v 1.3 2003/08/19 21:27:40 fluxgen Exp $
+// $Id: ToolTheme.cc,v 1.4 2003/08/29 00:46:18 fluxgen Exp $
 
 #include "ToolTheme.hh"
 
@@ -41,9 +41,12 @@ void ToolTheme::reconfigTheme() {
     update();
 }
 
-
 bool ToolTheme::fallback(FbTk::ThemeItem_base &item) {
-    if (item.name() == "toolbar.workspace")
-        return FbTk::ThemeManager::instance().loadItem(item, "toolbar.label", "Toolbar.Label");
+    if (item.name().find(".justify") != std::string::npos) {
+        return FbTk::ThemeManager::instance().loadItem(item, 
+                                                       "toolbar.justify",
+                                                       "Toolbar.Justify");
+    }
+
     return false;
 }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.hh,v 1.3 2003/08/19 21:27:39 fluxgen Exp $
+// $Id: ToolTheme.hh,v 1.4 2003/08/29 00:45:41 fluxgen Exp $
 
 #ifndef TOOLTHEME_HH
 #define TOOLTHEME_HH
@@ -46,6 +46,10 @@ public:
     // textures
     const FbTk::Texture &texture() const { return *m_texture; }
     const BorderTheme &border() const { return m_border; }
+
+protected:
+    FbTk::ThemeItem<FbTk::Texture> &textureTheme() { return m_texture; }
+
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
     BorderTheme m_border;
