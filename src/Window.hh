@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.11 2002/02/26 22:35:58 fluxgen Exp $
+// $Id: Window.hh,v 1.12 2002/03/18 19:58:06 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -168,6 +168,8 @@ public:
 
 	inline void setWindowNumber(int n) { window_number = n; }
 	
+	inline const timeval& getLastFocusTime() const {return lastFocusTime;}
+
 	bool validateClient(void);
 	bool setInputFocus(void);
 	void setTab(bool flag);
@@ -187,6 +189,7 @@ public:
 	void setWorkspace(int n);
 	void changeBlackboxHints(BaseDisplay::BlackboxHints *);
 	void restoreAttributes(void);
+	bool isLowerTab(void) const;
 
 	void buttonPressEvent(XButtonEvent *);
 	void buttonReleaseEvent(XButtonEvent *);
@@ -226,6 +229,8 @@ private:
 
 	Time lastButtonPressTime;
 	Windowmenu *windowmenu;
+
+	timeval lastFocusTime;
 
 	int focus_mode, window_number, workspace_number;
 	unsigned long current_state;

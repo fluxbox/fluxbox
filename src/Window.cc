@@ -1,5 +1,5 @@
 // Window.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002	Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // Window.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.31 2002/02/27 22:04:01 fluxgen Exp $
+// $Id: Window.cc,v 1.32 2002/03/18 19:58:06 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -79,6 +79,7 @@ tab(0)
 ,gnome_hints(0)
 #endif
 {
+	lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
 
 	#ifdef DEBUG
 	fprintf(stderr,
@@ -2372,6 +2373,10 @@ void FluxboxWindow::stick(void) {
 void FluxboxWindow::setFocusFlag(bool focus) {
 	focused = focus;
 
+	// Record focus timestamp for window cycling enhancements, such as skipping lower tabs
+	if (focused)
+		gettimeofday(&lastFocusTime, 0);
+
 	if (decorations.titlebar) {
 		if (focused) {
 			if (frame.ftitle)
@@ -2699,6 +2704,17 @@ void FluxboxWindow::restoreGravity(void) {
 	}
 }
 
+bool FluxboxWindow::isLowerTab(void) const {
+	Tab* chkTab = (tab ? tab->first() : 0);
+	while (chkTab) {
+		FluxboxWindow* chkWin = chkTab->getWindow();
+		if (chkWin && chkWin != this &&
+				timercmp(&chkWin->lastFocusTime, &lastFocusTime, >))
+			return true;
+		chkTab = chkTab->next();
+	}
+	return false;
+}
 
 void FluxboxWindow::redrawLabel(void) {
 	if (focused) {
