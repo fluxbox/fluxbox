@@ -707,7 +707,7 @@ void FluxboxWindow::decorate(void) {
 
 	Pixmap tmp = frame.fbutton;
 	BTexture *texture = &(screen->getWindowStyle()->b_focus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.fbutton = None;
 		frame.fbutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -717,7 +717,7 @@ void FluxboxWindow::decorate(void) {
 
 	tmp = frame.ubutton;
 	texture = &(screen->getWindowStyle()->b_unfocus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.ubutton = None;
 		frame.ubutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -727,7 +727,7 @@ void FluxboxWindow::decorate(void) {
 
 	tmp = frame.pbutton;
 	texture = &(screen->getWindowStyle()->b_pressed);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pbutton = None;
 		frame.pbutton_pixel = texture->getColor()->getPixel();
 	} else
@@ -738,7 +738,7 @@ void FluxboxWindow::decorate(void) {
 	if (decorations.titlebar) {
 		tmp = frame.ftitle;
 		texture = &(screen->getWindowStyle()->t_focus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.ftitle = None;
 			frame.ftitle_pixel = texture->getColor()->getPixel();
 		} else
@@ -750,7 +750,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.utitle;
 		texture = &(screen->getWindowStyle()->t_unfocus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.utitle = None;
 			frame.utitle_pixel = texture->getColor()->getPixel();
 		} else
@@ -773,7 +773,7 @@ void FluxboxWindow::decorate(void) {
 	if (decorations.handle) {
 		tmp = frame.fhandle;
 		texture = &(screen->getWindowStyle()->h_focus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.fhandle = None;
 			frame.fhandle_pixel = texture->getColor()->getPixel();
 		} else
@@ -783,7 +783,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.uhandle;
 		texture = &(screen->getWindowStyle()->h_unfocus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.uhandle = None;
 			frame.uhandle_pixel = texture->getColor()->getPixel();
 		} else
@@ -794,7 +794,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.fgrip;
 		texture = &(screen->getWindowStyle()->g_focus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.fgrip = None;
 			frame.fgrip_pixel = texture->getColor()->getPixel();
 		} else
@@ -805,7 +805,7 @@ void FluxboxWindow::decorate(void) {
 
 		tmp = frame.ugrip;
 		texture = &(screen->getWindowStyle()->g_unfocus);
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			frame.ugrip = None;
 			frame.ugrip_pixel = texture->getColor()->getPixel();
 		} else
@@ -829,7 +829,7 @@ void FluxboxWindow::decorate(void) {
 void FluxboxWindow::decorateLabel(void) {
 	Pixmap tmp = frame.flabel;
 	BTexture *texture = &(screen->getWindowStyle()->l_focus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.flabel = None;
 		frame.flabel_pixel = texture->getColor()->getPixel();		
 	} else
@@ -839,7 +839,7 @@ void FluxboxWindow::decorateLabel(void) {
 
 	tmp = frame.ulabel;
 	texture = &(screen->getWindowStyle()->l_unfocus);
-	if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.ulabel = None;
 		frame.ulabel_pixel = texture->getColor()->getPixel();
 	} else

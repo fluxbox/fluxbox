@@ -109,11 +109,11 @@ BImage::~BImage(void) {
 
 
 Pixmap BImage::render(BTexture *texture) {
-  if (texture->getTexture() & BImage_ParentRelative)
+  if (texture->getTexture() & BImage::PARENTRELATIVE)
     return ParentRelative;
-  else if (texture->getTexture() & BImage_Solid)
+  else if (texture->getTexture() & BImage::SOLID)
     return render_solid(texture);
-  else if (texture->getTexture() & BImage_Gradient)
+  else if (texture->getTexture() & BImage::GRADIENT)
     return render_gradient(texture);
 
   return None;
@@ -156,7 +156,7 @@ Pixmap BImage::render_solid(BTexture *texture) {
 			width, height);
 
 #ifdef    INTERLACE
-	if (texture->getTexture() & BImage_Interlaced) {
+	if (texture->getTexture() & BImage::INTERLACED) {
 		gcv.foreground = texture->getColorTo()->getPixel();
 		GC igc = XCreateGC(control->getBaseDisplay()->getXDisplay(), pixmap,
 						GCForeground, &gcv);
@@ -171,8 +171,8 @@ Pixmap BImage::render_solid(BTexture *texture) {
 #endif // INTERLACE
 
 
-	if (texture->getTexture() & BImage_Bevel1) {
-		if (texture->getTexture() & BImage_Raised) {
+	if (texture->getTexture() & BImage::BEVEL1) {
+		if (texture->getTexture() & BImage::RAISED) {
 			XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, lgc,
 								0, height - 1, width - 1, height - 1);
 			XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, lgc,
@@ -182,7 +182,7 @@ Pixmap BImage::render_solid(BTexture *texture) {
 								0, 0, width - 1, 0);
 			XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, hgc,
 								0, height - 1, 0, 0);
-		} else if (texture->getTexture() & BImage_Sunken) {
+		} else if (texture->getTexture() & BImage::SUNKEN) {
 			XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, hgc,
 								0, height - 1, width - 1, height - 1);
 			XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, hgc,
@@ -193,8 +193,8 @@ Pixmap BImage::render_solid(BTexture *texture) {
 			XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, lgc,
 								0, height - 1, 0, 0);
 		}
-	} else if (texture->getTexture() & BImage_Bevel2) {
-			if (texture->getTexture() & BImage_Raised) {
+	} else if (texture->getTexture() & BImage::BEVEL2) {
+			if (texture->getTexture() & BImage::RAISED) {
 				XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, lgc,
 							1, height - 3, width - 3, height - 3);
 				XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, lgc,
@@ -204,7 +204,7 @@ Pixmap BImage::render_solid(BTexture *texture) {
 							1, 1, width - 3, 1);
 				XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, hgc,
 							1, height - 3, 1, 1);
-			} else if (texture->getTexture() & BImage_Sunken) {
+			} else if (texture->getTexture() & BImage::SUNKEN) {
 				XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, hgc,
 							1, height - 3, width - 3, height - 3);
 				XDrawLine(control->getBaseDisplay()->getXDisplay(), pixmap, hgc,
@@ -229,34 +229,34 @@ Pixmap BImage::render_gradient(BTexture *texture) {
  int inverted = 0;
 
 #ifdef    INTERLACE
-  interlaced = texture->getTexture() & BImage_Interlaced;
+  interlaced = texture->getTexture() & BImage::INTERLACED;
 #endif // INTERLACE
 
-  if (texture->getTexture() & BImage_Sunken) {
+  if (texture->getTexture() & BImage::SUNKEN) {
     from = texture->getColorTo();
     to = texture->getColor();
 
-    if (! (texture->getTexture() & BImage_Invert)) inverted = 1;
+    if (! (texture->getTexture() & BImage::INVERT)) inverted = 1;
   } else {
     from = texture->getColor();
     to = texture->getColorTo();
 
-    if (texture->getTexture() & BImage_Invert) inverted = 1;
+    if (texture->getTexture() & BImage::INVERT) inverted = 1;
   }
 
   control->getGradientBuffers(width, height, &xtable, &ytable);
 
-  if (texture->getTexture() & BImage_Diagonal) dgradient();
-  else if (texture->getTexture() & BImage_Elliptic) egradient();
-  else if (texture->getTexture() & BImage_Horizontal) hgradient();
-  else if (texture->getTexture() & BImage_Pyramid) pgradient();
-  else if (texture->getTexture() & BImage_Rectangle) rgradient();
-  else if (texture->getTexture() & BImage_Vertical) vgradient();
-  else if (texture->getTexture() & BImage_CrossDiagonal) cdgradient();
-  else if (texture->getTexture() & BImage_PipeCross) pcgradient();
+  if (texture->getTexture() & BImage::DIAGONAL) dgradient();
+  else if (texture->getTexture() & BImage::ELLIPTIC) egradient();
+  else if (texture->getTexture() & BImage::HORIZONTAL) hgradient();
+  else if (texture->getTexture() & BImage::PYRAMID) pgradient();
+  else if (texture->getTexture() & BImage::RECTANGLE) rgradient();
+  else if (texture->getTexture() & BImage::VERTICAL) vgradient();
+  else if (texture->getTexture() & BImage::CROSSDIAGONAL) cdgradient();
+  else if (texture->getTexture() & BImage::PIPECROSS) pcgradient();
 
-  if (texture->getTexture() & BImage_Bevel1) bevel1();
-  else if (texture->getTexture() & BImage_Bevel2) bevel2();
+  if (texture->getTexture() & BImage::BEVEL1) bevel1();
+  else if (texture->getTexture() & BImage::BEVEL2) bevel2();
 
   if (inverted) invert();
 
@@ -2255,7 +2255,7 @@ Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
           (it.current()->height == height) &&
           (it.current()->texture == texture) &&
           (it.current()->pixel1 == c1->getPixel()))
-          if (texture & BImage_Gradient) {
+          if (texture & BImage::GRADIENT) {
             if (it.current()->pixel2 == c2->getPixel()) {
               it.current()->count++;
               return it.current()->pixmap;
@@ -2273,7 +2273,7 @@ Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
 
 Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
       BTexture *texture) {
-  if (texture->getTexture() & BImage_ParentRelative) return ParentRelative;
+  if (texture->getTexture() & BImage::PARENTRELATIVE) return ParentRelative;
 
   Pixmap pixmap = searchCache(width, height, texture->getTexture(),
 			      texture->getColor(), texture->getColorTo());
@@ -2292,7 +2292,7 @@ Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
     tmp->texture = texture->getTexture();
     tmp->pixel1 = texture->getColor()->getPixel();
 
-    if (texture->getTexture() & BImage_Gradient)
+    if (texture->getTexture() & BImage::GRADIENT)
       tmp->pixel2 = texture->getColorTo()->getPixel();
     else
       tmp->pixel2 = 0l;
@@ -2502,53 +2502,53 @@ void BImageControl::parseTexture(BTexture *texture, char *t) {
     *(ts + i) = tolower(*(t + i));
 
   if (strstr(ts, "parentrelative")) {
-    texture->setTexture(BImage_ParentRelative);
+    texture->setTexture(BImage::PARENTRELATIVE);
   } else {
     texture->setTexture(0);
 
     if (strstr(ts, "solid"))
-      texture->addTexture(BImage_Solid);
+      texture->addTexture(BImage::SOLID);
     else if (strstr(ts, "gradient")) {
-      texture->addTexture(BImage_Gradient);
+      texture->addTexture(BImage::GRADIENT);
       if (strstr(ts, "crossdiagonal"))
-	texture->addTexture(BImage_CrossDiagonal);
+	texture->addTexture(BImage::CROSSDIAGONAL);
       else if (strstr(ts, "rectangle"))
-	texture->addTexture(BImage_Rectangle);
+	texture->addTexture(BImage::RECTANGLE);
       else if (strstr(ts, "pyramid"))
-	texture->addTexture(BImage_Pyramid);
+	texture->addTexture(BImage::PYRAMID);
       else if (strstr(ts, "pipecross"))
-	texture->addTexture(BImage_PipeCross);
+	texture->addTexture(BImage::PIPECROSS);
       else if (strstr(ts, "elliptic"))
-	texture->addTexture(BImage_Elliptic);
+	texture->addTexture(BImage::ELLIPTIC);
       else if (strstr(ts, "diagonal"))
-	texture->addTexture(BImage_Diagonal);
+	texture->addTexture(BImage::DIAGONAL);
       else if (strstr(ts, "horizontal"))
-	texture->addTexture(BImage_Horizontal);
+	texture->addTexture(BImage::HORIZONTAL);
       else if (strstr(ts, "vertical"))
-	texture->addTexture(BImage_Vertical);
+	texture->addTexture(BImage::VERTICAL);
       else
-	texture->addTexture(BImage_Diagonal);
+	texture->addTexture(BImage::DIAGONAL);
     } else
-      texture->addTexture(BImage_Solid);
+      texture->addTexture(BImage::SOLID);
 
     if (strstr(ts, "raised"))
-      texture->addTexture(BImage_Raised);
+      texture->addTexture(BImage::RAISED);
     else if (strstr(ts, "sunken"))
-      texture->addTexture(BImage_Sunken);
+      texture->addTexture(BImage::SUNKEN);
     else if (strstr(ts, "flat"))
-      texture->addTexture(BImage_Flat);
+      texture->addTexture(BImage::FLAT);
     else
-      texture->addTexture(BImage_Raised);
+      texture->addTexture(BImage::RAISED);
 
-    if (! (texture->getTexture() & BImage_Flat))
+    if (! (texture->getTexture() & BImage::FLAT))
       if (strstr(ts, "bevel2"))
-	texture->addTexture(BImage_Bevel2);
+	texture->addTexture(BImage::BEVEL2);
       else
-	texture->addTexture(BImage_Bevel1);
+	texture->addTexture(BImage::BEVEL1);
 
 #ifdef    INTERLACE
     if (strstr(ts, "interlaced"))
-      texture->addTexture(BImage_Interlaced);
+      texture->addTexture(BImage::INTERLACED);
 #endif // INTERLACE
   }
 

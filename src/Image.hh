@@ -27,6 +27,13 @@
 
 #include "Timer.hh"
 
+#ifndef _BASEDISPLAY_HH_
+#include "BaseDisplay.hh"
+#endif
+#ifndef _LINKEDLIST_HH_
+#include "LinkedList.hh"
+#endif
+
 class BImage;
 class BImageControl;
 
@@ -75,43 +82,6 @@ public:
 };
 
 
-// bevel options
-#define BImage_Flat		(1l<<1)
-#define BImage_Sunken		(1l<<2)
-#define BImage_Raised		(1l<<3)
-
-// textures
-#define BImage_Solid		(1l<<4)
-#define BImage_Gradient		(1l<<5)
-
-// gradients
-#define BImage_Horizontal	(1l<<6)
-#define BImage_Vertical		(1l<<7)
-#define BImage_Diagonal		(1l<<8)
-#define BImage_CrossDiagonal	(1l<<9)
-#define BImage_Rectangle	(1l<<10)
-#define BImage_Pyramid		(1l<<11)
-#define BImage_PipeCross	(1l<<12)
-#define BImage_Elliptic		(1l<<13)
-
-// bevel types
-#define BImage_Bevel1		(1l<<14)
-#define BImage_Bevel2		(1l<<15)
-
-// inverted image
-#define BImage_Invert		(1l<<16)
-
-// parent relative image
-#define BImage_ParentRelative   (1l<<17)
-
-#ifdef    INTERLACE
-// fake interlaced image
-#  define BImage_Interlaced	(1l<<18)
-#endif // INTERLACE
-
-#include "BaseDisplay.hh"
-#include "LinkedList.hh"
-
 
 class BImage {
 private:
@@ -149,7 +119,27 @@ protected:
 
 
 public:
-  BImage(BImageControl *, unsigned int, unsigned int);
+  enum Bevel{FLAT=0x00002, SUNKEN=0x00004, RAISED=0x00008};
+	enum Textures{SOLID=0x00010, GRADIENT=0x00020};
+	enum Gradients{
+		HORIZONTAL=0x00040,
+		VERTICAL=0x00080,
+		DIAGONAL=0x00100,
+		CROSSDIAGONAL=0x00200,
+		RECTANGLE=0x00400,
+		PYRAMID=0x00800,
+		PIPECROSS=0x01000,
+		ELLIPTIC=0x02000		
+	};
+	
+	enum {
+		BEVEL1=0x04000, BEVEL2=0x08000, // bevel types
+		INVERT=0x010000, //inverted image
+		PARENTRELATIVE=0x20000,
+		INTERLACED=0x40000
+	};
+	
+	BImage(BImageControl *, unsigned int, unsigned int);
   ~BImage(void);
 
   Pixmap render(BTexture *);
