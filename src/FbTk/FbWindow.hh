@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.5 2002/12/25 11:29:34 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.6 2003/01/05 22:55:14 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -76,6 +76,7 @@ public:
     int y() const { return m_y; }
     size_t width() const { return m_width; }
     size_t height() const { return m_height; }
+    size_t borderWidth() const { return m_border_width; }
     int screenNumber() const;
     /// compare X window
     bool operator == (Window win) const { return m_window == win; }	
@@ -93,9 +94,10 @@ private:
     static Display *s_display;
     const FbWindow *m_parent;
     int m_screen_num;
-    Window m_window; ///< X window
-    int m_x, m_y; ///< position
-    size_t m_width, m_height; 
+    Window m_window; ///< the X window
+    int m_x, m_y; ///< position of window
+    size_t m_width, m_height;  ///< size of window
+    size_t m_border_width; // border size
 };
 
 bool operator == (Window win, const FbWindow &fbwin);
