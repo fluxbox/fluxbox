@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*02/12/04:
+   * Changed Basemenu to FbWindow and EventHandler usage
+     Basemenu.hh/cc, fluxbox.hh/cc
+*02/12/03:
+   * Changed Toolbar to FbWindow usage
+     Toolbar.hh/cc
+   * Added FbTk::FbWindow, a wrapper for X window
 *02/12/02:
    * Added DirHelper class (Henrik)
      DirHelper.hh/cc
