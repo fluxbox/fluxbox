@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.cc,v 1.5 2003/09/06 15:43:27 fluxgen Exp $
+// $Id: CurrentWindowCmd.cc,v 1.6 2003/09/10 14:07:48 fluxgen Exp $
 
 #include "CurrentWindowCmd.hh"
 
@@ -63,26 +63,13 @@ FluxboxWindow &WindowHelperCmd::fbwindow() {
     return *Fluxbox::instance()->getFocusedWindow()->fbwindow();
 }
 
-MoveLeftCmd::MoveLeftCmd(int step_size):MoveHelper(step_size) { }
-void MoveLeftCmd::real_execute() {
-    fbwindow().move(fbwindow().x() - stepSize(),
-                    fbwindow().y());
-}
+MoveCmd::MoveCmd(const int step_size_x, const int step_size_y) :
+  m_step_size_x(step_size_x), m_step_size_y(step_size_y) { }
 
-MoveRightCmd::MoveRightCmd(int step_size):MoveHelper(step_size) { }
-void MoveRightCmd::real_execute() {
-    fbwindow().move(fbwindow().x() + stepSize(),
-                    fbwindow().y());
-}
-
-MoveDownCmd::MoveDownCmd(int step_size):MoveHelper(step_size) { }
-void MoveDownCmd::real_execute() {
-    fbwindow().move(fbwindow().x(), fbwindow().y() + stepSize());
-}
-
-MoveUpCmd::MoveUpCmd(int step_size):MoveHelper(step_size) { }
-void MoveUpCmd::real_execute() {
-    fbwindow().move(fbwindow().x(), fbwindow().y() - stepSize());
+void MoveCmd::real_execute() {
+  fbwindow().move(
+      fbwindow().x() + m_step_size_x,
+      fbwindow().y() + m_step_size_y );
 }
 
 ResizeCmd::ResizeCmd(const int step_size_x, const int step_size_y) :

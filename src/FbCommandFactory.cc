@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.15 2003/09/06 15:43:27 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.16 2003/09/10 14:06:37 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -40,7 +40,7 @@ FbCommandFactory FbCommandFactory::s_autoreg;
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
-    const char commands[][33] = {
+    const char commands[][52] = {
         "arrangewindows",
         "close",
         "detachclient",
@@ -57,6 +57,7 @@ FbCommandFactory::FbCommandFactory() {
         "maximizewindow",
         "minimize",
         "minimizewindow",
+        "move",
         "movedown",
         "moveleft",
         "moveright",
@@ -133,23 +134,29 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "maximizehorizontal")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeHorizontal);
     else if (command == "resize") {
-      std::istringstream is(arguments); 
-      int dx = 0, dy = 0;
-      is >> dx >> dy;
-      return new ResizeCmd(dx, dy);
+        std::istringstream is(arguments); 
+        int dx = 0, dy = 0;
+        is >> dx >> dy;
+        return new ResizeCmd(dx, dy);
     }
     else if (command == "resizehorizontal")
         return new ResizeCmd(atoi(arguments.c_str()),0);
     else if (command == "resizevertical")
         return new ResizeCmd(0,atoi(arguments.c_str()));
+    else if (command == "move") {
+        std::istringstream is(arguments);
+        int dx = 0, dy = 0;
+        is >> dx >> dy;
+        return new MoveCmd(dx, dy);
+    }
     else if (command == "moveright")
-        return new MoveRightCmd(atoi(arguments.c_str()));
+        return new MoveCmd(atoi(arguments.c_str()),0);
     else if (command == "moveleft")
-        return new MoveLeftCmd(atoi(arguments.c_str()));    
+        return new MoveCmd(-atoi(arguments.c_str()),0);
     else if (command == "moveup")
-        return new MoveUpCmd(atoi(arguments.c_str()));
+        return new MoveCmd(0,-atoi(arguments.c_str()));
     else if (command == "movedown")
-        return new MoveDownCmd(atoi(arguments.c_str()));
+        return new MoveCmd(0,atoi(arguments.c_str()));
     else if (command == "raise")
         return new CurrentWindowCmd(&FluxboxWindow::raise);
     else if (command == "lower")

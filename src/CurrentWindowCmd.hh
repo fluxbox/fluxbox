@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CurrentWindowCmd.hh,v 1.4 2003/09/06 15:43:27 fluxgen Exp $
+// $Id: CurrentWindowCmd.hh,v 1.5 2003/09/10 14:07:48 fluxgen Exp $
 
 #ifndef CURRENTWINDOWCMD_HH
 #define CURRENTWINDOWCMD_HH
@@ -69,48 +69,18 @@ private:
     const int m_workspace_num;
 };
 
-class MoveHelper: public WindowHelperCmd {
+class MoveCmd: public WindowHelperCmd {
 public:
-    explicit MoveHelper(int step_size):m_step_size(step_size) { }
+    explicit MoveCmd(const int step_size_x, const int step_size_y);
 protected:
-    int stepSize() const { return m_step_size; }
+    void real_execute();
 
 private:
-    const int m_step_size;
-};
-/// move window to left
-class MoveLeftCmd: public MoveHelper {
-public:
-    explicit MoveLeftCmd(int step_size);
-protected:
-    void real_execute();
+    const int m_step_size_x;
+    const int m_step_size_y;
 };
 
-/// move window to right
-class MoveRightCmd: public MoveHelper {
-public:
-    explicit MoveRightCmd(int step_size);
-protected:
-    void real_execute();
-};
-
-/// move window up
-class MoveUpCmd: public MoveHelper {
-public:
-    explicit MoveUpCmd(int step_size);
-protected:
-    void real_execute();
-};
-
-/// move window down
-class MoveDownCmd: public MoveHelper {
-public:
-    explicit MoveDownCmd(int step_size);
-protected:
-    void real_execute();
-};
-
-// resize horizontal
+// resize cmd
 class ResizeCmd: public WindowHelperCmd{
 public:
   explicit ResizeCmd(int step_size_x, int step_size_y);
