@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.25 2003/05/21 23:59:53 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.26 2003/06/05 13:09:08 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -561,20 +561,19 @@ void FbWinFrame::redrawTitle() {
 
     int button_width = label().width()/m_labelbuttons.size();
     //!! TODO: bevel
-    int border_width =  m_labelbuttons.size() != 0 ? 
-        m_labelbuttons.front()->window().borderWidth() : 0;
+    int border_width = m_labelbuttons.front()->window().borderWidth();
 
     ButtonList::iterator btn_it = m_labelbuttons.begin();
     ButtonList::iterator btn_it_end = m_labelbuttons.end();
     for (unsigned int last_x = 0;
          btn_it != btn_it_end; 
-         ++btn_it, last_x += button_width + border_width) {
+         ++btn_it, last_x += button_width + border_width) {        
         // since we add border width pixel we should remove
         // the same size for inside width so we can fit all buttons into label
-        (*btn_it)->moveResize(last_x - border_width, - border_width,
+        (*btn_it)->moveResize(last_x - (last_x ? border_width : 0), - border_width,
                               button_width, 
                               label().height() + border_width);
-        (*btn_it)->clear();        
+        (*btn_it)->clear();
     }
         
 }
@@ -585,6 +584,9 @@ void FbWinFrame::redrawTitlebar() {
     m_titlebar.clear();
     m_label.clear();
     redrawTitle();
+
+    if (m_current_label)
+        m_current_label->clear();
  }
 
 /**
@@ -876,21 +878,22 @@ void FbWinFrame::renderLabelButtons() {
     for (; btn_it != btn_it_end; ++btn_it) {
         (*btn_it)->setGC(theme().labelTextFocusGC());
         (*btn_it)->window().setBorderWidth(1);
-        if ((*btn_it) != m_current_label) {
-            if (m_label_unfocused_pm != 0)
-                (*btn_it)->setBackgroundPixmap(m_label_unfocused_pm);
-            else
-                (*btn_it)->setBackgroundColor(m_label_unfocused_color);
+        if (m_label_unfocused_pm != 0)
+            (*btn_it)->setBackgroundPixmap(m_label_unfocused_pm);
+        else
+            (*btn_it)->setBackgroundColor(m_label_unfocused_color);
             
-        } else {
-            
-            if (label_pm)
-                (*btn_it)->setBackgroundPixmap(label_pm);        
-            else
-                (*btn_it)->setBackgroundColor(label_color);
-        }
-        
         (*btn_it)->clear();
+    }
+
+    if (m_current_label != 0) {
+
+        if (label_pm) {
+            m_current_label->setBackgroundPixmap(label_pm);
+            cerr<<"label_pm = "<<hex<<label_pm<<dec<<endl;
+        } else
+            m_current_label->setBackgroundColor(label_color);
+        m_current_label->clear();
     }
     
 }
