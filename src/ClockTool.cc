@@ -20,13 +20,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.8 2003/12/07 16:39:43 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.9 2003/12/19 18:26:48 fluxgen Exp $
 
 #include "ClockTool.hh"
 
 #include "ToolTheme.hh"
 #include "Screen.hh"
 #include "CommandParser.hh"
+#include "CommandDialog.hh"
+#include "fluxbox.hh"
 
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/ImageControl.hh"
@@ -38,6 +40,9 @@
 #endif // HAVE_CONFIG_H
 
 #include <ctime>
+#include <string>
+#include <iostream>
+using namespace std;
 
 class ClockMenuItem: public FbTk::MenuItem {
 public:
@@ -104,6 +109,23 @@ private:
     ClockTool &m_tool;
 };
 
+class EditClockFormatCmd: public FbTk::Command {
+public:
+    void execute() {
+        BScreen *screen = Fluxbox::instance()->mouseScreen();
+        if (screen == 0)
+            return;
+        std::string resourcename = screen->name() + ".strftimeFormat";
+
+        CommandDialog *dialog = new CommandDialog(*screen, "Edit Clock Format", 
+                                                  "SetResourceValue " + resourcename + " ");
+        FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine("reconfigure"));
+        dialog->setPostCommand(cmd);
+        dialog->setText(screen->resourceManager().resourceValue(resourcename));
+        dialog->show();
+    }
+};
+
 ClockTool::ClockTool(const FbTk::FbWindow &parent,
                      ToolTheme &theme, BScreen &screen, FbTk::Menu &menu):
     ToolbarItem(ToolbarItem::FIXED),
@@ -127,10 +149,16 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_timer.start();
 
     m_button.setGC(m_theme.textGC());
+
+    // setup menu
     FbTk::RefCount<FbTk::Command> saverc(CommandParser::instance().parseLine("saverc"));
     FbTk::MenuItem *item = new ClockMenuItem(*this);
     item->setCommand(saverc);
     menu.insert(item);
+    FbTk::RefCount<FbTk::Command> editformat_cmd(new EditClockFormatCmd());
+    menu.insert("Edit Clock Format", editformat_cmd);
+
+
     update(0);
 }
 
