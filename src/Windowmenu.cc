@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.17 2002/08/31 10:42:25 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.18 2002/09/06 16:59:29 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -229,6 +229,10 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int inde
 		// if the window is stuck then unstick it
 		if (windowmenu->window->isStuck())
 			windowmenu->window->stick();
+		
+		// if the window is iconic, deiconify it
+		if (windowmenu->window->isIconic())
+			windowmenu->window->deiconify();
 
 		if (button == 1) { // send to workspace without changing workspace
 			windowmenu->screen->sendToWorkspace(index,
@@ -272,6 +276,10 @@ void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int
 			return;
 		if (getWindowMenu()->window->isStuck())
 			getWindowMenu()->window->stick();
+		
+		// if the window is iconic, deiconify it
+		if (getWindowMenu()->window->isIconic())
+			getWindowMenu()->window->deiconify();
 
 		if (button == 1) {
 			// TODO: use reassociateGroup from BScreen instead
