@@ -22,20 +22,39 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.10 2002/04/03 12:08:54 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.11 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
 
-#include <X11/Xlib.h>
 #include "Basemenu.hh"
 #include "Timer.hh"
 #include "IconBar.hh"
 
-// forward declaration
+
 class Toolbar;
 
-class Toolbarmenu : public Basemenu {
+/**
+	Menu for toolbar.
+	@see Toolbar
+*/
+class Toolbarmenu:public Basemenu {
+public:
+	explicit Toolbarmenu(Toolbar *tb);
+	~Toolbarmenu();
+	#ifdef XINERAMA
+	inline Basemenu *getHeadmenu() { return headmenu; }
+	#endif // XINERAMA
+
+	inline Basemenu *getPlacementmenu() { return placementmenu; }
+	inline const Basemenu *getPlacementmenu() const { return placementmenu; }
+
+	void reconfigure();
+
+protected:
+	virtual void itemSelected(int button, unsigned int index);
+	virtual void internal_hide();
+
 private:
 	class Placementmenu : public Basemenu {
 	private:
@@ -71,28 +90,88 @@ private:
 	friend class Placementmenu;
 	friend class Toolbar;
 
-
-protected:
-	virtual void itemSelected(int button, unsigned int index);
-	virtual void internal_hide(void);
-
-public:
-	Toolbarmenu(Toolbar *);
-	~Toolbarmenu(void);
-	#ifdef XINERAMA
-	inline Basemenu *getHeadmenu(void) { return headmenu; }
-	#endif // XINERAMA
-
-	inline Basemenu *getPlacementmenu(void) { return placementmenu; }
-
-	void reconfigure(void);
 };
 
-
+/**
+	the toolbar.
+*/
 class Toolbar : public TimeoutHandler {
+public:
+	/**
+		Toolbar placement on the screen
+	*/
+	enum Placement{ TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
+		BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT };
+
+	explicit Toolbar(BScreen *screen);
+	virtual ~Toolbar();
+
+	/// add icon to iconbar
+	void addIcon(FluxboxWindow *w);
+	/// remove icon from iconbar
+	void delIcon(FluxboxWindow *w);
+	
+	inline Toolbarmenu *getMenu() { return toolbarmenu; }
+	inline const Toolbarmenu *getMenu() const { return toolbarmenu; }
+
+	//inline Window getWindowLabel(void) { return frame.window_label; }
+	
+	/// are we in workspacename editing?
+	inline bool isEditing() const { return editing; }
+	/// always on top?
+	inline bool isOnTop() const { return on_top; }
+	/// are we hidden?
+	inline bool isHidden() const { return hidden; }
+	/// do we auto hide the toolbar?
+	inline bool doAutoHide() const { return do_auto_hide; }
+	/**
+		@return X window of the toolbar
+	*/
+	inline Window getWindowID() const { return frame.window; }
+
+	inline unsigned int getWidth() const { return frame.width; }
+	inline unsigned int getHeight() const { return frame.height; }
+	inline unsigned int getExposedHeight() const { return ((do_auto_hide) ? frame.bevel_w : frame.height); }
+	inline int getX() const	{ return ((hidden) ? frame.x_hidden : frame.x); }
+	inline int getY() const	{ return ((hidden) ? frame.y_hidden : frame.y); }
+	inline IconBar *getIconBar() { return iconbar; }
+	/**
+		@name eventhandlers
+	*/
+	//@{
+	void buttonPressEvent(XButtonEvent *be);
+	void buttonReleaseEvent(XButtonEvent *be);
+	void enterNotifyEvent(XCrossingEvent *ce);
+	void leaveNotifyEvent(XCrossingEvent *ce);
+	void exposeEvent(XExposeEvent *ee);
+	void keyPressEvent(XKeyEvent *ke);
+	//@}
+	
+	void redrawWindowLabel(bool redraw= false);
+	void redrawWorkspaceLabel(bool redraw= false);
+	void redrawPrevWorkspaceButton(bool pressed = false, bool redraw = false);
+	void redrawNextWorkspaceButton(bool pressed = false, bool redraw = false);
+	void redrawPrevWindowButton(bool pressed = false, bool redraw = false);
+	void redrawNextWindowButton(bool pressed = false, bool redraw = false);
+	/// enter edit mode on workspace label
+	void edit();
+	void reconfigure();
+
+#ifdef HAVE_STRFTIME
+	void checkClock(bool redraw = false);
+#else // HAVE_STRFTIME
+	void checkClock(bool redraw = false, bool date = false);
+#endif // HAVE_STRFTIME
+
+	virtual void timeout();
+
+		
 private:
-	Bool on_top, editing, hidden, do_auto_hide;
-	Display *display;
+	bool on_top;       ///< always on top
+	bool editing;      ///< edit workspace label mode
+	bool hidden;       ///< hidden state
+	bool do_auto_hide; ///< do we auto hide	
+	Display *display;  ///< display connection
 
 	struct frame {
 		unsigned long button_pixel, pbutton_pixel;
@@ -112,14 +191,14 @@ private:
 		virtual void timeout(void);
 	} hide_handler;
 
-	Fluxbox *fluxbox;
-	BScreen *screen;
+	Fluxbox *fluxbox; ///< obsolete
+	BScreen *screen;  ///< screen on wich this toolbar exist
 	BImageControl *image_ctrl; 
 	BTimer clock_timer, *hide_timer;
 	Toolbarmenu *toolbarmenu;
-	class IconBar *iconbar;
+	IconBar *iconbar;
 	
-	std::string new_workspace_name;
+	std::string new_workspace_name; ///< temp variable in edit mode
 
 	friend class HideHandler;
 	friend class Toolbarmenu;
@@ -127,60 +206,7 @@ private:
 	#ifdef XINERAMA
 	friend class Toolbarmenu::Headmenu;
 	#endif // XINERAMA
-
-
-public:
-	Toolbar(BScreen *);
-	virtual ~Toolbar(void);
-	void addIcon(FluxboxWindow *w);
-	void delIcon(FluxboxWindow *w);
-	
-	inline Toolbarmenu *getMenu(void) { return toolbarmenu; }
-	//inline Window getWindowLabel(void) { return frame.window_label; }
-	inline const Bool &isEditing(void) const { return editing; }
-	inline const Bool &isOnTop(void) const { return on_top; }
-	inline const Bool &isHidden(void) const { return hidden; }
-	inline const Bool &doAutoHide(void) const { return do_auto_hide; }
-
-	inline const Window &getWindowID(void) const { return frame.window; }
-
-	inline const unsigned int &getWidth(void) const { return frame.width; }
-	inline const unsigned int &getHeight(void) const { return frame.height; }
-	inline const unsigned int &getExposedHeight(void) const
-	{ return ((do_auto_hide) ? frame.bevel_w : frame.height); }
-	inline const int &getX(void) const
-	{ return ((hidden) ? frame.x_hidden : frame.x); }
-	inline const int &getY(void) const
-	{ return ((hidden) ? frame.y_hidden : frame.y); }
-	inline IconBar *getIconBar(void) { return iconbar; }
-
-	void buttonPressEvent(XButtonEvent *);
-	void buttonReleaseEvent(XButtonEvent *);
-	void enterNotifyEvent(XCrossingEvent *);
-	void leaveNotifyEvent(XCrossingEvent *);
-	void exposeEvent(XExposeEvent *);
-	void keyPressEvent(XKeyEvent *);
-
-	void redrawWindowLabel(Bool = False);
-	void redrawWorkspaceLabel(Bool = False);
-	void redrawPrevWorkspaceButton(Bool = False, Bool = False);
-	void redrawNextWorkspaceButton(Bool = False, Bool = False);
-	void redrawPrevWindowButton(Bool = False, Bool = False);
-	void redrawNextWindowButton(Bool = False, Bool = False);
-	void edit(void);
-	void reconfigure(void);
-
-#ifdef		HAVE_STRFTIME
-	void checkClock(Bool = False);
-#else //	HAVE_STRFTIME
-	void checkClock(Bool = False, Bool = False);
-#endif // HAVE_STRFTIME
-
-	virtual void timeout(void);
-
-	enum Placement{ TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
-		BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT };
 };
 
 
-#endif // __Toolbar_hh
+#endif // TOOLBAR_HH

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.24 2002/07/10 14:46:42 fluxgen Exp $
+// $Id: Window.hh,v 1.25 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -45,10 +45,16 @@
 
 class Tab;
 
+/**
+	Creates the window frame and handles any window event for it
+	TODO: this is to huge!
+*/
 class FluxboxWindow : public TimeoutHandler {
 public:
+	/// obsolete
 	enum Error{NOERROR=0, XGETWINDOWATTRIB, CANTFINDSCREEN};
-	#ifdef GNOME
+	
+#ifdef GNOME
 	enum GnomeLayer { 
 		WIN_LAYER_DESKTOP = 0,
 		WIN_LAYER_BELOW = 2,
@@ -79,7 +85,7 @@ public:
 		WIN_HINTS_GROUP_TRANSIENT = (1<<3), // Reserved - definition is unclear
 		WIN_HINTS_FOCUS_ON_CLICK  = (1<<4)  // app only accepts focus if clicked
 	};
-	#endif
+#endif // GNOME
 	
 	enum WinLayer {
 		LAYER_BOTTOM = 0x01, 
@@ -116,9 +122,12 @@ public:
 		MwmDecorMaximize    = (1l << 6)
 	};
 
-	explicit FluxboxWindow(Window, BScreen *scr = 0);
+	explicit FluxboxWindow(Window win, BScreen *scr = 0);
 	virtual ~FluxboxWindow();
-
+	/**
+		@name accessors		
+	*/
+	//@{
 	inline bool isTransient() const { return ((transient) ? true : false); }
 	inline bool hasTransient() const { return ((client.transient) ? true : false); }
 	inline bool isManaged() const { return managed; }
@@ -136,11 +145,15 @@ public:
 	inline bool hasTab() const { return (tab!=0 ? true : false); }
 	inline bool isMoving() const { return moving; }
 	inline bool isResizing() const { return resizing; }
-	inline BScreen *getScreen() const { return screen; }
-	inline Tab *getTab() const { return tab; }
-	inline FluxboxWindow *getTransient() const { return client.transient; }
-	inline FluxboxWindow *getTransientFor() const { return client.transient_for; }
-
+	inline const BScreen *getScreen() const { return screen; }
+	inline BScreen *getScreen() { return screen; }
+	inline const Tab *getTab() const { return tab; }
+	inline Tab *getTab() { return tab; }
+	inline const FluxboxWindow *getTransient() const { return client.transient; }
+	inline FluxboxWindow *getTransient() { return client.transient; }	
+	inline const FluxboxWindow *getTransientFor() const { return client.transient_for; }
+	inline FluxboxWindow *getTransientFor() { return client.transient_for; }
+	
 	inline const Window &getFrameWindow() const { return frame.window; }
 	inline const Window &getClientWindow() const { return client.window; }
 
@@ -160,6 +173,8 @@ public:
 	inline unsigned int getClientHeight() const { return client.height; }
 	inline unsigned int getClientWidth() const { return client.width; }
 	inline unsigned int getTitleHeight() const { return frame.title_h; }
+	bool isLowerTab() const;
+	//@}
 
 	inline void setWindowNumber(int n) { window_number = n; }
 	
@@ -184,7 +199,7 @@ public:
 	void setWorkspace(int n);
 	void changeBlackboxHints(BaseDisplay::BlackboxHints *bh);
 	void restoreAttributes();
-	bool isLowerTab() const;
+	
 
 	void buttonPressEvent(XButtonEvent *be);
 	void buttonReleaseEvent(XButtonEvent *be);
@@ -202,9 +217,9 @@ public:
 
 	static void showError(FluxboxWindow::Error error);
 	
-	#ifdef SHAPE
+#ifdef SHAPE
 	void shapeEvent(XShapeEvent *);
-	#endif // SHAPE
+#endif // SHAPE
 
 	virtual void timeout();
 	
@@ -215,10 +230,11 @@ public:
 		unsigned long functions;   // Motif wm functions
 		unsigned long decorations; // Motif wm decorations
 	} MwmHints;
-	#ifdef GNOME
+
+#ifdef GNOME
 	void setGnomeState(int state);
 	inline int getGnomeHints() const { return gnome_hints; }
-	#endif //GNOME
+#endif //GNOME
 	
 private:
 	
@@ -326,7 +342,7 @@ private:
 	void destroyHandle();
 	void checkTransient();
 
-	#ifdef GNOME
+#ifdef GNOME
 	
 	void updateGnomeAtoms() const;
 	void updateGnomeStateAtom() const;
@@ -345,15 +361,15 @@ private:
 	void loadGnomeLayerAtom();
 
 	int gnome_hints;
-	#endif //GNOME
+#endif //GNOME
 	
-	#ifdef NEWWMSPEC
+#ifdef NEWWMSPEC
 	
 	void updateNETWMAtoms();
 	void handleNETWMProperyNotify(Atom atom);
 	int getNETWMWindowState();
 
-	#endif //NEWWMSPEC
+#endif //NEWWMSPEC
 
 	Window findTitleButton(int type);	
 private:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.40 2002/08/02 12:52:44 fluxgen Exp $
+// $Id: Screen.hh,v 1.41 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -70,82 +70,82 @@ public:
 		int scrn);
 	~BScreen();
 
-	inline bool isToolbarOnTop(void) const { return *resource.toolbar_on_top; }
-	inline bool doToolbarAutoHide(void) const { return *resource.toolbar_auto_hide; }
-	inline bool isSloppyFocus(void) const { return resource.sloppy_focus; }
-	inline bool isSemiSloppyFocus(void) const { return resource.semi_sloppy_focus; }
-	inline bool isRootColormapInstalled(void) const { return root_colormap_installed; }
-	inline bool isScreenManaged(void) const { return managed; }
-	inline bool isTabRotateVertical(void) const { return *resource.tab_rotate_vertical; }
-	inline bool isSloppyWindowGrouping(void) const { return *resource.sloppy_window_grouping; }
-	inline bool isWorkspaceWarping(void) const { return *resource.workspace_warping; }
-	inline bool isDesktopWheeling(void) const { return *resource.desktop_wheeling; }
-	inline bool doAutoRaise(void) const { return resource.auto_raise; }
-	inline bool doImageDither(void) const { return *resource.image_dither; }
-	inline bool doMaxOverSlit(void) const { return *resource.max_over_slit; }
-	inline bool doOpaqueMove(void) const { return *resource.opaque_move; }
-	inline bool doFullMax(void) const { return *resource.full_max; }
-	inline bool doFocusNew(void) const { return *resource.focus_new; }
-	inline bool doFocusLast(void) const { return *resource.focus_last; }
-	inline bool doShowWindowPos(void) const { return *resource.show_window_pos; }
+	inline bool isToolbarOnTop() const { return *resource.toolbar_on_top; }
+	inline bool doToolbarAutoHide() const { return *resource.toolbar_auto_hide; }
+	inline bool isSloppyFocus() const { return resource.sloppy_focus; }
+	inline bool isSemiSloppyFocus() const { return resource.semi_sloppy_focus; }
+	inline bool isRootColormapInstalled() const { return root_colormap_installed; }
+	inline bool isScreenManaged() const { return managed; }
+	inline bool isTabRotateVertical() const { return *resource.tab_rotate_vertical; }
+	inline bool isSloppyWindowGrouping() const { return *resource.sloppy_window_grouping; }
+	inline bool isWorkspaceWarping() const { return *resource.workspace_warping; }
+	inline bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
+	inline bool doAutoRaise() const { return resource.auto_raise; }
+	inline bool doImageDither() const { return *resource.image_dither; }
+	inline bool doMaxOverSlit() const { return *resource.max_over_slit; }
+	inline bool doOpaqueMove() const { return *resource.opaque_move; }
+	inline bool doFullMax() const { return *resource.full_max; }
+	inline bool doFocusNew() const { return *resource.focus_new; }
+	inline bool doFocusLast() const { return *resource.focus_last; }
+	inline bool doShowWindowPos() const { return *resource.show_window_pos; }
 
 	inline GC getOpGC() const { return theme->getOpGC(); }
 	
-	inline const FbTk::Color *getBorderColor(void) const { return &theme->getBorderColor(); }
-	inline BImageControl *getImageControl(void) { return image_control; }
-	inline Rootmenu *getRootmenu(void) { return rootmenu; }
+	inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
+	inline BImageControl *getImageControl() { return image_control; }
+	inline Rootmenu *getRootmenu() { return rootmenu; }
 	inline const std::string &getRootCommand(void ) const { return *resource.rootcommand; }
 #ifdef	 SLIT
-	inline bool isSlitOnTop(void) const { return resource.slit_on_top; }
-	inline bool doSlitAutoHide(void) const { return resource.slit_auto_hide; }
-	inline Slit *getSlit(void) { return slit; }
-	inline int getSlitPlacement(void) const { return resource.slit_placement; }
-	inline int getSlitDirection(void) const { return resource.slit_direction; }
+	inline bool isSlitOnTop() const { return resource.slit_on_top; }
+	inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
+	inline Slit *getSlit() { return slit; }
+	inline int getSlitPlacement() const { return resource.slit_placement; }
+	inline int getSlitDirection() const { return resource.slit_direction; }
 	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
 	inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
 	inline void saveSlitOnTop(bool t) { resource.slit_on_top = t;  }
 	inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
 #ifdef XINERAMA
-	inline unsigned int getSlitOnHead(void) const { return resource.slit_on_head; }
+	inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
 	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 #endif // XINERAMA
 
 #endif // SLIT
 
-	inline Toolbar *getToolbar(void) { return toolbar; }
+	inline Toolbar *getToolbar() { return toolbar; }
 
 	inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
-	inline Workspace *getCurrentWorkspace(void) { return current_workspace; }
+	inline Workspace *getCurrentWorkspace() { return current_workspace; }
 
-	inline Workspacemenu *getWorkspacemenu(void) { return workspacemenu; }
+	inline Workspacemenu *getWorkspacemenu() { return workspacemenu; }
 
-	inline unsigned int getHandleWidth(void) const { return theme->getHandleWidth(); }
-	inline unsigned int getBevelWidth(void) const { return theme->getBevelWidth(); }
-	inline unsigned int getFrameWidth(void) const { return theme->getFrameWidth(); }
-	inline unsigned int getBorderWidth(void) const { return theme->getBorderWidth(); }
-	inline unsigned int getBorderWidth2x(void) const { return theme->getBorderWidth()*2; }
+	inline unsigned int getHandleWidth() const { return theme->getHandleWidth(); }
+	inline unsigned int getBevelWidth() const { return theme->getBevelWidth(); }
+	inline unsigned int getFrameWidth() const { return theme->getFrameWidth(); }
+	inline unsigned int getBorderWidth() const { return theme->getBorderWidth(); }
+	inline unsigned int getBorderWidth2x() const { return theme->getBorderWidth()*2; }
 	inline unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
 
     typedef std::vector<FluxboxWindow *> Icons;
-	inline unsigned int getCount(void) const { return workspacesList.size(); }
-	inline unsigned int getIconCount(void) const { return iconList.size(); }
-	inline const Icons &getIconList(void) const { return iconList; }
-	inline Icons &getIconList(void) { return iconList; }
+	inline unsigned int getCount() const { return workspacesList.size(); }
+	inline unsigned int getIconCount() const { return iconList.size(); }
+	inline const Icons &getIconList() const { return iconList; }
+	inline Icons &getIconList() { return iconList; }
 
-	inline int getNumberOfWorkspaces(void) const { return *resource.workspaces; }
-	inline Toolbar::Placement getToolbarPlacement(void) const { return *resource.toolbar_placement; }
+	inline int getNumberOfWorkspaces() const { return *resource.workspaces; }
+	inline Toolbar::Placement getToolbarPlacement() const { return *resource.toolbar_placement; }
 #ifdef XINERAMA
-	inline int getToolbarOnHead(void) { return *resource.toolbar_on_head; }
+	inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
 #endif // XINERAMA
-	inline int getToolbarWidthPercent(void) const { return *resource.toolbar_width_percent; }
-	inline int getPlacementPolicy(void) const { return resource.placement_policy; }
-	inline int getEdgeSnapThreshold(void) const { return *resource.edge_snap_threshold; }
-	inline int getRowPlacementDirection(void) const { return resource.row_direction; }
-	inline int getColPlacementDirection(void) const { return resource.col_direction; }
-	inline unsigned int getTabWidth(void) const { return *resource.tab_width; }
-	inline unsigned int getTabHeight(void) const { return *resource.tab_height; }
-	inline Tab::Placement getTabPlacement(void) const { return *resource.tab_placement; }
-	inline Tab::Alignment getTabAlignment(void) const { return *resource.tab_alignment; }
+	inline int getToolbarWidthPercent() const { return *resource.toolbar_width_percent; }
+	inline int getPlacementPolicy() const { return resource.placement_policy; }
+	inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
+	inline int getRowPlacementDirection() const { return resource.row_direction; }
+	inline int getColPlacementDirection() const { return resource.col_direction; }
+	inline unsigned int getTabWidth() const { return *resource.tab_width; }
+	inline unsigned int getTabHeight() const { return *resource.tab_height; }
+	inline Tab::Placement getTabPlacement() const { return *resource.tab_placement; }
+	inline Tab::Alignment getTabAlignment() const { return *resource.tab_alignment; }
 
 	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
 	inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
@@ -179,37 +179,37 @@ public:
 	inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
 	inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
 	inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
-	inline void iconUpdate(void) { iconmenu->update(); }
-	inline Iconmenu *getIconmenu(void) { return iconmenu; }
+	inline void iconUpdate() { iconmenu->update(); }
+	inline Iconmenu *getIconmenu() { return iconmenu; }
 	inline void setAutoGroupWindow(Window w = 0) { auto_group_window = w; }
 
 	
 	#ifdef HAVE_STRFTIME
-	inline const char *getStrftimeFormat(void) { return resource.strftime_format.c_str(); }
+	inline const char *getStrftimeFormat() { return resource.strftime_format.c_str(); }
 	void saveStrftimeFormat(const char *format);
 	#else // !HAVE_STRFTIME
-	inline int getDateFormat(void) { return resource.date_format; }
+	inline int getDateFormat() { return resource.date_format; }
 	inline void saveDateFormat(int f) { resource.date_format = f; }
-	inline bool isClock24Hour(void) { return resource.clock24hour; }
+	inline bool isClock24Hour() { return resource.clock24hour; }
 	inline void saveClock24Hour(Bool c) { resource.clock24hour = c; }
 	#endif // HAVE_STRFTIME
 
-	inline Theme::WindowStyle *getWindowStyle(void) { return &theme->getWindowStyle(); } 
-	inline Theme::MenuStyle *getMenuStyle(void) { return &theme->getMenuStyle(); } 
-	inline Theme::ToolbarStyle *getToolbarStyle(void) { return &theme->getToolbarStyle(); } 
+	inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
+	inline Theme::MenuStyle *getMenuStyle() { return &theme->getMenuStyle(); } 
+	inline Theme::ToolbarStyle *getToolbarStyle() { return &theme->getToolbarStyle(); } 
 	const Theme *getTheme() const { return theme; }
 	FluxboxWindow *getIcon(unsigned int index);
 
-	int addWorkspace(void);
-	int removeLastWorkspace(void);
+	int addWorkspace();
+	int removeLastWorkspace();
 	//scroll workspaces
 	void nextWorkspace(const int delta);
 	void prevWorkspace(const int delta);
 	void rightWorkspace(const int delta);
 	void leftWorkspace(const int delta);
 
-	void removeWorkspaceNames(void);
-	void updateWorkspaceNamesAtom(void);
+	void removeWorkspaceNames();
+	void updateWorkspaceNamesAtom();
 	
 	void addWorkspaceName(const char *name);
 	void addNetizen(Netizen *net);
@@ -223,19 +223,19 @@ public:
 	void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void prevFocus(int = 0);
 	void nextFocus(int = 0);
-	void raiseFocus(void);
-	void reconfigure(void);	
-	void rereadMenu(void);
-	void shutdown(void);
+	void raiseFocus();
+	void reconfigure();	
+	void rereadMenu();
+	void shutdown();
 	void showPosition(int, int);
 	void showGeometry(unsigned int, unsigned int);
-	void hideGeometry(void);
+	void hideGeometry();
 
-	FluxboxWindow* useAutoGroupWindow(void);
+	FluxboxWindow* useAutoGroupWindow();
 
-	void updateNetizenCurrentWorkspace(void);
-	void updateNetizenWorkspaceCount(void);
-	void updateNetizenWindowFocus(void);
+	void updateNetizenCurrentWorkspace();
+	void updateNetizenWorkspaceCount();
+	void updateNetizenWindowFocus();
 	void updateNetizenWindowAdd(Window, unsigned long);
 	void updateNetizenWindowDel(Window);
 	void updateNetizenConfigNotify(XEvent *);
@@ -356,7 +356,7 @@ protected:
 	XFontSet createFontSet(char *);
 	void readDatabaseFont(char *, char *, XFontStruct **);
 
-	void initMenu(void);
+	void initMenu();
 
 
 };

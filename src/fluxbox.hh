@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.21 2002/07/19 21:26:11 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.22 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -62,6 +62,10 @@
 #include <map>
 #include <list>
 
+/**
+	main class for the window manager.
+	singleton type
+*/
 class Fluxbox : public BaseDisplay, public TimeoutHandler {	
 public:
 	
@@ -72,12 +76,12 @@ public:
 	inline bool useIconBar() { return *m_rc_iconbar; }
 	inline void saveTabs(bool value) { *m_rc_tabs = value; }
 	inline void saveIconBar(bool value) { m_rc_iconbar = value; }
-#ifdef		HAVE_GETPID
-	inline const Atom &getFluxboxPidAtom(void) const { return fluxbox_pid; }
+#ifdef HAVE_GETPID
+	inline const Atom &getFluxboxPidAtom() const { return fluxbox_pid; }
 	#ifdef KDE
 	//For KDE dock applets
-	inline const Atom &getKWM1DockwindowAtom(void) const { return kwm1_dockwindow; } //KDE v1.x
-	inline const Atom &getKWM2DockwindowAtom(void) const { return kwm2_dockwindow; } //KDE v2.x
+	inline const Atom &getKWM1DockwindowAtom() const { return kwm1_dockwindow; } //KDE v1.x
+	inline const Atom &getKWM2DockwindowAtom() const { return kwm2_dockwindow; } //KDE v2.x
 	#endif
 #endif // HAVE_GETPID
 
@@ -85,39 +89,39 @@ public:
 
 	FluxboxWindow *searchGroup(Window, FluxboxWindow *);
 	FluxboxWindow *searchWindow(Window);
-	inline FluxboxWindow *getFocusedWindow(void) { return focused_window; }
+	inline FluxboxWindow *getFocusedWindow() { return focused_window; }
 
 		
-	BScreen *searchScreen(Window);
+	BScreen *searchScreen(Window w);
 
-	inline const Time &getDoubleClickInterval(void) const
-		{ return resource.double_click_interval; }
-	inline const Time &getLastTime(void) const { return last_time; }
+	inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
+	inline const Time &getLastTime() const { return last_time; }
 
-	Toolbar *searchToolbar(Window);
+	Toolbar *searchToolbar(Window w);
 	Tab *searchTab(Window);
 	
+	/// obsolete
 	enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
 	
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
-	inline const char *getStyleFilename(void) const { return m_rc_stylefile->c_str(); }
+	inline const char *getStyleFilename() const { return m_rc_stylefile->c_str(); }
 
-	inline const char *getMenuFilename(void) const { return m_rc_menufile->c_str(); }
-	inline const std::string &getSlitlistFilename(void) const { return *m_rc_slitlistfile; }
-	inline int colorsPerChannel(void) const { return *m_rc_colors_per_channel; }
+	inline const char *getMenuFilename() const { return m_rc_menufile->c_str(); }
+	inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
+	inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
 
-	inline const timeval &getAutoRaiseDelay(void) const { return resource.auto_raise_delay; }
+	inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }
 
-	inline unsigned int getCacheLife(void) const { return *m_rc_cache_life * 60000; }
-	inline unsigned int getCacheMax(void) const { return *m_rc_cache_max; }
+	inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
+	inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
 
 	inline void maskWindowEvents(Window w, FluxboxWindow *bw)
 		{ masked = w; masked_window = bw; }
 	inline void setNoFocus(Bool f) { no_focus = f; }
 
 	void setFocusedWindow(FluxboxWindow *w);
-	void shutdown(void);
+	void shutdown();
 	void load_rc(BScreen *);
 	void loadRootCommand(BScreen *);
 	void loadTitlebar();
@@ -130,21 +134,21 @@ public:
 	void saveToolbarSearch(Window, Toolbar *);
 	void saveTabSearch(Window, Tab *);
 	void saveGroupSearch(Window, FluxboxWindow *);	
-	void save_rc(void);
+	void save_rc();
 	void removeMenuSearch(Window);
 	void removeWindowSearch(Window);
 	void removeToolbarSearch(Window);
 	void removeTabSearch(Window);
 	void removeGroupSearch(Window);
 	void restart(const char * = 0);
-	void reconfigure(void);
-	void reconfigureTabs(void);
-	void rereadMenu(void);
-	void checkMenu(void);
+	void reconfigure();
+	void reconfigureTabs();
+	void rereadMenu();
+	void checkMenu();
 
 	virtual Bool handleSignal(int);
 
-	virtual void timeout(void);
+	virtual void timeout();
 
 #ifdef		SLIT
 	Slit *searchSlit(Window);
@@ -238,18 +242,18 @@ protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
 	char *getRcFilename();
 	void getDefaultDataFilename(char *, std::string &);
-	void load_rc(void);
+	void load_rc();
 	
-	void reload_rc(void);
-	void real_rereadMenu(void);
-	void real_reconfigure(void);
+	void reload_rc();
+	void real_rereadMenu();
+	void real_reconfigure();
 
 	virtual void process_event(XEvent *);
 	//only main should be able to creat new blackbox object
 	//TODO this must be removed!
 	friend int main(int,char **);
 	static Fluxbox *singleton;	//singleton object ( can only be destroyed by main )
-	virtual ~Fluxbox(void);
+	virtual ~Fluxbox();
 
 };
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.6 2002/07/20 09:51:03 fluxgen Exp $
+// $Id: Resource.hh,v 1.7 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -27,7 +27,9 @@
 #include "NotCopyable.hh"
 #include <string>
 #include <list>
-
+/**
+	Base class for resources
+*/
 class Resource_base:private NotCopyable
 {
 public:
@@ -47,17 +49,18 @@ public:
 protected:	
 	Resource_base(const std::string &name, const std::string &altname):
 	m_name(name), m_altname(altname)
-	{
-	
-	}
+	{ }
 
 private:
-	std::string m_name; // name of this resource
-	std::string m_altname; // alternative name 
+	std::string m_name; ///< name of this resource
+	std::string m_altname; ///< alternative name 
 };
 
 class ResourceManager;
 
+/**
+	Real resource class
+*/
 template <typename T>
 class Resource:public Resource_base
 {
@@ -79,10 +82,10 @@ public:
 	inline Resource<T>& operator = (const T& newvalue) { m_value = newvalue;  return *this;}
 	
 	std::string getString();	
-	inline T& operator*(void) { return m_value; }
-	inline const T& operator*(void) const { return m_value; }
-	inline T *operator->(void) { return &m_value; }
-	inline const T *operator->(void) const { return &m_value; }
+	inline T& operator*() { return m_value; }
+	inline const T& operator*() const { return m_value; }
+	inline T *operator->() { return &m_value; }
+	inline const T *operator->() const { return &m_value; }
 private:
 	T m_value, m_defaultval;
 	ResourceManager &m_rm;
@@ -103,11 +106,17 @@ public:
 		save all resouces registered to this class
 	*/
 	virtual bool save(const char *filename, const char *mergefilename=0);
+	/**
+		add resource to list
+	*/
 	template <class T>
 	void addResource(Resource<T> &r) {
 		m_resourcelist.push_back(&r);
 		m_resourcelist.unique();
 	}
+	/**
+		Remove a specific resource
+	*/
 	template <class T>
 	void removeResource(Resource<T> &r) {
 		m_resourcelist.remove(&r);
@@ -115,9 +124,9 @@ public:
 protected:
 	static inline void ensureXrmIsInitialize();
 private:
+
 	static bool m_init;
 	ResourceList m_resourcelist;
-
 };
 
 #endif //_RESOURCE_HH_

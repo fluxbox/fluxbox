@@ -22,24 +22,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.10 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Image.hh,v 1.11 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
 #include "Timer.hh"
 #include "BaseDisplay.hh"
-
 #include "Color.hh"
 #include "Texture.hh"
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 #include <list>
 
 class BImageControl;
 
+/**
+	Renders to pixmap
+*/
 class BImage {
 public:
 	BImage(BImageControl *ic, unsigned int, unsigned int);
@@ -62,7 +63,10 @@ protected:
 		@returns allocated and rendered XImage, user is responsible to deallocate
 	*/
 	XImage *renderXImage();
-
+	/**
+		@name render functions
+	*/
+	//@{
 	void invert();
 	void bevel1();
 	void bevel2();
@@ -74,6 +78,7 @@ protected:
 	void vgradient();
 	void cdgradient();
 	void pcgradient();
+	//@}
 
 private:
 	BImageControl *control;
@@ -91,7 +96,9 @@ private:
 	unsigned int width, height, *xtable, *ytable;
 };
 
-
+/**
+	Holds screen info and color tables	
+*/
 class BImageControl : public TimeoutHandler {
 public:
 	BImageControl(BaseDisplay *disp, ScreenInfo *screen, bool = False, int = 4,
@@ -102,13 +109,14 @@ public:
 
 	inline bool doDither() { return dither; }
 	inline const Colormap &colormap() const { return m_colormap; }
-	inline ScreenInfo *getScreenInfo() { return screeninfo; }
-
+	inline const ScreenInfo *getScreenInfo() const { return screeninfo; }
 	inline Window drawable() const { return window; }
-
+	
+	/// @return visual of screen
 	inline Visual *visual() { return screeninfo->getVisual(); }
-
+	/// @return Bits per pixel of screen
 	inline int bitsPerPixel() const { return bits_per_pixel; }
+	/// @return depth of screen
 	inline int depth() const { return screen_depth; }
 	inline int colorsPerChannel() const	{ return colors_per_channel; }
 
@@ -116,7 +124,13 @@ public:
 	unsigned long color(const char *, unsigned char *, unsigned char *,
 												 unsigned char *);
 	unsigned long getSqrt(unsigned int val);
-
+	/**
+		Render to pixmap
+		@param width width of pixmap
+		@param height height of pixmap
+		@param src_texture texture type to render
+		@return pixmap of the rendered image, on failure None
+	*/
 	Pixmap renderImage(unsigned int width, unsigned int height,
 		const FbTk::Texture *src_texture);
 
@@ -153,7 +167,8 @@ private:
 	Colormap m_colormap;
 
 	Window window;
-	XColor *colors; // color table
+	XColor *colors; ///< color table
+
 	int colors_per_channel, ncolors, screen_number, screen_depth,
 		bits_per_pixel, red_offset, green_offset, blue_offset,
 		red_bits, green_bits, blue_bits;
@@ -179,5 +194,5 @@ private:
 };
 
 
-#endif // __Image_hh
+#endif // IMAGE_HH
 

@@ -19,29 +19,36 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.6 2002/02/17 18:57:47 fluxgen Exp $
+// $Id: IconBar.hh,v 1.7 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
 
-#include <vector>
 #include "Window.hh"
 
 #include <list>
 
+/**
+	Icon object in IconBar
+*/
 class IconBarObj
 {
 public:	
 	IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin);
 	~IconBarObj();
-	inline Window getIconWin(void) { return m_iconwin; }
-	inline FluxboxWindow *getFluxboxWin(void)  { return m_fluxboxwin; }
-	unsigned int getWidth(void);
+	Window getIconWin() const { return m_iconwin; }
+	FluxboxWindow *getFluxboxWin() { return m_fluxboxwin; }
+	const FluxboxWindow *getFluxboxWin() const { return m_fluxboxwin; }
+	unsigned int width() const;
+
 private:
 	FluxboxWindow *m_fluxboxwin;
 	Window m_iconwin;
 };
 
+/**
+	Icon container
+*/
 class IconBar
 {
 public:
@@ -64,7 +71,7 @@ private:
 	void loadTheme(unsigned int width, unsigned int height);
 	void decorate(Window win);
 //	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
-	void repositionIcons(void);
+	void repositionIcons();
 	Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
 	BScreen *m_screen;
 	Display *m_display;
@@ -74,4 +81,4 @@ private:
 	unsigned long m_focus_pixel;
 };
 
-#endif // _ICONBAR_HH_
+#endif // ICONBAR_HH

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.3 2002/05/15 09:36:57 fluxgen Exp $
+//$Id: Font.hh,v 1.4 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -30,23 +30,46 @@
 namespace FbTk
 {
 
+/**
+	Handles loading of font.	
+*/
 class Font
 {
 public:
 	Font(Display *display, const char *name=0);
 	virtual ~Font();
-	//manipulators
+	/** 
+		Load a font
+		@return true on success, else false and it'll fall back on the last
+		loaded font
+	*/
 	bool load(const char *name);
+	/**
+		Loads a font from database
+		@return true on success, else false and it'll fall back on the last
+		loaded font
+		@see load(const char *name)
+	*/
 	bool loadFromDatabase(XrmDatabase &database, const char *rname, const char *rclass);
-	//accessors
+	/// @return true if a font is loaded, else false
 	inline bool isLoaded() const { return m_loaded; }
-	inline const XFontStruct *getFontStruct() const { return m_font.fontstruct; }
-	inline const XFontSet &getFontSet() const { return m_font.set; }
-	inline const XFontSetExtents *getFontSetExtents() const { return m_font.set_extents; }
+	/// @return XFontStruct of  font, note: can be 0
+	inline const XFontStruct *fontStruct() const { return m_font.fontstruct; }
+	/// @return XFontSet of font, note: check isLoaded
+	inline const XFontSet &fontSet() const { return m_font.set; }
+	/// @return XFontSetExtents of font, note: can be 0
+	inline const XFontSetExtents *fontSetExtents() const { return m_font.set_extents; }
+	/// @return true if multibyte is enabled, else false
 	static inline bool multibyte() { return m_multibyte; }
-	unsigned int getTextWidth(const char *text, unsigned int size) const;
-	unsigned int getHeight() const;
-	Display *getDisplay() const { return m_display; }
+	/**
+		@param text text to check size
+		@param size length of text in bytes
+		@return size of text in pixels
+	*/
+	unsigned int textWidth(const char *text, unsigned int size) const;
+	unsigned int height() const;
+	/// @return display connection
+	Display *display() const { return m_display; }
 private:
 	void freeFont();
 	static XFontSet createFontSet(Display *display, const char *fontname);

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.14 2002/07/27 18:03:39 fluxgen Exp $
+// $Id: Keys.hh,v 1.15 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -31,7 +31,9 @@
 class Keys 
 {
 public:
-	
+	/**
+		Key actions
+	*/
 	enum KeyAction{
 			ICONIFY=0,
 			RAISE, LOWER,
@@ -59,7 +61,11 @@ public:
 			ROOTMENU,   // pop up rootmenu
 			LASTKEYGRAB //mark end of keygrabbs
 	};
-	
+	/**
+		Constructor
+		@param display display connection
+		@param filename file to load, default none
+	*/
 	Keys(Display *display, const char *filename=0);
 	/// destructor
 	~Keys();
@@ -97,8 +103,21 @@ private:
 	void deleteTree();
 	void ungrabKeys();
 	void bindKey(unsigned int key, unsigned int mod);
+	/**
+		@param modstr modifier string (i.e Mod4, Mod5)
+		@return modifier number that match modstr
+	*/
 	unsigned int getModifier(const char *modstr);
+	/**
+		@param keystr a key string (i.e F1, Enter)
+		@return key number that match keystr
+	*/
 	unsigned int getKey(const char *keystr);
+	/**
+		grab a key
+		@param key the key
+		@param mod the modifier
+	*/
 	void grabKey(unsigned int key, unsigned int mod);
 	std::string filename;	
 	
@@ -139,6 +158,7 @@ private:
 		@return true on success, else false
 	*/
 	bool mergeTree(t_key *newtree, t_key *basetree=0);
+
 #ifdef DEBUG
 	/// debug function
 	void showTree();
@@ -154,10 +174,10 @@ private:
 	static t_actionstr m_actionlist[];
 	
 	std::vector<t_key *> m_keylist;	
-	t_key *m_abortkey; //abortkey for keygrabbing chain
-	std::string m_execcmdstring; //copy of the execcommandstring
-    int m_param;                // copy of the param argument
-	Display *m_display;
+	t_key *m_abortkey;           ///< abortkey for keygrabbing chain
+	std::string m_execcmdstring; ///< copy of the execcommandstring
+    int m_param;                 ///< copy of the param argument
+	Display *m_display;			 ///< display connection
 };
 
 #endif // _KEYS_HH_

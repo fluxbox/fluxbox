@@ -29,61 +29,77 @@
 #include "../config.h"
 #endif //HAVE_CONFIG_H
 
-#ifdef		TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h> 
-#else // !TIME_WITH_SYS_TIME 
-#	ifdef		HAVE_SYS_TIME_H
+#ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
-#	else // !HAVE_SYS_TIME_H
-#		include <time.h>
-#	endif // HAVE_SYS_TIME_H
+#include <time.h> 
+#else //!TIME_WITH_SYS_TIME 
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else // !HAVE_SYS_TIME_H
+#include <time.h>
+#endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
 #include <list>
 
+/**
+	Inherit this to have a timed object, that calls
+	timeout function when the time is out
+*/
 class TimeoutHandler {
 public:
-	virtual void timeout(void) = 0;
+	/// called when the time is out
+	virtual void timeout() = 0;
 };
 
-
+/**
+	Handles TimeoutHandles
+*/
 class BTimer {
 public:
-	explicit BTimer(TimeoutHandler *);
-	virtual ~BTimer(void);
+	explicit BTimer(TimeoutHandler *handler);
+	virtual ~BTimer();
 
-	inline int isTiming(void) const { return m_timing; } 
-	inline int doOnce(void) const { return m_once; }
+	inline int isTiming() const { return m_timing; } 
+	inline int doOnce() const { return m_once; }
 
-	inline const timeval &getTimeout(void) const { return m_timeout; }
-	inline const timeval &getStartTime(void) const { return m_start; }
+	inline const timeval &getTimeout() const { return m_timeout; }
+	inline const timeval &getStartTime() const { return m_start; }
 
 	inline void fireOnce(bool once) { m_once = once; }
+	/// set timeout
+	void setTimeout(long val);
+	/// set timeout 
+	void setTimeout(timeval val);
+	/// start timing
+	void start();
+	/// stop timing
+	void stop();
+	/// update all timers
+	static void updateTimers(int file_descriptor);
 
-	void setTimeout(long);
-	void setTimeout(timeval);
-	void start(void);
-	void stop(void);
-	static void updateTimers(int fd);
 protected:
-	void fireTimeout(void);
+	/// force a timeout
+	void fireTimeout();
 
 private:
+	/// add a timer to the static list
 	static void addTimer(BTimer *timer);
+	/// remove a timer from the static list
 	static void removeTimer(BTimer *timer);
 	
 	typedef std::list<BTimer *> TimerList;
-    static TimerList m_timerlist;
+    static TimerList m_timerlist; ///< list of all timers
 	
-	TimeoutHandler *m_handler;
+	TimeoutHandler *m_handler; ///< handler
 	
-	bool m_timing, m_once;
+	bool m_timing; ///< clock running?
+	bool m_once;  ///< do timeout only once?
 
-	timeval m_start, m_timeout;
+	timeval m_start;    ///< start time
+	timeval m_timeout; ///< time length
 
 };
 
-
-#endif // _TIMER_HH_
+#endif // TIMER_HH
 

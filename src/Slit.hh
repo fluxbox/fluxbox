@@ -40,15 +40,15 @@ class Slitmenu;
 class Slitmenu : public Basemenu {
 public:
 	explicit Slitmenu(Slit &theslist);
-	virtual ~Slitmenu(void);
+	virtual ~Slitmenu();
 
-	inline Basemenu *getDirectionmenu(void) { return directionmenu; }
-	inline Basemenu *getPlacementmenu(void) { return placementmenu; }
+	inline Basemenu *getDirectionmenu() { return directionmenu; }
+	inline Basemenu *getPlacementmenu() { return placementmenu; }
 #ifdef XINERAMA
-	inline Basemenu *getHeadmenu(void) { return headmenu; }
+	inline Basemenu *getHeadmenu() { return headmenu; }
 #endif // XINERAMA
 
-	void reconfigure(void);
+	void reconfigure();
 
 private: 
 	class Directionmenu : public Basemenu {
@@ -103,52 +103,63 @@ private:
 
 protected:
 	virtual void itemSelected(int button, unsigned int index);
-	virtual void internal_hide(void);
+	virtual void internal_hide();
 };
 
 
 class Slit : public TimeoutHandler {
 public:
-	explicit Slit(BScreen *);
+	explicit Slit(BScreen *screen);
 	virtual ~Slit();
 
-	inline bool isOnTop(void) const { return on_top; }
-	inline bool isHidden(void) const { return hidden; }
-	inline bool doAutoHide(void) const { return do_auto_hide; }
+	inline bool isOnTop() const { return on_top; }
+	inline bool isHidden() const { return hidden; }
+	inline bool doAutoHide() const { return do_auto_hide; }
 
-	Slitmenu &getMenu() { return slitmenu; }
+	Slitmenu &menu() { return slitmenu; }
 
 	inline const Window &getWindowID() const { return frame.window; }
 
-	inline int getX() const { return ((hidden) ? frame.x_hidden : frame.x); }
-	inline int getY() const { return ((hidden) ? frame.y_hidden : frame.y); }
+	inline int x() const { return ((hidden) ? frame.x_hidden : frame.x); }
+	inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
 
-	inline unsigned int getWidth(void) const { return frame.width; }
-	inline unsigned int getHeight(void) const { return frame.height; }
+	inline unsigned int width() const { return frame.width; }
+	inline unsigned int height() const { return frame.height; }
 
-	void addClient(Window);
-	void removeClient(Window, bool = true);
-	void reconfigure(void);
-	void reposition(void);
-	void shutdown(void);
-	void saveClientList(void);
+	void addClient(Window clientwin);
+	void removeClient(Window clientwin, bool = true);
+	void reconfigure();
+	void reposition();
+	void shutdown();
+	void saveClientList();
 
-	void buttonPressEvent(XButtonEvent *);
-	void enterNotifyEvent(XCrossingEvent *);
-	void leaveNotifyEvent(XCrossingEvent *);
-	void configureRequestEvent(XConfigureRequestEvent *);
+	/**
+		@name eventhandlers
+	*/
+	//@{
+	void buttonPressEvent(XButtonEvent *bp);
+	void enterNotifyEvent(XCrossingEvent *en);
+	void leaveNotifyEvent(XCrossingEvent *ln);
+	void configureRequestEvent(XConfigureRequestEvent *cr);
+	//@}
+	
+	virtual void timeout();
 
-	virtual void timeout(void);
-
+	/**
+		Client alignment
+	*/
 	enum { VERTICAL = 1, HORIZONTAL };
+	/**
+		Screen placement
+	*/
 	enum { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
 				 TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
 
 private:
 	class SlitClient {
 	public:
-		SlitClient(BScreen *, Window);	// For adding an actual window
-		SlitClient(const char *);		// For adding a placeholder
+		SlitClient(BScreen *screen, Window client_window);	// For adding an actual window
+		SlitClient(const char *name);		// For adding a placeholder
 
 		// Now we pre-initialize a list of slit clients with names for
 		// comparison with incoming client windows.  This allows the slit
@@ -163,16 +174,17 @@ private:
 		int x, y;
 		unsigned int width, height;
 
-		void initialize(BScreen * = NULL, Window = None);
+		void initialize(BScreen *screen = 0, Window client_window= None);
 	};
 	
-	void removeClient(SlitClient *, bool, bool);
-	void loadClientList(void);
+	void removeClient(SlitClient *client, bool remap, bool destroy);
+	void loadClientList();
 	
-	Bool on_top, hidden, do_auto_hide;
-	Display *display;
+	bool on_top, hidden, do_auto_hide;
 
-	Fluxbox *fluxbox;
+	Display *display; ///< display connection
+
+	Fluxbox *fluxbox; ///< obsolete
 	BScreen *screen;
 	BTimer timer;
 
@@ -199,4 +211,4 @@ private:
 };
 
 
-#endif // __Slit_hh
+#endif // SLIT_HH

@@ -20,8 +20,6 @@
 // DEALINGS IN THE SOFTWARE.
 //
 //  A lot of the base code is taken from Screen.hh in Blackbox 0.61.1
-//  and Brad Hughes (bhuges@tcac.net) should get alot of credit for it
-//  And for license-hunters here's the license and copyright for Screen.cc
 //  Screen.cc - Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 // 
 //  Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,7 +40,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.12 2002/07/23 18:38:31 fluxgen Exp $
+// $Id: Theme.hh,v 1.13 2002/08/04 15:55:13 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -55,7 +53,10 @@
 #include <X11/Xresource.h>
 
 #include <string>
-
+/**
+	Main theme class, holds themes for 
+	Window, toolbar, slit, menu and the rootCommand, for a specific screen.
+*/
 class Theme
 {
 public:	
