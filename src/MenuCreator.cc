@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.2 2004/05/02 22:17:00 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.3 2004/05/02 22:28:45 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -406,12 +406,15 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
         BScreen *screen = Fluxbox::instance()->findScreen(menu.screenNumber());
         if (screen == 0)
             return false;
-        menu.insert(real_label.c_str(),  
-                    new LayerMenu<FluxboxWindow>(screen->menuTheme(), 
-                                                 screen->imageControl(), 
-                                                 *screen->layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                                 &win,
-                                                 false));
+        FbTk::Menu *submenu = new LayerMenu<FluxboxWindow>(screen->menuTheme(), 
+                                                           screen->imageControl(), 
+                                                           *screen->layerManager().
+                                                           getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                                           &win,
+                                                           false);
+        submenu->disableTitle();
+        menu.insert(real_label.c_str(), submenu);
+
 
     } else if (type == "separator") {
         menu.insert("---");
