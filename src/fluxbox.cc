@@ -22,19 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.91 2003/01/12 18:11:12 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.92 2003/01/12 18:50:27 fluxgen Exp $
 
 
 #include "fluxbox.hh"
 
 #include "i18n.hh"
-#include "Basemenu.hh"
-#include "Clientmenu.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "Window.hh"
 #include "Workspace.hh"
-#include "Workspacemenu.hh"
 #include "StringUtil.hh"
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
