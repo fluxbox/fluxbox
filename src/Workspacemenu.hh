@@ -1,3 +1,5 @@
+// Workspacemenu.hh for Fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // WorkspaceMenu.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -22,24 +24,20 @@
 #ifndef   WORKSPACEMENU_HH
 #define   WORKSPACEMENU_HH
 
-// forward declaration
-class Workspacemenu;
-class Toolbar;
-
 #include "Basemenu.hh"
-
+class Workspace;
 
 class Workspacemenu : public Basemenu {
 private:
   BScreen *screen;
 
-
 protected:
   virtual void itemSelected(int, int);
 
-
 public:
   Workspacemenu(BScreen *);
+  void removeWorkspace(unsigned int id);
+  void addWorkspace(Workspace *wkspc);
 };
 
 

@@ -1,3 +1,5 @@
+// Workspacemenu.cc for Fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 // Workspacemenu.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -35,7 +37,8 @@
 #include "Toolbar.hh"
 #include "Workspacemenu.hh"
 #include "Workspace.hh"
-
+#include <iostream>
+#include <cassert>
 
 Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
 	screen = scrn;
@@ -81,4 +84,20 @@ void Workspacemenu::itemSelected(int button, int index) {
     if (! (screen->getWorkspacemenu()->isTorn() || isTorn()))
       hide();
   }
+}
+
+void Workspacemenu::removeWorkspace(unsigned int id) {
+	if (id<getCount()) {
+		remove(id+2); // + 2 is where workspaces starts
+		#ifdef DEBUG
+		using namespace std;
+		cerr<<__FILE__<<"("<<__LINE__<<"): Removing "<<id<<endl;
+		#endif
+	}
+}
+
+void Workspacemenu::addWorkspace(Workspace *wkspc) {
+	assert(wkspc);
+	insert(wkspc->getName(), wkspc->getMenu(),
+		wkspc->getWorkspaceID() + 2);
 }
