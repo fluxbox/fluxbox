@@ -22,6 +22,12 @@ bool ButtonTheme::fallback(FbTk::ThemeItem_base &item) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
     }
 
+    if (item.name().find(".pressed") != std::string::npos) {
+        // copy texture
+        *m_pressed_texture = texture();
+        return true;
+    }
+
     return ToolTheme::fallback(item);
 }
 
