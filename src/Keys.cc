@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.40 2003/12/20 17:37:57 fluxgen Exp $
+//$Id: Keys.cc,v 1.41 2003/12/30 18:14:33 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -243,7 +243,7 @@ bool Keys::addBinding(const std::string &linebuffer) {
 void Keys::doAction(XKeyEvent &ke) {
     static t_key *next_key = 0;
     // Remove numlock, capslock and scrolllock
-    ke.state = FbTk::KeyUtil::cleanMods(ke.state);
+    ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
 	
     if (!next_key) {
 	
