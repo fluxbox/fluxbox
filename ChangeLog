@@ -1,5 +1,24 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/19:
+  * Fixed bug in key/mouse screen updates in fluxbox.cc (Henrik)
+  * Old/New action: 
+    SetWorkspaceName doesn't pop up dialog to edit workspace name  (Henrik)
+    it now sets the current workspace name direct 
+    example: SetWorkspaceName somespace
+    this will set current workspace name to somespace
+    The new action for editing workspace name is:
+    WorkspaceNameDialog
+    FbCommands.hh/cc, FbCommandFactory.cc    
+  * New Action: CommandDialog - with this action you'll get a dialog much like  (Henrik)
+    fbrun but in this you can issue fluxbox actions like NextWorkspace and so on.    
+  * Replaces WorkspaceNameEditing with a more generic dialog  (Henrik)
+    CommandDialog.
+    CommandDialog.hh/cc, FbCommandFactory.cc
+  * Code cleaning (Henrik)
+    ...
+  * changed session.opaqueMove to session.screen<num>.opaqueMove (Henrik)
+    Screen.cc
 *03/12/18:
   * Patch from Ciaran that fixes so style files that    (Thanks Ciaran McCreesh)
     starts with "." or ends with "~" (backup files)
