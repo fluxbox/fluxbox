@@ -95,6 +95,7 @@ protected:
     void placeWindow(FluxboxWindow *win);
 
 private:
+    void updateClientmenu();
 
     BScreen &screen;
     FluxboxWindow *lastfocus;

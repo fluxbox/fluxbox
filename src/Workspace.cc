@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.49 2003/02/20 12:06:26 rathnor Exp $
+// $Id: Workspace.cc,v 1.50 2003/02/20 21:00:29 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -155,14 +155,22 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 
       }
     */
-    FbTk::RefCount<FbTk::Command> 
-        raise_and_focus(new RaiseFocusAndSetWorkspace(*this, *w));
 
-    m_clientmenu.insert(w->getTitle().c_str(), raise_and_focus);
+    // find focused window position
+    /*    Windows::iterator insert_point_it = m_windowlist.begin();
+          for (;insert_point_it != m_windowlist.end(); ++insert_point_it) {
+          if ((*insert_point_it)->isFocused()) {
+          break;
+          }
+          }
+          // if we found focused window, insert our window directly after it
+          if (insert_point_it != m_windowlist.end())
+          m_windowlist.insert(insert_point_it, w);
+          else // we didn't find it, so we just add it to stack
+    */
     m_windowlist.push_back(w);
-	
-    //update menugraphics
-    m_clientmenu.update();
+    updateClientmenu();
+
 	
     if (!w->isStuck()) 
         screen.updateNetizenWindowAdd(w->getClientWindow(), m_id);
@@ -241,9 +249,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
             break;
         }
     }
-
-    m_clientmenu.remove(w->getWindowNumber());
-    m_clientmenu.update();
+    updateClientmenu();
 	
     if (!w->isStuck())
         screen.updateNetizenWindowDel(w->getClientWindow());
@@ -456,6 +462,18 @@ void Workspace::shutdown() {
     }
 }
 
+void Workspace::updateClientmenu() {
+    m_clientmenu.removeAll();
+    Windows::iterator win_it = m_windowlist.begin();
+    Windows::iterator win_it_end = m_windowlist.end();
+    for (; win_it != win_it_end; ++win_it) {
+        FbTk::RefCount<FbTk::Command> 
+            raise_and_focus(new RaiseFocusAndSetWorkspace(*this, *(*win_it)));
+
+        m_clientmenu.insert((*win_it)->getTitle().c_str(), raise_and_focus); 
+    }
+    m_clientmenu.update();
+}
 
 void Workspace::placeWindow(FluxboxWindow *win) {
     Bool placed = False;
