@@ -147,11 +147,12 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 
   update();
 
-  setItemEnabled(1, window->hasTitlebar());
-  setItemEnabled(2, window->isIconifiable());
-  setItemEnabled(3, window->isMaximizable());
-  setItemEnabled(8, window->isClosable());
-	setItemEnabled(9, window->hasTab());
+  setItemEnabled(2, window->hasTitlebar());
+  setItemEnabled(3, window->isIconifiable());
+  setItemEnabled(4, window->isMaximizable());
+  setItemEnabled(9, window->isClosable());
+  setItemEnabled(10, window->hasTab());
+
 }
 
 
@@ -162,9 +163,9 @@ Windowmenu::~Windowmenu(void) {
 
 
 void Windowmenu::show(void) {
-  if (isItemEnabled(1)) setItemSelected(1, window->isShaded());
-  if (isItemEnabled(3)) setItemSelected(3, window->isMaximized());
-  if (isItemEnabled(6)) setItemSelected(6, window->isStuck());
+  if (isItemEnabled(2)) setItemSelected(2, window->isShaded());
+  if (isItemEnabled(4)) setItemSelected(4, window->isMaximized());
+  if (isItemEnabled(7)) setItemSelected(7, window->isStuck());
 
   Basemenu::show();
 }
