@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.4 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: i18n.cc,v 1.5 2002/04/04 11:32:16 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -58,7 +58,7 @@ void NLSInit(const char *catalog) {
 }
 
 
-I18n::I18n():m_multibyte(false), m_catalog_fd(-1) {
+I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 #ifdef		HAVE_SETLOCALE
 	//make sure we don't get 0 to m_locale string
 	char *temp = setlocale(LC_ALL, "");
