@@ -1,5 +1,5 @@
 // Toolbar.hh for Fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Toolbar.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.29 2003/04/25 11:39:31 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.30 2003/05/10 13:55:57 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -47,13 +47,11 @@ class ImageControl;
 };
 
 ///	The toolbar.
-/**
-   Handles iconbar, workspace name view and clock view
- */
+/// Handles iconbar, workspace name view and clock view
 class Toolbar : public FbTk::TimeoutHandler, public FbTk::EventHandler {
 public:
        
-    ///Toolbar placement on the screen
+    /// Toolbar placement on the screen
     enum Placement{ 
         // top and bottom placement
         TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
@@ -63,9 +61,9 @@ public:
         RIGHTCENTER, RIGHTBOTTOM, RIGHTTOP        
     };
 
-    /// create a toolbar on the screen with specific width
-    explicit Toolbar(BScreen &screen, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width = 200);
-    /// destructor
+    /// Create a toolbar on the screen with specific width
+    Toolbar(BScreen &screen, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width = 200);
+
     virtual ~Toolbar();
 
     /// add icon to iconbar
@@ -161,12 +159,13 @@ private:
 
         virtual void timeout();
     } hide_handler;
+
     friend class HideHandler;
 
-    BScreen &m_screen;
-    FbTk::ImageControl &image_ctrl; 
-    FbTk::Timer clock_timer; ///< timer to update clock
-    FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
+    BScreen &m_screen; ///< screen connection
+
+    FbTk::Timer m_clock_timer; ///< timer to update clock
+    FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
     FbTk::Menu &m_toolbarmenu;
     FbTk::Menu m_placementmenu;
     LayerMenu<Toolbar> m_layermenu;

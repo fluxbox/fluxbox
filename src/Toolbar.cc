@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.77 2003/04/28 16:48:23 rathnor Exp $
+// $Id: Toolbar.cc,v 1.78 2003/05/10 13:57:07 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -246,9 +246,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     do_auto_hide(scrn.doToolbarAutoHide()),
     frame(*this, scrn.getScreenNumber()),
     m_screen(scrn),
-    image_ctrl(*scrn.getImageControl()),
-    clock_timer(this), 	// get the clock updating every minute
-    hide_timer(&hide_handler),
+    m_clock_timer(this), // get the clock updating every minute
+    m_hide_timer(&hide_handler),
     m_toolbarmenu(menu),
     m_placementmenu(*scrn.menuTheme(),
                     scrn.getScreenNumber(), *scrn.getImageControl()),
@@ -279,12 +278,12 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     timeval delay;
     delay.tv_sec = 1;
     delay.tv_usec = 0;
-    clock_timer.setTimeout(delay);
-    clock_timer.start();
+    m_clock_timer.setTimeout(delay);
+    m_clock_timer.start();
 
     hide_handler.toolbar = this;
-    hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
-    hide_timer.fireOnce(true);
+    m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
+    m_hide_timer.fireOnce(true);
 
     frame.grab_x = frame.grab_y = 0;
 
@@ -320,7 +319,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
 
 
 Toolbar::~Toolbar() {
-
+    FbTk::ImageControl &image_ctrl = *screen().getImageControl();
     if (frame.base) image_ctrl.removeImage(frame.base);
     if (frame.label) image_ctrl.removeImage(frame.label);
     if (frame.wlabel) image_ctrl.removeImage(frame.wlabel);
@@ -388,7 +387,7 @@ void Toolbar::reconfigure() {
 
     if (do_auto_hide == false && 
         do_auto_hide != screen().doToolbarAutoHide()) {
-        hide_timer.start();
+        m_hide_timer.start();
     }
 
     do_auto_hide = screen().doToolbarAutoHide();
@@ -562,6 +561,8 @@ void Toolbar::reconfigure() {
 
     frame.clock.moveResize(next_x + text_x, next_y + text_y,
                            clock_w, clock_h);
+
+    FbTk::ImageControl &image_ctrl = *screen().getImageControl();
 
     Pixmap tmp = frame.base;
     const FbTk::Texture *texture = &(m_theme.toolbar());
@@ -972,11 +973,11 @@ void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {
         return;
 
     if (hidden) {
-        if (! hide_timer.isTiming())
-            hide_timer.start();
+        if (! m_hide_timer.isTiming())
+            m_hide_timer.start();
     } else {
-        if (hide_timer.isTiming())
-            hide_timer.stop();
+        if (m_hide_timer.isTiming())
+            m_hide_timer.stop();
     }
 }
 
@@ -985,10 +986,10 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &not_used) {
         return;
 
     if (hidden) {
-        if (hide_timer.isTiming()) 
-            hide_timer.stop();
-    } else if (! m_toolbarmenu.isVisible() && ! hide_timer.isTiming()) 
-        hide_timer.start();
+        if (m_hide_timer.isTiming()) 
+            m_hide_timer.stop();
+    } else if (! m_toolbarmenu.isVisible() && ! m_hide_timer.isTiming()) 
+        m_hide_timer.start();
 
 }
 
@@ -1072,7 +1073,7 @@ void Toolbar::timeout() {
     timeval delay;
     delay.tv_sec = 1;
     delay.tv_usec = 0;	
-    clock_timer.setTimeout(delay);
+    m_clock_timer.setTimeout(delay);
 }
 
 
@@ -1209,12 +1210,12 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
 void Toolbar::HideHandler::timeout() {
     if (toolbar->isEditing()) { // don't hide if we're editing workspace label
-        toolbar->hide_timer.fireOnce(false);
-        toolbar->hide_timer.start(); // restart timer and try next timeout
+        toolbar->m_hide_timer.fireOnce(false);
+        toolbar->m_hide_timer.start(); // restart timer and try next timeout
         return;
     }
 
-    toolbar->hide_timer.fireOnce(true);
+    toolbar->m_hide_timer.fireOnce(true);
 
     toolbar->hidden = ! toolbar->hidden;
     if (toolbar->hidden) {
