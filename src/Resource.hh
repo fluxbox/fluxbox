@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.4 2002/04/04 14:26:47 fluxgen Exp $
+// $Id: Resource.hh,v 1.5 2002/05/17 10:59:58 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -74,7 +74,9 @@ public:
 	
 	std::string getString();	
 	inline T& operator*(void) { return m_value; }
+	inline const T& operator*(void) const { return m_value; }
 	inline T *operator->(void) { return &m_value; }
+	inline const T *operator->(void) const { return &m_value; }
 private:
 	T m_value, m_defaultval;
 	ResourceManager &m_rm;
