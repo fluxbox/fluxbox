@@ -92,9 +92,8 @@ RefCount<Pointer> &RefCount<Pointer>::operator = (const RefCount<Pointer> &copy)
 template <typename Pointer>
 RefCount<Pointer> &RefCount<Pointer>::operator = (Pointer *p) {
     decRefCount();
-    m_data = p;
-    if (m_refcount == 0)
-        m_refcount = new unsigned int(0);
+    m_data = p; // set data pointer
+    m_refcount = new unsigned int(0); // create new counter
     incRefCount();
 }
 
