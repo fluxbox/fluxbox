@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.13 2002/05/17 11:57:02 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.14 2002/05/19 12:57:47 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -61,7 +61,7 @@ public:
 	void leaveNotifyEvent(XCrossingEvent *);
 	void exposeEvent(XExposeEvent *);
 	void reconfigure();
-	void setLabel(const char *n);
+	void setLabel(const char *labelstr);
 	void move(int x, int y);
 	void update();
 	void setItemSelected(unsigned int index, bool val);
