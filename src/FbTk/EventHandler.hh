@@ -1,5 +1,5 @@
 // EventHandler.cc for Fluxbox Window Manager
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventHandler.hh,v 1.4 2003/04/28 01:47:29 fluxgen Exp $
+// $Id: EventHandler.hh,v 1.5 2003/05/10 23:14:22 fluxgen Exp $
+
+/// @file holds EventHandler interface for X events
 
 #ifndef FBTK_EVENTHANDLER_HH
 #define FBTK_EVENTHANDLER_HH
@@ -28,9 +30,17 @@
 
 namespace FbTk {
 
+
+/// interface for X events
 /**
-   interface for X events
-*/
+ * Use this class to catch events from X windows and FbWindows \n
+ * Register instance of this class to EventManager \n
+ * example: \n
+ * EventManager::instance()->add(your_eventhandler, your_window); \n
+ * Don't forget to unregister it: \n
+ * EventManager::instance()->remove(your_window);
+ * @see EventManager
+ */
 class EventHandler {
 public:
     virtual ~EventHandler() { }
