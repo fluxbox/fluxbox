@@ -22,18 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.65 2002/08/04 15:15:22 fluxgen Exp $
+// $Id: Window.cc,v 1.66 2002/08/11 22:44:29 fluxgen Exp $
 
 #include "Window.hh"
-
-//use GNU extensions
-#ifndef	 _GNU_SOURCE
-#define	 _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
 #include "fluxbox.hh"
@@ -43,25 +34,26 @@
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
 
-#ifdef		SLIT
-#	include "Slit.hh"
+#ifdef SLIT
+#include "Slit.hh"
 #endif // SLIT
+
+//use GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 
-#ifdef		STDC_HEADERS
-#	include <string.h>
-#endif // STDC_HEADERS
-
-#ifdef		DEBUG
-#	ifdef		HAVE_STDIO_H
-#		include <stdio.h>
-#	endif // HAVE_STDIO_H
-#endif // DEBUG
-
-
+#include <cstring>
+#include <cstdio>
 #include <iostream>
+
 using namespace std;
 
 FluxboxWindow::FluxboxWindow(Window w, BScreen *s):
@@ -82,7 +74,7 @@ tab(0)
 {
 	
 	lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
-	#ifdef DEBUG
+#ifdef DEBUG
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
@@ -90,7 +82,7 @@ tab(0)
 			"FluxboxWindow::FluxboxWindow(): creating 0x%lx\n"),
 			w);
 
-	#endif //DEBUG
+#endif //DEBUG
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
@@ -333,10 +325,9 @@ tab(0)
 	updateGnomeAtoms();
 	#endif
 
-	#ifdef DEBUG
+#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
-	#endif
-
+#endif // DEBUG
 
 }
 
@@ -2713,52 +2704,81 @@ void FluxboxWindow::redrawAllButtons() {
 }
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
-	if (re->window == client.window) {
-#ifdef		DEBUG
+	if (re->window != client.window)
+		return;
+#ifdef DEBUG
 		fprintf(stderr,
 			I18n::instance()->getMessage(
-					 FBNLS::WindowSet, FBNLS::WindowMapRequest,
-					 "FluxboxWindow::mapRequestEvent() for 0x%lx\n"),
-						client.window);
+				 FBNLS::WindowSet, FBNLS::WindowMapRequest,
+				 "FluxboxWindow::mapRequestEvent() for 0x%lx\n"),
+					client.window);
 #endif // DEBUG
-		Fluxbox *fluxbox = Fluxbox::instance();
-		BaseDisplay::GrabGuard gg(*fluxbox);
-		fluxbox->grab();
-		if (! validateClient())
-			return;
-
-		bool get_state_ret = getState();
-		if (! (get_state_ret && fluxbox->isStartup())) {
-			if ((client.wm_hint_flags & StateHint) &&
-					(! (current_state == NormalState || current_state == IconicState)))
-				current_state = client.initial_state;
-			else
-				current_state = NormalState;
-		} else if (iconic)
+	Fluxbox *fluxbox = Fluxbox::instance();
+	BaseDisplay::GrabGuard gg(*fluxbox);
+	fluxbox->grab();
+	if (! validateClient())
+		return;
+	
+	bool get_state_ret = getState();
+	if (! (get_state_ret && fluxbox->isStartup())) {
+		if ((client.wm_hint_flags & StateHint) &&
+				(! (current_state == NormalState || current_state == IconicState))) {
+			current_state = client.initial_state;
+		} else
 			current_state = NormalState;
+	} else if (iconic)
+		current_state = NormalState;
+		
+	switch (current_state) {
+	case IconicState:
+		iconify();
+	break;
 
-		switch (current_state) {
-		case IconicState:
-			iconify();
+	case WithdrawnState:
+		withdraw();
+	break;
 
-			break;
+	case NormalState:
+		//check WM_CLASS only when we changed state to NormalState from 
+		// WithdrawnState (ICCC 4.1.2.5)
+				
+		XClassHint ch;
 
-		case WithdrawnState:
-			withdraw();
+		if (XGetClassHint(display, getClientWindow(), &ch) == 0) {
+			cerr<<"Faild to ready class hint!"<<endl;
+		} else {
+			if (ch.res_name != 0) {
+				m_instance_name = const_cast<char *>(ch.res_name);
+				XFree(ch.res_name);
+			} else
+				m_instance_name = "";
 
-			break;
+			if (ch.res_class != 0) {
+				m_class_name = const_cast<char *>(ch.res_class);
+				XFree(ch.res_class);
+			} else 
+				m_class_name = "";
 
-		case NormalState:
-		case InactiveState:
-		case ZoomState:
-		default:
-			deiconify(false);
-
-			break;
-		}
-
-		fluxbox->ungrab();
+			Workspace *wsp = screen->getWorkspace(workspace_number);
+			// we must be resizable AND maximizable to be autogrouped
+			// TODO: there should be an isGroupable() function
+			if (wsp != 0 && isResizable() && isMaximizable()) {
+				wsp->checkGrouping(*this);
+			}
+		}		
+		
+		deiconify(false);
+			
+	break;
+	case InactiveState:
+	case ZoomState:
+	default:
+		deiconify(false);
+		break;
 	}
+
+	fluxbox->ungrab();
+
 }
 
 
@@ -2879,9 +2899,9 @@ bool FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
 
 void FluxboxWindow::propertyNotifyEvent(Atom atom) {
  	Fluxbox *fluxbox = Fluxbox::instance();
-//	BaseDisplay::GrabGuard gg(*fluxbox);
-//	fluxbox->grab();
-	if (! validateClient()) return;
+
+	if (! validateClient()) 
+		return;
 
 	switch(atom) {
 	case XA_WM_CLASS:
@@ -2976,7 +2996,6 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		break;
 	}
 
-//	fluxbox->ungrab();
 }
 
 
