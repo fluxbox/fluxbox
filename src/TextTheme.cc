@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.cc,v 1.2 2003/08/12 00:20:47 fluxgen Exp $
+// $Id: TextTheme.cc,v 1.3 2003/08/13 09:54:50 fluxgen Exp $
 
 #include "TextTheme.hh"
 
@@ -51,4 +51,9 @@ void TextTheme::update() {
     gcv.foreground = m_text_color->pixel();
     XChangeGC(FbTk::App::instance()->display(), m_text_gc,
               GCForeground, &gcv);
+}
+
+void TextTheme::setAntialias(bool value) {
+    font().setAntialias(value);
+    FbTk::ThemeManager::instance().loadItem(m_font);
 }

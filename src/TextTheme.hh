@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.hh,v 1.1 2003/08/11 14:28:38 fluxgen Exp $
+// $Id: TextTheme.hh,v 1.2 2003/08/13 09:54:30 fluxgen Exp $
 
 #ifndef TEXTTHEME_HH
 #define TEXTTHEME_HH
@@ -36,6 +36,8 @@ public:
     virtual ~TextTheme();
 
     void update();
+
+    void setAntialias(bool value);
 
     FbTk::Font &font() { return *m_font; }
     const FbTk::Font &font() const { return *m_font; }
