@@ -22,12 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.180 2003/06/11 00:51:07 fluxgen Exp $
+// $Id: Screen.cc,v 1.181 2003/06/12 15:24:37 fluxgen Exp $
 
 
 #include "Screen.hh"
 
-#include "i18n.hh"
+#include "I18n.hh"
 #include "fluxbox.hh"
 #include "ImageControl.hh"
 #include "Toolbar.hh"
@@ -114,6 +114,7 @@
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
+#include <X11/cursorfont.h>
 
 #ifdef XINERAMA
 extern  "C" {
@@ -152,7 +153,9 @@ FbTk::Menu *createMenuFromScreen(BScreen &screen) {
 
 class FocusModelMenuItem : public FbTk::MenuItem {
 public:
-    FocusModelMenuItem(const char *label, BScreen &screen, Fluxbox::FocusModel model, FbTk::RefCount<FbTk::Command> &cmd):
+    FocusModelMenuItem(const char *label, BScreen &screen, 
+                       Fluxbox::FocusModel model, 
+                       FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_screen(screen), m_focusmodel(model) {
     }
     bool isEnabled() const { return m_screen.getFocusModel() != m_focusmodel; }
@@ -524,14 +527,14 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     initXinerama();
 
-    unsigned long event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
-        SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
-        ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
-
     XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
-    rootWindow().setEventMask(event_mask);
+
+    rootWindow().setEventMask(ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
+                              SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
+                              ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask);
 
     XSync(disp, False);
+
     XSetErrorHandler((XErrorHandler) old);
 
     managed = running;
@@ -540,35 +543,24 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 	
     I18n *i18n = I18n::instance();
 	
-    fprintf(stderr,
-            i18n->
-            getMessage(
-                       FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
-                       "BScreen::BScreen: managing screen %d "
-                       "using visual 0x%lx, depth %d\n"),
+    fprintf(stderr, i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
+                                     "BScreen::BScreen: managing screen %d "
+                                     "using visual 0x%lx, depth %d\n"),
             screenNumber(), XVisualIDFromVisual(rootWindow().visual()),
             rootWindow().depth());
 
-    Fluxbox * const fluxbox = Fluxbox::instance();
-#ifdef HAVE_GETPID
-    pid_t bpid = getpid();
-
-    rootWindow().changeProperty(Fluxbox::instance()->getFluxboxPidAtom(), XA_CARDINAL,
-                                sizeof(pid_t) * 8, PropModeReplace,
-                                (unsigned char *) &bpid, 1);
-#endif // HAVE_GETPID
-
-
     cycling_window = focused_list.end();
+    
+    rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
-    XDefineCursor(disp, rootWindow().window(), fluxbox->getSessionCursor());
-
+    Fluxbox *fluxbox = Fluxbox::instance();
     m_image_control.reset(new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
-                                               fluxbox->getCacheLife(), fluxbox->getCacheMax()));
+                                                 fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
     root_colormap_installed = true;
 
     fluxbox->load_rc(*this);
+
     FbTk::Menu::setAlpha(*resource.menu_alpha);
 
     imageControl().setDither(*resource.image_dither);
@@ -585,10 +577,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     const char *s = i18n->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
                                      "W: 0000 x H: 0000");
 	
-    int l = strlen(s);
-
     int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
-    int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
+    int geom_w = winFrameTheme().font().textWidth(s, strlen(s)) + m_root_theme->bevelWidth()*2;
 
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
@@ -601,39 +591,24 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                       0, 0, geom_w, geom_h, rootTheme().borderWidth(), rootWindow().depth(),
                       InputOutput, rootWindow().visual(), mask, &attrib);
     geom_visible = false;
+    geom_pixmap = 0;
 
-    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (winFrameTheme().titleFocusTexture().type() ==
-            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
-            geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
-        } else {
-            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().titleFocusTexture());
-            m_geom_window.setBackgroundPixmap(geom_pixmap);
-        }
-    } else {
-        if (winFrameTheme().labelFocusTexture().type() ==
-            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
-            geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
-        } else {
-            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().labelFocusTexture());
-            m_geom_window.setBackgroundPixmap(geom_pixmap);
-        }
-    }
+    renderGeomWindow();
 
     workspacemenu.reset(createMenuFromScreen(*this));
     workspacemenu->setInternalMenu();
 
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
-            Workspace *wkspc = new Workspace(*this, m_layermanager, m_workspaces_list.size());
+            Workspace *wkspc = new Workspace(*this, m_layermanager, 
+                                             getNameOfWorkspace(m_workspaces_list.size()),
+                                             m_workspaces_list.size());
             m_workspaces_list.push_back(wkspc);
         }
     } else { // create at least one workspace
-        Workspace *wkspc = new Workspace(*this, m_layermanager, m_workspaces_list.size());
+        Workspace *wkspc = new Workspace(*this, m_layermanager, 
+                                         getNameOfWorkspace(m_workspaces_list.size()),
+                                         m_workspaces_list.size());
         m_workspaces_list.push_back(wkspc);
     }
 
@@ -862,31 +837,8 @@ void BScreen::reconfigure() {
     int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
     int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
     m_geom_window.resize(geom_w, geom_h);
-
-    Pixmap tmp = geom_pixmap;
-    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (winFrameTheme().titleFocusTexture().type() ==
-            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
-            geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
-        } else {
-            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().titleFocusTexture());
-            m_geom_window.setBackgroundPixmap(geom_pixmap);
-        }
-    } else {
-        if (winFrameTheme().labelFocusTexture().type() ==
-            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
-            geom_pixmap = None;
-            m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
-        } else {
-            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
-                                                     winFrameTheme().labelFocusTexture());
-            m_geom_window.setBackgroundPixmap(geom_pixmap);
-        }
-    }
-    if (tmp)
-        imageControl().removeImage(tmp);
+    
+    renderGeomWindow();
 
     m_geom_window.setBorderWidth(m_root_theme->borderWidth());
     m_geom_window.setBorderColor(m_root_theme->borderColor());
@@ -1054,12 +1006,14 @@ void BScreen::setAntialias(bool value) {
 }
 
 int BScreen::addWorkspace() {
-    Workspace *wkspc = new Workspace(*this, m_layermanager, m_workspaces_list.size());
+    Workspace *wkspc = new Workspace(*this, m_layermanager, 
+                                     "",
+                                     m_workspaces_list.size());
     m_workspaces_list.push_back(wkspc);
     addWorkspaceName(wkspc->name().c_str()); // update names
     //add workspace to workspacemenu
     workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu(),
-                          wkspc->workspaceID() + 2); //+2 so we add it after "remove last"
+                          wkspc->workspaceID() + 2); //+2 so we add it after "remove last" item
 		
     workspacemenu->update();
     saveWorkspaces(m_workspaces_list.size());
@@ -1067,7 +1021,6 @@ int BScreen::addWorkspace() {
         toolbar()->reconfigure();
     
     updateNetizenWorkspaceCount();	
-	
 	
     return m_workspaces_list.size();
 	
@@ -2463,6 +2416,36 @@ bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
             /* (opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
              */
             (opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
+}
+
+void BScreen::renderGeomWindow() {
+    Pixmap tmp = geom_pixmap;
+
+    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (winFrameTheme().titleFocusTexture().type() ==
+            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+            geom_pixmap = None;
+            m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
+        } else {
+            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
+                                                     winFrameTheme().titleFocusTexture());
+            m_geom_window.setBackgroundPixmap(geom_pixmap);
+        }
+    } else {
+        if (winFrameTheme().labelFocusTexture().type() ==
+            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+            geom_pixmap = None;
+            m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
+        } else {
+            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
+                                                     winFrameTheme().labelFocusTexture());
+            m_geom_window.setBackgroundPixmap(geom_pixmap);
+        }
+    }
+
+    if (tmp)
+        imageControl().removeImage(tmp);
+
 }
 
 /**
