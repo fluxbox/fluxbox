@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.32 2002/10/19 14:00:09 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.33 2002/10/22 14:46:11 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -959,7 +959,7 @@ void Basemenu::exposeEvent(XExposeEvent *ee) {
 				for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
 					int index = ii + (i * menu.persub);
 					// redraw the item
-					drawItem(index, (which_sub == index), False,
+					drawItem(index, (which_sub == index), true,
 							ee->x, ee->y, ee->width, ee->height);
 				}
 			}
