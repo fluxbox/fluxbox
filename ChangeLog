@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/11:
+  * Font::drawText now takes a referens to FbTk::FbDrawable as first argument 
+    instead of X Drawable (Henrik)
+  * Code cleaning (Henrik)
+    fluxbox.cc, Slit.cc/hh, FbCommands.cc	
+  * display() access function for FbDrawable (Henrik)
   * Fix some more X errors from XRender calls (Simon)
     - also fixes some menu background update issues
     FbTk/Menu.cc FbTk/Transparent.cc FbTk/FbWindow.cc
