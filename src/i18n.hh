@@ -22,12 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.8 2002/05/24 13:24:02 fluxgen Exp $
+// $Id: i18n.hh,v 1.9 2002/08/15 10:52:16 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
 
 #include "../nls/blackbox-nls.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 #ifdef		HAVE_LOCALE_H
 #	include <locale.h>
