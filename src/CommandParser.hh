@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandParser.hh,v 1.2 2003/07/01 09:01:20 fluxgen Exp $
+// $Id: CommandParser.hh,v 1.3 2004/01/02 13:43:58 fluxgen Exp $
 
 #ifndef COMMANDPARSER_HH
 #define COMMANDPARSER_HH
@@ -56,6 +56,8 @@ public:
 
     /// @return instance of command parser
     static CommandParser &instance();
+    /// @return map of factorys
+    const CommandFactoryMap &factorys() const { return m_commandfactorys; }
 private:
     // so CommandFactory can associate it's commands
     friend class CommandFactory;
