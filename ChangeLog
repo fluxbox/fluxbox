@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/05/08:
+   * Fixed sloppy focus for embedded tabs (Simon)
+     Window.cc
    * Fixed Slit ordering bug (Henrik)
      Screen.cc
    * Fixed better command help/option

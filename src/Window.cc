@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.163 2003/05/08 02:20:52 rathnor Exp $
+// $Id: Window.cc,v 1.164 2003/05/08 15:06:59 rathnor Exp $
 
 #include "Window.hh"
 
@@ -344,7 +344,7 @@ void FluxboxWindow::init() {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     // we need motion notify so we mask it
     btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
-                               ButtonMotionMask);
+                               ButtonMotionMask | EnterWindowMask);
 
     FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*m_client));
     btn->setOnClick(set_client_cmd);
@@ -552,7 +552,7 @@ void FluxboxWindow::attachClient(WinClient &client) {
             btn->show();
             // we need motion notify so we mask it
             btn->window().setEventMask(ExposureMask | ButtonPressMask | 
-                                       ButtonReleaseMask | ButtonMotionMask);
+                                       ButtonReleaseMask | ButtonMotionMask | EnterWindowMask);
 
 
             FbTk::RefCount<FbTk::Command> 
@@ -2515,10 +2515,27 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         !isVisible()) {
         return;
     }
+
+    WinClient *client = 0;
+    // don't waste our time scanning if we aren't real sloppy focus
+    if (screen.isSloppyFocus()) {
+        // determine if we're in a label button (tab)
+        Client2ButtonMap::iterator it = m_labelbuttons.begin();
+        Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+        for (; it != it_end; ++it) {
+            if ((*it).second->window() == ev.window) {
+                client = (*it).first;
+                break;
+            }
+        }
+    }
     if (ev.window == frame().window() ||
-        ev.window == m_client->window()) {
-        if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus()) 
-            && !isFocused()) {
+        ev.window == m_client->window() || 
+        client) {
+        if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus())
+            && !isFocused() ||
+            // or, we are focused, but it isn't the one we want
+            client && screen.isSloppyFocus() && (m_client != client)) {
            
             // check that there aren't any subsequent leave notify events in the 
             // X event queue
@@ -2527,8 +2544,10 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             sa.w = ev.window;
             sa.enter = sa.leave = False;
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);   
-
-            if ((!sa.leave || sa.inferior) && setInputFocus())
+            
+            // if client is set, use setCurrent client, otherwise just setInputFocus
+            if ((!sa.leave || sa.inferior) && 
+                ((client && setCurrentClient(*client, true)) || setInputFocus()))
                 installColormap(True);
         }        
     }
