@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.49 2003/12/03 00:31:40 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.50 2003/12/08 17:29:44 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -45,8 +45,6 @@
 class BScreen;
 class Strut;
 class FbMenu;
-class Container;
-class IconButton;
 class Shape;
 class ToolbarItem;
 
@@ -54,7 +52,6 @@ namespace FbTk {
 class ImageControl;
 };
 
-typedef Container IconBar;
 ///	The toolbar.
 /// Handles iconbar, workspace name view and clock view
 class Toolbar: public FbTk::EventHandler, public FbTk::Observer {
@@ -77,6 +74,7 @@ public:
 
     void raise();
     void lower();
+    void updateVisibleState();
     void toggleHidden();
 
 
@@ -179,7 +177,7 @@ private:
     Strut *m_strut; ///< created and destroyed by BScreen
 
     // resources
-    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over;
+    FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over, m_rc_visible;
     FbTk::Resource<int> m_rc_width_percent;
     FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
     FbTk::Resource<int> m_rc_on_head;

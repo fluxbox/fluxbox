@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.129 2003/12/07 16:39:43 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.130 2003/12/08 17:29:44 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -212,6 +212,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
                    scrn.name() + ".toolbar.autoHide", scrn.altName() + ".Toolbar.AutoHide"),
     m_rc_maximize_over(scrn.resourceManager(), false,
                        scrn.name() + ".toolbar.maxOver", scrn.altName() + ".Toolbar.MaxOver"),
+    m_rc_visible(scrn.resourceManager(), true, scrn.name() + ".toolbar.visible", scrn.altName() + ".Toolbar.Visible"),
     m_rc_width_percent(scrn.resourceManager(), 65, 
                        scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),  
     m_rc_layernum(scrn.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
@@ -352,6 +353,8 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
+    updateVisibleState();
+    
     m_tool_factory.updateThemes();
 
     // parse resource tools and determine if we need to rebuild toolbar
@@ -714,6 +717,10 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     }
 }
 
+void Toolbar::updateVisibleState() {
+    *m_rc_visible ? frame.window.show() : frame.window.hide();
+}
+
 void Toolbar::toggleHidden() {
     m_hide_timer.fireOnce(true);
 
@@ -732,59 +739,66 @@ void Toolbar::moveToLayer(int layernum) {
 }
 
 void Toolbar::setupMenus() {
-    Toolbar &tbar = *this;
-    I18n *i18n = I18n::instance();
+    const I18n &i18n = *I18n::instance();
     using namespace FBNLS;
     using namespace FbTk;
 
-    FbTk::Menu &menu = tbar.menu();
+    typedef RefCount<Command> RefCommand;
+    typedef SimpleCommand<Toolbar> ToolbarCommand;
+
     //!! TODO: this should be inserted by the workspace tool
         
 
-    RefCount<Command> start_edit(CommandParser::instance().parseLine("setworkspacename"));
-    menu.insert(i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
-                                 "Edit current workspace name"),
-                start_edit);
+    RefCommand start_edit(CommandParser::instance().parseLine("setworkspacename"));
+    menu().insert(i18n.getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
+                                   "Edit current workspace name"),
+                  start_edit);
     
-    menu.setLabel(i18n->getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarToolbarTitle,
-                                   "Toolbar")); 
+    menu().setLabel(i18n.getMessage(FBNLS::ToolbarSet, FBNLS::ToolbarToolbarTitle,
+                                     "Toolbar")); 
 
-    FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
-                                                          m_rc_width_percent,
-                                                          0, 100); // min/max value
+    MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
+                                                    m_rc_width_percent,
+                                                    0, 100); // min/max value
 
 
-    FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
-                                                   SimpleCommand<Toolbar>
-                                                   (tbar, &Toolbar::reconfigure));
-    FbTk::RefCount<FbTk::Command> save_resources(CommandParser::instance().parseLine("saverc"));
-    FbTk::MacroCommand *toolbar_menuitem_macro = new FbTk::MacroCommand();
+    RefCommand reconfig_toolbar(new ToolbarCommand(*this, &Toolbar::reconfigure));
+    RefCommand save_resources(CommandParser::instance().parseLine("saverc"));
+    MacroCommand *toolbar_menuitem_macro = new MacroCommand();
     toolbar_menuitem_macro->add(reconfig_toolbar);
     toolbar_menuitem_macro->add(save_resources);
 
-    FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
+    RefCommand reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);  
 
-    menu.insert(toolbar_menuitem);
+    menu().insert(toolbar_menuitem);
 
-    menu.insert(new BoolMenuItem(i18n->getMessage(FBNLS::CommonSet, FBNLS::CommonAutoHide,
-                                                  "Auto hide"),
-                                 *m_rc_auto_hide,
-                                 reconfig_toolbar_and_save_resource));
-    menu.insert(new BoolMenuItem("Maximize Over", *m_rc_maximize_over,
-                                 reconfig_toolbar_and_save_resource));
-    menu.insert("Layer...", &tbar.layermenu());
+    menu().insert(new BoolMenuItem(i18n.getMessage(FBNLS::CommonSet, FBNLS::CommonAutoHide,
+                                                    "Auto hide"),
+                                   *m_rc_auto_hide,
+                                   reconfig_toolbar_and_save_resource));
 
-    if (tbar.screen().hasXinerama()) {
+    MacroCommand *visible_macro = new MacroCommand();
+    RefCommand toggle_visible(new ToolbarCommand(*this, &Toolbar::updateVisibleState));
+    visible_macro->add(toggle_visible);
+    visible_macro->add(save_resources);
+    RefCommand toggle_visible_cmd(visible_macro);
+    menu().insert(new BoolMenuItem("Visible", *m_rc_visible, toggle_visible_cmd));
+
+    menu().insert(new BoolMenuItem("Maximize Over", *m_rc_maximize_over,
+                                   reconfig_toolbar_and_save_resource));
+    menu().insert("Layer...", &layermenu());
+
+
+
+    if (screen().hasXinerama()) {
         // TODO: nls (main label plus menu heading
-        menu.insert("On Head...", new XineramaHeadMenu<Toolbar>(
-                                                                *tbar.screen().menuTheme(),
-                                                                tbar.screen(),
-                                                                tbar.screen().imageControl(),
-                                                                *tbar.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                                tbar,
-                                                                "Toolbar on Head"
-                                                                ));
+        menu().insert("On Head...", new XineramaHeadMenu<Toolbar>(*screen().menuTheme(),
+                                                                  screen(),
+                                                                  screen().imageControl(),
+                                                                  *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
+                                                                  *this,
+                                                                  "Toolbar on Head"));
     }
 
     // setup items in placement menu
@@ -814,23 +828,23 @@ void Toolbar::setupMenus() {
         
         {0, 0, "Bottom Right", Toolbar::BOTTOMRIGHT}
     };
-    tbar.placementMenu().setMinimumSublevels(3);
+    placementMenu().setMinimumSublevels(3);
     // create items in sub menu
     for (size_t i=0; i<15; ++i) {
         if (place_menu[i].default_str == 0) {
-            tbar.placementMenu().insert("");
+            placementMenu().insert("");
         } else {
-            const char *i18n_str = i18n->getMessage(place_menu[i].set, 
+            const char *i18n_str = i18n.getMessage(place_menu[i].set, 
                                                     place_menu[i].base,
                                                     place_menu[i].default_str);
-            RefCount<FbTk::Command> setplace(new SetToolbarPlacementCmd(tbar, place_menu[i].placement));
-            tbar.placementMenu().insert(i18n_str, setplace);
+            RefCommand setplace(new SetToolbarPlacementCmd(*this, place_menu[i].placement));
+            placementMenu().insert(i18n_str, setplace);
                                                               
         }
     }
-    menu.insert("Placement", &tbar.placementMenu());
-    tbar.placementMenu().update();
-    menu.update();
+    menu().insert("Placement", &placementMenu());
+    placementMenu().update();
+    menu().update();
 }
 
 void Toolbar::saveOnHead(int head) {
