@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.9 2004/04/19 22:49:25 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.10 2004/05/04 14:33:37 rathnor Exp $
 
 #include "SystemTray.hh"
 
@@ -141,6 +141,7 @@ SystemTray::~SystemTray() {
     // remove us, else fluxbox might delete the memory too
     Fluxbox::instance()->removeAtomHandler(m_handler.get());
     removeAllClients();
+    // ~FbWindow cleans EventManager
 }
 
 void SystemTray::move(int x, int y) {

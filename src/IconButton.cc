@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.19 2004/05/02 20:46:19 fluxgen Exp $
+// $Id: IconButton.cc,v 1.20 2004/05/04 14:33:37 rathnor Exp $
 
 #include "IconButton.hh"
 
@@ -112,7 +112,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
 }
 
 IconButton::~IconButton() {
-
+    // ~FbWindow cleans event manager
 }
 
 

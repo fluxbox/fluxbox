@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.8 2004/04/19 22:46:46 fluxgen Exp $
+// $Id: EventManager.hh,v 1.9 2004/05/04 14:33:38 rathnor Exp $
 
 #include "EventHandler.hh"
 #include <map>
@@ -51,12 +51,15 @@ public:
 
     void registerEventHandler(EventHandler &ev, Window win);
     void unregisterEventHandler(Window win);
+
 private:
     EventManager() { }
     ~EventManager();
     void dispatch(Window win, XEvent &event, bool parent = false);
-    std::map<Window, EventHandler *> m_eventhandlers;
-    std::map<Window, EventHandler *> m_parent;
+
+    typedef std::map<Window, EventHandler *> EventHandlerMap;
+    EventHandlerMap m_eventhandlers;
+    EventHandlerMap m_parent;
 };
 
 } //end namespace FbTk

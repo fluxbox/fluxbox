@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/04:
+  * Fix EventManager bug/memory leak (possibly caused crash) (Simon)
+    EventManager.hh/cc
 *04/05/02:
   * Added new nls item for windowmenu: Layer
     nls/C/Windowmenu.m    

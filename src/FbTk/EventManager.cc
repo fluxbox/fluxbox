@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.11 2004/04/19 22:46:46 fluxgen Exp $
+// $Id: EventManager.cc,v 1.12 2004/05/04 14:33:38 rathnor Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -128,11 +128,19 @@ void EventManager::unregisterEventHandler(Window win) {
 
 void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
     EventHandler *evhand = 0;
-    if (parent)
-        evhand = m_parent[win];
-    else {
+    if (parent) {
+        EventHandlerMap::iterator it = m_parent.find(win);
+        if (it == m_parent.end())
+            return;
+        else
+            evhand = it->second;
+    } else {
         win = getEventWindow(ev);
-        evhand = m_eventhandlers[win];
+        EventHandlerMap::iterator it = m_eventhandlers.find(win);
+        if (it == m_eventhandlers.end())
+            return;
+        else
+            evhand = it->second;
     }
 
     if (evhand == 0)

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.13 2004/01/21 13:34:40 fluxgen Exp $
+// $Id: Container.cc,v 1.14 2004/05/04 14:33:37 rathnor Exp $
 
 #include "Container.hh"
 
@@ -37,7 +37,7 @@ Container::Container(const FbTk::FbWindow &parent):
 }
 
 Container::~Container() {
-
+    // ~FbWindow cleans event manager
 }
 
 void Container::resize(unsigned int width, unsigned int height) {
