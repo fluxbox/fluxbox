@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.83 2002/09/10 10:55:34 fluxgen Exp $
+// $Id: Window.cc,v 1.84 2002/09/10 16:46:15 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3601,6 +3601,10 @@ void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
 
 	if ((net->flags & BaseDisplay::ATTRIB_WORKSPACE) &&
 			(workspace_number !=  net->workspace)) {
+
+		if (getTab()) // disconnect from tab chain before sending it to another workspace
+			getTab()->disconnect();
+
 		screen->reassociateWindow(this, net->workspace, true);
 
 		if (screen->getCurrentWorkspaceID() != net->workspace)
