@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.32 2002/10/29 16:07:27 fluxgen Exp $
+// $Id: Theme.cc,v 1.33 2002/11/03 10:39:25 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -519,10 +519,12 @@ void Theme::loadToolbarStyle() {
 	readDatabaseColor("toolbar.label.textColor", "Toolbar.Label.TextColor",
 		&m_toolbarstyle.l_text,
 		WhitePixel(m_display, m_screennum));
+
 	readDatabaseColor("toolbar.windowLabel.textColor",
 		"Toolbar.WindowLabel.TextColor",
 		&m_toolbarstyle.w_text,
 		WhitePixel(m_display, m_screennum));
+
 	readDatabaseColor("toolbar.clock.textColor", "Toolbar.Clock.TextColor",
 		&m_toolbarstyle.c_text,
 		WhitePixel(m_display, m_screennum));
@@ -915,7 +917,7 @@ void Theme::reconfigure(bool antialias) {
 	XChangeGC(m_display, m_menustyle.hilite_gc,
 			gc_value_mask, &gcv);
 
-	gc_value_mask |= GCFont;
+	gcv.foreground = m_toolbarstyle.l_text.pixel();
 	XChangeGC(m_display, m_toolbarstyle.l_text_gc,
 		gc_value_mask, &gcv);
 
