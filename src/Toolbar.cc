@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.142 2004/06/08 11:47:10 rathnor Exp $
+// $Id: Toolbar.cc,v 1.143 2004/06/10 17:07:58 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -888,10 +888,10 @@ void Toolbar::rearrangeItems() {
 
         last_bw = (*item_it)->borderWidth();
 
-        if ((*item_it)->type() == ToolbarItem::FIXED && (*item_it)->active()) {
+        if ((*item_it)->type() == ToolbarItem::FIXED) {
             fixed_width += (*item_it)->width();
             fixed_items++;
-        } else if ((*item_it)->type() == ToolbarItem::RELATIVE && (*item_it)->active()) {
+        } else if ((*item_it)->type() == ToolbarItem::RELATIVE) {
             relative_items++;
         }
     }
