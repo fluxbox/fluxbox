@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
+*03/04/08:
+   * Fixes in fluxbox-generate_menu (Thanks Han)
 *03/03/30:
    * Using pkg-config instead of xft-config (Thanks Matt Hope)
      xft.m4
