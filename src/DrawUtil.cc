@@ -13,31 +13,49 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.cc,v 1.9 2002/11/25 14:00:20 fluxgen Exp $
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif //HAVE_CONFIG_H
+// $Id: DrawUtil.cc,v 1.10 2002/11/26 15:50:46 fluxgen Exp $
 
 #include "DrawUtil.hh"
-#include "StringUtil.hh"
-#include "i18n.hh"
-
-#include <cstdlib>
-#include <cassert>
-#include <cstdio>
-#include <iostream>
-#include <X11/Xutil.h>
-
-using namespace std;
 
 namespace DrawUtil {
 
+int doAlignment(int max_width, int bevel, Font::FontJustify justify, 
+	const FbTk::Font &font, const char * const text, size_t textlen, size_t &newlen) {
+
+	if (text == 0 || textlen == 0)
+		return 0;
+
+	int l = font.textWidth(text, textlen) + bevel;
+	size_t dlen = textlen;
+	int dx = bevel;
+	if (l > max_width) {
+		for (; dlen > 0; dlen--) {
+			l = font.textWidth(text, dlen) + bevel;
+			if (l<=max_width)
+				break;
+		}
+	}
+
+	newlen = dlen;
+
+	switch (justify) {
+	case DrawUtil::Font::RIGHT:
+		dx = max_width - l - bevel;
+	break;
+	case DrawUtil::Font::CENTER:
+		dx = (max_width - l)/2;
+	break;
+	case DrawUtil::Font::LEFT:
+	break;
+	}
+	
+	return dx;
+}
 
 }; //end namespace DrawUtil

@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.8 2002/11/25 14:00:20 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.9 2002/11/26 15:45:48 fluxgen Exp $
 
 #ifndef DRAWUTIL_HH
 #define DRAWUTIL_HH
 
 #include <X11/Xlib.h>
+#include "Font.hh"
 
 namespace DrawUtil {
 	// note: obsolete!
@@ -37,6 +38,8 @@ namespace DrawUtil {
 		FontJustify justify;
 	};
 
+	int doAlignment(int max_width, int bevel, Font::FontJustify justify, 
+		const FbTk::Font &font, const char * const text, size_t textlen, size_t &newlen);
 }; //end namespace DrawUtil
 
 #endif //DRAWUTIL_HH
