@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.70 2004/07/05 09:40:08 fluxgen Exp $
+// $Id: Menu.cc,v 1.71 2004/07/14 18:30:37 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -283,7 +283,7 @@ void Menu::lower() {
 
 void Menu::nextItem() {
     int old_which_press = which_press;
-
+    m_active_index = -1;
     if (validIndex(old_which_press) && 
         menuitems[old_which_press] != 0) {
         if (menuitems[old_which_press]->submenu()) {
@@ -320,7 +320,7 @@ void Menu::nextItem() {
 void Menu::prevItem() {
 
     int old_which_press = which_press;
-
+    m_active_index = -1;
     if (validIndex(old_which_press)) {
         if (menuitems[old_which_press]->submenu()) {
             // we need to do this explicitly on the menu.window
@@ -980,8 +980,8 @@ int Menu::drawItem(unsigned int index, bool clear, bool render_trans,
 
 
     if (clear) {
-        menu.frame.clearArea(item_x, item_y,
-                             menu.item_w, theme().itemHeight(), False);
+        frameWindow().clearArea(item_x, item_y,
+                                menu.item_w, theme().itemHeight(), False);
     }
 
 
