@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.1 2002/09/07 20:33:33 fluxgen Exp $
+// $Id: AtomHandler.hh,v 1.2 2002/09/08 11:02:08 fluxgen Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -32,14 +32,22 @@ class BScreen;
 class AtomHandler {
 public:
 	virtual ~AtomHandler() { }
+	
 	virtual void initForScreen(const BScreen &screen) = 0;
+	virtual void setupWindow(FluxboxWindow &win) = 0;
+	
 	virtual void updateClientList(const BScreen &screen) = 0;
 	virtual void updateWorkspaceNames(const BScreen &screen) = 0;
 	virtual void updateCurrentWorkspace(const BScreen &screen) = 0;
 	virtual void updateWorkspaceCount(const BScreen &screen) = 0;
-	virtual void updateState(FluxboxWindow *win) = 0;
-	virtual void updateHints(FluxboxWindow *win) = 0;
+	
+	virtual void updateWorkspace(FluxboxWindow &win) = 0;
+	virtual void updateState(FluxboxWindow &win) = 0;
+	virtual void updateHints(FluxboxWindow &win) = 0;
+	
 	virtual bool checkClientMessage(const XClientMessageEvent &ce, BScreen *screen, FluxboxWindow *win) = 0;
+	
+	/// should this object be updated or not?
 	bool update() const { return m_update; }
 protected:
 	void disableUpdate() { m_update = false; }
