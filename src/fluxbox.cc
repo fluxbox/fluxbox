@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.176 2003/07/28 15:06:35 rathnor Exp $
+// $Id: fluxbox.cc,v 1.177 2003/07/28 20:10:05 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -786,51 +786,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
         break;
     case MapRequest: {
-#ifdef SLIT
-#ifdef KDE
-        //Check and see if client is KDE dock applet.
-        //If so add to Slit
-        bool iskdedockapp = false;
-        Atom ajunk;
-        int ijunk;
-        unsigned long *data = (unsigned long *) 0, uljunk;
-        Display *disp = FbTk::App::instance()->display();
-        // Check if KDE v2.x dock applet
-        if (XGetWindowProperty(disp, e->xmaprequest.window,
-                               m_kwm2_dockwindow, 0l, 1l, False,
-                               XA_WINDOW, &ajunk, &ijunk, &uljunk,
-                               &uljunk, (unsigned char **) &data) == Success) {
-					
-            if (data)
-                iskdedockapp = True;
-            XFree((void *) data);
-            data = 0;
-        }
-
-        // Check if KDE v1.x dock applet
-        if (!iskdedockapp) {
-            if (XGetWindowProperty(disp, e->xmaprequest.window,
-                                   m_kwm1_dockwindow, 0l, 1l, False,
-                                   m_kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
-                                   &uljunk, (unsigned char **) &data) == Success && data) {
-                iskdedockapp = (data && data[0] != 0);
-                XFree((void *) data);
-                data = 0;
-            }
-        }
-
-        if (iskdedockapp) {
-            XSelectInput(disp, e->xmaprequest.window, StructureNotifyMask);
-            ScreenList::iterator it = m_screen_list.begin();			
-            for (; (*it) == m_screen_list.back(); ++it) {
-                if ((*it)->slit())
-                    (*it)->slit()->addClient(e->xmaprequest.window);
-            }
-
-            return; // dont create a FluxboxWindow for this one
-        }
-#endif // KDE
-#endif // SLIT
 
 #ifdef DEBUG
         cerr<<"MapRequest for 0x"<<hex<<e->xmaprequest.window<<dec<<endl;
