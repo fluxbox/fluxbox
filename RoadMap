@@ -15,6 +15,7 @@ Some of the interesting new features beyond 0.1.14 that we'd like to work toward
 - Integration of remember patch (or at least the concept)
 - Smarter config menus (ability to modify numeric values)
 - fix Xinerama support again
+- XRandr support
 
 Some minor ones (mainly bugfixes or small things) that I feel like noting are
 (many of these based on feature requests or bug reports from sourceforge):
@@ -49,72 +50,90 @@ Some lower priority ones ("thoughts"/maybes):
 - ability to specify keybinding actions for titlebar buttons (i.e. configurable actions for titlebar buttons).
 
 Known Bugs (to be looked at at some time):
-
+ - Focus acts sloppy on window close/warp, or when decoration-less window is "focused"
+ - Doesn't redraw properly after unshade
 
 ----------------------------------------------------------
 
 So, what's the plan?
 
+Key:
+- => Planned (or not applicable)
+= => Started
++ => Almost done
+* => Done
+
 ----------------------------------------------------------
 Release:      0.9.0
 Approx Date:  23 February, 2003
 Major Features:
- - Layer support                        (Simon)
- - New action system                    (Henrik)
- - Smarter config menus                 (Henrik)
+ * Layer support                        (Simon)
+ * New action system                    (Henrik)
+ * Smarter config menus                 (Henrik)
 Minor Features:
- - Proper initialisation from hints     (Simon)
- - layer configuration things           (Simon)
+ * Proper initialisation from hints     (Simon)
+ * layer configuration things           (Simon)
 Bugfixes/lower priority:
 
 ----------------------------------------------------------
 Release:      0.9.1
-Approx Date:  8 March, 2003
+Approx Date:  7 April, 2003
 Major Features:
- - Toolbar modes                        (Simon)
- - Tabs embedded in titlebar            (Henrik)
- - Tabgroup rewrite                     (Henrik)
+ * Toolbar modes                        (Simon)
+ = Tabs embedded in titlebar            (Henrik)
+ = Tabgroup rewrite                     (Henrik)
  - Most recently used window cycling    (Simon)
 Minor Features:
  - per workspace backgrounds            (Simon)
  - more keybinding actions              (Both)
- - pixmap buttons                       (Henrik)
- - Shaped menu/slit/toolbar             (Henrik)
- - fix outline window moving
+ * fix outline window moving            (Simon)
 Bugfixes/lower priority:
  - Bugs from 0.9.0                      (Both)
  - stop window moving from borders      (Simon)
- - more powerful autogroup matching     (?)
+ - Focus acts sloppy on window close/warp (Simon)
+ - Doesn't redraw properly after unshade (Simon)
 
 ----------------------------------------------------------
 Release:      0.9.2
-Approx Date:  22 March, 2003
+Approx Date:  5 May, 2003
 Major Features:
  - Integration of Remember patch        (Simon)
  - Transparency                         (Henrik)
- - Xinerama                             (Henrik)
 Minor Features:
  - directional focus movement           (?)
  - fix up focus issues                  (Simon)
  - snap to windows                      (Simon)
  - improved command-line help option    (Henrik)
- - nls updating (layers, toolbar)       (Both)
+ - more powerful autogroup matching     (?)
+ - pixmap buttons                       (Henrik)
+ = Shaped menu/slit/toolbar             (Henrik)
 Bugfixes/lower priority:
  - Bugs from 0.9.1                      (Both)
 
 ----------------------------------------------------------
+Release:      0.9.3
+Approx Date:  26 May, 2003
+Major Features:
+ - Xinerama                             (Simon)
+ - XRandr                               (Henrik)
+Minor Features:
+ - nls updating (layers, toolbar)       (Both)
+Bugfixes/lower priority:
+ - Fixes for 0.9.2 and previous         (Both)
+
+----------------------------------------------------------
 Release:      1.0.0 rc1
-Approx Date:  8 April, 2003
+Approx Date:  9 June, 2003
 Major Features:
  None
 Minor Features:
  None
 Bugfixes/lower priority:
- - Fixes for 0.9.2 and previous
+ - Fixes for 0.9.3 and previous
 
 ----------------------------------------------------------
 
 Release:      1.0.0
-Approx Date:  23 April, 2003
+Approx Date:  30 June, 2003
 
 Obviously any remaining bug-fixes and small tweaks
