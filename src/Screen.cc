@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.27 2002/02/20 23:04:51 fluxgen Exp $
+// $Id: Screen.cc,v 1.28 2002/02/21 00:38:51 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -863,6 +863,7 @@ void BScreen::updateNetizenCurrentWorkspace(void) {
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
 		getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32, PropModeReplace,
 			(unsigned char *)&gnome_workspace, 1);
+	updateGnomeClientList();
 	#endif
 	
 	Netizens::iterator it = netizenList.begin();
@@ -871,9 +872,6 @@ void BScreen::updateNetizenCurrentWorkspace(void) {
 		(*it)->sendCurrentWorkspace();
 	}
 
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): Update Current Workspace"<<endl;
-	#endif
 }
 
 
@@ -898,12 +896,9 @@ void BScreen::updateNetizenWorkspaceCount(void) {
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
 		getBaseDisplay()->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32, PropModeReplace,
 			(unsigned char *)&numworkspaces, 1);
-	}
+	}	
 	#endif
 	
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): Update Workspace Count"<<endl;
-	#endif
 }
 
 
@@ -1762,6 +1757,7 @@ void BScreen::initGnomeAtoms(void) {
 		getBaseDisplay()->getGnomeWorkspaceNamesAtom(),
 		getBaseDisplay()->getGnomeHintsAtom(),
 		getBaseDisplay()->getGnomeClientListAtom(),
+		getBaseDisplay()->getGnomeLayerAtom(),
 	};
 
 	//list atoms that we support
