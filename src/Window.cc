@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.111 2003/01/09 22:18:06 fluxgen Exp $
+// $Id: Window.cc,v 1.112 2003/01/10 20:20:37 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -776,7 +776,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         if (tab)
             tab->setPosition();
 		
-        //    if (! moving)
+        // if (! moving)
         send_event = true;
     }
 
@@ -1572,7 +1572,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
-    if (ne.window == client.window && (! ne.override_redirect) && (visible)) {
+    if (ne.window == client.window && !ne.override_redirect && visible) {
         Fluxbox *fluxbox = Fluxbox::instance();
         fluxbox->grab();
         if (! validateClient())
@@ -1734,49 +1734,53 @@ void FluxboxWindow::exposeEvent(XExposeEvent &ee) {
 
 
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
-    if (cr.window == client.window) {
-        if (! validateClient())
-            return;
+    if (cr.window != client.window)
+        return;
 
-        int cx = m_frame.x(), cy = m_frame.y();
-        unsigned int cw = m_frame.width(), ch = m_frame.height();
+    if (! validateClient())
+        return;
 
-        if (cr.value_mask & CWBorderWidth)
-            client.old_bw = cr.border_width;
+    int cx = m_frame.x(), cy = m_frame.y();
+    unsigned int cw = m_frame.width(), ch = m_frame.height();
 
-        if (cr.value_mask & CWX)
-            cx = cr.x;// - frame_mwm_border_w - screen->getBorderWidth();
+    if (cr.value_mask & CWBorderWidth)
+        client.old_bw = cr.border_width;
 
-        if (cr.value_mask & CWY)
-            cy = cr.y - m_frame.titlebar().height(); // - frame_mwm_border_w - screen->getBorderWidth();
+    if (cr.value_mask & CWX)
+        cx = cr.x;// - frame_mwm_border_w - screen->getBorderWidth();
 
-        if (cr.value_mask & CWWidth)
-            cw = cr.width;// + (frame_mwm_border_w * 2);
+    if (cr.value_mask & CWY)
+        cy = cr.y - m_frame.titlebar().height(); // - frame_mwm_border_w - screen->getBorderWidth();
 
-        if (cr.value_mask & CWHeight) {
-            ch = cr.height;
-        }
+    if (cr.value_mask & CWWidth)
+        cw = cr.width;// + (frame_mwm_border_w * 2);
 
-        if (m_frame.x() != cx || m_frame.y() != cy ||
-            m_frame.width() != cw || m_frame.height() != ch) {
-            moveResize(cx, cy, cw, ch);
-        }
+    if (cr.value_mask & CWHeight)
+        ch = cr.height;
 
-        if (cr.value_mask & CWStackMode) {
-            switch (cr.detail) {
-            case Above:
-            case TopIf:
-            default:
-                raise();
-                break;
+    if (m_frame.x() != cx || m_frame.y() != cy ||
+        m_frame.width() != cw || m_frame.height() != ch) {
+        // the request is for client window so we resize the frame to it first
+        frame().resizeForClient(cw, ch);
+        move(cx, cy);
 
-            case Below:
-            case BottomIf:
-                lower();
-                break;
-            }
+    }
+
+    if (cr.value_mask & CWStackMode) {
+        switch (cr.detail) {
+        case Above:
+        case TopIf:
+        default:
+            raise();
+            break;
+
+        case Below:
+        case BottomIf:
+            lower();
+            break;
         }
     }
+
 }
 
 
