@@ -22,11 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.70 2003/06/05 13:21:10 rathnor Exp $
+// $Id: Workspace.cc,v 1.71 2003/06/12 14:30:00 fluxgen Exp $
 
 #include "Workspace.hh"
 
-#include "i18n.hh"
+#include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
@@ -113,24 +113,23 @@ private:
 
 Workspace::GroupList Workspace::m_groups;
 
-Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, unsigned int i):
+Workspace::Workspace(BScreen &scrn, FbTk::MultLayers &layermanager, 
+                     const std::string &name, unsigned int i):
     m_screen(scrn),
     m_lastfocus(0),
     m_clientmenu(*scrn.menuTheme(), scrn.screenNumber(), scrn.imageControl()),
     m_layermanager(layermanager),
-    m_name(""),
+    m_name(name),
     m_id(i) {
 
 
-    m_cascade_x = new int[scrn.numHeads()+1];
-    m_cascade_y = new int[scrn.numHeads()+1];
+    m_cascade_x = new int[scrn.numHeads() + 1];
+    m_cascade_y = new int[scrn.numHeads() + 1];
     for (int i=0; i < scrn.numHeads()+1; i++) {
         m_cascade_x[i] = 32 + scrn.getHeadX(i);
         m_cascade_y[i] = 32 + scrn.getHeadY(i);
     }
     m_clientmenu.setInternalMenu();
-    setName(screen().getNameOfWorkspace(m_id));
-
 }
 
 

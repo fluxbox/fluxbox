@@ -47,7 +47,7 @@ class Workspace:private FbTk::NotCopyable {
 public:
     typedef std::vector<FluxboxWindow *> Windows;
 
-    Workspace(BScreen &screen, FbTk::MultLayers &layermanager, 
+    Workspace(BScreen &screen, FbTk::MultLayers &layermanager, const std::string &name,
               unsigned int workspaceid = 0);
     ~Workspace();
 	
