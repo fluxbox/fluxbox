@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.136 2003/04/26 05:42:35 rathnor Exp $
+// $Id: Screen.cc,v 1.137 2003/04/26 15:00:25 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1731,23 +1731,12 @@ void BScreen::initMenu() {
     I18n *i18n = I18n::instance();
 	
     if (m_rootmenu.get()) {
-        /*        Rootmenus::iterator it = rootmenuList.begin();
-                  Rootmenus::iterator it_end = rootmenuList.end();
-                  for (; it != it_end; ++it) {
-                  if (*it != m_configmenu.get()) {
-                  delete *it;
-                  }
-                  }
-                  rootmenuList.clear();
-        */
-        while (!rootmenuList.empty()) {
-            delete rootmenuList.back();
-            rootmenuList.pop_back();
-        }
-        
+        // since all menus in root is submenus in m_rootmenu
+        // just remove every item in m_rootmenu and then clear rootmenuList
         while (m_rootmenu->numberOfItems())
             m_rootmenu->remove(0); 
-        	
+        rootmenuList.clear();
+
     } else
         m_rootmenu.reset(createMenuFromScreen(*this));
 
@@ -1906,7 +1895,10 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                            "no label defined"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        cerr<<"inserts configmenu: "<<m_configmenu.get()<<endl;
+#ifdef DEBUG
+                        cerr<<__FILE__<<"("<<__FUNCTION__<<
+                            "): inserts configmenu: "<<m_configmenu.get()<<endl;
+#endif // DEBUG
                         menu.insert(str_label.c_str(), m_configmenu.get());
                     }
                 } // end of config                
@@ -2057,6 +2049,8 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     s_a_reconf_macro->add(reconf_cmd);
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
     // create focus menu
+    // we don't set this to internal menu so will 
+    // be deleted toghether with the parent
     FbTk::Menu *focus_menu = createMenuFromScreen(*this);
 
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
@@ -2088,16 +2082,16 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                         save_and_reconfigure));
 
     focus_menu->update();
-    rootmenuList.push_back(focus_menu);
-
 
     menu.insert(i18n->getMessage(
                                  ConfigmenuSet, ConfigmenuFocusModel,
                                  "Focus Model"), 
                 focus_menu);
 #ifdef SLIT
-    if (getSlit() != 0)
+    if (getSlit() != 0) {
+        getSlit()->menu().setInternalMenu();
         menu.insert("Slit", &getSlit()->menu());
+    }
 #endif // SLIT
     menu.insert(i18n->getMessage(
                                  ToolbarSet, ToolbarToolbarTitle,
