@@ -21,13 +21,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspacemenu.cc,v 1.9 2002/09/07 10:21:27 fluxgen Exp $
+// $Id: Workspacemenu.cc,v 1.10 2002/10/25 21:15:49 fluxgen Exp $
 
 #include "Workspacemenu.hh"
 
 #include "i18n.hh"
 #include "Screen.hh"
 #include "Workspace.hh"
+#include "fluxbox.hh"
 
 //use GNU extension
 #ifndef   _GNU_SOURCE
