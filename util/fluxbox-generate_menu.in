@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.20 2004/04/25 16:27:28 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.21 2004/04/28 23:20:52 rathnor Exp $
 
 #
 # Portability notes:
@@ -984,7 +984,7 @@ if find_it_options $MY_BROWSER; then
 else
     [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
-    for browser in firefox mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
+    for browser in firefox mozilla-firefox mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
         if find_it $browser; then
             DEFAULT_BROWSER=$browser
             break
