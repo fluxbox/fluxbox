@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.31 2004/04/18 18:48:58 fluxgen Exp $
+// $Id: Menu.hh,v 1.32 2004/06/07 20:28:49 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -151,7 +151,7 @@ public:
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     inline const MenuTheme &theme() const { return m_theme; }
-    inline unsigned char alpha() const { return m_theme.alpha(); }
+    inline unsigned char alpha() const { return theme().alpha(); }
     inline static Menu *focused() { return s_focused; }
     /// @return menuitem at index
     inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
@@ -174,7 +174,7 @@ protected:
     inline Menu *parent() { return m_parent; }
     inline const Menu *parent() const { return m_parent; }
 
-    void update(FbTk::Subject *) { reconfigure(); }
+    void update(FbTk::Subject *);
 
 private: 
 
@@ -183,8 +183,8 @@ private:
     void startHide();
     void stopHide();
 
-    void renderTransFrame();
-
+    void renderTransp(int x, int y,
+                      unsigned int width, unsigned int height);
     typedef std::vector<MenuItem *> Menuitems;
     const MenuTheme &m_theme;
     Menu *m_parent;
@@ -211,7 +211,8 @@ private:
 
     Drawable m_root_pm;
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
-    FbPixmap m_frame_pm;
+    FbPixmap m_frame_pm, m_real_frame_pm;
+    std::auto_ptr<Transparent> m_transp;
     bool m_need_update;
     Timer m_submenu_timer;
     Timer m_hide_timer;
