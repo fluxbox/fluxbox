@@ -1,0 +1,49 @@
+# fluxbox startup-script:
+#
+# Lines starting with a `#' are ignored.
+
+# You can set your favourite wallpaper here if you don't want
+# to do it from your style.
+#
+# bsetbg -f ~/pictures/wallpaper.png
+#
+# This sets a black background
+
+@pkgbindir@/bsetroot -solid black
+
+# This shows the fluxbox-splash-screen
+# fbsetbg -C /usr/share/fluxbox/splash.jpg
+
+# Other examples. Check man xset for details.
+#
+# Turn off beeps:
+# xset -b
+#
+# Increase the keyboard repeat-rate:
+# xset r rate 195 35
+#
+# Your own fonts-dir:
+# xset +fp $HOME/.font
+#
+# Your favourite mouse cursor:
+# xsetroot -cursor_name right_ptr
+#
+# Change your keymap:
+# xmodmap ~/.Xmodmap
+
+
+
+# Applications you want to run with fluxbox.
+# MAKE SURE THAT APPS THAT KEEP RUNNING HAVE AN ``&'' AT THE END.
+#
+# unclutter -idle 2 &
+# wmnd &
+# wmsmixer -w &
+# idesk &
+
+# And last but not least we start fluxbox.
+# Because it is the last app you have to run it with ``exec'' before it.
+
+exec @pkgbindir@/fluxbox
+# or if you want to keep a log:
+# exec @pkgbindir@/fluxbox -log ~/.fluxbox/log
