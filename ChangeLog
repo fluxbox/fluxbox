@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*04/12/30:
+  * Fixed "remove last workspace" bug (Henrik)
+    Screen.cc
 *04/12/28:
   * Fixed minor shape bug (Henrik)
     Window.cc
