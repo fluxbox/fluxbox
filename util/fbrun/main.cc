@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.11 2003/12/01 18:58:53 fluxgen Exp $
+// $Id: main.cc,v 1.12 2004/09/03 14:18:48 akir Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -43,6 +43,7 @@ void showUsage(const char *progname) {
         "   -h [height]                 Window height in pixels"<<endl<<
         "   -display [display string]   Display name"<<endl<<
         "   -pos [x] [y]                Window position in pixels"<<endl<<
+        "   -pos nearmouse              Window position near mouse"<<endl<<
         "   -fg [color name]            Foreground text color"<<endl<<
         "   -bg [color name]            Background color"<<endl<<
         "   -na                         Disable antialias"<<endl<<
@@ -56,6 +57,7 @@ int main(int argc, char **argv) {
     size_t width = 200, height = 32; // default size of window
     bool set_height = false, set_width=false; // use height/width of font by default
     bool set_pos = false; // set position
+    bool near_mouse = false; // popup near mouse
     bool antialias = true; // antialias text
     string fontname; // font name
     string title("Run program"); // default title
@@ -84,6 +86,10 @@ int main(int argc, char **argv) {
             x = atoi(argv[++i]);
             y = atoi(argv[++i]);
             set_pos = true;
+        } else if (strcmp(argv[i], "-nearmouse") == 0) {
+            set_pos = true;
+            near_mouse = true;
+            i++;
         } else if (strcmp(argv[i], "-fg") == 0 && i+1 < argc) {
             foreground = argv[++i];
         } else if (strcmp(argv[i], "-bg") == 0 && i+1 < argc) {
@@ -139,7 +145,27 @@ int main(int argc, char **argv) {
         fbrun.setTitle(title);
         fbrun.setText(text);
         fbrun.show();
-		
+	
+        if (near_mouse) {
+            
+            int wx, wy;
+            unsigned int mask;
+            Window ret_win;
+            Window child_win;
+            
+            Display* dpy = FbTk::App::instance()->display();
+            
+            if (XQueryPointer(dpy, DefaultRootWindow(dpy), 
+                              &ret_win, &child_win,
+                              &x, &y, &wx, &wy, &mask)) {
+
+                if ( x - (fbrun.width()/2) > 0 )
+                    x-= fbrun.width()/2;
+                if ( y - (fbrun.height()/2) > 0 )
+                    y-= fbrun.height()/2;
+            }
+        }
+        
         if (set_pos)
             fbrun.move(x, y);
 		

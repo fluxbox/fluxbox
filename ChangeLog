@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/03:
+  * Added -nearmouse to FbRun (Mathias)
+    main.cc
 *04/09/02:
   * Fix crash when in windowmenu->submenu and closing the app (Mathias)
     Remember.cc
