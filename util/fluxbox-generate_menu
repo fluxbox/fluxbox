@@ -1,6 +1,8 @@
 #!/bin/sh
+#
 # generate_menu for Fluxbox
-# Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+#
+# Copyright (c) 2002 Han Boetes <han@mijncomputer.nl>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -19,6 +21,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
+#
+# $Id: fluxbox-generate_menu,v 1.10 2002/11/12 19:19:14 fluxgen Exp $
 
 [ `id -u` -eq 0 ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
@@ -31,16 +35,17 @@ Usage: fluxbox-generate_menu [-kg] [-o /path]
 	 [-p /path] [-m menu-title]
 Options:
 
-    -t	Favourite terminal.
+    -t	Favourite terminal
+    -b  Favourite browser
     -k	Insert a kde menu
     -g	Add a gnome menu
     -o	Outputfile; default is ~/.fluxbox/menu
     -m	Menu-title; default is "Fluxbox"
-
+    -r  Don't remove empty menu-entries; Better for templates.
     -h	Display this help
     -a	Display the authors of this script
 
-  only for packagers:
+  Only for packagers:
 
     -p	Package-datadir; default is /usr/share
     -n	Gnome-datadir; default is Package-datadir
@@ -87,13 +92,15 @@ append_menu() {
 }
 
 append_submenu() {
-    echo >> ${FILENAME}
+    # empty line for readability
+    [ ${REMOVE} ] && echo >> ${FILENAME}
     append_menu "[submenu] ($1)"
 }
 
 append_menu_end() {
     append_menu "[end]"
-    echo >> ${FILENAME}
+    # empty line for readability
+    [ ${REMOVE} ] && echo >> ${FILENAME}
 }
 
 menu_entry() {
@@ -120,18 +127,28 @@ normal_find() {
     done
 }
 
+clean_up() {
+# -e "/^$/d" -e "/^$/d"
+cat ${FILENAME} | sed  -e "/^\[submenu]/{
+N
+/^\[submenu].*\n\[end]/d
+}" > ${FILENAME}.tmp
+mv -f ${FILENAME}.tmp ${FILENAME}
+}
 
 # Get options.
-while getopts ":khagt:p:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
+while getopts ":khragb:t:p:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
     case "${COMMAND_LINE_ARGUMENT}" in
 	k) KDEMENU=yes ;;
 	g) GNOMEMENU=yes ;;
 	t) MY_TERM=${OPTARG};;
+	b) MY_BROWSER=${OPTARG};;
 	o) FILENAME=${OPTARG} ;;
 	p) PKGDATADIR=${OPTARG} ;;
 	n) GPKGDATADIR=${OPTARG} ;;
 	q) KPKGDATADIR=${OPTARG} ;;
 	m) MENUTITLE=${OPTARG} ;;
+	r) REMOVE=no ;;
 	h) display_usage ; exit 0 ;;
 	a) display_authors ; exit 0 ;;
 	*) display_help ; exit 1 ;;
@@ -154,12 +171,19 @@ fi
 
 # backup menu
 if [ -w ${FILENAME} ]; then
+    if [ -f ${FILENAME}.firstbak ];then
+	cp ${FILENAME} ${FILENAME}.firstbak
+    fi
     mv ${FILENAME} ${FILENAME}.bak
 fi
 
 #packagedatadir
 if [ ! -d "${PKGDATADIR}" ]; then
-    PKGDATADIR=/usr/share
+    if [ `uname` = "Linux" ];then 
+	PKGDATADIR=/usr/share
+    else
+	PKGDATADIR=/usr/local/share
+    fi
 fi
 
 #gnome packagedatadir
@@ -192,6 +216,21 @@ else
     DEFAULT_TERM=$MY_TERM
 fi
 
+
+# find the default browser
+find_it $MY_BROWSER
+if [ $? -ne 0 ];then
+    [ -n "$MY_BROWSER" ] && echo "Warning: you choose an invalid browser." > /dev/stderr
+    #The precise order is up for debate.
+    for browser in opera phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
+	if find_it $browser; then
+	    DEFAULT_BROWSER=$browser
+	    break
+	fi
+    done
+else
+    DEFAULT_BROWSER=$MY_BROWSER
+fi
 
 
 # a unix system without any terms. that's odd
@@ -387,11 +426,52 @@ echo "[begin] (${MENUTITLE})" > ${FILENAME}
 
 
 append "[exec]	  (${DEFAULT_TERM}) {${DEFAULT_TERM}}"
-find_it nedit		append "[exec]	 (nedit) {nedit}"
+
+case "$DEFAULT_BROWSER" in
+    links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} fluxbox.org}" ;;
+    mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_BROWSER}}" ;;
+    konqueror) append "[exec] (konqueror) {kfmclient openProfile webbrowsing}" ;;
+    opera) append "[exec] (opera) {env QT_XFT=true opera}" ;;
+esac
+
+find_it fbrun		append "[exec]	 (Run) {fbrun}"
 
 
 append_submenu ${TERMINALMENU}
     normal_find xterm gnome-terminal Eterm konsole aterm rxvt
+append_menu_end
+
+
+append_submenu ${NETMENU}
+    append_submenu ${BROWSERMENU}
+        normal_find netscape galeon mozilla dillo
+	find_it opera	    append "[exec]   (opera) {env QT_XFT=true opera}"
+	find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
+	find_it links	    append "[exec]   (links) {${DEFAULT_TERM} -e links fluxbox.org}"
+	find_it w3m	    append "[exec]   (w3m) {${DEFAULT_TERM} -e w3m fluxbox.org}"
+	find_it lynx	    append "[exec]   (lynx) {${DEFAULT_TERM} -e lynx fluxbox.org}"
+    append_menu_end
+    
+    append_submenu IM
+        normal_find gaim kopete gnomemeeting 
+        find_it licq	    append "[exec]   (licq) {env QT_XFT=true licq}"
+    append_menu_end
+
+    append_submenu Mail
+        normal_find sylpheed kmail evolution 
+        find_it mutt	    append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
+    append_menu_end
+
+    append_submenu IRC
+        normal_find xchat  
+        find_it irssi	    append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
+        find_it BitchX	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}"
+        [ $? -ne 0 ] && \
+          find_it bitchx	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
+        find_it ircii	    append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
+    append_menu_end
+
+    normal_find gftp pan
 append_menu_end
 
 
@@ -400,51 +480,23 @@ append_submenu ${EDITORMENU}
 append_menu_end
 
 
-append_submenu ${BROWSERMENU}
-    normal_find netscape galeon mozilla dillo
-	find_it opera	    append "[exec]   (opera) {env QT_XFT=true opera}"
-	find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
-	find_it links	    append "[exec]   (links) {${DEFAULT_TERM} -e links fluxbox.org}"
-	find_it w3m	    append "[exec]   (w3m) {${DEFAULT_TERM} -e w3m fluxbox.org}"
-	find_it lynx	    append "[exec]   (lynx) {${DEFAULT_TERM} -e lynx fluxbox.org}"
-append_menu_end
-
-
-append_submenu ${NETMENU}
-normal_find realplay gaim sylpheed kmail gnomemeeting evolution gftp pan xchat kopete
-	find_it licq	    append "[exec]   (licq) {env QT_XFT=true licq}"
-	find_it mutt	    append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
-	find_it irssi	    append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
-	find_it BitchX	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}"
-	[ $? -ne 0 ] && \
-	find_it bitchx	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
-	find_it ircii	    append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
-append_menu_end
-
-
 append_submenu ${MULTIMEDIAMENU}
        append_submenu ${GRAPHICMENU}
                normal_find gimp xv gqview xpaint kpaint kiconedit xscreensaver-demo
-	       find_it gears 	        append "[exec] (Mesa gears) {gears}"
+	       find_it gears	        append "[exec] (Mesa gears) {gears}"
 	       find_it morph3d 	        append "[exec] (Mesa morph) {morph3d}"
 	       find_it reflect 	        append "[exec] (Mesa reflect) {reflect}"
        append_menu_end
 
        append_submenu ${MUSICMENU}
                normal_find xmms gqmpeg xmixer gmix kmix grecord \
-		   kmidi xplaycd soundtracker grip
+		   kmidi xplaycd soundtracker grip easytag
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
        append_menu_end
 
-       append_submenu ${GAMESMENU}
-           normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
-	       gnect mahjongg gnomine gnome-stones gnometris gnotravex \
-	       gnotski iagno knights same-gnome xboard freecell pysol \
-	       gtali tuxracer xpenguins xsnow xeyes xpenguins
-       append_menu_end
 
        append_submenu ${MISCMENU}
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd 
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay 
 	   find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
@@ -464,11 +516,18 @@ append_submenu ${OFFICEMENU}
     normal_find abiword kword wordperfect katoob acroread xpdf
 append_menu_end
 
+append_submenu ${GAMESMENU}
+    normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
+        gnect mahjongg gnomine gnome-stones gnometris gnotravex \
+	gnotski iagno knights same-gnome xboard freecell pysol \
+	gtali tuxracer xpenguins xsnow xeyes xpenguins \
+	quake2 quake3
+append_menu_end
 
 # gnome menu
 if [ -d ${GPKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
     append_submenu ${GNOMEMENUTEXT}
-    for a in `ls ${GPKGDATADIR}/gnome/apps`; do
+    for a in ${GPKGDATADIR}/gnome/apps/* ; do
 	if [ -d ${GPKGDATADIR}/gnome/apps/"${a}" ] ; then
 	    append_submenu "${a}"
 	    menu_entry_dir "${GPKGDATADIR}/gnome/apps/${a}"
@@ -482,10 +541,10 @@ fi
 # kde submenu
 if [ -d ${KPKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
     append_submenu ${KDEMENUTEXT}
-    for a in `ls ${KPKGDATADIR}/applnk/`; do
+    for a in ${KPKGDATADIR}/applnk/* ; do
 	if [ -d ${KPKGDATADIR}/applnk/"${a}" ]; then
 	    append_submenu "${a}"
-	    for x in `ls ${KPKGDATADIR}/applnk/"${a}"`; do
+	    for x in ${KPKGDATADIR}/applnk/"${a}"/*; do
 		if [ -d ${KPKGDATADIR}/applnk/"${a}"/"${x}" ]; then
 		    append_submenu "${x}"
 		    menu_entry_dir ${KPKGDATADIR}/applnk/"${a}"/"${x}"
@@ -500,27 +559,41 @@ if [ -d ${KPKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
     append_menu_end
 fi
 
-        append_submenu ${FBSETTINGSMENU}
-	    append "[workspaces]   (${WORKSPACEMENU})"
+#        append_submenu ${FBSETTINGSMENU}
+         append_submenu Fluxbox-menu
+	    append "[config] (${CONFIGUREMENU})"
+
 
 	    append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
-	        append "[stylesdir] (~/.fluxbox/styles)"
 		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
+	        append "[stylesdir] (~/.fluxbox/styles)"
+		
 	    append_menu_end
 
-	    append "[config] (${CONFIGUREMENU})"
-	    append "[reconfig] (${RELOADITEM})"
+	    append "[workspaces]   (${WORKSPACEMENU})"
 
-	    find_it fluxconf append "[exec] (Fluxconf) {fluxconf}"
-
+	append_submenu Tools
+	    find_it fluxconf append "[exec] (FluxConf) {fluxconf}"
+	    find_it fluxkeys append "[exec] (FluxKeys) {fluxkeys}"
+	    find_it fluxmenu append "[exec] (FluxMenu) {fluxmenu}"
 	    # if gxmessage exitst use it; else use xmessage
 	    find_it gxmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
 	    [ $? -ne 0 ] && \
 		find_it xmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+            find_it fbrun append "[exec] (Run) {fbrun}"
 	append_menu_end
 
+	    append "[reconfig] (${RELOADITEM})"
+            append "[restart] (${RESTARTITEM})"
+            append "[exit] (${EXITITEM})"
 
-append "[restart] (${RESTARTITEM})"
-append "[exit] (${EXITITEM})"
+	append_menu_end
 
 append_menu_end
+
+# this function removes empty menu items. It can not yet  remove  nested
+# empty submenus :\
+
+if [ ! ${REMOVE} ];then
+    clean_up
+fi
