@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.25 2002/11/15 12:13:56 fluxgen Exp $
+// $Id: Slit.cc,v 1.26 2002/11/15 12:31:58 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -153,6 +153,7 @@ Slit::~Slit() {
 
 
 void Slit::addClient(Window w) {
+
 	//Can't add non existent window
 	if (w == None)
 		return;
@@ -214,6 +215,7 @@ void Slit::addClient(Window w) {
 	}
 	XWindowAttributes attrib;
 #ifdef KDE
+	Fluxbox *fluxbox = Fluxbox::instance();
 	//Check and see if new client is a KDE dock applet
 	//If so force reasonable size
 	bool iskdedockapp=false;
