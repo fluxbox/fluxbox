@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.88 2003/05/24 13:13:22 rathnor Exp $
+// $Id: Toolbar.cc,v 1.89 2003/06/11 14:51:22 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -381,7 +381,7 @@ void Toolbar::delAllIcons() {
     delete deleted;
 }
     
-bool Toolbar::containsIcon(FluxboxWindow &win) {
+bool Toolbar::containsIcon(const FluxboxWindow &win) const {
     return (m_iconbar->findIcon(&win) != 0);
 }
 

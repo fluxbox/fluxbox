@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.31 2003/05/15 11:17:27 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.32 2003/06/11 14:50:57 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -72,11 +72,11 @@ public:
     void delIcon(FluxboxWindow *w);
     /// remove all icons
     void delAllIcons();
-    bool containsIcon(FluxboxWindow &win);
 
     void enableIconBar();
     void disableIconBar();
 
+    bool containsIcon(const FluxboxWindow &win) const;
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
     inline FbTk::Menu &placementMenu() { return m_placementmenu; }
