@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.21 2002/05/15 09:35:49 fluxgen Exp $
+// $Id: Theme.cc,v 1.22 2002/07/19 21:45:00 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -104,7 +104,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 	m_opgc = XCreateGC(m_display, rootwindow,
 		GCForeground | GCFunction | GCSubwindowMode, &gcv);
 
-	gcv.foreground = m_windowstyle.l_text_focus.getPixel();
+	gcv.foreground = m_windowstyle.l_text_focus.pixel();
 	if (m_windowstyle.font.fontstruct)
 		gcv.font = m_windowstyle.font.fontstruct->fid;
 		
@@ -112,7 +112,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 		XCreateGC(m_display, rootwindow,
 			gc_value_mask, &gcv);
 	
-	gcv.foreground = m_windowstyle.l_text_unfocus.getPixel();
+	gcv.foreground = m_windowstyle.l_text_unfocus.pixel();
 	if (m_windowstyle.font.fontstruct)
 		gcv.font = m_windowstyle.font.fontstruct->fid;
 	m_windowstyle.l_text_unfocus_gc =
@@ -120,7 +120,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 				gc_value_mask, &gcv);
 	
 	//---- Tab 
-	gcv.foreground = m_windowstyle.tab.l_text_focus.getPixel();
+	gcv.foreground = m_windowstyle.tab.l_text_focus.pixel();
 	if (m_windowstyle.tab.font.fontstruct)
 		gcv.font = m_windowstyle.tab.font.fontstruct->fid;
 	
@@ -128,7 +128,7 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 		XCreateGC(m_display, rootwindow,
 			gc_value_mask, &gcv);
 	
-	gcv.foreground = m_windowstyle.tab.l_text_unfocus.getPixel();
+	gcv.foreground = m_windowstyle.tab.l_text_unfocus.pixel();
 	m_windowstyle.tab.l_text_unfocus_gc =
 		XCreateGC(m_display, rootwindow,
 			gc_value_mask, &gcv);
@@ -136,24 +136,24 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 	//---end Tab			
 	
 				
-	gcv.foreground = m_windowstyle.b_pic_focus.getPixel();
+	gcv.foreground = m_windowstyle.b_pic_focus.pixel();
 	m_windowstyle.b_pic_focus_gc =
 		XCreateGC(m_display, rootwindow,
 				GCForeground, &gcv);
 
-	gcv.foreground = m_windowstyle.b_pic_unfocus.getPixel();
+	gcv.foreground = m_windowstyle.b_pic_unfocus.pixel();
 	m_windowstyle.b_pic_unfocus_gc =
 		XCreateGC(m_display, rootwindow,
 				GCForeground, &gcv);
 
-	gcv.foreground = m_menustyle.t_text.getPixel();
+	gcv.foreground = m_menustyle.t_text.pixel();
 	if (m_menustyle.titlefont.getFontStruct())
 		gcv.font = m_menustyle.titlefont.getFontStruct()->fid;
 	m_menustyle.t_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.f_text.getPixel();
+	gcv.foreground = m_menustyle.f_text.pixel();
 	if (m_menustyle.framefont.getFontStruct())
 		gcv.font = m_menustyle.framefont.getFontStruct()->fid;
 
@@ -161,39 +161,39 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.h_text.getPixel();
+	gcv.foreground = m_menustyle.h_text.pixel();
 	m_menustyle.h_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.d_text.getPixel();
+	gcv.foreground = m_menustyle.d_text.pixel();
 	m_menustyle.d_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.hilite.getColor()->getPixel();
+	gcv.foreground = m_menustyle.hilite.color().pixel();
 	m_menustyle.hilite_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.l_text.getPixel();
+	gcv.foreground = m_toolbarstyle.l_text.pixel();
 	if (m_toolbarstyle.font.fontstruct)
 		gcv.font = m_toolbarstyle.font.fontstruct->fid;
 	m_toolbarstyle.l_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.w_text.getPixel();
+	gcv.foreground = m_toolbarstyle.w_text.pixel();
 	m_toolbarstyle.w_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.c_text.getPixel();
+	gcv.foreground = m_toolbarstyle.c_text.pixel();
 	m_toolbarstyle.c_text_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.b_pic.getPixel();
+	gcv.foreground = m_toolbarstyle.b_pic.pixel();
 	m_toolbarstyle.b_pic_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
@@ -729,7 +729,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		sprintf(colorclass, "%s.Color", rclass);
 		sprintf(colorname,	"%s.color", rname);
 		
-		if (!readDatabaseColor(colorname, colorclass, texture->getColor(),
+		if (!readDatabaseColor(colorname, colorclass, &texture->color(),
 				default_pixel))
 			retval = false;
 
@@ -737,51 +737,50 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		sprintf(colorclass, "%s.ColorTo", rclass);
 		sprintf(colorname,	"%s.colorTo", rname);
 
-		readDatabaseColor(colorname, colorclass, texture->getColorTo(),
-			default_pixel);
+		readDatabaseColor(colorname, colorclass, &texture->colorTo(), default_pixel);
 #endif // INTERLACE
 
 		delete [] colorclass;
 		delete [] colorname;
 
-		if ((! texture->getColor()->isAllocated()) ||
+		if ((! texture->color().isAllocated()) ||
 				(texture->getTexture() & BImage::FLAT))
 			return retval;
 
 		XColor xcol;
 
-		xcol.red = (unsigned int) (texture->getColor()->getRed() +
-			(texture->getColor()->getRed() >> 1));
+		xcol.red = (unsigned int) (texture->color().red() +
+			(texture->color().red() >> 1));
 		if (xcol.red >= 0xff) xcol.red = 0xffff;
 		else xcol.red *= 0xff;
-		xcol.green = (unsigned int) (texture->getColor()->getGreen() +
-			(texture->getColor()->getGreen() >> 1));
+		xcol.green = (unsigned int) (texture->color().green() +
+			(texture->color().green() >> 1));
 		if (xcol.green >= 0xff) xcol.green = 0xffff;
 		else xcol.green *= 0xff;
-		xcol.blue = (unsigned int) (texture->getColor()->getBlue() +
-			(texture->getColor()->getBlue() >> 1));
+		xcol.blue = (unsigned int) (texture->color().blue() +
+			(texture->color().blue() >> 1));
 		if (xcol.blue >= 0xff) xcol.blue = 0xffff;
 		else xcol.blue *= 0xff;
 
 		if (! XAllocColor(m_display, m_colormap, &xcol))
 			xcol.pixel = 0;
 
-		texture->getHiColor()->setPixel(xcol.pixel);
+		texture->hiColor().setPixel(xcol.pixel);
 
 		xcol.red =
-			(unsigned int) ((texture->getColor()->getRed() >> 2) +
-			(texture->getColor()->getRed() >> 1)) * 0xff;
+			(unsigned int) ((texture->color().red() >> 2) +
+			(texture->color().red() >> 1)) * 0xff;
 		xcol.green =
-			(unsigned int) ((texture->getColor()->getGreen() >> 2) +
-			(texture->getColor()->getGreen() >> 1)) * 0xff;
+			(unsigned int) ((texture->color().green() >> 2) +
+			(texture->color().green() >> 1)) * 0xff;
 		xcol.blue =
-			(unsigned int) ((texture->getColor()->getBlue() >> 2) +
-			(texture->getColor()->getBlue() >> 1)) * 0xff;
+			(unsigned int) ((texture->color().blue() >> 2) +
+			(texture->color().blue() >> 1)) * 0xff;
 
 		if (! XAllocColor(m_display, m_colormap, &xcol))
 			xcol.pixel = 0;
 
-		texture->getLoColor()->setPixel(xcol.pixel);
+		texture->loColor().setPixel(xcol.pixel);
 	} else if (texture->getTexture() & BImage::GRADIENT) {
 		int clen = strlen(rclass) + 10, nlen = strlen(rname) + 10;
 
@@ -794,12 +793,11 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		sprintf(colortoclass, "%s.ColorTo", rclass);
 		sprintf(colortoname,	"%s.colorTo", rname);
 
-		if (!readDatabaseColor(colorname, colorclass, texture->getColor(),
+		if (!readDatabaseColor(colorname, colorclass, &texture->color(),
 				default_pixel))
 			retval = false;	//report failure in loading
 				
-		readDatabaseColor(colortoname, colortoclass, texture->getColorTo(),
-				default_pixel);
+		readDatabaseColor(colortoname, colortoclass, &texture->colorTo(), default_pixel);
 
 		delete [] colorclass;
 		delete [] colorname;
@@ -928,80 +926,80 @@ void Theme::reconfigure() {
 	XChangeGC(m_display, m_opgc,
 		GCForeground | GCFunction | GCSubwindowMode, &gcv);
 
-	gcv.foreground = m_windowstyle.l_text_focus.getPixel();
+	gcv.foreground = m_windowstyle.l_text_focus.pixel();
 	if (m_windowstyle.font.fontstruct)
 		gcv.font = m_windowstyle.font.fontstruct->fid;
 		
 	XChangeGC(m_display, m_windowstyle.l_text_focus_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_windowstyle.l_text_unfocus.getPixel();
+	gcv.foreground = m_windowstyle.l_text_unfocus.pixel();
 	XChangeGC(m_display, m_windowstyle.l_text_unfocus_gc,
 		gc_value_mask, &gcv);
 
 	//---- Tab 
-	gcv.foreground = m_windowstyle.tab.l_text_focus.getPixel();
+	gcv.foreground = m_windowstyle.tab.l_text_focus.pixel();
 	if (m_windowstyle.tab.font.fontstruct)
 		gcv.font = m_windowstyle.tab.font.fontstruct->fid;
 	
 	XChangeGC(m_display, m_windowstyle.tab.l_text_focus_gc,
 		gc_value_mask, &gcv);
 	
-	gcv.foreground = m_windowstyle.tab.l_text_unfocus.getPixel();
+	gcv.foreground = m_windowstyle.tab.l_text_unfocus.pixel();
 	XChangeGC(m_display, m_windowstyle.tab.l_text_unfocus_gc,
 		gc_value_mask, &gcv);
 	
 	//--- end tab
 		
-	gcv.foreground = m_windowstyle.b_pic_focus.getPixel();
+	gcv.foreground = m_windowstyle.b_pic_focus.pixel();
 	XChangeGC(m_display, m_windowstyle.b_pic_focus_gc,
 		GCForeground, &gcv);
 
-	gcv.foreground = m_windowstyle.b_pic_unfocus.getPixel();
+	gcv.foreground = m_windowstyle.b_pic_unfocus.pixel();
 	XChangeGC(m_display, m_windowstyle.b_pic_unfocus_gc,
 		GCForeground, &gcv);
 
-	gcv.foreground = m_menustyle.t_text.getPixel();
+	gcv.foreground = m_menustyle.t_text.pixel();
 	if (m_menustyle.titlefont.getFontStruct())
 		gcv.font = m_menustyle.titlefont.getFontStruct()->fid;
 	XChangeGC(m_display, m_menustyle.t_text_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.f_text.getPixel();	
+	gcv.foreground = m_menustyle.f_text.pixel();	
 	if (m_menustyle.framefont.getFontStruct())
 		gcv.font = m_menustyle.framefont.getFontStruct()->fid;
 		
 	XChangeGC(m_display, m_menustyle.f_text_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.h_text.getPixel();
+	gcv.foreground = m_menustyle.h_text.pixel();
 	XChangeGC(m_display, m_menustyle.h_text_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.d_text.getPixel();
+	gcv.foreground = m_menustyle.d_text.pixel();
 	XChangeGC(m_display, m_menustyle.d_text_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_menustyle.hilite.getColor()->getPixel();
+	gcv.foreground = m_menustyle.hilite.color().pixel();
 	XChangeGC(m_display, m_menustyle.hilite_gc,
 			gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.l_text.getPixel();
+	gcv.foreground = m_toolbarstyle.l_text.pixel();
 	if (m_toolbarstyle.font.fontstruct)
 		gcv.font = m_toolbarstyle.font.fontstruct->fid;
 		
 	XChangeGC(m_display, m_toolbarstyle.l_text_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.w_text.getPixel();
+	gcv.foreground = m_toolbarstyle.w_text.pixel();
 	XChangeGC(m_display, m_toolbarstyle.w_text_gc,
 		gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.c_text.getPixel();
+	gcv.foreground = m_toolbarstyle.c_text.pixel();
 	XChangeGC(m_display, m_toolbarstyle.c_text_gc,
 			gc_value_mask, &gcv);
 
-	gcv.foreground = m_toolbarstyle.b_pic.getPixel();
+	gcv.foreground = m_toolbarstyle.b_pic.pixel();
 	XChangeGC(m_display, m_toolbarstyle.b_pic_gc,
 			gc_value_mask, &gcv);
 			
