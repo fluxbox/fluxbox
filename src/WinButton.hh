@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.hh,v 1.3 2003/04/25 17:29:58 fluxgen Exp $
+/// $Id: WinButton.hh,v 1.4 2003/04/28 22:39:12 fluxgen Exp $
 
 #include "Button.hh"
 #include "Observer.hh"
 
 class FluxboxWindow;
+class WinButtonTheme;
 
 /// draws and handles basic window button graphic
 class WinButton:public FbTk::Button, public FbTk::Observer {
@@ -32,6 +33,7 @@ public:
     /// draw type for the button
     enum Type {MAXIMIZE, MINIMIZE, SHADE, STICK, CLOSE};
     WinButton(const FluxboxWindow &listen_to, 
+              WinButtonTheme &theme,
               Type buttontype, const FbTk::FbWindow &parent, int x, int y, 
               unsigned int width, unsigned int height);
     /// override for drawing
@@ -44,4 +46,6 @@ private:
     void drawType();
     Type m_type; ///< the button type
     const FluxboxWindow &m_listen_to;
+    WinButtonTheme &m_theme;
+
 };
