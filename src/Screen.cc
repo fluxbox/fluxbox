@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.37 2002/03/19 14:30:42 fluxgen Exp $
+// $Id: Screen.cc,v 1.38 2002/03/23 15:14:45 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -728,11 +728,11 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 }
 
 
-FluxboxWindow *BScreen::getIcon(int index) {
-	if (index >= 0 && index < iconList.size())
+FluxboxWindow *BScreen::getIcon(unsigned int index) {
+	if (index < iconList.size())
 		return iconList[index];
 
-	return (FluxboxWindow *) 0;
+	return 0;
 }
 
 
@@ -782,8 +782,8 @@ int BScreen::removeLastWorkspace(void) {
 }
 
 
-void BScreen::changeWorkspaceID(int id) {
-	if (! current_workspace || id >= workspacesList.size() || id < 0)
+void BScreen::changeWorkspaceID(unsigned int id) {
+	if (! current_workspace || id >= workspacesList.size())
 		return;
 	
 	if (id != current_workspace->getWorkspaceID()) {
@@ -819,13 +819,10 @@ void BScreen::changeWorkspaceID(int id) {
 	updateNetizenCurrentWorkspace();
 }
 
-void BScreen::sendToWorkspace(int id) {
-	 BScreen::sendToWorkspace(id, true);
-}
 
-void BScreen::sendToWorkspace(int id, bool changeWS) {
+void BScreen::sendToWorkspace(unsigned int id, bool changeWS) {
 	FluxboxWindow *win;
-	if (! current_workspace || id >= workspacesList.size() || id < 0)
+	if (! current_workspace || id >= workspacesList.size())
 		return;
 
 	if (id != current_workspace->getWorkspaceID()) {
@@ -1084,9 +1081,9 @@ void BScreen::addWorkspaceName(char *name) {
 }
 
 
-void BScreen::getNameOfWorkspace(int id, char **name) {
-	if (id >= 0 && id < workspaceNames.size()) {
-		const char *wkspc_name = workspaceNames[id].c_str();
+void BScreen::getNameOfWorkspace(unsigned int workspace, char **name) {
+	if (workspace < workspaceNames.size()) {
+		const char *wkspc_name = workspaceNames[workspace].c_str();
 
 		if (wkspc_name)
 			*name = StringUtil::strdup(wkspc_name);
@@ -1095,10 +1092,10 @@ void BScreen::getNameOfWorkspace(int id, char **name) {
 }
 
 
-void BScreen::reassociateWindow(FluxboxWindow *w, int wkspc_id, Bool ignore_sticky) {
+void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
 	if (! w) return;
 
-	if (wkspc_id == -1)
+	if (wkspc_id >= workspaceNames.size())
 		wkspc_id = current_workspace->getWorkspaceID();
 
 	if (w->getWorkspaceNumber() == wkspc_id)
@@ -1807,7 +1804,7 @@ void BScreen::rightWorkspace(const int delta) {
 // Goes to the workspace "left" of the current
 //--------------------------------------------
 void BScreen::leftWorkspace(const int delta) {
-	if (getCurrentWorkspaceID() >= delta)
+	if (getCurrentWorkspaceID() >= static_cast<unsigned int>(delta))
 		changeWorkspaceID(getCurrentWorkspaceID()-delta);
 }
 

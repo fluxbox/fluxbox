@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.10 2002/02/07 14:45:02 fluxgen Exp $
+// $Id: IconBar.cc,v 1.11 2002/03/23 15:14:45 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -239,7 +239,7 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	
 	FluxboxWindow *fluxboxwin = obj->getFluxboxWin();
 	Window iconwin = obj->getIconWin();
-	char *title = *fluxboxwin->getIconTitle();
+	const char *title = fluxboxwin->getIconTitle();
 	unsigned int title_len = strlen(title);
 	unsigned int title_text_w;
 

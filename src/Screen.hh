@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.24 2002/03/19 14:30:42 fluxgen Exp $
+// $Id: Screen.hh,v 1.25 2002/03/23 15:14:45 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -111,7 +111,7 @@ public:
 
 	inline Toolbar *getToolbar(void) { return toolbar; }
 
-	inline Workspace *getWorkspace(int w) { return workspacesList[w]; }
+	inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
 	inline Workspace *getCurrentWorkspace(void) { return current_workspace; }
 
 	inline Workspacemenu *getWorkspacemenu(void) { return workspacemenu; }
@@ -121,10 +121,10 @@ public:
 	inline const unsigned int getFrameWidth(void) const { return theme->getFrameWidth(); }
 	inline const unsigned int getBorderWidth(void) const { return theme->getBorderWidth(); }
 	inline const unsigned int getBorderWidth2x(void) const { return theme->getBorderWidth()*2; }
-	inline const int getCurrentWorkspaceID() { return current_workspace->getWorkspaceID(); }
+	inline const unsigned int getCurrentWorkspaceID() const { return current_workspace->getWorkspaceID(); }
 
     typedef std::vector<FluxboxWindow *> Icons;
-	inline const int getCount(void) { return workspacesList.size(); }
+	inline const unsigned int getCount(void) { return workspacesList.size(); }
 	inline const int getIconCount(void) { return iconList.size(); }
 	inline Icons &getIconList(void) { return iconList; }
 
@@ -191,7 +191,7 @@ public:
 	inline Theme::MenuStyle *getMenuStyle(void) { return &theme->getMenuStyle(); } 
 	inline Theme::ToolbarStyle *getToolbarStyle(void) { return &theme->getToolbarStyle(); } 
 
-	FluxboxWindow *getIcon(int);
+	FluxboxWindow *getIcon(unsigned int index);
 
 	int addWorkspace(void);
 	int removeLastWorkspace(void);
@@ -209,12 +209,11 @@ public:
 	void removeNetizen(Window);
 	void addIcon(FluxboxWindow *);
 	void removeIcon(FluxboxWindow *);
-	void getNameOfWorkspace(int, char **);
-	void changeWorkspaceID(int);
-	void sendToWorkspace(int);
-	void sendToWorkspace(int, bool);
+	void getNameOfWorkspace(unsigned int workspace, char **name);
+	void changeWorkspaceID(unsigned int);
+	void sendToWorkspace(unsigned int workspace, bool changeworkspace=true);
 	void raiseWindows(Window *, int);
-	void reassociateWindow(FluxboxWindow *, int, Bool);
+	void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
 	void prevFocus(int = 0);
 	void nextFocus(int = 0);
 	void raiseFocus(void);

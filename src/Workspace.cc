@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.13 2002/03/19 14:30:43 fluxgen Exp $
+// $Id: Workspace.cc,v 1.14 2002/03/23 15:14:45 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -63,7 +63,7 @@ using namespace std;
 using namespace std;
 #endif
 
-Workspace::Workspace(BScreen *scrn, int i):
+Workspace::Workspace(BScreen *scrn, unsigned int i):
 screen(scrn),
 lastfocus(0),
 name(""),
@@ -87,7 +87,7 @@ Workspace::~Workspace() {
 }
 
 
-const int Workspace::addWindow(FluxboxWindow *w, Bool place) {
+const int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	if (! w)
 		return -1;
 
@@ -100,7 +100,7 @@ const int Workspace::addWindow(FluxboxWindow *w, Bool place) {
 	stackingList.push_front(w);
 	windowList.push_back(w);
 
-	clientmenu->insert((const char **) w->getTitle());
+	clientmenu->insert(w->getTitle());
 	clientmenu->update();
 
 	screen->updateNetizenWindowAdd(w->getClientWindow(), id);
@@ -286,11 +286,11 @@ void Workspace::reconfigure(void) {
 }
 
 
-FluxboxWindow *Workspace::getWindow(int index) {
-	if ((index >= 0) && (index < windowList.size()))
+FluxboxWindow *Workspace::getWindow(unsigned int index) {
+	if (index < windowList.size())
 		return windowList[index];
-	else
-		return 0;
+
+	return 0;
 }
 
 

@@ -39,20 +39,20 @@ class Workspace {
 public:
 	typedef std::vector<FluxboxWindow *> Windows;
 	
-	Workspace(BScreen *, int = 0);
+	Workspace(BScreen *, unsigned int = 0);
 	~Workspace(void);
 
 	inline BScreen *getScreen(void) { return screen; }
 	inline FluxboxWindow *getLastFocusedWindow(void) { return lastfocus; }	
 	inline Clientmenu *getMenu(void) { return clientmenu; }
 	inline const char *getName(void) const { return name.c_str(); }
-	inline const int &getWorkspaceID(void) const { return id; }	
+	inline const unsigned int getWorkspaceID(void) const { return id; }	
 	inline void setLastFocusedWindow(FluxboxWindow *w) { lastfocus = w; }
-	FluxboxWindow *getWindow(int);
+	FluxboxWindow *getWindow(unsigned int id);
 	inline Windows &getWindowList() { return windowList; }
 	bool isCurrent(void);
 	bool isLastWindow(FluxboxWindow *);	
-	const int addWindow(FluxboxWindow *, Bool = False);
+	const int addWindow(FluxboxWindow *, bool = False);
 	const int removeWindow(FluxboxWindow *);
 	const int getCount(void);
  
@@ -79,7 +79,8 @@ private:
 	Windows windowList;
 
 	std::string name;
-	int id, cascade_x, cascade_y;
+	unsigned int id;
+	int cascade_x, cascade_y;
 
 
 protected:

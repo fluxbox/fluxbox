@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.34 2002/03/19 14:30:42 fluxgen Exp $
+// $Id: Window.cc,v 1.35 2002/03/23 15:14:45 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -411,9 +411,11 @@ FluxboxWindow::~FluxboxWindow(void) {
 		XUngrabPointer(display, CurrentTime);
 	}
 	
-	if (workspace_number != -1 && window_number != -1)
-		screen->getWorkspace(workspace_number)->removeWindow(this);
-	else if (iconic)
+	if (!iconic) {
+		Workspace *workspace = screen->getWorkspace(workspace_number);		
+		if (workspace)
+			workspace->removeWindow(this);
+	} else //it's iconic
 		screen->removeIcon(this);
 
 	if (windowmenu)
@@ -2022,9 +2024,9 @@ void FluxboxWindow::iconify(void) {
 
 
 void FluxboxWindow::deiconify(bool reassoc, bool raise) {
-	if (iconic || reassoc)
-		screen->reassociateWindow(this, -1, false);
-	else if (workspace_number != screen->getCurrentWorkspace()->getWorkspaceID())
+	if (iconic || reassoc) {
+		screen->reassociateWindow(this, screen->getCurrentWorkspace()->getWorkspaceID(), false);
+	} else if (workspace_number != screen->getCurrentWorkspace()->getWorkspaceID())
 		return;
 
 	setState(NormalState);
@@ -2443,7 +2445,7 @@ void FluxboxWindow::stick(void) {
 		stuck = false;
 
 		if (! iconic)
-			screen->reassociateWindow(this, -1, true);
+			screen->reassociateWindow(this, screen->getCurrentWorkspace()->getWorkspaceID(), true);
 
 		
 	} else {
@@ -2712,8 +2714,8 @@ void FluxboxWindow::restoreAttributes(void) {
 		current_state = save_state;
 	}
 
-	if (((int) blackbox_attrib.workspace != screen->getCurrentWorkspaceID()) &&
-			((int) blackbox_attrib.workspace < screen->getCount())) {
+	if (( blackbox_attrib.workspace != screen->getCurrentWorkspaceID()) &&
+			( blackbox_attrib.workspace < screen->getCount())) {
 		screen->reassociateWindow(this, blackbox_attrib.workspace, true);
 
 		if (current_state == NormalState) current_state = WithdrawnState;
@@ -3675,10 +3677,10 @@ void FluxboxWindow::changeBlackboxHints(BaseDisplay::BlackboxHints *net) {
 		stick();
 
 	if ((net->flags & BaseDisplay::ATTRIB_WORKSPACE) &&
-			(workspace_number != (signed) net->workspace)) {
+			(workspace_number !=  net->workspace)) {
 		screen->reassociateWindow(this, net->workspace, true);
 
-		if (screen->getCurrentWorkspaceID() != (signed) net->workspace)
+		if (screen->getCurrentWorkspaceID() != net->workspace)
 			withdraw();
 		else 
 			deiconify();
