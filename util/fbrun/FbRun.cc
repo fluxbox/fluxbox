@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.24 2004/02/25 18:37:47 fluxgen Exp $
+// $Id: FbRun.cc,v 1.25 2004/02/28 10:43:20 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -314,14 +314,15 @@ void FbRun::lastHistoryItem() {
 }
 
 void FbRun::tabCompleteHistory() {
-    if (m_current_history_item == 0) {
+    if (m_current_history_item == 0 || m_history.empty() ) {
         XBell(m_display, 0);
     } else {
+        unsigned int nr= 0;
         int history_item = m_current_history_item - 1;
         string prefix = text().substr(0, cursorPosition());
-        while (history_item != m_current_history_item ) {
-            if (history_item == -1 )
-                history_item+= m_history.size();
+        while (history_item != m_current_history_item && nr++ < m_history.size()) {
+            if (history_item <= -1 )
+                history_item= m_history.size() - 1;
             if (m_history[history_item].find(prefix) == 0) {
                 m_current_history_item = history_item;
                 setText(m_history[m_current_history_item]);
