@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.hh,v 1.1 2003/06/30 14:38:42 fluxgen Exp $
+// $Id: WorkspaceCmd.hh,v 1.2 2003/07/01 09:47:41 fluxgen Exp $
 
 #ifndef WORKSPACECMD_HH
 #define WORKSPACECMD_HH
@@ -50,6 +50,22 @@ public:
 class PrevWorkspaceCmd: public FbTk::Command {
 public:
     void execute();
+};
+
+class LeftWorkspaceCmd: public FbTk::Command {
+public:
+    explicit LeftWorkspaceCmd(int num=1):m_param(num == 0 ? 1 : num) { }
+    void execute();
+private:
+    const int m_param;
+};
+
+class RightWorkspaceCmd: public FbTk::Command {
+public:
+    explicit RightWorkspaceCmd(int num=1):m_param(num == 0 ? 1 : num) { }
+    void execute();
+private:
+    const int m_param;
 };
 
 class JumpToWorkspaceCmd: public FbTk::Command {

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.6 2003/07/01 01:49:09 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.7 2003/07/01 09:47:39 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -37,7 +37,7 @@ FbCommandFactory FbCommandFactory::s_autoreg;
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
-    const char commands[][25] = {
+    const char commands[][30] = {
         "setstyle",
         "saverc",
         "reconfigure",
@@ -69,6 +69,8 @@ FbCommandFactory::FbCommandFactory() {
         "prevtab",
         "detachclient",
         "nextworkspace",
+        "rightworkspace",
+        "leftworkspace",
         "prevworkspace",
         "workspace",
         "nextwindow",
@@ -107,7 +109,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     //
     // Current focused window commands
     //
-    else if (command == "minimizewindow" || command == "mimimize" || command == "iconify")
+    else if (command == "minimizewindow" || command == "minimize" || command == "iconify")
         return new CurrentWindowCmd(&FluxboxWindow::iconify);
     else if (command == "maximizewindow" || command == "maximize")
         return new CurrentWindowCmd(&FluxboxWindow::maximize);
@@ -152,6 +154,10 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new NextWorkspaceCmd();
     else if (command == "prevworkspace" && arguments.size() == 0)
         return new PrevWorkspaceCmd();
+    else if (command == "rightworkspace")
+        return new RightWorkspaceCmd(atoi(arguments.c_str()));
+    else if (command == "leftworkspace")
+        return new LeftWorkspaceCmd(atoi(arguments.c_str()));
     else if (command == "workspace") {
         int num = 1; // workspaces appear 1-indexed to the user
         if (!arguments.empty())

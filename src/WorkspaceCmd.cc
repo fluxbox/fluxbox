@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.1 2003/06/30 14:38:42 fluxgen Exp $
+// $Id: WorkspaceCmd.cc,v 1.2 2003/07/01 09:47:41 fluxgen Exp $
 
 #include "WorkspaceCmd.hh"
 #include "Workspace.hh"
@@ -83,6 +83,18 @@ void PrevWorkspaceCmd::execute() {
     BScreen *screen = Fluxbox::instance()->keyScreen();
     if (screen != 0)
         screen->prevWorkspace();
+}
+
+void LeftWorkspaceCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0)
+        screen->leftWorkspace(m_param);
+}
+
+void RightWorkspaceCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen != 0)
+        screen->rightWorkspace(m_param);
 }
 
 JumpToWorkspaceCmd::JumpToWorkspaceCmd(int workspace_num):m_workspace_num(workspace_num) { }
