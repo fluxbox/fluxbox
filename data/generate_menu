@@ -109,7 +109,7 @@ append_menu "[end]"
 
 
 append_menu "[submenu] (Terminals)"
-	find_it xterm       append "[exec]   (xterm) {xterm -fg white -bg black}"
+	append "[exec] (xterm) {xterm -fg white -bg black}"
 	find_it gnome-terminal append "[exec] (gnome-terminal) {gnome-terminal}"
 	find_it Eterm       append "[exec] (Eterm) {Eterm}"
 	find_it konsole     append "[exec] (konsole) {konsole}"
