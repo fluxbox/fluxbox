@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.192 2003/06/24 13:56:01 fluxgen Exp $
+// $Id: Screen.cc,v 1.193 2003/06/24 14:55:55 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -786,8 +786,6 @@ void BScreen::updateWorkspaceNamesAtom() {
 void BScreen::addIcon(FluxboxWindow *w) {
     if (! w) return;
 
-    w->setWindowNumber(m_icon_list.size());
-
     m_icon_list.push_back(w);
 }
 
@@ -803,12 +801,6 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (erase_it != m_icon_list.end())
         m_icon_list.erase(erase_it);
 
-    
-    Icons::iterator it = m_icon_list.begin();
-    Icons::iterator it_end = m_icon_list.end();
-    for (int i = 0; it != it_end; ++it, ++i) {
-        (*it)->setWindowNumber(i);
-    }
 }
 
 void BScreen::removeWindow(FluxboxWindow *win) {
@@ -1109,7 +1101,7 @@ void BScreen::updateNetizenWindowLower(Window w) {
 }
 
 
-void BScreen::updateNetizenConfigNotify(XEvent *e) {
+void BScreen::updateNetizenConfigNotify(XEvent &e) {
     Netizens::iterator it = m_netizen_list.begin();
     Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
@@ -1121,12 +1113,14 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     WinClient *winclient = new WinClient(client, *this);
 
 #ifdef SLIT
+    if (winclient->initial_state == WithdrawnState)
+        slit()->addClient(client);
+
+#endif // SLIT
     if (winclient->initial_state == WithdrawnState) {
         delete winclient;
-        slit()->addClient(client);
         return 0;
     }
-#endif // SLIT
 
     // check if it should be grouped with something else
     FluxboxWindow *win;
@@ -1413,14 +1407,12 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
 
 void BScreen::nextFocus(int opts) {
     bool have_focused = false;
-    int focused_window_number = -1;
     FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
     const int num_windows = currentWorkspace()->numberOfWindows();
 
     if (focused != 0) {
         if (focused->screen().screenNumber() == screenNumber()) {
             have_focused = true;
-            focused_window_number = focused->windowNumber();
         }
     }
 
@@ -1502,14 +1494,12 @@ void BScreen::nextFocus(int opts) {
 
 void BScreen::prevFocus(int opts) {
     bool have_focused = false;
-    int focused_window_number = -1;
     FluxboxWindow *focused;
     int num_windows = currentWorkspace()->numberOfWindows();
 	
     if ((focused = Fluxbox::instance()->getFocusedWindow())) {
         if (focused->screen().screenNumber() == screenNumber()) {
             have_focused = true;
-            focused_window_number = focused->windowNumber();
         }
     }
 
@@ -1594,13 +1584,11 @@ void BScreen::prevFocus(int opts) {
 
 void BScreen::raiseFocus() {
     bool have_focused = false;
-    int focused_window_number = -1;
     Fluxbox * const fb = Fluxbox::instance();
 	
     if (fb->getFocusedWindow())
         if (fb->getFocusedWindow()->screen().screenNumber() == screenNumber()) {
             have_focused = true;
-            focused_window_number = fb->getFocusedWindow()->windowNumber();
         }
 
     if ((currentWorkspace()->numberOfWindows() > 1) && have_focused)

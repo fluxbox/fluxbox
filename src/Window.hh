@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.80 2003/06/23 14:16:05 rathnor Exp $
+// $Id: Window.hh,v 1.81 2003/06/24 14:57:06 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -137,8 +137,6 @@ public:
     WinClient *findClient(Window win);
     void nextClient();
     void prevClient();
-
-    void setWindowNumber(int n) { m_window_number = n; }
 
     bool validateClient();
     bool setInputFocus();
@@ -292,7 +290,7 @@ public:
     int x() const;
     int y() const;
     unsigned int workspaceNumber() const { return m_workspace_number; }
-    int windowNumber() const { return m_window_number; }
+
     int layerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
  
@@ -405,7 +403,6 @@ private:
     int m_last_move_x, m_last_move_y; // handles last pos for non opaque moving
     unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
 
-    int m_window_number;
     unsigned int m_workspace_number;
     unsigned long m_current_state;
 

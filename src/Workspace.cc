@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.74 2003/06/16 14:54:18 fluxgen Exp $
+// $Id: Workspace.cc,v 1.75 2003/06/24 14:57:53 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -146,14 +146,13 @@ void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
         m_lastfocus = 0;
 }
 
-int Workspace::addWindow(FluxboxWindow &w, bool place) {
+void Workspace::addWindow(FluxboxWindow &w, bool place) {
     // we don't need to add a window that already exist in our list
     if (find(m_windowlist.begin(), m_windowlist.end(), &w) !=
         m_windowlist.end())
-        return -1;
+        return;
 
     w.setWorkspace(m_id);
-    w.setWindowNumber(m_windowlist.size());
 
     if (place)
         placeWindow(w);
@@ -170,7 +169,6 @@ int Workspace::addWindow(FluxboxWindow &w, bool place) {
             screen().updateNetizenWindowAdd((*client_it)->window(), m_id);
     }
 
-    return w.windowNumber();
 }
 
 

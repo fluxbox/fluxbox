@@ -62,7 +62,7 @@ public:
     void update();
     void setCurrent();
     void shutdown();
-    int addWindow(FluxboxWindow &win, bool place = false);
+    void addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
     void removeWindow(WinClient &client);
     void updateClientmenu();

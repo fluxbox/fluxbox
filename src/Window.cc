@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.195 2003/06/23 14:16:05 rathnor Exp $
+// $Id: Window.cc,v 1.196 2003/06/24 14:57:05 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -380,7 +380,7 @@ void FluxboxWindow::init() {
     // display connection
     display = FbTk::App::instance()->display();
 
-    m_blackbox_attrib.workspace = m_workspace_number = m_window_number = -1;
+    m_blackbox_attrib.workspace = m_workspace_number = 0;
 
     m_blackbox_attrib.flags = m_blackbox_attrib.attrib = m_blackbox_attrib.stack = 0;
     m_blackbox_attrib.premax_x = m_blackbox_attrib.premax_y = 0;
@@ -3245,7 +3245,7 @@ void FluxboxWindow::sendConfigureNotify() {
         event.xconfigure.above = frame().window().window();
         event.xconfigure.override_redirect = false;
 
-        screen().updateNetizenConfigNotify(&event);
+        screen().updateNetizenConfigNotify(event);
     } // end for        
 }
 
