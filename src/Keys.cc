@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.32 2003/06/30 14:57:14 fluxgen Exp $
+//$Id: Keys.cc,v 1.33 2003/06/30 19:42:20 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -190,8 +190,13 @@ bool Keys::load(const char *filename) {
 
             } else { // parse command line
 
+
+                const char *str = 
+                    FbTk::StringUtil::strcasestr(linebuffer.c_str(),
+                                                 val[argc].c_str() + 1); // +1 to skip ':'
+
                 // +1 to remove the first ':'
-                last_key->m_command = CommandParser::instance().parseLine(val[argc].c_str() + 1);
+                last_key->m_command = CommandParser::instance().parseLine(str);
 
                 if (*last_key->m_command == 0) {
                     cerr<<"File: "<<filename<<". Error on line: "<<line<<endl;
