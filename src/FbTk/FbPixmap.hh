@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.1 2003/04/25 12:29:49 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.2 2003/04/27 00:10:28 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -32,11 +32,16 @@ namespace FbTk {
 class FbPixmap {
 public:    
     FbPixmap();
-    FbPixmap(const FbPixmap &copy);
+    /// copy pixmap 
+    explicit FbPixmap(const FbPixmap &copy);
+    /// creates a FbPixmap from X pixmap
+    explicit FbPixmap(Pixmap pm);
     FbPixmap(Drawable src, 
              unsigned int width, unsigned int height,
              int depth);
+
     ~FbPixmap();
+
     void copyArea(Drawable src, GC gc,
                   int src_x, int src_y,
                   int dest_x, int dest_y,
@@ -48,7 +53,10 @@ public:
     void fillPolygon(GC gc, XPoint *points, int npoints,
                      int shape, int mode);
     void copy(const FbPixmap &the_copy);
+
     FbPixmap &operator = (const FbPixmap &copy);
+    /// sets new pixmap
+    FbPixmap &operator = (Pixmap pm);
 
     inline Drawable drawable() const { return m_pm; }
     inline unsigned int width() const { return m_width; }

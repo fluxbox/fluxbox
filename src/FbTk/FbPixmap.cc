@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.1 2003/04/25 12:29:49 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.2 2003/04/27 00:12:17 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -31,9 +31,18 @@ FbPixmap::FbPixmap():m_pm(0),
                      m_depth(0) { }
 
 FbPixmap::FbPixmap(const FbPixmap &the_copy):m_pm(0), 
-                                         m_width(0), m_height(0), 
-                                         m_depth(0) {
+                                             m_width(0), m_height(0), 
+                                             m_depth(0) {
     copy(the_copy);
+}
+
+FbPixmap::FbPixmap(Pixmap pm):m_pm(0), 
+                              m_width(0), m_height(0),
+                              m_depth(0) {
+    if (pm == 0)
+        return;
+    // assign X pixmap to this
+    (*this) = pm;
 }
 
 FbPixmap::FbPixmap(Drawable src, 
@@ -96,9 +105,69 @@ FbPixmap &FbPixmap::operator = (const FbPixmap &the_copy) {
     return *this;
 }
 
-void FbPixmap::copy(const FbPixmap &the_copy) {
+FbPixmap &FbPixmap::operator = (Pixmap pm) {
+    // free pixmap before we set new
     free();
-    create(the_copy.drawable(), the_copy.width(), the_copy.height(), the_copy.depth());
+
+    if (pm == 0)
+        return *this;
+
+    // get width, height and depth for the pixmap
+    Window root;
+    int x, y;
+    unsigned int border_width, bpp;    
+    XGetGeometry(FbTk::App::instance()->display(),
+                 pm,
+                 &root,
+                 &x, &y,
+                 &m_width, &m_height,
+                 &border_width,
+                 &bpp);
+
+    m_depth = bpp;
+
+    m_pm = pm;
+
+    return *this;
+}
+
+void FbPixmap::copy(const FbPixmap &the_copy) {
+
+    bool create_new = false;
+
+    if (the_copy.width() != width() ||
+        the_copy.height() != height() ||
+        the_copy.depth() != depth() ||
+        drawable() == 0)
+        create_new = true;
+    
+    if (create_new)    
+        free();
+
+    if (the_copy.drawable() != 0) {
+        if (create_new) {
+            create(the_copy.drawable(), 
+                   the_copy.width(), the_copy.height(),
+                   the_copy.depth());
+        }
+        
+        if (drawable()) {
+            Display *dpy = FbTk::App::instance()->display();
+            GC temp_gc = XCreateGC(dpy,
+                                   drawable(),
+                                   0, 0);
+            
+            copyArea(the_copy.drawable(),
+                     temp_gc,
+                     0, 0,
+                     0, 0,
+                     width(), height());
+            
+            XFreeGC(dpy, temp_gc);
+                               
+        }
+         
+    }
 }
 
 void FbPixmap::free() {
