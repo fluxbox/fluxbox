@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.1 2004/06/07 11:46:05 rathnor Exp $
+// $Id: I18n.cc,v 1.2 2004/06/20 15:16:08 rathnor Exp $
 
 /* Note:
  * A good reference for the older non-gettext style I18n
@@ -65,7 +65,7 @@ void NLSInit(const char *catalog) {
 I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 #ifdef 	HAVE_SETLOCALE
     //make sure we don't get 0 to m_locale string
-    char *temp = setlocale(LC_ALL, "");
+    char *temp = setlocale(LC_MESSAGES, "");
     m_locale = ( temp ?  temp : ""); 
     if (m_locale.empty()) {
         cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
