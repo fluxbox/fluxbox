@@ -1,5 +1,7 @@
 Changes for 0.1.6:
 *01/01/11:
+   * Fixed small bug in keybindings code, now killwindow and shade will
+     work as supposed with tabs. (Claes Nästén)
    * Fixed so it compiles with cygwin (Thanks Eric Nicolas)
    * Fixed bug in maximize over slit option
    * Updated documents (Thanks Rando Christensen)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.19 2002/01/11 09:17:37 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.20 2002/01/11 22:48:45 pekdon Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -845,6 +845,8 @@ void Fluxbox::process_event(XEvent *e) {
 						break;
 					*/
 					case Keys::KILLWINDOW: //kill the current window
+						XKillClient(screen->getBaseDisplay()->getXDisplay(),
+							focused_window->getClientWindow());
 						break;
 					case Keys::NEXTWINDOW:	//activate next window
 						screen->nextFocus();
@@ -1036,6 +1038,8 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 			focused_window->close();
 		break;
 		case Keys::SHADE:		
+			if (focused_window->hasTab())
+				focused_window->getTab()->shade();
 			focused_window->shade();
 		break;
 		case Keys::MAXIMIZE:
