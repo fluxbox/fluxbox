@@ -2,17 +2,20 @@
 Changes for 0.1.9:
 *02/05/24:
    * Fixed bugs and arguments in fluxbox-generate_menu (Thanks Han Boetes)
+   * Fixed include in i18n.hh so it compiles in Mac OS X
+   * 24 hour clock format as default now
 *02/05/23:
    * Fixed invalid iterator in Timer.cc
    * Fixed nls files (Thanks Anton Denisov)
    * Updated generate_menu to fluxbox-generate_menu and fixed 
-     new items and functionality (Thanks Han Boetes)
+     new items and functionality (Thanks Han Boetes and Jeramy B. Smith)
 *02/05/21:
    * Moved transient checking into a function in class FluxboxWindow
    * const fixes in Screen.hh
 *02/05/19:
    * Removed titlebar from src/Makefile.am and doc/fluxbox.1.in (Thanks Matt Hope)
    * Added configurable geometry show (Thanks Rando Christensen)
+     New configure in init: session.screen0.showwindowposition
 *02/05/18:
    * Fixed style save_rc when changing style
    * const-correct in class Tab
@@ -35,7 +38,7 @@ Changes for 0.1.9:
    * const fixes in FbAtoms.hh
    * Added options direct to CXXFLAGS in configure.in, so we don't need to 
      add them in every Makefile.am-file.
-   * Updated src/Makefile.am and util/Makefile.am (see above)	 
+   * Updated src/Makefile.am and util/Makefile.am (see above) 
 *02/05/03:
    * Fixed so settins for tool bar saves when you change them i the menu
      in Toolbar.cc

@@ -1,3 +1,13 @@
+
+* const-correctnes
+* Clean up in BImage class, some of those functions are huge, and needs to be smaller.
+  And make the class more independent so it could be movable to other applications, 
+  such as config tools.
+
+* toolbar -> separate application
+* Some kind of resource class instead of the Screen and Fluxbox class with all the resources?
+
+
 * Screen.cc:
 	fix toupper for str_key in in Menu loading
 	nls for "error on row" in Menu loading ?? 
@@ -35,4 +45,5 @@
   (I really like the emacs's "ido.el" package behavior, which I recommend
    to any emacs user)
 * mouse button configure
-  
+
+

@@ -8,7 +8,7 @@ Contributors:
         and some code.
     Cleas Nästén <pekdon@gmx.net>
       - suggestions, bug reports, beta testing and 
-        Tab placement/alignment code.
+        Tab placement/alignment and Xinerama code.
     Johan Andersson <xfs@linux.se>
       - suggestions, bug reports and beta testing
     Oliwier Ptak  <aleczapka@gmx.net>
@@ -27,6 +27,10 @@ Contributors:
       - minor additions, fixes, cleanups...
     Steve Cooper <stevencooper@isomedia.com>
       - Workspace warping, window cycling with optional parameters
+    Han Boetes <han@mijncomputer.nl>
+      - RPM Packaging, debugging and scripts.
+	Jeramy B. Smith
+      - Packaging assistance, gnome and kde menu system.
 
 
 
