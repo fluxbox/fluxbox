@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.20 2003/07/28 15:06:34 rathnor Exp $
+// $Id: WinClient.cc,v 1.21 2003/07/28 15:46:00 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -67,6 +67,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
     updateWMHints();
     updateWMNormalHints();
     updateWMClassHint();
+    updateWMProtocols();
     updateTitle();
     updateIconTitle();
     Fluxbox::instance()->saveWindowSearch(win, this);
@@ -574,7 +575,7 @@ bool WinClient::focus() {
         return m_win->setCurrentClient(*this, true);
 }
 
-void WinClient::getWMProtocols() {
+void WinClient::updateWMProtocols() {
     Atom *proto = 0;
     int num_return = 0;
     FbAtoms *fbatoms = FbAtoms::instance();

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.11 2003/07/28 15:06:34 rathnor Exp $
+// $Id: WinClient.hh,v 1.12 2003/07/28 15:46:00 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -57,7 +57,7 @@ public:
     const std::string &getWMClassClass() const;
     /// updates from wm class hints
     void updateWMClassHint();
-    void getWMProtocols();
+    void updateWMProtocols();
 
     inline const std::string &getTitle() const { return m_title; }
     void updateTitle();

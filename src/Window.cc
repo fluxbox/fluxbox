@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.213 2003/07/28 15:06:34 rathnor Exp $
+// $Id: Window.cc,v 1.214 2003/07/28 15:46:00 rathnor Exp $
 
 #include "Window.hh"
 
@@ -420,13 +420,13 @@ void FluxboxWindow::init() {
     functions.resize = functions.move = functions.iconify = functions.maximize = true;
     decorations.close = false;
 
-    functions.close = m_client->isClosable();
-
     if (m_client->getBlackboxHint() != 0)
         getBlackboxHints();
     else
         getMWMHints();
     
+    functions.close = m_client->isClosable();
+
     //!!
     // fetch client size and placement
     XWindowAttributes wattrib;
@@ -2254,7 +2254,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
     default:
         if (atom == FbAtoms::instance()->getWMProtocolsAtom()) {
-            m_client->getWMProtocols();
+            m_client->updateWMProtocols();
             //!!TODO  check this area            
             // reset window actions
             setupWindow();
