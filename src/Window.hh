@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.6 2002/01/20 02:12:52 fluxgen Exp $
+// $Id: Window.hh,v 1.7 2002/02/07 15:13:19 fluxgen Exp $
 
 #ifndef	 _WINDOW_HH_
 #define	 _WINDOW_HH_
@@ -262,7 +262,12 @@ private:
 	enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
 	void createButton(int type, ButtonEventProc, ButtonEventProc, ButtonDrawProc);
-	Window findTitleButton(int type);
+	#ifdef GNOME
+	void updateGnomeAtoms();
+	long getGnomeWindowState();
+	#endif
+
+	Window findTitleButton(int type);	
 protected:
 	//event callbacks
 	static void stickyButton_cb(FluxboxWindow *, XButtonEvent *);
