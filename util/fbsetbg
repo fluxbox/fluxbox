@@ -23,14 +23,14 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.1 2003/04/27 15:33:26 fluxgen Exp $
+# $Id: fbsetbg,v 1.2 2003/04/28 14:45:13 fluxgen Exp $
 
 #
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
 # please keep the following restrictions in mind:
 #
-# don't use [ -e file ] use [ -r file ]
+# don't use [ -e file ], use [ -r file ]
 # don't use $(), use ``
 # don't use ~, use ${HOME}
 # don't use id -u, use whoami
@@ -61,6 +61,9 @@ Options:
     -f  Set fullscreen wallpaper
     -c  Set centered wallpaper
     -t  Set tiled wallpaper
+    -a  Set maximized wallpaper, preserving aspect.
+        ( if your bgsetter doesn't support this
+          fbsetbg falls back to -f )
 
     -h  Display this help
 
@@ -81,9 +84,9 @@ cat<<EOF
 
 To replace all occurances of bsetbg in a file use this command:
 
-  perl -pi -e 's, bsetbg, fbsetbg,'
+  perl -pi -e 's,([^f]|^)bsetbg,fbsetbg,'
 
-If you want to choose your own wallpapers and you want fbsetbg to
+If you want the style to set the wallpaper and you want fbsetbg to
 remember the previous wallpaper put this in your ~/.fluxbox/init
 
   session.screen0.rootCommand:    fbsetbg -l
@@ -110,6 +113,11 @@ message() {
     xmessage -center "$@"
 }
 
+remembercommand() {
+        echo $option > $lastwallpaper
+        echo $wallpaper >> $lastwallpaper
+}
+
 debugfbsetbg (){
 
     standardrant (){
@@ -131,24 +139,27 @@ EOF
 
     case $WPSETTER in
         xsri)
-            echo 'Actually I never heard of this app.'
+            echo "This is a RedHat specific app. I can't find docs about it."
             ;;
         display)
             standardrant
             ;;
         Esetroot)
             echo 'Esetroot is a nice app :)'
-            echo "You won't have any problems"
+            echo "You won't have any problems."
             ;;
         wmsetbg)
             echo 'wmsetbg is my favourite :)'
-            echo "You won't have any problems"
+            echo "You won't have any problems."
             ;;
         xsetbg)
             standardrant
+            echo 'Is actually xli'
+            echo 'fillscreen option (-f) is broken, defaults to (-a)'
 	    ;;
         xli)
             standardrant
+            echo 'fillscreen option (-f) is broken, defaults to (-a)'
             ;;
         qiv)
             standardrant
@@ -187,41 +198,49 @@ case $WPSETTER in
 	full='--center-x --center-y --scale-width=100 --scale-width=100'
 	tile='--tile'
 	center='--center-x --center-y'
+        aspect=$full
         ;;
     display)
-        full='-geometry 800x600 -window root'
+        full='`xwininfo -root|grep geom` -window root'
         tile='-window root'
         center='-backdrop -window root'
+        aspect=$full
         ;;
     Esetroot)
         full='-scale'
         tile=''
         center='-c'
+        aspect='-fit'
         ;;
     wmsetbg)
         full='-s -S'
         tile='-t'
         center='-b black -e'
+        aspect='-b black -a'
         ;;
     xsetbg)
-	full='-fillscreen'
-	tile=''
-	center='-center'
+	tile='-border black'
+	center='-center -border black'
+        aspect='-fullscreen -border black'
+	full=$aspect #broken
 	;;
     xli)
-	full='-fillscreen -onroot -quiet'
-	tile='-onroot -quiet'
-	center='-center -onroot quiet'
+	tile='-onroot -quiet -border black'
+	center='-center -onroot -quiet -border black'
+        aspect='-fullscreen -onroot -quiet -border black'
+	full=$aspect #broken
         ;;
     qiv)
         full='--root_s'
         tile='--root_t'
         center='--root'
+        aspect='-m --root'
         ;;
     xv)
         full='-max -smooth -root -quit'
         tile='-root -quit'
         center='-rmode 5 -root -quit'
+        aspect='-maxpect -smooth -root -quit'
         ;;
     '')
             message "Can't find and app to set the wallpaper with.
@@ -230,22 +249,23 @@ Use fbsetbg -d to find out what to do next"
 esac
 
 #Get options.
-getopts ":f:c:t:Tlh-" COMMAND_LINE_ARGUMENT
+getopts ":a:f:c:t:Tlh-" COMMAND_LINE_ARGUMENT
 case "${COMMAND_LINE_ARGUMENT}" in
+    a) option=$aspect
+        wallpaper=$OPTARG
+        remembercommand
+        ;;
     f) option=$full
         wallpaper=$OPTARG
-        echo $option > $lastwallpaper
-        echo $wallpaper >> $lastwallpaper
+        remembercommand
         ;;
     c) option=$center
         wallpaper=$OPTARG
-        echo $option > $lastwallpaper
-        echo $wallpaper >> $lastwallpaper
+        remembercommand
         ;;
     t) option=$tile
         wallpaper=$OPTARG
-        echo $option > $lastwallpaper
-        echo $wallpaper >> $lastwallpaper
+        remembercommand
         ;;
     l)
         if [ -r $lastwallpaper ];then

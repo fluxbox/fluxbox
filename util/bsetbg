@@ -2,123 +2,178 @@
 
 # Copyright (c) 2000 LordZork Industries (lordzork@lordzork.com)
 #
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the "Software"),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the 
-# Software is furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in 
-# all copies or substantial portions of the Software. 
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
-# DEALINGS IN THE SOFTWARE.
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# $Id: bsetbg,v 1.5 2003/04/28 14:44:04 fluxgen Exp $
+
+#
+# Portability notes:
+# To guarantee this script works on all platforms that support fluxbox
+# please keep the following restrictions in mind:
+#
+# don't use [ -e file ] use [ -r file ]
+# don't use $(), use ``
+# don't use ~, use ${HOME}
+# don't use id -u, use whoami
+# getopts won't work on all platforms, but the config-file can
+# compensate for that.
+#
 
 
-error_msg()
-{
- case $INFO in yes|y|1) info_msg; esac
+error_msg() {
+    case $INFO in
+        yes|y|1)
+            info_msg
+            ;;
+    esac
 
- case $1 in
-   1)
-     echo; echo "$NAME: configuration error: $OPTION=\"$VALUE\"" 
-     echo "$NAME: please edit $CONFIG and provide the correct variable."
-     ;;
-   2)
-     echo; echo "$NAME: error: couldn't execute '$APP'! tried to run fallback option $ARGUMENT"
-     echo "$NAME: but quit because of the following error in $CONFIG:"
-     echo "$NAME: $OPTION= $VALUE"
-     echo "$NAME: please edit $CONFIG and provide the correct variable!"
-     ;;
-   3)
-     echo; echo "$NAME: error: couldn't find any suitable image applications in the system path!"
-     echo
-     error_msg url
-     ;;
-   4)
-     echo; echo "$NAME: error: invalid option, or non-existent image ($ARGUMENT)."
-     ;;
-   5)
-     echo; echo "$NAME: error: the image you specified ($IMAGE) could not be found."
-     ;;
-   6)
-     echo; echo "$NAME: error: please specify a valid image."
-     ;;
-   7)
-     echo; echo "$NAME: error: bsetroot couldn't be found! check your blackbox installation."
-     ;;
-   8)
-     echo; echo "$NAME: error: wrong number of arguments!"
-     echo "$NAME: make sure you enclosed the options for '$APP' in double quotes."
-     ;;
-   nobgapp)
-     echo; echo "$NAME: error: tried to run '$VALUE' for $ARGUMENT argument,"
-     echo "$NAME: but couldnt find '$APP' in the path! please fix the following"
-     echo "$NAME: line in $CONFIG to point to an existing application:"
-     echo "$NAME: $OPTION=\"$VALUE\""
-     ;;
-   nogrep)
-     echo "$NAME: error: couldn't find grep!"
-     echo "this script needs grep to be in your path in order to function." 
-     echo "you can get GNU grep from ftp://ftp.gnu.org/bin/gnu/grep/" && exit 1
-     ;;
-   url)
-     echo "it is suggested that you use qiv, xli (xsetbg), or xv."
-     echo "you can obtain them at the following locations:"
-     echo
-     echo "   qiv: http://www.klografx.de/software/qiv.shtml"
-     echo "   xli: http://pantransit.reptiles.org/prog/#xli"
-     echo "   xv: http://www.trilon.com/xv/downloads.html"
-     echo
-     echo "the above URLs are current as of 05/23/2000."
- esac
- exit 1	    
+    case $1 in
+        1)
+            cat << EOF >&2
+
+$NAME: configuration error: $OPTION="$VALUE"
+$NAME: please edit $CONFIG and provide the correct variable.
+EOF
+            ;;
+        2)
+            cat << EOF >&2
+
+$NAME: error: couldn't execute '$APP'! tried to run fallback option $ARGUMENT
+$NAME: but quit because of the following error in $CONFIG:
+$NAME: $OPTION=$VALUE
+$NAME: please edit $CONFIG and provide the correct variable!
+EOF
+            ;;
+        3)
+            cat << EOF >&2
+
+$NAME: error: couldn't find any suitable image applications in the system path!
+EOF
+            error_msg url
+            ;;
+        4)
+            cat << EOF >&2
+
+$NAME: error: invalid option, or non-existent image ($ARGUMENT).
+EOF
+            ;;
+            5)
+            cat << EOF >&2
+
+$NAME: error: the image you specified ($IMAGE) could not be found."
+EOF
+            ;;
+            6)
+            cat << EOF >&2
+
+$NAME: error: please specify a valid image.
+EOF
+            ;;
+            7)
+            cat << EOF >&2
+
+$NAME: error: bsetroot couldn't be found! check your fluxbox installation.
+EOF
+            ;;
+            8)
+            cat << EOF >&2
+
+$NAME: error: wrong number of arguments!
+$NAME: make sure you enclosed the options for '$APP' in double quotes.
+EOF
+            ;;
+            nobgapp)
+            cat << EOF >&2
+
+$NAME: error: tried to run '$VALUE' for $ARGUMENT argument,
+$NAME: but couldnt find '$APP' in the path! please fix the following
+$NAME: line in $CONFIG to point to an existing application:
+$NAME: $OPTION=\$VALUE\
+EOF
+            ;;
+            nogrep)
+            cat << EOF >&2
+
+$NAME: error: couldn't find grep!
+This script needs grep to be in your path in order to function.
+You can get GNU grep from ftp://ftp.gnu.org/bin/gnu/grep/
+EOF
+            ;;
+            url)
+            cat << EOF >&2
+
+It is suggested that you use qiv, xli (xsetbg), or xv.
+You can obtain them at the following locations:
+
+    qiv: http://www.klografx.de/software/qiv.shtml
+    xli: http://pantransit.reptiles.org/prog/#xli
+    xv: http://www.trilon.com/xv/downloads.html
+
+The above URLs are current as of 05/23/2000.
+EOF
+            ;;
+    esac
+    exit 1
 }
 
 
-help_msg()
-{
-    echo "$NAME $VERSION: $MORE"
-    echo "options:"
-    echo
-    echo "  (none)                             image is set using default values"
-    echo
-    echo "  -full, -f                          image is set fullscreen"
-    echo "  -tile, -t                          image is set tiled"
-    echo "  -center, -c                        image is set centered"
-    echo
-    echo "  -app, -a <application>             image is set using <application> with"
-    echo "     <"'"application options"'">            quote-enclosed \"options\" and" 
-    echo "     -center, -c|-tile, -t|-full, -f    default fallback option"
-    echo
-    echo "  -display <string>                  display to connect to (bsetroot only)"
-    echo "  -mod <x> <y>                       sets bsetroot modula pattern"
-    echo "     -foreground, -fg <color>           modula foreground color"
-    echo "     -background, -bg <color>           modula background color"
-    echo
-    echo "  -gradient <texture>                sets bsetroot gradient texture"
-    echo "     -from <color>                      gradient start color"
-    echo "     -to <color>                        gradient end color"
-    echo
-    echo "  -solid <color>                     sets bsetroot solid color"
-    echo
-    echo "  -version, -v                       outputs $NAME's version number"
-    echo "  -info, -i                          outputs configuration info"
-    echo "  -help, -h                          this message"
-    echo
-    echo "usage: <options...> <image>"
-    exit 0 
+help_msg() {
+cat << EOF
+$NAME $VERSION: $MORE
+options:
+
+  (none)                             image is set using default values
+
+  -full, -f                          image is set fullscreen
+  -tile, -t                          image is set tiled
+  -center, -c                        image is set centered
+
+  -last, -l                          last used image is set
+
+  -app, -a <application>             image is set using <application> with
+     <'application options'>            single-quote-enclosed options and
+     -center, -c|-tile, -t|-full, -f    default fallback option
+
+  -display <string>                  display to connect to (bsetroot only)
+
+  -mod <x> <y>                       sets bsetroot modula pattern
+     -foreground, -fg <color>           modula foreground color
+     -background, -bg <color>           modula background color
+
+  -gradient <texture>                sets bsetroot gradient texture
+     -from <color>                      gradient start color
+     -to   <color>                      gradient end color
+
+  -solid <color>                     sets bsetroot solid color
+
+  -version, -v                       outputs $NAME's version number
+  -info, -i                          outputs configuration info
+  -help, -h                          this message
+
+usage: <options...> <image>
+EOF
+    exit 0
 }
 
 
-info_msg()
-{
+info_msg() {
     case $ERROR in
 	[1-3])
 	    SUMMARY="error: some variables are blank"
@@ -128,10 +183,13 @@ info_msg()
 	    ;;
  	0)
 	    SUMMARY="looks good"
+            ;;
     esac
 
-    case $APP_ERROR in [1-4])
-	SUMMARY="error: some applications couldn't be found!"
+    case $APP_ERROR in
+        [1-4])
+	    SUMMARY="error: some applications couldn't be found!"
+            ;;
     esac
 
     case `which bsetroot 2>&1` in
@@ -146,53 +204,60 @@ info_msg()
 		    ;;
 		*)
 		    SUMMARY="$SUMMARY, but bsetroot does not seem to be present."
+                    ;;
 	    esac
+            ;;
     esac
+cat << EOF
+$NAME $VERSION configuration:
 
-    echo "$NAME $VERSION configuration:"
-    echo
-    echo "  bsetroot:                          $BSETROOT"
-    echo
-    echo "  reading configuration from:        $CONFIG"
-    echo
-    echo "  configuration values:"
-    echo
-    case $FULL_BGAPP_MSG in 
-	*"not found")
+  bsetroot:                          $BSETROOT
+
+  reading configuration from:        $CONFIG
+
+  configuration values:
+
+EOF
+    case $FULL_BGAPP_MSG in
+	*'not found')
 	    echo "      fullscreen (ERROR):            $FULL_BGAPP_MSG"
 	    ;;
 	*)
 	    echo "      fullscreen (FULL):             $FULL_MSG"
+            ;;
     esac
 
     echo
 
-    case $TILE_BGAPP_MSG in 
-	*"not found")
+    case $TILE_BGAPP_MSG in
+	*'not found')
 	    echo "      tiled (ERROR):                 $TILE_BGAPP_MSG"
 	    ;;
 	*)
 	    echo "      tiled (TILE):                  $TILE_MSG"
+            ;;
     esac
 
     echo
 
-    case $CENTER_BGAPP_MSG in 
-	*"not found")
+    case $CENTER_BGAPP_MSG in
+	*'not found')
 	    echo "      centered (ERROR):              $CENTER_BGAPP_MSG"
 	    ;;
 	*)
 	    echo "      centered (CENTER):             $CENTER_MSG"
+            ;;
     esac
 
     echo
 
-    case $DEFAULT_BGAPP_MSG in 
-	*"not found")
+    case $DEFAULT_BGAPP_MSG in
+	*'not found')
 	    echo "      default (ERROR):               $DEFAULT_BGAPP_MSG"
 	    ;;
 	*)
 	    echo "      default (DEFAULT):             $DEFAULT_MSG"
+            ;;
     esac
     echo
     echo "  summary: $SUMMARY"
@@ -200,18 +265,19 @@ info_msg()
 }
 
 
-find_app()
-{
-    case `which $1 2>&1` in 
+find_app() {
+    APP_PATH=`which $1 2>&1`
+    case $APP_PATH in
 	*/*$1)
-	    echo "$NAME: checking for $1... `which $1`"
-	    echo "### $app" >> $TMPFILE
-	    echo "# FULL=\"$full\"" >> $TMPFILE
-	    echo "# TILE=\"$tile\"" >> $TMPFILE
-	    echo "# CENTER=\"$center\"" >> $TMPFILE
-	    echo "# DEFAULT=\"$default\"" >> $TMPFILE
-	    echo >> $TMPFILE
+	    echo "$NAME: checking for $1... $APP_PATH"
+            cat << EOF >> $TMPFILE
+### $app
+# FULL="$full"
+# TILE="$tile"
+# CENTER="$center"
+# DEFAULT="$default"
 
+EOF
 	    FULL=$full
 	    TILE=$tile
 	    CENTER=$center
@@ -219,112 +285,105 @@ find_app()
 	    APP=$app
 	    ;;
 	*)
-	echo "$NAME: checking for $1... not found."
+	    echo "$NAME: checking for $1... not found."
+            ;;
     esac
 }
 
-search_xsri()
-{
-	### xsri
-	full="xsri --scale-width=100 --scale-width=100"
-	tile="xsri --tile"
-	center="xsri --center-x --center-y"
-	default=$center
-	find_app xsri
+search_xsri() {
+    full='xsri --scale-width=100 --scale-width=100'
+    tile='xsri --tile'
+    center='xsri --center-x --center-y'
+    default=$center
+    find_app xsri
 }
 
-search_display()
-{
-    ### display
-    full="display -geometry 800x600 -window root"
-    tile="display -window root"
-    center="display -backdrop -window root"
+search_display() {
+    full='display -geometry 800x600 -window root'
+    tile='display -window root'
+    center='display -backdrop -window root'
     default=$center
     find_app display
 }
 
-search_Esetroot()
-{
-    ### Esetroot
-    full="Esetroot -scale"
-    tile="Esetroot"
-    center="Esetroot -c"
+search_Esetroot() {
+    full='Esetroot -scale'
+    tile='Esetroot'
+    center='Esetroot -c'
     default=$center
     find_app Esetroot
 }
 
-search_wmsetbg()
-{
-    ### wmsetbg
-    full="wmsetbg -s -S"
-    tile="wmsetbg -t"
-    center="wmsetbg -e"
+search_wmsetbg() {
+    full='wmsetbg -s -S'
+    tile='wmsetbg -t'
+    center='wmsetbg -e'
     default=$center
     find_app wmsetbg
 }
 
-search_xli()
-{
-    ### xli
+search_xli() {
     case `which xsetbg 2>&1` in
 	*/*xsetbg)
-	    full="xsetbg -fillscreen"
-	    tile="xsetbg"
-	    center="xsetbg -center"
+	    full='xsetbg -fillscreen'
+	    tile='xsetbg'
+	    center='xsetbg -center'
 	    default=$center
-	    app="xsetbg (xli)"
+	    app='xsetbg (xli)'
 	    find_app xsetbg
 	    ;;
 	*)
-	    case `which xli 2>&1` in */*xli)
-		full="xli -fillscreen -onroot -quiet"
-		tile="xli -onroot -quiet"
-		center="xli -center -onroot quiet"
-		default=$center
-		app=xli
-		find_app xli
+	    case `which xli 2>&1` in
+                */*xli)
+		    full='xli -fillscreen -onroot -quiet'
+		    tile='xli -onroot -quiet'
+		    center='xli -center -onroot quiet'
+		    default=$center
+		    app=xli
+		    find_app xli
+                    ;;
 	    esac
+            ;;
     esac
 }
 
-search_qiv()
-{
-    ### qiv
-    full="qiv --root_s"
-    tile="qiv --root_t"
-    center="qiv --root"
+search_qiv() {
+    full='qiv --root_s'
+    tile='qiv --root_t'
+    center='qiv --root'
     default=$center
     find_app qiv
 }
 
-search_xv()
-{
-    ### xv
-    full="xv -max -smooth -root -quit"
-    tile="xv -root -quit"
-    center="xv -rmode 5 -root -quit"
+search_xv() {
+    full='xv -max -smooth -root -quit'
+    tile='xv -root -quit'
+    center='xv -rmode 5 -root -quit'
     default=$center
     find_app xv
 }
 
 
-rm_tmpfiles()
-{
+rm_tmpfiles() {
     [ -f $TMPFILE ] && rm -f $TMPFILE
-    [ -f $TMPFILE2 ] && rm -f $TMPFILE2
 }
 
 
-create_config()
-{
+create_config() {
     trap rm_tmpfiles INT QUIT STOP TERM
-    case $UID in 0)
-	if [ "$ARGUMENT" != "-r" ]; then
-	    echo "$NAME: running X as root is a security hazard, and is NOT a good idea!"
-	    echo "$NAME: if you insist upon having a ~/.fluxbox/bsetbg for root, run bsetbg with"
-	    echo "$NAME: the '-r' flag to force its creation. you have been warned!"
-	    exit 1
-	fi
+    case `whoami` in root)
+	    if [ ! "$ARGUMENT" = "-r" ]; then
+                cat << EOF >&2
+
+$NAME: Running X as root is a security hazard, and is NOT a good idea!
+$NAME: If you insist upon having a ~/.fluxbox/bsetbg for root, run bsetbg with
+$NAME: the '-r' flag to force its creation. You have been warned!
+$NAME: And you will be warned again and again and again. Don't you get it yet?
+$NAME: DON'T DO IT!!!
+EOF
+	        exit 1
+	    fi
+            ;;
     esac
 
     case $ARGUMENT in
@@ -333,6 +392,7 @@ create_config()
 	    ;;
 	*)
 	    echo "$NAME: $CONFIG not found, creating..."
+            ;;
     esac
 
     rm_tmpfiles
@@ -341,177 +401,214 @@ create_config()
 	search_$app
     done
 
-    if [ -z "$FULL" ] || [ -z "TILE" ] || [ -z "$CENTER" ]; then
+    if [ -z "$FULL" -o -z "$TILE" -o -z "$CENTER" ]; then
 	rm -f $TMPFILE
-	INFO= && error_msg 3
+	unset INFO
+        error_msg 3
     fi
 
-    if [ ! -d ~/.fluxbox ]; then
-    	mkdir ~/.fluxbox
+    if [ ! -d ${HOME}/.fluxbox ]; then
+    	mkdir ${HOME}/.fluxbox
     fi
 
-    echo "# $CONFIG" >> $CONFIG
-    echo "#" >> $CONFIG
-    echo "# automagically generated with loving care by $NAME $VERSION on `date`" >> $CONFIG
-    echo "#" >> $CONFIG
-    echo "# uncomment the set below that corresponds to your favorite root-image" >> $CONFIG
-    echo "# application, or mix and match to suit your pleasure." >> $CONFIG
-    echo "#" >> $CONFIG
-    echo "# xli misbehaves under larger screen resolutions when using the -fillscreen" >> $CONFIG
-    echo "# option. use -fullscreen if your resolution is higher than 1024x768." >> $CONFIG
-    echo "#" >> $CONFIG
-    echo; echo >> $CONFIG
-    echo "### $APP" >> $CONFIG
-    echo "FULL=\"$FULL\"" >> $CONFIG
-    echo "TILE=\"$TILE\"" >> $CONFIG
-    echo "CENTER=\"$CENTER\"" >> $CONFIG
-    echo "DEFAULT=\"$DEFAULT\"" >> $CONFIG
-    echo >> $CONFIG
- 
-    cat $TMPFILE | grep -v $APP > $TMPFILE2
-    cat "$TMPFILE2" >> $CONFIG
+    cat << EOF > ${CONFIG}
 
-    rm -f $TMPFILE $TMPFILE2
+# $CONFIG
+#
+# Automagically generated with loving care by $NAME $VERSION on `date`
+#
+# Uncomment the set below that corresponds to your favorite root-image
+# application, or mix and match to suit your pleasure.
+#
+# xli misbehaves under larger screen resolutions when using the -fullscreen
+# option. use -fullscreen if your resolution is higher than 1024x768.
+#
+
+
+### $APP
+FULL="$FULL"
+TILE="$TILE"
+CENTER="$CENTER"
+DEFAULT="$DEFAULT"
+
+EOF
+
+    grep -v ${APP} ${TMPFILE} >> ${CONFIG}
+
+    rm -f $TMPFILE
 
     if [ -f $CONFIG ]; then
 	echo "$NAME: default configuration was created in $CONFIG."
     else
-	echo "ERROR: $CONFIG not found!" && exit 1
+	echo "ERROR: $CONFIG not found!"
+        exit 1
     fi
 }
 
-check_config_apps()
-{
+check_config_apps() {
     BGAPP=$1
-    case `which $1 2>&1` in
-	*/*$1)
-	    BGAPP_MSG="`which $1`"
+    APP_PATH=`which $BGAPP 2>&1`
+    case ${APP_PATH} in
+	*/*$BGAPP)
+	    BGAPP_MSG="$APP_PATH"
 	    ;;
 	*)
 	    BGAPP_MSG="$BGAPP: not found"
 	    APP_ERROR=`expr $APP_ERROR + 1`
+            ;;
     esac
 }
 
 
-check_config_vars()
-{
+check_config_vars() {
     ERROR=0
     APP_ERROR=0
 
-    if [ -z "$FULL" ]; then
-	FULL_MSG="(no value)" && ERROR=`expr $ERROR + 1`
-    else
-	check_config_apps $FULL
-	FULL_BGAPP_MSG=$BGAPP_MSG
-	FULL_BGAPP=$BGAPP
-	FULL_MSG="$FULL" 
-    fi
-
-    if [ -z "$TILE" ]; then
-	TILE_MSG="(no value)" && ERROR=`expr $ERROR + 1`
-    else
-	check_config_apps $TILE
-	TILE_BGAPP_MSG=$BGAPP_MSG
-	TILE_BGAPP=$BGAPP
-	TILE_MSG="$TILE"
-    fi
-
-    if [ -z "$CENTER" ]; then
-	CENTER_MSG="(no value)" && ERROR=`expr $ERROR + 1`
-    else
-	check_config_apps $CENTER
-	CENTER_BGAPP_MSG=$BGAPP_MSG
-	CENTER_BGAPP=$BGAPP
-	CENTER_MSG="$CENTER"
-    fi
-
-    if [ -z "$DEFAULT" ]; then
-	DEFAULT_MSG="(no value)" && ERROR=`expr $ERROR + 1`
-    else
-	check_config_apps $DEFAULT
-	DEFAULT_BGAPP_MSG=$BGAPP_MSG
-	DEFAULT_BGAPP=$BGAPP
-	DEFAULT_MSG="$DEFAULT"
-    fi
+    case $FB_ARG in
+	$FULL)
+	    if [ -z "$FULL" ]; then
+		FULL_MSG="(no value)"
+		ERROR=`expr $ERROR + 1`
+	    else
+		check_config_apps $FULL
+		FULL_BGAPP_MSG=$BGAPP_MSG
+		FULL_BGAPP=$BGAPP
+		FULL_MSG="$FULL"
+	    fi
+	    ;;
+	$TILE)
+	    if [ -z "$TILE" ]; then
+		TILE_MSG="(no value)"
+		ERROR=`expr $ERROR + 1`
+	    else
+		check_config_apps $TILE
+		TILE_BGAPP_MSG=$BGAPP_MSG
+		TILE_BGAPP=$BGAPP
+		TILE_MSG="$TILE"
+	    fi
+	    ;;
+	$CENTER)
+	    if [ -z "$CENTER" ]; then
+		CENTER_MSG="(no value)"
+		ERROR=`expr $ERROR + 1`
+	    else
+		check_config_apps $CENTER
+		CENTER_BGAPP_MSG=$BGAPP_MSG
+		CENTER_BGAPP=$BGAPP
+		CENTER_MSG="$CENTER"
+	    fi
+	    ;;
+	*)
+	    if [ -z "$DEFAULT" ]; then
+		DEFAULT_MSG="(no value)"
+		ERROR=`expr $ERROR + 1`
+	    else
+		check_config_apps $DEFAULT
+		DEFAULT_BGAPP_MSG=$BGAPP_MSG
+		DEFAULT_BGAPP=$BGAPP
+		DEFAULT_MSG="$DEFAULT"
+	    fi
+	    ;;
+    esac
 }
 
 
-final_error_check()
-{
+final_error_check() {
     case $ARGUMENT in
 	*full|-f|c)
 	    OPTION=FULL
 	    VALUE=$FULL_MSG
 	    FB_ARG=$FULL
-	    case $FULL_BGAPP_MSG in *"not found")
-		APP=$FULL_BGAPP
-		error_msg nobgapp
+	    case $FULL_BGAPP_MSG in
+                *'not found')
+		    APP=$FULL_BGAPP
+		    error_msg nobgapp
+                    ;;
 	    esac
 	    ;;
 	*tile|-t|t)
 	    OPTION=TILE
 	    VALUE=$TILE_MSG
 	    FB_ARG=$TILE
-	    case $TILE_BGAPP_MSG in *"not found")
-		APP=$TILE_BGAPP
-		error_msg nobgapp
+	    case $TILE_BGAPP_MSG in
+                *'not found')
+		    APP=$TILE_BGAPP
+		    error_msg nobgapp
+                    ;;
 	    esac
 	    ;;
 	*center|-c|c)
 	    OPTION=CENTER
 	    VALUE=$CENTER_MSG
 	    FB_ARG=$CENTER
-	    case $CENTER_BGAPP_MSG in *"not found")
-		APP=$CENTER_BGAPP
-		error_msg nobgapp
-	    esac		    
+	    case $CENTER_BGAPP_MSG in
+                *'not found')
+		    APP=$CENTER_BGAPP
+		    error_msg nobgapp
+                    ;;
+	    esac
 	    ;;
+        *last|-l|l)
+            OPTION=DEFAULT
+            VALUE=$DEFAULT_MSG
+            FB_ARG=$DEFAULT
+            ARGUMENT=default
+            case $DEFAULT_BGAPP_MSG in
+                *'not found')
+                    APP=$DEFAULT_BGAPP
+                    error_msg nobgapp
+                    ;;
+            esac
+            ;;
 	*)
 	    OPTION=DEFAULT
 	    VALUE=$DEFAULT_MSG
 	    FB_ARG=$DEFAULT
 	    ARGUMENT=default
-	    case $DEFAULT_BGAPP_MSG in *"not found")
-		APP=$DEFAULT_BGAPP
-		error_msg nobgapp
+	    case $DEFAULT_BGAPP_MSG in
+                *'not found')
+		    APP=$DEFAULT_BGAPP
+		    error_msg nobgapp
+                    ;;
 	    esac
 
-	    if [ "$IMAGE_EXISTS" != yes ]; then
-	    error_msg 4; fi
+	    if [ ! "$IMAGE_EXISTS" = yes ]; then
+	        error_msg 4; fi
+            ;;
     esac
 
-    case $VALUE in "(no value)")
-        if [ -n "$APP" ]; then
-	    error_msg 2
-	else
-	    error_msg 1
-	fi
+    case $VALUE in
+        '(no value)')
+            if [ -n "$APP" ]; then
+	        error_msg 2
+	    else
+	        error_msg 1
+	    fi
+            ;;
     esac
 }
 
 
-check_config()
-{
+check_config() {
     if [ ! -f $CONFIG ]; then
 	create_config
     fi
 
-    check_old_config
     . $CONFIG
-    check_config_vars
+    check_old_config
     final_error_check
+    check_config_vars
 }
 
 
-check_image()
-{
+check_image() {
     case "$IMAGE" in
 	*~/*)
 	    IMAGE="$HOME/`basename $IMAGE`"
+            ;;
     esac
 
-    case $NOARG in 
+    case $NOARG in
 	yes|y|1)
 	    NUM=4
 	    ;;
@@ -521,21 +618,22 @@ check_image()
 	    else
 		NUM=6
 	    fi
-	    case $IMAGE in $ARGUMENT|"."|"./")
-	        error_msg 6
+	    case $IMAGE in
+                $ARGUMENT|'.'|'./')
+	            error_msg 6
+                    ;;
 	    esac
     esac
 
-    if [ ! -e "$IMAGE" ]; then
-	error_msg $NUM  
+    if [ ! -r "$IMAGE" ]; then
+	error_msg $NUM
     else
 	IMAGE_EXISTS=yes
     fi
 }
 
 
-exec_app()
-{
+exec_app() {
     case `which $APP 2>&1` in
 	*/*$APP)
 	    check_image
@@ -546,12 +644,12 @@ exec_app()
 	    check_image
 	    check_config
 	    exec $FB_ARG "$IMAGE"
+            ;;
     esac
 }
 
 
-check_bsetroot_args()
-{
+check_bsetroot_args() {
     case $1 in
 	-mod)
 	    ARGS="$1 $2 $3 $4 $5 $6 $7"
@@ -561,150 +659,181 @@ check_bsetroot_args()
 	    ;;
         -solid)
 	    ARGS="$1 $2"
+            ;;
     esac
 }
 
 
-exec_bsetroot()
-{
+exec_bsetroot() {
     case `which bsetroot 2>&1` in
         */*bsetroot)
 	    exec bsetroot $ARGS
 	    ;;
         *)
 	    error_msg 7
+            ;;
     esac
 }
 
 
-check_old_config()
-{
-   if [ -f $CONFIG ]; then
-	. $CONFIG
-	if [ -n "$BGAPP" ] || [ -n "$CENTER_ARGS" ] || \
-	   [ -n "$TILED_ARGS" ] || [ -n "$OTHER_ARGS" ] || \
-	   [ -n "$DEFAULT_ARGS" ]; then
-		echo " this version of $NAME ($VERSION) no longer uses the old configuration format."
-	      	echo " please update $CONFIG with the new syntax:"
-		echo
-		echo "        CENTER=\"value\""
-		echo "        FULL=\"value\""
-		echo "        TILE=\"value\""
-	        echo "        DEFAULT=\"value\""
-		echo
-		echo "     see the sample.config file for details."
-		exit 0
+check_old_config() {
+    if [ -f $CONFIG ]; then
+	if [ -n "$BGAPP"      -o -n "$CENTER_ARGS" -o \
+             -n "$TILED_ARGS" -o -n "$OTHER_ARGS"  -o \
+             -n "$DEFAULT_ARGS" ]; then
+            cat << EOF >&2
+This version of $NAME ($VERSION) no longer uses the old configuration format."
+Please update $CONFIG with the new syntax:"
+
+CENTER="value"
+FULL="value"
+TILE="value"
+DEFAULT="value"
+
+Look at the sample.config file for details.
+EOF
+            exit 1
 	fi
     fi
 }
 
 
-debug()
-{ 
-    echo "DEBUG:--------------------------"
-    echo "config: $CONFIG"
-    echo "full: $FULL"
-    echo "tile: $TILE"
-    echo "center: $CENTER"
-    echo "default: $DEFAULT"
-    echo "error: $ERROR"
-    echo "app error: $APP_ERROR"
-    echo "argument: $ARGUMENT"
-    echo "________________________________"
-    echo
+debug() {
+cat << EOF
+DEBUG:--------------------------
+config:    $CONFIG
+full:      $FULL
+tile:      $TILE
+center:    $CENTER
+default:   $DEFAULT
+error:     $ERROR
+app error: $APP_ERROR
+argument:  $ARGUMENT
+________________________________
+EOF
 }
 
 IMAGE_APPS="display Esetroot wmsetbg xv xli qiv xsri"
 CONFIG="$HOME/.fluxbox/bsetbg"
-NAME=bsetbg
-VERSION=1.12
-MORE="(C) 2000 by lordzork industries (http://lordzork.com/)"
+LASTIMAGEFILE="$HOME/.fluxbox/bsetbg.lastimage"
+NAME=`basename $0`
+VERSION=1.13
+MORE='(C) 2000 by lordzork industries (http://lordzork.com/)'
 PATH=$PATH:/usr/bin:/usr/local/bin:/usr/X11R6/bin:/usr/X11/bin
-TMPFILE=/tmp/bsetbg.1
-TMPFILE2=/tmp/bsetbg.2
+TMPFILE=$CONFIG.tmp
 ARGUMENT=$1
-
 
 which grep  > /dev/null 2> /dev/null || error_msg nogrep
 
-case $1 in 
+case $1 in
     *-full|-f|f)
-   	check_config
-	IMAGE=$2 && check_image
-	exec $FULL "$IMAGE"
-	;;
+        check_config
+        IMAGE=$2
+        check_image
+        echo -e "full\n$IMAGE" > $LASTIMAGEFILE
+        exec $FULL "$IMAGE"
+        ;;
     *-tile|*tiled|-t|t)
-   	check_config
-	IMAGE=$2 && check_image
-	exec $TILE "$IMAGE"
-	;;
+        check_config
+        IMAGE=$2
+        check_image
+        echo -e "tile\n$IMAGE" > $LASTIMAGEFILE
+        exec $TILE "$IMAGE"
+        ;;
     *-center|-c|c)
-   	check_config
-	IMAGE=$2 && check_image
-	exec $CENTER "$IMAGE"
-	;;
+        check_config
+        IMAGE=$2
+        check_image
+        echo -e "center\n$IMAGE" > $LASTIMAGEFILE
+        exec $CENTER "$IMAGE"
+        ;;
+    *-last|-l|l)
+        check_config
+        LASTACTION="`head -n 1 $LASTIMAGEFILE 2> /dev/null`"
+        IMAGE="`tail -n 1 $LASTIMAGEFILE 2> /dev/null`" && check_image
+        ACTION=$DEFAULT
+        case "$LASTACTION" in
+            full)   ACTION=$FULL ;;
+            tile)   ACTION=$TILE ;;
+            center) ACTION=$CENTER ;;
+            *)  echo "Error: $LASTIMAGEFILE is kaputt" >&2
+                exit 1
+                ;;
+        esac
+        exec $ACTION "$IMAGE"
+        ;;
     *-app|-a|a)
-	APP=$2
-	ARGS="$3"
-	case $# in
-	    4)
-		ARGMENT=$3
-		IMAGE=$4 
-		exec_app
-		;;
-	    5)
-		COMMAND=`shift 1 && echo $*`
-		ARGUMENT=$4
-		IMAGE=$5
-		exec_app
-		;;
-	    *)
-		error_msg 8
-	esac
-	;;
+        APP=$2
+        ARGS="$3"
+        case $# in
+            4)
+                ARGUMENT=$3
+                IMAGE=$4
+                exec_app
+                ;;
+            5)
+                COMMAND=`shift && echo $*`
+                ARGUMENT=$4
+                IMAGE=$5
+                exec_app
+                ;;
+            *)
+                error_msg 8
+                ;;
+        esac
+        ;;
     -mod|-gradient|-solid)
-	check_bsetroot_args $*
-	exec_bsetroot
-	;;
+        check_bsetroot_args $*
+        exec_bsetroot
+        ;;
     -display)
-	shift 1 && check_bsetroot_args $*
-	ARGS="-display $ARGS"
-	exec_bsetroot
-	;;
+        shift 1 && check_bsetroot_args $*
+        ARGS="-display $ARGS"
+        exec_bsetroot
+        ;;
     *-info|-i|i)
-	INFO=yes
-	check_config
-	info_msg
-	;;
+        INFO=yes
+        check_config
+        info_msg
+        ;;
     *-version|-v|v)
-	echo; echo "    $NAME version $VERSION"; echo "    $MORE";  exit 0
-	;;
+        cat << EOF
+
+$NAME version $VERSION
+$MORE
+EOF
+        ;;
     *-help|-h|h)
-	help_msg
-	;;
+        help_msg
+        ;;
     -r)
-	case $UID in
-	    0)
-		if [ -f $CONFIG ]; then
-		    exit 1
-		else
-		    create_config
-		fi		
-		;;
-	    *)
-		exit 1
-	esac
-	;;
+        case `whoami` in
+            root)
+                if [ -f $CONFIG ]; then
+                    echo 'Error: Config already exists' >&2
+                    exit 1
+                else
+                    create_config
+                fi
+                ;;
+            *)
+                echo 'Error: -r is for creating a config for root and your are not root' >&2
+                exit 1
+        esac
+        ;;
     *)
-	if [ -n "$1" ]; then
-	    NOARG=yes
-	    IMAGE=$1 && check_image
-	    check_config && final_error_check
-	    exec $DEFAULT "$1"
-	else
-	    if [ ! -f $CONFIG ]; then
-		create_config && exit 0
-	    fi
-	    help_msg
-	fi
+        if [ -n "$1" ]; then
+            NOARG=yes
+            IMAGE=$1
+            check_image
+            check_config && final_error_check
+            echo -e "default\n$IMAGE" > $LASTIMAGEFILE
+            exec $DEFAULT "$1"
+        else
+            if [ ! -f $CONFIG ]; then
+                create_config
+            fi
+            help_msg
+        fi
+        ;;
 esac
