@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.34 2004/06/13 00:31:29 fluxgen Exp $
+// $Id: Menu.hh,v 1.35 2004/06/13 10:58:34 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -146,7 +146,6 @@ public:
     inline unsigned int height() const { return menu.window.height(); }
     inline unsigned int numberOfItems() const { return menuitems.size(); }
     inline int currentSubmenu() const { return which_sub; } 
-    inline unsigned int titleHeight() const { return menu.title_h; }
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
@@ -161,8 +160,6 @@ public:
 protected:
 
     inline void setTitleVisibility(bool b) { title_vis = b; m_need_update = true; }
-    inline void setMovable(bool b) { movable = b; }
-    inline void setHideTree(bool h) { hide_tree = h; }
 
     virtual void itemSelected(int button, unsigned int index) { }
     virtual int drawItem(unsigned int index, bool highlight = false, 
@@ -192,12 +189,16 @@ private:
     Menuitems menuitems;
 
     const unsigned int m_screen_width, m_screen_height;
-    bool moving, visible, movable, torn, internal_menu, title_vis, shifted,
-        hide_tree;
+    bool moving; ///< if we're moving/draging or not
+    bool visible; ///< menu visibility
+    bool torn; ///< torn from parent
+    bool internal_menu; ///< whether we should destroy this menu or if it's managed somewhere else
+    bool title_vis; ///< title visibility
+    bool shifted; ///< if the menu is shifted to the other side of the parent
 	
     int which_sub, which_press, which_sbl;
     Alignment m_alignment;
-    int m_border_width;
+
     struct _menu {
         Pixmap frame_pixmap, title_pixmap, hilite_pixmap, sel_pixmap;
         FbTk::FbWindow window, frame, title;
@@ -205,7 +206,8 @@ private:
         std::string label;
         int x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
             grab_x, grab_y;
-        unsigned int title_h, frame_h, item_w, item_h, bevel_w;
+
+        unsigned int frame_h, item_w;
     } menu;
 
     Drawable m_root_pm;
