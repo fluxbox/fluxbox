@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/10:
+  * Clean up some unused variables (thanks Ryan O'Hara)
+    FbTk/XLayer.cc
 *04/09/09:
   * tidy+replace qiv with display in screenshot, add jpg option (Han)
     fluxbox-generate_menu.in

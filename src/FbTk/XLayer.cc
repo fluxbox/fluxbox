@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.9 2003/07/20 18:05:40 rathnor Exp $
+// $Id: XLayer.cc,v 1.10 2004/09/10 04:03:58 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -53,7 +53,7 @@ void XLayer::restack() {
     size_t j=0;
     
     // add all the windows from each item
-    for (size_t i=0; it != it_end; ++it, i++) {
+    for (; it != it_end; ++it) {
         XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
         XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
         for (; wit != wit_end; ++wit) {
@@ -72,7 +72,7 @@ int XLayer::countWindows() {
     int num_windows = 0;
     iterator it = itemList().begin();
     iterator it_end = itemList().end();
-    for (size_t i=0; it != it_end; ++it, i++) {
+    for (; it != it_end; ++it) {
         num_windows += (*it)->numWindows();
     }
     return num_windows;
