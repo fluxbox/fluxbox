@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.9 2002/01/27 12:52:02 fluxgen Exp $
+// $Id: Tab.hh,v 1.10 2002/02/04 06:51:15 fluxgen Exp $
 
 #ifndef _TAB_HH_
 #define _TAB_HH_
@@ -100,6 +100,7 @@ private:
 	int setPositionLRAlignHelper(Alignment align);
 	void setTabWidth(unsigned int w);
 	void setTabHeight(unsigned int h);
+	unsigned int numObjects();
 	unsigned int calcRelativeWidth();
 	unsigned int calcRelativeHeight();
 	unsigned int calcCenterXPos();

@@ -13,18 +13,18 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.19 2002/02/02 18:20:44 pekdon Exp $
+// $Id: Tab.cc,v 1.20 2002/02/04 06:50:48 fluxgen Exp $
 
 #include "Tab.hh"
 
 #ifdef HAVE_CONFIG_H
-#  include "../config.h"
+#	include "../config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
@@ -92,7 +92,7 @@ Tab::~Tab() {
 //-------------------------------------------------
 void Tab::createTabWindow() {
 	unsigned long attrib_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
-			      CWColormap | CWOverrideRedirect | CWEventMask;
+			CWColormap | CWOverrideRedirect | CWEventMask;
 	XSetWindowAttributes attrib;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
@@ -152,11 +152,10 @@ void Tab::focus() {
 //-----------------------------------------
 void Tab::raise() {
 	//get first tab
-	Tab *first = 0;
-	first = getFirst(this);
+	Tab *tab = 0;
 	//raise tabs
-	for (; first!=0; first = first->m_next)
-		m_win->getScreen()->raiseWindows(&first->m_tabwin, 1);
+	for (tab = getFirst(this); tab!=0; tab = tab->m_next)
+		m_win->getScreen()->raiseWindows(&tab->m_tabwin, 1);
 }
 
 //-------------- lower --------------------
@@ -165,9 +164,9 @@ void Tab::raise() {
 //-----------------------------------------
 void Tab::lower() {
 	Tab *current = this;
-	FluxboxWindow *win = 0; //convinence
+	FluxboxWindow *win = 0; //convenience
 	//this have to be done in the correct order, otherwise we'll switch the window
-	//beeing ontop in the group
+	//being ontop in the group
 	do { 
 		XLowerWindow(m_display, current->m_tabwin); //lower tabwin and tabs window
 		win = current->getWindow(); 
@@ -191,42 +190,43 @@ void Tab::loadTheme() {
 	Pixmap tmp = m_focus_pm;
 	BTexture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
 
- 	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
+	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
 		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_focus);
 		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
-  		  m_focus_pm = None;
-	    m_focus_pixel = pt->getColor()->getPixel();
-  	} else
-    	m_focus_pm =
-	      image_ctrl->renderImage(m_size_w, m_size_h, pt);
-  	if (tmp) image_ctrl->removeImage(tmp);
-		
+			m_focus_pm = None;
+			m_focus_pixel = pt->getColor()->getPixel();
+		} else
+			m_focus_pm =
+				image_ctrl->renderImage(m_size_w, m_size_h, pt);
+
+		if (tmp) image_ctrl->removeImage(tmp);
+
 	} else {
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
-  		  m_focus_pm = None;
-	    m_focus_pixel = texture->getColor()->getPixel();
-  	} else
-    	m_focus_pm =
-	      image_ctrl->renderImage(m_size_w, m_size_h, texture);
-  	if (tmp) image_ctrl->removeImage(tmp);
+			m_focus_pm = None;
+			m_focus_pixel = texture->getColor()->getPixel();
+		} else
+			m_focus_pm =
+				image_ctrl->renderImage(m_size_w, m_size_h, texture);
+		if (tmp) image_ctrl->removeImage(tmp);
 	}
-	
+
 	tmp = m_unfocus_pm;
 	texture = &(m_win->getScreen()->getWindowStyle()->tab.l_unfocus);
-  
+
 	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
 		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_unfocus);
 		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_unfocus_pm = None;
 			m_unfocus_pixel = pt->getColor()->getPixel();
-  		} else
+		} else
 			m_unfocus_pm =
 			image_ctrl->renderImage(m_size_w, m_size_h, pt);
 	} else {
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_unfocus_pm = None;
 			m_unfocus_pixel = texture->getColor()->getPixel();
-  		} else
+		} else
 			m_unfocus_pm =
 				image_ctrl->renderImage(m_size_w, m_size_h, texture);
 	}
@@ -279,14 +279,14 @@ void Tab::stick() {
  
 	//now do stick for all windows in the list
 	for (tab = getFirst(this); tab != 0; tab = tab->m_next) {
-		FluxboxWindow *win = tab->m_win; //just for convenient
+		FluxboxWindow *win = tab->m_win; //just for convenience
 		if (win->isStuck()) {
 			win->blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->stuck = false;
 			if (!win->isIconic())
-      	win->getScreen()->reassociateWindow(win, -1, true);
-				    
+				win->getScreen()->reassociateWindow(win, -1, true);
+
 		} else {
 			win->stuck = true;
 			win->blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
@@ -351,7 +351,7 @@ void Tab::draw(bool pressed) {
 	unsigned int tabtext_w;
 
 	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
-		   m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
+		m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
 
 	// Different routines for drawing rotated text
 	if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
@@ -543,7 +543,7 @@ void Tab::calcIncrease(void) {
 
 	Tab *tab;
 	int inc_x = 0, inc_y = 0;
-	unsigned int tabs = 0, i = 0;
+	unsigned int i = 0, tabs = numObjects();
 
 	if (m_win->getScreen()->getTabPlacement() == PTOP ||
 			m_win->getScreen()->getTabPlacement() == PBOTTOM ||
@@ -588,9 +588,7 @@ void Tab::calcIncrease(void) {
 		}
 	}
 
-	for (tab = getFirst(this); tab!=0; tab = tab->m_next, tabs++);
-
-	for (tab = getFirst(this); tab!=0; tab = tab->m_next, i++){
+	for (tab = getFirst(this); tab!=0; tab = tab->m_next, i++) {
 
 	//TODO: move this out from here?
 		if ((m_win->getScreen()->getTabPlacement() == PTOP ||
@@ -672,7 +670,7 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 							m_win->getScreen()->getRootWindow(),
 							be->x_root, be->y_root, &dest_x, &dest_y, &child)) {
 			
-			Tab *tab 	   = Fluxbox::instance()->searchTab(child);
+			Tab *tab = Fluxbox::instance()->searchTab(child);
 			FluxboxWindow *win = Fluxbox::instance()->searchWindow(child);
 			//search tablist for a tabwindow
 			if ( (tab!=0) || (m_win->getScreen()->isSloppyWindowGrouping() &&
@@ -1067,16 +1065,23 @@ unsigned int Tab::calcRelativeWidth() {
 	return ((m_win->getWidth() + m_win->getScreen()->getBorderWidth2x())/num);
 }
 
+//--------------- numObjects -------------------
+// Returns the number of objects in
+// the TabGroup. 
+//-----------------------------------------------
+unsigned int Tab::numObjects() {
+	unsigned int num = 0;
+	for (Tab *tab = getFirst(this); tab != 0; tab = tab->m_next, num++);
+	return num;
+}
+
 //------------- calcRelativeHeight -------
 // Returns: Calculated height for relative 
 // alignment
 //----------------------------------------
 unsigned int Tab::calcRelativeHeight() {
-	unsigned int num=0;
-	//calculate num objs in list (extract this to a function?)
-	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
-
-	return ((m_win->getHeight() + m_win->getScreen()->getBorderWidth2x())/num);
+	return ((m_win->getHeight() + 
+			m_win->getScreen()->getBorderWidth2x())/numObjects());
 }
 
 //------------- calcCenterXPos -----------
@@ -1084,11 +1089,8 @@ unsigned int Tab::calcRelativeHeight() {
 // centered alignment
 //----------------------------------------
 unsigned int Tab::calcCenterXPos() {
-	unsigned int num=0;
-	//calculate num objs in list (extract this to a function?)
-	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
-
-	return (m_win->getXFrame() + ((m_win->getWidth() - (m_size_w * num)) / 2));
+	return (m_win->getXFrame() + ((m_win->getWidth() - 
+			(m_size_w * numObjects())) / 2));
 }
 
 //------------- calcCenterYPos -----------
@@ -1096,11 +1098,8 @@ unsigned int Tab::calcCenterXPos() {
 // centered alignment
 //----------------------------------------
 unsigned int Tab::calcCenterYPos() {
-	unsigned int num=0;
-	//calculate num objs in list (extract this to a function?)
-	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
-
-	return (m_win->getYFrame() + ((m_win->getHeight() - (m_size_h * num)) / 2));
+	return (m_win->getYFrame() + ((m_win->getHeight() - 
+			(m_size_h * numObjects())) / 2));
 }
 
 
