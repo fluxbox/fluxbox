@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.28 2002/09/07 20:24:06 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.29 2002/10/13 21:55:56 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -36,6 +36,10 @@
 #include "Tab.hh"
 #include "Toolbar.hh"
 #include "Observer.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
 
 #ifdef	SLIT
 #include "Slit.hh"
@@ -161,7 +165,7 @@ public:
 	void update(FbTk::Subject *changed);
 
 	void attachSignals(FluxboxWindow &win);
-
+	
 	virtual void timeout();
 	
 	inline const Cursor &getSessionCursor() const { return cursor.session; }
@@ -259,6 +263,7 @@ private:
 
 	FluxboxWindow *focused_window, *masked_window;
 	BTimer timer;
+
 
 #ifdef		HAVE_GETPID
 	Atom fluxbox_pid;
