@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.12 2003/07/28 15:06:33 rathnor Exp $
+// $Id: Remember.hh,v 1.13 2003/12/11 15:23:14 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -59,8 +59,8 @@ public:
         { workspace = ws; workspace_remember = true; }
     inline void rememberDimensions(int width, int height) 
         { w = width; h = height; dimensions_remember = true; }
-    inline void rememberPosition(int posx, int posy)
-        { x = posx; y = posy; position_remember = true; }
+    inline void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
+        { x = posx; y = posy; refc = rfc; position_remember = true; }
     inline void rememberShadedstate(bool state)
         { shadedstate = state; shadedstate_remember = true; }
     inline void rememberTabstate(bool state)
@@ -85,6 +85,10 @@ public:
 
     bool position_remember;
     int x,y;
+    unsigned char refc;    // referenceCorner-> 0 - upperleft
+                           //                   1 - upperight
+                           //                   2 - lowerleft
+                           //                   3 - lowerright
 
     bool shadedstate_remember;
     bool shadedstate;
@@ -137,6 +141,17 @@ public:
         REM_SAVEONCLOSE,
         REM_LASTATTRIB // not actually used
     };
+
+    enum {
+      POS_UPPERLEFT= 0,
+      POS_UPPERRIGHT,
+      POS_LOWERLEFT,
+      POS_LOWERRIGHT,
+      POS_CENTER,
+      POS_WINCENTER
+    };
+
+
 
     // a "pattern"  to the relevant app
     // each app exists ONLY for that pattern.

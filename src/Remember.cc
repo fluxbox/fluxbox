@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.31 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: Remember.cc,v 1.32 2003/12/11 15:23:14 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -291,10 +291,18 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             if (line[0] == '#')
                 continue;  //the line is commented
             int parse_pos = 0, err = 0;
-            string str_key, str_label;
+            string str_key, str_option, str_label;
             err = FbTk::StringUtil::getStringBetween(str_key, 
                                                      line.c_str(), 
                                                      '[', ']');
+            if (err > 0) {
+                int tmp;
+                tmp= FbTk::StringUtil::getStringBetween(str_option,
+                                                        line.c_str() + err,
+                                                        '(', ')');
+                if (tmp>0)
+                  err += tmp;
+            }
             if (err > 0 ) {
                 parse_pos += err;
                 err = FbTk::StringUtil::getStringBetween(str_label, 
@@ -324,10 +332,30 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 iss >> w >> h;
                 app.rememberDimensions(w,h);
             } else if (str_key == "Position") {
-                unsigned int x,y;
-                FB_istringstream iss(str_label.c_str());
+                FB_istringstream iss;
+                unsigned int r= 0;
+                unsigned int x= 0;
+                unsigned int y= 0;
+                // more info about the parameter
+                // in ::rememberPosition
+                
+                if ( str_option.length() )
+                {
+                  if      ( str_option == "UPPERLEFT"  ) r= POS_UPPERLEFT;
+                  else if ( str_option == "UPPERRIGHT" ) r= POS_UPPERRIGHT;
+                  else if ( str_option == "LOWERLEFT"  ) r= POS_LOWERLEFT;
+                  else if ( str_option == "LOWERRIGHT" ) r= POS_LOWERRIGHT;
+                  else if ( str_option == "CENTER" )     r= POS_CENTER;
+                  else if ( str_option == "WINCENTER" )  r= POS_WINCENTER;
+                  else {
+                      iss.str(str_option);
+                      iss >> r;
+                  }
+                }
+
+                iss.str(str_label.c_str());
                 iss >> x >> y;
-                app.rememberPosition(x,y);
+                app.rememberPosition(x, y, r);
             } else if (str_key == "Shaded") {
                 app.rememberShadedstate((str_label=="yes"));
             } else if (str_key == "Tab") {
@@ -719,8 +747,32 @@ void Remember::setupFrame(FluxboxWindow &win) {
     if (app->dimensions_remember)
         win.resize(app->w, app->h);
     
-    if (app->position_remember)
+    if (app->position_remember) {
+        switch (app->refc) {
+          default:
+          case POS_UPPERLEFT: // upperleft corner
         win.move(app->x, app->y);
+              break;
+          case POS_UPPERRIGHT: // upperright corner
+              win.move(screen.width() - win.width() - app->x, app->y);
+              break;
+          case POS_LOWERLEFT: // lowerleft corner
+              win.move(app->x, screen.height() - win.height() - app->y);
+              break;
+          case POS_LOWERRIGHT: // lowerright corner
+              win.move(screen.width() - win.width() - app->x,
+                       screen.height() - win.height() - app->y);
+              break;
+          case POS_CENTER: // center of the screen, windows topleft corner is on the center
+                win.move((screen.width() / 2) + app->x,
+                         (screen.height() / 2) + app->y);
+              break;
+          case POS_WINCENTER: // the window is centered REALLY upon the center
+                win.move((screen.width() / 2) - ( win.width() / 2 ) + app->x,
+                         (screen.height() / 2) - ( win.height() / 2 ) + app->y);
+              break;
+        };
+    }
 
     if (app->shadedstate_remember)
         // if inconsistent...
