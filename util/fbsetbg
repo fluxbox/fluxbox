@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.9 2003/07/02 05:42:47 fluxgen Exp $
+# $Id: fbsetbg,v 1.10 2003/07/10 11:10:51 fluxgen Exp $
 
 #
 # Portability notes:
@@ -116,11 +116,13 @@ message() {
 }
 
 remembercommand() {
-    #if the $wallpaper path is absolute
-    echo $option > $lastwallpaper
+    grep -vs "${DISPLAY}$" ${lastwallpaper} > ${lastwallpaper}.tmp
+    mv -f ${lastwallpaper}.tmp ${lastwallpaper}
+    # Make dir/../../path/file.jpg work
     case $wallpaper in
-        /*) echo      $wallpaper >> $lastwallpaper ;;
-        *)  echo $PWD/$wallpaper >> $lastwallpaper ;;
+        # no spaces allowed between the varname and '|'
+        /*) echo $option'|'$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
+        *)  echo $option'|'$PWD/$wallpaper'|'$DISPLAY >> $lastwallpaper ;;
     esac
 }
 
@@ -244,11 +246,13 @@ case "${COMMAND_LINE_ARGUMENT}" in
         ;;
     l)
         if [ -r $lastwallpaper ];then
-            option=`head -n1 $lastwallpaper`
-            wallpaper=`tail -n1 $lastwallpaper`
+            option=`grep "${DISPLAY}$" $lastwallpaper|cut -d'|' -f1`
+            wallpaper=`grep "${DISPLAY}$" $lastwallpaper|cut -d'|' -f2`
         else
             message 'No previous wallpaper recorded. You have never used fbsetbg before.'
+            exit 1
         fi
+        remember=false
         ;;
     h) display_help ; exit 0 ;;
     T) display_tips ; exit 0 ;;
@@ -282,4 +286,4 @@ fi
 $WPSETTER $option "$wallpaper" || message "Something went wrong while setting the wallpaper
 Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
 #remember previous wallpaper
-remembercommand
+[ ! "$remember" = false ] && remembercommand
