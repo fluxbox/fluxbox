@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.154 2003/06/11 04:21:17 rathnor Exp $
+// $Id: fluxbox.cc,v 1.155 2003/06/11 10:50:59 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1736,7 +1736,7 @@ void Fluxbox::restart(const char *prog) {
     shutdown();
 
     if (prog) {
-        execlp(prog, prog, (void *) NULL);
+        execlp(prog, prog, 0);
         perror(prog);
     }
 
