@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.20 2003/10/13 22:57:14 fluxgen Exp $
+// $Id: Theme.cc,v 1.21 2003/11/16 22:33:55 rathnor Exp $
 
 #include "Theme.hh"
 
@@ -27,10 +27,12 @@
 #include "App.hh"
 #include "StringUtil.hh"
 #include "ThemeItems.hh"
+#include "Directory.hh"
 
 #include <cstdio>
 #include <memory>
 #include <iostream>
+
 using namespace std;
 
 namespace FbTk {
@@ -50,7 +52,8 @@ ThemeManager &ThemeManager::instance() {
 
 ThemeManager::ThemeManager():
     m_max_screens(ScreenCount(FbTk::App::instance()->display())),
-    m_verbose(false) {
+    m_verbose(false),
+    m_themelocation("") {
 
 }
 
@@ -71,9 +74,38 @@ bool ThemeManager::unregisterTheme(Theme &tm) {
 }
 
 bool ThemeManager::load(const std::string &filename) {
-    
-    if (!m_database.load(FbTk::StringUtil::expandFilename(filename).c_str()))
+    std::string location = FbTk::StringUtil::expandFilename(filename).c_str();
+    std::string prefix = "";
+
+    if (Directory::isDirectory(filename)) {
+        prefix = location;
+
+        location.append("/theme.cfg");
+        if (!Directory::isRegularFile(location)) {
+            cerr<<"Error loading theme file "<<location<<": not a regular file"<<endl;
+            return false;
+        }
+    } else {
+        // dirname
+        prefix = location.substr(0, location.find_last_of('/'));
+    }
+
+    if (!m_database.load(location.c_str()))
         return false;
+
+    // relies on the fact that load_rc clears search paths each time
+    if (m_themelocation != "") {
+        Image::removeSearchPath(m_themelocation);
+        m_themelocation.append("/pixmaps");
+        Image::removeSearchPath(m_themelocation);
+    }
+
+    m_themelocation = prefix;
+
+    location = prefix;
+    Image::addSearchPath(location);
+    location.append("/pixmaps");
+    Image::addSearchPath(location);
 
     //get list and go throu all the resources and load them
     ThemeList::iterator theme_it = m_themelist.begin();

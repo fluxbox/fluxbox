@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.1 2003/08/22 21:25:14 fluxgen Exp $
+// $Id: Image.cc,v 1.2 2003/11/16 22:33:55 rathnor Exp $
 
 #include "Image.hh"
 #include "StringUtil.hh"
@@ -111,6 +111,10 @@ void Image::remove(ImageBase &base) {
 
 void Image::addSearchPath(const std::string &search_path) {
     s_search_paths.push_back(search_path);
+}
+
+void Image::removeSearchPath(const std::string &search_path) {
+    s_search_paths.remove(search_path);
 }
 
 void Image::removeAllSearchPaths() {

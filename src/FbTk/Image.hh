@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.1 2003/08/22 21:25:14 fluxgen Exp $
+// $Id: Image.hh,v 1.2 2003/11/16 22:33:55 rathnor Exp $
 
 #ifndef FBTK_IMAGE_HH
 #define FBTK_IMAGE_HH
@@ -46,6 +46,8 @@ public:
     static void remove(ImageBase &base);
     /// adds a path to search images from
     static void addSearchPath(const std::string &search_path);
+    /// removes a path to search images from
+    static void removeSearchPath(const std::string &search_path);
     /// adds a path to search images from
     static void removeAllSearchPaths();
 private:

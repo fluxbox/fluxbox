@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.10 2003/09/14 11:17:21 fluxgen Exp $
+// $Id: Theme.hh,v 1.11 2003/11/16 22:33:56 rathnor Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -149,6 +149,8 @@ private:
     const int m_max_screens;
     XrmDatabaseHelper m_database;
     bool m_verbose;
+
+    std::string m_themelocation;
 };
 
 
