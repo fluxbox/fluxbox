@@ -19,16 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.2 2003/02/23 01:06:23 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.3 2003/04/25 17:35:28 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
+#include "Window.hh"
 
-WinButton::WinButton(Type buttontype, const FbTk::FbWindow &parent,
+WinButton::WinButton(const FluxboxWindow &listen_to, 
+                     Type buttontype, const FbTk::FbWindow &parent,
                      int x, int y,
                      unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
-    m_type(buttontype) {
+    m_type(buttontype), m_listen_to(listen_to) {
 
 }
 
@@ -37,48 +39,45 @@ void WinButton::exposeEvent(XExposeEvent &event) {
     drawType();
 }
 
+void WinButton::buttonReleaseEvent(XButtonEvent &event) {
+    FbTk::Button::buttonReleaseEvent(event);
+    clear();
+}
+
 void WinButton::drawType() {
     if (gc() == 0) // must have valid graphic context
         return;
 
-    Display *disp = FbTk::App::instance()->display();
     switch (m_type) {
     case MAXIMIZE:
-        XDrawRectangle(disp, window().window(),
-                       gc(),
-                       2, 2, width() - 5, height() - 5);
-        XDrawLine(disp, window().window(),
-                  gc(),
-                  2, 3, width() - 3, 3);
+        window().drawRectangle(gc(),
+                               2, 2, width() - 5, height() - 5);
+        window().drawLine(gc(),
+                          2, 3, width() - 3, 3);
         break;
     case MINIMIZE:
-        XDrawRectangle(disp, window().window(),
-                       gc(),
-                       2, height() - 5, width() - 5, 2);
+        window().drawRectangle(gc(),
+                               2, height() - 5, width() - 5, 2);
         break;
     case STICK:
-        /*        if (m_stuck) {
-                  XFillRectangle(disp, window().window(), 
-                  gc(),
-                  width()/2 - width()/4, height()/2 - height()/4,
-                  width()/2, height()/2);
-                  } else {            */
-        XFillRectangle(disp, window().window(), 
-                       gc(),
-                       width()/2, height()/2,
-                       width()/5, height()/5);
-        //    }
+        if (m_listen_to.isStuck()) {
+            window().fillRectangle(gc(),
+                                   width()/2 - width()/4, height()/2 - height()/4,
+                                   width()/2, height()/2);
+        } else {
+            window().fillRectangle(gc(),
+                           width()/2, height()/2,
+                           width()/5, height()/5);
+        }
 
         break;
     case CLOSE:    
-        XDrawLine(disp, window().window(),
-                  gc(), 
-                  2, 2,
-                  width() - 3, height() - 3);
-        XDrawLine(disp, window().window(),
-                  gc(), 
-                  2, width() - 3, 
-                  height() - 3, 2);
+        window().drawLine(gc(), 
+                          2, 2,
+                          width() - 3, height() - 3);
+        window().drawLine(gc(), 
+                          2, width() - 3, 
+                          height() - 3, 2);
         break;
     case SHADE:
         break;
@@ -88,4 +87,8 @@ void WinButton::drawType() {
 void WinButton::clear() {
     FbTk::Button::clear();
     drawType();
+}
+
+void WinButton::update(FbTk::Subject *subj) {
+    clear();
 }
