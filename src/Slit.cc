@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.72 2003/07/18 15:40:55 rathnor Exp $
+// $Id: Slit.cc,v 1.73 2003/07/19 11:55:49 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -1263,7 +1263,7 @@ void Slit::setupMenu() {
                                                                    screen(),
                                                                    screen().imageControl(),
                                                                    *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                                                                   this
+                                                                   *this
                                                                    ));
     }
                     
@@ -1344,3 +1344,10 @@ void Slit::moveToLayer(int layernum) {
     m_layeritem->moveToLayer(layernum);
     *m_rc_layernum = layernum;
 }
+
+void Slit::saveOnHead(int head) {
+    m_rc_on_head = head;
+    // reposition
+    reconfigure();
+}
+

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.65 2003/07/18 15:40:55 rathnor Exp $
+// $Id: fluxbox.hh,v 1.66 2003/07/19 11:55:49 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -118,6 +118,8 @@ public:
     inline int getNumberOfLayers() const { return *m_rc_numlayers; }
 
     // class to store layer numbers (special Resource type)
+    // we have a special resource type because we need to be able to name certain layers
+    // a Resource<int> wouldn't allow this
     class Layer {
     public:
         explicit Layer(int i) : m_num(i) {};

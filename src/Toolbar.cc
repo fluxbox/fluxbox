@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.101 2003/07/18 15:40:55 rathnor Exp $
+// $Id: Toolbar.cc,v 1.102 2003/07/19 11:55:49 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -1397,7 +1397,7 @@ void Toolbar::setupMenus() {
                         tbar.screen(),
                         tbar.screen().imageControl(),
                         *tbar.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()),
-                        &tbar
+                        tbar
                         ));
     }
 
@@ -1441,4 +1441,9 @@ void Toolbar::setupMenus() {
     menu.insert("Placement", &tbar.placementMenu());
     tbar.placementMenu().update();
     menu.update();
+}
+
+void Toolbar::saveOnHead(int head) {
+    m_rc_on_head = head;
+    reconfigure();
 }

@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/07/19:
+   * Fix xinerama options (again) for Slit and Toolbar (Simon)
+     Xinerama.hh Slit.hh/cc Toolbar.hh/cc
    * Move menu alpha setting into MenuTheme (Simon)
      - fixes alpha init on multi-screened machines
      MenuTheme.hh/cc Menu.hh/cc Screen.cc

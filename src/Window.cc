@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.204 2003/07/17 17:56:28 rathnor Exp $
+// $Id: Window.cc,v 1.205 2003/07/19 11:55:49 rathnor Exp $
 
 #include "Window.hh"
 
@@ -698,7 +698,8 @@ bool FluxboxWindow::detachClient(WinClient &client) {
 
     removeClient(client);
 
-    client.m_win = screen().createWindow(client);
+    // m_client must be valid as there should be at least one other window 
+    // otherwise this wouldn't be here (refer numClients() <= 1 return)
     m_client->raise();
     setInputFocus();
     return true;

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xinerama.hh,v 1.3 2003/07/10 11:58:36 fluxgen Exp $
+// $Id: Xinerama.hh,v 1.4 2003/07/19 11:55:49 rathnor Exp $
 
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
@@ -42,20 +42,20 @@
 template <typename ItemType> 
 class XineramaHeadMenuItem : public FbTk::MenuItem {
 public:
-    XineramaHeadMenuItem(const char *label, ItemType *object, int headnum,
+    XineramaHeadMenuItem(const char *label, ItemType &object, int headnum,
                   FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label,cmd), m_object(object), m_headnum(headnum) {}
-    XineramaHeadMenuItem(const char *label, ItemType *object, int headnum):
+    XineramaHeadMenuItem(const char *label, ItemType &object, int headnum):
         FbTk::MenuItem(label), m_object(object), m_headnum(headnum) {}
 
-    bool isEnabled() const { return true; } //m_object->screen().getOnHead(*m_object) != m_headnum; } ;
+    bool isEnabled() const { return m_object.getOnHead() != m_headnum; } 
     void click(int button, int time) {
-        //        m_object->screen().setOnHead(*m_object, m_headnum);
+        m_object.saveOnHead(m_headnum);
         FbTk::MenuItem::click(button, time);
     }
     
 private:
-    ItemType *m_object;
+    ItemType &m_object;
     int m_headnum;
 };
 
@@ -65,16 +65,16 @@ template <typename ItemType>
 class XineramaHeadMenu : public FbMenu {
 public:
     XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                     FbTk::XLayer &layer, ItemType *item);
+                     FbTk::XLayer &layer, ItemType &item);
 
 private:
-    ItemType *m_object;
+    ItemType &m_object;
 };
 
 
 template <typename ItemType>
 XineramaHeadMenu<ItemType>::XineramaHeadMenu(MenuTheme &tm, BScreen &screen, FbTk::ImageControl &imgctrl,
-                               FbTk::XLayer &layer, ItemType *item):
+                               FbTk::XLayer &layer, ItemType &item):
     FbMenu(tm, screen.screenNumber(), imgctrl, layer), 
     m_object(item) 
 {

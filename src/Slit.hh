@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.35 2003/06/24 13:42:23 fluxgen Exp $
+/// $Id: Slit.hh,v 1.36 2003/07/19 11:55:49 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -68,7 +68,7 @@ public:
     inline Direction direction() const { return *m_rc_direction; }
     inline Placement placement() const { return *m_rc_placement; }
     inline int getOnHead() const { return *m_rc_on_head; }
-    inline void saveOnHead(int head) { m_rc_on_head = head; }
+    void saveOnHead(int head);
     FbTk::Menu &menu() { return m_slitmenu; }
 
     inline const FbTk::FbWindow &window() const { return frame.window; }
