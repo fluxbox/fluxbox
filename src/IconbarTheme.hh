@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.hh,v 1.4 2003/08/13 10:03:06 fluxgen Exp $
+// $Id: IconbarTheme.hh,v 1.5 2003/08/19 21:26:45 fluxgen Exp $
 
 #ifndef ICONBARTHEME_HH
 #define ICONBARTHEME_HH
@@ -37,6 +37,7 @@ public:
     virtual ~IconbarTheme();
 
     void reconfigTheme();
+    bool fallback(FbTk::ThemeItem_base &item);
 
     void setAntialias(bool antialias);
 
@@ -55,6 +56,7 @@ private:
     FbTk::ThemeItem<FbTk::Texture> m_focused_texture, m_unfocused_texture, m_empty_texture;
     BorderTheme m_focused_border, m_unfocused_border, m_border;
     TextTheme m_focused_text, m_unfocused_text;
+    std::string m_name;
 };
 
 #endif  // ICONBARTHEME_HH

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.4 2003/08/13 10:03:06 fluxgen Exp $
+// $Id: IconbarTheme.cc,v 1.5 2003/08/19 21:26:45 fluxgen Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -36,7 +36,8 @@ IconbarTheme::IconbarTheme(int screen_num,
     m_unfocused_border(*this, name + ".unfocused", altname + ".Unfocused"),
     m_border(*this, name, altname),
     m_focused_text(*this, name + ".focused", altname + ".Focused"),
-    m_unfocused_text(*this, name + ".unfocused", altname + ".Unfocused") {
+    m_unfocused_text(*this, name + ".unfocused", altname + ".Unfocused"),
+    m_name(name) {
 
     FbTk::ThemeManager::instance().loadTheme(*this);
 
@@ -56,3 +57,36 @@ void IconbarTheme::setAntialias(bool value) {
     m_unfocused_text.setAntialias(value);
 }
 
+// fallback resources
+bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
+    using namespace FbTk;
+    ThemeManager &tm = ThemeManager::instance();
+
+    if (&m_focused_texture == &item)
+        return tm.loadItem(item, "window.title.focus", "Window.Title.Focus");
+    else if (&m_unfocused_texture == &item) {
+        return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) ? 
+                true : 
+                tm.loadItem(item, "window.title.unfocus", "Window.Title.Unfocus"));
+    } else if (&m_empty_texture == &item) {
+        return (tm.loadItem(item, m_focused_texture.name(), m_focused_texture.altName()) ? 
+                true : 
+                tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel"));
+    } else if (item.name() == m_name + ".borderWidth" || 
+               item.name() == m_name + ".focused.borderWidth" ||
+               item.name() == m_name + ".unfocused.borderWidth")
+        return tm.loadItem(item, "borderWidth", "BorderWidth");
+    else if (item.name() == m_name + ".borderColor" || 
+             item.name() == m_name + ".focused.borderColor" ||
+             item.name() == m_name + ".unfocused.borderColor")
+        return tm.loadItem(item, "borderColor", "BorderColor");
+    else if (item.name() == m_name + ".focused.font" ||
+             item.name() == m_name + ".unfocused.font")
+        return tm.loadItem(item, "window.font", "Window.Font");
+    else if (item.name() == m_name + ".focused.textColor")
+        return tm.loadItem(item, "window.label.focus.textColor", "Window.Label.Focus.TextColor");
+    else if (item.name() == m_name + ".unfocused.textColor")
+        return tm.loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
+
+    return false;
+}
