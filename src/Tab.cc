@@ -19,17 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.35 2002/10/22 14:42:58 fluxgen Exp $
+// $Id: Tab.cc,v 1.36 2002/10/25 21:03:13 fluxgen Exp $
 
 #include "Tab.hh"
-
-#ifdef HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
 #include "DrawUtil.hh"
 #include "Screen.hh"
+#include "fluxbox.hh"
+#include "Rootmenu.hh"
 
 #include <iostream>
 using namespace std;
@@ -59,7 +57,7 @@ Tab::Tab(FluxboxWindow *win, Tab *prev, Tab *next) {
 	m_move_x = m_move_y = 0;	
 	m_prev = prev; m_next = next; 
 	m_win = win;
-	m_display = Fluxbox::instance()->getXDisplay();
+	m_display = BaseDisplay::getXDisplay();
 	
 	if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
 			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
@@ -360,7 +358,6 @@ void Tab::shade() {
 // TODO: the "draw in pressed mode" 
 //-----------------------------------
 void Tab::draw(bool pressed) const {	
-	unsigned int tabtext_w;
 
 	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
 		m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
@@ -385,8 +382,8 @@ void Tab::draw(bool pressed) const {
 	*/
 	int dx=m_win->frame.bevel_w*2;
 	Theme::WindowStyle *winstyle = m_win->getScreen()->getWindowStyle();
-	int dlen = m_win->getTitle().size();
-	int l = dlen;
+	size_t dlen = m_win->getTitle().size();
+	size_t l = dlen;
 	if ( dlen > m_size_w) {
 		for (; dlen >= 0; dlen--) {
 			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
