@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
+*03/04/14:
+   * Don't create menuconfig during install and style cleanups (Han)
+     fluxbox_generate_menu 
+   * Sun compat in Makefile.am (Han)
+     data/Makefile.am
 *03/04/08:
    * Fixes in fluxbox-generate_menu (Thanks Han)
 *03/03/30:
