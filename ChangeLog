@@ -151,8 +151,8 @@ Changes for 0.9.10:
   * Fixed fallback for toolbar.button.pressed (Henrik)
     ButtonTheme.cc
 *04/07/15:
-  * Click on handle bar raises window even if
-    "click to raises" = false,
+  * Click on handle bar raises window even if 
+    "click raises" = false,
     Consistent with the title bar.
     (Henrik)
     Window.cc
