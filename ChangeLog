@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/03/11:
+  * Fix usage of 'which' - test behaviour of which to choose usage 
+    method, rather than guessing based on system (Simon)
+    fbsetbg fluxbox-generate_menu.in
 *05/02/13:
   * Romanian translation update for fluxbox-generate_menu 
    (Thanks Costin Stroie)
