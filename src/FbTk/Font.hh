@@ -1,5 +1,5 @@
-// Font.cc
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Font.cc for FbTk
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
+//$Id: Font.hh,v 1.3 2002/12/08 18:37:08 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -39,6 +39,7 @@ class FontImp;
 */
 class Font {
 public:
+
     Font(const char *name=0, bool antialias = false);
     virtual ~Font();
     /** 
@@ -66,17 +67,33 @@ public:
        Rotate font in any angle (currently only 90 degrees supported and just XFont implementation)
     */
     void rotate(float angle);
-    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
-    bool isAntialias() const { return m_antialias; }	
+
+    /**
+       Draws text to drawable
+       @param w the drawable
+       @param screen screen number
+       @param gc Graphic Context
+       @param text the text buffer
+       @param len size of text buffer
+       @param x position
+       @param y position
+       @param rotate if the text should be drawn rotated (if it's rotated before)
+    */	
+    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, bool rotate=true) const;
+    bool isAntialias() const { return m_antialias; }
+    /// @return true if the font is rotated, else false
     bool isRotated() const { return m_rotated; }
+    /// @return rotated angle
+    float angle() const { return m_angle; }
 private:
 	
-    std::auto_ptr<FontImp> m_fontimp;
-    std::string m_fontstr;
-    static bool m_multibyte;
-    static bool m_utf8mode;
-    bool m_antialias;
+    std::auto_ptr<FontImp> m_fontimp; ///< font implementation
+    std::string m_fontstr; ///< font name
+    static bool m_multibyte; ///< if the fontimp should be a multibyte font
+    static bool m_utf8mode; ///< should the font use utf8 font imp
+    bool m_antialias; ///< is font antialias
     bool m_rotated; ///< wheter we're rotated or not
+    float m_angle; ///< rotation angle
 };
 
 }; //end namespace FbTk
