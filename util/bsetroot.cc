@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.9 2002/09/15 13:08:05 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.10 2002/11/25 22:23:03 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -44,12 +44,12 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 	pixmaps = (Pixmap *) 0;
 	grad = fore = back = (char *) 0;
 
-	Bool mod = False, sol = False, grd = False;
+	bool mod = false, sol = false, grd = false;
 	int mod_x = 0, mod_y = 0, i = 0;
 
 	img_ctrl = new BImageControl*[10];
 	for (; i < getNumberOfScreens(); i++) {
-		img_ctrl[i] = new BImageControl(this, getScreenInfo(i), True);
+		img_ctrl[i] = new BImageControl(getScreenInfo(i), true);
 	}
 
 	for (i = 1; i < argc; i++) {
@@ -74,7 +74,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 			if ((++i) >= argc)
 				usage(1);
       fore = argv[i];
-      sol = True;
+      sol = true;
 
     } else if (! strcmp("-mod", argv[i])) {
       if ((++i) >= argc)
@@ -87,14 +87,14 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 				mod_x = 1;
 			if (mod_y < 1)
 				mod_y = 1;
-			mod = True;
+			mod = true;
 
 		} else if (! strcmp("-gradient", argv[i])) {
 			if ((++i) >= argc)
 				usage();
 
 			grad = argv[i];
-			grd = True;
+			grd = true;
 
 		} else if (! strcmp("-display", argv[i])) {
 			// -display passed through tests earlier... we just skip it now
