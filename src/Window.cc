@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.19 2002/01/11 17:01:31 fluxgen Exp $
+// $Id: Window.cc,v 1.20 2002/01/18 01:25:58 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -41,7 +41,6 @@
 #include "Toolbar.hh"
 #include "Window.hh"
 #include "Windowmenu.hh"
-#include "Workspace.hh"
 #include "StringUtil.hh"
 
 #ifdef		SLIT
@@ -65,26 +64,34 @@
 #include <iostream>
 using namespace std;
 
-FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
+FluxboxWindow::FluxboxWindow(Window w, BScreen *s):
+image_ctrl(0),
+moving(false), resizing(false), shaded(false), maximized(false),
+visible(false), iconic(false), transient(false), focused(false),
+stuck(false), modal(false), send_focus_message(false), managed(false),
+screen(0),
+timer(0),
+display(0),
+lastButtonPressTime(0),
+windowmenu(0),
+tab(0)
+{
 
 #ifdef		DEBUG
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
 #	ifdef		NLS
-				WindowSet, WindowCreating,
+			WindowSet, WindowCreating,
 #	else // !NLS
-				0, 0,
+			0, 0,
 #	endif // NLS
-				"FluxboxWindow::FluxboxWindow(): creating 0x%lx\n"),
+			"FluxboxWindow::FluxboxWindow(): creating 0x%lx\n"),
 		w);
 #endif // DEBUG
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
-	
-	moving = resizing = shaded = maximized = visible = iconic = false;
-	transient = focused = stuck = modal =	send_focus_message = managed = false;
 
 	blackbox_attrib.workspace = workspace_number = window_number = -1;
 
@@ -94,7 +101,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	//use tab as default
 	decorations.tab = true;
 	client.window = w;
-	tab = 0;
 	frame.window = frame.plate = frame.title = frame.handle = None;
 	frame.right_grip = frame.left_grip = None;
 
@@ -147,37 +153,16 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	client.mwm_hint = (MwmHints *) 0;
 	client.blackbox_hint = 0;
 
-	windowmenu = 0;
-	lastButtonPressTime = 0;
-	timer = 0;
-	screen = 0;
-	image_ctrl = 0;
-
 	fluxbox->grab();
-	if (! validateClient()) 
+	if (! validateClient())
 		return;
 
 	// fetch client size and placement
 	XWindowAttributes wattrib;
 	if ((! XGetWindowAttributes(display, client.window, &wattrib)) ||
-			(! wattrib.screen) || wattrib.override_redirect) {
-#ifdef		DEBUG
-		fprintf(stderr,
-						I18n::instance()->
-			getMessage(
-#	ifdef		NLS
-					 WindowSet, WindowXGetWindowAttributesFail,
-#	else // !NLS
-					 0, 0,
-#	endif // NLS
-					 "FluxboxWindow::FluxboxWindow(): XGetWindowAttributes "
-					 "failed\n"));
-#endif // DEBUG
-
-		delete this;
-
+			(! wattrib.screen) || wattrib.override_redirect) {		
 		fluxbox->ungrab();
-		return;
+		throw FluxboxWindow::XGETWINDOWATTRIB;
 	}
 
 	if (s)
@@ -185,24 +170,9 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	else
 		screen = fluxbox->searchScreen(RootWindowOfScreen(wattrib.screen));
 
-	if (! screen) {
-#ifdef		DEBUG
-		fprintf(stderr,
-			I18n::instance()->
-			getMessage(
-#	ifdef		NLS
-					WindowSet, WindowCannotFindScreen,
-#	else // !NLS
-					0, 0,
-#	endif // NLS
-					"FluxboxWindow::FluxboxWindow(): can't find screen\n"
-					"	for root window 0x%lx\n"),
-			RootWindowOfScreen(wattrib.screen));
-#endif // DEBUG
-		delete this;
-
-		fluxbox->ungrab();
-		return;
+	if (!screen) {
+		fluxbox->ungrab();		
+		throw FluxboxWindow::CANTFINDSCREEN;
 	}
 
 	image_ctrl = screen->getImageControl();
@@ -230,10 +200,8 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 #ifdef		SLIT
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
-		delete this;
-
 		fluxbox->ungrab();
-		return;
+		throw NOERROR;
 	}
 #endif // SLIT
 
@@ -332,8 +300,8 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	}
 
 	frame.window = createToplevelWindow(frame.x, frame.y, frame.width,
-							frame.height,
-							screen->getBorderWidth());	//create frame window
+		frame.height,
+		screen->getBorderWidth());	//create frame window
 	
 	fluxbox->saveWindowSearch(frame.window, this);	//save frame window
 
@@ -364,24 +332,24 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 
 
 	XGrabButton(display, Button1, AnyModifier, 
-			frame.plate, True, ButtonPressMask,
-			GrabModeSync, GrabModeSync, None, None);		
+		frame.plate, True, ButtonPressMask,
+		GrabModeSync, GrabModeSync, None, None);		
 	XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
 		
 
 	XGrabButton(display, Button1, Mod1Mask, frame.window, True,
-				ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-				GrabModeAsync, None, fluxbox->getMoveCursor());
+		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+		GrabModeAsync, None, fluxbox->getMoveCursor());
 
 	//----grab with "all" modifiers
 	grabButton(display, Button1, frame.window, fluxbox->getMoveCursor());
 	
 	XGrabButton(display, Button2, Mod1Mask, frame.window, True,
-				ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);	
+		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);	
 		
 	XGrabButton(display, Button3, Mod1Mask, frame.window, True,
-				ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-				GrabModeAsync, None, fluxbox->getLowerRightAngleCursor());
+		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
+		GrabModeAsync, None, fluxbox->getLowerRightAngleCursor());
 	
 	//---grab with "all" modifiers
 	grabButton(display, Button3, frame.window, fluxbox->getLowerRightAngleCursor());
@@ -429,11 +397,12 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 	#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
 	#endif
+	
 	//TODO move this
 	#ifdef GNOME		
-  int val = workspace_number; 
-  XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
-                  PropModeReplace, (unsigned char *)&val, 1);
+	int val = workspace_number; 
+	XChangeProperty(display, client.window, screen->getBaseDisplay()->getGnomeWorkspaceAtom(), XA_CARDINAL, 32,
+		PropModeReplace, (unsigned char *)&val, 1);
 	#endif
 
 }
@@ -442,6 +411,9 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 FluxboxWindow::~FluxboxWindow(void) {
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
+	//TODO: Move this to Workspace::removeWindow
+	if (client.transient_for)	
+		fluxbox->setFocusedWindow(client.transient_for);	
 	
 	if (moving || resizing) {
 		screen->hideGeometry();
@@ -527,9 +499,9 @@ FluxboxWindow::~FluxboxWindow(void) {
 		fluxbox->removeWindowSearch(frame.handle);
 		fluxbox->removeWindowSearch(frame.right_grip);
 		fluxbox->removeWindowSearch(frame.left_grip);
-		XDestroyWindow(display, frame.right_grip);
-		XDestroyWindow(display, frame.left_grip);
 		XDestroyWindow(display, frame.handle);
+		XDestroyWindow(display, frame.right_grip);
+		XDestroyWindow(display, frame.left_grip);		
 	}
 
 	if (frame.fbutton)
@@ -556,14 +528,46 @@ FluxboxWindow::~FluxboxWindow(void) {
 		fluxbox->removeWindowSearch(client.window);
 		screen->removeNetizen(client.window);
 	}
-	//TODO: Move this to Workspace::removeWindow
-	if (client.transient_for)	
-		fluxbox->setFocusedWindow(client.transient_for);	
+
 	#ifdef DEBUG	
 	fprintf(stderr, "%s(%d): ~FluxboxWindow(this=%p) done\n", __FILE__, __LINE__, this);
 	#endif
 }
 
+void FluxboxWindow::showError(FluxboxWindow::Error error) {
+
+#ifdef		DEBUG
+	switch (error) {		
+	case NOERROR:
+		break;
+	case XGETWINDOWATTRIB:	
+		fprintf(stderr,
+			I18n::instance()->
+			getMessage(
+			#ifdef NLS
+				WindowSet, WindowXGetWindowAttributesFail,
+			#else // !NLS
+				0, 0,
+			#endif // NLS
+				"FluxboxWindow::FluxboxWindow(): XGetWindowAttributes "
+				"failed\n")
+			);	
+		break;
+	case CANTFINDSCREEN:
+		fprintf(stderr,
+			I18n::instance()->
+			getMessage(
+			#ifdef NLS
+				WindowSet, WindowCannotFindScreen,
+			#else // !NLS
+				0, 0,
+			#endif // NLS
+				"FluxboxWindow::FluxboxWindow(): can't find screen\n"
+				"	for root window"));
+		break;
+	};
+#endif // DEBUG	
+}
 
 Window FluxboxWindow::createToplevelWindow(int x, int y, unsigned int width,
 							unsigned int height,
@@ -1704,8 +1708,13 @@ void FluxboxWindow::setTab(bool flag) {
 	decorations.tab = flag;
 }
 
+//------------- iconify ----------------
+// Unmaps the window and removes it from workspace list
+//--------------------------------------
 void FluxboxWindow::iconify(void) {
-	if (iconic) return;
+
+	if (iconic)
+		return;
 
 	if (windowmenu)
 		windowmenu->hide();
