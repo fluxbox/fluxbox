@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.6 2003/08/11 16:54:46 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.7 2003/08/13 09:53:46 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -45,29 +45,14 @@ void FbTk::ThemeItem<bool>::setFromString(char const *strval) {
 
 ToolbarTheme::ToolbarTheme(int screen_num):
     FbTk::Theme(screen_num),
-    m_label_textcolor(*this, 
-                      "toolbar.label.textColor", "Toolbar.Label.TextColor"),
-    m_window_textcolor(*this,
-                       "toolbar.windowLabel.textColor", 
-                       "Toolbar.WindowLabel.TextColor"),
-    m_clock_textcolor(*this,
-                      "toolbar.clock.textColor", "Toolbar.Clock.TextColor"),
     m_button_color(*this, 
                    "toolbar.button.picColor", "Toolbar.Button.PicColor"),
     m_border_color(*this,
                    "toolbar.borderColor", "Toolbar.BorderColor"),
     m_toolbar(*this, "toolbar", "Toolbar"),
-    m_iconbar_focused(*this, "toolbar.iconbar.focused", "Toolbar.Iconbar.Focused"),
-    m_iconbar_unfocused(*this, "toolbar.iconbar.unfocused", "Toolbar.Iconbar.Unfocused"),
-    m_label(*this, "toolbar.label", "Toolbar.Label"),
-    m_window(*this, "toolbar.windowLabel", "Toolbar.WindowLabel"),
     m_button(*this, "toolbar.button", "Toolbar.Button"),
     m_pressed_button(*this, 
                      "toolbar.button.pressed", "Toolbar.Button.Pressed"),
-    m_clock(*this, "toolbar.clock", "Toolbar.Clock"),
-    m_font(*this, "toolbar.font", "Toolbar.Font"),
-    m_icon_font(*this, "toolbar.iconFont", "Toolbar.IconFont"),
-    m_justify(*this, "toolbar.justify", "Toolbar.Justify"),
     m_border_width(*this, "toolbar.borderWidth", "Toolbar.BorderWidth"),
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
     m_button_border_width(*this, "toolbar.button.borderWidth", "Toolbar.Button.BorderWidth"),
@@ -80,45 +65,16 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     XGCValues gcv;
     unsigned long gc_value_mask = GCForeground;
     
-    gcv.foreground = m_label_textcolor->pixel();
-
-    m_label_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_window_textcolor->pixel();
-    m_window_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_clock_textcolor->pixel();
-    m_clock_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
 
     gcv.foreground = m_button_color->pixel();
     m_button_pic_gc =
         XCreateGC(m_display, rootwindow,
                   gc_value_mask, &gcv);
 
-    gcv.foreground = m_iconbar_focused->color().pixel();
-    m_icon_text_focused_gc = 
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    m_icon_text_unfocused_gc = 
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    // load from current database
-    FbTk::ThemeManager::instance().loadTheme(*this);
 }
 
 ToolbarTheme::~ToolbarTheme() {
     XFreeGC(m_display, m_button_pic_gc);
-    XFreeGC(m_display, m_clock_text_gc);
-    XFreeGC(m_display, m_label_text_gc);
-    XFreeGC(m_display, m_window_text_gc);
 }
 
 void ToolbarTheme::reconfigTheme() {
@@ -129,19 +85,6 @@ void ToolbarTheme::reconfigTheme() {
 
     XGCValues gcv;
     unsigned long gc_value_mask = GCForeground;
-
-    
-    gcv.foreground = m_label_textcolor->pixel();
-    XChangeGC(m_display, m_label_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_window_textcolor->pixel();
-    XChangeGC(m_display, m_window_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_clock_textcolor->pixel();
-    XChangeGC(m_display, m_clock_text_gc,
-              gc_value_mask, &gcv);
 
     gcv.foreground = m_button_color->pixel();
     XChangeGC(m_display, m_button_pic_gc,
