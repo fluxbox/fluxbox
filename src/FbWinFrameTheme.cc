@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.8 2003/08/16 11:05:19 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.9 2003/08/22 15:02:33 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -59,7 +59,10 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_textjustify(*this, "window.justify", "Window.Justify"),
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
 
-    m_alpha(*this, "window.alpha", "Window.Alpha") {
+    m_alpha(*this, "window.alpha", "Window.Alpha"),
+    m_title_height(*this, "window.title.height", "Window.Title.Height") {
+
+    *m_title_height = 0;
     // set defaults
     m_font->load("fixed");
     *m_alpha = 255;

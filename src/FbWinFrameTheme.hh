@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.7 2003/08/04 12:49:20 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.8 2003/08/22 15:02:33 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -91,6 +91,7 @@ public:
 
     unsigned char alpha() const { return *m_alpha; }
 
+    unsigned int titleHeight() const { return *m_title_height; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_label_focus, m_label_unfocus;
     FbTk::ThemeItem<FbTk::Texture> m_title_focus, m_title_unfocus;
@@ -106,8 +107,8 @@ private:
     FbTk::ThemeItem<FbTk::Justify> m_textjustify;
     FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
-    FbTk::ThemeItem<int> m_alpha;
-
+    FbTk::ThemeItem<int> m_alpha, m_title_height;
+    
     GC m_label_text_focus_gc, m_label_text_unfocus_gc;
     GC m_button_pic_focus_gc, m_button_pic_unfocus_gc;
 
