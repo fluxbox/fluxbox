@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.29 2004/09/09 15:25:26 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.30 2004/09/11 23:59:13 fluxgen Exp $
 
 #
 # Portability notes:
@@ -924,7 +924,9 @@ if [ -w "${MENUFILENAME}" ]; then
     if [ -f ${MENUFILENAME}.firstbak ]; then
         cp ${MENUFILENAME} ${MENUFILENAME}.firstbak
     fi
-    mv ${MENUFILENAME} ${MENUFILENAME}.bak
+    if [ -s "${MENUFILE}" ]; then
+       mv ${MENUFILE} ${MENUFILE}.bak
+    fi
 fi
 
 # prefix
