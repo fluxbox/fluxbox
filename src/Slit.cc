@@ -19,8 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -76,8 +75,8 @@ Slit::Slit(BScreen *scr) {
 	frame.window =
 		XCreateWindow(display, screen->getRootWindow(), frame.x, frame.y,
 			frame.width, frame.height, screen->getBorderWidth(),
-									screen->getDepth(), InputOutput, screen->getVisual(),
-									create_mask, &attrib);
+			screen->getDepth(), InputOutput, screen->getVisual(),
+			create_mask, &attrib);
 	fluxbox->saveSlitSearch(frame.window, this);
 
 	reconfigure();
@@ -103,7 +102,6 @@ Slit::~Slit() {
 
 void Slit::addClient(Window w) {
 	fluxbox->grab();
-
 	if (fluxbox->validateWindow(w)) {
 		SlitClient *client = new SlitClient;
 		client->client_window = w;
@@ -128,16 +126,8 @@ void Slit::addClient(Window w) {
 			client->icon_window = None;
 			client->window = client->client_window;
 		}
-	#ifndef KDE 
 		XWindowAttributes attrib;
-		if (XGetWindowAttributes(display, client->window, &attrib)) {
-			client->width = attrib.width;
-			client->height = attrib.height;
-		} else {
-			client->width = client->height = 64;
-		}
-	#else //KDE stuff starts here
-	  XWindowAttributes attrib;
+	#ifdef KDE
 		//Check and see if new client is a KDE dock applet
 		//If so force reasonable size
 		bool iskdedockapp=false;
@@ -169,14 +159,16 @@ void Slit::addClient(Window w) {
 
 		if (iskdedockapp)
 			client->width = client->height = 24;
-		else {
+		else
+	#endif // KDE
+		{
 			if (XGetWindowAttributes(display, client->window, &attrib)) {
 				client->width = attrib.width;
 				client->height = attrib.height;
-			}	else
+			} else {
 				client->width = client->height = 64;
+			}
 		}
-	#endif // KDE
 
 		XSetWindowBorderWidth(display, client->window, 0);
 
