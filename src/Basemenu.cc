@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.28 2002/08/04 15:19:34 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.29 2002/09/09 10:01:41 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -221,12 +221,11 @@ int Basemenu::insert(const char *label, Basemenu *submenu, int pos) {
 
 int Basemenu::remove(unsigned int index) {
 	if (index >= menuitems.size()) {
-		#ifdef DEBUG
+#ifdef DEBUG
 		std::cout << "Bad index (" << index << ") given to Basemenu::remove()"
-		          << " -- should be between 0 and " << menuitems.size()-1
-		          << " inclusive."
-			          << std::endl;
-		#endif
+		          << " -- should be between 0 and " << menuitems.size()
+		          << " inclusive." << std::endl;
+#endif // DEBUG
 		return -1;
 	}
 

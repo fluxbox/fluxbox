@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.27 2002/09/08 19:38:48 fluxgen Exp $
+// $Id: Workspace.cc,v 1.28 2002/09/09 10:00:24 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -164,10 +164,10 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 			w->getTransientFor()->setInputFocus();
 		} else {
 			FluxboxWindow *top = 0;
-			if (stackingList.size()!=0)
+			if (stackingList.size() != 0)
 				top = stackingList.front();
 
-			if (!top || !top->setInputFocus()) {
+			if (top == 0|| !top->setInputFocus()) {
 				Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
 				XSetInputFocus(Fluxbox::instance()->getXDisplay(),
 					screen->getToolbar()->getWindowID(),
@@ -210,11 +210,7 @@ void Workspace::showAll(void) {
 	WindowStack::iterator it = stackingList.begin();
 	WindowStack::iterator it_end = stackingList.end();
 	for (; it != it_end; ++it) {
-		if ((*it) == 0) {
-			stackingList.erase(it);
-		} else {
-			(*it)->deiconify(False, False);
-		}
+		(*it)->deiconify(false, false);
 	}
 }
 
