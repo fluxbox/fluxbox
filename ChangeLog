@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
 *03/06/30:
+   * Fixed so we can use the same action strings in menu as in key actions (Henrik)
+     Screen.cc
    * Added command "ShowDesktop" (Henrik)
      This command iconifies all windows and shows the desktop
      WorkspaceCmd.hh/cc, FbCommandFactory.cc
