@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Texture.hh,v 1.1 2002/07/23 16:23:15 fluxgen Exp $
+// $Id: Texture.hh,v 1.2 2002/09/14 23:23:23 fluxgen Exp $
 
 #ifndef FBTK_TEXTURE_HH
 #define FBTK_TEXTURE_HH
@@ -36,16 +36,19 @@ namespace FbTk  {
 */
 class Texture {
 public:
+
 	enum Bevel {
 		FLAT =     0x00002,
 		SUNKEN =   0x00004, 
 		RAISED =   0x00008
 	};
+
 	enum Textures {
 		NONE =     0x00000,
 		SOLID =    0x00010,
 		GRADIENT = 0x00020
 	};
+
 	enum Gradients {
 		HORIZONTAL =     0x00040,
 		VERTICAL =       0x00080,
@@ -67,18 +70,19 @@ public:
 
 	Texture():m_type(0) { }
 
-	inline void setType(unsigned long t) { m_type = t; }
-	inline void addType(unsigned long t) { m_type |= t; }
+	void setType(unsigned long t) { m_type = t; }
+	void addType(unsigned long t) { m_type |= t; }
+	void setFromString(const char * const str);
 	
-	inline Color &color() { return m_color; }
-	inline Color &colorTo() { return m_color_to; }
-	inline Color &hiColor() { return m_hicolor; }
-	inline Color &loColor() { return m_locolor; }
+	Color &color() { return m_color; }
+	Color &colorTo() { return m_color_to; }
+	Color &hiColor() { return m_hicolor; }
+	Color &loColor() { return m_locolor; }
 
-	inline const Color &color() const { return m_color; }
-	inline const Color &colorTo() const { return m_color_to; }
-	inline const Color &hiColor() const { return m_hicolor; }
-	inline const Color &loColor() const { return m_locolor; }
+	const Color &color() const { return m_color; }
+	const Color &colorTo() const { return m_color_to; }
+	const Color &hiColor() const { return m_hicolor; }
+	const Color &loColor() const { return m_locolor; }
 	
 	inline unsigned long type() const { return m_type; }
 
