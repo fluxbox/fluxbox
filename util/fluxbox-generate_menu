@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.42 2003/08/02 14:26:45 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.43 2003/08/02 14:42:43 rathnor Exp $
 
 #
 # Portability notes:
@@ -142,8 +142,8 @@ append_menu_end() {
 
 menu_entry() {
     if [ -f "$1" ]; then
-        append "[exec] (`grep -v GenericName $* 2>/dev/null | grep Name= | cut -d = -f 2`) \
-        {`grep -v TryExec $* 2>/dev/null| grep Exec= | cut -d = -f 2`}"
+        append "[exec] (`grep -v GenericName \"$*\" 2>/dev/null | grep Name= | cut -d = -f 2`) \
+        {`grep -v TryExec \"$*\" 2>/dev/null| grep Exec= | cut -d = -f 2`}"
     fi
 }
 
@@ -163,6 +163,7 @@ menu_entry_dir() {
 # recursively build a menu from the listed directories
 # the dirs are merged
 recurse_dir_menu () {
+    echo "recurse on $@"
     ls "$@"/ 2>/dev/null | sort | uniq | while read name; do
         for dir in "$@"; do
             if [ -n "$name" -a -d "$dir/$name" ]; then
@@ -863,19 +864,19 @@ append_menu_end
 # We'll only use this once
 ETCAPPLNK=/etc/X11/applnk
 # gnome menu
-if [ -d "${GNOME_PREFIX}/share/gnome/apps" -a "${GNOMEMENU}" ]; then
+if [ "${GNOMEMENU}" ]; then
     append_submenu "${GNOMEMENUTEXT}"
-    recurse_dir_menu "${GNOME_PREFIX}/share/gnome/apps" ${ETCAPPLNK}
+    recurse_dir_menu "${GNOME_PREFIX}/share/gnome/apps" "$HOME/.gnome/apps" ${ETCAPPLNK}
     append_menu_end
-    ETCAPPLNK=
+    unset ETCAPPLNK
 fi
 
 # kde submenu
 if [ -d "${KDE_PREFIX}/share/applnk/" -a "${KDEMENU}" ]; then
     append_submenu "${KDEMENUTEXT}"
-    recurse_dir_menu "${KDE_PREFIX}/share/applnk" ${ETCAPPLNK}
+    recurse_dir_menu "${KDE_PREFIX}/share/applnk" "$HOME/.kde/share/applnk" ${ETCAPPLNK}
     append_menu_end
-    ETCAPPLNK=
+    unset ETCAPPLNK
 fi
 
 #User menu
