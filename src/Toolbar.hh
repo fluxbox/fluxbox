@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.24 2003/02/18 15:11:10 rathnor Exp $
+// $Id: Toolbar.hh,v 1.25 2003/02/23 00:50:02 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -39,6 +39,7 @@
 #include "LayerMenu.hh"
 
 #include <memory>
+
 
 namespace FbTk {
 class ImageControl;
@@ -73,13 +74,15 @@ public:
 	
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
+    inline FbTk::Menu &placementMenu() { return m_placementmenu; }
+    inline const FbTk::Menu &placementMenu() const { return m_placementmenu; }
 
-    inline FbTk::Menu *layermenu() { return m_layermenu; }
-    inline const FbTk::Menu *layermenu() const { return m_layermenu; }
+    inline FbTk::Menu &layermenu() { return m_layermenu; }
+    inline const FbTk::Menu &layermenu() const { return m_layermenu; }
 
-    void moveToLayer(int layernum) { m_layeritem->moveToLayer(layernum); }
+    void moveToLayer(int layernum) { m_layeritem.moveToLayer(layernum); }
 
-    FbTk::XLayerItem &getLayerItem() { return *m_layeritem; }
+    FbTk::XLayerItem &getLayerItem() { return m_layeritem; }
 
     /// are we in workspacename editing?
     inline bool isEditing() const { return editing; }
@@ -158,7 +161,8 @@ private:
     FbTk::Timer clock_timer; ///< timer to update clock
     FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
     FbTk::Menu m_toolbarmenu;
-    LayerMenu<Toolbar> *m_layermenu;
+    FbTk::Menu m_placementmenu;
+    LayerMenu<Toolbar> m_layermenu;
     std::auto_ptr<IconBar> m_iconbar;
 	
     std::string new_workspace_name; ///< temp variable in edit workspace name mode
@@ -178,7 +182,8 @@ private:
     
     ThemeListener m_themelistener;
 
-    FbTk::XLayerItem *m_layeritem;
+    FbTk::XLayerItem m_layeritem;
+
 };
 
 
