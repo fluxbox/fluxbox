@@ -22,24 +22,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.47 2003/10/06 06:22:43 rathnor Exp $
+// $Id: Toolbar.hh,v 1.48 2003/10/13 23:49:12 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
 
-#include "Timer.hh"
 #include "ToolbarTheme.hh"
-#include "ToolTheme.hh"
-#include "IconbarTheme.hh"
-
-#include "EventHandler.hh"
-#include "FbWindow.hh"
-#include "ArrowButton.hh"
-#include "Observer.hh"
-#include "XLayer.hh"
-#include "XLayerItem.hh"
 #include "LayerMenu.hh"
-#include "Resource.hh"
+#include "ToolFactory.hh"
+#include "ToolTheme.hh"
+
+#include "FbTk/Timer.hh"
+#include "FbTk/Resource.hh"
+#include "FbTk/Observer.hh"
+#include "FbTk/XLayer.hh"
+#include "FbTk/XLayerItem.hh"
+#include "FbTk/EventHandler.hh"
+#include "FbTk/FbWindow.hh"
 
 #include <memory>
 
@@ -169,13 +168,12 @@ private:
 
     // themes
     ToolbarTheme m_theme;
-    ToolTheme m_clock_theme;
-    std::auto_ptr<ToolTheme> m_workspace_theme;
-    IconbarTheme m_iconbar_theme;
-
+    
     FbTk::XLayerItem m_layeritem;
     typedef std::list<ToolbarItem *> ItemList;
     ItemList m_item_list;
+
+    ToolFactory m_tool_factory;
 
     Strut *m_strut; ///< created and destroyed by BScreen
 
