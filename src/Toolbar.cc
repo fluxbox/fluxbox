@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.46 2002/12/02 21:54:30 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.47 2002/12/03 17:02:53 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -69,12 +69,80 @@
 #include <iostream>
 
 using namespace std;
+// toolbar frame
+Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
+    window(screen_num, // screen (parent)
+           0, 0, // pos
+           1, 1, //
+           ButtonPressMask | ButtonReleaseMask | 
+           EnterWindowMask | LeaveWindowMask,
+           true), // override redirect 
+    workspace_label(window, // parent
+                    0, 0, //pos
+                    1, 1, // size
+                    ButtonPressMask | ButtonReleaseMask | 
+                    ExposureMask | KeyPressMask),
+    window_label(window, // parent
+                  0, 0, // pos
+                  1, 1, // size
+                  ButtonPressMask | ButtonReleaseMask | 
+                  ExposureMask),
+    clock (window, //parent
+            0, 0, // pos
+            1, 1, // size
+            ButtonPressMask | ButtonReleaseMask | 
+            ExposureMask),
+    psbutton(window, // parent
+             0, 0, // pos
+             1, 1, // size
+              ButtonPressMask | ButtonReleaseMask | 
+             ExposureMask),
+    nsbutton(window,
+             0, 0,
+             1, 1,
+             ButtonPressMask | ButtonReleaseMask | 
+             ExposureMask),
+    pwbutton(window,
+             0, 0,
+             1, 1,
+             ButtonPressMask | ButtonReleaseMask | 
+             ExposureMask),
+    nwbutton(window,
+              0, 0,
+              1, 1,
+              ButtonPressMask | ButtonReleaseMask | 
+              ExposureMask) 
+{
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    evm.add(evh, window);
+    evm.add(evh, workspace_label);
+    evm.add(evh, window_label);
+    evm.add(evh, clock);
+    evm.add(evh, psbutton);
+    evm.add(evh, nsbutton);
+    evm.add(evh, pwbutton);
+    evm.add(evh, nwbutton);
+    
+}
+
+Toolbar::Frame::~Frame() {
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    evm.remove(window);
+    evm.remove(workspace_label);
+    evm.remove(window_label);
+    evm.remove(clock);
+    evm.remove(psbutton);
+    evm.remove(nsbutton);
+    evm.remove(pwbutton);
+    evm.remove(nwbutton);
+}
 
 Toolbar::Toolbar(BScreen *scrn, size_t width):
     on_top(scrn->isToolbarOnTop()),
     editing(false),
     hidden(scrn->doToolbarAutoHide()), 
     do_auto_hide(scrn->doToolbarAutoHide()),
+    frame(*this, scrn->getScreenNumber()),
     m_screen(scrn),
     image_ctrl(*scrn->getImageControl()),
     clock_timer(this), 	// get the clock updating every minute
@@ -103,85 +171,26 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
 
     frame.grab_x = frame.grab_y = 0;
 
-    display = BaseDisplay::getXDisplay();
-    XSetWindowAttributes attrib;
-    unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
-        CWColormap | CWOverrideRedirect | CWEventMask;
-		
-    attrib.background_pixmap = None;
-    attrib.background_pixel = attrib.border_pixel =
-        m_screen->getBorderColor()->pixel();
-    attrib.colormap = m_screen->colormap();
-    attrib.override_redirect = true;
-    attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
-        EnterWindowMask | LeaveWindowMask;
-
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    
-    int depth = m_screen->getDepth();
-    Visual *vis = m_screen->getVisual();
-    frame.window =
-        XCreateWindow(display, m_screen->getRootWindow(), 0, 0, 1, 1, 0,
-                      depth, InputOutput, vis,
-                      create_mask, &attrib);
-    evm.add(*this, frame.window);
-
-    attrib.event_mask = ButtonPressMask | ButtonReleaseMask | ExposureMask |
-        KeyPressMask | EnterWindowMask;
-
-    frame.workspace_label =
-        XCreateWindow(display, frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.workspace_label);
-
-    frame.window_label =
-        XCreateWindow(display, frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.window_label);
-
-    frame.clock =
-        XCreateWindow(display, frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.clock);
-
-    frame.psbutton =
-        XCreateWindow(display ,frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.psbutton);
-
-    frame.nsbutton =
-        XCreateWindow(display ,frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.nsbutton);
-
-    frame.pwbutton =
-        XCreateWindow(display ,frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.pwbutton);
-
-    frame.nwbutton =
-        XCreateWindow(display ,frame.window, 0, 0, 1, 1, 0, depth,
-                      InputOutput, vis, create_mask, &attrib);
-    evm.add(*this, frame.nwbutton);
+    display = FbTk::App::instance()->display();
 
     frame.base = frame.label = frame.wlabel = frame.clk = frame.button =
         frame.pbutton = None;
 
 		
     if (Fluxbox::instance()->useIconBar())
-        m_iconbar.reset(new IconBar(screen(), frame.window_label));
+        m_iconbar.reset(new IconBar(screen(), frame.window_label.window()));
 
 
-    XMapSubwindows(display, frame.window);
-    XMapWindow(display, frame.window);	
-	
+    XMapSubwindows(display, frame.window.window());
+    frame.window.show();
+
     reconfigure();
 	
 }
 
 
 Toolbar::~Toolbar() {
-    XUnmapWindow(display, frame.window);
+    frame.window.hide();
 	 
     if (frame.base) image_ctrl.removeImage(frame.base);
     if (frame.label) image_ctrl.removeImage(frame.label);
@@ -190,24 +199,15 @@ Toolbar::~Toolbar() {
     if (frame.button) image_ctrl.removeImage(frame.button);
     if (frame.pbutton) image_ctrl.removeImage(frame.pbutton);
 
-    FbTk::EventManager &evm = *FbTk::EventManager::instance();
-    
-    evm.remove(frame.window);
+}
 
-    evm.remove(frame.workspace_label);
-    evm.remove(frame.window_label);
-    evm.remove(frame.clock);
-    evm.remove(frame.psbutton);
-    evm.remove(frame.nsbutton);
-    evm.remove(frame.pwbutton);
-    evm.remove(frame.nwbutton);
-	
-    XDestroyWindow(display, frame.workspace_label);
-    XDestroyWindow(display, frame.window_label);
-    XDestroyWindow(display, frame.clock);
-
-    XDestroyWindow(display, frame.window);
-
+bool Toolbar::isVertical() const {
+    return (m_place == RIGHTCENTER ||
+            m_place == RIGHTTOP ||
+            m_place == RIGHTBOTTOM ||
+            m_place == LEFTCENTER ||
+            m_place == LEFTTOP ||
+            m_place == LEFTBOTTOM);
 }
 
 void Toolbar::addIcon(FluxboxWindow *w) {
@@ -223,9 +223,9 @@ void Toolbar::delIcon(FluxboxWindow *w) {
 void Toolbar::reconfigure() {
 
     frame.bevel_w = screen()->getBevelWidth();
-    frame.button_w = frame.height;
 
-    //   setPlacement(m_place);
+    // recallibrate size
+    setPlacement(m_place);
 
 #ifdef HAVE_STRFTIME
     time_t ttmp = time(0);
@@ -287,46 +287,66 @@ void Toolbar::reconfigure() {
                         frame.workspace_label_w + (frame.bevel_w * 8) + 6));
 
     if (hidden)
-        XMoveResizeWindow(display, frame.window, frame.x_hidden, frame.y_hidden,
-                          frame.width, frame.height);
+        frame.window.moveResize(frame.x_hidden, frame.y_hidden,
+                                frame.width, frame.height);
+    else {
+        frame.window.moveResize(frame.x, frame.y,
+                                frame.width, frame.height);
+    }
+    
+    cerr<<"workspace label width = "<<frame.workspace_label_w<<endl;
+    bool vertical = isVertical();
+    unsigned int size_w = frame.workspace_label_w;
+    unsigned int size_h = frame.label_h;
+    unsigned int swap_var = 0;
+    if (vertical) {
+        swap_var = size_w;
+        size_w = size_h;
+        size_h = swap_var;
+    }
+    frame.workspace_label.moveResize(frame.bevel_w, frame.bevel_w, size_w, size_h);
+    
+    size_w = frame.workspace_label_w + 1;
+    size_h = frame.bevel_w + 1;
+    if (vertical) {
+        swap_var = size_w;
+        size_w = size_h;
+        size_h = swap_var;
+    }
+    frame.psbutton.moveResize(frame.bevel_w * 2 +
+                              size_w , size_h,
+                              frame.button_w, frame.button_w);
+    if (vertical)
+        size_h += frame.button_w + 1;
     else
-        XMoveResizeWindow(display, frame.window, frame.x, frame.y,
-                          frame.width, frame.height);
+        size_w += frame.button_w + 1;
 
-    XMoveResizeWindow(display, frame.workspace_label, frame.bevel_w,
-                      frame.bevel_w, frame.workspace_label_w,
-                      frame.label_h);
-    XMoveResizeWindow(display, frame.psbutton, (frame.bevel_w * 2) +
-                      frame.workspace_label_w + 1, frame.bevel_w + 1,
-                      frame.button_w, frame.button_w);
-    XMoveResizeWindow(display ,frame.nsbutton, (frame.bevel_w * 3) +
-                      frame.workspace_label_w + frame.button_w + 2,
-                      frame.bevel_w + 1, frame.button_w, frame.button_w);
-    XMoveResizeWindow(display, frame.window_label, (frame.bevel_w * 4) +
-                      (frame.button_w * 2) + frame.workspace_label_w + 3,
-                      frame.bevel_w, frame.window_label_w, frame.label_h);
-    XMoveResizeWindow(display, frame.pwbutton, (frame.bevel_w * 5) +
-                      (frame.button_w * 2) + frame.workspace_label_w +
-                      frame.window_label_w + 4, frame.bevel_w + 1,
-                      frame.button_w, frame.button_w);
-    XMoveResizeWindow(display, frame.nwbutton, (frame.bevel_w * 6) +
-                      (frame.button_w * 3) + frame.workspace_label_w +
-                      frame.window_label_w + 5, frame.bevel_w + 1,
-                      frame.button_w, frame.button_w);
-    XMoveResizeWindow(display, frame.clock, frame.width - frame.clock_w -
-                      frame.bevel_w, frame.bevel_w, frame.clock_w,
-                      frame.label_h);
+    frame.nsbutton.moveResize(frame.bevel_w * 3 +
+                              size_w, size_h,
+                              frame.button_w, frame.button_w);
+    frame.window_label.moveResize(frame.bevel_w * 4 +
+                                  frame.button_w * 2 + frame.workspace_label_w + 3,
+                                  frame.bevel_w, frame.window_label_w, frame.label_h);
+    frame.pwbutton.moveResize(frame.bevel_w * 5 +
+                              frame.button_w * 2 + frame.workspace_label_w +
+                              frame.window_label_w + 4, frame.bevel_w + 1,
+                              frame.button_w, frame.button_w);
+    frame.nwbutton.moveResize(frame.bevel_w * 6 +
+                              frame.button_w * 3 + frame.workspace_label_w +
+                              frame.window_label_w + 5, frame.bevel_w + 1,
+                              frame.button_w, frame.button_w);
+    frame.clock.moveResize(frame.width - frame.clock_w -
+                           frame.bevel_w, frame.bevel_w, frame.clock_w,
+                           frame.label_h);
 
     Pixmap tmp = frame.base;
     const FbTk::Texture *texture = &(m_theme.toolbar());
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.base = None;
-        XSetWindowBackground(display, frame.window,
-                             texture->color().pixel());
+        frame.window.setBackgroundColor(texture->color());
     } else {
-        frame.base =
-            image_ctrl.renderImage(frame.width, frame.height, *texture);
-        XSetWindowBackgroundPixmap(display, frame.window, frame.base);
+        frame.base = image_ctrl.renderImage(frame.width, frame.height, *texture);
+        frame.window.setBackgroundPixmap(frame.base);
     }
     if (tmp) image_ctrl.removeImage(tmp);
     
@@ -334,12 +354,11 @@ void Toolbar::reconfigure() {
     texture = &(m_theme.window());
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.label = None;
-        XSetWindowBackground(display, frame.window_label,
-                             texture->color().pixel());
+        frame.window_label.setBackgroundColor(texture->color());
     } else {
         frame.label =
             image_ctrl.renderImage(frame.window_label_w, frame.label_h, *texture);
-        XSetWindowBackgroundPixmap(display, frame.window_label, frame.label);
+        frame.window_label.setBackgroundPixmap(frame.label);
     }
     if (tmp) image_ctrl.removeImage(tmp);
 
@@ -347,12 +366,11 @@ void Toolbar::reconfigure() {
     texture = &(m_theme.label());
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.wlabel = None;
-        XSetWindowBackground(display, frame.workspace_label,
-                             texture->color().pixel());
+        frame.workspace_label.setBackgroundColor(texture->color());
     } else {
         frame.wlabel =
             image_ctrl.renderImage(frame.workspace_label_w, frame.label_h, *texture);
-        XSetWindowBackgroundPixmap(display, frame.workspace_label, frame.wlabel);
+        frame.workspace_label.setBackgroundPixmap(frame.wlabel);
     }
     if (tmp) image_ctrl.removeImage(tmp);
 
@@ -360,11 +378,11 @@ void Toolbar::reconfigure() {
     texture = &(m_theme.clock());
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.clk = None;
-        XSetWindowBackground(display, frame.clock, texture->color().pixel());
+        frame.clock.setBackgroundColor(texture->color());
     } else {
         frame.clk =
             image_ctrl.renderImage(frame.clock_w, frame.label_h, *texture);
-        XSetWindowBackgroundPixmap(display, frame.clock, frame.clk);
+        frame.clock.setBackgroundPixmap(frame.clk);
     }
     if (tmp) image_ctrl.removeImage(tmp);
 
@@ -373,19 +391,19 @@ void Toolbar::reconfigure() {
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.button = None;
 
-        frame.button_pixel = texture->color().pixel();
-        XSetWindowBackground(display, frame.psbutton, frame.button_pixel);
-        XSetWindowBackground(display, frame.nsbutton, frame.button_pixel);
-        XSetWindowBackground(display, frame.pwbutton, frame.button_pixel);
-        XSetWindowBackground(display, frame.nwbutton, frame.button_pixel);
+        const FbTk::Color &color = texture->color();
+        frame.psbutton.setBackgroundColor(color);
+        frame.nsbutton.setBackgroundColor(color);
+        frame.pwbutton.setBackgroundColor(color);
+        frame.nwbutton.setBackgroundColor(color);
     } else {
         frame.button =
             image_ctrl.renderImage(frame.button_w, frame.button_w, *texture);
-
-        XSetWindowBackgroundPixmap(display, frame.psbutton, frame.button);
-        XSetWindowBackgroundPixmap(display, frame.nsbutton, frame.button);
-        XSetWindowBackgroundPixmap(display, frame.pwbutton, frame.button);
-        XSetWindowBackgroundPixmap(display, frame.nwbutton, frame.button);
+        
+        frame.psbutton.setBackgroundPixmap(frame.button);
+        frame.nsbutton.setBackgroundPixmap(frame.button);
+        frame.pwbutton.setBackgroundPixmap(frame.button);
+        frame.nwbutton.setBackgroundPixmap(frame.button);
     }
     if (tmp) 
         image_ctrl.removeImage(tmp);
@@ -394,25 +412,23 @@ void Toolbar::reconfigure() {
     texture = &(m_theme.pressedButton());
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
         frame.pbutton = None;
-        frame.pbutton_pixel = texture->color().pixel();
     } else
         frame.pbutton =
             image_ctrl.renderImage(frame.button_w, frame.button_w, *texture);
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
-    XSetWindowBorder(display, frame.window,
-                     screen()->getBorderColor()->pixel());
-    XSetWindowBorderWidth(display, frame.window, screen()->getBorderWidth());
+    frame.window.setBorderColor(*screen()->getBorderColor());
+    frame.window.setBorderWidth(screen()->getBorderWidth());
 
-    XClearWindow(display, frame.window);
-    XClearWindow(display, frame.workspace_label);
-    XClearWindow(display, frame.window_label);
-    XClearWindow(display, frame.clock);
-    XClearWindow(display, frame.psbutton);
-    XClearWindow(display, frame.nsbutton);
-    XClearWindow(display, frame.pwbutton);
-    XClearWindow(display, frame.nwbutton);
+    frame.window.clear();
+    frame.workspace_label.clear();
+    frame.window_label.clear();
+    frame.clock.clear();
+    frame.psbutton.clear();
+    frame.nsbutton.clear();
+    frame.pwbutton.clear();
+    frame.nwbutton.clear();
 	
     redrawWindowLabel();
     redrawWorkspaceLabel();
@@ -424,10 +440,9 @@ void Toolbar::reconfigure() {
 
     m_toolbarmenu.reconfigure();
 
-    //iconbar, no iconbar?
     if (Fluxbox::instance()->useIconBar()) {
         if (m_iconbar.get() == 0) { // create new iconbar if we don't have one
-            m_iconbar.reset(new IconBar(screen(), frame.window_label));
+            m_iconbar.reset(new IconBar(screen(), frame.window_label.window()));
             if (screen()->getIconCount()) {
                 BScreen::Icons & l = screen()->getIconList();
                 BScreen::Icons::iterator it = l.begin();
@@ -465,7 +480,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
         if (tt->tm_min != frame.minute || tt->tm_hour != frame.hour) {
             frame.hour = tt->tm_hour;
             frame.minute = tt->tm_min;
-            XClearWindow(display, frame.clock);
+            frame.clock.clear();
             redraw = true;
         }
     } else
@@ -473,7 +488,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
 	
 
     if (redraw) {
-        XClearWindow(display, frame.clock);
+        frame.clock.clear();
 #ifdef HAVE_STRFTIME
         char t[1024];
         if (! strftime(t, 1024, screen()->getStrftimeFormat(), tt))
@@ -530,7 +545,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
                                        t, strlen(t), newlen);
 			
         m_theme.font().drawText(
-            frame.clock,
+            frame.clock.window(),
             screen()->getScreenNumber(),
             m_theme.clockTextGC(),
             t, newlen,
@@ -542,7 +557,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
 void Toolbar::redrawWindowLabel(bool redraw) {
     if (Fluxbox::instance()->getFocusedWindow()) {
         if (redraw)
-            XClearWindow(display, frame.window_label);
+            frame.window_label.clear();
 
         FluxboxWindow *foc = Fluxbox::instance()->getFocusedWindow();
         if (foc->getScreen() != screen() || foc->getTitle().size() == 0)
@@ -555,13 +570,13 @@ void Toolbar::redrawWindowLabel(bool redraw) {
                                        foc->getTitle().c_str(), foc->getTitle().size(), newlen);
 			
         m_theme.font().drawText(
-            frame.window_label,
+            frame.window_label.window(),
             screen()->getScreenNumber(),
             m_theme.windowTextGC(),
             foc->getTitle().c_str(), newlen,
             dx, 1 + m_theme.font().ascent());
     } else
-        XClearWindow(display, frame.window_label);
+        frame.window_label.clear();
 }
  
  
@@ -570,7 +585,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
         return;
 		
     if (redraw)
-        XClearWindow(display, frame.workspace_label);
+        frame.workspace_label.clear();
 		
     const char *text = screen()->getCurrentWorkspace()->name().c_str();
     size_t textlen = screen()->getCurrentWorkspace()->name().size();
@@ -581,7 +596,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
                                    text, textlen, newlen);
 			
     m_theme.font().drawText(
-        frame.workspace_label,
+        frame.workspace_label.window(),
         screen()->getScreenNumber(),
         m_theme.labelTextGC(),
         text, newlen,
@@ -591,18 +606,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
 
 void Toolbar::redrawPrevWorkspaceButton(bool pressed, bool redraw) {
     if (redraw) {
-        if (pressed) {
-            if (frame.pbutton)
-                XSetWindowBackgroundPixmap(display, frame.psbutton, frame.pbutton);
-            else
-                XSetWindowBackground(display, frame.psbutton, frame.pbutton_pixel);
-        } else {
-            if (frame.button)
-                XSetWindowBackgroundPixmap(display, frame.psbutton, frame.button);
-            else
-                XSetWindowBackground(display, frame.psbutton, frame.button_pixel);
-        }
-        XClearWindow(display, frame.psbutton);
+        drawButtonBase(frame.psbutton, pressed);
     }
 
     int hh = frame.button_w / 2, hw = frame.button_w / 2;
@@ -612,25 +616,14 @@ void Toolbar::redrawPrevWorkspaceButton(bool pressed, bool redraw) {
     pts[1].x = 4; pts[1].y = 2;
     pts[2].x = 0; pts[2].y = -4;
 
-    XFillPolygon(display, frame.psbutton, m_theme.buttonPicGC(),
+    XFillPolygon(display, frame.psbutton.window(), m_theme.buttonPicGC(),
                  pts, 3, Convex, CoordModePrevious);
 }
 
 
 void Toolbar::redrawNextWorkspaceButton(bool pressed, bool redraw) {
     if (redraw) {
-        if (pressed) {
-            if (frame.pbutton)
-                XSetWindowBackgroundPixmap(display, frame.nsbutton, frame.pbutton);
-            else
-                XSetWindowBackground(display, frame.nsbutton, frame.pbutton_pixel);
-        } else {
-            if (frame.button)
-                XSetWindowBackgroundPixmap(display, frame.nsbutton, frame.button);
-            else
-                XSetWindowBackground(display, frame.nsbutton, frame.button_pixel);
-        }
-        XClearWindow(display, frame.nsbutton);
+        drawButtonBase(frame.nsbutton, pressed);
     }
 
     int hh = frame.button_w / 2, hw = frame.button_w / 2;
@@ -640,25 +633,14 @@ void Toolbar::redrawNextWorkspaceButton(bool pressed, bool redraw) {
     pts[1].x = 4; pts[1].y =	2;
     pts[2].x = -4; pts[2].y = 2;
 
-    XFillPolygon(display, frame.nsbutton, m_theme.buttonPicGC(),
+    XFillPolygon(display, frame.nsbutton.window(), m_theme.buttonPicGC(),
                  pts, 3, Convex, CoordModePrevious);
 }
 
 
 void Toolbar::redrawPrevWindowButton(bool pressed, bool redraw) {
     if (redraw) {
-        if (pressed) {
-            if (frame.pbutton)
-                XSetWindowBackgroundPixmap(display, frame.pwbutton, frame.pbutton);
-            else
-                XSetWindowBackground(display, frame.pwbutton, frame.pbutton_pixel);
-        } else {
-            if (frame.button)
-                XSetWindowBackgroundPixmap(display, frame.pwbutton, frame.button);
-            else
-                XSetWindowBackground(display, frame.pwbutton, frame.button_pixel);
-        }
-        XClearWindow(display, frame.pwbutton);
+        drawButtonBase(frame.pwbutton, pressed);
     }
 
     int hh = frame.button_w / 2, hw = frame.button_w / 2;
@@ -668,25 +650,14 @@ void Toolbar::redrawPrevWindowButton(bool pressed, bool redraw) {
     pts[1].x = 4; pts[1].y = 2;
     pts[2].x = 0; pts[2].y = -4;
 
-    XFillPolygon(display, frame.pwbutton, m_theme.buttonPicGC(),
+    XFillPolygon(display, frame.pwbutton.window(), m_theme.buttonPicGC(),
                  pts, 3, Convex, CoordModePrevious);
 }
 
 
 void Toolbar::redrawNextWindowButton(bool pressed, bool redraw) {
     if (redraw) {
-        if (pressed) {
-            if (frame.pbutton)
-                XSetWindowBackgroundPixmap(display, frame.nwbutton, frame.pbutton);
-            else
-                XSetWindowBackground(display, frame.nwbutton, frame.pbutton_pixel);
-        } else {
-            if (frame.button)
-                XSetWindowBackgroundPixmap(display, frame.nwbutton, frame.button);
-            else
-                XSetWindowBackground(display, frame.nwbutton, frame.button_pixel);
-        }
-        XClearWindow(display, frame.nwbutton);
+        drawButtonBase(frame.nwbutton, pressed);
     }
 
     int hh = frame.button_w / 2, hw = frame.button_w / 2;
@@ -696,10 +667,25 @@ void Toolbar::redrawNextWindowButton(bool pressed, bool redraw) {
     pts[1].x = 4; pts[1].y =	2;
     pts[2].x = -4; pts[2].y = 2;
 
-    XFillPolygon(display, frame.nwbutton, m_theme.buttonPicGC(),
+    XFillPolygon(display, frame.nwbutton.window(), m_theme.buttonPicGC(),
                  pts, 3, Convex, CoordModePrevious);
 }
 
+void Toolbar::drawButtonBase(FbTk::FbWindow &win, bool pressed) {
+    if (pressed) {
+        if (frame.pbutton)
+            win.setBackgroundPixmap(frame.pbutton);
+        else
+            win.setBackgroundColor(m_theme.pressedButton().color());
+    } else {
+        if (frame.button)            
+            win.setBackgroundPixmap(frame.button);            
+        else
+            win.setBackgroundColor(m_theme.button().color());
+    }
+    win.clear();
+
+}
 
 void Toolbar::edit() {
     Window window;
@@ -713,17 +699,17 @@ void Toolbar::edit() {
         return;
 
     //set input focus to workspace label
-    XSetInputFocus(display, frame.workspace_label,
+    XSetInputFocus(display, frame.workspace_label.window(),
                    ((screen()->isSloppyFocus() || screen()->isSemiSloppyFocus()) ?
                     RevertToPointerRoot : RevertToParent), CurrentTime);
 
-    XClearWindow(display, frame.workspace_label);	//clear workspace text
+    frame.workspace_label.clear();
     Fluxbox * const fluxbox = Fluxbox::instance();
     fluxbox->setNoFocus(true);
     if (fluxbox->getFocusedWindow())	//disable focus on current focused window
         fluxbox->getFocusedWindow()->setFocusFlag(false);
 
-    XDrawRectangle(display, frame.workspace_label,
+    XDrawRectangle(display, frame.workspace_label.window(),
                    screen()->getWindowStyle()->l_text_focus_gc,
                    frame.workspace_label_w / 2, 0, 1,
                    frame.label_h - 1);
@@ -747,17 +733,17 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
         }
 #ifndef	 HAVE_STRFTIME
         else if (be.window == frame.clock) {
-            XClearWindow(display, frame.clock);
+            frame.clock.clear();
             checkClock(true, true);
         }
 #endif // HAVE_STRFTIME
         else if (! on_top) {
             Workspace::Stack st;
-            st.push_back(frame.window);
+            st.push_back(frame.window.window());
             screen()->raiseWindows(st);
         }
     } else if (be.button == 2 && (! on_top)) {
-        XLowerWindow(display, frame.window);
+        frame.window.lower();
     } else if (be.button == 3) {
         FluxboxWindow *fluxboxwin = 0;
         // if we clicked on a icon then show window menu
@@ -766,7 +752,7 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
             if (wm != 0) {
                 int menu_y = be.y_root - wm->height();
                 int menu_x = be.x_root;
-				// make sure the menu is visible
+                // make sure the menu is visible
                 if (menu_y < 0) {
                     menu_y = 0;
                 }
@@ -949,7 +935,7 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
                 new_workspace_name += keychar[0];
 
 
-            XClearWindow(display, frame.workspace_label);
+            frame.workspace_label.clear();
             int l = new_workspace_name.size(), tw, x;
 
             tw = m_theme.font().textWidth(new_workspace_name.c_str(), l);
@@ -959,13 +945,13 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
                 x = frame.bevel_w;
 
             m_theme.font().drawText(
-                frame.workspace_label,
+                frame.workspace_label.window(),
                 screen()->getScreenNumber(),
                 screen()->getWindowStyle()->l_text_focus_gc,
                 new_workspace_name.c_str(), l,
                 x, 1 + m_theme.font().ascent()); 
 
-            XDrawRectangle(display, frame.workspace_label,
+            XDrawRectangle(display, frame.workspace_label.window(),
                            screen()->getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
                            frame.label_h - 1);
         }		
@@ -1002,28 +988,37 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_y = screen()->getHeadY(head);
         head_w = screen()->getHeadWidth(head);
         head_h = screen()->getHeadHeight(head);
-
-        frame.width =
-            (screen()->getHeadWidth(head) * screen()->getToolbarWidthPercent() / 100);
     }	else {
         head_w = screen->getWidth();
         head_h = screen->getHeight();
-
-        frame.width = screen()->getWidth() * screen()->getToolbarWidthPercent() / 100;
     }
 #else // !XINERAMA
     head_w = screen()->getWidth();
     head_h = screen()->getHeight();
-
-    frame.width = screen()->getWidth() * screen()->getToolbarWidthPercent() / 100;
 #endif // XINERAMA
 
+    frame.width = head_w * screen()->getToolbarWidthPercent() / 100;
     frame.height = m_theme.font().height();
 
     frame.height += 2;
-    frame.label_h = frame.height;
     frame.height += (frame.bevel_w * 2);
 
+
+    // should we flipp sizes?
+    if (isVertical()) {
+        frame.width = frame.height;
+        frame.height = head_h * screen()->getToolbarWidthPercent() / 100;
+        if (!m_theme.font().isRotated())
+            m_theme.font().rotate(90); // rotate to vertical text
+
+        frame.label_h = frame.width;
+        frame.button_w = frame.width;
+    } else { // horizontal toolbar
+        if (m_theme.font().isRotated()) 
+            m_theme.font().rotate(0); // rotate to horizontal text
+        frame.label_h = frame.height;
+        frame.button_w = frame.height;    
+    }
 
     switch (where) {
     case TOPLEFT:
@@ -1067,16 +1062,22 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     case BOTTOMCENTER: // default is BOTTOMCENTER
     default:
-        frame.x = head_x + ((head_w - frame.width) / 2);
+        frame.x = head_x + (head_w - frame.width) / 2;
         frame.y = head_y + head_h - frame.height - screen()->getBorderWidth2x();
         frame.x_hidden = frame.x;
         frame.y_hidden = head_y + head_h - screen()->getBevelWidth() - 
             screen()->getBorderWidth();
         break;
-
+    case LEFTCENTER:
+        frame.x = 0;
+        frame.y = head_y + (head_h - frame.height)/2;
+        frame.x_hidden = head_x + head_w - screen()->getBevelWidth() - screen()->getBorderWidth();
+        frame.y_hidden = frame.y;
+        break;
     }
 
 }
+
 void Toolbar::HideHandler::timeout() {
     if (toolbar->isEditing()) { // don't hide if we're editing workspace label
         toolbar->hide_timer.fireOnce(false);
@@ -1087,11 +1088,9 @@ void Toolbar::HideHandler::timeout() {
 
     toolbar->hidden = ! toolbar->hidden;
     if (toolbar->hidden) {
-        XMoveWindow(toolbar->display, toolbar->frame.window,
-                    toolbar->frame.x_hidden, toolbar->frame.y_hidden);
+        toolbar->frame.window.move(toolbar->frame.x_hidden, toolbar->frame.y_hidden);
     } else {
-        XMoveWindow(toolbar->display, toolbar->frame.window,
-                    toolbar->frame.x, toolbar->frame.y);
+        toolbar->frame.window.move(toolbar->frame.x, toolbar->frame.y);
     }
 }
 
@@ -1244,6 +1243,8 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu &tm)
         CommonSet, CommonPlacementBottomRight,
         "Bottom Right"),
            Toolbar::BOTTOMRIGHT);
+
+    insert("Left Center", Toolbar::LEFTCENTER);
 
     update();
 }
