@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.109 2003/02/16 17:57:54 rathnor Exp $
+// $Id: Screen.cc,v 1.110 2003/02/17 12:35:59 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -41,7 +41,7 @@
 #include "MenuTheme.hh"
 #include "FbCommands.hh"
 #include "BoolMenuItem.hh"
-//#include "IntResMenuItem.hh"
+#include "IntResMenuItem.hh"
 #include "MacroCommand.hh"
 #include "XLayerItem.hh"
 #include "MultLayers.hh"
@@ -279,6 +279,14 @@ private:
     BScreen &m_screen;
 };
 
+class ReloadStyleCmd: public FbTk::Command {
+public:
+    void execute() {
+        FbCommands::SetStyleCmd cmd(Fluxbox::instance()->getStyleFilename());
+        cmd.execute();
+    }
+};
+
 void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
     menu.removeAll(); // clear all items
     using namespace FbTk;
@@ -426,11 +434,16 @@ BScreen::BScreen(ResourceManager &rm,
 
     image_control->setDither(*resource.image_dither);
     theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
-                      fluxbox->getStyleFilename(), getRootCommand().c_str());
+                      fluxbox->getStyleFilename().c_str(), getRootCommand().c_str());
 
     theme->reconfigure(*resource.antialias);
+    // setup windowtheme, toolbartheme for antialias
+    m_windowtheme.font().setAntialias(*resource.antialias);
+    m_menutheme->titleFont().setAntialias(*resource.antialias);
+    m_menutheme->frameFont().setAntialias(*resource.antialias);
+
     // set database for new Theme Engine
-    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename());
+    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
 
     // special case for tab rotated
     if (*resource.tab_rotate_vertical && 
@@ -482,7 +495,7 @@ BScreen::BScreen(ResourceManager &rm,
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
                                                      m_windowtheme.labelFocusTexture());
-           geom_window.setBackgroundPixmap(geom_pixmap);
+            geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
 
@@ -493,12 +506,10 @@ BScreen::BScreen(ResourceManager &rm,
         for (int i = 0; i < *resource.workspaces; ++i) {
             wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
             workspacesList.push_back(wkspc);
-            //            workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
         }
-    } else {
+    } else { // create at least one workspace
         wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
         workspacesList.push_back(wkspc);
-        //        workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
     }
 
     current_workspace = workspacesList.front();
@@ -508,7 +519,25 @@ BScreen::BScreen(ResourceManager &rm,
 #endif // SLIT
 
     m_toolbar.reset(new Toolbar(*this));
+    // setup toolbar width menu item
+    FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
+                                                    resource.toolbar_width_percent,
+                                                    0, 100); // min/max value
+    FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
+                                                   SimpleCommand<Toolbar>
+                                                   (*(m_toolbar.get()), &Toolbar::reconfigure));
+    FbTk::RefCount<FbTk::Command> save_resources(new FbTk::
+                                                 SimpleCommand<Fluxbox>
+                                                 (*Fluxbox::instance(), &Fluxbox::save_rc));
+    FbTk::MacroCommand *toolbar_menuitem_macro = new FbTk::MacroCommand();
+    toolbar_menuitem_macro->add(reconfig_toolbar);
+    toolbar_menuitem_macro->add(save_resources);
 
+    FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
+
+    toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);    
+    m_toolbar->menu().insert(toolbar_menuitem);
+    
     setupWorkspacemenu(*this, *workspacemenu);
 
     m_configmenu.reset(createMenuFromScreen(*this));
@@ -661,7 +690,16 @@ void BScreen::reconfigure() {
     theme->setRootCommand(getRootCommand());
     const string &filename = Fluxbox::instance()->getStyleFilename();
     theme->load(filename.c_str()); // old theme engine
+    // setup windowtheme, toolbartheme for antialias
+    m_windowtheme.font().setAntialias(*resource.antialias);
+    m_menutheme->titleFont().setAntialias(*resource.antialias);
+    m_menutheme->frameFont().setAntialias(*resource.antialias);
+
     FbTk::ThemeManager::instance().load(filename.c_str()); // new theme engine
+
+    if (m_toolbar.get())
+        m_toolbar->theme().font().setAntialias(*resource.antialias);
+
     theme->reconfigure(*resource.antialias);
     
     I18n *i18n = I18n::instance();
@@ -1183,6 +1221,14 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 #ifdef DEBUG
                 cerr<<__FILE__<<": Creating stick button"<<endl;
 #endif // DEBUG
+            } else if ((*dir)[i] == Fluxbox::SHADE) {
+                newbutton = new WinButton(WinButton::SHADE,
+                                          frame.titlebar(),
+                                          0, 0, 10, 10);
+                newbutton->setOnClick(shade_cmd);
+#ifdef DEBUG
+                cerr<<__FILE__<<": Creating shade button"<<endl;
+#endif // DEBUG
             }
         
             if (newbutton != 0) {
@@ -1207,8 +1253,9 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     menu.removeAll(); // clear old items
     menu.disableTitle(); // not titlebar
 
-    // check and setup layer menu
+    // check and setup layer menu as a submenu windowmenu
     FbTk::Menu &layer_menu = win.getLayermenu();
+    layer_menu.disableTitle(); // no titlebar
     // if it hasn't already been setup (no need to reset it)
     if (layer_menu.numberOfItems() == 0) {
         Fluxbox *fluxbox = Fluxbox::instance();
@@ -1528,6 +1575,8 @@ void BScreen::initMenu() {
 bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
 	
     string line;
+    FbTk::RefCount<FbTk::Command> 
+        hide_menu(new FbTk::SimpleCommand<FbTk::Menu>(menu, &FbTk::Menu::hide));
 
     while (! file.eof()) {
 
@@ -1568,7 +1617,11 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                         cerr<<"Row: "<<row<<endl;
                     } else {
                         FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd));
-                        menu.insert(str_label.c_str(), exec_cmd);
+                        FbTk::MacroCommand *exec_and_hide = new FbTk::MacroCommand();
+                        exec_and_hide->add(hide_menu);
+                        exec_and_hide->add(exec_cmd);
+                        FbTk::RefCount<FbTk::Command> exec_and_hide_cmd(exec_and_hide);
+                        menu.insert(str_label.c_str(), exec_and_hide_cmd);
                     }
                 } else if (str_key == "exit") { // exit
                     if (!str_label.size()) {
@@ -1711,7 +1764,8 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                            "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        FbTk::RefCount<FbTk::Command> reconfig_fb_cmd(new FbCommands::ReconfigureFluxboxCmd());
+                        FbTk::RefCount<FbTk::Command> 
+                            reconfig_fb_cmd(new FbCommands::ReconfigureFluxboxCmd());
                         menu.insert(str_label.c_str(), reconfig_fb_cmd);
                     }
                 } else if (str_key == "stylesdir" || str_key == "stylesmenu") {
@@ -1811,7 +1865,11 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                               ConfigmenuSet, ConfigmenuDesktopWheeling,
                                               "Desktop MouseWheel Switching"),
                              *resource.desktop_wheeling, save_and_reconfigure));
-    menu.insert(new BoolMenuItem("antialias", *resource.antialias, save_and_reconfigure));
+
+    // setup antialias cmd to reload style and save resource on toggle
+    menu.insert(new BoolMenuItem("antialias", *resource.antialias, 
+                                 save_and_reconfigure));
+
     // finaly update menu 
     menu.update();
 }
