@@ -27,15 +27,15 @@ Contributors:
       - minor additions, fixes, cleanups...
     Steve Cooper <stevencooper@isomedia.com>
       - Workspace warping, window cycling with optional parameters,
-	    slit order
+        slit order
     Han Boetes <han@mijncomputer.nl>
       - RPM Packaging, debugging and scripts.
-	Jeramy B. Smith
+    Jeramy B. Smith
       - Packaging assistance, gnome and kde menu system.
-    Simon Bowden
-	  - Window moving across workspaces in outlined mode and bugfixes.
-	Artis Trops <hornet at navigator.lv >
-	  - Latvian Localisation
+    Simon Bowden <rathnor@users.sourceforge.net>
+      - Window moving across workspaces in outlined mode and bugfixes.
+    Artis Trops <hornet at navigator.lv >
+      - Latvian Localisation
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 
