@@ -1219,11 +1219,7 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         focused_list.push_front(&win->winClient());
     else
         focused_list.push_back(&win->winClient());
-    
-//    if (new_win) {
-//        Fluxbox::instance()->attachSignals(*win);
-//    }
-
+ 
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
     FluxboxWindow *otherwin = 0;
@@ -1242,11 +1238,6 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 FluxboxWindow *BScreen::createWindow(WinClient &client) {
 
     if (isKdeDockapp(client.window()) && addKdeDockapp(client.window())) {
-        // we need to save old handler and readd it later
-// I think rearranging the logic negates the need for this - sb 04jan2005
-//        FbTk::EventManager *evm = FbTk::EventManager::instance();
-//        FbTk::EventHandler *evh = evm->find(client.window());
-//        evm->add(*evh, client.window());
         return 0;
     }
 
@@ -1254,24 +1245,17 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
                                            winFrameTheme(),
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
 
-// Why not KDE? - sb 04jan2005
-//    if (!isKdeDockapp(client.window())) {
 #ifdef SLIT
-        if (win->initialState() == WithdrawnState && slit() != 0) {
-            slit()->addClient(win->clientWindow());
-        }
+    if (win->initialState() == WithdrawnState && slit() != 0) {
+        slit()->addClient(win->clientWindow());
+    }
 #endif // SLIT
-//    }
                  
 
     if (!win->isManaged()) {
         delete win;
         return 0;
     }
-    // don't add to focused_list, as it should already be in there (since the
-    // WinClient already exists).
-    
-//    Fluxbox::instance()->attachSignals(*win);
 
     m_clientlist_sig.notify();
 
@@ -1355,7 +1339,10 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         // gets updated
         m_clientlist_sig.notify(); 
     } else if (ignore_sticky || ! w->isStuck()) {
-        getWorkspace(w->workspaceNumber())->removeWindow(w, true);
+        // fresh windows have workspaceNumber == -1, which leads to
+        // an invalid workspace (unsigned int)
+        if (getWorkspace(w->workspaceNumber()))
+            getWorkspace(w->workspaceNumber())->removeWindow(w, true);
         getWorkspace(wkspc_id)->addWindow(*w);
         // see comment above
         m_clientlist_sig.notify();
