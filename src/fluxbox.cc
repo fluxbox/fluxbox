@@ -1,5 +1,5 @@
 // fluxbox.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // blackbox.cc for blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.219 2004/01/11 13:10:39 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.220 2004/01/11 16:10:51 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -606,6 +606,7 @@ Fluxbox::~Fluxbox() {
         delete m_atomhandler.back();
         m_atomhandler.pop_back();
     }
+
     while (!m_screen_list.empty()) {
         delete m_screen_list.back();
         m_screen_list.pop_back();
@@ -951,19 +952,8 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         BScreen *screen = searchScreen(be.window);
         if (screen == 0)
             break; // end case
-#ifdef SLIT
-        // hide slit menu
-        if (screen->slit())
-            screen->slit()->menu().hide();
-#endif // SLIT
 
-#ifdef USE_TOOLBAR
-        // hide toolbar that matches screen
-        for (size_t toolbar = 0; toolbar < m_toolbars.size(); ++toolbar) {
-            if (&(m_toolbars[toolbar]->screen()) == screen)
-                m_toolbars[toolbar]->menu().hide();
-        }
-#endif // USE_TOOLBAR
+        screen->hideMenus();
 
         // strip num/caps/scroll-lock and 
         // see if we're using any other modifier,
@@ -1094,7 +1084,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
  */
 void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 #ifdef DEBUG
-    const char * atom = "nothing";
+    char * atom = 0;
     if (ce.message_type)
         atom = XGetAtomName(FbTk::App::instance()->display(), ce.message_type);
 
@@ -1759,6 +1749,18 @@ void Fluxbox::checkMenu() {
         rereadMenu();
 }
 
+void Fluxbox::hideExtraMenus(BScreen &screen) {
+
+#ifdef USE_TOOLBAR
+        // hide toolbar that matches screen
+        for (size_t toolbar = 0; toolbar < m_toolbars.size(); ++toolbar) {
+            if (&(m_toolbars[toolbar]->screen()) == &screen)
+                m_toolbars[toolbar]->menu().hide();
+        }
+
+#endif // USE_TOOLBAR
+
+}
 
 void Fluxbox::rereadMenu() {
     m_reread_menu_wait = true;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.81 2003/12/31 00:35:21 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.82 2004/01/11 16:10:23 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -180,6 +180,8 @@ public:
     void rereadMenu();
     /// reloads the menus if the timestamps changed
     void checkMenu();
+
+    void hideExtraMenus(BScreen &screen);
 	
     /// handle any system signal sent to the application
     void handleSignal(int signum);
@@ -191,7 +193,9 @@ public:
     void timed_reconfigure();
 
     bool isStartup() const { return m_starting; }
-	
+
+
+
     typedef std::vector<Fluxbox::Titlebar> TitlebarList;
     /// @return whether the timestamps on the menu changed
     bool menuTimestampsChanged() const;
