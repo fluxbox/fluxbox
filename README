@@ -20,10 +20,10 @@ Compile and Install:
 
 Configuration options:
 
-  For KDE slitsupport: (Allows kde tray icons to be placed in the fluxbox slit)
+  For KDE slitsupport (default): (Allows kde tray icons to be placed in systray inside the toolbar)
     ./configure --enable-kde
 
-  For Gnome support:
+  For Gnome support (default):
     ./configure --enable-gnome
 
   Use ./configure --help to see the full list of options
