@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.15 2003/08/17 13:27:44 fluxgen Exp $
+# $Id: fbsetbg,v 1.16 2003/08/26 20:32:27 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -178,7 +178,7 @@ case $WPSETTER in
         debugstory=$standardok
         ;;
     xsri)
-        full='--center-x --center-y --scale-width=100 --scale-width=100'
+        full='--center-x --center-y --scale-width=100 --scale-height=100'
         tile='--tile'
         center='--center-x --center-y'
         aspect=$full
