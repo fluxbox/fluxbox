@@ -1,5 +1,5 @@
 // Menu.hh for FbTk - Fluxbox Toolkit
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Basemenu.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.1 2002/12/25 11:46:50 fluxgen Exp $
+// $Id: Menu.hh,v 1.2 2003/01/07 02:09:43 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -43,9 +43,8 @@ namespace FbTk {
 class MenuItem;
 class MenuTheme;
 
-/**
-   Base class for menus
-*/
+
+///   Base class for menus
 class Menu: public FbTk::EventHandler {
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
@@ -69,8 +68,10 @@ public:
     int insert(const char *label, int function= 0, const char *exec = 0, int pos = -1);
     /// add submenu
     int insert(const char *label, Menu *submenu, int pos= -1);
-    /// remove item
+    /// remove an item
     int remove(unsigned int item);
+    /// remove all items
+    void removeAll();
     inline void setInternalMenu() { internal_menu = true; }
     inline void setAlignment(Alignment a) { m_alignment = a; }
     inline void setTorn() { torn = true; }
@@ -79,6 +80,8 @@ public:
     void raise();
     /// lower this window
     void lower();
+    void disableTitle();
+    void enableTitle();
     /**
        @name event handlers
     */
@@ -135,7 +138,7 @@ protected:
     inline void setHideTree(bool h) { hide_tree = h; }
     inline void setMinimumSublevels(int m) { menu.minsub = m; }
 
-    virtual void itemSelected(int button, unsigned int index) = 0;
+    virtual void itemSelected(int button, unsigned int index) { }
     virtual void drawItem(unsigned int index, bool highlight = false, 
                           bool clear= false,
                           int x= -1, int y= -1, 
