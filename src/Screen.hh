@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.17 2002/02/17 10:28:18 fluxgen Exp $
+// $Id: Screen.hh,v 1.18 2002/02/17 18:54:58 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -307,7 +307,7 @@ private:
 
 	} resource;
 
-
+	void createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory);
 protected:
 	Bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
 
