@@ -1,10 +1,23 @@
 * const-correctnes
-* Clean up in BImage class, some of those functions are huge, and needs to be smaller.
-  And make the class more independent so it could be movable to other applications, 
-  such as config tools.
 
-* toolbar -> separate application
-* Some kind of resource class instead of the Screen and Fluxbox class with all the resources?
+* Clean up in BImage class, some of those functions are huge, and needs
+  to be smaller. 
+  - also make the class more independent so it could be movable to other
+    applications, such as config tools.
+
+* better group handling - possibly a structure to hold information about a
+  tabgroup, so you can set a win property with a unique identifier and
+  ordering, so that groups can be reconstructed on restart, and also set
+  on launch somehow. Possibly related would be fixing it so it remembers
+  which member of a tabgroup is the focused one, and set that
+  appropriately when necessary (eg currently, unsticking a group will
+  revert the focus to the "first" window in the group, instead of the
+  focused one).
+
+
+* toolbar -> separate application 
+* Some kind of resource class instead of the Screen and Fluxbox class
+  with all the resources?
 
 
 * Screen.cc:
