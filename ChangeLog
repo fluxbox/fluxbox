@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/27:
+  * Improve fallback if toolbar button style item missing (Simon)
+    ButtonTheme.hh/cc ToolFactory.cc
 *04/08/26:
   * Tiny unification (Mathias)
     - theme.cfg and style.cfg allowed

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.5 2004/08/25 17:16:40 rathnor Exp $
+// $Id: ToolFactory.cc,v 1.6 2004/08/27 14:14:42 rathnor Exp $
 
 #include "ToolFactory.hh"
 
@@ -75,7 +75,8 @@ private:
 
 ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
     m_clock_theme(screen.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
-    m_button_theme(new ButtonTheme(screen.screenNumber(), "toolbar.button", "Toolbar.Button")),
+    m_button_theme(new ButtonTheme(screen.screenNumber(), "toolbar.button", "Toolbar.Button", 
+                                   "toolbar.workspace", "Toolbar.Workspace")),
     m_workspace_theme(new WorkspaceNameTheme(screen.screenNumber(), "toolbar.workspace", "Toolbar.Workspace")),
     m_iconbar_theme(screen.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar") {
 
