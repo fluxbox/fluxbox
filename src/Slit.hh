@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.34 2003/06/23 14:16:04 rathnor Exp $
+/// $Id: Slit.hh,v 1.35 2003/06/24 13:42:23 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -96,6 +96,8 @@ public:
 
     BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }
+    SlitTheme &theme() { return *m_slit_theme.get(); }
+    const SlitTheme &theme() const { return *m_slit_theme.get(); }
     /**
        @name eventhandlers
     */
