@@ -294,7 +294,7 @@ Configmenu::Focusmenu::Focusmenu(Configmenu *cm) : Basemenu(cm->screen) {
 	setItemSelected(2, configmenu->screen->isSemiSloppyFocus());
 	setItemEnabled(3, (configmenu->screen->isSloppyFocus() ||
 						configmenu->screen->isSemiSloppyFocus()));
-	setItemSelected(3, configmenu->screen->doAutoRaise());
+	setItemSelected(4, configmenu->screen->doAutoRaise());
 }
 
 
