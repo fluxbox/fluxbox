@@ -1,11 +1,22 @@
-So whats new in 0.1.5? 
- * Keybinding code and new keyconfiguresstyle
- * Keybindings: NextTab, PrevTab and AbortKeychain
- * Tab placement and alignment 
- * wheelscroll on titlebar changes between tabs
- * Toggle tab on windows
- * Semi-sloppy focus
- * Italian nls
- * a session.rootCommand to override the Themes rootCommand
- * and some buggfixes
- 
+So whats new in 0.1.6? 
+* different rootCommand on different screens
+* less strict keyconfig file reading
+* coding design
+* You can drop tabs on titlebar too
+* tab width is configured for each screen
+* Tab cycling
+* "Maximize stop at slit" option
+
+Bugfixes:
+* close button
+* keys memory leak
+* keybinding bug
+* withdraw state fixed (opera will not open another instance)
+* Slit OnTop while Toolbar OnTop
+* Alt + resize and pressing button 1
+* Tab toggle texture/position
+* Windowmenu bug when resizing with num/caps/scrollock on
+* Shade bug in Windowmenu
+* Sticky toggle bug in Windowmenu
+* Tab/Iconbar resource
+* Crash on no title (the slit apps)
