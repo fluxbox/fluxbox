@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.183 2003/06/15 11:52:44 rathnor Exp $
+// $Id: Screen.cc,v 1.184 2003/06/15 20:09:13 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2415,7 +2415,8 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
     const FluxboxWindow *win = winclient.fbwindow();
     return (!win ||
             (opts & CYCLESKIPSTUCK) != 0 && win->isStuck() || // skip if stuck
-            (opts & CYCLEGROUPS) != 0 && win->winClient() != winclient.window() || // skip if not active client (i.e. only visit each fbwin once)
+            // skip if not active client (i.e. only visit each fbwin once)
+            (opts & CYCLEGROUPS) != 0 && win->winClient() != winclient.window() ||
             (opts & CYCLESKIPSHADED) != 0 && win->isShaded() // skip if shaded
         ); 
 }
