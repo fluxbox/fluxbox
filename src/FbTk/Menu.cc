@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.20 2003/05/04 10:34:09 fluxgen Exp $
+// $Id: Menu.cc,v 1.21 2003/05/13 00:24:26 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -920,7 +920,7 @@ void Menu::setItemEnabled(unsigned int index, bool enable) {
 bool Menu::isItemEnabled(unsigned int index) const {
     if (index >= menuitems.size()) return false;
 
-    MenuItem *item = find(index);
+    const MenuItem *item = find(index);
     if (!item)
         return false;
 
