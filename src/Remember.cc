@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.41 2004/09/02 09:52:26 akir Exp $
+// $Id: Remember.cc,v 1.42 2004/09/04 04:54:38 akir Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -461,7 +461,9 @@ void Remember::load() {
             std::list<ClientPattern *> grouped_pats;
             while (getline(apps_file, line) && ! apps_file.eof()) {
                 row++;
-                if (line[0] == '#')
+                FbTk::StringUtil::removeFirstWhitespace(line);
+                FbTk::StringUtil::removeTrailingWhitespace(line);
+                if (line.size() == 0 || line[0] == '#')
                     continue;
                 string key;
                 int err=0;
