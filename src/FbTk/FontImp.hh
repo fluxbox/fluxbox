@@ -1,5 +1,5 @@
 // FontImp.cc for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FontImp.hh,v 1.2 2002/12/01 13:42:14 rathnor Exp $
+// $Id: FontImp.hh,v 1.3 2003/04/20 13:52:29 fluxgen Exp $
 
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
