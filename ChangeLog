@@ -1,12 +1,17 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*+02/09/21:
+   * new menu item (Thanks Han)
+     fluxbox-generate_menu
 *02/09/14:
    * Fixed bug [ 604463 ] mplayer fullscreen fails (Henrik)
      Window.cc
    * Added Color.cc and moved color handling from Image.cc to it. 
      (Henrik)
+   * Added Texture.cc and Texture::setFromString (Henrik)
    * Proper handling of sticky windows when cycling (Simon)
 
+---------------------------------------------------------------------
 Changes for 0.1.12/13:
 *02/09/12:
    * Removed -fg and -bg settings in fluxbox-generate_menu
