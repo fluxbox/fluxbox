@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.12 2002/02/17 18:59:01 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.13 2002/02/20 22:39:14 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -67,9 +67,6 @@ public:
 		ATTRIB_DECORATION = 0x40
 	};
 	
-	#ifdef GNOME
-	
-	#endif
 	enum Decor {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
 	
 	
