@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
 *03/06/13:
+   * Fixed autogrouping (Henrik)
+     Window.cc, Workspace.cc
    * Regular expression support for remember (Simon)
      Also ability to limit number of matches for a given rule
      Also ability to match several different window attributes
