@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.6 2002/11/26 17:04:23 fluxgen Exp $
+// $Id: main.cc,v 1.7 2002/11/27 21:54:11 fluxgen Exp $
 
 #include "FbRun.hh"
 #include "App.hh"
@@ -156,13 +156,7 @@ int main(int argc, char **argv) {
 		if (set_pos)
 			fbrun.move(x, y);
 		
-		XEvent ev;
-		
-		// main loop
-		while (!fbrun.end()) {
-			XNextEvent(disp, &ev);
-			fbrun.handleEvent(&ev);
-		}	
+		application.eventLoop();
 
 	} catch (string errstr) {
 		cerr<<"Error: "<<errstr<<endl;
