@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.198 2003/06/30 18:04:48 fluxgen Exp $
+// $Id: Screen.cc,v 1.199 2003/07/01 12:39:09 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -227,34 +227,6 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
 };
 
 
-template <>
-void FbTk::ThemeItem<std::string>::load() { }
-
-template <>
-void FbTk::ThemeItem<std::string>::setDefaultValue() { 
-    *(*this) = ""; 
-}
-
-template <>
-void FbTk::ThemeItem<std::string>::setFromString(const char *str) { 
-    *(*this) = (str ? str : ""); 
-}
-
-template <>
-void FbTk::ThemeItem<int>::load() { }
-
-template <>
-void FbTk::ThemeItem<int>::setDefaultValue() {
-    *(*this) = 0;
-}
-
-template <>
-void FbTk::ThemeItem<int>::setFromString(const char *str) {
-    if (str == 0)
-        return;
-    sscanf(str, "%d", &m_value);
-}
-
 BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm, 
                                         const std::string &scrname, 
                                         const std::string &altscrname):
@@ -287,6 +259,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_workspacecount_sig(*this), // workspace count signal
     m_workspacenames_sig(*this), // workspace names signal 
     m_currentworkspace_sig(*this), // current workspace signal
+    m_reconfigure_sig(*this), // reconfigure signal
     m_layermanager(num_layers),
     cycling_focus(false),
     cycling_last(0),
@@ -386,7 +359,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     renderGeomWindow();
 
-
     // setup workspaces and workspace menu
 
     workspacemenu.reset(createMenuFromScreen(*this));
@@ -426,12 +398,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_configmenu->setInternalMenu();
 
     workspacemenu->setItemSelected(2, true);
-
-
-    initMenu(); // create and initiate rootmenu
-
-    //update menus
-    m_rootmenu->update();
+    // create and initiate rootmenu
+    rereadMenu();
+    
     m_configmenu->update();
 
 #ifdef SLIT
@@ -663,8 +632,7 @@ void BScreen::reconfigure() {
         }
     }
 
-    initMenu();
-    m_rootmenu->reconfigure();		
+    rereadMenu();
 
     if (restore_menus) {
         // restore submenus, no timestamp changed
@@ -700,13 +668,13 @@ void BScreen::reconfigure() {
              mem_fun(&FluxboxWindow::reconfigure));
 
     imageControl().timeout();
-
+    // notify objects that the screen is reconfigured
+    m_reconfigure_sig.notify();
 }
 
 
 void BScreen::rereadMenu() {
     initMenu();
-
     m_rootmenu->reconfigure();
 }
 
@@ -717,7 +685,6 @@ void BScreen::removeWorkspaceNames() {
 
 void BScreen::updateWorkspaceNamesAtom() {
     m_workspacenames_sig.notify();
-
 }
 
 void BScreen::addIcon(FluxboxWindow *w) {
@@ -731,7 +698,6 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (! w)
         return;
 	
-
     Icons::iterator erase_it = remove_if(m_icon_list.begin(),
                                          m_icon_list.end(),
                                          bind2nd(equal_to<FluxboxWindow *>(), w));
@@ -915,10 +881,6 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
                 changeWorkspaceID(id);
                 win->setInputFocus();
             }
-#ifdef DEBUG
-            cerr<<__FILE__<<": Sending to id = "<<id<<endl;
-            cerr<<__FILE__<<": win->workspaceId="<<win->workspaceNumber()<<endl;
-#endif //DEBUG
 
         }
 
@@ -990,6 +952,7 @@ void BScreen::updateNetizenWindowFocus() {
     for (; it != it_end; ++it) {
         (*it)->sendWindowFocus(f);
     }
+
 }
 
 

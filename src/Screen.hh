@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.112 2003/06/25 05:46:21 fluxgen Exp $
+// $Id: Screen.hh,v 1.113 2003/07/01 12:39:09 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -147,6 +147,8 @@ public:
     FbTk::Subject &workspaceNamesSig() { return m_workspacenames_sig; }
     /// current workspace signal
     FbTk::Subject &currentWorkspaceSig() { return m_currentworkspace_sig; }
+    /// reconfigure signal
+    FbTk::Subject &reconfigureSig() { return m_reconfigure_sig; }
     //@}
 		
     /// @return the resource value of number of workspace
@@ -203,7 +205,7 @@ public:
     const std::string &altName() const { return m_altname; }
     int addWorkspace();
     int removeLastWorkspace();
-    //scroll workspaces
+    // scroll workspaces
     void nextWorkspace() { nextWorkspace(1); }
     void prevWorkspace() { prevWorkspace(1); }
     void nextWorkspace(int delta);
@@ -340,7 +342,8 @@ private:
     m_clientlist_sig,  ///< client signal
         m_workspacecount_sig, ///< workspace count signal
         m_workspacenames_sig, ///< workspace names signal 
-        m_currentworkspace_sig; ///< current workspace signal
+        m_currentworkspace_sig, ///< current workspace signal
+        m_reconfigure_sig; ///< reconfigure signal
 		
     FbTk::MultLayers m_layermanager;
 	
