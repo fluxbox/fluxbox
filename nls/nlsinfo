@@ -278,12 +278,12 @@ sub mode_header {
     my $setnum = 0;
     foreach my $set (sort keys %sets) {
         $setnum++;
-        printf "\t%s = 0x%x,\n", $set, $setnum; 
+        printf "\t%s = %d,\n", $set, $setnum; 
 
         my $strnum = 0;
         foreach my $str (sort keys %{$sets{$set}}) {
             $strnum++;
-            printf "\t%s = 0x%x,\n", $str, $strnum; 
+            printf "\t%s = %d,\n", $str, $strnum; 
         }
         print "\n";
     }
