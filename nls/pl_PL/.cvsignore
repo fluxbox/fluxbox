@@ -1,0 +1,5 @@
+.cvsignore
+Makefile
+Makefile.in
+*.cat
+Translation.m
