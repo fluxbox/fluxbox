@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.80 2002/09/08 19:51:30 fluxgen Exp $
+// $Id: Window.cc,v 1.81 2002/09/08 20:06:58 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -371,6 +371,7 @@ FluxboxWindow::~FluxboxWindow() {
 
 
 	if (client.transient_for != 0) {
+		fluxbox->setFocusedWindow(client.transient_for);
 		client.transient_for->client.transients.remove(this);
 		client.transient_for = 0;			
 	}
