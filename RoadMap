@@ -1,0 +1,119 @@
+This file is intended to provide a rough roadmap of the development 
+towards the Fluxbox 1.0.0 release.
+
+The process will involve a number of development releases in the 0.9
+series until features and execution (i.e. bugs) stabilise.
+
+Some of the interesting new features beyond 0.1.14 that we'd like to work towards are:
+
+- Layer Support
+- New action system (key/mouse bindings)
+- Tabgroup rewrite (should also allow more commands to act on the whole group)
+- Tabs embedded in titlebar
+- Most recently used window cycling
+- Toolbar modes
+- Integration of remember patch (or at least the concept)
+- Smarter config menus (ability to modify numeric values)
+- fix Xinerama support again
+
+Some minor ones (mainly bugfixes or small things) that I feel like noting are
+(many of these based on feature requests or bug reports from sourceforge):
+
+- (optional) Unique per-workspace backgrounds
+- Key bindings for:
+  -> restart
+  -> specific tab numbers
+  -> tabgroup keybindings
+  -> menu navigation
+  -> moving windows to next workspace/tabgroup
+- fix up focus issues (click to focus sometimes acts like sloppy)
+- proper initialisation from hints (e.g. Eterm -D 2)
+- fix toggledecoration to not give tabs back etc
+- snap to windows
+- Pixmap buttons
+- Shaped menus/toolbar/slit
+- improved command line output for help option (plus include compile-time options 
+        etc in output for improved bug reporting)
+- layer configuration things for toolbar/slit/numlayers
+- fix outline window moving
+
+Some lower priority ones ("thoughts"/maybes):
+
+- transparency (major)
+- keybindings for directional focus moving:
+  -> nextWindowLeft/Right/Up/Down
+     - looks for the window left of the current one, and gives it focus
+- more powerful autogrouping matching
+- stop window movement by clicking on border (only on frame instead)
+- mouse button "keys"
+
+Known Bugs (to be looked at at some time):
+
+
+----------------------------------------------------------
+
+So, what's the plan?
+
+----------------------------------------------------------
+Release:      0.9.0
+Approx Date:  23 February, 2003
+Major Features:
+ - Layer support                        (Simon)
+ - New action system                    (Henrik)
+ - Smarter config menus                 (Henrik)
+Minor Features:
+ - Proper initialisation from hints     (Simon)
+ - Shaped menu/slit/toolbar             (Henrik)
+ - layer configuration things           (Simon)
+Bugfixes/lower priority:
+
+----------------------------------------------------------
+Release:      0.9.1
+Approx Date:  8 March, 2003
+Major Features:
+ - Toolbar modes                        (Simon)
+ - Tabs embedded in titlebar            (Henrik)
+ - Tabgroup rewrite                     (Henrik)
+ - Most recently used window cycling    (Simon)
+Minor Features:
+ - per workspace backgrounds            (Simon)
+ - more keybinding actions              (Both)
+ - pixmap buttons                       (Henrik)
+ - fix outline window moving
+Bugfixes/lower priority:
+ - Bugs from 0.9.0                      (Both)
+ - stop window moving from borders      (Simon)
+ - more powerful autogroup matching     (?)
+
+----------------------------------------------------------
+Release:      0.9.2
+Approx Date:  22 March, 2003
+Major Features:
+ - Integration of Remember patch        (Simon)
+ - Transparency                         (Henrik)
+ - Xinerama                             (Henrik)
+Minor Features:
+ - directional focus movement           (?)
+ - fix up focus issues                  (Simon)
+ - snap to windows                      (Simon)
+ - improved command-line help option    (Henrik)
+ - nls updating (layers, toolbar)       (Both)
+Bugfixes/lower priority:
+ - Bugs from 0.9.1                      (Both)
+
+----------------------------------------------------------
+Release:      1.0.0 rc1
+Approx Date:  8 April, 2003
+Major Features:
+ None
+Minor Features:
+ None
+Bugfixes/lower priority:
+ - Fixes for 0.9.2 and previous
+
+----------------------------------------------------------
+
+Release:      1.0.0
+Approx Date:  23 April, 2003
+
+Obviously any remaining bug-fixes and small tweaks
