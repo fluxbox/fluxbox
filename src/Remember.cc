@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.17 2003/05/26 04:24:24 rathnor Exp $
+// $Id: Remember.cc,v 1.18 2003/05/26 11:27:31 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -395,6 +395,10 @@ void Remember::save() {
             case (FluxboxWindow::DECORM_TITLEBAR 
                   | FluxboxWindow::DECORM_MENU):
                 apps_file << "  [Deco]\t{TINY}" << endl;
+                break;
+            case (FluxboxWindow::DECORM_BORDER 
+                  | FluxboxWindow::DECORM_MENU):
+                apps_file << "  [Deco]\t{BORDER}" << endl;
                 break;
             default:
                 apps_file << "  [Deco]\t{0x"<<hex<<a->decostate<<dec<<"}"<<endl;
