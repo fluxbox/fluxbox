@@ -19,16 +19,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#include "Timer.hh"
+
 //use GNU extensions
-#ifndef	 _GNU_SOURCE
+#ifndef	_GNU_SOURCE
 #define _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef		HAVE_CONFIG_H
+#ifdef	HAVE_CONFIG_H
 #include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#include "Timer.hh"
 #include <sys/types.h>
 #include <unistd.h>
 #include <cassert>
@@ -43,7 +44,7 @@ m_once(false) {
 }
 
 
-BTimer::~BTimer(void) {
+BTimer::~BTimer() {
 	if (isTiming()) stop();
 }
 
@@ -62,7 +63,7 @@ void BTimer::setTimeout(timeval t) {
 }
 
 
-void BTimer::start(void) {
+void BTimer::start() {
 	gettimeofday(&m_start, 0);
 
 	if (! m_timing) {
@@ -72,13 +73,13 @@ void BTimer::start(void) {
 }
 
 
-void BTimer::stop(void) {
+void BTimer::stop() {
 	m_timing = false;
 	removeTimer(this); //remove us from the list
 }
 
 
-void BTimer::fireTimeout(void) {
+void BTimer::fireTimeout() {
 	if (m_handler) m_handler->timeout();
 }
 
