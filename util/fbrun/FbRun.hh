@@ -19,15 +19,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.13 2003/08/27 00:19:57 fluxgen Exp $
+// $Id: FbRun.hh,v 1.14 2003/08/27 14:04:12 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
 
-#include "EventHandler.hh"
-#include "Font.hh"
-#include "FbWindow.hh"
-#include "TextBox.hh"
+#include "FbTk/EventHandler.hh"
+#include "FbTk/Font.hh"
+#include "FbTk/FbWindow.hh"
+#include "FbTk/TextBox.hh"
+#include "FbTk/GContext.hh"
+#include "FbTk/FbPixmap.hh"
 
 #include <string>
 #include <vector>
@@ -84,14 +86,14 @@ private:
     FbTk::Font m_font; ///< font used to draw command text
     Display *m_display;  ///< display connection
     int m_bevel;
-    GC m_gc; ///< graphic context
+    FbTk::GContext m_gc; ///< graphic context
     bool m_end; ///< marks when this object is done
     std::vector<std::string> m_history; ///< history list of commands
     size_t m_current_history_item; ///< holds current position in command history
     std::string m_history_file; ///< holds filename for command history file
     Cursor m_cursor;
 
-    Pixmap m_pixmap;
+    FbTk::FbPixmap m_pixmap;
 };
 
 #endif // FBRUN_HH

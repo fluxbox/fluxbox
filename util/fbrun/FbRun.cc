@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.18 2003/08/27 00:20:19 fluxgen Exp $
+// $Id: FbRun.cc,v 1.19 2003/08/27 14:04:12 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -55,13 +55,12 @@ FbRun::FbRun(int x, int y, size_t width):
     m_font("fixed"),
     m_display(FbTk::App::instance()->display()),
     m_bevel(4),
-    m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
+    m_gc(*this),
     m_end(false),
     m_current_history_item(0),
-    m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)),
-    m_pixmap(0) {
-
-    setGC(m_gc);
+    m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)) {
+    
+    setGC(m_gc.gc());
     setCursor(m_cursor);
     // setting nomaximize in local resize
     resize(width, font().height() + m_bevel);
@@ -77,20 +76,23 @@ FbRun::FbRun(int x, int y, size_t width):
     XFree(class_hint);
 #ifdef HAVE_XPM
     Pixmap mask = 0;
+    Pixmap pm;
     XpmCreatePixmapFromData(m_display,
                             window(),
                             fbrun_xpm,
-                            &m_pixmap,
+                            &pm,
                             &mask,
                             0); // attribs
     if (mask != 0)
         XFreePixmap(m_display, mask);
+
+    m_pixmap = pm;
 #endif // HAVE_XPM
 
-    if (m_pixmap) {
+    if (m_pixmap.drawable()) {
         XWMHints wmhints;
         wmhints.flags = IconPixmapHint;
-        wmhints.icon_pixmap = m_pixmap;
+        wmhints.icon_pixmap = m_pixmap.drawable();
         XSetWMHints(m_display, window(), &wmhints);
     }
 }
@@ -98,8 +100,6 @@ FbRun::FbRun(int x, int y, size_t width):
 
 FbRun::~FbRun() {
     hide();
-    if (m_pixmap != 0)
-        XFreePixmap(FbTk::App::instance()->display(), m_pixmap);
 }
 
 void FbRun::run(const std::string &command) {
@@ -187,7 +187,7 @@ bool FbRun::loadFont(const string &fontname) {
 }
 
 void FbRun::setForegroundColor(const FbTk::Color &color) {
-    XSetForeground(m_display, m_gc, color.pixel());
+    m_gc.setForeground(color);
 }
 
 void FbRun::setTitle(const string &title) {
