@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.77 2003/12/19 13:36:21 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.78 2003/12/20 17:40:50 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -86,7 +86,7 @@ public:
     bool validateWindow(Window win) const;
     void grab();
     void ungrab();
-
+    Keys *keys() { return m_key.get(); }
     inline Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
 
     // Not currently implemented until we decide how it'll be used
