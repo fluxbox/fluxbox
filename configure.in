@@ -320,4 +320,5 @@ nls/bg_BG/Makefile
 nls/ja_JP/Makefile
 nls/lv_LV/Makefile
 nls/it_IT/Makefile
+nls/de_DE/Makefile
 )
