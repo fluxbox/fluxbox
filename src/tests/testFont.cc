@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: testFont.cc,v 1.6 2003/09/11 16:51:03 fluxgen Exp $
+// $Id: testFont.cc,v 1.7 2004/09/01 12:41:11 fluxgen Exp $
 
 #include "App.hh"
 #include "FbWindow.hh"
@@ -38,13 +38,14 @@ using namespace std;
 
 class App:public FbTk::App, public FbTk::EventHandler {
 public:
-    App(const char *displayname):
+    App(const char *displayname, const string &foreground, const string background):
         FbTk::App(displayname),
         m_win(DefaultScreen(display()),
               0, 0, 640, 480, KeyPressMask | ExposureMask) { 
-
+        m_background = background;
+        m_foreground = foreground;
         m_win.show();
-        m_win.setBackgroundColor(FbTk::Color("white", m_win.screenNumber()));
+        m_win.setBackgroundColor(FbTk::Color(background.c_str(), m_win.screenNumber()));
         FbTk::EventManager::instance()->add(*this, m_win);
     }
     ~App() {
@@ -84,7 +85,8 @@ public:
         wingc.setForeground(FbTk::Color("red", m_win.screenNumber()));
         m_win.drawLine(wingc.gc(),
                        x, y, x + text_w, y);
-        wingc.setForeground(FbTk::Color("black", m_win.screenNumber()));
+        wingc.setForeground(FbTk::Color(m_foreground.c_str(), m_win.screenNumber()));
+        cerr<<"text width: "<<m_font.textWidth(m_text.c_str(), m_text.size())<<endl;
         m_font.drawText(m_win.drawable(),
                         0, wingc.gc(),
 			m_text.c_str(), m_text.size(),
@@ -96,6 +98,7 @@ public:
     void setText(const std::string& text) { m_text = text; }
 
 private:
+    string m_foreground, m_background;
     FbTk::FbWindow m_win;
     FbTk::Font m_font;
     string m_text;
@@ -106,6 +109,8 @@ int main(int argc, char **argv) {
     bool rotate = false;
     string fontname("fixed");
     string displayname("");
+    string background("black");
+    string foreground("white");
     string text("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-_¯åäöÅÄÖ^~+=`\"!#¤%&/()=¡@£$½¥{[]}¶½§±");
     for (int a=1; a<argc; ++a) {
         if (strcmp("-font", argv[a])==0 && a + 1 < argc) {
@@ -116,16 +121,32 @@ int main(int argc, char **argv) {
             displayname = argv[++a];
         } else if (strcmp("-text", argv[a]) == 0 && a + 1 < argc) {
             text = argv[++a];
-        } else if (strcmp("-rotate", argv[a]) == 0)
+        } else if (strcmp("-rotate", argv[a]) == 0) {
             rotate = true;
-    
+        } else if (strcmp("-bg", argv[a]) == 0 && a + 1 < argc) {
+            background = argv[++a];
+        } else if (strcmp("-fg", argv[a]) == 0 && a + 1 < argc) {
+            foreground = argv[++a];
+        } else if (strcmp("-h", argv[a]) == 0) {
+            cerr<<"Arguments: "<<endl;
+            cerr<<"-font <fontname>"<<endl;
+            cerr<<"-antialias"<<endl;
+            cerr<<"-display <display>"<<endl;
+            cerr<<"-text <text>"<<endl;
+            cerr<<"-rotate"<<endl;
+            cerr<<"-fg <foreground color>"<<endl;
+            cerr<<"-bg <background color>"<<endl;
+            cerr<<"-h"<<endl;
+            exit(0);
+        }
+            
     }
 
-    App app(displayname.c_str());
+    App app(displayname.c_str(), foreground, background);
     app.font().setAntialias(antialias);
     if (!app.font().load(fontname.c_str()))
         cerr<<"Failed to load: "<<fontname<<endl;
-	
+    cerr<<"Setting text: "<<text<<endl;
     app.setText(text);
     if (rotate)
         app.font().rotate(90);
