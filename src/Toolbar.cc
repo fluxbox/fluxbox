@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.127 2003/12/03 00:32:13 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.128 2003/12/07 15:27:52 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -241,7 +241,9 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_layermenu.setInternalMenu();
     m_placementmenu.setInternalMenu();
     setupMenus();
-
+    // add menu to screen
+    screen().addConfigMenu("Toolbar", menu());
+    
     // geometry settings
     frame.width = width;
     frame.height = 10;
