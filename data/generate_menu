@@ -1,0 +1,232 @@
+# generate_menu for Fluxbox 
+# Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+#!/bin/sh
+
+FILENAME=menu.in
+
+
+# Start of menu
+
+echo "[begin] (Fluxbox @VERSION@)" > $FILENAME
+
+if [ -x `which xterm` ]; then 		
+		echo "	[exec] (xterm) {xterm -fg white -bg black}" >> $FILENAME		
+fi
+
+if [ -x `which nedit` ]; then 		
+		echo "	[exec] (nedit) {nedit}" >> $FILENAME		
+fi
+
+echo "[submenu] (Browsers)" >> $FILENAME
+	if [ -x `which netscape` ]; then 		
+		echo "	[exec] (netscape) {netscape}" >> $FILENAME		
+	fi
+	if [ -x `which opera` ]; then 		
+		echo "	[exec] (opera) {opera}" >> $FILENAME		
+	fi
+	if [ -x `which galeon` ]; then 		
+		echo "	[exec] (galeon) {galeon}" >> $FILENAME		
+	fi
+	if [ -x `which mozilla` ]; then 		
+		echo "	[exec] (mozilla) {mozilla}" >> $FILENAME		
+	fi
+	if [ -x `which konqueror` ]; then 		
+		echo "	[exec] (konqueror) {konqueror}" >> $FILENAME		
+	fi	
+echo "[end]" >> $FILENAME
+
+
+echo "[submenu] (Editors)" >> $FILENAME
+	if [ -x `which nedit` ]; then 		
+		echo "	[exec] (nedit) {nedit}" >> $FILENAME		
+	fi
+	if [ -x `which vim` ]; then 		
+		echo "	[exec] (vim) {vim -g}" >> $FILENAME		
+	fi
+	if [ -x `which xemacs` ]; then 		
+		echo "	[exec] (xemacs) {xemacs}" >> $FILENAME		
+	fi
+	if [ -x `which gedit` ]; then 		
+		echo "	[exec] (gedit) {gedit}" >> $FILENAME		
+	fi
+	if [ -x `which xedit` ]; then 		
+		echo "	[exec] (xedit) {xedit}" >> $FILENAME		
+	fi
+	if [ -x `which kword` ]; then 		
+		echo "	[exec] (kword) {kword}" >> $FILENAME		
+	fi
+
+echo "[end]" >> $FILENAME
+
+echo "[submenu] (Net)" >> $FILENAME
+	if [ -x `which realplay` ]; then 		
+		echo "	[exec] (realplay) {realplay}" >> $FILENAME		
+	fi
+	
+	if [ -x `which licq` ]; then 		
+		echo "	[exec] (licq) {licq}" >> $FILENAME		
+	fi
+	if [ -x `which xchat` ]; then 		
+		echo "	[exec] (xchat) {xchat}" >> $FILENAME		
+	fi
+	if [ -x `which sylpheed` ]; then 		
+		echo "	[exec] (sylpheed) {sylpheed}" >> $FILENAME		
+	fi
+	if [ -x `which gftp` ]; then 		
+		echo "	[exec] (gftp) {gftp}" >> $FILENAME		
+	fi
+	if [ -x `which BitchX` ]; then 		
+		echo "	[exec] (BitchX) {xterm -title BitchX -fg white -bg black -e BitchX -N}" >> $FILENAME
+	else
+		if [ -x `which bitchx` ]; then 		
+			echo "	[exec] (BitchX) {xterm -title BitchX -fg white -bg black -e bitchx -N}" >> $FILENAME
+		fi
+	fi
+	if [ -x `which ircii` ]; then 		
+		echo "	[exec] (ircii) {xterm -title ircii -fg white -bg black -e ircii -s}" >> $FILENAME
+	fi
+echo "[end]" >> $FILENAME
+
+
+echo "[submenu] (Graphics)" >> $FILENAME
+	if [ -x `which gimp` ]; then 		
+		echo "	[exec] (gimp) {gimp}" >> $FILENAME		
+	fi
+	if [ -x `which xv` ]; then 		
+		echo "	[exec] (xv) {xv}" >> $FILENAME		
+	fi
+	if [ -x `which gqview` ]; then 		
+		echo "	[exec] (gqview) {gqview}" >> $FILENAME		
+	fi
+	if [ -x `which xpaint` ]; then 		
+		echo "	[exec] (xpaint) {xpaint}" >> $FILENAME		
+	fi
+echo "[end]" >> $FILENAME
+
+echo "[submenu] (Music)" >> $FILENAME
+	if [ -x `which xmms` ]; then 		
+		echo "	[exec] (xmms) {xmms}" >> $FILENAME		
+	fi
+	if [ -x `which gqmpeg` ]; then 		
+		echo "	[exec] (gqmpeg) {gqmpeg}" >> $FILENAME		
+	fi
+	if [ -x `which xmixer` ]; then 		
+		echo "	[exec] (xmixer) {xmixer}" >> $FILENAME		
+	fi
+	if [ -x `which gmix` ]; then 		
+		echo "	[exec] (gmix) {gmix}" >> $FILENAME		
+	fi
+	if [ -x `which xplaycd` ]; then 		
+		echo "	[exec] (xplaycd) {xplaycd}" >> $FILENAME		
+	fi
+	if [ -x `which soundtracker` ]; then 		
+		echo "	[exec] (soundtracker) {soundtracker}" >> $FILENAME		
+	fi
+echo "[end]" >> $FILENAME
+
+echo "[submenu] (Terminals)" >> $FILENAME
+	if [ -x `which xterm` ]; then 		
+		echo "	[exec] (xterm) {xterm -fg white -bg black}" >> $FILENAME		
+	fi
+	if [ -x `which gnome-terminal` ]; then
+		echo "  [exec] (gnome-terminal) {gnome-terminal}" >> $FILENAME
+	fi	
+	if [ -x `which Eterm` ]; then
+		echo "  [exec] (Eterm) {Eterm}" >> $FILENAME
+	fi	
+	if [ -x `which konsole` ]; then
+		echo "  [exec] (konsole) {konsole}" >> $FILENAME
+	fi	
+	if [ -x `which aterm` ]; then
+		echo "  [exec] (aterm) {aterm}" >> $FILENAME
+	fi	
+	if [ -x `which rxvt` ]; then
+		echo "  [exec] (rxvt) {rxvt}" >> $FILENAME
+	fi
+echo "[end]" >> $FILENAME	
+
+
+echo "[submenu] (Misc)" >> $FILENAME
+	if [ -x `which acroread` ]; then
+		echo "  [exec] (acroread) {acroread}" >> $FILENAME
+	fi
+	if [ -x `which gcalc` ]; then
+		echo "  [exec] (gcalc) {gcalc}" >> $FILENAME
+	fi	
+	if [ -x `which xgdb` ]; then
+		echo "  [exec] (xgdb) {xgdb}" >> $FILENAME
+	fi	
+	if [ -x `which ddd` ]; then
+		echo "  [exec] (ddd) {ddd}" >> $FILENAME
+	fi	
+	if [ -x `which xterm` ]; then 		
+	  echo "	[exec] (tail access_log) {xterm -fg white -bg black -title access_log -e tail -f /var/log/access_log}" >> $FILENAME
+	fi
+echo "[end]" >> $FILENAME	
+
+echo "[submenu] (X utils)" >> $FILENAME
+	if [ -x `which xpenguins` ]; then
+		echo "  [exec] (xpenguins) {xpenguins}" >> $FILENAME
+	fi		
+	if [ -x `which xcalc` ]; then
+		echo "  [exec] (xcalc) {xcalc}" >> $FILENAME
+	fi	
+	if [ -x `which xfontsel` ]; then
+		echo "  [exec] (xfontsel) {xfontsel}" >> $FILENAME
+	fi	
+	if [ -x `which xman` ]; then
+		echo "  [exec] (xman) {xman}" >> $FILENAME
+	fi	
+	if [ -x `which xload` ]; then
+		echo "  [exec] (xload) {xload}" >> $FILENAME
+	fi	
+	if [ -x `which xfig` ]; then
+		echo "  [exec] (xfig) {xfig}" >> $FILENAME
+	fi	
+	if [ -x `which xbiff` ]; then
+		echo "  [exec] (xbiff) {xbiff}" >> $FILENAME
+	fi	
+	if [ -x `which editres` ]; then
+		echo "  [exec] (editres) {editres}" >> $FILENAME
+	fi	
+	if [ -x `which viewres` ]; then
+		echo "  [exec] (viewres) {viewres}" >> $FILENAME
+	fi	
+	if [ -x `which xsnow` ]; then
+		echo "  [exec] (xsnow) {xsnow}" >> $FILENAME
+	fi	
+	if [ -x `which xclock` ]; then
+		echo "  [exec] (xclock) {xclock}" >> $FILENAME
+	fi
+echo "[end]" >> $FILENAME		
+
+
+echo "[workspaces] (Workspace List)" >> $FILENAME
+echo "[submenu] (Styles) {Choose a style...}" >> $FILENAME
+echo "[stylesdir] (@pkgdatadir@/styles)" >> $FILENAME
+echo "[end]" >> $FILENAME
+echo "[config] (Configuration)" >> $FILENAME
+echo "[reconfig] (Reconfigure)" >> $FILENAME
+echo "[restart] (Restart)" >> $FILENAME
+echo "[exit] (Exit)" >> $FILENAME
+
+echo "[end]" >> $FILENAME
