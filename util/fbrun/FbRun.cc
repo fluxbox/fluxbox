@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.31 2004/08/31 15:26:40 rathnor Exp $
+// $Id: FbRun.cc,v 1.32 2004/09/29 00:51:29 akir Exp $
 
 #include "FbRun.hh"
 
@@ -166,7 +166,11 @@ bool FbRun::loadHistory(const char *filename) {
     ifstream infile(filename);
     if (!infile) {
         //even though we fail to load file, we should try save to it
-        m_history_file = filename;
+        ofstream outfile(filename);
+        if (outfile) {
+            m_history_file = filename;
+            return true;
+        }
         return false;
     }
     // clear old history and load new one from file
