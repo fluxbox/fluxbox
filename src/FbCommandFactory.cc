@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.30 2004/04/28 14:59:11 rathnor Exp $
+// $Id: FbCommandFactory.cc,v 1.31 2004/05/02 21:13:08 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -69,6 +69,7 @@ FbCommandFactory::FbCommandFactory() {
         "exec",
         "execcommand",
         "execute",
+        "exit",
         "focusup",
         "focusdown",
         "focusleft",
@@ -158,6 +159,8 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new SaveResources();
     else if (command == "execcommand" || command == "execute" || command == "exec")
         return new ExecuteCmd(arguments); // execute command on key screen
+    else if (command == "exit") 
+        return new ExitFluxboxCmd();
     else if (command == "quit")
         return new FbTk::SimpleCommand<Fluxbox>(*Fluxbox::instance(), &Fluxbox::shutdown);
     else if (command == "commanddialog") // run specified fluxbox command
