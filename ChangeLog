@@ -3,11 +3,12 @@ Changes for 0.9.11
 *04/12/02:
   * New features for the Slit (Mathias)
     - left click on Slitclient-menu enables/disables item
+    - wheel or middle/right-click on the items move them up / down in 
+      the slit
     - minor visual change of the menu, added a "Save SlitList" - entry
-    - wheel on the items move them up / down in the slit
     Slit.cc/hh
 *04/11/30:
-  * Fix for notworing bsetroot (thanx Rob Stevens)
+  * Fix for notworking bsetroot (thanx Rob Stevens)
     bsetroot.cc
   * Fix to avoid gentoo bug #72703 (Mathias, thanx Rob Stevens)
     also reported at http://www.securityfocus.com/archive/1/382398/2004-11-24/2004-11-30/2
