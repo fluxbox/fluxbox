@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.8 2003/12/07 15:45:28 fluxgen Exp $
+// $Id: Container.cc,v 1.9 2003/12/12 14:35:34 fluxgen Exp $
 
 #include "Container.hh"
 
@@ -28,7 +28,10 @@
 #include "FbTk/EventManager.hh"
 
 Container::Container(const FbTk::FbWindow &parent):
-    FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), m_selected(0),
+    FbTk::FbWindow(parent, 0, 0, 1, 1, ExposureMask), 
+    m_align(RELATIVE),
+    m_max_size_per_client(60),
+    m_selected(0),
     m_update_lock(false) {
     FbTk::EventManager::instance()->add(*this, *this);
 }
@@ -161,6 +164,14 @@ void Container::setSelected(int pos) {
         
 }
 
+void Container::setMaxSizePerClient(unsigned int size) {
+    m_max_size_per_client = size;
+}
+
+void Container::setAlignment(Container::Alignment a) {
+    m_align = a;
+}
+
 void Container::exposeEvent(XExposeEvent &event) {
     if (!m_update_lock)
         clearArea(event.x, event.y, event.width, event.height);
@@ -182,15 +193,21 @@ void Container::repositionItems() {
 
     int next_x = -borderW; // zero so the border of the first shows
     int extra = 0;
-    for (; it != it_end; ++it, next_x += max_width_per_client + borderW + extra) {
+    int direction = 1;
+    if (alignment() == RIGHT) {
+        direction = -1;
+        next_x = width() - max_width_per_client + borderW;
+    }
+
+    for (; it != it_end; ++it, next_x += direction*(max_width_per_client + borderW + extra)) {
         //!! TODO: check this more carefully, seems like error doesn't work with even numbers
         /*
-        if (rounding_error != 0) {
-            --rounding_error;
-            extra = 0;
-        } else {
-            extra = 0;
-        }
+          if (rounding_error != 0) {
+          --rounding_error;
+          extra = 0;
+          } else {
+          extra = 0;
+          }
         */
         // resize each clients including border in size
         (*it)->moveResize(next_x,
@@ -199,17 +216,29 @@ void Container::repositionItems() {
                           height());
         (*it)->clear();
     }
+
 }
 
 
 unsigned int Container::maxWidthPerClient() const {
-    int count = size();
-    if (count == 0)
-        return width();
-    else {
-        int borderW = m_item_list.front()->borderWidth();
-        // there're count-1 borders to fit in with the windows
-        // -> 1 per window plus end
-        return (width() - (count - 1) * borderW) / count;
+    switch (alignment()) {
+    case RIGHT:
+    case LEFT:
+        return m_max_size_per_client;
+        break;
+    case RELATIVE:
+        int count = size();
+        if (count == 0)
+            return width();
+        else {
+            int borderW = m_item_list.front()->borderWidth();
+            // there're count-1 borders to fit in with the windows
+            // -> 1 per window plus end
+            return (width() - (count - 1) * borderW) / count;
+        }
+        break;
     }
+
+    // this will never happen anyway
+    return 1;
 }
