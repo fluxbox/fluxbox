@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.5 2003/09/05 20:42:47 fluxgen Exp $
+// $Id: Shape.cc,v 1.6 2003/09/17 14:16:53 fluxgen Exp $
 
 #include "Shape.hh"
 #include "FbTk/FbWindow.hh"
@@ -28,6 +28,7 @@
 
 #include <cstring>
 
+#include <X11/Xutil.h>
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
