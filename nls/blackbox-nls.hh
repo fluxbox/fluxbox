@@ -114,6 +114,7 @@
 #define WindowmenuStick 0x8
 #define WindowmenuKillClient 0x9
 #define WindowmenuClose 0xa
+#define WindowmenuTab 0xb
 
 #define WorkspaceSet 0xb
 #define WorkspaceDefaultNameFormat 0x1
