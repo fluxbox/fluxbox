@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.198 2003/10/09 16:48:09 rathnor Exp $
+// $Id: fluxbox.cc,v 1.199 2003/10/13 19:31:04 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -843,7 +843,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): MappingNotify"<<endl;
 #endif // DEBUG        
 
-        FbTk::KeyUtil::instance()->init(); // reinitialise the key utils
+        FbTk::KeyUtil::instance().init(); // reinitialise the key utils
 
         break;
     case CreateNotify:
