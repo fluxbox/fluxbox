@@ -971,7 +971,7 @@ void Fluxbox::process_event(XEvent *e) {
 						net.attrib = e->xclient.data.l[1];
 						net.workspace = e->xclient.data.l[2];
 						net.stack = e->xclient.data.l[3];
-						net.decoration = e->xclient.data.l[4];
+						net.decoration = static_cast<BaseDisplay::Decor>(e->xclient.data.l[4]);
 
 	  	  		win->changeBlackboxHints(&net);
 					}
