@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.184 2003/05/21 23:59:53 rathnor Exp $
+// $Id: Window.cc,v 1.185 2003/05/24 12:04:39 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -329,6 +329,9 @@ FluxboxWindow::~FluxboxWindow() {
 
 
 void FluxboxWindow::init() { 
+    // so parent menu don't kill us
+    m_layermenu->setInternalMenu();
+
     m_attaching_tab = 0;
     assert(m_client);
 
