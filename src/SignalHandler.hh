@@ -19,14 +19,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.hh,v 1.2 2002/08/14 22:49:32 fluxgen Exp $
+// $Id: SignalHandler.hh,v 1.3 2002/08/17 22:15:04 fluxgen Exp $
 
 #ifndef FBTK_SIGNALHANDLER_HH
 #define FBTK_SIGNALHANDLER_HH
 
+#include "EventHandler.hh"
+
 #include <signal.h>
 
 namespace FbTk {
+
+struct SignalEvent {
+	int signum;
+};
 
 /**
 	Handles system signals, singleton.
@@ -36,14 +42,7 @@ namespace FbTk {
 */
 class SignalHandler {
 public:
-	/**
-		Inherit this class to handle signals.
-	*/
-	class EventHandler {
-	public:
-		virtual void handleSignal(int signum) = 0;
-	};
-
+	
 	/// get singleton object
 	static SignalHandler *instance();
 	/** 
@@ -53,7 +52,7 @@ public:
 		@param eh event handler
 		@param oldhandler_ret return handler to old sighandler
 	*/
-	bool registerHandler(int signum, EventHandler *eh, EventHandler **oldhandler_ret = 0);
+	bool registerHandler(int signum, EventHandler<SignalEvent> *eh, EventHandler<SignalEvent> **oldhandler_ret = 0);
 	/**
 		removes the signum handler
 		@param signum signal number
@@ -64,7 +63,7 @@ private:
 
 	static void handleSignal(int signum);
 
-	static EventHandler *s_signal_handler[NSIG]; ///< NSIG defined in signal.h
+	static EventHandler<SignalEvent> *s_signal_handler[NSIG]; ///< NSIG defined in signal.h
 }; 
 
 }; // end namespace FbTk
