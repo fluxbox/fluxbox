@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.2 2003/07/18 15:40:55 rathnor Exp $
+// $Id: Resource.hh,v 1.3 2003/08/08 10:54:36 fluxgen Exp $
 
 #ifndef FBTK_RESOURCE_HH
 #define FBTK_RESOURCE_HH
@@ -28,6 +28,8 @@
 
 #include <string>
 #include <list>
+#include <iostream>
+
 #include <X11/Xresource.h>
 
 namespace FbTk {
@@ -184,9 +186,9 @@ void ResourceManager::addResource(Resource<T> &r) {
                        r.altName().c_str(), &value_type, &value)) {
         r.setFromString(value.addr);
     } else {
-        cerr<<"Failed to read: "<<r.name()<<endl;
-        cerr<<"Setting default value"<<endl;
-            r.setDefaultValue();
+        std::cerr<<"Failed to read: "<<r.name()<<std::endl;
+        std::cerr<<"Setting default value"<<std::endl;
+        r.setDefaultValue();
     }
 
     unlock();
