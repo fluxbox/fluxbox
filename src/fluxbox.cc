@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.16 2002/01/09 14:07:09 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.17 2002/01/09 15:08:22 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -119,6 +119,7 @@
 #include <iostream>
 #include <string>
 #include <strstream>
+#include <memory>
 using namespace std;
 
 #ifndef   HAVE_BASENAME
