@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.75 2003/04/25 16:08:45 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.76 2003/04/27 04:28:03 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -293,10 +293,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.base = frame.label = frame.wlabel = frame.clk = frame.button =
         frame.pbutton = None;
 
-    //DEL/fix -> remove useIconBar resource
-//    if (Fluxbox::instance()->useIconBar())
     m_iconbar.reset(new IconBar(screen(), frame.window_label.window(), m_theme.font()));
-
 
     XMapSubwindows(display, frame.window.window());
     frame.window.show();
@@ -370,17 +367,16 @@ bool Toolbar::containsIcon(FluxboxWindow &win) {
 }
 
 void Toolbar::enableIconBar() {
-    // already on
     if (m_iconbar.get() != 0) 
-        return;
+        return; // already on
+
     m_iconbar.reset(new IconBar(screen(), frame.window_label.window(), m_theme.font()));
 }
 
 void Toolbar::disableIconBar() {
-    // already off
     if (m_iconbar.get() == 0) 
-        return;
-    
+        return; // already off
+
     delAllIcons();
 
     m_iconbar.reset(0); // destroy iconbar

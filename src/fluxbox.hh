@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.50 2003/04/25 15:52:58 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.51 2003/04/27 04:28:04 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -79,9 +79,6 @@ public:
 	
     static Fluxbox *instance() { return s_singleton; }
 	
-    inline bool useIconBar() const { return *m_rc_iconbar; }
-    inline void saveIconBar(bool value) { m_rc_iconbar = value; }
-
     inline Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
 
     FluxboxWindow *searchGroup(Window, FluxboxWindow *);
@@ -219,7 +216,7 @@ private:
     ResourceManager m_resourcemanager, m_screen_rm;
 	
     //--- Resources
-    Resource<bool> m_rc_tabs, m_rc_iconbar;
+    Resource<bool> m_rc_tabs;
     Resource<int> m_rc_colors_per_channel, m_rc_numlayers;
     Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,

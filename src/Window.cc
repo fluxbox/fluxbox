@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.150 2003/04/27 02:26:21 rathnor Exp $
+// $Id: Window.cc,v 1.151 2003/04/27 04:28:03 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2899,7 +2899,7 @@ void FluxboxWindow::attachTo(int x, int y) {
 
 //finds and redraw the icon label
 void FluxboxWindow::updateIcon() {
-    if (Fluxbox::instance()->useIconBar()) {
+    if (screen.getToolbar()) {
         const IconBar *iconbar = 0;
         const IconBarObj *icon = 0;
         if ((iconbar = screen.getToolbar()->iconBar()) != 0) {

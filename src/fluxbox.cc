@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.120 2003/04/27 00:36:28 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.121 2003/04/27 04:28:04 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -365,7 +365,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_fbatoms(new FbAtoms()),
       m_resourcemanager(), m_screen_rm(),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
-      m_rc_iconbar(m_resourcemanager, true, "session.iconbar", "Session.Iconbar"),
       m_rc_colors_per_channel(m_resourcemanager, 4, 
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
