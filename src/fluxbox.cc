@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.96 2003/02/17 12:31:17 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.97 2003/02/18 15:11:12 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -281,6 +281,56 @@ getString() {
     char tmpstr[128];
     sprintf(tmpstr, "%ul", m_value);
     return string(tmpstr);
+}
+
+template<>
+void Resource<Fluxbox::Layer>::
+setFromString(const char *strval) {
+    int tempnum = 0;
+    if (sscanf(strval, "%d", &tempnum) == 1)
+        m_value = tempnum;
+    else if (strcasecmp(strval, "Menu") == 0)
+        m_value = Fluxbox::instance()->getMenuLayer();
+    else if (strcasecmp(strval, "AboveDock") == 0)
+        m_value = Fluxbox::instance()->getAboveDockLayer();
+    else if (strcasecmp(strval, "Dock") == 0)
+        m_value = Fluxbox::instance()->getDockLayer();
+    else if (strcasecmp(strval, "Top") == 0)
+        m_value = Fluxbox::instance()->getTopLayer();
+    else if (strcasecmp(strval, "Normal") == 0)
+        m_value = Fluxbox::instance()->getNormalLayer();
+    else if (strcasecmp(strval, "Bottom") == 0)
+        m_value = Fluxbox::instance()->getBottomLayer();
+    else if (strcasecmp(strval, "Desktop") == 0)
+        m_value = Fluxbox::instance()->getDesktopLayer();
+    else 
+        setDefaultValue();
+}
+
+
+template<>
+string Resource<Fluxbox::Layer>::
+getString() {
+
+    if (m_value.getNum() == Fluxbox::instance()->getMenuLayer()) 
+        return string("Menu");
+    else if (m_value.getNum() == Fluxbox::instance()->getAboveDockLayer()) 
+        return string("AboveDock");
+    else if (m_value.getNum() == Fluxbox::instance()->getDockLayer()) 
+        return string("Dock");
+    else if (m_value.getNum() == Fluxbox::instance()->getTopLayer()) 
+        return string("Top");
+    else if (m_value.getNum() == Fluxbox::instance()->getNormalLayer()) 
+        return string("Normal");
+    else if (m_value.getNum() == Fluxbox::instance()->getBottomLayer()) 
+        return string("Bottom");
+    else if (m_value.getNum() == Fluxbox::instance()->getDesktopLayer()) 
+        return string("Desktop");
+    else {
+        char tmpstr[128];
+        sprintf(tmpstr, "%d", m_value.getNum());
+        return string(tmpstr);
+    }
 }
 
 //static singleton var

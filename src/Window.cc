@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.119 2003/02/17 22:42:52 fluxgen Exp $
+// $Id: Window.cc,v 1.120 2003/02/18 15:11:10 rathnor Exp $
 
 #include "Window.hh"
 
@@ -112,13 +112,20 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     display(0),
     lastButtonPressTime(0),
     m_windowmenu(menutheme, screen_num, imgctrl),
-    m_layermenu(menutheme, screen_num, imgctrl),
+    m_layermenu(0),
     old_decoration(DECOR_NORMAL),
     tab(0),
     m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100),
-    m_layeritem(getFrameWindow(), layer),
-    m_layernum(layer.getLayerNum()) {
+    m_layeritem(m_frame.window(), layer),
+    m_layernum(layer.getLayerNum())
+{
 
+    m_layermenu = new LayerMenu<FluxboxWindow>(
+        menutheme, 
+        screen_num, 
+        imgctrl, 
+        *s->layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+        this);
 
 
     // redirect events from frame to us
@@ -353,6 +360,8 @@ FluxboxWindow::~FluxboxWindow() {
         fluxbox->removeGroupSearch(client.window_group);
         client.window_group = 0;
     }
+
+    if (m_layermenu) delete m_layermenu;
 
     if (client.window)
         fluxbox->removeWindowSearch(client.window);

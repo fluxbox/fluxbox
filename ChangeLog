@@ -1,6 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
 *03/02/17:
+   * Added layer menus for windows, toolbar, and slit, plus associated 
+     resources. Cleaned up some cruft from the previous layering setup.
+     Gnome.cc LayerMenu.hh Screen.hh/cc Slit.hh/cc Tab.cc Toolbar.hh/cc Window.hh/cc Workspace.hh fluxbox.hh/cc
+   * Renamed LayeredMenu to FbMenu
+     LayeredMenu.hh FbMenu.hh
+   * Changed XLayerItem to hold FbWindows instead of Windows
+     XLayerItem.hh/cc XLayer.cc MultLayers.cc Window.cc
    * Added shade option for button config (Henrik)
      Screen.cc
    * Fixed antialias toggle for menus (Henrik)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.49 2003/02/17 22:41:24 fluxgen Exp $
+// $Id: Window.hh,v 1.50 2003/02/18 15:11:11 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -34,6 +34,7 @@
 #include "FbWinFrame.hh"
 #include "EventHandler.hh"
 #include "XLayerItem.hh"
+#include "LayerMenu.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -57,6 +58,7 @@ class MenuTheme;
 class ImageControl;
 class XLayer;
 };
+
 
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow : public FbTk::TimeoutHandler, public FbTk::EventHandler {
@@ -223,11 +225,14 @@ public:
     Window getFrameWindow() const { return m_frame.window().window(); }
     Window getClientWindow() const { return client.window; }
 
+    FbTk::FbWindow &getFbWindow() { return m_frame.window(); }
+    const FbTk::FbWindow &getFbWindow() const { return m_frame.window(); }
+
     FbTk::Menu &getWindowmenu() { return m_windowmenu; }
     const FbTk::Menu &getWindowmenu() const { return m_windowmenu; }
 
-    FbTk::Menu &getLayermenu() { return m_layermenu; }
-    const FbTk::Menu &getLayermenu() const { return m_layermenu; }
+    FbTk::Menu *getLayermenu() { return m_layermenu; }
+    const FbTk::Menu *getLayermenu() const { return m_layermenu; }
 	
     const std::string &getTitle() const { return client.title; }
     const std::string &getIconTitle() const { return client.icon_title; }
@@ -341,7 +346,8 @@ private:
     BaseDisplay::BlackboxAttributes blackbox_attrib;
 
     Time lastButtonPressTime;
-    FbTk::Menu m_windowmenu, m_layermenu;
+    FbTk::Menu m_windowmenu;
+    LayerMenu<FluxboxWindow> *m_layermenu;
     
     timeval lastFocusTime;
 	
@@ -402,6 +408,11 @@ private:
     enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
   
 };
+
+template <>
+void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
+    m_object->moveToLayer(m_layernum);
+}
 
 
 #endif // WINDOW_HH

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.67 2003/02/16 00:36:17 fluxgen Exp $
+// $Id: Screen.hh,v 1.68 2003/02/18 15:11:08 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -36,6 +36,7 @@
 #include "FbWinFrameTheme.hh"
 #include "MultLayers.hh"
 #include "XLayerItem.hh"
+#include "fluxbox.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -77,7 +78,6 @@ public:
             int scrn, int number_of_layers);
     ~BScreen();
 
-    inline bool isToolbarOnTop() const { return *resource.toolbar_on_top; }
     inline bool doToolbarAutoHide() const { return *resource.toolbar_auto_hide; }
     inline bool isSloppyFocus() const { return resource.sloppy_focus; }
     inline bool isSemiSloppyFocus() const { return resource.semi_sloppy_focus; }
@@ -105,7 +105,6 @@ public:
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
 
-    inline bool isSlitOnTop() const { return resource.slit_on_top; }
     inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
 #ifdef SLIT
     inline Slit *getSlit() { return m_slit.get(); }
@@ -115,7 +114,6 @@ public:
     inline int getSlitDirection() const { return resource.slit_direction; }
     inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
     inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
-    inline void saveSlitOnTop(bool t) { resource.slit_on_top = t;  }
     inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
 
     inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
@@ -181,6 +179,10 @@ public:
     inline int getColPlacementDirection() const { return resource.col_direction; }
     inline unsigned int getTabWidth() const { return *resource.tab_width; }
     inline unsigned int getTabHeight() const { return *resource.tab_height; }
+
+    inline int getSlitLayerNum() const { return (*resource.slit_layernum).getNum(); }
+    inline int getToolbarLayerNum() const { return (*resource.toolbar_layernum).getNum(); }
+
     inline Tab::Placement getTabPlacement() const { return *resource.tab_placement; }
     inline Tab::Alignment getTabAlignment() const { return *resource.tab_alignment; }
 
@@ -190,7 +192,6 @@ public:
     inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s;  }
     inline void saveAutoRaise(bool a) { resource.auto_raise = a;  }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
-    inline void saveToolbarOnTop(bool r) { *resource.toolbar_on_top = r;  }
     inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
     inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
 
@@ -262,7 +263,6 @@ public:
     std::string getNameOfWorkspace(unsigned int workspace) const;
     void changeWorkspaceID(unsigned int);
     void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
-    void raiseWindows(const Workspace::Stack &workspace_stack);
     void reassociateGroup(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, bool ignore_sticky);
     void prevFocus() { prevFocus(0); }
@@ -375,7 +375,7 @@ private:
         ScreenResource(ResourceManager &rm, const std::string &scrname,
                        const std::string &altscrname);
 
-        Resource<bool> toolbar_on_top, toolbar_auto_hide,
+        Resource<bool> toolbar_auto_hide,
             image_dither, opaque_move, full_max,
             max_over_slit, tab_rotate_vertical,
             sloppy_window_grouping, workspace_warping,
@@ -387,13 +387,14 @@ private:
             ordered_dither;
         Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold,
             tab_width, tab_height;
+        Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;
         int placement_policy, row_direction, col_direction;
 
         Resource<Tab::Placement> tab_placement;
         Resource<Tab::Alignment> tab_alignment;
         Resource<int> toolbar_on_head;
 
-        bool slit_on_top, slit_auto_hide;
+        bool slit_auto_hide;
         int slit_placement, slit_direction;
 
         unsigned int slit_on_head;

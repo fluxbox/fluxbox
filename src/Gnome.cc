@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.10 2003/02/16 17:57:54 rathnor Exp $
+// $Id: Gnome.cc,v 1.11 2003/02/18 15:11:07 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -366,9 +366,11 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
         layer = Fluxbox::instance()->getTopLayer();
         break;
     case WIN_LAYER_DOCK:
-        layer = Fluxbox::instance()->getSlitLayer();
+        layer = Fluxbox::instance()->getDockLayer();
         break;
-        //case WIN_LAYER_ABOVE_DOCK:
+    case WIN_LAYER_ABOVE_DOCK:
+        layer = Fluxbox::instance()->getAboveDockLayer();
+        break;
     case WIN_LAYER_MENU:
         layer = Fluxbox::instance()->getMenuLayer();
         break;

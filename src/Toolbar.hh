@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.23 2003/02/16 00:08:29 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.24 2003/02/18 15:11:10 rathnor Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -34,10 +34,11 @@
 #include "FbWindow.hh"
 #include "ArrowButton.hh"
 #include "Observer.hh"
+#include "XLayer.hh"
+#include "XLayerItem.hh"
+#include "LayerMenu.hh"
 
 #include <memory>
-
-class Toolbar;
 
 namespace FbTk {
 class ImageControl;
@@ -61,7 +62,7 @@ public:
     };
 
     /// create a toolbar on the screen with specific width
-    explicit Toolbar(BScreen &screen, size_t width = 200);
+    explicit Toolbar(BScreen &screen, FbTk::XLayer &layer, size_t width = 200);
     /// destructor
     virtual ~Toolbar();
 
@@ -73,10 +74,15 @@ public:
     inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
     inline FbTk::Menu &menu() { return m_toolbarmenu; }
 
+    inline FbTk::Menu *layermenu() { return m_layermenu; }
+    inline const FbTk::Menu *layermenu() const { return m_layermenu; }
+
+    void moveToLayer(int layernum) { m_layeritem->moveToLayer(layernum); }
+
+    FbTk::XLayerItem &getLayerItem() { return *m_layeritem; }
+
     /// are we in workspacename editing?
     inline bool isEditing() const { return editing; }
-    /// always on top?
-    inline bool isOnTop() const { return on_top; }
     /// are we hidden?
     inline bool isHidden() const { return hidden; }
     /// do we auto hide the toolbar?
@@ -120,7 +126,6 @@ public:
 		
 private:
 
-    bool on_top;       ///< always on top
     bool editing;      ///< edit workspace label mode
     bool hidden;       ///< hidden state
     bool do_auto_hide; ///< do we auto hide	
@@ -130,6 +135,7 @@ private:
     struct Frame {
         Frame(FbTk::EventHandler &evh, int screen_num);
         ~Frame();
+
         Pixmap base, label, wlabel, clk, button, pbutton;
         FbTk::FbWindow window, workspace_label, window_label, clock;
         ArrowButton psbutton, nsbutton, pwbutton, nwbutton;
@@ -152,6 +158,7 @@ private:
     FbTk::Timer clock_timer; ///< timer to update clock
     FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
     FbTk::Menu m_toolbarmenu;
+    LayerMenu<Toolbar> *m_layermenu;
     std::auto_ptr<IconBar> m_iconbar;
 	
     std::string new_workspace_name; ///< temp variable in edit workspace name mode
@@ -170,6 +177,8 @@ private:
     };
     
     ThemeListener m_themelistener;
+
+    FbTk::XLayerItem *m_layeritem;
 };
 
 

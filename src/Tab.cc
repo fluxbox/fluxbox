@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.54 2003/02/09 14:11:12 rathnor Exp $
+// $Id: Tab.cc,v 1.55 2003/02/18 15:11:09 rathnor Exp $
 
 #include "Tab.hh"
 
@@ -152,6 +152,7 @@ void Tab::focus() {
 //-----------------------------------------
 void Tab::raise() {
     //get first tab
+    /*
     Tab *tab = 0;
     //raise tabs
     Workspace::Stack st;
@@ -159,6 +160,7 @@ void Tab::raise() {
         st.push_back(tab->m_tabwin);
     }
     m_win->getScreen()->raiseWindows(st);
+    */
 }
 
 //-------------- lower --------------------

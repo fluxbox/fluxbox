@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.58 2003/02/17 12:32:21 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.59 2003/02/18 15:11:09 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -91,6 +91,8 @@ void setupMenus(Toolbar &tbar) {
                                    ToolbarSet, ToolbarToolbarTitle,
                                    "Toolbar"));
     menu.setInternalMenu();
+
+    menu.insert("Layer...", tbar.layermenu());
 
     using namespace FbTk;
     RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
@@ -166,8 +168,7 @@ Toolbar::Frame::~Frame() {
     evm.remove(clock);
 }
 
-Toolbar::Toolbar(BScreen &scrn, size_t width):
-    on_top(scrn.isToolbarOnTop()),
+Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     editing(false),
     hidden(scrn.doToolbarAutoHide()), 
     do_auto_hide(scrn.doToolbarAutoHide()),
@@ -177,10 +178,20 @@ Toolbar::Toolbar(BScreen &scrn, size_t width):
     clock_timer(this), 	// get the clock updating every minute
     hide_timer(&hide_handler),
     m_toolbarmenu(*scrn.menuTheme(), scrn.getScreenNumber(), *scrn.getImageControl()),
+    m_layermenu(0),
     m_theme(scrn.getScreenNumber()),
     m_place(BOTTOMCENTER),
-    m_themelistener(*this) {
+    m_themelistener(*this),
+    m_layeritem(0)
+{
 
+   m_layermenu = new LayerMenu<Toolbar>(
+       *scrn.menuTheme(), 
+       scrn.getScreenNumber(), 
+       *scrn.getImageControl(),
+       *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+       this);
+       
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
 
@@ -193,6 +204,8 @@ Toolbar::Toolbar(BScreen &scrn, size_t width):
         frame.workspace_label_w = frame.clock_w = width/3; 
     frame.button_w = 20;
     frame.bevel_w = 1;
+
+    m_layeritem = new FbTk::XLayerItem(frame.window, layer);
 
     timeval delay;
     delay.tv_sec = 1;
@@ -247,6 +260,8 @@ Toolbar::~Toolbar() {
     if (frame.clk) image_ctrl.removeImage(frame.clk);
     if (frame.button) image_ctrl.removeImage(frame.button);
     if (frame.pbutton) image_ctrl.removeImage(frame.pbutton);
+    if (m_layeritem) delete m_layeritem;
+    if (m_layermenu) delete m_layermenu;
 
 }
 
@@ -748,13 +763,6 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
             checkClock(true, true);
         }
 #endif // HAVE_STRFTIME
-        else if (! on_top) {
-            Workspace::Stack st;
-            st.push_back(frame.window.window());
-            screen().raiseWindows(st);
-        }
-    } else if (be.button == 2 && (! on_top)) {
-        frame.window.lower();
     } else if (be.button == 3) {
         FluxboxWindow *fluxboxwin = 0;
         // if we clicked on a icon then show window menu

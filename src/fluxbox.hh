@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.42 2003/02/17 12:29:35 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.43 2003/02/18 15:11:12 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -103,7 +103,7 @@ public:
 	
     /// obsolete
     enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
-	
+    
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
     inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
@@ -113,14 +113,26 @@ public:
     inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     inline int getNumberOfLayers() const { return *m_rc_numlayers; }
 
-    // TODO there probably should be configurable
-    inline int getDesktopLayer()   const { return 12; }
-    inline int getBottomLayer()    const { return 10; }
-    inline int getNormalLayer()    const { return 8; }
-    inline int getTopLayer()       const { return 6; }
-    inline int getSlitLayer()      const { return 4; }
-    inline int getAboveSlitLayer() const { return 2; }
+    // class to store layer numbers (special Resource type)
+    class Layer {
+    public:
+        Layer(int i) : m_num(i) {};
+        const int getNum() const { return m_num; }
+
+        Layer &operator=(int num) { m_num = num; return *this; }
+        
+    private:
+        int m_num;
+    };
+
+    // TODO these probably should be configurable
     inline int getMenuLayer()      const { return 0; }
+    inline int getAboveDockLayer() const { return 2; }
+    inline int getDockLayer()      const { return 4; }
+    inline int getTopLayer()       const { return 6; }
+    inline int getNormalLayer()    const { return 8; }
+    inline int getBottomLayer()    const { return 10; }
+    inline int getDesktopLayer()   const { return 12; }
 
 
     inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }
@@ -216,6 +228,7 @@ private:
     Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile;
+
 	
     Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
     Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;

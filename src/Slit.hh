@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.18 2003/01/12 17:53:10 fluxgen Exp $
+/// $Id: Slit.hh,v 1.19 2003/02/18 15:11:08 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -30,6 +30,8 @@
 #include "Menu.hh"
 #include "FbWindow.hh"
 #include "Timer.hh"
+#include "XLayerItem.hh"
+#include "LayerMenu.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -54,10 +56,9 @@ public:
     enum Placement { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
            TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
 
-    explicit Slit(BScreen &screen, const char *filename = 0);
+    explicit Slit(BScreen &screen, FbTk::XLayer &layer, const char *filename = 0);
     virtual ~Slit();
 
-    inline bool isOnTop() const { return on_top; }
     inline bool isHidden() const { return hidden; }
     inline bool doAutoHide() const { return do_auto_hide; }
     inline Direction direction() const { return m_direction; }
@@ -74,7 +75,6 @@ public:
 
     void setDirection(Direction dir);
     void setPlacement(Placement place);
-    void setOnTop(bool val);
     void setAutoHide(bool val);
     void addClient(Window clientwin);
     void removeClient(Window clientwin, bool = true);
@@ -101,6 +101,9 @@ public:
     void configureRequestEvent(XConfigureRequestEvent &event);
     //@}
 	
+    void moveToLayer(int layernum) { m_layeritem->moveToLayer(layernum); }
+    FbTk::XLayerItem &getLayerItem() { return *m_layeritem; }
+
     virtual void timeout();
 
 
@@ -111,7 +114,7 @@ private:
     void loadClientList(const char *filename);
     void updateClientmenu();
 
-    bool on_top, hidden, do_auto_hide;
+    bool hidden, do_auto_hide;
     Direction m_direction;
     Placement m_placement;
 
@@ -122,6 +125,7 @@ private:
 
     SlitClients clientList;
     FbTk::Menu slitmenu, placement_menu, clientlist_menu;
+    LayerMenu<Slit> *slit_layermenu;
     std::string clientListPath;
     std::string m_filename;
 
@@ -134,6 +138,8 @@ private:
     } frame;
     // for KDE
     Atom kwm1_dockwindow, kwm2_dockwindow;
+
+    FbTk::XLayerItem *m_layeritem;
 };
 
 

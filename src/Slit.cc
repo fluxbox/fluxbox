@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.34 2003/02/17 12:53:21 fluxgen Exp $
+// $Id: Slit.cc,v 1.35 2003/02/18 15:11:08 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -43,6 +43,9 @@
 #include "BoolMenuItem.hh"
 #include "EventManager.hh"
 #include "MacroCommand.hh"
+#include "LayerMenu.hh"
+#include "fluxbox.hh"
+#include "XLayer.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -104,6 +107,7 @@ void getWMName(BScreen *screen, Window window, std::string& name) {
 }
 
 };
+
 /// holds slit client info
 class SlitClient {
 public:
@@ -226,8 +230,8 @@ private:
 
 }; // End anonymous namespace
 
-Slit::Slit(BScreen &scr, const char *filename):
-    m_screen(&scr), timer(this), 
+Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
+    : m_screen(&scr), timer(this), 
     slitmenu(*scr.menuTheme(), 
              scr.getScreenNumber(), 
              *scr.getImageControl()),
@@ -236,12 +240,20 @@ Slit::Slit(BScreen &scr, const char *filename):
                    *scr.getImageControl()),
     clientlist_menu(*scr.menuTheme(),
                     scr.getScreenNumber(),
-                    *scr.getImageControl()) {
+                    *scr.getImageControl()),
+    slit_layermenu(0),
+    m_layeritem(0)
+{
+
+    slit_layermenu = new LayerMenu<Slit>(*scr.menuTheme(),
+                                   scr.getScreenNumber(),
+                                   *scr.getImageControl(),
+                                   *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                                   this);
 
     // default placement and direction
     m_direction = HORIZONTAL;
     m_placement = TOPLEFT;
-    on_top = false;
     hidden = do_auto_hide = false;
 
     frame.pixmap = None;
@@ -270,6 +282,7 @@ Slit::Slit(BScreen &scr, const char *filename):
                       create_mask, &attrib);
 
     FbTk::EventManager::instance()->add(*this, frame.window);
+    m_layeritem = new FbTk::XLayerItem(frame.window, layer);
 
     //For KDE dock applets
     kwm1_dockwindow = XInternAtom(disp, "KWM_DOCKWINDOW", False); //KDE v1.x
@@ -287,6 +300,8 @@ Slit::Slit(BScreen &scr, const char *filename):
 Slit::~Slit() {
     if (frame.pixmap != 0)
         screen()->getImageControl()->removeImage(frame.pixmap);
+    if (m_layeritem) delete m_layeritem;
+    if (slit_layermenu) delete slit_layermenu;
 }
 
 
@@ -904,13 +919,7 @@ void Slit::buttonPressEvent(XButtonEvent &e) {
     if (e.window != frame.window.window()) 
         return;
 
-    if (e.button == Button1 && (! on_top)) {
-        Workspace::Stack st;
-        st.push_back(frame.window.window());
-        screen()->raiseWindows(st);
-    } else if (e.button == Button2 && (! on_top)) {
-        frame.window.lower();
-    } else if (e.button == Button3) {
+    if (e.button == Button3) {
         if (! slitmenu.isVisible()) {
             int x = e.x_root - (slitmenu.width() / 2),
                 y = e.y_root - (slitmenu.height() / 2); 
@@ -1068,13 +1077,6 @@ void Slit::saveClientList() {
     }
 }
 
-void Slit::setOnTop(bool val) {
-    if (isOnTop())
-        screen()->raiseWindows(Workspace::Stack());
-
-}
-
-
 void Slit::setAutoHide(bool val) {
     do_auto_hide = val;
 }
@@ -1091,11 +1093,8 @@ void Slit::setupMenu() {
                                      CommonSet, CommonPlacementTitle,
                                      "Placement"),
                     &placement_menu);
-    slitmenu.insert(new BoolMenuItem(i18n->getMessage(
-                                                      CommonSet, CommonAlwaysOnTop,
-                                                      "Always on top"),
-                                     on_top,
-                                     menu_cmd));
+
+    slitmenu.insert("Layer...", slit_layermenu);
 
     slitmenu.insert(new BoolMenuItem(i18n->getMessage(
                                                       CommonSet, CommonAutoHide,

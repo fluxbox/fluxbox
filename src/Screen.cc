@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.110 2003/02/17 12:35:59 fluxgen Exp $
+// $Id: Screen.cc,v 1.111 2003/02/18 15:11:07 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -45,7 +45,8 @@
 #include "MacroCommand.hh"
 #include "XLayerItem.hh"
 #include "MultLayers.hh"
-#include "LayeredMenu.hh"
+#include "FbMenu.hh"
+#include "LayerMenu.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -131,13 +132,14 @@ int anotherWMRunning(Display *display, XErrorEvent *) {
 }
 
 FbTk::Menu *createMenuFromScreen(BScreen &screen) {
-    FbTk::Menu *menu = new LayeredMenu(*screen.menuTheme(), 
+    FbTk::Menu *menu = new FbMenu(*screen.menuTheme(), 
                                        screen.getScreenNumber(), 
                                        *screen.getImageControl(), 
                                      *screen.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()));
     return menu;
 }
 
+/*
 class WindowLayerMenuItem : public FbTk::MenuItem {
 public:
     WindowLayerMenuItem(const char *label, FluxboxWindow &win, int layernum):
@@ -152,6 +154,8 @@ private:
     FluxboxWindow &m_window;
     int m_layernum;
 };
+*/
+
 
 }; // End anonymous namespace
 
@@ -345,7 +349,6 @@ void FbTk::ThemeItem<std::string>::setFromString(const char *str) {
 BScreen::ScreenResource::ScreenResource(ResourceManager &rm, 
                                         const std::string &scrname, 
                                         const std::string &altscrname):
-    toolbar_on_top(rm, false, scrname+".toolbar.onTop", altscrname+".Toolbar.OnTop"),
     toolbar_auto_hide(rm, false, scrname+".toolbar.autoHide", altscrname+".Toolbar.AutoHide"),
     image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
     opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
@@ -365,6 +368,8 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
     tab_width(rm, 64, scrname+".tab.width", altscrname+".Tab.Width"),
     tab_height(rm, 16, scrname+".tab.height", altscrname+".Tab.Height"),
+    slit_layernum(rm, Fluxbox::instance()->getDockLayer(), scrname+".slit.layer", altscrname+".Slit.Layer"),
+    toolbar_layernum(rm, Fluxbox::instance()->getDesktopLayer(), scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
     tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
     tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead")
@@ -515,10 +520,10 @@ BScreen::BScreen(ResourceManager &rm,
     current_workspace = workspacesList.front();
 
 #ifdef SLIT
-    m_slit.reset(new Slit(*this));
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(getSlitLayerNum())));
 #endif // SLIT
 
-    m_toolbar.reset(new Toolbar(*this));
+    m_toolbar.reset(new Toolbar(*this, *layerManager().getLayer(getToolbarLayerNum())));
     // setup toolbar width menu item
     FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
                                                     resource.toolbar_width_percent,
@@ -536,6 +541,7 @@ BScreen::BScreen(ResourceManager &rm,
     FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
 
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);    
+
     m_toolbar->menu().insert(toolbar_menuitem);
     
     setupWorkspacemenu(*this, *workspacemenu);
@@ -548,8 +554,6 @@ BScreen::BScreen(ResourceManager &rm,
     m_toolbar->reconfigure();
 
     initMenu(); // create and initiate rootmenu
-
-    raiseWindows(Workspace::Stack());
 
     //update menus
     m_rootmenu->update();
@@ -749,7 +753,6 @@ void BScreen::reconfigure() {
     m_configmenu->reconfigure();
 	
     initMenu();
-    raiseWindows(Workspace::Stack());
     m_rootmenu->reconfigure();		
 
 
@@ -784,7 +787,6 @@ void BScreen::reconfigure() {
 
 void BScreen::rereadMenu() {
     initMenu();
-    raiseWindows(Workspace::Stack());
 
     m_rootmenu->reconfigure();
 }
@@ -1253,35 +1255,6 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     menu.removeAll(); // clear old items
     menu.disableTitle(); // not titlebar
 
-    // check and setup layer menu as a submenu windowmenu
-    FbTk::Menu &layer_menu = win.getLayermenu();
-    layer_menu.disableTitle(); // no titlebar
-    // if it hasn't already been setup (no need to reset it)
-    if (layer_menu.numberOfItems() == 0) {
-        Fluxbox *fluxbox = Fluxbox::instance();
-        struct {
-            int set;
-            int base;
-            const char *default_str;
-            int layernum;
-        } layer_menuitems[]  = {
-            //TODO: nls
-            {0, 0, "Above Slit", fluxbox->getAboveSlitLayer()},
-            {0, 0, "Slit", fluxbox->getSlitLayer()},
-            {0, 0, "Top", fluxbox->getTopLayer()},
-            {0, 0, "Normal", fluxbox->getNormalLayer()},
-            {0, 0, "Bottom", fluxbox->getBottomLayer()},
-            {0, 0, "Desktop", fluxbox->getDesktopLayer()},
-        };
-        
-        for (size_t i=0; i < 6; ++i) {
-            // TODO: fetch nls string
-            layer_menu.insert(new WindowLayerMenuItem(layer_menuitems[i].default_str, 
-                                                      win, layer_menuitems[i].layernum));
-        };
-        layer_menu.update();
-    }
-
     // set new menu items
     menu.insert("Shade", shade_cmd);
     menu.insert("Stick", stick_cmd);
@@ -1291,57 +1264,14 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     menu.insert("Iconify", iconify_cmd);
     menu.insert("Raise", raise_cmd);
     menu.insert("Lower", lower_cmd);
-    menu.insert("Layer...", &layer_menu);
+    menu.insert("Layer...", win.getLayermenu());
     menu.insert("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
     menu.insert("Close", close_cmd);
 
     menu.reconfigure(); // update graphics
 
 }
-void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
-    // TODO: I don't think we need this...
-#ifdef DEBUG
-    cerr<<"BScreen::raiseWindows() called"<<endl;
-#endif //DEBUG
-
-    /*
-
-    Window session_stack[(workspace_stack.size() + workspacesList.size() + rootmenuList.size() + 30)];
-    int i = 0;	
-
-    Workspaces::iterator wit = workspacesList.begin();
-    Workspaces::iterator wit_end = workspacesList.end();
-    for (; wit != wit_end; ++wit) {
-        session_stack[i++] = (*wit)->menu().windowID();
-    }
-
-    session_stack[i++] = workspacemenu->windowID();
-
-    Rootmenus::iterator rit = rootmenuList.begin();
-    Rootmenus::iterator rit_end = rootmenuList.end();
-    for (; rit != rit_end; ++rit) {
-        session_stack[i++] = (*rit)->windowID();
-    }
-    session_stack[i++] = m_rootmenu->windowID();
-
-    if (m_toolbar->isOnTop())
-        session_stack[i++] = m_toolbar->getWindowID();
-
-#ifdef SLIT
-    if (m_slit->isOnTop())
-        session_stack[i++] = m_slit->getWindowID();
-#endif // SLIT
-    if (!workspace_stack.empty()) {
-        Workspace::Stack::const_reverse_iterator it = workspace_stack.rbegin();
-        Workspace::Stack::const_reverse_iterator it_end = workspace_stack.rend();
-        for (; it != it_end; ++it)
-            session_stack[i++] = (*it);
-    }
-
-    XRestackWindows(getBaseDisplay()->getXDisplay(), session_stack, i);
-    */
-}
 
 void BScreen::saveStrftimeFormat(const char *format) {
     //make sure std::string don't get 0 string
