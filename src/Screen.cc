@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.100 2003/01/12 23:56:49 fluxgen Exp $
+// $Id: Screen.cc,v 1.101 2003/02/02 16:32:38 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -43,6 +43,8 @@
 #include "BoolMenuItem.hh"
 //#include "IntResMenuItem.hh"
 #include "MacroCommand.hh"
+#include "XLayerItem.hh"
+#include "MultLayers.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -132,7 +134,11 @@ int dcmp(const void *one, const void *two) {
 }
 
 FbTk::Menu *createMenuFromScreen(BScreen &screen) {
-    return new FbTk::Menu(*screen.menuTheme(), screen.getScreenNumber(), *screen.getImageControl());
+    FbTk::Menu *menu = new FbTk::Menu(*screen.menuTheme(), screen.getScreenNumber(), *screen.getImageControl());
+    menu->setLayerItem(new FbTk::XLayerItem(menu->windowID()));
+
+    screen.setLayer(*menu->getLayerItem(), Fluxbox::instance()->getMenuLayer());
+    return menu;
 }
 };
 
@@ -340,7 +346,8 @@ BScreen::BScreen(ResourceManager &rm,
                              m_workspacecount_sig(*this), // workspace count signal
                              m_workspacenames_sig(*this), // workspace names signal 
                              m_currentworkspace_sig(*this), // current workspace signal
-                             theme(0), m_windowtheme(scrn),
+                             m_layermanager(0),
+                             theme(0), m_windowtheme(scrn), 
                              m_menutheme(new FbTk::MenuTheme(scrn)),
                              resource(rm, screenname, altscreenname),
                              m_root_theme(new RootTheme(*this))
@@ -392,6 +399,7 @@ BScreen::BScreen(ResourceManager &rm,
 
     fluxbox->load_rc(this);
 
+    m_layermanager = new FbTk::MultLayers(fluxbox->getNumberOfLayers());
     image_control->setDither(*resource.image_dither);
     theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
                       fluxbox->getStyleFilename(), getRootCommand().c_str());
@@ -461,12 +469,12 @@ BScreen::BScreen(ResourceManager &rm,
     Workspace *wkspc = (Workspace *) 0;
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
-            wkspc = new Workspace(this, workspacesList.size());
+            wkspc = new Workspace(this, *m_layermanager, workspacesList.size());
             workspacesList.push_back(wkspc);
             workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
         }
     } else {
-        wkspc = new Workspace(this, workspacesList.size());
+        wkspc = new Workspace(this, *m_layermanager, workspacesList.size());
         workspacesList.push_back(wkspc);
         workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu());
     }
@@ -547,7 +555,6 @@ BScreen::BScreen(ResourceManager &rm,
                 if (win) {
                     XMapRequestEvent mre;
                     mre.window = children[i];
-                    win->restoreAttributes();
                     win->mapRequestEvent(mre);
                 }
             }
@@ -809,7 +816,7 @@ void BScreen::setAntialias(bool value) {
 }
 
 int BScreen::addWorkspace() {
-    Workspace *wkspc = new Workspace(this, workspacesList.size());
+    Workspace *wkspc = new Workspace(this, *m_layermanager, workspacesList.size());
     workspacesList.push_back(wkspc);
     addWorkspaceName(wkspc->name().c_str()); // update names
     //add workspace to workspacemenu
@@ -902,7 +909,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
             !(focused && focused->isMoving())) {
             current_workspace->getLastFocusedWindow()->setInputFocus();		
 
-        } else if (focused && focused->isStuck()) {
+        } else if (focused && (focused->isStuck() || focused->isMoving())) {
             focused->setInputFocus();
         }
 
@@ -1184,6 +1191,13 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 }
 void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
+    // TODO: I don't think we need this...
+#ifdef DEBUG
+    cerr<<"BScreen::raiseWindows() called"<<endl;
+#endif //DEBUG
+
+    /*
+
     Window session_stack[(workspace_stack.size() + workspacesList.size() + rootmenuList.size() + 30)];
     int i = 0;	
 
@@ -1217,7 +1231,7 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
     }
 
     XRestackWindows(getBaseDisplay()->getXDisplay(), session_stack, i);
-
+    */
 }
 
 void BScreen::saveStrftimeFormat(const char *format) {
@@ -1311,7 +1325,7 @@ void BScreen::nextFocus(int opts) {
         } while (*it != focused);
 
         if (*it != focused && it != wins.end())
-            wksp->raiseWindow(*it);
+            raiseWindow(*it);
 
     }
 
@@ -1354,7 +1368,7 @@ void BScreen::prevFocus(int opts) {
         } while (*it != focused);
 
         if (*it != focused && it != wins.end())
-            wksp->raiseWindow(*it);
+            raiseWindow(*it);
 
     }
 }
@@ -1375,8 +1389,7 @@ void BScreen::raiseFocus() {
         }
 
     if ((getCurrentWorkspace()->getCount() > 1) && have_focused)
-        getWorkspace(fb->getFocusedWindow()->getWorkspaceNumber())->
-            raiseWindow(fb->getFocusedWindow());
+        raiseWindow(fb->getFocusedWindow());
 }
 
 void BScreen::initMenu() {
@@ -1923,6 +1936,151 @@ void BScreen::hideGeometry() {
         geom_visible = false;
     }
 }
+
+void BScreen::raise(FbTk::XLayerItem &item) {
+    item.raise();
+}
+
+void BScreen::lower(FbTk::XLayerItem &item) {
+    item.lower();
+}
+
+void BScreen::setLayer(FbTk::XLayerItem &item, int layernum) {
+    m_layermanager->moveToLayer(item, layernum);
+}
+
+void BScreen::removeLayerItem(FbTk::XLayerItem *item) {
+    m_layermanager->remove(*item);
+    delete item;
+}
+
+void BScreen::raiseWindow(FluxboxWindow *w) {
+    FluxboxWindow *win = w;
+
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+
+    if (!win->isIconic()) {
+        updateNetizenWindowRaise(win->getClientWindow());
+        win->getLayerItem()->raise();
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            updateNetizenWindowRaise((*it)->getClientWindow());
+            (*it)->getLayerItem()->raise();
+        }
+    }
+}
+
+void BScreen::lowerWindow(FluxboxWindow *w) {
+    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
+
+    while (bottom->getTransientFor()) {
+        bottom = bottom->getTransientFor();
+        assert(bottom != bottom->getTransientFor());
+    }
+
+    win = bottom;
+
+    if (!win->isIconic()) {
+        updateNetizenWindowLower(win->getClientWindow());
+        win->getLayerItem()->lower();
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            updateNetizenWindowLower((*it)->getClientWindow());
+            (*it)->getLayerItem()->lower();
+        }
+    }
+
+}
+
+void BScreen::raiseWindowLayer(FluxboxWindow *w) {
+    FluxboxWindow *win = w;
+
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+
+    if (!win->isIconic()) {
+        updateNetizenWindowRaise(win->getClientWindow());
+        m_layermanager->raise(*win->getLayerItem());
+        win->setLayerNum(win->getLayerNum()-1);
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            updateNetizenWindowRaise((*it)->getClientWindow());
+            m_layermanager->raise(*(*it)->getLayerItem());
+            (*it)->setLayerNum((*it)->getLayerNum()-1);
+        }
+    }
+}
+
+void BScreen::lowerWindowLayer(FluxboxWindow *w) {
+    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
+
+    while (bottom->getTransientFor()) {
+        bottom = bottom->getTransientFor();
+        assert(bottom != bottom->getTransientFor());
+    }
+
+    win = bottom;
+
+    if (!win->isIconic()) {
+        updateNetizenWindowLower(win->getClientWindow());
+        m_layermanager->lower(*win->getLayerItem());
+        win->setLayerNum(win->getLayerNum()+1);
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            updateNetizenWindowLower((*it)->getClientWindow());
+            m_layermanager->lower(*(*it)->getLayerItem());
+            (*it)->setLayerNum((*it)->getLayerNum()+1);
+        }
+    }
+
+}
+
+void BScreen::moveWindowToLayer(FluxboxWindow *win, int layernum) {
+    Fluxbox * fluxbox = Fluxbox::instance();
+
+    // don't let it set its layer into menu area
+    if (layernum <= fluxbox->getMenuLayer()) {
+        layernum = fluxbox->getMenuLayer() + 1;
+    }
+
+    while (win->getTransientFor()) {
+        win = win->getTransientFor();
+        assert(win != win->getTransientFor());
+    }
+
+    if (!win->isIconic()) {
+        updateNetizenWindowRaise(win->getClientWindow());
+        m_layermanager->moveToLayer(*win->getLayerItem(),layernum);
+        win->setLayerNum(layernum);
+    }
+    std::list<FluxboxWindow *>::const_iterator it = win->getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
+    for (; it != it_end; ++it) {
+        if (!(*it)->isIconic()) {
+            updateNetizenWindowRaise((*it)->getClientWindow());
+            m_layermanager->moveToLayer(*(*it)->getLayerItem(), layernum);
+            (*it)->setLayerNum(layernum);
+        }
+    }
+}
+
 
 /**
  Goes to the workspace "right" of the current

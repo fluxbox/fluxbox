@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.2 2003/01/29 21:42:53 rathnor Exp $
+// $Id: XLayer.cc,v 1.3 2003/02/02 16:32:41 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -38,14 +38,11 @@ XLayer::~XLayer() {
 }
 
 void XLayer::restack() {
-    int numWindows = 0;
-    iterator it = itemList().begin();
-    iterator it_end = itemList().end();
-    for (size_t i=0; it != it_end; ++it, i++) {
-        numWindows += (*it)->numWindows();
-    }
+    int numWindows = countWindows();
 
     // each LayerItem can contain several windows
+    iterator it = itemList().begin();
+    iterator it_end = itemList().end();
     it = itemList().begin();
     it_end = itemList().end();
     Window *winlist = new Window[numWindows];
@@ -63,6 +60,17 @@ void XLayer::restack() {
     delete [] winlist;
 }
 
+int XLayer::countWindows() {
+    int numWindows = 0;
+    iterator it = itemList().begin();
+    iterator it_end = itemList().end();
+    for (size_t i=0; it != it_end; ++it, i++) {
+        numWindows += (*it)->numWindows();
+    }
+    return numWindows;
+}
+
+
 void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     // little optimisation
     Window *winlist;
@@ -79,6 +87,7 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
             return;
         }
     } else {
+
         i=1;
         // stack relative to one above
 
@@ -87,13 +96,12 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
         winlist[0] = above->getWindows().front();
     }
 
-    
     XLayerItem::Windows::iterator it = item->getWindows().begin();
     XLayerItem::Windows::iterator it_end = item->getWindows().end();
     for (; it != it_end; ++it, i++) {
         winlist[i] = (*it);
     }
-    
+
     XRestackWindows(FbTk::App::instance()->display(), winlist, size);
 
     delete [] winlist;
@@ -106,7 +114,7 @@ XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
 #endif // DEBUG
     
     itemList().push_front(&item);
-    item.setLayer(*this);
+    item.setLayer(this);
     // restack below next window up
     item.setLayerIterator(itemList().begin());
     stackBelowItem(&item, m_manager.getLowestItemAboveLayer(m_layernum));
@@ -115,6 +123,7 @@ XLayer::iterator XLayer::insert(XLayerItem &item, unsigned int pos) {
 
 void XLayer::remove(XLayerItem &item) {
     itemList().erase(item.getLayerIterator());
+    item.setLayer(0);
 }
 
 void XLayer::cycleUp() {
@@ -187,8 +196,9 @@ void XLayer::stepDown(XLayerItem &item) {
 void XLayer::raise(XLayerItem &item) {
     // assume it is already in this layer
 
-    if (&item == itemList().front()) 
+    if (&item == itemList().front()) {
         return; // nothing to do
+    }
 
     itemList().erase(item.getLayerIterator());
     itemList().push_front(&item);
@@ -214,4 +224,23 @@ void XLayer::lower(XLayerItem &item) {
 XLayerItem *XLayer::getLowestItem() {
     if (itemList().empty()) return 0;
     else return itemList().back();
+}
+
+XLayerItem *XLayer::getItemBelow(XLayerItem &item) {
+    iterator it = item.getLayerIterator();
+    if (it == itemList().begin()) {
+        return 0;
+    } else {
+        return *(--it);
+    }
+}
+
+XLayerItem *XLayer::getItemAbove(XLayerItem &item) {
+    iterator it = item.getLayerIterator();
+    it++;
+    if (it == itemList().end()) {
+        return 0;
+    } else {
+        return *it;
+    }
 }

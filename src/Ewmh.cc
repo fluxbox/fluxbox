@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.9 2003/01/05 23:04:46 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.10 2003/02/02 16:32:37 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -204,6 +204,10 @@ void Ewmh::updateWorkspaceCount(const BScreen &screen) {
 
 void Ewmh::updateState(FluxboxWindow &win) {
 
+}
+
+void Ewmh::updateLayer(FluxboxWindow &win) {
+    //TODO _NET_WM_WINDOW_TYPE
 }
 
 void Ewmh::updateHints(FluxboxWindow &win) {

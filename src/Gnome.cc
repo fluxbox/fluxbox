@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.6 2002/12/01 13:41:57 rathnor Exp $
+// $Id: Gnome.cc,v 1.7 2003/02/02 16:32:37 rathnor Exp $
 
 #include "Gnome.hh"
 
+#include "fluxbox.hh"
 #include "Window.hh"
 #include "Screen.hh"
 
@@ -61,8 +62,8 @@ void Gnome::initForScreen(const BScreen &screen) {
         m_gnome_wm_win_workspace_names,
         m_gnome_wm_win_client_list,
         m_gnome_wm_win_state,
-        m_gnome_wm_win_hints
-//		m_gnome_wm_win_layer  not supported yet
+        m_gnome_wm_win_hints,
+        m_gnome_wm_win_layer
     };
 
     //list atoms that we support
@@ -96,8 +97,25 @@ void Gnome::setupWindow(FluxboxWindow &win) {
         XFree (data);
     }
 
-    // make sure we get right workspace
-    updateWorkspace(win);
+    // load gnome layer atom
+    if (XGetWindowProperty(disp, win.getClientWindow(), 
+                           m_gnome_wm_win_layer, 0, 1, False, XA_CARDINAL, 
+                           &ret_type, &fmt, &nitems, &bytes_after, 
+                           (unsigned char **) &data) ==  Success && data) {
+        flags = *data;
+        setLayer(&win, flags);
+        XFree (data);
+    }
+
+    // load gnome layer atom
+    if (XGetWindowProperty(disp, win.getClientWindow(), 
+                           m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
+                           &ret_type, &fmt, &nitems, &bytes_after, 
+                           (unsigned char **) &data) ==  Success && data) {
+        flags = *data;
+        win.getScreen()->reassociateWindow(&win, flags ,false);
+        XFree (data);
+    }
 
 }
 
@@ -209,6 +227,15 @@ void Gnome::updateState(FluxboxWindow &win) {
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
 }
 
+void Gnome::updateLayer(FluxboxWindow &win) {
+    //TODO - map from flux layers to gnome ones
+    int layernum = win.getLayerNum();
+    XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
+                    m_gnome_wm_win_layer,
+                    XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&layernum, 1);
+    
+}
+
 void Gnome::updateHints(FluxboxWindow &win) {
     //TODO
 	
@@ -258,7 +285,13 @@ bool Gnome::checkClientMessage(const XClientMessageEvent &ce, BScreen * const sc
         cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
 #endif // DEBUG
 
-    } else 
+    } else if (ce.message_type == m_gnome_wm_win_layer) {
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_LAYER"<<endl;
+#endif // DEBUG
+
+        setLayer(win, ce.data.l[0]);
+    } else
         return false; //the gnome atom wasn't found or not supported
 
     return true; // we handled the atom
@@ -314,29 +347,37 @@ void Gnome::setState(FluxboxWindow *win, int state) {
     */
 }
 
-void Gnome::setLayer(GnomeLayer layer) {
-    FluxboxWindow::WinLayer winlayer;
-	
+void Gnome::setLayer(FluxboxWindow *win, int layer) {
+    if (!win) return;
+    
+    
     switch (layer) {
     case WIN_LAYER_DESKTOP:
-        winlayer = FluxboxWindow::LAYER_BOTTOM;
+        layer = Fluxbox::instance()->getDesktopLayer();
         break;
     case WIN_LAYER_BELOW:
-        winlayer = FluxboxWindow::LAYER_BELOW;
+        layer = Fluxbox::instance()->getBottomLayer();
         break;
     case WIN_LAYER_NORMAL:
-        winlayer = FluxboxWindow::LAYER_NORMAL;
+        layer = Fluxbox::instance()->getNormalLayer();
         break;		
     case WIN_LAYER_ONTOP:
+        layer = Fluxbox::instance()->getTopLayer();
+        break;
     case WIN_LAYER_DOCK:
-    case WIN_LAYER_ABOVE_DOCK:
+        layer = Fluxbox::instance()->getSlitLayer();
+        break;
+        //case WIN_LAYER_ABOVE_DOCK:
     case WIN_LAYER_MENU:
-        winlayer = FluxboxWindow::LAYER_TOP;
+        layer = Fluxbox::instance()->getMenuLayer();
         break;
     default:
-        winlayer = FluxboxWindow::LAYER_NORMAL;
+        // our windows are in the opposite direction to gnome
+        layer = Fluxbox::instance()->getDesktopLayer() - layer;
         break;
     }
+    win->getScreen()->setLayer(*win->getLayerItem(),layer);
+
 }
 
 void Gnome::createAtoms() {

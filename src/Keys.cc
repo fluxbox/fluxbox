@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.21 2002/12/01 13:41:57 rathnor Exp $
+//$Id: Keys.cc,v 1.22 2003/02/02 16:32:37 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -72,6 +72,12 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {"Minimize", ICONIFY},
     {"Raise", RAISE},
     {"Lower", LOWER},
+    {"RaiseLayer", RAISELAYER},
+    {"LowerLayer", LOWERLAYER},
+    {"TopLayer", TOPLAYER},
+    {"BottomLayer", BOTTOMLAYER},
+    {"AlwaysOnTop", TOPLAYER},
+    {"AlwaysOnBottom", BOTTOMLAYER},
     {"Close", CLOSE},
     {"AbortKeychain", ABORTKEYCHAIN},
     {"Workspace", WORKSPACE},
@@ -122,6 +128,7 @@ Keys::t_actionstr Keys::m_actionlist[] = {
     {"ToggleDecor", TOGGLEDECOR},	
     {"ToggleTab", TOGGLETAB}, 
     {"RootMenu", ROOTMENU},
+    {"Quit", QUIT},
     {0, LASTKEYGRAB}
 };	
 
@@ -249,8 +256,9 @@ bool Keys::load(const char *filename) {
 
                 for (i=0; i< LASTKEYGRAB; i++) {
                     // +1 on the val[argc] because we dont want to compare the ':'
-                    if (strcasecmp(m_actionlist[i].string, val[argc].c_str()+1) == 0)
+                    if (strcasecmp(m_actionlist[i].string, val[argc].c_str()+1) == 0) {
                         break;	
+                    }
                 }
 
                 if (i < LASTKEYGRAB ) {

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.hh,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: XLayer.hh,v 1.2 2003/02/02 16:32:41 rathnor Exp $
 
 
 #ifndef FBTK_XLAYER_HH
@@ -36,18 +36,27 @@ class XLayerItem;
 
 class XLayer : public FbTk::Layer<XLayerItem, std::list<XLayerItem *> > {
 public:
+
     XLayer(MultLayers &manager, int layernum);
     ~XLayer();
 
-    //typedef std::list<XLayerItem *>::iterator iterator;
+    typedef std::list<XLayerItem *> ItemList;
+    typedef std::list<XLayerItem *>::iterator iterator;
+    
     //typedef std::list<XLayerItem *>::reverse_iterator reverse_iterator;
 
     void setLayerNum(int layernum) { m_layernum = layernum; };
     int  getLayerNum() { return m_layernum; };
     void restack();
+    int countWindows();
     void stackBelowItem(XLayerItem *item, XLayerItem *above);
     XLayerItem *getLowestItem();
-    
+    XLayerItem *getItemBelow(XLayerItem &item);
+    XLayerItem *getItemAbove(XLayerItem &item);
+
+    const ItemList &getItemList() const { return itemList(); }
+    ItemList &getItemList() { return itemList(); }
+
     // we redefine these as XLayer has special optimisations, and X restacking needs
     iterator insert(XLayerItem &item, unsigned int pos=0);
     void remove(XLayerItem &item);

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.4 2002/12/01 13:41:56 rathnor Exp $
+// $Id: Ewmh.hh,v 1.5 2003/02/02 16:32:37 rathnor Exp $
 
 #include "AtomHandler.hh"
 
@@ -40,6 +40,7 @@ public:
     void updateWorkspaceCount(const BScreen &screen);
 
     void updateState(FluxboxWindow &win);
+    void updateLayer(FluxboxWindow &win);
     void updateHints(FluxboxWindow &win);
     void updateWorkspace(FluxboxWindow &win);
 

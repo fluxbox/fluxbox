@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.112 2003/01/10 20:20:37 fluxgen Exp $
+// $Id: Window.cc,v 1.113 2003/02/02 16:32:39 rathnor Exp $
 
 #include "Window.hh"
 
@@ -99,6 +99,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
                              FbTk::MenuTheme &menutheme):
     m_hintsig(*this),
     m_statesig(*this),
+    m_layersig(*this),
     m_workspacesig(*this),
     m_diesig(*this),
     moving(false), resizing(false), shaded(false), maximized(false),
@@ -109,7 +110,9 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
     display(0),
     lastButtonPressTime(0),
     m_windowmenu(menutheme, screen_num, imgctrl),
-    m_layer(LAYER_NORMAL), old_decoration(DECOR_NORMAL),
+    m_layeritem(0),
+    m_layernum(4),
+    old_decoration(DECOR_NORMAL),
     tab(0),
     m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100) {
 
@@ -150,13 +153,18 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
     client.mwm_hint = 0;
     client.blackbox_hint = 0;
     Fluxbox *fluxbox = Fluxbox::instance();
+    
+    // default to normal layer
+    m_layernum = fluxbox->getNormalLayer();
 
     getBlackboxHints();
-    if (! client.blackbox_hint)
+    if (! client.blackbox_hint) {
         getMWMHints();
+    }
     
     // get size, aspect, minimum/maximum size and other hints set
     // by the client
+
     getWMProtocols();
     getWMHints(); 
     getWMNormalHints();
@@ -206,7 +214,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
     }
 
     upsize();
-	
+
     bool place_window = true;
     if (fluxbox->isStartup() || transient ||
         client.normal_hint_flags & (PPosition|USPosition)) {
@@ -241,13 +249,18 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
     associateClientWindow();
 
     grabButtons();
-				
+		
     positionWindows();
 
+    m_layeritem = new FbTk::XLayerItem(getFrameWindow());
+
     if (workspace_number < 0 || workspace_number >= screen->getCount())
-        screen->getCurrentWorkspace()->addWindow(this, place_window);
-    else
-        screen->getWorkspace(workspace_number)->addWindow(this, place_window);
+        workspace_number = screen->getCurrentWorkspaceID();
+
+    restoreAttributes(place_window);
+
+    screen->moveWindowToLayer(this, m_layernum);
+    screen->getWorkspace(workspace_number)->addWindow(this, place_window);
 
     moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
 
@@ -267,10 +280,13 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
         deiconify(); //we're omnipresent and visible
     }
 
+    setState(current_state);
+
     // no focus default
     setFocusFlag(false);
 
     // finaly show the frame and the client window
+
     m_frame.show();
     XSync(display, False);
 }
@@ -341,6 +357,15 @@ FluxboxWindow::~FluxboxWindow() {
 
     if (client.window)
         fluxbox->removeWindowSearch(client.window);
+
+    if (m_layeritem) {
+        m_layeritem->removeWindow(getFrameWindow());
+        //if (hasTab())
+        //   m_layeritem->removeWindow(get tab window)
+        if (m_layeritem->isEmpty()) {
+            screen->removeLayerItem(m_layeritem);
+        }
+    }
 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
@@ -732,6 +757,8 @@ void FluxboxWindow::getBlackboxHints() {
             if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_WORKSPACE)
                 workspace_number = client.blackbox_hint->workspace;
 
+            if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_STACK)
+                workspace_number = client.blackbox_hint->stack;
 
             if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
                 old_decoration = static_cast<Decoration>(client.blackbox_hint->decoration);
@@ -1093,6 +1120,19 @@ void FluxboxWindow::setWorkspace(int n) {
     m_workspacesig.notify();
 }
 
+void FluxboxWindow::setLayerNum(int layernum) {
+    m_layernum = layernum;
+
+    blackbox_attrib.flags |= BaseDisplay::ATTRIB_STACK;
+    blackbox_attrib.stack = layernum;
+    saveBlackboxHints();
+
+#ifdef DEBUG
+    cerr<<this<<" notify layer signal"<<endl;
+#endif // DEBUG
+
+    m_layersig.notify();
+}
 
 void FluxboxWindow::shade() {
     if (decorations.titlebar) {
@@ -1147,18 +1187,13 @@ void FluxboxWindow::lower() {
     if (isIconic())
         deiconify();
 
-    screen->getWorkspace(workspace_number)->lowerWindow(this);
-    if (hasTab())
-        getTab()->lower(); //lower the tab AND it's windows
+    screen->lowerWindow(this);
 }
 
 void FluxboxWindow::raise() {
     if (isIconic())
         deiconify();
-    screen->getWorkspace(workspace_number)->raiseWindow(this);
-    //raise tab first if there is any
-    if (hasTab())
-        tab->raise();
+    screen->raiseWindow(this);
 }
 
 void FluxboxWindow::setFocusFlag(bool focus) {
@@ -1214,6 +1249,13 @@ void FluxboxWindow::installColormap(bool install) {
     fluxbox->ungrab();
 }
 
+void FluxboxWindow::saveBlackboxHints() {
+    Fluxbox *fluxbox = Fluxbox::instance();
+    XChangeProperty(display, client.window, fluxbox->getFluxboxAttributesAtom(),
+                    fluxbox->getFluxboxAttributesAtom(), 32, PropModeReplace,
+                    (unsigned char *) &blackbox_attrib, PropBlackboxAttributesElements);
+}
+
 
 void FluxboxWindow::setState(unsigned long new_state) {
     current_state = new_state;
@@ -1225,10 +1267,7 @@ void FluxboxWindow::setState(unsigned long new_state) {
                     fluxbox->getWMStateAtom(), 32, PropModeReplace,
                     (unsigned char *) state, 2);
 
-    XChangeProperty(display, client.window, fluxbox->getFluxboxAttributesAtom(),
-                    fluxbox->getFluxboxAttributesAtom(), 32, PropModeReplace,
-                    (unsigned char *) &blackbox_attrib, PropBlackboxAttributesElements);
-
+    saveBlackboxHints();
     //notify state changed
     m_statesig.notify();
 }
@@ -1328,8 +1367,12 @@ void FluxboxWindow::setGravityOffsets() {
         m_frame.move(newx, newy);
 }
 
-
-void FluxboxWindow::restoreAttributes() {
+/* 
+ * restoreAttributes sets the attributes to what they should be
+ * but doesn't change the actual state
+ * (so the caller can set defaults etc as well)
+ */
+void FluxboxWindow::restoreAttributes(bool place_window) {
     if (!getState())
         current_state = NormalState;
 
@@ -1363,15 +1406,14 @@ void FluxboxWindow::restoreAttributes() {
         int save_state =
             ((current_state == IconicState) ? NormalState : current_state);
 
-        shaded = false;
-        shade();
+        shaded = true;
 			
         current_state = save_state;
     }
 
     if (( blackbox_attrib.workspace != screen->getCurrentWorkspaceID()) &&
         ( blackbox_attrib.workspace < screen->getCount())) {
-        screen->reassociateWindow(this, blackbox_attrib.workspace, true);
+        workspace_number = blackbox_attrib.workspace;
 
         if (current_state == NormalState) current_state = WithdrawnState;
     } else if (current_state == WithdrawnState)
@@ -1379,10 +1421,14 @@ void FluxboxWindow::restoreAttributes() {
 
     if (blackbox_attrib.flags & BaseDisplay::ATTRIB_OMNIPRESENT &&
         blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) {
-        stuck = false;
-        stick();
+        stuck = true;
 
         current_state = NormalState;
+    }
+
+    if (blackbox_attrib.flags & BaseDisplay::ATTRIB_STACK) {
+        //TODO check value?
+        m_layernum = blackbox_attrib.stack;
     }
 
     if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) ||
@@ -1392,7 +1438,7 @@ void FluxboxWindow::restoreAttributes() {
         maximized = false;
         if ((blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
             (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT))
-            maximize();
+            maximized = true;
         else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXVERT)
             maximizeVertical();
         else if (blackbox_attrib.flags & BaseDisplay::ATTRIB_MAXHORIZ)
@@ -2221,7 +2267,7 @@ void FluxboxWindow::restore(bool remap) {
     if (! XCheckTypedWindowEvent(display, client.window, ReparentNotify,
                                  &dummy)) {
 #ifdef DEBUG
-        cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client.window<<dec<<"to root"<<endl;
+        cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client.window<<dec<<" to root"<<endl;
 #endif // DEBUG
 
         // reparent to screen window
@@ -2280,6 +2326,12 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
             withdraw();
         else 
             deiconify();
+    }
+
+    if (net.flags & BaseDisplay::ATTRIB_STACK) {
+        if ((unsigned int) m_layernum != net.stack) {
+            screen->moveWindowToLayer(this, net.stack);
+        }
     }
 
     if (net.flags & BaseDisplay::ATTRIB_DECORATION) {

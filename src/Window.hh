@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.42 2003/01/09 22:16:40 fluxgen Exp $
+// $Id: Window.hh,v 1.43 2003/02/02 16:32:40 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -33,6 +33,7 @@
 #include "Subject.hh"
 #include "FbWinFrame.hh"
 #include "EventHandler.hh"
+#include "XLayerItem.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -59,14 +60,6 @@ class ImageControl;
 /// Creates the window frame and handles any window event for it
 class FluxboxWindow : public FbTk::TimeoutHandler, public FbTk::EventHandler {
 public:
-    /// layer bits
-    enum WinLayer {
-        LAYER_BOTTOM = 0x01,  ///< bottom layer
-        LAYER_BELOW  = 0x02,  ///< below normal layer but above bottom
-        LAYER_NORMAL = 0x04,  ///< normal layer
-        LAYER_TOP    = 0x08   ///< top layer
-    };
-
     /// decoration bit
     enum Decoration {
         DECOR_NONE=0, ///< no decor at all
@@ -145,7 +138,7 @@ public:
 
     void setWorkspace(int n);
     void changeBlackboxHints(const BaseDisplay::BlackboxHints &bh);
-    void restoreAttributes();
+    void restoreAttributes(bool place_window);
     void showMenu(int mx, int my);
     // popup menu on last button press position
     void popupMenu();
@@ -204,6 +197,9 @@ public:
     const BScreen *getScreen() const { return screen; }
     BScreen *getScreen() { return screen; }
 
+    const FbTk::XLayerItem *getLayerItem() const { return m_layeritem; }
+    FbTk::XLayerItem *getLayerItem() { return m_layeritem; }
+
     const Tab *getTab() const { return tab; }
     Tab *getTab() { return tab; }
 
@@ -227,7 +223,8 @@ public:
     int getYClient() const { return client.y; }
     unsigned int getWorkspaceNumber() const { return workspace_number; }
     int getWindowNumber() const { return window_number; }
-    WinLayer getLayer() const { return m_layer; }
+    int getLayerNum() const { return m_layernum; }
+    void setLayerNum(int layernum);
     unsigned int getWidth() const { return m_frame.width(); }
     unsigned int getHeight() const { return m_frame.height(); }
     unsigned int getClientHeight() const { return client.height; }
@@ -247,6 +244,8 @@ public:
     */
     FbTk::Subject &stateSig() { return m_statesig; }
     const FbTk::Subject &stateSig() const { return m_statesig; }
+    FbTk::Subject &layerSig() { return m_layersig; }
+    const FbTk::Subject &layerSig() const { return m_layersig; }
     FbTk::Subject &hintSig() { return m_hintsig; }
     const FbTk::Subject &hintSig() const { return m_hintsig; }
     FbTk::Subject &workspaceSig() { return m_workspacesig; }
@@ -297,6 +296,7 @@ private:
     void getWMHints();
     void getMWMHints();
     void getBlackboxHints();
+    void saveBlackboxHints();
     void setNetWMAttributes();
     void associateClientWindow();
     void createWinButtons();
@@ -312,7 +312,7 @@ private:
     void left_fixsize(int *x = 0, int *y = 0);
 
     // state and hint signals
-    WinSubject m_hintsig, m_statesig, m_workspacesig, m_diesig;
+    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig;
 
     std::string m_instance_name; /// instance name from WM_CLASS
     std::string m_class_name; /// class name from WM_CLASS
@@ -328,6 +328,8 @@ private:
 
     Time lastButtonPressTime;
     FbTk::Menu m_windowmenu;
+    FbTk::XLayerItem *m_layeritem;
+    int m_layernum;
 
     timeval lastFocusTime;
 	
@@ -338,7 +340,7 @@ private:
     int focus_mode, window_number;
     unsigned int workspace_number;
     unsigned long current_state;
-    WinLayer m_layer;
+
     Decoration old_decoration;
 
     struct _client {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.4 2003/01/05 22:58:11 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.5 2003/02/02 16:32:40 rathnor Exp $
 
 #include "FbWindow.hh"
 
@@ -33,7 +33,7 @@ namespace FbTk {
 Display *FbWindow::s_display = 0;
 
 FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0), m_x(0), m_y(0), 
-                     m_width(0), m_height(0), m_border_width(0) {
+                     m_width(0), m_height(0), m_border_width(0), m_layeritem(0) {
 
     if (s_display == 0)
         s_display = App::instance()->display();

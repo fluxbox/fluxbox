@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.5 2002/12/01 13:41:54 rathnor Exp $
+// $Id: AtomHandler.hh,v 1.6 2003/02/02 16:32:37 rathnor Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -44,7 +44,8 @@ public:
     virtual void updateWorkspace(FluxboxWindow &win) = 0;
     virtual void updateState(FluxboxWindow &win) = 0;
     virtual void updateHints(FluxboxWindow &win) = 0;
-	
+    virtual void updateLayer(FluxboxWindow &win) = 0;
+
     virtual bool checkClientMessage(const XClientMessageEvent &ce, 
                                     BScreen * const screen, FluxboxWindow * const win) = 0;
 	

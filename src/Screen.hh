@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.63 2003/01/12 23:54:10 fluxgen Exp $
+// $Id: Screen.hh,v 1.64 2003/02/02 16:32:38 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -34,6 +34,8 @@
 #include "Resource.hh"
 #include "Subject.hh"
 #include "FbWinFrameTheme.hh"
+#include "MultLayers.hh"
+#include "XLayerItem.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -273,6 +275,16 @@ public:
     void showGeometry(unsigned int, unsigned int);
     void hideGeometry();
 
+    void raise(FbTk::XLayerItem &item);
+    void lower(FbTk::XLayerItem &item);
+    void setLayer(FbTk::XLayerItem &item, int layernum);
+    void removeLayerItem(FbTk::XLayerItem *item);
+    void raiseWindow(FluxboxWindow *win);
+    void lowerWindow(FluxboxWindow *win);
+    void raiseWindowLayer(FluxboxWindow *win);
+    void lowerWindowLayer(FluxboxWindow *win);
+    void moveWindowToLayer(FluxboxWindow *win, int layernum);
+
     FluxboxWindow* useAutoGroupWindow();
 
     void updateNetizenCurrentWorkspace();
@@ -323,6 +335,7 @@ private:
         m_workspacenames_sig, ///< workspace names signal 
         m_currentworkspace_sig; ///< current workspace signal
 		
+    FbTk::MultLayers *m_layermanager;
 	
     Theme *theme;
 	
@@ -398,4 +411,4 @@ private:
 };
 
 
-#endif // SCREEN_HH
+#endif // SCREEN_

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.18 2002/12/01 13:41:57 rathnor Exp $
+// $Id: Keys.hh,v 1.19 2003/02/02 16:32:38 rathnor Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -36,7 +36,9 @@ public:
     */
     enum KeyAction{
         ICONIFY=0,
-        RAISE, LOWER,
+        RAISE, LOWER, 
+        RAISELAYER, LOWERLAYER, TOPLAYER, BOTTOMLAYER,
+        ALWAYSONTOP, ALWAYSONBOTTOM, // aliases for TOPLAYER, etc
         CLOSE,
         ABORTKEYCHAIN,
         WORKSPACE,
@@ -59,6 +61,7 @@ public:
         TOGGLEDECOR,// toggle visibility of decor (title, frame, handles)
         TOGGLETAB,  // toggle visibilty of tab
         ROOTMENU,   // pop up rootmenu
+        QUIT,  // Die, quit, logout, shutdown
         LASTKEYGRAB //mark end of keygrabbs
     };
     /**

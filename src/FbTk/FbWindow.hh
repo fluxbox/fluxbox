@@ -19,10 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.6 2003/01/05 22:55:14 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.7 2003/02/02 16:32:40 rathnor Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
+
+#include "XLayerItem.hh"
 
 #include <X11/Xlib.h>
 
@@ -70,6 +72,10 @@ public:
     void lower();
     void raise();
 
+    XLayerItem *getLayerItem() const { return m_layeritem; }
+    void setLayerItem(XLayerItem *item) { m_layeritem = item; }
+    
+
     const FbWindow *parent() const { return m_parent; }
     Window window() const { return m_window; }
     int x() const { return m_x; }
@@ -98,6 +104,8 @@ private:
     int m_x, m_y; ///< position of window
     size_t m_width, m_height;  ///< size of window
     size_t m_border_width; // border size
+    
+    XLayerItem *m_layeritem;
 };
 
 bool operator == (Window win, const FbWindow &fbwin);

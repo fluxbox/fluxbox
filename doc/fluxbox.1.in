@@ -751,7 +751,14 @@ Here is a list of possible Operations:
 Minimize
 Raise
 Lower
+RaiseLayer
+LowerLayer
+TopLayer
+BottomLayer
+AlwaysOnTop (this is an alias for TopLayer)
+AlwaysOnBottom (similarly)
 Close
+Quit
 RootMenu
 Workspace N (where N is positive integer)
 Workspace1

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.39 2003/01/12 18:49:36 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.40 2003/02/02 16:32:40 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -111,6 +111,16 @@ public:
     inline const char *getMenuFilename() const { return m_rc_menufile->c_str(); }
     inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
     inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
+    inline int getNumberOfLayers() const { return *m_rc_numlayers; }
+
+    // TODO there probably should be configurable
+    inline int getDesktopLayer() const { return 12; }
+    inline int getBottomLayer()  const { return 10; }
+    inline int getNormalLayer()  const { return 8; }
+    inline int getTopLayer()     const { return 2; }
+    inline int getSlitLayer()    const { return 4; }
+    inline int getMenuLayer()    const { return 0; }
+
 
     inline const timeval &getAutoRaiseDelay() const { return resource.auto_raise_delay; }
 
@@ -201,7 +211,7 @@ private:
 	
     //--- Resources
     Resource<bool> m_rc_tabs, m_rc_iconbar;
-    Resource<int> m_rc_colors_per_channel;
+    Resource<int> m_rc_colors_per_channel, m_rc_numlayers;
     Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile;

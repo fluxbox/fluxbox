@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.43 2003/01/13 12:59:26 fluxgen Exp $
+// $Id: Workspace.cc,v 1.44 2003/02/02 16:32:40 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -72,10 +72,11 @@ int countTransients(const FluxboxWindow &win) {
 
 Workspace::GroupList Workspace::m_groups;
 
-Workspace::Workspace(BScreen *scrn, unsigned int i):
+Workspace::Workspace(BScreen *scrn, FbTk::MultLayers &layermanager, unsigned int i):
     screen(scrn),
     lastfocus(0),
     m_clientmenu(*scrn->menuTheme(), scrn->getScreenNumber(), *scrn->getImageControl()),
+    m_layermanager(layermanager),
     m_name(""),
     m_id(i),
     cascade_x(32), cascade_y(32) {
@@ -107,8 +108,6 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
     w->setWorkspace(m_id);
     w->setWindowNumber(m_windowlist.size());
 
-    stackingList.push_front(w);
-
     //insert window after the currently focused window	
     //FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
 
@@ -139,13 +138,13 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
     m_clientmenu.insert(w->getTitle().c_str());
     m_windowlist.push_back(w);
 	
+    w->raise();
+
     //update menugraphics
     m_clientmenu.update();
 	
     if (!w->isStuck()) 
         screen->updateNetizenWindowAdd(w->getClientWindow(), m_id);
-
-    raiseWindow(w);
 
     return w->getWindowNumber();
 }
@@ -158,8 +157,6 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     if (lastfocus == w) {
         lastfocus = 0;
     }
-
-    stackingList.remove(w);
 
     if (w->isFocused()) {
         if (screen->isSloppyFocus()) {
@@ -174,8 +171,43 @@ int Workspace::removeWindow(FluxboxWindow *w) {
             w->getTransientFor()->setInputFocus();
         } else {
             FluxboxWindow *top = 0;
-            if (stackingList.size() != 0)
-                top = stackingList.front();
+
+            // this bit is pretty dodgy at present
+            // it gets the next item down, then scans through our windowlist to see if it is 
+            // in this workspace. If not, goes down more
+            FbTk::XLayerItem *item = 0, *lastitem = w->getLayerItem();
+            do {
+                item = m_layermanager.getItemBelow(*lastitem);
+                Windows::iterator it = m_windowlist.begin();
+                Windows::iterator it_end = m_windowlist.end();
+                for (; it != it_end; ++it) {
+                    if ((*it)->getLayerItem() == item) {
+                        // found one!
+                        top = *it;
+                    }
+                }
+
+                lastitem = item;
+                
+            } while (item && !top);
+            
+            if (!top) {
+                // look upwards
+                lastitem = w->getLayerItem();
+                do {
+                    item = m_layermanager.getItemAbove(*lastitem);
+                    Windows::iterator it = m_windowlist.begin();
+                    Windows::iterator it_end = m_windowlist.end();
+                    for (; it != it_end; ++it) {
+                        if ((*it)->getLayerItem() == item) {
+                            // found one!
+                            top = *it;
+                        }
+                    }
+                    lastitem = item;
+                } while (item && !top);
+
+            }
 
             if (top == 0|| !top->setInputFocus()) {
                 Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
@@ -183,7 +215,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
         }
     }
 	
-	
+    // we don't remove it from the layermanager, as it may be being moved
 
     Windows::iterator it = m_windowlist.begin();
     Windows::iterator it_end = m_windowlist.end();
@@ -216,8 +248,8 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
 
 void Workspace::showAll() {
-    WindowStack::iterator it = stackingList.begin();
-    WindowStack::iterator it_end = stackingList.end();
+    Windows::iterator it = m_windowlist.begin();
+    Windows::iterator it_end = m_windowlist.end();
     for (; it != it_end; ++it) {
         (*it)->deiconify(false, false);
     }
@@ -225,8 +257,8 @@ void Workspace::showAll() {
 
 
 void Workspace::hideAll() {
-    WindowStack::reverse_iterator it = stackingList.rbegin();
-    WindowStack::reverse_iterator it_end = stackingList.rend();
+    Windows::reverse_iterator it = m_windowlist.rbegin();
+    Windows::reverse_iterator it_end = m_windowlist.rend();
     for (; it != it_end; ++it) {
         if (! (*it)->isStuck())
             (*it)->withdraw();
@@ -240,63 +272,6 @@ void Workspace::removeAll() {
     for (; it != it_end; ++it) {
         (*it)->iconify();
     }
-}
-
-
-void Workspace::raiseWindow(FluxboxWindow *w) {
-    FluxboxWindow *win = w;
-
-    while (win->getTransientFor()) {
-        win = win->getTransientFor();
-        assert(win != win->getTransientFor());
-    }
-	
-    int i = 1 + countTransients(*win);
-
-    Stack nstack(i);
-    Stack::iterator stackit = nstack.begin();
-	
-    *(stackit++) = win->getFrameWindow();
-    screen->updateNetizenWindowRaise(win->getClientWindow());
-    if (! win->isIconic()) {
-        Workspace *wkspc = screen->getWorkspace(win->getWorkspaceNumber());
-        wkspc->stackingList.remove(win);
-        wkspc->stackingList.push_front(win);
-    }	
-	
-    raiseAndFillStack(stackit, *win);
-
-    screen->raiseWindows(nstack);
-	
-}
-
-void Workspace::lowerWindow(FluxboxWindow *w) {
-    FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
-
-    while (bottom->getTransientFor()) {
-        bottom = bottom->getTransientFor();
-        assert(bottom != bottom->getTransientFor());
-    }
-
-    win = bottom;
-    int i = 1 + countTransients(*win);
-
-
-    Stack st(i);
-    Stack::iterator stackit = st.begin();
-    lowerAndFillStack(stackit, *win);
-    (*stackit) = win->getFrameWindow();
-
-    screen->updateNetizenWindowLower(win->getClientWindow());
-    if (! win->isIconic()) {
-        Workspace *wkspc = screen->getWorkspace(win->getWorkspaceNumber());
-        wkspc->stackingList.remove(win);
-        wkspc->stackingList.push_back(win);
-    }
-
-    XLowerWindow(BaseDisplay::getXDisplay(), st.front());
-    XRestackWindows(BaseDisplay::getXDisplay(), &st[0], st.size());
-
 }
 
 
@@ -460,6 +435,7 @@ void Workspace::setName(const std::string &name) {
 void Workspace::shutdown() {
     // note: when the window dies it'll remove it self from the list
     while (!m_windowlist.empty()) {
+        cerr<<m_windowlist.size()<<endl;
         m_windowlist.back()->restore(true); // restore with remap
         delete m_windowlist.back(); //delete window (the window removes it self from m_windowlist)
     }
@@ -799,56 +775,4 @@ void Workspace::placeWindow(FluxboxWindow *win) {
     }
 
     win->moveResize(place_x, place_y, win->getWidth(), win->getHeight());
-}
-
-
-void Workspace::raiseAndFillStack(Stack::iterator &stackit, const FluxboxWindow &w) {
-    if (w.getTransients().empty())
-        return;
-
-    std::list<FluxboxWindow *>::const_iterator it = w.getTransients().begin();
-    std::list<FluxboxWindow *>::const_iterator it_end = w.getTransients().end();
-    for (; it != it_end; ++it) {		
-        *stackit++ = (*it)->getFrameWindow();
-		
-        screen->updateNetizenWindowRaise((*it)->getClientWindow());
-
-        if (! (*it)->isIconic()) {
-            Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
-            wkspc->stackingList.remove((*it));
-            wkspc->stackingList.push_front((*it));
-        }
-
-		
-    }
-	
-    it = w.getTransients().begin();
-    for (; it != it_end; ++it)
-        raiseAndFillStack(stackit, *(*it));
-	
-
-}
-
-void Workspace::lowerAndFillStack(Stack::iterator &stackit, const FluxboxWindow &win) {
-    if (win.getTransients().empty()) // nothing to lower and stack
-        return;
-
-    std::list<FluxboxWindow *>::const_reverse_iterator it = win.getTransients().rbegin();
-    std::list<FluxboxWindow *>::const_reverse_iterator it_end = win.getTransients().rend();
-    for (; it != it_end; ++it)
-        lowerAndFillStack(stackit, *(*it));
-	
-    it = win.getTransients().rbegin();
-	
-    for (; it != it_end; ++it) {
-        (*stackit) = (*it)->getFrameWindow();
-        ++stackit;
-        screen->updateNetizenWindowLower((*it)->getClientWindow());
-        if (! (*it)->isIconic()) {
-            Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
-            wkspc->stackingList.remove((*it));
-            wkspc->stackingList.push_back((*it));
-        }
-    }
-
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.5 2003/01/12 17:02:33 fluxgen Exp $
+// $Id: Menu.hh,v 1.6 2003/02/02 16:32:41 rathnor Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -35,6 +35,7 @@
 #include "EventHandler.hh"
 #include "RefCount.hh"
 #include "Command.hh"
+#include "XLayerItem.hh"
 
 namespace FbTk {
 
@@ -80,6 +81,11 @@ public:
     void raise();
     /// lower this window
     void lower();
+
+    XLayerItem *getLayerItem() const { return menu.window.getLayerItem(); }
+    void setLayerItem(XLayerItem *item) { menu.window.setLayerItem(item); }
+
+
     void disableTitle();
     void enableTitle();
     /**

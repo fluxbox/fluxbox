@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.92 2003/01/12 18:50:27 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.93 2003/02/02 16:32:40 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -296,6 +296,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
       m_rc_iconbar(m_resourcemanager, true, "session.iconbar", "Session.Iconbar"),
       m_rc_colors_per_channel(m_resourcemanager, 4, "session.colorsPerChannel", "Session.ColorsPerChannel"),
+      m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
       m_rc_stylefile(m_resourcemanager, "", "session.styleFile", "Session.StyleFile"),
       m_rc_menufile(m_resourcemanager, DEFAULTMENU, "session.menuFile", "Session.MenuFile"),
       m_rc_keyfile(m_resourcemanager, DEFAULTKEYSFILE, "session.keyFile", "Session.KeyFile"),
@@ -701,7 +702,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             win = tab->getWindow();
             if (win->getScreen()->isSloppyFocus() && (! win->isFocused()) &&
                 (! no_focus)) {
-                win->getScreen()->getWorkspace(win->getWorkspaceNumber())->raiseWindow(win);
+                win->getScreen()->raiseWindow(win);
 					
                 grab();
 
@@ -1112,24 +1113,18 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     break;
                 case Keys::NEXTWINDOW:	//activate next window
                     screen->nextFocus(key->getParam());
-                    if (focused_window && focused_window->getTab())
-                        focused_window->getTab()->raise();
                     break;
                 case Keys::PREVWINDOW:	//activate prev window
                     screen->prevFocus(key->getParam());
-                    if (focused_window && focused_window->getTab())
-                        focused_window->getTab()->raise();
                     break;
                 case Keys::NEXTTAB: 
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
                         if (tab->next()) {
-                            screen->getCurrentWorkspace()->raiseWindow(
-                                                                       tab->next()->getWindow());
+                            screen->raiseWindow(tab->next()->getWindow());
                             tab->next()->getWindow()->setInputFocus();
                         } else {
-                            screen->getCurrentWorkspace()->raiseWindow(
-                                                                       tab->first()->getWindow());
+                            screen->raiseWindow(tab->first()->getWindow());
                             tab->first()->getWindow()->setInputFocus();
                         }	
                     }
@@ -1138,12 +1133,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
                         if (tab->prev()) {
-                            screen->getCurrentWorkspace()->raiseWindow(
-                                                                       tab->prev()->getWindow());
+                            screen->raiseWindow(tab->prev()->getWindow());
                             tab->prev()->getWindow()->setInputFocus();
                         } else {
-                            screen->getCurrentWorkspace()->raiseWindow(
-                                                                       tab->last()->getWindow());
+                            screen->raiseWindow(tab->last()->getWindow());
                             tab->last()->getWindow()->setInputFocus();
                         }
                     }
@@ -1151,16 +1144,14 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                 case Keys::FIRSTTAB:
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
-                        screen->getCurrentWorkspace()->raiseWindow(
-                                                                   tab->first()->getWindow());
+                        screen->raiseWindow(tab->first()->getWindow());
                         tab->first()->getWindow()->setInputFocus();
                     }
                     break;
                 case Keys::LASTTAB:
                     if (focused_window && focused_window->getTab()) {
                         Tab *tab = focused_window->getTab();
-                        screen->getCurrentWorkspace()->raiseWindow(
-                                                                   tab->last()->getWindow());
+                        screen->raiseWindow(tab->last()->getWindow());
                         tab->last()->getWindow()->setInputFocus();
                     }
                     break;
@@ -1178,6 +1169,11 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     {
                         cerr<<"TODO"<<endl;
 			
+                    }
+                    break;
+                case Keys::QUIT:
+                    {
+                        shutdown();
                     }
                     break;
                 case Keys::ROOTMENU: //show root menu
@@ -1247,15 +1243,22 @@ void Fluxbox::doWindowAction(Keys::KeyAction action, const int param) {
         focused_window->iconify();
         break;
     case Keys::RAISE:
-        if (focused_window->hasTab())
-            focused_window->getTab()->raise(); //raise the tabs if we have any
-        focused_window->getScreen()->getWorkspace(focused_window->getWorkspaceNumber())->raiseWindow(focused_window);
+        focused_window->raise();
         break;
     case Keys::LOWER:
-        focused_window->getScreen()->getWorkspace(focused_window->getWorkspaceNumber())->lowerWindow(focused_window);
-        if (focused_window->hasTab())
-            focused_window->getTab()->lower(); //lower the tabs AND it's windows
-
+        focused_window->lower();
+        break;
+    case Keys::RAISELAYER:
+        focused_window->getScreen()->raiseWindowLayer(focused_window);
+        break;
+    case Keys::LOWERLAYER:
+        focused_window->getScreen()->lowerWindowLayer(focused_window);
+        break;
+    case Keys::TOPLAYER:
+        focused_window->getScreen()->moveWindowToLayer(focused_window,getBottomLayer());
+        break;
+    case Keys::BOTTOMLAYER:
+        focused_window->getScreen()->moveWindowToLayer(focused_window,getTopLayer());
         break;
     case Keys::CLOSE:
         focused_window->close();
@@ -1459,6 +1462,14 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                 if (m_atomhandler[i]->update())
                     m_atomhandler[i]->updateState(win);
             }
+        } else if ((&(win.layerSig())) == changedsub) { // layer signal
+#ifdef DEBUG
+            cerr<<__FILE__<<"("<<__LINE__<<") WINDOW layer signal from "<<&win<<endl;
+#endif // DEBUG
+            for (size_t i=0; i<m_atomhandler.size(); ++i) {
+                if (m_atomhandler[i]->update())
+                    m_atomhandler[i]->updateLayer(win);
+            }
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__LINE__<<") WINDOW workspace signal from "<<&win<<endl;
@@ -1516,6 +1527,7 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.hintSig().attach(this);
     win.stateSig().attach(this);
     win.workspaceSig().attach(this);
+    win.layerSig().attach(this);
     for (size_t i=0; i<m_atomhandler.size(); ++i) {
         m_atomhandler[i]->setupWindow(win);
     }

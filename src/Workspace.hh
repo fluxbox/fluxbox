@@ -28,6 +28,7 @@
 #include "NotCopyable.hh"
 
 #include "Menu.hh"
+#include "MultLayers.hh"
 
 #include <X11/Xlib.h>
 
@@ -46,7 +47,7 @@ public:
     typedef std::vector<FluxboxWindow *> Windows;
     typedef std::vector<Window> Stack;
 
-    explicit Workspace(BScreen *screen, unsigned int workspaceid = 0);
+    explicit Workspace(BScreen *screen, FbTk::MultLayers &layermanager, unsigned int workspaceid = 0);
     ~Workspace();
 	
     void setLastFocusedWindow(FluxboxWindow *w);
@@ -57,8 +58,6 @@ public:
     void showAll();
     void hideAll();
     void removeAll();
-    void raiseWindow(FluxboxWindow *win);
-    void lowerWindow(FluxboxWindow *win);
     void reconfigure();
     void update();
     void setCurrent();
@@ -97,9 +96,6 @@ protected:
 
 private:
 
-    void raiseAndFillStack(Stack::iterator &it, const FluxboxWindow &win);
-    void lowerAndFillStack(Stack::iterator &it, const FluxboxWindow &win);
-
     BScreen *screen;
     FluxboxWindow *lastfocus;
     FbTk::Menu m_clientmenu;
@@ -110,7 +106,7 @@ private:
 	
     static GroupList m_groups; ///< handle auto groupings
 
-    WindowStack stackingList;
+    FbTk::MultLayers &m_layermanager;
     Windows m_windowlist;
 
     std::string m_name;  ///< name of this workspace
