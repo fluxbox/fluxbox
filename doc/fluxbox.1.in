@@ -882,6 +882,15 @@ Remember the current shaded state.
 .B Tab state [yes|no]
 Remember the current tab state.
 .TP
+.B IconHidden 
+hides the app from the icon bar
+.TP
+.B FocusHidden
+hides the app from the list to be reachable via Next/PrevWindow
+.TP
+.B Hidden
+is [IconHidden] + [FocusHidden]
+.TP
 .B Decoration state [NONE|NORMAL|TOOL|TINY]
 Remember the current decoration state.
 .TP
