@@ -47,7 +47,8 @@ public:
     typedef std::vector<FluxboxWindow *> Windows;
     typedef std::vector<Window> Stack;
 
-    explicit Workspace(BScreen *screen, FbTk::MultLayers &layermanager, unsigned int workspaceid = 0);
+    Workspace(BScreen &screen, FbTk::MultLayers &layermanager, 
+              unsigned int workspaceid = 0);
     ~Workspace();
 	
     void setLastFocusedWindow(FluxboxWindow *w);
@@ -64,10 +65,10 @@ public:
     void shutdown();
     int addWindow(FluxboxWindow *win, bool place = false);
     int removeWindow(FluxboxWindow *win);
-    BScreen *getScreen() { return screen; }
+    BScreen &getScreen() { return screen; }
     FluxboxWindow *getLastFocusedWindow() { return lastfocus; }
 
-    const BScreen *getScreen() const { return screen; }	
+    const BScreen &getScreen() const { return screen; }	
     const FluxboxWindow *getLastFocusedWindow() const { return lastfocus; }	
     FbTk::Menu &menu() { return m_clientmenu; }
     inline const FbTk::Menu &menu() const { return m_clientmenu; }
@@ -96,7 +97,7 @@ protected:
 
 private:
 
-    BScreen *screen;
+    BScreen &screen;
     FluxboxWindow *lastfocus;
     FbTk::Menu m_clientmenu;
 
