@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.206 2003/12/09 12:28:24 rathnor Exp $
+// $Id: fluxbox.cc,v 1.207 2003/12/16 23:36:06 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -368,7 +368,7 @@ void copyFile(const std::string &from, const std::string &to) {
         }		
 }
 
-};
+} // end anonymous
 
 static int handleXErrors(Display *d, XErrorEvent *e) {
 #ifdef DEBUG
@@ -1983,7 +1983,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 #endif // DEBUG    
     BScreen *old_screen = 0, *screen = 0;
     WinClient *old_client = 0;
-    Workspace *old_wkspc = 0, *wkspc = 0;
+    Workspace *old_wkspc = 0;
     
     if (m_focused_window != 0) {
         // check if m_focused_window is valid
@@ -2024,7 +2024,6 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
             m_focused_window = 0; // the window pointer wasn't valid, mark no window focused
         } else {
             screen = *winscreen;
-            wkspc = screen->getWorkspace(win->workspaceNumber());
             m_focused_window = client;     // update focused window
             win->setCurrentClient(*client, false); // don't setinputfocus
             win->setFocusFlag(true); // set focus flag

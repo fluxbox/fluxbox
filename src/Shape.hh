@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.hh,v 1.2 2003/08/24 15:02:15 fluxgen Exp $
+// $Id: Shape.hh,v 1.3 2003/12/16 23:32:02 fluxgen Exp $
 
 #ifndef SHAPE_HH
 #define SHAPE_HH
@@ -28,7 +28,7 @@
 
 namespace FbTk {
 class FbWindow;
-};
+}
 
 /// creates round corners on windows
 class Shape {
@@ -38,7 +38,7 @@ public:
         BOTTOMRIGHT = 0x01, 
         TOPRIGHT = 0x02,
         BOTTOMLEFT = 0x04,
-        TOPLEFT = 0x08,
+        TOPLEFT = 0x08
     };
 
     Shape(FbTk::FbWindow &win, int shapeplaces);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.50 2003/12/08 17:29:44 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.51 2003/12/16 23:33:21 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -50,7 +50,7 @@ class ToolbarItem;
 
 namespace FbTk {
 class ImageControl;
-};
+}
 
 ///	The toolbar.
 /// Handles iconbar, workspace name view and clock view

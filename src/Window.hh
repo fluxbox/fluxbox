@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.101 2003/12/07 17:47:42 fluxgen Exp $
+// $Id: Window.hh,v 1.102 2003/12/16 23:28:36 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -387,7 +387,6 @@ private:
     void updateMWMHintsFromClient(WinClient &client);
     void updateBlackboxHintsFromClient(const WinClient &client);
     void saveBlackboxAttribs();
-    void setNetWMAttributes();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1);
 
     void restoreGravity();

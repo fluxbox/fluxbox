@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.29 2003/10/05 07:19:36 rathnor Exp $
+// $Id: Keys.hh,v 1.30 2003/12/16 23:32:29 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -28,11 +28,9 @@
 #include <vector>
 #include <X11/Xlib.h>
 
-#include "NotCopyable.hh"
-#include "RefCount.hh"
-namespace FbTk {
-class Command;
-};
+#include "FbTk/NotCopyable.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/Command.hh"
 
 class Keys:private FbTk::NotCopyable  {
 public:

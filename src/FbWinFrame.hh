@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.25 2003/12/09 08:48:08 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.26 2003/12/16 23:34:36 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -46,7 +46,7 @@ class ImageControl;
 class Command;
 class Button;
 class Texture;
-};
+}
 
 /// holds a window frame with a client window
 /// (see: <a href="fluxbox_fbwinframe.png">image</a>)
@@ -295,7 +295,7 @@ private:
     class ThemeListener: public FbTk::Observer {
     public:
         ThemeListener(FbWinFrame &frame):m_frame(frame) { }
-        void update(FbTk::Subject *subj) {
+        void update(FbTk::Subject *) {
             m_frame.reconfigure();
         }
     private:

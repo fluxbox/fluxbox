@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.13 2003/12/03 22:13:21 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.14 2003/12/16 23:35:00 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -98,6 +98,6 @@ public:
     void execute();
 };
 
-}; // end namespace FbCommands
+} // end namespace FbCommands
 
 #endif // FBCOMMANDS_HH
