@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.131 2003/04/23 10:51:17 fluxgen Exp $
+// $Id: Screen.cc,v 1.132 2003/04/25 11:05:11 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -38,7 +38,9 @@
 #include "DirHelper.hh"
 #include "WinButton.hh"
 #include "SimpleCommand.hh"
+#include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
+#include "RootTheme.hh"
 #include "FbCommands.hh"
 #include "BoolMenuItem.hh"
 #include "IntResMenuItem.hh"
@@ -49,6 +51,7 @@
 #include "LayerMenu.hh"
 #include "WinClient.hh"
 #include "Subject.hh"
+
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -417,27 +420,6 @@ void setupWorkspacemenu(BScreen &scr, FbTk::Menu &menu) {
 
 };
 
-/// for root command
-class RootTheme: public FbTk::Theme {
-public:
-    explicit RootTheme(BScreen &scr):FbTk::Theme(scr.getScreenNumber()),
-                                     m_root_command(*this, "rootCommand", "RootCommand"), 
-                                     m_scr(scr) { }
-    void reconfigTheme() {
-        // override resource root command?
-        if (m_scr.getRootCommand() == "") { 
-            // do root command
-            FbCommands::ExecuteCmd cmd(*m_root_command);
-            cmd.execute();
-        } else {
-            FbCommands::ExecuteCmd cmd(m_scr.getRootCommand());
-            cmd.execute();
-        }
-    }
-private:
-    FbTk::ThemeItem<std::string> m_root_command;
-    BScreen &m_scr;
-};
 
 template <>
 void FbTk::ThemeItem<std::string>::load() { }
@@ -450,6 +432,21 @@ void FbTk::ThemeItem<std::string>::setDefaultValue() {
 template <>
 void FbTk::ThemeItem<std::string>::setFromString(const char *str) { 
     *(*this) = (str ? str : ""); 
+}
+
+template <>
+void FbTk::ThemeItem<int>::load() { }
+
+template <>
+void FbTk::ThemeItem<int>::setDefaultValue() {
+    *(*this) = 0;
+}
+
+template <>
+void FbTk::ThemeItem<int>::setFromString(const char *str) {
+    if (str == 0)
+        return;
+    sscanf(str, "%d", &m_value);
 }
 
 BScreen::ScreenResource::ScreenResource(ResourceManager &rm, 
@@ -503,12 +500,14 @@ BScreen::BScreen(ResourceManager &rm,
                              m_currentworkspace_sig(*this), // current workspace signal
                              m_layermanager(num_layers),
                              cycling_focus(false),
-                             theme(0), m_windowtheme(scrn), 
+                             m_windowtheme(new FbWinFrameTheme(scrn)), 
                              m_menutheme(new FbTk::MenuTheme(scrn)),
                              resource(rm, screenname, altscreenname),
-                             m_root_theme(new RootTheme(*this)),
-                             m_toolbarhandler(0)
-{
+                             m_root_theme(new 
+                                          RootTheme(scrn, 
+                                                    *resource.rootcommand)),
+                             m_toolbarhandler(0) {
+
     Display *disp = FbTk::App::instance()->display();
 
     event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
@@ -573,15 +572,13 @@ BScreen::BScreen(ResourceManager &rm,
 
     fluxbox->load_rc(*this);
     FbTk::Menu::setAlpha(*resource.menu_alpha);
-    image_control->setDither(*resource.image_dither);
-    theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
-                      fluxbox->getStyleFilename().c_str(), getRootCommand().c_str());
 
-    theme->reconfigure(*resource.antialias);
+    image_control->setDither(*resource.image_dither);
+
     // setup windowtheme, toolbartheme for antialias
-    m_windowtheme.font().setAntialias(*resource.antialias);
-    m_menutheme->titleFont().setAntialias(*resource.antialias);
-    m_menutheme->frameFont().setAntialias(*resource.antialias);
+    winFrameTheme().font().setAntialias(*resource.antialias);
+    menuTheme()->titleFont().setAntialias(*resource.antialias);
+    menuTheme()->frameFont().setAntialias(*resource.antialias);
 
     // set database for new Theme Engine
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
@@ -592,42 +589,42 @@ BScreen::BScreen(ResourceManager &rm,
 	
     int l = strlen(s);
 
-    geom_h = m_windowtheme.font().height();
-    geom_w = m_windowtheme.font().textWidth(s, l);
+    geom_h = winFrameTheme().font().height();
+    geom_w = winFrameTheme().font().textWidth(s, l);
 	
-    geom_w += getBevelWidth()*2;
-    geom_h += getBevelWidth()*2;
+    geom_w += m_root_theme->bevelWidth()*2;
+    geom_h += m_root_theme->bevelWidth()*2;
 
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
-    attrib.border_pixel = getBorderColor()->pixel();
+    attrib.border_pixel = m_root_theme->borderColor().pixel();
     attrib.colormap = colormap();
     attrib.save_under = true;
-
-    geom_window =
+    //!! TODO border width
+    geom_window = 
         XCreateWindow(disp, getRootWindow(),
-                      0, 0, geom_w, geom_h, theme->getBorderWidth(), getDepth(),
+                      0, 0, geom_w, geom_h, m_root_theme->borderWidth(), getDepth(),
                       InputOutput, getVisual(), mask, &attrib);
     geom_visible = false;
 
-    if (m_windowtheme.labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (m_windowtheme.titleFocusTexture().type() ==
+    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (winFrameTheme().titleFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(m_windowtheme.titleFocusTexture().color());
+            geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     m_windowtheme.titleFocusTexture());
+                                                     winFrameTheme().titleFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (m_windowtheme.labelFocusTexture().type() ==
+        if (winFrameTheme().labelFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(m_windowtheme.labelFocusTexture().color());
+            geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     m_windowtheme.labelFocusTexture());
+                                                     winFrameTheme().labelFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
@@ -774,8 +771,6 @@ BScreen::~BScreen() {
 
     delete image_control;
 
-    delete theme;
-
 }
 
 const FbTk::Menu &BScreen::getToolbarModemenu() const {
@@ -786,6 +781,10 @@ FbTk::Menu &BScreen::getToolbarModemenu() {
     return m_toolbarhandler->getModeMenu();
 }
 
+unsigned int BScreen::getCurrentWorkspaceID() const { 
+    return current_workspace->workspaceID(); 
+}
+    
 /// TODO
 unsigned int BScreen::getMaxLeft() const {
     return 0;
@@ -811,18 +810,15 @@ void BScreen::reconfigure() {
 #endif // DEBUG
     FbTk::Menu::setAlpha(*resource.menu_alpha);
     Fluxbox::instance()->loadRootCommand(*this);
-    theme->setRootCommand(getRootCommand());
-    const string &filename = Fluxbox::instance()->getStyleFilename();
-    theme->load(filename.c_str()); // old theme engine
+
     // setup windowtheme, toolbartheme for antialias
-    m_windowtheme.font().setAntialias(*resource.antialias);
+    winFrameTheme().font().setAntialias(*resource.antialias);
     m_menutheme->titleFont().setAntialias(*resource.antialias);
     m_menutheme->frameFont().setAntialias(*resource.antialias);
+    // load theme
+    std::string theme_filename(Fluxbox::instance()->getStyleFilename());
+    FbTk::ThemeManager::instance().load(theme_filename.c_str());
 
-    FbTk::ThemeManager::instance().load(filename.c_str()); // new theme engine
-
-    theme->reconfigure(*resource.antialias);
-    
     I18n *i18n = I18n::instance();
 
     const char *s = i18n->getMessage(
@@ -832,38 +828,38 @@ void BScreen::reconfigure() {
     int l = strlen(s);
 
     //TODO: repeated from somewhere else?
-    geom_h = m_windowtheme.font().height();
-    geom_w = m_windowtheme.font().textWidth(s, l);
-    geom_w += getBevelWidth()*2;
-    geom_h += getBevelWidth()*2;
+    geom_h = winFrameTheme().font().height();
+    geom_w = winFrameTheme().font().textWidth(s, l);
+    geom_w += m_root_theme->bevelWidth()*2;
+    geom_h += m_root_theme->bevelWidth()*2;
 
     Pixmap tmp = geom_pixmap;
-    if (m_windowtheme.labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (m_windowtheme.titleFocusTexture().type() ==
+    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (winFrameTheme().titleFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(m_windowtheme.titleFocusTexture().color());
+            geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     m_windowtheme.titleFocusTexture());
+                                                     winFrameTheme().titleFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (m_windowtheme.labelFocusTexture().type() ==
+        if (winFrameTheme().labelFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(m_windowtheme.labelFocusTexture().color());
+            geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {
             geom_pixmap = image_control->renderImage(geom_w, geom_h,
-                                                     m_windowtheme.labelFocusTexture());
+                                                     winFrameTheme().labelFocusTexture());
             geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
     if (tmp)
         image_control->removeImage(tmp);
 
-    geom_window.setBorderWidth(theme->getBorderWidth());
-    geom_window.setBorderColor(theme->getBorderColor());
+    geom_window.setBorderWidth(m_root_theme->borderWidth());
+    geom_window.setBorderColor(m_root_theme->borderColor());
 
     //reconfigure menus
     workspacemenu->reconfigure();
@@ -1643,7 +1639,7 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
 
     FluxboxWindow *foundwin = 0;
     int weight = 999999, exposure = 0; // extreme values
-    int borderW = getBorderWidth(),
+    int borderW = m_root_theme->borderWidth(),
         top = win.getYFrame(), 
         bottom = win.getYFrame() + win.getHeight() + 2*borderW,
         left = win.getXFrame(),
@@ -2269,13 +2265,14 @@ void BScreen::showPosition(int x, int y) {
 
     geom_window.clear();
 
-    m_windowtheme.font().drawText(
+    winFrameTheme().font().drawText(
                                   geom_window.window(),
                                   getScreenNumber(),
-                                  m_windowtheme.labelTextFocusGC(),
+                                  winFrameTheme().labelTextFocusGC(),
                                   label, strlen(label),
-                                  theme->getBevelWidth(), theme->getBevelWidth() + 
-                                  m_windowtheme.font().ascent());
+                                  m_root_theme->bevelWidth(), 
+                                  m_root_theme->bevelWidth() + 
+                                  winFrameTheme().font().ascent());
 		
 }
 
@@ -2308,13 +2305,13 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     geom_window.clear();
 
     //TODO: geom window again?! repeated
-    m_windowtheme.font().drawText(
-                                  geom_window.window(),
+    winFrameTheme().font().drawText(geom_window.window(),
                                   getScreenNumber(),
-                                  m_windowtheme.labelTextFocusGC(),
+                                  winFrameTheme().labelTextFocusGC(),
                                   label, strlen(label),
-                                  theme->getBevelWidth(), theme->getBevelWidth() + 
-                                  m_windowtheme.font().ascent());	
+                                  m_root_theme->bevelWidth(), 
+                                  m_root_theme->bevelWidth() + 
+                                  winFrameTheme().font().ascent());	
 }
 
 
