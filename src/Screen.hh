@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.51 2002/11/27 13:00:05 fluxgen Exp $
+// $Id: Screen.hh,v 1.52 2002/11/27 21:53:55 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -34,27 +34,8 @@
 #include "Resource.hh"
 #include "Toolbar.hh"
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
-#ifdef SLIT
-#include "Slit.hh"
-#endif // SLIT
-
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
-
-#ifdef TIME_WITH_SYS_TIME
-#include <sys/time.h>
-#include <time.h>
-#else // !TIME_WITH_SYS_TIME
-#ifdef	HAVE_SYS_TIME_H
-#include <sys/time.h>
-#else // !HAVE_SYS_TIME_H
-#include <time.h>
-#endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
 
 #include <cstdio>
 #include <string>
@@ -68,6 +49,7 @@ class Workspacemenu;
 class Iconmenu;
 class Rootmenu;
 class Netizen;
+class Slit;
 
 class BScreen : public ScreenInfo {
 public:
@@ -106,7 +88,7 @@ public:
 	Rootmenu * const getRootmenu() { return rootmenu; }
 	
 	inline const std::string &getRootCommand() const { return *resource.rootcommand; }
-#ifdef	 SLIT
+
 	inline bool isSlitOnTop() const { return resource.slit_on_top; }
 	inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
 	inline Slit *getSlit() { return m_slit.get(); }
@@ -117,12 +99,9 @@ public:
 	inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
 	inline void saveSlitOnTop(bool t) { resource.slit_on_top = t;  }
 	inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
-#ifdef XINERAMA
+
 	inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
 	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
-#endif // XINERAMA
-
-#endif // SLIT
 
 	inline const Toolbar * const getToolbar() const { return m_toolbar.get(); }
 	inline Toolbar * const getToolbar() { return m_toolbar.get(); }
@@ -163,9 +142,9 @@ public:
 	/// @return the resource value of number of workspace
 	inline int getNumberOfWorkspaces() const { return *resource.workspaces; }	
 	inline Toolbar::Placement getToolbarPlacement() const { return *resource.toolbar_placement; }
-#ifdef XINERAMA
+
 	inline int getToolbarOnHead() { return *resource.toolbar_on_head; }
-#endif // XINERAMA
+
 	inline int getToolbarWidthPercent() const { return *resource.toolbar_width_percent; }
 	inline int getPlacementPolicy() const { return resource.placement_policy; }
 	inline int getEdgeSnapThreshold() const { return *resource.edge_snap_threshold; }
@@ -186,9 +165,9 @@ public:
 	inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
 	inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
 	inline void saveToolbarPlacement(Toolbar::Placement p) { *resource.toolbar_placement = p;  }
-#ifdef XINERAMA
+
 	inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
-#endif // XINERAMA
+
 
 	inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
 	inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
@@ -213,15 +192,13 @@ public:
 	inline void setAutoGroupWindow(Window w = 0) { auto_group_window = w; }
 	void setAntialias(bool value);
 	
-	#ifdef HAVE_STRFTIME
 	inline const char *getStrftimeFormat() { return resource.strftime_format.c_str(); }
 	void saveStrftimeFormat(const char *format);
-	#else // !HAVE_STRFTIME
+
 	inline int getDateFormat() { return resource.date_format; }
 	inline void saveDateFormat(int f) { resource.date_format = f; }
 	inline bool isClock24Hour() { return resource.clock24hour; }
 	inline void saveClock24Hour(bool c) { resource.clock24hour = c; }
-	#endif // HAVE_STRFTIME
 
 	inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
 	inline Theme::MenuStyle *getMenuStyle() { return &theme->getMenuStyle(); } 
@@ -331,9 +308,7 @@ private:
     Netizens netizenList;
     Icons iconList;
 
-#ifdef		SLIT
 	std::auto_ptr<Slit> m_slit;
-#endif // SLIT
 
 	std::auto_ptr<Toolbar> m_toolbar;
 	Workspace *current_workspace;
@@ -367,30 +342,22 @@ private:
 
 		Resource<Tab::Placement> tab_placement;
 		Resource<Tab::Alignment> tab_alignment;
-#ifdef XINERAMA
 		Resource<int> toolbar_on_head;
-#endif // XINERAMA
+
 
 		Resource<Toolbar::Placement> toolbar_placement;
 
 
-#ifdef SLIT
 		bool slit_on_top, slit_auto_hide;
 		int slit_placement, slit_direction;
 
-#ifdef XINERAMA
 		unsigned int slit_on_head;
-#endif // XINERAMA
 
-#endif // SLIT
-
-
-#ifdef	HAVE_STRFTIME
 		std::string strftime_format;
-#else // !HAVE_STRFTIME
+
 		bool clock24hour;
 		int date_format;
-#endif // HAVE_STRFTIME
+
 
 	} resource;
 };
