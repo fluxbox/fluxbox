@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.68 2003/06/24 20:19:36 fluxgen Exp $
+// $Id: Slit.cc,v 1.69 2003/06/27 15:05:19 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -56,6 +56,7 @@
 #include "SlitTheme.hh"
 #include "SlitClient.hh"
 #include "Xutil.hh"
+#include "FbAtoms.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -67,6 +68,7 @@
 #endif // HAVE_SYS_STAT_H
 
 #include <X11/Xatom.h>
+#include <X11/Xlib.h>
 
 #include <iostream>
 #include <algorithm>
@@ -452,10 +454,26 @@ void Slit::addClient(Window w) {
             client->setWindow(client->clientWindow());
         }
 
-        XFree(wmhints);
+        XFree((void *) wmhints);
     } else {
         client->setIconWindow(None);
         client->setWindow(client->clientWindow());
+    }
+
+    Atom *proto = 0;
+    int num_return = 0;
+    FbAtoms *fbatoms = FbAtoms::instance();
+
+    if (XGetWMProtocols(disp, w, &proto, &num_return)) {
+        
+        for (int i = 0; i < num_return; ++i) {
+            if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
+                screen().addNetizen(w);
+        }
+        
+        XFree((void *) proto);
+    } else {
+        cerr<<"Warning: Failed to read WM Protocols. "<<endl;
     }
 
     XWindowAttributes attrib;
@@ -476,7 +494,7 @@ void Slit::addClient(Window w) {
                            &ajunk, &ijunk, &uljunk, &uljunk,
                            (unsigned char **) &data) == Success && data) {
         iskdedockapp = (data && data[0] != 0);
-        XFree((char *) data);
+        XFree((void *) data);
         data = 0;
     }
 
@@ -488,7 +506,7 @@ void Slit::addClient(Window w) {
                                &ajunk, &ijunk, &uljunk, &uljunk,
                                (unsigned char **) &data) == Success && data) {
             iskdedockapp = (data && data[0] != 0);
-            XFree((char *) data);
+            XFree((void *) data);
             data = 0;
         }
     }
@@ -964,7 +982,7 @@ void Slit::handleEvent(XEvent &event) {
 					
             if (data)
                 iskdedockapp = True;
-            XFree((char *) data);
+            XFree((void *) data);
             data = 0;
         }
 
@@ -975,7 +993,7 @@ void Slit::handleEvent(XEvent &event) {
                                    m_kwm1_dockwindow, &ajunk, &ijunk, &uljunk,
                                    &uljunk, (unsigned char **) &data) == Success && data) {
                 iskdedockapp = (data && data[0] != 0);
-                XFree((char *) data);
+                XFree((void *) data);
                 data = 0;
             }
         }

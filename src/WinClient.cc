@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.15 2003/06/24 12:58:57 rathnor Exp $
+// $Id: WinClient.cc,v 1.16 2003/06/27 15:05:19 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -95,6 +95,8 @@ WinClient::~WinClient() {
         transients.back()->transient_for = 0;
         transients.pop_back();
     }
+
+    screen().removeNetizen(window());
 
     if (window_group != 0) {
         fluxbox->removeGroupSearch(window_group);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.195 2003/06/25 05:47:23 fluxgen Exp $
+// $Id: Screen.cc,v 1.196 2003/06/27 15:05:19 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1034,13 +1034,11 @@ void BScreen::updateNetizenConfigNotify(XEvent &e) {
 FluxboxWindow *BScreen::createWindow(Window client) {
     WinClient *winclient = new WinClient(client, *this);
 
-#ifdef SLIT
-    if (winclient->initial_state == WithdrawnState)
-        slit()->addClient(client);
-
-#endif // SLIT
     if (winclient->initial_state == WithdrawnState) {
         delete winclient;
+#ifdef SLIT
+        slit()->addClient(client);
+#endif // SLIT
         return 0;
     }
 

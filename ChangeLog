@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/28:
+   * Fix slit netizens (e.g. withdrawn pager)  (Simon)
+     Slit.cc WinClient.cc Screen.cc
 *03/06/26:
    * Speedups for having many (particularly stuck) windows (Simon)
      Toolbar.hh/cc IconBar.hh/cc ToolbarHandler.cc Gnome.cc Window.cc
