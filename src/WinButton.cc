@@ -19,54 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.8 2003/08/13 10:14:54 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.9 2003/08/22 15:04:18 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
 #include "Window.hh"
 #include "WinButtonTheme.hh"
-
-namespace {
-
-inline void scale(const FbTk::Button &btn, WinButtonTheme::PixmapWithMask &pm) {
-    // copy pixmap and scale it
-    pm.pixmap_scaled = pm.pixmap;
-    pm.mask_scaled = pm.mask;
-
-    if (pm.pixmap_scaled.drawable() != 0)
-        pm.pixmap_scaled.scale(btn.width(), btn.height());
-    if (pm.mask_scaled.drawable() != 0)
-        pm.mask_scaled.scale(btn.width(), btn.height());
-}
-
-void updateScale(const FbTk::Button &btn, WinButtonTheme &theme) {
-
-    // we need to scale our pixmaps to right size
-    scale(btn, theme.closePixmap());
-    scale(btn, theme.closeUnfocusPixmap());
-    scale(btn, theme.closePressedPixmap());
-
-    scale(btn, theme.maximizePixmap());
-    scale(btn, theme.maximizeUnfocusPixmap());
-    scale(btn, theme.maximizePressedPixmap());
-
-    scale(btn, theme.iconifyPixmap());
-    scale(btn, theme.iconifyUnfocusPixmap());
-    scale(btn, theme.iconifyPressedPixmap());
-
-    scale(btn, theme.shadePixmap());
-    scale(btn, theme.shadeUnfocusPixmap());
-    scale(btn, theme.shadePressedPixmap());
-
-    scale(btn, theme.stickPixmap());
-    scale(btn, theme.stickUnfocusPixmap());
-    scale(btn, theme.stickPressedPixmap());
-
-    scale(btn, theme.stuckPixmap());
-    scale(btn, theme.stuckUnfocusPixmap());
-}
-
-};
 
 WinButton::WinButton(const FluxboxWindow &listen_to, 
                      WinButtonTheme &theme,
@@ -94,23 +52,23 @@ void WinButton::drawType() {
 
     switch (m_type) {
     case MAXIMIZE:
-        if (m_theme.maximizePixmap().pixmap_scaled.drawable() != 0) {
+        if (m_theme.maximizePixmap().pixmap.drawable() != 0) {
             if (pressed()) { 
                 FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                     maximizePressedPixmap().
-                                                    pixmap_scaled.drawable());
-            } else if (m_theme.maximizePixmap().pixmap_scaled.drawable()) {
+                                                    pixmap.drawable());
+            } else if (m_theme.maximizePixmap().pixmap.drawable()) {
                 // check focus 
                 if (!m_listen_to.isFocused() && 
-                    m_theme.maximizeUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    m_theme.maximizeUnfocusPixmap().pixmap.drawable() != 0) {
                     // not focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         maximizeUnfocusPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 } else { // focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         maximizePixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 }
             }
             
@@ -126,23 +84,23 @@ void WinButton::drawType() {
         }
         break;
     case MINIMIZE:
-        if (m_theme.iconifyPixmap().pixmap_scaled.drawable() != 0) {
+        if (m_theme.iconifyPixmap().pixmap.drawable() != 0) {
             if (pressed()) { 
                 FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                     iconifyPressedPixmap().
-                                                    pixmap_scaled.drawable());
-            } else if (m_theme.iconifyPixmap().pixmap_scaled.drawable()){
+                                                    pixmap.drawable());
+            } else if (m_theme.iconifyPixmap().pixmap.drawable()){
                 // check focus 
                 if (!m_listen_to.isFocused() && 
-                    m_theme.iconifyUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    m_theme.iconifyUnfocusPixmap().pixmap.drawable() != 0) {
                     // not focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         iconifyUnfocusPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 } else { // focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         iconifyPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 }
             }
             
@@ -156,41 +114,41 @@ void WinButton::drawType() {
         }
         break;
     case STICK:
-        if (m_theme.stickPixmap().pixmap_scaled.drawable() != 0) {
+        if (m_theme.stickPixmap().pixmap.drawable() != 0) {
             if (m_listen_to.isStuck() && 
-                m_theme.stuckPixmap().pixmap_scaled.drawable() &&
+                m_theme.stuckPixmap().pixmap.drawable() &&
                 ! pressed()) { // we're using the same pixmap for pressed as in not stuck
                 // check focus 
                 if (!m_listen_to.isFocused() && 
-                    m_theme.stuckUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    m_theme.stuckUnfocusPixmap().pixmap.drawable() != 0) {
                     // not focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         stuckUnfocusPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 } else { // focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         stuckPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 }
             } else { // not stuck
 
                 if (pressed()) { 
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         stickPressedPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
 
-                } else if (m_theme.stickPixmap().pixmap_scaled.drawable()) {
+                } else if (m_theme.stickPixmap().pixmap.drawable()) {
                     // check focus 
                     if (!m_listen_to.isFocused() && 
-                        m_theme.stickUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                        m_theme.stickUnfocusPixmap().pixmap.drawable() != 0) {
                         // not focused
                         FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                             stickUnfocusPixmap().
-                                                            pixmap_scaled.drawable());
+                                                            pixmap.drawable());
                     } else { // focused
                         FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                             stickPixmap().
-                                                            pixmap_scaled.drawable());
+                                                            pixmap.drawable());
                     }
 
                 }
@@ -214,24 +172,24 @@ void WinButton::drawType() {
         break;
     case CLOSE:
         
-        if (m_theme.closePixmap().pixmap_scaled.drawable() != 0) {
+        if (m_theme.closePixmap().pixmap.drawable() != 0) {
             if (pressed()) { 
                 FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                     closePressedPixmap().
-                                                    pixmap_scaled.drawable());
+                                                    pixmap.drawable());
 
-            } else if (m_theme.closePixmap().pixmap_scaled.drawable()) {
+            } else if (m_theme.closePixmap().pixmap.drawable()) {
                 // check focus 
                 if (!m_listen_to.isFocused() && 
-                    m_theme.closeUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    m_theme.closeUnfocusPixmap().pixmap.drawable() != 0) {
                     // not focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         closeUnfocusPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 } else { // focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         closePixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 }
             }
             
@@ -249,23 +207,23 @@ void WinButton::drawType() {
         }
         break;
     case SHADE:
-        if (m_theme.shadePixmap().pixmap_scaled.drawable() != 0) {
+        if (m_theme.shadePixmap().pixmap.drawable() != 0) {
             if (pressed()) { 
                 FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                     shadePressedPixmap().
-                                                    pixmap_scaled.drawable());
-            } else if (m_theme.shadePixmap().pixmap_scaled.drawable()) {
+                                                    pixmap.drawable());
+            } else if (m_theme.shadePixmap().pixmap.drawable()) {
                 // check focus 
                 if (!m_listen_to.isFocused() && 
-                    m_theme.shadeUnfocusPixmap().pixmap_scaled.drawable() != 0) {
+                    m_theme.shadeUnfocusPixmap().pixmap.drawable() != 0) {
                     // not focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         shadeUnfocusPixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 } else { // focused
                     FbTk::FbWindow::setBackgroundPixmap(m_theme.
                                                         shadePixmap().
-                                                        pixmap_scaled.drawable());
+                                                        pixmap.drawable());
                 }
             }
             
@@ -282,10 +240,5 @@ void WinButton::clear() {
 
 void WinButton::update(FbTk::Subject *subj) {
     clear();
-
-    //!! TODO 
-    // We need to optimize this
-    // This shouldn't be run on every button in every fluxbox window
-    updateScale(*this, m_theme);
     drawType();
 }
