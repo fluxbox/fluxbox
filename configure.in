@@ -118,22 +118,6 @@ AC_ARG_ENABLE(
 )
 AM_CONDITIONAL(NEWWMSPEC, test x$NEWWMSPEC = xtrue)
 
-
-dnl Check for Interlacing
-AC_MSG_CHECKING([whether to include interlacing image code])
-AC_ARG_ENABLE(
-  interlace, [  --enable-interlace      include code for image interlacing [default=yes]],
-  if test x$enableval = "xyes"; then
-    AC_MSG_RESULT([yes])
-    AC_DEFINE(INTERLACE, 1, "Interlaced rendering")
-  else
-    AC_MSG_RESULT([no])
-  fi,
-  AC_MSG_RESULT([yes])
-  AC_DEFINE(INTERLACE, 1, "Interlaced rendering")
-)
-
-
 dnl Check for ordered 8bpp dithering
 AC_MSG_CHECKING([whether to include Pseudocolor ordered dithering code])
 AC_ARG_ENABLE(ordered-pseudo,
