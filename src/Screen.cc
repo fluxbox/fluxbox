@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.175 2003/05/20 11:03:10 rathnor Exp $
+// $Id: Screen.cc,v 1.176 2003/05/22 01:17:15 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -2549,6 +2549,7 @@ void BScreen::initXinerama() {
     if (!XineramaIsActive(display)) {
         m_xinerama_avail = false;
         m_xinerama_headinfo = 0;
+        m_xinerama_num_heads = 0;
         return;
     }
     m_xinerama_avail = true;
