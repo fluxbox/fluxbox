@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.12 2003/06/24 10:22:42 fluxgen Exp $
+// $Id: FbRun.cc,v 1.13 2003/06/25 12:01:23 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -58,6 +58,14 @@ FbRun::FbRun(int x, int y, size_t width):
     // setting nomaximize in local resize
     resize(width, m_font.height());
     FbTk::EventManager::instance()->registerEventHandler(*this, m_win.window());
+    // setup class name
+    XClassHint *class_hint = XAllocClassHint();
+    if (class_hint == 0)
+        throw string("Out of memory");
+    class_hint->res_name = "fbrun";
+    class_hint->res_class = "FbRun";
+    XSetClassHint(m_display, m_win.window(), class_hint);
+    XFree(class_hint);
 }
 
 
