@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.12 2003/07/28 15:46:00 rathnor Exp $
+// $Id: WinClient.hh,v 1.13 2003/09/11 19:55:27 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -109,6 +109,8 @@ public:
     // does this client have a pending unmap or destroy event?
     bool validateClient() const;
 
+    inline int gravity() const { return m_win_gravity; }
+
     /**
        !! TODO !!
        remove or move these to private
@@ -123,7 +125,7 @@ public:
     unsigned int
         min_width, min_height, max_width, max_height, width_inc, height_inc,
         min_aspect_x, min_aspect_y, max_aspect_x, max_aspect_y,
-        base_width, base_height, win_gravity;
+        base_width, base_height;
     unsigned long initial_state, normal_hint_flags, wm_hint_flags;
 
     // this structure only contains 3 elements... the Motif 2.0 structure contains
@@ -156,6 +158,8 @@ private:
     // or indicates that we are modal if don't have any transients
     int m_modal;
     bool send_focus_message, closable;
+
+    int m_win_gravity;
 
     std::string m_title, m_icon_title;
     std::string m_class_name, m_instance_name;

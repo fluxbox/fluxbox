@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/12:
+   * Fix window gravity handling (Simon)
+     - should fix some offset fullscreen issues
+     FbWinFrame.hh/cc WinClient.hh/cc Window.cc
 *03/09/10:
    * Fixed buffer for TextButton (Henrik)
      Reduces flicker

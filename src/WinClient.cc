@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.23 2003/07/28 18:30:02 fluxgen Exp $
+// $Id: WinClient.cc,v 1.24 2003/09/11 19:55:27 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -48,7 +48,6 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      min_aspect_x(1), min_aspect_y(1),
                      max_aspect_x(1), max_aspect_y(1),
                      base_width(1), base_height(1),
-                     win_gravity(0),
                      initial_state(0),
                      normal_hint_flags(0),
                      wm_hint_flags(0),
@@ -56,6 +55,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_modal(0),
                      send_focus_message(false),
                      closable(false),
+                     m_win_gravity(0),
                      m_title(""), m_icon_title(""),
                      m_class_name(""), m_instance_name(""),
                      m_blackbox_hint(0),
@@ -427,7 +427,7 @@ void WinClient::updateWMNormalHints() {
         max_height = 0;
         min_aspect_x = min_aspect_y =
             max_aspect_x = max_aspect_y = 1;
-        win_gravity = NorthWestGravity;
+        m_win_gravity = NorthWestGravity;
     } else {
         normal_hint_flags = sizehint.flags;
 
@@ -467,9 +467,10 @@ void WinClient::updateWMNormalHints() {
             base_width = base_height = 0;
 
         if (sizehint.flags & PWinGravity)
-            win_gravity = sizehint.win_gravity;
+            m_win_gravity = sizehint.win_gravity;
         else
-            win_gravity = NorthWestGravity;
+            m_win_gravity = NorthWestGravity;
+
     }
 }
 

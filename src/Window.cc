@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.223 2003/09/10 09:56:18 fluxgen Exp $
+// $Id: Window.cc,v 1.224 2003/09/11 19:55:27 rathnor Exp $
 
 #include "Window.hh"
 
@@ -463,10 +463,22 @@ void FluxboxWindow::init() {
 
     upsize();
 
+    associateClientWindow();
+
+    grabButtons();
+		
+    applyDecorations(true);
+
+    if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
+        m_workspace_number = screen().currentWorkspaceID();
+
+    restoreAttributes();
+
     bool place_window = true;
     if (fluxbox.isStartup() || m_client->isTransient() ||
         m_client->normal_hint_flags & (PPosition|USPosition)) {
-        setGravityOffsets();
+
+        frame().gravityTranslate(wattrib.x, wattrib.y, m_client->gravity(), false);
 
         if (! fluxbox.isStartup()) {
 
@@ -483,17 +495,6 @@ void FluxboxWindow::init() {
             place_window = false;
 
     }
-
-    associateClientWindow();
-
-    grabButtons();
-		
-    applyDecorations(true);
-
-    if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
-        m_workspace_number = screen().currentWorkspaceID();
-
-    restoreAttributes();
 
     frame().move(wattrib.x, wattrib.y);
     frame().resizeForClient(wattrib.width, wattrib.height);
@@ -1762,75 +1763,6 @@ bool FluxboxWindow::getState() {
     return ret;
 }
 
-//!! TODO: this functions looks odd
-void FluxboxWindow::setGravityOffsets() {
-    int newx = frame().x();
-    int newy = frame().y();
-    // translate x coordinate
-    switch (m_client->win_gravity) {
-        // handle Westward gravity
-    case NorthWestGravity:
-    case WestGravity:
-    case SouthWestGravity:
-    default:
-#ifdef DEBUG
-        cerr<<__FILE__<<": Default gravity: SouthWest, NorthWest, West"<<endl;
-#endif // DEBUG
-
-        newx = frame().x();
-        break;
-
-        // handle Eastward gravity
-    case NorthEastGravity:
-    case EastGravity:
-    case SouthEastGravity:
-#ifdef DEBUG
-        cerr<<__FILE__<<": Gravity: SouthEast, NorthEast, East"<<endl;
-#endif // DEBUG
-
-        newx = frame().x() + frame().clientArea().width() - frame().width();
-        break;
-
-        // no x translation desired - default
-    case StaticGravity:
-    case ForgetGravity:
-    case CenterGravity:
-#ifdef DEBUG
-        cerr<<__FILE__<<": Gravity: Center, Forget, Static"<<endl;
-#endif // DEBUG
-
-        newx = frame().x();
-    }
-
-    // translate y coordinate
-    switch (m_client->win_gravity) {
-        // handle Northbound gravity
-    case NorthWestGravity:
-    case NorthGravity:
-    case NorthEastGravity:
-    default:
-        newy = frame().y();
-        break;
-
-        // handle Southbound gravity
-    case SouthWestGravity:
-    case SouthGravity:
-    case SouthEastGravity:
-        newy = frame().y() + frame().clientArea().height() - frame().height();
-        break;
-
-        // no y translation desired - default
-    case StaticGravity:
-    case ForgetGravity:
-    case CenterGravity:
-        newy = frame().y();
-        break;
-    }
-    // finaly move the frame
-    if (frame().x() != newx || frame().y() != newy)
-        frame().move(newx, newy);
-}
-
 /** 
  * Sets the attributes to what they should be
  * but doesn't change the actual state
@@ -1946,44 +1878,6 @@ void FluxboxWindow::popupMenu() {
     m_windowmenu.move(m_last_button_x, frame().y() + diff_y);
     m_windowmenu.show();
     m_windowmenu.raise();
-}
-
-void FluxboxWindow::restoreGravity() {
-    // restore x coordinate
-    switch (m_client->win_gravity) {
-        // handle Westward gravity
-    case NorthWestGravity:
-    case WestGravity:
-    case SouthWestGravity:
-    default:
-        m_client->x = frame().x();
-        break;
-
-    // handle Eastward gravity
-    case NorthEastGravity:
-    case EastGravity:
-    case SouthEastGravity:
-        m_client->x = (frame().x() + frame().width()) - m_client->width();
-        break;
-    }
-
-    // restore y coordinate
-    switch (m_client->win_gravity) {
-        // handle Northbound gravity
-    case NorthWestGravity:
-    case NorthGravity:
-    case NorthEastGravity:
-    default:
-        m_client->y = frame().y();
-        break;
-
-        // handle Southbound gravity
-    case SouthWestGravity:
-    case SouthGravity:
-    case SouthEastGravity:
-        m_client->y = (frame().y() + frame().height()) - m_client->height();
-        break;
-    }
 }
 
 /**
@@ -2281,17 +2175,21 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (client == 0)
         return;
 
-    int cx = frame().x(), cy = frame().y();
+    int cx = frame().x(), cy = frame().y(), ignore = 0;
     unsigned int cw = frame().width(), ch = frame().height();
 
     if (cr.value_mask & CWBorderWidth)
         client->old_bw = cr.border_width;
 
-    if (cr.value_mask & CWX)
+    if (cr.value_mask & CWX) {
         cx = cr.x;
+        frame().gravityTranslate(cx, ignore, client->gravity(), false);
+    }
 
-    if (cr.value_mask & CWY)
+    if (cr.value_mask & CWY) {
         cy = cr.y;
+        frame().gravityTranslate(ignore, cy, client->gravity(), false);
+    }
 
     if (cr.value_mask & CWWidth)
         cw = cr.width;
@@ -3062,8 +2960,8 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
     XChangeSaveSet(display, client->window(), SetModeDelete);
     client->setEventMask(NoEventMask);
 
-    //!! TODO
-    //restoreGravity();
+    int wx = frame().x(), wy = frame().y(); // not actually used here
+    frame().gravityTranslate(wx, wy, -client->gravity(), true); // negative to invert
 
     client->hide();
 
