@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.184 2003/08/12 21:00:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.185 2003/08/15 13:57:18 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1104,12 +1104,12 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
     } else {
         WinClient *winclient = searchWindow(ce.window);
         BScreen *screen = searchScreen(ce.window);
-
-        if (winclient || screen) {            
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                 m_atomhandler[i]->checkClientMessage(ce, screen, winclient);
-            }
+        // note: we dont need screen nor winclient to be non-null, 
+        // it's up to the atomhandler to check that
+        for (size_t i=0; i<m_atomhandler.size(); ++i) {
+            m_atomhandler[i]->checkClientMessage(ce, screen, winclient);
         }
+
     }
 }
 
