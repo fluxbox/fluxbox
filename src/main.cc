@@ -20,10 +20,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.17 2003/05/16 00:46:41 fluxgen Exp $
+// $Id: main.cc,v 1.18 2003/06/12 14:37:21 fluxgen Exp $
 
 #include "fluxbox.hh"
-#include "i18n.hh"
+#include "I18n.hh"
 #include "version.h"
 
 #ifdef HAVE_CONFIG_H
