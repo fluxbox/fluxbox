@@ -40,6 +40,7 @@ $set 3 #Configmenu
 24 Увеличи върху Slit -а
 25 Sloppy Групиране на прозорци
 26 Workspace Warping
+27 Desktop Wheeling
 
 $set 4 #Icon
 

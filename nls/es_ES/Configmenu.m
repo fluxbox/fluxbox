@@ -52,3 +52,5 @@ $ #SloppyWindowGrouping
 # Sloppy Window Grouping
 $ #WorkspaceWarping
 # Workspace Warping
+$ #DesktopWheeling
+# Desktop Wheeling

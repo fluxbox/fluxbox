@@ -40,6 +40,7 @@ $set 3 #Configmenu
 24 Slitを越えて最大化
 25 Window内にタブドロップでもタブグループに
 26 Workspace Warping
+27 Desktop Wheeling
 
 $set 4 #Icon
 

@@ -52,3 +52,5 @@ $ #SloppyWindowGrouping
 # Sloppy Групиране на прозорци
 $ #WorkspaceWarping
 # Workspace Warping
+$ #DesktopWheeling
+# Desktop Wheeling

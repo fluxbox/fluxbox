@@ -52,3 +52,5 @@ $ #SloppyWindowGrouping
 # Window内にタブドロップでもタブグループに
 $ #WorkspaceWarping
 # Workspace Warping
+$ #DesktopWheeling
+# Desktop Wheeling

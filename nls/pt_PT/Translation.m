@@ -40,6 +40,7 @@ $set 3 #Configmenu
 24 Maximizar Sobre Slit
 25 Sloppy Janela Em Grupo
 26 Workspace Warping
+27 Desktop Wheeling
 
 $set 4 #Icon
 
