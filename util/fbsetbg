@@ -383,7 +383,7 @@ case $WPSETTER in
         full='-s -S'
         tile='-t'
         center='-b black -e'
-        aspect='-b black -a'
+        aspect='-b black -a -S'
         debugstory=$standardok
         ;;
     xsetbg)
