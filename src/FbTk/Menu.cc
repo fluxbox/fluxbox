@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.16 2003/04/26 12:34:48 fluxgen Exp $
+// $Id: Menu.cc,v 1.17 2003/04/26 14:47:04 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -243,15 +243,19 @@ int Menu::remove(unsigned int index) {
 
     if (item) {
         menuitems.erase(it);
-        /*if ((! internal_menu) && (item->submenu())) {
-          Menu *tmp = item->submenu();
-
-          if (! tmp->internal_menu) {
-          delete tmp;				
-          } else
-          tmp->internal_hide();
-          }
-        */
+        if ((! internal_menu) && (item->submenu())) {
+            Menu *tmp = item->submenu();
+            // if menu is interal we should just hide it instead
+            // if destroying it
+            if (! tmp->internal_menu) {
+#ifdef DEBUG
+                cerr<<__FILE__<<"("<<__FUNCTION__<<"): delete: "<<tmp<<endl;
+#endif // DEBUG
+                delete tmp;				
+            } else
+                tmp->internal_hide();
+        }
+        
 		
         delete item;
     }
