@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.43 2003/08/15 13:25:03 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.44 2003/08/19 21:28:57 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -158,6 +158,8 @@ private:
         int x, y, x_hidden, y_hidden, grab_x, grab_y;
         unsigned int width, height, bevel_w;
     } frame;
+    // background pixmap
+    Pixmap m_window_pm;
 
     BScreen &m_screen; ///< screen connection
 
@@ -166,14 +168,17 @@ private:
     FbTk::Menu m_placementmenu;
     LayerMenu<Toolbar> m_layermenu;
 
-	
+    // themes
     ToolbarTheme m_theme;
+    ToolTheme m_clock_theme, m_workspace_theme;
+    IconbarTheme m_iconbar_theme;
 
     FbTk::XLayerItem m_layeritem;
     typedef std::list<ToolbarItem *> ItemList;
     ItemList m_item_list;
 
     Strut *m_strut; ///< created and destroyed by BScreen
+
     // resources
     FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over;
     FbTk::Resource<int> m_rc_width_percent;
@@ -183,8 +188,7 @@ private:
     FbTk::Resource<int> m_rc_height;
     std::auto_ptr<Shape> m_shape;
 
-    ToolTheme m_clock_theme, m_workspace_theme;
-    IconbarTheme m_iconbar_theme;
+
     bool m_resize_lock; ///< to lock rearrangeItems or not
 };
 

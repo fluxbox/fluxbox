@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.111 2003/08/16 12:10:19 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.112 2003/08/19 21:28:57 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -38,6 +38,7 @@
 #include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
+#include "ImageControl.hh"
 
 #include "EventManager.hh"
 #include "SimpleCommand.hh"
@@ -201,6 +202,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_editing(false),
     m_hidden(false),
     frame(*this, scrn.screenNumber()),
+    m_window_pm(0),
     m_screen(scrn),
     m_toolbarmenu(menu),
     m_placementmenu(*scrn.menuTheme(),
@@ -212,6 +214,9 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                 this,
                 true),
     m_theme(scrn.screenNumber()),
+    m_clock_theme(scrn.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
+    m_workspace_theme(scrn.screenNumber(), "toolbar.workspace", "Toolbar.Workspace"),
+    m_iconbar_theme(scrn.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
     m_layeritem(frame.window, layer),
     m_strut(0),
     // lock rcmanager here
@@ -229,9 +234,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                    scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),
     m_rc_height(scrn.resourceManager(), 0, scrn.name() + ".toolbar.height", scrn.altName() + ".Toolbar.Height"),
     m_shape(new Shape(frame.window, 0)),
-    m_clock_theme(scrn.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
-    m_workspace_theme(scrn.screenNumber(), "toolbar.workspace", "Toolbar.Workspace"),
-    m_iconbar_theme(scrn.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
     m_resize_lock(false) {
 
     // we need to get notified when the theme is reloaded
@@ -288,6 +290,9 @@ Toolbar::~Toolbar() {
         delete m_item_list.back();
         m_item_list.pop_back();
     }
+
+    if (m_window_pm)
+        screen().imageControl().removeImage(m_window_pm);
 
     clearStrut();
 }
@@ -384,9 +389,19 @@ void Toolbar::reconfigure() {
         frame.window.moveResize(frame.x, frame.y,
                                 frame.width, frame.height);
     }
-
-
-
+    // render frame window
+    Pixmap tmp = m_window_pm;
+    if (theme().toolbar().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+        m_window_pm = 0;
+        frame.window.setBackgroundColor(theme().toolbar().color());
+    } else {
+        m_window_pm = screen().imageControl().renderImage(frame.window.width(), frame.window.height(),
+                                                          theme().toolbar());
+        frame.window.setBackgroundPixmap(m_window_pm);
+    }
+    if (tmp)
+        screen().imageControl().removeImage(tmp);
+        
     frame.window.setBorderColor(theme().border().color());
     frame.window.setBorderWidth(theme().border().width());
     frame.window.clear();
