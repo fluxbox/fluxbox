@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.197 2003/06/25 06:02:15 fluxgen Exp $
+// $Id: Window.cc,v 1.198 2003/06/25 13:37:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -219,10 +219,6 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
     m_object->moveToLayer(m_layernum);
 }
 
-
-//int FluxboxWindow::PropBlackboxHintsElements = 5;
-//int FluxboxWindow::PropBlackboxAttributesElements = 8;
-
 FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme, 
                              FbTk::XLayer &layer):
@@ -232,9 +228,10 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_layersig(*this),
     m_workspacesig(*this),
     m_diesig(*this),
-    moving(false), resizing(false), shaded(false), maximized(false),
+    moving(false), resizing(false), shaded(false), 
     iconic(false), focused(false),
     stuck(false), m_managed(false),
+    maximized(MAX_NONE),
     m_screen(scr),
     m_timer(this),
     display(0),
@@ -512,7 +509,7 @@ void FluxboxWindow::init() {
     }
 
     if (maximized && functions.maximize) { // start maximized
-        maximized = false;
+        maximized = MAX_NONE;
         maximize();
     }	
 
@@ -961,13 +958,13 @@ void FluxboxWindow::getBlackboxHints() {
         (hint->flags & ATTRIB_MAXVERT))
         maximized = ((hint->attrib &
                       (ATTRIB_MAXHORIZ | 
-                       ATTRIB_MAXVERT)) ? 1 : 0);
+                       ATTRIB_MAXVERT)) ? MAX_FULL : MAX_NONE);
     else if (hint->flags & ATTRIB_MAXVERT)
         maximized = ((hint->attrib & 
-                      ATTRIB_MAXVERT) ? 2 : 0);
+                      ATTRIB_MAXVERT) ? MAX_VERT : MAX_NONE);
     else if (hint->flags & ATTRIB_MAXHORIZ)
         maximized = ((hint->attrib & 
-                      ATTRIB_MAXHORIZ) ? 3 : 0);
+                      ATTRIB_MAXHORIZ) ? MAX_HORZ : MAX_NONE);
 
     if (hint->flags & ATTRIB_OMNIPRESENT)
         stuck = (hint->attrib & 
@@ -1244,32 +1241,47 @@ void FluxboxWindow::maximize() {
         moveResize(left_x, max_top, 
                    max_width - left_x - 2*frame().window().borderWidth(), 
                    screen().maxBottom(head) - max_top - 2*frame().window().borderWidth());
+        maximized = MAX_FULL;
     } else { // demaximize, restore to old values
         moveResize(m_old_pos_x, m_old_pos_y,
                    m_old_width, m_old_height);
+        maximized = MAX_NONE;
     }
-    // toggle maximize
-    maximized = !maximized;
+
 }
-
+/**
+ * Maximize window horizontal
+ */
 void FluxboxWindow::maximizeHorizontal() {
-    int head = screen().getHead(frame().window());
-    unsigned int left_x = screen().maxLeft(head);
-    unsigned int max_width = screen().maxRight(head);
-    moveResize(left_x, frame().y(), 
-               max_width - left_x - 2*frame().window().borderWidth(), frame().height());
-
+    if (! (maximized & MAX_HORZ) ) {
+        const int head = screen().getHead(frame().window());
+        const unsigned int left_x = screen().maxLeft(head);
+        const unsigned int max_width = screen().maxRight(head);
+        m_old_width = frame().width();
+        m_old_pos_x = frame().x();
+        moveResize(left_x, frame().y(), max_width - left_x, frame().height());
+        maximized |= MAX_HORZ;
+    } else {
+        moveResize(m_old_pos_x, frame().y(), m_old_width, frame().height());
+        maximized &= ~MAX_HORZ;
+    }
 }
 
 /**
- Maximize window horizontal
+ * Maximize window vertical
  */
 void FluxboxWindow::maximizeVertical() {
-    int head = screen().getHead(frame().window());
-    unsigned int max_top = screen().maxTop(head);
-    moveResize(frame().x(), max_top,
-               frame().width(),
-               screen().maxBottom(head) - max_top - 2*frame().window().borderWidth());
+    if (! (maximized & MAX_VERT) ) {
+        const int head = screen().getHead(frame().window());
+        const unsigned int max_top = screen().maxTop(head);
+        m_old_height = frame().height();
+        m_old_pos_y = frame().y();
+        moveResize(frame().x(), max_top, frame().width(), screen().maxBottom(head) - max_top);
+        maximized |= MAX_VERT;
+    } else {
+        moveResize(frame().x(), m_old_pos_y, frame().width(), m_old_height);
+        maximized &= ~MAX_VERT;
+    }
 }
 
 
@@ -1753,10 +1765,10 @@ void FluxboxWindow::restoreAttributes() {
         (m_blackbox_attrib.flags & ATTRIB_MAXVERT)) {
         int x = m_blackbox_attrib.premax_x, y = m_blackbox_attrib.premax_y;
         unsigned int w = m_blackbox_attrib.premax_w, h = m_blackbox_attrib.premax_h;
-        maximized = false;
+        maximized = MAX_NONE;
         if ((m_blackbox_attrib.flags & ATTRIB_MAXHORIZ) &&
             (m_blackbox_attrib.flags & ATTRIB_MAXVERT))
-            maximized = true;
+            maximized = MAX_FULL;
         else if (m_blackbox_attrib.flags & ATTRIB_MAXVERT)
             maximizeVertical();
         else if (m_blackbox_attrib.flags & ATTRIB_MAXHORIZ)

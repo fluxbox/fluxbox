@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.81 2003/06/24 14:57:06 fluxgen Exp $
+// $Id: Window.hh,v 1.82 2003/06/25 13:37:06 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -102,6 +102,35 @@ public:
         ATTRIB_STACK = 0x20,		
         ATTRIB_DECORATION = 0x40
     };	
+
+    /**
+     * Types of maximization
+     */
+    enum MaximizeMode {
+        MAX_NONE = 0, ///< normal state
+        MAX_HORZ = 1, ///< maximize horizontal
+        MAX_VERT = 2, ///< maximize vertical
+        MAX_FULL = 3  ///< maximize full
+    };
+    /** 
+       This enumeration represents individual decoration 
+       attributes, they can be OR-d together to get a mask.
+       Useful for saving.
+    */
+    enum DecorationMask {
+        DECORM_TITLEBAR = (1<<0),
+        DECORM_HANDLE   = (1<<1),
+        DECORM_BORDER   = (1<<2),
+        DECORM_ICONIFY  = (1<<3),
+        DECORM_MAXIMIZE = (1<<4),
+        DECORM_CLOSE    = (1<<5),
+        DECORM_MENU     = (1<<6),
+        DECORM_STICKY   = (1<<7),
+        DECORM_SHADE    = (1<<8),
+        DECORM_TAB      = (1<<9),
+        DECORM_ENABLED  = (1<<10),
+        DECORM_LAST     = (1<<11) // useful for getting "All"
+    };
 
     typedef struct _blackbox_hints {
         unsigned long flags, attrib, workspace, stack;
@@ -212,25 +241,6 @@ public:
     void applyDecorations();
     void toggleDecoration();
 
-    /** 
-       This enumeration represents individual decoration 
-       attributes, they can be OR-d together to get a mask.
-       Useful for saving.
-    */
-    enum DecorationMask {
-        DECORM_TITLEBAR = (1<<0),
-        DECORM_HANDLE   = (1<<1),
-        DECORM_BORDER   = (1<<2),
-        DECORM_ICONIFY  = (1<<3),
-        DECORM_MAXIMIZE = (1<<4),
-        DECORM_CLOSE    = (1<<5),
-        DECORM_MENU     = (1<<6),
-        DECORM_STICKY   = (1<<7),
-        DECORM_SHADE    = (1<<8),
-        DECORM_TAB      = (1<<9),
-        DECORM_ENABLED  = (1<<10),
-        DECORM_LAST     = (1<<11) // useful for getting "All"
-    };
 
     void setStrut(Strut *strut);
     void clearStrut();
@@ -249,7 +259,7 @@ public:
     bool isVisible() const;
     inline bool isIconic() const { return iconic; }
     inline bool isShaded() const { return shaded; }
-    inline bool isMaximized() const { return maximized; }
+    inline bool isMaximized() const { return maximized == MAX_FULL; }
     inline bool isIconifiable() const { return functions.iconify; }
     inline bool isMaximizable() const { return functions.maximize; }
     inline bool isResizable() const { return functions.resize; }
@@ -382,8 +392,10 @@ private:
     WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig;
 
     // Window states
-    bool moving, resizing, shaded, maximized, iconic,
+    bool moving, resizing, shaded, iconic,
         focused, stuck, m_managed;
+
+    int maximized;
 
     WinClient *m_attaching_tab;
 
