@@ -87,24 +87,21 @@ CXXFLAGS="$CXXFLAGS $SHAPE"
 LIBS="$LIBS $Xext_lib"
 
 dnl Check for the Slit
-SLIT=""
 AC_MSG_CHECKING([whether to include the Slit])
 AC_ARG_ENABLE(
   slit, [  --enable-slit           include code for the Slit [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    SLIT="-DSLIT"
+    AC_DEFINE(SLIT, 1, " compile with slit")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([yes])
-  SLIT="-DSLIT"
+  AC_DEFINE(SLIT, 1, " compile with slit")
 )
-AC_SUBST(SLIT)
-CXXFLAGS="$CXXFLAGS $SLIT"
+
 
 dnl Check for the new WM Spec
-NEWWMSPEC=""
 AC_MSG_CHECKING([whether to include the new WM Spec (DOES NOTHING)])
 AC_ARG_ENABLE(
   newspec,
@@ -112,48 +109,42 @@ AC_ARG_ENABLE(
                           [default=no]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    NEWWMSPEC="-DNEWWMSPEC"   
+	AC_DEFINE(NEWWMSPEC, 1, "Extended Window Manager Hints")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([no])
 )
-AC_SUBST(NEWWMSPEC)
-CXXFLAGS="$CXXFLAGS $NEWWMSPEC"
+
 
 dnl Check for Interlacing
-INTERLACE=""
 AC_MSG_CHECKING([whether to include interlacing image code])
 AC_ARG_ENABLE(
   interlace, [  --enable-interlace      include code for image interlacing [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    INTERLACE="-DINTERLACE"
+    AC_DEFINE(INTERLACE, 1, "Interlaced rendering")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([yes])
-  INTERLACE="-DINTERLACE"
+  AC_DEFINE(INTERLACE, 1, "Interlaced rendering")
 )
-AC_SUBST(INTERLACE)
-CXXFLAGS="$CXXFLAGS $INTERLACE"
+
 
 dnl Check for ordered 8bpp dithering
-ORDEREDPSEUDO=""
 AC_MSG_CHECKING([whether to include Pseudocolor ordered dithering code])
 AC_ARG_ENABLE(ordered-pseudo,
 [  --enable-ordered-pseudo include code for ordered pseudocolor (8bpp)
                           dithering [default=no]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    ORDEREDPSEUDO="-DORDEREDPSEUDO" 
+	AC_DEFINE(ORDEREDPSEUDO, 1, "ordered dithering code")
   else
     AC_MSG_RESULT([no]) 
   fi,
   AC_MSG_RESULT([no])
 )
-AC_SUBST(ORDEREDPSEUDO)
-CXXFLAGS="$CXXFLAGS $ORDEREDPSEUDO"
 
 dnl Check whether to include debugging code
 DEBUG=""
@@ -172,21 +163,18 @@ AC_SUBST(DEBUG)
 CXXFLAGS="$CXXFLAGS $DEBUG"
 
 dnl Check whether to include natural language support (i18n)
-NLS=""
 AC_MSG_CHECKING([whether to include NLS support])
 AC_ARG_ENABLE(nls,
   [  --enable-nls            include natural language support [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    NLS="-DNLS"
+    AC_DEFINE(NLS, 1, "Natural language support")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([yes])
-  NLS="-DNLS"
+  AC_DEFINE(NLS, 1, "Natural language support")
 )
-AC_SUBST(NLS)
-CXXFLAGS="$CXXFLAGS $NLS"
 
 AC_CHECK_LIB(xpg4, setlocale, LIBS="$LIBS -lxpg4")
 
@@ -197,59 +185,51 @@ fi
 
 
 dnl Check for new timed pixmap cache
-TIMEDCACHE=""
 AC_MSG_CHECKING([whether to use the new timed pixmap cache])
 AC_ARG_ENABLE(
   timed-cache,
 [  --enable-timed-cache    use new timed pixmap cache [default=yes]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    TIMEDCACHE="-DTIMEDCACHE"
+    AC_DEFINE(TIMEDCACHE, 1, "timed cache")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([yes])
-  TIMEDCACHE="-DTIMEDCACHE"
+  AC_DEFINE(TIMEDCACHE, 1, "timed cache")
 )
-AC_SUBST(TIMEDCACHE)
-CXXFLAGS="$CXXFLAGS $TIMEDCACHE"
 
 dnl Check KDE
-KDE=""
 AC_MSG_CHECKING([whether to have KDE slit support])
 AC_ARG_ENABLE(
   kde,
 [  --enable-kde            KDE slit support [default=no]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    KDE="-DKDE"
+    AC_DEFINE(KDE, 1, "KDE slit support")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([no])
 )
-AC_SUBST(KDE)
-CXXFLAGS="$CXXFLAGS $KDE"
 
 dnl Check GNOME
-GNOME=""
+
 AC_MSG_CHECKING([whether to have GNOME support])
 AC_ARG_ENABLE(
   gnome,
 [  --enable-gnome            GNOME support [default=no]],
   if test x$enableval = "xyes"; then
     AC_MSG_RESULT([yes])
-    GNOME="-DGNOME"
+	AC_DEFINE(GNOME, 1, "Gnome 1 support")
   else
     AC_MSG_RESULT([no])
   fi,
   AC_MSG_RESULT([no])
 )
-AC_SUBST(GNOME)
-CXXFLAGS="$CXXFLAGS $GNOME"
 
 dnl Check for Xinerama support
-XINERAMA=""
+
 AC_MSG_CHECKING([whether to build support for the Xinerama extension])
 AC_ARG_ENABLE(xinerama,
 [  --enable-xinerama       enable xinerama extension [default=no]], , [enable_xinerama=no])
@@ -284,7 +264,9 @@ AC_MSG_RESULT([])
 
 dnl Output files
 AM_CONFIG_HEADER(config.h)
+
 AC_OUTPUT(Makefile
+version.h
 src/Makefile
 util/Makefile
 util/fbrun/Makefile
@@ -306,4 +288,4 @@ nls/pt_PT/Makefile
 nls/bg_BG/Makefile
 nls/ja_JP/Makefile
 nls/lv_LV/Makefile
-version.h)
+)
