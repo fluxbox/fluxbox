@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.12 2003/08/25 01:16:41 fluxgen Exp $
+// $Id: FbRun.hh,v 1.13 2003/08/27 00:19:57 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -27,6 +27,7 @@
 #include "EventHandler.hh"
 #include "Font.hh"
 #include "FbWindow.hh"
+#include "TextBox.hh"
 
 #include <string>
 #include <vector>
@@ -34,19 +35,17 @@
 /**
    Creates and managed a run window
 */
-class FbRun: public FbTk::EventHandler, public FbTk::FbWindow {
+class FbRun: public FbTk::TextBox {
 public:
     FbRun(int x = 0, int y = 0, size_t width = 200);
     ~FbRun();
     void handleEvent(XEvent * const ev);
-    void setText(const std::string &text);
     void setTitle(const std::string &title);
-    void resize(size_t width, size_t height);
+    void resize(unsigned int width, unsigned int height);
 
     /// load and reconfigure for new font
     bool loadFont(const std::string &fontname);
     void setForegroundColor(const FbTk::Color &color);
-    void setBackgroundColor(const FbTk::Color &color);
     void setAntialias(bool val) { m_font.setAntialias(val); }
     const FbTk::Font &font() const { return m_font; }
     /// execute command and exit
@@ -62,15 +61,12 @@ public:
        @name events
     */
     ///@{
-    void exposeEvent(XExposeEvent &ev);
     void keyPressEvent(XKeyEvent &ev);
     ///@}
 
 private:
     void nextHistoryItem();
     void prevHistoryItem();
-    void cursorLeft();
-    void cursorRight();
     void drawString(int x, int y, const char *text, size_t len);
     void getSize(size_t &width, size_t &height);
     void createWindow(int x, int y, size_t width, size_t height);
@@ -78,12 +74,7 @@ private:
     /// set no maximizable for this window
     void setNoMaximize();
 
-    void cursorHome();
-    void cursorEnd();
-    void backspace();
-    void deleteForward();
-    void killToEnd();
-    void insertCharacter(KeySym ks, char *keychar);
+    void insertCharacter(char key);
     void adjustStartPos();
     void adjustEndPos();
     void firstHistoryItem();
@@ -92,8 +83,7 @@ private:
 
     FbTk::Font m_font; ///< font used to draw command text
     Display *m_display;  ///< display connection
-    std::string m_runtext; ///< command to execute
-    int m_bevel; ///< distance to window edge from font in pixels
+    int m_bevel;
     GC m_gc; ///< graphic context
     bool m_end; ///< marks when this object is done
     std::vector<std::string> m_history; ///< history list of commands
@@ -101,9 +91,6 @@ private:
     std::string m_history_file; ///< holds filename for command history file
     Cursor m_cursor;
 
-    int m_start_pos; ///< start position of portion of text to display
-    int m_cursor_pos; ///< relative to m_start_pos
-    int m_end_pos; ///< end postition of portion of text to display
     Pixmap m_pixmap;
 };
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.17 2003/08/25 01:18:00 fluxgen Exp $
+// $Id: FbRun.cc,v 1.18 2003/08/27 00:20:19 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -50,10 +50,8 @@
 
 using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
-    FbTk::FbWindow((int)DefaultScreen(FbTk::App::instance()->display()), 
-                   x, y,
-                   width, 10,
-                   KeyPressMask | ExposureMask),
+    FbTk::TextBox(DefaultScreen(FbTk::App::instance()->display()),
+                  m_font, ""),
     m_font("fixed"),
     m_display(FbTk::App::instance()->display()),
     m_bevel(4),
@@ -61,15 +59,13 @@ FbRun::FbRun(int x, int y, size_t width):
     m_end(false),
     m_current_history_item(0),
     m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)),
-    m_start_pos(0),
-    m_end_pos(0),
-    m_cursor_pos(0),
     m_pixmap(0) {
 
+    setGC(m_gc);
     setCursor(m_cursor);
     // setting nomaximize in local resize
-    resize(width, m_font.height());
-    FbTk::EventManager::instance()->add(*this, *this);
+    resize(width, font().height() + m_bevel);
+
     // setup class name
     XClassHint *class_hint = XAllocClassHint();
     if (class_hint == 0)
@@ -91,10 +87,12 @@ FbRun::FbRun(int x, int y, size_t width):
         XFreePixmap(m_display, mask);
 #endif // HAVE_XPM
 
-    XWMHints wmhints;
-    wmhints.flags = IconPixmapHint;
-    wmhints.icon_pixmap = m_pixmap;
-    XSetWMHints(m_display, window(), &wmhints);
+    if (m_pixmap) {
+        XWMHints wmhints;
+        wmhints.flags = IconPixmapHint;
+        wmhints.icon_pixmap = m_pixmap;
+        XSetWMHints(m_display, window(), &wmhints);
+    }
 }
 
 
@@ -118,18 +116,18 @@ void FbRun::run(const std::string &command) {
     hide(); // hide gui
     
     // save command history to file
-    if (m_runtext.size() != 0) { // no need to save empty command
+    if (text().size() != 0) { // no need to save empty command
 
         // don't allow duplicates into the history file, first
         // look for a duplicate
         if (m_current_history_item < m_history.size()
-            && m_runtext == m_history[m_current_history_item]) {
+            && text() == m_history[m_current_history_item]) {
             // m_current_history_item is the duplicate
         } else {
             m_current_history_item = 0;
             for (; m_current_history_item < m_history.size(); 
                  ++m_current_history_item) {
-                if (m_history[m_current_history_item] == m_runtext)
+                if (m_history[m_current_history_item] == text())
                     break;
             }
         }
@@ -147,7 +145,7 @@ void FbRun::run(const std::string &command) {
                 inoutfile<<m_history[i]<<endl;
             
             // and append the current one back to the end
-            inoutfile<<m_runtext<<endl;
+            inoutfile<<text()<<endl;
         } else
             cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
     }
@@ -184,23 +182,12 @@ bool FbRun::loadFont(const string &fontname) {
         return false;
 
     // resize to fit new font height
-    resize(width(), m_font.height() + m_bevel);
+    resize(width(), font().height() + m_bevel);
     return true;
 }
 
 void FbRun::setForegroundColor(const FbTk::Color &color) {
     XSetForeground(m_display, m_gc, color.pixel());
-    redrawLabel();
-}
-
-void FbRun::setBackgroundColor(const FbTk::Color &color) {
-    FbTk::FbWindow::setBackgroundColor(color);
-    redrawLabel();
-}
-
-void FbRun::setText(const string &text) {
-    m_runtext = text;
-    redrawLabel();
 }
 
 void FbRun::setTitle(const string &title) {
@@ -208,30 +195,16 @@ void FbRun::setTitle(const string &title) {
 }
 
 void FbRun::resize(size_t width, size_t height) {
-    FbTk::FbWindow::resize(width, height);    
+    FbTk::TextBox::resize(width, height);    
     setNoMaximize();
 }
 
 void FbRun::redrawLabel() {
     clear();
-    drawString(m_bevel/2, m_font.ascent() + m_bevel/2,
-               m_runtext.c_str(), m_runtext.size());
-
-}
-
-void FbRun::drawString(int x, int y,
-                       const char *text, size_t len) {
-    assert(m_gc);
-
-    m_font.drawText(window(), screenNumber(), 
-                    m_gc, text + m_start_pos, 
-                    m_end_pos - m_start_pos, x, y - 2);
-    // draw cursor position
-    int cursor_pos = m_font.textWidth(text + m_start_pos, m_cursor_pos) + 1;
-    drawLine(m_gc, cursor_pos, 0, cursor_pos, m_font.height());
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
+    FbTk::TextBox::keyPressEvent(ke);
     KeySym ks;
     char keychar[1];
     XLookupString(&ke, keychar, 1, &ks, 0);
@@ -241,29 +214,11 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     if (ke.state) { // a modifier key is down
         if (ke.state == ControlMask) {
             switch (ks) {
-            case XK_b:
-                cursorLeft();
-                break;
-            case XK_f:
-                cursorRight();
-                break;
             case XK_p:
                 prevHistoryItem();
                 break;
             case XK_n:
                 nextHistoryItem();
-                break;
-            case XK_a:
-                cursorHome();
-                break;
-            case XK_e:
-                cursorEnd();
-                break;
-            case XK_d:
-                deleteForward();
-                break;
-            case XK_k:
-                killToEnd();
                 break;
             }
         } else if (ke.state == (Mod1Mask | ShiftMask)) {
@@ -275,8 +230,6 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
                 lastHistoryItem();
                 break;
             }
-        } else if (ke.state == ShiftMask) {
-            if (isprint(keychar[0]))insertCharacter(ks, keychar);
         }
     } else { // no modifier key
         switch (ks) {
@@ -286,17 +239,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             FbTk::App::instance()->end(); // end program
             break;
         case XK_Return:
-            run(m_runtext);
-            m_runtext = ""; // clear text
-            break;
-        case XK_BackSpace:
-            backspace();
-            break;
-        case XK_Home:
-            cursorHome();
-            break;
-        case XK_End:
-            cursorEnd();
+            run(text());
             break;
         case XK_Up:
             prevHistoryItem();
@@ -304,24 +247,12 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
         case XK_Down:
             nextHistoryItem();
             break;
-        case XK_Left:
-            cursorLeft();
-            break;
-        case XK_Right:
-            cursorRight();
-            break;
         case XK_Tab:
             tabCompleteHistory();
             break;
-        default:
-            if (isprint(keychar[0])) insertCharacter(ks, keychar);
         }
     }
-    redrawLabel();
-}
-
-void FbRun::exposeEvent(XExposeEvent &ev) {
-    redrawLabel();
+    clear();
 }
 
 void FbRun::setNoMaximize() {
@@ -340,9 +271,7 @@ void FbRun::prevHistoryItem() {
         XBell(m_display, 0);
     } else {
         m_current_history_item--;
-        m_runtext = m_history[m_current_history_item];
-        m_cursor_pos = m_end_pos = m_runtext.size();
-        adjustStartPos();
+        setText(m_history[m_current_history_item]);
     }
 }
 
@@ -353,13 +282,9 @@ void FbRun::nextHistoryItem() {
         m_current_history_item++;
         if (m_current_history_item == m_history.size()) {
             m_current_history_item = m_history.size();
-            m_runtext = "";
-            m_start_pos = m_cursor_pos = m_end_pos = 0;
-        } else {
-            m_runtext = m_history[m_current_history_item];
-            m_cursor_pos = m_end_pos = m_runtext.size();
-            adjustStartPos();
-        }
+            setText("");
+         } else
+            setText(m_history[m_current_history_item]);
     }
 }
 
@@ -368,9 +293,7 @@ void FbRun::firstHistoryItem() {
         XBell(m_display, 0);
     } else {
         m_current_history_item = 0;
-        m_runtext = m_history[m_current_history_item];
-        m_cursor_pos = m_end_pos = m_runtext.size();
-        adjustStartPos();
+        setText(m_history[m_current_history_item]);
     }
 }
 
@@ -380,8 +303,7 @@ void FbRun::lastHistoryItem() {
         XBell(m_display, 0);
     } else {
         m_current_history_item = m_history.size();
-        m_runtext = "";
-        m_start_pos = m_cursor_pos = m_end_pos = 0;
+        setText("");
     }
 }
 
@@ -390,12 +312,11 @@ void FbRun::tabCompleteHistory() {
         XBell(m_display, 0);
     } else {
         int history_item = m_current_history_item - 1;
-        string prefix = m_runtext.substr(0, m_cursor_pos);
+        string prefix = text().substr(0, cursorPosition());
         while (history_item > - 1) {
             if (m_history[history_item].find(prefix) == 0) {
                 m_current_history_item = history_item;
-                m_runtext = m_history[m_current_history_item];
-                adjustEndPos();
+                setText(m_history[m_current_history_item]);
                 break;
             }
             history_item--;
@@ -404,92 +325,8 @@ void FbRun::tabCompleteHistory() {
     }
 }
 
-void FbRun::cursorLeft() {
-    if (m_cursor_pos)
-        m_cursor_pos--;
-    else if (m_start_pos) {
-        m_start_pos--;
-        adjustEndPos();
-    }
+void FbRun::insertCharacter(char keychar) {
+    char val[2] = {keychar, 0};
+    insertText(val);
 }
 
-void FbRun::cursorRight() {
-    if (m_start_pos + m_cursor_pos < m_end_pos)
-        m_cursor_pos++;
-    else if (m_end_pos < m_runtext.size()) {
-        m_cursor_pos++;
-        m_end_pos++;
-        adjustStartPos();
-    }
-}
-
-void FbRun::cursorHome() {
-    m_start_pos = m_cursor_pos = 0;
-    adjustEndPos();
-}
-
-void FbRun::cursorEnd() {
-    m_cursor_pos = m_end_pos = m_runtext.size();
-    adjustStartPos();
-}
-
-void FbRun::backspace() {
-    if (m_start_pos || m_cursor_pos) {
-        m_runtext.erase(m_start_pos + m_cursor_pos - 1, 1);
-        if (m_cursor_pos)
-            m_cursor_pos--;
-        else
-            m_start_pos--;
-        adjustEndPos();
-    }
-}
-
-void FbRun::deleteForward() {
-    if (m_start_pos + m_cursor_pos < m_end_pos) {
-        m_runtext.erase(m_start_pos + m_cursor_pos, 1);
-        adjustEndPos();
-    }
-}
-
-void FbRun::killToEnd() {
-    if (m_start_pos + m_cursor_pos < m_end_pos) {
-        m_runtext.erase(m_start_pos + m_cursor_pos);
-        adjustEndPos();
-    }
-}
-
-void FbRun::insertCharacter(KeySym ks, char *keychar) {
-    char in_char[2] = {keychar[0], 0};
-    m_runtext.insert(m_start_pos + m_cursor_pos, in_char);
-    m_cursor_pos++;
-    m_end_pos++;
-    if (m_start_pos + m_cursor_pos < m_end_pos)
-        adjustEndPos();
-    else
-        adjustStartPos();
-}
-
-void FbRun::adjustEndPos() {
-    m_end_pos = m_runtext.size();
-    const char *text = m_runtext.c_str();
-    int text_width = m_font.textWidth(text + m_start_pos, m_end_pos - m_start_pos);
-    while (text_width > width()) {
-        m_end_pos--;
-        text_width = m_font.textWidth(text + m_start_pos, m_end_pos - m_start_pos);
-    }
-}
-
-void FbRun::adjustStartPos() {
-    const char *text = m_runtext.c_str();
-    int text_width = m_font.textWidth(text + m_start_pos, m_end_pos - m_start_pos);
-    if (text_width < width()) return;
-    int start_pos = 0;
-    text_width = m_font.textWidth(text + start_pos, m_end_pos - start_pos);
-    while (text_width > width()) {
-        start_pos++;
-        text_width = m_font.textWidth(text + start_pos, m_end_pos - start_pos);
-    }
-    // adjust m_cursor_pos according relative to change to m_start_pos
-    m_cursor_pos -= start_pos - m_start_pos;
-    m_start_pos = start_pos;
-}
