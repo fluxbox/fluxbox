@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.303 2004/10/18 01:24:24 akir Exp $
+// $Id: Window.cc,v 1.304 2004/10/21 10:38:25 akir Exp $
 
 #include "Window.hh"
 
@@ -347,7 +347,7 @@ FluxboxWindow::~FluxboxWindow() {
     m_client = 0;
 
     if (m_clientlist.size() > 1) {
-        cerr<<__FILE__<<"("<<__FUNCTION__<<") WARNING! clientlist > 1"<<endl;
+        cerr<<__FILE__<<"(~FluxboxWindow()) WARNING! clientlist > 1"<<endl;
         while (!m_clientlist.empty()) {
             detachClient(*m_clientlist.back());
         }
@@ -2041,7 +2041,7 @@ void FluxboxWindow::popupMenu() {
    Determine if this is the lowest tab of them all
 */
 bool FluxboxWindow::isLowerTab() const {
-    cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO!"<<endl;
+    cerr<<__FILE__<<"(FluxboxWindow::isLowerTab()) TODO!"<<endl;
     return true;
 }
 

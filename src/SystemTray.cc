@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.15 2004/09/01 08:46:55 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.16 2004/10/21 10:38:25 akir Exp $
 
 #include "SystemTray.hh"
 
@@ -111,7 +111,7 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
     m_window.setBackgroundPixmap(ParentRelative);
 
     // setup atom name to _NET_SYSTEM_TRAY_S<screen number>
-    char intbuff[16];    
+    char intbuff[16];
     sprintf(intbuff, "%d", m_window.screenNumber());
     std::string atom_name("_NET_SYSTEM_TRAY_S");
     atom_name += intbuff; // append number
@@ -123,14 +123,14 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
     Window owner = XGetSelectionOwner(disp, tray_atom);
     if (owner != 0) {
 #ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): can't set owner!"<<endl;
+        cerr<<__FILE__<<"(SystemTray(const FbTk::FbWindow)): can't set owner!"<<endl;
 #endif // DEBUG
         return;  // the're can't be more than one owner
     }
 
     // ok, it was free. Lets set owner
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): SETTING OWNER!"<<endl;
+    cerr<<__FILE__<<"(SystemTray(const FbTk::FbWindow)): SETTING OWNER!"<<endl;
 #endif // DEBUG
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_window.window(), CurrentTime);
@@ -222,7 +222,7 @@ bool SystemTray::clientMessage(const XClientMessageEvent &event) {
         int type = event.data.l[1];
         if (type == SYSTEM_TRAY_REQUEST_DOCK) {
 #ifndef DEBUG
-            cerr<<"SystemTray::"<<__FUNCTION__<<": SYSTEM_TRAY_REQUEST_DOCK"<<endl;
+            cerr<<"SystemTray::clientMessage(const XClientMessageEvent): SYSTEM_TRAY_REQUEST_DOCK"<<endl;
             cerr<<"window = event.data.l[2] = "<<event.data.l[2]<<endl;
 #endif // DEBUG
             addClient(event.data.l[2]);
@@ -273,7 +273,7 @@ void SystemTray::addClient(Window win) {
     FbTk::FbWindow *traywin = new TrayWindow(win);
 
 #ifdef DEBUG
-    cerr<<"SystemTray::"<<__FUNCTION__<<": 0x"<<hex<<win<<dec<<endl;
+    cerr<<"SystemTray::addClient(Window): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
     if (m_clients.empty())
         show();
@@ -298,7 +298,7 @@ void SystemTray::removeClient(Window win) {
         return;
 
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<win<<dec<<endl;
+    cerr<<__FILE__<<"(SystemTray::removeClient(Window)): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
     FbTk::FbWindow *traywin = *tray_it;
     m_clients.erase(tray_it);
