@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.34 2004/02/20 09:05:24 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.35 2004/03/22 20:08:08 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -286,7 +286,6 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_focus_timer.setTimeout(to);
     m_focus_timer.fireOnce(true);
 
-    update(0);
 }
 
 IconbarTool::~IconbarTool() {
