@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.97 2002/11/12 14:54:45 rathnor Exp $
+// $Id: Window.cc,v 1.98 2002/11/12 22:04:16 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -225,12 +225,12 @@ tab(0) {
 		setGravityOffsets();
 
 		if (! fluxbox->isStartup()) {
-			#ifdef XINERAMA
+#ifdef XINERAMA
 			unsigned int head = 0;
 			if (screen->hasXinerama()) {
 				head = screen->getHead(frame.x, frame.y);
 			}
-			#endif // XINERAMA
+#endif // XINERAMA
 
 			int real_x = frame.x;
 			int real_y = frame.y;
@@ -245,7 +245,7 @@ tab(0) {
 				}
 			}
 
-			#ifdef XINERAMA
+#ifdef XINERAMA
 			// check is within the current head, so it won't overlap heads
 			if (real_x >= screen->getHeadX(head) && 
 					real_y + frame.y_border >= screen->getHeadY(head) &&
@@ -254,13 +254,13 @@ tab(0) {
 					(real_y + frame.height) <=
 						(screen->getHeadY(head) + screen->getHeadHeight(head)) )
 				place_window = false;
-			#else // !XINERAMA
+#else // !XINERAMA
 			if (real_x >= 0 && 
 					real_y + frame.y_border >= 0 &&
 					real_x <= (signed) screen->getWidth() &&
 					real_y <= (signed) screen->getHeight())
 				place_window = false;
-			#endif // XIENRAMA
+#endif // XIENRAMA
 
 		} else
 			place_window = false;
@@ -1168,7 +1168,7 @@ void FluxboxWindow::getWMHints() {
 	} else {
 		client.wm_hint_flags = wmhint->flags;
 		if (wmhint->flags & InputHint) {
-			if (wmhint->input == true) {
+			if (wmhint->input) {
 				if (send_focus_message)
 					focus_mode = F_LOCALLYACTIVE;
 				else
@@ -1504,6 +1504,7 @@ bool FluxboxWindow::setInputFocus() {
 		} else {
 			return false;
 		}
+		
 		Fluxbox *fb = Fluxbox::instance();
 		fb->setFocusedWindow(this);
 			
@@ -2423,12 +2424,32 @@ void FluxboxWindow::redrawLabel() {
 	if (getTitle().size() != 0) {
 		GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
 				 screen->getWindowStyle()->l_text_unfocus_gc);
-		screen->getWindowStyle()->font.drawText(
+		unsigned int l = client.title_text_w;
+		int dlen = getTitle().size();
+		int dx = frame.bevel_w;
+		FbTk::Font &font = screen->getWindowStyle()->font;
+		if (l > frame.label_w) {
+			for (; dlen >= 0; dlen--) {
+				l = font.textWidth(getTitle().c_str(), dlen) + frame.bevel_w*4; 
+				if (l < frame.label_w)
+					break;
+			}
+		}
+		switch (screen->getWindowStyle()->justify) {
+			case DrawUtil::Font::RIGHT:
+				dx += frame.label_w - l;
+			break;
+			case DrawUtil::Font::CENTER:
+				dx += (frame.label_w - l)/2;
+			break;
+		}
+
+		font.drawText(
 			frame.label,
 			screen->getScreenNumber(),
 			gc,
 			getTitle().c_str(), getTitle().size(),
-			frame.bevel_w, frame.bevel_w/2 + screen->getWindowStyle()->font.ascent());
+			dx, screen->getWindowStyle()->font.ascent() + 1);
 	}
 }
 
@@ -2441,15 +2462,16 @@ void FluxboxWindow::redrawAllButtons() {
 }
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
+#ifdef DEBUG
+	fprintf(stderr,
+		I18n::instance()->getMessage(
+			 FBNLS::WindowSet, FBNLS::WindowMapRequest,
+			 "FluxboxWindow::mapRequestEvent() for 0x%lx\n"),
+			client.window);
+#endif // DEBUG
 	if (re->window != client.window)
 		return;
-#ifdef DEBUG
-		fprintf(stderr,
-			I18n::instance()->getMessage(
-				 FBNLS::WindowSet, FBNLS::WindowMapRequest,
-				 "FluxboxWindow::mapRequestEvent() for 0x%lx\n"),
-					client.window);
-#endif // DEBUG
+
 	Fluxbox *fluxbox = Fluxbox::instance();
 	fluxbox->grab();
 	if (! validateClient())
@@ -2787,7 +2809,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			if (be->window == buttonlist[i].win && buttonlist[i].draw)
 					buttonlist[i].draw(this, be->window, true);
 		}
-		
+
 		if (frame.plate == be->window) {
 			
 			if (m_windowmenu.get() && m_windowmenu->isVisible()) //hide menu if its visible
