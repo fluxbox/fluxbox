@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.20 2002/05/29 06:22:31 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.21 2002/07/19 21:26:11 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -105,7 +105,7 @@ public:
 
 	inline const char *getMenuFilename(void) const { return m_rc_menufile->c_str(); }
 	inline const std::string &getSlitlistFilename(void) const { return *m_rc_slitlistfile; }
-	inline int getColorsPerChannel(void) const { return *m_rc_colors_per_channel; }
+	inline int colorsPerChannel(void) const { return *m_rc_colors_per_channel; }
 
 	inline const timeval &getAutoRaiseDelay(void) const { return resource.auto_raise_delay; }
 
