@@ -22,12 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.112 2004/04/18 21:17:36 fluxgen Exp $
+// $Id: Window.hh,v 1.113 2004/05/02 21:06:27 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
 
-#include "FbMenu.hh"
 #include "Timer.hh"
 #include "Subject.hh"
 #include "EventHandler.hh"
@@ -52,6 +51,7 @@ class TextButton;
 class MenuTheme;
 class ImageControl;
 class XLayer;
+class Menu;
 }
 
 /// Creates the window frame and handles any window event for it
@@ -152,6 +152,8 @@ public:
     } BlackboxAttributes;
 
     typedef std::list<WinClient *> ClientList;
+    // this should perhaps be a refcount??
+    typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
 
     /// create a window from a client
     FluxboxWindow(WinClient &client,
@@ -298,11 +300,9 @@ public:
     FbTk::FbWindow &fbWindow();
     const FbTk::FbWindow &fbWindow() const;
 
-    FbTk::Menu &menu() { return m_windowmenu; }
-    const FbTk::Menu &menu() const { return m_windowmenu; }
+    FbTk::Menu &menu() { return *m_windowmenu.get(); }
+    const FbTk::Menu &menu() const { return *m_windowmenu.get(); }
 
-    // this should perhaps be a refcount??
-    typedef std::list<std::pair<const char *, FbTk::Menu *> > ExtraMenus;
 
     // for extras to add menus. 
     // These menus will be marked internal, 
@@ -451,7 +451,7 @@ private:
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
 
-    FbMenu m_windowmenu;
+    std::auto_ptr<FbTk::Menu> m_windowmenu;
 
     timeval m_last_focus_time;
 
