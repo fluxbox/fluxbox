@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.51 2004/09/11 13:34:36 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.52 2004/10/16 22:20:05 akir Exp $
 
 #include "Ewmh.hh"
 
@@ -617,9 +617,22 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
         // ce.window = window to focus
 
         winclient->focus();
-        if (winclient->fbwindow())
-            winclient->fbwindow()->raise();
+        if (winclient->fbwindow()) {
 
+            FluxboxWindow* fbwin = winclient->fbwindow();
+            fbwin->raise();
+
+            // if the raised window is on a different workspace
+            // we do what the user wish: 
+            //   either ignore|go to that workspace|get the window
+            if (fbwin->screen().currentWorkspaceID() != fbwin->workspaceNumber()) {
+                if (fbwin->screen().getFollowModel() == BScreen::FOLLOW_ACTIVE_WINDOW) {
+                    fbwin->screen().changeWorkspaceID(fbwin->workspaceNumber());
+                } else if (fbwin->screen().getFollowModel() == BScreen::FETCH_ACTIVE_WINDOW) {
+                    fbwin->screen().sendToWorkspace(fbwin->screen().currentWorkspaceID(), fbwin);
+                } // else we ignore it. my favourite mode :)
+            }
+        } 
         return true;
     } else if (ce.message_type == m_net_close_window) {
         if (winclient == 0)
