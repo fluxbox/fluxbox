@@ -4,6 +4,7 @@ Changes for 0.9.6:
   * Various drawing-related optimisations and bug fixes (Simon)
     - fixes toolbar random colour flicker on workspace change
     - speeds up pixmap rendering a little (inlining and friends!)
+    - pixmap cache now a set rather than list (faster search)
     FbWinFrame.cc GContext.hh/cc Color.hh ImageControl.hh/cc 
     IconbarTool.cc fluxbox.cc Container.cc
 *03/10/08:
