@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.14 2002/05/15 09:37:27 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.15 2002/07/23 13:49:01 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -218,13 +218,22 @@ void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, unsigned int inde
 	if (button > 2) return;
 
 	if (index <= windowmenu->screen->getCount()) {
-		if (index == windowmenu->screen->getCurrentWorkspaceID()) return;
-		if (windowmenu->window->isStuck()) windowmenu->window->stick();
+		
+		// no need to send it to a workspace it already exist on
+		if (index == windowmenu->screen->getCurrentWorkspaceID())
+			return;
 
-		if (button == 1)
-			windowmenu->screen->sendToWorkspace(index, False);
-		else if (button == 2)
-			windowmenu->screen->sendToWorkspace(index);
+		// if the window is stuck then unstick it
+		if (windowmenu->window->isStuck())
+			windowmenu->window->stick();
+
+		if (button == 1) { // send to workspace without changing workspace
+			windowmenu->screen->sendToWorkspace(index,
+				windowmenu->window, false);
+		} else if (button == 2) { // send to workspace and change workspace
+			windowmenu->screen->sendToWorkspace(index,
+				windowmenu->window, true);
+		}
 	}
 
 	hide();
