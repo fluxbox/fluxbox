@@ -6,15 +6,8 @@ BUGS:
     -> Tabbing them together makes them fight over the window size, and
        thus shrink to minimum
 
-  * vertical toolbar alignment reported broken with pixmap themes
-
   * Some builds/distros seem to require all supported locales to be
     installed to build properly (e.g. mdk, gentoo reported), this ok?
-
-  * Default style stuff is completely broken (e.g. try breaking the path to
-    your styleFile in init file)
-    => I also couldn't see an error about that, but maybe it got lost in
-       debug output? Check that too.
 
 Other TODO:
 
@@ -24,6 +17,4 @@ FAQ items for:
     window moving.
     - outline moving does this, it's not a bug, etc etc.
 
-  * Focus problems with gtk2 apps.
-    - This is a gtk2 bug, it also happens in gdm.
 
