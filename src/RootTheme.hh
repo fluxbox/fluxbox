@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.hh,v 1.5 2003/09/12 23:33:13 fluxgen Exp $
+// $Id: RootTheme.hh,v 1.6 2004/01/02 13:28:38 fluxgen Exp $
 
 #ifndef ROOTTHEME_HH
 #define ROOTTHEME_HH
@@ -44,11 +44,13 @@ public:
     void reconfigTheme();
 
     GC opGC() const { return m_opgc.gc(); }
-
+    //!! TODO we should need this later
+    void lock(bool value) { m_lock = value; }
 private:
     FbTk::ThemeItem<std::string> m_root_command;
     std::string &m_screen_root_command; ///< string to execute and override theme rootCommand
     FbTk::GContext m_opgc;
+    bool m_lock;
 };
 
 #endif // ROOTTHEME_HH

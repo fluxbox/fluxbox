@@ -19,19 +19,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.cc,v 1.6 2003/09/12 23:33:13 fluxgen Exp $
+// $Id: RootTheme.cc,v 1.7 2004/01/02 13:28:38 fluxgen Exp $
 
 #include "RootTheme.hh"
 
 #include "FbCommands.hh"
-#include "App.hh"
+#include "FbTk/App.hh"
 
 RootTheme::RootTheme(int screen_num, std::string &screen_root_command):
     FbTk::Theme(screen_num),
     m_root_command(*this, "rootCommand", "RootCommand"), 
     m_screen_root_command(screen_root_command),
-    m_opgc(RootWindow(FbTk::App::instance()->display(), screen_num)) {
-
+    m_opgc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_lock(false) {
+    
     Display *disp = FbTk::App::instance()->display();
     m_opgc.setForeground(WhitePixel(disp, screen_num)^BlackPixel(disp, screen_num));
     m_opgc.setFunction(GXxor);
@@ -43,6 +44,9 @@ RootTheme::~RootTheme() {
 }
 
 void RootTheme::reconfigTheme() {
+    if (m_lock)
+        return;
+
     // override resource root command?
     if (m_screen_root_command == "") { 
         // do root command

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.256 2003/12/31 00:38:40 fluxgen Exp $
+// $Id: Screen.cc,v 1.257 2004/01/02 13:29:01 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -558,7 +558,14 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // we need to load win frame theme before we create any fluxbox window
     // and after we've load the resources
     // else we get some bad handle/grip height/width
-    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
+    //    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
+    //!! TODO: For some strange reason we must load everything,
+    // else the focus label doesn't get updated
+    // So we lock root theme temporary so it doesn't uses RootTheme::reconfigTheme
+    // This must be fixed in the future.
+    m_root_theme->lock(true);
+    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
+    m_root_theme->lock(false);
 
     int i;
     unsigned int nchild;
