@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.34 2002/10/15 17:06:29 fluxgen Exp $
+// $Id: Tab.cc,v 1.35 2002/10/22 14:42:58 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -383,20 +383,42 @@ void Tab::draw(bool pressed) const {
 
 	} else {
 	*/
-		XClearWindow(m_display, m_tabwin);
+	int dx=m_win->frame.bevel_w*2;
+	Theme::WindowStyle *winstyle = m_win->getScreen()->getWindowStyle();
+	int dlen = m_win->getTitle().size();
+	int l = dlen;
+	if ( dlen > m_size_w) {
+		for (; dlen >= 0; dlen--) {
+			l = winstyle->tab.font.textWidth(m_win->getTitle().c_str(), dlen);
+			l += (dx * 4);
 
-		tabtext_w = m_win->getScreen()->getWindowStyle()->tab.font.textWidth(
-			m_win->getTitle().c_str(), m_win->getTitle().size());
-		tabtext_w += (m_win->frame.bevel_w * 4);
+			if (l < m_size_w)
+				break;
+		}
+	}
+	
+	switch (winstyle->tab.justify) {
+	case DrawUtil::Font::RIGHT:
+		dx += m_size_w - l;
+		break;
+
+	case DrawUtil::Font::CENTER:
+		dx += (m_size_w - l) / 2;
+		break;
+	default:
+		break;
+	}
+
+	XClearWindow(m_display, m_tabwin);
 		
-		m_win->getScreen()->getWindowStyle()->tab.font.drawText(
-			m_tabwin,
-			m_win->getScreen()->getScreenNumber(),
-			gc,
-			m_win->getTitle().c_str(), m_win->getTitle().size(),
-			m_win->frame.bevel_w, 
-			m_win->getScreen()->getWindowStyle()->tab.font.height());
-	//}
+	m_win->getScreen()->getWindowStyle()->tab.font.drawText(
+		m_tabwin,
+		m_win->getScreen()->getScreenNumber(),
+		gc,
+		m_win->getTitle().c_str(), dlen,
+		dx, 
+		m_win->getScreen()->getWindowStyle()->tab.font.ascent() + m_win->frame.bevel_w);
+
 }
 
 //-----------------------------------------------
@@ -408,10 +430,10 @@ void Tab::draw(bool pressed) const {
 int Tab::setPositionShadingHelper(bool shaded) {
 	if (shaded) {
 		return m_win->getYFrame() + m_win->getTitleHeight() + 
-				m_win->getScreen()->getBorderWidth2x();
+			m_win->getScreen()->getBorderWidth2x();
 	} else {
 		return m_win->getYFrame() + m_win->getHeight() +
-				m_win->getScreen()->getBorderWidth2x();
+			m_win->getScreen()->getBorderWidth2x();
 	}
 }
 
