@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.10:
+*02/06/14:
+   * Extra checking for transient, so we don't get lockup
+*02/06/04:
+   * Fixed Resize/Move even without decorations.
 *02/06/03:
    * Fixed bug [ 562882 ] "bbpager in slit doesn't work correctly".
      The client was removed from netizenlist in ~FluxboxWindow.
