@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.1 2002/11/26 16:01:28 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.2 2002/11/26 20:04:15 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
@@ -43,6 +43,23 @@
 using namespace std;
 
 namespace {
+
+#ifndef HAVE_STRCASESTR
+//
+// Tries to find a string in another and
+// ignoring the case of the characters
+// Returns 0 on success else pointer to str.
+const char *strcasestr(const char *str, const char *ptn) {
+	const char *s2, *p2;
+	for( ; *str; str++) {
+		for(s2=str, p2=ptn; ; s2++,p2++) {	
+			if (!*p2) return str; // check if we reached the end of ptn, if so, return str
+			if (toupper(*s2) != toupper(*p2)) break; // check if the chars match(ignoring case)
+		}
+	}
+	return 0;
+}
+#endif //HAVE_STRCASESTR
 
 const char *getFontSize(const char *pattern, int *size) {
 	const char *p;
@@ -80,7 +97,7 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
 	while((v = va_arg(va, char *)) != 0) {
-		p = strcasestr(pattern, v);
+		p = ::strcasestr(pattern, v);
 		if (p) {
 			std::strncpy(buf, p+1, bufsiz-2);
 			p2 = strchr(buf, '-');
