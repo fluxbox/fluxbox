@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.18 2003/05/17 10:43:20 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.19 2003/05/19 08:27:49 rathnor Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -121,6 +121,9 @@ FbWindow &FbWindow::operator = (Window win) {
 }
 
 void FbWindow::setNew(Window win) {
+    if (s_display == 0)
+        s_display = App::instance()->display();
+
     if (m_window != 0 && m_destroy)
         XDestroyWindow(s_display, m_window);
     m_window = win;

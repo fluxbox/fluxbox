@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/19:
+   * Fix bsetroot segfault (Simon)
+     FbWindow.cc
 *03/05/18:
    * Moved Resource.hh/cc, DirHelper.hh/cc and 
      XrmDatabaseHelper.hh to FbTk (Henrik)
