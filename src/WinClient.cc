@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.27 2003/09/24 14:02:25 rathnor Exp $
+// $Id: WinClient.cc,v 1.28 2003/09/29 14:58:15 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -43,7 +43,7 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      window_group(0),
                      x(0), y(0), old_bw(0),
                      min_width(1), min_height(1),
-                     max_width(1), max_height(1),
+                     max_width(0), max_height(0),
                      width_inc(1), height_inc(1),
                      min_aspect_x(1), min_aspect_y(1),
                      max_aspect_x(1), max_aspect_y(1),
@@ -434,8 +434,23 @@ void WinClient::updateWMNormalHints() {
         if (sizehint.flags & PMinSize) {
             min_width = sizehint.min_width;
             min_height = sizehint.min_height;
-        } else
+            if (!(sizehint.flags & PBaseSize)) {
+                base_width = min_width;
+                base_height = min_height;
+            }
+        } else {
             min_width = min_height = 1;
+            base_width = base_height = 0;
+        }
+
+        if (sizehint.flags & PBaseSize) {
+            base_width = sizehint.base_width;
+            base_height = sizehint.base_height;
+            if (!(sizehint.flags & PMinSize)) {
+                min_width = base_width;
+                min_height = base_height;
+            }
+        } // default set in PMinSize
 
         if (sizehint.flags & PMaxSize) {
             max_width = sizehint.max_width;
@@ -459,12 +474,6 @@ void WinClient::updateWMNormalHints() {
         } else
             min_aspect_x = min_aspect_y =
                 max_aspect_x = max_aspect_y = 1;
-
-        if (sizehint.flags & PBaseSize) {
-            base_width = sizehint.base_width;
-            base_height = sizehint.base_height;
-        } else
-            base_width = base_height = 0;
 
         if (sizehint.flags & PWinGravity)
             m_win_gravity = sizehint.win_gravity;
@@ -604,4 +613,49 @@ void WinClient::updateWMProtocols() {
         cerr<<"Warning: Failed to read WM Protocols. "<<endl;
     }
 
+}
+
+
+/**
+ * Changes width and height to the nearest (lower) value
+ * that conforms to it's size hints.
+ *
+ * display_* give the values that would be displayed
+ * to the user when resizing.
+ * We use pointers for display_* since they are optional.
+ *
+ * See ICCCM section 4.1.2.3
+ */
+void WinClient::applySizeHints(int &width, int &height, 
+                               int *display_width, int *display_height) {
+
+    int i = width, j = height;
+
+    // Check minimum size
+    if (width < 0 || width < min_width) 
+        width = min_width;
+
+    if (height < 0 || height < min_height)
+        height = min_height;
+
+    // Check maximum size
+    if (max_width > 0 && width > max_width)
+        width = max_width;
+
+    if (max_height > 0 && height > max_height)
+        height = max_height;
+
+    // enforce incremental size limits, wrt base size
+    // only calculate this if we really need to
+    i = (width - base_width) / width_inc;
+    width = i*width_inc + base_width;
+
+    j = (height - base_height) / height_inc;
+    height = j*height_inc + base_height;
+
+    if (display_width)
+        *display_width = i;
+
+    if (display_height)
+        *display_height = j;
 }

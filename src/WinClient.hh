@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.14 2003/09/21 12:49:48 rathnor Exp $
+// $Id: WinClient.hh,v 1.15 2003/09/29 14:58:15 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -101,6 +101,16 @@ public:
     void updateMWMHints();
     void updateWMHints();
     void updateWMNormalHints();
+
+    /**
+     * Changes width and height to the nearest (lower) value
+     * that conforms to it's size hints.
+     *
+     * display_* give the values that would be displayed
+     * to the user when resizing.
+     * We use pointers for display_* since they are optional.
+     */
+    void applySizeHints(int &width, int &height, int *display_width = 0, int *display_height = 0);
 
     // grouping is tracked by remembering the window to the left in the group
     Window getGroupLeftWindow() const;

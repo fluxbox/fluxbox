@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.235 2003/09/29 12:53:58 rathnor Exp $
+// $Id: Window.cc,v 1.236 2003/09/29 14:58:15 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2437,11 +2437,11 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             fixsize(&gx, &gy);
 
-           // draw resize rectangle
-           parent().drawRectangle(screen().rootTheme().opGC(),
-                                  m_last_resize_x, m_last_resize_y,
-                                  m_last_resize_w - 1 + 2 * frame().window().borderWidth(), 
-                                  m_last_resize_h - 1 + 2 * frame().window().borderWidth());
+            // draw resize rectangle
+            parent().drawRectangle(screen().rootTheme().opGC(),
+                                   m_last_resize_x, m_last_resize_y,
+                                   m_last_resize_w - 1 + 2 * frame().window().borderWidth(), 
+                                   m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 
             if (screen().doShowWindowPos())
                 screen().showGeometry(gx, gy);
@@ -3166,7 +3166,7 @@ void FluxboxWindow::downsize() {
 }
 
 
-void FluxboxWindow::fixsize(int *gx, int *gy) {
+void FluxboxWindow::fixsize(int *user_w, int *user_h) {
     int titlebar_height = (decorations.titlebar ? 
                            frame().titlebar().height()  + 
                            frame().titlebar().borderWidth() : 0);
@@ -3177,49 +3177,20 @@ void FluxboxWindow::fixsize(int *gx, int *gy) {
 
     // dx is new width = current width + difference between new and old x values
     //int dx = frame().width() + frame().x() - m_last_resize_x;
-    int dx = m_last_resize_w - m_client->base_width;
+    int dw = m_last_resize_w;
 
     // dy = new height (w/o decorations), similarly
-    int dy = m_last_resize_h - m_client->base_height - decoration_height;
+    int dh = m_last_resize_h - decoration_height;
 
-    // check minimum size
-    if (dx < static_cast<signed int>(m_client->min_width))
-        dx = m_client->min_width;
-    if (dy < static_cast<signed int>(m_client->min_height))
-        dy = m_client->min_height;
-
-    // check maximum size
-    if (m_client->max_width > 0 && dx > static_cast<signed int>(m_client->max_width))
-        dx = m_client->max_width;
-    if (m_client->max_height > 0 && dy > static_cast<signed int>(m_client->max_height))
-        dy = m_client->max_height;
-
-    // make sure we have valid increment
-    if (m_client->width_inc == 0)
-        m_client->width_inc = 1;
-    if (m_client->height_inc == 0)
-        m_client->height_inc = 1;
-
-    // set snapping
-    dx /= m_client->width_inc;
-    dy /= m_client->height_inc;
-
-    // set return values
-    if (gx != 0)
-        *gx = dx;
-    if (gy != 0)
-        *gy = dy;
-
-    // snapping
-    dx = dx * m_client->width_inc + m_client->base_width;
-    dy = dy * m_client->height_inc + m_client->base_height + decoration_height;
+    m_client->applySizeHints(dw, dh, user_w, user_h);
 
     // update last resize 
-    m_last_resize_w = dx;
-    m_last_resize_h = dy;
+    m_last_resize_w = dw;
+    m_last_resize_h = dh + decoration_height;
 
+    // move X if necessary
     if (m_resize_corner == LEFTTOP || m_resize_corner == LEFTBOTTOM) {
-    m_last_resize_x = frame().x() + frame().width() - m_last_resize_w;	
+        m_last_resize_x = frame().x() + frame().width() - m_last_resize_w;	
     }
 
     if (m_resize_corner == LEFTTOP || m_resize_corner == RIGHTTOP) {

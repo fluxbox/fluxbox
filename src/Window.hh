@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.96 2003/09/29 12:53:58 rathnor Exp $
+// $Id: Window.hh,v 1.97 2003/09/29 14:58:15 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -398,7 +398,8 @@ private:
 
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);
-    void fixsize(int *x = 0, int *y = 0);
+    // user_w/h return the values that should be shown to the user
+    void fixsize(int *user_w = 0, int *user_h = 0);
     void resizeClient(WinClient &client, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);

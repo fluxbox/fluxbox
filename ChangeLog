@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/29:
+  * Fix resize calculations, particularly wrt base_width/height (Simon)
+    - fixes abiword resize issues
+    Window.hh/cc WinClient.hh/cc
   * Nearest-quadrant resizing (Thanks Mathias Gumz)
     Window.hh/cc Screen.hh/cc FbWinFrameTheme.hh/cc
   * Update from Han 
