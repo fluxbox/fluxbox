@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.181 2003/06/12 15:24:37 fluxgen Exp $
+// $Id: Screen.cc,v 1.182 2003/06/15 11:37:53 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1536,7 +1536,7 @@ void BScreen::nextFocus(int opts) {
                     // keep track of the originally selected window in a set
                     WinClient &last_client = fbwin->winClient();
 
-                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setCurrentClient(**it)) ) {
+                    if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
                         // moved onto a new fbwin
                         if (!cycling_last || cycling_last->fbwindow() != fbwin) {
                             if (cycling_last)
@@ -1566,7 +1566,7 @@ void BScreen::nextFocus(int opts) {
                 if (it == wins.end())
                     it = wins.begin();
                 // see if the window should be skipped
-                if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
+                if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
                     break;
             } while ((*it) != focused);
             if ((*it) != focused && it != wins.end())
@@ -1627,7 +1627,7 @@ void BScreen::prevFocus(int opts) {
                     WinClient &last_client = fbwin->winClient();
 
 
-                    if (! (doSkipWindow(fbwin, opts) || !fbwin->setCurrentClient(**it)) ) {
+                    if (! (doSkipWindow(**it, opts) || !fbwin->setCurrentClient(**it)) ) {
                         // moved onto a new fbwin
                         if (!cycling_last || cycling_last->fbwindow() != fbwin) {
                             if (cycling_last)
@@ -1659,7 +1659,7 @@ void BScreen::prevFocus(int opts) {
                     it = wins.end();
                 --it;
                 // see if the window should be skipped
-                if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
+                if (! (doSkipWindow((*it)->winClient(), opts) || !(*it)->setInputFocus()) )
                     break;
             } while ((*it) != focused);
             
@@ -2411,11 +2411,13 @@ void BScreen::leftWorkspace(const int delta) {
 /**
   @return true if the windows should be skiped else false
 */
-bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
-    return ((opts & CYCLESKIPSTUCK) != 0 && w->isStuck() || // skip if stuck
-            /* (opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
-             */
-            (opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
+bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
+    const FluxboxWindow *win = winclient.fbwindow();
+    return (!win ||
+            (opts & CYCLESKIPSTUCK) != 0 && win->isStuck() || // skip if stuck
+            (opts & CYCLEGROUPS) != 0 && win->winClient() != winclient || // skip if not active client (i.e. only visit each fbwin once)
+            (opts & CYCLESKIPSHADED) != 0 && win->isShaded() // skip if shaded
+        ); 
 }
 
 void BScreen::renderGeomWindow() {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.104 2003/06/12 15:22:59 fluxgen Exp $
+// $Id: Screen.hh,v 1.105 2003/06/15 11:37:53 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -339,7 +339,7 @@ public:
            UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
 
     // prevFocus/nextFocus option bits
-    enum { CYCLESKIPLOWERTABS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
+    enum { CYCLEGROUPS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
            CYCLELINEAR = 0x08, CYCLEDEFAULT = 0x00 };
 
     class ScreenSubject:public FbTk::Subject {
@@ -359,7 +359,7 @@ private:
 
     void initMenu();
 
-    bool doSkipWindow(const FluxboxWindow *w, int options);
+    bool doSkipWindow(const WinClient &winclient, int options);
 
     void renderGeomWindow();
 
