@@ -177,9 +177,10 @@ void Windowmenu::itemSelected(int button, int index) {
   switch (item->function()) {
   case BScreen::WindowShade:
     hide();
-		if (window->getTab())
-			window->getTab()->shade();
+
     window->shade();
+		if (window->hasTab())
+			window->getTab()->shade();
     break;
 
   case BScreen::WindowIconify:
