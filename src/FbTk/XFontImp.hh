@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.2 2002/12/01 13:42:15 rathnor Exp $
+// $Id: XFontImp.hh,v 1.3 2002/12/09 22:10:01 fluxgen Exp $
 
 #ifndef FBTK_XFONTIMP_HH
 #define FBTK_XFONTIMP_HH
@@ -40,6 +40,8 @@ public:
     void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
     bool loaded() const { return m_fontstruct != 0; }
     void rotate(float angle);
+    /// enable/disable rotation witout alloc/dealloc rotfont structures
+    void setRotate(bool val) { m_rotate = val; }
 private:
     void freeRotFont();
     void drawRotText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
@@ -71,9 +73,10 @@ private:
 
         XRotCharStruct per_char[95];
     };
-    XRotFontStruct *m_rotfont;
-    XFontStruct *m_fontstruct;
-    float m_angle;
+    XRotFontStruct *m_rotfont; ///< rotated font structure
+    XFontStruct *m_fontstruct; ///< X font structure
+    float m_angle; ///< the rotated angle
+    bool m_rotate; ///< used to disable/enable rotation temprarly without reallocating m_rotfont
 };
 
 }; // end namespace FbTk
