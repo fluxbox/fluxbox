@@ -1,6 +1,22 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*02/11/14:
+   * Fixed bug [ 604958 ] Menu not (full) visible when tabs bottom
+     Rootmenu.cc/hh
+   * Fixed bug [ 581588 ] Toolbar auto-hiding
+     Toolbar.cc
 *02/11/13:
+   * Clean up in Slit
+     Slit.cc/hh, Screen.cc
+   * Fixed caps, num and scroll lock modifier checks
+     (fixed Bug: [ 522673 ] Numlock not handled correctly in Solaris)
+     Keys.cc/hh
+*02/11/12:
+   * Updated fluxbox-generate_menu (Han)
+   * Fixed alignment in window label
+     Window.cc
+   * Fixed history in FbRun
+   * Updated FbRun to use the new font system
    * Removed window size limitation, fixes Debian bug #159709 (Simon)
      Window.cc
    * Fixed geometry/position window size and alignment problem (Simon)
@@ -9,20 +25,20 @@ Changes for 0.1.13:
    * Fixed Toolbar workspace label text color.
      Theme.cc
 *02/10/25:
-   * Icon.hh/cc renamed to Iconmenu.hh/cc
-   * Clean up
-      BaseDisplay.hh/cc, Screen.cc/hh, Tab.cc, Window.cc
+   * Renamed Icon.hh/cc to Iconmenu.hh/cc
+   * Clean up (fixed bug [ 608945 ] xmms crashes fluxbox )
+     BaseDisplay.hh/cc, Screen.cc/hh, Tab.cc, Window.cc
 *02/10/24:
    * Updated fluxbox-generate_menu (Thanks Han)
 *02/10/23:
    * Fixed auto_ptr assignment so it compiles with gcc 2.95.x
-     fluxbox.cc, Window.cc	 
+     fluxbox.cc, Window.cc 
    * Minor cleaning in Windowmenu.cc/hh
 *02/10/22:
    * Fixed isGroupable for FluxboxWindow,
-   	 It should report if the window is groupable if it's
-	 not transient, nonresiable and nonmaximizable
-	 Window.hh/cc
+     It should report if the window is groupable if it's
+     not transient, nonresiable and nonmaximizable
+     Window.hh/cc
 *02/10/20:
    * Updated it_IT translation (Thanks Filippo Pappalardo)
 *02/10/19:
@@ -43,10 +59,10 @@ Changes for 0.1.13:
    * Fixed support for:
      _NET_WM_DESKTOP,
      _NET_NUMBER_OF_DESKTOPS,
-	 _NET_CURRENT_DESKTOP,
-	 _NET_ACTIVE_WINDOW,
-	 _NET_CLOSE_WINDOW
-	 Ewmh.hh/cc
+     _NET_CURRENT_DESKTOP,
+     _NET_ACTIVE_WINDOW,
+     _NET_CLOSE_WINDOW
+     Ewmh.hh/cc
 *02/10/15:
    * Conditional compile/linking of Xft specific files
      src/Makefile.am, configure.in
@@ -69,7 +85,7 @@ Changes for 0.1.13:
 *02/10/11:
    * Fixed support for _NET_WM_STATE with _NET_WM_STATE_STICKY and 
      _NET_WM_STATE_SHADED
-	 Ewmh.cc
+     Ewmh.cc
 *02/10/02:
    * Added Ewmh.hh/cc for Extended Window Manager Hints
 *02/09/21:
@@ -99,7 +115,7 @@ Changes for 0.1.12/13:
      Window.cc
    * Fixed so Gnome win state is checked after window creation.
      bug [ 548957 ] fspanel doesnt become sticky
-	 Window.cc
+     Window.cc
 *02/09/08:
    * Fixed new transient handling
      Workspace.cc/hh, Screen.cc/hh, Window.cc/hh, Slit.cc, Toolbar.cc
