@@ -25,12 +25,13 @@
 #ifndef	 WORKSPACE_HH
 #define	 WORKSPACE_HH
 
-#include "NotCopyable.hh"
+
 
 #include "FbMenu.hh"
-#include "MultLayers.hh"
 
-#include <X11/Xlib.h>
+#include "FbTk/MultLayers.hh"
+#include "FbTk/Observer.hh"
+#include "FbTk/NotCopyable.hh"
 
 #include <string>
 #include <vector>
@@ -43,7 +44,7 @@ class WinClient;
 /**
 	Handles a single workspace
 */
-class Workspace:private FbTk::NotCopyable {
+class Workspace:private FbTk::NotCopyable, private FbTk::Observer {
 public:
     typedef std::vector<FluxboxWindow *> Windows;
 
@@ -59,11 +60,9 @@ public:
     void hideAll();
     void removeAll();
     void reconfigure();
-    void update();
     void shutdown();
     void addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
-    void removeWindow(WinClient &client);
     void updateClientmenu();
 
     BScreen &screen() { return m_screen; }
@@ -90,6 +89,7 @@ public:
     static bool loadGroups(const std::string &filename);
 
 private:
+    void update(FbTk::Subject *subj);
     void placeWindow(FluxboxWindow &win);
 
     BScreen &m_screen;

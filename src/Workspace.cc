@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.84 2003/12/03 23:05:29 fluxgen Exp $
+// $Id: Workspace.cc,v 1.85 2003/12/07 17:49:07 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -157,6 +157,8 @@ void Workspace::addWindow(FluxboxWindow &w, bool place) {
         return;
 
     w.setWorkspace(m_id);
+    // attach signals
+    w.titleSig().attach(this);
 
     if (place)
         placeWindow(w);
@@ -180,6 +182,9 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
     if (w == 0)
         return -1;
+
+    // detach from signals
+    w->titleSig().detach(this);
 
     if (m_lastfocus == w) {
         m_lastfocus = 0;
@@ -229,20 +234,6 @@ int Workspace::removeWindow(FluxboxWindow *w) {
     }
 
     return m_windowlist.size();
-}
-
-void Workspace::removeWindow(WinClient &client) {
-    if (client.m_win == 0)
-        return;
-
-    if (client.m_win->numClients() == 0) {
-        Windows::iterator erase_it = remove(m_windowlist.begin(), 
-                                            m_windowlist.end(), client.m_win);
-        if (erase_it != m_windowlist.end())
-            m_windowlist.erase(erase_it);
-    }
-
-    updateClientmenu();
 }
 
 void Workspace::showAll() {
@@ -378,7 +369,7 @@ bool Workspace::loadGroups(const std::string &filename) {
     return true;
 }
 
-void Workspace::update() {
+void Workspace::update(FbTk::Subject *subj) {
     m_clientmenu.update();
 }
 
@@ -407,13 +398,6 @@ void Workspace::setName(const std::string &name) {
  clears the m_windowlist
 */
 void Workspace::shutdown() {
-#ifdef DEBUG
-    cerr<<__FILE__<<"("<<__FUNCTION__<<"): scr "<<screen().screenNumber()<<", ws "<<
-        m_id<<", windowlist:"<<endl;
-    copy(m_windowlist.begin(), m_windowlist.end(),
-         ostream_iterator<FluxboxWindow *>(cerr, " \n"));
-    cerr<<endl;
-#endif // DEBUG
     // note: when the window dies it'll remove it self from the list
     while (!m_windowlist.empty()) {
         // restore with remap on all clients in that window
