@@ -87,7 +87,7 @@ Start Fluxbox on the specified display.
 Programs started by Fluxbox will have the
 .B DISPLAY
 environment variable set to this value, too.
-.SH RUNNING BLACKBOX
+.SH RUNNING FLUXBOX
 This program is usually started by the user's startup script, most times called
 .IR ~/.xinitrc .
 To run fluxbox, modify the script by adding
@@ -664,6 +664,44 @@ can easily set lots of keys with a single command, e.g.
 *font:	lucidasans-10
 .EE
 This sets already nice defaults for many components.
+.SH KEYS FILE
+Fluxbox 0.1.5 has new keybinding code, and you can customise it through the
+.IR ~/.fluxbox/keys
+file.  The file takes the format of :
+.EX
+<modifier> <key> :<operation>
+.EE
+In the example below, Mod1 is the 'Alt' key on the PC keyboard and Mod4 is
+one of the three extra keys on a pc104 branded with a sickening corporate logo.
+.EX
+Mod1 Tab :NextWindow 
+Mod1 F1 :Workspace1 
+Mod1 F2 :Workspace2 
+Mod1 F3 :Workspace3 
+Mod1 F4 :Workspace4 
+Mod1 F5 :Workspace5 
+Mod1 F6 :Workspace6 
+Mod1 F7 :Workspace7 
+Mod1 F8 :Workspace8 
+Mod1 F9 :Workspace9 
+Mod1 F10 :Workspace10 
+Mod1 F11 :Workspace11 
+Mod1 F12 :Workspace12 
+Mod4 b :PrevWorkspace 
+Mod4 c :Minimize 
+Mod4 r :ExecCommand rxvt 
+Mod4 v :NextWorkspace 
+Mod4 x :Close 
+.EE
+.SH TITLEBAR FILE
+Fluxbox lets you customise the button layout on the window titlebar.  This is
+done by modifying the
+.IR ~/.fluxbox/titlebar
+file.
+.EX
+Right: minimize maximize close
+Left: sticky
+.EE
 .SH THE SLIT
 The slit is a special Fluxbox window frame that can contain dockable
 applications, e.g. the `bbtools.'
@@ -698,6 +736,28 @@ However, there are some resources in it you might want to edit yourself:
 .TP
 .B session.menuFile:
 This tells Fluxbox where to look for its menu file.
+.EX
+session.menuFile: /home/myself/.fluxbox/menu
+.EE
+.TP
+.B session.titlebarFile:
+This tells Fluxbox where to find the file describing the layout of buttons
+on each windows' titlebar.
+.EX
+session.titlebarFile: /home/myself/.fluxbox/titlebar
+.EE
+.TP
+.B session.keyFile:
+This tells Fluxbox where to find the file describing the keybindings.
+.EX
+session.keyFile: /home/myself/.fluxbox/keys
+.EE
+.TP
+.B session.styleFile:
+This tells Fluxbox where to find the style (theme) file for this session.
+.EX
+session.styleFile: @pkgdatadir@/styles/Flux
+.EE
 .TP
 .B session.screen0.toolbar.widthPercent:
 This determines the amount (in %) of space the toolbar will take.
@@ -744,6 +804,20 @@ server's memory.
 Default value is
 .IR 5 .
 .TP
+.B session.opaqueMove:
+When moving a window, setting this to
+.IR True
+will draw the window contents as it moves (nasty on slow systems), if 
+.IR False
+it will only draw an outline of the window border.
+.TP
+.B session.imageDither:
+.IR True
+or
+.IR False
+to, respectively, enable or disable dithering of images.  Only necessary
+on systems with small colour depths (8bpp or less)
+.TP
 .B session.colorsPerChannel:
 This tells Fluxbox how many colors to take from the X server on pseudocolor
 displays.  A channel would be red, green, or blue.
@@ -752,12 +826,78 @@ Value must be between 2 and 6.
 When you run Fluxbox on an 8-bit display, you must set this resource to 4.
 Default value is
 .IR 4.
+.TP
+.B session.iconbar:
+.IR True
+or
+.IR False
+to enable or disable Fluxbox using the toolbar to display iconified windows.
+.TP
+.B session.tabs:
+.IR True
+or
+.IR False
+to enable/disable Fluxbox's PWM-like window tabs.  Tabs let you group windows
+together, they will take up identical desktop space (windows smaller or larger
+than the existing group size get resized automatically) and can be moved as a
+group around the desktop or to a different workspace.
+Default value is
+.IR True .
+.TP
+.B session.screen0.tab.placement:
+Tells Fluxbox where to put the tab on the window.  This can be customised 
+through Fluxbox's Configuration/Tab Placement menu.  Values are
+.IR Top
+.IR Bottom
+.IR Left
+.IR Right
+.TP
+.B session.screen0.tab.alignment:
+Tells Fluxbox how to align tabs to the window.  Values are
+.IR Top
+.IR Bottom
+.IR Left
+.IR Right
+.IR Center
+.IR Relative
+This should also be done via the Configuration/Tab Placement menu.
+.TP
+.B session.screen0.tab.rotatevertical:
+If True, will rotate text on the tab so it is readable on vertically-
+placed tabs.  Once again, use the Configuration/Tab Placement menu.
 .PP
 When running Fluxbox in a multiple desktop environment the
 .B screen0
 key can also be
 .B screen1, 2
-etc. for any appropriate desktop.
+etc. for any appropriate desktop, and you can customise the behaviour of
+Fluxbox on each desktop accordingly.  A favourite of the man page author
+with a dual-head Matrox G450 was to autohide the slit and toolbar on
+screen0 and set it alwaysontop and not autohidden on screen1, with a 
+larger date format on screen1
+.EX
+session.screen0.toolbar.onTop: False
+session.screen0.toolbar.autoHide: True
+session.screen0.toolbar.placement: BottomCenter
+session.screen0.toolbar.widthPercent: 42
+session.screen0.slit.onTop: False
+session.screen0.slit.autoHide: True
+session.screen0.slit.placement: TopLeft
+session.screen0.slit.direction: Vertical
+session.screen0.strftimeFormat: %I:%M %p
+session.screen1.toolbar.onTop: True
+session.screen1.toolbar.autoHide: False
+session.screen1.toolbar.placement: BottomCenter
+session.screen1.toolbar.widthPercent: 69
+session.screen1.slit.onTop: True
+session.screen1.slit.autoHide: False
+session.screen1.slit.placement: CenterRight
+session.screen1.slit.direction: Vertical
+session.screen1.strftimeFormat: %a %d %R [%s]
+.EE
+This way the main workspace (screen0) has the maximum amount of space available
+and the secondary workspace could show the time and run some withrawn apps like
+gkrellm in the slit, always visible yet out of the way of real work.
 .SH ENVIRONMENT
 .TP
 .B HOME
