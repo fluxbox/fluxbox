@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.130 2003/04/21 07:01:03 rathnor Exp $
+// $Id: Screen.cc,v 1.131 2003/04/23 10:51:17 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -731,7 +731,7 @@ BScreen::BScreen(ResourceManager &rm,
     }
 
     if (! isSloppyFocus() && getToolbar() != 0) {
-        XSetInputFocus(disp, getToolbar()->getWindowID(),
+        XSetInputFocus(disp, getToolbar()->window().window(),
                        RevertToParent, CurrentTime);
     }
 
