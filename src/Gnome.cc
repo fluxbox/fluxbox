@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.9 2003/02/09 14:11:12 rathnor Exp $
+// $Id: Gnome.cc,v 1.10 2003/02/16 17:57:54 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -107,13 +107,14 @@ void Gnome::setupWindow(FluxboxWindow &win) {
         XFree (data);
     }
 
-    // load gnome layer atom
+    // load gnome workspace atom
     if (XGetWindowProperty(disp, win.getClientWindow(), 
                            m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL, 
                            &ret_type, &fmt, &nitems, &bytes_after, 
                            (unsigned char **) &data) ==  Success && data) {
-        flags = *data;
-        win.getScreen()->reassociateWindow(&win, flags ,false);
+        unsigned int workspace_num = *data;
+        if (win.getWorkspaceNumber() != workspace_num) 
+            win.getScreen()->reassociateWindow(&win, workspace_num, false);
         XFree (data);
     }
 

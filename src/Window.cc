@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.116 2003/02/16 15:12:07 rathnor Exp $
+// $Id: Window.cc,v 1.117 2003/02/16 17:57:53 rathnor Exp $
 
 #include "Window.hh"
 
@@ -261,7 +261,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     if (workspace_number < 0 || workspace_number >= screen->getCount())
         workspace_number = screen->getCurrentWorkspaceID();
 
-    restoreAttributes(place_window);
+    restoreAttributes();
 
     moveToLayer(m_layernum);
     screen->getWorkspace(workspace_number)->addWindow(this, place_window);
@@ -289,10 +289,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     // no focus default
     setFocusFlag(false);
 
-    // finaly show the frame and the client window
-
-    m_frame.show();
-    XSync(display, False);
 }
 
 
@@ -931,6 +927,15 @@ void FluxboxWindow::setTab(bool flag) {
     */
 }
 
+void FluxboxWindow::hide() {
+    m_windowmenu.hide();
+    m_frame.hide();
+}
+
+void FluxboxWindow::show() {
+    m_frame.show();
+}
+
 /**
    Unmaps the window and removes it from workspace list
 */
@@ -1103,6 +1108,7 @@ void FluxboxWindow::maximizeVertical() {
 
 
 void FluxboxWindow::setWorkspace(int n) {
+
     workspace_number = n;
 
     blackbox_attrib.flags |= BaseDisplay::ATTRIB_WORKSPACE;
@@ -1501,7 +1507,7 @@ void FluxboxWindow::setGravityOffsets() {
  * but doesn't change the actual state
  * (so the caller can set defaults etc as well)
  */
-void FluxboxWindow::restoreAttributes(bool place_window) {
+void FluxboxWindow::restoreAttributes() {
     if (!getState())
         current_state = NormalState;
 

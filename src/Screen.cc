@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.108 2003/02/16 16:45:23 fluxgen Exp $
+// $Id: Screen.cc,v 1.109 2003/02/16 17:57:54 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1105,7 +1105,11 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         Fluxbox::instance()->saveWindowSearch(client, win);
         Fluxbox::instance()->attachSignals(*win);
         setupWindowActions(*win);
-     }
+    }
+    if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
+        win->show();
+        XSync(FbTk::App::instance()->display(), False);
+    }
     return win;
 }
 
@@ -1127,8 +1131,8 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     CommandRef close_cmd(new WindowCmd(win, &FluxboxWindow::close));
     CommandRef shade_cmd(new WindowCmd(win, &FluxboxWindow::shade));
     CommandRef raise_cmd(new WindowCmd(win, &FluxboxWindow::raise));
+    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::lower));
     CommandRef raise_and_focus_cmd(new WindowCmd(win, &FluxboxWindow::raiseAndFocus));
-    CommandRef lower_cmd(new WindowCmd(win, &FluxboxWindow::raise));
     CommandRef stick_cmd(new WindowCmd(win, &FluxboxWindow::stick));
     CommandRef show_menu_cmd(new WindowCmd(win, &FluxboxWindow::popupMenu));
 
@@ -1138,7 +1142,6 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     // get titlebar configuration
     const vector<Fluxbox::Titlebar> *dir = &Fluxbox::instance()->getTitlebarLeft();
     for (char c=0; c<2; c++) {
-
         for (size_t i=0; i< dir->size(); ++i) {
             //create new buttons
             FbTk::Button *newbutton = 0;
@@ -1324,7 +1327,6 @@ void BScreen::reassociateGroup(FluxboxWindow *w, unsigned int wkspc_id, bool ign
     }
 }
 
-
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
     if (! w) return;
 
@@ -1337,6 +1339,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 
     if (w->getWorkspaceNumber() == wkspc_id)
         return;
+
 
     if (w->isIconic()) {
         removeIcon(w);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.47 2003/02/16 16:43:00 fluxgen Exp $
+// $Id: Window.hh,v 1.48 2003/02/16 17:57:53 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -111,6 +111,10 @@ public:
     void raiseAndFocus() { raise(); setInputFocus(); }
     void setTab(bool flag);
     void setFocusFlag(bool flag);
+    // map this window
+    void show();
+    // unmap this window
+    void hide();
     void iconify();
     void deiconify(bool = true, bool = true);
     /// destroy this window
@@ -145,7 +149,7 @@ public:
 
     void setWorkspace(int n);
     void changeBlackboxHints(const BaseDisplay::BlackboxHints &bh);
-    void restoreAttributes(bool place_window);
+    void restoreAttributes();
     void showMenu(int mx, int my);
     // popup menu on last button press position
     void popupMenu();
