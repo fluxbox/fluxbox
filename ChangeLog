@@ -1,6 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *05/01/24:
+  * Updated a lot of Copyright dates and mail-info (Mathias)
   * Close #1107227, #1107222
     data/Makefile.am util/fluxbox-generate_menu.in
 *05/01/21:
