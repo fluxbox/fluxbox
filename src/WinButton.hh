@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.hh,v 1.4 2003/04/28 22:39:12 fluxgen Exp $
+/// $Id: WinButton.hh,v 1.5 2004/01/10 00:37:35 rathnor Exp $
 
 #include "Button.hh"
 #include "Observer.hh"
@@ -43,7 +43,7 @@ public:
     void clear();
     void update(FbTk::Subject *subj);
 private:
-    void drawType();
+    void drawType(bool clear, bool no_trans); // don't update transparency (eg in clear)
     Type m_type; ///< the button type
     const FluxboxWindow &m_listen_to;
     WinButtonTheme &m_theme;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.68 2004/01/02 13:26:44 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.69 2004/01/10 00:37:35 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -560,7 +560,10 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
 }
 
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
-    if (m_label == event.window) {
+    if (m_titlebar == event.window) {
+        m_titlebar.clearArea(event.x, event.y, event.width, event.height);
+        m_titlebar.updateTransparent(event.x, event.y, event.width, event.height);
+    } else if (m_label == event.window) {
         m_label.clearArea(event.x, event.y, event.width, event.height);
         m_label.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_handle == event.window) {
@@ -853,7 +856,6 @@ void FbWinFrame::renderTitlebar() {
     getCurrentFocusPixmap(label_pm, title_pm,
                           label_color, title_color);
 
-
     if (label_pm != 0)
         m_label.setBackgroundPixmap(label_pm);
     else            
@@ -863,6 +865,9 @@ void FbWinFrame::renderTitlebar() {
         m_titlebar.setBackgroundPixmap(title_pm);
     else
         m_titlebar.setBackgroundColor(title_color);
+
+    m_titlebar.setAlpha(theme().alpha());
+    m_label.setAlpha(theme().alpha());
 
     renderLabelButtons();
     redrawTitlebar();
@@ -921,16 +926,8 @@ void FbWinFrame::renderHandles() {
     }
 
     m_handle.setAlpha(theme().alpha());
-    m_handle.clear();
-    m_handle.updateTransparent();
-
     m_grip_left.setAlpha(theme().alpha());
-    m_grip_left.clear();
-    m_grip_left.updateTransparent();
-
     m_grip_right.setAlpha(theme().alpha());
-    m_grip_right.clear();
-    m_grip_right.updateTransparent();
 
 }
 
@@ -1160,8 +1157,6 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
     } else
         button.setBackgroundColor(m_label_focused_color);
 
-    button.clear();
-    button.updateTransparent();
 }
 
 void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
@@ -1178,8 +1173,6 @@ void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
     } else
         button.setBackgroundColor(m_label_active_color);
 
-    button.clear();
-    button.updateTransparent();
 }
 
 void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
@@ -1196,15 +1189,13 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
     } else
         button.setBackgroundColor(m_label_unfocused_color);
 
-    button.clear(); 
-    button.updateTransparent();
 }
 
 void FbWinFrame::updateTransparent() {
     redrawTitlebar();
     
     ButtonList::iterator button_it = m_buttons_left.begin();
-    ButtonList::iterator button_it_end = m_buttons_left.begin();
+    ButtonList::iterator button_it_end = m_buttons_left.end();
     for (; button_it != button_it_end; ++button_it) {
         (*button_it)->clear();
         (*button_it)->updateTransparent();
@@ -1223,6 +1214,7 @@ void FbWinFrame::updateTransparent() {
     m_grip_right.updateTransparent();
     m_handle.clear();
     m_handle.updateTransparent();
+
 }
 
 

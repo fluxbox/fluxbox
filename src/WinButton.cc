@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.16 2003/10/31 19:32:40 rathnor Exp $
+/// $Id: WinButton.cc,v 1.17 2004/01/10 00:37:35 rathnor Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -39,15 +39,17 @@ WinButton::WinButton(const FluxboxWindow &listen_to,
 
 void WinButton::exposeEvent(XExposeEvent &event) {
     FbTk::Button::exposeEvent(event);
-    drawType();
+    drawType(false, false);
 }
 
 void WinButton::buttonReleaseEvent(XButtonEvent &event) {
     FbTk::Button::buttonReleaseEvent(event);
     clear();
+    updateTransparent();
 }
 
-void WinButton::drawType() {
+// clear is used to force this to clear the window (e.g. called from clear())
+void WinButton::drawType(bool clear, bool no_trans) {
     bool used = false;
 
     // if it's odd and we're centring, we need to add one
@@ -79,13 +81,14 @@ void WinButton::drawType() {
                 used = true;
             }
         }
-        if (used)
+        if (used || clear)
             FbTk::FbWindow::clear();
             
         // if no pixmap was used, use old style
         if (!used) {            
             if (gc() == 0) // must have valid graphic context
                 return;
+
             drawRectangle(gc(),
                           2, 2, width() - 5, height() - 5);
             drawLine(gc(),
@@ -120,9 +123,10 @@ void WinButton::drawType() {
 
         } 
 
-        if (used) {
+        if (used || clear) {
             FbTk::FbWindow::clear();
-        } else if (gc() != 0) { // must have valid graphic context
+        }
+        if (!used && gc() != 0) { // must have valid graphic context
             FbTk::FbWindow::drawRectangle(gc(),
                                           2, height() - 5, width() - 5, 2);
         }
@@ -178,9 +182,10 @@ void WinButton::drawType() {
             
         } 
 
-        if (used)
+        if (used || clear)
             FbTk::FbWindow::clear();
-        else if (gc() != 0) {
+
+        if (!used && gc() != 0) {
             // width/4 != width/2, so we use /4*2 so that it's properly centred
             if (m_listen_to.isStuck()) {
                 fillRectangle(gc(),
@@ -221,9 +226,10 @@ void WinButton::drawType() {
         }
 
             
-        if (used)
+        if (used || clear)
             FbTk::FbWindow::clear();            
-        else if (gc() != 0) { // must have valid graphic context
+        
+        if (!used && gc() != 0) { // must have valid graphic context
 
             drawLine(gc(), 
                      2, 2,
@@ -265,20 +271,19 @@ void WinButton::drawType() {
             }
         }
 
-
-        FbTk::FbWindow::clear();            
+        if (used || clear)
+            FbTk::FbWindow::clear();            
 
         break;
     }
-    updateTransparent();
+    if ((used || clear) && !no_trans)
+        updateTransparent();
 }
 
 void WinButton::clear() {
-    FbTk::Button::clear();
-    drawType();
+    drawType(true, true);
 }
 
 void WinButton::update(FbTk::Subject *subj) {
     clear();
-    drawType();
 }

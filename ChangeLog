@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.8:
+*04/01/10:
+  * Fix a number of transparency issues for window frames (Simon)
+    FbWinFrame.cc WinButton.hh/cc
 *04/01/09:
   * Fixed color parse bug (Henrik)
     removing whitespaces
