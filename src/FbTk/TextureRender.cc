@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.14 2004/10/21 10:03:43 akir Exp $
+// $Id: TextureRender.cc,v 1.15 2004/10/25 22:57:32 akir Exp $
 
 #include "TextureRender.hh"
 
@@ -45,7 +45,6 @@ using namespace std;
 #if defined sgi && ! defined GCC
 #define FB_new_nothrow new
 #else
-#warning yeah, thats the way
 #define FB_new_nothrow new(std::nothrow)
 #endif
 
