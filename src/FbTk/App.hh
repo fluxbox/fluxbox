@@ -46,7 +46,7 @@ public:
     explicit App(const char *displayname=0);
     virtual ~App();
     /// display connection
-    Display *display() const { return m_display; }
+    inline Display *display() const { return m_display; }
     void sync(bool discard);
     /// starts event loop
     virtual void eventLoop();
