@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.30 2002/02/26 22:25:20 fluxgen Exp $
+// $Id: Screen.cc,v 1.31 2002/02/26 22:40:31 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1790,7 +1790,7 @@ void BScreen::initGnomeAtoms(void) {
 		getBaseDisplay()->getGnomeWorkspaceNamesAtom(),
 		getBaseDisplay()->getGnomeHintsAtom(),
 		getBaseDisplay()->getGnomeClientListAtom(),
-		getBaseDisplay()->getGnomeLayerAtom(),
+//		getBaseDisplay()->getGnomeLayerAtom(), // not supported yet
 	};
 
 	//list atoms that we support
