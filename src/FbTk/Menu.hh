@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.12 2003/04/20 14:20:14 fluxgen Exp $
+// $Id: Menu.hh,v 1.13 2003/04/25 12:32:11 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -38,6 +38,7 @@
 #include "Command.hh"
 #include "Observer.hh"
 #include "XLayerItem.hh"
+#include "FbPixmap.hh"
 
 namespace FbTk {
 
@@ -203,6 +204,8 @@ private:
     std::auto_ptr<Transparent> m_trans;
     Drawable m_root_pm;
     static unsigned char s_alpha;
+    FbPixmap m_frame_pm;
+    bool m_need_update;
 };
 
 }; // end namespace FbTk
