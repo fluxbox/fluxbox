@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.260 2004/01/11 16:06:22 fluxgen Exp $
+// $Id: Screen.cc,v 1.261 2004/01/16 11:47:07 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -485,6 +485,11 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     int geom_h = 10;
     int geom_w = 100; // just initial, will be fixed in render
 
+    // create geometry window 
+
+    int pos_h = 10;
+    int pos_w = 100; // just initial, will be fixed in render
+
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
     attrib.border_pixel = winFrameTheme().border().color().pixel();
@@ -501,6 +506,15 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     geom_pixmap = 0;
 
     renderGeomWindow();
+
+    m_pos_window = 
+        XCreateWindow(disp, rootWindow().window(),
+                      0, 0, pos_w, pos_h, winFrameTheme().border().width(), rootWindow().depth(),
+                      InputOutput, rootWindow().visual(), mask, &attrib);
+    pos_visible = false;
+    pos_pixmap = 0;
+
+    renderPosWindow();
 
     // setup workspaces and workspace menu
 
@@ -633,6 +647,9 @@ BScreen::~BScreen() {
     if (geom_pixmap != None)
         imageControl().removeImage(geom_pixmap);
 
+    if (pos_pixmap != None)
+        imageControl().removeImage(pos_pixmap);
+
     removeWorkspaceNames();
 
     Workspaces::iterator w_it = m_workspaces_list.begin();
@@ -731,6 +748,7 @@ void BScreen::update(FbTk::Subject *subj) {
     // if another signal is added later, will need to differentiate here
 
     renderGeomWindow();
+    renderPosWindow();
 }
 
 FbTk::Menu *BScreen::createMenu(const std::string &label) {
@@ -800,6 +818,7 @@ void BScreen::reconfigure() {
     m_menutheme->frameFont().setAntialias(*resource.antialias);
 
     renderGeomWindow();
+    renderPosWindow();
 
     //reconfigure menus
     workspacemenu->reconfigure();
@@ -2238,21 +2257,21 @@ void BScreen::showPosition(int x, int y) {
     if (!doShowWindowPos())
         return;
 
-    if (! geom_visible) {
+    if (! pos_visible) {
         if (hasXinerama()) {
             unsigned int head = getCurrHead();
 
-            m_geom_window.move(getHeadX(head) + (getHeadWidth(head) - m_geom_window.width()) / 2,
-                               getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
+            m_pos_window.move(getHeadX(head) + (getHeadWidth(head) - m_pos_window.width()) / 2,
+                              getHeadY(head) + (getHeadHeight(head) - m_pos_window.height()) / 2);
                             
         } else {
-            m_geom_window.move((width() - m_geom_window.width()) / 2, (height() - m_geom_window.height()) / 2);
+            m_pos_window.move((width() - m_pos_window.width()) / 2, (height() - m_pos_window.height()) / 2);
         }
 
-        m_geom_window.show();
-        m_geom_window.raise();
+        m_pos_window.show();
+        m_pos_window.raise();
 
-        geom_visible = true;
+        pos_visible = true;
     }
     char label[256];
 	
@@ -2260,9 +2279,9 @@ void BScreen::showPosition(int x, int y) {
             I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
                                          "X: %4d x Y: %4d"), x, y);
 
-    m_geom_window.clear();
+    m_pos_window.clear();
 
-    winFrameTheme().font().drawText(m_geom_window.window(),
+    winFrameTheme().font().drawText(m_pos_window.window(),
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),
@@ -2270,6 +2289,14 @@ void BScreen::showPosition(int x, int y) {
                                     winFrameTheme().bevelWidth() + 
                                     winFrameTheme().font().ascent());
 		
+}
+
+
+void BScreen::hidePosition() {
+    if (pos_visible) {
+        m_pos_window.hide();
+        pos_visible = false;
+    }
 }
 
 
@@ -2370,7 +2397,7 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
 void BScreen::renderGeomWindow() {
 
     const char *s = I18n::instance()->getMessage(FBNLS::ScreenSet, 
-                                     FBNLS::ScreenPositionLength,
+                                     FBNLS::ScreenGeometryLength,
                                      "W: 0000 x H: 0000");
     int l = strlen(s);
 
@@ -2408,6 +2435,52 @@ void BScreen::renderGeomWindow() {
         imageControl().removeImage(tmp);
 
 }
+
+
+void BScreen::renderPosWindow() {
+
+    const char *s = I18n::instance()->getMessage(FBNLS::ScreenSet, 
+                                     FBNLS::ScreenPositionLength,
+                                     "0: 0000 x 0: 0000");
+    int l = strlen(s);
+
+    int pos_h = winFrameTheme().font().height() + winFrameTheme().bevelWidth()*2;
+    int pos_w = winFrameTheme().font().textWidth(s, l) + winFrameTheme().bevelWidth()*2;
+    m_pos_window.resize(pos_w, pos_h);
+
+    m_pos_window.setBorderWidth(winFrameTheme().border().width());
+    m_pos_window.setBorderColor(winFrameTheme().border().color());
+
+
+    Pixmap tmp = pos_pixmap;
+
+    if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
+        if (!winFrameTheme().titleFocusTexture().usePixmap()) {
+            pos_pixmap = None;
+            m_pos_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
+        } else {
+            pos_pixmap = imageControl().renderImage(m_pos_window.width(), m_pos_window.height(),
+                                                    winFrameTheme().titleFocusTexture());
+            m_pos_window.setBackgroundPixmap(pos_pixmap);
+        }
+    } else {
+        if (!winFrameTheme().labelFocusTexture().usePixmap()) {
+            pos_pixmap = None;
+            m_pos_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
+        } else {
+            pos_pixmap = imageControl().renderImage(m_pos_window.width(), m_pos_window.height(),
+                                                     winFrameTheme().labelFocusTexture());
+            m_pos_window.setBackgroundPixmap(pos_pixmap);
+        }
+    }
+
+    if (tmp)
+        imageControl().removeImage(tmp);
+
+}
+
+
+
 
 /**
    Called when a set of watched modifiers has been released
