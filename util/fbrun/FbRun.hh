@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.5 2002/11/13 16:44:42 fluxgen Exp $
+// $Id: FbRun.hh,v 1.6 2002/11/15 14:03:14 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -42,6 +42,8 @@ public:
 	void setTitle(const std::string &title);
 	void move(int x, int y);
 	void resize(size_t width, size_t height);
+	size_t height() const { return m_height; }
+	size_t width() const { return m_width; }
 	/// hide window
 	void hide();
 	/// show window
