@@ -871,16 +871,24 @@ void Fluxbox::process_event(XEvent *e) {
 								screen->getCurrentWorkspace()->raiseWindow(
 									tab->next()->getWindow());
 								tab->next()->getWindow()->setInputFocus();
-							}
+							} else {
+								screen->getCurrentWorkspace()->raiseWindow(
+									tab->first()->getWindow());
+								tab->first()->getWindow()->setInputFocus();
+							}	
 						}
 						break;						
 					case Keys::grabPrevTab: 
 						if (focused_window && focused_window->getTab()) {
 							Tab *tab = focused_window->getTab();
-							if (tab->prev()) {								
+							if (tab->prev()) {
 								screen->getCurrentWorkspace()->raiseWindow(
 									tab->prev()->getWindow());
 								tab->prev()->getWindow()->setInputFocus();
+							} else {
+								screen->getCurrentWorkspace()->raiseWindow(
+									tab->last()->getWindow());
+								tab->last()->getWindow()->setInputFocus();
 							}
 						}
 						break;
