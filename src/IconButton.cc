@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.11 2003/10/31 20:02:49 rathnor Exp $
+// $Id: IconButton.cc,v 1.12 2003/11/19 12:57:27 rathnor Exp $
 
 #include "IconButton.hh"
 
@@ -53,18 +53,7 @@ public:
         int x = event.xbutton.x_root - (m_win.menu().width() / 2);
         int y = event.xbutton.y_root - (m_win.menu().height() / 2);
 
-        if (x < 0)
-            x = 0;
-        else if (x + m_win.menu().width() > m_win.screen().width())
-            x = m_win.screen().width() - m_win.menu().width();
-
-        if (y < 0)
-            y = 0;
-        else if (y + m_win.menu().height() > m_win.screen().height())
-            y = m_win.screen().height() - m_win.menu().height();
-
-        m_win.menu().move(x, y);
-        m_win.menu().show();        
+        m_win.showMenu(x, y);
     }
 private:
     FluxboxWindow &m_win;

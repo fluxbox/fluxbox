@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.40 2003/11/01 00:12:53 rathnor Exp $
+// $Id: Menu.cc,v 1.41 2003/11/19 12:57:27 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -425,11 +425,12 @@ void Menu::update(int active_index) {
     if (! menu.width) menu.width = menu.item_w;
 
     menu.frame_h = (menu.item_h * menu.persub);
-    if (menu.frame_h < 1)
-        menu.frame_h = 1;
+    if (menu.frame_h < 0)
+        menu.frame_h = 0;
 
-    menu.height = (title_vis ? menu.title_h + menu.title.borderWidth() : 0) +
-        menu.frame_h;
+    menu.height = menu.frame_h;
+    if (title_vis)
+        menu.height += menu.title_h + ((menu.frame_h>0)?menu.title.borderWidth():0);
 
     if (menu.height < 1)
         menu.height = 1;
@@ -554,7 +555,7 @@ void Menu::show() {
     raise();
     visible = true;
 
-    if (! m_parent) {
+    if (! m_parent && shown != this) {
         if (shown && (! shown->torn))
             shown->hide();
 

@@ -1,4 +1,13 @@
 (Format: Year/Month/Day)
+Changes for 0.9.7:
+*03/11/19:
+  * Fix menu draw bug for empty submenus (Simon)
+    Menu.cc
+  * Fix menu placement for iconbar and titlebar activation, including 
+    xinerama awareness (Simon)
+    Window.cc IconButton.cc
+  * Fix win menu hide straight after show when right click icon (Simon)
+    Menu.cc
 Changes for 0.9.6:
 *03/11/16:
   * Fixed sstream and strstream header check (Henrik)

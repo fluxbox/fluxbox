@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.243 2003/10/28 02:17:02 rathnor Exp $
+// $Id: Window.cc,v 1.244 2003/11/19 12:57:27 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1885,8 +1885,22 @@ void FluxboxWindow::restoreAttributes() {
 /**
    Show the window menu at pos mx, my
 */
-void FluxboxWindow::showMenu(int mx, int my) {
-    m_windowmenu.move(mx, my);
+void FluxboxWindow::showMenu(int menu_x, int menu_y) {
+    // move menu directly under titlebar
+
+    int head = screen().getHead(menu_x, menu_y);
+
+    // but not under screen
+    if (menu_y + m_windowmenu.height() >= screen().maxBottom(head))
+        menu_y = screen().maxBottom(head) - m_windowmenu.height() - 1 - m_windowmenu.fbwindow().borderWidth();
+
+    if (menu_x < static_cast<signed>(screen().maxLeft(head)))
+        menu_x = screen().maxLeft(head);
+    else if (menu_x + static_cast<signed>(m_windowmenu.width()) >= static_cast<signed>(screen().maxRight(head)))
+        menu_x = screen().maxRight(head) - m_windowmenu.width() - 1;
+
+
+    m_windowmenu.move(menu_x, menu_y);
     m_windowmenu.show();		
     m_windowmenu.raise();
 }
@@ -1900,14 +1914,12 @@ void FluxboxWindow::popupMenu() {
         m_windowmenu.hide(); 
         return;
     }
-    // move menu directly under titlebar
-    int diff_y = frame().titlebar().height() + frame().titlebar().borderWidth();
-    if (!decorations.titlebar) // if we don't have any titlebar
-        diff_y = 0;
 
-    m_windowmenu.move(m_last_button_x, frame().y() + diff_y);
-    m_windowmenu.show();
-    m_windowmenu.raise();
+    int menu_y = frame().titlebar().height() + frame().titlebar().borderWidth();
+    if (!decorations.titlebar) // if we don't have any titlebar
+        menu_y = 0;
+
+    showMenu(m_last_button_x, menu_y + frame().y());
 }
 
 /**
