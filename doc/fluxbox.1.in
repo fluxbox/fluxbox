@@ -54,7 +54,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "December 9th, 2004" "0.9.11"
+.TH fluxbox 1 "August 16th, 2004" "0.9.9"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -72,8 +72,8 @@ Fluxbox is built with C++, based on the sources of Blackbox 0.61.0.
 .BR Fast .
 .PP
 Fluxbox provides configurable window decorations, a root menu to launch
-applications and a toolbar that shows the current workspace name, a set of
-application names and the current time.
+applications and a toolbar that shows the current workspace name, the focused
+application name and the current time.
 There is also a workspace menu to add or remove workspaces. The `slit' can be
 used to dock small applications, e.g. most of the bbtools can use the slit.
 .PP
@@ -83,13 +83,15 @@ A double-click on the titlebar of a window will shade it i.e. the window will
 disappear, only the titlebar stays visible.
 .PP
 Fluxbox uses its own graphics class to render its images on the fly.
-By using style files, you can determine at a great level how your desktop looks.Fluxbox styles are compatible with those of Blackbox, so users migrating
+By using style files, you can determine at a great level how your desktop looks
+like.  Fluxbox styles are compatible with those of Blackbox, so users migrating
 can still use their current favourite themes.
 .PP
 .\" TODO wmhints support
 .\" TODO KDE2 GNome support
-Fluxbox supports the majority of the Extended Window Manager Hints (EWMH)
-specification, as well as numerous other Window Hint standards.
+Currently KDE WM hints are not supported, but Fluxbox is already prepared to
+support the new window manager specification that is now being developed for
+both Gnome and KDE2.0.
 .SH OPTIONS
 Fluxbox supports the following commandline options:
 .TP
@@ -124,9 +126,6 @@ exec fluxbox
 .EE
 as the last executed command of the script.
 When Fluxbox terminates, the X session will terminate too.
-Another alternative is to use the
-.IR startfluxbox (1)
-script, which adds some more convenience features.
 .PP
 When started, Fluxbox will try to find a default menufile in
 .IR @pkgdatadir@/menu .
@@ -174,7 +173,7 @@ Using the wheel on workspace name or the clock switches the workspace, this
 could also be enabled for the whole desktop in the fluxbox menu.
 .PP
 When 
-.B workspace warping
+.B desktop warping
 is enabled, dragging a window outside the desktop will change to the next desktop.
 .PP
 Using the toolbar menu you can enter a name for the current workspace (when finished,
@@ -186,11 +185,11 @@ workspaces, Workspace Icons, Workspace -- all windows from Workspace, All Window
 from all workspaces.
 .SS Layer
 Fluxbox manages following layers: Above Dock, Dock, Top, Normal, Bottom, Desktop.
-The list is from top to bottom. Slit and toolbar can be assigned to
-a layer with the menu, applications might be assigned to a layer in the apps file, or by hand in the window menu.
+Presumably the list is from top to bottom. Slit and toolbar can be assigned to
+a layer with the menu, applications might be assigned to a layer in the apps file.
 .\" TODO the apps file has numbers for layers
 .SS Focus Model
-The window that has the focus is the one that receives key and mouse events.
+The window that has the focus is the one that recieves keys and mouse events.
 The focus model is selectable via the Configuration menu.
 .P
 For
@@ -211,7 +210,7 @@ Middle clicking on border or titlebar will immediately lower the window.
 Right clicking on border or titlebar pops up the window menu,
 containing these commands:
 .TP
-.B Send To...
+.B Send To... (in 0.9.7)
 Send window to another workspace.
 When you select the workspace with the middle button, Fluxbox will
 send you along with the application to the selected workspace
@@ -222,11 +221,11 @@ Shade the window (display titlebar only)
 .B Iconify
 Iconify window.
 The `icon' can be found in the `Icons' submenu of the workspace menu
-as well as in the toolbar if a Toolbar mode showing Icons is selected.
+as well as in the toolbar.
 .TP
 .B Maximize
-(Un)Maximize window. Depending on toolbar and slit configuration maximize 
-covers the slit and toolbar or not.
+(Un)Maximize window. Depending on toolbar and slit configuration maximize does
+cover slit and toolbar or not.
 .TP
 .B Button1
 (usually left button) Maximize Normal, i.e. Vertical and Horizontal
@@ -235,7 +234,7 @@ covers the slit and toolbar or not.
 (Un)Maximize window only vertically.
 .TP
 .B Button3
-(Un)Maximize window only horizontally.
+(Un)Maximize window only horizontal.
 .TP
 .B Raise
 Raise window
@@ -245,13 +244,13 @@ Lower window
 .TP
 .B Stick
 (Un)Stick window.
-A stuck window will be displayed on all workspaces.
+A stuck window will always be displayed in the current workspace
 .TP
 .B Next Client
 Activate next client in this window's group.
 .TP
 .B Prev Client
-Activate previous client in this window's group.
+Activate prev client in this window's group.
 .TP
 .B Layer ...
 Change the layer of this window.
@@ -322,7 +321,7 @@ is needed.
 .PP
 A menu reload can also be forced by sending SIGUSR2.
 .SS Menu behaviour
-The behaviour of submenus in the menu can be configured in the 
+The behaviour of the menu can be configured in the 
 .I ~/.fluxbox/init
 file, with the following entries:
 .TP
@@ -353,14 +352,14 @@ required [begin] tag.
 .TP
 .B [exec] (label for command) {shell command}
 Inserts a command item into the menu.
-When you select the menu item from the menu, Fluxbox runs `shell command'.
+When you select the menu item from the menu, Fluxbox runs `shell command.'
 .TP
 .B [exit] (label for exit)
 Inserts an item that shuts down and exits Fluxbox.
 Any open windows are reparented to the root window before Fluxbox exits.
 .TP
 .B [include] (filename)
-Reads the file or directory
+Reads the file 
 .I filename
 into the current menu. The file has to start with
 .IR [begin]
@@ -516,7 +515,6 @@ one of the three extra keys on a pc104 branded with a sickening corporate logo.
 # Fluxbox keys file.
 # Any line starting with a # is a comment.
 Mod1 Tab :NextWindow
-Mod1 Shift Tab :PrevWindow
 Mod1 F1 :Workspace 1
 Mod1 F2 :Workspace 2
 Mod1 F3 :Workspace 3
@@ -537,7 +535,7 @@ Control n Mod1 n :NextTab
 As you can see from the last line, keybinds can be chained in a fashion similar
 to emacs keybindings.
 
-Commands are case-insensitive, workspace numbering starts at "1", some commands
+Commands are caseinsensitive, workspace numbering starts at "1", some commands
 have synonyms, the space between the last key and the :Command is mandatory.
 Possible Operations:
 
@@ -618,6 +616,31 @@ SetResourceValue \fIresourcename\fR \fIresource value\fR
 BindKey \fIkey string : action\fR   - this will append key string and 
     action to your keys file and bind the key
 .EE
+.\" --- groups ---
+.SH GROUPS FILE
+Since version 0.1.11, Fluxbox has a feature called autogrouping, that is apps are
+automatically grouped together if they are in the same group.
+You can create groups simply by editing the
+.IR ~/.fluxbox/groups
+file.
+The file takes the format of:
+.EX
+<app1> <app2> <app3> ... <appN>
+.EE
+where elements can be found with this command:
+.EX
+xprop WM_CLASS
+.EE
+Just launch this command in a terminal and click on the desired app after. It will
+tell you what to write as element.
+Each line forms a different group, e.g:
+.EX
+Navigator nedit
+xterm
+.EE
+This will create two groups, one with netscape and nedit, and one with xterm.
+The new window will only group itself to other windows on the same workspace
+and to the last window that was focused.
 .SH THE SLIT
 The slit is a special Fluxbox window frame that can contain dockable
 applications, e.g. the `bbtools.'
@@ -797,21 +820,47 @@ When you run Fluxbox on an 8-bit display, you must set this resource to 4.
 Default value is
 .IR 4.
 .TP
+.\" session.iconbar
 .B session.iconbar:
 .IR True
 or
 .IR False
 to enable or disable Fluxbox using the toolbar to display iconified windows.
 .TP
-.B session.screen0.iconbar.alignment:
-.IR LEFT, RELATIVE or RIGHT
+.B session.*.iconbar.alignment:
+.IR LEFT , 
+.IR RELATIVE or
+.IR RIGHT
 can be changed in the iconbar mode menu. If LEFT or RIGHT is specified the
 iconbar buttons have a fixed with and are left/right aligned.
 .TP
-.B session.screen0.iconbar.clientWidth: 
+.B session.*.iconbar.clientWidth: 
 .IR Integer
 is used to specify the iconbar button width for LEFT/RIGHT alignment.
 .TP
+.B session.*.iconbar.wheelMode: 
+.IR On ,
+.IR Off or
+.IR Screen
+.EX
+On     - enable mousewheeling on the iconbuttons
+Off    - disables mousewheeling on the iconbuttons
+Screen - uses the settings of desktopWheeling
+.EE
+.TP
+.B session.*.iconbar.deiconifyMode:
+.IR Current ,
+.IR Follow or
+.IR SemiFollow
+.EX
+      Current    - deiconifies the window on current workspace
+      Follow     - deiconifies the window on the workspace it
+                   was iconified from and jumps to that workspace
+      SemiFollow - acts as 'Current' for windows that were actually
+                   iconified, and as 'follow' for the others
+.EE
+.TP
+.\" session.tabs
 .B session.tabs:
 .IR True
 or
@@ -861,96 +910,46 @@ Sometimes, you want to force an application to have always the same dimensions,
 position, and other settings.  It is now possible with the new window-submenu
 called 'Remember...'.  Settings are saved in the
 .I ~/.fluxbox/apps
-file.  You don't have to edit the file yourself as most manipulations can be
+file.  You don't have to edit the file yourself as all manipulations can be
 done using the 'Remember...' submenu.
-.PP
-The format of a line in the apps file is:
-.PP
-.nf
-[app] (app-name) {count - optional}
-  [Property1]  {value1}
-  [Property2]  {value2}
-  ... 
-[end]
-.fi
-.PP
-Each 
-.B app-name
-can be a string, or a regular expression. By default the name is matched
-against a windows 
-.B WM_CLASS
-property (the first string in it, called the "instance"). You can
-match against the title, instance name (default), class name, or role
-(WM_WINDOW_ROLE property) by explicitly specifying it. You can also 
-specify multiple matches, which must ALL match for the properties to be applied. 
-If a count is supplied in curly brackets at the end of the app line, then
-the entry will only match at most count at any time (default is to match all matching windows).
-Some example
-.B [app]
-lines are:
-.PP
-.nf
-# match a standard xterm
-[app] (xterm)
-# match an xterm started like: xterm -name myshell
-[app] (myshell)
-# match any one Firefox window (the instance name is "Gecko")
-[app] (class=Firefox-bin) {1}
-# match the gaim buddy list window
-[app] (role=buddy_list)
-# match an rdesktop window to a particular host
-[app] (title=rdesktop - hostname.*)
-.fi
-
-.PP
-The following are the properties that can be defined in each 
-.B [app]
-entry. Each name must be enclosed in square brackets, and the value
-is generally in curly brackets.
-
 .TP
-.B Workspace {0-N}
+.B Workspace [0-N]
 Force the workspace of the application to be the current one, even if you launch
 the application from another workspace.
 .TP
-.B Dimensions {Width Height}
+.B Dimensions [Width Height]
 Remember the current dimensions.
 .TP
-.B Position ([WINCENTER|CENTER|UPPERLEFT|UPPERRIGHT|LOWERLEFT|LOWERRIGHT]) {X Y}
-Remember the current position. X and Y are relative to e.g. WINCENTER . Defaults to be relative to UPPERLEFT.
+.B Position ([WINCENTER|CENTER|UPPERLEFT|UPPERRIGHT|LOWERLEFT|LOWERRIGHT]) [X Y]
+Remember the current position. X and Y are relative to e.g. WINCENTER .
 .TP
-.B Layer {Layernum}
-Specify the layer to open the window on (by number). Each layer has a number. The named ones are:
-2-AboveDock, 4-Dock, 6-Top, 8-Normal, 10-Bottom, 12-Desktop.
-.TP
-.B Shaded {yes|no}
+.B Shaded state [yes|no]
 Remember the current shaded state.
 .TP
-.B Tab {yes|no}
+.B Tab state [yes|no]
 Remember the current tab state.
 .TP
-.B IconHidden {yes|no}
+.B IconHidden 
 hides the app from the icon bar
 .TP
-.B FocusHidden {yes|no}
-hides the app from the window cycling list to be reachable via Next/PrevWindow
+.B FocusHidden
+hides the app from the list to be reachable via Next/PrevWindow
 .TP
 .B Hidden
 is [IconHidden] + [FocusHidden]
 .TP
-.B Deco {NONE|NORMAL|TOOL|TINY|bitmask}
-Remember the current decoration state. There are several predefined decoration
-sets, but a bitmask can be used for fine-grained control. The bits are (from "1" to (1<<10): titlebar, handle/grips, border, iconify button, maximize button, close button, menu enabled, sticky button, shade button, tabbing enabled, focus enabled.
+.B Decoration state [NONE|NORMAL|TOOL|TINY]
+Remember the current decoration state.
 .TP
-.B Sticky {yes|no}
+.B Sticky state [yes|no]
 Remember the current sticky state.
 .TP
-.B Jump {yes|no}
-Jump to workspace - This one is only useful if 'Workspace' is set too.  The workspace is changed
+.B Jump to workspace [yes|no]
+This one is only useful if 'Workspace' is set too.  The workspace is changed
 to the workspace containing the application being launched.
 .TP
-.B Close {yes|no}
-Save settings on close - By default, application settings are not saved when a window is closed.  Set
+.B Save settings on close [yes|no]
+By default, application settings are not saved when a window is closed.  Set
 this option if you want previous settings to be saved when the window is closed.
 .PP
 The 
@@ -962,18 +961,6 @@ lines .
 .B options
 could be used to specify the screen, not the workspace, on which
 the application should started. startup is not yet setable by menu.
-
-.PP
-Finally, you can set windows to group together by using the 
-.B apps-file
-. This is achieved by using a 
-.B [group] 
-tag around several
-.B [app]
-tags, with an
-.B [end]
-tag to indicate the end of the group. You can also specify dimensions, position
-etc for the group as for normal app entries.
 
 .SS Applications example
 Here is a short example of an apps file:
@@ -991,49 +978,14 @@ Here is a short example of an apps file:
   [Position]    {16 0}
   [Jump]        {yes}
 [end]
-# start all aterms with no decorations
-[app] (aterm)
+[app] (xterm)
   [Deco]        {NONE}
-[end]
-# a group with all windows called "special-term", appears on layer 4 (bottom)
-[group]
-  [app] (special-term)
-  [Layer] {4}
 [end]
 .fi
 
 Parameters in the 'apps' file are case-sensitive.  Application names are taken
-from the first X-Window WM_CLASS attribute by default (WM_NAME = title, WM_WINDOW_ROLE = role).  You can see these attributes by using
+from the first X-Window WM_CLASS attribute.  You can see this attribute by using
 the xprop command.  Transient windows are not affected by application settings.
-.\" --- groups ---
-.SH GROUPS FILE
-Since version 0.1.11, Fluxbox has a feature called autogrouping, that is apps are
-automatically grouped together if they are in the same group. 
-Note that this feature is deprecated since version 0.9.1 in favour 
-of grouping using the apps file, since it is much more powerful.
-.PP
-You can create groups by editing the
-.IR ~/.fluxbox/groups
-file.
-The file takes the format of:
-.EX
-<app1> <app2> <app3> ... <appN>
-.EE
-where elements can be found with this command:
-.EX
-xprop WM_CLASS
-.EE
-Just launch this command in a terminal and click on the desired app after. It will
-tell you what to write as element.
-Each line forms a different group, e.g:
-.EX
-Navigator nedit
-xterm
-.EE
-This will create two groups, one with netscape and nedit, and one with xterm.
-The new window will only group itself to other windows on the same workspace
-and to the last window that was focused.
-
 .SH ENVIRONMENT
 .TP
 .B HOME
