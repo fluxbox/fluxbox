@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.104 2002/11/27 21:58:35 fluxgen Exp $
+// $Id: Window.cc,v 1.105 2002/11/30 20:39:42 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -34,6 +34,7 @@
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
+#include "ImageControl.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
