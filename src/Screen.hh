@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.75 2003/04/15 00:50:24 rathnor Exp $
+// $Id: Screen.hh,v 1.76 2003/04/15 12:14:13 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -231,6 +231,7 @@ public:
     inline void saveClock24Hour(bool c) { resource.clock24hour = c; }
 
     inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
+    inline const Theme::WindowStyle *getWindowStyle() const { return &theme->getWindowStyle(); } 
     inline FbWinFrameTheme &winFrameTheme() { return m_windowtheme; }
     inline const FbWinFrameTheme &winFrameTheme() const { return m_windowtheme; }
     inline FbTk::MenuTheme *menuTheme() { return m_menutheme.get(); }
