@@ -21,6 +21,11 @@ bugs:
 * Can lock up on workspace change - possibly related to above as it 
   works when there aren't too many xload windows started up yet.
 
+other todo:
+FAQ items for:
+ * "My window (e.g. mplayer/xmms) stops updating when I move windows 
+    around" => outline moving does this, it's not a bug, etc etc.
+
 fixed bugs (or not-our-fault bugs):
 * Some people get weird transparency behaviour.
   -> this appears to be a problem with nvidia drivers, make sure
