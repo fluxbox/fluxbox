@@ -1,7 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
-*02/10/03:
-   * Fixed Toolbar worlspace label text color.
+*02/11/13:
+   * Removed window size limitation, fixes Debian bug #159709 (Simon)
+     Window.cc
+   * Fixed geometry/position window size and alignment problem (Simon)
+     Screen.cc
+*02/11/03:
+   * Fixed Toolbar workspace label text color.
      Theme.cc
 *02/10/25:
    * Icon.hh/cc renamed to Iconmenu.hh/cc

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.96 2002/10/29 16:24:54 fluxgen Exp $
+// $Id: Window.cc,v 1.97 2002/11/12 14:54:45 rathnor Exp $
 
 #include "Window.hh"
 
@@ -210,8 +210,8 @@ tab(0) {
 	
 	if ((client.normal_hint_flags & PMinSize) &&
 			(client.normal_hint_flags & PMaxSize) &&
-			client.max_width <= client.min_width &&
-			client.max_height <= client.min_height) {
+			client.max_width != 0 && client.max_width <= client.min_width &&
+			client.max_height != 0 && client.max_height <= client.min_height) {
 		decorations.maximize = decorations.handle =
 			functions.resize = functions.maximize = false;
 			decorations.tab = false; //no tab for this window
@@ -1207,8 +1207,8 @@ void FluxboxWindow::getWMNormalHints() {
 		client.min_width = client.min_height =
 			client.base_width = client.base_height =
 			client.width_inc = client.height_inc = 1;
-		client.max_width = screen->getWidth();
-		client.max_height = screen->getHeight();
+		client.max_width = 0; // unbounded
+		client.max_height = 0;
 		client.min_aspect_x = client.min_aspect_y =
 			client.max_aspect_x = client.max_aspect_y = 1;
 		client.win_gravity = NorthWestGravity;
@@ -1225,8 +1225,8 @@ void FluxboxWindow::getWMNormalHints() {
 			client.max_width = sizehint.max_width;
 			client.max_height = sizehint.max_height;
 		} else {
-			client.max_width = screen->getWidth();
-			client.max_height = screen->getHeight();
+			client.max_width = 0; // unbounded
+			client.max_height = 0;
 		}
 
 		if (sizehint.flags & PResizeInc) {
@@ -1809,8 +1809,8 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		if (dw < client.min_width) dw = client.min_width;
 		if (dh < client.min_height) dh = client.min_height;
-		if (dw > client.max_width) dw = client.max_width;
-		if (dh > client.max_height) dh = client.max_height;
+		if (client.max_width != 0 && dw > client.max_width) dw = client.max_width;
+		if (client.max_height != 0 && dh > client.max_height) dh = client.max_height;
 
 		dw -= (dw % client.width_inc);
 		dw += client.base_width;
@@ -2649,8 +2649,8 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		if ((client.normal_hint_flags & PMinSize) &&
 			(client.normal_hint_flags & PMaxSize)) {
  
-			if (client.max_width <= client.min_width &&
-				client.max_height <= client.min_height) {
+			if (client.max_width != 0 && client.max_width <= client.min_width &&
+				client.max_height != 0 && client.max_height <= client.min_height) {
 				decorations.maximize = false;
 				decorations.handle = false;
 				functions.resize=false;
@@ -3662,9 +3662,9 @@ void FluxboxWindow::right_fixsize(int *gx, int *gy) {
 		dx = client.min_width;
 	if (dy < (signed) client.min_height)
 		dy = client.min_height;
-	if ((unsigned) dx > client.max_width)
+	if (client.max_width > 0 && (unsigned) dx > client.max_width)
 		dx = client.max_width;
-	if ((unsigned) dy > client.max_height)
+	if (client.max_height > 0 && (unsigned) dy > client.max_height)
 		dy = client.max_height;
 
 	dx /= client.width_inc;
@@ -3693,8 +3693,8 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
 
 	if (dx < (signed) client.min_width) dx = client.min_width;
 	if (dy < (signed) client.min_height) dy = client.min_height;
-	if ((unsigned) dx > client.max_width) dx = client.max_width;
-	if ((unsigned) dy > client.max_height) dy = client.max_height;
+	if (client.max_width > 0 && (unsigned) dx > client.max_width) dx = client.max_width;
+	if (client.max_height > 0 && (unsigned) dy > client.max_height) dy = client.max_height;
 
 	dx /= client.width_inc;
 	dy /= client.height_inc;
