@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MacroCommand.cc,v 1.1 2003/01/11 01:09:24 fluxgen Exp $
+// $Id: MacroCommand.cc,v 1.2 2003/09/29 14:00:46 fluxgen Exp $
 
 #include "MacroCommand.hh"
 
@@ -27,6 +27,10 @@ namespace FbTk {
 
 void MacroCommand::add(RefCount<Command> &com) {
     m_commandlist.push_back(com);
+}
+
+unsigned int MacroCommand::size() const {
+    return m_commandlist.size();
 }
 
 void MacroCommand::execute() {
