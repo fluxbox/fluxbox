@@ -76,21 +76,24 @@ public:
     void execute() {
         if(m_win.isIconic() || !m_win.isFocused()) {
             switch(m_tool.deiconifyMode()) {
-            case IconbarTool::CURRENT:
-                m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
-                break;
             case IconbarTool::FOLLOW:
                 m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                m_win.raiseAndFocus();
                 break;
             case IconbarTool::SEMIFOLLOW:
-                if (m_win.isIconic()) 
+                if (m_win.isIconic()) {
                     m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
-                else
+                } else {
                     m_win.screen().changeWorkspaceID(m_win.workspaceNumber());
+                    m_win.raiseAndFocus();
+                }
+                break;
+            case IconbarTool::CURRENT:
+            default:
+                m_win.screen().sendToWorkspace(m_win.screen().currentWorkspaceID(), &m_win);
                 break;
             };
 
-            m_win.raiseAndFocus();
        } else
            m_win.iconify();
     }
