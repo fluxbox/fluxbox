@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.7 2003/12/31 11:57:47 fluxgen Exp $
+// $Id: KeyUtil.hh,v 1.8 2004/10/08 11:51:16 akir Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
@@ -67,7 +67,7 @@ public:
     */
     unsigned int cleanMods(unsigned int mods) {
         //remove numlock, capslock and scrolllock
-         return mods & ~(capslock() | numlock() | scrolllock());
+         return mods & ~(capslock() | numlock() );
     }
 
     /**
