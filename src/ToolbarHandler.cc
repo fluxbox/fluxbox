@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.2 2003/03/10 21:38:47 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.3 2003/03/10 22:25:18 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -275,9 +275,16 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
 void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
     if (win.getScreen() != &m_screen) return;
     // don't care about current workspace except if in workspace mode
-    if (m_mode != WORKSPACE) return;
+    if (!(m_mode == WORKSPACE || (m_mode == WORKSPACEICONS && win.isIconic()))) return;
+    
     if (win.getWorkspaceNumber() == m_current_workspace) {
-        m_toolbar->addIcon(&win);
+        // TODO
+        // this shouldn't be needed, but is until Workspaces get fixed so that
+        // you only move between them, you don't 'add' and 'remove'
+        // alternatively, fix reassocaiteWindow so that the iconic stuff is
+        // done elsewhere
+        if (!m_toolbar->containsIcon(win))
+            m_toolbar->addIcon(&win);
     } else {
         // relies on the fact that this runs but does nothing if window isn't contained.
         m_toolbar->delIcon(&win);
