@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.31 2002/09/08 19:43:15 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.32 2002/09/14 10:58:25 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -1032,7 +1032,8 @@ void Toolbar::buttonPressEvent(XButtonEvent *be) {
 		FluxboxWindow *fluxboxwin = 0;
 		if ( iconbar && (fluxboxwin = iconbar->findWindow(be->window)) ) {
 			Windowmenu *wm = fluxboxwin->getWindowmenu();
-			fluxboxwin->showMenu(be->x_root, be->y_root - wm->height());
+			if (wm) 
+				fluxboxwin->showMenu(be->x_root, be->y_root - wm->height());
 		} else if (! toolbarmenu->isVisible()) {
 			int x, y;
 
