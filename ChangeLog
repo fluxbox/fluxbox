@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/04/28:
+   * Fix remembering (and general init) of decorations (Simon)
+     Window.hh/cc
    * Fix handleEvent issues, plus detachClient crash (Simon)
      Window.cc Screen.cc Remember.cc
 *03/04/27:

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.154 2003/04/28 12:56:38 rathnor Exp $
+// $Id: Window.cc,v 1.155 2003/04/28 13:38:23 rathnor Exp $
 
 #include "Window.hh"
 
@@ -2507,7 +2507,6 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 	//	functions.iconify = functions.maximize = true;
 	//	functions.move = true;   // We need to move even without decor
 	//	functions.resize = true; // We need to resize even without decor
-        frame().hideAllDecorations();
 	break;
 
     default:
@@ -2517,9 +2516,6 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
             decorations.menu = true;
         functions.resize = functions.move = functions.iconify =
             functions.maximize = true;
-        m_frame.showAllDecorations();
-        m_frame.show();
-        
 	break;
 
     case DECOR_TINY:
@@ -2527,7 +2523,6 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
             functions.move = functions.iconify = true;
         decorations.border = decorations.handle = decorations.maximize =
             functions.resize = functions.maximize = false;
-        m_frame.show();
 	break;
 
     case DECOR_TOOL:
@@ -2537,9 +2532,27 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
             functions.iconify = false;
 	break;
     }
-
+    applyDecorations();
+    // is this reconfigure necessary???
     reconfigure();
 
+}
+
+// commit current decoration values to actual displayed things
+void FluxboxWindow::applyDecorations() {
+    // we rely on frame not doing anything if it is already shown/hidden
+    if (decorations.titlebar) 
+        m_frame.showTitlebar();
+    else
+        m_frame.hideTitlebar();
+
+    if (decorations.handle)
+        m_frame.showHandle();
+    else
+        m_frame.hideHandle();
+
+    m_frame.show();
+    // is reconfigure needed here?
 }
 
 void FluxboxWindow::toggleDecoration() {
@@ -2599,6 +2612,7 @@ void FluxboxWindow::setDecorationMask(unsigned int mask) {
     decorations.shade    = mask & DECORM_SHADE;
     decorations.tab      = mask & DECORM_TAB;
     decorations.enabled  = mask & DECORM_ENABLED;
+    applyDecorations();
 }
 
 bool FluxboxWindow::validateClient() {

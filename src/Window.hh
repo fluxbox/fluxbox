@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.64 2003/04/27 14:36:05 rathnor Exp $
+// $Id: Window.hh,v 1.65 2003/04/28 13:38:23 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -202,6 +202,7 @@ public:
     //@}
 
     void setDecoration(Decoration decoration);
+    void applyDecorations();
     void toggleDecoration();
 	
     /** 
