@@ -19,13 +19,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.3 2003/06/24 16:26:56 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.4 2003/07/10 12:00:09 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
 #include "App.hh"
 #include <iostream>
 using namespace std;
+
+template<>
+void FbTk::ThemeItem<bool>::load() { }
+
+template<>
+void FbTk::ThemeItem<bool>::setDefaultValue() {
+    *(*this) = false;
+}
+
+template<>
+void FbTk::ThemeItem<bool>::setFromString(char const *strval) {
+    if (strcasecmp(strval, "true")==0)
+        *(*this) = true;
+    else
+        *(*this) = false;
+}
 
 ToolbarTheme::ToolbarTheme(int screen_num):
     FbTk::Theme(screen_num),
@@ -51,7 +67,8 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_justify(*this, "toolbar.justify", "Toolbar.Justify"),
     m_border_width(*this, "toolbar.borderWidth", "Toolbar.BorderWidth"),
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
-    m_display(FbTk::App::instance()->display()){
+    m_shape(*this, "toolbar.shape", "Toolbar.Shape"),
+    m_display(FbTk::App::instance()->display()) {
 
     Window rootwindow = RootWindow(m_display, screen_num);
 

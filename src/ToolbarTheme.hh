@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.3 2003/06/24 16:26:56 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.4 2003/07/10 12:00:09 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -73,10 +73,13 @@ public:
     ///@}
     FbTk::Justify justify() const { return *m_justify; }
 
-    int borderWidth() const { return *m_border_width; }
-    int bevelWidth() const { return *m_bevel_width; }    
+    inline int borderWidth() const { return *m_border_width; }
+    inline int bevelWidth() const { return *m_bevel_width; }    
+    inline bool shape() const { return *m_shape; }
+
     void addListener(FbTk::Observer &obs) { m_theme_change_sig.attach(&obs); }
     void removeListener(FbTk::Observer &obs) { m_theme_change_sig.detach(&obs); }
+
 private:
     // text colors
     FbTk::ThemeItem<FbTk::Color> m_label_textcolor, m_window_textcolor, m_clock_textcolor;
@@ -87,6 +90,8 @@ private:
     FbTk::ThemeItem<FbTk::Justify> m_justify;
 
     FbTk::ThemeItem<int> m_border_width, m_bevel_width;
+    FbTk::ThemeItem<bool> m_shape;
+
     // graphic context
     GC m_label_text_gc, m_window_text_gc, m_clock_text_gc, m_button_pic_gc;
     Display *m_display;
