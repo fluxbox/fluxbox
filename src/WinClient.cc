@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.37 2003/12/30 20:56:41 fluxgen Exp $
+// $Id: WinClient.cc,v 1.38 2004/04/01 14:06:42 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -45,8 +45,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      min_width(1), min_height(1),
                      max_width(0), max_height(0),
                      width_inc(1), height_inc(1),
-                     min_aspect_x(1), min_aspect_y(1),
-                     max_aspect_x(1), max_aspect_y(1),
+                     min_aspect_x(0), min_aspect_y(0),
+                     max_aspect_x(0), max_aspect_y(0),
                      base_width(1), base_height(1),
                      initial_state(0),
                      normal_hint_flags(0),
@@ -441,7 +441,7 @@ void WinClient::updateWMNormalHints() {
         max_width = 0; // unbounded
         max_height = 0;
         min_aspect_x = min_aspect_y =
-            max_aspect_x = max_aspect_y = 1;
+            max_aspect_x = max_aspect_y = 0;
         m_win_gravity = NorthWestGravity;
     } else {
         normal_hint_flags = sizehint.flags;
@@ -488,7 +488,7 @@ void WinClient::updateWMNormalHints() {
             max_aspect_y = sizehint.max_aspect.y;
         } else
             min_aspect_x = min_aspect_y =
-                max_aspect_x = max_aspect_y = 1;
+                max_aspect_x = max_aspect_y = 0;
 
         if (sizehint.flags & PWinGravity)
             m_win_gravity = sizehint.win_gravity;
@@ -630,6 +630,26 @@ void WinClient::updateWMProtocols() {
 
 }
 
+/* For aspect ratios
+   Note that its slightly simplified in that only the
+   line gradient is given - this is because for aspect
+   ratios, we always have the line going through the origin
+   
+   * Based on this formula:
+   http://astronomy.swin.edu.au/~pbourke/geometry/pointline/
+
+   Note that a gradient from origin goes through ( grad , 1 )
+ */
+
+void closestPointToLine(double &ret_x, double &ret_y, 
+                        double point_x, double point_y,
+                        double gradient) {
+    double u = (point_x * gradient + point_y) /
+        (gradient*gradient + 1);
+
+    ret_x = u*gradient;
+    ret_y = u;
+}
 
 /**
  * Changes width and height to the nearest (lower) value
@@ -659,6 +679,58 @@ void WinClient::applySizeHints(int &width, int &height,
 
     if (max_height > 0 && height > static_cast<signed>(max_height))
         height = max_height;
+
+    // we apply aspect ratios before incrementals
+    // Too difficult to exactly satisfy both incremental+aspect 
+    // in most situations 
+    // (they really shouldn't happen at the same time anyway).
+
+    /* aspect ratios are applied exclusive to the base_width
+     *
+     * min_aspect_x      width      max_aspect_x
+     * ------------  <  -------  <  ------------
+     * min_aspect_y      height     max_aspect_y
+     *
+     * beware of integer maximum (so I'll use doubles instead and divide)
+     *
+     * The trick is how to get back to the aspect ratio with minimal
+     * change - do we modify x, y or both?
+     * A: we minimise the distance between the current point, and
+     *    the target aspect ratio (consider them as x,y coordinates)
+     *  Consider that the aspect ratio is a line, and the current
+     *  w/h is a point, so we're just using the formula for
+     *  shortest distance from a point to a line!
+     */
+
+    if (min_aspect_y > 0 && max_aspect_y > 0 &&
+        (height - base_height) > 0) {
+        double widthd = static_cast<double>(width - base_width);
+        double heightd = static_cast<double>(height - base_height);
+
+        double min = static_cast<double>(min_aspect_x) / 
+            static_cast<double>(min_aspect_y); 
+
+        double max = static_cast<double>(max_aspect_x) / 
+            static_cast<double>(max_aspect_y); 
+
+        double actual = widthd / heightd;
+
+        if (max > 0 && min > 0 && actual > 0) { // don't even try otherwise
+            bool changed = false;
+            if (actual < min) {
+                changed = true;
+                closestPointToLine(widthd, heightd, widthd, heightd, min);
+            } else if (actual > max) {
+                changed = true;
+                closestPointToLine(widthd, heightd, widthd, heightd, max);
+            }
+
+            if (changed) {
+                width = static_cast<int>(widthd) + base_width;
+                height = static_cast<int>(heightd) + base_height;
+            }
+        }
+    }
 
     // enforce incremental size limits, wrt base size
     // only calculate this if we really need to
