@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.95 2002/10/25 21:01:49 fluxgen Exp $
+// $Id: Window.cc,v 1.96 2002/10/29 16:24:54 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2956,7 +2956,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 
 				default:
 					dtty = 0;
-					dbby = screen->getToolbar()->getY();
+					dbby = screen->getToolbar()->y();
 					break;
 				}
 
@@ -3339,9 +3339,9 @@ void FluxboxWindow::stopResizing(Window win) {
 //finds and redraw the icon label
 void FluxboxWindow::updateIcon() {
 	if (Fluxbox::instance()->useIconBar()) {
-		IconBar *iconbar = 0;
-		IconBarObj *icon = 0;
-		if ((iconbar = screen->getToolbar()->getIconBar()) != 0) {
+		const IconBar *iconbar = 0;
+		const IconBarObj *icon = 0;
+		if ((iconbar = screen->getToolbar()->iconBar()) != 0) {
 			if ((icon = iconbar->findIcon(this)) != 0)
 				iconbar->draw(icon, icon->width());
 		}
