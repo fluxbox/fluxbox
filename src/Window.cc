@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.275 2004/03/31 10:28:08 fluxgen Exp $
+// $Id: Window.cc,v 1.276 2004/04/12 18:19:10 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -254,6 +254,8 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
     m_object->moveToLayer(m_layernum);
 }
 
+int FluxboxWindow::s_num_grabs = 0;
+
 FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
                              FbTk::XLayer &layer):
     oplock(false),
@@ -265,17 +267,27 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_focussig(*this),
     m_titlesig(*this),
     m_themelistener(*this),
-    m_icon_hidden(false),
     moving(false), resizing(false), shaded(false), 
     iconic(false), focused(false),
     stuck(false), m_managed(false),
     maximized(MAX_NONE),
+    m_attaching_tab(0),
     m_screen(client.screen()),
     display(FbTk::App::instance()->display()),
     m_windowmenu(client.screen().menuTheme(), client.screen().imageControl(),
                  *client.screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+    m_button_grab_x(0), m_button_grab_y(0),
+    m_last_move_x(0), m_last_move_y(0),
+    m_last_resize_h(1), m_last_resize_w(1),
+    m_workspace_number(0),
+    m_current_state(0),
     m_old_decoration(DECOR_NORMAL),
-    m_client(&client),   
+    m_client(&client), 
+    m_shaped(false),
+    m_icon_hidden(false),
+    m_old_pos_x(0), m_old_pos_y(0),
+    m_old_width(1),  m_old_height(1),
+    m_last_button_x(0),  m_last_button_y(0),
     m_frame(tm, client.screen().imageControl(), 0, 0, 100, 100),
     m_layeritem(m_frame.window(), layer),
     m_layernum(layer.getLayerNum()),
@@ -299,7 +311,7 @@ FluxboxWindow::~FluxboxWindow() {
     if (moving || resizing || m_attaching_tab) {
         screen().hideGeometry();
         screen().hidePosition();
-        XUngrabPointer(display, CurrentTime);
+        ungrabPointer(CurrentTime);
     }
 
     // no longer a valid window to do stuff with
@@ -2357,7 +2369,7 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
         attachTo(re.x_root, re.y_root);
     else if (re.window == frame().window()) {
         if (re.button == 2 && re.state == Mod1Mask)
-            XUngrabPointer(display, CurrentTime);
+            ungrabPointer(CurrentTime);
         else 
             frame().buttonReleaseEvent(re);
     } else {
@@ -2528,17 +2540,17 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             screen().showGeometry(gx, gy);
         }
     } else if ((me.state & Button2Mask) && inside_titlebar && client != 0) {
-
+        if (s_num_grabs > 0)
+            return;
         //
         // drag'n'drop code for tabs
         //
         if (m_attaching_tab == 0) {
             // start drag'n'drop for tab
             m_attaching_tab = client;
-
-            XGrabPointer(display, me.window, False, Button2MotionMask |
-                         ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                         None, frame().theme().moveCursor(), CurrentTime);
+            grabPointer(me.window, False, Button2MotionMask |
+                        ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+                        None, frame().theme().moveCursor(), CurrentTime);
             m_last_move_x = me.x_root - 1;
             m_last_move_y = me.y_root - 1;
         
@@ -2803,13 +2815,16 @@ void FluxboxWindow::setDecorationMask(unsigned int mask) {
 }
 
 void FluxboxWindow::startMoving(Window win) {
+    if (s_num_grabs > 0)
+        return;
+
     moving = true;
     Fluxbox *fluxbox = Fluxbox::instance();
     // grabbing (and masking) on the root window allows us to 
     // freely map and unmap the window we're moving.
-    XGrabPointer(display, screen().rootWindow().window(), False, Button1MotionMask |
-                 ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                 screen().rootWindow().window(), frame().theme().moveCursor(), CurrentTime);
+    grabPointer(screen().rootWindow().window(), False, Button1MotionMask |
+                ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
+                screen().rootWindow().window(), frame().theme().moveCursor(), CurrentTime);
 
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
@@ -2853,7 +2868,7 @@ void FluxboxWindow::stopMoving() {
 
 
     screen().hidePosition();
-    XUngrabPointer(display, CurrentTime);
+    ungrabPointer(CurrentTime);
 	
     FbTk::App::instance()->sync(false); //make sure the redraw is made before we continue
 }
@@ -2997,6 +3012,9 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 
 void FluxboxWindow::startResizing(Window win, int x, int y) {
+    if (s_num_grabs > 0)
+        return;
+
     resizing = true;
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme().upperLeftAngleCursor() :
@@ -3004,8 +3022,8 @@ void FluxboxWindow::startResizing(Window win, int x, int y) {
                            (m_resize_corner == RIGHTBOTTOM) ? frame().theme().lowerRightAngleCursor() :
                                                             frame().theme().lowerLeftAngleCursor();
 
-    XGrabPointer(display, win, false, ButtonMotionMask | ButtonReleaseMask, 
-                 GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
+    grabPointer(win, false, ButtonMotionMask | ButtonReleaseMask, 
+                GrabModeAsync, GrabModeAsync, None, cursor, CurrentTime);
 
     int gx = 0, gy = 0;
     m_button_grab_x = x;
@@ -3041,14 +3059,14 @@ void FluxboxWindow::stopResizing(Window win) {
     moveResize(m_last_resize_x, m_last_resize_y,
                m_last_resize_w, m_last_resize_h);
 	
-    XUngrabPointer(display, CurrentTime);
+    ungrabPointer(CurrentTime);
 }
 
 void FluxboxWindow::attachTo(int x, int y) {
     if (m_attaching_tab == 0)
         return;
 
-    XUngrabPointer(display, CurrentTime);
+    ungrabPointer(CurrentTime);
 
 
     parent().drawRectangle(screen().rootTheme().opGC(),
@@ -3525,4 +3543,36 @@ void FluxboxWindow::reconfigTheme() {
     }
 
     sendConfigureNotify();
+}
+
+// grab pointer an increase counter.
+// we need this to count grab pointers,
+// especially at startup, where we can drag/resize while starting
+// and causing it to send events to windows later on and make
+// two different windows do grab pointer which only one window
+// should do at the time
+void FluxboxWindow::grabPointer(Window grab_window,
+                                Bool owner_events,
+                                unsigned int event_mask,
+                                int pointer_mode, int keyboard_mode,
+                                Window confine_to,
+                                Cursor cursor,
+                                Time time) {
+    XGrabPointer(FbTk::App::instance()->display(), 
+                 grab_window,
+                 owner_events,
+                 event_mask,
+                 pointer_mode, keyboard_mode,
+                 confine_to,
+                 cursor,
+                 time);
+    s_num_grabs++;
+}
+
+// ungrab and decrease counter
+void FluxboxWindow::ungrabPointer(Time time) {
+    XUngrabPointer(FbTk::App::instance()->display(), time);
+    s_num_grabs--;
+    if (s_num_grabs < 0)
+        s_num_grabs = 0;
 }

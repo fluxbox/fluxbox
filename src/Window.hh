@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.110 2004/03/21 09:00:25 rathnor Exp $
+// $Id: Window.hh,v 1.111 2004/04/12 18:19:10 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -413,6 +413,16 @@ private:
     void moveResizeClient(WinClient &client, int x, int y, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);
+
+    static void grabPointer(Window grab_window,
+                     Bool owner_events,
+                     unsigned int event_mask,
+                     int pointer_mode, int keyboard_mode,
+                     Window confine_to,
+                     Cursor cursor,
+                     Time time);
+    static void ungrabPointer(Time time);
+
     // state and hint signals
     WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig, m_titlesig;
 
@@ -487,6 +497,7 @@ private:
     ResizeCorner m_resize_corner;
 
     ExtraMenus m_extramenus;
+    static int s_num_grabs; ///< number of XGrabPointer's
 };
 
 
