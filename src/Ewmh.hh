@@ -36,7 +36,7 @@ public:
     void initForScreen(BScreen &screen);
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
-    
+
     void updateFocusedWindow(BScreen &screen, Window win);
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);
@@ -51,7 +51,7 @@ public:
     void updateHints(FluxboxWindow &win);
     void updateWorkspace(FluxboxWindow &win);
 
-    bool checkClientMessage(const XClientMessageEvent &ce, 
+    bool checkClientMessage(const XClientMessageEvent &ce,
                             BScreen * screen, WinClient * const winclient);
 
     bool propertyNotify(WinClient &winclient, Atom the_property);
@@ -63,9 +63,10 @@ public:
     void setFullscreen(FluxboxWindow &win, bool value);
 
 private:
-	
+
     typedef struct WindowState {
-        WindowState(int x, int y, unsigned int width, unsigned int height, int layer, unsigned int decor);
+        WindowState(int x, int y, unsigned int width, unsigned int height,
+                    int layer, unsigned int decor);
         int x, y, layer;
         unsigned int width, height, decor;
     } WindowState;
@@ -88,7 +89,7 @@ private:
     Atom m_net_close_window, m_net_wm_moveresize;
 
     // application window properties
-    Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, 
+    Atom m_net_properties, m_net_wm_name, m_net_wm_desktop,
         // types
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
@@ -96,16 +97,28 @@ private:
 
         // states
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
-	m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
+        m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
         m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
         m_net_wm_state_below,
         m_net_wm_state_above,
 
+        // allowed actions
+        m_net_wm_allowed_actions,
+        m_net_wm_action_move, 
+        m_net_wm_action_resize,
+        m_net_wm_action_minimize, 
+        m_net_wm_action_shade,
+        m_net_wm_action_stick, 
+        m_net_wm_action_maximize_horz, m_net_wm_action_maximize_vert,
+        m_net_wm_action_fullscreen, 
+        m_net_wm_action_change_desktop,
+        m_net_wm_action_close,
+
         m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
         m_net_wm_handled_icons;
-			
+
     // application protocols
     Atom m_net_wm_ping;
 

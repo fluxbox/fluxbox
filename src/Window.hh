@@ -71,12 +71,12 @@ public:
         MwmHintsFunctions   = (1l << 0), ///< use motif wm functions
         MwmHintsDecorations	= (1l << 1) ///< use motif wm decorations
     };
-	
+
     /// Motif wm functions
     enum MwmFunc{
         MwmFuncAll          = (1l << 0), ///< all motif wm functions
-        MwmFuncResize       = (1l << 1), ///< resize 
-        MwmFuncMove         = (1l << 2), ///< move 
+        MwmFuncResize       = (1l << 1), ///< resize
+        MwmFuncMove         = (1l << 2), ///< move
         MwmFuncIconify      = (1l << 3), ///< iconify
         MwmFuncMaximize     = (1l << 4), ///< maximize
         MwmFuncClose        = (1l << 5)  ///< close
@@ -100,10 +100,10 @@ public:
         ATTRIB_MAXVERT = 0x04,
         ATTRIB_OMNIPRESENT = 0x08,
         ATTRIB_WORKSPACE = 0x10,
-        ATTRIB_STACK = 0x20,		
+        ATTRIB_STACK = 0x20,
         ATTRIB_DECORATION = 0x40,
         ATTRIB_HIDDEN = 0x80,
-    };	
+    };
 
     /**
      * Types of maximization
@@ -114,8 +114,8 @@ public:
         MAX_VERT = 2, ///< maximize vertical
         MAX_FULL = 3  ///< maximize full
     };
-    /** 
-       This enumeration represents individual decoration 
+    /**
+       This enumeration represents individual decoration
        attributes, they can be OR-d together to get a mask.
        Useful for saving.
     */
@@ -165,7 +165,7 @@ public:
 
     /// attach client to our client list and remove it from old window
     void attachClient(WinClient &client, int x=-1, int y=-1);
-    /// detach client (remove it from list) and create a new window for it 
+    /// detach client (remove it from list) and create a new window for it
     bool detachClient(WinClient &client);
     /// detach current working client if we have more than one
     void detachCurrentClient();
@@ -199,6 +199,8 @@ public:
     void kill();
     /// set the window in withdrawn state
     void withdraw(bool interrupt_moving);
+    /// set fullscreen
+    void setFullscreen(bool flag);
     /// toggle maximize
     void maximize(int type = MAX_FULL);
     /// maximizes the window horizontal
@@ -210,7 +212,7 @@ public:
     /// toggles shade
     void shade();
     /// toggles sticky
-    void stick(); 
+    void stick();
     void raise();
     void lower();
     void tempRaise();
@@ -269,10 +271,13 @@ public:
     void setDecorationMask(unsigned int mask);
 
     /**
-       @name accessors		
+       @name accessors
     */
     //@{
-    // whether this window can be tabbed with other windows, 
+    
+    // @return NormalState | IconicState | WithdrawnState
+    unsigned int getWmState() const { return m_current_state; }
+    // whether this window can be tabbed with other windows,
     // and others tabbed with it
     inline void setTabable(bool tabable) { functions.tabable = tabable; }
     inline bool isTabable() { return functions.tabable; }
@@ -280,12 +285,13 @@ public:
     inline void setResizable(bool resizable) { functions.resize = resizable; }
 
     inline bool isFocusHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
-    inline bool isIconHidden() const { return m_icon_hidden; } 
+    inline bool isIconHidden() const { return m_icon_hidden; }
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
     bool isVisible() const;
     inline bool isIconic() const { return iconic; }
     inline bool isShaded() const { return shaded; }
+    inline bool isFullscreen() const { return fullscreen; }
     inline bool isMaximized() const { return maximized == MAX_FULL; }
     inline bool isIconifiable() const { return functions.iconify; }
     inline bool isMaximizable() const { return functions.maximize; }
@@ -318,8 +324,8 @@ public:
     const FbTk::Menu &menu() const { return *m_windowmenu.get(); }
 
 
-    // for extras to add menus. 
-    // These menus will be marked internal, 
+    // for extras to add menus.
+    // These menus will be marked internal,
     // and deleted when the window dies (as opposed to Screen
     void addExtraMenu(const char *label, FbTk::Menu *menu);
     void removeExtraMenu(FbTk::Menu *menu);
@@ -341,7 +347,7 @@ public:
 
     int layerNum() const { return m_layernum; }
     void setLayerNum(int layernum);
- 
+
 
     unsigned int titlebarHeight() const;
 
@@ -453,7 +459,7 @@ private:
 
     // Window states
     bool moving, resizing, shaded, iconic,
-        focused, stuck, m_managed;
+        focused, stuck, m_managed, fullscreen;
 
     int maximized;
 
@@ -474,9 +480,10 @@ private:
     unsigned int m_last_resize_h, m_last_resize_w; // handles height/width for resize "window"
 
     unsigned int m_workspace_number;
-    unsigned long m_current_state;
+    unsigned long m_current_state; // NormalState | IconicState | Withdrawn
 
     Decoration m_old_decoration;
+    unsigned int m_old_decoration_mask;
 
     ClientList m_clientlist;
     WinClient *m_client; ///< current client
@@ -491,14 +498,14 @@ private:
             maximize, close, menu, sticky, shade, tab, enabled;
     } decorations;
 
-    bool m_toggled_decos; 
+    bool m_toggled_decos;
 
     struct _functions {
         bool resize, move, iconify, maximize, close, tabable;
     } functions;
 
     bool m_shaped; ///< if the window is shaped with a mask
-    bool m_icon_hidden;  ///< if the window is in the iconbar 
+    bool m_icon_hidden;  ///< if the window is in the iconbar
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
@@ -507,6 +514,7 @@ private:
 
     FbTk::XLayerItem m_layeritem;
     int m_layernum;
+    int m_old_layernum;
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
 

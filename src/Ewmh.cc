@@ -60,10 +60,28 @@ Ewmh::~Ewmh() {
 void Ewmh::initForScreen(BScreen &screen) {
     Display *disp = FbTk::App::instance()->display();
 
+    /* From Extended Window Manager Hints, draft 1.3:
+     *
+     * _NET_SUPPORTING_WM_CHECK
+     * 
+     * The Window Manager MUST set this property on the root window 
+     * to be the ID of a child window created by himself, to indicate 
+     * that a compliant window manager is active. The child window 
+     * MUST also have the _NET_SUPPORTING_WM_CHECK property set to 
+     * the ID of the child window. The child window MUST also have 
+     * the _NET_WM_NAME property set to the name of the Window Manager.
+     * 
+     * Rationale: The child window is used to distinguish an active 
+     * Window Manager from a stale _NET_SUPPORTING_WM_CHECK property 
+     * that happens to point to another window. If the 
+     * _NET_SUPPORTING_WM_CHECK window on the client window is missing 
+     * or not properly set, clients SHOULD assume that no conforming 
+     * Window Manager is present.
+     */
 
     Window wincheck = XCreateSimpleWindow(disp,
                                           screen.rootWindow().window(),
-                                          0, 0, 5, 5, 0, 0, 0);
+                                          -10, -10, 5, 5, 0, 0, 0);
 
     if (wincheck != None) {
         // store the window so we can delete it later
@@ -72,10 +90,10 @@ void Ewmh::initForScreen(BScreen &screen) {
         screen.rootWindow().changeProperty(m_net_supporting_wm_check, XA_WINDOW, 32,
                                            PropModeReplace, (unsigned char *) &wincheck, 1);
         XChangeProperty(disp, wincheck, m_net_supporting_wm_check, XA_WINDOW, 32,
-			PropModeReplace, (unsigned char *) &wincheck, 1);
+                        PropModeReplace, (unsigned char *) &wincheck, 1);
 
         XChangeProperty(disp, wincheck, m_net_wm_name, XA_STRING, 8,
-			PropModeReplace, (unsigned char *) "Fluxbox", strlen("Fluxbox"));
+                        PropModeReplace, (unsigned char *) "Fluxbox", strlen("Fluxbox"));
     }
 
     //set supported atoms
@@ -86,9 +104,9 @@ void Ewmh::initForScreen(BScreen &screen) {
         // states that we support:
         m_net_wm_state_sticky,
         m_net_wm_state_shaded,
-	m_net_wm_state_maximized_horz,
-	m_net_wm_state_maximized_vert,
-	m_net_wm_state_fullscreen,
+        m_net_wm_state_maximized_horz,
+        m_net_wm_state_maximized_vert,
+        m_net_wm_state_fullscreen,
         m_net_wm_state_hidden,
         m_net_wm_state_skip_taskbar,
 
@@ -170,6 +188,7 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
      * Managers that do not recognize the extensions.
      *
      */
+
     win.winClient().property(m_net_wm_window_type, 0, 0x7fffffff, False, XA_ATOM,
                              &ret_type, &fmt, &nitems, &bytes_after,
                              &data);
@@ -501,7 +520,39 @@ void Ewmh::updateWorkarea(BScreen &screen) {
 }
 
 void Ewmh::updateState(FluxboxWindow &win) {
-    //!! TODO
+    
+    // TODO: should we update the _NET_WM_ALLOWED_ACTIONS
+    //       here too?
+    
+    std::vector<unsigned int> state;
+
+    if (win.isStuck())
+        state.push_back(m_net_wm_state_sticky);
+    if (win.isShaded())
+        state.push_back(m_net_wm_state_shaded);
+    if (win.layerNum() == Fluxbox::instance()->getBottomLayer())
+        state.push_back(m_net_wm_state_below);
+    if (win.layerNum() == Fluxbox::instance()->getAboveDockLayer())
+        state.push_back(m_net_wm_state_above);
+    if (win.isFocusHidden()) {
+        state.push_back(m_net_wm_state_hidden);
+        state.push_back(m_net_wm_state_skip_taskbar);
+    }
+    if (win.isFullscreen()) {
+        state.push_back(m_net_wm_state_fullscreen);
+    }
+
+    FluxboxWindow::ClientList::iterator it = win.clientList().begin();
+    FluxboxWindow::ClientList::iterator it_end = win.clientList().end();
+    
+    it = win.clientList().begin();
+    for (; it != it_end; ++it) {
+        if (!state.empty())
+            (*it)->changeProperty(m_net_wm_state, XA_ATOM, 32, PropModeReplace,
+                                  reinterpret_cast<unsigned char*>(&state.front()), state.size());
+        else
+            (*it)->deleteProperty(m_net_wm_state);
+    }
 }
 
 void Ewmh::updateLayer(FluxboxWindow &win) {
@@ -537,6 +588,7 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 // return true if we did handle the atom here
 bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
                               BScreen * screen, WinClient * const winclient) {
+
     if (ce.message_type == m_net_wm_desktop) {
         // ce.data.l[0] = workspace number
         // valid window
@@ -581,7 +633,6 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce,
             toggleState(win, ce.data.l[1]);
             toggleState(win, ce.data.l[2]);
         }
-
         return true;
     } else if (ce.message_type == m_net_number_of_desktops) {
         if (screen == 0)
@@ -676,7 +727,7 @@ bool Ewmh::propertyNotify(WinClient &winclient, Atom the_property) {
 #endif // DEBUG
         updateStrut(winclient);
         return true;
-    }
+    } 
 
     return false;
 }
@@ -725,6 +776,18 @@ void Ewmh::createAtoms() {
     m_net_wm_state_above = XInternAtom(disp, "_NET_WM_STATE_ABOVE", False);
     m_net_wm_state_below = XInternAtom(disp, "_NET_WM_STATE_BELOW", False);
 
+    // allowed actions
+    m_net_wm_allowed_actions = XInternAtom(disp, "_NET_WM_ALLOWED_ACTIONS", False);
+    m_net_wm_action_move = XInternAtom(disp, "_NET_WM_ACTIONS_MOVE", False);
+    m_net_wm_action_resize = XInternAtom(disp, "_NET_WM_ACTIONS_RESIZE", False);
+    m_net_wm_action_minimize = XInternAtom(disp, "_NET_WM_ACTIONS_MINIMIZE", False);
+    m_net_wm_action_shade = XInternAtom(disp, "_NET_WM_ACTIONS_SHADE", False);
+    m_net_wm_action_stick = XInternAtom(disp, "_NET_WM_ACTIONS_STICK", False);
+    m_net_wm_action_maximize_horz = XInternAtom(disp, "_NET_WM_ACTIONS_MAXIMIZE_HORZ", False);
+    m_net_wm_action_maximize_vert = XInternAtom(disp, "_NET_WM_ACTIONS_MAXIMIZE_VERT", False);
+    m_net_wm_action_fullscreen = XInternAtom(disp, "_NET_WM_ACTIONS_FULLSCREEN", False);
+    m_net_wm_action_change_desktop = XInternAtom(disp, "_NET_WM_ACTIONS_CHANGE_DESKTOP", False);
+    m_net_wm_action_close = XInternAtom(disp, "_NET_WM_ACTIONS_CLOSE", False);
 
     m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
     m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
@@ -739,6 +802,12 @@ void Ewmh::createAtoms() {
 void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
     // fullscreen implies maximised, above dock layer,
     // and no decorations (or decorations offscreen)
+    // 
+    // TODO: do we need the WindowState etc here anymore?
+    //       FluxboxWindow::setFullscreen() remembering old values
+    //       already and set them...
+    //       only reason i can see is that the user manually
+    //       moved the (fullscreened) window
     WindowState *saved_state = getState(win);
     if (value) {
         // fullscreen on
@@ -746,25 +815,17 @@ void Ewmh::setFullscreen(FluxboxWindow &win, bool value) {
             saved_state = new WindowState(win.x(), win.y(), win.width(),
                                           win.height(), win.layerNum(), win.decorationMask());
             saveState(win, saved_state);
-
-            // actually make it fullscreen
-
-            // clear decorations
-            win.setDecorationMask(0);
-
-            // be xinerama aware
-            BScreen &screen = win.screen();
-            int head = screen.getHead(win.fbWindow());
-            win.moveResize(screen.getHeadX(head), screen.getHeadY(head),
-                           screen.getHeadWidth(head), screen.getHeadHeight(head));
-            win.moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+            win.setFullscreen(true);
         }
     } else { // turn off fullscreen
         if (saved_state) { // no saved state, can't restore it
+            win.setFullscreen(false);
+            /*
             win.setDecorationMask(saved_state->decor);
             win.moveResize(saved_state->x, saved_state->y,
                            saved_state->width, saved_state->height);
             win.moveToLayer(saved_state->layer);
+            */
             clearState(win);
             saved_state = 0;
         }
@@ -791,11 +852,13 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
             (!value && win.isMaximized()))
         win.maximizeVertical();
     } else if (state == m_net_wm_state_fullscreen) { // fullscreen
+        if ((value && !win.isFullscreen()) ||
+            (!value && win.isFullscreen()))
         setFullscreen(win, value);
     } else if (state == m_net_wm_state_hidden ||
                state == m_net_wm_state_skip_taskbar) {
         win.setFocusHidden(value);
-        win.setIconHidden(win.isFocusHidden());
+        win.setIconHidden(value);
     } else if (state == m_net_wm_state_below) {  // bottom layer
         if (value)
             win.moveToLayer(Fluxbox::instance()->getBottomLayer());

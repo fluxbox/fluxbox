@@ -280,7 +280,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_themelistener(*this),
     moving(false), resizing(false), shaded(false),
     iconic(false), focused(false),
-    stuck(false), m_managed(false),
+    stuck(false), m_managed(false), fullscreen(false),
     maximized(MAX_NONE),
     m_attaching_tab(0),
     m_screen(client.screen()),
@@ -292,6 +292,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_workspace_number(0),
     m_current_state(0),
     m_old_decoration(DECOR_NORMAL),
+    m_old_decoration_mask(0),
     m_client(&client),
     m_toggled_decos(false),
     m_shaped(false),
@@ -302,6 +303,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_frame(tm, client.screen().imageControl(), 0, 0, 100, 100),
     m_layeritem(m_frame.window(), layer),
     m_layernum(layer.getLayerNum()),
+    m_old_layernum(0),
     m_parent(client.screen().rootWindow()),
     m_resize_corner(RIGHTBOTTOM) {
 
@@ -603,6 +605,7 @@ void FluxboxWindow::init() {
 void FluxboxWindow::shape() {
 #ifdef SHAPE
     if (m_shaped) {
+        if (isFullscreen())
         XShapeCombineShape(display,
                            frame().window().window(), ShapeBounding,
                            0, frame().clientArea().y(), // xOff, yOff
@@ -1579,10 +1582,70 @@ void FluxboxWindow::withdraw(bool interrupt_moving) {
     hide(interrupt_moving);
 }
 
+/** setFullscreen mode:
+    
+    - maximize as big as the screen is, dont care about slit / toolbar
+    - raise to toplayer
+*/
+void FluxboxWindow::setFullscreen(bool flag) {
+
+    const int head = screen().getHead(fbWindow());
+    Fluxbox* fb = Fluxbox::instance();
+    
+    if (flag && !isFullscreen()) {
+
+        if (isIconic())
+            deiconify();
+
+        if (isShaded())
+            shade();
+
+        frame().setUseShape(false);
+
+        m_old_decoration_mask = decorationMask();
+        m_old_layernum =layerNum();
+        m_old_pos_x = frame().x();
+        m_old_pos_y = frame().y();
+        m_old_width = frame().width();
+        m_old_height = frame().height();
+        
+        // clear decorations
+        setDecorationMask(0);
+
+        // be xinerama aware
+        moveResize(screen().getHeadX(head), screen().getHeadY(head),
+                   screen().getHeadWidth(head), screen().getHeadHeight(head));
+        moveToLayer(Fluxbox::instance()->getAboveDockLayer());
+
+        fullscreen = true;
+
+        stateSig().notify();
+
+    } else if (!flag && isFullscreen()) {
+
+        fullscreen = false;
+    
+        setDecorationMask(m_old_decoration_mask);
+        frame().setUseShape(!m_shaped);
+        
+        moveResize(m_old_pos_x, m_old_pos_y, m_old_width, m_old_height);
+        moveToLayer(m_old_layernum);
+
+        m_old_decoration_mask = 0;
+        m_old_layernum = Fluxbox::instance()->getNormalLayer();
+       
+        stateSig().notify();
+    }
+}
+
 /**
    Maximize window both horizontal and vertical
 */
 void FluxboxWindow::maximize(int type) {
+
+    if (isFullscreen())
+        return;
+    
     if (isIconic())
         deiconify();
 
