@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.9 2003/12/19 18:26:48 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.10 2004/01/13 14:41:32 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -240,6 +240,7 @@ void ClockTool::updateTime() {
     }
 
     m_button.clear();
+    m_button.updateTransparent();
 }
 
 void ClockTool::renderTheme() {
@@ -258,5 +259,7 @@ void ClockTool::renderTheme() {
     m_button.setJustify(m_theme.justify());
     m_button.setBorderWidth(m_theme.border().width());
     m_button.setBorderColor(m_theme.border().color());
+    m_button.setAlpha(m_theme.alpha());
     m_button.clear();
+    m_button.updateTransparent();
 }

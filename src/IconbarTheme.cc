@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.7 2003/08/29 00:48:41 fluxgen Exp $
+// $Id: IconbarTheme.cc,v 1.8 2004/01/13 14:41:32 rathnor Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -37,7 +37,8 @@ IconbarTheme::IconbarTheme(int screen_num,
     m_border(*this, name, altname),
     m_focused_text(*this, name + ".focused", altname + ".Focused"),
     m_unfocused_text(*this, name + ".unfocused", altname + ".Unfocused"),
-    m_name(name) {
+    m_name(name),
+    m_alpha(*this, name+".alpha", altname+".Alpha") {
 
     FbTk::ThemeManager::instance().loadTheme(*this);
 
@@ -103,9 +104,11 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
 
         return tm.loadItem(item, "window.label.focus.textColor", "Window.Label.Focus.TextColor");        
 
-    } else if (item.name() == m_name + ".unfocused.textColor")
+    } else if (item.name() == m_name + ".unfocused.textColor") {
         return tm.loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
-
+    } else if (item.name() == m_name + ".alpha") {
+        return tm.loadItem(item, "toolbar.alpha", "Toolbar.Alpha");
+    }
  
     return false;
 }

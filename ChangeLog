@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.8:
+*04/01/14:
+  * Implement transparency for toolbar (Simon)
+    - can use toolbar.alpha, as well as toolbar.<tool>.alpha
+    ToolTheme.hh/cc IconbarTheme.hh/cc *Tool.cc Container.cc Toolbar.cc
 *04/01/11:
   * Fixed ImageControl cache problem (Henrik)
     ImageControl.hh/cc	

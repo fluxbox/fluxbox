@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ButtonTool.cc,v 1.2 2003/12/07 16:39:43 fluxgen Exp $
+// $Id: ButtonTool.cc,v 1.3 2004/01/13 14:41:32 rathnor Exp $
 
 #include "ButtonTool.hh"
 
@@ -54,6 +54,7 @@ void ButtonTool::renderTheme() {
     btn.setGC(static_cast<const ButtonTheme &>(theme()).gc());
     btn.setBorderColor(theme().border().color());
     btn.setBorderWidth(theme().border().width());
+    btn.setAlpha(theme().alpha());
 
     Pixmap old_pm = m_cache_pm;
     if (!theme().texture().usePixmap()) {
@@ -81,5 +82,6 @@ void ButtonTool::renderTheme() {
         m_image_ctrl.removeImage(old_pm);
 
     btn.clear();
+    btn.updateTransparent();
 }
 

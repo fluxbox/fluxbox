@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.28 2004/01/10 01:19:13 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.29 2004/01/13 14:41:32 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -576,6 +576,7 @@ void IconbarTool::renderTheme() {
 
     m_icon_container.setBorderWidth(m_theme.border().width());
     m_icon_container.setBorderColor(m_theme.border().color());
+    m_icon_container.setAlpha(m_theme.alpha());
 
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
@@ -587,6 +588,7 @@ void IconbarTool::renderTheme() {
 void IconbarTool::renderButton(IconButton &button) {
 
     button.setPixmap(*m_rc_use_pixmap);
+    button.setAlpha(m_theme.alpha());
 
     // if we're rendering a button, there must be a back button.
     // The last button is always the regular width
@@ -628,6 +630,7 @@ void IconbarTool::renderButton(IconButton &button) {
     }
 
     button.clear();
+    button.updateTransparent();
 }
 
 void IconbarTool::deleteIcons() {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.135 2004/01/11 16:08:57 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.136 2004/01/13 14:41:32 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -450,7 +450,9 @@ void Toolbar::reconfigure() {
         
     frame.window.setBorderColor(theme().border().color());
     frame.window.setBorderWidth(theme().border().width());
+    frame.window.setAlpha(theme().alpha());
     frame.window.clear();
+    frame.window.updateTransparent();
     
     if (theme().shape() && m_shape.get())
         m_shape->update();
@@ -542,6 +544,8 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
 void Toolbar::exposeEvent(XExposeEvent &ee) {
     if (ee.window == frame.window) {
         frame.window.clearArea(ee.x, ee.y,
+                               ee.width, ee.height);
+        frame.window.updateTransparent(ee.x, ee.y,
                                ee.width, ee.height);
     }
 }
@@ -920,6 +924,7 @@ void Toolbar::rearrangeItems() {
     // unlock
     m_resize_lock = false;
     frame.window.clear();
+    frame.window.updateTransparent();
 
 }
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.10 2003/12/21 16:12:19 rathnor Exp $
+// $Id: Container.cc,v 1.11 2004/01/13 14:41:32 rathnor Exp $
 
 #include "Container.hh"
 
@@ -130,8 +130,10 @@ void Container::removeItem(int index) {
 void Container::removeAll() {
     m_selected = 0;
     m_item_list.clear();
-    if (!m_update_lock)
+    if (!m_update_lock) {
         clear();
+        updateTransparent();
+    }
 
 }
 
@@ -158,8 +160,10 @@ void Container::setSelected(int pos) {
         for (; pos != 0; --pos, ++it)
             continue;
         m_selected = *it;
-        if (m_selected)
+        if (m_selected) {
             m_selected->clear();
+            m_selected->updateTransparent();
+        }
     }
         
 }
@@ -173,8 +177,10 @@ void Container::setAlignment(Container::Alignment a) {
 }
 
 void Container::exposeEvent(XExposeEvent &event) {
-    if (!m_update_lock)
+    if (!m_update_lock) {
         clearArea(event.x, event.y, event.width, event.height);
+        updateTransparent(event.x, event.y, event.width, event.height);
+    }
 }
 
 void Container::repositionItems() {
@@ -212,6 +218,7 @@ void Container::repositionItems() {
                           max_width_per_client + extra,
                           height());
         (*it)->clear();
+        (*it)->updateTransparent();
     }
 
 }
