@@ -2,6 +2,8 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
+  * Icons menu isn't in Workspaces menu
+
   * Window handle is invisible sometimes.
 
   * Default style stuff is completely broken (e.g. try breaking the path to 
