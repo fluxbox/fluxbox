@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.72 2003/04/16 13:43:44 rathnor Exp $
+// $Id: Toolbar.cc,v 1.73 2003/04/23 00:17:51 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -108,6 +108,7 @@ void setupMenus(Toolbar &tbar) {
                                                           tbar.screen().getToolbarWidthPercentResource(),
                                                           0, 100); // min/max value
 
+
     FbTk::RefCount<FbTk::Command> reconfig_toolbar(new FbTk::
                                                    SimpleCommand<Toolbar>
                                                    (tbar, &Toolbar::reconfigure));
@@ -119,11 +120,9 @@ void setupMenus(Toolbar &tbar) {
     toolbar_menuitem_macro->add(save_resources);
 
     FbTk::RefCount<FbTk::Command> reconfig_toolbar_and_save_resource(toolbar_menuitem_macro);
-
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);  
 
     tbar.menu().insert(toolbar_menuitem);
-
 
     menu.setInternalMenu();
 
@@ -193,16 +192,16 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
                   0, 0, // pos
                   1, 1, // size
                  // event mask
-                  ButtonPressMask | ButtonReleaseMask | 
-                  ExposureMask |
+                 ButtonPressMask | ButtonReleaseMask | 
+                 ExposureMask |
                  EnterWindowMask | LeaveWindowMask),
     clock(window, //parent
-            0, 0, // pos
-            1, 1, // size
-           // event mask
-            ButtonPressMask | ButtonReleaseMask | 
-            ExposureMask |
-           EnterWindowMask | LeaveWindowMask),
+          0, 0, // pos
+          1, 1, // size
+          // event mask
+          ButtonPressMask | ButtonReleaseMask | 
+          ExposureMask |
+          EnterWindowMask | LeaveWindowMask),
     psbutton(ArrowButton::LEFT, // arrow type
              window, // parent
              0, 0, // pos
@@ -220,15 +219,15 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
              0, 0, // pos 
              1, 1), // size
     hour(-1), // start with invalid number to force update
-    minute(-1)
+    minute(-1) {
 
-{
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     // add windows to eventmanager
     evm.add(evh, window);
     evm.add(evh, workspace_label);
     evm.add(evh, window_label);
     evm.add(evh, clock);
+
 }
 
 Toolbar::Frame::~Frame() {
@@ -263,7 +262,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_themelistener(*this),
     m_layeritem(frame.window, layer) {
 
-       
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
 
@@ -435,12 +433,16 @@ void Toolbar::reconfigure() {
 	
     I18n *i18n = I18n::instance();
     frame.clock_w = m_theme.font().textWidth(
-                                             i18n->getMessage(
-                                                              FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeLength,
-                                                              "00:00000"),
-                                             strlen(i18n->getMessage(
-                                                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeLength,
-                                                                     "00:00000"))) + (frame.bevel_w * 4);
+                                             i18n->
+                                             getMessage(
+                                                        FBNLS::ToolbarSet, 
+                                                        FBNLS::ToolbarNoStrftimeLength,
+                                                        "00:00000"),
+                                             strlen(i18n->
+                                                    getMessage(
+                                                               FBNLS::ToolbarSet, 
+                                                               FBNLS::ToolbarNoStrftimeLength,
+                                                               "00:00000"))) + (frame.bevel_w * 4);
 	
 #endif // HAVE_STRFTIME
 
@@ -744,6 +746,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
         dy = frame.clock.height() - dx;
         dx = tmp;
     }		
+    frame.clock.clear();
     m_theme.font().drawText(
                             frame.clock.window(),
                             screen().getScreenNumber(),
@@ -800,9 +803,9 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
     size_t textlen = screen().getCurrentWorkspace()->name().size();
     unsigned int newlen = textlen;
     int dx = FbTk::doAlignment(frame.workspace_label_w, frame.bevel_w,
-                                   m_theme.justify(),
-                                   m_theme.font(),
-                                   text, textlen, newlen);
+                               m_theme.justify(),
+                               m_theme.font(),
+                               text, textlen, newlen);
     int dy = 1 + m_theme.font().ascent();
     if (m_theme.font().isRotated()) {
         int tmp = dy;
@@ -810,11 +813,12 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
         dx = tmp;
     }
     m_theme.font().drawText(
-        frame.workspace_label.window(),
-        screen().getScreenNumber(),
-        m_theme.labelTextGC(),
-        text, newlen,
-        dx, dy);
+                            frame.workspace_label.window(),
+                            screen().getScreenNumber(),
+                            m_theme.labelTextGC(),
+                            text, newlen,
+                            dx, dy);
+
 }
 
 void Toolbar::edit() {
@@ -910,7 +914,8 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
             FbTk::Menu *menu = screen().getWorkspacemenu();
             //move the workspace label and make it visible
             menu->move(re.x_root, re.y_root);
-            // make sure the entire menu is visible (TODO: this is repeated by other menus, make a function!)
+            // make sure the entire menu is visible 
+            //!!TODO: this is repeated by other menus, make a function!)
             int newx = menu->x(); // new x position of menu
             int newy = menu->y(); // new y position of menu
             if (menu->x() < 0)
@@ -977,68 +982,65 @@ void Toolbar::exposeEvent(XExposeEvent &ee) {
 
 
 void Toolbar::keyPressEvent(XKeyEvent &ke) {
-    if (ke.window == frame.workspace_label && editing) {
+    if (ke.window != frame.workspace_label.window() || !editing)
+        return;
 		
-        KeySym ks;
-        char keychar[1];
-        XLookupString(&ke, keychar, 1, &ks, 0);
+    KeySym ks;
+    char keychar[1];
+    XLookupString(&ke, keychar, 1, &ks, 0);
 
-        if (ks == XK_Return || ks == XK_Escape) {
+    if (ks == XK_Return || ks == XK_Escape) {			
+        editing = false;
+        Fluxbox * const fluxbox = Fluxbox::instance();			
+        fluxbox->setNoFocus(false);
+        if (fluxbox->getFocusedWindow()) {
+            fluxbox->getFocusedWindow()->setInputFocus();
+            fluxbox->getFocusedWindow()->setFocusFlag(true);
+        } else
+            XSetInputFocus(display, PointerRoot, None, CurrentTime);
 			
+        if (ks == XK_Return)	//change workspace name if keypress = Return
+            screen().getCurrentWorkspace()->setName(new_workspace_name.c_str());
 
-            editing = false;
-            Fluxbox * const fluxbox = Fluxbox::instance();			
-            fluxbox->setNoFocus(false);
-            if (fluxbox->getFocusedWindow()) {
-                fluxbox->getFocusedWindow()->setInputFocus();
-                fluxbox->getFocusedWindow()->setFocusFlag(true);
-            } else
-                XSetInputFocus(display, PointerRoot, None, CurrentTime);
-			
-            if (ks == XK_Return)	//change workspace name if keypress = Return
-                screen().getCurrentWorkspace()->setName(new_workspace_name.c_str());
+        new_workspace_name.erase(); //erase temporary workspace name
+        reconfigure();
+        //save workspace names
+        Fluxbox::instance()->save_rc();
 
-            new_workspace_name.erase(); //erase temporary workspace name
-            reconfigure();
-            //save workspace names
-            Fluxbox::instance()->save_rc();
+    } else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
 
-        } else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
-
-            if (ks == XK_BackSpace && new_workspace_name.size())
-                new_workspace_name.erase(new_workspace_name.size()-1);
-            else
-                new_workspace_name += keychar[0];
+        if (ks == XK_BackSpace && new_workspace_name.size())
+            new_workspace_name.erase(new_workspace_name.size()-1);
+        else
+            new_workspace_name += keychar[0];
 
 
-            frame.workspace_label.clear();
-            int l = new_workspace_name.size(), tw, x;
+        frame.workspace_label.clear();
+        int l = new_workspace_name.size(), tw, x;
 
-            tw = m_theme.font().textWidth(new_workspace_name.c_str(), l);
-            x = (frame.workspace_label_w - tw) / 2;
+        tw = m_theme.font().textWidth(new_workspace_name.c_str(), l);
+        x = (frame.workspace_label_w - tw) / 2;
 
-            if (x < (signed) frame.bevel_w)
-                x = frame.bevel_w;
-            int dy = 1 + m_theme.font().ascent();
-            if (m_theme.font().isRotated()) {
-                int tmp = dy;
-                dy = frame.workspace_label_w - x;
-                x = tmp;
-            }
+        if (x < (signed) frame.bevel_w)
+            x = frame.bevel_w;
+        int dy = 1 + m_theme.font().ascent();
+        if (m_theme.font().isRotated()) {
+            int tmp = dy;
+            dy = frame.workspace_label_w - x;
+            x = tmp;
+        }
 
-            m_theme.font().drawText(
-                frame.workspace_label.window(),
-                screen().getScreenNumber(),
-                screen().getWindowStyle()->l_text_focus_gc,
-                new_workspace_name.c_str(), l,
-                x, dy);
+        m_theme.font().drawText(
+                                frame.workspace_label.window(),
+                                screen().getScreenNumber(),
+                                screen().getWindowStyle()->l_text_focus_gc,
+                                new_workspace_name.c_str(), l,
+                                x, dy);
 
-            XDrawRectangle(display, frame.workspace_label.window(),
-                           screen().getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
-                           frame.label_h - 1);
-        }		
-		
-    }
+        XDrawRectangle(display, frame.workspace_label.window(),
+                       screen().getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
+                       frame.label_h - 1);
+    }		
 }
 
 
