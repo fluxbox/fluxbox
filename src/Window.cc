@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.151 2003/04/27 04:28:03 rathnor Exp $
+// $Id: Window.cc,v 1.152 2003/04/27 12:31:43 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2321,15 +2321,21 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             doSnapping(dx, dy);
             
             if (! screen.doOpaqueMove()) {
-                XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
+                XDrawRectangle(display, screen.getRootWindow(),
+                               screen.rootTheme().opGC(),
                                last_move_x, last_move_y, 
-                               m_frame.width() + 2*frame().window().borderWidth()-1,
-                               m_frame.height() + 2*frame().window().borderWidth()-1);
+                               m_frame.width() + 
+                               2*frame().window().borderWidth() - 1,
+                               m_frame.height() + 
+                               2*frame().window().borderWidth() - 1);
 
-                XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
+                XDrawRectangle(display, screen.getRootWindow(), 
+                               screen.rootTheme().opGC(),
                                dx, dy, 
-                               m_frame.width() + 2*frame().window().borderWidth()-1,
-                               m_frame.height() + 2*frame().window().borderWidth()-1);
+                               m_frame.width() + 
+                               2*frame().window().borderWidth()-1,
+                               m_frame.height() + 
+                               2*frame().window().borderWidth()-1);
                 last_move_x = dx;
                 last_move_y = dy;
             } else {
@@ -2350,7 +2356,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             startResizing(me.window, me.x, me.y, left); 
         } else if (resizing) {
             // draw over old rect
-            XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
+            XDrawRectangle(display, screen.getRootWindow(), 
+                           screen.rootTheme().opGC(),
                            last_resize_x, last_resize_y,
                            last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                            last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2378,7 +2385,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             }
 
             // draw resize rectangle
-            XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
+            XDrawRectangle(display, screen.getRootWindow(),
+                           screen.rootTheme().opGC(),
                            last_resize_x, last_resize_y,
                            last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
                            last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2469,7 +2477,6 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         ev.window == m_client->window()) {
         if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus()) 
             && !isFocused()) {
-           
             
             // check that there aren't any subsequent leave notify events in the 
             // X event queue
@@ -2481,7 +2488,6 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     
             if ((!sa.leave || sa.inferior) && setInputFocus())
                 installColormap(True);
-            
            
         }        
     }
@@ -2647,15 +2653,18 @@ void FluxboxWindow::stopMoving() {
 
    
     if (! screen.doOpaqueMove()) {
-        XDrawRectangle(FbTk::App::instance()->display(), screen.getRootWindow(), screen.rootTheme().opGC(),
+        XDrawRectangle(FbTk::App::instance()->display(),
+                       screen.getRootWindow(), screen.rootTheme().opGC(),
                        last_move_x, last_move_y, 
-                       frame().width() + 2*frame().window().borderWidth()-1,
-                       frame().height() + 2*frame().window().borderWidth()-1);
+                       frame().width() + 2*frame().window().borderWidth() - 1,
+                       frame().height() + 2*frame().window().borderWidth() - 1);
+
         moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
+        
         if (workspace_number != getScreen().getCurrentWorkspaceID()) {
-            screen.reassociateWindow(this, getScreen().getCurrentWorkspaceID(), true);
-            m_frame.show();
+            deiconify(true, false);
         }
+        
         fluxbox->ungrab();
     } else
         moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
