@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.3 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Window.hh,v 1.4 2002/01/11 10:40:59 fluxgen Exp $
 
 #ifndef   _WINDOW_HH_
 #define   _WINDOW_HH_
@@ -257,7 +257,7 @@ private:
       bevel_w, resize_w, resize_h, snap_w, snap_h;
   } frame;
 
-  enum { F_NoInput = 0, F_Passive, F_LocallyActive, F_GloballyActive };
+  enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
   void createButton(int type, ButtonEventProc, ButtonEventProc, ButtonDrawProc);
 	Window findTitleButton(int type);

@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.13 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Theme.cc,v 1.14 2002/01/11 10:43:55 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -69,7 +69,6 @@
 #include <iostream>
 using namespace std;
 
-
 Theme::Theme(Display *display, Window rootwindow, Colormap colormap, 
 	int screennum, BImageControl *ic, const char *filename, const char *rootcommand):
 m_imagecontrol(ic),
@@ -78,7 +77,6 @@ m_colormap(colormap),
 m_screennum(screennum),
 m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointer to std::string	
 {
-
 	//default settings	
 	m_menustyle.titlefont.set = m_menustyle.framefont.set = m_toolbarstyle.font.set =
 		m_windowstyle.font.set = m_windowstyle.tab.font.set =  0;
@@ -362,27 +360,27 @@ void Theme::loadMenuStyle() {
 										 &value_type, &value)) {
 		
 		if (! strncasecmp(value.addr, "empty", value.size))
-			m_menustyle.bullet = Basemenu::Empty;
+			m_menustyle.bullet = Basemenu::EMPTY;
 		else if (! strncasecmp(value.addr, "square", value.size))
-			m_menustyle.bullet = Basemenu::Square;
+			m_menustyle.bullet = Basemenu::SQUARE;
 		else if (! strncasecmp(value.addr, "diamond", value.size))
-			m_menustyle.bullet = Basemenu::Diamond;
+			m_menustyle.bullet = Basemenu::DIAMOND;
 		else
-			m_menustyle.bullet = Basemenu::Triangle;
+			m_menustyle.bullet = Basemenu::TRIANGLE;
 			
 	} else
-		m_menustyle.bullet = Basemenu::Triangle;
+		m_menustyle.bullet = Basemenu::TRIANGLE;
 
 	if (XrmGetResource(m_database, "menu.bullet.position",
 										 "Menu.Bullet.Position", &value_type, &value)) {
 
 		if (! strncasecmp(value.addr, "right", value.size))
-			m_menustyle.bullet_pos = Basemenu::Right;
+			m_menustyle.bullet_pos = Basemenu::RIGHT;
 		else
-			m_menustyle.bullet_pos = Basemenu::Left;
+			m_menustyle.bullet_pos = Basemenu::LEFT;
 			
 	} else
-		m_menustyle.bullet_pos = Basemenu::Left;
+		m_menustyle.bullet_pos = Basemenu::LEFT;
 
 	//---------- font
 
@@ -669,6 +667,7 @@ void Theme::loadRootCommand() {
 		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;
 		 
 		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
+
 		#else //         __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), NULL);  
 		#endif // !__EMX__     
@@ -687,12 +686,12 @@ void Theme::loadRootCommand() {
 		displaystring.append(DisplayString(m_display));
 		displaystring.append(tmpstring); // append m_screennum				
 		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;		 		
-			
+
 		bexec(value.addr, const_cast<char *>(displaystring.c_str()));
 	#else //	 __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, NULL);
 	#endif // !__EMX__
-	
+
 	#ifdef DEBUG
 		fprintf(stderr, "rootcommand:%s\n", value.addr); 
 	#endif 	
@@ -965,7 +964,6 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 
 void Theme::reconfigure() {
 
-	//Window rootwindow = DefaultRootWindow(m_display);
 	XGCValues gcv;
 	unsigned long gc_value_mask = GCForeground;
 	if (! I18n::instance()->multibyte())

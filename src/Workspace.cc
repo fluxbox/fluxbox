@@ -355,27 +355,27 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 			(screen->getBorderWidth2x() * 2),
 		place_x = 0, place_y = 0, change_x = 1, change_y = 1;
 
-	if (screen->getColPlacementDirection() == BScreen::BottomTop)
+	if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
 		change_y = -1;
-	if (screen->getRowPlacementDirection() == BScreen::RightLeft)
+	if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
 		change_x = -1;
 
 	register int test_x, test_y, curr_w, curr_h;
 
 	switch (screen->getPlacementPolicy()) {
-	case BScreen::RowSmartPlacement: {
+	case BScreen::ROWSMARTPLACEMENT: {
 		test_y = screen->getBorderWidth() + screen->getEdgeSnapThreshold();
-		if (screen->getColPlacementDirection() == BScreen::BottomTop)
+		if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
 			test_y = screen->getHeight() - win_h - test_y;
 
-		while (((screen->getColPlacementDirection() == BScreen::BottomTop) ?
+		while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 			test_y > 0 :		test_y + win_h < (signed) screen->getHeight()) &&
 		 ! placed) {
 			test_x = screen->getBorderWidth() + screen->getEdgeSnapThreshold();
-			if (screen->getRowPlacementDirection() == BScreen::RightLeft)
+			if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
 	test_x = screen->getWidth() - win_w - test_x;
 
-			while (((screen->getRowPlacementDirection() == BScreen::RightLeft) ?
+			while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
 				test_x > 0 : test_x + win_w < (signed) screen->getWidth()) &&
 			 ! placed) {
 				placed = True;
@@ -425,19 +425,19 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 
 		break; }
 
-	case BScreen::ColSmartPlacement: {
+	case BScreen::COLSMARTPLACEMENT: {
 		test_x = screen->getBorderWidth() + screen->getEdgeSnapThreshold();
-		if (screen->getRowPlacementDirection() == BScreen::RightLeft)
+		if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
 			test_x = screen->getWidth() - win_w - test_x;
 
-		while (((screen->getRowPlacementDirection() == BScreen::RightLeft) ?
+		while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
 			test_x > 0 : test_x + win_w < (signed) screen->getWidth()) &&
 		 ! placed) {
 			test_y = screen->getBorderWidth() + screen->getEdgeSnapThreshold();
-			if (screen->getColPlacementDirection() == BScreen::BottomTop)
+			if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
 	test_y = screen->getHeight() - win_h - test_y;
 
-			while (((screen->getColPlacementDirection() == BScreen::BottomTop) ?
+			while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 				test_y > 0 : test_y + win_h < (signed) screen->getHeight()) &&
 			 ! placed) {
 				placed = True;
