@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.4 2003/04/25 11:21:17 fluxgen Exp $
+// $Id: WinClient.cc,v 1.5 2003/04/27 02:26:21 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -33,6 +33,8 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
+#include <cassert>
+
 using namespace std;
 
 WinClient::WinClient(Window win, FluxboxWindow &fbwin):FbTk::FbWindow(win),

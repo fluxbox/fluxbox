@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
+*03/04/27
+   * Fix cassert #includes (Simon)
+     Window.cc WinClient.cc FbRun.cc signaltest.cc
 *03/04/26:
    * Add remember layer (Simon)
      Remember.hh/cc

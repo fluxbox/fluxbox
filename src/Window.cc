@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.149 2003/04/26 05:42:35 rathnor Exp $
+// $Id: Window.cc,v 1.150 2003/04/27 02:26:21 rathnor Exp $
 
 #include "Window.hh"
 
@@ -55,7 +55,7 @@
 #include <cstring>
 #include <cstdio>
 #include <iostream>
-
+#include <cassert>
 
 using namespace std;
 
