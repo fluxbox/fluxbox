@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.10 2003/07/28 15:06:33 rathnor Exp $
+// $Id: Ewmh.hh,v 1.11 2003/08/27 21:06:04 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -75,6 +75,7 @@ private:
     // application window properties
     Atom m_net_properties, m_net_wm_name, m_net_wm_desktop, m_net_wm_window_type,
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,
+	m_net_wm_state_maximized_horz, m_net_wm_state_maximized_vert,
         m_net_wm_strut, m_net_wm_icon_geometry, m_net_wm_icon, m_net_wm_pid,
         m_net_wm_handled_icons;
 			

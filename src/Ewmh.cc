@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.31 2003/08/11 14:51:15 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.32 2003/08/27 21:06:04 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -74,6 +74,8 @@ void Ewmh::initForScreen(BScreen &screen) {
         // states that we support:
         m_net_wm_state_sticky,
         m_net_wm_state_shaded,
+	m_net_wm_state_maximized_horz,
+	m_net_wm_state_maximized_vert,
 		
         m_net_wm_desktop,
 				
@@ -407,7 +409,9 @@ void Ewmh::createAtoms() {
     m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
     m_net_wm_state_sticky = XInternAtom(disp, "_NET_WM_STATE_STICKY", False);
     m_net_wm_state_shaded = XInternAtom(disp, "_NET_WM_STATE_SHADED", False);
-
+    m_net_wm_state_maximized_horz = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_HORZ", False);
+    m_net_wm_state_maximized_vert = XInternAtom(disp, "_NET_WM_STATE_MAXIMIZED_VERT", False);
+    
     m_net_wm_strut = XInternAtom(disp, "_NET_WM_STRUT", False);
     m_net_wm_icon_geometry = XInternAtom(disp, "_NET_WM_ICON_GEOMETRY", False);
     m_net_wm_icon = XInternAtom(disp, "_NET_WM_ICON", False);
@@ -428,7 +432,16 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) const {
         if ((value && !win.isShaded()) ||
             (!value && win.isShaded()))
             win.shade();
-    } 
+    }  else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
+        if ((value && !win.isMaximized()) ||
+            (!value && win.isMaximized()))
+	    	win.maximizeHorizontal();
+    } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
+        if ((value && !win.isMaximized()) ||
+            (!value && win.isMaximized()))
+		win.maximizeVertical();
+    }
+    
 	
 }
 
@@ -436,8 +449,14 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) const {
 void Ewmh::toggleState(FluxboxWindow &win, Atom state) const {
     if (state == m_net_wm_state_sticky) {
         win.stick();
-    } else if (state == m_net_wm_state_shaded)
+    } else if (state == m_net_wm_state_shaded){
         win.shade();
+    } else if (state == m_net_wm_state_maximized_horz ) { // maximized Horizontal
+        win.maximizeHorizontal();
+    } else if (state == m_net_wm_state_maximized_vert) { // maximized Vertical
+        win.maximizeVertical();
+    }
+    
 }
 
 
