@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.1 2002/10/02 16:26:05 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.2 2002/10/11 10:20:33 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -63,7 +63,8 @@ void Ewmh::initForScreen(const BScreen &screen) {
 	//set supported atoms
 	Atom atomsupported[] = {
 		m_net_wm_state,
-		m_net_wm_state_sticky,		
+		// states that we support:
+		m_net_wm_state_sticky,
 		m_net_wm_state_shaded,
 		
 		m_net_client_list,
@@ -186,7 +187,21 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 }
 
 bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen *screen, FluxboxWindow *win) {
-
+	if (win != 0) {
+		if (ce.message_type == m_net_wm_state) {
+			if (ce.data.l[0] == STATE_REMOVE) {
+				setState(*win, ce.data.l[1], false);
+				setState(*win, ce.data.l[2], false);
+			} else if (ce.data.l[0] == STATE_ADD) {
+				setState(*win, ce.data.l[1], true);
+				setState(*win, ce.data.l[2], true);
+			} else if (ce.data.l[0] == STATE_TOGGLE) {
+				toggleState(*win, ce.data.l[1]);
+				toggleState(*win, ce.data.l[2]);
+			}
+		}
+	}
+	return false;
 }
 
 
@@ -212,7 +227,8 @@ void Ewmh::createAtoms() {
 	m_net_wm_name = XInternAtom(disp, "_NET_WM_NAME", False);
 	m_net_wm_desktop = XInternAtom(disp, "_NET_WM_DESKTOP", False);
 	m_net_wm_window_type = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
-
+	
+	// state atom and the supported state atoms
 	m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
 	m_net_wm_state_sticky = XInternAtom(disp, "_NET_WM_STATE_STICKY", False);
 	m_net_wm_state_shaded = XInternAtom(disp, "_NET_WM_STATE_SHADED", False);
@@ -224,5 +240,28 @@ void Ewmh::createAtoms() {
 	m_net_wm_handled_icons = XInternAtom(disp, "_NET_WM_HANDLED_ICONS", False);
 
 	m_net_wm_ping = XInternAtom(disp, "_NET_WM_PING", False);
+}
+
+// set window state
+void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) const {
+
+	if (state == m_net_wm_state_sticky) { // STICKY
+		if (value && !win.isStuck() ||
+			(!value && win.isStuck()))
+			win.stick();
+	} else if (state == m_net_wm_state_shaded) { // SHADED
+		if ((value && !win.isShaded()) ||
+			(!value && win.isShaded()))
+			win.shade();
+	} 
+	
+}
+
+// toggle window state
+void Ewmh::toggleState(FluxboxWindow &win, Atom state) const {
+	if (state == m_net_wm_state_sticky) {
+		win.stick();
+	} else if (state == m_net_wm_state_shaded)
+		win.shade();
 }
 

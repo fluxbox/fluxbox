@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.1 2002/10/02 16:26:05 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.2 2002/10/11 10:20:33 fluxgen Exp $
 
 #include "AtomHandler.hh"
 
@@ -50,7 +50,8 @@ private:
 	
 	enum { STATE_REMOVE = 0, STATE_ADD = 1, STATE_TOGGLE = 2};
 	
-	void setState(FluxboxWindow &win, Atom flags) const;
+	void setState(FluxboxWindow &win, Atom state, bool value) const;
+	void toggleState(FluxboxWindow &win, Atom state) const;
 	void createAtoms();
 
 	// root window properties
