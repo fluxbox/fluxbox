@@ -1425,7 +1425,8 @@ void Fluxbox::save_rc(void) {
 
 	char *dbfile = getRcFilename();	//note: dbfile memory will be release @ end of function
 
-	load_rc();
+//	load_rc(); This overwrites configs made while running, for example
+// usage of iconbar and tabs
   
 	sprintf(rc_string, "session.iconbar: %s", resource.iconbar ? "true" : "false");
 	XrmPutLineResource(&new_blackboxrc, rc_string);
