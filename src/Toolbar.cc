@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.43 2002/11/27 21:48:41 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.44 2002/11/30 20:29:27 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -35,6 +35,7 @@
 #include "Window.hh"
 #include "Workspace.hh"
 #include "Workspacemenu.hh"
+#include "ImageControl.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE

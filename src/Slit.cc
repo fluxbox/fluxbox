@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.28 2002/11/27 21:50:09 fluxgen Exp $
+// $Id: Slit.cc,v 1.29 2002/11/30 20:28:32 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -37,10 +37,10 @@
 
 #include "i18n.hh"
 #include "fluxbox.hh"
-#include "Image.hh"
 #include "Screen.hh"
 #include "Slit.hh"
 #include "Toolbar.hh"
+#include "ImageControl.hh"
 
 #include <algorithm>
 #include <iostream>
