@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.95 2003/01/09 17:41:02 fluxgen Exp $
+// $Id: Screen.cc,v 1.96 2003/01/10 00:35:19 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -351,7 +351,7 @@ BScreen::BScreen(ResourceManager &rm,
     XDefineCursor(disp, getRootWindow(), fluxbox->getSessionCursor());
 
     image_control =
-        new BImageControl(scrn, true, fluxbox->colorsPerChannel(),
+        new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
                           fluxbox->getCacheLife(), fluxbox->getCacheMax());
     image_control->installRootColormap();
     root_colormap_installed = true;

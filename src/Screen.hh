@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.59 2003/01/09 17:38:40 fluxgen Exp $
+// $Id: Screen.hh,v 1.60 2003/01/10 00:34:08 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -57,6 +57,7 @@ class Slit;
 namespace FbTk {
 class MenuTheme;
 class Menu;
+class ImageControl;
 };
 
 /// Handles screen connection and screen clients
@@ -95,7 +96,7 @@ public:
     inline GC getOpGC() const { return theme->getOpGC(); }
 	
     inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
-    inline BImageControl *getImageControl() { return image_control; }
+    inline FbTk::ImageControl *getImageControl() { return image_control; }
     const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
 	
@@ -331,7 +332,7 @@ private:
     Pixmap geom_pixmap;
     Window geom_window;
 
-    BImageControl *image_control;
+    FbTk::ImageControl *image_control;
     Configmenu *configmenu;
 
     std::auto_ptr<FbTk::Menu> m_rootmenu;
