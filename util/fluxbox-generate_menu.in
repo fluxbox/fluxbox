@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.30 2004/09/11 23:59:13 fluxgen Exp $
+# $Id$
 
 #
 # Portability notes:
@@ -372,37 +372,39 @@ case ${LC_ALL} in
 
         BACKGROUNDMENU='Bakgrunder'
         BACKGROUNDMENUTITLE='Sätt bakgrund'
-        BROWSERMENU='Browsers'
+        BROWSERMENU='Webbläsare'
         CONFIGUREMENU='Konfiguration'
         EDITORMENU='Editorer'
-        EXITITEM='Exit (CHANGE ME!)'
+        EXITITEM='Avsluta'
         FBSETTINGSMENU='FB-inställningar'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        FILEUTILSMENU='Filverktyg'
+        FLUXBOXCOMMAND='Fluxbox kommando'
         GAMESMENU='Spel'
         GNOMEMENUTEXT='Gnome-menyer'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='KDE-menyer'
-        LOCKSCREEN='Lock screen'
+        LOCKSCREEN='Lås skärm'
         MISCMENU='Blandat'
+        MULTIMEDIAMENU='Multimedia'
         MUSICMENU='Musik'
-        NETMENU='Net'
-        OFFICEMENU='Office (CHANGE ME!)'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        NETMENU='Internet'
+        OFFICEMENU='Office'
+        RANDOMBACKGROUND='Slumpmässig bakgrund'
+        REGENERATEMENU='Generera meny'
         RELOADITEM='Ladda om konfig'
         RESTARTITEM='Starta om'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='Kör'
+        SCREENSHOT='Skärmdump'
         STYLEMENUTITLE='Välj en stil'
         SYSTEMSTYLES='Stiler'
         TERMINALMENU='Terminaler'
-        TOOLS='Tools (CHANGE ME!)'
+        TOOLS='Verktyg'
         USERSTYLES='Stiler'
+        VIDEOMENU='Video'
         WINDOWMANAGERS='Fönsterhanterare'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWNAME='Fönsternamn'
         WORKSPACEMENU='Arbetsytor'
-        XUTILSMENU='X-program (CHANGE ME!)'
+        XUTILSMENU='X-program'
         ;;
     nl_*) #Nederlandse locales
         BACKGROUNDMENU='Achtergrond'
@@ -1061,7 +1063,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu Mail
-        normal_find sylpheed kmail evolution thunderbird
+        normal_find sylpheed kmail evolution thunderbird mozilla-thunderbird
         find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
     append_menu_end
 
@@ -1162,7 +1164,7 @@ append_submenu "${OFFICEMENU}"
         find_it mrproject      append "[exec] (Mr.Project)       {mrproject}"
     done
 
-    normal_find abiword kword wordperfect katoob acroread xpdf
+    normal_find abiword kword wordperfect katoob acroread xpdf lyx
 append_menu_end
 
 append_submenu "${GAMESMENU}"
@@ -1171,7 +1173,10 @@ append_submenu "${GAMESMENU}"
         gnotski iagno knights eboard xboard scid freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins smclone \
         openmortal quake2 quake3 skoosh same-gnome enigma xbill \
-        icebreaker scorched3d sol dosbox
+        icebreaker scorched3d sol dosbox black-box enigma freeciv \
+        freeciv-server frozen-bubble liquidwar qt-nethack gnugo \
+        nethack-gnome pathological scummvm
+
     find_it et append "[exec] (Enemy Territory) {et}"
     find_it ut append "[exec] (Unreal Tournament) {ut}"
     find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
