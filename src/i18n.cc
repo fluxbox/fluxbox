@@ -1,5 +1,5 @@
 // i18n.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
 // i18n.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
@@ -22,26 +22,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.8 2002/12/02 22:50:57 fluxgen Exp $
+// $Id: i18n.cc,v 1.9 2003/04/26 15:46:03 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef	HAVE_CONFIG_H
-#include "../config.h"
-#endif // HAVE_CONFIG_H
-
 #include "i18n.hh"
 
 #include <X11/Xlocale.h>
 
-
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
-
 
 #ifdef	HAVE_LOCALE_H
 #include <locale.h>
@@ -59,15 +53,18 @@ void NLSInit(const char *catalog) {
 
 
 I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
-#ifdef		HAVE_SETLOCALE
+#ifdef 	HAVE_SETLOCALE
     //make sure we don't get 0 to m_locale string
     char *temp = setlocale(LC_ALL, "");
     m_locale = ( temp ?  temp : ""); 
     if (m_locale.size() == 0) {
         cerr<<"Warning: Failed to set locale, reverting to \"C\""<<endl;
 #endif // HAVE_SETLOCALE
+
         m_locale = "C";
-#ifdef		HAVE_SETLOCALE
+
+#ifdef	HAVE_SETLOCALE
+
     } else {		
         // MB_CUR_MAX returns the size of a char in the current locale
         if (MB_CUR_MAX > 1)
@@ -109,7 +106,7 @@ void I18n::openCatalog(const char *catalog) {
     catalog_filename += '/';
     catalog_filename += catalog;
 
-#ifdef		MCLoadBySet
+#ifdef MCLoadBySet
     m_catalog_fd = catopen(catalog_filename.c_str(), MCLoadBySet);
 #else // !MCLoadBySet
     m_catalog_fd = catopen(catalog_filename.c_str(), NL_CAT_LOCALE);
@@ -125,7 +122,8 @@ void I18n::openCatalog(const char *catalog) {
 }
 
 
-const char *I18n::getMessage(int set_number, int message_number, const char *default_message) {
+const char *I18n::getMessage(int set_number, int message_number, 
+                             const char *default_message) {
 
 #if defined(NLS) && defined(HAVE_CATGETS)
     if (m_catalog_fd != (nl_catd)-1)

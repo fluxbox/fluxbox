@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.10 2002/12/01 13:42:07 rathnor Exp $
+// $Id: i18n.hh,v 1.11 2003/04/26 15:46:03 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
@@ -30,37 +30,32 @@
 #include "../nls/blackbox-nls.hh"
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef		HAVE_LOCALE_H
-#	include <locale.h>
+#ifdef HAVE_LOCALE_H
+#include <locale.h>
 #endif // HAVE_LOCALE_H
 
-#ifdef		HAVE_NL_TYPES_H
+#ifdef HAVE_NL_TYPES_H
 // this is needed for linux libc5 systems
 extern "C" {
-#	include <nl_types.h>
+#include <nl_types.h>
 }
-#else // HAVE_NL_TYPES_H
-#include "nl_types_cygnus.h"
 #endif // HAVE_NL_TYPES_H
-
-#ifdef __CYGWIN32__
-#	include "nl_types_cygnus.h"
-#endif
 
 #include <string>
 
 class I18n {
 public:
     static I18n *instance();
-    inline const char *getLocale(void) const { return m_locale.c_str(); }
-    inline bool multibyte(void) const { return m_multibyte; }
-    inline const nl_catd &getCatalogFd(void) const { return m_catalog_fd; }
+    inline const char *getLocale() const { return m_locale.c_str(); }
+    inline bool multibyte() const { return m_multibyte; }
+    inline const nl_catd &getCatalogFd() const { return m_catalog_fd; }
 
-    const char *getMessage(int set_number, int message_number, const char *default_messsage = 0);
-    void openCatalog(const char *);
+    const char *getMessage(int set_number, int message_number, 
+                           const char *default_messsage = 0);
+    void openCatalog(const char *catalog);
 private:
     I18n();
     ~I18n();
