@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.5 2003/04/14 15:01:55 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.6 2003/04/15 13:38:57 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -152,7 +152,13 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
             Workspace::Windows::iterator wit = wins.begin();
             Workspace::Windows::iterator wit_end = wins.end();
             for (; wit != wit_end; ++wit) {
-                //   m_toolbar->addIcon(*(*wit));
+                    m_toolbar->addIcon(*wit);
+/*
+                FluxboxWindow::ClientList::iterator cit = (*wit)->clientList().begin();
+                FluxboxWindow::ClientList::iterator cit_end = (*wit)->clientList().end();
+                for (; cit != cit_end; ++cit)
+                    m_toolbar->addIcon(*(*cit));
+*/
             }
         }
     }
@@ -164,7 +170,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         BScreen::Icons::iterator iconit = iconlist.begin();
         BScreen::Icons::iterator iconit_end = iconlist.end();
         for(; iconit != iconit_end; ++iconit) {
-            //            m_toolbar->addIcon(*iconit);
+            m_toolbar->addIcon(*iconit);
         }
     }
     break;
@@ -174,7 +180,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         Workspace::Windows::iterator wit = wins.begin();
         Workspace::Windows::iterator wit_end = wins.end();
         for (; wit != wit_end; ++wit) {
-            // m_toolbar->addIcon(*wit);
+            m_toolbar->addIcon(*wit);
         }
     }
     // fall through and add icons for this workspace
