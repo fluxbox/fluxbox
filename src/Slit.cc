@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.61 2003/06/18 13:49:43 fluxgen Exp $
+// $Id: Slit.cc,v 1.62 2003/06/20 01:27:28 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -52,6 +52,8 @@
 #include "Transparent.hh"
 #include "IntResMenuItem.hh"
 #include "Xinerama.hh"
+#include "SlitTheme.hh"
+#include "SlitClient.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -114,74 +116,23 @@ void getWMName(BScreen *screen, Window window, std::string& name) {
 
 };
 
-/// holds slit client info
-class SlitClient {
-public:
-    /// For adding an actual window
-    SlitClient(BScreen *screen, Window win) {
-        initialize(screen, win);
-    }
-    /// For adding a placeholder
-    explicit SlitClient(const char *name) { 
-        initialize();
-        match_name = (name == 0 ? "" : name);
-
-    }
-
-    // Now we pre-initialize a list of slit clients with names for
-    // comparison with incoming client windows.  This allows the slit
-    // to maintain a sorted order based on a saved window name list.
-    // Incoming windows not found in the list are appended.  Matching
-    // duplicates are inserted after the last found instance of the
-    // matching name.
-    std::string match_name;
-
-    Window window, client_window, icon_window;
-
-    int x, y;
-    unsigned int width, height;
-    bool visible; ///< wheter the client should be visible or not
-
-    void initialize(BScreen *screen = 0, Window win= None) {
-        client_window = win;
-        window = icon_window = None;
-        x = y = 0;
-        width = height = 0;
-        if (match_name.size() == 0)
-            getWMName(screen, client_window, match_name);
-        visible = true;        
-    }
-    void disableEvents() {
-        if (window == 0)
-            return;
-        Display *disp = FbTk::App::instance()->display();
-        XSelectInput(disp, window, NoEventMask);
-    }
-    void enableEvents() {
-        if (window == 0)
-            return;
-        Display *disp = FbTk::App::instance()->display();
-        XSelectInput(disp, window, StructureNotifyMask |
-                 SubstructureNotifyMask | EnterWindowMask);
-    }
-};
 
 namespace { 
 
 class SlitClientMenuItem: public FbTk::MenuItem {
 public:
     explicit SlitClientMenuItem(SlitClient &client, FbTk::RefCount<FbTk::Command> &cmd):
-        FbTk::MenuItem(client.match_name.c_str(), cmd), m_client(client) {
-        FbTk::MenuItem::setSelected(client.visible);
+        FbTk::MenuItem(client.matchName().c_str(), cmd), m_client(client) {
+        FbTk::MenuItem::setSelected(client.visible());
     }
     const std::string &label() const {
-        return m_client.match_name;
+        return m_client.matchName();
     }
     bool isSelected() const {
-        return m_client.visible;
+        return m_client.visible();
     }
     void click(int button, int time) { 
-        m_client.visible = !m_client.visible;
+        m_client.setVisible(!m_client.visible());
         FbTk::MenuItem::click(button, time);
         Fluxbox::instance()->save_rc();
     }
@@ -241,25 +192,7 @@ private:
     Slit::Placement m_place;
 };
 
-
 }; // End anonymous namespace
-
-class SlitTheme:public FbTk::Theme {
-public:
-    explicit SlitTheme(Slit &slit):FbTk::Theme(slit.screen().screenNumber()), 
-                          m_slit(slit),
-                          m_texture(*this, "slit", "Slit") { 
-        // default texture type
-        m_texture->setType(FbTk::Texture::SOLID);
-    }
-    void reconfigTheme() {
-        m_slit.reconfigure();
-    }
-    const FbTk::Texture &texture() const { return *m_texture; }
-private:
-    Slit &m_slit;
-    FbTk::ThemeItem<FbTk::Texture> m_texture;
-};
 
 unsigned int Slit::s_eventmask = SubstructureRedirectMask |  ButtonPressMask | 
                                  EnterWindowMask | LeaveWindowMask | ExposureMask;
@@ -292,12 +225,23 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
       m_layeritem(0),
       m_slit_theme(new SlitTheme(*this)),
-      m_strut(0) {
+      m_strut(0),
+      m_rc_auto_hide(scr.resourceManager(), false, 
+                     scr.name() + ".slit.autoHide", scr.altName() + ".Slit.AutoHide"),
+      // TODO: this resource name must change
+      m_rc_maximize_over(scr.resourceManager(), false,
+                         scr.name() + ".maxOverSlit", scr.altName() + ".MaxOverSlit"),
+      m_rc_placement(scr.resourceManager(), BOTTOMRIGHT,
+                     scr.name() + ".slit.placement", scr.altName() + ".Slit.Placement"),
+      m_rc_direction(scr.resourceManager(), VERTICAL, 
+                     scr.name() + ".slit.direction", scr.altName() + ".Slit.Direction"),
+      m_rc_alpha(scr.resourceManager(), 255, 
+                 scr.name() + ".slit.alpha", scr.altName() + ".Slit.Alpha"),
+      m_rc_on_head(scr.resourceManager(), 0,
+                   scr.name() + ".slit.onhead", scr.altName() + ".Slit.onHead"),
+      m_rc_layernum(scr.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
+                    scr.name() + ".slit.layer", scr.altName() + ".Slit.Layer") {
 
-    // default placement and direction
-    m_direction = screen().getSlitDirection();
-    m_placement = screen().getSlitPlacement();
-    m_hidden = m_do_auto_hide = screen().doSlitAutoHide();
 
     frame.pixmap = None;
 
@@ -325,7 +269,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     FbTk::EventManager::instance()->add(*this, frame.window);
     m_transp.reset(new FbTk::Transparent(screen().rootPixmap(), frame.window.drawable(), 
-                                         *screen().slitAlphaResource(), 
+                                         255,
                                          screen().screenNumber()));
 
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
@@ -417,9 +361,9 @@ void Slit::addClient(Window w) {
     bool found_match = false;
     for (; it != it_end; ++it) {
         // If the name matches...
-        if ((*it)->match_name == match_name) {
+        if ((*it)->matchName() == match_name) {
             // Use the slot if no window is assigned
-            if ((*it)->window == None) {
+            if ((*it)->window() == None) {
                 client = (*it);
                 client->initialize(&screen(), w);
                 break;
@@ -446,20 +390,20 @@ void Slit::addClient(Window w) {
     if (wmhints != 0) {
         if ((wmhints->flags & IconWindowHint) &&
             (wmhints->icon_window != None)) {
-            XMoveWindow(disp, client->client_window, screen().width() + 10,
-                        screen().height() + 10);
-            XMapWindow(disp, client->client_window);				
-            client->icon_window = wmhints->icon_window;
-            client->window = client->icon_window;
+            XMoveWindow(disp, client->clientWindow(), screen().width() + 10,
+                        screen().height() + 10);            
+            XMapWindow(disp, client->clientWindow());
+            client->setIconWindow(wmhints->icon_window);
+            client->setWindow(client->iconWindow());
         } else {
-            client->icon_window = None;
-            client->window = client->client_window;
+            client->setIconWindow(None);
+            client->setWindow(client->clientWindow());
         }
 
         XFree(wmhints);
     } else {
-        client->icon_window = None;
-        client->window = client->client_window;
+        client->setIconWindow(None);
+        client->setWindow(client->clientWindow());
     }
 
     XWindowAttributes attrib;
@@ -496,30 +440,29 @@ void Slit::addClient(Window w) {
     }
 
     if (iskdedockapp)
-        client->width = client->height = 24;
+        client->resize(24, 24);
     else
 #endif // KDE
     
         {
-            if (XGetWindowAttributes(disp, client->window, &attrib)) {
-                client->width = attrib.width;
-                client->height = attrib.height;
+            if (XGetWindowAttributes(disp, client->window(), &attrib)) {
+                client->resize(attrib.width, attrib.height);
             } else { // set default size if we failed to get window attributes
-                client->width = client->height = 64;
+                client->resize(64, 64);
             }
         }
 
     // disable border for client window
-    XSetWindowBorderWidth(disp, client->window, 0);
+    XSetWindowBorderWidth(disp, client->window(), 0);
 
     // disable events to frame.window
     frame.window.setEventMask(NoEventMask);
     client->disableEvents();
     
 
-    XReparentWindow(disp, client->window, frame.window.window(), 0, 0);
-    XMapRaised(disp, client->window);
-    XChangeSaveSet(disp, client->window, SetModeInsert);
+    XReparentWindow(disp, client->window(), frame.window.window(), 0, 0);
+    XMapRaised(disp, client->window());
+    XChangeSaveSet(disp, client->window(), SetModeInsert);
     // reactivate events for frame.window
     frame.window.setEventMask(s_eventmask);
     // setup event for slit client window
@@ -529,8 +472,8 @@ void Slit::addClient(Window w) {
     XFlush(disp);
 
     // add slit client to eventmanager
-    FbTk::EventManager::instance()->add(*this, client->client_window);
-    FbTk::EventManager::instance()->add(*this, client->icon_window);
+    FbTk::EventManager::instance()->add(*this, client->clientWindow());
+    FbTk::EventManager::instance()->add(*this, client->iconWindow());
 
     frame.window.show();
     clearWindow();
@@ -543,27 +486,25 @@ void Slit::addClient(Window w) {
 }
 
 void Slit::setDirection(Direction dir) {
-    m_direction = dir;
-    screen().saveSlitDirection(dir);
+    *m_rc_direction = dir;
     reconfigure();
 }
 
 void Slit::setPlacement(Placement place) {
-    m_placement = place;
-    screen().saveSlitPlacement(place);
+    *m_rc_placement = place;
     reconfigure();
 }
 
 void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
 #ifdef DEBUG
-    cerr<<"Slit::removeClient( client->client_window = 0x"<<hex<<client->client_window<<
+    cerr<<"Slit::removeClient( client->client_window = 0x"<<hex<<client->clientWindow()<<
         ", client->icon_window)"<<endl;
 #endif // DEBUG
     // remove from event manager
-    if (client->client_window != 0)
-        FbTk::EventManager::instance()->remove(client->client_window);
-    if (client->icon_window != 0)
-        FbTk::EventManager::instance()->remove(client->icon_window);
+    if (client->clientWindow() != 0)
+        FbTk::EventManager::instance()->remove(client->clientWindow());
+    if (client->iconWindow() != 0)
+        FbTk::EventManager::instance()->remove(client->iconWindow());
 
     // Destructive removal?
     if (destroy)
@@ -571,20 +512,20 @@ void Slit::removeClient(SlitClient *client, bool remap, bool destroy) {
     else // Clear the window info, but keep around to help future sorting?
         client->initialize();
 
-    screen().removeNetizen(client->window);
+    screen().removeNetizen(client->window());
 
-    if (remap && client->window != 0) {
+    if (remap && client->window() != 0) {
         Display *disp = FbTk::App::instance()->display();
 
-        if (!client->visible)
-            XMapWindow(disp, client->window);
+        if (!client->visible())
+            client->show();
 
         client->disableEvents();
         // stop events to frame.window temporarly
         frame.window.setEventMask(NoEventMask);
-        XReparentWindow(disp, client->window, screen().rootWindow().window(),
-			client->x, client->y);
-        XChangeSaveSet(disp, client->window, SetModeDelete);
+        XReparentWindow(disp, client->window(), screen().rootWindow().window(),
+			client->x(), client->y());
+        XChangeSaveSet(disp, client->window(), SetModeDelete);
         // reactivate events to frame.window
         frame.window.setEventMask(s_eventmask);
         XFlush(disp);
@@ -610,7 +551,7 @@ void Slit::removeClient(Window w, bool remap) {
     SlitClients::iterator it = m_client_list.begin();
     SlitClients::iterator it_end = m_client_list.end();
     for (; it != it_end; ++it) {
-        if ((*it)->window == w) {
+        if ((*it)->window() == w) {
             removeClient((*it), remap, false);
             reconf = true;
 
@@ -624,54 +565,46 @@ void Slit::removeClient(Window w, bool remap) {
 
 
 void Slit::reconfigure() {
-    m_transp->setAlpha(*screen().slitAlphaResource());
+    m_transp->setAlpha(*m_rc_alpha);
 
     frame.width = 0;
     frame.height = 0;
-
-    // be sure to sync slit auto hide up with the screen's menu resource
-    m_do_auto_hide = screen().doSlitAutoHide();
 
     // Need to count windows because not all client list entries
     // actually correspond to mapped windows.
     int num_windows = 0;
     const int bevel_width = screen().rootTheme().bevelWidth();
-
+    // determine width or height increase
+    bool height_inc = false;
     switch (direction()) {
-    case VERTICAL: {
-        SlitClients::iterator it = m_client_list.begin();
-        SlitClients::iterator it_end = m_client_list.end();
-        for (; it != it_end; ++it) {
-            // client created window?
-            if ((*it)->window != None && (*it)->visible) {
-                num_windows++;
-                frame.height += (*it)->height + bevel_width;					
-                
-                if (frame.width < (*it)->width) 
-                    frame.width = (*it)->width;
+    case VERTICAL:
+        height_inc = true;
+        break;
+    case HORIZONTAL: // already false
+        break;
+    }
+
+    SlitClients::iterator client_it = m_client_list.begin();
+    SlitClients::iterator client_it_end = m_client_list.end();
+    for (; client_it != client_it_end; ++client_it) {
+        // client created window?
+        if ((*client_it)->window() != None && (*client_it)->visible()) {
+            num_windows++;
+            if (height_inc) {
+                // increase height of slit for each client (VERTICAL mode)
+                frame.height += (*client_it)->height() + bevel_width;		
+                // the slit should always have the width of the largest client
+                if (frame.width < (*client_it)->width()) 
+                    frame.width = (*client_it)->width();
+            } else {
+                // increase width of slit for each client (HORIZONTAL mode)
+                frame.width += (*client_it)->width() + bevel_width;
+                // the slit should always have the width of the largest client
+                if (frame.height < (*client_it)->height())
+                    frame.height = (*client_it)->height();
             }
         }
     }
-
-        break;
-
-    case HORIZONTAL: {
-        SlitClients::iterator it = m_client_list.begin();
-        SlitClients::iterator it_end = m_client_list.end();
-        for (; it != it_end; ++it) {
-            //client created window?
-            if ((*it)->window != None && (*it)->visible) {
-                num_windows++;
-                frame.width += (*it)->width + bevel_width;
-                //frame height < client height?
-                if (frame.height < (*it)->height)
-                    frame.height = (*it)->height;
-            }
-        }
-     
-    }
-        break;
-    } // end switch
 
     if (frame.width < 1)
         frame.width = 1;
@@ -703,7 +636,7 @@ void Slit::reconfigure() {
         frame.window.setBackgroundColor(texture.color());
     } else {
         frame.pixmap = image_ctrl.renderImage(frame.width, frame.height,
-                                               texture);
+                                              texture);
         if (frame.pixmap == 0)
             frame.window.setBackgroundColor(texture.color());
         else
@@ -714,119 +647,69 @@ void Slit::reconfigure() {
         image_ctrl.removeImage(tmp);
 
     clearWindow();
-    int x, y;
 
+    int x = 0, y = 0;
+    height_inc = false;
     switch (direction()) {
     case VERTICAL:
         x = 0;
         y = bevel_width;
-
-        {
-            SlitClients::iterator it = m_client_list.begin();
-            SlitClients::iterator it_end = m_client_list.end();
-            for (; it != it_end; ++it) {
-                if ((*it)->window == None)
-                    continue;
-
-                //client created window?
-                if ((*it)->visible) 
-                    XMapWindow(disp, (*it)->window);
-                else {
-                    (*it)->disableEvents();
-                    XUnmapWindow(disp, (*it)->window);
-                    (*it)->enableEvents();
-                    continue;
-                }
-
-                x = (frame.width - (*it)->width) / 2;                
-
-                XMoveResizeWindow(disp, (*it)->window, x, y,
-                                  (*it)->width, (*it)->height);
-
-                // for ICCCM compliance
-                (*it)->x = x;
-                (*it)->y = y;
-
-                XEvent event;
-                event.type = ConfigureNotify;
-
-                event.xconfigure.display = disp;
-                event.xconfigure.event = (*it)->window;
-                event.xconfigure.window = (*it)->window;
-                event.xconfigure.x = x;
-                event.xconfigure.y = y;
-                event.xconfigure.width = (*it)->width;
-                event.xconfigure.height = (*it)->height;
-                event.xconfigure.border_width = 0;
-                event.xconfigure.above = frame.window.window();
-                event.xconfigure.override_redirect = False;
-
-                XSendEvent(disp, (*it)->window, False, StructureNotifyMask,
-                           &event);
-
-                y += (*it)->height + bevel_width;
-            } // end for
-        }
-
+        height_inc = true;
         break;
 
     case HORIZONTAL:
         x = bevel_width;
         y = 0;
-
-        {
-            SlitClients::iterator it = m_client_list.begin();
-            SlitClients::iterator it_end = m_client_list.end();
-            for (; it != it_end; ++it) {
-                //client created window?
-                if ((*it)->window == None)
-                    continue;
-
-                if ((*it)->visible) { 
-                    XMapWindow(disp, (*it)->window);
-                } else {
-                    (*it)->disableEvents();
-                    XUnmapWindow(disp, (*it)->window);
-                    (*it)->enableEvents();
-                    continue;
-                }
-
-                y = (frame.height - (*it)->height) / 2;
-
-                XMoveResizeWindow(disp, (*it)->window, x, y,
-                                  (*it)->width, (*it)->height);
-
-
-
-
-
-                // for ICCCM compliance
-                (*it)->x = x;
-                (*it)->y = y;
-
-                XEvent event;
-                event.type = ConfigureNotify;
-
-                event.xconfigure.display = disp;
-                event.xconfigure.event = (*it)->window;
-                event.xconfigure.window = (*it)->window;
-                event.xconfigure.x = frame.x + x + screen().rootTheme().borderWidth();
-                event.xconfigure.y = frame.y + y + screen().rootTheme().borderWidth();
-                event.xconfigure.width = (*it)->width;
-                event.xconfigure.height = (*it)->height;
-                event.xconfigure.border_width = 0;
-                event.xconfigure.above = frame.window.window();
-                event.xconfigure.override_redirect = False;
-
-                XSendEvent(disp, (*it)->window, False, StructureNotifyMask,
-                           &event);
-
-                x += (*it)->width + bevel_width;
-            }
-        }
-
         break;
     }
+
+    client_it = m_client_list.begin();
+    for (; client_it != client_it_end; ++client_it) {
+        if ((*client_it)->window() == None)
+            continue;
+
+        //client created window?
+        if ((*client_it)->visible()) 
+            (*client_it)->show();
+        else {
+            (*client_it)->disableEvents();
+            (*client_it)->hide();
+            (*client_it)->enableEvents();
+            continue;
+        }
+        if (height_inc)
+            x = (frame.width - (*client_it)->width()) / 2;
+        else
+            y = (frame.height - (*client_it)->height()) / 2;
+
+        XMoveResizeWindow(disp, (*client_it)->window(), x, y,
+                          (*client_it)->width(), (*client_it)->height());
+
+        // for ICCCM compliance
+        (*client_it)->move(x, y);
+
+        XEvent event;
+        event.type = ConfigureNotify;
+
+        event.xconfigure.display = disp;
+        event.xconfigure.event = (*client_it)->window();
+        event.xconfigure.window = (*client_it)->window();
+        event.xconfigure.x = (*client_it)->x();
+        event.xconfigure.y = (*client_it)->y();
+        event.xconfigure.width = (*client_it)->width();
+        event.xconfigure.height = (*client_it)->height();
+        event.xconfigure.border_width = 0;
+        event.xconfigure.above = frame.window.window();
+        event.xconfigure.override_redirect = False;
+
+        XSendEvent(disp, (*client_it)->window(), False, StructureNotifyMask,
+                   &event);
+
+        if (height_inc)
+            y += (*client_it)->height() + bevel_width;
+        else
+            x += (*client_it)->width() + bevel_width;
+    } // end for
 
     if (doAutoHide() && !isHidden() && !m_timer.isTiming()) 
         m_timer.start();
@@ -844,7 +727,7 @@ void Slit::reposition() {
         head_h;
 
     if (screen().hasXinerama()) {
-        int head = screen().getSlitOnHead();
+        int head = *m_rc_on_head;
         head_x = screen().getHeadX(head);
         head_y = screen().getHeadY(head);
         head_w = screen().getHeadWidth(head);
@@ -1114,11 +997,10 @@ void Slit::configureRequestEvent(XConfigureRequestEvent &event) {
     SlitClients::iterator it = m_client_list.begin();
     SlitClients::iterator it_end = m_client_list.end();
     for (; it != it_end; ++it) {
-        if ((*it)->window == event.window) {
-            if ((*it)->width != ((unsigned) event.width) ||
-                (*it)->height != ((unsigned) event.height)) {
-                (*it)->width = (unsigned) event.width;
-                (*it)->height = (unsigned) event.height;
+        if ((*it)->window() == event.window) {
+            if ((*it)->width() != ((unsigned) event.width) ||
+                (*it)->height() != ((unsigned) event.height)) {
+                (*it)->resize(event.width, event.height);;
 
                 reconf = true; //requires reconfiguration
 
@@ -1203,7 +1085,7 @@ void Slit::updateClientmenu() {
     FbTk::RefCount<FbTk::Command> reconfig(new FbTk::SimpleCommand<Slit>(*this, &Slit::reconfigure));
     SlitClients::iterator it = m_client_list.begin();
     for (; it != m_client_list.end(); ++it) {
-        if ((*it) != 0 && (*it)->window != 0)
+        if ((*it) != 0 && (*it)->window() != 0)
             m_clientlist_menu.insert(new SlitClientMenuItem(*(*it), reconfig));
     }
 
@@ -1218,7 +1100,7 @@ void Slit::saveClientList() {
     std::string prevName;
     std::string name;
     for (; it != it_end; ++it) {
-        name = (*it)->match_name;
+        name = (*it)->matchName();
         if (name != prevName)
             file << name.c_str() << std::endl;
 
@@ -1227,8 +1109,7 @@ void Slit::saveClientList() {
 }
 
 void Slit::setAutoHide(bool val) {
-    m_do_auto_hide = val;
-    screen().saveSlitAutoHide(val);
+    *m_rc_auto_hide = val;
     if (doAutoHide()) {
         if (! m_timer.isTiming()) {
             if (m_slitmenu.isVisible())
@@ -1283,11 +1164,11 @@ void Slit::setupMenu() {
     m_slitmenu.insert(new BoolMenuItem(i18n->getMessage(
                                                         CommonSet, CommonAutoHide,
                                                         "Auto hide"),
-                                       screen().doSlitAutoHide(),
+                                       *m_rc_auto_hide,
                                        save_and_reconfigure_slit));
 
     FbTk::MenuItem *alpha_menuitem = new IntResMenuItem("Alpha", 
-                                                        screen().slitAlphaResource(),
+                                                        m_rc_alpha,
                                                         0, 255);
     alpha_menuitem->setCommand(save_and_reconfigure_slit);
     m_slitmenu.insert(alpha_menuitem);
@@ -1345,5 +1226,5 @@ void Slit::setupMenu() {
 
 void Slit::moveToLayer(int layernum) {
     m_layeritem->moveToLayer(layernum);
-    m_screen.saveSlitLayer((Fluxbox::Layer) layernum);
+    m_rc_layernum = static_cast<Fluxbox::Layer>(layernum);
 }
