@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.77 2004/08/29 14:53:23 rathnor Exp $
+// $Id: Menu.cc,v 1.78 2004/08/30 10:23:37 akir Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -656,8 +656,9 @@ void Menu::hide() {
     if (!torn && m_parent && m_parent->isVisible()) {
         Menu *p = m_parent;
 
-        while (p->isVisible() && (! p->torn) && p->m_parent)
+        while ((! p->torn) && p->m_parent && p->m_parent->isVisible())
             p = p->m_parent;
+        
         p->internal_hide();
     } else // if we dont have a parent then do hide here
         internal_hide();
@@ -669,7 +670,6 @@ void Menu::grabInputFocus() {
 
     // grab input focus
     menu.window.setInputFocus(RevertToPointerRoot, CurrentTime);
-
 }
 
 

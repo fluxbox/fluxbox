@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/30:
+  * Fix bug in menu-closing with keys (Mathias)
+    FbTk/Menu.cc
 *04/08/29:
   * Added [wallpapers|wallpapermenu|rootcommands] to possible
     menuitems (Mathias)
