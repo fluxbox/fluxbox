@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.75 2002/09/08 19:31:27 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.76 2002/10/11 10:23:54 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -41,7 +41,7 @@
 #include "XrmDatabaseHelper.hh"
 #include "AtomHandler.hh"
 #include "Gnome.hh"
-//#include "Ewmh.hh"
+#include "Ewmh.hh"
 
 #ifdef SLIT
 #include "Slit.hh"
@@ -1646,7 +1646,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 		BScreen &screen = subj->screen();
 		if ((&(screen.workspaceCountSig())) == changedsub) {
 #ifdef DEBUG	
-			cerr<<__FILE__<<"("<<__LINE__<<"): workspace count signal"<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<"): SCREEN workspace count signal"<<endl;
 #endif // DEBUG
 			for (size_t i=0; i<m_atomhandler.size(); ++i) {
 				if (m_atomhandler[i]->update())
@@ -1654,7 +1654,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 			}
 		} else if ((&(screen.workspaceNamesSig())) == changedsub) {
 #ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): workspace names signal"<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<"): SCREEN workspace names signal"<<endl;
 #endif // DEBUG
 			for (size_t i=0; i<m_atomhandler.size(); ++i) {
 				if (m_atomhandler[i]->update())
@@ -1662,7 +1662,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 			}
 		} else if ((&(screen.currentWorkspaceSig())) == changedsub) {
 #ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): current workspace signal"<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<"): SCREEN current workspace signal"<<endl;
 #endif // DEBUG	
 			for (size_t i=0; i<m_atomhandler.size(); ++i) {
 				if (m_atomhandler[i]->update())
@@ -1670,7 +1670,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 			}
 		} else if ((&(screen.clientListSig())) == changedsub) {
 #ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): client list signal"<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<"): SCREEN client list signal"<<endl;
 #endif // DEBUG
 			for (size_t i=0; i<m_atomhandler.size(); ++i) {
 				if (m_atomhandler[i]->update())
@@ -2558,9 +2558,9 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 		ScreenList::iterator winscreen = 
 			std::find(screenList.begin(), screenList.end(),
 				win->getScreen());
-		if (winscreen == screenList.end())
+		if (winscreen == screenList.end()) {
 			focused_window = 0; // the window pointer wasn't valid, mark no window focused
-		else {
+		} else {
 			screen = *winscreen;
 			tbar = screen->getToolbar();
 			wkspc = screen->getWorkspace(win->getWorkspaceNumber());		
