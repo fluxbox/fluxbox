@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.17 2003/07/03 12:23:28 fluxgen Exp $
+// $Id: Menu.hh,v 1.18 2003/07/10 11:55:49 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -112,7 +112,7 @@ public:
     //@}
     /// get input focus
     void grabInputFocus();
-    void reconfigure();
+    virtual void reconfigure();
     /// set label string
     void setLabel(const char *labelstr);
     /// move menu to x,y
@@ -139,6 +139,8 @@ public:
     Window window() const { return menu.window.window(); }
     FbWindow &fbwindow() { return menu.window; }
     const FbWindow &fbwindow() const { return menu.window; }
+    FbWindow &titleWindow() { return menu.title; }
+    FbWindow &frameWindow() { return menu.frame; }
     const std::string &label() const { return menu.label; }  
     int x() const { return menu.x; }
     int y() const { return menu.y; }
@@ -150,6 +152,7 @@ public:
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
+    const MenuTheme &theme() const { return m_theme; }
     static unsigned char alpha() { return s_alpha; }
     static Menu *focused() { return s_focused; }
     /// @return menuitem at index
@@ -180,7 +183,6 @@ private:
     const MenuTheme &m_theme;
     Display *m_display;
     const int m_screen_num;
-    Window m_prev_focused_window;
     Menu *m_parent;
     ImageControl &m_image_ctrl;
     Menuitems menuitems;
