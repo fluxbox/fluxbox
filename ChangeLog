@@ -3,6 +3,8 @@ Changes for 0.1.13:
 *02/10/15:
    * Conditional compile/linking of Xft specific files
      src/Makefile.am, configure.in
+   * Antialias in Windowmenu, Tab and geometry window
+     Window.cc, Screen.cc, Toolbar.cc, Theme.cc/hh, Tab.cc, IconBar.cc
    * Antialias option in Configmenu
      Configmenu.cc, Screen.cc/hh, Theme.cc/hh
 *02/10/14:
