@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.10 2003/10/14 16:23:16 rathnor Exp $
+// $Id: EventManager.cc,v 1.11 2004/04/19 22:46:46 fluxgen Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -56,6 +56,11 @@ void EventManager::addParent(EventHandler &ev, const FbWindow &win) {
 void EventManager::remove(const FbWindow &win) {
     unregisterEventHandler(win.window());
 }
+
+EventHandler *EventManager::find(Window win) {
+    return m_eventhandlers[win];
+}
+
 
 Window EventManager::getEventWindow(XEvent &ev) {
     // we only have cases for events that differ from xany
