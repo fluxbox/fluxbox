@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.85 2003/12/18 20:56:18 fluxgen Exp $
+// $Id: Slit.cc,v 1.86 2003/12/20 19:10:49 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -796,6 +796,8 @@ void Slit::reconfigure() {
 
     if (doAutoHide() && !isHidden() && !m_timer.isTiming()) 
         m_timer.start();
+    else if (!doAutoHide() && isHidden())
+        toggleHidden(); // restore visible
 
     m_slitmenu.reconfigure();
     updateClientmenu();
