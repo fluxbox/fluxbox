@@ -1,8 +1,29 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+<<<<<<< ChangeLog
+
+=======
 *03/09/08:
+   * Added icon list sig to Screen (Henrik)
+     This will notify when the icon list changed.
+     Useful for IconbarTool
+     Screen.hh/cc
+   * Fixed minor bug in FbTk::Subject (Henrik)
+     If one removes an observer while notify() it'll put that observer
+     in a dead_observer list which will be cleand after notify()
+     Subject.cc
+   * Fixed minor bug in FbTk::Button (Henrik)
+     It did a execute() and then a updateTransparent (in buttonRelease), 
+     which could 
+     be dangerous if the execute() killed the object
+     Button.cc
    * Fix when selecting + unneeded submenu redraw on enter+motion (Simon)
      Menu.cc
+*03/09/07:
+   * Added startup script to be used with startfluxbox, to get a 
+     consistent frontend for both *dm and startx and your fluxbox-session  (Thanks Han)
+     startfluxbox.in, startup.in
+   * Minor cleaning in some Makefile.am (Thanks Han)   
 *03/09/06:
    * Added Resize x y as command (Thanks Mathias Gumz)
      FbCommands.cc/hh, FbCommandFactory.cc
