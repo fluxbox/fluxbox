@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/28:
+  * Fix for possible segfaults in *.iconbar.deiconifyMode (Mathias)
+    IconButton.cc
 *04/11/25:
   * Applied patch #1072818 (thanx Glyn Kennington)
     Toolbar.cc
