@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.27 2002/09/14 16:39:16 fluxgen Exp $
+// $Id: Theme.cc,v 1.28 2002/09/14 23:25:44 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -748,7 +748,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 	
 	if (XrmGetResource(m_database, rname, rclass, &value_type,
 			&value))
-		m_imagecontrol->parseTexture(texture, value.addr);
+		texture->setFromString(value.addr);
 	else
 		texture->setType(FbTk::Texture::SOLID | FbTk::Texture::FLAT);
 
