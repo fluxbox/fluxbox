@@ -47,14 +47,14 @@
 
 
 WHOAMI=`whoami`
-[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
+[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin
 
 # Check for Imlib2-support
 if fluxbox -info 2> /dev/null | grep -q "^IMLIB"; then
-	PNG_ICONS="yes"
+    PNG_ICONS="yes"
 else
-	# better assume to assume "no"
-	PNG_ICONS="no"
+    # better assume to assume "no"
+    PNG_ICONS="no"
 fi
 
 # Functions
@@ -82,7 +82,7 @@ Options:
     -i  other path(s) to search for icons
         e.g., "/usr/kde/3.3/share/icons/crystalsvg/16x16/*"
     -is wider search for icons (worth the extra time)
-	-in skip icon search
+    -in skip icon search
 
     -t  Favourite terminal
     -w  Homepage for console-browsers. Default is fluxbox.org
@@ -125,7 +125,7 @@ EOF
 
 # some which's have a reliable return code, some don't
 # Lets figure out which which we have.
-if which this_program_does_not_exist-no_really-aA1zZ9 >/dev/null 2>/dev/null; then
+if which this_program_does_not_exist-no_really-aA1zZ9 2> /dev/null 1> /dev/null; then
     # can't rely on return value
     find_it() {
         file=`which $1 2> /dev/null`
@@ -167,296 +167,296 @@ replaceWithinString(){
 }
 
 convertIcon(){
-	if [ ! -f "$1" ] ; then 
-		echo "Icon file not found: $1" >&2
-		return 1
-	fi
+    if [ ! -f "$1" ] ; then 
+        echo "Icon file not found: $1" >&2
+        return 1
+    fi
 
-	if [ "$1" = "$2" ]; then
-		# $dnlamVERBOSE "Files are in the same location: $1 = $2" >&2
-		# not really an error; just nothing to do.
-		return 0;
-	fi
+    if [ "$1" = "$2" ]; then
+        # $dnlamVERBOSE "Files are in the same location: $1 = $2" >&2
+        # not really an error; just nothing to do.
+        return 0;
+    fi
 
-	local BASENAME
-	BASENAME="${1##*/}"
+    local BASENAME
+    BASENAME="${1##*/}"
 
-	# make sure it is an icon by checking if it has an extension
-	if [ "$BASENAME" = "${BASENAME%%.*}" ]; then
-		# $dnlamVERBOSE "File $1 does not have a filename extention." >&2
-		return 1;
-	fi
+    # make sure it is an icon by checking if it has an extension
+    if [ "$BASENAME" = "${BASENAME%%.*}" ]; then
+        # $dnlamVERBOSE "File $1 does not have a filename extention." >&2
+        return 1;
+    fi
 
-	# don't have to convert xpm files
-	case "$1" in
-		*.xpm)
-			echo "$1"
-			return 0;
-		;;
-	esac
+    # don't have to convert xpm files
+    case "$1" in
+        *.xpm)
+            echo "$1"
+            return 0;
+        ;;
+    esac
 
-	# may not have to convert png if imlib is enabled
-	if [ "$PNG_ICONS" = "yes" ]; then
-		case "$1" in
-			*.png)
-				echo "$1"
-				return 0;
-			;;
-		esac
-	fi
+    # may not have to convert png if imlib is enabled
+    if [ "$PNG_ICONS" = "yes" ]; then
+        case "$1" in
+            *.png)
+                echo "$1"
+                return 0;
+            ;;
+        esac
+    fi
 
-	# convert all others icons and save it as xpm format under directory $2
-	entry_icon="$2/${BASENAME%.*}.xpm"
-	if [ -f "${entry_icon}" ]; then
-		: echo "File exists. To overwrite, type: convert \"$1\" \"$entry_icon\"" >&2
-	else
-		if which convert &> /dev/null; then
-			convert "$1" "$entry_icon"
-			# echo convert "$1" , "$entry_icon" >> $ICONMAPPING
-		else
-			echo "Please install ImageMagick's convert utility" >&2
-		fi
-	fi
-	echo "$entry_icon"
+    # convert all others icons and save it as xpm format under directory $2
+    entry_icon="$2/${BASENAME%.*}.xpm"
+    if [ -f "${entry_icon}" ]; then
+        : echo "File exists. To overwrite, type: convert \"$1\" \"$entry_icon\"" >&2
+    else
+        if which convert &> /dev/null; then
+            convert "$1" "$entry_icon"
+            # echo convert "$1" , "$entry_icon" >> $ICONMAPPING
+        else
+            echo "Please install ImageMagick's convert utility" >&2
+        fi
+    fi
+    echo "$entry_icon"
 }
 
 removePath(){
-	execname="$1"
-	local progname
-	progname="${execname%% *}"
-	# separate program name and its parameters
-	if [ "$progname" = "$execname" ]; then
-		# no params
-		# remove path from only program name
-		execname="${progname##*/}"
-	else
-		local params
-		params="${execname#* }"
-		# remove path from only program name
-		execname="${progname##*/} $params"
-	fi
-	echo $execname
+    execname="$1"
+    local progname
+    progname="${execname%% *}"
+    # separate program name and its parameters
+    if [ "$progname" = "$execname" ]; then
+        # no params
+        # remove path from only program name
+        execname="${progname##*/}"
+    else
+        local params
+        params="${execname#* }"
+        # remove path from only program name
+        execname="${progname##*/} $params"
+    fi
+    echo $execname
 }
 
 doSearchLoop(){
-	for ICONPATH in "$@"; do
-		## $dnlamVERBOSE ": $ICONPATH" >> $ICONMAPPING
-	  	[ -d "$ICONPATH" ] || continue
-		#echo -n "."
-		# # $dnlamVERBOSE ":: $ICONPATH/$temp_icon" >> $ICONMAPPING
-		if [ -f "$ICONPATH/$temp_icon" ]; then
-			echo "$ICONPATH/$temp_icon"
-			return 0;
-		else # try different extensions; 
-			# remove extension
-			iconNOext="${temp_icon%%.*}"
-			[ -d "$ICONPATH" ] && for ICONEXT in .xpm .png .gif ; do
-				## echo "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
-				if [ -f "$ICONPATH/$iconNOext$ICONEXT" ]; then
-					echo "$ICONPATH/$iconNOext$ICONEXT"
-					return 0;
-				fi
-			done
-		fi
-	done
-	#echo "done"
-	return 1
+    for ICONPATH in "$@"; do
+        ## $dnlamVERBOSE ": $ICONPATH" >> $ICONMAPPING
+          [ -d "$ICONPATH" ] || continue
+        #echo -n "."
+        # # $dnlamVERBOSE ":: $ICONPATH/$temp_icon" >> $ICONMAPPING
+        if [ -f "$ICONPATH/$temp_icon" ]; then
+            echo "$ICONPATH/$temp_icon"
+            return 0;
+        else # try different extensions; 
+            # remove extension
+            iconNOext="${temp_icon%%.*}"
+            [ -d "$ICONPATH" ] && for ICONEXT in .xpm .png .gif ; do
+                ## echo "::: $ICONPATH/$iconNOext$ICONEXT" >> $ICONMAPPING
+                if [ -f "$ICONPATH/$iconNOext$ICONEXT" ]; then
+                    echo "$ICONPATH/$iconNOext$ICONEXT"
+                    return 0;
+                fi
+            done
+        fi
+    done
+    #echo "done"
+    return 1
 }
 
 doSearch(){
-	# remove '(' from '(fluxbox ...) | ...'
-	local execname temp_icon
-	execname=`replaceWithinString "$1" "\("`
-	temp_icon="$2"
-	# $dnlamVERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
+    # remove '(' from '(fluxbox ...) | ...'
+    local execname temp_icon
+    execname=`replaceWithinString "$1" "\("`
+    temp_icon="$2"
+    # $dnlamVERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
 
-	# check in $ICONMAPPING before searching directories
-	entry_icon=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
-	if [ -n "$entry_icon" ]; then
-		entry_icon=`replaceWithinString "$entry_icon" "<"`
-		entry_icon=`replaceWithinString "$entry_icon" ">"`
-		echo $entry_icon
-		return 0;
-	fi
-	# echo "$ICONMAPPING for $execname: $entry_icon"
+    # check in $ICONMAPPING before searching directories
+    entry_icon=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
+    if [ -n "$entry_icon" ]; then
+        entry_icon=`replaceWithinString "$entry_icon" "<"`
+        entry_icon=`replaceWithinString "$entry_icon" ">"`
+        echo $entry_icon
+        return 0;
+    fi
+    # echo "$ICONMAPPING for $execname: $entry_icon"
 
-	# the following paths include a user-defined variable, listing paths to search for icons
-	# echo -n "for $temp_icon"
-	eval doSearchLoop $USER_ICONPATHS \
-	  "$FB_ICONDIR" \
-	  "/usr/share/${execname%% *}" \
-	  ${OTHER_ICONPATHS} \
+    # the following paths include a user-defined variable, listing paths to search for icons
+    # echo -n "for $temp_icon"
+    eval doSearchLoop $USER_ICONPATHS \
+      "$FB_ICONDIR" \
+      "/usr/share/${execname%% *}" \
+      ${OTHER_ICONPATHS} \
 
 
 }
 
 searchForIcon(){
-	# remove '&' and everything after it
-	entry_exec="${1%%&*}"
-	entry_icon="$2"
-	# $dnlamVERBOSE echo "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
-	
-	# get the basename and parameters of entry_exec -- no path
-	entry_exec=`removePath "${entry_exec}"`
-	[ -z "$entry_exec" ] && { echo "Exec is NULL $1 with icon $2"; return 1; }
+    # remove '&' and everything after it
+    entry_exec="${1%%&*}"
+    entry_icon="$2"
+    # $dnlamVERBOSE echo "searchForIcon \"$entry_exec\" \"$entry_icon\"" >&2
+    
+    # get the basename and parameters of entry_exec -- no path
+    entry_exec=`removePath "${entry_exec}"`
+    [ -z "$entry_exec" ] && { echo "Exec is NULL $1 with icon $2"; return 1; }
 
-	# search for specified icon if it does not exists
-	if [ -n "$entry_icon" ] && [ ! "$entry_exec" = "$entry_icon" ] && [ ! -f "$entry_icon" ]; then
-		# to search for icon in other paths,
-		# get basename
-		local temp_icon
-		temp_icon="${entry_icon##*/}"
-		# remove parameters
-		temp_icon="${temp_icon#* }"
-		# clear entry_icon until temp_icon is found
-		unset entry_icon
+    # search for specified icon if it does not exists
+    if [ -n "$entry_icon" ] && [ ! "$entry_exec" = "$entry_icon" ] && [ ! -f "$entry_icon" ]; then
+        # to search for icon in other paths,
+        # get basename
+        local temp_icon
+        temp_icon="${entry_icon##*/}"
+        # remove parameters
+        temp_icon="${temp_icon#* }"
+        # clear entry_icon until temp_icon is found
+        unset entry_icon
 
-		if [ ! -f "$entry_icon" ]; then
-			entry_icon=`doSearch "$entry_exec" "$temp_icon"`
-		fi
-	fi
+        if [ ! -f "$entry_icon" ]; then
+            entry_icon=`doSearch "$entry_exec" "$temp_icon"`
+        fi
+    fi
 
-	# remove parameters
-	local execname
-	execname="${entry_exec%% *}"
+    # remove parameters
+    local execname
+    execname="${entry_exec%% *}"
 
-	# echo "search for icon named $execname.{xpm,png,gif}"
-	if [ ! -f "$entry_icon" ]; then
-		entry_icon=`doSearch "$entry_exec" "$execname"`
-	fi
+    # echo "search for icon named $execname.{xpm,png,gif}"
+    if [ ! -f "$entry_icon" ]; then
+        entry_icon=`doSearch "$entry_exec" "$execname"`
+    fi
 
-	# -----------  done with search ------------
-	# $dnlamVERBOSE echo "::: $entry_icon" >&2
+    # -----------  done with search ------------
+    # $dnlamVERBOSE echo "::: $entry_icon" >&2
 
-	# convert icon file, if needed
-	if [ -f "$entry_icon" ] && [ -n "yes$ConvertIfNecessary" ]; then
-		entry_icon=`convertIcon "$entry_icon" "$HOME/.fluxbox/icons"`
-		# $dnlamVERBOSE echo ":::: $entry_icon" >&2
-	fi
+    # convert icon file, if needed
+    if [ -f "$entry_icon" ] && [ -n "yes$ConvertIfNecessary" ]; then
+        entry_icon=`convertIcon "$entry_icon" "$HOME/.fluxbox/icons"`
+        # $dnlamVERBOSE echo ":::: $entry_icon" >&2
+    fi
 
-	# remove path to icon; just get basename
-	local icon_base
-	icon_base="${entry_icon##*/}"
-	# remove extension
-	icon_base="${icon_base%%.*}"
-	# echo "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" 
-	if [ -f "$entry_icon" ]; then
-	# if icon exists and entry does not already exists, add it
-		if ! grep -q -m 1 "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" $ICONMAPPING 2> /dev/null; then
-			echo -e "\"${entry_exec}\" \t <${entry_icon}>" >> $ICONMAPPING
-		else 
-			: echo "#    mapping already exists for ${entry_exec}" >> $ICONMAPPING
-		fi
-	else
-		echo "# No icon file found for $entry_exec" >> $ICONMAPPING
-	fi
+    # remove path to icon; just get basename
+    local icon_base
+    icon_base="${entry_icon##*/}"
+    # remove extension
+    icon_base="${icon_base%%.*}"
+    # echo "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" 
+    if [ -f "$entry_icon" ]; then
+    # if icon exists and entry does not already exists, add it
+        if ! grep -q -m 1 "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" $ICONMAPPING 2> /dev/null; then
+            echo -e "\"${entry_exec}\" \t <${entry_icon}>" >> $ICONMAPPING
+        else 
+            : echo "#    mapping already exists for ${entry_exec}" >> $ICONMAPPING
+        fi
+    else
+        echo "# No icon file found for $entry_exec" >> $ICONMAPPING
+    fi
 }
 
 toSingleLine(){ echo "$@"; }
 createIconMapping(){
-	# $dnlamVERBOSE "# creating `date`" >> $ICONMAPPING
-	# $dnlamVERBOSE "# using desktop files in $@" >> $ICONMAPPING
-	# $dnlamVERBOSE "# searching for icons in `eval toSingleLine $OTHER_ICONPATHS`" >> $ICONMAPPING
-	# need to determine when to use .fluxbox/icons/$execname.xpm over those listed in iconmapping
-	# $dnlamVERBOSE echo "createIconMapping: $@"
-	for DIR in "$@" ; do
-		if [ -d "$DIR" ]; then
-			# $dnlamVERBOSE echo "# ------- Looking in $DIR" >&2 
-			# >> $ICONMAPPING
-			find "$DIR" -type f -name "*.desktop" | while read DESKTOP_FILE; do 
-				# echo $DESKTOP_FILE; 
-				#entry_name=`grep -m 1 '^[ ]*Name=' $DESKTOP_FILE`
-				#entry_name=${entry_name##*=}
-				entry_exec=`grep -m 1 '^[ ]*Exec=' "$DESKTOP_FILE"`
-				entry_exec=${entry_exec##*=}
-				entry_exec=`replaceWithinString "$entry_exec" "\""`
-				if [ -z "$entry_exec" ]; then
-					entry_exec=${DESKTOP_FILE%%.desktop*}
-				fi
+    # $dnlamVERBOSE "# creating `date`" >> $ICONMAPPING
+    # $dnlamVERBOSE "# using desktop files in $@" >> $ICONMAPPING
+    # $dnlamVERBOSE "# searching for icons in `eval toSingleLine $OTHER_ICONPATHS`" >> $ICONMAPPING
+    # need to determine when to use .fluxbox/icons/$execname.xpm over those listed in iconmapping
+    # $dnlamVERBOSE echo "createIconMapping: $@"
+    for DIR in "$@" ; do
+        if [ -d "$DIR" ]; then
+            # $dnlamVERBOSE echo "# ------- Looking in $DIR" >&2 
+            # >> $ICONMAPPING
+            find "$DIR" -type f -name "*.desktop" | while read DESKTOP_FILE; do 
+                # echo $DESKTOP_FILE; 
+                #entry_name=`grep -m 1 '^[ ]*Name=' $DESKTOP_FILE`
+                #entry_name=${entry_name##*=}
+                entry_exec=`grep -m 1 '^[ ]*Exec=' "$DESKTOP_FILE"`
+                entry_exec=${entry_exec##*=}
+                entry_exec=`replaceWithinString "$entry_exec" "\""`
+                if [ -z "$entry_exec" ]; then
+                    entry_exec=${DESKTOP_FILE%%.desktop*}
+                fi
 
-				entry_icon=`grep -m 1 '^[ ]*Icon=' "$DESKTOP_FILE"`
-				entry_icon=${entry_icon##*=}
-		
-				# $dnlamVERBOSE echo "--- $entry_exec $entry_icon" >&2
-				case "$entry_icon" in
-					"" | mime_empty | no_icon )
-						: echo "no icon for $entry_exec"
-					;;
-					*)
-						searchForIcon "$entry_exec" "$entry_icon"
-					;;
-				esac
-			done
-		fi
-	done
-	# $dnlamVERBOSE "# done `date`" >> $ICONMAPPING
+                entry_icon=`grep -m 1 '^[ ]*Icon=' "$DESKTOP_FILE"`
+                entry_icon=${entry_icon##*=}
+
+                # $dnlamVERBOSE echo "--- $entry_exec $entry_icon" >&2
+                case "$entry_icon" in
+                    "" | mime_empty | no_icon )
+                        : echo "no icon for $entry_exec"
+                    ;;
+                    *)
+                        searchForIcon "$entry_exec" "$entry_icon"
+                    ;;
+                esac
+            done
+        fi
+    done
+    # $dnlamVERBOSE "# done `date`" >> $ICONMAPPING
 }
 
 lookupIcon() {
-	if [ ! -f "$ICONMAPPING" ]; then
-		echo "!!! Icon map file not found: $ICONMAPPING" >&2
-		return 1
-	fi
-	
-	local execname
-	execname="$1"
-	shift
-	[ -n "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
+    if [ ! -f "$ICONMAPPING" ]; then
+        echo "!!! Icon map file not found: $ICONMAPPING" >&2
+        return 1
+    fi
 
-	[ -z "$execname" ] && { echo "execname is NULL; cannot lookup"; return 1; }
-	execname=`removePath "$execname"`
+    local execname
+    execname="$1"
+    shift
+    [ -n "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
 
-	#echo "grepping ${execname}"
-	iconString=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
-	# $dnlamVERBOSE "lookupIcon $execname, $iconString" >&2
+    [ -z "$execname" ] && { echo "execname is NULL; cannot lookup"; return 1; }
+    execname=`removePath "$execname"`
 
-	if [ -z "$iconString" ] ; then
-		iconString=`grep -m 1 "^\"${execname%% *}" $ICONMAPPING | grep -o '<.*>'`
-	fi
+    #echo "grepping ${execname}"
+    iconString=`grep -m 1 "^\"${execname}\"" $ICONMAPPING | grep -o '<.*>'`
+    # $dnlamVERBOSE "lookupIcon $execname, $iconString" >&2
 
-	if [ -z "$iconString" ] && [ -z "$PARSING_DESKTOP" ] ; then
-		## $dnlamVERBOSE "lookupIcon: Searching ...  should only be needed for icons not gotten from *.desktop (manual-created ones): $execname" >&2
-		searchForIcon "$execname" "$execname"
-		[ -n "$entry_icon" ] && iconString="<$entry_icon>"
-	fi
+    if [ -z "$iconString" ] ; then
+        iconString=`grep -m 1 "^\"${execname%% *}" $ICONMAPPING | grep -o '<.*>'`
+    fi
 
-	# [ -n "$iconString" ] && echo "  Found icon for $execname: $iconString" >&2
-	echo $iconString
+    if [ -z "$iconString" ] && [ -z "$PARSING_DESKTOP" ] ; then
+        ## $dnlamVERBOSE "lookupIcon: Searching ...  should only be needed for icons not gotten from *.desktop (manual-created ones): $execname" >&2
+        searchForIcon "$execname" "$execname"
+        [ -n "$entry_icon" ] && iconString="<$entry_icon>"
+    fi
+
+    # [ -n "$iconString" ] && echo "  Found icon for $execname: $iconString" >&2
+    echo $iconString
 }
 
 append() {
- 	if [ -z "${INSTALL}" ]; then
-		# $dnlamVERBOSE echo "append: $*" >&2
-		local iconString
-		iconString="`echo $* | grep -o '<.*>'`"
-		# echo "iconString=$iconString" >&2
-		if [ -z "$iconString" ] && [ -z "$NO_ICON" ]; then
-			echo -n "      $* " >> ${MENUFILENAME}
-			# get the program name between '{}' from parameters			
-			local execname
-			execname="$*"
-			execname=${execname#*\{}
-			execname=${execname%%\}*}
-			# $dnlamVERBOSE echo "execname=$execname" >&2
-			# if execname hasn't changed from original $*, then no '{...}' was given
-			if [ ! "$execname" = "$*" ]; then
-				case "$execname" in
-					$DEFAULT_TERM*)
-						# remove quotes
-						execname=`replaceWithinString "$execname" "\""`
-						# remove "$DEFAULT_TERM -e "
-						# needed in case calling another program (e.g., vi) via "xterm -e"					
-						execname=${execname##*$DEFAULT_TERM -e }
-					;;
-				esac
-				# lookup execname in icon map file
-				iconString=`lookupIcon "$execname"`
-				#[ -n "$iconString" ] || echo "No icon found for $execname"
-			fi
-			echo "${iconString}" >> ${MENUFILENAME}
-		else
-			echo "      $*" >> ${MENUFILENAME}
-		fi
+     if [ -z "${INSTALL}" ]; then
+        # $dnlamVERBOSE echo "append: $*" >&2
+        local iconString
+        iconString="`echo $* | grep -o '<.*>'`"
+        # echo "iconString=$iconString" >&2
+        if [ -z "$iconString" ] && [ -z "$NO_ICON" ]; then
+            echo -n "      $* " >> ${MENUFILENAME}
+            # get the program name between '{}' from parameters            
+            local execname
+            execname="$*"
+            execname=${execname#*\{}
+            execname=${execname%%\}*}
+            # $dnlamVERBOSE echo "execname=$execname" >&2
+            # if execname hasn't changed from original $*, then no '{...}' was given
+            if [ ! "$execname" = "$*" ]; then
+                case "$execname" in
+                    $DEFAULT_TERM*)
+                        # remove quotes
+                        execname=`replaceWithinString "$execname" "\""`
+                        # remove "$DEFAULT_TERM -e "
+                        # needed in case calling another program (e.g., vi) via "xterm -e"                    
+                        execname=${execname##*$DEFAULT_TERM -e }
+                    ;;
+                esac
+                # lookup execname in icon map file
+                iconString=`lookupIcon "$execname"`
+                #[ -n "$iconString" ] || echo "No icon found for $execname"
+            fi
+            echo "${iconString}" >> ${MENUFILENAME}
+        else
+            echo "      $*" >> ${MENUFILENAME}
+        fi
     else
         echo "      $*" >> ${MENUFILENAME}
     fi
@@ -479,8 +479,8 @@ append_menu_end() {
 menu_entry() {
     if [ -f "$1" ]; then
         #                   space&tab here
-        entry_name=`grep '^[	 ]*Name=' "$1" | head -n 1 | cut -d = -f 2`
-        entry_exec=`grep '^[	 ]*Exec=' "$1" | head -n 1 | cut -d = -f 2`
+        entry_name=`grep '^[     ]*Name=' "$1" | head -n 1 | cut -d = -f 2`
+        entry_exec=`grep '^[     ]*Exec=' "$1" | head -n 1 | cut -d = -f 2`
         if [ -n "$entry_name" -a -n "$entry_exec" ]; then
             append "[exec] ($entry_name) {$entry_exec}"
         fi
@@ -528,6 +528,13 @@ recurse_dir_menu () {
 normal_find() {
     while [ "$1" ]; do
         find_it $1     append "[exec]   ($1) {$1}"
+        shift
+    done
+}
+
+cli_find() {
+    while [ "$1" ]; do
+        find_it $1     append "[exec]   ($1) {${DEFAULT_TERM} -e $1}"
         shift
     done
 }
@@ -1235,33 +1242,33 @@ while [ $# -gt 0 ]; do
         -B) BACKGROUNDMENUITEM=yes; shift;;
         -k) KDEMENU=yes; shift;;
         -g) GNOMEMENU=yes; shift;;
-		-in) NO_ICON=yes; shift;;
-		-is) OTHER_ICONPATHS="
-				/usr{,/local}/share{,/xclass}/{icons,pixmaps}
-				/usr{,/local}/share/icons/mini
-				/usr{,/local}/{,X11R6/}share/icons/{default.kde,hicolor}/16x16/*
-			"
-			shift;;
-		-ds) OTHER_DESKTOP_PATHS="
-				/usr/share/mimelnk 
-				/usr/share/applications
-				/usr/share/xsessions 
-				/usr/share/services 
-			"
-			# /usr/share/apps \
-			shift;;
+        -in) NO_ICON=yes; shift;;
+        -is) OTHER_ICONPATHS="
+                /usr{,/local}/share{,/xclass}/{icons,pixmaps}
+                /usr{,/local}/share/icons/mini
+                /usr{,/local}/{,X11R6/}share/icons/{default.kde,hicolor}/16x16/*
+            "
+            shift;;
+        -ds) OTHER_DESKTOP_PATHS="
+                /usr/share/mimelnk 
+                /usr/share/applications
+                /usr/share/xsessions 
+                /usr/share/services 
+            "
+            # /usr/share/apps \
+            shift;;
         -i) USER_ICONPATHS=${2};
-			#needs testing 
-			for aPath in $2; do
-				testoption di $1 $aPath; 
-			done
-			shift 2;;
+            #needs testing 
+            for aPath in $2; do
+                testoption di $1 $aPath; 
+            done
+            shift 2;;
         -d) USER_DESKTOP_PATHS=${2};
-			#needs testing 
-			for aPath in $2; do
-				testoption di $1 $aPath; 
-			done
-			shift 2;;
+            #needs testing 
+            for aPath in $2; do
+                testoption di $1 $aPath; 
+            done
+            shift 2;;
         -t) MY_TERM=${2}; testoption ex $1 $2; shift 2;;
         -b) MY_BROWSER=${2}; testoption ex $1 $2; shift 2;;
         -o) MENUFILENAME=${2}; shift 2; CHECKINIT=NO ;;
@@ -1336,46 +1343,46 @@ for KDE_PREFIX in "${KDE_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; d
 done
 
 if [ -z "${INSTALL}" ] && [ -z "${NO_ICON}" ]; then
-	# [ -z "$dnlamVERBOSE" ] && dnlamVERBOSE=": echo"   # for debugging
-	FB_ICONDIR="$HOME/.fluxbox/icons"
-	[ -d "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
-	ICONMAPPING="$HOME/.fluxbox/iconmapping"
+    # [ -z "$dnlamVERBOSE" ] && dnlamVERBOSE=": echo"   # for debugging
+    FB_ICONDIR="$HOME/.fluxbox/icons"
+    [ -d "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
+    ICONMAPPING="$HOME/.fluxbox/iconmapping"
 
-	if [ "$GNOMEMENU" ] ; then
-		OTHER_DESKTOP_PATHS="\"$HOME/.gnome/apps\" \"${GNOME_PREFIX}/share/gnome/apps\" $OTHER_DESKTOP_PATHS"
-		#[ "OTHER_ICONPATHS" ] && OTHER_ICONPATHS=
-	fi
-	if [ "$KDEMENU" ] ; then
-		OTHER_DESKTOP_PATHS="\"$HOME/.kde/share/applnk\" \"${KDE_PREFIX}/share/applnk\" $OTHER_DESKTOP_PATHS"
-		[ "OTHER_ICONPATHS" ] && OTHER_ICONPATHS="\"$HOME\"/.kde/share/icons/{,*} $OTHER_ICONPATHS"
-	fi
-	[ "$GNOMEMENU$KDEMENU" ] && OTHER_DESKTOP_PATHS="\"$ETCAPPLNK\" $OTHER_DESKTOP_PATHS"
+    if [ "$GNOMEMENU" ] ; then
+        OTHER_DESKTOP_PATHS="\"$HOME/.gnome/apps\" \"${GNOME_PREFIX}/share/gnome/apps\" $OTHER_DESKTOP_PATHS"
+        #[ "OTHER_ICONPATHS" ] && OTHER_ICONPATHS=
+    fi
+    if [ "$KDEMENU" ] ; then
+        OTHER_DESKTOP_PATHS="\"$HOME/.kde/share/applnk\" \"${KDE_PREFIX}/share/applnk\" $OTHER_DESKTOP_PATHS"
+        [ "OTHER_ICONPATHS" ] && OTHER_ICONPATHS="\"$HOME\"/.kde/share/icons/{,*} $OTHER_ICONPATHS"
+    fi
+    [ "$GNOMEMENU$KDEMENU" ] && OTHER_DESKTOP_PATHS="\"$ETCAPPLNK\" $OTHER_DESKTOP_PATHS"
 
-	checkDirs(){
-		#echo checkDirs: $* >&2
-		local CHECKED_DIRS=""
-		for DIR in "$@"; do
-			if [ -d "$DIR" ]; then
-				# todo: should check if there are duplicates
-				CHECKED_DIRS="$CHECKED_DIRS \"$DIR\""
-			fi
-		done
-		#echo checkDirs - $CHECKED_DIRS >&2
-		echo $CHECKED_DIRS
-	}
+    checkDirs(){
+        #echo checkDirs: $* >&2
+        local CHECKED_DIRS=""
+        for DIR in "$@"; do
+            if [ -d "$DIR" ]; then
+                # todo: should check if there are duplicates
+                CHECKED_DIRS="$CHECKED_DIRS \"$DIR\""
+            fi
+        done
+        #echo checkDirs - $CHECKED_DIRS >&2
+        echo $CHECKED_DIRS
+    }
 
-	OTHER_ICONPATHS=`eval checkDirs $OTHER_ICONPATHS`
-	OTHER_DESKTOP_PATHS=`eval checkDirs $OTHER_DESKTOP_PATHS`
+    OTHER_ICONPATHS=`eval checkDirs $OTHER_ICONPATHS`
+    OTHER_DESKTOP_PATHS=`eval checkDirs $OTHER_DESKTOP_PATHS`
 
-	# $dnlamVERBOSE "Using USER_DESKTOP_PATHS=\"$USER_DESKTOP_PATHS\" and USER_ICONPATHS=\"$USER_ICONPATHS\""
-	# $dnlamVERBOSE "Using OTHER_ICONPATHS=$OTHER_ICONPATHS"
-	# $dnlamVERBOSE "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
-	# $dnlamVERBOSE "Calling function: createIconMapping"
-	
-	# $dnlamVERBOSE "Creating $ICONMAPPING" >&2
-	touch "$ICONMAPPING"
-	eval createIconMapping $USER_DESKTOP_PATHS $OTHER_DESKTOP_PATHS
-	# $dnlamVERBOSE "Done createIconMapping."
+    # $dnlamVERBOSE "Using USER_DESKTOP_PATHS=\"$USER_DESKTOP_PATHS\" and USER_ICONPATHS=\"$USER_ICONPATHS\""
+    # $dnlamVERBOSE "Using OTHER_ICONPATHS=$OTHER_ICONPATHS"
+    # $dnlamVERBOSE "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
+    # $dnlamVERBOSE "Calling function: createIconMapping"
+    
+    # $dnlamVERBOSE "Creating $ICONMAPPING" >&2
+    touch "$ICONMAPPING"
+    eval createIconMapping $USER_DESKTOP_PATHS $OTHER_DESKTOP_PATHS
+    # $dnlamVERBOSE "Done createIconMapping."
 fi
 
 # directory for the backgrounds
@@ -1485,44 +1492,36 @@ append_submenu "${NETMENU}"
     append_submenu IM
         normal_find gaim kopete gnomemeeting sim kadu psi
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
-        find_it centericq   append "[exec]   (centericq) {${DEFAULT_TERM} -e centericq}"
-        find_it micq        append "[exec]   (micq) {${DEFAULT_TERM} -e micq}"
+        cli_find centericq micq
     append_menu_end
 
     append_submenu Mail
-        normal_find sylpheed kmail evolution thunderbird mozilla-thunderbird
-        find_it mutt        append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
+        normal_find sylpheed kmail evolution thunderbird mozilla-thunderbird \
+            sylpheed-claws
+        cli_find mutt pine
     append_menu_end
 
     append_submenu News
         normal_find liferea pears
-        find_it slrn       append "[exec]   (slrn) {${DEFAULT_TERM} -e slrn}"
+        cli_find slrn tin
     append_menu_end
 
     append_submenu IRC
         normal_find xchat ksirc vyqchat lostirc logui konversation kvirc
-        find_it irssi         append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
+        cli_find irssi epic4 weechat ninja
         find_it BitchX        append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}" || \
         find_it bitchx        append "[exec]   (BitchX) {${DEFAULT_TERM} -e bitchx -N}"
         find_it ircii         append "[exec]   (ircii) {${DEFAULT_TERM} -e ircii -s}"
-        find_it epic4         append "[exec]   (epic4) {${DEFAULT_TERM} -e epic4}"
-        find_it weechat       append "[exec]   (weechat) {${DEFAULT_TERM} -e weechat}"
-        find_it ninja         append "[exec]   (ninja) {${DEFAULT_TERM} -e ninja}"
     append_menu_end
 
     append_submenu P2P
         normal_find gtk-gnutella lopster nicotine pyslsk xmule amule dcgui-qt
-        find_it TekNap      append "[exec]   (TekNap) {${DEFAULT_TERM} -e TekNap}"
-        find_it giFTcurs      append "[exec]   (giFTcurs) {${DEFAULT_TERM} -e giFTcurs}"
+        cli_find TekNap giFTcurs
     append_menu_end
 
     append_submenu ftp
         normal_find gftp IglooFTP-PRO
-        find_it ncftp      append "[exec]   (ncftp) {${DEFAULT_TERM} -e ncftp}"
-        find_it pftp      append "[exec]   (pftp) {${DEFAULT_TERM} -e pftp}"
-        find_it ftp       append "[exec]   (ftp) {${DEFAULT_TERM} -e ftp}"
-        find_it lftp      append "[exec]   (lftp) {${DEFAULT_TERM} -e lftp}"
-        find_it yafc      append "[exec]   (yafc) {${DEFAULT_TERM} -e yafc}"
+        cli_find ncftp pftp ftp lftp yafc
     append_menu_end
 
     normal_find pan xnmap skype x3270
@@ -1531,12 +1530,8 @@ append_menu_end
 
 append_submenu "${EDITORMENU}"
     normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
-        wings xemacs emacs kvim cream
-    find_it     nano   append "[exec]   (nano)     {${DEFAULT_TERM} -e nano}"
-    find_it     vi     append "[exec]   (vi)       {${DEFAULT_TERM} -e vi}" ||\
-        find_it     vim    append "[exec]   (vim)      {${DEFAULT_TERM} -e vim}"
-    find_it     zile   append "[exec]   (zile)     {${DEFAULT_TERM} -e zile}"
-    find_it     jed    append "[exec]   (jed)      {${DEFAULT_TERM} -e jed}"
+        wings xemacs emacs kvim cream evim
+    cli_find nano vim vi zile jed
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
     find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
 append_menu_end
@@ -1544,7 +1539,7 @@ append_menu_end
 append_submenu "${FILEUTILSMENU}"
     normal_find konqueror gentoo krusader linuxcmd rox tuxcmd krename xfe
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
-    find_it     mc       append "[exec] (mc) {${DEFAULT_TERM} -e mc}"
+    cli_find mc
 append_menu_end
 
 append_submenu "${MULTIMEDIAMENU}"
@@ -1562,9 +1557,7 @@ append_submenu "${MULTIMEDIAMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
                    grecord kmidi xplaycd soundtracker grip easytag audacity \
                    zinf rhythmbox kaboodle beep-media-player
-               find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
-               find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
-               find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
+               cli_find cdcd cplay alsamixer orpheus mp3blaster
        append_menu_end
 
 
@@ -1608,8 +1601,9 @@ append_submenu "${GAMESMENU}"
         gtali tuxracer xpenguins xsnow xeyes xpenguins smclone \
         openmortal quake2 quake3 skoosh same-gnome enigma xbill \
         icebreaker scorched3d sol dosbox black-box enigma freeciv \
-        freeciv-server frozen-bubble liquidwar qt-nethack gnugo \
+        freeciv-server frozen-bubble liquidwar qt-nethack \
         nethack-gnome pathological scummvm xqf
+    cli_find gnugo
 
     find_it et append "[exec] (Enemy Territory) {et}"
     find_it ut append "[exec] (Unreal Tournament) {ut}"
@@ -1746,12 +1740,12 @@ mv -f menu.tmp $MENUFILENAME
 if [ -z "$INSTALL" ]; then
     if [ -z "$CHECKINIT" ]; then
         INITMENUFILENAME=`awk '/menuFile/ {print $2}' $HOME/.fluxbox/init`
-		INITMENUFILENAME=`replaceWithinString "$INITMENUFILENAME" "~" "$HOME"`
+        INITMENUFILENAME=`replaceWithinString "$INITMENUFILENAME" "~" "$HOME"`
         if [ ! "$INITMENUFILENAME" = "$MENUFILENAME" ]; then 
             echo "Note: In $HOME/.fluxbox/init, your \"session.menuFile\" does not point to $MENUFILENAME but to $INITMENUFILENAME" >&2
         fi
     fi
     echo "Menu successfully generated: $MENUFILENAME"
-	#echo "  Make sure \"session.menuFile: $MENUFILENAME\" is in $HOME/.fluxbox/init."
+    #echo "  Make sure \"session.menuFile: $MENUFILENAME\" is in $HOME/.fluxbox/init."
     echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
 fi
