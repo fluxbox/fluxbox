@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.21 2003/07/04 14:06:20 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.22 2003/07/10 11:53:44 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -216,7 +216,8 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
             Workspace::Windows::iterator wit = wins.begin();
             Workspace::Windows::iterator wit_end = wins.end();
             for (; wit != wit_end; ++wit) {
-                if (!m_toolbar->containsIcon(**wit))
+
+                if (!m_toolbar->containsIcon(**wit) && *wit != 0)
                     m_toolbar->addIcon(*wit);
 /*
                 FluxboxWindow::ClientList::iterator cit = (*wit)->clientList().begin();
@@ -234,6 +235,8 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         BScreen::Icons::iterator iconit = iconlist.begin();
         BScreen::Icons::iterator iconit_end = iconlist.end();
         for(; iconit != iconit_end; ++iconit) {
+            if (*iconit == 0)
+                continue;
             m_toolbar->addIcon(*iconit);
         }
     }
@@ -243,7 +246,8 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         Workspace::Windows::iterator wit = wins.begin();
         Workspace::Windows::iterator wit_end = wins.end();
         for (; wit != wit_end; ++wit) {
-            if (!m_toolbar->containsIcon(**wit))
+
+            if (!m_toolbar->containsIcon(**wit) && *wit != 0)
                 m_toolbar->addIcon(*wit);
         }
     }
@@ -285,9 +289,8 @@ void ToolbarHandler::setupFrame(FluxboxWindow &win) {
         // else fall through and add the icon
     case LASTMODE:
     case ICONS:
-        if (win.isIconic()) {
+        if (win.isIconic())
             m_toolbar->addIcon(&win);
-        }
         break;
     case ALLWINDOWS:
         m_toolbar->addIcon(&win);
