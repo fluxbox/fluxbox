@@ -25,7 +25,6 @@
 
 DEFAULT_MENU=$(pkgdatadir)/menu
 DEFAULT_STYLE=$(pkgdatadir)/styles/Clean
-DEFAULT_TITLEBAR=$(pkgdatadir)/titlebar
 DEFAULT_KEYSFILE=$(pkgdatadir)/keys
 DEFAULT_INITFILE=
 
@@ -33,7 +32,6 @@ CPPFLAGS= -Wall @CPPFLAGS@ \
 -DLOCALEPATH=\"$(pkgdatadir)/nls\" \
 -DDEFAULTMENU=\"$(DEFAULT_MENU)\" \
 -DDEFAULTSTYLE=\"$(DEFAULT_STYLE)\" \
--DDEFAULTTITLEBAR=\"$(DEFAULT_TITLEBAR)\"\
 -DDEFAULTKEYSFILE=\"$(DEFAULT_KEYSFILE)\"\
 -DDEFAULT_INITFILE=\"$(pkgdatadir)/init\"
 

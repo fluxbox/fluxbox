@@ -783,11 +783,11 @@ ToggleDecor
 .SH TITLEBAR FILE
 Fluxbox lets you customise the button layout on the window titlebar.  This is
 done by modifying the
-.IR ~/.fluxbox/titlebar
+.IR ~/.fluxbox/init
 file.
 .EX
-Right: minimize maximize close
-Left: sticky
+session.titlebar.right: minimize maximize close
+session.titlebar.left: sticky
 .EE
 .SH THE SLIT
 The slit is a special Fluxbox window frame that can contain dockable
