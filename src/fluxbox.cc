@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.39 2002/03/01 16:58:51 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.40 2002/03/18 20:26:32 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1227,10 +1227,10 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 					focused_window->getClientWindow());
 			break;
 			case Keys::NEXTWINDOW:	//activate next window
-				screen->nextFocus();
+				screen->nextFocus(key->getParam());
 			break;
 			case Keys::PREVWINDOW:	//activate prev window
-				screen->prevFocus();
+				screen->prevFocus(key->getParam());
 			break;
 			case Keys::NEXTTAB: 
 				if (focused_window && focused_window->getTab()) {
