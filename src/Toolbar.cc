@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.65 2003/03/03 21:51:07 rathnor Exp $
+// $Id: Toolbar.cc,v 1.66 2003/03/23 01:33:31 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -663,7 +663,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
     char t[9];
     if (date) {
         // format the date... with special consideration for y2k ;)
-        if (screen().getDateFormat() == Blackbox::B_EuropeanDate) {
+        if (screen().getDateFormat() == Fluxbox::B_EUROPEANDATE) {
             sprintf(t,
                     i18n->getMessage(
                                      ToolbarSet, ToolbarNoStrftimeDateFormatEu,

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.104 2003/03/22 05:13:08 rathnor Exp $
+// $Id: fluxbox.cc,v 1.105 2003/03/23 01:33:31 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -1760,7 +1760,7 @@ void Fluxbox::save_rc() {
         XrmPutLineResource(&new_blackboxrc, rc_string);
 #else // !HAVE_STRFTIME
         sprintf(rc_string, "session.screen%d.dateFormat:	%s", screen_number,
-                ((screen->getDateFormat() == B_EuropeanDate) ?
+                ((screen->getDateFormat() == B_EUROPEANDATE) ?
                  "European" : "American"));
         XrmPutLineResource(&new_blackboxrc, rc_string);
 
@@ -2064,11 +2064,11 @@ void Fluxbox::load_rc(BScreen *screen) {
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
                        &value)) {
         if (strncasecmp(value.addr, "european", value.size))
-            screen->saveDateFormat(B_AmericanDate);
+            screen->saveDateFormat(B_AMERICANDATE);
         else
-            screen->saveDateFormat(B_EuropeanDate);
+            screen->saveDateFormat(B_EUROPEANDATE);
     } else
-        screen->saveDateFormat(B_AmericanDate);
+        screen->saveDateFormat(B_AMERICANDATE);
 
     sprintf(name_lookup, "session.screen%d.clockFormat", screen_number);
     sprintf(class_lookup, "Session.Screen%d.ClockFormat", screen_number);
