@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.226 2004/01/18 12:42:47 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.227 2004/01/19 18:33:05 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -548,6 +548,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         screen->currentWorkspaceSig().attach(this);
         screen->workspaceCountSig().attach(this);
         screen->workspaceNamesSig().attach(this);
+        screen->workspaceAreaSig().attach(this);
         screen->clientListSig().attach(this);
 
         // initiate atomhandler for screen specific stuff
@@ -1130,7 +1131,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
  * Handles XClientMessageEvent
  */
 void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
-#ifdef DEBUG
+
     char * atom = 0;
     if (ce.message_type)
         atom = XGetAtomName(FbTk::App::instance()->display(), ce.message_type);
@@ -1140,7 +1141,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 
     if (ce.message_type && atom) XFree((char *) atom);
 
-#endif // DEBUG
+
 
     if (ce.format != 32)
         return;
@@ -1376,6 +1377,11 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
                 if (m_atomhandler[i]->update())
                     m_atomhandler[i]->updateCurrentWorkspace(screen);
+            }
+        } else if ((&(screen.workspaceAreaSig())) == changedsub) {
+            for (size_t i=0; i<m_atomhandler.size(); ++i) {
+                if (m_atomhandler[i]->update())
+                    m_atomhandler[i]->updateWorkarea(screen);
             }
         } else if ((&(screen.clientListSig())) == changedsub) {
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
@@ -1940,11 +1946,21 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
 
 
-    if (screen != 0)
+    if (screen != 0) {
         screen->updateNetizenWindowFocus();
+        for (int i=0; i < m_atomhandler.size(); ++i) {
+            
+            m_atomhandler[i]->updateFocusedWindow(*screen, (m_focused_window ? 
+                                                            m_focused_window->window() :
+                                                            0));
+        }
+    }
 
-    if (old_screen && old_screen != screen)
+    if (old_screen && old_screen != screen) {
         old_screen->updateNetizenWindowFocus();
+        for (int i=0; i < m_atomhandler.size(); ++i)
+            m_atomhandler[i]->updateFocusedWindow(*old_screen, 0);
+    }
 
 }
 
