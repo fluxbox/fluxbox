@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.74 2004/01/23 11:04:05 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.75 2004/02/27 12:20:01 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -27,10 +27,10 @@
 #include "FbTk/EventManager.hh"
 #include "FbTk/TextButton.hh"
 #include "FbTk/App.hh"
-#include "FbTk/Compose.hh"
 #include "FbTk/SimpleCommand.hh"
-
+#include "CompareWindow.hh"
 #include "FbWinFrameTheme.hh"
+
 #ifdef SHAPE
 #include "Shape.hh"
 #endif // SHAPE
@@ -546,8 +546,8 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
     
     LabelList::iterator button_it = find_if(m_labelbuttons.begin(),
                                             m_labelbuttons.end(),
-                                            FbTk::Compose(bind2nd(equal_to<Window>(), event.window),
-                                                          mem_fun(&FbTk::Button::window)));
+                                            CompareWindow(&FbTk::Button::window,
+                                                          event.window));
     if (button_it != m_labelbuttons.end())
         (*button_it)->buttonReleaseEvent(event);
 
@@ -592,11 +592,9 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
         m_grip_right.updateTransparent(event.x, event.y, event.width, event.height);
     } else {
         // create compare function
-        // that we should use with find_if
-        FbTk::Compose_base<std::binder2nd<std::equal_to<Window> >,
-            std::const_mem_fun_t<Window, FbTk::FbWindow> > 
-            compare = FbTk::Compose(bind2nd(equal_to<Window>(), event.window),
-                                    mem_fun(&FbTk::Button::window));
+        // that we should use with find_if        
+        FbTk::CompareEqual_base<FbTk::FbWindow, Window> compare(&FbTk::FbWindow::window,
+                                                                event.window);
 
         LabelList::iterator btn_it = find_if(m_labelbuttons.begin(),
                                              m_labelbuttons.end(),
@@ -769,10 +767,14 @@ void FbWinFrame::redrawTitle() {
         (*btn_it)->moveResize(last_x - border_width, - border_width,
                               button_width + extra, 
                               label().height() + border_width);
-        if (isVisible()) {
-            (*btn_it)->clear();
-            (*btn_it)->updateTransparent();
-        }
+
+
+    }
+
+    if (isVisible()) {
+        for_each(m_labelbuttons.begin(),
+                 m_labelbuttons.end(),
+                 mem_fun(&FbTk::Button::clear));
     }
 
     if (isVisible()) {
@@ -977,20 +979,19 @@ void FbWinFrame::renderButtons() {
            m_button_size, m_button_size);
 
     // setup left and right buttons
-    for (size_t i=0; i < m_buttons_left.size(); ++i) {        
+    for (size_t i=0; i < m_buttons_left.size(); ++i)
         setupButton(*m_buttons_left[i]);
-        if (isVisible()) {
-            m_buttons_left[i]->clear();
-            m_buttons_left[i]->updateTransparent();
-        }
-    }
 
-    for (size_t i=0; i < m_buttons_right.size(); ++i) {
+    for (size_t i=0; i < m_buttons_right.size(); ++i)
         setupButton(*m_buttons_right[i]);
-        if (isVisible()) {
-            m_buttons_right[i]->clear();
-            m_buttons_right[i]->updateTransparent();
-        }
+
+    if (isVisible()) {
+            for_each(m_buttons_left.begin(),
+                     m_buttons_left.end(),
+                     mem_fun(&FbTk::Button::clear));
+            for_each(m_buttons_right.begin(),
+                     m_buttons_right.end(),
+                     mem_fun(&FbTk::Button::clear));
     }
     
 }
@@ -1226,19 +1227,12 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
 void FbWinFrame::updateTransparent() {
     redrawTitlebar();
     
-    ButtonList::iterator button_it = m_buttons_left.begin();
-    ButtonList::iterator button_it_end = m_buttons_left.end();
-    for (; button_it != button_it_end; ++button_it) {
-        (*button_it)->clear();
-        (*button_it)->updateTransparent();
-    }
-
-    button_it = m_buttons_right.begin();
-    button_it_end = m_buttons_right.end();
-    for (; button_it != button_it_end; ++button_it) {
-        (*button_it)->clear();
-        (*button_it)->updateTransparent();
-    }
+    for_each(m_buttons_left.begin(),
+             m_buttons_left.end(),
+             mem_fun(&FbTk::Button::clear));
+    for_each(m_buttons_right.begin(),
+             m_buttons_right.end(),
+             mem_fun(&FbTk::Button::clear));
 
     m_grip_left.clear();
     m_grip_left.updateTransparent();
@@ -1246,7 +1240,6 @@ void FbWinFrame::updateTransparent() {
     m_grip_right.updateTransparent();
     m_handle.clear();
     m_handle.updateTransparent();
-
 }
 
 
