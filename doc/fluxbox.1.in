@@ -4,7 +4,19 @@
 .\" Copyright (c) 2000 by Wilbert Berendsen <wbsoft@xs4all.nl>
 .\" Copyright (c) 2001 by Matthew Hawkins <matt@mh.dropbear.id.au>
 .\"
-.\" This manual page may be freely distributed and modified.
+.\" Permission to use, copy, modify, and distribute this documentation for
+.\" any purpose with or without fee is hereby granted, provided that the
+.\" above copyright notice and this permission notice appear in all copies.
+.\"
+.\" THE DOCUMENTATION IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+.\" WARRANTIES WITH REGARD TO THIS DOCUMENTATION INCLUDING ALL IMPLIED
+.\" WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+.\" AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+.\" DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+.\" PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+.\" TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+.\" PERFORMANCE OF THIS DOCUMENTATION
+.\"
 .\" Parts of the text are taken from website and several README's
 .\" by His Great Hughesness himself. Why reinvent wheels?
 .\"
