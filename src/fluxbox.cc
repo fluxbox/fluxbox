@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.222 2004/01/16 11:28:00 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.223 2004/01/16 11:29:12 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -765,8 +765,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
             ScreenList::iterator it_end = m_screen_list.end();
             for (; it != it_end; ++it) {
                 if ( (*it)->screenNumber() == 
-                     FbTk::Menu::focused()->fbwindow().screenNumber())
+                     FbTk::Menu::focused()->fbwindow().screenNumber()) {
                     screen = (*it);
+                    break; // found the screen, no more search
+                }
             }
             if (screen != 0)
                 revertFocus(*screen);
