@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.33 2003/08/04 12:45:42 fluxgen Exp $
+// $Id: Menu.cc,v 1.34 2003/08/18 11:49:50 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -243,10 +243,7 @@ int Menu::remove(unsigned int index) {
             // if menu is interal we should just hide it instead
             // if destroying it
             if (! tmp->internal_menu) {
-#ifdef DEBUG
-                cerr<<__FILE__<<"("<<__FUNCTION__<<"): delete: "<<tmp<<endl;
-#endif // DEBUG
-                delete tmp;				
+                delete tmp;
             } else
                 tmp->internal_hide();
         }
@@ -823,10 +820,12 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
 
     if (clear) {
 
-        GC def_gc = DefaultGC(m_display, menu.frame.screenNumber());
+        GC def_gc = XCreateGC(m_display, menu.frame.window(), 0, 0); 
         if (menu.frame_pixmap == 0) {
+
             XSetForeground(m_display, def_gc, m_theme.frameTexture().color().pixel());
             m_frame_pm.fillRectangle(def_gc, item_x, item_y, menu.item_w, menu.item_h);
+
         } else {
 
             m_frame_pm.copyArea(menu.frame_pixmap, def_gc,
@@ -834,7 +833,7 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
                                 item_x, item_y,
                                 menu.item_w, menu.item_h);
         }    
-
+        XFreeGC(m_display, def_gc);
     } else if (! (x == y && y == -1 && w == h && h == 0)) {
         // calculate the which part of the hilite to redraw
         if (! (std::max(item_x, x) <= (signed) std::min(item_x + menu.item_w, x + w) &&
@@ -1050,7 +1049,9 @@ void Menu::handleEvent(XEvent &event) {
 }
 
 void Menu::buttonPressEvent(XButtonEvent &be) {
-    grabInputFocus();
+    if (be.window == menu.title)
+        grabInputFocus();
+
     if (be.window == menu.frame && menu.item_h != 0 && menu.item_w != 0) {
 
         int sbl = (be.x / menu.item_w), i = (be.y / menu.item_h);
@@ -1093,8 +1094,6 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                re.x >= 0 && re.x < (signed) menu.width &&
                re.y >= 0 && re.y < (signed) menu.frame_h) {
 			
-        
-        
         int sbl = (re.x / menu.item_w), i = (re.y / menu.item_h),
             ix = sbl * menu.item_w, iy = i * menu.item_h,
             w = (sbl * menu.persub) + i,
