@@ -1,6 +1,21 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/01/19:
+  * Fixed minor bug in ResourceManager (Henrik)
+    Resource.cc
+  * Support for:                   (Henrik)
+    _NET_WM_CLIENT_LIST_STACKING
+    _NET_WM_DESKTOP_VIEWPORT
+    _NET_WM_DESKTOP_GEOMETRY
+    _NET_WORKAREA
+    _NET_ACTIVE_WINDOW
+    Ewmh.cc
+  * Fixed minor bugs in Ewmh,   (Henrik)
+    The gnome-panel should now be working with window list and workspaces
+    Ewmh.cc
 *04/01/18:
+  * Fixed snap to max screen area instead of real screen area (Henrik)
+    Window.cc
   * Support for _NET_WM_STATE_HIDDEN and _NET_WM_STATE_SKIP_TASKBAR (Henrik)
     Window.cc/hh, Ewmh.hh/cc
   * Fixed mplayer xvid vo bug (Henrik)
