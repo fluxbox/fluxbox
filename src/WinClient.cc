@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.12 2003/06/15 18:36:16 fluxgen Exp $
+// $Id: WinClient.cc,v 1.13 2003/06/22 12:35:03 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -29,6 +29,7 @@
 #include "I18n.hh"
 #include "FbAtoms.hh"
 #include "EventManager.hh"
+#include "Xutil.hh"
 
 #include <iostream>
 #include <algorithm>
@@ -256,39 +257,7 @@ void WinClient::updateTransientInfo() {
 
 
 void WinClient::updateTitle() {
-    XTextProperty text_prop;
-    char **list = 0;
-    int num = 0;
-    I18n *i18n = I18n::instance();
-
-    if (getWMName(text_prop)) {
-        if (text_prop.value && text_prop.nitems > 0) {
-            if (text_prop.encoding != XA_STRING) {
-				
-                text_prop.nitems = strlen((char *) text_prop.value);
-				
-                if (XmbTextPropertyToTextList(FbTk::App::instance()->display(), &text_prop,
-                                              &list, &num) == Success &&
-                    num > 0 && *list) {
-                    m_title = static_cast<char *>(*list);
-                    XFreeStringList(list);
-                } else
-                    m_title = (char *)text_prop.value;
-					
-            } else
-                m_title = (char *)text_prop.value;
-            XFree((char *) text_prop.value);
-        } else { // ok, we don't have a name, set default name
-            m_title = i18n->getMessage(
-                                       FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                       "Unnamed");
-        }
-    } else {
-        m_title = i18n->getMessage(
-                                   FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                   "Unnamed");
-    }
-
+    m_title = Xutil::getWMName(window());
 }
 
 void WinClient::updateIconTitle() {
@@ -307,11 +276,12 @@ void WinClient::updateIconTitle() {
                     m_icon_title = (char *)*list;
                     XFreeStringList(list);
                 } else
-                    m_icon_title = (char *)text_prop.value;
+                    m_icon_title = text_prop.value ? (char *)text_prop.value : "";
             } else
-                m_icon_title = (char *)text_prop.value;
+                m_icon_title = text_prop.value ? (char *)text_prop.value : "";
 
-            XFree((char *) text_prop.value);
+            if (text_prop.value)
+                XFree((char *) text_prop.value);
         } else
             m_icon_title = title();
     } else

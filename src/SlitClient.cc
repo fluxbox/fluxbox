@@ -19,63 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitClient.cc,v 1.1 2003/06/20 01:25:26 fluxgen Exp $
+// $Id: SlitClient.cc,v 1.2 2003/06/22 12:30:59 fluxgen Exp $
 
 #include "SlitClient.hh"
 
-#include "I18n.hh"
 #include "Screen.hh"
 #include "App.hh"
+#include "Xutil.hh"
 
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-
-namespace {
-
-void getWMName(BScreen *screen, Window window, std::string& name) {
-    name = "";
-
-    if (screen == 0 || window == None)
-        return;
-
-    Display *display = FbTk::App::instance()->display();
-
-    XTextProperty text_prop;
-    char **list;
-    int num;
-    I18n *i18n = I18n::instance();
-
-    if (XGetWMName(display, window, &text_prop)) {
-        if (text_prop.value && text_prop.nitems > 0) {
-            if (text_prop.encoding != XA_STRING) {
-				
-                text_prop.nitems = strlen((char *) text_prop.value);
-				
-                if ((XmbTextPropertyToTextList(display, &text_prop,
-                                               &list, &num) == Success) &&
-                    (num > 0) && *list) {
-                    name = static_cast<char *>(*list);
-                    XFreeStringList(list);
-                } else
-                    name = (char *)text_prop.value;
-					
-            } else				
-                name = (char *)text_prop.value;
-        } else { // default name
-            name = i18n->getMessage(
-                                    FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                    "Unnamed");
-        }
-    } else {
-        // default name
-        name = i18n->getMessage(
-                                FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                "Unnamed");
-    }
-
-}
-
-}; // end anonymous namespace 
 
 SlitClient::SlitClient(BScreen *screen, Window win) {
     initialize(screen, win);
@@ -100,7 +53,7 @@ void SlitClient::initialize(BScreen *screen, Window win) {
     resize(0, 0);
 
     if (matchName().empty())
-        getWMName(screen, clientWindow(), m_match_name);
+        m_match_name = Xutil::getWMName(clientWindow());
     m_visible = true;        
 }
 
