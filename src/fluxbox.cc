@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.99 2003/02/22 16:09:44 rathnor Exp $
+// $Id: fluxbox.cc,v 1.100 2003/02/23 00:53:31 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -804,18 +804,9 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
     {
         last_time = be.time;
 
-        FluxboxWindow *win = 0;
         Tab *tab = 0; 
 
-        /*
-        if ((win = searchWindow(be.window))) {
-
-            win->buttonPressEvent(be);
-				
-            if (be.button == 1)
-                win->installColormap(True);
-        }
-        else*/ if ((tab = searchTab(be.window))) {
+        if ((tab = searchTab(be.window))) {
             tab->buttonPressEvent(&be);
         } else {
             ScreenList::iterator it = screenList.begin();
@@ -1678,46 +1669,42 @@ void Fluxbox::save_rc() {
     for (; it != it_end; ++it) {
         BScreen *screen = *it;
         int screen_number = screen->getScreenNumber();
+        
+#ifdef SLIT
+        string slit_placement;
+
+        switch (screen->getSlitPlacement()) {
+        case Slit::TOPLEFT: slit_placement = "TopLeft"; break;
+        case Slit::CENTERLEFT: slit_placement = "CenterLeft"; break;
+        case Slit::BOTTOMLEFT: slit_placement = "BottomLeft"; break;
+        case Slit::TOPCENTER: slit_placement = "TopCenter"; break;
+        case Slit::BOTTOMCENTER: slit_placement = "BottomCenter"; break;
+        case Slit::TOPRIGHT: slit_placement = "TopRight"; break;
+        case Slit::BOTTOMRIGHT: slit_placement = "BottomRight"; break;
+        case Slit::CENTERRIGHT: default: slit_placement = "CenterRight"; break;
+        }
+
+        sprintf(rc_string, "session.screen%d.slit.placement: %s", screen_number,
+                slit_placement.c_str());
+        XrmPutLineResource(&new_blackboxrc, rc_string);
+
+        sprintf(rc_string, "session.screen%d.slit.direction: %s", screen_number,
+                ((screen->getSlitDirection() == Slit::HORIZONTAL) ? "Horizontal" :
+                 "Vertical"));
+        XrmPutLineResource(&new_blackboxrc, rc_string);
+
+        sprintf(rc_string, "session.screen%d.slit.autoHide: %s", screen_number,
+                ((screen->getSlit()->doAutoHide()) ? "True" : "False"));
+        XrmPutLineResource(&new_blackboxrc, rc_string);
         /*
-          #ifdef SLIT
-          string slit_placement;
-
-          switch (screen->getSlitPlacement()) {
-          case Slit::TOPLEFT: slit_placement = "TopLeft"; break;
-          case Slit::CENTERLEFT: slit_placement = "CenterLeft"; break;
-          case Slit::BOTTOMLEFT: slit_placement = "BottomLeft"; break;
-          case Slit::TOPCENTER: slit_placement = "TopCenter"; break;
-          case Slit::BOTTOMCENTER: slit_placement = "BottomCenter"; break;
-          case Slit::TOPRIGHT: slit_placement = "TopRight"; break;
-          case Slit::BOTTOMRIGHT: slit_placement = "BottomRight"; break;
-          case Slit::CENTERRIGHT: default: slit_placement = "CenterRight"; break;
-          }
-
-          sprintf(rc_string, "session.screen%d.slit.placement: %s", screen_number,
-          slit_placement.c_str());
-          XrmPutLineResource(&new_blackboxrc, rc_string);
-
-          sprintf(rc_string, "session.screen%d.slit.direction: %s", screen_number,
-          ((screen->getSlitDirection() == Slit::HORIZONTAL) ? "Horizontal" :
-          "Vertical"));
-          XrmPutLineResource(&new_blackboxrc, rc_string);
-
-          sprintf(rc_string, "session.screen%d.slit.onTop: %s", screen_number,
-          ((screen->getSlit()->isOnTop()) ? "True" : "False"));
-          XrmPutLineResource(&new_blackboxrc, rc_string);
-
-          sprintf(rc_string, "session.screen%d.slit.autoHide: %s", screen_number,
-          ((screen->getSlit()->doAutoHide()) ? "True" : "False"));
-          XrmPutLineResource(&new_blackboxrc, rc_string);
-
           #ifdef XINERAMA
           sprintf(rc_string, "session.screen%d.slit.onHead: %d", screen_number,
           screen->getSlitOnHead());
           XrmPutLineResource(&new_blackboxrc, rc_string);
           #endif // XINERAMA
-
-          #endif // SLIT
         */
+#endif // SLIT
+        
         sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
                 ((screen->getRowPlacementDirection() == BScreen::LEFTRIGHT) ?
                  "LeftToRight" : "RightToLeft"));
@@ -1987,64 +1974,54 @@ void Fluxbox::load_rc(BScreen *screen) {
             screen->savePlacementPolicy(BScreen::CASCADEPLACEMENT);
     } else
         screen->savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
+    
+#ifdef SLIT
+    sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
+    sprintf(class_lookup, "Session.Screen%d.Slit.Placement", screen_number);
+    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
+                       &value)) {
+        if (! strncasecmp(value.addr, "TopLeft", value.size))
+            screen->saveSlitPlacement(Slit::TOPLEFT);
+        else if (! strncasecmp(value.addr, "CenterLeft", value.size))
+            screen->saveSlitPlacement(Slit::CENTERLEFT);
+        else if (! strncasecmp(value.addr, "BottomLeft", value.size))
+            screen->saveSlitPlacement(Slit::BOTTOMLEFT);
+        else if (! strncasecmp(value.addr, "TopCenter", value.size))
+            screen->saveSlitPlacement(Slit::TOPCENTER);
+        else if (! strncasecmp(value.addr, "BottomCenter", value.size))
+            screen->saveSlitPlacement(Slit::BOTTOMCENTER);
+        else if (! strncasecmp(value.addr, "TopRight", value.size))
+            screen->saveSlitPlacement(Slit::TOPRIGHT);
+        else if (! strncasecmp(value.addr, "BottomRight", value.size))
+            screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
+        else
+            screen->saveSlitPlacement(Slit::CENTERRIGHT);
+    } else
+        screen->saveSlitPlacement(Slit::CENTERRIGHT);
+
+    sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
+    sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
+    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
+                       &value)) {
+        if (! strncasecmp(value.addr, "Horizontal", value.size))
+            screen->saveSlitDirection(Slit::HORIZONTAL);
+        else
+            screen->saveSlitDirection(Slit::VERTICAL);
+    } else
+        screen->saveSlitDirection(Slit::VERTICAL);
+
+
+    sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
+    sprintf(class_lookup, "Session.Screen%d.Slit.AutoHide", screen_number);
+    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
+                       &value)) {
+        if (! strncasecmp(value.addr, "True", value.size))
+            screen->saveSlitAutoHide(True);
+        else
+            screen->saveSlitAutoHide(False);
+    } else
+        screen->saveSlitAutoHide(False);
     /*
-      #ifdef SLIT
-      sprintf(name_lookup, "session.screen%d.slit.placement", screen_number);
-      sprintf(class_lookup, "Session.Screen%d.Slit.Placement", screen_number);
-      if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-      &value)) {
-      if (! strncasecmp(value.addr, "TopLeft", value.size))
-      screen->saveSlitPlacement(Slit::TOPLEFT);
-      else if (! strncasecmp(value.addr, "CenterLeft", value.size))
-      screen->saveSlitPlacement(Slit::CENTERLEFT);
-      else if (! strncasecmp(value.addr, "BottomLeft", value.size))
-      screen->saveSlitPlacement(Slit::BOTTOMLEFT);
-      else if (! strncasecmp(value.addr, "TopCenter", value.size))
-      screen->saveSlitPlacement(Slit::TOPCENTER);
-      else if (! strncasecmp(value.addr, "BottomCenter", value.size))
-      screen->saveSlitPlacement(Slit::BOTTOMCENTER);
-      else if (! strncasecmp(value.addr, "TopRight", value.size))
-      screen->saveSlitPlacement(Slit::TOPRIGHT);
-      else if (! strncasecmp(value.addr, "BottomRight", value.size))
-      screen->saveSlitPlacement(Slit::BOTTOMRIGHT);
-      else
-      screen->saveSlitPlacement(Slit::CENTERRIGHT);
-      } else
-      screen->saveSlitPlacement(Slit::CENTERRIGHT);
-
-      sprintf(name_lookup, "session.screen%d.slit.direction", screen_number);
-      sprintf(class_lookup, "Session.Screen%d.Slit.Direction", screen_number);
-      if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-      &value)) {
-      if (! strncasecmp(value.addr, "Horizontal", value.size))
-      screen->saveSlitDirection(Slit::HORIZONTAL);
-      else
-      screen->saveSlitDirection(Slit::VERTICAL);
-      } else
-      screen->saveSlitDirection(Slit::VERTICAL);
-
-      sprintf(name_lookup, "session.screen%d.slit.onTop", screen_number);
-      sprintf(class_lookup, "Session.Screen%d.Slit.OnTop", screen_number);
-      if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-      &value)) {
-      if (! strncasecmp(value.addr, "True", value.size))
-      screen->saveSlitOnTop(True);
-      else
-      screen->saveSlitOnTop(False);
-      } else
-      screen->saveSlitOnTop(False);
-
-      sprintf(name_lookup, "session.screen%d.slit.autoHide", screen_number);
-      sprintf(class_lookup, "Session.Screen%d.Slit.AutoHide", screen_number);
-      if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
-      &value)) {
-      if (! strncasecmp(value.addr, "True", value.size))
-      screen->saveSlitAutoHide(True);
-      else
-      screen->saveSlitAutoHide(False);
-      } else
-      screen->saveSlitAutoHide(False);
-
       #ifdef XINERAMA
       int tmp_head;
       sprintf(name_lookup, "session.screen%d.slit.onHead", screen_number);
@@ -2057,9 +2034,9 @@ void Fluxbox::load_rc(BScreen *screen) {
       tmp_head = 0;
       screen->saveSlitOnHead(tmp_head);
       #endif // XINERAMA
-
-      #endif // SLIT
     */
+#endif // SLIT
+    
 #ifdef HAVE_STRFTIME
     sprintf(name_lookup, "session.screen%d.strftimeFormat", screen_number);
     sprintf(class_lookup, "Session.Screen%d.StrftimeFormat", screen_number);
