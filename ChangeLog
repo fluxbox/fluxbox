@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/20:
+  * Close #1105048 (thanx to the openbsd-folks)
+    minor issues with fluxbox-generate_menu
+  * Close #1105041 (thanx to the openbsd-folks)
+    execl needs NULL termination, on 64-bit-systems '0' would expand
+    expand to a 32bit integer, not a 64bit pointer.
+    src/FbCommands.cc util/fbrun/FbRun.cc
 *05/01/15:
   * Added menutest.cc to src/tests (Henrik)
     testing menu parser and theme
