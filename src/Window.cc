@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.301 2004/10/04 15:37:58 rathnor Exp $
+// $Id: Window.cc,v 1.302 2004/10/17 21:40:15 akir Exp $
 
 #include "Window.hh"
 
@@ -3097,9 +3097,9 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
 
 
 void FluxboxWindow::startResizing(Window win, int x, int y) {
-    if (s_num_grabs > 0)
+    if (s_num_grabs > 0 || isShaded() || isIconic() )
         return;
-
+    
     resizing = true;
 
     const Cursor& cursor = (m_resize_corner == LEFTTOP) ? frame().theme().upperLeftAngleCursor() :
