@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.14 2004/09/09 14:32:56 akir Exp $
+// $Id: MenuCreator.cc,v 1.15 2004/09/12 00:31:11 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -220,10 +220,43 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
             menu.insert(str_label.c_str(), &screen->configMenu());
     } // end of config                
     else if (str_key == "include") { // include
+
+        // this will make sure we dont get stuck in a loop
+        static size_t safe_counter = 0;
+        if (safe_counter > 10)
+            return;
+
+        safe_counter++;
+
         string newfile = FbTk::StringUtil::expandFilename(str_label);
-        // inject this file into the current menu
-        MenuCreator::createFromFile(newfile, menu);
-        Fluxbox::instance()->saveMenuFilename(newfile.c_str());
+        if (FbTk::Directory::isDirectory(newfile)) {
+            // inject every file in this directory into the current menu
+            FbTk::Directory dir(newfile.c_str());
+
+            std::vector<std::string> filelist(dir.entries());
+            for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
+                filelist[file_index] = dir.readFilename();
+            std::sort(filelist.begin(), filelist.end(), less<string>());
+
+            for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
+                std::string thisfile(newfile + '/' + filelist[file_index]);
+
+                if (FbTk::Directory::isRegularFile(thisfile) &&
+                        (filelist[file_index][0] != '.') &&
+                        (thisfile[thisfile.length() - 1] != '~')) {
+                    MenuCreator::createFromFile(thisfile, menu);
+                    Fluxbox::instance()->saveMenuFilename(thisfile.c_str());
+                }
+            }
+
+        } else {
+            // inject this file into the current menu
+            MenuCreator::createFromFile(newfile, menu);
+            Fluxbox::instance()->saveMenuFilename(newfile.c_str());
+        }
+
+        safe_counter--;
+
     } // end of include
     else if (str_key == "submenu") {
             
