@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.248 2003/12/07 17:47:42 fluxgen Exp $
+// $Id: Window.cc,v 1.249 2003/12/10 22:28:07 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2407,8 +2407,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 moveResize(dx, dy, frame().width(), frame().height());
             }
 
-            if (screen().doShowWindowPos())
-                screen().showPosition(dx, dy);
+            screen().showPosition(dx, dy);
         } // end if moving
     } else if (functions.resize &&
                (((me.state & Button1Mask) && (me.window == frame().gripRight() ||
@@ -2468,8 +2467,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                                    m_last_resize_w - 1 + 2 * frame().window().borderWidth(), 
                                    m_last_resize_h - 1 + 2 * frame().window().borderWidth());
 
-            if (screen().doShowWindowPos())
-                screen().showGeometry(gx, gy);
+            screen().showGeometry(gx, gy);
         }
     } else if ((me.state & Button2Mask) && inside_titlebar && client != 0) {
 
@@ -2958,8 +2956,8 @@ void FluxboxWindow::startResizing(Window win, int x, int y) {
 
     fixsize(&gx, &gy);
 
-    if (screen().doShowWindowPos())
-        screen().showGeometry(gx, gy);
+
+    screen().showGeometry(gx, gy);
 
     parent().drawRectangle(screen().rootTheme().opGC(),
                            m_last_resize_x, m_last_resize_y,

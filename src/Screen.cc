@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.245 2003/12/07 16:39:43 fluxgen Exp $
+// $Id: Screen.cc,v 1.246 2003/12/10 22:28:07 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2016,6 +2016,9 @@ void BScreen::shutdown() {
 
 
 void BScreen::showPosition(int x, int y) {
+    if (!doShowWindowPos())
+        return;
+
     if (! geom_visible) {
         if (hasXinerama()) {
             unsigned int head = getCurrHead();
@@ -2052,6 +2055,9 @@ void BScreen::showPosition(int x, int y) {
 
 
 void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
+    if (!doShowWindowPos())
+        return;
+
     if (! geom_visible) {
         if (hasXinerama()) {
             unsigned int head = getCurrHead();
