@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.15 2002/01/18 01:28:34 fluxgen Exp $
+// $Id: Theme.cc,v 1.16 2002/01/21 02:02:38 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -651,10 +651,6 @@ void Theme::loadToolbarStyle() {
 void Theme::loadRootCommand() {
 	XrmValue value;
 	char *value_type;
-	#ifdef DEBUG
-	cerr<<"rootcommand.size()="<<m_rootcommand.size()<<endl;
-	cerr<<"rootcommand="<<m_rootcommand<<endl;
-	#endif
 	
 	if (m_rootcommand.size()) {
 		#ifndef         __EMX__		
@@ -664,44 +660,35 @@ void Theme::loadRootCommand() {
 		string displaystring("DISPLAY=");
 		displaystring.append(DisplayString(m_display));
 		displaystring.append(tmpstring); // append m_screennum				
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;
-		#endif
 		
 		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
 
 		#else //         __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), NULL);  
 		#endif // !__EMX__     
-		
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): Rootcommand: "<<m_rootcommand<<endl;
-		#endif //!DEBUG
-	
-	} else if (XrmGetResource(m_database, "rootCommand",
-										 "RootCommand", &value_type, &value)) {
-	#ifndef		__EMX__
+
+	} else if (XrmGetResource(m_database, "rootCommand", "RootCommand",
+			&value_type, &value)) {
+		#ifndef		__EMX__
 		char tmpstring[256]; //to hold m_screennum
 		tmpstring[0]=0;
 		sprintf(tmpstring, "%d", m_screennum);
 		string displaystring("DISPLAY=");
 		displaystring.append(DisplayString(m_display));
 		displaystring.append(tmpstring); // append m_screennum				
-		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;		 		
-
+		
 		bexec(value.addr, const_cast<char *>(displaystring.c_str()));
-	#else //	 __EMX__
+		#else //	 __EMX__
+	
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, NULL);
-	#endif // !__EMX__
-
-	#ifdef DEBUG
-		fprintf(stderr, "rootcommand:%s\n", value.addr); 
-	#endif 	
+	
+		#endif // !__EMX__
+		
 	}
-#ifdef DEBUG
+	#ifdef DEBUG
 	else
-		fprintf(stderr, "%s(%d) Didnt find rootCommand!\n", __FILE__, __LINE__);
-#endif	
+		cerr<<__FILE__<<"("<<__LINE__<<"): Didn't find rootCommand."<<endl;
+	#endif	
 
 }
 
