@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.231 2004/02/20 09:29:05 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.232 2004/02/27 12:30:17 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -48,6 +48,7 @@
 #include "FbTk/Command.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
+#include "FbTk/CompareEqual.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -837,14 +838,11 @@ void Fluxbox::handleEvent(XEvent * const e) {
                 screen_num = XScreenNumberOfScreen(attr.screen);
             
                 // find screen
-                ScreenList::iterator screen_it = m_screen_list.begin();
-                const ScreenList::iterator screen_it_end = m_screen_list.end();
-                for (; screen_it != screen_it_end; ++screen_it) {
-                    if ((*screen_it)->screenNumber() == screen_num) {
-                        screen = (*screen_it);
-                        break;
-                    }
-                }
+                ScreenList::iterator screen_it = find_if(m_screen_list.begin(),
+                                                         m_screen_list.end(),
+                                                         FbTk::CompareEqual<BScreen>(&BScreen::screenNumber, screen_num));
+                if (screen_it != m_screen_list.end())
+                    screen = *screen_it;
             }
             // try with parent if we failed to find screen num
             if (screen == 0)
@@ -1435,11 +1433,12 @@ void Fluxbox::attachSignals(WinClient &winclient) {
 }
 
 BScreen *Fluxbox::searchScreen(Window window) {
-    ScreenList::iterator it = m_screen_list.begin();
+
+    ScreenList::iterator it = m_screen_list.begin();                              
     ScreenList::iterator it_end = m_screen_list.end();
     for (; it != it_end; ++it) {
         if (*it && (*it)->rootWindow() == window)
-            return (*it);
+            return *it;
     }
 
     return 0;

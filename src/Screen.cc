@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.267 2004/02/20 09:06:19 fluxgen Exp $
+// $Id: Screen.cc,v 1.268 2004/02/27 12:32:54 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -641,6 +641,17 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     XFlush(disp);
 }
 
+template <typename A>
+void destroyAndClearList(A &a) {
+    typedef typename A::iterator iterator;
+    iterator it = a.begin();
+    iterator it_end = a.end();
+    for (; it != it_end; ++it)
+        delete (*it);
+
+    a.clear();
+}
+
 BScreen::~BScreen() {
     if (! managed)
         return;
@@ -656,27 +667,9 @@ BScreen::~BScreen() {
 
     removeWorkspaceNames();
 
-    Workspaces::iterator w_it = m_workspaces_list.begin();
-    Workspaces::iterator w_it_end = m_workspaces_list.end();
-    for(; w_it != w_it_end; ++w_it) {
-        delete (*w_it);
-    }
-    m_workspaces_list.clear();
-	
-    Icons::iterator i_it = m_icon_list.begin();
-    Icons::iterator i_it_end = m_icon_list.end();
-    for(; i_it != i_it_end; ++i_it) {
-        delete (*i_it);
-    }
-    m_icon_list.clear();
-	
-    Netizens::iterator n_it = m_netizen_list.begin();
-    Netizens::iterator n_it_end = m_netizen_list.end();
-    for(; n_it != n_it_end; ++n_it) {
-        delete (*n_it);
-    }
-
-    m_netizen_list.clear();
+    destroyAndClearList(m_workspaces_list);
+    destroyAndClearList(m_icon_list);
+    destroyAndClearList(m_netizen_list);
 
     if (hasXinerama() && m_xinerama_headinfo) {
         delete [] m_xinerama_headinfo;
