@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.20 2002/04/08 22:30:51 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.21 2002/04/09 23:16:28 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -374,14 +374,14 @@ void Toolbar::reconfigure(void) {
 		if (i18n->multibyte()) {
 			XRectangle ink, logical;
 			XmbTextExtents(screen->getToolbarStyle()->font.set,
-				 screen->getWorkspace(i)->getName(),
-				 strlen(screen->getWorkspace(i)->getName()),
+				 screen->getWorkspace(i)->name().c_str(),
+				 screen->getWorkspace(i)->name().size(),
 				 &ink, &logical);
 			w = logical.width;
 		} else
 			w = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-				screen->getWorkspace(i)->getName(),
-				strlen(screen->getWorkspace(i)->getName()));
+				screen->getWorkspace(i)->name().c_str(),
+				screen->getWorkspace(i)->name().size());
 
 		w += (frame.bevel_w * 4);
 
@@ -786,7 +786,7 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
  
  
 void Toolbar::redrawWorkspaceLabel(Bool redraw) {
-	if (screen->getCurrentWorkspace()->getName()) {
+	if (screen->getCurrentWorkspace()->name().size()>0) {
 		
 		if (redraw)
 			XClearWindow(display, frame.workspace_label);
@@ -795,10 +795,10 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 					&screen->getToolbarStyle()->font,
 					frame.workspace_label_w, frame.width,
 				frame.bevel_w, 
-				const_cast<char *>(screen->getCurrentWorkspace()->getName()));*/
+				const_cast<char *>(screen->getCurrentWorkspace()->name().c_str()));*/
 		
 		int dx = (frame.bevel_w * 2), dlen =
-						strlen(screen->getCurrentWorkspace()->getName());
+						screen->getCurrentWorkspace()->name().size();
 		unsigned int l;
 		I18n *i18n = I18n::instance();
 		
@@ -806,12 +806,12 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 		if (i18n->multibyte()) {
 			XRectangle ink, logical;
 			XmbTextExtents(screen->getToolbarStyle()->font.set,
-						screen->getCurrentWorkspace()->getName(), dlen,
+						screen->getCurrentWorkspace()->name().c_str(), dlen,
 						&ink, &logical);
 			l = logical.width;
 		} else
 			l = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-					screen->getCurrentWorkspace()->getName(), dlen);
+					screen->getCurrentWorkspace()->name().c_str(), dlen);
 		
 		l += (frame.bevel_w * 4);
 		
@@ -820,12 +820,12 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 				if (i18n->multibyte()) {
 					XRectangle ink, logical;
 					XmbTextExtents(screen->getToolbarStyle()->font.set,
-						screen->getCurrentWorkspace()->getName(), dlen,
+						screen->getCurrentWorkspace()->name().c_str(), dlen,
 						&ink, &logical);
 						l = logical.width;
 				} else {
 					l = XTextWidth(screen->getWindowStyle()->font.fontstruct,
-							screen->getCurrentWorkspace()->getName(), dlen);
+							screen->getCurrentWorkspace()->name().c_str(), dlen);
 				}
 				
 				l += (frame.bevel_w * 4);
@@ -852,12 +852,12 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 				screen->getToolbarStyle()->font.set,
 				screen->getToolbarStyle()->l_text_gc, dx, 1 -
 				screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
-				(char *) screen->getCurrentWorkspace()->getName(), dlen);
+				(char *) screen->getCurrentWorkspace()->name().c_str(), dlen);
 		} else {
 			XDrawString(display, frame.workspace_label,
 				screen->getToolbarStyle()->l_text_gc, dx,
 				screen->getToolbarStyle()->font.fontstruct->ascent + 1,
-				(char *) screen->getCurrentWorkspace()->getName(), dlen);
+				(char *) screen->getCurrentWorkspace()->name().c_str(), dlen);
 		}
 	}
 }
@@ -1138,9 +1138,7 @@ void Toolbar::exposeEvent(XExposeEvent *ee) {
 
 void Toolbar::keyPressEvent(XKeyEvent *ke) {
 	if (ke->window == frame.workspace_label && editing) {
-		BaseDisplay::GrabGuard gg(*fluxbox);
-		fluxbox->grab();
-
+		
 		KeySym ks;
 		char keychar[1];
 		XLookupString(ke, keychar, 1, &ks, 0);
@@ -1158,17 +1156,17 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 				XSetInputFocus(display, PointerRoot, None, CurrentTime);
 			
 			if (ks == XK_Return)	//change workspace name if keypress = Return
-				screen->getCurrentWorkspace()->setName(const_cast<char *>(new_workspace_name.c_str()));
+				screen->getCurrentWorkspace()->setName(new_workspace_name.c_str());
 
 			new_workspace_name.erase(); //erase temporary workspace name
 			
-			screen->getCurrentWorkspace()->getMenu()->hide();
+			screen->getCurrentWorkspace()->menu()->hide();
 			screen->getWorkspacemenu()->
-				remove(screen->getCurrentWorkspace()->getWorkspaceID() + 2);
+				remove(screen->getCurrentWorkspace()->workspaceID() + 2);
 			screen->getWorkspacemenu()->
-				insert(screen->getCurrentWorkspace()->getName(),
-			screen->getCurrentWorkspace()->getMenu(),
-			screen->getCurrentWorkspace()->getWorkspaceID() + 1);
+				insert(screen->getCurrentWorkspace()->name().c_str(),
+			screen->getCurrentWorkspace()->menu(),
+			screen->getCurrentWorkspace()->workspaceID() + 1);
 			screen->getWorkspacemenu()->update();
 
 			reconfigure();
@@ -1218,9 +1216,8 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			XDrawRectangle(display, frame.workspace_label,
 				screen->getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
 				frame.label_h - 1);
-		}
+		}		
 		
-		fluxbox->ungrab();
 	}
 }
 
