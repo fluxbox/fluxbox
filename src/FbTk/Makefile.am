@@ -8,6 +8,7 @@ xmb_SOURCE= XmbFontImp.hh XmbFontImp.cc
 endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
+	Directory.hh Directory.cc \
 	EventHandler.hh EventManager.hh EventManager.cc \
 	FbWindow.hh FbWindow.cc Font.cc Font.hh FontImp.hh \
 	ImageControl.hh ImageControl.cc \
@@ -22,10 +23,12 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Button.hh Button.cc \
 	Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh \
 	XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh \
+	Resource.hh Resource.cc \
 	StringUtil.hh StringUtil.cc \
 	Subject.hh Subject.cc Observer.hh Observer.cc \
 	Transparent.hh Transparent.cc \
 	FbPixmap.hh FbPixmap.cc \
 	FbDrawable.hh FbDrawable.cc \
+	XrmDatabaseHelper.hh \
 	${xft_SOURCE} \
 	${xmb_SOURCE}
