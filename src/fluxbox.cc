@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.190 2003/09/12 22:55:33 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.191 2003/09/14 11:23:48 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -852,7 +852,10 @@ void Fluxbox::handleEvent(XEvent * const e) {
         }
     } break;
     case FocusIn: {
-        if (e->xfocus.mode == NotifyUngrab ||
+        
+        // a grab is something of a pseudo-focus event, so we ignore
+        // them, here we ignore some window receiving it
+        if (e->xfocus.mode == NotifyGrab ||
             e->xfocus.detail == NotifyPointer)
             break;
 
@@ -862,7 +865,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 	
     } break;
     case FocusOut:{
-
+        // and here we ignore some window losing the special grab focus
         if (e->xfocus.mode == NotifyUngrab ||
             e->xfocus.detail == NotifyPointer)
             break;
@@ -871,6 +874,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
+        } else if (winclient && winclient == m_focused_window) {
+            setFocusedWindow(0);
         }
     }
 	break;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.228 2003/09/14 10:13:06 fluxgen Exp $
+// $Id: Window.cc,v 1.229 2003/09/14 11:23:47 rathnor Exp $
 
 #include "Window.hh"
 
@@ -806,19 +806,17 @@ void FluxboxWindow::nextClient() {
         return;
 
     ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
+    WinClient *client = 0;
     if (it == m_clientlist.end()) {
-        m_client = m_clientlist.front();
-        return;
+        client = m_clientlist.front();
+    } else {
+        it++;
+        if (it == m_clientlist.end())
+            client = m_clientlist.front();
+        else
+            client = *it;
     }
-
-    it++;
-    if (it == m_clientlist.end())
-        m_client = m_clientlist.front();
-    else
-        m_client = *it;
-    m_client->raise();
-    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
-    frame().setFocus(setInputFocus());
+    setCurrentClient(*client, true);
 }
 
 void FluxboxWindow::prevClient() {
@@ -826,18 +824,17 @@ void FluxboxWindow::prevClient() {
         return;
 
     ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
+    WinClient *client = 0;
     if (it == m_clientlist.end()) {
-        m_client = m_clientlist.front();
-        return;
+        client = m_clientlist.front();
+    } else {
+        if (it == m_clientlist.begin())
+            client = m_clientlist.back();
+        else
+            client = *(--it);
     }
-    if (it == m_clientlist.begin())
-        m_client = m_clientlist.back();
-    else
-        m_client = *(--it);
 
-    m_client->raise();
-    frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
-    frame().setFocus(setInputFocus());
+    setCurrentClient(*client, true);
 }
 
 
