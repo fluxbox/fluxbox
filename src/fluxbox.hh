@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.71 2003/08/11 17:15:51 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.72 2003/09/10 09:51:58 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -97,6 +97,7 @@ public:
     BScreen *searchScreen(Window w);
 
     inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
+    inline long getUpdateDelayTime() const { return resource.update_delay_time; }
     inline const Time &getLastTime() const { return m_last_time; }
 
     void addAtomHandler(AtomHandler *atomh);
@@ -213,6 +214,7 @@ private:
     struct resource {
         Time double_click_interval;		
         timeval auto_raise_delay;
+        long update_delay_time;
     } resource;
 		
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.187 2003/08/24 11:19:45 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.188 2003/09/10 09:51:58 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -493,7 +493,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 
     resource.auto_raise_delay.tv_sec = resource.auto_raise_delay.tv_usec = 0;
-	
+    resource.update_delay_time = 5;
+
 #ifdef HAVE_GETPID
     m_fluxbox_pid = XInternAtom(disp, "_BLACKBOX_PID", False);
 #endif // HAVE_GETPID
@@ -1452,6 +1453,10 @@ void Fluxbox::save_rc() {
             resource.double_click_interval);
     XrmPutLineResource(&new_blackboxrc, rc_string);
 
+
+    sprintf(rc_string, "session.updateDelayTime: %lu", resource.update_delay_time);
+    XrmPutLineResource(&new_blackboxrc, rc_string);
+
     sprintf(rc_string, "session.autoRaiseDelay:	%lu",
             ((resource.auto_raise_delay.tv_sec * 1000) +
              (resource.auto_raise_delay.tv_usec / 1000)));
@@ -1606,6 +1611,14 @@ void Fluxbox::load_rc() {
             resource.double_click_interval = 250;
     } else
         resource.double_click_interval = 250;
+
+
+    if (XrmGetResource(*database, "session.updateDelayTime", "Session.updateDelayTime", 
+                       &value_type, &value)) {
+        if (sscanf(value.addr, "%lu", &resource.update_delay_time) != 1)
+            resource.update_delay_time = 5;
+    } else
+        resource.update_delay_time = 5;
 
     if (XrmGetResource(*database, "session.autoRaiseDelay", "Session.AutoRaiseDelay", 
                        &value_type, &value)) {
