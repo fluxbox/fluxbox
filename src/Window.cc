@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.305 2004/10/28 19:13:30 akir Exp $
+// $Id: Window.cc,v 1.306 2004/11/07 09:30:59 akir Exp $
 
 #include "Window.hh"
 
@@ -3047,12 +3047,15 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     int dy = screen().getEdgeSnapThreshold() + 1;
 
     // we only care about the left/top etc that includes borders
-    int borderW = frame().window().borderWidth();
+    int borderW = 0;
+    
+    if (decorationMask() & DECORM_ENABLED)
+        borderW = frame().window().borderWidth();
 
     int top = orig_top; // orig include the borders
     int left = orig_left;
-    int right = orig_left + width() + 2*borderW;
-    int bottom = orig_top + height() + 2*borderW;
+    int right = orig_left + width() + 2 * borderW;
+    int bottom = orig_top + height() + 2 * borderW;
 
     /////////////////////////////////////
     // begin by checking the screen (or Xinerama head) edges
@@ -3083,14 +3086,16 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     Workspace::Windows::iterator it = wins.begin();
     Workspace::Windows::iterator it_end = wins.end();
 
+    unsigned int bw;
     for (; it != it_end; it++) {
         if ((*it) == this) continue; // skip myself
+        bw = (*it)->decorationMask() & DECORM_ENABLED ? (*it)->frame().window().borderWidth() : 0;
 
         snapToWindow(dx, dy, left, right, top, bottom, 
                      (*it)->x(),
-                     (*it)->x() + (*it)->width()  + 2*borderW,
+                     (*it)->x() + (*it)->width() + 2 * bw,
                      (*it)->y(),
-                     (*it)->y() + (*it)->height() + 2*borderW);
+                     (*it)->y() + (*it)->height() + 2 * bw);
     }
 
     // commit
