@@ -1,6 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/07/06:
+  * Applied tiled texture fix patch (Thanks  dhx (xyx@gm...))
+    FbPixmap.hh/cc, TextureRender.cc
 *04/07/05:
+  * Fixed minor bug: (Thanks Mathias Gumz)
+    - menutitle and menulables drawn to close to screen-bottom
+    Menu.cc, MenuItem.cc
   * Fixed minor bug: (Thanks Mathias Gumz)
     - menu reload if filename changed
     MenuCreator.cc
