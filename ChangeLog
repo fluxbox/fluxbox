@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/02/04:
+  * Fixed possible bug for invalid tools (Mathias)
+    ToolFactory.cc
 *05/02/03:
   * Added 'revision-number' to  fluxbox -info (Mathias)
     the revision-number only occurs in build based on svn, builds
