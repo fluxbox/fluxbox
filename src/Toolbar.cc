@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.39 2002/11/15 12:05:04 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.40 2002/11/16 22:17:06 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -972,6 +972,25 @@ void Toolbar::buttonReleaseEvent(XButtonEvent *re) {
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
 				screen->nextFocus();
+		} else if (re->window == frame.workspace_label) {
+			Basemenu *menu = screen->getWorkspacemenu();
+			//move the workspace label and make it visible
+			menu->move(re->x_root, re->y_root);
+			// make sure the entire menu is visible (TODO: this is repeated by other menus, make a function!)
+			int newx = menu->x(); // new x position of menu
+			int newy = menu->y(); // new y position of menu
+			if (menu->x() < 0)
+				newx = 0;
+			else if (menu->x() + menu->width() > screen->getWidth())
+				newx = screen->getWidth() - menu->width();
+			
+			if (menu->y() < 0)
+				newy = 0;
+			else if (menu->y() + menu->height() > screen->getHeight())
+				newy = screen->getHeight() - menu->height();
+			// move and show menu
+			menu->move(newx, newy);
+			menu->show();
 		} else if (re->window == frame.window_label)
 			screen->raiseFocus();
 #ifndef	 HAVE_STRFTIME
