@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.106 2003/08/11 20:19:16 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.107 2003/08/13 09:50:45 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -266,22 +266,30 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, screen()));
     m_item_list.push_back(new ClockTool(frame.window, m_clock_theme, screen()));
 
-    m_theme.font().setAntialias(screen().antialias());
-    
+    m_clock_theme.setAntialias(screen().antialias());
+    m_iconbar_theme.setAntialias(screen().antialias());
+    m_workspace_theme.setAntialias(screen().antialias());
+    // signal a change 
+    m_clock_theme.reconfigSig().notify();
+    m_workspace_theme.reconfigSig().notify();
+    m_iconbar_theme.reconfigSig().notify();
+
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
     FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
     m_hide_timer.setCommand(toggle_hidden);
     m_hide_timer.fireOnce(true);
 
-    // get everything together
-    reconfigure(); 
 
     // show all windows
     frame.window.showSubwindows();
     frame.window.show();
 
     scrn.resourceManager().unlock();
+
+    // get everything together
+    reconfigure(); 
+
 }
 
 Toolbar::~Toolbar() {
@@ -359,7 +367,9 @@ void Toolbar::lower() {
 
 void Toolbar::reconfigure() {
 
-    theme().font().setAntialias(screen().antialias());
+    m_clock_theme.setAntialias(screen().antialias());
+    m_iconbar_theme.setAntialias(screen().antialias());
+    m_workspace_theme.setAntialias(screen().antialias());
 
     if (doAutoHide())
         m_hide_timer.start();
@@ -376,10 +386,10 @@ void Toolbar::reconfigure() {
     // recallibrate size
     setPlacement(placement());
 
-    if (isHidden())
+    if (isHidden()) {
         frame.window.moveResize(frame.x_hidden, frame.y_hidden,
                                 frame.width, frame.height);
-    else {
+    } else {
         frame.window.moveResize(frame.x, frame.y,
                                 frame.width, frame.height);
     }
@@ -394,40 +404,7 @@ void Toolbar::reconfigure() {
         m_shape->update();
 
 
-    // calculate size for fixed items
-    ItemList::iterator item_it = m_item_list.begin();
-    ItemList::iterator item_it_end = m_item_list.end();
-    int fixed_width = 0; // combined size of all fixed items
-    int fixed_items = 0; // number of fixed items
-    for (; item_it != item_it_end; ++item_it) {
-        if ((*item_it)->type() == ToolbarItem::FIXED) {
-            fixed_width += (*item_it)->width();
-            fixed_items++;
-        }
-    }
-    // calculate what's going to be left over to the relative sized items
-    int relative_width = 0;
-    if (fixed_items == 0) // no fixed items, then the rest is the entire width
-        relative_width = width();
-    else {
-        const int relative_items = m_item_list.size() - fixed_items;
-        if (relative_items == 0)
-            relative_width = 0;
-        else // size left after fixed items / number of relative items
-            relative_width = (width() - fixed_width)/relative_items;
-    }
-
-    // now move and resize the items
-    int next_x = 0;
-    for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
-        if ((*item_it)->type() == ToolbarItem::RELATIVE) {
-            (*item_it)->moveResize(next_x, 0, relative_width, height());
-        } else { // fixed size
-            (*item_it)->moveResize(next_x, 0,
-                                   (*item_it)->width(), height()); 
-        }
-        next_x += (*item_it)->width();
-    }
+    rearrangeItems();
 
     m_toolbarmenu.reconfigure();
     // we're done with all resizing and stuff now we can request a new 
@@ -541,7 +518,22 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
 
     frame.width = head_w * (*m_rc_width_percent) / 100;
-    frame.height = m_theme.font().height();
+    //!! TODO: change this 
+    // max height of each toolbar items font...
+    unsigned int max_height = 0;
+    if (max_height < m_clock_theme.font().height())
+        max_height = m_clock_theme.font().height();
+
+    if (max_height < m_workspace_theme.font().height())
+        max_height = m_workspace_theme.font().height();
+
+    if (max_height < m_iconbar_theme.focusedText().font().height())
+        max_height = m_iconbar_theme.focusedText().font().height();
+
+    if (max_height < m_iconbar_theme.unfocusedText().font().height())
+        max_height = m_iconbar_theme.unfocusedText().font().height();
+
+    frame.height = max_height;
 
     frame.height += 2;
     frame.height += (frame.bevel_w * 2);
@@ -553,13 +545,9 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     if (isVertical()) {
         frame.width = frame.height;
         frame.height = head_h * (*m_rc_width_percent) / 100;
-        if (!m_theme.font().isRotated())
-            m_theme.font().rotate(90); // rotate to vertical text
 
-    } else { // horizontal toolbar
-        if (m_theme.font().isRotated()) 
-            m_theme.font().rotate(0); // rotate to horizontal text
-    }
+    } // else horizontal toolbar
+
 
     // So we get at least one pixel visible in hidden mode
     if (bevel_width <= border_width)
@@ -793,4 +781,43 @@ void Toolbar::setupMenus() {
 void Toolbar::saveOnHead(int head) {
     m_rc_on_head = head;
     reconfigure();
+}
+
+void Toolbar::rearrangeItems() {
+
+    // calculate size for fixed items
+    ItemList::iterator item_it = m_item_list.begin();
+    ItemList::iterator item_it_end = m_item_list.end();
+    int fixed_width = 0; // combined size of all fixed items
+    int fixed_items = 0; // number of fixed items
+    for (; item_it != item_it_end; ++item_it) {
+        if ((*item_it)->type() == ToolbarItem::FIXED) {
+            fixed_width += (*item_it)->width() + (*item_it)->borderWidth()*2;
+            fixed_items++;
+        }
+    }
+    // calculate what's going to be left over to the relative sized items
+    int relative_width = 0;
+    if (fixed_items == 0) // no fixed items, then the rest is the entire width
+        relative_width = width();
+    else {
+        const int relative_items = m_item_list.size() - fixed_items;
+        if (relative_items == 0)
+            relative_width = 0;
+        else // size left after fixed items / number of relative items
+            relative_width = (width() - fixed_width)/relative_items;
+    }
+
+    // now move and resize the items
+    int next_x = m_item_list.front()->borderWidth();
+    for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+        if ((*item_it)->type() == ToolbarItem::RELATIVE) {
+            (*item_it)->moveResize(next_x, 0, relative_width, height());
+        } else { // fixed size
+            (*item_it)->moveResize(next_x, 0,
+                                   (*item_it)->width(), height()); 
+        }
+        next_x += (*item_it)->width() + (*item_it)->borderWidth()*2;
+    }
+
 }
