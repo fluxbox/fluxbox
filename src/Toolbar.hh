@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.4 2002/01/20 02:11:51 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.5 2002/01/21 00:54:38 fluxgen Exp $
 
 #ifndef   _TOOLBAR_HH_
 #define   _TOOLBAR_HH_
@@ -100,13 +100,13 @@ private:
   } hide_handler;
 
   Fluxbox *fluxbox;
-  BImageControl *image_ctrl;
   BScreen *screen;
+  BImageControl *image_ctrl; 
   BTimer *clock_timer, *hide_timer;
   Toolbarmenu *toolbarmenu;
 	class IconBar *iconbar;
 	
-  char *new_workspace_name, *new_name_pos;
+  std::string new_workspace_name;
 
   friend class HideHandler;
   friend class Toolbarmenu;
