@@ -12,9 +12,6 @@ EXTRA_DIST=		fbsetbg fluxbox-generate_menu startfluxbox.in
 
 all-local:	startfluxbox
 
-distclean-local:
-		rm -f *\~ Makefile.in
-
 clean-local:
 		rm -f startfluxbox
 
