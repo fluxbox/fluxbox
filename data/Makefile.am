@@ -12,4 +12,4 @@ distclean-local:
 init: init.in
 	@regex_cmd@ -e "s,@pkgdatadir@,$(pkgdatadir),g" init.in > init
 menu: fluxbox-generate_menu
-	sh ./fluxbox-generate_menu -o menu -p ${prefix}/share -m "Fluxbox-${VERSION}"
+	./fluxbox-generate_menu -o menu -p ${prefix}/share -m "Fluxbox-${VERSION}"
