@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.30 2002/09/12 14:55:11 rathnor Exp $
+// $Id: Workspace.cc,v 1.31 2002/09/21 16:02:22 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -91,6 +91,13 @@ Workspace::~Workspace() {
 
 }
 
+void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
+	// make sure we have this window in the list
+	if (std::find(windowList.begin(), windowList.end(), win) != windowList.end())
+		lastfocus = win;
+	else
+		lastfocus = 0;
+}
 
 int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	if (w == 0)
@@ -150,6 +157,10 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 	if (w == 0)
 		return -1;
 
+	if (lastfocus == w) {
+		lastfocus = 0;
+	}
+
 	stackingList.remove(w);
 
 	if (w->isFocused()) {
@@ -177,10 +188,8 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 		}
 	}
 	
-	if (lastfocus == w)
-		lastfocus = 0;
+	
 
-	//could be faster?
 	Windows::iterator it = windowList.begin();
 	Windows::iterator it_end = windowList.end();
 	for (; it != it_end; ++it) {
@@ -203,7 +212,10 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 			(*it)->setWindowNumber(i);
 		}
 	}
-
+	
+	if (lastfocus == w || windowList.empty())
+		lastfocus = 0;
+	
 	return windowList.size();
 }
 
@@ -411,7 +423,7 @@ bool Workspace::isLastWindow(FluxboxWindow *w) const{
 	return (w == windowList.back());
 }
 
-void Workspace::setCurrent(void) {
+void Workspace::setCurrent() {
 	screen->changeWorkspaceID(m_id);
 }
 

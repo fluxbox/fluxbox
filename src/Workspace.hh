@@ -44,10 +44,10 @@ public:
 	typedef std::vector<FluxboxWindow *> Windows;
 	typedef std::vector<Window> Stack;
 
-	Workspace(BScreen *screen, unsigned int workspaceid = 0);
+	explicit Workspace(BScreen *screen, unsigned int workspaceid = 0);
 	~Workspace();
 	
-	inline void setLastFocusedWindow(FluxboxWindow *w) { lastfocus = w; }
+	void setLastFocusedWindow(FluxboxWindow *w);
 	/**
 		Set workspace name
 	*/
