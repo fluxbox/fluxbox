@@ -3,6 +3,8 @@ Changes for 0.1.13:
 *02/09/14:
    * Fixed bug [ 604463 ] mplayer fullscreen fails (Henrik)
      Window.cc
+   * Added Color.cc and moved color handling from Image.cc to it. 
+     (Henrik)
 
 Changes for 0.1.12/13:
 *02/09/12:
