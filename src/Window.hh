@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.46 2003/02/16 15:12:08 rathnor Exp $
+// $Id: Window.hh,v 1.47 2003/02/16 16:43:00 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -108,6 +108,7 @@ public:
       
     bool validateClient();
     bool setInputFocus();
+    void raiseAndFocus() { raise(); setInputFocus(); }
     void setTab(bool flag);
     void setFocusFlag(bool flag);
     void iconify();
