@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/27:
+  * Added toggle menu (Henrik)
+    - redraws each time a toggle menu item changes
+    ToggleMenu.hh, FbMenu.hh, LayerMenu.hh, FbTk/Menu.cc
+  * Fixed bug in Iconbar mode menu (Henrik)
+    IconbarTool.cc
+  * Some cleaning in the menu code (Henrik)
+    Menu.hh/cc
 *04/06/21:
   * Fix and tidy KDE dockapps on [re]start (Simon)
     - and don't listen to screen reconfigure sig anymore in toolbar
