@@ -244,9 +244,9 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 									InputOutput, getVisual(), mask, &attrib);
 	geom_visible = False;
 
-	if (theme->getWindowStyle().l_focus.getTexture() & BImage_ParentRelative) {
+	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
 		if (theme->getWindowStyle().t_focus.getTexture() ==
-			(BImage_Flat | BImage_Solid)) {
+			(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				 theme->getWindowStyle().t_focus.getColor()->getPixel());
@@ -258,7 +258,7 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 		}
 	} else {
 		if (theme->getWindowStyle().l_focus.getTexture() ==
-				(BImage_Flat | BImage_Solid)) {
+				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				 theme->getWindowStyle().l_focus.getColor()->getPixel());
@@ -458,9 +458,9 @@ void BScreen::reconfigure(void) {
 	geom_h += getBevelWidth()*2;
 
 	Pixmap tmp = geom_pixmap;
-	if (theme->getWindowStyle().l_focus.getTexture() & BImage_ParentRelative) {
+	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
 		if (theme->getWindowStyle().t_focus.getTexture() ==
-				(BImage_Flat | BImage_Solid)) {
+				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				theme->getWindowStyle().t_focus.getColor()->getPixel());
@@ -472,7 +472,7 @@ void BScreen::reconfigure(void) {
 		}
 	} else {
 		if (theme->getWindowStyle().l_focus.getTexture() ==
-				(BImage_Flat | BImage_Solid)) {
+				(BImage::FLAT | BImage::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				theme->getWindowStyle().l_focus.getColor()->getPixel());

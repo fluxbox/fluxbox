@@ -24,8 +24,8 @@
 
 
 
-#ifndef	 __Screen_hh
-#define	 __Screen_hh
+#ifndef	 _SCREEN_HH_
+#define	 _SCREEN_HH_
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -302,15 +302,10 @@ private:
 	LinkedList<Workspace> *workspacesList;
 
 	struct resource {
-//		WindowStyle wstyle;
-//		ToolbarStyle tstyle;
-//		MenuStyle mstyle;
 
 		Bool toolbar_on_top, toolbar_auto_hide, sloppy_focus, auto_raise,
 			auto_edge_balance, image_dither, ordered_dither, opaque_move, full_max,
 			focus_new, focus_last, tab_rotate_vertical, semi_sloppy_focus;
-//		BColor border_color;
-//		XrmDatabase stylerc;
 
 		int workspaces, toolbar_placement, toolbar_width_percent, placement_policy,
 			edge_snap_threshold, row_direction, col_direction;
@@ -322,8 +317,6 @@ private:
 		int slit_placement, slit_direction;
 #endif // SLIT
 
-	//	unsigned int handle_width, frame_width,
-	//		border_width, border_width_2x;
 
 #ifdef		HAVE_STRFTIME
 		char *strftime_format;
@@ -352,4 +345,4 @@ protected:
 };
 
 
-#endif // __Screen_hh
+#endif // _SCREEN_HH_
