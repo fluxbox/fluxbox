@@ -22,12 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.5 2003/10/02 16:14:41 rathnor Exp $
+// $Id: TextureRender.cc,v 1.6 2004/01/11 12:52:37 fluxgen Exp $
 
 #include "TextureRender.hh"
 
 #include "ImageControl.hh"
 #include "App.hh"
+#include "FbPixmap.hh"
+#include "GContext.hh"
 
 #include <iostream>
 #include <string>
@@ -114,94 +116,85 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
 
     Display *disp = FbTk::App::instance()->display();
 
-    Pixmap pixmap = XCreatePixmap(disp,
-                                  RootWindow(disp, control.screenNum()), width,
-                                  height, control.depth());
-    if (pixmap == None) {
+    FbPixmap pixmap(RootWindow(disp, control.screenNum()), 
+                  width, height,
+                  control.depth());
+
+    if (pixmap.drawable() == None) {
         cerr<<"FbTk::TextureRender::render_solid(): error creating pixmap"<<endl;
         return None;
     }
 
-    XGCValues gcv;
-    GC gc, hgc, lgc;
 
-    gcv.foreground = texture.color().pixel();
-    gcv.fill_style = FillSolid;
-    gc = XCreateGC(disp, pixmap, GCForeground | GCFillStyle, &gcv);
+    FbTk::GContext gc(pixmap), 
+        hgc(pixmap), lgc(pixmap);
 
-    gcv.foreground = texture.hiColor().pixel();
-    hgc = XCreateGC(disp, pixmap, GCForeground, &gcv);
+    gc.setForeground(texture.color());
+    gc.setFillStyle(FillSolid);
 
-    gcv.foreground = texture.loColor().pixel();
-    lgc = XCreateGC(disp, pixmap, GCForeground, &gcv);
+    hgc.setForeground(texture.hiColor());
 
-    XFillRectangle(disp, pixmap, gc, 0, 0, width, height);
+    pixmap.fillRectangle(gc.gc(), 0, 0, width, height);
 	
     using namespace FbTk;
 	
     if (texture.type() & Texture::INTERLACED) {
-        gcv.foreground = texture.colorTo().pixel();
-        GC igc = XCreateGC(disp, pixmap,
-                           GCForeground, &gcv);
-
+        lgc.setForeground(texture.colorTo());
         register unsigned int i = 0;
         for (; i < height; i += 2)
-            XDrawLine(disp, pixmap, igc, 0, i, width, i);
+            pixmap.drawLine(lgc.gc(), 0, i, width, i);
 
-        XFreeGC(disp, igc);
     }
+
+    lgc.setForeground(texture.loColor());
 
     if (texture.type() & Texture::BEVEL1) {
         if (texture.type() & Texture::RAISED) {
-            XDrawLine(disp, pixmap, lgc,
-                      0, height - 1, width - 1, height - 1);
-            XDrawLine(disp, pixmap, lgc,
-                      width - 1, height - 1, width - 1, 0);
+            pixmap.drawLine(lgc.gc(), 
+                            0, height - 1, width - 1, height - 1);
+            pixmap.drawLine(lgc.gc(),
+                            width - 1, height - 1, width - 1, 0);
 
-            XDrawLine(disp, pixmap, hgc,
-                      0, 0, width - 1, 0);
-            XDrawLine(disp, pixmap, hgc,
-                      0, height - 1, 0, 0);
+            pixmap.drawLine(hgc.gc(),
+                            0, 0, width - 1, 0);
+            pixmap.drawLine(hgc.gc(),
+                            0, height - 1, 0, 0);
         } else if (texture.type() & Texture::SUNKEN) {
-            XDrawLine(disp, pixmap, hgc,
-                      0, height - 1, width - 1, height - 1);
-            XDrawLine(disp, pixmap, hgc,
-                      width - 1, height - 1, width - 1, 0);
+            pixmap.drawLine(hgc.gc(),
+                            0, height - 1, width - 1, height - 1);
+            pixmap.drawLine(hgc.gc(),
+                            width - 1, height - 1, width - 1, 0);
 
-            XDrawLine(disp, pixmap, lgc,
-                      0, 0, width - 1, 0);
-            XDrawLine(disp, pixmap, lgc,
-                      0, height - 1, 0, 0);
+            pixmap.drawLine(lgc.gc(),
+                            0, 0, width - 1, 0);
+            pixmap.drawLine(lgc.gc(),
+                            0, height - 1, 0, 0);
         }
     } else if (texture.type() & Texture::BEVEL2) {
         if (texture.type() & Texture::RAISED) {
-            XDrawLine(disp, pixmap, lgc,
-                      1, height - 3, width - 3, height - 3);
-            XDrawLine(disp, pixmap, lgc,
-                      width - 3, height - 3, width - 3, 1);
+            pixmap.drawLine(lgc.gc(),
+                            1, height - 3, width - 3, height - 3);
+            pixmap.drawLine(lgc.gc(),
+                            width - 3, height - 3, width - 3, 1);
 
-            XDrawLine(disp, pixmap, hgc,
-                      1, 1, width - 3, 1);
-            XDrawLine(disp, pixmap, hgc,
-                      1, height - 3, 1, 1);
+            pixmap.drawLine(hgc.gc(),
+                            1, 1, width - 3, 1);
+            pixmap.drawLine(hgc.gc(),
+                            1, height - 3, 1, 1);
         } else if (texture.type() & Texture::SUNKEN) {
-            XDrawLine(disp, pixmap, hgc,
-                      1, height - 3, width - 3, height - 3);
-            XDrawLine(disp, pixmap, hgc,
-                      width - 3, height - 3, width - 3, 1);
+            pixmap.drawLine(hgc.gc(),
+                            1, height - 3, width - 3, height - 3);
+            pixmap.drawLine(hgc.gc(),
+                            width - 3, height - 3, width - 3, 1);
 
-            XDrawLine(disp, pixmap, lgc,
-                      1, 1, width - 3, 1);
-            XDrawLine(disp, pixmap, lgc,
-                      1, height - 3, 1, 1);
+            pixmap.drawLine(lgc.gc(),
+                            1, 1, width - 3, 1);
+            pixmap.drawLine(lgc.gc(),
+                            1, height - 3, 1, 1);
         }
     }
 
-    XFreeGC(disp, gc);
-    XFreeGC(disp, hgc);
-    XFreeGC(disp, lgc);
-
-    return pixmap;
+    return pixmap.release();
 }
 
 
@@ -666,11 +659,10 @@ return image;
 
 Pixmap TextureRender::renderPixmap() {
     Display *disp = FbTk::App::instance()->display();
-    Pixmap pixmap =
-        XCreatePixmap(disp,
-                      RootWindow(disp, control.screenNum()), width, height, control.depth());
+    FbPixmap pixmap(RootWindow(disp, control.screenNum()), 
+                    width, height, control.depth());
 
-    if (pixmap == None) {
+    if (pixmap.drawable() == None) {
         cerr<<"TextureRender::renderPixmap(): error creating pixmap"<<endl;
         return None;
     }
@@ -678,15 +670,13 @@ Pixmap TextureRender::renderPixmap() {
     XImage *image = renderXImage();
 
     if (! image) {
-        XFreePixmap(disp, pixmap);
         return None;
     } else if (! image->data) {
         XDestroyImage(image);
-        XFreePixmap(disp, pixmap);
         return None;
     }
 
-    XPutImage(disp, pixmap,
+    XPutImage(disp, pixmap.drawable(),
               DefaultGC(disp, control.screenNum()),
               image, 0, 0, 0, 0, width, height);
 
@@ -697,7 +687,7 @@ Pixmap TextureRender::renderPixmap() {
 
     XDestroyImage(image);
 
-    return pixmap;
+    return pixmap.release();
 }
 
 
