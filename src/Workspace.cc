@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.88 2003/12/18 18:03:22 fluxgen Exp $
+// $Id: Workspace.cc,v 1.89 2003/12/30 18:16:51 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -32,8 +32,8 @@
 #include "Window.hh"
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
-#include "MenuItem.hh"
 
+#include "FbTk/MenuItem.hh"
 #include "FbTk/StringUtil.hh"
 
 // use GNU extensions
@@ -143,8 +143,7 @@ void Workspace::setLastFocusedWindow(FluxboxWindow *win) {
 
 void Workspace::addWindow(FluxboxWindow &w, bool place) {
     // we don't need to add a window that already exist in our list
-    if (find(m_windowlist.begin(), m_windowlist.end(), &w) !=
-        m_windowlist.end())
+    if (find(m_windowlist.begin(), m_windowlist.end(), &w) != m_windowlist.end())
         return;
 
     w.setWorkspace(m_id);
