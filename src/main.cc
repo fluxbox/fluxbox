@@ -106,6 +106,11 @@ void showInfo(ostream &ostr) {
 #endif // HAVE_XPM
         "XPM"<<endl<<
 
+#ifndef HAVE_IMLIB2
+        NOT<<
+#endif // HAVE_IMLIB2
+        "IMLIB2"<<endl<<
+
 #ifndef USE_GNOME
         NOT<<
 #endif // USE_GNOME

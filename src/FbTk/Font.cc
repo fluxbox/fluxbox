@@ -229,9 +229,14 @@ namespace FbTk {
 bool Font::m_multibyte = false; 
 bool Font::m_utf8mode = false;
 
-// some initialisation for using fonts
-void fontInit() {
-   setlocale(LC_CTYPE, "");
+
+void Font::init() {
+    // must be set before the first XFontSet is created
+    setlocale(LC_CTYPE, "");
+}
+
+void Font::shutdown() {
+
 }
 
 Font::Font(const char *name, bool antialias):

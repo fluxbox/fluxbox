@@ -40,8 +40,6 @@
 
 namespace FbTk {
 
-void fontInit();
-
 class FontImp;
 class FbDrawable;
 
@@ -50,6 +48,19 @@ class FbDrawable;
 */
 class Font {
 public:
+
+    /// called at FbTk::App creation time, initializes some stuff
+    static void init();
+
+    /// called at FbTk::App destruction time, cleans up what was inited first
+    static void shutdown();
+    
+    /// @return true if multibyte is enabled, else false
+    static bool multibyte() { return m_multibyte; }
+    /// @return true if utf-8 mode is enabled, else false
+    static bool utf8() { return m_utf8mode; }
+
+
 
     Font(const char *name=0, bool antialias = false);
     virtual ~Font();
@@ -60,10 +71,6 @@ public:
     */
     bool load(const std::string &name);
 
-    /// @return true if multibyte is enabled, else false
-    static bool multibyte() { return m_multibyte; }
-    /// @return true if utf-8 mode is enabled, else false
-    static bool utf8() { return m_utf8mode; }
     void setAntialias(bool flag);
     inline void setShadow(bool flag) { m_shadow = flag; if (m_shadow) setHalo(false); }
     inline void setHalo(bool flag)   { m_halo = flag; if (m_halo) setShadow(false); }

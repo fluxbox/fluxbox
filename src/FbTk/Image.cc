@@ -1,5 +1,5 @@
 // Image.cc for FbTk - Fluxbox ToolKit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -30,10 +30,15 @@
 
 #ifdef HAVE_XPM
 #include "ImageXPM.hh"
-#endif /// HAVE_XPM
+#endif // HAVE_XPM
+
+#ifdef HAVE_IMLIB2
+#include "ImageImlib2.hh"
+#endif // HAVE_IMLIB2
 
 #include <list>
 #include <iostream>
+#include <set>
 using namespace std;
 
 namespace FbTk {
@@ -41,13 +46,41 @@ namespace FbTk {
 Image::ImageMap Image::s_image_map;
 Image::StringList Image::s_search_paths;
 
+
+void Image::init() {
+
+// create imagehandlers for their extensions
+#ifdef HAVE_XPM
+    new ImageXPM();
+#endif // HAVE_XPM
+#ifdef HAVE_IMLIB2
+    new ImageImlib2();
+#endif // HAVE_IMLIB2
+}
+
+void Image::shutdown() {
+
+    std::set<ImageBase*> handlers;
+    
+    // one imagehandler could be registered 
+    // for more than one type
+    ImageMap::iterator it = s_image_map.begin();
+    ImageMap::iterator it_end = s_image_map.end();
+    for (; it != it_end; it++)
+        handlers.insert(it->second);
+
+    // free the unique handlers
+    std::set<ImageBase*>::iterator handler_it = handlers.begin();
+    std::set<ImageBase*>::iterator handler_it_end = handlers.end();
+    for(; handler_it != handler_it_end; handler_it++) {
+        delete (*handler_it);
+    }
+
+    s_image_map.clear();
+}
+
 PixmapWithMask *Image::load(const std::string &filename, int screen_num) {
 
-#ifdef HAVE_XPM
-    // we must do this because static linkage with libFbTk will not init 
-    // a static autoreg variable for it
-    static ImageXPM xpm;
-#endif // HAVE_XPM
 
     if (filename == "")
         return false;

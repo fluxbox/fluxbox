@@ -20,6 +20,8 @@
 // DEALINGS IN THE SOFTWARE.
 
 #include "App.hh"
+#include "Font.hh"
+#include "Image.hh"
 
 #include "EventManager.hh"
 
@@ -49,10 +51,17 @@ App::App(const char *displayname):m_done(false), m_display(0) {
     if (displayname != 0 && displayname[0] == '\0')
         displayname = 0;
     m_display = XOpenDisplay(displayname);
+
+    Font::init();
+    Image::init();
 }
 
 App::~App() {
     if (m_display != 0) {
+        
+        Font::shutdown();
+        Image::shutdown();
+        
         XCloseDisplay(m_display);
         m_display = 0;
     }

@@ -244,8 +244,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                              "Error message when no X display appears to exist"));
     }
 
-    FbTk::fontInit();
-
     Display *disp = FbTk::App::instance()->display();
     // For KDE dock applets
     // KDE v1.x
@@ -1369,7 +1367,6 @@ void Fluxbox::shutdown() {
              m_screen_list.end(), mem_fun(&BScreen::shutdown));
 
     sync(false);
-
 }
 
 /// saves resources

@@ -11,6 +11,9 @@ endif
 if XPM
 xpm_SOURCE= ImageXPM.hh ImageXPM.cc
 endif
+if IMLIB2
+imlib2_SOURCE= ImageImlib2.hh ImageImlib2.cc
+endif
 
 libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	FileUtil.hh FileUtil.cc \
@@ -48,4 +51,5 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	MenuIcon.hh MenuIcon.cc \
 	${xpm_SOURCE} \
 	${xft_SOURCE} \
-	${xmb_SOURCE}
+	${xmb_SOURCE} \
+	${imlib2_SOURCE}
