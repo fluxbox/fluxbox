@@ -1,78 +1,81 @@
 -- AUTHORS for Fluxbox 
-Author:
-    Henrik Kinnunen <fluxgen@users.sourceforge.net>
 
+Author/Project leader:
+    Henrik Kinnunen <fluxgen(at)fluxbox.org>
+
+Main developers:
+    Henrik Kinnunen <fluxgen(at)fluxbox.org>
+    Simon Bowden <rathnor(at)fluxbox.org>
+    
 Contributors:
-    Joel Carlbark <skypher@linuxmail.org>
+    Joel Carlbark <skypher(at)linuxmail.org>
       - suggestions, bug reports, beta testing, styles
         and some code.
-    Cleas Nästén <pekdon@gmx.net>
+    Cleas Nästén <pekdon(at)gmx.net>
       - suggestions, bug reports, beta testing and 
         Tab placement/alignment and Xinerama code.
-    Johan Andersson <xfs@linux.se>
+    Johan Andersson <xfs(at)linux.se>
       - suggestions, bug reports and beta testing
-    Oliwier Ptak  <aleczapka@gmx.net>
+    Oliwier Ptak  <aleczapka(at)gmx.net>
       - suggestions, styles and webpage
-    Paul W Brannan <pbrannan@atdesk.com>
+    Paul W Brannan <pbrannan(at)atdesk.com>
       - consulting, code clean up
-    Rando Christensen <rando@babblica.net>
+    Rando Christensen <rando(at)babblica.net>
       - Documentation
-    Takashi KATAYAMA <valcyrie@hi-ho.ne.jp>
+    Takashi KATAYAMA <valcyrie(at)hi-ho.ne.jp>
       - Japanese translation
-    Miroslav Iordanov <m_iordo@yahoo.com>
+    Miroslav Iordanov <m_iordo(at)yahoo.com>
       - Bulgarian translation
-    Luis Medinas <metalgodin@excite.com>
+    Luis Medinas <metalgodin(at)excite.com>
       - Portuguese translation
-    Stanislav Karchebny <berk@madfire.net>
+    Stanislav Karchebny <berk(at)madfire.net>
       - minor additions, fixes, cleanups...
-    Steve Cooper <stevencooper@isomedia.com>
+    Steve Cooper <stevencooper(at)isomedia.com>
       - Workspace warping, window cycling with optional parameters,
         slit order
-    Han Boetes <han@mijncomputer.nl>
+    Han Boetes <han(at)mijncomputer.nl>
       - RPM Packaging, debugging and scripts.
     Jeramy B. Smith
       - Packaging assistance, gnome and kde menu system.
-    Simon Bowden <rathnor@users.sourceforge.net>
-      - Window moving across workspaces in outlined mode and bugfixes.
     Artis Trops <hornet at navigator.lv >
       - Latvian Localisation
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager
 
 Author:
-        Brad Hughes <bhughes@trolltech.com>
+        Brad Hughes <bhughes(at)trolltech.com>
 
 Co-author:
-        Jeff Raven <jraven@psu.edu>
+        Jeff Raven <jraven(at)psu.edu>
 
 Contributors:
-        Jeffrey Sean Connell <ankh@canuck.gen.nz>
+        Jeffrey Sean Connell <ankh(at)canuck.gen.nz>
           - debugger class code (ommited from sources)
-        Frank Belew <frb@umr.edu>
+        Frank Belew <frb(at)umr.edu>
           - dgradient code
-        Scott Garner <mrfab@arn.net>
+        Scott Garner <mrfab(at)arn.net>
           - suggestions, bug reports and beta testing (*the* beta moron)
-        David Doan <ddoan@usa.net>
+        David Doan <ddoan(at)usa.net>
          - testing of 8bpp code
-        Mark Seward <illuzion@paradise.net.nz>
+        Mark Seward <illuzion(at)paradise.net.nz>
          - beta testing, bug reports and 32bpp testing
-        Keith Bolland <prime@strip.net.nz>
+        Keith Bolland <prime(at)strip.net.nz>
          - beta testing, bug reports and suggestions
-        James Spooner <spoons@xtra.co.nz>
+        James Spooner <spoons(at)xtra.co.nz>
          - beta testing, bug reports
-        Fred Knieper <derf@tamu.edu>
+        Fred Knieper <derf(at)tamu.edu>
          - beta testing, bug reports
-        Steve Udell <hettar@teleport.com>
+        Steve Udell <hettar(at)teleport.com>
          - beta testing, bug reports, questions (very good ones)
-        Gregory Barlow <barlowg@ncssm-server.ncssm.edu>
+        Gregory Barlow <barlowg(at)ncssm-server.ncssm.edu>
         - bug reports and patches/suggestions (original middle click advocate)
-        Dyon Balding <dyon.balding@eng.monash.edu.au>
+        Dyon Balding <dyon.balding(at)eng.monash.edu.au>
         - patch for Smart(er)Placement window placement
-        Mike Cole <mike@mydot.com>
+        Mike Cole <mike(at)mydot.com>
         - co-author/hacker of Image.cc (local LUG buddy)
-        John Kennis <jkennis@chello.nl>
+        John Kennis <jkennis(at)chello.nl>
         - author of bbtools/beta testing/bug reports
-  Wilbert Berendsen <wbsoft@xs4all.nl>
+  Wilbert Berendsen <wbsoft(at)xs4all.nl>
   - author of blackbox/bsetroot manpages
 
 I would also like to thank the creators of WindowMaker.  Reading the existing
@@ -82,5 +85,5 @@ wrlib).
 
 I recently stumbled upon a library called ccmalloc (which is included in the
 source tarball with blackbox) that has helped me immensely.  Many thanks to
-Armin Biere <armin@ira.uka.de> for this debugging aid.
+Armin Biere <armin(at)ira.uka.de> for this debugging aid.
 
