@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/19:
+   * Fixed fallback option for theme items (Henrik)
+     So the toolbar should look better in old themes
+     ToolTheme.cc/hh, IconbarTheme.hh/cc, Theme.hh/cc,
+   * Fixed bug in Subject.cc that cause observers to be added more than once (Henrik)	
+     Subject.cc
+*03/08/17:
+   * Update fbsetbg and fluxbox-generate_menu (Han)
 *03/08/16:
    * Fixed iconified windows in toolbar  (Henrik)
      IconbarTool.cc
