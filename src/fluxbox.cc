@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.17 2002/01/09 15:08:22 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.18 2002/01/10 12:51:21 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -191,8 +191,8 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 	key=0;
 	
   no_focus = False;
-  resource.titlebar_file = resource.menu_file = resource.style_file = resource.keys_file = 
-		resource.root_cmd = 0;  
+  resource.titlebar_file = resource.menu_file = resource.style_file = resource.keys_file = 0;
+	
 	resource.auto_raise_delay.tv_sec = resource.auto_raise_delay.tv_usec = 0;
 		
   focused_window = masked_window = (FluxboxWindow *) 0;
@@ -289,9 +289,6 @@ Fluxbox::~Fluxbox(void) {
 	
 	delete key;
 	key = 0;
-	
-	if (resource.root_cmd)
-		delete [] resource.root_cmd;
 	
 	if (resource.menu_file)
 		delete [] resource.menu_file;
@@ -982,7 +979,17 @@ void Fluxbox::process_event(XEvent *e) {
 
 	  	  		win->changeBlackboxHints(&net);
 					}
+				} 
+				#ifdef GNOME
+				else if (e->xclient.message_type == getGnomeWorkspaceAtom()) {
+					#ifdef DEBUG
+					cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom"<<endl;
+					#endif//!DEBUG
+					BScreen *screen = searchScreen(e->xclient.window);
+					if (screen)
+						screen->changeWorkspaceID(e->xclient.data.l[0]);
 				}
+				#endif //!GNOME
 			}
 
 			break;
@@ -1256,28 +1263,6 @@ Slit *Fluxbox::searchSlit(Window window) {
 
 void Fluxbox::saveWindowSearch(Window window, FluxboxWindow *data) {
   windowSearchList->insert(new WindowSearch(window, data));
-
-#ifdef GNOME
-	/*
-	Window	*wl=0;
-	int	num=0;
-
-	num = windowSearchList->count();
-	wl = new Window[num];
-  // Fill in array of window ID's
-	LinkedListIterator<WindowSearch> it(windowSearchList);
-
-	for (unsigned int i=0; it.current(); it++, i++)
-		wl[i] = it.current()->getWindow();		
-	
-	//set property
-  XChangeProperty(getXDisplay(), DefaultRootWindow(getXDisplay()), getGnomeClientListAtom(), XA_CARDINAL, 32,
-                  PropModeReplace, (unsigned char  *)(wl), num);
-	
-	delete wl;	
-	*/
-#endif
-
 }
 
 
@@ -1432,7 +1417,8 @@ void Fluxbox::save_rc(void) {
 
 	auto_ptr<char> dbfile(getRcFilename());
 
-//	load_rc(); This overwrites configs made while running, for example
+//	load_rc();
+// This overwrites configs made while running, for example
 // usage of iconbar and tabs
   
 	sprintf(rc_string, "session.iconbar: %s", resource.iconbar ? "true" : "false");
@@ -1511,15 +1497,19 @@ void Fluxbox::save_rc(void) {
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.imageDither: %s",
-				((screen->getImageControl()->doDither()) ? "True" : "False"));
+			((screen->getImageControl()->doDither()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.fullMaximization: %s", screen_number,
-					((screen->doFullMax()) ? "True" : "False"));
+			((screen->doFullMax()) ? "True" : "False"));
+		XrmPutLineResource(&new_blackboxrc, rc_string);
+		
+		sprintf(rc_string, "session.screen%d.rootCommand: %s", screen_number,
+			screen->getRootCommand().c_str());
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.focusNewWindows: %s", screen_number,
-						((screen->doFocusNew()) ? "True" : "False"));
+			((screen->doFocusNew()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.focusLastWindow: %s", screen_number,
@@ -1528,18 +1518,18 @@ void Fluxbox::save_rc(void) {
 
 		sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
 			((screen->getRowPlacementDirection() == BScreen::LeftRight) ?
-				"LeftToRight" : "RightToLeft"));
+			"LeftToRight" : "RightToLeft"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		sprintf(rc_string, "session.screen%d.colPlacementDirection: %s", screen_number,
 			((screen->getColPlacementDirection() == BScreen::TopBottom) ?
-				"TopToBottom" : "BottomToTop"));
+			"TopToBottom" : "BottomToTop"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 
 		char *placement = (char *) 0;
 		
 		sprintf(rc_string, "session.screen%d.maxOverSlit: %s", screen_number,
-					((screen->doMaxOverSlit()) ? "True" : "False"));
+			((screen->doMaxOverSlit()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
 		switch (screen->getPlacementPolicy()) {
 		case BScreen::CascadePlacement:
@@ -1699,13 +1689,8 @@ void Fluxbox::save_rc(void) {
 char *Fluxbox::getRcFilename() {
 	char *dbfile=0;
  
-	if (!rc_file) {
-		
-		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);		
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): str.size()="<<str.size()<<endl;
-		cerr<<__FILE__<<"("<<__LINE__<<"): str="<<str<<endl;
-		#endif
+	if (!rc_file) {		
+		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);				
 		return StringUtil::strdup(str.c_str());
 	} else
 		dbfile = StringUtil::strdup(rc_file);
@@ -1807,16 +1792,6 @@ void Fluxbox::load_rc(void) {
 		resource.style_file = StringUtil::expandFilename(value.addr);
 	else
 		resource.style_file = StringUtil::strdup(DEFAULTSTYLE);
-
-	if (resource.root_cmd) {
-		delete [] resource.root_cmd;
-		resource.root_cmd = 0;
-	}
-
-	if (XrmGetResource(database, "session.rootCommand", "Session.RootCommand", &value_type, &value))
-		resource.root_cmd = StringUtil::expandFilename(value.addr);
-	else
-		resource.root_cmd = 0;
 
 	if (XrmGetResource(database, "session.doubleClickInterval",
 				"Session.DoubleClickInterval", &value_type, &value)) {
@@ -1946,7 +1921,8 @@ void Fluxbox::load_rc(BScreen *screen) {
   char *value_type, name_lookup[1024], class_lookup[1024];
   int screen_number = screen->getScreenNumber();
 
-  sprintf(name_lookup,  "session.screen%d.fullMaximization", screen_number);
+  
+	sprintf(name_lookup,  "session.screen%d.fullMaximization", screen_number);
   sprintf(class_lookup, "Session.Screen%d.FullMaximization", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
                      &value)) {
@@ -1957,7 +1933,15 @@ void Fluxbox::load_rc(BScreen *screen) {
   } else
     screen->saveFullMax(False);
 
-  sprintf(name_lookup,  "session.screen%d.focusNewWindows", screen_number);
+  sprintf(name_lookup,  "session.screen%d.rootCommand", screen_number);
+  sprintf(class_lookup, "Session.Screen%d.RootCommand", screen_number);
+  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+                     &value)) {										 
+    screen->saveRootCommand(value.addr==0 ? "": value.addr);
+  } else
+		screen->saveRootCommand("");    
+
+	sprintf(name_lookup,  "session.screen%d.focusNewWindows", screen_number);
   sprintf(class_lookup, "Session.Screen%d.FocusNewWindows", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
                      &value)) {
@@ -2080,27 +2064,7 @@ void Fluxbox::load_rc(BScreen *screen) {
 
     delete [] search;
   }
-	//TODO MOVE THIS!!!!!!
-	#ifdef GNOME	
-	{
-	Atom atype;
-  int aformat;
-  unsigned long nitems, bytes_remain;
-  unsigned char *prop;
-	XGetWindowProperty (screen->getBaseDisplay()->getXDisplay(), 
-		screen->getRootWindow(), 
-		screen->getBaseDisplay()->getGnomeWorkspaceCountAtom(), 
-		0L, 1L, False, XA_CARDINAL, &atype, &aformat, &nitems, &bytes_remain, &prop);
-		
-	long val = screen->getNumberOfWorkspaces();
-	fprintf(stderr, "HERE!! %s(%d) num wrkspace(%l)\n", __FILE__, __LINE__, val);
-		XChangeProperty(screen->getBaseDisplay()->getXDisplay(), screen->getRootWindow(),
-			screen->getBaseDisplay()->getGnomeWorkspaceCountAtom(), XA_CARDINAL, 32,
-		PropModeReplace, (unsigned char *)&val, 1);
-	}
-	#endif //GNOME
-     
-		 
+
   sprintf(name_lookup,  "session.screen%d.toolbar.onTop", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Toolbar.OnTop", screen_number);
   if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
@@ -2375,7 +2339,26 @@ void Fluxbox::load_rc(BScreen *screen) {
 
 }
 
+void Fluxbox::loadRootCommand(BScreen *screen)  {
+	XrmDatabase database = (XrmDatabase) 0;
 
+  auto_ptr<char> dbfile(getRcFilename());
+
+  database = XrmGetFileDatabase(dbfile.get());
+	if (!database) 
+		database = XrmGetFileDatabase(DEFAULT_INITFILE);
+
+  XrmValue value;
+  char *value_type, name_lookup[1024], class_lookup[1024];
+	sprintf(name_lookup,  "session.screen%d.rootCommand", screen->getScreenNumber());
+  sprintf(class_lookup, "Session.Screen%d.RootCommand", screen->getScreenNumber());
+  if (XrmGetResource(database, name_lookup, class_lookup, &value_type,
+                     &value)) {										 
+    screen->saveRootCommand(value.addr==0 ? "": value.addr);
+  } else
+		screen->saveRootCommand("");    
+	
+}
 void Fluxbox::reload_rc(void) {
   load_rc();
   reconfigure();

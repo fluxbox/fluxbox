@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.4 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.5 2002/01/10 12:51:21 fluxgen Exp $
 
 #ifndef	 _FLUXBOX_HH_
 #define	 _FLUXBOX_HH_
@@ -128,8 +128,7 @@ public:
 	inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return titlebar.left; }
 	inline const char *getStyleFilename(void) const
 		{ return resource.style_file; }
-	inline const char *getRootCommand() const 
-		{ return resource.root_cmd; }
+
 	inline const char *getMenuFilename(void) const
 		{ return resource.menu_file; }
 
@@ -151,6 +150,7 @@ public:
 	void setFocusedWindow(FluxboxWindow *w);
 	void shutdown(void);
 	void load_rc(BScreen *);
+	void loadRootCommand(BScreen *);
 	void loadTitlebar();
 	void saveStyleFilename(const char *);
 	void saveMenuFilename(const char *);
@@ -211,7 +211,7 @@ private:
 	struct resource {
 		Time double_click_interval;
 
-		char *menu_file, *style_file, *titlebar_file, *keys_file, *root_cmd;
+		char *menu_file, *style_file, *titlebar_file, *keys_file;
 		int colors_per_channel;
 		timeval auto_raise_delay;
 		unsigned long cache_life, cache_max;
