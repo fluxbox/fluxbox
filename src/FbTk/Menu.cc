@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.5 2003/01/12 17:01:02 fluxgen Exp $
+// $Id: Menu.cc,v 1.6 2003/01/13 03:04:47 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -133,6 +133,8 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
                                CopyFromParent, InputOutput,
                                CopyFromParent, attrib_mask, &attrib);
     evm.add(*this, menu.frame);
+    // update style 
+    reconfigure();
 }
 
 Menu::~Menu() {
