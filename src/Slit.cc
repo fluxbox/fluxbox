@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.89 2004/02/06 12:09:14 rathnor Exp $
+// $Id: Slit.cc,v 1.90 2004/02/10 18:45:26 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -107,6 +107,7 @@ void FbTk::Resource<Slit::Direction>::setFromString(const char *strval) {
         setDefaultValue();
 }
 
+template<>
 string FbTk::Resource<Slit::Placement>::getString() {
     switch (m_value) {
     case Slit::TOPLEFT:
