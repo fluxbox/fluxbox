@@ -52,96 +52,52 @@ screen(window->getScreen()){
 	
 	sendToMenu = new SendtoWorkspacemenu(this);
 	sendGroupToMenu = new SendGroupToWorkspacemenu(this);
-	
+	using namespace FBNLS;	
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuSendTo,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Send To ..."),
+		WindowmenuSet, WindowmenuSendTo,
+		"Send To ..."),
 	 sendToMenu);
 	 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuSendGroupTo,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Send Group To ..."),
+		WindowmenuSet, WindowmenuSendGroupTo,
+		"Send Group To ..."),
 	sendGroupToMenu);
 	 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuShade,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Shade"),
+		WindowmenuSet, WindowmenuShade,
+		"Shade"),
 	 BScreen::WINDOWSHADE);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuIconify,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Iconify"),
+		WindowmenuSet, WindowmenuIconify,
+		"Iconify"),
 	 BScreen::WINDOWICONIFY);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuMaximize,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Maximize"),
+		WindowmenuSet, WindowmenuMaximize,
+		"Maximize"),
 	 BScreen::WINDOWMAXIMIZE);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuRaise,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Raise"),
+		WindowmenuSet, WindowmenuRaise,
+		"Raise"),
 	 BScreen::WINDOWRAISE);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuLower,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Lower"),
+		WindowmenuSet, WindowmenuLower,
+		"Lower"),
 	 BScreen::WINDOWLOWER);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuStick,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Stick"),
+		WindowmenuSet, WindowmenuStick,
+		"Stick"),
 	 BScreen::WINDOWSTICK);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuKillClient,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Kill Client"),
+		WindowmenuSet, WindowmenuKillClient,
+		"Kill Client"),
 	 BScreen::WINDOWKILL);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuClose,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Close"),
+		WindowmenuSet, WindowmenuClose,
+		"Close"),
 	 BScreen::WINDOWCLOSE);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				WindowmenuSet, WindowmenuTab,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Tab"),
+		WindowmenuSet, WindowmenuTab,
+		"Tab"),
 	 BScreen::WINDOWTAB);
 
 	update();

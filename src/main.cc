@@ -22,10 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.5 2002/03/08 12:21:46 fluxgen Exp $
+// $Id: main.cc,v 1.6 2002/04/04 11:28:19 fluxgen Exp $
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
+//use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -75,12 +74,12 @@ uds::uds_flags_t uds::flags = uds::leak_check;
 const char *getNLSYesNoMsg(bool val) {
 	if (val) {
 		return I18n::instance()->getMessage(
-			CommonSet, CommonYes,
+			FBNLS::CommonSet, FBNLS::CommonYes,
 			"yes");
 	}
 	
 	return I18n::instance()->getMessage(
-		CommonSet, CommonNo,
+		FBNLS::CommonSet, FBNLS::CommonNo,
 		"no");
 }
 
@@ -103,7 +102,7 @@ int main(int argc, char **argv) {
 			if ((++i) >= argc) {
 				fprintf(stderr,
 					i18n->getMessage(
-					mainSet, mainRCRequiresArg,
+					FBNLS::mainSet, FBNLS::mainRCRequiresArg,
 					"error: '-rc' requires and argument\n"));	
 				exit(1);
 			}
@@ -116,7 +115,7 @@ int main(int argc, char **argv) {
 			if ((++i) >= argc) {
 				fprintf(stderr,
 					i18n->getMessage(				
-					mainSet, mainDISPLAYRequiresArg,				
+					FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,				
 					"error: '-display' requires an argument\n"));
 				exit(1);
 			}
@@ -129,7 +128,7 @@ int main(int argc, char **argv) {
 				fprintf(stderr,
 					i18n->
 					getMessage(
-					 mainSet, mainWarnDisplaySet,
+					 FBNLS::mainSet, FBNLS::mainWarnDisplaySet,
 					 "warning: couldn't set environment variable 'DISPLAY'\n"));
 				perror("putenv()");
 			}
@@ -143,7 +142,7 @@ int main(int argc, char **argv) {
 			// print program usage and command line options
 			printf(i18n->
 			getMessage(
-			mainSet, mainUsage,
+			FBNLS::mainSet, FBNLS::mainUsage,
 			"Fluxbox %s : (c) 2001-2002 Henrik Kinnunen\n\n"
 			"	-display <string>\t\tuse display connection.\n"
 			"	-rc <string>\t\t\tuse alternate resource file.\n"
@@ -155,11 +154,7 @@ int main(int argc, char **argv) {
 			// as well
 			printf(i18n->
 			 getMessage(
-			#ifdef NLS
-			mainSet, mainCompileOptions,
-			#else // !NLS
-			0, 0,
-			#endif // NLS
+			FBNLS::mainSet, FBNLS::mainCompileOptions,			
 			"Compile time options:\n"
 			"	Debugging:\t\t\t%s\n"
 			"	Interlacing:\t\t\t%s\n"

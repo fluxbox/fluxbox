@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.18 2002/03/21 10:54:29 fluxgen Exp $
+// $Id: Theme.cc,v 1.19 2002/04/04 11:28:19 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -889,11 +889,7 @@ void Theme::readDatabaseFontSet(char *rname, char *rclass, XFontSet *fontset) {
 			fprintf(stderr,
 				I18n::instance()->
 				getMessage(
-			#ifdef NLS
-				 ScreenSet, ScreenDefaultFontLoadFail,
-			#else // !NLS
-				 0, 0,
-			#endif // NLS
+				 FBNLS::ScreenSet, FBNLS::ScreenDefaultFontLoadFail,
 				 "BScreen::LoadStyle(): couldn't load default font.\n"));
 			throw 2;
 		}
@@ -922,12 +918,8 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 			fprintf(stderr,
 				I18n::instance()->
 				getMessage(
-			#ifdef NLS
-				ScreenSet, ScreenFontLoadFail,
-			#else // !NLS
-				0, 0,
-			#endif // NLS
-			 "BScreen::LoadStyle(): couldn't load font '%s'\n"),
+					FBNLS::ScreenSet, FBNLS::ScreenFontLoadFail,
+					"BScreen::LoadStyle(): couldn't load font '%s'\n"),
 				value.addr);
 
 			load_default = true;
@@ -941,13 +933,9 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 			fprintf(stderr,
 				I18n::instance()->
 				getMessage(
-#ifdef		NLS
-			 ScreenSet, ScreenDefaultFontLoadFail,
-#else // !NLS
-			 0, 0,
-#endif // NLS
-						 "BScreen::LoadStyle(): couldn't load default font.\n"));
-			throw (int)(2);
+					 FBNLS::ScreenSet, FBNLS::ScreenDefaultFontLoadFail,
+					 "BScreen::LoadStyle(): couldn't load default font.\n"));
+			throw 2; //fatal!
 		}
 	}
 }

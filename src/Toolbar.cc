@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.18 2002/04/03 23:02:49 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.19 2002/04/04 11:28:19 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1248,14 +1248,10 @@ void Toolbar::HideHandler::timeout(void) {
 Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 	toolbar = tb;
 	I18n *i18n = I18n::instance();
-	
+	using namespace FBNLS;
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-				ToolbarSet, ToolbarToolbarTitle,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Toolbar"));
+		ToolbarSet, ToolbarToolbarTitle,
+		"Toolbar"));
 	setInternalMenu();
 
 	placementmenu = new Placementmenu(this);
@@ -1266,13 +1262,9 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 #endif // XINERAMA
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTitle,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Placement"),
-				placementmenu);
+		CommonSet, CommonPlacementTitle,
+		"Placement"),
+		placementmenu);
 
 #ifdef XINERAMA
 	if (toolbar->screen->hasXinerama()) { //TODO: NLS
@@ -1281,29 +1273,17 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 #endif // XINERAMA
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonAlwaysOnTop,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Always on top"),
-				1);
+		CommonSet, CommonAlwaysOnTop,
+		"Always on top"),
+		1);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonAutoHide,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Auto hide"),
+		CommonSet, CommonAutoHide,
+		"Auto hide"),
 				2);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ToolbarSet, ToolbarEditWkspcName,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Edit current workspace name"),
-				3);
+		ToolbarSet, ToolbarEditWkspcName,
+		"Edit current workspace name"),
+		3);
 
 	update();
 
@@ -1386,64 +1366,36 @@ Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu *tm)
 	: Basemenu(tm->toolbar->screen) {
 	toolbarmenu = tm;
 	I18n *i18n = I18n::instance();
-	
+	using namespace FBNLS;
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-					ToolbarSet, ToolbarToolbarPlacement,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Toolbar Placement"));
+		ToolbarSet, ToolbarToolbarPlacement,
+		"Toolbar Placement"));
 	setInternalMenu();
 	setMinimumSublevels(3);
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTopLeft,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Top Left"),
-				Toolbar::TOPLEFT);
+		CommonSet, CommonPlacementTopLeft,
+		"Top Left"),
+		Toolbar::TOPLEFT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementBottomLeft,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Bottom Left"),
-				Toolbar::BOTTOMLEFT);
+		CommonSet, CommonPlacementBottomLeft,
+		"Bottom Left"),
+		Toolbar::BOTTOMLEFT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTopCenter,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Top Center"),
-				Toolbar::TOPCENTER);
+		CommonSet, CommonPlacementTopCenter,
+		"Top Center"),
+		Toolbar::TOPCENTER);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementBottomCenter,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Bottom Center"),
-				Toolbar::BOTTOMCENTER);
+		CommonSet, CommonPlacementBottomCenter,
+		"Bottom Center"),
+		Toolbar::BOTTOMCENTER);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTopRight,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Top Right"),
-				Toolbar::TOPRIGHT);
+		CommonSet, CommonPlacementTopRight,
+		"Top Right"),
+		Toolbar::TOPRIGHT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementBottomRight,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Bottom Right"),
+		CommonSet, CommonPlacementBottomRight,
+		"Bottom Right"),
 	Toolbar::BOTTOMRIGHT);
 
 	update();

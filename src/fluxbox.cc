@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.43 2002/04/02 23:13:38 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.44 2002/04/04 11:28:19 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -380,11 +380,7 @@ key(0)
 		fprintf(stderr,
 			i18n->
 				getMessage(
-#ifdef		NLS
-				blackboxSet, blackboxNoManagableScreens,
-#else // !NLS
-				 0, 0,
-#endif // NLS
+				FBNLS::blackboxSet, FBNLS::blackboxNoManagableScreens,
 				"Fluxbox::Fluxbox: no managable screens found, aborting.\n"));
 
 		throw static_cast<int>(3);
@@ -602,13 +598,9 @@ void Fluxbox::process_event(XEvent *e) {
 		fprintf(stderr,
 			I18n::instance()->
 				getMessage(
-				#ifdef NLS
-				 blackboxSet, blackboxMapRequest,
-				#else // !NLS
-				 0, 0,
-				#endif // NLS
+				FBNLS::blackboxSet, FBNLS::blackboxMapRequest,
 				 "Fluxbox::process_event(): MapRequest for 0x%lx\n"),
-							e->xmaprequest.window);
+					e->xmaprequest.window);
 		#endif // DEBUG
 		
 		#ifdef SLIT

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.16 2002/04/03 23:04:01 fluxgen Exp $
+// $Id: Workspace.cc,v 1.17 2002/04/04 11:28:19 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -351,11 +351,7 @@ void Workspace::setName(char *new_name) {
 		char tname[128];
 		sprintf(tname, I18n::instance()->
 			getMessage(
-#ifdef		NLS
-			WorkspaceSet, WorkspaceDefaultNameFormat,
-#else // !NLS
-			0, 0,
-#endif // NLS
+			FBNLS::WorkspaceSet, FBNLS::WorkspaceDefaultNameFormat,
 			"Workspace %d"), id + 1);
 		name = tname;
 	}

@@ -44,29 +44,16 @@ Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
 	
 	setInternalMenu();
 	I18n *i18n = I18n::instance();
-	
+	using namespace FBNLS;
 	setLabel(i18n->getMessage(
-#ifdef    NLS
-					WorkspacemenuSet, WorkspacemenuWorkspacesTitle,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Workspaces"));
-
+		WorkspacemenuSet, WorkspacemenuWorkspacesTitle,
+		"Workspaces"));
 	insert(i18n->getMessage(
-#ifdef    NLS
-				WorkspacemenuSet, WorkspacemenuNewWorkspace,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"New Workspace"));
+		WorkspacemenuSet, WorkspacemenuNewWorkspace,
+		"New Workspace"));
 	insert(i18n->getMessage(
-#ifdef    NLS
-				WorkspacemenuSet, WorkspacemenuRemoveLast,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Remove Last"));
+		WorkspacemenuSet, WorkspacemenuRemoveLast,
+		"Remove Last"));
 }
 
 

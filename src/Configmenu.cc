@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.11 2002/04/03 12:08:53 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.12 2002/04/04 11:28:19 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -48,105 +48,51 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	I18n *i18n = I18n::instance();
 	
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuConfigOptions,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Config options"));
+		FBNLS::ConfigmenuSet, FBNLS::ConfigmenuConfigOptions,
+		"Config options"));
 	
 	setInternalMenu();
 
 	focusmenu = new Focusmenu(this);
 	placementmenu = new Placementmenu(this);
 	tabmenu = new Tabmenu(this);
-
+	using namespace FBNLS;
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuFocusModel,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Focus Model"), focusmenu);
+		ConfigmenuSet, ConfigmenuFocusModel,
+		"Focus Model"), focusmenu);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuWindowPlacement,
-#else //! NLS
-				0, 0,
-#endif // NLS
-				"Window Placement"), placementmenu);
+		ConfigmenuSet, ConfigmenuWindowPlacement,
+		"Window Placement"), placementmenu);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuTabPlacement,
-#else // !NLS
-				0, 0,
-#endif	// NLS
-				"Tab Placement"), tabmenu);
+		ConfigmenuSet, ConfigmenuTabPlacement,
+		"Tab Placement"), tabmenu);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuImageDithering,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Image Dithering"), 1);
+		ConfigmenuSet, ConfigmenuImageDithering,
+		"Image Dithering"), 1);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuOpaqueMove,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Opaque Window Moving"), 2);
+		ConfigmenuSet, ConfigmenuOpaqueMove,
+		"Opaque Window Moving"), 2);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuFullMax,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Full Maximization"), 3);
+		ConfigmenuSet, ConfigmenuFullMax,
+		"Full Maximization"), 3);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuFocusNew,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Focus New Windows"), 4);
+		ConfigmenuSet, ConfigmenuFocusNew,
+		"Focus New Windows"), 4);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuFocusLast,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Focus Last Window on Workspace"), 5);
+		ConfigmenuSet, ConfigmenuFocusLast,
+		"Focus Last Window on Workspace"), 5);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuMaxOverSlit,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Maxmize Over Slit"), 6);
-
-
+		ConfigmenuSet, ConfigmenuMaxOverSlit,
+		"Maxmize Over Slit"), 6);
     insert(i18n->getMessage(
-#ifdef   NLS
-       ConfigmenuSet, ConfigmenuTabs,
-#else // !NLS
-       0, 0,
-#endif // NLS
-       "Use Tabs"), CMENU_USE_TABS);
- insert(i18n->getMessage(
-#ifdef   NLS
-       ConfigmenuSet, ConfigmenuIcons,
-#else // !NLS
-       0, 0,
-#endif // NLS
-       "Use Icons"), CMENU_USE_ICONS);
- insert(i18n->getMessage(
-#ifdef   NLS
-       ConfigmenuSet, ConfigmenuSloppyWindowGrouping,
-#else // !NLS
-       0, 0,
-#endif // NLS
-       "Sloppy Window Grouping"), CMENU_SLOPPY_WIN_GROUP);
+		ConfigmenuSet, ConfigmenuTabs,
+		"Use Tabs"), CMENU_USE_TABS);
+	insert(i18n->getMessage(
+		ConfigmenuSet, ConfigmenuIcons,
+		"Use Icons"), CMENU_USE_ICONS);
+	insert(i18n->getMessage(
+		ConfigmenuSet, ConfigmenuSloppyWindowGrouping,
+		"Sloppy Window Grouping"), CMENU_SLOPPY_WIN_GROUP);
 
 	update();
 	setItemSelected(8, screen->doMaxOverSlit());
@@ -253,52 +199,33 @@ void Configmenu::reconfigure(void) {
 Configmenu::Focusmenu::Focusmenu(Configmenu *cm) : Basemenu(cm->screen) {
 	configmenu = cm;
 	I18n *i18n = I18n::instance();
+	using namespace FBNLS;
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-					ConfigmenuSet, ConfigmenuFocusModel,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Focus Model"));
+			ConfigmenuSet, ConfigmenuFocusModel,
+			"Focus Model"));
 	setInternalMenu();
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuClickToFocus,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Click To Focus"), 1);
+			ConfigmenuSet, ConfigmenuClickToFocus,
+			"Click To Focus"), 1);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuSloppyFocus,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Sloppy Focus"), 2);
+		ConfigmenuSet, ConfigmenuSloppyFocus,
+		"Sloppy Focus"), 2);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuSemiSloppyFocus,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Semi Sloppy Focus"), 3);
+		ConfigmenuSet, ConfigmenuSemiSloppyFocus,
+		"Semi Sloppy Focus"), 3);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				ConfigmenuSet, ConfigmenuAutoRaise,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Auto Raise"), 4);
+		ConfigmenuSet, ConfigmenuAutoRaise,
+		"Auto Raise"), 4);
 
 	update();
 
 	setItemSelected(0, !(configmenu->screen->isSloppyFocus() || 
-							configmenu->screen->isSemiSloppyFocus()));
+		configmenu->screen->isSemiSloppyFocus()));
 	setItemSelected(1, configmenu->screen->isSloppyFocus());
 	setItemSelected(2, configmenu->screen->isSemiSloppyFocus());
 	setItemEnabled(3, (configmenu->screen->isSloppyFocus() ||
-						configmenu->screen->isSemiSloppyFocus()));
+		configmenu->screen->isSemiSloppyFocus()));
 	setItemSelected(3, configmenu->screen->doAutoRaise());
 }
 
@@ -366,7 +293,7 @@ void Configmenu::Focusmenu::itemSelected(int button, unsigned int index) {
 Configmenu::Placementmenu::Placementmenu(Configmenu *cm) : Basemenu(cm->screen) {
 	configmenu = cm;
 	I18n *i18n = I18n::instance();
-
+	using namespace FBNLS;
 	setLabel(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuWindowPlacement,
 		"Window Placement"));
@@ -495,6 +422,7 @@ void Configmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 Configmenu::Tabmenu::Tabmenu(Configmenu *cm) : Basemenu(cm->screen) {
 	configmenu = cm;
 	I18n *i18n = I18n::instance();
+	using namespace FBNLS;
 
 	setLabel(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuTabPlacement,

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.36 2002/04/03 23:01:04 fluxgen Exp $
+// $Id: Window.cc,v 1.37 2002/04/04 11:28:19 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -81,18 +81,13 @@ tab(0)
 {
 	lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
 
-	#ifdef DEBUG
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
-	#ifdef NLS
-			WindowSet, WindowCreating,
-	#else // !NLS
-			0, 0,
-	#endif // NLS
+			FBNLS::WindowSet, FBNLS::WindowCreating,
 			"FluxboxWindow::FluxboxWindow(): creating 0x%lx\n"),
-		w);
-	#endif // DEBUG
+			w);
+
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
@@ -528,11 +523,7 @@ void FluxboxWindow::showError(FluxboxWindow::Error error) {
 		fprintf(stderr,
 			I18n::instance()->
 			getMessage(
-			#ifdef NLS
-				WindowSet, WindowXGetWindowAttributesFail,
-			#else // !NLS
-				0, 0,
-			#endif // NLS
+				FBNLS::WindowSet, FBNLS::WindowXGetWindowAttributesFail,
 				"FluxboxWindow::FluxboxWindow(): XGetWindowAttributes "
 				"failed\n")
 			);	
@@ -541,11 +532,7 @@ void FluxboxWindow::showError(FluxboxWindow::Error error) {
 		fprintf(stderr,
 			I18n::instance()->
 			getMessage(
-			#ifdef NLS
-				WindowSet, WindowCannotFindScreen,
-			#else // !NLS
-				0, 0,
-			#endif // NLS
+				FBNLS::WindowSet, FBNLS::WindowCannotFindScreen,			
 				"FluxboxWindow::FluxboxWindow(): can't find screen\n"
 				"	for root window"));
 		break;
@@ -1463,11 +1450,11 @@ void FluxboxWindow::getWMName(void) {
 			XFree((char *) text_prop.value);
 		} else
 			client.title = i18n->getMessage(
-				WindowSet, WindowUnnamed,
+				FBNLS::WindowSet, FBNLS::WindowUnnamed,
 				"Unnamed");
 	} else {
 		client.title = i18n->getMessage(
-			WindowSet, WindowUnnamed,
+			FBNLS::WindowSet, FBNLS::WindowUnnamed,
 			"Unnamed");
 	}
 
@@ -2816,11 +2803,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
 #ifdef		DEBUG
 		fprintf(stderr,
 			I18n::instance()->getMessage(
-#ifdef		NLS
-					 WindowSet, WindowMapRequest,
-#else // !NLS
-					 0, 0,
-#endif // NLS
+					 FBNLS::WindowSet, FBNLS::WindowMapRequest,
 					 "FluxboxWindow::mapRequestEvent() for 0x%lx\n"),
 						client.window);
 #endif // DEBUG
@@ -2907,11 +2890,7 @@ bool FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 		#ifdef DEBUG
 		fprintf(stderr,
 			I18n::instance()->getMessage(
-		#ifdef NLS
-			 WindowSet, WindowUnmapNotify,
-		#else // !NLS
-			 0, 0,
-		#endif // NLS
+			 FBNLS::WindowSet, FBNLS::WindowUnmapNotify,
 			 "FluxboxWindow::unmapNotifyEvent() for 0x%lx\n"),
 			client.window);
 		#endif // DEBUG
@@ -2937,13 +2916,9 @@ bool FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 			#ifdef DEBUG
 			fprintf(stderr,
 				I18n::instance()->getMessage(
-			#ifdef NLS
-						 WindowSet, WindowUnmapNotifyReparent,
-			#else // !NLS
-						 0, 0,
-			#endif // NLS
-						 "FluxboxWindow::unmapNotifyEvent(): reparent 0x%lx to "
-						 "root.\n"), client.window);
+					 FBNLS::WindowSet, FBNLS::WindowUnmapNotifyReparent,		
+					 "FluxboxWindow::unmapNotifyEvent(): reparent 0x%lx to "
+					 "root.\n"), client.window);
 			#endif // DEBUG
 			restoreGravity();
 			XReparentWindow(display, client.window, screen->getRootWindow(),

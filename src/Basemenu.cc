@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.17 2002/04/03 23:08:19 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.18 2002/04/04 11:28:19 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -281,7 +281,7 @@ void Basemenu::update(void) {
 	if (title_vis) {
 		const char *s = (menu.label) ? menu.label :
 			i18n->getMessage(
-				 BasemenuSet, BasemenuBlackboxMenu,
+				 FBNLS::BasemenuSet, FBNLS::BasemenuBlackboxMenu,
 				 "fluxbox Menu");
 		int l = strlen(s);
 		
@@ -484,11 +484,7 @@ void Basemenu::redrawTitle(void) {
 	I18n *i18n = I18n::instance();
 	char *text = (char *) ((menu.label) ? menu.label :
 			i18n->getMessage(
-#ifdef		NLS
-					BasemenuSet, BasemenuBlackboxMenu,
-#else // !NLS
-					0, 0,
-#endif // NLS
+					FBNLS::BasemenuSet, FBNLS::BasemenuBlackboxMenu,
 					"fluxbox Menu"));
 	int dx = menu.bevel_w, len = strlen(text);
 	unsigned int l;

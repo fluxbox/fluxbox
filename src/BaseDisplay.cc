@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.11 2002/03/23 02:02:00 pekdon Exp $
+// $Id: BaseDisplay.cc,v 1.12 2002/04/04 11:28:19 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -107,11 +107,7 @@ static int handleXErrors(Display *d, XErrorEvent *e) {
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
-		#ifdef	NLS
-			BaseDisplaySet, BaseDisplayXError,
-		#else // !NLS
-			0, 0,
-		#endif // NLS
+			FBNLS::BaseDisplaySet, FBNLS::BaseDisplayXError,
 			 "%s:	X error: %s(%d) opcodes %d/%d\n	resource 0x%lx\n"),
 			base_display->getApplicationName(), errtxt, e->error_code,
 			e->request_code, e->minor_code, e->resourceid);
@@ -165,11 +161,7 @@ static void signalhandler(int sig) {
 
 		fprintf(stderr,
 			i18n->getMessage(
-			#ifdef NLS
-				 BaseDisplaySet, BaseDisplaySignalCaught,
-			#else // !NLS
-				 0, 0,
-			#endif // NLS
+				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplaySignalCaught,
 				 "%s:	signal %d caught\n"),
 			base_display->getApplicationName(), sig);
 
@@ -179,23 +171,15 @@ static void signalhandler(int sig) {
 			re_enter = 1;
 			fprintf(stderr,
 				i18n->getMessage(
-			#ifdef NLS
-					BaseDisplaySet, BaseDisplayShuttingDown,
-			#else // !NLS
-				 0, 0,
-			#endif // NLS
-				 "shutting down\n"));
+					FBNLS::BaseDisplaySet, FBNLS::BaseDisplayShuttingDown,
+					"shutting down\n"));
 			base_display->shutdown();
 		}
 
 		if (sig != SIGTERM && sig != SIGINT) {
 			fprintf(stderr,
 				i18n->getMessage(
-			#ifdef NLS
-				 BaseDisplaySet, BaseDisplayAborting,
-			#else // !NLS
-				 0, 0,
-			#endif // NLS
+				 FBNLS::BaseDisplaySet, FBNLS::BaseDisplayAborting,
 				 "aborting... dumping core\n"));
 			abort();
 		}
@@ -260,25 +244,17 @@ m_server_grabs(0)
 		fprintf(stderr,
 			i18n->
 			getMessage(
-		#ifdef NLS
-			BaseDisplaySet, BaseDisplayXConnectFail,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-		"BaseDisplay::BaseDisplay: connection to X server failed.\n"));
+				FBNLS::BaseDisplaySet, FBNLS::BaseDisplayXConnectFail,
+				"BaseDisplay::BaseDisplay: connection to X server failed.\n"));
 		
 		throw static_cast<int>(2); //throw error 2
 	} else if (fcntl(ConnectionNumber(m_display), F_SETFD, 1) == -1) {
 		fprintf(stderr,
 			i18n->
 				getMessage(
-		#ifdef NLS
-				BaseDisplaySet, BaseDisplayCloseOnExecFail,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-				"BaseDisplay::BaseDisplay: couldn't mark display connection "
-				"as close-on-exec\n"));
+					FBNLS::BaseDisplaySet, FBNLS::BaseDisplayCloseOnExecFail,
+					"BaseDisplay::BaseDisplay: couldn't mark display connection "
+					"as close-on-exec\n"));
 		throw static_cast<int>(2); //throw error 2
 	}
 	//initiate atoms
@@ -332,11 +308,7 @@ void BaseDisplay::eventLoop(void) {
 			fprintf(stderr,
 				I18n::instance()->
 					getMessage(
-			#ifdef NLS
-					BaseDisplaySet, BaseDisplayBadWindowRemove,
-			#else // !NLS
-					0, 0,
-			#endif // NLS
+					FBNLS::BaseDisplaySet, FBNLS::BaseDisplayBadWindowRemove,
 					"BaseDisplay::eventLoop(): removing bad window "
 					"from event queue\n"));
 			#endif // DEBUG

@@ -663,14 +663,10 @@ void Slit::timeout(void) {
 Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 	slit = sl;
 	I18n *i18n = I18n::instance();
-	
+	using namespace FBNLS;
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-					SlitSet, SlitSlitTitle,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Slit"));
+		SlitSet, SlitSlitTitle,
+		"Slit"));
 	setInternalMenu();
 
 	directionmenu = new Directionmenu(this);
@@ -682,20 +678,12 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 #endif // XINERAMA
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonDirectionTitle,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Direction"),
+		CommonSet, CommonDirectionTitle,
+		"Direction"),
 	 directionmenu);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTitle,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Placement"),
+		CommonSet, CommonPlacementTitle,
+		"Placement"),
 	 placementmenu);
 
 #ifdef XINERAMA
@@ -706,19 +694,11 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 #endif // XINERAMA
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonAlwaysOnTop,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Always on top"), 1);
+		CommonSet, CommonAlwaysOnTop,
+		"Always on top"), 1);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonAutoHide,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Auto hide"), 2);
+		CommonSet, CommonAutoHide,
+		"Auto hide"), 2);
 
 	update();
 
@@ -792,31 +772,19 @@ void Slitmenu::reconfigure(void) {
 Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->slit->screen) {
 	slitmenu = sm;
 	I18n *i18n = I18n::instance();
-	
+	using namespace FBNLS;	
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-					SlitSet, SlitSlitDirection,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Slit Direction"));
+		SlitSet, SlitSlitDirection,
+		"Slit Direction"));
 	setInternalMenu();
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonDirectionHoriz,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Horizontal"),
+		CommonSet, CommonDirectionHoriz,
+		"Horizontal"),
 	 Slit::HORIZONTAL);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonDirectionVert,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Vertical"),
+		CommonSet, CommonDirectionVert,
+		"Vertical"),
 	 Slit::VERTICAL);
 
 	update();
@@ -852,81 +820,45 @@ void Slitmenu::Directionmenu::itemSelected(int button, unsigned int index) {
 Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen) {
 	slitmenu = sm;
 	I18n *i18n = I18n::instance();
-	
+	using namespace FBNLS;	
 	setLabel(i18n->getMessage(
-#ifdef		NLS
-					SlitSet, SlitSlitPlacement,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Slit Placement"));
+		SlitSet, SlitSlitPlacement,
+		"Slit Placement"));
 	setMinimumSublevels(3);
 	setInternalMenu();
 
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTopLeft,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Top Left"),
+		CommonSet, CommonPlacementTopLeft,
+		"Top Left"),
 	 Slit::TOPLEFT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementCenterLeft,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Center Left"),
+		CommonSet, CommonPlacementCenterLeft,
+		"Center Left"),
 	 Slit::CENTERLEFT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementBottomLeft,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Bottom Left"),
+		CommonSet, CommonPlacementBottomLeft,
+		"Bottom Left"),
 	 Slit::BOTTOMLEFT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTopCenter,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Top Center"),
+		CommonSet, CommonPlacementTopCenter,
+		"Top Center"),
 	 Slit::TOPCENTER);
 	insert("");
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementBottomCenter,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Bottom Center"),
+		CommonSet, CommonPlacementBottomCenter,
+		"Bottom Center"),
 	 Slit::BOTTOMCENTER);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementTopRight,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Top Right"),
+		CommonSet, CommonPlacementTopRight,
+		"Top Right"),
 	 Slit::TOPRIGHT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementCenterRight,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Center Right"),
+		CommonSet, CommonPlacementCenterRight,
+		"Center Right"),
 	 Slit::CENTERRIGHT);
 	insert(i18n->getMessage(
-#ifdef		NLS
-				CommonSet, CommonPlacementBottomRight,
-#else // !NLS
-				0, 0,
-#endif // NLS
-				"Bottom Right"),
+		CommonSet, CommonPlacementBottomRight,
+		"Bottom Right"),
 	 Slit::BOTTOMRIGHT);
 
 	update();

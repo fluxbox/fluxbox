@@ -39,12 +39,8 @@ Iconmenu::Iconmenu(BScreen *scrn) : Basemenu(scrn) {
 
 	screen = scrn;	
 	setLabel(I18n::instance()->getMessage(
-#ifdef		NLS
-					IconSet, IconIcons,
-#else // !NLS
-					0, 0,
-#endif // NLS
-					"Icons"));
+		FBNLS::IconSet, FBNLS::IconIcons,
+		"Icons"));
 	update();
 }
 

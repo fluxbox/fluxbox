@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.41 2002/04/03 23:02:16 fluxgen Exp $
+// $Id: Screen.cc,v 1.42 2002/04/04 11:28:19 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -104,11 +104,7 @@ static int anotherWMRunning(Display *display, XErrorEvent *) {
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
-#ifdef		NLS
-			ScreenSet, ScreenAnotherWMRunning,
-#else // !NLS
-			0, 0,
-#endif // NLS
+			FBNLS::ScreenSet, FBNLS::ScreenAnotherWMRunning,
 			"BScreen::BScreen: an error occured while querying the X server.\n"
 			"	another window manager already running on display %s.\n"),
 			DisplayString(display));
@@ -252,15 +248,11 @@ resource(rm, screenname, altscreenname)
 	fprintf(stderr,
 		i18n->
 		getMessage(
-		#ifdef NLS
-				ScreenSet, ScreenManagingScreen,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-				"BScreen::BScreen: managing screen %d "
-				"using visual 0x%lx, depth %d\n"),
-		getScreenNumber(), XVisualIDFromVisual(getVisual()),
-		getDepth());
+			FBNLS::ScreenSet, FBNLS::ScreenManagingScreen,
+			"BScreen::BScreen: managing screen %d "
+			"using visual 0x%lx, depth %d\n"),
+			getScreenNumber(), XVisualIDFromVisual(getVisual()),
+			getDepth());
 
 	rootmenu = 0;
 		
@@ -311,11 +303,7 @@ resource(rm, screenname, altscreenname)
 	#endif //!NEWWMSPEC
 
 	const char *s =	i18n->getMessage(
-	#ifdef		NLS
-		ScreenSet, ScreenPositionLength,
-	#else // !NLS
-		0, 0,
-	#endif // NLS
+		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
 		"0: 0000 x 0: 0000");
 	
 	int l = strlen(s);
@@ -393,11 +381,7 @@ resource(rm, screenname, altscreenname)
 
 	workspacemenu->insert(i18n->
 		getMessage(
-		#ifdef NLS
-			 IconSet, IconIcons,
-		#else // !NLS
-			 0, 0,
-		#endif // NLS
+			FBNLS::IconSet, FBNLS::IconIcons,
 			 "Icons"),
 			iconmenu);
 	workspacemenu->update();
@@ -555,12 +539,8 @@ void BScreen::reconfigure(void) {
 	I18n *i18n = I18n::instance();
 
 	const char *s = i18n->getMessage(
-#ifdef		NLS
-			ScreenSet, ScreenPositionLength,
-#else // !NLS
-			0, 0,
-#endif // NLS
-			"0: 0000 x 0: 0000");
+		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
+		"0: 0000 x 0: 0000");
 	int l = strlen(s);
 
 	if (i18n->multibyte()) {
@@ -1251,11 +1231,7 @@ void BScreen::initMenu(void) {
 			} else {
 				fprintf(stderr,
 					i18n->getMessage(
-				#ifdef NLS
-						ScreenSet, ScreenEmptyMenuFile,
-				#else // !NLS
-						0, 0,
-				#endif // NLS
+						FBNLS::ScreenSet, FBNLS::ScreenEmptyMenuFile,
 						"%s: Empty menu file"),
 					fluxbox->getMenuFilename());
 			}
@@ -1267,36 +1243,20 @@ void BScreen::initMenu(void) {
 	if (defaultMenu) {
 		rootmenu->setInternalMenu();
 		rootmenu->insert(i18n->getMessage(
-		#ifdef		NLS
-			ScreenSet, Screenxterm,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-				"xterm"),
-				BScreen::EXECUTE,
-				i18n->getMessage(
-		#ifdef NLS
-				ScreenSet, Screenxterm,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-				"xterm"));
+			FBNLS::ScreenSet, FBNLS::Screenxterm,
+			"xterm"),
+			BScreen::EXECUTE,
+			i18n->getMessage(
+			FBNLS::ScreenSet, FBNLS::Screenxterm,
+			"xterm"));
 		rootmenu->insert(i18n->getMessage(
-		#ifdef NLS
-				ScreenSet, ScreenRestart,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-						"Restart"),
-					BScreen::RESTART);
+			FBNLS::ScreenSet, FBNLS::ScreenRestart,
+			"Restart"),
+			BScreen::RESTART);
 		rootmenu->insert(i18n->getMessage(
-		#ifdef		NLS
-				ScreenSet, ScreenExit,
-		#else // !NLS
-				0, 0,
-		#endif // NLS
-				"Exit"),
-				BScreen::EXIT);
+			FBNLS::ScreenSet, FBNLS::ScreenExit,
+			"Exit"),
+			BScreen::EXIT);
 	} else
 		fluxbox->saveMenuFilename(fluxbox->getMenuFilename());
 }
@@ -1339,13 +1299,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 					if (!(str_label.size() && str_cmd.size())) {
 						fprintf(stderr,
 						i18n->getMessage(
-					#ifdef NLS
-						ScreenSet, ScreenEXECError,
-					#else // !NLS
-						0, 0,
-					#endif // NLS
-						"BScreen::parseMenuFile: [exec] error, "
-						"no menu label and/or command defined\n"));
+							FBNLS::ScreenSet, FBNLS::ScreenEXECError,
+							"BScreen::parseMenuFile: [exec] error, "
+							"no menu label and/or command defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else
 						menu->insert(str_label.c_str(), BScreen::EXECUTE, str_cmd.c_str());
@@ -1354,13 +1310,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 					if (!str_label.size()) {
 						fprintf(stderr,
 						i18n->getMessage(
-					#ifdef NLS
-						 ScreenSet, ScreenEXITError,
-					#else // !NLS
-						 0, 0,
-					#endif // NLS
-						 "BScreen::parseMenuFile: [exit] error, "
-						 "no menu label defined\n"));
+							FBNLS::ScreenSet, FBNLS::ScreenEXITError,
+							 "BScreen::parseMenuFile: [exit] error, "
+							 "no menu label defined\n"));
 						 cerr<<"Row: "<<row<<endl;
 					} else
 						menu->insert(str_label.c_str(), BScreen::EXIT);
@@ -1370,13 +1322,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-				#ifdef NLS
-					 	ScreenSet, ScreenSTYLEError,
-				#else // !NLS
-						 0, 0,
-				#endif // NLS
-					 	"BScreen::parseMenuFile: [style] error, "
-					 	"no menu label and/or filename defined\n"));
+						 	FBNLS::ScreenSet, FBNLS::ScreenSTYLEError,
+						 	"BScreen::parseMenuFile: [style] error, "
+						 	"no menu label and/or filename defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else {
 						char *style;
@@ -1393,13 +1341,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-					#ifdef NLS
-						 ScreenSet, ScreenCONFIGError,
-					#else // !NLS
-						 0, 0,
-					#endif // NLS
-						 "BScreen::parseMenufile: [config] error, "
-						 "no label defined"));
+							FBNLS::ScreenSet, FBNLS::ScreenCONFIGError,
+							 "BScreen::parseMenufile: [config] error, "
+							 "no label defined"));
 						cerr<<"Row: "<<row<<endl;
 					} else
 						menu->insert(str_label.c_str(), configmenu);
@@ -1409,13 +1353,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-					#ifdef NLS
-						 	ScreenSet, ScreenINCLUDEError,
-					#else // !NLS
-						 	0, 0,
-					#endif // NLS
-				 		"BScreen::parseMenuFile: [include] error, "
-					 	"no filename defined\n"));
+						 	FBNLS::ScreenSet, FBNLS::ScreenINCLUDEError,
+					 		"BScreen::parseMenuFile: [include] error, "
+						 	"no filename defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else {	// start of else 'x'
 						char *newfile;
@@ -1433,13 +1373,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 									fprintf(stderr,
 									i18n->
 									getMessage(
-								#ifdef NLS
-						 			ScreenSet, ScreenINCLUDEErrorReg,
-								#else // !NLS
-						 			0, 0,
-								#endif // NLS
-						 			"BScreen::parseMenuFile: [include] error: "
-						 			"'%s' is not a regular file\n"), newfile);
+							 			FBNLS::ScreenSet, FBNLS::ScreenINCLUDEErrorReg,
+							 			"BScreen::parseMenuFile: [include] error: "
+							 			"'%s' is not a regular file\n"), newfile);
 									cerr<<"Row: "<<row<<endl;
 								}
 								
@@ -1460,13 +1396,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-					#ifdef		NLS
-				 		ScreenSet, ScreenSUBMENUError,
-					#else // !NLS
-				 		0, 0,
-					#endif // NLS
-				 		"BScreen::parseMenuFile: [submenu] error, "
-				 		"no menu label defined\n"));
+					 		FBNLS::ScreenSet, FBNLS::ScreenSUBMENUError,
+					 		"BScreen::parseMenuFile: [submenu] error, "
+					 		"no menu label defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else {
 						Rootmenu *submenu = new Rootmenu(this);
@@ -1487,13 +1419,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-						#ifdef		NLS
-				 		ScreenSet, ScreenRESTARTError,
-						#else // !NLS
-				 		0, 0,
-						#endif // NLS
-				 		"BScreen::parseMenuFile: [restart] error, "
-				 		"no menu label defined\n"));
+					 		FBNLS::ScreenSet, FBNLS::ScreenRESTARTError,
+					 		"BScreen::parseMenuFile: [restart] error, "
+					 		"no menu label defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else {
 					if (str_cmd.size())
@@ -1507,13 +1435,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-					#ifdef NLS
-				 		ScreenSet, ScreenRECONFIGError,
-					#else // !NLS
-				 		0, 0,
-					#endif // NLS
-				 		"BScreen::parseMenuFile: [reconfig] error, "
-				 		"no menu label defined\n"));
+					 		FBNLS::ScreenSet, FBNLS::ScreenRECONFIGError,
+					 		"BScreen::parseMenuFile: [reconfig] error, "
+					 		"no menu label defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else 
 						menu->insert(str_label.c_str(), BScreen::RECONFIGURE);
@@ -1524,13 +1448,9 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 						fprintf(stderr,
 						i18n->
 						getMessage(
-					#ifdef NLS
-						ScreenSet, ScreenSTYLESDIRError,
-					#else // !NLS
-						0, 0,
-					#endif // NLS
-				 		"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-				 		" error, no directory defined\n"));
+							FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRError,
+					 		"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
+					 		" error, no directory defined\n"));
 						cerr<<"Row: "<<row<<endl;
 					} else { // else 'y'
 						createStyleMenu(menu, newmenu, str_label.c_str(), (newmenu) ? str_cmd.c_str() : str_label.c_str());						
@@ -1540,7 +1460,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 					if (!str_label.size()) {
 						fprintf(stderr,
 						i18n->getMessage(
-						 ScreenSet, ScreenWORKSPACESError,
+						 FBNLS::ScreenSet, FBNLS::ScreenWORKSPACESError,
 						 "BScreen:parseMenuFile: [workspaces] error, "
 						 "no menu label defined\n"));
 						 cerr<<"Row: "<<row<<endl;
@@ -1612,11 +1532,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 			fprintf(stderr,
 			i18n->
 			getMessage(
-				#ifdef NLS
-				ScreenSet, ScreenSTYLESDIRErrorNotDir,
-				#else // !NLS
-				0, 0,
-				#endif // NLS	
+				FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNotDir,
 				"BScreen::parseMenuFile:"
 				" [stylesdir/stylesmenu] error, %s is not a"
 				" directory\n"), stylesdir.get());
@@ -1625,13 +1541,9 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 		fprintf(stderr,
 		i18n->
 		getMessage(
-		#ifdef NLS
-			ScreenSet, ScreenSTYLESDIRErrorNoExist,
-		#else // !NLS
-			0, 0,
-		#endif // NLS
-		"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
-		" error, %s does not exist\n"), stylesdir.get());
+			FBNLS::ScreenSet, FBNLS::ScreenSTYLESDIRErrorNoExist,		
+			"BScreen::parseMenuFile: [stylesdir/stylesmenu]"
+			" error, %s does not exist\n"), stylesdir.get());
 	} // end of 'stat'
 
 }
@@ -1689,12 +1601,8 @@ void BScreen::showPosition(int x, int y) {
 	
 	snprintf(label, label_size,
 		I18n::instance()->getMessage(
-#ifdef		NLS
-				 ScreenSet, ScreenPositionFormat,
-#else // !NLS
-				 0, 0,
-#endif // NLS
-				 "X: %4d x Y: %4d"), x, y);
+			 FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
+			 "X: %4d x Y: %4d"), x, y);
 
 	XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
@@ -1737,12 +1645,8 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 
 	sprintf(label,
 		I18n::instance()->getMessage(
-#ifdef		NLS
-				 ScreenSet, ScreenGeometryFormat,
-#else // !NLS
-				 0, 0,
-#endif // NLS
-				 "W: %4d x H: %4d"), gx, gy);
+			FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
+			 "W: %4d x H: %4d"), gx, gy);
 
 	XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
