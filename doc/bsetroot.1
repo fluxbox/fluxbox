@@ -2,6 +2,9 @@
 .\" Man page for Bsetroot
 .\"
 .\" Copyright (c) 2000 by Wilbert Berendsen <wbsoft@xs4all.nl>
+.\" Copyright (c) 2004 by Curt "Asenchi" Micol <asenchi@asenchi.com>
+.\" 
+.\" This page was updated for Fluxbox by Curt "Asenchi" Micol on June 25, 2004
 .\"
 .\" Permission to use, copy, modify, and distribute this documentation for
 .\" any purpose with or without fee is hereby granted, provided that the
@@ -16,9 +19,11 @@
 .\" TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 .\" PERFORMANCE OF THIS DOCUMENTATION
 .\"
-.TH bsetroot 1 "June 16th, 2000" "0.60.3"
+.TH bsetroot 1 "June 25th, 2004" "0.60.3"
 .SH NAME
-bsetroot \- blackbox utility to change root window appearance
+bsetroot \- a simple background utility used by the Fluxbox window manager, ori
+ginally written
+for and by the original Blackbox window manager team.
 .SH SYNOPSIS
 .BR bsetroot " \-help"
 .br
@@ -38,9 +43,10 @@ to it, or render a gradient texture, based on two different colors.
 Bsetroot resembles
 .IR xsetroot (1)
 in this functionality but it supports multiple screen displays, and gradient
-textures the same way as Blackbox does.
+textures the same way as Blackbox or Fluxbox does.
 It doesn't handle cursors etc.
-Bsetroot is part of the Blackbox package.
+Bsetroot was originally part of the Blackbox package and was carried over with
+the code that became Fluxbox.
 .SH OPTIONS
 Bsetroot operates in three ways, you must choose one of the first 3 options:
 .TP
@@ -54,11 +60,19 @@ colors.
 .TP
 .BI \-gradient " texturestring"
 Renders the specified texture string to the root window.
-For possible texture strings, please refer to
-.IR blackbox (1).
-You must also specify both a
+.RS
+.PP
+.I texturestring
+may be one of:
+.PP
+.B Horizontal / Vertical / Diagonal / Crossdiagonal / Pipecross / Elliptic / Rectangle / Pyramid
+.PP
+Select one of these texture types, they only apply when
+.B \-gradient
+is specifed. You must also specify both a
 .BR \-from " and a " \-to
 color.
+.RE
 .TP
 .BI \-display " display"
 Tells Bsetroot to connect to the specified display.
@@ -97,6 +111,10 @@ Bsetroot is written and maintained by Brad Hughes
 and Jeff Raven
 .nh
 (jraven@psu.edu).
+.PP
+This manpage was modified by Curt "Asenchi" Micol <asenchi@asenchi.com> for
+the Fluxbox window manager.
 .hy
 .SH SEE ALSO
-.IR blackbox (1)
+.IR fluxbox (1)
+.IR fbsetbg (1)

@@ -2,9 +2,22 @@
 .\" Manual page for Fluxbox Styles
 .\"
 .\" Fluxbox is Copyright (c) 2001-2004 Henrik Kinnunen
-.\" Fluxstyle(1) is Copyright (c) 2004 Curt Micol
-.\"
-.\" This manual page is freely distrubted and modified.
+
+.\" Copyright (c) 2003, 2004, Curt "Asenchi" Micol
+
+.\" Permission to use, copy, modify, and distribute this documentation for
+.\" any purpose with or without fee is hereby granted, provided that the
+.\" above copyright notice and this permission notice appear in all copies.
+
+.\" THE DOCUMENTATION IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
+.\" WARRANTIES WITH REGARD TO THIS DOCUMENTATION INCLUDING ALL IMPLIED
+.\" WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+.\" AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+.\" DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+.\" PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+.\" TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+.\" PERFORMANCE OF THIS DOCUMENTATION
+
 .\" Parts of the text are taken from websites and style
 .\" files on http://www.fluxbox.org and http://www.fluxmod.dk
 .\"
@@ -339,6 +352,8 @@ menu.submenu.pixmap: <filename>
 menu.selected.pixmap: <filename>
 menu.unselected.pixmap: <filename>
 menu.roundCorners:
+menu.titleHeight: <integer>
+menu.itemHeight: <integer>
 .EE
 .SS ROOT COMMAND OPTION
 This is how you set your background within your style.  Use the official fluxbox background program, fbsetbg.  It is distributed with Fluxbox, and can also be downloaded from here: http://www.xs4all.nl/~hanb/software/fluxbox/fbsetbg.html
@@ -387,17 +402,6 @@ toolbar.workspace.color:  <color>
 toolbar.workspace.colorTo: <color>
 toolbar.workspace.borderWidth: <integer>
 toolbar.workspace.borderColor: <color>
-toolbar.button.size for fixed buttons in the toolbar
-toolbar.button.borderWidth
-toolbar.button.borderColor
-toolbar.button
-toolbar.button.color
-toolbar.button.colorTo
-toolbar.button.pixmap
-toolbar.button.picColor
-toolbar.button.pressed.color
-toolbar.button.pressed.colorTo
-toolbar.button.pressed
 toolbar.iconbar.focused: <texture type>
 toolbar.iconbar.focused.pixmap:  <filename>
 toolbar.iconbar.focused.color:  <color>
@@ -467,11 +471,11 @@ The Official Fluxbox website:
 .B http://www.fluxbox.org/
 .hy
 .PP
-Flumod is a Fluxbox community site where you can find many new styles that
+Fluxmod was a Fluxbox community site where you could find many new styles that
 work with this version of Fluxbox and take advantage of all the new features.
-You can find Fluxmod here:
+However, fluxmod is no more, but a new site gaining popularity is:
 .nh
-.B http://www.fluxmod.dk/
+.B http://www.fluxcandy.org
 .hy
 .PP
 You can also find more styles here:
@@ -493,8 +497,6 @@ Numerous other languages could be available if someone jumps in.
 .IR bsetroot (1)
 
 .\" ADDITIONS TO MAKE
-.\" Create a font section
 .\" Change layout of theme items
-.\" Obtain new theme items, grubert just placed in new man page
 .\" Become a little more verbose on color usage.
 .\" 

@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/06/29:
+  * manpage updates (thanks Curt Micol)
+    fluxstyle.1 bsetroot.1
   * Fix rectangle cleaning on attaching tabs (Simon)
     Window.cc
 *04/06/27:
