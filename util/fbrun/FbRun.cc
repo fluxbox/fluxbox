@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.20 2003/09/06 15:50:25 fluxgen Exp $
+// $Id: FbRun.cc,v 1.21 2003/09/16 14:49:49 rathnor Exp $
 
 #include "FbRun.hh"
 
@@ -195,7 +195,7 @@ void FbRun::setTitle(const string &title) {
     setName(title.c_str());
 }
 
-void FbRun::resize(size_t width, size_t height) {
+void FbRun::resize(unsigned int width, unsigned int height) {
     FbTk::TextBox::resize(width, height);    
     setNoMaximize();
 }
