@@ -55,7 +55,7 @@ The default installation of Fluxbox is shipped with many classic styles that
 show the customization of current Fluxbox versions. They are usually located in
 .IR ~/.fluxbox/styles
 and in the global Fluxbox share directory
-.IR /usr/local/share/fluxbox/styles
+.IR @pkgdatadir@/styles
 which may vary depending on the method of installation used. To use one of
 the styles shipped with Fluxbox, look in your root menu under the configure
 part of the menu for 'System Styles'.
@@ -99,7 +99,7 @@ We'll cover quickly where styles can be found and placed after you create your o
 There are a number of default styles that come with the installation, while we have already
 covered this, we will again just provide a central location for all style locations.  These
 default styles are located in
-.IR /usr/local/share/fluxbox/styles
+.IR @pkgdatadir@/styles
 providing a default configureation at installation.
 .PP
 Once you create your own, you can create a directory in
