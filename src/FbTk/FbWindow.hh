@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.31 2004/06/07 20:24:37 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.32 2004/06/13 00:32:40 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -137,6 +137,8 @@ public:
                         unsigned char *data,
                         int nelements);
 
+    void setBufferPixmap(Pixmap pm);
+
     std::string textProperty(Atom property) const;
 
     /// @return parent FbWindow
@@ -164,7 +166,7 @@ public:
 protected:
     /// creates a window with x window client (m_window = client)
     explicit FbWindow(Window client);
-    void setBufferPixmap(Pixmap pm);
+
     /// updates x,y, width, height and screen num from X window
     void updateGeometry();
 private:
