@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/01/22:
+  * Fix missing sanitycheck in fbsetbg (Thanks Tom Ryan)
+    fbsetbg
 *04/01/21:
   * Added more international keywords and     (Thanks Antonio Gomez)
     Portuguese locales for fluxbox-generate_menu.in 
