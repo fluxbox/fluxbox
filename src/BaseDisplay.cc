@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.12 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.13 2002/04/08 22:23:41 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -44,31 +44,30 @@
 #	include <X11/extensions/shape.h>
 #endif // SHAPE
 
-
-#ifdef		HAVE_FCNTL_H
-#	include <fcntl.h>
+#ifdef HAVE_FCNTL_H
+#include <fcntl.h>
 #endif // HAVE_FCNTL_H
 
-#ifdef		HAVE_STDIO_H
-#	include <stdio.h>
+#ifdef	HAVE_STDIO_H
+#include <stdio.h>
 #endif // HAVE_STDIO_H
 
-#ifdef		STDC_HEADERS
-#	include <stdlib.h>
-#	include <string.h>
+#ifdef	STDC_HEADERS
+#include <stdlib.h>
+#include <string.h>
 #endif // STDC_HEADERS
 
-#ifdef		HAVE_UNISTD_H
-#	include <sys/types.h>
-#	include <unistd.h>
+#ifdef	HAVE_UNISTD_H
+#include <sys/types.h>
+#include <unistd.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef		HAVE_SYS_SELECT_H
-#	include <sys/select.h>
+#ifdef	HAVE_SYS_SELECT_H
+#include <sys/select.h>
 #endif // HAVE_SYS_SELECT_H
 
-#ifdef		HAVE_SIGNAL_H
-#	include <signal.h>
+#ifdef	HAVE_SIGNAL_H
+#include <signal.h>
 #endif // HAVE_SIGNAL_H
 
 #ifndef	 SA_NODEFER
