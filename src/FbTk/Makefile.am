@@ -17,6 +17,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	ImageControl.hh ImageControl.cc \
 	MacroCommand.hh MacroCommand.cc \
 	Menu.hh Menu.cc MenuItem.hh MenuItem.cc \
+	MultiButtonMenuItem.hh MultiButtonMenuItem.cc \
 	MenuTheme.hh MenuTheme.cc NotCopyable.hh \
 	RefCount.hh SimpleCommand.hh SignalHandler.cc SignalHandler.hh \
 	Text.hh Text.cc \
