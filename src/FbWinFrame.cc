@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.40 2003/08/24 11:11:07 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.41 2003/08/24 15:39:52 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -644,7 +644,7 @@ void FbWinFrame::reconfigure() {
     if (!m_shaded)
         renderHandles();
 
-    if (m_shape.get() && theme().shapePlace() == Shape::NONE)
+    if (m_shape.get() && theme().shapePlace() == Shape::NONE  || m_disable_shape)
         m_shape.reset(0);
     else if (m_shape.get() == 0 && theme().shapePlace() != Shape::NONE)
         m_shape.reset(new Shape(window(), theme().shapePlace()));
@@ -655,6 +655,15 @@ void FbWinFrame::reconfigure() {
         m_shape->update();
 
     // titlebar stuff rendered already by reconftitlebar
+}
+
+void FbWinFrame::setUseShape(bool value) {
+    m_disable_shape = !value;
+
+    if (m_shape.get() && m_disable_shape)
+        m_shape.reset(0);
+    else if (m_shape.get() == 0 && !m_disable_shape)
+        m_shape.reset(new Shape(window(), theme().shapePlace()));
 }
 
 unsigned int FbWinFrame::buttonHeight() const {
@@ -886,6 +895,8 @@ void FbWinFrame::renderButtons() {
 
 void FbWinFrame::init() {
 
+    m_disable_shape = false;
+
     m_current_label = 0; // no focused button at first
 
     // clear pixmaps
@@ -1065,3 +1076,5 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
 
     button.clear(); 
 }
+
+
