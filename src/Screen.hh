@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.111 2003/06/24 16:29:54 fluxgen Exp $
+// $Id: Screen.hh,v 1.112 2003/06/25 05:46:21 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -45,8 +45,6 @@
 #include <memory>
 
 class Netizen;
-class Toolbar;
-class ToolbarHandler;
 class FbWinFrameTheme;
 class RootTheme;
 class WinButtonTheme;
@@ -65,7 +63,7 @@ class FbWindow;
 
 /// Handles screen connection, screen clients and workspaces
 /**
- Create a toolbar and workspaces, handles switching between workspaces and windows
+ Create workspaces, handles switching between workspaces and windows
  */
 class BScreen : private FbTk::NotCopyable {
 public:
@@ -97,20 +95,12 @@ public:
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
-    const FbTk::Menu &toolbarModemenu() const;
-    FbTk::Menu &toolbarModemenu();
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
 
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
-
-    const Toolbar *toolbar() const;
-    Toolbar *toolbar();
-
-    inline const ToolbarHandler &toolbarHandler() const { return *m_toolbarhandler; }
-    inline ToolbarHandler &toolbarHandler() { return *m_toolbarhandler; }
 
     inline Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
     inline Workspace *currentWorkspace() { return m_current_workspace; }
@@ -266,7 +256,7 @@ public:
     FluxboxWindow* useAutoGroupWindow();
 
     /// updates root window size and resizes/reconfigures screen clients 
-    /// that depends on screen size (toolbar, slit)
+    /// that depends on screen size (slit)
     /// (and maximized windows?)
     void updateSize();
 
@@ -426,8 +416,6 @@ private:
 
     const std::string m_name, m_altname;
     FbTk::ResourceManager &m_resource_manager;
-
-    std::auto_ptr<ToolbarHandler> m_toolbarhandler;
 
     bool m_xinerama_avail;
     int m_xinerama_num_heads;

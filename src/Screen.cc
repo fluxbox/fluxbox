@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.194 2003/06/24 16:30:13 fluxgen Exp $
+// $Id: Screen.cc,v 1.195 2003/06/25 05:47:23 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -30,8 +30,6 @@
 #include "I18n.hh"
 #include "fluxbox.hh"
 #include "ImageControl.hh"
-#include "Toolbar.hh"
-#include "ToolbarHandler.hh"
 #include "Window.hh"
 #include "Workspace.hh"
 #include "StringUtil.hh"
@@ -305,7 +303,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_name(screenname),
     m_altname(altscreenname),
     m_resource_manager(rm),
-    m_toolbarhandler(0),
     m_available_workspace_area(new Strut(0, 0, 0, 0)),
     m_xinerama_headinfo(0) {
 
@@ -354,7 +351,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     imageControl().setDither(*resource.image_dither);
 
-    // setup windowtheme, toolbartheme for antialias
+    // setup windowtheme for antialias
     // before we load the theme
 
     winFrameTheme().font().setAntialias(*resource.antialias);
@@ -418,11 +415,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 #endif // SLIT
 
-    // create toolbarhandler for toolbar
 
-    m_toolbarhandler.reset(new ToolbarHandler(*this));
-
-    //!! TODO: we shouldn't do this more than once, but since slit/toolbar handles their
+    //!! TODO: we shouldn't do this more than once, but since slit handles their
     // own resources we must do this.
     fluxbox->load_rc(*this);
 
@@ -432,8 +426,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     workspacemenu->setItemSelected(2, true);
 
-    // if toolbar needs initialisation, do it in ToolbarHandler instead
-    // so it will work when destroyed later etc
 
     initMenu(); // create and initiate rootmenu
 
@@ -445,9 +437,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     if (slit()) // this will load theme and reconfigure slit
         FbTk::ThemeManager::instance().loadTheme(slit()->theme());
 #endif // SLIT
-
-    if (toolbar())
-        toolbar()->reconfigure();
 
     // start with workspace 0
     changeWorkspaceID(0);
@@ -502,10 +491,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         }
     }
 
-    if (! isSloppyFocus() && toolbar() != 0) {
-        XSetInputFocus(disp, toolbar()->window().window(),
-                       RevertToParent, CurrentTime);
-    }
 
     // set the toolbarhandler after the windows are setup, so it catches their state properly
 
@@ -550,22 +535,6 @@ BScreen::~BScreen() {
         delete [] m_xinerama_headinfo;
     }
 #endif // XINERAMA
-}
-
-const FbTk::Menu &BScreen::toolbarModemenu() const {
-    return m_toolbarhandler->getModeMenu();
-}
-
-FbTk::Menu &BScreen::toolbarModemenu() {
-    return m_toolbarhandler->getModeMenu();
-}
-
-const Toolbar *BScreen::toolbar() const {
-    return m_toolbarhandler->toolbar();
-}
-
-Toolbar *BScreen::toolbar() {
-    return m_toolbarhandler->toolbar();
 }
 
 unsigned int BScreen::currentWorkspaceID() const { 
@@ -633,8 +602,6 @@ void BScreen::reconfigure() {
     winFrameTheme().font().setAntialias(*resource.antialias);
     m_menutheme->titleFont().setAntialias(*resource.antialias);
     m_menutheme->frameFont().setAntialias(*resource.antialias);
-    if (toolbar() && toolbar()->theme().font().isAntialias() != *resource.antialias)
-        toolbar()->theme().font().setAntialias(*resource.antialias);
 
     // load theme
     std::string theme_filename(Fluxbox::instance()->getStyleFilename());
@@ -705,8 +672,6 @@ void BScreen::reconfigure() {
         }
     }
 
-    if (toolbar())
-        toolbar()->reconfigure();
 
 #ifdef SLIT    
     if (slit())
@@ -828,8 +793,6 @@ int BScreen::addWorkspace() {
 		
     workspacemenu->update();
     saveWorkspaces(m_workspaces_list.size());
-    if (toolbar() != 0)
-        toolbar()->reconfigure();
     
     updateNetizenWorkspaceCount();	
 	
@@ -856,8 +819,6 @@ int BScreen::removeLastWorkspace() {
     m_workspaces_list.pop_back();		
     delete wkspc;
 
-    if (toolbar() != 0)
-        toolbar()->reconfigure();
 
     updateNetizenWorkspaceCount();
     saveWorkspaces(m_workspaces_list.size());
@@ -2031,8 +1992,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         menu.insert("Slit", &slit()->menu());
     }
 #endif // SLIT
-    menu.insert(i18n->getMessage(ToolbarSet, ToolbarToolbarTitle,
-                                 "Toolbar"), &m_toolbarhandler->getToolbarMenu());
+
     menu.insert(new
                 BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuImageDithering,
                                               "Image Dithering"),
@@ -2380,9 +2340,6 @@ void BScreen::updateSize() {
     // reset background
     m_root_theme->reconfigTheme();
 
-    if (toolbar())
-        toolbar()->reconfigure();
-
     if (slit())
         slit()->reconfigure();
 
@@ -2555,14 +2512,3 @@ void BScreen::setOnHead<Slit>(Slit &slit, int head) {
     slit.reconfigure();
 }
 
-template <>
-int BScreen::getOnHead<Toolbar>(Toolbar &tbar) {
-    return 0;
-    //    return tbar.getOnHead();
-}
-
-template <>
-void BScreen::setOnHead<Toolbar>(Toolbar &tbar, int head) {
-    //    saveToolbarOnHead(head);
-    tbar.reconfigure();
-}
