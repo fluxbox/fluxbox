@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.9:
+*02/05/08:
+   * Fixed checking on focused_window in handleKeyEvents, fluxbox.cc
+   * Added "Allow Desktop MouseWheel Switching" runtime option (Thanks Rando Christensen)
+   * Fixed Slit saving bug and slit update bug when you start fluxbox.
 *02/05/07:
    * Fixed a minor bug in DrawUtil.cc (Thanks Sang-Hoon RHEE)
    * Fixed bug [ 552723 ] removing decorations while shaded. (Thanks Joel Carlbark)
