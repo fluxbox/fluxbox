@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.180 2003/05/19 15:32:47 rathnor Exp $
+// $Id: Window.cc,v 1.181 2003/05/19 15:39:06 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1404,7 +1404,7 @@ void FluxboxWindow::maximizeHorizontal() {
     unsigned int left_x = screen().maxLeft(frame().window());
     unsigned int max_width = screen().maxRight(frame().window());
     moveResize(left_x, frame().y(), 
-               max_width - left_x, frame().height() - frame().window().borderWidth());
+               max_width - left_x - 2*frame().window().borderWidth(), frame().height());
 
 }
 
@@ -1414,8 +1414,8 @@ void FluxboxWindow::maximizeHorizontal() {
 void FluxboxWindow::maximizeVertical() {
     unsigned int max_top = screen().maxTop(frame().window());
     moveResize(frame().x(), max_top,
-               frame().width() - frame().window().borderWidth(), 
-               screen().maxBottom(frame().window()) - max_top);
+               frame().width(),
+               screen().maxBottom(frame().window()) - max_top - 2*frame().window().borderWidth());
 }
 
 
