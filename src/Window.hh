@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.74 2003/05/21 23:59:53 rathnor Exp $
+// $Id: Window.hh,v 1.75 2003/05/24 13:01:48 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -404,8 +404,9 @@ private:
     Display *display; /// display connection
     BlackboxAttributes m_blackbox_attrib;
 
-    FbTk::Menu m_windowmenu;
     std::auto_ptr<FbTk::Menu> m_layermenu;
+    FbTk::Menu m_windowmenu;
+
     
     timeval m_last_focus_time;
 	
