@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.22 2002/12/02 20:52:50 fluxgen Exp $
+// $Id: Theme.hh,v 1.23 2003/01/12 18:47:56 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -37,9 +37,10 @@
 
 #include <string>
 
+/// OBSOLETE
 /**
 	Main theme class, holds themes for 
-	Window, toolbar, slit, menu and the rootCommand, for a specific screen.
+	Window, slit, and the rootCommand, for a specific screen.
 */
 class Theme {
 public:	
@@ -47,19 +48,6 @@ public:
     Theme(Display *display, Window rootwindow, Colormap colormap, 
           int screennum, const char *filename, const char *rootcommand);
     ~Theme();	
-	
-	
-    typedef struct MenuStyle {
-        MenuStyle():titlefont("fixed"),
-                    framefont("fixed") { }
-        FbTk::Color t_text, f_text, h_text, d_text;
-        FbTk::Texture title, frame, hilite;
-        GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-        FbTk::Font titlefont, framefont;
-        DrawUtil::Font::FontJustify framefont_justify;
-        DrawUtil::Font::FontJustify titlefont_justify;
-        int bullet, bullet_pos;
-    } MenuStyle;
 	
     typedef struct LabelStyle {
         LabelStyle(const char *fontname="fixed"):font(fontname) { }
@@ -89,7 +77,6 @@ public:
     } WindowStyle;
 
     inline WindowStyle &getWindowStyle() { return m_windowstyle; }
-    inline MenuStyle &getMenuStyle() { return m_menustyle; }
     inline const FbTk::Texture &getSlitTexture() const { return m_slit_texture; }
     inline unsigned int getBevelWidth() const { return m_bevel_width; }
     inline unsigned int getBorderWidth() const { return m_border_width; }
@@ -106,12 +93,10 @@ public:
 	
 private:
 	
-    void loadMenuStyle();
     void loadWindowStyle();
     void loadTabStyle();
     void loadRootCommand();
     void loadMisc();
-    void freeMenuStyle();
     void freeWindowStyle();
     void freeTabStyle();
 
@@ -128,7 +113,6 @@ private:
 
 
     WindowStyle m_windowstyle;
-    MenuStyle m_menustyle;
 
     unsigned int m_bevel_width, m_border_width, m_handle_width, m_frame_width;
     FbTk::Color m_border_color;

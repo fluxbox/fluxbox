@@ -21,13 +21,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.40 2003/01/09 22:09:19 fluxgen Exp $
+// $Id: Theme.cc,v 1.41 2003/01/12 18:48:14 fluxgen Exp $
 
 
 #include "Theme.hh"
 
 #include "i18n.hh"
-#include "Basemenu.hh"
 #include "StringUtil.hh"
 
 #ifndef   _GNU_SOURCE
@@ -108,52 +107,11 @@ Theme::Theme(Display *display, Window rootwindow, Colormap colormap,
         XCreateGC(m_display, rootwindow,
                   GCForeground, &gcv);
 
-    gcv.foreground = m_menustyle.t_text.pixel();
-
-    m_menustyle.t_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.f_text.pixel();
-
-    m_menustyle.f_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.h_text.pixel();
-    m_menustyle.h_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.d_text.pixel();
-    m_menustyle.d_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.hilite.color().pixel();
-    m_menustyle.hilite_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
 }
 
 Theme::~Theme() {
-
-    freeMenuStyle();
     freeWindowStyle();
     freeTabStyle();
-}
-
-//----- freeMenuStyle -----
-// free memory allocated for m_menustyle
-// should only be called from ~Theme
-//--------------------
-void Theme::freeMenuStyle() {
-		
-    XFreeGC(m_display, m_menustyle.t_text_gc);
-    XFreeGC(m_display, m_menustyle.f_text_gc);
-    XFreeGC(m_display, m_menustyle.h_text_gc);
-    XFreeGC(m_display, m_menustyle.d_text_gc);
-    XFreeGC(m_display, m_menustyle.hilite_gc);
 }
 
 //----- freeWindowStyle -----
@@ -182,98 +140,12 @@ void Theme::load(const char *filename){
     if (!m_database)
         m_database = XrmGetFileDatabase(DEFAULTSTYLE);
 
-    loadMenuStyle();
     loadWindowStyle();
     loadTabStyle();
     loadRootCommand();
     loadMisc();
 	
     XrmDestroyDatabase(m_database);
-}
-
-void Theme::loadMenuStyle() {
-
-    readDatabaseTexture("menu.title", "Menu.Title",
-                        &m_menustyle.title,
-                        WhitePixel(m_display, m_screennum));
-    readDatabaseTexture("menu.frame", "Menu.Frame",
-                        &m_menustyle.frame,
-                        BlackPixel(m_display, m_screennum));
-    readDatabaseTexture("menu.hilite", "Menu.Hilite",
-                        &m_menustyle.hilite,
-                        WhitePixel(m_display, m_screennum));
-    readDatabaseColor("menu.title.textColor", "Menu.Title.TextColor",
-                      &m_menustyle.t_text,
-                      BlackPixel(m_display, m_screennum));
-    readDatabaseColor("menu.frame.textColor", "Menu.Frame.TextColor",
-                      &m_menustyle.f_text,
-                      WhitePixel(m_display, m_screennum));
-    readDatabaseColor("menu.frame.disableColor", "Menu.Frame.DisableColor",
-                      &m_menustyle.d_text,
-                      BlackPixel(m_display, m_screennum));
-    readDatabaseColor("menu.hilite.textColor", "Menu.Hilite.TextColor",
-                      &m_menustyle.h_text,
-                      BlackPixel(m_display, m_screennum));
-
-    XrmValue value;
-    char *value_type=0;
-	
-    if (XrmGetResource(m_database, "menu.title.justify",
-                       "Menu.Title.Justify", &value_type, &value)) {
-				 
-        if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-            m_menustyle.titlefont_justify = DrawUtil::Font::RIGHT;
-        else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-            m_menustyle.titlefont_justify = DrawUtil::Font::CENTER;
-        else
-            m_menustyle.titlefont_justify = DrawUtil::Font::LEFT;
-		
-    } else
-        m_menustyle.titlefont_justify = DrawUtil::Font::LEFT;
-
-    if (XrmGetResource(m_database, "menu.frame.justify",
-                       "Menu.Frame.Justify", &value_type, &value)) {
-		
-        if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-            m_menustyle.framefont_justify = DrawUtil::Font::RIGHT;
-        else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-            m_menustyle.framefont_justify = DrawUtil::Font::CENTER;
-        else
-            m_menustyle.framefont_justify = DrawUtil::Font::LEFT;
-			
-    } else
-        m_menustyle.framefont_justify = DrawUtil::Font::LEFT;
-
-    if (XrmGetResource(m_database, "menu.bullet", "Menu.Bullet",
-                       &value_type, &value)) {
-		
-        if (! strncasecmp(value.addr, "empty", value.size))
-            m_menustyle.bullet = Basemenu::EMPTY;
-        else if (! strncasecmp(value.addr, "square", value.size))
-            m_menustyle.bullet = Basemenu::SQUARE;
-        else if (! strncasecmp(value.addr, "diamond", value.size))
-            m_menustyle.bullet = Basemenu::DIAMOND;
-        else
-            m_menustyle.bullet = Basemenu::TRIANGLE;
-			
-    } else
-        m_menustyle.bullet = Basemenu::TRIANGLE;
-
-    if (XrmGetResource(m_database, "menu.bullet.position",
-                       "Menu.Bullet.Position", &value_type, &value)) {
-
-        if (! strncasecmp(value.addr, "right", value.size))
-            m_menustyle.bullet_pos = Basemenu::RIGHT;
-        else
-            m_menustyle.bullet_pos = Basemenu::LEFT;
-			
-    } else
-        m_menustyle.bullet_pos = Basemenu::LEFT;
-
-    //---------- font
-    loadFontFromDatabase(m_menustyle.framefont, "menu.frame.font", "Menu.Frame.Font");
-    loadFontFromDatabase(m_menustyle.titlefont, "menu.title.font", "Menu.Title.Font");
-	
 }
 
 void Theme::loadWindowStyle() {
@@ -742,32 +614,6 @@ void Theme::reconfigure(bool antialias) {
     gcv.foreground = m_windowstyle.b_pic_unfocus.pixel();
     XChangeGC(m_display, m_windowstyle.b_pic_unfocus_gc,
               GCForeground, &gcv);
-
-    gcv.foreground = m_menustyle.t_text.pixel();
-    if (m_menustyle.titlefont.isAntialias() != antialias)
-        m_menustyle.titlefont.setAntialias(antialias);
-
-    XChangeGC(m_display, m_menustyle.t_text_gc,
-              gc_value_mask|GCForeground, &gcv);
-
-    gcv.foreground = m_menustyle.f_text.pixel();	
-    if (m_menustyle.framefont.isAntialias() != antialias)
-        m_menustyle.framefont.setAntialias(antialias);
-		
-    XChangeGC(m_display, m_menustyle.f_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.h_text.pixel();
-    XChangeGC(m_display, m_menustyle.h_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.d_text.pixel();
-    XChangeGC(m_display, m_menustyle.d_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_menustyle.hilite.color().pixel();
-    XChangeGC(m_display, m_menustyle.hilite_gc,
-              gc_value_mask, &gcv);
 
 }
 
