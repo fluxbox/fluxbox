@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.3 2003/07/01 01:49:13 rathnor Exp $
+//$Id: StringUtil.hh,v 1.4 2003/08/22 19:37:07 fluxgen Exp $
 
 #ifndef FBTK_STRINGUTIL_HH
 #define FBTK_STRINGUTIL_HH
@@ -37,17 +37,18 @@ const char *strcasestr(const char *str, const char *ptn);
 
 /// expands ~ to value of ${HOME} enviroment variable
 std::string expandFilename(const std::string &filename);
+/// @return extension of filename (ex: filename.txt will return txt)
+std::string findExtension(const std::string &filename);
 
 ///  returns string between character first and last
 int getStringBetween(std::string& out, const char *instr, 
                      char first, char last,
                      const char *ok_chars=" \t\n", bool allow_nesting = false);
 
-/// converts a string to lover case
-void toLower(char * const conv);
-
+/// @return lower case letters of conv
 std::string toLower(const std::string &conv);
-
+/// @return upper case letters of conv
+std::string toUpper(const std::string &conv);
 
 /// Breaks a string into tokens
 template <typename Container>
