@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.128 2003/04/20 12:21:35 rathnor Exp $
+// $Id: Screen.cc,v 1.129 2003/04/20 13:46:18 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -48,6 +48,7 @@
 #include "FbMenu.hh"
 #include "LayerMenu.hh"
 #include "WinClient.hh"
+#include "Subject.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -475,6 +476,7 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     toolbar_width_percent(rm, 65, 
                           scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
+    menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
     slit_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
                   scrname+".slit.layer", altscrname+".Slit.Layer"),
     toolbar_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
@@ -543,6 +545,22 @@ BScreen::BScreen(ResourceManager &rm,
                     (unsigned char *) &bpid, 1);
 #endif // HAVE_GETPID
 
+    Atom real_type;
+    int real_format;
+    unsigned long items_read, items_left;
+    unsigned int *data;
+    if (XGetWindowProperty(disp, getRootWindow(),
+                           XInternAtom(disp, "_XROOTPMAP_ID", false),
+                           0L, 1L, 
+                           false, XA_PIXMAP, &real_type,
+                           &real_format, &items_read, &items_left, 
+                           (unsigned char **) &data) == Success && 
+        items_read) { 
+        m_root_pm = (Pixmap) (*data);                  
+        XFree(data);
+    } else 
+        m_root_pm = 0;
+
     cycling_window = focused_list.end();
 
     XDefineCursor(disp, getRootWindow(), fluxbox->getSessionCursor());
@@ -554,7 +572,7 @@ BScreen::BScreen(ResourceManager &rm,
     root_colormap_installed = true;
 
     fluxbox->load_rc(*this);
-
+    FbTk::Menu::setAlpha(*resource.menu_alpha);
     image_control->setDither(*resource.image_dither);
     theme = new Theme(disp, getRootWindow(), colormap(), getScreenNumber(), 
                       fluxbox->getStyleFilename().c_str(), getRootCommand().c_str());
@@ -791,6 +809,7 @@ void BScreen::reconfigure() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
 #endif // DEBUG
+    FbTk::Menu::setAlpha(*resource.menu_alpha);
     Fluxbox::instance()->loadRootCommand(*this);
     theme->setRootCommand(getRootCommand());
     const string &filename = Fluxbox::instance()->getStyleFilename();
@@ -2126,10 +2145,16 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 
     menu.insert(new BoolMenuItem("Click Raises",
 				 *resource.click_raises,
-				 save_and_reconfigure));
+				 save_and_reconfigure));    
     // setup antialias cmd to reload style and save resource on toggle
     menu.insert(new BoolMenuItem("antialias", *resource.antialias, 
                                  save_and_reconfigure));
+
+    FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
+                                              0, 255);
+    menu_alpha_item->setCommand(saverc_cmd);
+    menu.insert(menu_alpha_item);
+
 
 
     // finaly update menu 
