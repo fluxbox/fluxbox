@@ -1693,15 +1693,19 @@ void Fluxbox::save_rc(void) {
 
 //-------- getRcFilename -------------
 // Returns filename of resource file
+// TODO: possible replacement with strstream?
 //------------------------------------
 char *Fluxbox::getRcFilename() {
 	char *dbfile=0;
  
 	if (!rc_file) {
-		strstream str;
-		str<<getenv("HOME")<<"/."<<RC_PATH<<"/"<<RC_INIT_FILE;		
 		
-		return StringUtil::strdup(str.str());
+		string str(getenv("HOME")+string("/.")+RC_PATH+string("/")+RC_INIT_FILE);		
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): str.size()="<<str.size()<<endl;
+		cerr<<__FILE__<<"("<<__LINE__<<"): str="<<str<<endl;
+		#endif
+		return StringUtil::strdup(str.c_str());
 	} else
 		dbfile = StringUtil::strdup(rc_file);
  
