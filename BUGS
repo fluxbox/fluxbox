@@ -19,4 +19,6 @@ bugs:
 
 fixed bugs (or not-our-fault bugs):
 * Some people get weird transparency behaviour.
-  -> this appears to be a problem with nvidia drivers, try nv instead
+  -> this appears to be a problem with nvidia drivers, make sure
+     RenderAccel is off (Option "RenderAccel" "false").
+     (thanks RJNFC on #fluxbox, and barlad in gentoo forums)
