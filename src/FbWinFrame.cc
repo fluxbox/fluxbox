@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.22 2003/04/16 22:15:22 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.23 2003/05/01 13:19:36 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -69,6 +69,7 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_use_titlebar(true), 
     m_use_handle(true),
     m_focused(false),
+    m_visible(false),
     m_button_pm(0),
     m_themelistener(*this) {
 
@@ -124,12 +125,14 @@ bool FbWinFrame::setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &ref, int mous
 
 void FbWinFrame::hide() {
     m_window.hide();
+    m_visible = false;
 }
 
 void FbWinFrame::show() {
+    m_visible = true;
+    reconfigure();
     m_window.showSubwindows();
     m_window.show();
-    reconfigure();
 }
 
 /**
@@ -534,12 +537,13 @@ void FbWinFrame::reconfigure() {
         }
     }        
 
+    if (!m_visible) return;
+
     // render the theme
     renderButtons();
     if (!m_shaded)
         renderHandles();
-    redrawTitle();
-    redrawTitlebar();
+    // titlebar stuff rendered already by reconftitlebar
 }
 
 unsigned int FbWinFrame::titleHeight() const {
@@ -557,7 +561,7 @@ unsigned int FbWinFrame::buttonHeight() const {
    aligns and redraws title
 */
 void FbWinFrame::redrawTitle() {
-    if (m_labelbuttons.size() == 0)
+    if (m_labelbuttons.size() == 0 || !m_visible)
         return;
 
     int button_width = label().width()/m_labelbuttons.size();
@@ -581,12 +585,12 @@ void FbWinFrame::redrawTitle() {
 }
 
 void FbWinFrame::redrawTitlebar() {
-    if (!m_use_titlebar)
+    if (!m_use_titlebar || !m_visible)
         return;
     m_titlebar.clear();
     m_label.clear();
     redrawTitle();
-}
+ }
 
 /**
    Align buttons with title text window
@@ -637,7 +641,7 @@ void FbWinFrame::reconfigureTitlebar() {
 }
 
 void FbWinFrame::renderTitlebar() {
-    if (!m_use_titlebar)
+    if (!m_use_titlebar || !m_visible)
         return;
 
     // render pixmaps
@@ -679,12 +683,12 @@ void FbWinFrame::renderTitlebar() {
         m_titlebar.setBackgroundColor(title_color);
 
     renderLabelButtons();
-    redrawTitle();
+    redrawTitlebar();
 }
 
 
 void FbWinFrame::renderHandles() {
-    if (!m_use_handle)
+    if (!m_use_handle || !m_visible)
         return;
     render(m_theme.handleFocusTexture(), m_handle_focused_color, 
            m_handle_focused_pm,
@@ -741,6 +745,7 @@ void FbWinFrame::renderHandles() {
 }
 
 void FbWinFrame::renderButtons() {
+    if (!m_visible) return;
 
     render(m_theme.buttonFocusTexture(), m_button_color, m_button_pm,
            m_button_size, m_button_size);
@@ -785,7 +790,6 @@ void FbWinFrame::init() {
 
     setEventHandler(*this);
 
-    reconfigureTitlebar();
     reconfigure();
 }
 
@@ -864,6 +868,7 @@ void FbWinFrame::getUnFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::renderLabelButtons() {
+    if (!m_visible) return;
     Pixmap label_pm = None;
     Pixmap not_used_pm = None;
     FbTk::Color label_color;

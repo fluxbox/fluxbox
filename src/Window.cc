@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.155 2003/04/28 13:38:23 rathnor Exp $
+// $Id: Window.cc,v 1.156 2003/05/01 13:19:36 rathnor Exp $
 
 #include "Window.hh"
 
@@ -201,7 +201,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_workspacesig(*this),
     m_diesig(*this),
     moving(false), resizing(false), shaded(false), maximized(false),
-    visible(false), iconic(false), transient(false), focused(false),
+    iconic(false), transient(false), focused(false),
     stuck(false), modal(false), send_focus_message(false), m_managed(false),
     screen(scr),
     timer(this),
@@ -233,7 +233,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
     m_workspacesig(*this),
     m_diesig(*this),
     moving(false), resizing(false), shaded(false), maximized(false),
-    visible(false), iconic(false), transient(false), focused(false),
+    iconic(false), transient(false), focused(false),
     stuck(false), modal(false), send_focus_message(false), m_managed(false),
     screen(scr),
     timer(this),
@@ -850,7 +850,6 @@ void FluxboxWindow::getWMHints() {
     //!!
     XWMHints *wmhint = XGetWMHints(display, m_client->window());
     if (! wmhint) {
-        visible = true;
         iconic = false;
         focus_mode = F_PASSIVE;
         m_client->window_group = None;
@@ -1152,11 +1151,10 @@ bool FluxboxWindow::setInputFocus() {
             return false;
         }
 
-	m_frame.setFocus(true);
 	screen.setFocusedWindow(*m_client);
 
         Fluxbox::instance()->setFocusedWindow(this);
-			
+
         if (send_focus_message)
             m_client->sendFocus();
 
@@ -1191,7 +1189,6 @@ void FluxboxWindow::iconify() {
         return;
 
     m_windowmenu.hide();
-    visible = false;
     iconic = true;
 
     setState(IconicState);
@@ -1229,7 +1226,6 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     bool was_iconic = iconic;
 
     iconic = false;
-    visible = true;
     setState(NormalState);
 
     ClientList::iterator client_it = clientList().begin();
@@ -1283,7 +1279,6 @@ void FluxboxWindow::close() {
  Set window in withdrawn state
 */
 void FluxboxWindow::withdraw() {
-    visible = false;
     iconic = false;
 
     if (isResizing())
@@ -1989,7 +1984,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
     if (client == 0)
         return;
 
-    if (!ne.override_redirect && visible) {
+    if (!ne.override_redirect && isVisible()) {
         Fluxbox *fluxbox = Fluxbox::instance();
         fluxbox->grab();
         if (! validateClient())
@@ -2005,7 +2000,6 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 	if (focused)
             m_frame.setFocus(true);
 
-        visible = true;
         iconic = false;
 
         // Auto-group from tab?
@@ -2468,13 +2462,11 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
         !isVisible()) {
         return;
     }
-
     if (ev.window == frame().window() ||
         ev.window == m_client->window()) {
         if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus()) 
             && !isFocused()) {
            
-            
             // check that there aren't any subsequent leave notify events in the 
             // X event queue
             XEvent dummy;
@@ -2482,11 +2474,9 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
             sa.w = ev.window;
             sa.enter = sa.leave = False;
             XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);   
-    
+
             if ((!sa.leave || sa.inferior) && setInputFocus())
                 installColormap(True);
-            
-           
         }        
     }
 }

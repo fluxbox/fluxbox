@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.6 2003/04/16 12:24:28 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.7 2003/05/01 13:19:36 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -67,6 +67,7 @@ public:
 
     void hide();
     void show();
+    inline bool isVisible() const { return m_visible; }
     /// shade frame (ie resize to titlebar size)
     void shade();
     void move(int x, int y);
@@ -210,6 +211,7 @@ private:
     bool m_use_titlebar; ///< if we should use titlebar
     bool m_use_handle; ///< if we should use handle
     bool m_focused; ///< focused/unfocused mode
+    bool m_visible; ///< if we are currently showing
 
     /**
        @name pixmaps and colors for rendering

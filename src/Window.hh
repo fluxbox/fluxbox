@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.65 2003/04/28 13:38:23 rathnor Exp $
+// $Id: Window.hh,v 1.66 2003/05/01 13:19:36 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -242,7 +242,7 @@ public:
     bool hasTransient() const;
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
-    inline bool isVisible() const { return visible; }
+    inline bool isVisible() const { return m_frame.isVisible(); }
     inline bool isIconic() const { return iconic; }
     inline bool isShaded() const { return shaded; }
     inline bool isMaximized() const { return maximized; }
@@ -387,7 +387,7 @@ private:
     std::string m_class_name; /// class name from WM_CLASS
 	
     //Window state
-    bool moving, resizing, shaded, maximized, visible, iconic, transient,
+    bool moving, resizing, shaded, maximized, iconic, transient,
         focused, stuck, modal, send_focus_message, m_managed;
     WinClient *m_attaching_tab;
 
