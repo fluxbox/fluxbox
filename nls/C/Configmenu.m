@@ -56,3 +56,5 @@ $ #DesktopWheeling
 # Desktop Wheeling
 $ #AntiAlias
 # AntiAlias
+$ #DecorateTransient
+# Decorate Transient
