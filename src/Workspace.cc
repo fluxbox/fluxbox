@@ -309,7 +309,7 @@ void Workspace::setName(char *new_name) {
 		delete [] name;
 
 	if (new_name) {
-		name = bstrdup(new_name);
+		name = Misc::strdup(new_name);
 	} else {
 		name = new char[128];
 		sprintf(name, I18n::instance()->
