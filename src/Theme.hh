@@ -42,19 +42,14 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.6 2002/02/17 18:49:50 fluxgen Exp $
+// $Id: Theme.hh,v 1.7 2002/03/21 10:54:29 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
 
-
-#ifndef _IMAGE_HH_
 #include "Image.hh"
-#endif //!_IMAGE_HH_
-
-#ifndef _DRAWUTIL_HH_
 #include "DrawUtil.hh"
-#endif //!_MISC_HH_
+#include "Font.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -74,7 +69,9 @@ public:
 		BColor t_text, f_text, h_text, d_text;
 		BTexture title, frame, hilite;
 		GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
-		DrawUtil::Font titlefont, framefont;
+		FbTk::Font *titlefont, *framefont;
+		DrawUtil::Font::FontJustify framefont_justify;
+		DrawUtil::Font::FontJustify titlefont_justify;
 		int bullet, bullet_pos;
 	} MenuStyle;
 	

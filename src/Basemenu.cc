@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.13 2002/03/20 14:10:03 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.14 2002/03/21 10:54:29 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -49,7 +49,10 @@
 #	include <string.h>
 #endif // STDC_HEADERS
 
+#ifdef DEBUG
 #include <iostream>
+using namespace std;
+#endif //DEBUG
 
 static Basemenu *shown = (Basemenu *) 0;
 
@@ -93,12 +96,12 @@ Basemenu::Basemenu(BScreen *scrn) {
 	
 	if (i18n->multibyte()) {
 		menu.width = menu.title_h = menu.item_w = menu.frame_h =
-			screen->getMenuStyle()->titlefont.set_extents->max_ink_extent.height +
+			screen->getMenuStyle()->titlefont->getFontSetExtents()->max_ink_extent.height +
 			(menu.bevel_w	* 2);
 	} else {
 		menu.width = menu.title_h = menu.item_w = menu.frame_h =
-			screen->getMenuStyle()->titlefont.fontstruct->ascent +
-			screen->getMenuStyle()->titlefont.fontstruct->descent +
+			screen->getMenuStyle()->titlefont->getFontStruct()->ascent +
+			screen->getMenuStyle()->titlefont->getFontStruct()->descent +
 			(menu.bevel_w * 2);
 	}
 	menu.label = 0;
@@ -108,11 +111,11 @@ Basemenu::Basemenu(BScreen *scrn) {
 		menu.minsub = 0;
 	
 	if (i18n->multibyte()) {
-		menu.item_h = screen->getMenuStyle()->framefont.set_extents->max_ink_extent.height +
+		menu.item_h = screen->getMenuStyle()->framefont->getFontSetExtents()->max_ink_extent.height +
 			(menu.bevel_w);
 	} else {
-		menu.item_h = screen->getMenuStyle()->framefont.fontstruct->ascent +
-			screen->getMenuStyle()->framefont.fontstruct->descent +
+		menu.item_h = screen->getMenuStyle()->framefont->getFontStruct()->ascent +
+			screen->getMenuStyle()->framefont->getFontStruct()->descent +
 			(menu.bevel_w);
 	}
 	menu.height = menu.title_h + screen->getBorderWidth() + menu.frame_h;
@@ -277,37 +280,33 @@ void Basemenu::update(void) {
 	I18n *i18n = I18n::instance();
 	
 	if (i18n->multibyte()) {
-		menu.item_h = screen->getMenuStyle()->framefont.set_extents->max_ink_extent.height +
+		menu.item_h = screen->getMenuStyle()->framefont->getFontSetExtents()->max_ink_extent.height +
 			menu.bevel_w;
-		menu.title_h =	screen->getMenuStyle()->titlefont.set_extents->max_ink_extent.height +
+		menu.title_h =	screen->getMenuStyle()->titlefont->getFontSetExtents()->max_ink_extent.height +
 			(menu.bevel_w * 2);
 	} else {
-		menu.item_h = screen->getMenuStyle()->framefont.fontstruct->ascent +
-			screen->getMenuStyle()->framefont.fontstruct->descent +
+		menu.item_h = screen->getMenuStyle()->framefont->getFontStruct()->ascent +
+			screen->getMenuStyle()->framefont->getFontStruct()->descent +
 			menu.bevel_w;
-		menu.title_h =	screen->getMenuStyle()->titlefont.fontstruct->ascent +
-				screen->getMenuStyle()->titlefont.fontstruct->descent +
+		menu.title_h =	screen->getMenuStyle()->titlefont->getFontStruct()->ascent +
+				screen->getMenuStyle()->titlefont->getFontStruct()->descent +
 				(menu.bevel_w * 2);
 	}
 		
 	if (title_vis) {
 		const char *s = (menu.label) ? menu.label :
-				i18n->getMessage(
-#ifdef		NLS
-						 BasemenuSet, BasemenuBlackboxMenu,
-#else // !NLS
-						 0, 0,
-#endif // NLS
-						 "fluxbox Menu");
+			i18n->getMessage(
+				 BasemenuSet, BasemenuBlackboxMenu,
+				 "fluxbox Menu");
 		int l = strlen(s);
 		
 
 		if (i18n->multibyte()) {
 			XRectangle ink, logical;
-			XmbTextExtents(screen->getMenuStyle()->titlefont.set, s, l, &ink, &logical);
+			XmbTextExtents(screen->getMenuStyle()->titlefont->getFontSet(), s, l, &ink, &logical);
 			menu.item_w = logical.width;
 		} else
-			menu.item_w = XTextWidth(screen->getMenuStyle()->titlefont.fontstruct, s, l);
+			menu.item_w = XTextWidth(screen->getMenuStyle()->titlefont->getFontStruct(), s, l);
 		
 		menu.item_w += (menu.bevel_w * 2);
 	}	else
@@ -324,10 +323,10 @@ void Basemenu::update(void) {
 
 		if (i18n->multibyte()) {
 			XRectangle ink, logical;
-			XmbTextExtents(screen->getMenuStyle()->framefont.set, s, l, &ink, &logical);
+			XmbTextExtents(screen->getMenuStyle()->framefont->getFontSet(), s, l, &ink, &logical);
 			ii = logical.width;
 		} else
-			ii = XTextWidth(screen->getMenuStyle()->framefont.fontstruct, s, l);
+			ii = XTextWidth(screen->getMenuStyle()->framefont->getFontStruct(), s, l);
 
 		ii += (menu.bevel_w * 2) + (menu.item_h * 2);
 
@@ -509,16 +508,12 @@ void Basemenu::redrawTitle(void) {
 	int dx = menu.bevel_w, len = strlen(text);
 	unsigned int l;
 
-	if (i18n->multibyte()) {
-		XRectangle ink, logical;
-		XmbTextExtents(screen->getMenuStyle()->titlefont.set, text, len, &ink, &logical);
-		l = logical.width;
-	} else
-		l = XTextWidth(screen->getMenuStyle()->titlefont.fontstruct, text, len);
+	l = screen->getMenuStyle()->titlefont->getTextWidth(text, len);
 
-	l +=	(menu.bevel_w * 2);
+	l += (menu.bevel_w * 2);
 
-	switch (screen->getMenuStyle()->titlefont.justify) {
+	//titlefont.justify
+	switch (screen->getMenuStyle()->titlefont_justify) {
 	case DrawUtil::Font::RIGHT:
 		dx += menu.width - l;
 		break;
@@ -531,13 +526,13 @@ void Basemenu::redrawTitle(void) {
 	}
 
 	if (i18n->multibyte())
-		XmbDrawString(display, menu.title, screen->getMenuStyle()->titlefont.set,
+		XmbDrawString(display, menu.title, screen->getMenuStyle()->titlefont->getFontSet(),
 			screen->getMenuStyle()->t_text_gc, dx, menu.bevel_w -
-			screen->getMenuStyle()->titlefont.set_extents->max_ink_extent.y,
+			screen->getMenuStyle()->titlefont->getFontSetExtents()->max_ink_extent.y,
 			text, len);
 	else
 		XDrawString(display, menu.title, screen->getMenuStyle()->t_text_gc, dx,
-		screen->getMenuStyle()->titlefont.fontstruct->ascent + menu.bevel_w,
+		screen->getMenuStyle()->titlefont->getFontStruct()->ascent + menu.bevel_w,
 		text, len);
 }
 
@@ -681,20 +676,19 @@ void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 	I18n *i18n = I18n::instance();
 	
 	if (text) {		
-		if (i18n->multibyte()) {
-			XRectangle ink, logical;
-			XmbTextExtents(screen->getMenuStyle()->framefont.set, text, len, &ink, &logical);
-			text_w = logical.width;
+		text_w = screen->getMenuStyle()->framefont->getTextWidth(text, len);
+		
+		if (screen->getMenuStyle()->framefont->multibyte()) {
 			text_y = item_y + (menu.bevel_w / 2) -
-				screen->getMenuStyle()->framefont.set_extents->max_ink_extent.y;
+				screen->getMenuStyle()->framefont->getFontSetExtents()->max_ink_extent.y;
 		} else {
-			text_w = XTextWidth(screen->getMenuStyle()->framefont.fontstruct, text, len);
-			text_y =	item_y +
-				screen->getMenuStyle()->framefont.fontstruct->ascent +
+			text_y = item_y +
+				screen->getMenuStyle()->framefont->getFontStruct()->ascent +
 				(menu.bevel_w / 2);
 		}
-		
-		switch(screen->getMenuStyle()->framefont.justify) {
+
+		// framfont.justify
+		switch(screen->getMenuStyle()->framefont_justify) {
 		case DrawUtil::Font::LEFT:
 			text_x = item_x + menu.bevel_w + menu.item_h + 1;
 			break;
@@ -706,7 +700,7 @@ void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 			text_x = item_x + ((menu.item_w + 1 - text_w) / 2);
 			break;
 		}
-		
+
 		text_h = menu.item_h - menu.bevel_w;
 	}
 	
@@ -781,7 +775,7 @@ void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 	
 	if (dotext && text) {
 		if (i18n->multibyte()) {
-			XmbDrawString(display, menu.frame, screen->getMenuStyle()->framefont.set,
+			XmbDrawString(display, menu.frame, screen->getMenuStyle()->framefont->getFontSet(),
 				tgc, text_x, text_y, text, len);
 		} else
 			XDrawString(display, menu.frame, tgc, text_x, text_y, text, len);
