@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.7 2003/04/16 13:30:55 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.8 2003/04/16 23:33:59 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -104,6 +104,7 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
     if (mode < 0 || mode >= LASTMODE || (mode == m_mode && initialise)) 
         return;
 
+    m_screen.saveToolbarMode(mode);
     if (mode == OFF) {
         m_mode = mode;
         m_toolbarmenu.removeAll();
