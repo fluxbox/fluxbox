@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.3 2002/12/01 13:42:14 rathnor Exp $
+// $Id: Color.cc,v 1.4 2003/02/23 01:09:20 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -50,7 +50,7 @@ Color::Color(const Color &col_copy) {
     copy(col_copy);
 }
 
-Color::Color(unsigned char red, unsigned char green, unsigned char blue, int screen):
+Color::Color(unsigned short red, unsigned short green, unsigned short blue, int screen):
     m_red(red),	m_green(green), m_blue(blue), 
     m_pixel(0), m_allocated(false),
     m_screen(screen) { 
@@ -138,7 +138,7 @@ void Color::copy(const Color &col_copy) {
 	
 }
 
-void Color::allocate(unsigned char red, unsigned char green, unsigned char blue, int screen) {
+void Color::allocate(unsigned short red, unsigned short green, unsigned short blue, int screen) {
 
     Display *disp = App::instance()->display();
     XColor color;
@@ -161,7 +161,7 @@ void Color::allocate(unsigned char red, unsigned char green, unsigned char blue,
     m_screen = screen;
 }
 
-void Color::setRGB(unsigned char red, unsigned char green, unsigned char blue) {
+void Color::setRGB(unsigned short red, unsigned short green, unsigned short blue) {
     m_red = red;
     m_green = green;
     m_blue = blue;
