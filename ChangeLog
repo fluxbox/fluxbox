@@ -1,6 +1,26 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/04/22:
+  * New Command: Deiconify <mode> <dest>
+    * Where mode is:
+      * last                         
+         - deiconify last iconified window
+      * lastworkspace (default)       
+         - deiconify last iconified window 
+           from current workspace
+      * all
+         - deiconify all iconified windows
+      * allworkspace
+         - deiconify all iconfiied windows 
+           from current workspace
+    * and dest is:
+      * current (default)
+        - deiconify them on current windows
+      * origin 
+        - deiconify them where they were
+
+   (Thanks Mathias Gumz)
+   FbCommands.cc/hh, FbCommandFactory.cc
   * Attach area for tabs:
     new resource:
     * session.tabsAttachArea: <mode>
