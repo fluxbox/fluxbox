@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.2 2003/01/07 02:09:43 fluxgen Exp $
+// $Id: Menu.hh,v 1.3 2003/01/09 16:43:54 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -64,8 +64,8 @@ public:
     //@{
     /// add a menu item with a label and a command
     int insert(const char *label, RefCount<Command> &cmd, int pos=-1);
-    /// note: obsolete
-    int insert(const char *label, int function= 0, const char *exec = 0, int pos = -1);
+    /// add empty menu item
+    int insert(const char *label, int pos=-1);
     /// add submenu
     int insert(const char *label, Menu *submenu, int pos= -1);
     /// remove an item
@@ -183,22 +183,17 @@ private:
 class MenuItem {
 public:
     MenuItem(
-             const char *label,
-             int function,
-             const char *exec = (const char *) 0)
-        : m_label(label ? label : "")
-        , m_exec(exec ? exec : "")
-        , m_submenu(0)
-        , m_function(function)
-        , m_enabled(true)
-        , m_selected(false)
+             const char *label)
+        : m_label(label ? label : ""),
+        m_submenu(0),
+        m_enabled(true),
+        m_selected(false)
     { }
     /// create a menu item with a specific command to be executed on click
     MenuItem(const char *label, RefCount<Command> &cmd):
         m_label(label ? label : ""),
         m_submenu(0),
         m_command(cmd),
-        m_function(0),
         m_enabled(true),
         m_selected(false) {
 		
@@ -206,9 +201,7 @@ public:
 
     MenuItem(const char *label, Menu *submenu)
         : m_label(label ? label : "")
-        , m_exec("")
         , m_submenu(submenu)
-        , m_function(0)
         , m_enabled(true)
         , m_selected(false)
     { }
@@ -220,9 +213,7 @@ public:
         @name accessors
     */
     //@{
-    const std::string &exec() const { return m_exec; }
     const std::string &label() const { return m_label; }
-    int function() const { return m_function; }
     const Menu *submenu() const { return m_submenu; } 
     bool isEnabled() const { return m_enabled; }
     bool isSelected() const { return m_selected; }
@@ -232,10 +223,8 @@ public:
 	
 private:
     std::string m_label; ///< label of this item
-    std::string m_exec;  ///< command string to execute
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
     RefCount<Command> m_command; ///< command to be executed
-    int m_function;
     bool m_enabled, m_selected;
 
     friend class Menu;
