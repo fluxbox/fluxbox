@@ -163,7 +163,7 @@ void Timer::updateTimers(int fd) {
 
     //must check end ...the timer might remove
     //it self from the list (should be fixed in the future)
-    for(it = m_timerlist.begin(); it != m_timerlist.end(); ++it) {
+    for(it = m_timerlist.begin(); it != m_timerlist.end(); ) {
         //This is to make sure we don't get an invalid iterator
         //when we do fireTimeout
         Timer &t = *(*it);
@@ -178,12 +178,21 @@ void Timer::updateTimers(int fd) {
 
         t.fireTimeout();
         // restart the current timer so that the start time is updated
-        if (! t.doOnce())
+        if (! t.doOnce()) {
             t.start();
-        else {
-            t.stop();			
-            it--;
-        }					
+
+            // Note that this mustn't be done if we're deleting the
+            // entry from the list, so therefore it's not in the update
+            // section of the for loop
+            it++;
+        } else {
+            // Since the default stop behaviour results in the timer
+            // being removed, we must remove it here, so that the iterator
+            // lives well. Another option would be to add it to another
+            // list, and then just go through that list and stop them all.
+            it = m_timerlist.erase(it);
+            t.stop();
+        }
     }
 
     last_time = time(0);
