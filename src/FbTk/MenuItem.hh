@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.hh,v 1.2 2003/02/17 12:28:06 fluxgen Exp $
+// $Id: MenuItem.hh,v 1.3 2003/08/27 14:18:02 fluxgen Exp $
 
 #ifndef FBTK_MENUITEM_HH
 #define FBTK_MENUITEM_HH
@@ -38,9 +38,10 @@ public:
     MenuItem(
              const char *label)
         : m_label(label ? label : ""),
-        m_submenu(0),
-        m_enabled(true),
-        m_selected(false)
+          m_submenu(0),
+          m_enabled(true),
+          m_selected(false),
+          m_toggle_item(false)
     { }
     /// create a menu item with a specific command to be executed on click
     MenuItem(const char *label, RefCount<Command> &cmd):
@@ -48,7 +49,8 @@ public:
         m_submenu(0),
         m_command(cmd),
         m_enabled(true),
-        m_selected(false) {
+        m_selected(false),
+        m_toggle_item(false) {
 		
     }
 
@@ -56,7 +58,8 @@ public:
         : m_label(label ? label : "")
         , m_submenu(submenu)
         , m_enabled(true)
-        , m_selected(false)
+        , m_selected(false),
+          m_toggle_item(false)
     { }
     virtual ~MenuItem() { }
 
@@ -64,6 +67,7 @@ public:
     virtual void setSelected(bool selected) { m_selected = selected; }
     virtual void setEnabled(bool enabled) { m_enabled = enabled; }
     virtual void setLabel(const char *label) { m_label = (label ? label : ""); }
+    virtual void setToggleItem(bool val) { m_toggle_item = val; }
     Menu *submenu() { return m_submenu; }
     /** 
         @name accessors
@@ -73,11 +77,12 @@ public:
     const Menu *submenu() const { return m_submenu; } 
     virtual bool isEnabled() const { return m_enabled; }
     virtual bool isSelected() const { return m_selected; }
+    virtual bool isToggleItem() const { return m_toggle_item; }
     /**
        Called when the item was clicked with a specific button
        @param button the button number
        @param time the time stamp 
-     */
+    */
     virtual void click(int button, int time);
     RefCount<Command> &command() { return m_command; }
     const RefCount<Command> &command() const { return m_command; }
@@ -88,6 +93,7 @@ private:
     Menu *m_submenu; ///< a submenu, 0 if we don't have one
     RefCount<Command> m_command; ///< command to be executed
     bool m_enabled, m_selected;
+    bool m_toggle_item;
 };
 
 };// end namespace FbTk
