@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.9 2003/08/25 16:37:50 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.10 2003/08/27 17:52:08 fluxgen Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -30,6 +30,8 @@
 #include "FbTk/Color.hh"
 #include "FbTk/Theme.hh"
 #include "FbTk/Subject.hh"
+#include "FbTk/GContext.hh"
+
 #include "BorderTheme.hh"
 #include "Shape.hh"
 
@@ -74,10 +76,10 @@ public:
 
     FbTk::Justify justify() const { return *m_textjustify; }
 
-    GC labelTextFocusGC() const { return m_label_text_focus_gc; }
-    GC labelTextUnfocusGC() const { return m_label_text_unfocus_gc; }
-    GC buttonPicFocusGC() const { return m_button_pic_focus_gc; }
-    GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc; }
+    GC labelTextFocusGC() const { return m_label_text_focus_gc.gc(); }
+    GC labelTextUnfocusGC() const { return m_label_text_unfocus_gc.gc(); }
+    GC buttonPicFocusGC() const { return m_button_pic_focus_gc.gc(); }
+    GC buttonPicUnfocusGC() const { return m_button_pic_unfocus_gc.gc(); }
 
     bool fallback(FbTk::ThemeItem_base &item);
     void reconfigTheme();
@@ -112,8 +114,8 @@ private:
     FbTk::ThemeItem<int> m_alpha, m_title_height;
     BorderTheme m_border;
 
-    GC m_label_text_focus_gc, m_label_text_unfocus_gc;
-    GC m_button_pic_focus_gc, m_button_pic_unfocus_gc;
+    FbTk::GContext m_label_text_focus_gc, m_label_text_unfocus_gc;
+    FbTk::GContext m_button_pic_focus_gc, m_button_pic_unfocus_gc;
 
     FbTk::Subject m_theme_change;
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.10 2003/08/25 16:37:50 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.11 2003/08/27 17:52:08 fluxgen Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -61,21 +61,19 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
 
     m_alpha(*this, "window.alpha", "Window.Alpha"),
     m_title_height(*this, "window.title.height", "Window.Title.Height"),
-    m_border(*this, "window", "Window") { // for window.border*
+    m_border(*this, "window", "Window"), // for window.border*
+    m_label_text_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_label_text_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_button_pic_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)) {
 
     *m_title_height = 0;
     // set defaults
     m_font->load("fixed");
     *m_alpha = 255;
 
-    // create GCs
-    Display *disp = FbTk::App::instance()->display();
-    Window rootwin = RootWindow(disp, screen_num);
-    m_label_text_focus_gc = XCreateGC(disp, rootwin, 0, 0);
-    m_label_text_unfocus_gc = XCreateGC(disp, rootwin, 0, 0);
-    m_button_pic_focus_gc = XCreateGC(disp, rootwin, 0, 0);
-    m_button_pic_unfocus_gc = XCreateGC(disp, rootwin, 0, 0);
     // create cursors
+    Display *disp = FbTk::App::instance()->display();
     m_cursor_move = XCreateFontCursor(disp, XC_fleur);
     m_cursor_lower_left_angle = XCreateFontCursor(disp, XC_ll_angle);
     m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_lr_angle);
@@ -83,12 +81,7 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
 }
 
 FbWinFrameTheme::~FbWinFrameTheme() {
-    // destroy GCs
-    Display *disp = FbTk::App::instance()->display();
-    XFreeGC(disp, m_label_text_focus_gc);
-    XFreeGC(disp, m_label_text_unfocus_gc);
-    XFreeGC(disp, m_button_pic_focus_gc);
-    XFreeGC(disp, m_button_pic_unfocus_gc);
+
 }
 
 bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
@@ -106,21 +99,10 @@ void FbWinFrameTheme::reconfigTheme() {
     else if (*m_alpha < 0)
         *m_alpha = 0;
 
-    XGCValues gcv;
-    unsigned long gc_value_mask = GCForeground;
-    Display *disp = FbTk::App::instance()->display();
-
-    gcv.foreground = m_label_focus_color->pixel();
-    XChangeGC(disp, m_label_text_focus_gc, gc_value_mask, &gcv);
-
-    gcv.foreground = m_label_unfocus_color->pixel();
-    XChangeGC(disp, m_label_text_unfocus_gc, gc_value_mask, &gcv);
-
-    gcv.foreground = m_button_focus_color->pixel();
-    XChangeGC(disp, m_button_pic_focus_gc, gc_value_mask, &gcv);
-
-    gcv.foreground = m_button_unfocus_color->pixel();
-    XChangeGC(disp, m_button_pic_unfocus_gc, gc_value_mask, &gcv);
+    m_label_text_focus_gc.setForeground(*m_label_focus_color);
+    m_label_text_unfocus_gc.setForeground(*m_label_unfocus_color);
+    m_button_pic_focus_gc.setForeground(*m_button_focus_color);
+    m_button_pic_unfocus_gc.setForeground(*m_button_unfocus_color);
 
     // notify listeners
     m_theme_change.notify();
