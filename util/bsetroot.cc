@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.13 2002/11/30 21:07:51 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.14 2002/12/09 23:41:54 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -407,7 +407,7 @@ int main(int argc, char **argv) {
 	char *display_name = (char *) 0;
 	int i = 1;
   
-	NLSInit("blackbox.cat");
+	NLSInit("fluxbox.cat");
   
 	for (; i < argc; i++) {
 		if (! strcmp(argv[i], "-display")) {
