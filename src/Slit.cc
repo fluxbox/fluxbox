@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.19 2002/07/23 18:38:31 fluxgen Exp $
+// $Id: Slit.cc,v 1.20 2002/08/14 21:51:07 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -521,7 +521,7 @@ void Slit::reconfigure(void) {
 }
 
 
-void Slit::reposition(void) {
+void Slit::reposition() {
 	int head_x = 0,
 			head_y = 0,
 			head_w,
@@ -667,7 +667,7 @@ void Slit::reposition(void) {
 }
 
 
-void Slit::shutdown(void) {
+void Slit::shutdown() {
 	saveClientList();
 	while (clientList.size() != 0)
 		removeClient(clientList.front(), true, true);
@@ -710,9 +710,11 @@ void Slit::enterNotifyEvent(XCrossingEvent *) {
 		return;
 
 	if (hidden) {
-		if (! timer.isTiming()) timer.start();
+		if (! timer.isTiming()) 
+			timer.start();
 	} else {
-		if (timer.isTiming()) timer.stop();
+		if (timer.isTiming()) 
+			timer.stop();
 	}
 }
 
@@ -722,9 +724,11 @@ void Slit::leaveNotifyEvent(XCrossingEvent *) {
 		return;
 
 	if (hidden) {
-		if (timer.isTiming()) timer.stop();
+		if (timer.isTiming()) 
+			timer.stop();
 	} else if (! slitmenu.isVisible()) {
-		if (! timer.isTiming()) timer.start();
+		if (! timer.isTiming()) 
+			timer.start();
 	}
 }
 
@@ -768,7 +772,7 @@ void Slit::configureRequestEvent(XConfigureRequestEvent *e) {
 }
 
 
-void Slit::timeout(void) {
+void Slit::timeout() {
 	hidden = ! hidden;
 	if (hidden)
 		XMoveWindow(display, frame.window, frame.x_hidden, frame.y_hidden);
@@ -776,11 +780,10 @@ void Slit::timeout(void) {
 		XMoveWindow(display, frame.window, frame.x, frame.y);
 }
 
-void Slit::loadClientList(void) {
+void Slit::loadClientList() {
 	const std::string &filename = fluxbox->getSlitlistFilename();
 	struct stat buf;
-	if (!stat(filename.c_str(), &buf))
-	{
+	if (!stat(filename.c_str(), &buf)) {
 		std::ifstream file(fluxbox->getSlitlistFilename().c_str());
 		std::string name;
 		while (! file.eof()) {
@@ -860,7 +863,7 @@ slit(sl) {
 }
 
 
-Slitmenu::~Slitmenu(void) {
+Slitmenu::~Slitmenu() {
 	delete directionmenu;
 	delete placementmenu;
 #ifdef XINERAMA
