@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.cc,v 1.5 2002/03/22 11:51:46 fluxgen Exp $
+// $Id: DrawUtil.cc,v 1.6 2002/04/03 23:00:10 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"
@@ -274,7 +274,7 @@ void XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
 //------- XRotTextWidth ------------------
 // Returns the width of a rotated string
 //----------------------------------------
-unsigned int XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
+unsigned int XRotTextWidth(XRotFontStruct *rotfont, const char *str, int len)
 {
 	int i, width = 0, ichar;
 
@@ -300,7 +300,7 @@ unsigned int XRotTextWidth(XRotFontStruct *rotfont, char *str, int len)
 // A front end to XRotDrawString : mimics XDrawString
 //----------------------------------------
 void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
-		    GC gc, int x, int y, char *str, int len)
+		    GC gc, int x, int y, const char *str, int len)
 {            
 	static GC my_gc = 0;
 	int i, xp, yp, dir, ichar;
@@ -368,7 +368,7 @@ void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
 //Draw title string	
 void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font, 
 					unsigned int text_w, unsigned int size_w, 
-					unsigned int bevel_w, char *text) {
+					unsigned int bevel_w, const char *text) {
 
 	assert(display);
 	assert(font);
@@ -430,7 +430,7 @@ void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
 void DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
 					unsigned int align, unsigned int text_w, 
 					unsigned int size_w, unsigned int size_h,
-					unsigned int bevel_w, char *text) {
+					unsigned int bevel_w, const char *text) {
 
 	assert(display);
 	assert(font);

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.hh,v 1.4 2002/03/22 11:51:46 fluxgen Exp $
+// $Id: DrawUtil.hh,v 1.5 2002/04/03 23:00:10 fluxgen Exp $
 
 #ifndef DRAWUTIL_HH
 #define DRAWUTIL_HH
@@ -40,7 +40,7 @@ namespace DrawUtil
 	
 void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
 					unsigned int text_w, unsigned int size_w,
-					unsigned int bevel_w, char *text);
+					unsigned int bevel_w, const char *text);
 
 // ----------------------------------------------------------------------
 // xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
@@ -78,14 +78,14 @@ void DrawString(Display *display, Window w, GC gc, DrawUtil::Font *font,
 
 		DrawUtil::XRotCharStruct	 per_char[95];
 	};
-unsigned int XRotTextWidth(DrawUtil::XRotFontStruct *rotfont, char *str, int len);
+unsigned int XRotTextWidth(DrawUtil::XRotFontStruct *rotfont, const char *str, int len);
 void XRotDrawString(Display *dpy, DrawUtil::XRotFontStruct *rotfont, Drawable drawable,
-					GC gc, int x, int y, char *str, int len);
+					GC gc, int x, int y, const char *str, int len);
 
 void DrawRotString(Display *display, Window w, GC gc, DrawUtil::XRotFontStruct *font,
 					unsigned int align, unsigned int text_w,
 					unsigned int size_w, unsigned int size_h,
-					unsigned int bevel_w, char *text);
+					unsigned int bevel_w, const char *text);
 					
 DrawUtil::XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle);
 void XRotUnloadFont(Display *dpy, DrawUtil::XRotFontStruct *rotfont);
