@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/10:
+   * Fix session.menuFile to work with ~ properly (Simon)
+     fluxbox.hh/cc Screen.cc     
 *03/08/07:
    * Updated fluxbox-generate_menu (Thanks Han)
      Test before warning, browser details, minor indent issues

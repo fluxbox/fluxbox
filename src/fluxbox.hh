@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.69 2003/07/28 15:06:36 rathnor Exp $
+// $Id: fluxbox.hh,v 1.70 2003/08/10 12:50:04 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -113,7 +113,7 @@ public:
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
     inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
 
-    inline const char *getMenuFilename() const { return m_rc_menufile->c_str(); }
+    inline const std::string &getMenuFilename() const { return *m_rc_menufile; }
     inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
     inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     inline int getNumberOfLayers() const { return *m_rc_numlayers; }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.178 2003/08/04 18:16:22 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.179 2003/08/10 12:50:04 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1625,13 +1625,8 @@ void Fluxbox::load_rc() {
 	
     XrmValue value;
     char *value_type;
-
-    if (m_rc_menufile->size()) {
-        *m_rc_menufile = StringUtil::expandFilename(*m_rc_menufile);
-        if (!m_rc_menufile->size())
+    if (m_rc_menufile->size() == 0)
             m_rc_menufile.setDefaultValue();
-    } else
-        m_rc_menufile.setDefaultValue();
  
     if (m_rc_slitlistfile->size() != 0) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);

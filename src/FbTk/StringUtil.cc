@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.3 2003/07/01 01:49:13 rathnor Exp $
+// $Id: StringUtil.cc,v 1.4 2003/08/10 12:50:04 rathnor Exp $
 
 #include "StringUtil.hh"
 
@@ -73,7 +73,6 @@ const char *strcasestr(const char *str, const char *ptn) {
  returns expanded filename 
 */
 string expandFilename(const std::string &filename) {
-  
     string retval;
     size_t pos = filename.find_first_not_of(" \t");
     if (pos != std::string::npos && filename[pos] == '~') {  	
@@ -84,7 +83,7 @@ string expandFilename(const std::string &filename) {
         }
     } else
         return filename; //return unmodified value
-  
+
     return retval;
 }
 

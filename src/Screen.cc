@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.212 2003/08/04 12:50:06 fluxgen Exp $
+// $Id: Screen.cc,v 1.213 2003/08/10 12:50:04 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1612,8 +1612,10 @@ void BScreen::initMenu() {
 
     bool defaultMenu = true;
     Fluxbox * const fb = Fluxbox::instance();
-    if (fb->getMenuFilename()) {
-        ifstream menu_file(fb->getMenuFilename());
+    if (fb->getMenuFilename().size() > 0) {
+        std::string menufilestr = fb->getMenuFilename();
+        menufilestr = FbTk::StringUtil::expandFilename(menufilestr);
+        ifstream menu_file(menufilestr.c_str());
 
         if (!menu_file.fail()) {
             if (! menu_file.eof()) {
@@ -1650,11 +1652,11 @@ void BScreen::initMenu() {
                         i18n->getMessage(
                                          FBNLS::ScreenSet, FBNLS::ScreenEmptyMenuFile,
                                          "%s: Empty menu file"),
-                        fb->getMenuFilename());
+                        menufilestr.c_str());
             }
             menu_file.close();
         } else
-            perror(fb->getMenuFilename());
+            perror(menufilestr.c_str());
     }
 
     if (defaultMenu) {
@@ -1674,8 +1676,7 @@ void BScreen::initMenu() {
                                             FBNLS::ScreenSet, FBNLS::ScreenExit,
                                             "Exit"),
                            exit_fb);
-    } else
-        fb->saveMenuFilename(fb->getMenuFilename());
+    }
 }
 
 /// looks through a menufile and adds correct items to the root-menu.
