@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.266 2004/02/10 18:53:37 fluxgen Exp $
+// $Id: Screen.cc,v 1.267 2004/02/20 09:06:19 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2411,7 +2411,7 @@ bool BScreen::doSkipWindow(const WinClient &winclient, int opts) {
             // skip if not active client (i.e. only visit each fbwin once)
             (opts & CYCLEGROUPS) != 0 && win->winClient().window() != winclient.window() ||
             (opts & CYCLESKIPSHADED) != 0 && win->isShaded() || // skip if shaded
-            win->isHidden()
+            win->isFocusHidden()
             ); 
 }
 

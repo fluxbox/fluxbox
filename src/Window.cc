@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.267 2004/02/16 09:19:45 fluxgen Exp $
+// $Id: Window.cc,v 1.268 2004/02/20 09:07:27 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -265,6 +265,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_focussig(*this),
     m_titlesig(*this),
     m_themelistener(*this),
+    m_icon_hidden(false),
     moving(false), resizing(false), shaded(false), 
     iconic(false), focused(false),
     stuck(false), m_managed(false),
@@ -1688,7 +1689,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
     }
 }
 
-void FluxboxWindow::setHidden(bool value) {
+void FluxboxWindow::setFocusHidden(bool value) {
     if(value) 
         m_blackbox_attrib.flags |= ATTRIB_HIDDEN;
     else
@@ -1696,6 +1697,12 @@ void FluxboxWindow::setHidden(bool value) {
 
     m_statesig.notify();
 }
+
+void FluxboxWindow::setIconHidden(bool value) {
+    m_icon_hidden= value;
+    m_statesig.notify();
+}
+
 
 // window has actually RECEIVED focus (got a FocusIn event)
 // so now we make it a focused frame etc

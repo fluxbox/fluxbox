@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.34 2004/02/16 10:25:33 fluxgen Exp $
+// $Id: Remember.cc,v 1.35 2004/02/20 09:05:38 fluxgen Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -210,7 +210,8 @@ Application::Application(bool grouped)
 {
 	decostate_remember     = 
 	dimensions_remember =
-	hiddenstate_remember   = 
+	focushiddenstate_remember = 
+  iconhiddenstate_remember =
 	jumpworkspace_remember = 
 	layer_remember         = 
 	position_remember =
@@ -364,8 +365,13 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
                 app.rememberShadedstate((str_label=="yes"));
             } else if (str_key == "Tab") {
                 app.rememberTabstate((str_label=="yes"));
+            } else if (str_key == "FocusHidden") {
+                app.rememberFocusHiddenstate((str_label=="yes")); 
+            } else if (str_key == "IconHidden") {
+                app.rememberIconHiddenstate((str_label=="yes")); 
             } else if (str_key == "Hidden") {
-                app.rememberHiddenstate((str_label=="yes")); 
+                app.rememberIconHiddenstate((str_label=="yes"));
+                app.rememberFocusHiddenstate((str_label=="yes"));
             } else if (str_key == "Deco") {
                 if (str_label == "NONE") {
                     app.rememberDecostate((unsigned int) 0);
@@ -548,9 +554,6 @@ void Remember::save() {
         if (a.tabstate_remember) {
             apps_file << "  [Tab]\t\t{" << ((a.tabstate)?"yes":"no") << "}" << endl;
         }
-        if (a.hiddenstate_remember) {
-            apps_file << "  [Hidden]\t\t{" << ((a.tabstate)?"yes":"no") << "}" << endl;
-        }
         if (a.decostate_remember) {
             switch (a.decostate) {
             case (0) :
@@ -576,6 +579,17 @@ void Remember::save() {
             default:
                 apps_file << "  [Deco]\t{0x"<<hex<<a.decostate<<dec<<"}"<<endl;
                 break;
+            }
+        }
+
+        if (a.focushiddenstate_remember || a.iconhiddenstate_remember) {
+            if (a.focushiddenstate_remember && a.iconhiddenstate_remember &&
+                a.focushiddenstate && a.iconhiddenstate) 
+                apps_file << "  [Hidden]\t{" << ((a.focushiddenstate)?"yes":"no") << "}" << endl;
+            else if (a.focushiddenstate_remember) {
+                apps_file << "  [FocusHidden]\t{" << ((a.focushiddenstate)?"yes":"no") << "}" << endl;
+            } else if (a.iconhiddenstate_remember) {
+                apps_file << "  [IconHidden]\t{" << ((a.iconhiddenstate)?"yes":"no") << "}" << endl;
             }
         }
         if (a.stuckstate_remember) {
@@ -607,8 +621,11 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     case REM_POSITION:
         return app->position_remember;
         break;
-    case REM_HIDDENSTATE:
-        return app->hiddenstate_remember;
+    case REM_FOCUSHIDDENSTATE:
+        return app->focushiddenstate_remember;
+        break;
+    case REM_ICONHIDDENSTATE:
+        return app->iconhiddenstate_remember;
         break;
     case REM_STUCKSTATE:
         return app->stuckstate_remember;
@@ -655,8 +672,11 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_POSITION:
         app->rememberPosition(win->x(), win->y());
         break;
-    case REM_HIDDENSTATE:
-        app->rememberHiddenstate(win->isHidden());
+    case REM_FOCUSHIDDENSTATE:
+        app->rememberFocusHiddenstate(win->isFocusHidden());
+        break;
+    case REM_ICONHIDDENSTATE:
+        app->rememberIconHiddenstate(win->isIconHidden());
         break;
     case REM_SHADEDSTATE:
         app->rememberShadedstate(win->isShaded());
@@ -703,8 +723,11 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
     case REM_POSITION:
         app->forgetPosition();
         break;
-    case REM_HIDDENSTATE:
-        app->forgetHiddenstate();
+    case REM_FOCUSHIDDENSTATE:
+        app->forgetFocusHiddenstate();
+        break;
+    case REM_ICONHIDDENSTATE:
+        app->forgetIconHiddenstate();
         break;
     case REM_STUCKSTATE:
         app->forgetStuckstate();
@@ -809,8 +832,10 @@ void Remember::setupFrame(FluxboxWindow &win) {
         if (win.isStuck() && !app->stuckstate ||
             !win.isStuck() && app->stuckstate)
             win.stick(); // toggles
-    if (app->hiddenstate_remember)
-        win.setHidden(true);
+    if (app->focushiddenstate_remember)
+        win.setFocusHidden(true);
+    if (app->iconhiddenstate_remember)
+        win.setIconHidden(true);
 
     if (app->layer_remember)
         win.moveToLayer(app->layer);

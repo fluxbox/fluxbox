@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.15 2004/02/16 10:25:34 fluxgen Exp $
+// $Id: Remember.hh,v 1.16 2004/02/20 09:05:38 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -50,7 +50,8 @@ public:
     inline void forgetShadedstate() { shadedstate_remember = false; }
     inline void forgetTabstate() { tabstate_remember = false; }
     inline void forgetDecostate() { decostate_remember = false; }
-    inline void forgetHiddenstate() { hiddenstate_remember= false; }
+    inline void forgetFocusHiddenstate() { focushiddenstate_remember= false; }
+    inline void forgetIconHiddenstate() { iconhiddenstate_remember= false; }
     inline void forgetStuckstate() { stuckstate_remember = false; }
     inline void forgetJumpworkspace() { jumpworkspace_remember = false; }
     inline void forgetLayer() { layer_remember = false; }
@@ -60,9 +61,10 @@ public:
         { workspace = ws; workspace_remember = true; }
     inline void rememberDimensions(int width, int height) 
         { w = width; h = height; dimensions_remember = true; }
-
-    inline void rememberHiddenstate(bool state)
-        { hiddenstate= state; hiddenstate_remember= true; }
+    inline void rememberFocusHiddenstate(bool state)
+        { focushiddenstate= state; focushiddenstate_remember= true; }
+    inline void rememberIconHiddenstate(bool state)
+        { iconhiddenstate= state; iconhiddenstate_remember= true; }
     inline void rememberPosition(int posx, int posy, unsigned char rfc= 0 )
         { x = posx; y = posy; refc = rfc; position_remember = true; }
     inline void rememberShadedstate(bool state)
@@ -106,8 +108,11 @@ public:
     bool stuckstate_remember;
     bool stuckstate;
 
-    bool hiddenstate_remember;
-    bool hiddenstate;
+    bool focushiddenstate_remember;
+    bool focushiddenstate;
+
+    bool iconhiddenstate_remember;
+    bool iconhiddenstate;
 
     bool jumpworkspace_remember;
     bool jumpworkspace;
@@ -138,7 +143,8 @@ public:
     enum Attribute {
         REM_DECOSTATE= 0,
         REM_DIMENSIONS,
-        REM_HIDDENSTATE,
+        REM_FOCUSHIDDENSTATE,
+        REM_ICONHIDDENSTATE,
         REM_JUMPWORKSPACE,
         REM_LAYER,
         REM_POSITION,

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.43 2004/02/14 12:15:35 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.44 2004/02/20 09:05:38 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -174,7 +174,8 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
              */
             if (atoms[l] == m_net_wm_window_type_dock) {
                 // we also assume it shouldn't be visible in any toolbar
-                win.setHidden(true);
+                win.setFocusHidden(true);
+                win.setIconHidden(true);
                 break;
             }
 
@@ -722,7 +723,8 @@ void Ewmh::setState(FluxboxWindow &win, Atom state, bool value) {
         setFullscreen(win, value);
     } else if (state == m_net_wm_state_hidden ||
                state == m_net_wm_state_skip_taskbar) {        
-        win.setHidden(value);
+        win.setFocusHidden(value);
+        win.setIconHidden(win.isFocusHidden());
     } else if (state == m_net_wm_state_below) {
         if (value)
             win.moveToLayer(Fluxbox::instance()->getBottomLayer());
@@ -752,7 +754,8 @@ void Ewmh::toggleState(FluxboxWindow &win, Atom state) {
         setFullscreen(win, getState(win) == 0); // toggle current state
     } else if (state == m_net_wm_state_hidden ||
                state == m_net_wm_state_skip_taskbar) {
-        win.setHidden(!win.isHidden());
+        win.setFocusHidden(!win.isFocusHidden());
+        win.setIconHidden(!win.isIconHidden());
     } else if (state == m_net_wm_state_below) {
         if (win.layerNum() == Fluxbox::instance()->getBottomLayer())
             win.moveToLayer(Fluxbox::instance()->getNormalLayer());

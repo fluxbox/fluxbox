@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.33 2004/01/19 18:36:27 fluxgen Exp $
+// $Id: Gnome.cc,v 1.34 2004/02/20 09:05:38 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -369,7 +369,10 @@ void Gnome::setState(FluxboxWindow *win, int state) {
         win->shade();
 
     if (state & WIN_STATE_HIDDEN)
-        win->setHidden(! win->isHidden());
+    {
+        win->setFocusHidden(! win->isFocusHidden());
+        win->setIconHidden(! win->isIconHidden());
+    }
 
 
     /*   

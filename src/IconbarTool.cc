@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.33 2004/02/16 10:26:03 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.34 2004/02/20 09:05:24 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -211,7 +211,7 @@ inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
         break;
     }
 
-    if (win.isHidden())
+    if (win.isIconHidden())
         ret_val = false;
 
     return ret_val;
@@ -682,7 +682,7 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
 
 void IconbarTool::addWindow(FluxboxWindow &win) {
     // we just want windows that has clients
-    if (win.clientList().empty() || win.isHidden() )
+    if (win.clientList().empty() || win.isIconHidden() )
         return;
 
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);

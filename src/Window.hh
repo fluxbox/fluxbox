@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.108 2004/02/16 20:47:51 fluxgen Exp $
+// $Id: Window.hh,v 1.109 2004/02/20 09:07:27 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -207,7 +207,8 @@ public:
     void raiseLayer();
     void lowerLayer();
     void moveToLayer(int layernum);
-    void setHidden(bool value);
+    void setFocusHidden(bool value);
+    void setIconHidden(bool value);
     void reconfigure();
 
 
@@ -262,7 +263,8 @@ public:
        @name accessors		
     */
     //@{
-    inline bool isHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
+    inline bool isFocusHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
+    inline bool isIconHidden() const { return m_icon_hidden; } 
     inline bool isManaged() const { return m_managed; }
     inline bool isFocused() const { return focused; }
     bool isVisible() const;
@@ -468,7 +470,7 @@ private:
     } functions;
 
     bool m_shaped; ///< if the window is shaped with a mask
-
+    bool m_icon_hidden;  ///< if the window is in the iconbar 
     int m_old_pos_x, m_old_pos_y; ///< old position so we can restore from maximized
     unsigned int m_old_width, m_old_height; ///< old size so we can restore from maximized state
     int m_last_button_x, ///< last known x position of the mouse button
