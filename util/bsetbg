@@ -311,7 +311,7 @@ create_config()
     case $UID in 0)
 	if [ "$ARGUMENT" != "-r" ]; then
 	    echo "$NAME: running X as root is a security hazard, and is NOT a good idea!"
-	    echo "$NAME: if you insist upon having a ~/.bsetbgrc for root, run bsetbg with"
+	    echo "$NAME: if you insist upon having a ~/.fluxbox/bsetbg for root, run bsetbg with"
 	    echo "$NAME: the '-r' flag to force its creation. you have been warned!"
 	    exit 1
 	fi
@@ -334,6 +334,10 @@ create_config()
     if [ -z "$FULL" ] || [ -z "TILE" ] || [ -z "$CENTER" ]; then
 	rm -f $TMPFILE
 	INFO= && error_msg 3
+    fi
+
+    if [ ! -d ~/.fluxbox ]; then
+    	mkdir ~/.fluxbox
     fi
 
     echo "# $CONFIG" >> $CONFIG
@@ -601,7 +605,7 @@ debug()
 }
 
 IMAGE_APPS="display Esetroot wmsetbg xv xli qiv"
-CONFIG="$HOME/.bsetbgrc"
+CONFIG="$HOME/.fluxbox/bsetbg"
 NAME=bsetbg
 VERSION=1.12
 MORE="(C) 2000 by lordzork industries (http://lordzork.com/)"
