@@ -47,6 +47,13 @@
 WHOAMI=`whoami`
 [ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
+# Check for Imlib2-support
+if ( fluxbox -info 2> /dev/null | grep -- -IMLIB ); then
+    PNG_ICONS="no"
+else
+    PNG_ICONS="yes"
+fi
+
 # Functions
 display_usage() {
     cat << EOF
@@ -146,10 +153,20 @@ append() {
     if [ -z "${INSTALL}" ]; then
         echo -n "      $*" >> ${MENUFILENAME}
         execname="`echo $*|cut -d\( -f2|cut -d\) -f1`"
-        if [ -r "${HOME}/.fluxbox/icons/$execname.xpm" ]; then
-            echo "<${HOME}/.fluxbox/icons/$execname.xpm>"  >> ${MENUFILENAME}
+        if [ "${PNG_ICONS}" = "no" ]; then
+            if [ -r "${HOME}/.fluxbox/icons/$execname.xpm" ]; then
+                echo "<${HOME}/.fluxbox/icons/$execname.xpm>"  >> ${MENUFILENAME}
+            else
+                echo >> ${MENUFILENAME}
+            fi
         else
-            echo >> ${MENUFILENAME}
+            if [ -r "${HOME}/.fluxbox/icons/$execname.png" ]; then
+                echo "<${HOME}/.fluxbox/icons/$execname.png>"  >> ${MENUFILENAME}
+            elif [ -r "${HOME}/.fluxbox/icons/$execname.xpm" ]; then
+                echo "<${HOME}/.fluxbox/icons/$execname.xpm>"  >> ${MENUFILENAME}
+            else
+                echo >> ${MENUFILENAME}
+            fi
         fi
     else
         echo "      $*" >> ${MENUFILENAME}
