@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.2 2003/01/07 02:10:24 fluxgen Exp $
+// $Id: Menu.cc,v 1.3 2003/01/09 16:45:21 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -104,7 +104,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, BImageControl &imgctrl):
     unsigned long attrib_mask = CWOverrideRedirect | CWEventMask;
     XSetWindowAttributes attrib;
     attrib.override_redirect = True;
-    attrib.event_mask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | ExposureMask;
+    attrib.event_mask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | KeyPressMask | ExposureMask;
 #ifdef DEBUG
     cerr<<__FILE__<<": Creating menu("<<menu.width<<", "<<menu.height<<")"<<endl;
 #endif // DEBUG    
@@ -177,18 +177,14 @@ int Menu::insert(const char *label, RefCount<Command> &cmd, int pos) {
         menuitems.insert(menuitems.begin() + pos, item);
     }
 }
-
-int Menu::insert(const char *label, int function, const char *exec, int pos) {
-    MenuItem *item = new MenuItem(label, function, exec);
-    if (pos == -1) {
+int Menu::insert(const char *label, int pos) {
+    MenuItem *item = new MenuItem(label);
+    if (pos == -1)
         menuitems.push_back(item);
-    } else {
+    else
         menuitems.insert(menuitems.begin() + pos, item);
-    }
-
     return menuitems.size();
 }
-
 
 int Menu::insert(const char *label, Menu *submenu, int pos) {
     MenuItem *item = new MenuItem(label, submenu);
@@ -507,19 +503,19 @@ void Menu::drawSubmenu(unsigned int index) {
 			
             int sbl = index / menu.persub, i = index - (sbl * menu.persub),
                 x = menu.x +
-                ((menu.item_w * (sbl + 1)) + m_border_width), y;
+                ((menu.item_w * (sbl + 1)) + menu.window.borderWidth()), y;
 		
             if (m_alignment == ALIGNTOP) {
                 y = (((shifted) ? menu.y_shift : menu.y) +
                      ((title_vis) ? menu.title_h + m_border_width : 0) -
                      ((item->submenu()->title_vis) ?
-                      item->submenu()->menu.title_h + m_border_width : 0));
+                      item->submenu()->menu.title_h + menu.window.borderWidth() : 0));
             } else {
                 y = (((shifted) ? menu.y_shift : menu.y) +
                      (menu.item_h * i) +
-                     ((title_vis) ? menu.title_h + m_border_width : 0) -
+                     ((title_vis) ? menu.title_h + menu.window.borderWidth() : 0) -
                      ((item->submenu()->title_vis) ?
-                      item->submenu()->menu.title_h + m_border_width : 0));
+                      item->submenu()->menu.title_h + menu.window.borderWidth() : 0));
             }
 			
             if (m_alignment == ALIGNBOTTOM &&
@@ -531,7 +527,7 @@ void Menu::drawSubmenu(unsigned int index) {
 
             if ((x + item->submenu()->width()) > m_screen_width) {
                 x = ((shifted) ? menu.x_shift : menu.x) -
-                    item->submenu()->width() - m_border_width;
+                    item->submenu()->width() - menu.window.borderWidth();
             }
 			
             if (x < 0)
@@ -539,7 +535,7 @@ void Menu::drawSubmenu(unsigned int index) {
 
             if ((y + item->submenu()->height()) > m_screen_height) {
                 y = m_screen_height - item->submenu()->height() -
-                    m_border_width * 2;
+                    menu.window.borderWidth() * 2;
             }
 			
             if (y < 0)
@@ -1023,12 +1019,11 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
 
 
 void Menu::reconfigure() {
-    //!! TODO
-    //   menu.window.setBackgroundColor(*m_screen->getBorderColor());
-    //   menu.window.setBorderColor(*m_screen->getBorderColor());
-    //   menu.window.setBorderWidth(m_screen->getBorderWidth());
-
-    //    menu.bevel_w = m_screen->getBevelWidth();
+    menu.window.setBackgroundColor(m_theme.borderColor());
+    menu.window.setBorderColor(m_theme.borderColor());
+    menu.window.setBorderWidth(m_theme.borderWidth());
+    menu.bevel_w = m_theme.bevelWidth();
+    m_border_width = menu.window.borderWidth();
     update();
 }
 
