@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.5 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.6 2002/01/21 01:56:39 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -73,4 +73,54 @@ char *StringUtil::expandFilename(const char *filename) {
     return StringUtil::strdup(filename);	//return unmodified value
   
   return StringUtil::strdup(retval.get());	//return modified value
+}
+
+//------------- getStringBetween -----------
+// Parses a string between "first" and "last" characters
+// and ignoring ok_chars as whitespaces. The value is
+// returned in "out".
+// Returns negative value on error and this value is the position 
+// in the in-string where the error occured.
+// Returns positive value on success and this value is
+// for the position + 1 in the in-string where the "last"-char value
+// was found.
+//------------------------------------------
+int StringUtil::getStringBetween(string& out, const char *instr, const char first, const char last,
+			const char *ok_chars) {
+	assert(first);
+	assert(last);
+	assert(instr);
+	
+	string::size_type i = 0, 
+		total_add=0; //used to add extra if there is a \last to skip
+	string in(instr);
+	
+	// eat leading whitespace
+	i = in.find_first_not_of(ok_chars);
+	if (i == string::npos)
+		return -in.size();   // nothing left but whitespace
+
+	if (in[i]!=first)		
+		return -i; //return position to error	
+
+	// find the end of the token
+	string::size_type j = i;
+	while (1) {
+		j = in.find_first_of(last, j+1);
+		if (j==string::npos)
+			return -in.size(); //send negative size
+
+		//we found the last char, check so it doesn't have a '\' before
+		if (j>1 && in[j-1] != '\\')	
+			break;
+		else if (j>1) {
+			in.erase(j-1, 1); //remove the '\'
+			j--;
+			total_add++; //save numchars removed so we can calculate totalpos
+		}
+	}
+
+	out = in.substr(i+1, j-i-1); //copy the string between first and last		
+	//return value to last character
+	return (j+1+total_add);
 }
