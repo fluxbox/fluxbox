@@ -1,5 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/25:
+   * Added window icon for FbRun (Henrik)
+     fbrun.xpm, FbRun.hh/cc
+*03/08/24:
+   * Fixed transparent bug in Menus (submenu) (Henrik)
+     Menu.cc
+   * Fixed so shaped windows like xmms wont get theme  (Henrik)
+     specified shape (round corners) 
+   * Added file Compose.hh (Henrik)
+   * Fixed randr support in toolbar (Henrik)
+     Toolbar.cc, Screen.hh/cc
 *03/08/23:
    * Fixed autohide and menu in Toolbar (Henrik)
      Toolbar.cc, EventManager.hh/cc, WorkspaceNameTool.hh
