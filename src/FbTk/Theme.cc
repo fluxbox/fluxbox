@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.10 2003/08/11 14:54:18 fluxgen Exp $
+// $Id: Theme.cc,v 1.11 2003/08/13 09:24:02 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -103,16 +103,18 @@ template <>
 void ThemeItem<FbTk::Font>::load() {
 }
 
+template <>
+void ThemeItem<FbTk::Texture>::setDefaultValue() {
+    m_value.setType(FbTk::Texture::FLAT | FbTk::Texture::SOLID);
+}
 
 template <>
 void ThemeItem<FbTk::Texture>::setFromString(const char *str) {
     m_value.setFromString(str);
+    if (m_value.type() == 0) // failed to set value
+        setDefaultValue();
 }
 
-template <>
-void ThemeItem<FbTk::Texture>::setDefaultValue() {
-    m_value.setType(0);
-}
 
 template <>
 void ThemeItem<FbTk::Texture>::load() {
@@ -123,8 +125,14 @@ void ThemeItem<FbTk::Texture>::load() {
     string pixmap_name(ThemeManager::instance().
                        resourceValue(name()+".pixmap", altName()+".Pixmap"));
 
-    m_value.color().setFromString(color_name.c_str(), m_tm.screenNum());
-    m_value.colorTo().setFromString(colorto_name.c_str(), m_tm.screenNum());
+
+    // set default value if we failed to load color
+    if (!m_value.color().setFromString(color_name.c_str(), m_tm.screenNum()))
+        m_value.color().setFromString("darkgray", m_tm.screenNum());
+
+    if (!m_value.colorTo().setFromString(colorto_name.c_str(), m_tm.screenNum()))
+        m_value.colorTo().setFromString("white", m_tm.screenNum());
+            
 
 #ifdef HAVE_XPM
     XpmAttributes xpm_attr;
@@ -233,25 +241,28 @@ bool ThemeManager::load(const std::string &filename) {
 }
 
 void ThemeManager::loadTheme(Theme &tm) {
-	
-    XrmValue value;
-    char *value_type;
-    
     std::list<ThemeItem_base *>::iterator i = tm.itemList().begin();
     std::list<ThemeItem_base *>::iterator i_end = tm.itemList().end();
     for (; i != i_end; ++i) {
         ThemeItem_base *resource = *i;
-        if (XrmGetResource(*m_database, resource->name().c_str(),
-                           resource->altName().c_str(), &value_type, &value)) {
-            resource->setFromString(value.addr);
-            resource->load(); // load additional stuff by the ThemeItem
-        } else {
-            cerr<<"Failed to read theme item: "<<resource->name()<<endl;
-            cerr<<"Setting default value"<<endl;
-            resource->setDefaultValue();
-        }
+        loadItem(*resource);
     }
     // send reconfiguration signal to theme and listeners
+}
+
+void ThemeManager::loadItem(ThemeItem_base &resource) {
+    XrmValue value;
+    char *value_type;
+
+    if (XrmGetResource(*m_database, resource.name().c_str(),
+                       resource.altName().c_str(), &value_type, &value)) {
+        resource.setFromString(value.addr);
+        resource.load(); // load additional stuff by the ThemeItem
+    } else {
+        cerr<<"Failed to read theme item: "<<resource.name()<<endl;
+        cerr<<"Setting default value"<<endl;
+        resource.setDefaultValue();
+    }
 }
 
 std::string ThemeManager::resourceValue(const std::string &name, const std::string &altname) {
