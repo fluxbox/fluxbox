@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.23 2003/10/05 09:03:43 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.24 2003/10/28 02:17:02 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -228,7 +228,7 @@ private:
     FbTk::FbWindow m_handle; ///< handle between grips
     FbTk::FbWindow m_grip_right,  ///< rightgrip
         m_grip_left; ///< left grip
-    FbTk::FbWindow m_clientarea; ///< window that holds client window @see setClientWindow
+    FbTk::FbWindow m_clientarea; ///< window that sits behind client window to fill gaps @see setClientWindow
     //@}
     typedef std::vector<FbTk::Button *> ButtonList;
     ButtonList m_buttons_left, ///< buttons to the left

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.59 2003/10/09 16:48:09 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.60 2003/10/28 02:17:02 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -367,15 +367,17 @@ void FbWinFrame::setClientWindow(Window win) {
     XSetWindowBorderWidth(display, win, 0);
 
     XChangeSaveSet(display, win, SetModeInsert);
-    
-    XSelectInput(display, m_clientarea.window(), NoEventMask);
+
+    XSelectInput(display, m_window.window(), NoEventMask);
+
     // we need to mask this so we don't get unmap event
     XSelectInput(display, win, NoEventMask);
-    XReparentWindow(display, win, m_clientarea.window(), 0, 0);
+    XReparentWindow(display, win, m_window.window(), 0, m_clientarea.y());
     // remask window so we get events
     XSelectInput(display, win, PropertyChangeMask | StructureNotifyMask | 
                  FocusChangeMask);
-    XSelectInput(display, m_clientarea.window(), SubstructureRedirectMask);
+    XSelectInput(display, m_window.window(), ButtonPressMask | ButtonReleaseMask |
+                 ButtonMotionMask | EnterWindowMask | SubstructureRedirectMask);
 
     XFlush(display);
 
@@ -387,8 +389,8 @@ void FbWinFrame::setClientWindow(Window win) {
     XChangeWindowAttributes(display, win, CWEventMask|CWDontPropagate, &attrib_set);
 
     m_clientarea.raise();
-    m_clientarea.showSubwindows();
-
+    XRaiseWindow(display, win);
+    m_window.showSubwindows();
 }
 
 bool FbWinFrame::hideTitlebar() {
@@ -397,7 +399,6 @@ bool FbWinFrame::hideTitlebar() {
 
     m_titlebar.hide();
     m_use_titlebar = false;
-    m_clientarea.raise();
 
     // only take away one borderwidth (as the other border is still the "top" border)
     m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
@@ -623,8 +624,12 @@ void FbWinFrame::reconfigure() {
                        gripLeft().height());
 
     // align titlebar and render it
-    if (m_use_titlebar)
+    if (m_use_titlebar) {
         reconfigureTitlebar();
+        m_titlebar.raise();
+    } else 
+        m_titlebar.lower();
+
 
     // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
     if (!m_shaded) {
@@ -644,10 +649,8 @@ void FbWinFrame::reconfigure() {
         m_clientarea.moveResize(0, client_top,
                                 m_window.width(), client_height);
         
-        
         if (m_use_handle) {
 
-        
             // align handle and grips
             const int grip_height = m_handle.height();
             const int grip_width = 20; //TODO
@@ -662,8 +665,12 @@ void FbWinFrame::reconfigure() {
 
             m_grip_right.moveResize(m_handle.width() - grip_width - handle_bw, -handle_bw,
                                     grip_width, grip_height);
+            m_handle.raise();
+        } else {
+            m_handle.lower();
         }
-    }        
+    }
+
 
     // render the theme
     renderButtons();

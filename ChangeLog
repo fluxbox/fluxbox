@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/27:
+  * Change FbWinFrame to NOT reparent client windows into clientarea (Simon)
+    - fixes (I think) java bug with missing drawing bits of window
+    - allows us to remove some dodgy "and for parent" hacks (not done in 
+      this patch, but will be in new action system which depends on this)
+    - clientarea still exists for future implementation of improved 
+      sizing, particularly to provide a backing to clients that don't 
+      take up the whole area.
+      FbWinFrame.hh/cc Window.hh/cc fluxbox.cc
 *03/10/26:
   * Fixed bug in FbWindow::setNew  (Henrik)
     It didn't update member variables

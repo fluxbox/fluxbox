@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.242 2003/10/26 20:59:07 fluxgen Exp $
+// $Id: Window.cc,v 1.243 2003/10/28 02:17:02 rathnor Exp $
 
 #include "Window.hh"
 
@@ -467,12 +467,12 @@ void FluxboxWindow::init() {
 
     upsize();
 
-    associateClientWindow();
+    applyDecorations(true);
+
+    associateClientWindow(true, wattrib.x, wattrib.y, wattrib.width, wattrib.height);
 
     grabButtons();
 		
-    applyDecorations(true);
-
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
         m_workspace_number = screen().currentWorkspaceID();
 
@@ -503,9 +503,6 @@ void FluxboxWindow::init() {
         wattrib.width = 1;
     if (wattrib.height <= 0)
         wattrib.height = 1;
-
-    frame().moveResizeForClient(wattrib.x, wattrib.y,
-                                wattrib.width, wattrib.height);
 
     // if we're a transient then we should be on the same layer as our parent
     if (m_client->isTransient() && 
@@ -558,7 +555,7 @@ void FluxboxWindow::init() {
     if (m_shaped)
         shape();
 
-
+    XSync(display, false);
 }
 
 /// apply shape to this window
@@ -607,9 +604,11 @@ void FluxboxWindow::attachClient(WinClient &client) {
             
             // reparent window to this
             frame().setClientWindow(**client_it);
-            resizeClient(**client_it, 
-                         frame().clientArea().width(),
-                         frame().clientArea().height());
+            moveResizeClient(**client_it, 
+                             frame().clientArea().x(),
+                             frame().clientArea().y(),
+                             frame().clientArea().width(),
+                             frame().clientArea().height());
 
             (*client_it)->m_win = this;
             // create a labelbutton for this client and 
@@ -910,22 +909,27 @@ bool FluxboxWindow::isGroupable() const {
     return false;
 }
 
-void FluxboxWindow::associateClientWindow() {
+void FluxboxWindow::associateClientWindow(bool use_attrs, int x, int y, unsigned int width, unsigned int height) {
     m_client->setBorderWidth(0);
     updateTitleFromClient(*m_client);
     updateIconNameFromClient(*m_client);
 
+    if (use_attrs)
+        frame().moveResizeForClient(x, y,
+                                    width, height);
+    else
+        frame().resizeForClient(m_client->width(), m_client->height());
+
     frame().setClientWindow(*m_client);
-    frame().resizeForClient(m_client->width(), m_client->height());
 }
 
 
 void FluxboxWindow::grabButtons() {
 
     XGrabButton(display, Button1, AnyModifier, 
-		frame().clientArea().window(), True, ButtonPressMask,
+		frame().window().window(), True, ButtonPressMask,
 		GrabModeSync, GrabModeSync, None, None);		
-    XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame().clientArea().window());
+    XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame().window().window());
 
 
     XGrabButton(display, Button1, Mod1Mask, frame().window().window(), True,
@@ -2268,13 +2272,13 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             setInputFocus(); 
         }
 
-        if (frame().clientArea() == be.window) {            
+        if (frame().window().window() == be.window) {            
             if (screen().clickRaises())
                 raise();
             XAllowEvents(display, ReplayPointer, be.time);			
-        } else {            
+
             m_button_grab_x = be.x_root - frame().x() - frame().window().borderWidth();
-            m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();      
+            m_button_grab_y = be.y_root - frame().y() - frame().window().borderWidth();
         }
         
         if (m_windowmenu.isVisible())
@@ -2668,7 +2672,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
     }
 
     frame().reconfigure();
-    if (client_move)
+    if (!initial && client_move)
         sendConfigureNotify();
 }
 
@@ -3234,10 +3238,11 @@ void FluxboxWindow::fixsize(int *user_w, int *user_h) {
 
 }
 
-void FluxboxWindow::resizeClient(WinClient &client, 
+void FluxboxWindow::moveResizeClient(WinClient &client, int x, int y,
                                  unsigned int height, unsigned int width) {
-    client.resize(frame().clientArea().width(),
-                  frame().clientArea().height());
+    client.moveResize(x, y,
+                      frame().clientArea().width(),
+                      frame().clientArea().height());
     client.updateRect(frame().x() + frame().clientArea().x(),
                       frame().y() + frame().clientArea().y(),
                       frame().clientArea().width(),
@@ -3256,29 +3261,29 @@ void FluxboxWindow::sendConfigureNotify(bool send_to_netizens) {
         //!!
         client.x = frame().x();
         client.y = frame().y();
-        resizeClient(client, 
+        moveResizeClient(client, 
+                     frame().clientArea().x(),
+                     frame().clientArea().y(),
                      frame().clientArea().width(),
                      frame().clientArea().height());
 
-        
-        XEvent event;
-        event.type = ConfigureNotify;
+        if (send_to_netizens) {
+            XEvent event;
+            event.type = ConfigureNotify;
 
-        event.xconfigure.display = display;
-        event.xconfigure.event = client.window();
-        event.xconfigure.window = client.window();
-        event.xconfigure.x = frame().x() + frame().clientArea().x();
-        event.xconfigure.y = frame().y() + frame().clientArea().y();
-        event.xconfigure.width = client.width();
-        event.xconfigure.height = client.height();
-        event.xconfigure.border_width = client.old_bw;
-        event.xconfigure.above = frame().window().window();
-        event.xconfigure.override_redirect = false;
+            event.xconfigure.display = display;
+            event.xconfigure.event = client.window();
+            event.xconfigure.window = client.window();
+            event.xconfigure.x = frame().x() + frame().clientArea().x();
+            event.xconfigure.y = frame().y() + frame().clientArea().y();
+            event.xconfigure.width = client.width();
+            event.xconfigure.height = client.height();
+            event.xconfigure.border_width = client.old_bw;
+            event.xconfigure.above = frame().window().window();
+            event.xconfigure.override_redirect = false;
 
-        XSendEvent(display, client.window(), False, StructureNotifyMask, &event);
-
-        if (send_to_netizens)
             screen().updateNetizenConfigNotify(event);
+        }
     } // end for        
 }
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.99 2003/10/06 06:22:43 rathnor Exp $
+// $Id: Window.hh,v 1.100 2003/10/28 02:17:03 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -388,7 +388,7 @@ private:
     void updateBlackboxHintsFromClient(WinClient &client);
     void saveBlackboxAttribs();
     void setNetWMAttributes();
-    void associateClientWindow();
+    void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1);
 
     void restoreGravity();
     void setGravityOffsets();
@@ -400,7 +400,7 @@ private:
     void doSnapping(int &left, int &top);
     // user_w/h return the values that should be shown to the user
     void fixsize(int *user_w = 0, int *user_h = 0);
-    void resizeClient(WinClient &client, unsigned int width, unsigned int height);
+    void moveResizeClient(WinClient &client, int x, int y, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);
     // state and hint signals

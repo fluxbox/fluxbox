@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.200 2003/10/14 16:23:15 rathnor Exp $
+// $Id: fluxbox.cc,v 1.201 2003/10/28 02:17:03 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -560,11 +560,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         screen->workspaceCountSig().attach(this);
         screen->workspaceNamesSig().attach(this);
         screen->clientListSig().attach(this);
-		
+
         // initiate atomhandler for screen specific stuff
         for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
             m_atomhandler[atomh]->initForScreen(*screen);
         }
+        revertFocus(*screen, false); // make sure focus style is correct
 
     }
     m_keyscreen = m_mousescreen = m_screen_list.front();
