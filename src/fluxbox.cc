@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.119 2003/04/26 05:42:36 rathnor Exp $
+// $Id: fluxbox.cc,v 1.120 2003/04/27 00:36:28 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -682,9 +682,12 @@ void Fluxbox::handleEvent(XEvent * const e) {
             win->mapRequestEvent(e->xmaprequest);
     }
         break;
-    case MapNotify:
-        // handled directly in FluxboxWindow::handleEvent    
-        break;
+    case MapNotify: {
+        // handled directly in FluxboxWindow::handleEvent
+        FluxboxWindow *win = searchWindow(e->xmap.window);
+        if (win)
+            win->mapNotifyEvent(e->xmap);
+    } break;
     case UnmapNotify:
         handleUnmapNotify(e->xunmap);
 	break;	
