@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.30 2003/07/10 11:36:21 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.31 2003/07/26 16:17:01 rathnor Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -913,4 +913,23 @@ void FbWinFrame::renderLabelButtons() {
         m_current_label->clear();
     }
     
+}
+
+void FbWinFrame::setBorderWidth(unsigned int borderW) {
+    int bw_changes = 0;
+    // we need to change the size of the window 
+    // if the border width changes...
+    if (m_use_titlebar) 
+        bw_changes += (signed) borderW - titlebar().borderWidth();
+    if (m_use_handle) 
+        bw_changes += (signed) borderW - handle().borderWidth();
+
+    window().setBorderWidth(borderW);
+    titlebar().setBorderWidth(borderW);
+    handle().setBorderWidth(borderW);
+    gripLeft().setBorderWidth(borderW);
+    gripRight().setBorderWidth(borderW);
+
+    if (bw_changes != 0)
+        resize(width(), height() + bw_changes);
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.210 2003/07/24 03:19:02 rathnor Exp $
+// $Id: Window.cc,v 1.211 2003/07/26 16:17:01 rathnor Exp $
 
 #include "Window.hh"
 
@@ -504,7 +504,7 @@ void FluxboxWindow::init() {
 
     grabButtons();
 		
-    applyDecorations();
+    applyDecorations(true);
 
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
         m_workspace_number = screen().currentWorkspaceID();
@@ -2678,21 +2678,15 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 }
 
 // commit current decoration values to actual displayed things
-void FluxboxWindow::applyDecorations() {
+void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
 
     unsigned int borderW = 0;
     if (decorations.border) 
         borderW = screen().rootTheme().borderWidth();
 
-    if (frame().window().borderWidth() != borderW) {
-        frame().window().setBorderWidth(borderW);
-        frame().titlebar().setBorderWidth(borderW);
-        frame().handle().setBorderWidth(borderW);
-        frame().gripLeft().setBorderWidth(borderW);
-        frame().gripRight().setBorderWidth(borderW);
-        frame().reconfigure();
-    }
+    if (initial || frame().window().borderWidth() != borderW)
+        frame().setBorderWidth(borderW);
 
     // we rely on frame not doing anything if it is already shown/hidden
     if (decorations.titlebar) 
@@ -2700,9 +2694,10 @@ void FluxboxWindow::applyDecorations() {
     else
         frame().hideTitlebar();
 
-    if (decorations.handle)
+    if (decorations.handle) {
         frame().showHandle();
-    else
+        frame().reconfigure(); // show handle requires reconfigure
+    } else
         frame().hideHandle();
 
 }
@@ -2713,15 +2708,15 @@ void FluxboxWindow::toggleDecoration() {
         return;
 	
     if (decorations.enabled) { //remove decorations
-        setDecoration(DECOR_NONE); 
         decorations.enabled = false;
+        setDecoration(DECOR_NONE); 
     } else { //revert back to old decoration
+        decorations.enabled = true;
         if (m_old_decoration == DECOR_NONE) { // make sure something happens
             setDecoration(DECOR_NORMAL);
         } else {
             setDecoration(m_old_decoration);
         }
-        decorations.enabled = true;
     }
 }
 

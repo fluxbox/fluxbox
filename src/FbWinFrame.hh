@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.9 2003/07/10 11:36:21 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.10 2003/07/26 16:17:01 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -112,6 +112,8 @@ public:
     void showHandle();
     void hideAllDecorations();
     void showAllDecorations();
+
+    void setBorderWidth(unsigned int borderW);
 
     /**
        @name Event handlers
