@@ -24,6 +24,7 @@
 struct StringUtil
 {
 	static char *strdup(const char *);
+	static const char *strcasestr(const char *str, const char *ptn);
 	static char *expandFilename(const char *filename);
 };
 

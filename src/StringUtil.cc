@@ -35,6 +35,19 @@ char *StringUtil::strdup(const char *s) {
   return n;
 }
 
+//------- strcasestr --------------
+// TODO: comment this
+//---------------------------------
+const char * StringUtil::strcasestr(const char *str, const char *ptn) {
+	const char *s2, *p2;
+	for( ; *str; str++) {
+		for(s2=str,p2=ptn; ; s2++,p2++) {
+			if (!*p2) return str;
+			if (toupper(*s2) != toupper(*p2)) break;
+		}
+	}
+	return 0;
+}
 
 //------------- expandFilename ----------------------
 // if ~ then expand it to home of user
