@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.15 2004/03/03 07:43:38 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.16 2004/03/16 17:34:58 fluxgen Exp $
 
 #
 # Portability notes:
@@ -1289,21 +1289,23 @@ if [ ! "${REMOVE}" ]; then
 fi
 
 # Signal all running fluxbox'es to reload their menu.
-case `uname` in
-    *BSD|Linux)
-        for i in `ps xco pid,command|awk '/fluxbox$/ {print $1}'`; do
-            kill -s USR2 $i 2>&1 >/dev/null
-        done
-        ;;
-    SunOS)
-        for i in `ps -eco pid,comm|awk '/fluxbox$/ {print $1}'`; do
-            kill -s USR2 $i 2>&1 >/dev/null
-        done
-        ;;
-    *)
-        echo 'You have to reload the settings manually.'
-        ;;
-esac
+if [ ! "${INSTALL}" = Yes ]; then
+    case `uname` in
+        *BSD|Linux)
+            for i in `ps xco pid,command|awk '/fluxbox$/ {print $1}'`; do
+                kill -s USR2 $i 2>&1 >/dev/null
+            done
+            ;;
+        SunOS)
+            for i in `ps -eco pid,comm|awk '/fluxbox$/ {print $1}'`; do
+                kill -s USR2 $i 2>&1 >/dev/null
+            done
+            ;;
+        *)
+            echo 'You have to reload the settings manually.'
+            ;;
+    esac
+fi
 
 echo 'Menu successfully generated.'
 echo 'Use fluxbox-generate_menu -h to read about all the latest features.'
