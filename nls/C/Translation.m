@@ -1,3 +1,4 @@
+$ codeset=ISO-8859-1
 
 $set 1 #Align
 
@@ -61,6 +62,11 @@ $set 4 #Configmenu
 13 Semi Sloppy Focus
 14 Sloppy Focus
 15 Workspace Warping
+16 Force Pseudo-Transparency
+17 Menu Alpha
+18 Transparency
+19 Focused Window Alpha
+20 Unfocused Window Alpha
 
 $set 5 #Ewmh
 
@@ -138,6 +144,7 @@ $set 11 #Remember
 9 Sticky
 10 Unknown apps key
 11 Workspace
+12 Head
 
 $set 12 #Screen
 
@@ -158,6 +165,7 @@ $set 13 #Slit
 6 Slit on Head
 7 Slit Placement
 8 Slit
+9 Save SlitList
 
 $set 14 #Toolbar
 
@@ -173,6 +181,10 @@ $set 14 #Toolbar
 10 Toolbar Placement
 11 Toolbar
 12 Toolbar width percent
+13 Clock: 24h
+14 Clock: 12h
+15 Edit Clock Format
+16 Show Pictures
 
 $set 15 #Window
 
@@ -189,6 +201,7 @@ $set 16 #Windowmenu
 7 Send To ...
 8 Shade
 9 Stick
+10 Kill
 
 $set 17 #Workspace
 
@@ -232,5 +245,15 @@ $set 19 #main
 -info\t\t\t\tdisplay some useful information.\n\
 -log <filename>\t\t\tlog output to file.\n\
 -help\t\t\t\tdisplay this help text and exit.\n\n
+13 warning: couldn't set environment variable 'DISPLAY'
+
+$set 20
+
+1 Above Dock
+2 Bottom
+3 Desktop
+4 Dock
+5 Normal
+6 Top
 
 

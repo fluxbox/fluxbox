@@ -1,6 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *05/01/02:
+  * Updated pl_PL (thanx to Meltir <meltir at wp.pl> and Cheester <czester at gmail.com>)
   * Fixed restart/memory problems with Imlib2 (Mathias)
     FbTk/Image.cc FbTk/ImageImlib2.cc
 *04/12/30:

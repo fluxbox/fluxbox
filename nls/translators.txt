@@ -15,10 +15,12 @@ Adding a new translation
 7. run ./configure
      
 
+    Details regarding the meaning of all of the positions & default values
+    are listed in Translation.m.desc
 
 List of translators contrubutors
 --------------------------------
 
-pl_PL: offtza@gazeta.pl
+pl_PL: Meltir and Cheester <meltir@wp.pl> <czester@gmail.com>, offtza@gazeta.pl
 nl_NL: Han Boetes <han@mijncomputer.nl>
 sl_SI: Ales Jagodnik <ales.jagodnik@siol.net>
