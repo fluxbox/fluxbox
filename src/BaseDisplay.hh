@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.34 2002/12/01 13:41:54 rathnor Exp $
+// $Id: BaseDisplay.hh,v 1.35 2003/01/09 21:54:51 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -42,17 +42,13 @@ extern	"C" {
 #include <list>
 #include <vector>
 
-// forward declaration
 class ScreenInfo;
 
 #define PropBlackboxHintsElements		(5)
 #define PropBlackboxAttributesElements	(8)
 
-/// obsolete
-void bexec(const char *command, char *displaystring);
-/**
-	Singleton class to manage display connection
-*/
+
+///	Singleton class to manage display connection
 class BaseDisplay:public FbTk::App, private FbTk::NotCopyable
 {
 public:
