@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.73 2002/08/30 14:06:40 fluxgen Exp $
+// $Id: Window.cc,v 1.74 2002/08/30 16:07:17 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -380,10 +380,15 @@ FluxboxWindow::~FluxboxWindow() {
 		if (client.transient_for == this) {
 #ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): WARNING! client.transient_for == this WARNING!"<<endl;
+			assert(0);
 #endif //DEBUG
 			client.transient_for = 0;
+			
 		}
-		
+		if (client.transient == this) {
+			client.transient = 0;
+			assert(0);
+		}
 		fluxbox->setFocusedWindow(client.transient_for);
 	}
 	
@@ -3746,6 +3751,10 @@ void FluxboxWindow::destroyHandle() {
 }
 
 void FluxboxWindow::checkTransient() {
+	// default values
+	client.transient_for = 0;
+	client.transient = 0;
+	
 	Fluxbox *fluxbox = Fluxbox::instance();
 	// determine if this is a transient window
 	Window win;
@@ -3753,36 +3762,59 @@ void FluxboxWindow::checkTransient() {
 		client.transient_for = 0;
 		return;
 	}
+
+	if (win == client.window)
+		return;
+
 	if (win && (win != client.window)) {
-		FluxboxWindow *tr;
-		if ((tr = fluxbox->searchWindow(win))) {
-				
-			while (tr->client.transient) {
+		FluxboxWindow *tr = fluxbox->searchWindow(win);
+		if (tr != 0) {
+
+			while (tr->client.transient != 0) {
 				tr = tr->client.transient;
-				if (tr && tr == tr->client.transient) { //ops! something is wrong with transient
+				if (tr == tr->client.transient) { //ops! something is wrong with transient
 					tr->client.transient = 0;
+					if (tr->client.transient_for == tr)
+						tr->client.transient_for = 0;
+					break;
 				}
 			}
 			
-
-			client.transient_for = tr;
-			tr->client.transient = this;
-			stuck = client.transient_for->stuck;
-			transient = true;
+			if (tr != this) {
+				client.transient_for = tr;
+				tr->client.transient = this;
+				transient = true;
+			} else {
+				client.transient_for = 0;
+				client.transient = 0;
+			}			
+			if (client.transient_for != 0) {
+				stuck = client.transient_for->stuck;
+			}
+			
 		} else if (win == client.window_group) {
 			if ((tr = fluxbox->searchGroup(win, this))) {
 					
-				while (tr->client.transient) {
+				while (tr->client.transient != 0) {
 					tr = tr->client.transient;
 					if (tr && tr == tr->client.transient) { //ops! somehtin is wrong with transient
 						tr->client.transient = 0;
 					}
 				}
-					
-				client.transient_for = tr;
-				tr->client.transient = this;
-				stuck = client.transient_for->stuck;
-				transient = true;
+			
+				if (tr != this) {
+					client.transient_for = tr;
+					tr->client.transient = this;
+					transient = true;
+				} else {	
+					client.transient_for = 0;
+					client.transient = 0;
+				}
+				
+				if (client.transient_for != 0) {
+					stuck = client.transient_for->stuck;
+				}
+				
 			}
 		}
 	}
