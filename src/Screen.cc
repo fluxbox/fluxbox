@@ -22,7 +22,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.75 2002/10/23 17:30:12 fluxgen Exp $
+// $Id: Screen.cc,v 1.76 2002/10/25 20:58:14 fluxgen Exp $
+
+
+#include "Screen.hh"
+
+#include "i18n.hh"
+#include "fluxbox.hh"
+#include "Image.hh"
+#include "Toolbar.hh"
+#include "Window.hh"
+#include "Workspace.hh"
+#include "Rootmenu.hh"
+#include "Workspacemenu.hh"
+#include "Configmenu.hh"
+#include "Iconmenu.hh"
+#include "StringUtil.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -33,51 +48,37 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#include "Screen.hh"
-
-#include "i18n.hh"
-#include "fluxbox.hh"
-#include "Icon.hh"
-#include "Image.hh"
-#include "StringUtil.hh"
-
 #ifdef SLIT
 #include "Slit.hh"
 #endif // SLIT
 
-#include "Rootmenu.hh"
-#include "Toolbar.hh"
-#include "Window.hh"
-#include "Workspace.hh"
-#include "Workspacemenu.hh"
-
 #ifdef STDC_HEADERS
-#	include <sys/types.h>
+#include <sys/types.h>
 #endif // STDC_HEADERS
 
 #ifdef HAVE_CTYPE_H
-#	include <ctype.h>
+#include <ctype.h>
 #endif // HAVE_CTYPE_H
 
 #ifdef HAVE_DIRENT_H
-#	include <dirent.h>
+#include <dirent.h>
 #endif // HAVE_DIRENT_H
 
 #ifdef HAVE_LOCALE_H
-#	include <locale.h>
+#include <locale.h>
 #endif // HAVE_LOCALE_H
 
 #ifdef HAVE_UNISTD_H
-#	include <sys/types.h>
-#	include <unistd.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif // HAVE_UNISTD_H
 
 #ifdef HAVE_SYS_STAT_H
-#	include <sys/stat.h>
+#include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
 #ifdef HAVE_STDARG_H
-#	include <stdarg.h>
+#include <stdarg.h>
 #endif // HAVE_STDARG_H
 
 #ifndef  MAXPATHLEN
@@ -94,8 +95,9 @@
 using namespace std;
 
 static bool running = true;
+namespace {
 
-static int anotherWMRunning(Display *display, XErrorEvent *) {
+int anotherWMRunning(Display *display, XErrorEvent *) {
 	fprintf(stderr,
 		I18n::instance()->
 		getMessage(
@@ -109,9 +111,11 @@ static int anotherWMRunning(Display *display, XErrorEvent *) {
 	return(-1);
 }
 
-static int dcmp(const void *one, const void *two) {
+int dcmp(const void *one, const void *two) {
 	return (strcmp((*(char **) one), (*(char **) two)));
 }
+
+};
 
 //---------- resource manipulators ---------
 template<>
@@ -218,26 +222,24 @@ toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altsc
 
 };
 
-BScreen::BScreen(ResourceManager &rm, Fluxbox *b, 
+BScreen::BScreen(ResourceManager &rm,
 	const string &screenname, const string &altscreenname,
-	int scrn) : ScreenInfo(b, scrn),
+	int scrn) : ScreenInfo(scrn),
 m_clientlist_sig(*this),  // client signal
 m_workspacecount_sig(*this), // workspace count signal
 m_workspacenames_sig(*this), // workspace names signal 
 m_currentworkspace_sig(*this), // current workspace signal
-
 theme(0),
 resource(rm, screenname, altscreenname)
 {
-	fluxbox = b;
 
 	event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
 		SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
 		ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
 
 	XErrorHandler old = XSetErrorHandler((XErrorHandler) anotherWMRunning);
-	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), event_mask);
-	XSync(getBaseDisplay()->getXDisplay(), False);
+	XSelectInput(BaseDisplay::getXDisplay(), getRootWindow(), event_mask);
+	XSync(BaseDisplay::getXDisplay(), False);
 	XSetErrorHandler((XErrorHandler) old);
 
 	managed = running;
@@ -256,18 +258,18 @@ resource(rm, screenname, altscreenname)
 			getDepth());
 
 	rootmenu = 0;
-		
+	Fluxbox * const fluxbox = Fluxbox::instance();
 #ifdef HAVE_GETPID
 	pid_t bpid = getpid();
 
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
+	XChangeProperty(BaseDisplay::getXDisplay(), getRootWindow(),
+		Fluxbox::instance()->getFluxboxPidAtom(), XA_CARDINAL,
 		sizeof(pid_t) * 8, PropModeReplace,
 		(unsigned char *) &bpid, 1);
 #endif // HAVE_GETPID
 
 
-	XDefineCursor(getBaseDisplay()->getXDisplay(), getRootWindow(),
+	XDefineCursor(BaseDisplay::getXDisplay(), getRootWindow(),
 		fluxbox->getSessionCursor());
 
 	image_control =
@@ -288,20 +290,7 @@ resource(rm, screenname, altscreenname)
 		"0: 0000 x 0: 0000");
 	
 	int l = strlen(s);
-	/*
-	if (i18n->multibyte()) {
-		XRectangle ink, logical;
-		XmbTextExtents(theme->getWindowStyle().font.set, s, l, &ink, &logical);
-		geom_w = logical.width;
 
-		geom_h = theme->getWindowStyle().font.set_extents->max_ink_extent.height;
-	} else {
-		geom_h = theme->getWindowStyle().font.fontstruct->ascent +
-			theme->getWindowStyle().font.fontstruct->descent;
-
-		geom_w = XTextWidth(theme->getWindowStyle().font.fontstruct, s, l);
-	}
-	*/
 	geom_h = theme->getWindowStyle().font.height();
 	geom_w = theme->getWindowStyle().font.textWidth(s, l);
 	
@@ -347,7 +336,7 @@ resource(rm, screenname, altscreenname)
 	}
 
 	workspacemenu = new Workspacemenu(this);
-	iconmenu = new Iconmenu(this);	
+	m_iconmenu = new Iconmenu(this);	
 	configmenu = new Configmenu(this);
 
 	Workspace *wkspc = (Workspace *) 0;
@@ -367,13 +356,13 @@ resource(rm, screenname, altscreenname)
 		getMessage(
 			FBNLS::IconSet, FBNLS::IconIcons,
 			 "Icons"),
-			iconmenu);
+			m_iconmenu);
 	workspacemenu->update();
 
 	current_workspace = workspacesList.front();
 	workspacemenu->setItemSelected(2, true);
 
-	toolbar = new Toolbar(this);
+	m_toolbar.reset(new Toolbar(this));
 
 #ifdef SLIT
 	slit = new Slit(this);
@@ -389,7 +378,7 @@ resource(rm, screenname, altscreenname)
 	slit->reconfigure();
 #endif // SLIT
 
-	
+	// start with workspace 0
 	changeWorkspaceID(0);
 	updateNetizenWorkspaceCount();
 	
@@ -452,7 +441,7 @@ resource(rm, screenname, altscreenname)
 	}
 
 	if (! resource.sloppy_focus)
-		XSetInputFocus(getBaseDisplay()->getXDisplay(), toolbar->getWindowID(),
+		XSetInputFocus(getBaseDisplay()->getXDisplay(), m_toolbar->getWindowID(),
 			RevertToParent, CurrentTime);
 
 	XFree(children);
@@ -501,18 +490,21 @@ BScreen::~BScreen() {
 
 	delete rootmenu;
 	delete workspacemenu;
-	delete iconmenu;
+	delete m_iconmenu;
 	delete configmenu;
 
 #ifdef SLIT
 	delete slit;
 #endif // SLIT
 
-	delete toolbar;
 	delete image_control;
 
 	delete theme;
 
+}
+
+void BScreen::iconUpdate() { 
+	m_iconmenu->update();
 }
 
 void BScreen::reconfigure() {
@@ -521,7 +513,7 @@ void BScreen::reconfigure() {
 #endif // DEBUG
 	Fluxbox::instance()->loadRootCommand(this);
 	theme->setRootCommand(getRootCommand());
-	theme->load(fluxbox->getStyleFilename());
+	theme->load(Fluxbox::instance()->getStyleFilename());
 	theme->reconfigure(*resource.antialias);
 	
 	I18n *i18n = I18n::instance();
@@ -530,20 +522,7 @@ void BScreen::reconfigure() {
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
 		"0: 0000 x 0: 0000");
 	int l = strlen(s);
-	/*
-	if (i18n->multibyte()) {
-		XRectangle ink, logical;
-		XmbTextExtents(theme->getWindowStyle().font.set, s, l, &ink, &logical);
-		geom_w = logical.width;
 
-		geom_h = theme->getWindowStyle().font.set_extents->max_ink_extent.height;
-	} else {
-		geom_w = XTextWidth(theme->getWindowStyle().font.fontstruct, s, l);
-
-		geom_h = theme->getWindowStyle().font.fontstruct->ascent +
-			theme->getWindowStyle().font.fontstruct->descent; 
-	}
-	*/
 	//TODO: repeat from somewhere else?
 	geom_h = theme->getWindowStyle().font.height();
 	geom_w = theme->getWindowStyle().font.textWidth(s, l);
@@ -585,7 +564,7 @@ void BScreen::reconfigure() {
 
 	//reconfigure menus
 	workspacemenu->reconfigure();
-	iconmenu->reconfigure();
+	m_iconmenu->reconfigure();
 
 	configmenu->reconfigure();
 	
@@ -598,7 +577,7 @@ void BScreen::reconfigure() {
 	}
 
 
-	toolbar->reconfigure();
+	m_toolbar->reconfigure();
 
 #ifdef		SLIT
 	slit->reconfigure();
@@ -648,9 +627,9 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
 	iconList.push_back(w);
 
-	iconmenu->insert(w->getIconTitle().c_str());
-	iconmenu->update();
-	toolbar->addIcon(w);
+	m_iconmenu->insert(w->getIconTitle().c_str());
+	m_iconmenu->update();
+	m_toolbar->addIcon(w);
 }
 
 
@@ -669,9 +648,9 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 	}
 	}
 		
-	iconmenu->remove(w->getWindowNumber());
-	iconmenu->update();
-	toolbar->delIcon(w);
+	m_iconmenu->remove(w->getWindowNumber());
+	m_iconmenu->update();
+	m_toolbar->delIcon(w);
 	
 	Icons::iterator it = iconList.begin();
 	Icons::iterator it_end = iconList.end();
@@ -712,7 +691,7 @@ int BScreen::addWorkspace() {
 		
 	workspacemenu->update();
 	saveWorkspaces(workspacesList.size());
-	toolbar->reconfigure();
+	m_toolbar->reconfigure();
 
 	updateNetizenWorkspaceCount();	
 	
@@ -724,29 +703,28 @@ int BScreen::addWorkspace() {
 /// removes last workspace
 /// @return number of desktops left
 int BScreen::removeLastWorkspace() {
-	if (workspacesList.size() > 1) {
-		Workspace *wkspc = workspacesList.back();
+	if (workspacesList.size() <= 1)
+		return 0;
+	Workspace *wkspc = workspacesList.back();
 
-		if (current_workspace->workspaceID() == wkspc->workspaceID())
-			changeWorkspaceID(current_workspace->workspaceID() - 1);
+	if (current_workspace->workspaceID() == wkspc->workspaceID())
+		changeWorkspaceID(current_workspace->workspaceID() - 1);
 
-		wkspc->removeAll();
+	wkspc->removeAll();
 
-		workspacemenu->remove(wkspc->workspaceID()+2); // + 2 is where workspaces starts
-		workspacemenu->update();
-		
-		//remove last workspace
-		workspacesList.pop_back();		
-		delete wkspc;
+	workspacemenu->remove(wkspc->workspaceID()+2); // + 2 is where workspaces starts
+	workspacemenu->update();
+	
+	//remove last workspace
+	workspacesList.pop_back();		
+	delete wkspc;
 
-		toolbar->reconfigure();
+	m_toolbar->reconfigure();
 
-		updateNetizenWorkspaceCount();
-		saveWorkspaces(workspacesList.size());
-		return workspacesList.size();
-	}
+	updateNetizenWorkspaceCount();
+	saveWorkspaces(workspacesList.size());
 
-	return 0;
+	return workspacesList.size();
 }
 
 
@@ -755,8 +733,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 		return;
 	
 	if (id != current_workspace->workspaceID()) {
-		XSync(fluxbox->getXDisplay(), true);
-		FluxboxWindow *focused = fluxbox->getFocusedWindow();
+		XSync(BaseDisplay::getXDisplay(), true);
+		FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
 #ifdef DEBUG
 		cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
 #endif // DEBUG
@@ -782,14 +760,14 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 		if (focused && focused->getScreen() == this &&
 				(! focused->isStuck()) && (!focused->isMoving())) {
 			current_workspace->setLastFocusedWindow(focused);
-			fluxbox->setFocusedWindow(0); // set focused window to none
+			Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
 		}
 
 		// set new workspace
 		current_workspace = getWorkspace(id);
 
 		workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
-		toolbar->redrawWorkspaceLabel(true);
+		m_toolbar->redrawWorkspaceLabel(true);
 
 		current_workspace->showAll();
 
@@ -815,7 +793,7 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 		return;
 
 	if (!win)
-		win = fluxbox->getFocusedWindow();
+		win = Fluxbox::instance()->getFocusedWindow();
 
 	if (id != current_workspace->workspaceID()) {
 		XSync(BaseDisplay::getXDisplay(), True);
@@ -867,8 +845,8 @@ void BScreen::addNetizen(Netizen *n) {
 		}
 	}
 
-	Window f = ((fluxbox->getFocusedWindow()) ?
-		fluxbox->getFocusedWindow()->getClientWindow() : None);
+	Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
+		Fluxbox::instance()->getFocusedWindow()->getClientWindow() : None);
 	n->sendWindowFocus(f);
 }
 
@@ -905,13 +883,6 @@ void BScreen::updateNetizenWorkspaceCount() {
 	for (; it != it_end; ++it) {
 		(*it)->sendWorkspaceCount();
 	}
-#ifdef NEWWMSPEC
-	//update _NET_WM_NUMBER_OF_DESKTOPS
-	int numworkspaces = getCount()-1;
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		getBaseDisplay()->getNETNumberOfDesktopsAtom(), XA_CARDINAL, 32, PropModeReplace,
-			(unsigned char *)&numworkspaces, 1);
-#endif // NEWWMSPEC
 
 	m_workspacecount_sig.notify();	
 	
@@ -922,8 +893,8 @@ void BScreen::updateNetizenWindowFocus() {
 
 	Netizens::iterator it = netizenList.begin();
 	Netizens::iterator it_end = netizenList.end();
-	Window f = ((fluxbox->getFocusedWindow()) ?
-			fluxbox->getFocusedWindow()->getClientWindow() : None);
+	Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
+			Fluxbox::instance()->getFocusedWindow()->getClientWindow() : None);
 	for (; it != it_end; ++it) {
 		(*it)->sendWindowFocus(f);
 	}
@@ -984,8 +955,8 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
 	Window session_stack[(workspace_stack.size() + workspacesList.size() + rootmenuList.size() + 30)];
 	int i = 0;	
-	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->windowID());
-	session_stack[i++] = iconmenu->windowID();
+	XRaiseWindow(getBaseDisplay()->getXDisplay(), m_iconmenu->windowID());
+	session_stack[i++] = m_iconmenu->windowID();
 
 	Workspaces::iterator wit = workspacesList.begin();
 	Workspaces::iterator wit_end = workspacesList.end();
@@ -1012,13 +983,13 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	#endif // SLIT
 
 	session_stack[i++] =
-		toolbar->getMenu()->getPlacementmenu()->windowID();
+		m_toolbar->getMenu()->getPlacementmenu()->windowID();
 	#ifdef XINERAMA
 	if (hasXinerama()) {
-		session_stack[i++] = toolbar->getMenu()->getHeadmenu()->windowID();
+		session_stack[i++] = m_toolbar->getMenu()->getHeadmenu()->windowID();
 	}
 	#endif // XINERAMA
-	session_stack[i++] = toolbar->getMenu()->windowID();
+	session_stack[i++] = m_toolbar->getMenu()->windowID();
 
 	Rootmenus::iterator rit = rootmenuList.begin();
 	Rootmenus::iterator rit_end = rootmenuList.end();
@@ -1027,8 +998,8 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 	}
 	session_stack[i++] = rootmenu->windowID();
 
-	if (toolbar->isOnTop())
-		session_stack[i++] = toolbar->getWindowID();
+	if (m_toolbar->isOnTop())
+		session_stack[i++] = m_toolbar->getWindowID();
 
 	#ifdef		SLIT
 	if (slit->isOnTop())
@@ -1106,7 +1077,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 void BScreen::nextFocus(int opts) {
 	bool have_focused = false;
 	int focused_window_number = -1;
-	FluxboxWindow *focused = fluxbox->getFocusedWindow();
+	FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
 	const int num_windows = getCurrentWorkspace()->getCount();
 
 	if (focused != 0) {
@@ -1151,7 +1122,7 @@ void BScreen::prevFocus(int opts) {
 	FluxboxWindow *focused;
 	int num_windows = getCurrentWorkspace()->getCount();
 	
-	if ((focused = fluxbox->getFocusedWindow())) {
+	if ((focused = Fluxbox::instance()->getFocusedWindow())) {
 		if (focused->getScreen()->getScreenNumber() ==
 				getScreenNumber()) {
 			have_focused = true;
@@ -1192,17 +1163,18 @@ void BScreen::prevFocus(int opts) {
 void BScreen::raiseFocus() {
 	bool have_focused = false;
 	int focused_window_number = -1;
-
-	if (fluxbox->getFocusedWindow())
-		if (fluxbox->getFocusedWindow()->getScreen()->getScreenNumber() ==
+	Fluxbox * const fb = Fluxbox::instance();
+	
+	if (fb->getFocusedWindow())
+		if (fb->getFocusedWindow()->getScreen()->getScreenNumber() ==
 				getScreenNumber()) {
 			have_focused = true;
-			focused_window_number = fluxbox->getFocusedWindow()->getWindowNumber();
+			focused_window_number = fb->getFocusedWindow()->getWindowNumber();
 		}
 
 	if ((getCurrentWorkspace()->getCount() > 1) && have_focused)
-		getWorkspace(fluxbox->getFocusedWindow()->getWorkspaceNumber())->
-			raiseWindow(fluxbox->getFocusedWindow());
+		getWorkspace(fb->getFocusedWindow()->getWorkspaceNumber())->
+			raiseWindow(fb->getFocusedWindow());
 }
 
 void BScreen::initMenu() {
@@ -1217,9 +1189,9 @@ void BScreen::initMenu() {
 		rootmenu = new Rootmenu(this);
 
 	bool defaultMenu = true;
-
-	if (fluxbox->getMenuFilename()) {
-		ifstream menu_file(fluxbox->getMenuFilename());
+	Fluxbox * const fb = Fluxbox::instance();
+	if (fb->getMenuFilename()) {
+		ifstream menu_file(fb->getMenuFilename());
 
 		if (!menu_file.fail()) {
 			if (! menu_file.eof()) {
@@ -1250,11 +1222,11 @@ void BScreen::initMenu() {
 					i18n->getMessage(
 						FBNLS::ScreenSet, FBNLS::ScreenEmptyMenuFile,
 						"%s: Empty menu file"),
-					fluxbox->getMenuFilename());
+					fb->getMenuFilename());
 			}
 			menu_file.close();
 		} else
-			perror(fluxbox->getMenuFilename());
+			perror(fb->getMenuFilename());
 	}
 
 	if (defaultMenu) {
@@ -1275,7 +1247,7 @@ void BScreen::initMenu() {
 			"Exit"),
 			BScreen::EXIT);
 	} else
-		fluxbox->saveMenuFilename(fluxbox->getMenuFilename());
+		fb->saveMenuFilename(fb->getMenuFilename());
 }
 
 // looks through a menufile and adds correct items to the root-menu.
@@ -1397,7 +1369,7 @@ bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 									fclose(submenufile);
 									ifstream subfile(newfile.c_str());
 									if (! parseMenuFile(subfile, menu, row))
-										fluxbox->saveMenuFilename(newfile.c_str());
+										Fluxbox::instance()->saveMenuFilename(newfile.c_str());
 								}
 							} else
 								perror(newfile.c_str());
@@ -1541,7 +1513,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 				rootmenuList.push_back(stylesmenu);
 			}
 
-			fluxbox->saveMenuFilename(stylesdir.c_str());
+			Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
 		} else { // dir
 			fprintf(stderr,
 			i18n->
@@ -1563,8 +1535,6 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 }
 
 void BScreen::shutdown() {
-	fluxbox->grab();
-
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), NoEventMask);
 	XSync(getBaseDisplay()->getXDisplay(), False);
 
@@ -1587,7 +1557,6 @@ void BScreen::shutdown() {
 	slit->shutdown();
 #endif // SLIT
 
-	fluxbox->ungrab();
 }
 
 
@@ -1619,27 +1588,14 @@ void BScreen::showPosition(int x, int y) {
 			 "X: %4d x Y: %4d"), x, y);
 
 	XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
-	/*
-	if (I18n::instance()->multibyte()) 
-		XmbDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-			theme->getWindowStyle().font.set, theme->getWindowStyle().l_text_focus_gc,
-			theme->getBevelWidth(), theme->getBevelWidth() -
-			theme->getWindowStyle().font.set_extents->max_ink_extent.y,
-			label, strlen(label));
-	else
-		XDrawString(getBaseDisplay()->getXDisplay(), geom_window,
-			theme->getWindowStyle().l_text_focus_gc,
-			theme->getBevelWidth(),
-			theme->getWindowStyle().font.fontstruct->ascent +
-			theme->getBevelWidth(), label, strlen(label));
-	*/
+
 	theme->getWindowStyle().font.drawText(
 		geom_window,
 		getScreenNumber(),
 		theme->getWindowStyle().l_text_focus_gc,
 		label, strlen(label),
 		theme->getBevelWidth(), theme->getBevelWidth() + 
-		theme->getWindowStyle().font.height());
+		theme->getWindowStyle().font.ascent());
 		
 }
 
