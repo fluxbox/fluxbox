@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.79 2002/10/23 22:00:46 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.80 2002/10/25 21:17:15 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -40,12 +40,7 @@
 #include "Resource.hh"
 #include "XrmDatabaseHelper.hh"
 #include "AtomHandler.hh"
-#include "Gnome.hh"
-#include "Ewmh.hh"
 
-#ifdef SLIT
-#include "Slit.hh"
-#endif // SLIT
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -55,6 +50,16 @@
 #ifdef		HAVE_CONFIG_H
 #include "../config.h"
 #endif // HAVE_CONFIG_H
+
+#ifdef SLIT
+#include "Slit.hh"
+#endif // SLIT
+#ifdef USE_GNOME
+#include "Gnome.hh"
+#endif // USE_GNOME
+#ifdef USE_NEWWMSPEC
+#include "Ewmh.hh"
+#endif //USE_NEWWMSPEC
 
 // X headers
 #include <X11/Xlib.h>
@@ -88,28 +93,20 @@
 #include <sys/select.h>
 #endif // HAVE_SYS_SELECT_H
 
-#ifdef HAVE_SIGNAL_H
-#include <signal.h>
-#endif // HAVE_SIGNAL_H
-
-#ifdef		HAVE_SYS_SIGNAL_H
-#	include <sys/signal.h>
-#endif // HAVE_SYS_SIGNAL_H
-
 #ifdef		HAVE_SYS_STAT_H
-#	include <sys/types.h>
-#	include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #endif // HAVE_SYS_STAT_H
 
 #ifdef		TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h>
+#include <sys/time.h>
+#include <time.h>
 #else // !TIME_WITH_SYS_TIME
-#	ifdef		HAVE_SYS_TIME_H
-#		include <sys/time.h>
-#	else // !HAVE_SYS_TIME_H
-#		include <time.h>
-#	endif // HAVE_SYS_TIME_H
+#ifdef		HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else // !HAVE_SYS_TIME_H
+#include <time.h>
+#endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
 #ifdef		HAVE_LIBGEN_H
@@ -324,7 +321,7 @@ key(0)
 		abort();
 	}
 	
-	//setup system signals
+	//catch system signals
 	SignalHandler *sigh = SignalHandler::instance();
 	
 	sigh->registerHandler(SIGSEGV, this);
@@ -341,13 +338,18 @@ key(0)
 	cursor.move = XCreateFontCursor(getXDisplay(), XC_fleur);
 	cursor.ll_angle = XCreateFontCursor(getXDisplay(), XC_ll_angle);
 	cursor.lr_angle = XCreateFontCursor(getXDisplay(), XC_lr_angle);
-	
-	// setup atom handlers
-	m_atomhandler.push_back(new Gnome()); // for gnome 1 atom support
-	m_atomhandler.push_back(new Ewmh()); // for Extended window manager atom support
 
 	//singleton pointer
 	singleton = this;
+
+	// setup atom handlers
+#ifdef USE_GNOME
+	m_atomhandler.push_back(new Gnome()); // for gnome 1 atom support
+#endif //USE_GNOME
+#ifdef USE_NEWWMSPEC
+	m_atomhandler.push_back(new Ewmh()); // for Extended window manager atom support
+#endif // USE_NEWWMSPEC
+
 	grab();
 	
 	setupConfigFiles();
@@ -384,7 +386,7 @@ key(0)
 		char scrname[128], altscrname[128];
 		sprintf(scrname, "session.screen%d", i);
 		sprintf(altscrname, "session.Screen%d", i);
-		BScreen *screen = new BScreen(m_screen_rm, this, scrname, altscrname, i);
+		BScreen *screen = new BScreen(m_screen_rm, scrname, altscrname, i);
 		if (! screen->isScreenManaged()) {
 			delete screen;			
 			continue;
