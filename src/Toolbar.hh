@@ -1,5 +1,5 @@
 // Toolbar.hh for Fluxbox
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Toolbar.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
