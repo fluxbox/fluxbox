@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.213 2003/12/21 16:23:59 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.214 2003/12/21 22:42:31 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -764,18 +764,26 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
 
 
-    // update key/mouse screen before we enter other eventhandlers
+    // update key/mouse screen and last time before we enter other eventhandlers
     if (e->type == KeyPress ||
         e->type == KeyRelease) {
         m_keyscreen = searchScreen(e->xkey.root);
     } else if (e->type == ButtonPress ||
                e->type == ButtonRelease ||
                e->type == MotionNotify ) {
+        if (e->type == MotionNotify)
+            m_last_time = e->xmotion.time;
+        else
+            m_last_time = e->xbutton.time;
+
         m_mousescreen = searchScreen(e->xbutton.root);
     } else if (e->type == EnterNotify ||
                e->type == LeaveNotify) {
+        m_last_time = e->xcrossing.time;
         m_mousescreen = searchScreen(e->xcrossing.root);
-    }
+    } else if (e->type == PropertyNotify)
+        m_last_time = e->xproperty.time;
+
     
     // try FbTk::EventHandler first
     FbTk::EventManager::instance()->handleEvent(*e);
