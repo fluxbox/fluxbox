@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.188 2003/06/06 14:45:13 rathnor Exp $
+// $Id: Window.cc,v 1.189 2003/06/11 14:51:56 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -370,8 +370,8 @@ void FluxboxWindow::init() {
     Fluxbox &fluxbox = *Fluxbox::instance();
 
     // setup cursors for resize grips
-    frame().gripLeft().setCursor(fluxbox.getLowerLeftAngleCursor());
-    frame().gripRight().setCursor(fluxbox.getLowerRightAngleCursor());
+    frame().gripLeft().setCursor(frame().theme().lowerLeftAngleCursor());
+    frame().gripRight().setCursor(frame().theme().lowerRightAngleCursor());
 
     frame().resize(m_client->width(), m_client->height());
     TextButton *btn =  new TextButton(frame().label(), 
@@ -824,20 +824,20 @@ void FluxboxWindow::grabButtons() {
 
     XGrabButton(display, Button1, Mod1Mask, frame().window().window(), True,
 		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-		GrabModeAsync, None, fluxbox->getMoveCursor());
+		GrabModeAsync, None, frame().theme().moveCursor());
 
     //----grab with "all" modifiers
-    grabButton(display, Button1, frame().window().window(), fluxbox->getMoveCursor());
+    grabButton(display, Button1, frame().window().window(), frame().theme().moveCursor());
 	
     XGrabButton(display, Button2, Mod1Mask, frame().window().window(), True,
 		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
 		
     XGrabButton(display, Button3, Mod1Mask, frame().window().window(), True,
 		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
-		GrabModeAsync, None, fluxbox->getLowerRightAngleCursor());
+		GrabModeAsync, None, frame().theme().lowerRightAngleCursor());
 	
     //---grab with "all" modifiers
-    grabButton(display, Button3, frame().window().window(), fluxbox->getLowerRightAngleCursor());
+    grabButton(display, Button3, frame().window().window(), frame().theme().lowerRightAngleCursor());
 }
 
 
@@ -2525,7 +2525,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             XGrabPointer(display, me.window, False, Button2MotionMask |
                          ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                         None, Fluxbox::instance()->getMoveCursor(), CurrentTime);
+                         None, frame().theme().moveCursor(), CurrentTime);
             m_last_move_x = me.x_root - 1;
             m_last_move_y = me.y_root - 1;
         
@@ -2786,7 +2786,7 @@ void FluxboxWindow::startMoving(Window win) {
     // freely map and unmap the window we're moving.
     XGrabPointer(display, screen().rootWindow().window(), False, Button1MotionMask |
                  ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
-                 screen().rootWindow().window(), fluxbox->getMoveCursor(), CurrentTime);
+                 screen().rootWindow().window(), frame().theme().moveCursor(), CurrentTime);
 
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
@@ -2971,7 +2971,7 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
     Fluxbox *fluxbox = Fluxbox::instance();
     XGrabPointer(display, win, false, ButtonMotionMask | ButtonReleaseMask, 
                  GrabModeAsync, GrabModeAsync, None,
-                 (left ? fluxbox->getLowerLeftAngleCursor() : fluxbox->getLowerRightAngleCursor()),
+                 (left ? frame().theme().lowerLeftAngleCursor() : frame().theme().lowerRightAngleCursor()),
                  CurrentTime);
 
     int gx = 0, gy = 0;
