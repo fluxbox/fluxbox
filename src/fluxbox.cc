@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.254 2004/09/11 13:38:58 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.255 2004/09/11 20:29:29 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1104,51 +1104,11 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                 screen->getRootmenu().hide();
 
         } else if (be.button == 2) {
-            int borderw = screen->getWorkspacemenu().fbwindow().borderWidth();
-            int head = screen->getHead(be.x_root, be.y_root);
-
-            pair<int, int> m = 
-                screen->clampToHead(head,
-                                    be.x_root - (screen->getWorkspacemenu().width() / 2), 
-                                    be.y_root - (screen->getWorkspacemenu().titleWindow().height() / 2),
-                                    screen->getWorkspacemenu().width() + 2*borderw,
-                                    screen->getWorkspacemenu().height() + 2*borderw);
-            screen->getWorkspacemenu().move(m.first, m.second);
-            screen->getWorkspacemenu().setScreen(screen->getHeadX(head),
-                                                 screen->getHeadY(head),
-                                                 screen->getHeadWidth(head),
-                                                 screen->getHeadHeight(head));
-
-            if (! screen->getWorkspacemenu().isVisible()) {
-                screen->getWorkspacemenu().removeParent();
-                screen->getWorkspacemenu().show();
-                screen->getWorkspacemenu().grabInputFocus();
-            }
+            FbCommands::ShowWorkspaceMenuCmd cmd;
+            cmd.execute();
         } else if (be.button == 3) { 
-            //calculate placement of root menu
-            //and show/hide it				
-
-            int borderw = screen->getRootmenu().fbwindow().borderWidth();
-            int head = screen->getHead(be.x_root, be.y_root);
-
-            pair<int, int> m = 
-                screen->clampToHead(head,
-                                    be.x_root - (screen->getRootmenu().width() / 2), 
-                                    be.y_root - (screen->getRootmenu().titleWindow().height() / 2),
-                                    screen->getRootmenu().width() + 2*borderw,
-                                    screen->getRootmenu().height() + 2*borderw);
-
-            screen->getRootmenu().move(m.first, m.second);
-            screen->getRootmenu().setScreen(screen->getHeadX(head),
-                                            screen->getHeadY(head),
-                                            screen->getHeadWidth(head),
-                                            screen->getHeadHeight(head));
-            
-            if (! screen->getRootmenu().isVisible()) {
-                checkMenu();
-                screen->getRootmenu().show();
-                screen->getRootmenu().grabInputFocus();
-            }
+            FbCommands::ShowRootMenuCmd cmd;
+            cmd.execute();
         } else if (screen->isDesktopWheeling() && be.button == 4) {
             screen->nextWorkspace(1);
         } else if (screen->isDesktopWheeling() && be.button == 5) {
