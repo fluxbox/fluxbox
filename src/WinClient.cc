@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.16 2003/06/27 15:05:19 rathnor Exp $
+// $Id: WinClient.cc,v 1.17 2003/07/10 11:58:13 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -325,11 +325,12 @@ void WinClient::updateBlackboxHints() {
     }
 
     if (property(atoms->getFluxboxHintsAtom(), 0,
-                           PropBlackboxHintsElements, False,
-                           atoms->getFluxboxHintsAtom(), &atom_return,
-                           &format, &num, &len,
-                           (unsigned char **) &m_blackbox_hint) &&
+                 PropBlackboxHintsElements, False,
+                 atoms->getFluxboxHintsAtom(), &atom_return,
+                 &format, &num, &len,
+                 (unsigned char **) &m_blackbox_hint) &&
         m_blackbox_hint) {
+
         if (num != (unsigned)PropBlackboxHintsElements) {
             XFree(m_blackbox_hint);
             m_blackbox_hint = 0;
