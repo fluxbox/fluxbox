@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.30 2002/10/15 10:53:01 fluxgen Exp $
+// $Id: Theme.cc,v 1.31 2002/10/15 17:08:45 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -62,10 +62,8 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 #endif //DEBUG
 	//default settings	
 
-	m_windowstyle.font.set = m_toolbarstyle.font.set = m_windowstyle.tab.font.set =  0;
-	
-	m_toolbarstyle.font.fontstruct = m_windowstyle.font.fontstruct = m_windowstyle.tab.font.fontstruct = 0;
-	m_windowstyle.tab.rot_font = 0;
+	m_toolbarstyle.font.set = 0;	
+	m_toolbarstyle.font.fontstruct = 0;
 		
 	load(filename);
 	//-------- create gc for the styles ------------
@@ -74,9 +72,6 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 	XGCValues gcv;
 	unsigned long gc_value_mask = GCForeground;
 
-	if (! I18n::instance()->multibyte())
-		gc_value_mask |= GCFont;
-
 	gcv.foreground = WhitePixel(m_display, screennum)^BlackPixel(m_display, screennum);
 	gcv.function = GXxor;
 	gcv.subwindow_mode = IncludeInferiors;
@@ -84,24 +79,17 @@ m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointe
 		GCForeground | GCFunction | GCSubwindowMode, &gcv);
 
 	gcv.foreground = m_windowstyle.l_text_focus.pixel();
-	if (m_windowstyle.font.fontstruct)
-		gcv.font = m_windowstyle.font.fontstruct->fid;
-		
 	m_windowstyle.l_text_focus_gc =
 		XCreateGC(m_display, rootwindow,
 			gc_value_mask, &gcv);
 	
 	gcv.foreground = m_windowstyle.l_text_unfocus.pixel();
-	if (m_windowstyle.font.fontstruct)
-		gcv.font = m_windowstyle.font.fontstruct->fid;
 	m_windowstyle.l_text_unfocus_gc =
 		XCreateGC(m_display, rootwindow,
 				gc_value_mask, &gcv);
 	
 	//---- Tab 
 	gcv.foreground = m_windowstyle.tab.l_text_focus.pixel();
-	if (m_windowstyle.tab.font.fontstruct)
-		gcv.font = m_windowstyle.tab.font.fontstruct->fid;
 	
 	m_windowstyle.tab.l_text_focus_gc =
 		XCreateGC(m_display, rootwindow,
@@ -202,15 +190,8 @@ void Theme::freeMenuStyle() {
 
 //----- freeWindowStyle -----
 // free memory allocated for m_windowstyle
-// should only be called from ~Theme
 //--------------------
 void Theme::freeWindowStyle() {
-	if (m_windowstyle.font.set)
-		XFreeFontSet(m_display, m_windowstyle.font.set);
-	
-	if (m_windowstyle.font.fontstruct)
-		XFreeFont(m_display, m_windowstyle.font.fontstruct);	
-		
 	XFreeGC(m_display, m_windowstyle.l_text_focus_gc);
 	XFreeGC(m_display, m_windowstyle.l_text_unfocus_gc);
 	XFreeGC(m_display, m_windowstyle.b_pic_focus_gc);
@@ -219,20 +200,8 @@ void Theme::freeWindowStyle() {
 
 //----- freeTabStyle -----
 // free memory allocated for m_windowstyle.tab
-// should only be called from ~Theme
 //--------------------
 void Theme::freeTabStyle() {	
-	
-	if (m_windowstyle.tab.font.set)
-		XFreeFontSet(m_display, m_windowstyle.tab.font.set);
-		
-	if (m_windowstyle.tab.font.fontstruct)
-		XFreeFont(m_display, m_windowstyle.tab.font.fontstruct);
-
-	if (m_windowstyle.tab.rot_font)
-		DrawUtil::XRotUnloadFont(m_display, m_windowstyle.tab.rot_font);
-
-	
 	XFreeGC(m_display, m_windowstyle.tab.l_text_focus_gc);
 	XFreeGC(m_display, m_windowstyle.tab.l_text_unfocus_gc);			
 }
@@ -445,17 +414,7 @@ void Theme::loadWindowStyle() {
 		WhitePixel(m_display, m_screennum));
 
 	//----- font
-	
-	if (I18n::instance()->multibyte()) {
-		readDatabaseFontSet("window.font", "Window.Font",
-			&m_windowstyle.font.set);	
-			
-		m_windowstyle.font.set_extents =
-			XExtentsOfFontSet(m_windowstyle.font.set);
-	} else {
-		readDatabaseFont("window.font", "Window.Font",
-			&m_windowstyle.font.fontstruct);
-	}
+	loadFontFromDatabase(m_windowstyle.font, "window.font", "Window.Font");
 	
 	XrmValue value;
 	char *value_type;
@@ -463,13 +422,13 @@ void Theme::loadWindowStyle() {
 	if (XrmGetResource(m_database, "window.justify", "Window.Justify",
 			&value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_windowstyle.font.justify = DrawUtil::Font::RIGHT;
+			m_windowstyle.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_windowstyle.font.justify = DrawUtil::Font::CENTER;
+			m_windowstyle.justify = DrawUtil::Font::CENTER;
 		else
-			m_windowstyle.font.justify = DrawUtil::Font::LEFT;
+			m_windowstyle.justify = DrawUtil::Font::LEFT;
 	} else
-		m_windowstyle.font.justify = DrawUtil::Font::LEFT;
+		m_windowstyle.justify = DrawUtil::Font::LEFT;
 		
 }
 
@@ -523,38 +482,29 @@ void Theme::loadTabStyle() {
 
 	m_windowstyle.tab.border_width_2x = m_windowstyle.tab.border_width*2;
 	
-	//---------- font
+	loadFontFromDatabase(m_windowstyle.tab.font, "window.tab.font", "Window.Tab.Font");
 	
-	if (I18n::instance()->multibyte()) {
-		readDatabaseFontSet("window.tab.font", "Window.Tab.Font",
-			&m_windowstyle.tab.font.set);
-		
-		m_windowstyle.tab.font.set_extents =
-			XExtentsOfFontSet(m_windowstyle.tab.font.set);
-	} else {
-		readDatabaseFont("window.tab.font", "Window.Tab.Font",
-			&m_windowstyle.tab.font.fontstruct);
-	}
-	
+	//TODO: fix rotated font
 	//--------- rotated font for left and right tabs
 	// TODO: add extra checking
-	if (XrmGetResource(m_database, "window.tab.font", "Window.Tab.Font",
+	/*if (XrmGetResource(m_database, "window.tab.font", "Window.Tab.Font",
 			&value_type, &value)) {		
 		if (! (m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, value.addr, 90.0)) )
 			m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, "fixed", 90);
 	} else
 		m_windowstyle.tab.rot_font = DrawUtil::XRotLoadFont(m_display, "fixed", 90);
+	*/
 
 	if (XrmGetResource(m_database, "window.tab.justify", "Window.Tab.Justify",
 			 &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_windowstyle.tab.font.justify = DrawUtil::Font::RIGHT;
+			m_windowstyle.tab.justify = DrawUtil::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_windowstyle.tab.font.justify = DrawUtil::Font::CENTER;
+			m_windowstyle.tab.justify = DrawUtil::Font::CENTER;
 		else
-			m_windowstyle.tab.font.justify = DrawUtil::Font::LEFT;
+			m_windowstyle.tab.justify = DrawUtil::Font::LEFT;
 	} else
-		m_windowstyle.tab.font.justify = DrawUtil::Font::LEFT;
+		m_windowstyle.tab.justify = DrawUtil::Font::LEFT;
 		
 }
 
@@ -920,8 +870,6 @@ void Theme::reconfigure(bool antialias) {
 
 	XGCValues gcv;
 	unsigned long gc_value_mask = GCForeground;
-	if (! I18n::instance()->multibyte())
-		gc_value_mask |= GCFont;
 	
 	XChangeGC(m_display, m_opgc,
 		GCForeground | GCFunction | GCSubwindowMode, &gcv);
@@ -933,8 +881,8 @@ void Theme::reconfigure(bool antialias) {
 		GCForeground | GCFunction | GCSubwindowMode, &gcv);
 
 	gcv.foreground = m_windowstyle.l_text_focus.pixel();
-	if (m_windowstyle.font.fontstruct)
-		gcv.font = m_windowstyle.font.fontstruct->fid;
+	if (m_windowstyle.font.isAntialias() != antialias)
+		m_windowstyle.font.setAntialias(antialias);
 		
 	XChangeGC(m_display, m_windowstyle.l_text_focus_gc,
 		gc_value_mask, &gcv);
@@ -945,9 +893,8 @@ void Theme::reconfigure(bool antialias) {
 
 	//---- Tab 
 	gcv.foreground = m_windowstyle.tab.l_text_focus.pixel();
-	if (m_windowstyle.tab.font.fontstruct)
-		gcv.font = m_windowstyle.tab.font.fontstruct->fid;
-	
+	if (m_windowstyle.tab.font.isAntialias() != antialias)
+		m_windowstyle.tab.font.setAntialias(antialias);
 	XChangeGC(m_display, m_windowstyle.tab.l_text_focus_gc,
 		gc_value_mask, &gcv);
 	
@@ -970,7 +917,7 @@ void Theme::reconfigure(bool antialias) {
 		m_menustyle.titlefont.setAntialias(antialias);
 
 	XChangeGC(m_display, m_menustyle.t_text_gc,
-		gc_value_mask, &gcv);
+		gc_value_mask|GCForeground, &gcv);
 
 	gcv.foreground = m_menustyle.f_text.pixel();	
 	if (m_menustyle.framefont.isAntialias() != antialias)
@@ -994,7 +941,8 @@ void Theme::reconfigure(bool antialias) {
 	gcv.foreground = m_toolbarstyle.l_text.pixel();
 	if (m_toolbarstyle.font.fontstruct)
 		gcv.font = m_toolbarstyle.font.fontstruct->fid;
-		
+
+	gc_value_mask |= GCFont;
 	XChangeGC(m_display, m_toolbarstyle.l_text_gc,
 		gc_value_mask, &gcv);
 
@@ -1138,7 +1086,8 @@ void Theme::loadFontFromDatabase(FbTk::Font &dest, const char *name, const char 
 #ifdef DEBUG
 		std::cerr<<__FILE__<<"("<<__LINE__<<"): Load font:"<<value.addr<<std::endl;
 #endif // DEBUG
-		dest.load(value.addr);		
+		if (!dest.load(value.addr))
+			cerr<<"Failed to load font: "<<value.addr<<endl;
 	}	
 
 

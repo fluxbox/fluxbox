@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.15 2002/10/15 10:52:18 fluxgen Exp $
+// $Id: Theme.hh,v 1.16 2002/10/15 17:07:32 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -59,12 +59,14 @@ public:
 		int bullet, bullet_pos;
 	} MenuStyle;
 	
-	typedef struct LabelStyle
-	{
+	typedef struct LabelStyle {
+		LabelStyle(const char *fontname="fixed"):font(fontname) { }
+
 		FbTk::Texture l_focus, l_unfocus,
 			t_focus, t_unfocus;	
 		GC l_text_focus_gc, l_text_unfocus_gc;
-		DrawUtil::Font font;
+		FbTk::Font font;
+		DrawUtil::Font::FontJustify justify;
 		FbTk::Color l_text_focus, l_text_unfocus;
 	} LabelStyle;
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.88 2002/10/13 21:54:36 fluxgen Exp $
+// $Id: Window.cc,v 1.89 2002/10/15 17:17:00 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1014,15 +1014,7 @@ void FluxboxWindow::reconfigure() {
 			 screen->getBorderWidth();
 
 	if (getTitle().size() > 0) {
-		if (I18n::instance()->multibyte()) {
-			XRectangle ink, logical;
-			XmbTextExtents(screen->getWindowStyle()->font.set,
-					getTitle().c_str(), getTitle().size(), &ink, &logical);
-			client.title_text_w = logical.width;
-		} else {
-			client.title_text_w = XTextWidth(screen->getWindowStyle()->font.fontstruct,
-					getTitle().c_str(), getTitle().size());
-		}
+		client.title_text_w = screen->getWindowStyle()->font.textWidth(getTitle().c_str(), getTitle().size());
 
 		client.title_text_w += (frame.bevel_w * 4);
 	}
@@ -1121,17 +1113,8 @@ void FluxboxWindow::getWMName() {
 			FBNLS::WindowSet, FBNLS::WindowUnnamed,
 			"Unnamed");
 	}
-
-	if (i18n->multibyte()) {
-		XRectangle ink, logical;
-		XmbTextExtents(screen->getWindowStyle()->font.set,
-				getTitle().c_str(), getTitle().size(), &ink, &logical);
-		client.title_text_w = logical.width;
-	} else {
-		client.title_text_w = XTextWidth(screen->getWindowStyle()->font.fontstruct,
-							getTitle().c_str(), getTitle().size());
-	}
-
+	//Note: repeated?
+	client.title_text_w = screen->getWindowStyle()->font.textWidth(getTitle().c_str(), getTitle().size());
 	client.title_text_w += (frame.bevel_w * 4);
 	
 }
@@ -2445,15 +2428,18 @@ void FluxboxWindow::redrawLabel() {
 			XSetWindowBackground(display, frame.label, frame.ulabel_pixel);
 	}
 
+	XClearWindow(display, frame.label);
+
 	//no need to draw the title if we don't have any
-	if (getTitle().size()!=0) {
+	if (getTitle().size() != 0) {
 		GC gc = ((focused) ? screen->getWindowStyle()->l_text_focus_gc :
 				 screen->getWindowStyle()->l_text_unfocus_gc);
-
-		DrawUtil::DrawString(display, frame.label, gc,
-				&screen->getWindowStyle()->font, 
-				client.title_text_w, frame.label_w,
-				frame.bevel_w, getTitle().c_str());
+		screen->getWindowStyle()->font.drawText(
+			frame.label,
+			screen->getScreenNumber(),
+			gc,
+			getTitle().c_str(), getTitle().size(),
+			frame.bevel_w, frame.bevel_w + screen->getWindowStyle()->font.height());
 	}
 }
 
@@ -3633,14 +3619,8 @@ void FluxboxWindow::upsize() {
 	frame.bevel_w = screen->getBevelWidth();
 	frame.mwm_border_w = screen->getFrameWidth() * decorations.border;
 	
-	if (I18n::instance()->multibyte()) {
-		frame.title_h = (screen->getWindowStyle()->font.set_extents->
-				max_ink_extent.height +
-				(frame.bevel_w * 2) + 2) * decorations.titlebar;
-	} else
-		frame.title_h = (screen->getWindowStyle()->font.fontstruct->ascent +
-				screen->getWindowStyle()->font.fontstruct->descent +
-				(frame.bevel_w * 2) + 2) * decorations.titlebar;
+	frame.title_h = screen->getWindowStyle()->font.height() + 
+		(frame.bevel_w*2 + 2)*decorations.titlebar;
 
 	frame.label_h = (frame.title_h - (frame.bevel_w * 2)) * decorations.titlebar;
 	frame.button_w = frame.button_h = frame.label_h - 2;

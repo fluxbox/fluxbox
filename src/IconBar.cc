@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.15 2002/08/04 15:23:24 fluxgen Exp $
+// $Id: IconBar.cc,v 1.16 2002/10/15 17:10:48 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -261,9 +261,9 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	FluxboxWindow *fluxboxwin = obj->getFluxboxWin();
 	Window iconwin = obj->getIconWin();
 	unsigned int title_text_w;
-
+	/*
 	const int multibyte = I18n::instance()->multibyte();
-
+	
 	if (multibyte) {
 		XRectangle ink, logical;
 		XmbTextExtents(m_screen->getWindowStyle()->font.set,
@@ -273,14 +273,16 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		title_text_w = XTextWidth(m_screen->getWindowStyle()->font.fontstruct,
 			fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
 	}
-	
+	*/
+	title_text_w = m_screen->getWindowStyle()->font.textWidth(
+		fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
 	int l = title_text_w;
 	unsigned int dlen=fluxboxwin->getIconTitle().size();
 	unsigned int bevel_w = m_screen->getBevelWidth();
 	int dx=bevel_w*2;
 		
 	for (; dlen >= 0; dlen--) {
-		if (multibyte) {
+		/*if (multibyte) {
 		XRectangle ink, logical;
 			XmbTextExtents(m_screen->getWindowStyle()->tab.font.set, 
 				fluxboxwin->getIconTitle().c_str(), dlen,
@@ -289,13 +291,16 @@ void IconBar::draw(IconBarObj *obj, int width) {
 		} else
 			l = XTextWidth(m_screen->getWindowStyle()->tab.font.fontstruct, 
 				fluxboxwin->getIconTitle().c_str(), dlen);
-			l += (bevel_w * 4);
-
+		*/
+		l = m_screen->getWindowStyle()->tab.font.textWidth(
+			fluxboxwin->getIconTitle().c_str(), dlen);
+		l += (bevel_w * 4);
+		
 		if (l < width)
 			break;
 	}
 
-	switch (m_screen->getWindowStyle()->tab.font.justify) {
+	switch (m_screen->getWindowStyle()->tab.justify) {
 	case DrawUtil::Font::RIGHT:
 		dx += width - l;
 		break;
@@ -309,7 +314,7 @@ void IconBar::draw(IconBarObj *obj, int width) {
 	//Draw title to m_iconwin
 
 	XClearWindow(m_display, iconwin);		
-	
+	/*	
 	if (multibyte) {
 		XmbDrawString(m_display, iconwin,
 			m_screen->getWindowStyle()->tab.font.set,
@@ -322,6 +327,13 @@ void IconBar::draw(IconBarObj *obj, int width) {
 			m_screen->getWindowStyle()->tab.font.fontstruct->ascent + 1, 
 			fluxboxwin->getIconTitle().c_str(), dlen);
 	}	
+	*/
+	m_screen->getWindowStyle()->tab.font.drawText(
+		iconwin,
+		m_screen->getScreenNumber(),
+		m_screen->getWindowStyle()->tab.l_text_focus_gc,
+		fluxboxwin->getIconTitle().c_str(), dlen,
+		dx, m_screen->getWindowStyle()->tab.font.height());
 
 }
 

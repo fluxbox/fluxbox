@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.73 2002/10/15 13:05:55 fluxgen Exp $
+// $Id: Screen.cc,v 1.74 2002/10/15 17:12:23 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -288,7 +288,7 @@ resource(rm, screenname, altscreenname)
 		"0: 0000 x 0: 0000");
 	
 	int l = strlen(s);
-
+	/*
 	if (i18n->multibyte()) {
 		XRectangle ink, logical;
 		XmbTextExtents(theme->getWindowStyle().font.set, s, l, &ink, &logical);
@@ -301,7 +301,10 @@ resource(rm, screenname, altscreenname)
 
 		geom_w = XTextWidth(theme->getWindowStyle().font.fontstruct, s, l);
 	}
-
+	*/
+	geom_h = theme->getWindowStyle().font.height();
+	geom_w = theme->getWindowStyle().font.textWidth(s, l);
+	
 	geom_w += getBevelWidth()*2;
 	geom_h += getBevelWidth()*2;
 
@@ -527,7 +530,7 @@ void BScreen::reconfigure() {
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
 		"0: 0000 x 0: 0000");
 	int l = strlen(s);
-
+	/*
 	if (i18n->multibyte()) {
 		XRectangle ink, logical;
 		XmbTextExtents(theme->getWindowStyle().font.set, s, l, &ink, &logical);
@@ -540,7 +543,10 @@ void BScreen::reconfigure() {
 		geom_h = theme->getWindowStyle().font.fontstruct->ascent +
 			theme->getWindowStyle().font.fontstruct->descent; 
 	}
-
+	*/
+	//TODO: repeat from somewhere else?
+	geom_h = theme->getWindowStyle().font.height();
+	geom_w = theme->getWindowStyle().font.textWidth(s, l);
 	geom_w += getBevelWidth()*2;
 	geom_h += getBevelWidth()*2;
 
@@ -1620,7 +1626,7 @@ void BScreen::showPosition(int x, int y) {
 			 "X: %4d x Y: %4d"), x, y);
 
 	XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
-
+	/*
 	if (I18n::instance()->multibyte()) 
 		XmbDrawString(getBaseDisplay()->getXDisplay(), geom_window,
 			theme->getWindowStyle().font.set, theme->getWindowStyle().l_text_focus_gc,
@@ -1633,7 +1639,15 @@ void BScreen::showPosition(int x, int y) {
 			theme->getBevelWidth(),
 			theme->getWindowStyle().font.fontstruct->ascent +
 			theme->getBevelWidth(), label, strlen(label));
-	
+	*/
+	theme->getWindowStyle().font.drawText(
+		geom_window,
+		getScreenNumber(),
+		theme->getWindowStyle().l_text_focus_gc,
+		label, strlen(label),
+		theme->getBevelWidth(), theme->getBevelWidth() + 
+		theme->getWindowStyle().font.height());
+		
 }
 
 
@@ -1664,7 +1678,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 			 "W: %4d x H: %4d"), gx, gy);
 
 	XClearWindow(getBaseDisplay()->getXDisplay(), geom_window);
-
+	/*
 	if (I18n::instance()->multibyte())
 		XmbDrawString(getBaseDisplay()->getXDisplay(), geom_window,
 			theme->getWindowStyle().font.set, theme->getWindowStyle().l_text_focus_gc,
@@ -1677,6 +1691,15 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 		theme->getBevelWidth(),
 		theme->getWindowStyle().font.fontstruct->ascent +
 		theme->getBevelWidth(), label, strlen(label));
+	*/
+	//TODO: geom window again?! repeat
+	theme->getWindowStyle().font.drawText(
+		geom_window,
+		getScreenNumber(),
+		theme->getWindowStyle().l_text_focus_gc,
+		label, strlen(label),
+		theme->getBevelWidth(), theme->getBevelWidth() + 
+		theme->getWindowStyle().font.height());	
 }
 
 
