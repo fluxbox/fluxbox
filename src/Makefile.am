@@ -29,7 +29,7 @@ DEFAULT_STYLE=$(pkgdatadir)/styles/Clean
 DEFAULT_KEYSFILE=$(pkgdatadir)/keys
 DEFAULT_INITFILE=
 
-AM_CPPFLAGS= -Wall @CPPFLAGS@ -IFbTk
+AM_CPPFLAGS=@CPPFLAGS@ -IFbTk
 
 bin_PROGRAMS= fluxbox
 BUILT_SOURCES = defaults.hh
