@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.9 2004/01/08 22:05:34 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.10 2004/01/11 12:48:46 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -48,6 +48,15 @@ FbPixmap::FbPixmap(Pixmap pm):m_pm(0),
         return;
     // assign X pixmap to this
     (*this) = pm;
+}
+
+FbPixmap::FbPixmap(const FbDrawable &src, 
+                   unsigned int width, unsigned int height,
+                   int depth):m_pm(0), 
+                              m_width(0), m_height(0), 
+                              m_depth(0) {
+
+    create(src.drawable(), width, height, depth);
 }
 
 FbPixmap::FbPixmap(Drawable src, 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.9 2004/01/08 22:05:58 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.10 2004/01/11 12:48:46 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -38,11 +38,14 @@ public:
     explicit FbPixmap(const FbPixmap &copy);
     /// creates a FbPixmap from X pixmap
     explicit FbPixmap(Pixmap pm);
+    FbPixmap(const FbDrawable &src, 
+             unsigned int width, unsigned int height,
+             int depth);
     FbPixmap(Drawable src, 
              unsigned int width, unsigned int height,
              int depth);
 
-    ~FbPixmap();
+    virtual ~FbPixmap();
 
     void copy(const FbPixmap &the_copy);
     void copy(Pixmap pixmap);
