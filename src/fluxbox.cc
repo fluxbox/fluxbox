@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.50 2002/04/12 13:02:56 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.51 2002/04/17 06:57:10 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -974,7 +974,11 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 						checkMenu();
 						screen->getRootmenu()->show();
 					}
-				} // end button == 3
+				} else if (be.button == 4) {
+					screen->nextWorkspace(1);
+				} else if (be.button == 5) {
+					screen->nextWorkspace(1);
+				}
 			}
 		}
 	}
