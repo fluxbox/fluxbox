@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.12 2002/12/09 22:51:23 fluxgen Exp $
+// $Id: main.cc,v 1.13 2003/01/09 18:28:48 fluxgen Exp $
 
 
 
@@ -54,6 +54,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <typeinfo>
 
 using namespace std;
 
