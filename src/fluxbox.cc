@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.110 2003/04/15 13:58:57 rathnor Exp $
+// $Id: fluxbox.cc,v 1.111 2003/04/15 19:04:18 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -643,8 +643,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             FluxboxWindow *win = (FluxboxWindow *) 0;
 
             if ((win = searchWindow(e->xconfigurerequest.window))) {
-                win->configureRequestEvent(e->xconfigurerequest);
-
+                // already handled in FluxboxWindow::handleEvent
             } else { 
                 grab();
 
@@ -659,7 +658,8 @@ void Fluxbox::handleEvent(XEvent * const e) {
                     xwc.sibling = e->xconfigurerequest.above;
                     xwc.stack_mode = e->xconfigurerequest.detail;
 
-                    XConfigureWindow(getXDisplay(), e->xconfigurerequest.window,
+                    XConfigureWindow(FbTk::App::instance()->display(),
+                                     e->xconfigurerequest.window,
                                      e->xconfigurerequest.value_mask, &xwc);
                 }
 
@@ -684,9 +684,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             else
                 cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
         }
-
-        if ((win = searchWindow(e->xmaprequest.window)))
-            win->mapRequestEvent(e->xmaprequest);
+        // handled in FluxboxWindow::handleEvent
 
     }
         break;
@@ -1033,14 +1031,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     case KeyPress:
         {
             BScreen *screen = searchScreen(ke.window);
-			
-       
 
             if (screen == 0)
                 break;
 
 #ifdef DEBUG
-            cerr<<"KeyEvent"<<endl;
+            cerr<<__FILE__<<"("<<__FUNCTION__<<"): KeyEvent"<<endl;
 #endif
             //find action
             Keys::KeyAction action = key->getAction(&ke);
