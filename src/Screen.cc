@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.255 2003/12/29 01:23:04 fluxgen Exp $
+// $Id: Screen.cc,v 1.256 2003/12/31 00:38:40 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -410,9 +410,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_xinerama_headinfo(0),
     m_shutdown(false) {
 
-    // we need to load win frame theme before we create any fluxbox window
-    // else we get some bad handle/grip height/width
-    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
 
     Display *disp = FbTk::App::instance()->display();
 
@@ -557,7 +554,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // start with workspace 0
     changeWorkspaceID(0);
     updateNetizenWorkspaceCount();
-	
+
+    // we need to load win frame theme before we create any fluxbox window
+    // and after we've load the resources
+    // else we get some bad handle/grip height/width
+    FbTk::ThemeManager::instance().loadTheme(*m_windowtheme.get());
+
     int i;
     unsigned int nchild;
     Window r, p, *children;
