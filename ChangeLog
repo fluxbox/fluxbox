@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/04/29:
+   * fix cause of (some?) excessive reconfigures (Simon)
+     fluxbox.cc
    * fix fbsetbg relative path bug + simplify (Han)
      util/fbsetbg
    * Added FbDrawable.hh/cc (Henrik)

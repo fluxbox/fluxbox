@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.124 2003/04/28 13:34:38 rathnor Exp $
+// $Id: fluxbox.cc,v 1.125 2003/04/29 12:39:45 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -2220,6 +2220,8 @@ void Fluxbox::timeout() {
 
 // set focused window
 void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
+    // already focused
+    if (m_focused_window == win) return;
     BScreen *old_screen = 0, *screen = 0;
     FluxboxWindow *old_win = 0;
     Toolbar *old_tbar = 0, *tbar = 0;
