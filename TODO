@@ -32,8 +32,6 @@
 * Wheel-config support
 * Separator in the menus
 * Clean up in the global namespace
-* Add "system menu" for minimized apps in the icon bar.
-  (Close, Kill, Send to, etc)	
 * "Iconify group"/group commands in Windowmenu
 * Call and navigate menus from the keyboard (bind a menu to a key
   and use arrows to navigate)
@@ -45,5 +43,6 @@
   emacs), needed for the next wish:
 * "Goto Frame" as Emacs C-x b, that show completions in the bar
 * mouse button configure
-
+* Check FluxboxWindow::toggleDecor
+  Needs cleaning and check functions that uses this one. Should function struct really be affected by this function.
 

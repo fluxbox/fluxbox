@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*02/11/17:
+   * Fixed bug in toggleTab
+     Window.cc
+   * Fixed alignment bug in Tab
+     Tab.cc
+   * Fixed HAVE_XFT_UTF8 check (Simon)
+     configure.in, XftFontImp.cc
 *02/11/15:
    * Fixed antialias bug in toolbar
    * Fixed bug [ 627897 ] Clicking tab leads to crashing X-Server.
