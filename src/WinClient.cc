@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.14 2003/06/23 14:16:05 rathnor Exp $
+// $Id: WinClient.cc,v 1.15 2003/06/24 12:58:57 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -65,6 +65,9 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
     updateMWMHints();
     updateWMHints();
     updateWMNormalHints();
+    updateWMClassHint();
+    updateTitle();
+    updateIconTitle();
 }
 
 WinClient::~WinClient() {
