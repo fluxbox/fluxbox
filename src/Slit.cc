@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.15 2002/05/29 19:10:04 fluxgen Exp $
+// $Id: Slit.cc,v 1.16 2002/07/19 16:10:18 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -526,7 +526,7 @@ void Slit::reposition(void) {
 			head_y = 0,
 			head_w,
 			head_h;
-#ifdef XINERMA
+#ifdef XINERAMA
 	if (screen->hasXinerama()) {
 		unsigned int head = screen->getSlitOnHead();
 
@@ -785,7 +785,7 @@ void Slit::loadClientList(void) {
 		std::string name;
 		while (! file.eof()) {
 			name = "";
-			file >> name;
+			std::getline(file, name); // get the entire line
 			if (name.size() > 0) {
 				SlitClient *client = new SlitClient(name.c_str());
 				clientList.push_back(client);
@@ -805,6 +805,7 @@ void Slit::saveClientList(void) {
 		name = (*it)->match_name;
 		if (name != prevName)
 			file << name.c_str() << std::endl;
+
 		prevName = name;
 	}
 }
