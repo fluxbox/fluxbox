@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.111 2003/02/18 15:11:07 rathnor Exp $
+// $Id: Screen.cc,v 1.112 2003/02/20 23:31:13 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -506,14 +506,13 @@ BScreen::BScreen(ResourceManager &rm,
 
     workspacemenu.reset(createMenuFromScreen(*this));
 
-    Workspace *wkspc = (Workspace *) 0;
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
-            wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
+            Workspace *wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
             workspacesList.push_back(wkspc);
         }
     } else { // create at least one workspace
-        wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
+        Workspace *wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
         workspacesList.push_back(wkspc);
     }
 
@@ -668,22 +667,18 @@ unsigned int BScreen::getMaxLeft() const {
     return 0;
 }
 
-/// TODO
+///!! TODO
 unsigned int BScreen::getMaxRight() const {
     return getWidth();
 }
 
-/// TODO
+///!! TODO
 unsigned int BScreen::getMaxTop() const {
     return 0;
 }
-/// TODO
+///!! TODO
 unsigned int BScreen::getMaxBottom() const {
     return getHeight();
-}
-
-void BScreen::iconUpdate() { 
-
 }
 
 void BScreen::reconfigure() {
@@ -1147,9 +1142,9 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         setupWindowActions(*win);
     }
     if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
-        win->show();
-        XSync(FbTk::App::instance()->display(), False);
+        win->show();      
     }
+    XSync(FbTk::App::instance()->display(), False);
     return win;
 }
 
@@ -1191,9 +1186,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                                           0, 0, 10, 10);
                 newbutton->setOnClick(iconify_cmd);
 
-#ifdef DEBUG
-                cerr<<__FILE__<<": Creating iconify button"<<endl;
-#endif //DEBUG
+
             } else if (win.isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
                 newbutton = new WinButton(WinButton::MAXIMIZE, 
                                           frame.titlebar(), 
@@ -1203,9 +1196,6 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 newbutton->setOnClick(maximize_horiz_cmd, 3);
                 newbutton->setOnClick(maximize_vert_cmd, 2);
 
-#ifdef DEBUG
-                cerr<<__FILE__<<": Creating maximize button"<<endl;
-#endif // DEBUG
             } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
                 newbutton = new WinButton(WinButton::CLOSE, 
                                           frame.titlebar(), 
@@ -1220,17 +1210,13 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                                           frame.titlebar(),
                                           0, 0, 10, 10);
                 newbutton->setOnClick(stick_cmd);
-#ifdef DEBUG
-                cerr<<__FILE__<<": Creating stick button"<<endl;
-#endif // DEBUG
+
             } else if ((*dir)[i] == Fluxbox::SHADE) {
                 newbutton = new WinButton(WinButton::SHADE,
                                           frame.titlebar(),
                                           0, 0, 10, 10);
                 newbutton->setOnClick(shade_cmd);
-#ifdef DEBUG
-                cerr<<__FILE__<<": Creating shade button"<<endl;
-#endif // DEBUG
+
             }
         
             if (newbutton != 0) {
@@ -1711,8 +1697,8 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                            " error, no directory defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else { 
-                        createStyleMenu(menu, newmenu, str_label.c_str(), 
-                                        (newmenu) ? str_cmd.c_str() : str_label.c_str());
+                        createStyleMenu(menu, str_label.c_str(), 
+                                        newmenu ? str_cmd.c_str() : str_label.c_str());
                     }
                 } // end of stylesdir
                 else if (str_key == "workspaces") {
@@ -1744,7 +1730,38 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     s_a_reconf_macro->add(saverc_cmd);
     s_a_reconf_macro->add(reconf_cmd);
     FbTk::RefCount<FbTk::Command> save_and_reconfigure(s_a_reconf_macro);
+    // create focus menu
+    FbTk::Menu *focus_menu = createMenuFromScreen(*this);
 
+    /*    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
+          ConfigmenuSet, ConfigmenuClickToFocus,
+          "Click To Focus"),*/
+    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
+                                                         ConfigmenuSet, 
+                                                         ConfigmenuSloppyFocus,
+                                                         "Sloppy Focus"), 
+                                        resource.sloppy_focus, 
+                                        save_and_reconfigure));
+    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
+                                                         ConfigmenuSet, 
+                                                         ConfigmenuSemiSloppyFocus,
+                                                         "Semi Sloppy Focus"),
+                                        resource.semi_sloppy_focus,
+                                        save_and_reconfigure));
+    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
+                                                         ConfigmenuSet, 
+                                                         ConfigmenuAutoRaise,
+                                                         "Auto Raise"),
+                                        resource.auto_raise,
+                                        save_and_reconfigure));
+
+    focus_menu->update();
+    rootmenuList.push_back(focus_menu);
+
+    menu.insert(i18n->getMessage(
+                                 ConfigmenuSet, ConfigmenuFocusModel,
+                                 "Focus Model"), 
+                focus_menu);
 #ifdef SLIT
     if (getSlit() != 0)
         menu.insert("Slit", &getSlit()->menu());
@@ -1800,11 +1817,12 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     menu.insert(new BoolMenuItem("antialias", *resource.antialias, 
                                  save_and_reconfigure));
 
+
     // finaly update menu 
     menu.update();
 }
 
-void BScreen::createStyleMenu(FbTk::Menu &menu, bool newmenu, 
+void BScreen::createStyleMenu(FbTk::Menu &menu, 
                               const char *label, const char *directory) {
     
     // perform shell style ~ home directory expansion
@@ -1817,30 +1835,34 @@ void BScreen::createStyleMenu(FbTk::Menu &menu, bool newmenu,
         if (S_ISDIR(statbuf.st_mode)) { // is a directory?
 
             DirHelper d(stylesdir.c_str());
+
+            // create a vector of all the filenames in the directory
+            // add sort it
             std::vector<std::string> filelist(d.entries());
             for (size_t file_index = 0; file_index < d.entries(); ++file_index)
                 filelist[file_index] = d.readFilename();
-
-            std::sort(filelist.begin(), filelist.end(), greater<string>());
+            std::sort(filelist.begin(), filelist.end(), less<string>());
 
             int slen = stylesdir.size();
+            // for each file in directory add filename and path to menu
             for (size_t file_index = 0; file_index < d.entries(); file_index++) {
                 int nlen = filelist[file_index].size();
                 char style[MAXPATHLEN + 1];
+
                 strncpy(style, stylesdir.c_str(), slen);
                 *(style + slen) = '/';
                 strncpy(style + slen + 1, filelist[file_index].c_str(), nlen + 1);
+
                 if ( !stat(style, &statbuf) && S_ISREG(statbuf.st_mode)) {
                     FbTk::RefCount<FbTk::Command> setstyle_cmd(new FbCommands::
                                                                SetStyleCmd(style));
                     menu.insert(filelist[file_index].c_str(), setstyle_cmd);
                 }
             } 
-
+            // update menu graphics
             menu.update();
-            // ?? 
             Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
-        } else { // dir
+        } else { // no directory
             fprintf(stderr,
                     i18n->
                     getMessage(
@@ -1848,8 +1870,8 @@ void BScreen::createStyleMenu(FbTk::Menu &menu, bool newmenu,
                         "BScreen::parseMenuFile:"
                         " [stylesdir/stylesmenu] error, %s is not a"
                         " directory\n"), stylesdir.c_str());
-        } // end of 'dir'
-    } else { // stat
+        } // end of directory check
+    } else { // stat failed
         fprintf(stderr,
 		i18n->
 		getMessage(
@@ -1905,10 +1927,9 @@ void BScreen::showPosition(int x, int y) {
 
         geom_visible = true;
     }
-    const int label_size = 1024;
-    char label[label_size];
+    char label[256];
 	
-    snprintf(label, label_size,
+    sprintf(label,
              I18n::instance()->getMessage(
                                           FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
                                           "X: %4d x Y: %4d"), x, y);
@@ -1944,7 +1965,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
         geom_visible = true;
     }
 	
-    char label[1024];
+    char label[256];
 
     sprintf(label,
             I18n::instance()->getMessage(
