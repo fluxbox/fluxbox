@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.263 2004/01/18 19:14:08 fluxgen Exp $
+// $Id: Window.cc,v 1.264 2004/01/19 18:32:12 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1689,6 +1689,8 @@ void FluxboxWindow::setHidden(bool value) {
         m_blackbox_attrib.flags |= ATTRIB_HIDDEN;
     else
         m_blackbox_attrib.flags ^= ATTRIB_HIDDEN;
+
+    m_statesig.notify();
 }
 
 // window has actually RECEIVED focus (got a FocusIn event)
