@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.113 2003/08/23 15:42:48 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.114 2003/08/24 13:17:00 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -266,6 +266,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_theme.reconfigSig().attach(this);
     // listen to screen reconfigure
     screen().reconfigureSig().attach(this);
+    screen().resizeSig().attach(this);
 
     moveToLayer((*m_rc_layernum).getNum());
 
