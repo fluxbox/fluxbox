@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.169 2003/05/11 13:36:11 fluxgen Exp $
+// $Id: Window.cc,v 1.170 2003/05/11 15:32:23 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1163,7 +1163,7 @@ bool FluxboxWindow::setInputFocus() {
         WinClient::TransientList::iterator it_end = m_client->transients.end();
         for (; it != it_end; ++it) {
             if ((*it)->isModal())
-                return (*it)->fbwindow()->setCurrentClient(**it,true);
+                return (*it)->fbwindow()->setCurrentClient(**it, true);
         }
     } else {
         if (m_focus_mode == F_LOCALLYACTIVE || m_focus_mode == F_PASSIVE) {
@@ -1176,6 +1176,8 @@ bool FluxboxWindow::setInputFocus() {
 	screen().setFocusedWindow(*m_client);
 
         Fluxbox::instance()->setFocusedWindow(this);
+
+        m_frame.setFocus(true);
 
         if (send_focus_message)
             m_client->sendFocus();
@@ -1950,8 +1952,13 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     // we're only conserned about client window event
-    if (re.window != m_client->window())
+    WinClient *client = findClient(re.window);
+    if (client == 0) {
+#ifdef DEBUG
+        cerr<<"mapRequestEvent: Can't find client!"<<endl;
+#endif // DEBUG
         return;
+    }
 
     Fluxbox *fluxbox = Fluxbox::instance();
 	
@@ -2006,7 +2013,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         }		
 		
         deiconify(false);
-			
+
 	break;
     case InactiveState:
     case ZoomState:
