@@ -1,5 +1,23 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*03/01/04:
+   * Added spanish locales (Muchas gracias Alberto G. Hierro)
+*02/12/29:
+   * Updated README (Han)
+   * Fixed screenshot and menu configuration in menu script (Han)
+     fluxbox-generate_menu
+*02/12/25:
+   * Minor fixes in FbTk::Button
+     Button.hh/cc
+   * Moved Basemenu to FbTk/ and changed name to Menu
+     and updated Menu to use commands and new MenuTheme
+     Menu.hh/cc
+   * Added FbTk::MenuTheme
+     MenuTheme.hh/cc
+*02/12/20:
+   * Fixes in fluxbox-generate_menu:
+     menu title with space, user menu, cleanups and 
+     simplifications, whitespace. (Han)
 *02/12/17:
    * Comment and minor fixes in fluxbox-generate_menu (Han)
 *02/12/16:
