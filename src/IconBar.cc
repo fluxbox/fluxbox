@@ -22,11 +22,10 @@
 #include "IconBar.hh"
 #include "i18n.hh"
 
-IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin):
-m_fluxboxwin(fluxboxwin),
-m_iconwin(iconwin)
+IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin)
 {
-
+m_fluxboxwin = fluxboxwin;
+m_iconwin = iconwin;
 }
 
 IconBarObj::~IconBarObj() {
@@ -93,10 +92,10 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 	Pixmap tmp = m_focus_pm;
   BTexture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
 	
-  if (texture->getTexture() & BImage_ParentRelative ) {
+  if (texture->getTexture() & BImage::PARENTRELATIVE ) {
 	
 		BTexture *pt = &(m_screen->getWindowStyle()->tab.t_focus);
-		if (pt->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   	  m_focus_pm = None;
 	    m_focus_pixel = pt->getColor()->getPixel();
   	} else
@@ -105,7 +104,7 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 		
 	} else {
 	
-		if (texture->getTexture() == (BImage_Flat | BImage_Solid)) {
+		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   	  m_focus_pm = None;
 	    m_focus_pixel = texture->getColor()->getPixel();
   	} else
