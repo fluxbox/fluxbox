@@ -10,8 +10,16 @@ FONT_OBJ = ../BaseDisplay.o ../Font.o ../XFontImp.o ../XftFontImp.o ../XmbFontIm
 all: testStringUtil testKeys testResource testSignal
 
 .cc.o:
-	$(CXX) -c $(CXXFLAGS) $<
+	$(CXX) -c $(CXXFLAGS) $< -o $@
 	
+../XftFontImp.o: ../XftFontImp.hh ../XftFontImp.cc
+
+../XmbFontImp.o: ../XmbFontImp.hh ../XmbFontImp.cc
+
+../XFontImp.o: ../XFontImp.hh ../XFontImp.cc
+
+../Font.o: ../XFontImp.hh ../XftFontImp.hh ../XmbFontImp.hh ../Font.hh ../Font.cc
+
 StringUtil.o: ../StringUtil.cc ../StringUtil.hh
 	$(CXX) -c $(CXXFLAGS) ../StringUtil.cc -o StringUtil.o
 
