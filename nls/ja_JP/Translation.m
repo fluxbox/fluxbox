@@ -1,218 +1,135 @@
-$ codeset=eucJP
-$set 1 #BaseDisplay
 
-1 %s:  X エラー: %s(%d) opcodes %d/%d\n  resource 0x%lx\n
-2 %s: シグナル %d 発生\n
-3 終了\n
-4 中止 ... コアダンプしますe\n
-5 BaseDisplay::BaseDisplay: X サーバへの接続に失敗.\n
-6 BaseDisplay::BaseDisplay: couldn't mark display connection as close-on-exec\n
-7 BaseDisplay::eventLoop(): イベントキューから不正なウィンドウを消します\n
+$set 0x1 #Align
 
-$set 2 #Basemenu
+0x1 下側-中央
+0x2 下側-左
+0x3 下側-右
+0x4 水平(H)
+0x6 左側-下
+0x7 左側-中央
+0x8 左側-上
+0xb 右側-下
+0xc 右側-中央
+0xd 右側-上
+0xe 上側-中央
+0xf 上側-左
+0x10 上側-右
+0x11 垂直(V)
 
-1 FluxBox メニュー
-
-$set 3 #Configmenu
-
-1 設定オプション
-2 フォーカスモデル
-3 ウィンドウ配置
-4 画像ディザ
-5 ウィンドウの内容を表示したまま移動
-6 完全最大化(タスクバー無視)
-7 新規ウィンドウにフォーカス
-8 ワークスペース移動時に最後のウィンドウにフォーカス
-9 クリックでフォーカス
-10 カーソルオーバーでフォーカス
-11 フォーカスを当てたときに最前面に移動
-12 賢く配置 (行:ROW)
-13 賢く配置 (列:COL)
-14 カスケード配置
-15 左から右へ
-16 右から左へ
-17 上から下へ
-18 下から上へ
-19 タブを表示
-20 アイコンの表示
-21 タブの表示位置
-22 タブの自動回転
-23 カーソルオーバーでフォーカス(SemiSloppy)
-24 Slitを越えて最大化
-25 Window内にタブドロップでもタブグループに
-26 ウィンドウドラッグでワークスペースを移動
-27 マウスホイールでワークスペース切り換え
-28 アンチエイリアス
-
-$set 4 #Icon
-
-1 アイコン
-
-$set 5 #Image
-
-1 BImage::render_solid: pixmap 生成エラー\n
-2 BImage::renderXImage: XImage 生成エラー\n
-3 BImage::renderXImage: 未サポートの視覚効果\n
-4 BImage::renderPixmap: pixmap 生成エラー\n
-5 BImageControl::BImageControl: 不正なカラーマップサイズ %d (%d/%d/%d) - 減色中\n
-6 BImageControl::BImageControl: \n
-7 BImageControl::BImageControl: カラー %d/%d/%d の確保に失敗\n
-8 BImageControl::~BImageControl: pixmap キャッシュ - %d pixmap を解放\n
-9 BImageControl::renderImage: キャッシュが大きすぎるので強制的に削除\n
-10 BImageControl::getColor: カラー解析エラー: '%s'\n
-11 BImageControl::getColor: カラー確保エラー: '%s'\n
-
-$set 6 #Screen
-
-1 BScreen::BScreen: X サーバ問合せ中にエラー発生.\n  \
-他のウィンドゥマネージャが既に起動しています %s.\n
-2 BScreen::BScreen: スクリーン %d を視覚効果 0x%lx, 色深度 %d で制御\n
-3 BScreen::LoadStyle(): フォント '%s' を読み込めませんでした\n
-4 BScreen::LoadStyle(): デフォルトフォントを読み込めませんでした.\n
-5 %s: メニューファイルが空でした\n
-6 Ｘたーむ
-7 再起動
-8 終了
-9 BScreen::parseMenuFile: [exec] エラー, メニューラベルかコマンドが未定義です\n
-10 BScreen::parseMenuFile: [exit] エラー, メニューラベル未定義です\n
-11 BScreen::parseMenuFile: [style] エラー, メニューラベルかファイル名が未定義です\n
-12 BScreen::parseMenuFile: [config] エラー, メニューラベルが未定義です\n
-13 BScreen::parseMenuFile: [include] エラー, ファイル名が未定義です\n
-14 BScreen::parseMenuFile: [include] エラー, '%s' は通常ファイルではないようです\n
-15 BScreen::parseMenuFile: [submenu] エラー, メニューラベルが未定義\n
-16 BScreen::parseMenuFile: [restart] エラー, メニューラベルが未定義\n
-17 BScreen::parseMenuFile: [reconfig] エラー, メニューラベルが未定義\n
-18 BScreen::parseMenuFile: [stylesdir/stylesmenu] エラー, ディレクトリ名が未定義\n
-19 BScreen::parseMenuFile: [stylesdir/stylesmenu] エラー, '%s' はディレクトリではありません\n
-20 BScreen::parseMenuFile: [stylesdir/stylesmenu] エラー, '%s' は存在しません\n
-21 BScreen::parseMenuFile: [workspaces] エラー, メニューラベルが未定義\n
-22 0: 0000 x 0: 0000
-23 X: %4d x Y: %4d
-24 幅: %4d x 高: %4d
-25 幅: 0000 x 高: 0000
+$set 0x2 #BaseDisplay
 
 
-$set 7 #Slit
+$set 0x3 #Common
 
-1 Slit
-2 Slit の方向
-3 Slit の配置
+0x2 自動的に隠す
 
-$set 8 #Toolbar
+$set 0x4 #Configmenu
 
-1 00:00000
-2 %02d/%02d/%02d
-3 %02d.%02d.%02d
-4  %02d:%02d 
-5 %02d:%02d %sm
-6 p
-7 a
-8 ツールバー
-9 現在のワークスペース名を編集
-10 ツールバーの配置
+0x1 アンチエイリアス
+0x2 フォーカスを当てたときに最前面に移動
+0x4 クリックでフォーカス
+0x7 ワークスペース移動時に最後のウィンドウにフォーカス
+0x8 フォーカスモデル
+0x9 新規ウィンドウにフォーカス
+0xa 完全最大化(タスクバー無視)
+0xb 画像ディザ
+0xc ウィンドウの内容を表示したまま移動
+0xd カーソルオーバーでフォーカス(SemiSloppy)
+0xe カーソルオーバーでフォーカス
+0xf ウィンドウドラッグでワークスペースを移動
 
-$set 9 #Window
+$set 0x5 #Ewmh
 
 
-1 BlackboxWindow::BlackboxWindow: 0x%lx を生成中\n
-2 BlackboxWindow::BlackboxWindow: XGetWindowAttributres failed\n
-3 BlackboxWindow::BlackboxWindow: root window 0x%lx に対するスクリーンが見つかりません\n
-4 名前なし
-5 BlackboxWindow::mapRequestEvent() for 0x%lx\n
-6 BlackboxWindow::unmapNotifyEvent() for 0x%lx\n
-7 BlackboxWindow::unmapnotifyEvent: reparent 0x%lx to root\n
+$set 0x6 #FbTkError
 
-$set 10 #Windowmenu
 
-1 送る ...
-2 グループを送る ...
-3 バーに格納
-4 アイコン化（タイトルバーに格納）
-5 最大化
-6 最前面に持ってくる
-7 最背面に持っていく
-8 すべてのワークスペースで表示
-9 強制終了
-10 閉じる
-11 タブ
+$set 0x7 #Fluxbox
 
-$set 11 #Workspace
 
-1 ワークスペース %d
+$set 0x8 #Gnome
 
-$set 12 #Workspacemenu
 
-1 ワークスペース
-2 新規ワークスペース作成
-3 末尾のワークスペースを削除
+$set 0x9 #Keys
 
-$set 13 #blackbox
 
-1 Blackbox::Blackbox: 操作可能なスクリーンがありません、中止します\n
-2 Blackbox::process_event: MapRequest for 0x%lx\n
+$set 0xa #Menu
 
-$set 14 #Common
+0x3 終了
+0x4 アイコン
+0x7 配置
+0x9 再起動
+0xa Ｘたーむ
 
-1 はい
-2 いいえ
+$set 0xb #Remember
 
-3 方向
-4 水平(H)
-5 垂直(V)
 
-6 常に最前面に
+$set 0xc #Screen
 
-7 配置
-8 上側-左
-9 中央-左
-10 下側-左
-11 上側-中央
-12 下側-中央
-13 上側-右
-14 中央-右
-15 下側-右
-16 左側-上
-17 左側-中央
-18 左側-下
-19 右側-上
-20 右側-中央
-21 右側-下
-22 上からの相対
-23 下からの相対
-24 左からの相対
-25 右からの相対
-26 自動的に隠す
+0x2 幅: %4d x 高: %4d
+0x3 幅: 0000 x 高: 0000
+0x5 X: %4d x Y: %4d
+0x6 0: 0000 x 0: 0000
 
-$set 15 #main
+$set 0xd #Slit
 
-1 error: '-rc' オプションは引数を必要とします\n
-2 error: '-display' オプションは引数を必要とします\n
-3 warning: 環境変数 'DISPLAY' を設定できませんでした\n
-4 Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
-  -display <string>\t\t 指定ディスプレイに接続.\n\
-  -rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
-  -version\t\t\t バージョン情報を表示して終了.\n\
-  -info\t\t\t\tdisplay some useful information.\n\
-  -log <filename>\t\t\tlog output to file.\n\
-  -help\t\t\t\t このヘルプを表示して終了.\n\n
-5 コンパイル時のオプション:\n\
-  Debugging\t\t\t%s\n\
-  Interlacing:\t\t\t%s\n\
-  Shape:\t\t\t%s\n\
-  Slit:\t\t\t\t%s\n\
-  8bpp Ordered Dithering:\t%s\n\n
+0x4 Slit の方向
+0x7 Slit の配置
+0x8 Slit
 
-$set 16 #bsetroot
+$set 0xe #Toolbar
 
-1 %s: error: 次の中から一つを選択しなければなりません: -solid, -mod, -gradient\n
-2 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
-  -display <string>        指定ディスプレイに接続\n\
-  -mod <x> <y>             格子のパターン間隔\n\
-  -foreground, -fg <color> 格子模様の前景色\n\
-  -background, -bg <color> 格子模様の背景色\n\n\
-  -gradient <texture>      グラデーション（テクスチャ）\n\
-  -from <color>            グラデーションの開始色\n\
-  -to <color>              グラデーションの終了色\n\n\
-  -solid <color>           単色\n\n\
-  -help                    このヘルプを表示して終了\n
+0x1 現在のワークスペース名を編集
+0xa ツールバーの配置
+0xb ツールバー
+
+$set 0xf #Window
+
+0x1 名前なし
+
+$set 0x10 #Windowmenu
+
+0x1 閉じる
+0x2 アイコン化（タイトルバーに格納）
+0x4 最背面に持っていく
+0x5 最大化
+0x6 最前面に持ってくる
+0x7 送る ...
+0x8 バーに格納
+0x9 すべてのワークスペースで表示
+
+$set 0x11 #Workspace
+
+0x1 ワークスペース %d
+0x2 ワークスペース
+0x3 新規ワークスペース作成
+0x4 末尾のワークスペースを削除
+
+$set 0x12 #bsetroot
+
+0x1 %s: error: 次の中から一つを選択しなければなりません: -solid, -mod, -gradient\n
+0x3 %s 2.0: (c) 1997-2000 Brad Hughes\n\n\
+-display <string>        指定ディスプレイに接続\n\
+-mod <x> <y>             格子のパターン間隔\n\
+-foreground, -fg <color> 格子模様の前景色\n\
+-background, -bg <color> 格子模様の背景色\n\n\
+-gradient <texture>      グラデーション（テクスチャ）\n\
+-from <color>            グラデーションの開始色\n\
+-to <color>              グラデーションの終了色\n\n\
+-solid <color>           単色\n\n\
+-help                    このヘルプを表示して終了\n
+
+$set 0x13 #main
+
+0x1 error: '-display' オプションは引数を必要とします\n
+0xb error: '-rc' オプションは引数を必要とします\n
+0xc Fluxbox %s: (c) %s Henrik Kinnunen\n\n\
+-display <string>\t\t 指定ディスプレイに接続.\n\
+-rc <string>\t\t\t 代わりのリソースファイルを使用.\n\
+-version\t\t\t バージョン情報を表示して終了.\n\
+-info\t\t\t\tdisplay some useful information.\n\
+-log <filename>\t\t\tlog output to file.\n\
+-help\t\t\t\t このヘルプを表示して終了.\n\n
+
+$set 0xd #mainWarnDisplay
 
