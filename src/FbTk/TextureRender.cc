@@ -1,5 +1,5 @@
 // TextureRender.cc for fluxbox
-// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002 - 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // from Image.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.7 2004/01/21 14:16:41 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.8 2004/01/21 20:19:50 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -59,7 +59,7 @@ TextureRender::TextureRender(ImageControl &imgctrl,
         height = 3200;
     }
 
-    red = new unsigned char[width * height];
+    red = new(nothrow) unsigned char[width * height];
     if (red == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
@@ -67,14 +67,14 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     }
 
 
-    green = new unsigned char[width * height];
+    green = new(nothrow) unsigned char[width * height];
     if (green == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
         throw string("TextureRender::TextureRender(): Out of memory while allocating green buffer. size " + string(sbuf));
     }
 
-    blue = new unsigned char[width * height];
+    blue = new(nothrow) unsigned char[width * height];
     if (blue == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
