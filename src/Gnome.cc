@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.25 2003/05/19 22:40:40 fluxgen Exp $
+// $Id: Gnome.cc,v 1.26 2003/06/12 14:28:00 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -61,6 +61,7 @@ void Gnome::initForScreen(BScreen &screen) {
                     m_gnome_wm_supporting_wm_check, 
                     XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
 
+    // supported gnome atoms
     Atom gnomeatomlist[] = {
         m_gnome_wm_supporting_wm_check,
         m_gnome_wm_win_workspace_names,
@@ -69,7 +70,6 @@ void Gnome::initForScreen(BScreen &screen) {
         m_gnome_wm_win_hints,
         m_gnome_wm_win_layer
     };
-
     //list atoms that we support
     screen.rootWindow().changeProperty(m_gnome_wm_prot, 
                                        XA_ATOM, 32, PropModeReplace,
@@ -143,7 +143,7 @@ void Gnome::updateClientList(BScreen &screen) {
 	
     Window *wl = new (nothrow) Window[num];
     if (wl == 0) {
-        cerr<<"Fatal: Out of memory, can't allocate for gnome client list"<<endl;
+        cerr<<"Fatal: Out of memory, can't allocate ("<<num*sizeof (Window)<<") for gnome client list"<<endl;
         return;
     }
 
@@ -180,24 +180,25 @@ void Gnome::updateClientList(BScreen &screen) {
 }
 
 void Gnome::updateWorkspaceNames(BScreen &screen) {
-    XTextProperty	text;
+
     int number_of_desks = screen.getWorkspaceNames().size();
-	
-    char s[1024];
+    const BScreen::WorkspaceNames &workspace_names = screen.getWorkspaceNames();
+    // convert our desktop names to a char * so we can send it
     char *names[number_of_desks];		
-	
+    
     for (int i = 0; i < number_of_desks; i++) {		
-        sprintf(s, "Desktop %i", i);
-        names[i] = new char[strlen(s) + 1];
-        strcpy(names[i], s);
+        names[i] = new char[workspace_names[i].size() + 1];
+        strcpy(names[i], workspace_names[i].c_str());
     }
-	
+
+    XTextProperty  text;	
     if (XStringListToTextProperty(names, number_of_desks, &text)) {
         XSetTextProperty(FbTk::App::instance()->display(), screen.rootWindow().window(),
 			 &text, m_gnome_wm_win_workspace_names);
         XFree(text.value);
     }
-	
+
+    // destroy name buffers
     for (int i = 0; i < number_of_desks; i++)
         delete [] names[i];
 }
