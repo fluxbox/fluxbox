@@ -1,7 +1,8 @@
-# nls/Makefile.am for Blackbox 0.61.x - an X11 Window Manager
+# nls/Makefile.am for fluxbox - http://fluxbox.sf.net
 
 NLSTEST = @NLS@
-SUBDIRS = C da_DK es_ES et_EE fr_FR pt_BR ru_RU sv_SE tr_TR it_IT pt_PT bg_BG ja_JP lv_LV
+SUBDIRS = C da_DK es_ES et_EE fr_FR pt_BR ru_RU sv_SE \
+	tr_TR it_IT pt_PT bg_BG ja_JP lv_LV de_DE
 MAINTAINERCLEANFILES = Makefile.in blackbox-nls.hh
 EXTRA_DIST=blackbox-nls.hh convert.awk
 
