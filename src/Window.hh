@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.82 2003/06/25 13:37:06 fluxgen Exp $
+// $Id: Window.hh,v 1.83 2003/07/10 11:32:57 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -148,7 +148,6 @@ public:
     /// create a window from a client
     FluxboxWindow(WinClient &client, BScreen &scr,
                   FbWinFrameTheme &tm,
-                  FbTk::MenuTheme &menutheme,
                   FbTk::XLayer &layer);
 
     virtual ~FluxboxWindow();

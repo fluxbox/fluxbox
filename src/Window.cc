@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.202 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Window.cc,v 1.203 2003/07/10 11:33:31 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -220,7 +220,6 @@ void LayerMenuItem<FluxboxWindow>::click(int button, int time) {
 }
 
 FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
-                             FbTk::MenuTheme &menutheme, 
                              FbTk::XLayer &layer):
     oplock(false),
     m_hintsig(*this),
@@ -235,13 +234,13 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_screen(scr),
     m_timer(this),
     display(0),
-    m_layermenu(new LayerMenu<FluxboxWindow>(menutheme, 
+    m_layermenu(new LayerMenu<FluxboxWindow>(*scr.menuTheme(), 
                                              scr.screenNumber(),
                                              scr.imageControl(), 
                                              *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                                              this,
                                              false)),
-    m_windowmenu(menutheme, scr.screenNumber(), scr.imageControl()),
+    m_windowmenu(*scr.menuTheme(), scr.screenNumber(), scr.imageControl()),
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
     m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
