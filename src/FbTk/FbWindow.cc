@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.24 2003/08/15 13:52:06 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.25 2003/08/26 23:45:36 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -357,6 +357,15 @@ void FbWindow::changeProperty(Atom property, Atom type,
 
 int FbWindow::screenNumber() const {
     return m_screen_num;
+}
+
+long FbWindow::eventMask() const {
+    XWindowAttributes attrib;
+    if (XGetWindowAttributes(s_display, window(), 
+                         &attrib) == Success) {
+        return attrib.your_event_mask;
+    }
+    return 0;
 }
 
 void FbWindow::updateGeometry() {

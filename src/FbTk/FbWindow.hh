@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.22 2003/08/15 13:52:06 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.23 2003/08/26 23:45:36 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -132,6 +132,7 @@ public:
     unsigned int borderWidth() const { return m_border_width; }
     int depth() const { return m_depth; }
     int screenNumber() const;
+    long eventMask() const;
     /// compare X window
     bool operator == (Window win) const { return m_window == win; }	
     bool operator != (Window win) const { return m_window != win; }
