@@ -1,5 +1,5 @@
 // Xutil.cc for Fluxbox - an X11 Window manager
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xutil.cc,v 1.2 2003/10/02 16:14:41 rathnor Exp $
+// $Id: Xutil.cc,v 1.3 2004/01/11 16:04:39 fluxgen Exp $
 
 #include "Xutil.hh"
 
