@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.hh,v 1.1 2002/08/13 23:57:04 fluxgen Exp $
+// $Id: SignalHandler.hh,v 1.2 2002/08/14 22:49:32 fluxgen Exp $
 
 #ifndef FBTK_SIGNALHANDLER_HH
 #define FBTK_SIGNALHANDLER_HH
@@ -30,6 +30,9 @@ namespace FbTk {
 
 /**
 	Handles system signals, singleton.
+	Usage: inherit the class EventHandler and then register 
+	it to SignalHandler by calling registerHandler with
+	a signal number
 */
 class SignalHandler {
 public:
