@@ -26,6 +26,12 @@
 #include "StringUtil.hh"
 #include "Color.hh"
 
+#ifdef XINERAMA
+extern  "C" {
+#include <X11/extensions/Xinerama.h>
+}
+#endif // XINERAMA
+
 #include <string>
 #include <iostream>
 
@@ -158,10 +164,44 @@ int main(int argc, char **argv) {
                               &ret_win, &child_win,
                               &x, &y, &wx, &wy, &mask)) {
 
-                if ( x - (fbrun.width()/2) > 0 )
-                    x-= fbrun.width()/2;
-                if ( y - (fbrun.height()/2) > 0 )
-                    y-= fbrun.height()/2;
+                int root_x = 0;
+                int root_y = 0;
+                unsigned int root_w = WidthOfScreen(DefaultScreenOfDisplay(dpy));
+                unsigned int root_h = HeightOfScreen(DefaultScreenOfDisplay(dpy));
+#ifdef XINERAMA
+                if(XineramaIsActive(dpy)) {
+                    XineramaScreenInfo* screen_info = 0;
+                    int number = 0;
+                    screen_info = XineramaQueryScreens(dpy, &number);
+                    if (screen_info) {
+                        for(int i= 0; i < number; i++) {
+                            if (x >= screen_info[i].x_org &&
+                                x <  screen_info[i].x_org + screen_info[i].width &&
+                                y >= screen_info[i].y_org &&
+                                y <  screen_info[i].y_org + screen_info[i].height) {
+                                root_x = screen_info[i].x_org;
+                                root_y = screen_info[i].y_org;
+                                root_w = screen_info[i].width;
+                                root_h = screen_info[i].height;
+                                break;
+                            }
+                        }
+
+                        XFree(screen_info);
+                    }
+                }
+#endif // XINERAMA
+                x-= fbrun.width()/2;
+                y-= fbrun.height()/2;
+
+                if (x < root_x)
+                    x = root_x;
+                if (x + fbrun.width() > root_x + root_w)
+                    x = root_x + root_w - fbrun.width();
+                if (y < root_y)
+                    y = root_y;
+                if (y + fbrun.height() > root_y + root_h)
+                    y = root_y + root_h - fbrun.height();
             }
         }
         
