@@ -255,6 +255,7 @@ texture61: Gradient PipeCross bevel2
 texture61.color: blue
 texture61.colorTo: green
 
-texture62: Gradient Elliptic bevel2
+texture62: Gradient Elliptic bevel2 tiled
+texture62.pixmap: max.xpm
 texture62.color: blue
 texture62.colorTo: green
