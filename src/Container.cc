@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Container.cc,v 1.3 2003/09/08 16:28:32 fluxgen Exp $
+// $Id: Container.cc,v 1.4 2003/09/15 20:13:24 fluxgen Exp $
 
 #include "FbTk/Button.hh"
 #include "Container.hh"
@@ -162,7 +162,7 @@ void Container::setSelected(int pos) {
 }
 
 void Container::exposeEvent(XExposeEvent &event) {
-    clear();
+    clearArea(event.x, event.y, event.width, event.height);
 }
 
 void Container::repositionItems() {
