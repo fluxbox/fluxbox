@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.3 2003/08/13 22:52:35 fluxgen Exp $
+// $Id: Shape.cc,v 1.4 2003/08/24 15:37:12 fluxgen Exp $
 
 #include "Shape.hh"
 #include "FbWindow.hh"
@@ -192,4 +192,30 @@ void Shape::update() {
 void Shape::setWindow(FbTk::FbWindow &win) {
     m_win = &win;
     update();
+}
+
+void Shape::setShapeNotify(const FbTk::FbWindow &win) {
+#ifdef SHAPE
+    XShapeSelectInput(FbTk::App::instance()->display(), 
+                      win.window(), ShapeNotifyMask);
+#endif // SHAPE
+}
+
+bool Shape::isShaped(const FbTk::FbWindow &win) {
+    int shaped = 0;
+
+#ifdef SHAPE
+    int not_used;
+    unsigned int not_used2;
+    XShapeQueryExtents(FbTk::App::instance()->display(),
+                       win.window(), 
+                       &shaped,  /// bShaped
+                       &not_used, &not_used,  // xbs, ybs
+                       &not_used2, &not_used2, // wbs, hbs
+                       &not_used, // cShaped
+                       &not_used, &not_used, // xcs, ycs
+                       &not_used2, &not_used2); // wcs, hcs
+#endif // SHAPE
+
+    return (shaped != 0 ? true : false);
 }
