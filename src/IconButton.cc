@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.21 2004/06/16 15:38:19 rathnor Exp $
+// $Id: IconButton.cc,v 1.22 2004/07/15 14:20:19 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -29,6 +29,7 @@
 #include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
+#include "CommandParser.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/SimpleCommand.hh"
@@ -93,7 +94,10 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                   ExposureMask | ButtonPressMask | ButtonReleaseMask),
     m_use_pixmap(true) {
 
-    FbTk::RefCount<FbTk::Command> hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
+    typedef FbTk::RefCount<FbTk::Command> RefCmd;
+    RefCmd hidemenus(new FbTk::SimpleCommand<BScreen>(win.screen(), &BScreen::hideMenus));
+    RefCmd next_workspace(CommandParser::instance().parseLine("nextworkspace"));
+    RefCmd prev_workspace(CommandParser::instance().parseLine("prevworkspace"));
     //!! TODO: There're some issues with MacroCommand when
     //         this object dies when the last macrocommand is executed (focused cmd)
     //         In iconbar mode Icons
@@ -104,6 +108,8 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     FbTk::RefCount<FbTk::Command> menu_cmd(new ::ShowMenu(m_win));
     setOnClick(focus_cmd, 1);
     setOnClick(menu_cmd, 3);
+    setOnClick(next_workspace, 4);
+    setOnClick(prev_workspace, 5);
     m_win.hintSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
