@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.4 2002/12/01 13:42:14 rathnor Exp $
+// $Id: XFontImp.cc,v 1.5 2002/12/09 22:12:56 fluxgen Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
@@ -34,7 +34,7 @@ using namespace std;
 namespace FbTk {
 
 XFontImp::XFontImp(const char *fontname):m_rotfont(0), m_fontstruct(0),
-                                         m_angle(0) {
+                                         m_angle(0), m_rotate(true) {
     if (fontname != 0)
         load(fontname);	
 }
@@ -63,6 +63,12 @@ bool XFontImp::load(const std::string &fontname) {
         XFreeFont(App::instance()->display(), m_fontstruct);
 
     m_fontstruct = font; //set new font
+
+    if (m_rotfont != 0) {
+        freeRotFont(); // free old rotated font
+        rotate(m_angle); // allocate new rotated font and rotate it to old angle
+    }
+
     return true;
 }
 
@@ -70,7 +76,7 @@ void XFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_t 
     if (m_fontstruct == 0)
         return;
     // use roated font functions?
-    if (m_rotfont != 0) {
+    if (m_rotfont != 0 && m_rotate) {
         drawRotText(w, screen, gc, text, len, x, y);
         return;
     }
@@ -101,17 +107,23 @@ unsigned int XFontImp::height() const {
 
 void XFontImp::rotate(float angle) {
     //we must have a font loaded before we rotate
-    if (m_fontstruct == 0)
+    if (m_fontstruct == 0 || m_fontstruct->per_char == 0)
         return;
+
     if (m_rotfont != 0)
         freeRotFont();
+
     // no need for rotating, use regular font
-    if (angle == 0)
+    if (angle == 0) {
+        m_angle = 0;
         return;
+    }
 
     //get positive angle
     while (angle < 0)
         angle += 360;
+
+    m_angle = angle;
 
     char val;
     XImage *I1, *I2;
