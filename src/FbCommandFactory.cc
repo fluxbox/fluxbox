@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.2 2003/06/30 19:51:07 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.3 2003/06/30 21:50:37 fluxgen Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -37,7 +37,10 @@ FbCommandFactory FbCommandFactory::s_autoreg;
 
 FbCommandFactory::FbCommandFactory() {
     // setup commands that we can handle
-    const char commands[][20] = {
+    const char commands[][25] = {
+		"setstyle",
+		"saverc",
+		"reconfigure"
         "execcommand",
         "exec",
         "execute",
@@ -60,13 +63,14 @@ FbCommandFactory::FbCommandFactory() {
         "shade",
         "stick",
         "toggledecor",
-        "sendtoworkspace",
+        "sendtoworkspace",	
         "killwindow",
         "nexttab",
         "prevtab",
         "detachclient",
         "nextworkspace",
         "prevworkspace",
+		"workspace",
         "nextwindow",
         "prevwindow",
         "showdesktop",
