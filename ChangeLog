@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/04/19:
+  * Minor fix for fbrun using FbTk::Directory (Thanks Mathias Gumz)
+    Directory.hh/cc, FbRun.cc
 *04/04/18:
+  * Fixed decoration bug with mwm hint + remember (Thanks Mathias Gumz)
+    fluxbox.hh/cc, Window.hh/cc
   * Fixed round courners bug in menu (Henrik)
     FbMenu.hh/cc, FbTk/Menu.hh
   * Minor fix for decor/position remember state (Thanks Mathias Gumz)
