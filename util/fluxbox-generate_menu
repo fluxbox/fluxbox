@@ -1,0 +1,454 @@
+#!/bin/sh
+# generate_menu for Fluxbox
+# Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+# Functions
+
+display_usage () {
+	echo
+	echo "fluxbox-generate_menu"
+	echo 'Usage: fluxbox-generate_menu [-kg] [-o /path]'
+	echo '         [-p /path] [-m menu-title]'
+	echo "Options:"
+	echo "  -k  Insert a kde menu"
+	echo "  -g  Add a gnome menu"
+	echo "  -p  Package-datadir; default is /usr/local/share"
+	echo "  -o  Outputfile; default is ~/.fluxbox/menu"
+	echo '  -m  Menu-title; default is "Fluxbox"'
+	echo "  -h  Display this help"
+	echo "  -a  Display the authors of this script"
+	echo
+}
+display_help () {
+	echo
+	echo "This program generates a menu-file for fluxbox."
+	echo "Use fluxbox-generate_menu -h for brief usage instructions"
+	echo
+}
+
+display_authors () {
+	echo
+	echo "This program was brought to you by:"
+	echo
+	echo "Henrik Kinnunnen:	Project leader."
+	echo "Han Boetes:		Packaging, debugging and scripts."
+	echo "Jeramy B. Smith:	Packaging assistance, gnome and kde menu system."
+	echo "Xyrnix:			Mysterious guest developer who made find_it module."
+	echo `whoami`":			Innocent bystander."
+	echo
+}
+
+find_it() {
+	which $1 > /dev/null 2> /dev/null && shift && $*
+}
+
+append() {
+	echo "	$*" >> ${FILENAME}
+}
+
+append_menu() {
+	echo "$*" >> ${FILENAME}
+}
+
+append_submenu() {
+	echo >> ${FILENAME}
+	append_menu "[submenu] ($1)"
+}
+
+append_menu_end() {
+	append_menu "[end]"
+	echo >> ${FILENAME}
+}
+
+menu_entry() {
+	append "[exec] ("`grep -v GenericName $* | grep Name= | cut -d = -f 2`") \
+	{"`grep -v TryExec $* | grep Exec= | cut -d = -f 2`"}"
+}
+
+menu_entry_dircheck() {
+	if [ -d "$*" ]; then
+		menu_entry_dir "$*"
+	fi
+}
+
+menu_entry_dir() {
+	for b in `ls "$*"/*.desktop 2>/dev/null `; do
+		menu_entry "${b}"
+	done
+}
+
+# Get options.
+while getopts ":khagp:o:m:" COMMAND_LINE_ARGUMENT ; do
+    case "${COMMAND_LINE_ARGUMENT}" in
+	k) KDEMENU=yes ;;
+	g) GNOMEMENU=yes ;;
+	o) FILENAME=${OPTARG} ;;
+	p) PKGDATADIR=${OPTARG} ;;
+	m) MENUTITLE=${OPTARG} ;;
+	h) display_usage ; exit 0 ;;
+	a) display_authors ; exit 0 ;;
+	*) display_help ; exit 1 ;;
+    esac
+done
+
+
+# Set Defaults
+
+# menufile name and make a backup
+if [ -z ${FILENAME} ]; then
+	FILENAME=${HOME}/.fluxbox/menu
+fi
+
+if [ ! -z ${FILENAME} ]; then 
+	if [ -w ${FILENAME} ]; then
+		cp -f ${FILENAME} ${FILENAME}.bak
+	fi
+fi
+
+#packagedatadir
+if [ -z "${PKGDATADIR}" ]; then
+	PKGDATADIR=/usr/share
+fi
+
+# menutitle
+if [ -z "${MENUTITLE}" ]; then
+	MENUTITLE="Fluxbox"
+fi
+
+# menu defaults (if translation forget to set one of them)
+BROWSERMENU="Browsers"
+EDITORMENU="Editors"
+NETMENU="Net"
+GRAPHICMENU="Graphics"
+MUSICMENU="Music"
+TERMINALMENU="Terminals"
+MISCMENU="Misc"
+XUTILSMENU="X-utils"
+FBSETTINGSMENU="FB-Settings"
+KDEMENUTEXT="KDE-menus"
+GNOMEMENUTEXT="Gnome-menus"
+RESTARTITEM="Restart"
+EXITITEM="Exit"
+CONFIGUREMENU="Configure"
+RELOADITEM="Reload config"
+STYLEMENU="Styles"
+STYLEMENUTITLE="Choose a style..."
+WORKSPACEMENU="Workspace List"
+
+# Check translation
+case ${LC_ALL} in
+	ru_RU) #Russian locales
+		BROWSERMENU="âÒÁÕÚÅÒÙ"
+		EDITORMENU="òÅÄÁËÔÏÒÙ"
+		NETMENU="óÅÔØ"
+		GRAPHICMENU="çÒÁÆÉËÁ"
+		MUSICMENU="ú×ÕË"
+		TERMINALMENU="ôÅÒÍÉÎÁÌÙ"
+		MISCMENU="ðÒÏÞÅÅ"
+		XUTILSMENU="X-ÕÔÉÌÉÔÙ"
+		FBSETTINGSMENU="FB-ÎÁÓÔÒÏÊËÉ"
+		KDEMENUTEXT="KDE-ÍÅÎÀ"
+		GNOMEMENUTEXT="Gnome-ÍÅÎÀ"
+		RESTARTITEM="ðÅÒÅÚÁÐÕÓÔÉÔØ"
+		EXITITEM="÷ÙÊÔÉ"
+		CONFIGUREMENU="îÁÓÔÒÏÊËÁ"
+		RELOADITEM="ðÅÒÅÎÁÓÔÒÏÉÔØ"
+		STYLEMENU="óÔÉÌÉ"
+		STYLEMENUTITLE="÷ÙÂÅÒÉÔÅ ÓÔÉÌØ"
+		WORKSPACEMENU="òÁÂÏÞÉÅ ÐÒÏÓÔÒÁÎÓÔ×Á"
+	;;
+	sv_SE) #Swedish locales
+		BROWSERMENU="Browsers"
+		EDITORMENU="Editorer"
+		NETMENU="Net"
+		GRAPHICMENU="Grafik"
+		MUSICMENU="Musik"
+		TERMINALMENU="Terminaler"
+		MISCMENU="Blandat"
+		XUTILSMENU="X-program"
+		FBSETTINGSMENU="FB-inställningar"
+		KDEMENUTEXT="KDE-menyer"
+		GNOMEMENUTEXT="Gnome-menyer"
+		RESTARTITEM="Starta om"
+		EXITITEM="Exit"
+		CONFIGUREMENU="Konfiguration"
+		RELOADITEM="Ladda om konfig"
+		STYLEMENU="Stiler"
+		STYLEMENUTITLE="Välj en stil"
+		WORKSPACEMENU="Arbetsytor"
+	;;
+	nl_NL) #Nederlandse locales
+		BROWSERMENU="Browsers"
+		EDITORMENU="Editors"
+		NETMENU="Net"
+		GRAPHICMENU="Grafisch"
+		MUSICMENU="Muziek"
+		TERMINALMENU="Terminals"
+		MISCMENU="Onregelmatig"
+		XUTILSMENU="X-utils"
+		FBSETTINGSMENU="FB-Instellingen"
+		KDEMENUTEXT="KDE-menu"
+		GNOMEMENUTEXT="Gnome-menu"
+		RESTARTITEM="Restart"
+		EXITITEM="Einde"
+		CONFIGUREMENU="Instellingen"
+		RELOADITEM="Vernieuwen"
+		STYLEMENU="Stylen"
+		STYLEMENUTITLE="Kies een styl..."
+		WORKSPACEMENU="Werkveld Lijst"
+	;;
+	fi_FI) #Finnish locales
+		BROWSERMENU="Selaimet"
+		EDITORMENU="Editorit"
+		NETMENU="Verkko"
+		GRAPHICMENU="Grafiikka"
+		MUSICMENU="Musikki"
+		TERMINALMENU="Terminaalit"
+		MISCMENU="Sekalaista"
+		XUTILSMENU="X-Ohjelmat"
+		FBSETTINGSMENU="FB:n Asetukset"
+		KDEMENUTEXT="KDE:n valikot"
+		GNOMEMENUTEXT="Gnomen valikot"
+		RESTARTITEM="Käynnistä uudelleen"
+		EXITITEM="Lopeta"
+		CONFIGUREMENU="Konfigurointi"
+		RELOADITEM="Päivitä"
+		STYLEMENU="Tyylit"
+		STYLEMENUTITLE="Valitse tyyli"
+		WORKSPACEMENU="Työaluet"
+	;;
+	ja_JP) #Japanese locales
+		BROWSERMENU="¥Ö¥é¥¦¥¶"
+		EDITORMENU="¥¨¥Ç¥£¥¿"
+		NETMENU="¥Í¥Ã¥È¥ï¡¼¥¯"
+		GRAPHICMENU="²èÁü"
+		MUSICMENU="²»³Ú"
+		TERMINALMENU="¥¿¡¼¥ß¥Ê¥ë"
+		MISCMENU="¤¤¤í¤¤¤í"
+		XUTILSMENU="X¥æ¡¼¥Æ¥£¥ê¥Æ¥£"
+		FBSETTINGSMENU="FluxboxÀßÄê"
+		KDEMENUTEXT="KDE¥á¥Ë¥å¡¼"
+		GNOMEMENUTEXT="Gnome¥á¥Ë¥å¡¼"
+		RESTARTITEM="ºÆµ¯Æ°"
+		EXITITEM="½ªÎ»"
+		CONFIGUREMENU="ÀßÄê"
+		RELOADITEM="ºÆÆÉ¤ß¹þ¤ß"
+		STYLEMENU="¥¹¥¿¥¤¥ë"
+		STYLEMENUTITLE="¥¹¥¿¥¤¥ëÁªÂò..."
+		WORKSPACEMENU="¥ï¡¼¥¯¥¹¥Ú¡¼¥¹"
+	;;
+	fr_FR) # french		
+		BROWSERMENU="Navigateurs"
+		EDITORMENU="Editeurs"
+		NETMENU="Net"
+		GRAPHICMENU="Graphisme"
+		MUSICMENU="Musique"
+		TERMINALMENU="Terminaux"
+		MISCMENU="Misc"
+		XUTILSMENU="X-utils"
+		FBSETTINGSMENU="FB-Settings"
+		KDEMENUTEXT="menus-KDE"
+		GNOMEMENUTEXT="menus-Gnome"
+		RESTARTITEM="Redémarrer"
+		EXITITEM="Sortir"
+		CONFIGUREMENU="Configurer"
+		RELOADITEM="Recharger config"
+		STYLEMENU="Styles"
+		STYLEMENUTITLE="Choisir un style..."
+		WORKSPACEMENU="Liste des bureaux"
+	;;
+	*)
+	;;
+esac
+
+# Start of menu
+
+echo "[begin] (${MENUTITLE})" > ${FILENAME}
+
+find_it xterm           append "[exec]   (xterm) {xterm -fg white -bg black}"
+find_it nedit           append "[exec]   (nedit) {nedit}"
+
+
+append_submenu ${BROWSERMENU}
+	find_it netscape    append "[exec]   (netscape) {netscape}"
+	find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
+	find_it galeon      append "[exec]   (galeon) {galeon}"
+	find_it mozilla     append "[exec]   (mozilla) {mozilla}"
+	find_it konqueror   append "[exec]   (konqueror) {konqueror}"
+	find_it links       append "[exec]   (links) {xterm -title links -fg white -bg black -e links fluxbox.sf.net}"
+        find_it w3m         append "[exec]   (w3m) {xterm -title w3m -fg white -bg black -e w3m}"
+	find_it lynx        append "[exec]   (lynx) {xterm -title lynx -fg white -bg black -e lynx}"
+	find_it dillo       append "[exec]   (dillo) {dillo}"
+append_menu_end
+
+append_submenu ${EDITORMENU}
+	find_it nedit       append "[exec]   (nedit) {nedit}"
+	find_it vim         append "[exec]   (vim) {vim -g}"
+	find_it xemacs      append "[exec]   (xemacs) {xemacs}"
+	find_it emacs       append "[exec]   (emacs) {emacs}"
+	find_it gedit       append "[exec]   (gedit) {gedit}"
+	find_it xedit       append "[exec]   (xedit) {xedit}"
+	find_it kword       append "[exec]   (kword) {kword}"
+	find_it kwrite      append "[exec]   (kwrite) {kwrite}"
+	find_it kate        append "[exec]   (kate) {kate}"
+append_menu_end
+
+append_submenu ${NETMENU}
+	find_it realplay    append "[exec]   (realplayer) {realplay}"
+	find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
+	find_it gaim        append "[exec]   (gaim) {gaim}"
+	find_it sylpheed    append "[exec]   (sylpheed) {sylpheed}"
+	find_it kmail    	append "[exec]   (kmail) {kmail}"
+	find_it gnomemeeting    append "[exec]   (gnomemeeting) {gnomemeeting}"
+	find_it evolution   append "[exec]   (evolution) {evolution}"
+	find_it mutt        append "[exec]   (mutt) {xterm -title mutt -fg white -bg black -e mutt}"
+	
+	find_it gftp        append "[exec]   (gftp) {gftp}"
+	find_it pan         append "[exec]   (pan)  {pan}"
+	find_it xchat       append "[exec]   (xchat) {xchat}"
+	find_it irssi       append "[exec]   (irssi) {xterm -title irssi -e irssi}"
+	find_it BitchX      append "[exec]   (BitchX) {xterm -title BitchX -fg white -bg black -e BitchX -N}"
+	find_it bitchx      append "[exec]   (BitchX) {xterm -title BitchX -fg white -bg black -e bitchx -N}"
+	find_it ircii       append "[exec]   (ircii) {xterm -title ircii -fg white -bg black -e ircii -s}"
+append_menu_end
+
+append_submenu ${GRAPHICMENU}
+	find_it gimp        append "[exec]   (gimp) {gimp}"
+	find_it xv          append "[exec]   (xv) {xv}"
+	find_it gqview      append "[exec]   (gqview) {gqview}"
+	find_it xpaint      append "[exec]   (xpaint) {xpaint}"
+	find_it kpaint      append "[exec]   (kpaint) {kpaint}"
+	find_it kiconedit   append "[exec]   (kiconedit) {kiconedit}"
+	find_it xscreensaver-demo  append "[exec]   (xscreensaver-demo) {xscreensaver-demo}"
+append_menu_end
+
+append_submenu ${MUSICMENU}
+	find_it xmms        append "[exec]   (xmms) {xmms}"
+	find_it gqmpeg      append "[exec]   (gqmpeg) {gqmpeg}"
+	find_it xmixer      append "[exec]   (xmixer) {xmixer}"
+	find_it gmix        append "[exec]   (gmix) {gmix}"
+	find_it kmix        append "[exec]   (kmix) {kmix}"
+	find_it grecord     append "[exec]   (grecord) {grecord}"
+	find_it kmidi       append "[exec]   (kmidi) {kmidi}"
+	find_it xplaycd     append "[exec]   (xplaycd) {xplaycd}"
+	find_it soundtracker append "[exec]   (soundtracker) {soundtracker}"
+	find_it cplay       append "[exec]   (cplay) {xterm -title cplay -fg white -bg black -e /usr/local/bin/cplay}"
+	find_it grip        append "[exec]   (grip) {grip}"
+append_menu_end
+
+append_submenu ${TERMINALMENU}
+	append "[exec] (xterm) {xterm -fg white -bg black}"
+	find_it gnome-terminal append "[exec] (gnome-terminal) {gnome-terminal}"
+	find_it Eterm       append "[exec] (Eterm) {Eterm}"
+	find_it konsole     append "[exec] (konsole) {konsole}"
+	find_it aterm       append "[exec] (aterm) {aterm}"
+	find_it rxvt        append "[exec] (rxvt) {rxvt}"
+append_menu_end
+
+append_submenu ${MISCMENU}
+	find_it acroread    append "[exec] (acroread) {acroread}"
+	find_it xpdf        append "[exec] (xpdf) {xpdf}"
+	find_it xine        append "[exec] (xine) {xine}"
+	find_it aviplay     append "[exec] (aviplay) {aviplay}"
+	find_it gtv         append "[exec] (gtv) {gtv}"
+	find_it xmovie      append "[exec] (xmovie) {xmovie}"
+	find_it xcdroast    append "[exec] (xcdroast) {xcdroast}"
+	find_it gcalc       append "[exec] (gcalc) {gcalc}"
+	find_it kcalc       append "[exec] (kcalc) {kcalc}"
+	find_it kpackage    append "[exec] (kpackage) {kpackage}"
+	find_it xgdb        append "[exec] (xgdb) {xgdb}"
+	find_it ddd         append "[exec] (ddd) {ddd}"
+	find_it xterm       append "[exec] (tail access_log) {xterm -fg white -bg black -title access_log -e tail -f /var/log/access_log}"
+append_menu_end
+
+
+append_submenu ${XUTILSMENU}
+	find_it xpenguins   append "[exec] (xpenguins) {xpenguins}"
+	find_it xcalc       append "[exec] (xcalc) {xcalc}"
+	find_it xfontsel    append "[exec] (xfontsel) {xfontsel}"
+	find_it xman        append "[exec] (xman) {xman}"
+	find_it xload       append "[exec] (xload) {xload}"
+	find_it xfig        append "[exec] (xfig) {xfig}"
+	find_it xbiff       append "[exec] (xbiff) {xbiff}"
+	find_it editres     append "[exec] (editres) {editres}"
+	find_it viewres     append "[exec] (viewres) {viewres}"
+	find_it xsnow       append "[exec] (xsnow) {xsnow}"
+	find_it xclock      append "[exec] (xclock) {xclock}"
+append_menu_end
+
+# gnome menu
+if [ -d ${PKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
+	append_submenu ${GNOMEMENUTEXT}
+	for a in `ls ${PKGDATADIR}/gnome/apps`; do
+                if [ -d ${PKGDATADIR}/gnome/apps/"${a}" ] ; then
+                        append_submenu "${a}"
+                        menu_entry_dir "${PKGDATADIR}/gnome/apps/"${a}""
+                        menu_entry_dircheck "/etc/X11/applnk/"${a}""
+                        append_menu_end
+                fi
+        done
+	append_menu_end
+fi
+
+# kde submenu
+if [ -d ${PKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
+	append_submenu ${KDEMENUTEXT}
+	for a in `ls ${PKGDATADIR}/applnk/`; do
+		if [ -d ${PKGDATADIR}/applnk/"${a}" ]; then
+			append_submenu "${a}"
+			for x in `ls ${PKGDATADIR}/applnk/"${a}"`; do
+				if [ -d ${PKGDATADIR}/applnk/"${a}"/"${x}" ]; then
+					append_submenu "${x}"
+					menu_entry_dir ${PKGDATADIR}/applnk/"${a}"/"${x}"
+					append_menu_end
+				fi
+			done
+			menu_entry_dir ${PKGDATADIR}/applnk/"${a}"
+			append_menu_end
+		fi
+	done
+	menu_entry_dir ${PKGDATADIR}/applnk/
+	append_menu_end
+fi
+
+
+append_submenu ${FBSETTINGSMENU}
+	append "[workspaces]   (${WORKSPACEMENU})"
+
+	append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
+		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
+		append "[stylesdir] (~/.fluxbox/styles)"
+	append_menu_end
+
+	append "[config] (${CONFIGUREMENU})"
+	append "[reconfig] (${RELOADITEM})"
+	
+	find_it fluxconf append "[exec] (Fluxconf) {fluxconf}"
+
+append_menu_end
+
+	append "[restart] (${RESTARTITEM})"
+	append "[exit] (${EXITITEM})"
+
+append_menu_end
+
+
+
