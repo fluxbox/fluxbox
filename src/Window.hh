@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.107 2004/01/23 10:38:25 rathnor Exp $
+// $Id: Window.hh,v 1.108 2004/02/16 20:47:51 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -250,7 +250,7 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
 
-    void setDecoration(Decoration decoration);
+    void setDecoration(Decoration decoration, bool apply = true);
     void applyDecorations(bool initial = false);
     void toggleDecoration();
 
