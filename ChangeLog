@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/06/13:
+  * More menu transparency improvements
+    Menu.hh/cc, MenuTheme.hh
 *04/06/12:
   * Updated japanese locales from Yasuhiro Takabayashi
     <kourin at momonga-linux dot org>
