@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.24 2002/12/01 13:41:54 rathnor Exp $
+// $Id: BaseDisplay.cc,v 1.25 2002/12/02 20:02:56 fluxgen Exp $
 
 
 
@@ -146,21 +146,20 @@ static int handleXErrors(Display *d, XErrorEvent *e) {
             I18n *i18n = I18n::instance();
 
             if (display() == 0) {
-		fprintf(stderr,
+		throw string(
 			i18n->
 			getMessage(
                             FBNLS::BaseDisplaySet, FBNLS::BaseDisplayXConnectFail,
-                            "BaseDisplay::BaseDisplay: connection to X server failed.\n"));
-		
-		throw static_cast<int>(2); //throw error 2
+                            "BaseDisplay::BaseDisplay: connection to X server failed."));
+	
             } else if (fcntl(ConnectionNumber(display()), F_SETFD, 1) == -1) {
-		fprintf(stderr,
+		throw string(
 			i18n->
                         getMessage(
                             FBNLS::BaseDisplaySet, FBNLS::BaseDisplayCloseOnExecFail,
                             "BaseDisplay::BaseDisplay: couldn't mark display connection "
-                            "as close-on-exec\n"));
-		throw static_cast<int>(2); //throw error 2
+                            "as close-on-exec"));
+		
             }
 	
 
