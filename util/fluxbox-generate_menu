@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.10 2002/11/12 19:19:14 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.11 2002/11/17 15:56:37 fluxgen Exp $
 
 [ `id -u` -eq 0 ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
@@ -92,14 +92,14 @@ append_menu() {
 }
 
 append_submenu() {
-    # empty line for readability
+    # only an empty line in templates
     [ ${REMOVE} ] && echo >> ${FILENAME}
     append_menu "[submenu] ($1)"
 }
 
 append_menu_end() {
     append_menu "[end]"
-    # empty line for readability
+    # only an empty line in templates
     [ ${REMOVE} ] && echo >> ${FILENAME}
 }
 
@@ -179,7 +179,7 @@ fi
 
 #packagedatadir
 if [ ! -d "${PKGDATADIR}" ]; then
-    if [ `uname` = "Linux" ];then 
+    if [ `uname` = "Linux" ];then
 	PKGDATADIR=/usr/share
     else
 	PKGDATADIR=/usr/local/share
@@ -451,19 +451,19 @@ append_submenu ${NETMENU}
 	find_it w3m	    append "[exec]   (w3m) {${DEFAULT_TERM} -e w3m fluxbox.org}"
 	find_it lynx	    append "[exec]   (lynx) {${DEFAULT_TERM} -e lynx fluxbox.org}"
     append_menu_end
-    
+
     append_submenu IM
-        normal_find gaim kopete gnomemeeting 
+        normal_find gaim kopete gnomemeeting
         find_it licq	    append "[exec]   (licq) {env QT_XFT=true licq}"
     append_menu_end
 
     append_submenu Mail
-        normal_find sylpheed kmail evolution 
+        normal_find sylpheed kmail evolution
         find_it mutt	    append "[exec]   (mutt) {${DEFAULT_TERM} -e mutt}"
     append_menu_end
 
     append_submenu IRC
-        normal_find xchat  
+        normal_find xchat
         find_it irssi	    append "[exec]   (irssi) {${DEFAULT_TERM} -e irssi}"
         find_it BitchX	    append "[exec]   (BitchX) {${DEFAULT_TERM} -e BitchX -N}"
         [ $? -ne 0 ] && \
@@ -496,18 +496,18 @@ append_submenu ${MULTIMEDIAMENU}
 
 
        append_submenu ${MISCMENU}
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay 
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay
 	   find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
        append_submenu ${XUTILSMENU}
-           normal_find xfontsel xman xload xfigxbiff editres viewres xclock           
+           normal_find xfontsel xman xload xfigxbiff editres viewres xclock
        append_menu_end
 append_menu_end
 
 
 append_submenu ${OFFICEMENU}
-    normal_find xclock xcalc kcalc 
+    normal_find xclock xcalc kcalc
     find_it gcalc	    append "[exec] (gcalc) {gcalc}"
     [ $? -ne 0 ] && \
 	find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
@@ -527,7 +527,7 @@ append_menu_end
 # gnome menu
 if [ -d ${GPKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
     append_submenu ${GNOMEMENUTEXT}
-    for a in ${GPKGDATADIR}/gnome/apps/* ; do
+    for a in `ls ${GPKGDATADIR}/gnome/apps/` ; do
 	if [ -d ${GPKGDATADIR}/gnome/apps/"${a}" ] ; then
 	    append_submenu "${a}"
 	    menu_entry_dir "${GPKGDATADIR}/gnome/apps/${a}"
@@ -541,7 +541,7 @@ fi
 # kde submenu
 if [ -d ${KPKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
     append_submenu ${KDEMENUTEXT}
-    for a in ${KPKGDATADIR}/applnk/* ; do
+    for a in `ls ${KPKGDATADIR}/applnk/` ; do
 	if [ -d ${KPKGDATADIR}/applnk/"${a}" ]; then
 	    append_submenu "${a}"
 	    for x in ${KPKGDATADIR}/applnk/"${a}"/*; do
@@ -567,7 +567,7 @@ fi
 	    append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
 		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
 	        append "[stylesdir] (~/.fluxbox/styles)"
-		
+
 	    append_menu_end
 
 	    append "[workspaces]   (${WORKSPACEMENU})"
