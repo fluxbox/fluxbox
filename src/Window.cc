@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.70 2002/08/16 10:50:20 fluxgen Exp $
+// $Id: Window.cc,v 1.71 2002/08/28 19:47:27 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3558,7 +3558,7 @@ void FluxboxWindow::stopResizing(Window win) {
 
 	screen->hideGeometry();
 
-	if (win == frame.left_grip)
+	if (win && win == frame.left_grip)
 		left_fixsize();
 	else
 		right_fixsize();
