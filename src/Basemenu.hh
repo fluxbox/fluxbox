@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.17 2002/09/10 10:48:44 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.18 2002/10/15 10:57:58 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -94,18 +94,19 @@ public:
 		@name accessors
 	*/
 	//@{
-	inline bool isTorn() const { return torn; }
-	inline bool isVisible() const { return visible; }
-	inline BScreen *screen() const { return m_screen; }
-	inline Window windowID() const { return menu.window; }
-	inline const std::string &label() const { return menu.label; }	
-	inline int x() const { return menu.x; }
-	inline int y() const { return menu.y; }
-	inline unsigned int width() const { return menu.width; }
-	inline unsigned int height() const { return menu.height; }
-	inline unsigned int numberOfItems() const { return menuitems.size(); }
-	inline int currentSubmenu() const { return which_sub; }	
-	inline unsigned int titleHeight() const { return menu.title_h; }
+	bool isTorn() const { return torn; }
+	bool isVisible() const { return visible; }
+	const BScreen *screen() const { return m_screen; }
+	BScreen *screen() { return m_screen; }
+	Window windowID() const { return menu.window; }
+	const std::string &label() const { return menu.label; }  
+	int x() const { return menu.x; }
+	int y() const { return menu.y; }
+	unsigned int width() const { return menu.width; }
+	unsigned int height() const { return menu.height; }
+	unsigned int numberOfItems() const { return menuitems.size(); }
+	int currentSubmenu() const { return which_sub; } 
+	unsigned int titleHeight() const { return menu.title_h; }
 	bool hasSubmenu(unsigned int index) const;
 	bool isItemSelected(unsigned int index) const;
 	bool isItemEnabled(unsigned int index) const;
@@ -157,7 +158,7 @@ private:
 };
 
 /**
-	A menu item
+	A menu item in Basemenu
 */
 class BasemenuItem {
 public:
