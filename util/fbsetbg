@@ -1,0 +1,282 @@
+#!/bin/sh
+#
+# Set wallpaper for fluxbox.
+#
+# Copyright (c) 2003 Han Boetes <han@mijncomputer.nl>
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
+# $Id: fbsetbg,v 1.1 2003/04/27 15:33:26 fluxgen Exp $
+
+#
+# Portability notes:
+# To guarantee this script works on all platforms that support fluxbox
+# please keep the following restrictions in mind:
+#
+# don't use [ -e file ] use [ -r file ]
+# don't use $(), use ``
+# don't use ~, use ${HOME}
+# don't use id -u, use whoami
+# getopts won't work on all platforms, but the config-file can
+# compensate for that.
+#
+
+wpsetters='wmsetbg Esetroot xli xsetbg display qiv xv xsri'
+lastwallpaper=${HOME}/.fluxbox/lastwallpaper
+
+WHOAMI=`whoami`
+[ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
+
+
+# Functions
+display_usage() {
+    cat <<EOF
+Usage: fbsetbg [-fct /path/to/wallpaper ] [ -l ] [ -h ]
+EOF
+}
+
+display_help() {
+    display_usage
+    cat <<EOF
+
+Options:
+
+    -f  Set fullscreen wallpaper
+    -c  Set centered wallpaper
+    -t  Set tiled wallpaper
+
+    -h  Display this help
+
+    -l  Set previous wallpaper
+
+    -d  Debug fbsetbg
+    -T  Tips
+
+Files:
+
+    ~/.fluxbox/lastwallpaper
+
+EOF
+}
+
+display_tips(){
+cat<<EOF
+
+To replace all occurances of bsetbg in a file use this command:
+
+  perl -pi -e 's, bsetbg, fbsetbg,'
+
+If you want to choose your own wallpapers and you want fbsetbg to
+remember the previous wallpaper put this in your ~/.fluxbox/init
+
+  session.screen0.rootCommand:    fbsetbg -l
+
+
+EOF
+}
+
+# ugly code for solaris compat.
+find_it() {
+    file=`which $1 2> /dev/null`
+    if [ -x "$file" ]; then
+        if [ $# -gt 1 ]; then
+            shift
+            $*
+        fi
+        return 0
+    else
+        return 1
+    fi
+}
+
+message() {
+    xmessage -center "$@"
+}
+
+debugfbsetbg (){
+
+    standardrant (){
+        cat <<EOF
+
+$WPSETTER sets the 'wrong' wallpaper. transparant apps like aterm and
+xchat wont work right with it. Consider using wmsetbg (from windowmaker)
+or Esetroot (from Eterm)
+
+EOF
+    }
+
+    for wpsetter in $wpsetters; do
+        if find_it $wpsetter; then
+            WPSETTER=$wpsetter
+            break
+        fi
+    done
+
+    case $WPSETTER in
+        xsri)
+            echo 'Actually I never heard of this app.'
+            ;;
+        display)
+            standardrant
+            ;;
+        Esetroot)
+            echo 'Esetroot is a nice app :)'
+            echo "You won't have any problems"
+            ;;
+        wmsetbg)
+            echo 'wmsetbg is my favourite :)'
+            echo "You won't have any problems"
+            ;;
+        xsetbg)
+            standardrant
+	    ;;
+        xli)
+            standardrant
+            ;;
+        qiv)
+            standardrant
+            ;;
+        xv)
+            standardrant
+            ;;
+        '')
+            cat <<EOF
+
+I Can't find and app to set the wallpaper with. You can install one in
+many many ways but I will give you some simple advice: install Eterm and
+your set. Eterm provides Esetroot and thats a great wallpapersetter. I
+recommend you install the package provided by your distro.
+
+EOF
+    esac
+    exit 0
+}
+
+if [ $1 = -d ];then
+    debugfbsetbg
+fi
+
+# Find the default wallpapersetter
+# The precise order is up for debate.
+for wpsetter in $wpsetters; do
+    if find_it $wpsetter; then
+        WPSETTER=$wpsetter
+        break
+    fi
+done
+
+case $WPSETTER in
+    xsri)
+	full='--center-x --center-y --scale-width=100 --scale-width=100'
+	tile='--tile'
+	center='--center-x --center-y'
+        ;;
+    display)
+        full='-geometry 800x600 -window root'
+        tile='-window root'
+        center='-backdrop -window root'
+        ;;
+    Esetroot)
+        full='-scale'
+        tile=''
+        center='-c'
+        ;;
+    wmsetbg)
+        full='-s -S'
+        tile='-t'
+        center='-b black -e'
+        ;;
+    xsetbg)
+	full='-fillscreen'
+	tile=''
+	center='-center'
+	;;
+    xli)
+	full='-fillscreen -onroot -quiet'
+	tile='-onroot -quiet'
+	center='-center -onroot quiet'
+        ;;
+    qiv)
+        full='--root_s'
+        tile='--root_t'
+        center='--root'
+        ;;
+    xv)
+        full='-max -smooth -root -quit'
+        tile='-root -quit'
+        center='-rmode 5 -root -quit'
+        ;;
+    '')
+            message "Can't find and app to set the wallpaper with.
+Use fbsetbg -d to find out what to do next"
+            exit 1
+esac
+
+#Get options.
+getopts ":f:c:t:Tlh-" COMMAND_LINE_ARGUMENT
+case "${COMMAND_LINE_ARGUMENT}" in
+    f) option=$full
+        wallpaper=$OPTARG
+        echo $option > $lastwallpaper
+        echo $wallpaper >> $lastwallpaper
+        ;;
+    c) option=$center
+        wallpaper=$OPTARG
+        echo $option > $lastwallpaper
+        echo $wallpaper >> $lastwallpaper
+        ;;
+    t) option=$tile
+        wallpaper=$OPTARG
+        echo $option > $lastwallpaper
+        echo $wallpaper >> $lastwallpaper
+        ;;
+    l)
+        if [ -r $lastwallpaper ];then
+            option=$(head -n1 $lastwallpaper)
+            wallpaper=$(tail -n1 $lastwallpaper)
+        else
+            message 'No previous wallpaper recorded.'
+        fi
+        ;;
+    h) display_help ; exit 0 ;;
+    T) display_tips ; exit 0 ;;
+    -) echo "fbsetbg doesn't recognize -- gnu-longopts."
+        echo "Use fbsetbg -h for a long help message."
+        display_usage
+        exit 1
+        ;;
+esac
+
+option=${option:=$full}
+wallpaper=${wallpaper:=$1}
+
+if [ -z "$wallpaper" ];then
+    message 'No wallpaper to set'
+    exit 1
+fi
+
+if [ ! -r "$wallpaper" ];then
+    message "Can't find wallpaper $wallpaper"
+    exit 1
+fi
+
+$WPSETTER $option "$wallpaper" || message "Something went wrong while setting the wallpaper
+Run '$WPSETTER $option "$wallpaper"' from an xterm to find out what."
+#remember previous wallpaper
