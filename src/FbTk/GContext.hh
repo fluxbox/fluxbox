@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.9 2004/03/22 20:56:15 fluxgen Exp $
+// $Id: GContext.hh,v 1.10 2004/07/06 10:47:36 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -64,6 +64,10 @@ public:
 
     inline void setBackground(long pixel_value) {
         XSetBackground(m_display, m_gc, pixel_value);
+    }
+
+    inline void setTile(const FbTk::FbPixmap &draw) {
+        XSetTile(m_display, m_gc, draw.drawable());
     }
 
     /// not implemented
