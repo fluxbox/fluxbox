@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: DrawUtil.cc,v 1.6 2002/04/03 23:00:10 fluxgen Exp $
+// $Id: DrawUtil.cc,v 1.7 2002/05/07 08:15:18 fluxgen Exp $
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"
@@ -82,7 +82,7 @@ XRotFontStruct *XRotLoadFont(Display *dpy, char *fontname, float angle) {
 
 	/* load the font ... */
 	fontstruct = XLoadQueryFont(dpy, fontname);
-	if (fontstruct == NULL) {
+	if (fontstruct == 0 || fontstruct->per_char == 0) {
 		cerr<<"Fluxbox::DrawUtil: No font"<<endl;
 		return 0;
 	}
