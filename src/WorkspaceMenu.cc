@@ -19,19 +19,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceMenu.cc,v 1.4 2004/06/08 13:15:30 rathnor Exp $
+// $Id: WorkspaceMenu.cc,v 1.5 2004/09/06 21:12:10 akir Exp $
 
 #include "WorkspaceMenu.hh"
 
 #include "Screen.hh"
 #include "fluxbox.hh"
 #include "Workspace.hh"
+#include "WorkspaceCmd.hh"
 #include "MenuCreator.hh"
+
 
 #include "FbTk/I18n.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/MenuItem.hh"
+#include "FbTk/MultiButtonMenuItem.hh"
 
 #include <typeinfo>
 
@@ -72,7 +75,12 @@ void WorkspaceMenu::update(FbTk::Subject *subj) {
                  ++workspace) {
                 Workspace *wkspc = screen.getWorkspace(workspace);
                 wkspc->menu().setInternalMenu();
-                insert(wkspc->name().c_str(), &wkspc->menu(), numberOfItems() - 1);
+                FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, 
+                                                                                   wkspc->name().c_str(),
+                                                                                   &wkspc->menu());
+                FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
+                mb_menu->setCommand(2, jump_cmd);
+                insert(mb_menu);
             }
 
             FbTk::Menu::update(-1);
@@ -102,7 +110,12 @@ void WorkspaceMenu::init(BScreen &screen) {
     for (size_t workspace = 0; workspace < screen.getCount(); ++workspace) {
         Workspace *wkspc = screen.getWorkspace(workspace);
         wkspc->menu().setInternalMenu();
-        insert(wkspc->name().c_str(), &wkspc->menu());
+        FbTk::MultiButtonMenuItem* mb_menu = new FbTk::MultiButtonMenuItem(5, 
+                                                                           wkspc->name().c_str(),
+                                                                           &wkspc->menu());
+        FbTk::RefCount<FbTk::Command> jump_cmd(new JumpToWorkspaceCmd(wkspc->workspaceID()));
+        mb_menu->setCommand(2, jump_cmd);
+        insert(mb_menu);
     }
     setItemSelected(screen.currentWorkspace()->workspaceID() + 2, true);
 
