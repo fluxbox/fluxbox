@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.27 2003/04/16 13:43:48 rathnor Exp $
+// $Id: Toolbar.hh,v 1.28 2003/04/23 00:13:47 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -98,7 +98,7 @@ public:
     /// do we auto hide the toolbar?
     inline bool doAutoHide() const { return do_auto_hide; }
     ///	@return X window of the toolbar
-    inline Window getWindowID() const { return frame.window.window(); }
+    inline const FbTk::FbWindow &window() const { return frame.window; }
     inline BScreen &screen() { return m_screen; }
     inline const BScreen &screen() const { return m_screen; }
     inline unsigned int width() const { return frame.width; }
@@ -190,7 +190,6 @@ private:
     ThemeListener m_themelistener;
 
     FbTk::XLayerItem m_layeritem;
-
 };
 
 
