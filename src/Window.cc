@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.299 2004/09/11 12:33:14 rathnor Exp $
+// $Id: Window.cc,v 1.300 2004/09/30 18:45:26 akir Exp $
 
 #include "Window.hh"
 
@@ -952,6 +952,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
 
     m_client = &client;
     m_client->raise();
+    titleSig().notify();
 
 #ifdef DEBUG
     cerr<<"FluxboxWindow::"<<__FUNCTION__<<": labelbutton[client] = "<<
@@ -2267,7 +2268,7 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         client.updateIconTitle(); 
     case XA_WM_NAME:
         updateTitleFromClient(client);
-        m_titlesig.notify();
+        titleSig().notify();
         break;
 
     case XA_WM_NORMAL_HINTS: {
