@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.4 2003/02/17 12:28:57 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.5 2003/02/22 21:24:19 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -35,7 +35,7 @@ namespace FbTk {
 
 class MenuTheme:public FbTk::Theme {
 public:
-    enum BulletType { EMPTY, SQUARE, TRIANGLE};
+    enum BulletType { EMPTY, SQUARE, TRIANGLE, DIAMOND};
     MenuTheme(int screen_num);
     virtual ~MenuTheme();
 
