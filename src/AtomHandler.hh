@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.7 2003/03/03 21:51:00 rathnor Exp $
+// $Id: AtomHandler.hh,v 1.8 2003/06/18 13:32:19 fluxgen Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -49,6 +49,8 @@ public:
 
     virtual bool checkClientMessage(const XClientMessageEvent &ce, 
                                     BScreen * screen, FluxboxWindow * const win) = 0;
+
+    virtual bool propertyNotify(FluxboxWindow &win, Atom the_property) = 0;
 
     /// should this object be updated or not?
     bool update() const { return m_update; }

@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.7 2003/06/12 15:12:19 rathnor Exp $
+// $Id: Remember.hh,v 1.8 2003/06/18 13:34:56 fluxgen Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -181,8 +181,8 @@ public:
 
     bool checkClientMessage(const XClientMessageEvent &ce, 
         BScreen * screen, FluxboxWindow * const win) { return false; }
-
-
+    // ignore this
+    bool propertyNotify(FluxboxWindow &win, Atom the_property) { return false; }
 private:
 
     // returns number of lines read

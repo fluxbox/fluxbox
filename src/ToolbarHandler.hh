@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.2 2003/04/16 13:43:49 rathnor Exp $
+// $Id: ToolbarHandler.hh,v 1.3 2003/06/18 13:35:36 fluxgen Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -71,6 +71,8 @@ public:
 
     bool checkClientMessage(const XClientMessageEvent &ce, 
                             BScreen * screen, FluxboxWindow * const win) { return false; }
+
+    bool propertyNotify(FluxboxWindow &win, Atom the_atom) { return false; }
 
     inline FbTk::Menu &getModeMenu() { return m_modemenu; }
     inline const FbTk::Menu &getModeMenu() const { return m_modemenu; }
