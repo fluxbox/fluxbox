@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.45 2003/09/10 21:43:54 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.46 2003/09/11 13:17:14 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -1105,4 +1105,67 @@ void FbWinFrame::updateTransparent() {
     m_grip_left.updateTransparent();
     m_grip_right.updateTransparent();
     m_handle.updateTransparent();
+}
+
+
+// this function translates its arguments according to win_gravity
+// if win_gravity is negative, it does an inverse translation
+void FbWinFrame::gravityTranslate(int &x, int &y, int win_gravity, bool move_frame) {
+    bool invert = false;
+    if (win_gravity < 0) {
+        invert = true;
+        win_gravity = -win_gravity; // make +ve
+    }
+
+    /* Ok, so, gravity says which point of the frame is put where the 
+     * corresponding bit of window would have been
+     * Thus, x,y always refers to where top left of the WINDOW would be placed
+     * but given that we're wrapping it in a frame, we actually place
+     * it so that the given reference point is in the same spot as the
+     * window's reference point would have been.
+     * i.e. east gravity says that the centre of the right hand side of the 
+     * frame is placed where the centre of the rhs of the window would
+     * have been if there was no frame.
+     * Hope that makes enough sense.
+     *
+     * If you get confused with the calculations, draw a picture.
+     *
+     */
+
+    // We calculate offsets based on the gravity and frame aspects
+    // and at the end apply those offsets +ve or -ve depending on 'invert'
+
+    int x_offset = 0;
+    int y_offset = 0;
+
+    // Start with X offset
+    switch (win_gravity) {
+    case NorthWest:
+    case North:
+    case NorthEast:
+        // no offset, since the top point is still the same
+        break;
+    case SouthWest:
+    case South:
+    case SouthEast:
+    case Static:
+    case Center:
+        // window shifted down by height of titlebar
+        x_offset -= m_titlebar.height() + m_titlebar.borderWidth();
+        break;
+    }
+
+    // no Y offset, since we don't have a frame down there
+
+    if (invert) {
+        x_offset = -x_offset;
+        y_offset = -y_offset;
+    }
+
+    x += x_offset;
+    y += y_offset;
+
+    if (move_frame && (x_offset != 0 || y_offset != 0)) {
+        move(x() + x_offset, y() + y_offset);
+    }
 }

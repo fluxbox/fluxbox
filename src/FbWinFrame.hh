@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.16 2003/09/11 13:15:58 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.17 2003/09/11 13:17:14 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -123,7 +123,7 @@ public:
 
     // this function translates its arguments according to win_gravity
     // if win_gravity is negative, it does an inverse translation
-    void gravityTranslate(int &x, int &y, int win_gravity);
+    void gravityTranslate(int &x, int &y, int win_gravity, bool move_frame = false);
 
     void setBorderWidth(unsigned int borderW);
 
