@@ -46,6 +46,7 @@ Some lower priority ones ("thoughts"/maybes):
 - more powerful autogrouping matching
 - stop window movement by clicking on border (only on frame instead)
 - mouse button "keys"
+- ability to specify keybinding actions for titlebar buttons (i.e. configurable actions for titlebar buttons).
 
 Known Bugs (to be looked at at some time):
 
