@@ -23,7 +23,7 @@ Bug fixes:
    * Fixed bug [ 600811 ] undefined keys messes up
    * Fixed bug [ 598490 ] misplaced parentrelative gives redrw prb
    * Fixed bug [ 586830 ] the clock now updates once per second.
-   * Fixed bug [ 574717 ] restaring fluxbox should keep iconic.
+   * Fixed bug [ 574717 ] restarting fluxbox should keep iconic.
    * Fixed "send to..." bug
    * Fixed slitlist bug
    * Fixed workspace name and the reassociation bug 
