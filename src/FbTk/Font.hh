@@ -1,6 +1,6 @@
 // Font.cc for FbTk
-// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at fluxbox dot org)
-// 
+// Copyright (c) 2002 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -54,7 +54,7 @@ public:
 
     /// called at FbTk::App destruction time, cleans up what was inited first
     static void shutdown();
-    
+
     /// @return true if multibyte is enabled, else false
     static bool multibyte() { return m_multibyte; }
     /// @return true if utf-8 mode is enabled, else false
@@ -64,7 +64,7 @@ public:
 
     Font(const char *name=0, bool antialias = false);
     virtual ~Font();
-    /** 
+    /**
         Load a font
         @return true on success, else false and it'll fall back on the last
         loaded font
@@ -80,11 +80,11 @@ public:
        @return size of text in pixels
     */
     unsigned int textWidth(const char * const text, unsigned int size) const;
-    unsigned int height() const;	
+    unsigned int height() const;
     int ascent() const;
     int descent() const;
     /**
-       Rotate font in any angle 
+       Rotate font in any angle
        (currently only 90 degrees supported and just XFont implementation)
     */
     void rotate(float angle);
@@ -99,9 +99,9 @@ public:
        @param x position
        @param y position
        @param rotate if the text should be drawn rotated (if it's rotated before)
-    */	
-    void drawText(const FbDrawable &w, int screen, GC gc, 
-                  const char *text, size_t len, 
+    */
+    void drawText(const FbDrawable &w, int screen, GC gc,
+                  const char *text, size_t len,
                   int x, int y, bool rotate=true) const;
     bool isAntialias() const { return m_antialias; }
     /// @return true if the font is rotated, else false
@@ -111,7 +111,7 @@ public:
     bool shadow() const { return m_shadow; }
     bool halo() const { return m_halo; }
 private:
-	
+
     std::auto_ptr<FontImp> m_fontimp; ///< font implementation
     std::string m_fontstr; ///< font name
     static bool m_multibyte; ///< if the fontimp should be a multibyte font

@@ -352,6 +352,7 @@ void Font::setAntialias(bool flag) {
 }
 
 bool Font::load(const std::string &name) {
+
     if (name.size() == 0)
         return false;
     // default values for font options
