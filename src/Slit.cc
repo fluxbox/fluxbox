@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.20 2002/08/14 21:51:07 fluxgen Exp $
+// $Id: Slit.cc,v 1.21 2002/09/08 19:48:03 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -678,8 +678,9 @@ void Slit::buttonPressEvent(XButtonEvent *e) {
 	if (e->window != frame.window) return;
 
 	if (e->button == Button1 && (! on_top)) {
-		Window w[1] = { frame.window };
-		screen->raiseWindows(w, 1);
+		Workspace::Stack st;
+		st.push_back(frame.window);
+		screen->raiseWindows(st);
 	} else if (e->button == Button2 && (! on_top)) {
 		XLowerWindow(display, frame.window);
 	} else if (e->button == Button3) {
@@ -888,7 +889,7 @@ void Slitmenu::itemSelected(int button, unsigned int index) {
 			setItemSelected(2, change);
 			
 			if (slit.isOnTop())
-				screen()->raiseWindows(0, 0);
+				screen()->raiseWindows(Workspace::Stack());
 		
 		break;
 		}
