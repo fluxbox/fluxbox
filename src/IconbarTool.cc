@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.3 2003/08/12 01:01:16 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.4 2003/08/12 11:09:46 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -48,8 +48,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     m_unfocused_pm(0),
     m_empty_pm(0) {
 
+    // setup signals
     theme.reconfigSig().attach(this);
-
     screen.clientListSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
 
@@ -112,7 +112,7 @@ void IconbarTool::update(FbTk::Subject *subj) {
         // we handle everything except die signal here
         FluxboxWindow::WinSubject *winsubj = static_cast<FluxboxWindow::WinSubject *>(subj);
         if (subj != &(winsubj->win().dieSig())) {
-            renderTheme();
+            renderButton(winsubj->win());
             return;
         }
     }
@@ -150,6 +150,43 @@ void IconbarTool::update(FbTk::Subject *subj) {
     m_icon_container.insertItems(items);
 
     renderTheme();
+}
+
+void IconbarTool::renderButton(FluxboxWindow &win) {
+    
+    IconList::iterator icon_it = m_icon_list.begin();
+    IconList::iterator icon_it_end = m_icon_list.end();
+    for (; icon_it != icon_it_end; ++icon_it) {
+        if (&(*icon_it)->win() == &win)
+            break;
+    }
+    if (icon_it == m_icon_list.end())
+        return;
+
+    IconButton &button = *(*icon_it);
+    
+    if (button.win().isFocused()) { // focused texture
+        button.setGC(m_theme.focusedText().textGC());     
+        button.setFont(m_theme.focusedText().font());
+        button.setJustify(m_theme.focusedText().justify());
+
+        if (m_focused_pm != 0)
+            button.setBackgroundPixmap(m_focused_pm);
+        else
+            button.setBackgroundColor(m_theme.focusedTexture().color());            
+
+
+    } else { // unfocused
+        button.setGC(m_theme.unfocusedText().textGC());
+        button.setFont(m_theme.unfocusedText().font());
+        button.setJustify(m_theme.unfocusedText().justify());
+
+        if (m_unfocused_pm != 0)
+            button.setBackgroundPixmap(m_unfocused_pm);
+        else
+            button.setBackgroundColor(m_theme.unfocusedTexture().color());
+    }
+    
 }
 
 void IconbarTool::renderTheme() {
