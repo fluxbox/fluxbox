@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.5 2003/04/26 13:14:37 fluxgen Exp $
+// $Id: Remember.cc,v 1.6 2003/04/26 13:47:53 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -117,6 +117,8 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
                                       Remember::REM_DECOSTATE));
     menu->insert(new RememberMenuItem("Shaded", remember, win,
                                       Remember::REM_SHADEDSTATE));
+    menu->insert(new RememberMenuItem("Layer", remember, win,
+                                      Remember::REM_LAYER));
     //    menu->insert(new RememberMenuItem("Tab", remember, win,
     //                                     Remember::REM_TABSTATE));
     menu->insert(new RememberMenuItem("Save on close", remember, win,
@@ -161,6 +163,7 @@ Application::Application() {
 	shadedstate_remember =
 	tabstate_remember =
 	jumpworkspace_remember =
+        layer_remember =
 	save_on_close_remember = false;
 }
 
@@ -222,6 +225,11 @@ int Remember::parseApp(ifstream &file, Application *a) {
                     istringstream iss(str_label.c_str());
                     iss >> w;
                     a->rememberWorkspace(w);
+                } else if (str_key == "Layer") {
+                    unsigned int l;
+                    istringstream iss(str_label.c_str());
+                    iss >> l;
+                    a->rememberLayer(l);
                 } else if (str_key == "Dimensions") {
                     unsigned int h,w;
                     istringstream iss(str_label.c_str());
@@ -386,6 +394,9 @@ void Remember::save() {
         if (a->jumpworkspace_remember) {
             apps_file << "  [Jump]\t{" << ((a->jumpworkspace)?"yes":"no") << "}" << endl;
         }
+        if (a->layer_remember) {
+            apps_file << "  [Layer]\t{" << a->layer << "}" << endl;
+        }
         if (a->save_on_close_remember) {
             apps_file << "  [Close]\t{" << ((a->save_on_close)?"yes":"no") << "}" << endl;
         }
@@ -420,6 +431,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
         //        break;
     case REM_JUMPWORKSPACE:
         return app->jumpworkspace_remember;
+        break;
+    case REM_LAYER:
+        return app->layer_remember;
         break;
     case REM_SAVEONCLOSE:
         return app->save_on_close_remember;
@@ -462,6 +476,9 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_JUMPWORKSPACE:
         app->rememberJumpworkspace(true);
         break;
+    case REM_LAYER:
+        app->rememberLayer(win->getLayerNum());
+        break;
     case REM_SAVEONCLOSE:
         app->rememberSaveOnClose(true);
         break;
@@ -503,6 +520,9 @@ void Remember::forgetAttrib(WinClient &winclient, Attribute attrib) {
 //        break;
     case REM_JUMPWORKSPACE:
         app->forgetJumpworkspace();
+        break;
+    case REM_LAYER:
+        app->forgetLayer();
         break;
     case REM_SAVEONCLOSE:
         app->forgetSaveOnClose();
@@ -557,6 +577,9 @@ void Remember::setupWindow(FluxboxWindow &win) {
         if (win.isStuck() && !app->stuckstate ||
             !win.isStuck() && app->stuckstate)
             win.stick(); // toggles
+
+    if (app->layer_remember)
+        win.moveToLayer(app->layer);
 
     // add the menu, this -2 is somewhat dodgy... :-/
     // TODO: nls

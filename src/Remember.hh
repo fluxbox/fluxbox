@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.3 2003/04/26 12:44:53 fluxgen Exp $
+// $Id: Remember.hh,v 1.4 2003/04/26 13:47:53 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -44,6 +44,7 @@ public:
     inline void forgetDecostate() { decostate_remember = false; }
     inline void forgetStuckstate() { stuckstate_remember = false; }
     inline void forgetJumpworkspace() { jumpworkspace_remember = false; }
+    inline void forgetLayer() { layer_remember = false; }
     inline void forgetSaveOnClose() { save_on_close_remember = false; }
     
     inline void rememberWorkspace(int ws) 
@@ -62,6 +63,8 @@ public:
         { stuckstate = state; stuckstate_remember = true; }
     inline void rememberJumpworkspace(bool state)
         { jumpworkspace = state; jumpworkspace_remember = true; }
+    inline void rememberLayer(int layernum) 
+        { layer = layernum; layer_remember = true; }
     inline void rememberSaveOnClose(bool state)
         { save_on_close = state; save_on_close_remember = true; }
 
@@ -90,6 +93,9 @@ public:
     bool jumpworkspace_remember;
     bool jumpworkspace;
 
+    bool layer_remember;
+    int layer;
+
     bool save_on_close_remember;
     bool save_on_close;
 };
@@ -116,6 +122,7 @@ public:
         REM_DECOSTATE,
         REM_SHADEDSTATE,
         //REM_TABSTATE, ... external tabs disabled atm
+        REM_LAYER,
         REM_JUMPWORKSPACE,
         REM_SAVEONCLOSE,
         REM_LASTATTRIB // not actually used
