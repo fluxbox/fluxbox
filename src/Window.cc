@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.87 2002/09/14 12:31:18 fluxgen Exp $
+// $Id: Window.cc,v 1.88 2002/10/13 21:54:36 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -34,6 +34,10 @@
 #include "Windowmenu.hh"
 #include "StringUtil.hh"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
 #ifdef SLIT
 #include "Slit.hh"
 #endif // SLIT
@@ -42,10 +46,6 @@
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
-
-#ifdef HAVE_CONFIG_H
-#include "../config.h"
-#endif // HAVE_CONFIG_H
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -1036,13 +1036,8 @@ void FluxboxWindow::reconfigure() {
 	setFocusFlag(focused);
 
 	configure(frame.x, frame.y, frame.width, frame.height);
-
-	if (! (screen->isSloppyFocus() || screen->isSemiSloppyFocus())) {
-		XGrabButton(display, Button1, AnyModifier, frame.plate, True, ButtonPressMask,
-				GrabModeSync, GrabModeSync, None, None);
-		XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
-	} else		
-		XUngrabButton(display, Button1, AnyModifier, frame.plate);
+	
+	grabButtons();
 
 	if (windowmenu) {
 		windowmenu->move(windowmenu->x(), frame.y + frame.title_h);
