@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.2 2002/12/16 11:05:35 fluxgen Exp $
+// $Id: Button.cc,v 1.3 2002/12/25 11:27:29 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -54,6 +54,14 @@ Button::Button(const FbWindow &parent, int x, int y,
 
 Button::~Button() {
     FbTk::EventManager::instance()->remove(m_win);
+}
+
+void Button::setOnClick(RefCount<Command> &cmd, int button) {
+	// we only handle buttons 1 to 5
+	if (button > 5 || button == 0)
+		return;
+	//set on click command for the button
+	m_onclick[button - 1] = cmd;
 }
 
 void Button::move(int x, int y) {
@@ -124,23 +132,9 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
         event.x > width() || event.y > height())
         return;
 
-    // call commands
-    switch (event.button) {
-    case Button1:
-        if (*m_onclick_left != 0)
-            m_onclick_left->execute();
-        break;
-    case Button2:
-        if (*m_onclick_middle != 0)
-            m_onclick_middle->execute();
-        break;
-    case Button3:
-        if (*m_onclick_right != 0)
-            m_onclick_right->execute();
-        break;
-    };
-
-    
+	if (event.button > 0 && event.button <= 5)
+		m_onclick[event.button - 1]->execute();
+   
 }
 
 void Button::exposeEvent(XExposeEvent &event) {

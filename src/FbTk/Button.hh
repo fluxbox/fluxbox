@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.2 2002/12/16 11:02:41 fluxgen Exp $
+// $Id: Button.hh,v 1.3 2002/12/25 11:28:43 fluxgen Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -41,13 +41,10 @@ class Button:public EventHandler,
 public:
     Button(int screen_num, int x, int y, unsigned int width, unsigned int height);
     Button(const FbWindow &parent, int x, int y, unsigned int width, unsigned int height);
-    virtual ~Button();	
-    /// sets action when the button is clicked with left mouse btn
-    void setOnClick(RefCount<Command> &com) { m_onclick_left = com; }
-    /// sets action when the button is clicked with middle mouse btn
-    void setOnClickMiddle(RefCount<Command> &com) { m_onclick_middle = com; }
-    /// sets action when the button is clicked with right mouse btn
-    void setOnClickRight(RefCount<Command> &com) { m_onclick_right = com; }
+    virtual ~Button();
+	
+    /// sets action when the button is clicked with #button mouse btn
+    void setOnClick(RefCount<Command> &com, int button = 1);
 
     void move(int x, int y);
     void resize(unsigned int width, unsigned int height);
@@ -100,9 +97,7 @@ private:
     Pixmap m_pressed_pm; ///< pressed pixmap
     GC m_gc; ///< graphic context for button
     bool m_pressed; ///< if the button is pressed
-    RefCount<Command> m_onclick_left; ///< what to do when this button is clicked with lmb
-    RefCount<Command> m_onclick_middle; ///< what to do when this button is clicked with mmb
-    RefCount<Command> m_onclick_right; ///< what to do when this button is clicked with rmb
+    RefCount<Command> m_onclick[5]; ///< what to do when this button is clicked with button num
 };
 
 };
