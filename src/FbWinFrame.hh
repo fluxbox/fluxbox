@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.24 2003/10/28 02:17:02 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.25 2003/12/09 08:48:08 rathnor Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -197,14 +197,18 @@ private:
     void renderTitlebar();
     void renderHandles();
     void renderButtons();
+    // focused => has focus
     void renderButtonFocus(FbTk::TextButton &button);
+    // unfocus => has no focus, label not the active one
     void renderButtonUnfocus(FbTk::TextButton &button);
+    // active => doesn't have keybaord focus, but is the active tab
+    void renderButtonActive(FbTk::TextButton &button);
     void renderLabel();
     /// renders to pixmap or sets color
     void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
                 unsigned int width, unsigned int height);
-    void getUnfocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
-                          FbTk::Color &label_color, FbTk::Color &title_color);
+    void getActiveLabelPixmap(Pixmap &label_pm, Pixmap &title_pm,
+                              FbTk::Color &label_color, FbTk::Color &title_color);
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                FbTk::Color &label_color, FbTk::Color &title_color);
     void renderLabelButtons();
@@ -256,6 +260,8 @@ private:
     FbTk::Color m_label_focused_color; ///< color for focused label
     Pixmap m_label_unfocused_pm; ///< pixmap for unfocused label
     FbTk::Color m_label_unfocused_color; ///< color for unfocued label
+    Pixmap m_label_active_pm; ///< pixmap for active label
+    FbTk::Color m_label_active_color; ///< color for active label
     
     FbTk::Color m_handle_focused_color, m_handle_unfocused_color;
     Pixmap m_handle_focused_pm, m_handle_unfocused_pm;

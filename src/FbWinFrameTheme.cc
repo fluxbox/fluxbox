@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.13 2003/09/29 12:53:58 rathnor Exp $
+// $Id: FbWinFrameTheme.cc,v 1.14 2003/12/09 08:48:08 rathnor Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -27,11 +27,13 @@
 #include <X11/cursorfont.h>
 
 #include <iostream>
+using namespace std;
 
 FbWinFrameTheme::FbWinFrameTheme(int screen_num): 
     FbTk::Theme(screen_num),
     m_label_focus(*this, "window.label.focus", "Window.Label.Focus"),
     m_label_unfocus(*this, "window.label.unfocus", "Window.Label.Unfocus"),
+    m_label_active(*this, "window.label.active", "Window.Label.Active"),
 
     m_title_focus(*this, "window.title.focus", "Window.Title.Focus"),
     m_title_unfocus(*this, "window.title.unfocus", "Window.Title.Unfocus"),
@@ -48,6 +50,7 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
   
     m_label_focus_color(*this, "window.label.focus.textColor", "Window.Label.Focus.TextColor"),
     m_label_unfocus_color(*this, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor"),
+    m_label_active_color(*this, "window.label.active.textColor", "Window.Label.Active.TextColor"),
     
     m_frame_focus_color(*this, "window.frame.focusColor", "Window.Frame.FocusColor"), 
     m_frame_unfocus_color(*this, "window.frame.unfocusColor", "Window.Frame.UnfocusColor"),
@@ -65,6 +68,7 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_border(*this, "window", "Window"), // for window.border*
     m_label_text_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_label_text_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_label_text_active_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_button_pic_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)) {
 
@@ -80,6 +84,8 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_lr_angle);
     m_cursor_upper_right_angle = XCreateFontCursor(disp, XC_ur_angle);
     m_cursor_upper_left_angle = XCreateFontCursor(disp, XC_ul_angle);
+
+    reconfigTheme();
 }
 
 FbWinFrameTheme::~FbWinFrameTheme() {
@@ -95,6 +101,11 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
         return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "bevelWidth");
     else if (item.name() == "window.handleWidth")
         return FbTk::ThemeManager::instance().loadItem(item, "handleWidth", "HandleWidth");
+    else if (item.name() == "window.label.active")
+        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus", "Window.Label.Unfocus");
+    else if (item.name() == "window.label.active.textColor")
+        return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor", "Window.Label.Unfocus.TextColor");
+    
 
     return false;
 }
@@ -117,6 +128,7 @@ void FbWinFrameTheme::reconfigTheme() {
 
     m_label_text_focus_gc.setForeground(*m_label_focus_color);
     m_label_text_unfocus_gc.setForeground(*m_label_unfocus_color);
+    m_label_text_active_gc.setForeground(*m_label_active_color);
     m_button_pic_focus_gc.setForeground(*m_button_focus_color);
     m_button_pic_unfocus_gc.setForeground(*m_button_unfocus_color);
 

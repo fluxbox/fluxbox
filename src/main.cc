@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.24 2003/10/02 16:14:41 rathnor Exp $
+// $Id: main.cc,v 1.25 2003/12/09 08:48:08 rathnor Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
             exit(0);
         } else if (strcmp(argv[i], "-log") == 0 ) {
             if (i + 1 >= argc) {
-                cerr<<"error: '-log' need an argument"<<endl;
+                cerr<<"error: '-log' needs an argument"<<endl;
                 exit(1);
             }
             log_filename = argv[++i];

@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/09:
+  * New theme items: (Simon)
+    window.label.active:   <texture>
+    window.label.active.textColor:  <color>
+    For highlighting the active (visible) tab when not in focus.
+    - fixes bug with unfocused windows not getting unfocus.textColor
+    FbWinFrame.hh/cc FbWinFrameTheme.hh/cc
 *03/12/08:
   * fbsetbg now remembers -u option  and it also has   (Han)
     a new -U option which does the same	thing without remembering 
