@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xinerama.hh,v 1.1 2003/05/19 14:26:30 rathnor Exp $
+// $Id: Xinerama.hh,v 1.2 2003/06/25 06:11:39 fluxgen Exp $
 
 #ifndef XINERAMA_HH
 #define XINERAMA_HH
@@ -48,9 +48,9 @@ public:
     XineramaHeadMenuItem(const char *label, ItemType *object, int headnum):
         FbTk::MenuItem(label), m_object(object), m_headnum(headnum) {}
 
-    bool isEnabled() const { return m_object->screen().getOnHead(*m_object) != m_headnum; } ;
+    bool isEnabled() const { return true; } //m_object->screen().getOnHead(*m_object) != m_headnum; } ;
     void click(int button, int time) {
-        m_object->screen().setOnHead(*m_object, m_headnum);
+        //        m_object->screen().setOnHead(*m_object, m_headnum);
         FbTk::MenuItem::click(button, time);
     }
     
