@@ -669,7 +669,7 @@ Fluxbox 0.1.5 has new keybinding code, and you can customise it through the
 .IR ~/.fluxbox/keys
 file.  The file takes the format of :
 .EX
-<modifier> <key> :<operation>
+<modifier> <key> [...] :<operation>
 .EE
 In the example below, Mod1 is the 'Alt' key on the PC keyboard and Mod4 is
 one of the three extra keys on a pc104 branded with a sickening corporate logo.
@@ -692,7 +692,10 @@ Mod4 c :Minimize
 Mod4 r :ExecCommand rxvt 
 Mod4 v :NextWorkspace 
 Mod4 x :Close 
+Control n Mod1 n :NextTab
 .EE
+As you can see from the last line, keybinds can be chained in a fashion similar
+to emacs keybindings.
 .SH TITLEBAR FILE
 Fluxbox lets you customise the button layout on the window titlebar.  This is
 done by modifying the
@@ -727,7 +730,7 @@ Of course to use the slit you must have slit support compiled in.
 .SH RESOURCE FILE
 Usually the
 .I ~/.fluxboxrc
-resource file is created and maintained bij Fluxbox itself.
+resource file is created and maintained by Fluxbox itself.
 All options from the
 .B [config]
 menu, the last selected style file, your workspace names and
@@ -865,6 +868,12 @@ This should also be done via the Configuration/Tab Placement menu.
 .B session.screen0.tab.rotatevertical:
 If True, will rotate text on the tab so it is readable on vertically-
 placed tabs.  Once again, use the Configuration/Tab Placement menu.
+.TP
+.B session.screen0.tab.width:
+Width of window tabs in pixels.
+.TP
+.B session.screen0.tab.height:
+Height of window tabs in pixels.
 .PP
 When running Fluxbox in a multiple desktop environment the
 .B screen0
