@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/11/15:
+  * Moved fluxbox-generate_menu to fluxbox-generate_menu.in  (Thanks Han)
+    fixed empty submenu problem
+	fluxbox-generate_menu.in, util/Makefile.am, data/Makefile.am
 *03/10/31:
   * Fix slit client map on restart and surplus menu redraw (Simon)
     SlitClient.hh Slit.cc Menu.cc
