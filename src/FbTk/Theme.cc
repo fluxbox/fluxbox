@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.2 2003/02/23 00:47:34 fluxgen Exp $
+// $Id: Theme.cc,v 1.3 2003/04/28 22:25:13 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -28,6 +28,15 @@
 #include "Color.hh"
 #include "Texture.hh"
 #include "App.hh"
+
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifdef HAVE_XPM
+#include <X11/xpm.h>
+#endif // HAVE_XPM
 
 #include <iostream>
 
@@ -71,10 +80,36 @@ void ThemeItem<FbTk::Texture>::setDefaultValue() {
 
 template <>
 void ThemeItem<FbTk::Texture>::load() {
-    string color_name(ThemeManager::instance().resourceValue(name()+".color", altName()+".Color"));
-    string colorto_name(ThemeManager::instance().resourceValue(name()+".colorTo", altName()+".ColorTo"));
+    string color_name(ThemeManager::instance().
+                      resourceValue(name()+".color", altName()+".Color"));
+    string colorto_name(ThemeManager::instance().
+                        resourceValue(name()+".colorTo", altName()+".ColorTo"));
+    string pixmap_name(ThemeManager::instance().
+                       resourceValue(name()+".pixmap", altName()+".Pixmap"));
+
     m_value.color().setFromString(color_name.c_str(), m_tm.screenNum());
     m_value.colorTo().setFromString(colorto_name.c_str(), m_tm.screenNum());
+
+#ifdef HAVE_XPM
+    XpmAttributes xpm_attr;
+    xpm_attr.valuemask = 0;
+    Display *dpy = FbTk::App::instance()->display();
+    Pixmap pm = 0, mask = 0;
+    int retvalue = XpmReadFileToPixmap(dpy,
+                                       RootWindow(dpy, m_tm.screenNum()), 
+                                       const_cast<char *>(pixmap_name.c_str()),
+                                       &pm,
+                                       &mask, &xpm_attr);
+    if (retvalue == 0) { // success
+        m_value.pixmap() = pm;
+        if (mask != 0)
+            XFreePixmap(dpy, mask);
+    } else { // failure
+        // create empty pixmap
+        m_value.pixmap() = FbTk::FbPixmap();
+    }
+#endif // HAVE_XPM
+
 }
 
 
@@ -179,7 +214,7 @@ std::string ThemeManager::resourceValue(const std::string &name, const std::stri
     char *value_type;
 	
     if (*m_database != 0 && XrmGetResource(*m_database, name.c_str(),
-                                          altname.c_str(), &value_type, &value) && value.addr != 0) {
+                                           altname.c_str(), &value_type, &value) && value.addr != 0) {
         return string(value.addr);
     }
     return "";
