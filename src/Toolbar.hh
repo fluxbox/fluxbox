@@ -19,18 +19,24 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Toolbar.hh,v 1.4 2002/01/20 02:11:51 fluxgen Exp $
+
 #ifndef   _TOOLBAR_HH_
 #define   _TOOLBAR_HH_
 
 #include <X11/Xlib.h>
-
-
-
-
+#ifndef _BASEMENU_HH_
 #include "Basemenu.hh"
+#endif
+#ifndef _LINKEDLIST_HH_
 #include "LinkedList.hh"
+#endif
+#ifndef _TIMER_HH_
 #include "Timer.hh"
+#endif
+#ifndef _ICONBAR_HH_
 #include "IconBar.hh"
+#endif
 
 
 // forward declaration
@@ -156,7 +162,7 @@ public:
 
   virtual void timeout(void);
 
-  enum { TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
+  enum Placement{ TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
          BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT };
 };
 
