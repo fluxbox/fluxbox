@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.85 2003/05/19 14:26:30 rathnor Exp $
+// $Id: Toolbar.cc,v 1.86 2003/05/19 15:32:47 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -42,10 +42,7 @@
 #include "RootTheme.hh"
 #include "BoolMenuItem.hh"
 #include "FbWinFrameTheme.hh"
-
-#ifdef XINERAMA
 #include "Xinerama.hh"
-#endif XINERAMA
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -138,7 +135,7 @@ void setupMenus(Toolbar &tbar) {
     menu.setInternalMenu();
 
     menu.insert("Layer...", &tbar.layermenu());
-#ifdef XINERAMA
+
     if (tbar.screen().hasXinerama()) {
         menu.insert("On Head...", new XineramaHeadMenu<Toolbar>(
                         *tbar.screen().menuTheme(),
@@ -148,8 +145,6 @@ void setupMenus(Toolbar &tbar) {
                         &tbar
                         ));
     }
-                    
-#endif //XINERAMA
 
     // setup items in placement menu
     struct {

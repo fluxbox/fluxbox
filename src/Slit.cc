@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.56 2003/05/19 14:26:30 rathnor Exp $
+// $Id: Slit.cc,v 1.57 2003/05/19 15:32:47 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -51,10 +51,7 @@
 #include "FbMenu.hh"
 #include "Transparent.hh"
 #include "IntResMenuItem.hh"
-
-#ifdef XINERAMA
 #include "Xinerama.hh"
-#endif // XINERAMA
 
 #include <algorithm>
 #include <iostream>
@@ -794,16 +791,13 @@ void Slit::reposition() {
         head_w,
         head_h;
 
-#ifdef XINERAMA
     if (screen().hasXinerama()) {
         int head = screen().getSlitOnHead();
         head_x = screen().getHeadX(head);
         head_y = screen().getHeadY(head);
         head_w = screen().getHeadWidth(head);
         head_h = screen().getHeadHeight(head);
-    } else 
-#endif // XINERAMA
-    {
+    } else {
         head_w = screen().width();
         head_h = screen().height();
     }

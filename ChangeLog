@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
 *03/05/19:
+   * Clean + change xinerama, plus add maximize smarts (Simon)
+     Screen.hh/cc Window.cc Workspace.cc Toolbar.cc Slit.cc     
    * Fixed minor bug in bsetroot (Henrik)
      bsetroot.cc
    * Add back some Xinerama support (still need placement + maximise) (Simon)

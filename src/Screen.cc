@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.172 2003/05/19 14:26:29 rathnor Exp $
+// $Id: Screen.cc,v 1.173 2003/05/19 15:32:46 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -53,6 +53,7 @@
 #include "WinClient.hh"
 #include "Subject.hh"
 #include "FbWinFrame.hh"
+#include "FbWindow.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -523,9 +524,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     Display *disp = FbTk::App::instance()->display();
 
-#ifdef XINERAMA
-    initXinerama(disp);
-#endif // XINERAMA
+    initXinerama();
 
     event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
         SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
@@ -815,23 +814,47 @@ Pixmap BScreen::rootPixmap() const {
 
 }
     
-/// TODO
-unsigned int BScreen::maxLeft() const {
-    return 0;
+unsigned int BScreen::maxLeft(FbTk::FbWindow &win) const {
+    if (hasXinerama()) {
+        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
+        // we MUST use a head, we use the center of the window, or if that
+        // isn't in a head, then the mouse's head
+        if (head == 0) head = getCurrHead();
+        return getHeadX(head);
+    } else
+        return 0;
 }
 
-///!! TODO
-unsigned int BScreen::maxRight() const {
-    return width();
+unsigned int BScreen::maxRight(FbTk::FbWindow &win) const {
+    if (hasXinerama()) {
+        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
+        // we MUST use a head, we use the center of the window, or if that
+        // isn't in a head, then the mouse's head
+        if (head == 0) head = getCurrHead();
+        return getHeadX(head) + getHeadWidth(head);
+    } else
+        return width();
 }
 
-///!! TODO
-unsigned int BScreen::maxTop() const {
-    return 0;
+unsigned int BScreen::maxTop(FbTk::FbWindow &win) const {
+    if (hasXinerama()) {
+        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
+        // we MUST use a head, we use the center of the window, or if that
+        // isn't in a head, then the mouse's head
+        if (head == 0) head = getCurrHead();
+        return getHeadY(head);
+    } else
+        return 0;
 }
-///!! TODO
-unsigned int BScreen::maxBottom() const {
-    return height();
+unsigned int BScreen::maxBottom(FbTk::FbWindow &win) const {
+    if (hasXinerama()) {
+        int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
+        // we MUST use a head, we use the center of the window, or if that
+        // isn't in a head, then the mouse's head
+        if (head == 0) head = getCurrHead();
+        return getHeadY(head) + getHeadHeight(head);
+    } else
+        return height();
 }
 
 void BScreen::reconfigure() {
@@ -2542,9 +2565,11 @@ void BScreen::updateSize() {
     
 }
 
-#ifdef XINERAMA
 
-void BScreen::initXinerama(Display *display) {
+void BScreen::initXinerama() {
+#ifdef XINERAMA
+    Display *display = FbTk::App::instance()->display();
+
     if (!XineramaIsActive(display)) {
         m_xinerama_avail = false;
         m_xinerama_headinfo = 0;
@@ -2563,11 +2588,16 @@ void BScreen::initXinerama(Display *display) {
         m_xinerama_headinfo[i].width = screen_info[i].width;
         m_xinerama_headinfo[i].height = screen_info[i].height;
     }
+#else // XINERAMA
+    m_xinerama_avail = false;
+    m_xinerama_num_heads = 0;
+#endif // XINERAMA
 
 }
 
 int BScreen::getHead(int x, int y) const {
     if (!hasXinerama()) return 0;
+#ifdef XINERAMA
 
     for (int i=0; i < m_xinerama_num_heads; i++) {
         if (x >= m_xinerama_headinfo[i].x &&
@@ -2578,13 +2608,15 @@ int BScreen::getHead(int x, int y) const {
         }
     }
 
+#endif // XINERAMA
     return 0;
 }
 
 int BScreen::getCurrHead() const {
     if (!hasXinerama()) return 0;
-    int root_x, root_y, ignore_i;
-
+    int root_x = 0, root_y = 0;
+#ifdef XINERAMA
+    int ignore_i;
     unsigned int ignore_ui;
 
     Window ignore_w;
@@ -2593,28 +2625,44 @@ int BScreen::getCurrHead() const {
                   rootWindow().window(), &ignore_w, 
                   &ignore_w, &root_x, &root_y,
                   &ignore_i, &ignore_i, &ignore_ui);
+#endif // XINERAMA
     return getHead(root_x, root_y);
-
 }
 
 int BScreen::getHeadX(int head) const {
+#ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return 0;
     return m_xinerama_headinfo[head-1].x;
+#else
+    return 0;
+#endif // XINERAMA
 }
 
 int BScreen::getHeadY(int head) const {
+#ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return 0;
     return m_xinerama_headinfo[head-1].y;
+#else
+    return 0;
+#endif // XINERAMA
 }
 
 int BScreen::getHeadWidth(int head) const {
+#ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return width();
     return m_xinerama_headinfo[head-1].width;
+#else
+    return width();
+#endif // XINERAMA
 }
 
 int BScreen::getHeadHeight(int head) const {
+#ifdef XINERAMA
     if (head == 0 || head > m_xinerama_num_heads) return height();
     return m_xinerama_headinfo[head-1].height;
+#else
+    return height();
+#endif // XINERAMA
 }
 
 template <>
@@ -2638,5 +2686,3 @@ void BScreen::setOnHead<Slit>(Slit &slit, int head) {
     saveSlitOnHead(head);
     slit.reconfigure();
 }
-
-#endif // XINERAMA

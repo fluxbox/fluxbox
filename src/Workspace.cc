@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.66 2003/05/15 23:30:07 fluxgen Exp $
+// $Id: Workspace.cc,v 1.67 2003/05/19 15:32:47 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -33,6 +33,7 @@
 #include "StringUtil.hh"
 #include "SimpleCommand.hh"
 #include "WinClient.hh"
+#include "FbWinFrame.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -507,10 +508,10 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         test_x = root_x - (win_w / 2);
         test_y = root_y - (win_h / 2);
 
-        min_x = (int) screen().maxLeft();
-        min_y = (int) screen().maxTop();
-        max_x = (int) screen().maxRight() - win_w;
-        max_y = (int) screen().maxBottom() - win_h;
+        min_x = (int) screen().maxLeft(win.frame().window());
+        min_y = (int) screen().maxTop(win.frame().window());
+        max_x = (int) screen().maxRight(win.frame().window()) - win_w;
+        max_y = (int) screen().maxBottom(win.frame().window()) - win_h;
 
         // keep the window inside the screen
 

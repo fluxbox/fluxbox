@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.100 2003/05/19 14:26:30 rathnor Exp $
+// $Id: Screen.hh,v 1.101 2003/05/19 15:32:46 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -58,6 +58,7 @@ class MenuTheme;
 class Menu;
 class ImageControl;
 class XLayerItem;
+class FbWindow;
 };
 
 /// Handles screen connection, screen clients and workspaces
@@ -134,12 +135,12 @@ public:
     unsigned int currentWorkspaceID() const;
     Pixmap rootPixmap() const;
     /*
-      maximum screen surface
+      maximum screen bounds for given window
     */
-    unsigned int maxLeft() const;
-    unsigned int maxRight() const;
-    unsigned int maxTop() const;
-    unsigned int maxBottom() const;
+    unsigned int maxLeft(FbTk::FbWindow &win) const;
+    unsigned int maxRight(FbTk::FbWindow &win) const;
+    unsigned int maxTop(FbTk::FbWindow &win) const;
+    unsigned int maxBottom(FbTk::FbWindow &win) const;
 
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }
@@ -296,12 +297,11 @@ public:
     /// (and maximized windows?)
     void updateSize();
 
-#ifdef XINERAMA
     // Xinerama-related functions
     inline bool hasXinerama() const { return m_xinerama_avail; }
     inline int numHeads() const { return m_xinerama_num_heads; }
 
-    void initXinerama(Display *display);
+    void initXinerama();
 
     int getHead(int x, int y) const;
     int getCurrHead() const;
@@ -310,14 +310,13 @@ public:
     int getHeadWidth(int head) const;
     int getHeadHeight(int head) const;
 
-    // magic to allow us to have "on head" placement without
+    // magic to allow us to have "on head" placement (menu) without
     // the object really knowing about it.
     template <typename OnHeadObject>
     int getOnHead(OnHeadObject &obj);
 
     template <typename OnHeadObject>
     void setOnHead(OnHeadObject &obj, int head);
-#endif // XINERAMA
 
     // notify netizens
     void updateNetizenCurrentWorkspace();
@@ -447,19 +446,17 @@ private:
 
     std::auto_ptr<ToolbarHandler> m_toolbarhandler;
 
-#ifdef XINERAMA
-    // Xinerama related private data
     bool m_xinerama_avail;
     int m_xinerama_num_heads;
+
+#ifdef XINERAMA
+    // Xinerama related private data
     
     int m_xinerama_center_x, m_xinerama_center_y;
 
     struct XineramaHeadInfo {
         int x, y, width, height;        
     } *m_xinerama_headinfo;
-
-    
-
 #endif
 };
 

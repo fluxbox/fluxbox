@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.179 2003/05/17 11:08:06 fluxgen Exp $
+// $Id: Window.cc,v 1.180 2003/05/19 15:32:47 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1386,12 +1386,12 @@ void FluxboxWindow::maximize() {
         m_old_height = frame().height();
         m_old_pos_x = frame().x();
         m_old_pos_y = frame().y();
-        unsigned int left_x = screen().maxLeft();
-        unsigned int max_width = screen().maxRight();
-        unsigned int max_top = screen().maxTop();
+        unsigned int left_x = screen().maxLeft(frame().window());
+        unsigned int max_width = screen().maxRight(frame().window());
+        unsigned int max_top = screen().maxTop(frame().window());
         moveResize(left_x, max_top, 
-                   max_width - left_x, 
-                   screen().maxBottom() - max_top - frame().window().borderWidth());
+                   max_width - left_x - 2*frame().window().borderWidth(), 
+                   screen().maxBottom(frame().window()) - max_top - 2*frame().window().borderWidth());
     } else { // demaximize, restore to old values
         moveResize(m_old_pos_x, m_old_pos_y,
                    m_old_width, m_old_height);
@@ -1401,8 +1401,8 @@ void FluxboxWindow::maximize() {
 }
 
 void FluxboxWindow::maximizeHorizontal() {
-    unsigned int left_x = screen().maxLeft();
-    unsigned int max_width = screen().maxRight();
+    unsigned int left_x = screen().maxLeft(frame().window());
+    unsigned int max_width = screen().maxRight(frame().window());
     moveResize(left_x, frame().y(), 
                max_width - left_x, frame().height() - frame().window().borderWidth());
 
@@ -1412,10 +1412,10 @@ void FluxboxWindow::maximizeHorizontal() {
  Maximize window horizontal
  */
 void FluxboxWindow::maximizeVertical() {
-    unsigned int max_top = screen().maxTop();
+    unsigned int max_top = screen().maxTop(frame().window());
     moveResize(frame().x(), max_top,
                frame().width() - frame().window().borderWidth(), 
-               screen().maxBottom() - max_top);
+               screen().maxBottom(frame().window()) - max_top);
 }
 
 
