@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.10 2002/02/20 23:10:48 fluxgen Exp $
+//$Id: Keys.cc,v 1.11 2002/02/21 00:39:08 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -31,17 +31,17 @@
 
 #ifdef		HAVE_STDIO_H
 #	 include <stdio.h>
-#endif									// HAVE_STDIO_H
+#endif	// HAVE_STDIO_H
 
 #ifdef		HAVE_CTYPE_H
 #	 include <ctype.h>
-#endif									// HAVE_CTYPE_H
+#endif	// HAVE_CTYPE_H
 
 #ifdef		STDC_HEADERS
 #	 include <stdlib.h>
 #	 include <string.h>
 #  include <errno.h>
-#endif									// STDC_HEADERS
+#endif	// STDC_HEADERS
 
 #if HAVE_STRINGS_H
 # include <strings.h>
@@ -49,19 +49,19 @@
 
 #ifdef		HAVE_SYS_TYPES_H
 #	 include <sys/types.h>
-#endif									// HAVE_SYS_TYPES_H
+#endif	// HAVE_SYS_TYPES_H
 
 #ifdef		HAVE_SYS_WAIT_H
 #	 include <sys/wait.h>
-#endif									// HAVE_SYS_WAIT_H
+#endif	// HAVE_SYS_WAIT_H
 
 #ifdef		HAVE_UNISTD_H
 #	 include <unistd.h>
-#endif									// HAVE_UNISTD_H
+#endif	// HAVE_UNISTD_H
 
 #ifdef		HAVE_SYS_STAT_H
 #	 include <sys/stat.h>
-#endif									// HAVE_SYS_STAT_H
+#endif	// HAVE_SYS_STAT_H
 
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
@@ -270,41 +270,41 @@ bool Keys::load(char *filename) {
 					}
 					
 					last_key->action = m_actionlist[i].action;
-                    switch(last_key->action) {
-                        case Keys::EXECUTE:
+					switch(last_key->action) {
+						case Keys::EXECUTE:
 						last_key->execcommand = 
-                                const_cast<char *>
-                                (StringUtil::strcasestr(linebuffer.get(),
-                                                        getActionStr(Keys::EXECUTE))+
+								const_cast<char *>
+								(StringUtil::strcasestr(linebuffer.get(),
+									getActionStr(Keys::EXECUTE))+
 							strlen(getActionStr(Keys::EXECUTE)));
-                            break;
-                        case WORKSPACE:
-                            if (argc + 1 < val.size())
-                                last_key->param = atoi( val[argc+1].c_str());
-                            else
-                                last_key->param = 0;
-                            break;
-                        case LEFTWORKSPACE:
-                        case RIGHTWORKSPACE:
-                        case NEXTWORKSPACE:
-                        case PREVWORKSPACE:
-                            if (argc + 1 < val.size())
-                                last_key->param = atoi( val[argc+1].c_str());
-                            else
-                                last_key->param = 1;
-                            break;
-                        case NUDGERIGHT:
-                        case NUDGELEFT:
-                        case NUDGEUP:
-                        case NUDGEDOWN:
-                            if (argc + 1 < val.size())
-                                last_key->param = atoi( val[argc+1].c_str());
-                            else
-                                last_key->param = 2;
-                            break;
-                        default:
-                            break;
-                    }
+						break;
+						case WORKSPACE:
+							if (argc + 1 < val.size())
+								last_key->param = atoi( val[argc+1].c_str());
+							else
+								last_key->param = 0;
+						break;
+						case LEFTWORKSPACE:
+						case RIGHTWORKSPACE:
+						case NEXTWORKSPACE:
+						case PREVWORKSPACE:
+							if (argc + 1 < val.size())
+								last_key->param = atoi( val[argc+1].c_str());
+							else
+								last_key->param = 1;
+						break;
+						case NUDGERIGHT:
+						case NUDGELEFT:
+						case NUDGEUP:
+						case NUDGEDOWN:
+							if (argc + 1 < val.size())
+								last_key->param = atoi( val[argc+1].c_str());
+							else
+								last_key->param = 2;
+						break;
+						default:
+						break;
+					}
 
 					//add the keychain to list										
 					if (!mergeTree(current_key))
@@ -453,7 +453,7 @@ Keys::KeyAction Keys::getAction(XKeyEvent *ke) {
 				} else {
 					if (m_keylist[i]->action == Keys::EXECUTE)
 						m_execcmdstring = m_keylist[i]->execcommand; //update execcmdstring if action is grabExecute
-                    m_param = m_keylist[i]->param;
+					m_param = m_keylist[i]->param;
 					return m_keylist[i]->action;
 				}
 			}
@@ -593,7 +593,7 @@ Keys::t_key::t_key(unsigned int key_, unsigned int mod_, KeyAction action_) {
 	action = action_;
 	key = key_;
 	mod = mod_;	
-    param = 0;
+	param = 0;
 }
 
 Keys::t_key::t_key(t_key *k) {
@@ -601,7 +601,7 @@ Keys::t_key::t_key(t_key *k) {
 	key = k->key;
 	mod = k->mod;
 	execcommand = k->execcommand;
-    param = k-> param;
+	param = k-> param;
 }
 
 Keys::t_key::~t_key() {	
