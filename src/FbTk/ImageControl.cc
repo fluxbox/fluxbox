@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.1 2003/01/09 21:09:49 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.2 2003/07/12 21:50:15 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -186,7 +186,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
         return pixmap; // return cache item
 
 	// render new image
-    TextureRender image(*this, width, height);
+    TextureRender image(*this, width, height, m_colors, m_num_colors);
     pixmap = image.render(texture);
 
     if (pixmap) {
