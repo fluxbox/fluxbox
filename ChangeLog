@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/20:
+  * Fix for adding/removing Workspaces via Menu (thanx Øyvind Albrigtsen)
+    WorkspaceMenu.cc
 *04/11/19:
   * Some changes to avoid invisible fonts (Mathias)
     FbTk/Font.cc FbTk/FontImp.hh FbTk/XftFontImp.cc/hh
