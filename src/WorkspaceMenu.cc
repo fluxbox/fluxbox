@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceMenu.cc,v 1.2 2004/06/07 11:46:04 rathnor Exp $
+// $Id: WorkspaceMenu.cc,v 1.3 2004/06/07 22:01:11 fluxgen Exp $
 
 #include "WorkspaceMenu.hh"
 
@@ -32,6 +32,8 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/RefCount.hh"
 #include "FbTk/MenuItem.hh"
+
+#include <typeinfo>
 
 WorkspaceMenu::WorkspaceMenu(BScreen &screen):
    FbMenu(screen.menuTheme(), 
