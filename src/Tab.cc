@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.23 2002/04/09 23:15:36 fluxgen Exp $
+// $Id: Tab.cc,v 1.24 2002/04/14 22:27:57 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -262,6 +262,8 @@ void Tab::deiconify() {
 void Tab::iconify() {
 	disconnect();
 	withdraw();
+	if(!Fluxbox::instance()->useTabs() && !m_next && !m_prev)//if we don't want to use tabs that much
+		m_win->setTab(false);//let's get rid of this loner tab
 }
 
 //------------ withdraw --------------
@@ -671,9 +673,11 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 		if (XTranslateCoordinates(m_display, m_win->getScreen()->getRootWindow(), 
 							m_win->getScreen()->getRootWindow(),
 							be->x_root, be->y_root, &dest_x, &dest_y, &child)) {
-			
+		        
 			Tab *tab = Fluxbox::instance()->searchTab(child);
 			FluxboxWindow *win = Fluxbox::instance()->searchWindow(child);
+			if(win!=0 && m_win->getScreen()->isSloppyWindowGrouping())
+				win->setTab(true);
 			//search tablist for a tabwindow
 			if ( (tab!=0) || (m_win->getScreen()->isSloppyWindowGrouping() &&
 					(win!=0) && (tab = win->getTab())!=0)) {
@@ -689,7 +693,7 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 				// attach this tabwindow chain to the tabwindow chain we found.
 				tab->insert(this);
 
-			} else {	
+			} else {	//Dropped nowhere
 				disconnect();
 
 				// convenience
@@ -736,6 +740,8 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 				//TODO: this causes an calculate increase event, even if we
 				// only are moving a window
 				m_win->configure(dest_x, dest_y, m_win->getWidth(), m_win->getHeight());
+				if(!Fluxbox::instance()->useTabs())
+					m_win->setTab(0);//Remove tab from window, as it is now alone...
 			}
 		}
 	} else {
@@ -971,13 +977,21 @@ void Tab::insert(Tab *tab) {
 //--------------------------------------
 void Tab::disconnect() {
 	Tab *tmp = 0;
+
+	Fluxbox *fluxbox = Fluxbox::instance();
 	if (m_prev) {	//if this have a chain to "the left" (previous tab) then set it's next to this next
 		m_prev->m_next = m_next;
-		tmp = m_prev;
+		if(!m_next && !fluxbox->useTabs())//Only two tabs in list, remove tab from remaining window
+			m_prev->m_win->setTab(false);
+		else
+			tmp = m_prev;
 	} 
 	if (m_next) {	//if this have a chain to "the right" (next tab) then set it's prev to this prev
 		m_next->m_prev = m_prev;
-		tmp = m_next;
+		if(!m_prev && !fluxbox->useTabs())//Only two tabs in list, remove tab from remaining window
+			m_next->m_win->setTab(false);
+		else
+			tmp = m_next;
 	}
 
 	//mark as no chain, previous and next.
