@@ -24,6 +24,8 @@
 .\"
 .\" Updated for version 0.1.7.1 by Stanislav Karchebny <berk@madfire.net>
 .\"
+.\" Updated for version 0.1.15 by Tobias Klausmann <klausman@users.sourceforge.net>
+.\"
 .\" ..define sort of <blockquote><pre> macro
 .de EX
 .ne 5
@@ -38,7 +40,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "December 10th, 2001" "0.5.1"
+.TH fluxbox 1 "December 15th, 2002" "0.1.15"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -53,7 +55,7 @@ fluxbox \- a window manager for X11
 Fluxbox is yet another addition to the list of window managers for the Open
 Group's X Window System, Version 11 Release 6 and above.
 Fluxbox is built with C++, based on the sources of Blackbox 0.61.0.
-.BR fast .
+.BR Fast .
 .PP
 Fluxbox provides configurable window decorations, a root menu to launch
 applications and a toolbar that shows the current workspace name, the focused
@@ -110,11 +112,10 @@ On exit or restart, Fluxbox will save user defaults in the file
 in the user's home directory.
 Some resources in this file can be edited by hand.
 .SH USING FLUXBOX
-Fluxbox includes keyboard handling.  0.1.4 integrated
-.IR bbkeys (1)
-however from version 0.1.5 the whole keyboard handling code was rewritten
-from scratch. You can get a script to convert your bbkeys file into fluxbox
-format at the fluxbox webpage, http://fluxbox.sourceforge.net/.
+Fluxbox includes keyboard handling. In order to customize your keybindings,
+edit the file
+.I ~/.fluxbox/keys
+as described below in the section KEYS FILE.
 .SS Root window (background):
 Right click (button 3) will pop up the root menu.
 With this you can launch your applications.
@@ -276,7 +277,7 @@ which will be expanded into your home directory (e.g.
 [include] (~/fluxbox/stylesmenu)
 .EE
 will include
-.I /home/fluxgen/fluxbox/stylesmenu
+.I /home/yourusername/fluxbox/stylesmenu
 in my menu).
 .TP
 .B [nop] (label - optional)
@@ -323,6 +324,9 @@ the new menu's title is the same as the item label.
 An
 .B [end]
 tag is required to end the submenu.
+.IP
+If you create a submenu labelled 'Startup', applications located in this
+submenu will be launched on fluxbox startup.
 .TP
 .B [reconfig] (label)
 When selected, this item rereads the current style and menu files and
@@ -361,7 +365,7 @@ Here is a short example of a menu file:
 .PP
 .nf
 # Fluxbox menu file
-[begin] (Fluxbox 0.5.1)
+[begin] (Fluxbox)
   [exec] (rxvt) {rxvt -ls}
   [exec] (netscape) {netscape -install}
   [exec] (The GIMP) {gimp}
@@ -374,6 +378,12 @@ Here is a short example of a menu file:
     [exec] (mail) {mozilla -mail}
     [exec] (edit) {mozilla -edit}
     [exec] (compose) {mozilla -compose}
+  [end]
+  [submenu] (Startup)
+    [exec] (gkrellm) {gkrellm -w}
+    [exec] (xmms) {xmms -p}
+    [exec] (galeon) {galeon -s}
+    [exec] (kdeinit) {kdeinit}
   [end]
   [submenu] (Window Manager)
     [exec] (Edit Menus) {nedit ~/.fluxbox/menu}
@@ -702,7 +712,7 @@ can easily set lots of keys with a single command, e.g.
 .EE
 This sets already nice defaults for many components.
 .SH KEYS FILE
-Since version 0.1.5, Fluxbox has new keybinding code, and you can customise it through the
+You can customise Fluxbox' key handling through the
 .IR ~/.fluxbox/keys
 file.  The file takes the format of :
 .EX
@@ -844,8 +854,8 @@ A simple procedure for getting the slit sequences the way you like it is:
 3) Re-add dockapps to your auto-run script, e.g. .xinitrc or .xsession. Order doesn't matter here!
 .EE
 This sequence will be saved by default to
-.IR~/.fluxbox/slitlist
-should be maintained in future fluxbox sessions.
+.IR ~/.fluxbox/slitlist
+and will be maintained in future fluxbox sessions.
 .PP
 Users are free to manually edit the slitlist file. It is a simple list of window names,
 one per dockapp. Similar to the init file it should be edited while not running fluxbox.
@@ -1069,6 +1079,66 @@ session.screen1.strftimeFormat: %a %d %R [%s]
 This way the main workspace (screen0) has the maximum amount of space available
 and the secondary workspace could show the time and run some withrawn apps like
 gkrellm in the slit, always visible yet out of the way of real work.
+.SH APPLICATIONS SETTINGS
+Sometimes, you want to force an application to have always the same dimensions,
+position, and other settings.  It is now possible with the new window-submenu
+called 'Remember...'.  Settings are saved in the
+.I ~/.fluxbox/apps
+file.  You don't have to edit the file yourself as all manipulations can be
+done using the 'Remember...' submenu.
+.TP
+.B Workspace [0-N]
+Force the workspace of the application to be the current one, even if you launch
+the application from another workspace.
+.TP
+.B Dimensions [Width Height]
+Remember the current dimensions.
+.TP
+.B Position [X Y]
+Remember the current position.
+.TP
+.B Shaded state [yes|no]
+Remember the current shaded state.
+.TP
+.B Tab state [yes|no]
+Remember the current tab state.
+.TP
+.B Decoration state [NONE|NORMAL|TOOL|TINY]
+Remember the current decoration state.
+.TP
+.B Sticky state [yes|no]
+Remember the current sticky state.
+.TP
+.B Jump to workspace [yes|no]
+This one is only useful if 'Workspace' is set too.  The workspace is changed
+to the workspace containing the application being launched.
+.TP
+.B Save settings on close [yes|no]
+By default, application settings are not saved when a window is closed.  Set
+this option if you want previous settings to be saved when the window is closed.
+.SS Applications example
+Here is a short example of an apps file:
+.PP
+.nf
+[app] (kate)
+  [Dimensions]  {1022 747}
+  [Position]    {0 0}
+  [Close]       {yes}
+[end]
+[app] (konqueror)
+  [Workspace]   {1}
+  [Dimensions]  {1006 749}
+  [Position]    {16 0}
+  [Jump]        {yes}
+[end]
+[app] (xterm)
+  [Deco]        {NONE}
+[end]
+.fi
+
+Parameters in the 'apps' file are case-sensitive.  Application names are taken
+from the first X-Window WM_CLASS attribute.  You can see this attribute by using
+the xprop command.  Transient windows are not affected by application settings.
 .SH ENVIRONMENT
 .TP
 .B HOME
@@ -1104,7 +1174,7 @@ The Official Fluxbox website:
 .br
 Many compatible themes:
 .nh
-.B http://www.themes.org/themes/blackbox/
+.B http://themes.freshmeat.net/
 .hy
 .PP
 This manpage was put together by Matthew Hawkins
@@ -1113,9 +1183,13 @@ This manpage was put together by Matthew Hawkins
 .hy
 from the original Blackbox man page by Wilbert Berendsen
 .nh
-(wbsoft@xs4all.nl).
+(wbsoft@xs4all.nl) 
+.hy
+and subsequently hacked upon by Tobias Klausmann
+.nh
+(klausman@users.sourceforge.net)
 .hy
 Numerous other languages will be available.
 .SH SEE ALSO
-.IR bsetroot (1), \ bbkeys (1)  \" not there, yet ;-(
+.IR bsetroot (1) \" not there, yet ;-(
 
