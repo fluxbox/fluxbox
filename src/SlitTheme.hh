@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitTheme.hh,v 1.2 2003/06/24 16:28:40 fluxgen Exp $
+// $Id: SlitTheme.hh,v 1.3 2003/08/24 23:21:58 fluxgen Exp $
 
 #ifndef SLITTHEME_HH
 #define SLITTHEME_HH
@@ -35,6 +35,10 @@ public:
                                    m_border_width(*this, "slit.borderWidth", "Slit.borderWidth"),
                                    m_bevel_width(*this, "slit.bevelWidth", "slit.bevelWidth"),
                                    m_border_color(*this, "slit.borderColor", "Slit.BorderColor") { 
+        m_texture.setDefaultValue();
+        m_border_width.setDefaultValue();
+        m_bevel_width.setDefaultValue();
+        m_border_color.setDefaultValue();
         // default texture type
         m_texture->setType(FbTk::Texture::SOLID);
     }
