@@ -150,9 +150,9 @@ public:
 
   virtual void timeout(void);
 
-  enum { Vertical = 1, Horizontal };
-  enum { TopLeft = 1, CenterLeft, BottomLeft, TopCenter, BottomCenter,
-         TopRight, CenterRight, BottomRight };
+  enum { VERTICAL = 1, HORIZONTAL };
+  enum { TOPLEFT = 1, CENTERLEFT, BOTTOMLEFT, TOPCENTER, BOTTOMCENTER,
+         TOPRIGHT, CENTERRIGHT, BOTTOMRIGHT };
 };
 
 

@@ -255,7 +255,7 @@ void Slit::reconfigure(void) {
 	LinkedListIterator<SlitClient> it(clientList);
 
 	switch (screen->getSlitDirection()) {
-	case Vertical:
+	case VERTICAL:
 		for (; it.current(); it++) {
 			frame.height += it.current()->height + screen->getBevelWidth();
 
@@ -275,7 +275,7 @@ void Slit::reconfigure(void) {
 
 		break;
 
-	case Horizontal:
+	case HORIZONTAL:
 		for (; it.current(); it++) {
 			frame.width += it.current()->width + screen->getBevelWidth();
 
@@ -326,7 +326,7 @@ void Slit::reconfigure(void) {
 	it.reset();
 
 	switch (screen->getSlitDirection()) {
-	case Vertical:
+	case VERTICAL:
 		x = 0;
 		y = screen->getBevelWidth();
 
@@ -363,7 +363,7 @@ void Slit::reconfigure(void) {
 
 		break;
 
-	case Horizontal:
+	case HORIZONTAL:
 		x = screen->getBevelWidth();
 		y = 0;
 
@@ -408,10 +408,10 @@ void Slit::reconfigure(void) {
 void Slit::reposition(void) {
 	// place the slit in the appropriate place
 	switch (screen->getSlitPlacement()) {
-	case TopLeft:
+	case TOPLEFT:
 		frame.x = 0;
 		frame.y = 0;
-		if (screen->getSlitDirection() == Vertical) {
+		if (screen->getSlitDirection() == VERTICAL) {
 			frame.x_hidden = screen->getBevelWidth() - screen->getBorderWidth()
 								 - frame.width;
 			frame.y_hidden = 0;
@@ -422,7 +422,7 @@ void Slit::reposition(void) {
 		}
 		break;
 
-	case CenterLeft:
+	case CENTERLEFT:
 		frame.x = 0;
 		frame.y = (screen->getHeight() - frame.height) / 2;
 		frame.x_hidden = screen->getBevelWidth() - screen->getBorderWidth()
@@ -430,10 +430,10 @@ void Slit::reposition(void) {
 		frame.y_hidden = frame.y;
 		break;
 
-	case BottomLeft:
+	case BOTTOMLEFT:
 		frame.x = 0;
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
-		if (screen->getSlitDirection() == Vertical) {
+		if (screen->getSlitDirection() == VERTICAL) {
 			frame.x_hidden = screen->getBevelWidth() - screen->getBorderWidth()
 								 - frame.width;
 			frame.y_hidden = frame.y;
@@ -444,7 +444,7 @@ void Slit::reposition(void) {
 		}
 		break;
 
-	case TopCenter:
+	case TOPCENTER:
 		frame.x = (screen->getWidth() - frame.width) / 2;
 		frame.y = 0;
 		frame.x_hidden = frame.x;
@@ -452,7 +452,7 @@ void Slit::reposition(void) {
 										 - frame.height;
 		break;
 
-	case BottomCenter:
+	case BOTTOMCENTER:
 		frame.x = (screen->getWidth() - frame.width) / 2;
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = frame.x;
@@ -460,10 +460,10 @@ void Slit::reposition(void) {
 										 - screen->getBorderWidth();
 		break;
 
-	case TopRight:
+	case TOPRIGHT:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = 0;
-		if (screen->getSlitDirection() == Vertical) {
+		if (screen->getSlitDirection() == VERTICAL) {
 			frame.x_hidden = screen->getWidth() - screen->getBevelWidth()
 								 - screen->getBorderWidth();
 			frame.y_hidden = 0;
@@ -474,7 +474,7 @@ void Slit::reposition(void) {
 		}
 		break;
 
-	case CenterRight:
+	case CENTERRIGHT:
 	default:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = (screen->getHeight() - frame.height) / 2;
@@ -483,10 +483,10 @@ void Slit::reposition(void) {
 		frame.y_hidden = frame.y;
 		break;
 
-	case BottomRight:
+	case BOTTOMRIGHT:
 		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
 		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
-		if (screen->getSlitDirection() == Vertical) {
+		if (screen->getSlitDirection() == VERTICAL) {
 			frame.x_hidden = screen->getWidth() - screen->getBevelWidth()
 								 - screen->getBorderWidth();
 			frame.y_hidden = frame.y;
@@ -508,13 +508,13 @@ void Slit::reposition(void) {
 			tbar->getY() < frame.y + sh && tbar->getY() + th > frame.y) {
 		if (frame.y < th) {
 			frame.y += tbar->getExposedHeight();
-			if (screen->getSlitDirection() == Vertical)
+			if (screen->getSlitDirection() == VERTICAL)
 				frame.y_hidden += tbar->getExposedHeight();
 			else
 	frame.y_hidden = frame.y;
 		} else {
 			frame.y -= tbar->getExposedHeight();
-			if (screen->getSlitDirection() == Vertical)
+			if (screen->getSlitDirection() == VERTICAL)
 				frame.y_hidden -= tbar->getExposedHeight();
 			else
 	frame.y_hidden = frame.y;
@@ -764,7 +764,7 @@ Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Horizontal"),
-	 Slit::Horizontal);
+	 Slit::HORIZONTAL);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonDirectionVert,
@@ -772,11 +772,11 @@ Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Vertical"),
-	 Slit::Vertical);
+	 Slit::VERTICAL);
 
 	update();
 
-	if (sm->slit->screen->getSlitDirection() == Slit::Horizontal)
+	if (sm->slit->screen->getSlitDirection() == Slit::HORIZONTAL)
 		setItemSelected(0, True);
 	else
 		setItemSelected(1, True);
@@ -790,7 +790,7 @@ void Slitmenu::Directionmenu::itemSelected(int button, int index) {
 
 		slitmenu->slit->screen->saveSlitDirection(item->function());
 
-		if (item->function() == Slit::Horizontal) {
+		if (item->function() == Slit::HORIZONTAL) {
 			setItemSelected(0, True);
 			setItemSelected(1, False);
 		} else {
@@ -825,7 +825,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Top Left"),
-	 Slit::TopLeft);
+	 Slit::TOPLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementCenterLeft,
@@ -833,7 +833,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Center Left"),
-	 Slit::CenterLeft);
+	 Slit::CENTERLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomLeft,
@@ -841,7 +841,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Bottom Left"),
-	 Slit::BottomLeft);
+	 Slit::BOTTOMLEFT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopCenter,
@@ -849,7 +849,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Top Center"),
-	 Slit::TopCenter);
+	 Slit::TOPCENTER);
 	insert("");
 	insert(i18n->getMessage(
 #ifdef		NLS
@@ -858,7 +858,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Bottom Center"),
-	 Slit::BottomCenter);
+	 Slit::BOTTOMCENTER);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementTopRight,
@@ -866,7 +866,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Top Right"),
-	 Slit::TopRight);
+	 Slit::TOPRIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementCenterRight,
@@ -874,7 +874,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Center Right"),
-	 Slit::CenterRight);
+	 Slit::CENTERRIGHT);
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonPlacementBottomRight,
@@ -882,7 +882,7 @@ Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 				0, 0,
 #endif // NLS
 				"Bottom Right"),
-	 Slit::BottomRight);
+	 Slit::BOTTOMRIGHT);
 
 	update();
 }

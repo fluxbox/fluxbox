@@ -195,7 +195,7 @@ rootcommand("")
 	image_control->setDither(resource.image_dither);
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
-	
+
 #ifdef GNOME
 	/* create the GNOME window */
   Window gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),
@@ -205,12 +205,13 @@ rootcommand("")
   XChangeProperty(getBaseDisplay()->getXDisplay(),
 			getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 			XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
- 
+
   XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
 		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-	
+	 
 	Atom gnomeatomlist[1] = {getBaseDisplay()->getGnomeWorkspaceAtom()};
+
   XChangeProperty(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), getBaseDisplay()->getGnomeProtAtom(),
 		XA_ATOM, 32, PropModeReplace,
@@ -1055,7 +1056,7 @@ void BScreen::InitMenu(void) {
 						0, 0,
 #endif // NLS
 						"xterm"),
-						BScreen::Execute,
+						BScreen::EXECUTE,
 						i18n->getMessage(
 #ifdef		NLS
 							ScreenSet, Screenxterm,
@@ -1070,7 +1071,7 @@ void BScreen::InitMenu(void) {
 						0, 0,
 #endif // NLS
 						"Restart"),
-					BScreen::Restart);
+					BScreen::RESTART);
 		rootmenu->insert(i18n->getMessage(
 #ifdef		NLS
 						ScreenSet, ScreenExit,
@@ -1078,7 +1079,7 @@ void BScreen::InitMenu(void) {
 						0, 0,
 #endif // NLS
 						"Exit"),
-				BScreen::Exit);
+				BScreen::EXIT);
 	} else
 		fluxbox->saveMenuFilename(fluxbox->getMenuFilename());
 }
@@ -1181,7 +1182,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 					continue;
 				}
 
-				menu->insert(label, BScreen::Execute, command);		
+				menu->insert(label, BScreen::EXECUTE, command);		
 				break;
 
 			case 442: // exit
@@ -1198,7 +1199,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 				continue;
 				}
 
-				menu->insert(label, BScreen::Exit);
+				menu->insert(label, BScreen::EXIT);
 				break;
 	
 			case 561: // style
@@ -1238,7 +1239,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 					*(style + command_length) = '\0';
 				}
 
-				menu->insert(label, BScreen::SetStyle, style);
+				menu->insert(label, BScreen::SETSTYLE, style);
 			}
 
 			break;
@@ -1380,9 +1381,9 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 			}
 
 			if (*command)
-				menu->insert(label, BScreen::RestartOther, command);
+				menu->insert(label, BScreen::RESTARTOTHER, command);
 			else
-				menu->insert(label, BScreen::Restart);
+				menu->insert(label, BScreen::RESTART);
 		}
 
 		break;
@@ -1403,7 +1404,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 				continue;
 			}
 
-			menu->insert(label, BScreen::Reconfigure);
+			menu->insert(label, BScreen::RECONFIGURE);
 		}
 
 		break;
@@ -1488,7 +1489,7 @@ Bool BScreen::parseMenuFile(FILE *file, Rootmenu *menu) {
 									strncpy(style + slen + 1, ls[n], nlen + 1);
 
 									if ((! stat(style, &statbuf)) && S_ISREG(statbuf.st_mode))
-										stylesmenu->insert(ls[n], BScreen::SetStyle, style);
+										stylesmenu->insert(ls[n], BScreen::SETSTYLE, style);
 
 									delete [] ls[n];
 								}

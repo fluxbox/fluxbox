@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.8 2002/01/10 12:49:15 fluxgen Exp $
+// $Id: Screen.hh,v 1.9 2002/01/11 10:20:00 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -270,13 +270,13 @@ public:
 	void updateNetizenWindowRaise(Window);
 	void updateNetizenWindowLower(Window);
 
-	enum { RowSmartPlacement = 1, ColSmartPlacement, CascadePlacement, LeftRight,
-				 RightLeft, TopBottom, BottomTop };
-	enum { LeftJustify = 1, RightJustify, CenterJustify };
-	enum { RoundBullet = 1, TriangleBullet, SquareBullet, NoBullet };
-	enum { Restart = 1, RestartOther, Exit, Shutdown, Execute, Reconfigure,
-				 WindowShade, WindowIconify, WindowMaximize, WindowClose, WindowRaise,
-				 WindowLower, WindowStick, WindowKill, SetStyle, WindowTab};
+	enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT, LEFTRIGHT,
+				 RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
+	enum { LEFTJUSTIFY = 1, RIGHTJUSTIFY, CENTERJUSTIFY };
+	enum { ROUNDBULLET = 1, TRIANGELBULLET, SQUAERBULLET, NOBULLET };
+	enum { RESTART = 1, RESTARTOTHER, EXIT, SHUTDOWN, EXECUTE, RECONFIGURE,
+				 WINDOWSHADE, WINDOWICONIFY, WINDOWMAXIMIZE, WINDOWCLOSE, WINDOWRAISE,
+				 WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
 
 private:
 	Theme *theme;
