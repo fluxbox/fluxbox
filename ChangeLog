@@ -1,7 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/08:
+  * Fix some TextBox issues with some "untypeable" keys (Mathias)
+    FbTk/TextBox.hh/cc FbTk/Keyutil.hh/cc
 *04/10/07:
-  * Fixed LC_TIME issue for ClockTool (Thanks to Christian Storm)
+  * Fixed bug #1033903 (Thanks to Christian Storm)
     FbTk/I18n.cc
 *04/10/06:
   * Memory allocation improvements in TextureRender. (Henrik)
