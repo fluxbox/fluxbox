@@ -19,13 +19,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.36 2003/08/13 16:36:37 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.37 2003/08/19 16:13:25 fluxgen Exp $
 
 #include "FbWinFrame.hh"
-#include "ImageControl.hh"
-#include "EventManager.hh"
-#include "TextButton.hh"
-#include "App.hh"
+
+#include "FbTk/ImageControl.hh"
+#include "FbTk/EventManager.hh"
+#include "FbTk/TextButton.hh"
+#include "FbTk/App.hh"
+
 #include "FbWinFrameTheme.hh"
 #ifdef SHAPE
 #include "Shape.hh"
@@ -271,7 +273,7 @@ void FbWinFrame::removeAllButtons() {
     }
 }
 
-void FbWinFrame::addLabelButton(TextButton &btn) {
+void FbWinFrame::addLabelButton(FbTk::TextButton &btn) {
     LabelList::iterator found_it = find(m_labelbuttons.begin(),
                                         m_labelbuttons.end(),
                                         &btn);
@@ -282,7 +284,7 @@ void FbWinFrame::addLabelButton(TextButton &btn) {
     m_labelbuttons.push_back(&btn);
 }
 
-void FbWinFrame::removeLabelButton(TextButton &btn) {
+void FbWinFrame::removeLabelButton(FbTk::TextButton &btn) {
     LabelList::iterator erase_it = remove(m_labelbuttons.begin(),
                                           m_labelbuttons.end(),
                                           &btn);
@@ -293,7 +295,7 @@ void FbWinFrame::removeLabelButton(TextButton &btn) {
 }
 
 
-void FbWinFrame::moveLabelButtonLeft(const TextButton &btn) {
+void FbWinFrame::moveLabelButtonLeft(const FbTk::TextButton &btn) {
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                    m_labelbuttons.end(),
                                    &btn);
@@ -303,7 +305,7 @@ void FbWinFrame::moveLabelButtonLeft(const TextButton &btn) {
 
     LabelList::iterator new_pos = it;
     new_pos--;
-    TextButton *item = *it;
+    FbTk::TextButton *item = *it;
     // remove from list
     m_labelbuttons.erase(it); 
     // insert on the new place
@@ -312,7 +314,7 @@ void FbWinFrame::moveLabelButtonLeft(const TextButton &btn) {
     redrawTitle();
 }
 
-void FbWinFrame::moveLabelButtonRight(const TextButton &btn) {
+void FbWinFrame::moveLabelButtonRight(const FbTk::TextButton &btn) {
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                   m_labelbuttons.end(),
                                   &btn);
@@ -320,7 +322,7 @@ void FbWinFrame::moveLabelButtonRight(const TextButton &btn) {
     if (it == m_labelbuttons.end() || *it == m_labelbuttons.back())
         return;
 
-    TextButton *item = *it;
+    FbTk::TextButton *item = *it;
     // remove from list
     LabelList::iterator new_pos = m_labelbuttons.erase(it); 
     new_pos++;
@@ -330,7 +332,7 @@ void FbWinFrame::moveLabelButtonRight(const TextButton &btn) {
     redrawTitle();
 }
 
-void FbWinFrame::setLabelButtonFocus(TextButton &btn) {
+void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                   m_labelbuttons.end(),
                                   &btn);
@@ -1031,7 +1033,7 @@ void FbWinFrame::setBorderWidth(unsigned int borderW) {
         resize(width(), height() + bw_changes);
 }
 
-void FbWinFrame::renderButtonFocus(TextButton &button) {
+void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
 
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
@@ -1046,7 +1048,7 @@ void FbWinFrame::renderButtonFocus(TextButton &button) {
     button.clear();
 }
 
-void FbWinFrame::renderButtonUnfocus(TextButton &button) {
+void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
    button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);

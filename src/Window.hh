@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.91 2003/08/11 16:57:11 fluxgen Exp $
+// $Id: Window.hh,v 1.92 2003/08/19 16:13:25 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -44,10 +44,10 @@
 class WinClient;
 class FbWinFrameTheme;
 class BScreen;
-
-class TextButton;
 class FbWinFrame;
+
 namespace FbTk {
+class TextButton;
 class MenuTheme;
 class ImageControl;
 class XLayer;
@@ -428,7 +428,7 @@ private:
 
     ClientList m_clientlist;
     WinClient *m_client;
-    typedef std::map<WinClient *, TextButton *> Client2ButtonMap;
+    typedef std::map<WinClient *, FbTk::TextButton *> Client2ButtonMap;
     Client2ButtonMap m_labelbuttons;
 
     // just temporary solution

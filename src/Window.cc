@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.218 2003/08/13 16:39:24 fluxgen Exp $
+// $Id: Window.cc,v 1.219 2003/08/19 16:13:25 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -34,7 +34,7 @@
 #include "Netizen.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
-#include "TextButton.hh"
+#include "FbTk/TextButton.hh"
 #include "EventManager.hh"
 #include "FbAtoms.hh"
 #include "RootTheme.hh"
@@ -371,7 +371,7 @@ void FluxboxWindow::init() {
     frame().gripRight().setCursor(frame().theme().lowerRightAngleCursor());
 
     frame().resize(m_client->width(), m_client->height());
-    TextButton *btn =  new TextButton(frame().label(), 
+    FbTk::TextButton *btn =  new FbTk::TextButton(frame().label(), 
                                       frame().theme().font(),
                                       m_client->title());
     btn->setJustify(frame().theme().justify());
@@ -611,7 +611,7 @@ void FluxboxWindow::attachClient(WinClient &client) {
             (*client_it)->m_win = this;
             // create a labelbutton for this client and 
             // associate it with the pointer
-            TextButton *btn = new TextButton(frame().label(), 
+            FbTk::TextButton *btn = new FbTk::TextButton(frame().label(), 
                                              frame().theme().font(),
                                              (*client_it)->title());
             btn->setJustify(frame().theme().justify());
@@ -642,7 +642,7 @@ void FluxboxWindow::attachClient(WinClient &client) {
         
     } else { // client.fbwindow() == 0
         // create a labelbutton for this client and associate it with the pointer
-        TextButton *btn = new TextButton(frame().label(), 
+        FbTk::TextButton *btn = new FbTk::TextButton(frame().label(), 
                                          frame().theme().font(),
                                          client.title());
         m_labelbuttons[&client] = btn;
@@ -774,7 +774,7 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.remove(client.window());
 
-    TextButton *label_btn = m_labelbuttons[&client];
+    FbTk::TextButton *label_btn = m_labelbuttons[&client];
     if (label_btn != 0) {
         frame().removeLabelButton(*label_btn);
         evm.remove(label_btn->window());

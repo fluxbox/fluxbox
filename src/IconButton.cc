@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.5 2003/08/16 12:04:12 fluxgen Exp $
+// $Id: IconButton.cc,v 1.6 2003/08/19 16:13:25 fluxgen Exp $
 
 #include "IconButton.hh"
 
@@ -42,7 +42,7 @@
 
 IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                        FluxboxWindow &win):
-    TextButton(parent, font, win.winClient().title()),
+    FbTk::TextButton(parent, font, win.winClient().title()),
     m_win(win), 
     m_icon_window(*this, 1, 1, 1, 1, 
                   ExposureMask | ButtonPressMask | ButtonReleaseMask) {
@@ -51,7 +51,7 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
     setOnClick(focus);
 
     m_win.hintSig().attach(this);
-
+    
     FbTk::EventManager::instance()->add(*this, m_icon_window);
     
     update(0);

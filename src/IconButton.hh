@@ -20,19 +20,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.hh,v 1.1 2003/08/11 15:45:50 fluxgen Exp $
+// $Id: IconButton.hh,v 1.2 2003/08/19 16:13:25 fluxgen Exp $
 
 #ifndef ICONBUTTON_HH
 #define ICONBUTTON_HH
 
 #include "FbTk/FbPixmap.hh"
 #include "FbTk/Observer.hh"
-
-#include "TextButton.hh"
+#include "FbTk/TextButton.hh"
 
 class FluxboxWindow;
 
-class IconButton: public TextButton, public FbTk::Observer {
+class IconButton: public FbTk::TextButton, public FbTk::Observer {
 public:
     IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font, FluxboxWindow &window);
     virtual ~IconButton();

@@ -20,14 +20,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.hh,v 1.2 2003/08/13 10:19:57 fluxgen Exp $
+// $Id: WorkspaceNameTool.hh,v 1.3 2003/08/19 16:15:32 fluxgen Exp $
 
 #ifndef WORKSPACENAMETOOL_HH
 #define WORKSPACENAMETOOL_HH
 
 #include "ToolbarItem.hh"
-#include "TextButton.hh"
 
+#include "FbTk/TextButton.hh"
 #include "FbTk/Observer.hh"
 
 class BScreen;
@@ -53,7 +53,7 @@ public:
 
 private:
     void renderTheme();
-    TextButton m_button;
+    FbTk::TextButton m_button;
     const ToolTheme &m_theme;
     BScreen &m_screen;
     Pixmap m_pixmap;
