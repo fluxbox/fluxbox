@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.64 2002/08/02 12:58:37 fluxgen Exp $
+// $Id: Window.cc,v 1.65 2002/08/04 15:15:22 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -285,7 +285,7 @@ tab(0)
 	
 	createTitlebar();
 	createHandle();
-		
+
 	associateClientWindow();
 
 	grabButtons();
@@ -296,6 +296,7 @@ tab(0)
 	// maximizable as default (such as dialogs)
 	if (decorations.tab && fluxbox->useTabs() && decorations.maximize)
 		tab = new Tab(this, 0, 0);
+
 	decorate();
 	
 	XRaiseWindow(display, frame.plate);
@@ -1986,7 +1987,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		Slit* mSlt = screen->getSlit();
 
-		if(!screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->getWidth() > 1))
+		if(!screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->width() > 1))
 		{
 			switch(screen->getSlitDirection())
 			{
@@ -1996,10 +1997,10 @@ void FluxboxWindow::maximize(unsigned int button) {
 				case Slit::TOPRIGHT:
 				case Slit::CENTERRIGHT:
 				case Slit::BOTTOMRIGHT:
-					slitModR = mSlt->getWidth() + screen->getBevelWidth();
+					slitModR = mSlt->width() + screen->getBevelWidth();
 					break;
 				default:
-					slitModL = mSlt->getWidth() + screen->getBevelWidth();
+					slitModL = mSlt->width() + screen->getBevelWidth();
 					break;
 				}
 			break;
@@ -2009,7 +2010,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 				case Slit::TOPLEFT:
 				case Slit::TOPCENTER:
 				case Slit::TOPRIGHT:
-					slitModT = mSlt->getHeight() + screen->getBevelWidth();
+					slitModT = mSlt->height() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
 						case Toolbar::TOPLEFT:
 						case Toolbar::TOPCENTER:
@@ -2022,7 +2023,7 @@ void FluxboxWindow::maximize(unsigned int button) {
 					}				
 					break;
 				default:
-					slitModB = mSlt->getHeight() + screen->getBevelWidth();
+					slitModB = mSlt->height() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
 						case Toolbar::BOTTOMLEFT:
 						case Toolbar::BOTTOMCENTER:
@@ -2878,8 +2879,8 @@ bool FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
 
 void FluxboxWindow::propertyNotifyEvent(Atom atom) {
  	Fluxbox *fluxbox = Fluxbox::instance();
-	BaseDisplay::GrabGuard gg(*fluxbox);
-	fluxbox->grab();
+//	BaseDisplay::GrabGuard gg(*fluxbox);
+//	fluxbox->grab();
 	if (! validateClient()) return;
 
 	switch(atom) {
@@ -2975,7 +2976,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 		break;
 	}
 
-	fluxbox->ungrab();
+//	fluxbox->ungrab();
 }
 
 
@@ -3580,7 +3581,7 @@ void FluxboxWindow::updateIcon() {
 		IconBarObj *icon = 0;
 		if ((iconbar = screen->getToolbar()->getIconBar()) != 0) {
 			if ((icon = iconbar->findIcon(this)) != 0)
-				iconbar->draw(icon, icon->getWidth());
+				iconbar->draw(icon, icon->width());
 		}
 	}
 }
