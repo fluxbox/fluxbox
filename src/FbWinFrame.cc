@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.42 2003/08/25 13:15:53 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.43 2003/08/25 16:17:18 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -1029,29 +1029,29 @@ void FbWinFrame::renderLabelButtons() {
     
 }
 
-void FbWinFrame::setBorderWidth(unsigned int borderW) {
+void FbWinFrame::setBorderWidth(unsigned int border_width) {
     int bw_changes = 0;
     // we need to change the size of the window 
     // if the border width changes...
     if (m_use_titlebar) 
-        bw_changes += (signed) borderW - titlebar().borderWidth();
+        bw_changes += static_cast<signed>(border_width - titlebar().borderWidth());
     if (m_use_handle) 
-        bw_changes += (signed) borderW - handle().borderWidth();
+        bw_changes += static_cast<signed>(border_width - handle().borderWidth());
 
-    window().setBorderWidth(borderW);
-    //window().setBorderColor(theme().borderColor());
+    window().setBorderWidth(border_width);
+    window().setBorderColor(theme().border().color());
 
-    titlebar().setBorderWidth(borderW);
-    //titlebar().setBorderColor(theme().borderColor());
+    titlebar().setBorderWidth(border_width);
+    titlebar().setBorderColor(theme().border().color());
 
-    handle().setBorderWidth(borderW);
-    //handle().setBorderColor(theme().borderColor());
+    handle().setBorderWidth(border_width);
+    handle().setBorderColor(theme().border().color());
 
-    gripLeft().setBorderWidth(borderW);
-    //gripLeft().setBorderColor(theme().borderColor());
+    gripLeft().setBorderWidth(border_width);
+    gripLeft().setBorderColor(theme().border().color());
 
-    gripRight().setBorderWidth(borderW);
-    //gripRight().setBorderColor(theme().borderColor());
+    gripRight().setBorderWidth(border_width);
+    gripRight().setBorderColor(theme().border().color());
 
     if (bw_changes != 0)
         resize(width(), height() + bw_changes);
