@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.68 2003/02/18 15:11:08 rathnor Exp $
+// $Id: Screen.hh,v 1.69 2003/02/20 23:33:08 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -216,7 +216,6 @@ public:
     inline void saveSloppyWindowGrouping(bool s) { resource.sloppy_window_grouping = s;  }
     inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
     inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
-    void iconUpdate();
 
     void setAntialias(bool value);
 	
@@ -319,7 +318,7 @@ public:
 	
 private:
     void setupConfigmenu(FbTk::Menu &menu);
-    void createStyleMenu(FbTk::Menu &menu, bool newmenu, const char *label, const char *directory);
+    void createStyleMenu(FbTk::Menu &menu, const char *label, const char *directory);
 
     bool parseMenuFile(std::ifstream &filestream, FbTk::Menu &menu, int &row);
 
