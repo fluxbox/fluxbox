@@ -91,7 +91,8 @@ Misc::XRotFontStruct *Misc::XRotLoadFont(Display *dpy, char *fontname, float ang
 	XSetFont(dpy, font_gc, fontstruct->fid);
 
 	/* allocate space for rotated font ... */
-	rotfont = new XRotFontStruct;
+ 	rotfont = (XRotFontStruct *)malloc((unsigned)sizeof(XRotFontStruct));
+
 	if (rotfont == 0) {
 		cerr<<"Fluxbox::Misc: out of memory"<<endl;
 		return 0;
@@ -158,8 +159,8 @@ Misc::XRotFontStruct *Misc::XRotLoadFont(Display *dpy, char *fontname, float ang
 							boxlen/2 - descent, text, 1);
 
 			/* reserve memory for first XImage ... */
-			vertdata = new unsigned char[vert_len*vert_h]; //(unsigned char *) malloc((unsigned)(vert_len*vert_h));
-		  
+ 			vertdata = (unsigned char *) malloc((unsigned)(vert_len*vert_h));
+
 			/* create the XImage ... */
 			I1 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap,
 								0, (char *)vertdata, vert_w, vert_h, 8, 0);
@@ -192,7 +193,7 @@ Misc::XRotFontStruct *Misc::XRotLoadFont(Display *dpy, char *fontname, float ang
 			rotfont->per_char[ichar-32].glyph.bit_h = bit_h;
 
 			/* reserve memory for the rotated image ... */
-			bitdata = new unsigned char[bit_h*bit_len]; //(unsigned char *)calloc((unsigned)(bit_h*bit_len), 1);
+ 			bitdata = (unsigned char *)calloc((unsigned)(bit_h*bit_len), 1);
 
 			/* create the image ... */
 			I2 = XCreateImage(dpy, DefaultVisual(dpy, screen), 1, XYBitmap, 0,
@@ -267,8 +268,8 @@ void Misc::XRotUnloadFont(Display *dpy, XRotFontStruct *rotfont)
 		XFreePixmap(dpy, rotfont->per_char[ichar].glyph.bm);
 	}
 	
-	delete rotfont->name;
-	delete rotfont;
+	free((char *)rotfont->name);
+ 	free((char *)rotfont);
 }
 
 //------- XRotTextWidth ------------------
