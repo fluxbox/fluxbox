@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.8 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Gnome.hh,v 1.9 2003/07/04 14:06:20 rathnor Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -81,7 +81,8 @@ public:
     bool checkClientMessage(const XClientMessageEvent &ce, BScreen * screen, FluxboxWindow * const win);
 	
     // ignore these ones
-    void updateWindowClose(FluxboxWindow &win) {}
+    void updateFrameClose(FluxboxWindow &win) {}
+    void updateClientClose(WinClient &winclient) {}
     bool propertyNotify(FluxboxWindow &win, Atom the_property) { return false; }
 
 private:

@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/07/05:
+   * Fix winclient death signalling - fixes remember issues with applying
+     attributes to wrong windows (Simon)
+     Remember.hh/cc AtomHandler.hh fluxbox.cc ToolbarHandler.hh/cc Ewmh.hh Gnome.hh
 *03/07/04:
    * Add support in remember for grouping apps (Simon)
      Achieved by using [group], e.g.

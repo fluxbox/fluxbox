@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.8 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Ewmh.hh,v 1.9 2003/07/04 14:06:20 rathnor Exp $
 
 #include "AtomHandler.hh"
 
@@ -51,7 +51,8 @@ public:
 
     bool propertyNotify(FluxboxWindow &win, Atom the_property);
     //ignore these ones
-    void updateWindowClose(FluxboxWindow &win) {}
+    void updateFrameClose(FluxboxWindow &win) {}
+    void updateClientClose(WinClient &winclient) {}
 
 private:
 	

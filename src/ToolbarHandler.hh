@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.hh,v 1.5 2003/07/04 01:03:40 rathnor Exp $
+// $Id: ToolbarHandler.hh,v 1.6 2003/07/04 14:06:20 rathnor Exp $
 
 #ifndef TOOLBARHANDLER_HH
 #define TOOLBARHANDLER_HH
@@ -61,7 +61,8 @@ public:
     void setupClient(WinClient &winclient) {}
     
     void updateState(FluxboxWindow &win);
-    void updateWindowClose(FluxboxWindow &win);
+    void updateFrameClose(FluxboxWindow &win);
+    void updateClientClose(WinClient &winclient) {}
     void updateWorkspace(FluxboxWindow &win);
     void updateCurrentWorkspace(BScreen &screen);
 

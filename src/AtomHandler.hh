@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.9 2003/07/04 01:03:40 rathnor Exp $
+// $Id: AtomHandler.hh,v 1.10 2003/07/04 14:06:20 rathnor Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -43,7 +43,8 @@ public:
     virtual void updateCurrentWorkspace(BScreen &screen) = 0;
     virtual void updateWorkspaceCount(BScreen &screen) = 0;
 
-    virtual void updateWindowClose(FluxboxWindow &win) = 0;
+    virtual void updateFrameClose(FluxboxWindow &win) = 0;
+    virtual void updateClientClose(WinClient &winclient) = 0;
     virtual void updateWorkspace(FluxboxWindow &win) = 0;
     virtual void updateState(FluxboxWindow &win) = 0;
     virtual void updateHints(FluxboxWindow &win) = 0;

@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.hh,v 1.9 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Remember.hh,v 1.10 2003/07/04 14:06:20 rathnor Exp $
 
 /* Based on the original "Remember patch" by Xavier Brouckaert */
 
@@ -166,7 +166,8 @@ public:
     // Functions we actually use
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient);
-    void updateWindowClose(FluxboxWindow &win);
+    void updateFrameClose(FluxboxWindow &win);
+    void updateClientClose(WinClient &winclient);
 
     // Functions we ignore (zero from AtomHandler)
     // Leaving here in case they might be useful later

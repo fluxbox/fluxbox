@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.168 2003/07/04 01:03:41 rathnor Exp $
+// $Id: fluxbox.cc,v 1.169 2003/07/04 14:06:20 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1262,7 +1262,7 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         } else if ((&(win.dieSig())) == changedsub) { // window death signal
             for (size_t i=0; i<m_atomhandler.size(); ++i) {
                 if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateWindowClose(win);
+                    m_atomhandler[i]->updateFrameClose(win);
             }
             // make sure each workspace get this 
             BScreen &scr = win.screen();
@@ -1309,15 +1309,16 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         WinClient::WinClientSubj *subj = dynamic_cast<WinClient::WinClientSubj *>(changedsub);
         WinClient &client = subj->winClient();
 
+        // TODO: don't assume it is diesig (need to fix as soon as another signal appears)
+        for (size_t i=0; i<m_atomhandler.size(); ++i) {
+            if (m_atomhandler[i]->update())
+                m_atomhandler[i]->updateClientClose(client);
+        }
         BScreen &screen = client.screen();
         screen.updateNetizenWindowDel(client.window());
         screen.removeClient(client);
 
         removeWindowSearch(client.window());        
-        //!! TODO
-#ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO: signal stuff for client death!!"<<endl;
-#endif // DEBUG
     }
 }
 

@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.25 2003/07/04 01:03:40 rathnor Exp $
+// $Id: Remember.cc,v 1.26 2003/07/04 14:06:20 rathnor Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -216,94 +216,94 @@ int Remember::parseApp(ifstream &file, Application &app, string *first_line) {
             }
 
             row++;
-            if (line[0] != '#') { //the line is commented
-                int parse_pos = 0, err = 0;
-                string str_key, str_label;
-                err = FbTk::StringUtil::getStringBetween(str_key, 
-                                                         line.c_str(), 
-                                                         '[', ']');
-                if (err > 0 ) {
+            if (line[0] == '#')
+                continue;  //the line is commented
+            int parse_pos = 0, err = 0;
+            string str_key, str_label;
+            err = FbTk::StringUtil::getStringBetween(str_key, 
+                                                     line.c_str(), 
+                                                     '[', ']');
+            if (err > 0 ) {
+                parse_pos += err;
+                err = FbTk::StringUtil::getStringBetween(str_label, 
+                                                         line.c_str() + parse_pos, 
+                                                         '{', '}');
+                if (err>0) {
                     parse_pos += err;
-                    err = FbTk::StringUtil::getStringBetween(str_label, 
-                                                       line.c_str() + parse_pos, 
-                                                       '{', '}');
-                    if (err>0) {
-                        parse_pos += err;
-                    }
-                } else
-                    continue; //read next line
-
-                if (!str_key.size())
-                    continue; //read next line
-                if (str_key == "Workspace") {
-                    unsigned int w;
-                    istringstream iss(str_label.c_str());
-                    iss >> w;
-                    app.rememberWorkspace(w);
-                } else if (str_key == "Layer") {
-                    unsigned int l;
-                    istringstream iss(str_label.c_str());
-                    iss >> l;
-                    app.rememberLayer(l);
-                } else if (str_key == "Dimensions") {
-                    unsigned int h,w;
-                    istringstream iss(str_label.c_str());
-                    iss >> w >> h;
-                    app.rememberDimensions(w,h);
-                } else if (str_key == "Position") {
-                    unsigned int x,y;
-                    istringstream iss(str_label);
-                    iss >> x >> y;
-                    app.rememberPosition(x,y);
-                } else if (str_key == "Shaded") {
-                    app.rememberShadedstate((str_label=="yes"));
-                } else if (str_key == "Tab") {
-                    app.rememberTabstate((str_label=="yes"));
-                } else if (str_key == "Deco") {
-                    if (str_label == "NONE") {
-                        app.rememberDecostate((unsigned int) 0);
-                    } else if (str_label == "NORMAL") {
-                        app.rememberDecostate((unsigned int) 0xfffffff);
-                    } else if (str_label == "TINY") {
-                        app.rememberDecostate((unsigned int)
-                                             FluxboxWindow::DECORM_TITLEBAR 
-                                             | FluxboxWindow::DECORM_ICONIFY
-                                             | FluxboxWindow::DECORM_MENU
-                                             );
-                    } else if (str_label == "TOOL") {
-                        app.rememberDecostate((unsigned int)
-                                             FluxboxWindow::DECORM_TITLEBAR
-                                             | FluxboxWindow::DECORM_MENU
-                                             );
-                    } else if (str_label == "BORDER") {
-                        app.rememberDecostate((unsigned int)
-                                             FluxboxWindow::DECORM_BORDER
-                                             | FluxboxWindow::DECORM_MENU
-                                             );
-                    } else {
-                        unsigned int mask;
-                        const char * str = str_label.c_str();
-                        // it'll have at least one char and \0, so this is safe
-                        istringstream iss(str);
-                        // check for hex
-                        if (str[0] == '0' && str[1] == 'x') {
-                            iss.seekg(2);
-                            iss >> hex;
-                        }
-                        iss >> mask ;
-                        app.rememberDecostate(mask);
-                    }
-                } else if (str_key == "Sticky") {
-                    app.rememberStuckstate((str_label=="yes"));
-                } else if (str_key == "Jump") {
-                    app.rememberJumpworkspace((str_label=="yes"));
-                } else if (str_key == "Close") {
-                    app.rememberSaveOnClose((str_label=="yes"));
-                } else if (str_key == "end") {
-                    return row;
-                } else {
-                    cerr << "Unsupported apps key = " << str_key << endl;
                 }
+            } else
+                continue; //read next line
+
+            if (!str_key.size())
+                continue; //read next line
+            if (str_key == "Workspace") {
+                unsigned int w;
+                istringstream iss(str_label.c_str());
+                iss >> w;
+                app.rememberWorkspace(w);
+            } else if (str_key == "Layer") {
+                unsigned int l;
+                istringstream iss(str_label.c_str());
+                iss >> l;
+                app.rememberLayer(l);
+            } else if (str_key == "Dimensions") {
+                unsigned int h,w;
+                istringstream iss(str_label.c_str());
+                iss >> w >> h;
+                app.rememberDimensions(w,h);
+            } else if (str_key == "Position") {
+                unsigned int x,y;
+                istringstream iss(str_label);
+                iss >> x >> y;
+                app.rememberPosition(x,y);
+            } else if (str_key == "Shaded") {
+                app.rememberShadedstate((str_label=="yes"));
+            } else if (str_key == "Tab") {
+                app.rememberTabstate((str_label=="yes"));
+            } else if (str_key == "Deco") {
+                if (str_label == "NONE") {
+                    app.rememberDecostate((unsigned int) 0);
+                } else if (str_label == "NORMAL") {
+                    app.rememberDecostate((unsigned int) 0xfffffff);
+                } else if (str_label == "TINY") {
+                    app.rememberDecostate((unsigned int)
+                                          FluxboxWindow::DECORM_TITLEBAR 
+                                          | FluxboxWindow::DECORM_ICONIFY
+                                          | FluxboxWindow::DECORM_MENU
+                        );
+                } else if (str_label == "TOOL") {
+                    app.rememberDecostate((unsigned int)
+                                          FluxboxWindow::DECORM_TITLEBAR
+                                          | FluxboxWindow::DECORM_MENU
+                        );
+                } else if (str_label == "BORDER") {
+                    app.rememberDecostate((unsigned int)
+                                          FluxboxWindow::DECORM_BORDER
+                                          | FluxboxWindow::DECORM_MENU
+                        );
+                } else {
+                    unsigned int mask;
+                    const char * str = str_label.c_str();
+                    // it'll have at least one char and \0, so this is safe
+                    istringstream iss(str);
+                    // check for hex
+                    if (str[0] == '0' && str[1] == 'x') {
+                        iss.seekg(2);
+                        iss >> hex;
+                    }
+                    iss >> mask ;
+                    app.rememberDecostate(mask);
+                }
+            } else if (str_key == "Sticky") {
+                app.rememberStuckstate((str_label=="yes"));
+            } else if (str_key == "Jump") {
+                app.rememberJumpworkspace((str_label=="yes"));
+            } else if (str_key == "Close") {
+                app.rememberSaveOnClose((str_label=="yes"));
+            } else if (str_key == "end") {
+                return row;
+            } else {
+                cerr << "Unsupported apps key = " << str_key << endl;
             }
         }
     }
@@ -684,35 +684,35 @@ void Remember::setupClient(WinClient &winclient) {
     }
 }
 
-void Remember::updateWindowClose(FluxboxWindow &win) {
-    // This doesn't work at present since fluxbox.cc is missing the windowclose stuff.
-    // I don't trust it (particularly winClient()) while this is the case
+void Remember::updateClientClose(WinClient &winclient) {
+    Application *app = find(winclient);
 
-    // scan all winclients and remove this fbw
+    if (app && (app->save_on_close_remember && app->save_on_close)) {
+
+        for (int attrib = 0; attrib <= REM_LASTATTRIB; attrib++) {
+            if (isRemembered(winclient, (Attribute) attrib)) {
+                rememberAttrib(winclient, (Attribute) attrib);
+            }
+        }
+
+        save();
+    }
+
+    // we need to get rid of references to this client
+    Clients::iterator wc_it = m_clients.find(&winclient);
+
+    if (wc_it != m_clients.end()) {
+        m_clients.erase(wc_it);
+    }
+
+}
+
+void Remember::updateFrameClose(FluxboxWindow &win) {
+    // scan all applications and remove this fbw if it is a recorded group
     Patterns::iterator it = m_pats.begin();
     while (it != m_pats.end()) {
         if (&win == it->second->group)
             it->second->group = 0;
         ++it;
     }
-
-    return;
-
-    WinClient &winclient = win.winClient();
-    Application *app = find(winclient);
-    Clients::iterator wc_it = m_clients.find(&win.winClient());
-
-    if (wc_it != m_clients.end())
-        m_clients.erase(wc_it);
-
-    if (!app || !(app->save_on_close_remember && app->save_on_close))
-        return;
-
-    for (int attrib = 0; attrib <= REM_LASTATTRIB; attrib++) {
-        if (isRemembered(winclient, (Attribute) attrib)) {
-            rememberAttrib(winclient, (Attribute) attrib);
-        }
-    }
-
-    save();
 }

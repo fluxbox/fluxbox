@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.20 2003/07/04 01:03:40 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.21 2003/07/04 14:06:20 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -295,7 +295,7 @@ void ToolbarHandler::setupFrame(FluxboxWindow &win) {
     }
 }
 
-void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
+void ToolbarHandler::updateFrameClose(FluxboxWindow &win) {
     if (&win.screen() != &m_screen) 
         return;
 
