@@ -1,5 +1,5 @@
 // Subject.cc for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@fluxbox.org)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen<at>users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Subject.cc,v 1.1 2003/02/15 01:21:40 fluxgen Exp $
+// $Id: Subject.cc,v 1.2 2003/08/19 16:03:26 fluxgen Exp $
 
 #include "Subject.hh"
 #include "Observer.hh"
@@ -36,45 +36,32 @@ Subject::Subject() {
 }
 
 Subject::~Subject() {
-    SubjectList::iterator it = s_subjectlist.begin();
-    SubjectList::iterator it_end = s_subjectlist.end();
-    for (; it != it_end; ++it) {
-        if (this == (*it)) {
-            s_subjectlist.erase(it);
-            break;
-        }
-    }
+    s_subjectlist.erase(std::remove(s_subjectlist.begin(),
+                                    s_subjectlist.end(), this));
 }
 
 void Subject::attach(Observer *obj) {
     m_observerlist.push_back(obj);
     // no need to have more than one instance of an observer
-    std::unique(m_observerlist.begin(), m_observerlist.end());
+    m_observerlist.erase(std::unique(m_observerlist.begin(), m_observerlist.end()),
+                         m_observerlist.end());
 }
 
 void Subject::detach(Observer *obj) {
-    ObserverList::iterator it = m_observerlist.begin();
-    ObserverList::iterator it_end = m_observerlist.end();
-    for (; it != it_end; ++it) {
-        if (obj == (*it)) {
-            m_observerlist.erase(it);
-            break;
-        }
-    }
+    m_observerlist.erase(std::remove(m_observerlist.begin(),
+                                     m_observerlist.end(), obj),
+                         m_observerlist.end());
 }
 
 void Subject::notify() {
-    ObserverList::iterator it = m_observerlist.begin();
-    for (; it != m_observerlist.end(); ++it) {
-        (*it)->update(this);
-    }
+    std::for_each(m_observerlist.begin(), m_observerlist.end(),
+                  std::bind2nd(std::mem_fun(&Observer::update), this));
 }
 
 void Subject::removeObserver(Observer *obj) {
-    SubjectList::iterator it = s_subjectlist.begin();
-    for(; it != s_subjectlist.end(); ++it) {
-        (*it)->detach(obj);
-    }
+    std::for_each(s_subjectlist.begin(), s_subjectlist.end(),
+                  std::bind2nd(std::mem_fun(&Subject::detach), obj));
+
 }
 
 }; // end namespace FbTk
