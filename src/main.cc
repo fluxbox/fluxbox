@@ -1,4 +1,4 @@
-// main.cc for Fluxbox Window manager
+// Main.cc for Fluxbox Window manager
 // Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
 //
 // main.cc for Blackbox - an X11 Window manager
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.9 2002/12/01 13:42:07 rathnor Exp $
+// $Id: main.cc,v 1.10 2002/12/02 22:02:35 fluxgen Exp $
 
 
 
@@ -63,7 +63,7 @@ using namespace std;
 #include <uds/uds.hh>
 
 // configure UDS
-uds::uds_flags_t uds::flags = uds::leak_check;
+uds::uds_flags_t uds::flags = uds::leak_check | uds::std_backtraces | uds::log_allocs | uds::leak_check;
 
 #endif //!DEBUG_UDS
 
@@ -98,8 +98,8 @@ int main(int argc, char **argv) {
             if ((++i) >= argc) {
                 fprintf(stderr,
                         i18n->getMessage(
-                            FBNLS::mainSet, FBNLS::mainRCRequiresArg,
-                            "error: '-rc' requires and argument\n"));	
+                                         FBNLS::mainSet, FBNLS::mainRCRequiresArg,
+                                         "error: '-rc' requires and argument\n"));	
                 exit(1);
             }
 
@@ -111,8 +111,8 @@ int main(int argc, char **argv) {
             if ((++i) >= argc) {
                 fprintf(stderr,
                         i18n->getMessage(				
-                            FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,				
-                            "error: '-display' requires an argument\n"));
+                                         FBNLS::mainSet, FBNLS::mainDISPLAYRequiresArg,				
+                                         "error: '-display' requires an argument\n"));
                 exit(1);
             }
 
@@ -124,8 +124,8 @@ int main(int argc, char **argv) {
                 fprintf(stderr,
                         i18n->
                         getMessage(
-                            FBNLS::mainSet, FBNLS::mainWarnDisplaySet,
-                            "warning: couldn't set environment variable 'DISPLAY'\n"));
+                                   FBNLS::mainSet, FBNLS::mainWarnDisplaySet,
+                                   "warning: couldn't set environment variable 'DISPLAY'\n"));
                 perror("putenv()");
             }
         } else if (strcmp(argv[i], "-version") == 0) {
@@ -137,25 +137,24 @@ int main(int argc, char **argv) {
             // print program usage and command line options
             printf(i18n->
                    getMessage(
-                       FBNLS::mainSet, FBNLS::mainUsage,
-                       "Fluxbox %s : (c) 2001-2002 Henrik Kinnunen\n\n"
-                       "	-display <string>\t\tuse display connection.\n"
-                       "	-rc <string>\t\t\tuse alternate resource file.\n"
-                       "	-version\t\t\tdisplay version and exit.\n"
-                       "	-help\t\t\t\tdisplay this help text and exit.\n\n"),
+                              FBNLS::mainSet, FBNLS::mainUsage,
+                              "Fluxbox %s : (c) 2001-2002 Henrik Kinnunen\n\n"
+                              "	-display <string>\t\tuse display connection.\n"
+                              "	-rc <string>\t\t\tuse alternate resource file.\n"
+                              "	-version\t\t\tdisplay version and exit.\n"
+                              "	-help\t\t\t\tdisplay this help text and exit.\n\n"),
                    __fluxbox_version);
 
-            // some people have requested that we print out command line options
-            // as well
+
             printf(i18n->
                    getMessage(
-                       FBNLS::mainSet, FBNLS::mainCompileOptions,			
-                       "Compile time options:\n"
-                       "	Debugging:\t\t\t%s\n"
-                       "	Interlacing:\t\t\t%s\n"
-                       "	Shape:\t\t\t%s\n"
-                       "	Slit:\t\t\t\t%s\n"
-                       "	8bpp Ordered Dithering:\t%s\n\n"),
+                              FBNLS::mainSet, FBNLS::mainCompileOptions,
+                              "Compile time options:\n"
+                              "	Debugging:\t\t\t%s\n"
+                              "	Interlacing:\t\t\t%s\n"
+                              "	Shape:\t\t\t%s\n"
+                              "	Slit:\t\t\t\t%s\n"
+                              "	8bpp Ordered Dithering:\t%s\n\n"),
 #ifdef DEBUG
                    getNLSYesNoMsg(true),
 #else // !DEBUG
@@ -186,7 +185,7 @@ int main(int argc, char **argv) {
                    getNLSYesNoMsg(false)
 #endif // ORDEREDPSEUDO
 
-                );
+                   );
 
             ::exit(0);
         }
@@ -202,14 +201,23 @@ int main(int argc, char **argv) {
         fluxbox = new Fluxbox(argc, argv, session_display, rc_file);
         fluxbox->eventLoop();
 		
-    } catch (std::out_of_range oor) {
+    } catch (std::out_of_range &oor) {
         cerr<<"Fluxbox: Out of range: "<<oor.what()<<endl;
-    } catch (std::logic_error le) {
+    } catch (std::logic_error &le) {
         cerr<<"Fluxbox: Logic error: "<<le.what()<<endl;
-    } catch (std::runtime_error re) {
+    } catch (std::runtime_error &re) {
         cerr<<"Fluxbox: Runtime error: "<<re.what()<<endl;
+    } catch (std::bad_cast &bc) {
+        cerr<<"Fluxbox: Bad cast: "<<bc.what()<<endl; 
+    } catch (std::bad_alloc &ba) {
+        cerr<<"Fluxbox: Bad Alloc: "<<ba.what()<<endl;
+    } catch (std::exception &e) {
+        cerr<<"Fluxbox: Standard exception: "<<e.what()<<endl;
+    } catch (std::string error_str) {
+        cerr<<"Error: "<<error_str<<endl;
     } catch (...) {
         cerr<<"Fluxbox: Unknown error."<<endl;
+        abort();
     }
 	
     if (fluxbox)
