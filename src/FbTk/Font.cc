@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.5 2003/11/28 23:27:29 fluxgen Exp $
+//$Id: Font.cc,v 1.6 2003/12/01 19:57:01 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -140,17 +140,46 @@ void Font::setAntialias(bool flag) {
 bool Font::load(const std::string &name) {
     if (name.size() == 0)
         return false;
+    // copy name so we can manipulate it
+    std::string new_name = name;
 
-    // find font option "shadow"
     m_shadow = false;
-    size_t start_pos = name.find_first_of(":");
-    if (start_pos != std::string::npos) {
-        if (name.find_first_of("shadow", start_pos) != std::string::npos)
+
+    // find font option "shadow"	
+    size_t start_pos = new_name.find_first_of(':');
+    if (start_pos != std::string::npos) {        
+        size_t shadow_pos = new_name.find("shadow", start_pos);
+        if (shadow_pos != std::string::npos) {
             m_shadow = true;
+            // erase "shadow" since it's not a valid option for the font
+            new_name.erase(shadow_pos, 6);
+            
+            // is the option row empty?
+            if (new_name.find_first_not_of("\t ,", start_pos + 1) == std::string::npos)
+                new_name.erase(start_pos); // erase the ':' and the rest of the line
+            else {
+                // there might be some options left so we need to remove the ","
+                // before/after "shadow" option
+                size_t pos = new_name.find_last_not_of("\t ", shadow_pos);
+                if (pos != std::string::npos) {
+                    if (new_name[pos] == ',')
+                        new_name.erase(pos, 1);
+                
+                }
+
+                // ok, we removed the "," and "shadow" now we need to determine
+                // if we need to remove the ":" , so we search for anything except
+                // \t and space and if we dont find anything the ":" is removed
+                if (new_name.find_first_not_of("\t ", start_pos + 1) == std::string::npos)
+                    new_name.erase(start_pos, 1);               
+
+            }
+
+        }
     }
 
     m_fontstr = name;
-    return m_fontimp->load(name.c_str());
+    return m_fontimp->load(new_name.c_str());
 }
 
 unsigned int Font::textWidth(const char * const text, unsigned int size) const {
