@@ -487,4 +487,6 @@ nls/lv_LV/Makefile
 nls/it_IT/Makefile
 nls/de_DE/Makefile
 nls/nl_NL/Makefile
+nls/pl_PL/Makefile
+nls/sl_SI/Makefile
 )
