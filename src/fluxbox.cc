@@ -785,50 +785,50 @@ void Fluxbox::process_event(XEvent *e) {
 				if (actionstr)
 					cerr<<"KeyAction("<<actionstr<<")"<<endl;				
 				#endif
-				if (action==Keys::lastKeygrab) //if action not found end case
+				if (action==Keys::LASTKEYGRAB) //if action not found end case
 					break;
 
 				switch (action) {					
-					case Keys::grabWorkspace1:
+					case Keys::WORKSPACE1:
 						screen->changeWorkspaceID(0);
 						break;
-					case Keys::grabWorkspace2:
+					case Keys::WORKSPACE2:
 						screen->changeWorkspaceID(1);
 						break;
-					case Keys::grabWorkspace3:
+					case Keys::WORKSPACE3:
 						screen->changeWorkspaceID(2);
 						break;
-					case Keys::grabWorkspace4:
+					case Keys::WORKSPACE4:
 						screen->changeWorkspaceID(3);
 						break;
-					case Keys::grabWorkspace5:
+					case Keys::WORKSPACE5:
 						screen->changeWorkspaceID(4);
 						break;
-					case Keys::grabWorkspace6:
+					case Keys::WORKSPACE6:
 						screen->changeWorkspaceID(5);
 						break;
-					case Keys::grabWorkspace7:
+					case Keys::WORKSPACE7:
 						screen->changeWorkspaceID(6);
 						break;
-					case Keys::grabWorkspace8:
+					case Keys::WORKSPACE8:
 						screen->changeWorkspaceID(7);
 						break;
-					case Keys::grabWorkspace9:
+					case Keys::WORKSPACE9:
 						screen->changeWorkspaceID(8);
 						break;
-					case Keys::grabWorkspace10:
+					case Keys::WORKSPACE10:
 						screen->changeWorkspaceID(9);
 						break;
-					case Keys::grabWorkspace11:
+					case Keys::WORKSPACE11:
 						screen->changeWorkspaceID(10);
 						break;
-					case Keys::grabWorkspace12:
+					case Keys::WORKSPACE12:
 						screen->changeWorkspaceID(11);
 						break;
-					case Keys::grabNextWorkspace:
+					case Keys::NEXTWORKSPACE:
 						screen->nextWorkspace();
 						break;
-					case Keys::grabPrevWorkspace:
+					case Keys::PREVWORKSPACE:
 						screen->prevWorkspace();
 						break;
 					/*case Keys::grabUpWorkspace:
@@ -840,15 +840,15 @@ void Fluxbox::process_event(XEvent *e) {
 					case Keys::grabRightWorkspace:
 						break;
 					*/
-					case Keys::grabKillWindow: //kill the current window
+					case Keys::KILLWINDOW: //kill the current window
 						break;
-					case Keys::grabNextWindow:	//activate next window
+					case Keys::NEXTWINDOW:	//activate next window
 						screen->nextFocus();
 						break;
-					case Keys::grabPrevWindow:	//activate prev window
+					case Keys::PREVWINDOW:	//activate prev window
 						screen->prevFocus();
 						break;
-					case Keys::grabNextTab: 
+					case Keys::NEXTTAB: 
 						if (focused_window && focused_window->getTab()) {
 							Tab *tab = focused_window->getTab();
 							if (tab->next()) {
@@ -862,7 +862,7 @@ void Fluxbox::process_event(XEvent *e) {
 							}	
 						}
 						break;						
-					case Keys::grabPrevTab: 
+					case Keys::PREVTAB: 
 						if (focused_window && focused_window->getTab()) {
 							Tab *tab = focused_window->getTab();
 							if (tab->prev()) {
@@ -876,7 +876,7 @@ void Fluxbox::process_event(XEvent *e) {
 							}
 						}
 						break;
-					case Keys::grabExecute: //execute command on keypress
+					case Keys::EXECUTE: //execute command on keypress
 					{
 						#ifndef    __EMX__
 						char displaystring[MAXPATHLEN];
@@ -1005,28 +1005,28 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 		return;
 		
 	switch (action) {
-		case Keys::grabIconify:
+		case Keys::ICONIFY:
 			focused_window->iconify();
 		break;
-		case Keys::grabRaise:
+		case Keys::RAISE:
 			focused_window->getScreen()->getWorkspace(focused_window->getWorkspaceNumber())->raiseWindow(focused_window);	
 		break;
-		case Keys::grabLower:
+		case Keys::LOWER:
 			XLowerWindow(getXDisplay(), focused_window->getFrameWindow());
 		break;
-		case Keys::grabClose:
+		case Keys::CLOSE:
 			focused_window->close();
 		break;
-		case Keys::grabShade:		
+		case Keys::SHADE:		
 			focused_window->shade();
 		break;
-		case Keys::grabMaximize:
+		case Keys::MAXIMIZE:
 			focused_window->maximize(0);
 		break;
-		case Keys::grabStick:
+		case Keys::STICK:
 			focused_window->stick();
 		break;								
-		case Keys::grabVertMax:
+		case Keys::VERTMAX:
 			//!!TODO: fix this
 			if (focused_window->isResizable()) {
 				int w = focused_window->getWidth();
@@ -1036,7 +1036,7 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 				focused_window->configure(x, y, w, focused_window->getHeight());
 			}
 		break;
-		case Keys::grabHorizMax:
+		case Keys::HORIZMAX:
 			//!!TODO: fix this
 			if (focused_window->isResizable()) {
 				int h = focused_window->getHeight();
@@ -1046,65 +1046,65 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 				focused_window->configure(x, y, focused_window->getWidth(), h);
 			}
 		break;
-		case Keys::grabNudgeRight:	
+		case Keys::NUDGERIGHT:	
 			focused_window->configure(
 				focused_window->getXFrame()+1, focused_window->getYFrame(),
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-		case Keys::grabNudgeLeft:			
+		case Keys::NUDGELEFT:			
 			focused_window->configure(
 				focused_window->getXFrame()-1, focused_window->getYFrame(),
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-		case Keys::grabNudgeUp:
+		case Keys::NUDGEUP:
 			focused_window->configure(
 				focused_window->getXFrame(), focused_window->getYFrame()-1,
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-		case Keys::grabNudgeDown:
+		case Keys::NUDGEDOWN:
 			focused_window->configure(
 				focused_window->getXFrame(), focused_window->getYFrame()+1,
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-		case Keys::grabBigNudgeRight:		
+		case Keys::BIGNUDGERIGHT:		
 			focused_window->configure(
 				focused_window->getXFrame()+10, focused_window->getYFrame(),
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-		case Keys::grabBigNudgeLeft:						
+		case Keys::BIGNUDGELEFT:						
 			focused_window->configure(
 				focused_window->getXFrame()-10, focused_window->getYFrame(),
 				focused_window->getWidth(), focused_window->getHeight());
 		break;
-		case Keys::grabBigNudgeUp:								
+		case Keys::BIGNUDGEUP:								
 			focused_window->configure(
 				focused_window->getXFrame(), focused_window->getYFrame()-10,
 				focused_window->getWidth(), focused_window->getHeight());
 		break;								
-		case Keys::grabBigNudgeDown:					
+		case Keys::BIGNUDGEDOWN:					
 			focused_window->configure(
 				focused_window->getXFrame(), focused_window->getYFrame()+10,
 				focused_window->getWidth(), focused_window->getHeight());								
 		break;												
-		case Keys::grabHorizInc:
+		case Keys::HORIZINC:
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth()+10, focused_window->getHeight());
 		break;								
-		case Keys::grabVertInc:
+		case Keys::VERTINC:
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth(), focused_window->getHeight()+10);
 		break;
-		case Keys::grabHorizDec:				
+		case Keys::HORIZDEC:				
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
 					focused_window->getWidth()-10, focused_window->getHeight());
 		break;								
-		case Keys::grabVertDec:
+		case Keys::VERTDEC:
 			if (focused_window->isResizable())
 				focused_window->configure(
 					focused_window->getXFrame(), focused_window->getYFrame(),
