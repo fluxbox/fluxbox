@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: MenuItem.hh,v 1.5 2004/06/07 20:33:20 fluxgen Exp $
 
 #ifndef FBTK_MENUITEM_HH
 #define FBTK_MENUITEM_HH
@@ -31,11 +31,20 @@
 namespace FbTk {
 
 class Menu;
+class MenuTheme;
+class FbDrawable;
 
 ///   An interface for a menu item in Menu
 class MenuItem {
 public:
-    MenuItem(
+    MenuItem()
+        : m_label(""),
+          m_submenu(0),
+          m_enabled(true),
+          m_selected(false),
+          m_toggle_item(false)
+    { }
+    explicit MenuItem(
              const char *label)
         : m_label(label ? label : ""),
           m_submenu(0),
@@ -63,21 +72,29 @@ public:
     { }
     virtual ~MenuItem() { }
 
-    void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
-    virtual void setSelected(bool selected) { m_selected = selected; }
-    virtual void setEnabled(bool enabled) { m_enabled = enabled; }
-    virtual void setLabel(const char *label) { m_label = (label ? label : ""); }
-    virtual void setToggleItem(bool val) { m_toggle_item = val; }
+    inline void setCommand(RefCount<Command> &cmd) { m_command = cmd; }
+    virtual inline void setSelected(bool selected) { m_selected = selected; }
+    virtual inline void setEnabled(bool enabled) { m_enabled = enabled; }
+    virtual inline void setLabel(const char *label) { m_label = (label ? label : ""); }
+    virtual inline void setToggleItem(bool val) { m_toggle_item = val; }
     Menu *submenu() { return m_submenu; }
     /** 
         @name accessors
     */
     //@{
-    virtual const std::string &label() const { return m_label; }
-    const Menu *submenu() const { return m_submenu; } 
-    virtual bool isEnabled() const { return m_enabled; }
-    virtual bool isSelected() const { return m_selected; }
-    virtual bool isToggleItem() const { return m_toggle_item; }
+    virtual inline const std::string &label() const { return m_label; }
+    inline const Menu *submenu() const { return m_submenu; } 
+    virtual inline bool isEnabled() const { return m_enabled; }
+    virtual inline bool isSelected() const { return m_selected; }
+    virtual inline bool isToggleItem() const { return m_toggle_item; }
+    virtual unsigned int width(const MenuTheme &theme) const;
+    virtual unsigned int height(const MenuTheme &theme) const;
+    virtual void draw(FbDrawable &drawable, 
+                      const MenuTheme &theme,
+                      bool highlight,
+                      int x, int y,
+                      unsigned int width, unsigned int height) const;
+    virtual void updateTheme(const MenuTheme &theme) { }
     /**
        Called when the item was clicked with a specific button
        @param button the button number
