@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SetWorkspaceName.cc,v 1.2 2003/08/27 18:05:12 fluxgen Exp $
+// $Id: SetWorkspaceName.cc,v 1.3 2003/12/19 00:47:55 fluxgen Exp $
 
 #include "SetWorkspaceName.hh"
 
@@ -27,6 +27,7 @@
 #include "Workspace.hh"
 #include "WinClient.hh"
 #include "FbWinFrameTheme.hh"
+#include "fluxbox.hh"
 
 #include "FbTk/EventManager.hh"
 #include "FbTk/App.hh"
