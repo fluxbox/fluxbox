@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.16 2003/04/15 00:14:24 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.17 2003/04/15 12:22:06 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -50,7 +50,8 @@ void Ewmh::initForScreen(BScreen &screen) {
 
 
     Window wincheck = XCreateSimpleWindow(disp,
-                                          screen.getRootWindow(), 0, 0, 5, 5, 0, 0, 0);
+                                          screen.getRootWindow(), 
+                                          0, 0, 5, 5, 0, 0, 0);
 
     if (wincheck != None) {
         m_windows.push_back(wincheck);
@@ -142,13 +143,19 @@ void Ewmh::updateClientList(BScreen &screen) {
         }
 
     }
-    //int num = getCurrentWorkspace()->getWindowList().size();
+    // and count icons
+    BScreen::Icons::const_iterator icon_it = screen.getIconList().begin();
+    BScreen::Icons::const_iterator icon_it_end = screen.getIconList().end();		
+    for (; icon_it != icon_it_end; ++icon_it) {
+        num += (*icon_it)->numClients();
+    }
 	
     Window *wl = new (nothrow) Window[num];
     if (wl == 0) {
         cerr<<"Fatal: Out of memory, can't allocate for Ewmh client list"<<endl;
         return;
     }
+
     //start the iterator from begining
     workspace_it = screen.getWorkspacesList().begin();
     int win=0;
@@ -175,10 +182,12 @@ void Ewmh::updateClientList(BScreen &screen) {
     }
 
     // plus iconified windows
-    BScreen::Icons::const_iterator it = screen.getIconList().begin();
-    BScreen::Icons::const_iterator it_end = screen.getIconList().end();		
-    for (; it != it_end; ++it) {
-        wl[win++] = (*it)->getClientWindow();
+    icon_it = screen.getIconList().begin();
+    for (; icon_it != icon_it_end; ++icon_it) {
+        FluxboxWindow::ClientList::iterator client_it = (*icon_it)->clientList().begin();
+        FluxboxWindow::ClientList::iterator client_it_end = (*icon_it)->clientList().end();
+        for (; client_it != client_it_end; ++client_it)
+            wl[win++] = (*client_it)->window();
     }
     
     //number of windows to show in client list
