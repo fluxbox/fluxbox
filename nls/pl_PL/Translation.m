@@ -26,7 +26,7 @@ $set 3 #Common
 
 $set 4 #Configmenu
 
-1 AnyiAlias
+1 AntiAlias
 2 Automatyczne podnoszenie
 4 Kliknij by uaktywniæ
 7 Zmieñ aktywne okno przy zmianie pulpitów
