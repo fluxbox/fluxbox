@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.64 2003/02/02 16:32:38 rathnor Exp $
+// $Id: Screen.hh,v 1.65 2003/02/03 13:50:35 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -74,7 +74,7 @@ public:
 	
     BScreen(ResourceManager &rm,
             const std::string &screenname, const std::string &altscreenname,
-            int scrn);
+            int scrn, int number_of_layers);
     ~BScreen();
 
     inline bool isToolbarOnTop() const { return *resource.toolbar_on_top; }
@@ -235,6 +235,8 @@ public:
 
     const Theme *getTheme() const { return theme; }
     FluxboxWindow *getIcon(unsigned int index);
+    FbTk::MultLayers &layerManager() { return m_layermanager; }
+    const FbTk::MultLayers &layerManager() const { return m_layermanager; }
 
     int addWorkspace();
     int removeLastWorkspace();
@@ -335,9 +337,9 @@ private:
         m_workspacenames_sig, ///< workspace names signal 
         m_currentworkspace_sig; ///< current workspace signal
 		
-    FbTk::MultLayers *m_layermanager;
-	
-    Theme *theme;
+    FbTk::MultLayers m_layermanager;
+    //!!	
+    Theme *theme; ///< obsolete
 	
     Bool root_colormap_installed, managed, geom_visible;
     GC opGC;
@@ -407,8 +409,9 @@ private:
 
 
     } resource;
+
     std::auto_ptr<RootTheme> m_root_theme;
 };
 
 
-#endif // SCREEN_
+#endif // SCREEN_HH
