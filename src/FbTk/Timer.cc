@@ -110,6 +110,7 @@ void Timer::updateTimers(int fd) {
     FD_ZERO(&rfds);
     FD_SET(fd, &rfds);
 
+  
     if (m_timerlist.size() > 0) {
         gettimeofday(&now, 0);
 
@@ -142,13 +143,27 @@ void Timer::updateTimers(int fd) {
 
     select(fd + 1, &rfds, 0, 0, timeout);
 
+    TimerList::iterator it;
+
+    // someone set the date of the machine BACK
+    // so we have to adjust the start_time
+    static time_t last_time = time(0);
+    if (time(0) < last_time) {
+    
+        time_t delta = time(0) - last_time;
+
+        for (it = m_timerlist.begin(); it != m_timerlist.end(); it++) {
+            (*it)->m_start.tv_sec += delta;
+        }
+    }
+
+
     // check for timer timeout
     gettimeofday(&now, 0);
 
-    TimerList::iterator it = m_timerlist.begin();
     //must check end ...the timer might remove
     //it self from the list (should be fixed in the future)
-    for(; it != m_timerlist.end(); ++it) {
+    for(it = m_timerlist.begin(); it != m_timerlist.end(); ++it) {
         //This is to make sure we don't get an invalid iterator
         //when we do fireTimeout
         Timer &t = *(*it);
@@ -157,8 +172,8 @@ void Timer::updateTimers(int fd) {
         tm.tv_usec = t.getStartTime().tv_usec +
             t.getTimeout().tv_usec;
 
-        if ((now.tv_sec < tm.tv_sec) ||
-            (now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec))
+        if (((now.tv_sec < tm.tv_sec) ||
+             (now.tv_sec == tm.tv_sec && now.tv_usec < tm.tv_usec)))
             break;
 
         t.fireTimeout();
@@ -170,6 +185,8 @@ void Timer::updateTimers(int fd) {
             it--;
         }					
     }
+
+    last_time = time(0);
 }
 
 void Timer::addTimer(Timer *timer) {
