@@ -19,15 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.29 2003/06/24 14:05:00 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.30 2003/07/10 11:36:21 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
 #include "EventManager.hh"
 #include "TextButton.hh"
 #include "App.hh"
+#include "FbWinFrameTheme.hh"
 #ifdef SHAPE
-//#include "Shape.hh"
+#include "Shape.hh"
 #endif // SHAPE
 
 #include <algorithm>
@@ -71,9 +72,8 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
     m_focused(false),
     m_visible(false),
     m_button_pm(0),
-    m_themelistener(*this) {
-
-    //    m_shape(new Shape(m_window, 0)) { //Shape::TOPLEFT | Shape::TOPRIGHT)) {
+    m_themelistener(*this),
+    m_shape(new Shape(m_window, theme.shapePlace())) {
     theme.addListener(m_themelistener);
     init();
 }
@@ -488,8 +488,6 @@ void FbWinFrame::configureNotifyEvent(XConfigureEvent &event) {
 
 void FbWinFrame::reconfigure() {
     m_window.clear();
-    //    if (m_shape.get())
-    //        m_shape->update();
 
     // align titlebar and render it
     if (m_use_titlebar)
@@ -542,6 +540,17 @@ void FbWinFrame::reconfigure() {
     renderButtons();
     if (!m_shaded)
         renderHandles();
+
+    if (m_shape.get() && theme().shapePlace() == Shape::NONE)
+        m_shape.reset(0);
+    else if (m_shape.get() == 0 && theme().shapePlace() != Shape::NONE)
+        m_shape.reset(new Shape(window(), theme().shapePlace()));
+    else if (m_shape.get())
+        m_shape->setPlaces(theme().shapePlace());
+
+    if (m_shape.get())
+        m_shape->update();
+
     // titlebar stuff rendered already by reconftitlebar
 }
 

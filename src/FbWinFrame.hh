@@ -19,27 +19,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.8 2003/05/21 23:59:53 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.9 2003/07/10 11:36:21 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
 
 #include "FbWindow.hh"
-#include "Button.hh"
 #include "EventHandler.hh"
-#include "Font.hh"
-#include "Text.hh"
-#include "FbWinFrameTheme.hh"
 #include "RefCount.hh"
-#include "Command.hh"
 #include "Observer.hh"
+#include "Color.hh"
+#include "FbPixmap.hh"
 
 #include <vector>
 #include <string>
+#include <memory>
 
+class Shape;
 class FbWinFrameTheme;
 namespace FbTk {
 class ImageControl;
+class Command;
+class Button;
+class Texture;
 };
 
 /// holds a window frame with a client window
@@ -266,6 +268,7 @@ private:
         FbWinFrame &m_frame;
     };
     ThemeListener m_themelistener;
+    std::auto_ptr<Shape> m_shape;
 };
 
 #endif // FBWINFRAME_HH
