@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.1 2003/07/10 11:52:47 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.2 2003/07/10 14:16:11 fluxgen Exp $
 
 #include "MenuTheme.hh"
 #include "StringUtil.hh"
@@ -51,6 +51,6 @@ void FbTk::ThemeItem<Shape::ShapePlace>::setFromString(const char *str) {
 }
 
 MenuTheme::MenuTheme(int screen_num):FbTk::MenuTheme(screen_num),
-                                     m_shapeplace(*this, "menu.shape", "Menu.Shape") {
+                                     m_shapeplace(*this, "menu.roundCorners", "Menu.RoundCorners") {
     *m_shapeplace = Shape::NONE;
 }
