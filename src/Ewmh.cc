@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.8 2002/12/27 02:15:08 rathnor Exp $
+// $Id: Ewmh.cc,v 1.9 2003/01/05 23:04:46 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -312,7 +312,7 @@ bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, BScreen * const scr
         // ce.data.l[3] = width
         // ce.data.l[4] = height
         // TODO: gravity and flags
-        win->configure(ce.data.l[1], ce.data.l[2],
+        win->moveResize(ce.data.l[1], ce.data.l[2],
                        ce.data.l[3], ce.data.l[4]);
         return true;
     }
