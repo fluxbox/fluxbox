@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Directory.cc,v 1.3 2004/04/19 18:09:15 fluxgen Exp $
+// $Id: Directory.cc,v 1.4 2004/04/26 10:17:09 fluxgen Exp $
 
 #include "Directory.hh"
 
@@ -60,7 +60,7 @@ std::string Directory::readFilename() {
 void Directory::close() {
     if (m_dir != 0) { 
         closedir(m_dir);
-        m_name.clear();
+        m_name = "";
         m_dir = 0;
         m_num_entries = 0;
     }
