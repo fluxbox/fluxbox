@@ -1,12 +1,12 @@
 $set 1 #BaseDisplay
 
-1 %s:  X erro: %s(%d) opcodes %d/%d\n  recurso 0x%lx\n
-2 %s: recebeido sinal %d\n
+1 %s:  X erro: %s(%d) opções %d/%d\n  recurso 0x%lx\n
+2 %s: recebendo o sinal %d\n
 3 desligando\n
 4 a abortar... a gerar ficheiro core\n
 5 BaseDisplay::BaseDisplay: conecção ao servidor X falhou.\n
 6 BaseDisplay::BaseDisplay: impossivel marcar a conexão ao display como close-on-exec\n
-7 BaseDisplay::eventLoop(): a remover má janela da trilha de eventos\n
+7 BaseDisplay::eventLoop(): a remover a janela da trilha de eventos\n
 
 $set 2 #Basemenu
 
@@ -34,11 +34,11 @@ $set 3 #Configmenu
 18 Baixo para Cima
 19 Tabs
 20 Icons
-21 Posicionamento de Tab
-22 Rotação Vertical de Tabs
+21 Posicionamento da Tab
+22 Rodar Tabs Verticais
 23 Semi Sloppy Focus
-24 Maximize Sobre Slit
-25 Sloppy Janela de Grupo
+24 Maximizar Sobre Slit
+25 Sloppy Janela Em Grupo
 
 $set 4 #Icon
 
@@ -48,7 +48,7 @@ $set 5 #Image
 
 1 BImage::render_solid: erro a criar pixmap\n
 2 BImage::renderXImage: erro a criar XImage\n
-3 BImage::renderXImage: Imagem não suportado\n
+3 BImage::renderXImage: Imagem não suportada\n
 4 BImage::renderPixmap: erro a criar pixmap\n
 5 BImageControl::BImageControl: mapa de cores de tamanho invalido %d (%d/%d/%d) - reduzindo\n
 6 BImageControl::BImageControl: erro localizado no mapa de cores\n
@@ -56,7 +56,7 @@ $set 5 #Image
 8 BImageControl::~BImageControl: reserva de pixmap cheia - libertando %d pixmaps\n
 9 BImageControl::renderImage: reserva cheia, a forçar limpeza\n
 10 BImageControl::getColor: color parse error: '%s'\n
-11 BImageControl::getColor: erro localizando cor: '%s'\n
+11 BImageControl::getColor: erro a localizar cor: '%s'\n
 
 $set 6 #Screen
 
@@ -103,13 +103,13 @@ $set 8 #Toolbar
 6 p
 7 a
 8 Toolbar
-9 Editar nome de Area de Trabalho
+9 Editar o nome de Area de Trabalho
 10 Posicionamento
 
 $set 9 #Window
 
 
-1 BlackboxWindow::BlackboxWindow: criando 0x%lx\n
+1 BlackboxWindow::BlackboxWindow: a criar 0x%lx\n
 2 BlackboxWindow::BlackboxWindow: XGetWindowAttributres falhou\n
 3 BlackboxWindow::BlackboxWindow: impossivel encontrar tela para janela 0x%lx\n
 4 Sem Nome
@@ -142,7 +142,7 @@ $set 12 #Workspacemenu
 
 $set 13 #blackbox
 
-1 Blackbox::Blackbox: não foram encontradas telas administraveis, abortando..\n
+1 Blackbox::Blackbox: não foram encontradas telas administraveis, a abortar...\n
 2 Blackbox::process_event: MapRequest para 0x%lx\n
 
 $set 14 #Common
@@ -157,31 +157,31 @@ $set 14 #Common
 6 Sempre Visivel
 
 7 Posicionamento
-8 No Alto a Esquerda
-9 No Centro a Esquerda
-10 Em Baixo a Esquerda
-11 No Alto e no Centro
+8 Em Cima na Esquerda
+9 No Centro e na Esquerda
+10 Em Baixo na Esquerda
+11 Em Cima e no Centro
 12 Em Baixo e no Centro
-13 No Alto a Direita
-14 No Meio a Direita
+13 Em Cima na Direita
+14 No Meio na Direita
 15 Em Baixo a Direita
-16 Left Top
-17 Left Center
-18 Left Bottom
-19 Right Top
-20 Right Center
-21 Right Bottom
-22 Top Relative
-23 Bottom Relative
-24 Left Relative
-25 Right Relative
+16 Na Esquerda em Cima
+17 Na Esquerda e no Centro
+18 Na Esquerda em Baixo
+19 Direita em Cima
+20 Direita e no Centro
+21 Direita em Baixo
+22 Cima Relativo
+23 Meio Relative
+24 Esquerda Relativa
+25 Direita Relativa
 
-26 Esconder Automaticamente
+26 Esconde automáticamente
 
 $set 15 #main
 
-1 erro: '-rc' requer um argumento\n
-2 erro: '-display' requer um argumento\n
+1 erro: '-rc' necesita um argumento\n
+2 erro: '-display' necesita um argumento\n
 3 aviso: não foi possivel colocar a variavel de ambiente 'DISPLAY'\n
 4 Fluxbox %s: (c) 2001 Henrik Kinnunen\n\n\
   -display <string>\t\tusar conexão com o display.\n\
