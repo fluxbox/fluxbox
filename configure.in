@@ -84,6 +84,17 @@ dnl now check for const char *msg argument in iconv(..)
     [ AC_MSG_RESULT([yes (non const msg)])],
     [ AC_DEFINE(HAVE_CONST_ICONV, 1, "iconv")
       AC_MSG_RESULT([yes (const msg)])])
+
+dnl Check if iconv is part of libiconv
+    AC_CHECK_LIB(iconv, iconv_close,
+      AC_MSG_CHECKING([for iconv_close in libiconv])
+      AC_TRY_LINK(
+        #include <iconv.h>,
+        [int main() { return iconv_close((iconv_t)(-1)); }],
+        AC_MSG_RESULT([yes]),
+        LIBS="$LIBS -liconv"
+      )
+    )
 else
     AC_MSG_RESULT([no])
 fi
