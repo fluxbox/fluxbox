@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.218 2004/01/10 02:58:50 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.219 2004/01/11 13:10:39 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -44,6 +44,9 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Resource.hh"
 #include "FbTk/XrmDatabaseHelper.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/SimpleCommand.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
