@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/11/27:
+  * The "Send To..."-menu is back (Henrik)
+    SendToMenu.hh/cc, Window.cc
   * Added new option on Iconbar mode menu: "Use Pixmap" (Henrik)
     Toggle this to show/hide pixmap of windows
     new resource item:
