@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SignalHandler.cc,v 1.2 2002/08/17 22:15:31 fluxgen Exp $
+// $Id: SignalHandler.cc,v 1.3 2002/10/12 13:28:03 fluxgen Exp $
 
 #include "SignalHandler.hh"
 
@@ -68,6 +68,8 @@ void SignalHandler::removeHandler(int signum) {
 }
 
 void SignalHandler::handleSignal(int signum) {
+	if (signum >= NSIG)
+		return;
 	// make sure we got a handler for this signal
 	if (s_signal_handler[signum] != 0) {
 		SignalEvent sigev;
