@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.51 2002/05/17 11:02:30 fluxgen Exp $
+// $Id: Screen.cc,v 1.52 2002/05/17 16:30:24 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -492,6 +492,32 @@ BScreen::~BScreen(void) {
 
 	removeWorkspaceNames();
 
+#ifdef __INTEL_COMPILER
+	//Didn't got icc to work with std::for_each
+	//so we do this by hand.
+	
+	Workspaces::iterator w_it = workspacesList.begin();
+	Workspaces::iterator w_it_end = workspacesList.end();
+	for(; w_it != w_it_end; ++w_it) {
+		delete (*w_it);
+	}
+	workspacesList.clear();
+	
+	Icons::iterator i_it = iconList.begin();
+	Icons::iterator i_it_end = iconList.end();
+	for(; i_it != i_it_end; ++i_it) {
+		delete (*i_it);
+	}
+	iconList.clear();
+	
+	Netizens::iterator n_it = netizenList.begin();
+	Netizens::iterator n_it_end = netizenList.end();
+	for(; n_it != n_it_end; ++n_it) {
+		delete (*n_it);
+	}
+	netizenList.clear();
+		
+#else //__INTEL_COMPILER
 	std::for_each(
 		workspacesList.begin(),
 		workspacesList.end(),
@@ -508,6 +534,7 @@ BScreen::~BScreen(void) {
 		netizenList.begin(),
 		netizenList.end(),
 		delete_obj<Netizen>);
+#endif //!__INTEL_COMPILER
 
 	delete rootmenu;
 	delete workspacemenu;
