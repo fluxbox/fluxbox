@@ -36,9 +36,9 @@ $ #RESTARTError
 $ #RECONFIGError
 # BScreen::parseMenuFile: ошибка [reconfig], не определено название пункта меню\n
 $ #STYLESDIRError
-# BScreen::parseMenuFile: ошибка [stylesdir/stylesmenu], не определено имя директории\n
+# BScreen::parseMenuFile: ошибка [stylesdir/stylesmenu], не определено имя каталога\n
 $ #STYLESDIRErrorNotDir
-# BScreen::parseMenuFile: ошибка [stylesdir/stylesmenu], '%s' не директория\n
+# BScreen::parseMenuFile: ошибка [stylesdir/stylesmenu], '%s' не каталог\n
 $ #STYLESDIRErrorNoExist
 # BScreen::parseMenuFile: ошибка [stylesdir/stylesmenu], '%s' не существует\n
 $ #WORKSPACESError

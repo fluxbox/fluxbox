@@ -7,7 +7,7 @@ $ #FocusModel
 $ #WindowPlacement
 # Положение окна
 $ #ImageDithering
-# Image Dithering
+# Сглаживать изображение
 $ #OpaqueMove
 # Перемещение заполненных окон
 $ #FullMax
@@ -37,12 +37,12 @@ $ #TopBottom
 $ #BottomTop
 # Снизу вверх
 $ #Tabs
-# Use Tabs
+# Использовать закладки
 $ #Icons
-# Use Icons
+# Сварачивать на панель инструментов
 $ #TabPlacement
-# Tab Placement
+# Расположение закладок
 $ #TabRotateVertical
-# Rotate Vertical Tabs
+# Закладки вертикально
 $ #SemiSloppyFocus
-# Semi Sloppy Focus
+# Размытый фокус
