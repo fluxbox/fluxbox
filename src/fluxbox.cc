@@ -1,6 +1,6 @@
 // fluxbox.cc for Fluxbox.
 // Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
-
+//
 // blackbox.cc for blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -116,6 +116,8 @@
 
 #include <iostream>
 #include <string>
+#include <strstream>
+using namespace std;
 
 #ifndef   HAVE_BASENAME
 static inline char *basename (char *);
@@ -131,7 +133,7 @@ static inline char *basename (char *s) {
 #define RC_PATH "fluxbox"
 #define RC_INIT_FILE "init"
 
-using namespace std;
+
 // X event scanner for enter/leave notifies - adapted from twm
 typedef struct scanargs {
   Window w;
@@ -165,7 +167,7 @@ Fluxbox *Fluxbox::instance(int m_argc, char **m_argv, char *dpy_name, char *rc) 
 
 
 Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
-  : BaseDisplay(m_argv[0], dpy_name)
+: BaseDisplay(m_argv[0], dpy_name)
 {
 		
 	//singleton pointer
@@ -262,7 +264,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, char *dpy_name, char *rc)
 	timer->fireOnce(True);
 
 	//create keybindings handler and load keys file
-	key = new Keys(resource.keys_file);
+	key = new Keys(getXDisplay(), resource.keys_file);
 
 	ungrab();
 }
@@ -1689,17 +1691,17 @@ void Fluxbox::save_rc(void) {
   delete [] dbfile;
 }
 
-//getRcFilename
-//returns filename of resource file
+//-------- getRcFilename -------------
+// Returns filename of resource file
+//------------------------------------
 char *Fluxbox::getRcFilename() {
 	char *dbfile=0;
  
 	if (!rc_file) {
-		char *homedir = getenv("HOME");
-		const int dbfile_size = strlen(homedir) + strlen("/.") +strlen(RC_PATH) + strlen(RC_INIT_FILE) + 24;
-		dbfile = new char[dbfile_size];
-		snprintf(dbfile, dbfile_size, "%s/.%s/%s", homedir, RC_PATH, RC_INIT_FILE);
-	
+		strstream str;
+		str<<getenv("HOME")<<"/."<<RC_PATH<<"/"<<RC_INIT_FILE;		
+		
+		return StringUtil::strdup(str.str());
 	} else
 		dbfile = StringUtil::strdup(rc_file);
  
