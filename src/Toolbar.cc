@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.141 2004/06/07 21:32:12 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.142 2004/06/08 11:47:10 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -764,7 +764,7 @@ void Toolbar::setupMenus() {
                           "Edit current workspace name", "Edit current workspace name"),
                   start_edit);
     
-    menu().setLabel(_FBTEXT(Toolbar, ToolbarTitle,
+    menu().setLabel(_FBTEXT(Toolbar, Toolbar,
                             "Toolbar", "Title of Toolbar menu")); 
 
     MenuItem *toolbar_menuitem = new IntResMenuItem(_FBTEXT(Toolbar, WidthPercent, "Toolbar width percent", "Percentage of screen width taken by toolbar"),
