@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
 *03/05/13:
+   * Fixed Slit redraw bug (Henrik)
+     Slit.cc
+   * Removed ScreenInfo.hh/cc (Henrik)
+   * Fixed better error msg for display connection (Henrik)
+     fluxbox.cc
    * Fix saving of Workspace Icons Toolbar mode (Simon)
      Screen.cc
    * Fixed iconify problems when autoraise on (Simon)
