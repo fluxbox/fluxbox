@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.193 2003/06/24 14:55:55 fluxgen Exp $
+// $Id: Screen.cc,v 1.194 2003/06/24 16:30:13 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -31,6 +31,7 @@
 #include "fluxbox.hh"
 #include "ImageControl.hh"
 #include "Toolbar.hh"
+#include "ToolbarHandler.hh"
 #include "Window.hh"
 #include "Workspace.hh"
 #include "StringUtil.hh"
@@ -175,53 +176,6 @@ private:
 }; // End anonymous namespace
 
 
-template<>
-void FbTk::Resource<ToolbarHandler::ToolbarMode>::
-setFromString(const char *strval) {
-    if (strcasecmp(strval, "Off") == 0) 
-        m_value = ToolbarHandler::OFF;
-    else if (strcasecmp(strval, "None") == 0) 
-        m_value = ToolbarHandler::NONE;
-    else if (strcasecmp(strval, "Icons") == 0) 
-        m_value = ToolbarHandler::ICONS;
-    else if (strcasecmp(strval, "WorkspaceIcons") == 0) 
-        m_value = ToolbarHandler::WORKSPACEICONS;
-    else if (strcasecmp(strval, "Workspace") == 0) 
-        m_value = ToolbarHandler::WORKSPACE;
-    else if (strcasecmp(strval, "AllWindows") == 0) 
-        m_value = ToolbarHandler::ALLWINDOWS;
-    else
-        setDefaultValue();
-}
-
-
-template<>
-string FbTk::Resource<ToolbarHandler::ToolbarMode>::
-getString() {
-    switch (m_value) {
-    case ToolbarHandler::OFF:
-        return string("Off");
-        break;
-    case ToolbarHandler::NONE:
-        return string("None");
-        break;
-    case ToolbarHandler::LASTMODE:
-    case ToolbarHandler::ICONS:
-        return string("Icons");
-        break;
-    case ToolbarHandler::WORKSPACEICONS:
-        return string("WorkspaceIcons");
-        break;
-    case ToolbarHandler::WORKSPACE:
-        return string("Workspace");
-        break;
-    case ToolbarHandler::ALLWINDOWS:
-        return string("AllWindows");
-        break;
-    }
-    // default string
-    return string("Icons");
-}
 
 namespace {
 
@@ -323,8 +277,7 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
-    menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
-    toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode") {
+    menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha") {
 
 };
 
@@ -467,7 +420,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     // create toolbarhandler for toolbar
 
-    m_toolbarhandler.reset(new ToolbarHandler(*this, toolbarMode()));
+    m_toolbarhandler.reset(new ToolbarHandler(*this));
 
     //!! TODO: we shouldn't do this more than once, but since slit/toolbar handles their
     // own resources we must do this.
@@ -605,6 +558,14 @@ const FbTk::Menu &BScreen::toolbarModemenu() const {
 
 FbTk::Menu &BScreen::toolbarModemenu() {
     return m_toolbarhandler->getModeMenu();
+}
+
+const Toolbar *BScreen::toolbar() const {
+    return m_toolbarhandler->toolbar();
+}
+
+Toolbar *BScreen::toolbar() {
+    return m_toolbarhandler->toolbar();
 }
 
 unsigned int BScreen::currentWorkspaceID() const { 
