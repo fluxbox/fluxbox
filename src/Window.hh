@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.78 2003/06/15 18:34:48 fluxgen Exp $
+// $Id: Window.hh,v 1.79 2003/06/18 13:55:16 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -44,9 +44,10 @@
 class WinClient;
 class FbWinFrameTheme;
 class BScreen;
+class Strut;
+
 class TextButton;
 class FbWinFrame;
-
 namespace FbTk {
 class MenuTheme;
 class ImageControl;
@@ -241,6 +242,9 @@ public:
         DECORM_ENABLED  = (1<<10),
         DECORM_LAST     = (1<<11) // useful for getting "All"
     };
+
+    void setStrut(Strut *strut);
+    void clearStrut();
 
     unsigned int decorationMask() const;
     void setDecorationMask(unsigned int mask);
@@ -440,6 +444,8 @@ private:
     int m_last_button_x, ///< last known x position of the mouse button
         m_last_button_y; ///< last known y position of the mouse button
     std::auto_ptr<FbWinFrame> m_frame;
+
+    Strut *m_strut;
 
     FbTk::XLayerItem m_layeritem;
     int m_layernum;

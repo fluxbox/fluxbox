@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.192 2003/06/15 18:35:32 fluxgen Exp $
+// $Id: Window.cc,v 1.193 2003/06/18 13:55:17 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -246,6 +246,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_old_decoration(DECOR_NORMAL),
     m_client(&client),   
     m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
+    m_strut(0),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {
@@ -279,6 +280,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
     m_old_decoration(DECOR_NORMAL),
     m_client(new WinClient(w, *this)),
     m_frame(new FbWinFrame(tm, scr.imageControl(), scr.screenNumber(), 0, 0, 100, 100)),
+    m_strut(0),
     m_layeritem(m_frame->window(), layer),
     m_layernum(layer.getLayerNum()),
     m_parent(scr.rootWindow()) {
@@ -296,6 +298,9 @@ FluxboxWindow::~FluxboxWindow() {
     cerr<<__FILE__<<"("<<__LINE__<<"): curr client = "<<m_client<<endl;
     cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
 #endif // DEBUG
+
+    clearStrut();
+
     if (moving || resizing || m_attaching_tab) {
         screen().hideGeometry();
         XUngrabPointer(display, CurrentTime);
@@ -1989,8 +1994,6 @@ void FluxboxWindow::handleEvent(XEvent &event) {
         }
         break;
 
-
-
     default:
 #ifdef SHAPE
         if (Fluxbox::instance()->haveShape() && 
@@ -2711,6 +2714,18 @@ void FluxboxWindow::toggleDecoration() {
             setDecoration(m_old_decoration);
         }
         decorations.enabled = true;
+    }
+}
+
+void FluxboxWindow::setStrut(Strut *strut) {    
+    clearStrut();
+    m_strut = strut;
+}
+
+void FluxboxWindow::clearStrut() {
+    if (m_strut != 0) {
+        screen().clearStrut(m_strut);
+        m_strut = 0;
     }
 }
 

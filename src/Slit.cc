@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.60 2003/06/13 05:03:43 fluxgen Exp $
+// $Id: Slit.cc,v 1.61 2003/06/18 13:49:43 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -291,7 +291,8 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
                                     "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", False)), //KDE v2.x
 
       m_layeritem(0),
-      m_slit_theme(new SlitTheme(*this)) {
+      m_slit_theme(new SlitTheme(*this)),
+      m_strut(0) {
 
     // default placement and direction
     m_direction = screen().getSlitDirection();
@@ -339,10 +340,65 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
 
 Slit::~Slit() {
+    clearStrut();
     if (frame.pixmap != 0)
         screen().imageControl().removeImage(frame.pixmap);
 }
 
+void Slit::clearStrut() {
+    if (m_strut != 0) {
+        screen().clearStrut(m_strut);
+        m_strut = 0;
+    }
+}
+
+void Slit::updateStrut() {
+    clearStrut();
+    // no need for area if we're autohiding
+    if (doAutoHide())
+        return;
+
+    int left = 0, right = 0, top = 0, bottom = 0;
+    switch (placement()) {
+    case TOPLEFT:
+        top = height();
+        left = width();
+        break;
+    case TOPCENTER:
+        top = height();
+        break;
+    case TOPRIGHT:
+        right = width();
+        top = height();
+        break;
+    case BOTTOMLEFT:
+        bottom = height();
+        left = width();
+        break;
+    case BOTTOMCENTER:
+        // would be strange to have it request size on vertical direction
+        // each time we add a client
+        if (direction() == HORIZONTAL)
+            bottom = height();
+        break;
+    case BOTTOMRIGHT:
+        if (direction() == HORIZONTAL)
+            bottom = height();
+        else
+            right = width();
+        break;
+    case CENTERLEFT:
+        if (direction() == VERTICAL)
+            left = width();        
+        break;
+    case CENTERRIGHT:
+        if (direction() == VERTICAL)
+            right = width();
+        break;
+    }
+    m_strut = screen().requestStrut(left, right, top, bottom);
+    screen().updateAvailableWorkspaceArea();
+}
 
 void Slit::addClient(Window w) {
 #ifdef DEBUG
@@ -777,6 +833,7 @@ void Slit::reconfigure() {
 
     m_slitmenu.reconfigure();
     updateClientmenu();
+    updateStrut();
 }
 
 

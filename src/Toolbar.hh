@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.32 2003/06/11 14:50:57 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.33 2003/06/18 13:50:40 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -42,6 +42,8 @@
 #include <memory>
 
 class BScreen;
+class Strut;
+
 namespace FbTk {
 class ImageControl;
 };
@@ -133,6 +135,8 @@ public:
 
 		
 private:
+    void clearStrut();
+    void updateStrut();
 
     bool editing;      ///< edit workspace label mode
     bool hidden;       ///< hidden state
@@ -189,6 +193,8 @@ private:
     ThemeListener m_themelistener;
 
     FbTk::XLayerItem m_layeritem;
+
+    Strut *m_strut; ///< created and destroyed by BScreen
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.90 2003/06/13 05:04:14 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.91 2003/06/18 13:50:40 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -43,6 +43,7 @@
 #include "BoolMenuItem.hh"
 #include "FbWinFrameTheme.hh"
 #include "Xinerama.hh"
+#include "Strut.hh"
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -279,7 +280,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_theme(scrn.screenNumber()),
     m_place(scrn.toolbarPlacement()),
     m_themelistener(*this),
-    m_layeritem(frame.window, layer) {
+    m_layeritem(frame.window, layer),
+    m_strut(0) {
 
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
@@ -339,6 +341,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
 
 
 Toolbar::~Toolbar() {
+    clearStrut();
     FbTk::ImageControl &image_ctrl = screen().imageControl();
     if (frame.base) image_ctrl.removeImage(frame.base);
     if (frame.label) image_ctrl.removeImage(frame.label);
@@ -347,6 +350,48 @@ Toolbar::~Toolbar() {
     if (frame.button) image_ctrl.removeImage(frame.button);
     if (frame.pbutton) image_ctrl.removeImage(frame.pbutton);
 
+}
+
+void Toolbar::clearStrut() {
+    if (m_strut) {
+        screen().clearStrut(m_strut);
+        m_strut = 0;
+    }
+}
+
+void Toolbar::updateStrut() {
+    clearStrut();
+    // we should request space if we're in autohide mode or
+    // if the user dont want to request space for toolbar.
+    if (doAutoHide())
+        return;
+
+    // request area on screen
+    int top = 0, bottom = 0, left = 0, right = 0;
+    switch (m_place) {
+    case TOPLEFT:
+    case TOPCENTER:
+    case TOPRIGHT:
+        top = height();
+        break;
+    case BOTTOMLEFT:
+    case BOTTOMCENTER:
+    case BOTTOMRIGHT:
+        bottom = height();
+        break;
+    case RIGHTTOP:
+    case RIGHTCENTER:
+    case RIGHTBOTTOM:
+        right = width();
+        break;
+    case LEFTTOP:
+    case LEFTCENTER:
+    case LEFTBOTTOM:
+        left = width();
+        break;
+    };
+    m_strut = screen().requestStrut(left, right, top, bottom);
+    screen().updateAvailableWorkspaceArea();
 }
 
 bool Toolbar::isVertical() const {
@@ -702,7 +747,9 @@ void Toolbar::reconfigure() {
     checkClock(true);
 
     m_toolbarmenu.reconfigure();
-
+    // we're done with all resizing and stuff now we can request a new 
+    // area to be reserv on screen
+    updateStrut();
 }
 
 
