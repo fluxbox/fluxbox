@@ -14,7 +14,6 @@
 	Tab <-> Window
 	Workspace <-> Window
 	and more 
-* Fix "no font" crash
 * Fix configurable toolbar
   so the user can configure toolbar in a config file
 * Toolbar shouldn't hide if its autohide and 

@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/02:
+   * New theme BlueNight (Thanks mack)
 *02/08/31:
    * Fixed minor issue with window moving across workspace in outlined mode
      (Thanks Simon Bowden)
@@ -9,7 +11,7 @@ Changes for 0.1.11:
    * Carry a window across workspace in non-opaque mode (Thanks Simon Bowden)
      Window.cc/hh, Screen.cc/hh, fluxbox.cc
    * Removed TDF theme
-   * Added new theme: lemonspace (Thanks xlife)
+   * Added new theme: LemonSpace (Thanks xlife)
    * Fixed transient windows checking
      Window.cc, Workspace.cc
 *02/08/28:
@@ -17,7 +19,7 @@ Changes for 0.1.11:
    * Fixed bug [ 582574 ] borderless windows cant be horiz resized. 
      (Thanks Simon Bowden)
      Window.cc
-   * Fixed [ 600811 ] undefined keys messes up
+   * Fixed bug [ 600811 ] undefined keys messes up
      Keys.cc
 *02/08/24:
    * Fixed workspace name and the reassociation bug (Thanks Simon Bowden)
@@ -74,9 +76,8 @@ Changes for 0.1.11:
       slit: <texture option>
       slit.color: <color value>
       slit.colorTo: <color value>     
-     If slit isn't present in the theme the slit will fall back to
-     Toolbar theme.
-
+     If slit isn't present in the theme it'll fall back to
+     toolbar theme.
 *02/07/19:
    * Fixed slitlist bug
      Slit wasn't reading the entire line from slitlist.

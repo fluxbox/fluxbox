@@ -32,7 +32,8 @@ Contributors:
       - RPM Packaging, debugging and scripts.
 	Jeramy B. Smith
       - Packaging assistance, gnome and kde menu system.
-
+    Simon Bowden
+	  - Window moving across workspaces in outlined mode and bugfixes.
 
 
 -- AUTHORS for Blackbox 0.61.1  - an X11 Window manager

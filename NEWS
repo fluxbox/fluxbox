@@ -1,13 +1,31 @@
-News in 0.1.10:
-   * slit order, you can now order your apps in the slit, 
-     see documentation for more details
-   * xsri target in bsetbg
-   * language support in fluxbox-generate_menu: sv_SE, nl_NL, fi_FI, ru_RU
+News in 0.1.11:
+   * Autogrouping:
+      This will read groups from a file and auto group programs when
+      they start.
+   * Autogrouping-from-tab:
+      This will allow you to popup the root menu, if you right click on the tab,
+      and select an application and it'll start grouped to the tab.
+      (note: this might interfere with the normal autogrouping in a bad way)
+   * Two new themes: BlueNight and LemonSpace
+   * Carry window across workspace with outlined mode.
+   * Slit now has a theme option:
+      slit: <texture option>
+      slit.color: <color value>
+      slit.colorTo: <color value>
+      It will fall back to the toolbar theme if it doesn't find it.
+   * ja_JP and fr_FR in fluxbox-generate_menu
+   * New util: fbrun
+      Which allows you to type a command and run it.
+   * The window menu now pop up in iconbar when you right click on the icon.  
+
 Bug fixes:
-   * [ 562882 ] "bbpager in slit doesn't work correctly".
-   * [ 562713 ] "incorrect listings in workspace menu".    
-   * [ 554646 ] "Dialog boxes have tabs briefly"
-   * [ 566277 ] "xine fullscreen causes hard X lockup"
-   * [ 554218 ] "windows have wrong resizeableness"
+   * Fixed bug [ 582574 ] borderless windows cant be horiz resized.
+   * Fixed bug [ 600811 ] undefined keys messes up
+   * Fixed bug [ 598490 ] misplaced parentrelative gives redrw prb
+   * Fixed bug [ 586830 ] the clock now updates once per second.
+   * Fixed bug [ 574717 ] restaring fluxbox should keep iconic.
+   * Fixed "send to..." bug
+   * Fixed slitlist bug
+   * Fixed workspace name and the reassociation bug 
 
 See ChangeLog for details
