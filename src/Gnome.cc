@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.7 2003/02/02 16:32:37 rathnor Exp $
+// $Id: Gnome.cc,v 1.8 2003/02/03 13:49:39 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -376,7 +376,7 @@ void Gnome::setLayer(FluxboxWindow *win, int layer) {
         layer = Fluxbox::instance()->getDesktopLayer() - layer;
         break;
     }
-    win->getScreen()->setLayer(*win->getLayerItem(),layer);
+    win->getScreen()->setLayer(win->getLayerItem(),layer);
 
 }
 
