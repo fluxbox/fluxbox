@@ -164,7 +164,7 @@ public:
     virtual ~FluxboxWindow();
 
     /// attach client to our client list and remove it from old window
-    void attachClient(WinClient &client);
+    void attachClient(WinClient &client, int x=-1, int y=-1);
     /// detach client (remove it from list) and create a new window for it 
     bool detachClient(WinClient &client);
     /// detach current working client if we have more than one
