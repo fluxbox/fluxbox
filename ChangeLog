@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+  * Fixed whitespace in filenames for pixmaps (Henrik)
+    StringUtil.hh/cc, ThemeItems.hh
+  * Added MoveTo/ResizeTo commands (Thanks sylvinus)
+    Moves/Resize the window absolute coordinates
+    * usage: MoveTo 100 100
+             ResizeTo 100 100
 *03/10/20:
   * fbgm updates from Han
     - allow options in ~/.fluxbox/menuconfig
