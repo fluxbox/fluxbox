@@ -273,8 +273,13 @@ int main(int argc, char **argv) {
         abort();
     }
 
-    bool restarting = fluxbox->isRestarting();
-    const std::string restart_argument(fluxbox->getRestartArgument());
+    bool restarting = false;
+    std::string restart_argument;
+    
+    if (fluxbox.get()) {
+        restarting = fluxbox->isRestarting();
+        restart_argument = fluxbox->getRestartArgument();   
+    }
 
     // destroy fluxbox
     fluxbox.reset(0);
