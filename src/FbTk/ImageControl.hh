@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.hh,v 1.9 2004/01/11 12:40:47 fluxgen Exp $
+// $Id: ImageControl.hh,v 1.10 2004/01/21 14:16:02 fluxgen Exp $
 
 #ifndef	 FBTK_IMAGECONTROL_HH
 #define	 FBTK_IMAGECONTROL_HH
@@ -49,8 +49,8 @@ public:
     inline int bitsPerPixel() const { return bits_per_pixel; }
     inline int depth() const { return m_screen_depth; }
     inline int colorsPerChannel() const	{ return m_colors_per_channel; }
-    int screenNum() const { return m_screen_num; }
-    Visual *visual() const { return m_visual; }
+    inline int screenNumber() const { return m_screen_num; }
+    inline Visual *visual() const { return m_visual; }
     unsigned long getSqrt(unsigned int val) const;
 
     /**
