@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.152 2003/05/10 22:52:44 fluxgen Exp $
+// $Id: Screen.cc,v 1.153 2003/05/11 11:47:19 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1049,54 +1049,53 @@ int BScreen::removeLastWorkspace() {
 
 
 void BScreen::changeWorkspaceID(unsigned int id) {
-    if (! current_workspace || id >= workspacesList.size())
+    if (! current_workspace || id >= workspacesList.size() ||
+        id == current_workspace->workspaceID())
         return;
-	
-    if (id != current_workspace->workspaceID()) {
-        XSync(FbTk::App::instance()->display(), true);
-        FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
+
+    XSync(FbTk::App::instance()->display(), true);
+    FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();
 #ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): focused = "<<focused<<endl;
 #endif // DEBUG
 
-        if (focused && focused->isMoving()) {
-            if (doOpaqueMove())
-                reassociateWindow(focused, id, true);
-            // don't reassociate if not opaque moving
-            focused->pauseMoving();
+    if (focused && focused->isMoving()) {
+        if (doOpaqueMove())
+            reassociateWindow(focused, id, true);
+        // don't reassociate if not opaque moving
+        focused->pauseMoving();
+    }
+
+    // reassociate all windows that are stuck to the new workspace
+    Workspace *wksp = getCurrentWorkspace();
+    Workspace::Windows wins = wksp->getWindowList();
+    Workspace::Windows::iterator it = wins.begin();
+    for (; it != wins.end(); ++it) {
+        if ((*it)->isStuck()) {
+            reassociateWindow(*it, id, true);
         }
+    }
 
-        // reassociate all windows that are stuck to the new workspace
-        Workspace *wksp = getCurrentWorkspace();
-        Workspace::Windows wins = wksp->getWindowList();
-        Workspace::Windows::iterator it = wins.begin();
-        for (; it != wins.end(); ++it) {
-            if ((*it)->isStuck()) {
-                reassociateWindow(*it, id, true);
-            }
-        }
+    current_workspace->hideAll();
 
-        current_workspace->hideAll();
+    workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
 
-        workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
+    // set new workspace
+    current_workspace = getWorkspace(id);
 
-        // set new workspace
-        current_workspace = getWorkspace(id);
+    workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
+    if (getToolbar() != 0)
+        getToolbar()->redrawWorkspaceLabel(true);
 
-        workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
-        if (getToolbar() != 0)
-            getToolbar()->redrawWorkspaceLabel(true);
+    current_workspace->showAll();
 
-        current_workspace->showAll();
+    if (focused && (focused->isStuck() || focused->isMoving())) {
+        focused->setInputFocus();
+    } else
+        Fluxbox::instance()->revertFocus(this);
 
-        if (focused && (focused->isStuck() || focused->isMoving())) {
-            focused->setInputFocus();
-        } else
-            Fluxbox::instance()->revertFocus(this);
-
-        if (focused && focused->isMoving()) {
-            focused->resumeMoving();
-        }
+    if (focused && focused->isMoving()) {
+        focused->resumeMoving();
     }
 
     updateNetizenCurrentWorkspace();
