@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.30 2003/04/15 12:05:47 fluxgen Exp $
+// $Id: IconBar.cc,v 1.31 2003/04/25 10:40:31 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -28,6 +28,7 @@
 #include "Window.hh"
 #include "ImageControl.hh"
 #include "Text.hh"
+#include "RootTheme.hh"
 
 #include <algorithm>
 
@@ -155,15 +156,18 @@ IconBar::WindowList *IconBar::delAllIcons() {
 /**
  renders theme to m_focus_pm
  with the size width * height
+
 */
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
+    //!! TODO: iconbar style theme
+
     FbTk::ImageControl *image_ctrl = screen().getImageControl();
     Pixmap tmp = m_focus_pm;
-    const FbTk::Texture *texture = &(screen().getWindowStyle()->tab.l_focus);
+    const FbTk::Texture *texture = &(screen().winFrameTheme().labelFocusTexture());
 	
     //If we are working on a PARENTRELATIVE, change to right focus value
     if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
-        texture = &(screen().getWindowStyle()->tab.t_focus);
+        texture = &(screen().winFrameTheme().titleFocusTexture());
     }
 		
     if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
@@ -183,9 +187,10 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
  border, border width of the window
 */
 void IconBar::decorate(Window win) {
-
-    XSetWindowBorderWidth(m_display, win, screen().getWindowStyle()->tab.border_width);
-    XSetWindowBorder(m_display, win, screen().getWindowStyle()->tab.border_color.pixel());
+    //!! TODO iconbar border width style
+    XSetWindowBorderWidth(m_display, win, 1);
+    XSetWindowBorder(m_display, win, BlackPixel(FbTk::App::instance()->display(),
+                                                screen().getScreenNumber())); 
     if (m_focus_pm)
         XSetWindowBackgroundPixmap(m_display, win, m_focus_pm);
     else
@@ -287,7 +292,9 @@ Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
     XSetWindowAttributes attrib;
     attrib.background_pixmap = None;
     attrib.background_pixel = attrib.border_pixel =
-        fluxboxwin->getScreen().getWindowStyle()->tab.border_color.pixel();
+        BlackPixel(m_display,
+                   screen().getScreenNumber());
+    //        fluxboxwin->getScreen().getWindowStyle()->tab.border_color.pixel();
     attrib.colormap = fluxboxwin->getScreen().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
@@ -315,7 +322,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
     title_text_w = m_font.textWidth(
         fluxboxwin->getIconTitle().c_str(), fluxboxwin->getIconTitle().size());
 
-    unsigned int bevel_w = screen().getBevelWidth();
+    unsigned int bevel_w = screen().rootTheme().bevelWidth();
     int dx=bevel_w*2;
 
     // center by default
@@ -338,7 +345,7 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
     m_font.drawText(
         iconwin,
         screen().getScreenNumber(),
-        screen().getWindowStyle()->tab.l_text_focus_gc,
+        screen().winFrameTheme().labelTextFocusGC(),
         fluxboxwin->getIconTitle().c_str(), newlen,
         dx, dy,	m_vertical);
 
