@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.4 2003/02/23 01:09:20 fluxgen Exp $
+// $Id: Color.cc,v 1.5 2003/08/11 23:39:28 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -46,7 +46,7 @@ Color::Color():
 
 }
 
-Color::Color(const Color &col_copy) {
+Color::Color(const Color &col_copy):m_allocated(false), m_screen(0) {
     copy(col_copy);
 }
 
