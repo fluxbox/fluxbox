@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.7 2002/01/27 12:46:28 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.8 2002/03/20 11:32:03 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -31,10 +31,13 @@
 
 using namespace std;
 
+namespace StringUtil
+{
+
 //------- strdup ------------------------
 //TODO: comment this
 //----------------------------------------
-char *StringUtil::strdup(const char *s) {
+char *strdup(const char *s) {
   int l = strlen(s) + 1;
   char *n = new char[l];
   strncpy(n, s, l);
@@ -47,7 +50,7 @@ char *StringUtil::strdup(const char *s) {
 // Returns 0 on success else pointer to str.
 // TODO: comment this
 //---------------------------------
-const char * StringUtil::strcasestr(const char *str, const char *ptn) {
+const char *strcasestr(const char *str, const char *ptn) {
 	const char *s2, *p2;
 	for( ; *str; str++) {
 		for(s2=str, p2=ptn; ; s2++,p2++) {	
@@ -63,7 +66,7 @@ const char * StringUtil::strcasestr(const char *str, const char *ptn) {
 // returns expanded filename 
 // (note: the function creates new memory for the string)
 //---------------------------------------------------
-char *StringUtil::expandFilename(const char *filename) {
+char *expandFilename(const char *filename) {
   
 	auto_ptr<char> retval( new char[strlen(filename)+strlen(getenv("HOME"))+2]);
   if (filename[0]=='~') {
@@ -85,29 +88,29 @@ char *StringUtil::expandFilename(const char *filename) {
 // for the position + 1 in the in-string where the "last"-char value
 // was found.
 //------------------------------------------
-int StringUtil::getStringBetween(string& out, const char *instr, const char first, const char last,
+int getStringBetween(std::string& out, const char *instr, const char first, const char last,
 			const char *ok_chars) {
 	assert(first);
 	assert(last);
 	assert(instr);
 	
-	string::size_type i = 0, 
+	std::string::size_type i = 0, 
 		total_add=0; //used to add extra if there is a \last to skip
-	string in(instr);
+	std::string in(instr);
 	
 	// eat leading whitespace
 	i = in.find_first_not_of(ok_chars);
-	if (i == string::npos)
+	if (i == std::string::npos)
 		return -in.size();   // nothing left but whitespace
 
 	if (in[i]!=first)		
 		return -i; //return position to error	
 
 	// find the end of the token
-	string::size_type j = i;
+	std::string::size_type j = i;
 	while (1) {
 		j = in.find_first_of(last, j+1);
-		if (j==string::npos)
+		if (j==std::string::npos)
 			return -in.size(); //send negative size
 
 		//we found the last char, check so it doesn't have a '\' before
@@ -124,3 +127,5 @@ int StringUtil::getStringBetween(string& out, const char *instr, const char firs
 	//return value to last character
 	return (j+1+total_add);
 }
+
+}; //end namespace StringUtil

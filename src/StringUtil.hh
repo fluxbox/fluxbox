@@ -19,60 +19,63 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: StringUtil.hh,v 1.6 2002/02/17 18:52:20 fluxgen Exp $
+//$Id: StringUtil.hh,v 1.7 2002/03/20 11:32:03 fluxgen Exp $
 
 #ifndef STRINGUTIL_HH
 #define STRINGUTIL_HH
 
 #include <string>
 
-struct StringUtil
+namespace StringUtil
 {
-	static char *strdup(const char *);
+
+char *strdup(const char *);
 	
-	//Similar to `strstr' but this function ignores the case of both strings
-	static const char *strcasestr(const char *str, const char *ptn);
+//Similar to `strstr' but this function ignores the case of both strings
+const char *strcasestr(const char *str, const char *ptn);
 	
-	static char *expandFilename(const char *filename);
-	static int getStringBetween(std::string& out, const char *instr, const char first, const char last,
-			const char *ok_chars=" \t\n");
-	//--------- stringtok ----------------------------------
-	// Breaks a string into tokens
-	// Usage check:
-	// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/howto.html#3
-	// Taken from an example at:
-	// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/stringtok_std_h.txt
-	//--------------------------------------------------
-	template <typename Container>
-	static void
-	stringtok (Container &container, std::string const &in,
-  	         const char * const delimiters = " \t\n")
-	{
-		const std::string::size_type len = in.length();
-		std::string::size_type i = 0;
+char *expandFilename(const char *filename);
+int getStringBetween(std::string& out, const char *instr, const char first, const char last,
+	const char *ok_chars=" \t\n");
 
-		while ( i < len ) {
-			// eat leading whitespace
-			i = in.find_first_not_of(delimiters, i);
-			if (i == std::string::npos)
-				return;   // nothing left but white space
+//--------- stringtok ----------------------------------
+// Breaks a string into tokens
+// Usage check:
+// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/howto.html#3
+// Taken from an example at:
+// http://gcc.gnu.org/onlinedocs/libstdc++/21_strings/stringtok_std_h.txt
+//--------------------------------------------------
+template <typename Container>
+static void
+stringtok (Container &container, std::string const &in,
+ 	         const char * const delimiters = " \t\n")
+{
+	const std::string::size_type len = in.length();
+	std::string::size_type i = 0;
 
-				// find the end of the token
-				std::string::size_type j = in.find_first_of(delimiters, i);
+	while ( i < len ) {
+		// eat leading whitespace
+		i = in.find_first_not_of(delimiters, i);
+		if (i == std::string::npos)
+			return;   // nothing left but white space
 
-				// push token
-				if (j == std::string::npos) {
-					container.push_back(in.substr(i));
-					return;
-				} else
-					container.push_back(in.substr(i, j-i));
+			// find the end of the token
+			std::string::size_type j = in.find_first_of(delimiters, i);
 
-				// set up for next loop
-				i = j + 1;
-			}
-	}
-};
+			// push token
+			if (j == std::string::npos) {
+				container.push_back(in.substr(i));
+				return;
+			} else
+				container.push_back(in.substr(i, j-i));
+
+			// set up for next loop
+			i = j + 1;
+		}
+}
+
+};//end namespace StringUtil
 
 
 
-#endif // _STRINGUTIL_HH_
+#endif // STRINGUTIL_HH
