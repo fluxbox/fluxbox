@@ -6,7 +6,7 @@ SUBDIRS = C da_DK es_ES et_EE fr_FR pt_BR ru_RU sv_SE \
 	sl_SI pl_PL
 
 MAINTAINERCLEANFILES = Makefile.in fluxbox-nls.hh
-EXTRA_DIST=fluxbox-nls.hh convert.awk nlsinfo
+EXTRA_DIST=fluxbox-nls.hh nlsinfo
 BUILT_SOURCES=fluxbox-nls.hh
 
 uninstall-local:
