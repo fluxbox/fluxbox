@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.124 2003/09/08 16:37:27 fluxgen Exp $
+// $Id: Screen.hh,v 1.125 2003/09/29 12:53:58 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -92,13 +92,14 @@ public:
     inline bool doFocusNew() const { return *resource.focus_new; }
     inline bool doFocusLast() const { return *resource.focus_last; }
     inline bool doShowWindowPos() const { return *resource.show_window_pos; }
-    bool antialias() const { return *resource.antialias; }
+    inline bool antialias() const { return *resource.antialias; }
 
     inline FbTk::ImageControl &imageControl() { return *m_image_control.get(); }
     const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
+    inline const std::string &getResizeMode()  const { return *resource.resizemode; }
     inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
 
     inline Slit *slit() { return m_slit.get(); }
@@ -170,6 +171,7 @@ public:
 
     inline void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
+    inline void saveResizeMode(std::string resizem) { *resource.resizemode = resizem; }
     inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
 
@@ -421,6 +423,7 @@ private:
             focus_last, focus_new,
             antialias, auto_raise, click_raises;
         FbTk::Resource<std::string> rootcommand;		
+        FbTk::Resource<std::string> resizemode;
         FbTk::Resource<Fluxbox::FocusModel> focus_model;
         bool ordered_dither;
         FbTk::Resource<int> workspaces, edge_snap_threshold, menu_alpha;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.12 2003/09/12 23:37:12 fluxgen Exp $
+// $Id: FbWinFrameTheme.cc,v 1.13 2003/09/29 12:53:58 rathnor Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -78,7 +78,8 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_cursor_move = XCreateFontCursor(disp, XC_fleur);
     m_cursor_lower_left_angle = XCreateFontCursor(disp, XC_ll_angle);
     m_cursor_lower_right_angle = XCreateFontCursor(disp, XC_lr_angle);
-
+    m_cursor_upper_right_angle = XCreateFontCursor(disp, XC_ur_angle);
+    m_cursor_upper_left_angle = XCreateFontCursor(disp, XC_ul_angle);
 }
 
 FbWinFrameTheme::~FbWinFrameTheme() {

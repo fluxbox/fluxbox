@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.95 2003/09/24 14:02:25 rathnor Exp $
+// $Id: Window.hh,v 1.96 2003/09/29 12:53:58 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -129,6 +129,13 @@ public:
         DECORM_TAB      = (1<<9),
         DECORM_ENABLED  = (1<<10),
         DECORM_LAST     = (1<<11) // useful for getting "All"
+    };
+
+    enum ResizeCorner {
+      LEFTTOP,
+      LEFTBOTTOM,
+      RIGHTBOTTOM,
+      RIGHTTOP
     };
 
     typedef struct _blackbox_hints {
@@ -366,7 +373,7 @@ private:
 
     void startMoving(Window win);
     void stopMoving();
-    void startResizing(Window win, int x, int y, bool left); 
+    void startResizing(Window win, int x, int y);
     void stopResizing(Window win=0);
     void updateIcon();
     /// try to attach current attaching client to a window at pos x, y
@@ -391,8 +398,7 @@ private:
 
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);
-    void right_fixsize(int *x = 0, int *y = 0);
-    void left_fixsize(int *x = 0, int *y = 0);
+    void fixsize(int *x = 0, int *y = 0);
     void resizeClient(WinClient &client, unsigned int width, unsigned int height);
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);
@@ -455,6 +461,8 @@ private:
     int m_layernum;
 
     FbTk::FbWindow &m_parent; ///< window on which we draw move/resize rectangle  (the "root window")
+
+    ResizeCorner m_resize_corner;
 
     ExtraMenus m_extramenus;
 };

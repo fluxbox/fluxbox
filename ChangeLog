@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/29:
+  * Nearest-quadrant resizing (Thanks Mathias Gumz)
+    Window.hh/cc Screen.hh/cc FbWinFrameTheme.hh/cc
   * Update from Han 
    - make startup executable to save one process
    - make pixmaps-dir

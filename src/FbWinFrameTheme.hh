@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.11 2003/09/12 23:37:12 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.12 2003/09/29 12:53:58 rathnor Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -90,6 +90,8 @@ public:
     inline Cursor moveCursor() const { return m_cursor_move; }
     inline Cursor lowerLeftAngleCursor() const { return m_cursor_lower_left_angle; }
     inline Cursor lowerRightAngleCursor() const { return m_cursor_lower_right_angle; }
+    inline Cursor upperLeftAngleCursor() const { return m_cursor_upper_left_angle; }
+    inline Cursor upperRightAngleCursor() const { return m_cursor_upper_right_angle; }
 
     inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
     inline const BorderTheme &border() const { return m_border; }
@@ -122,7 +124,11 @@ private:
 
     FbTk::Subject m_theme_change;
 
-    Cursor m_cursor_move, m_cursor_lower_left_angle, m_cursor_lower_right_angle;
+    Cursor m_cursor_move;
+    Cursor m_cursor_lower_left_angle;
+    Cursor m_cursor_lower_right_angle;
+    Cursor m_cursor_upper_left_angle;
+    Cursor m_cursor_upper_right_angle;
 };
 
 #endif // FBWINFRAMETHEME_HH
