@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.249 2004/08/18 16:30:33 rathnor Exp $
+// $Id: fluxbox.cc,v 1.250 2004/08/27 17:24:49 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -1621,13 +1621,16 @@ void Fluxbox::restart(const char *prog) {
 
 /// prepares fluxbox for a shutdown
 void Fluxbox::shutdown() {
+    if (m_shutdown)
+        return;
+
+    m_shutdown = true;
 
     XSetInputFocus(FbTk::App::instance()->display(), PointerRoot, None, CurrentTime);
 
     //send shutdown to all screens
     for_each(m_screen_list.begin(), m_screen_list.end(), mem_fun(&BScreen::shutdown));
 
-    m_shutdown = true;
     sync(false);
 
 }

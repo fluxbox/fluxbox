@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/27:
+  * Protect Fluxbox::shutdown better from being double-called (Simon)
+    fluxbox.cc
   * Improve fallback if toolbar button style item missing (Simon)
     ButtonTheme.hh/cc ToolFactory.cc
 *04/08/26:
