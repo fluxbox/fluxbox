@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.9 2002/12/05 00:07:39 fluxgen Exp $
+// $Id: FbRun.cc,v 1.10 2003/03/22 11:33:04 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -30,6 +30,7 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Xutil.h>
+#include <X11/cursorfont.h>
 
 #include <unistd.h>
 
@@ -40,13 +41,16 @@ using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
     m_font("fixed"),
     m_win((int)0, x, y,  //screen num and position
-          width + m_bevel, m_font.height(),  // size
+          width + m_bevel, m_font.height() + 2,  // size
           KeyPressMask|ExposureMask), // eventmask
     m_display(FbTk::App::instance()->display()),
     m_bevel(4),
     m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
     m_end(false),
-    m_current_history_item(0) {
+    m_current_history_item(0),
+    m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)),
+    m_cursor_pos(0) {
+    XDefineCursor(FbTk::App::instance()->display(), m_win.window(), m_cursor);
     // setting nomaximize in local resize
     resize(width, m_font.height());
     FbTk::EventManager::instance()->registerEventHandler(*this, m_win.window());
@@ -172,7 +176,12 @@ void FbRun::drawString(int x, int y,
         }		
     }
 
-    m_font.drawText(m_win.window(), DefaultScreen(m_display), m_gc, text + startpos, len-startpos, x, y);
+    m_font.drawText(m_win.window(), DefaultScreen(m_display), m_gc, text + startpos, len-startpos, x, y - 2);
+    int cursor_pos = m_font.textWidth(text + m_cursor_pos, len - startpos) + 1;
+    // draw cursor position
+    XDrawLine(FbTk::App::instance()->display(), m_win.window(), m_gc,
+              cursor_pos, 0,
+              cursor_pos, m_font.height());
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
@@ -183,7 +192,6 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
         m_end = true;
         hide();
         FbTk::App::instance()->end(); // end program
-        return; // no more processing
     } else if (ks == XK_Return) {
         run(m_runtext);
         m_runtext = ""; // clear text
@@ -191,9 +199,12 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
         if (m_runtext.size() != 0) { // we can't erase what we don't have ;)
             m_runtext.erase(m_runtext.size()-1);
             redrawLabel();
+            m_cursor_pos--;
         }
-    } else if (! IsModifierKey(ks) && !IsCursorKey(ks)) {
-        m_runtext+=keychar[0]; // append character
+    } else if (! IsModifierKey(ks) && !IsCursorKey(ks)) { // insert normal character at cursor pos
+        char in_char[2] = {keychar[0], 0};
+        m_runtext.insert(m_cursor_pos, in_char); 
+        m_cursor_pos++;
         redrawLabel(); 
     } else if (IsCursorKey(ks)) {
 		
@@ -204,8 +215,16 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
         case XK_Down:
             nextHistoryItem();
             break;
+        case XK_Left:
+            cursorLeft();
+            break;
+        case XK_Right:
+            cursorRight();
+            break;
         }
         redrawLabel();
+    } else if (ks == XK_End) {
+        m_cursor_pos = m_runtext.size() - 1;
     }
 }
 
@@ -242,4 +261,16 @@ void FbRun::nextHistoryItem() {
     } else 
         m_runtext = m_history[m_current_history_item];
 
+}
+
+
+void FbRun::cursorLeft() {
+    if (m_cursor_pos > 0)
+        m_cursor_pos--;
+}
+
+void FbRun::cursorRight() {
+    m_cursor_pos++;
+    if (m_cursor_pos >= m_runtext.size())
+        m_cursor_pos = m_runtext.size() - 1;
 }

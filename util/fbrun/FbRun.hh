@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.hh,v 1.8 2002/12/05 00:07:38 fluxgen Exp $
+// $Id: FbRun.hh,v 1.9 2003/03/22 11:31:43 fluxgen Exp $
 
 #ifndef FBRUN_HH
 #define FBRUN_HH
@@ -75,6 +75,8 @@ public:
 private:
     void nextHistoryItem();
     void prevHistoryItem();
+    void cursorLeft();
+    void cursorRight();
     void drawString(int x, int y, const char *text, size_t len);
     void getSize(size_t &width, size_t &height);
     void createWindow(int x, int y, size_t width, size_t height);	
@@ -92,6 +94,8 @@ private:
     std::vector<std::string> m_history; ///< history list of commands
     size_t m_current_history_item; ///< holds current position in command history
     std::string m_history_file; ///< holds filename for command history file
+    Cursor m_cursor;
+    int m_cursor_pos;
 };
 
 #endif // FBRUN_HH
