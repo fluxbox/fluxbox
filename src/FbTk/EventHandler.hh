@@ -1,5 +1,5 @@
-// fluxbox.cc for Fluxbox Window Manager
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// EventHandler.cc for Fluxbox Window Manager
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,23 +19,34 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventHandler.hh,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: EventHandler.hh,v 1.2 2002/11/27 21:41:38 fluxgen Exp $
 
 #ifndef FBTK_EVENTHANDLER_HH
 #define FBTK_EVENTHANDLER_HH
 
+#include <X11/Xlib.h>
+
 namespace FbTk {
 
 /**
-	template eventhandler
-	Both return value and argument is generic.
+	interface for X events
 */
-template <typename Event_T, typename Event_ret_T = void>
 class EventHandler {
 public:
 	virtual ~EventHandler() { }
 
-	virtual Event_ret_T handleEvent(Event_T * const) = 0;
+	/**
+	  Events that don't have an specific event function
+	*/
+	virtual void handleEvent(XEvent &ev) { }
+	virtual void buttonPressEvent(XButtonEvent &ev) { }
+	virtual void buttonReleaseEvent(XButtonEvent &ev) { }
+	virtual void exposeEvent(XExposeEvent &ev) { }
+	virtual void motionNotifyEvent(XMotionEvent &ev) { }
+	virtual void keyPressEvent(XKeyEvent &ev) { }
+	virtual void keyReleaseEvent(XKeyEvent &ev) { }
+	virtual void leaveNotifyEvent(XCrossingEvent &ev) { }
+	virtual void enterNotifyEvent(XCrossingEvent &ev) { }
 };
 
 };
