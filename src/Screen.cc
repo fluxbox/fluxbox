@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.71 2002/10/13 22:30:18 fluxgen Exp $
+// $Id: Screen.cc,v 1.72 2002/10/15 10:54:40 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -201,6 +201,7 @@ desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheel
 show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
 focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
 focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
+antialias(rm, false, scrname+".antialias", altscrname+".Antialias"),
 rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
 workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
 toolbar_width_percent(rm, 65, scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
@@ -256,14 +257,14 @@ resource(rm, screenname, altscreenname)
 
 	rootmenu = 0;
 		
-	#ifdef HAVE_GETPID
+#ifdef HAVE_GETPID
 	pid_t bpid = getpid();
 
 	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
 		fluxbox->getFluxboxPidAtom(), XA_CARDINAL,
 		sizeof(pid_t) * 8, PropModeReplace,
 		(unsigned char *) &bpid, 1);
-	#endif // HAVE_GETPID
+#endif // HAVE_GETPID
 
 
 	XDefineCursor(getBaseDisplay()->getXDisplay(), getRootWindow(),
@@ -281,19 +282,6 @@ resource(rm, screenname, altscreenname)
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), colormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 
-
-	#ifdef NEWWMSPEC
-	Atom netwmsupported[] = {
-//		getBaseDisplay()->getNETWMStateAtom(),
-		getBaseDisplay()->getNETNumberOfDesktopsAtom(),
-		getBaseDisplay()->getNETCurrentDesktopAtom(),
-		getBaseDisplay()->getNETSupportingWMCheckAtom(),		
-	};	
-
-	XChangeProperty(getBaseDisplay()->getXDisplay(), getRootWindow(),
-		getBaseDisplay()->getNETSupportedAtom(), XA_ATOM, 32, PropModeReplace,
-		(unsigned char *)netwmsupported, (sizeof netwmsupported)/sizeof netwmsupported[0]);
-	#endif //!NEWWMSPEC
 
 	const char *s =	i18n->getMessage(
 		FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
@@ -384,9 +372,9 @@ resource(rm, screenname, altscreenname)
 
 	toolbar = new Toolbar(this);
 
-	#ifdef SLIT
+#ifdef SLIT
 	slit = new Slit(this);
-	#endif // SLIT
+#endif // SLIT
 
 	initMenu();
 
@@ -394,9 +382,10 @@ resource(rm, screenname, altscreenname)
 
 	//update menus
 	rootmenu->update();
-	#ifdef SLIT
+#ifdef SLIT
 	slit->reconfigure();
-	#endif
+#endif // SLIT
+
 	
 	changeWorkspaceID(0);
 	updateNetizenWorkspaceCount();
@@ -465,7 +454,7 @@ resource(rm, screenname, altscreenname)
 
 	XFree(children);
 	XFlush(getBaseDisplay()->getXDisplay());
-	
+
 }
 
 namespace {
@@ -486,10 +475,6 @@ BScreen::~BScreen() {
 
 	removeWorkspaceNames();
 
-#ifdef __INTEL_COMPILER
-	//Didn't got icc to work with std::for_each
-	//so we do this by hand.
-	
 	Workspaces::iterator w_it = workspacesList.begin();
 	Workspaces::iterator w_it_end = workspacesList.end();
 	for(; w_it != w_it_end; ++w_it) {
@@ -510,32 +495,13 @@ BScreen::~BScreen() {
 		delete (*n_it);
 	}
 	netizenList.clear();
-		
-#else //__INTEL_COMPILER
-	std::for_each(
-		workspacesList.begin(),
-		workspacesList.end(),
-		delete_obj<Workspace>);
-
-	// don't delete items in the rootmenuList?
-
-	std::for_each(
-		iconList.begin(),
-		iconList.end(),
-		delete_obj<FluxboxWindow>);
-
-	std::for_each(
-		netizenList.begin(),
-		netizenList.end(),
-		delete_obj<Netizen>);
-#endif //!__INTEL_COMPILER
 
 	delete rootmenu;
 	delete workspacemenu;
 	delete iconmenu;
 	delete configmenu;
 
-#ifdef		SLIT
+#ifdef SLIT
 	delete slit;
 #endif // SLIT
 
@@ -547,14 +513,14 @@ BScreen::~BScreen() {
 }
 
 void BScreen::reconfigure() {
-	#ifdef DEBUG
+#ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
-	#endif
+#endif // DEBUG
 	Fluxbox::instance()->loadRootCommand(this);
 	theme->setRootCommand(getRootCommand());
-
+	theme->reconfigure(*resource.antialias);
 	theme->load(fluxbox->getStyleFilename());
-	theme->reconfigure();
+
 	I18n *i18n = I18n::instance();
 
 	const char *s = i18n->getMessage(
@@ -723,6 +689,12 @@ FluxboxWindow *BScreen::getIcon(unsigned int index) {
 	return 0;
 }
 
+void BScreen::setAntialias(bool value) {
+	if (*resource.antialias == value)
+		return;
+	resource.antialias = value;
+	reconfigure();
+}
 
 int BScreen::addWorkspace() {
 	Workspace *wkspc = new Workspace(this, workspacesList.size());
@@ -1024,9 +996,9 @@ void BScreen::raiseWindows(const Workspace::Stack &workspace_stack) {
 
 	session_stack[i++] = workspacemenu->windowID();
 
-	session_stack[i++] = configmenu->getFocusmenu()->windowID();
-	session_stack[i++] = configmenu->getPlacementmenu()->windowID();
-	session_stack[i++] = configmenu->getTabmenu()->windowID();
+	session_stack[i++] = configmenu->focusmenu().windowID();
+	session_stack[i++] = configmenu->placementmenu().windowID();
+	session_stack[i++] = configmenu->tabmenu().windowID();
 	session_stack[i++] = configmenu->windowID();
 
 	#ifdef		SLIT

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.46 2002/10/13 22:29:25 fluxgen Exp $
+// $Id: Screen.hh,v 1.47 2002/10/15 10:54:40 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -94,7 +94,7 @@ public:
 	inline bool doFocusNew() const { return *resource.focus_new; }
 	inline bool doFocusLast() const { return *resource.focus_last; }
 	inline bool doShowWindowPos() const { return *resource.show_window_pos; }
-
+	bool antialias() const { return *resource.antialias; }
 	inline GC getOpGC() const { return theme->getOpGC(); }
 	
 	inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
@@ -105,6 +105,7 @@ public:
 	inline bool isSlitOnTop() const { return resource.slit_on_top; }
 	inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
 	inline Slit *getSlit() { return slit; }
+	inline const Slit *getSlit() const { return slit; }
 	inline int getSlitPlacement() const { return resource.slit_placement; }
 	inline int getSlitDirection() const { return resource.slit_direction; }
 	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
@@ -203,7 +204,7 @@ public:
 	inline void iconUpdate() { iconmenu->update(); }
 	inline Iconmenu *getIconmenu() { return iconmenu; }
 	inline void setAutoGroupWindow(Window w = 0) { auto_group_window = w; }
-
+	void setAntialias(bool value);
 	
 	#ifdef HAVE_STRFTIME
 	inline const char *getStrftimeFormat() { return resource.strftime_format.c_str(); }
@@ -212,7 +213,7 @@ public:
 	inline int getDateFormat() { return resource.date_format; }
 	inline void saveDateFormat(int f) { resource.date_format = f; }
 	inline bool isClock24Hour() { return resource.clock24hour; }
-	inline void saveClock24Hour(Bool c) { resource.clock24hour = c; }
+	inline void saveClock24Hour(bool c) { resource.clock24hour = c; }
 	#endif // HAVE_STRFTIME
 
 	inline Theme::WindowStyle *getWindowStyle() { return &theme->getWindowStyle(); } 
@@ -344,7 +345,8 @@ private:
 			max_over_slit, tab_rotate_vertical,
 			sloppy_window_grouping, workspace_warping,
 			desktop_wheeling, show_window_pos,
-			focus_last, focus_new;
+			focus_last, focus_new,
+			antialias;
 		Resource<std::string> rootcommand;		
 		bool auto_raise, sloppy_focus, semi_sloppy_focus,
 			ordered_dither;
@@ -362,7 +364,7 @@ private:
 
 
 		#ifdef SLIT
-		Bool slit_on_top, slit_auto_hide;
+		bool slit_on_top, slit_auto_hide;
 		int slit_placement, slit_direction;
 
 		#ifdef XINERAMA
