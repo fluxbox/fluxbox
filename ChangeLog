@@ -1,4 +1,12 @@
 (Format: Year/Month/Day)
+Changes for 0.9.5:
+*03/07/12:
+   * Fixed 8 bpp crash (Henrik)
+     ImageControl.cc 
+*03/07/11:
+   * Added TOOLBAR to -info (Henrik)
+     main.cc
+-------------------------------------------------------------------------
 Changes for 0.9.4:
 *03/07/10:
    * Added new toolbar theme item (Henrik)
