@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.47 2003/12/12 19:45:46 fluxgen Exp $
+// $Id: Menu.cc,v 1.48 2003/12/12 21:47:36 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1168,7 +1168,6 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
                         if (item->submenu()->isVisible() &&
                             !item->submenu()->isTorn()) {
-                            which_sub = -1;
                             // setup hide timer for submenu
                             item->submenu()->startHide();
                         }
