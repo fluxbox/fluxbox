@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.22 2002/10/13 21:47:54 fluxgen Exp $
+// $Id: Slit.cc,v 1.23 2002/10/29 15:59:35 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -635,14 +635,14 @@ void Slit::reposition() {
 		break;
 	}
 
-	Toolbar *tbar = screen->getToolbar();
+	const Toolbar * const tbar = screen->getToolbar();
 	int sw = frame.width + screen->getBorderWidth2x(),
 		sh = frame.height + screen->getBorderWidth2x(),
-		tw = tbar->getWidth() + screen->getBorderWidth(),
-		th = tbar->getHeight() + screen->getBorderWidth();
+		tw = tbar->width() + screen->getBorderWidth(),
+		th = tbar->height() + screen->getBorderWidth();
 
-	if (tbar->getX() < frame.x + sw && tbar->getX() + tw > frame.x &&
-			tbar->getY() < frame.y + sh && tbar->getY() + th > frame.y) {
+	if (tbar->x() < frame.x + sw && tbar->x() + tw > frame.x &&
+			tbar->y() < frame.y + sh && tbar->y() + th > frame.y) {
 		if (frame.y < th) {
 			frame.y += tbar->getExposedHeight();
 			if (screen->getSlitDirection() == VERTICAL)
