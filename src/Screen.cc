@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.271 2004/03/22 21:01:10 fluxgen Exp $
+// $Id: Screen.cc,v 1.272 2004/03/23 09:21:29 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -930,6 +930,11 @@ void BScreen::reconfigure() {
     if (*resource.menu_delay_close < 0)
         *resource.menu_delay_close = 0;
 
+    m_root_theme->setLineAttributes(*resource.gc_line_width,
+                                    *resource.gc_line_style,
+                                    *resource.gc_cap_style,
+                                    *resource.gc_join_style);
+
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
 
@@ -1001,6 +1006,7 @@ void BScreen::reconfigure() {
     imageControl().cleanCache();
     // notify objects that the screen is reconfigured
     m_reconfigure_sig.notify();
+
 }
 
 
