@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.63 2002/08/16 11:01:09 fluxgen Exp $
+// $Id: Screen.cc,v 1.64 2002/08/24 18:12:54 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -744,6 +744,7 @@ FluxboxWindow *BScreen::getIcon(unsigned int index) {
 int BScreen::addWorkspace() {
 	Workspace *wkspc = new Workspace(this, workspacesList.size());
 	workspacesList.push_back(wkspc);
+	addWorkspaceName(wkspc->name().c_str()); // update names
 	//add workspace to workspacemenu
 	workspacemenu->insert(wkspc->name().c_str(), wkspc->menu(),
 		wkspc->workspaceID() + 2); //+2 so we add it after "remove last"
@@ -1094,7 +1095,7 @@ string BScreen::getNameOfWorkspace(unsigned int workspace) const {
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
 	if (! w) return;
 
-	if (wkspc_id >= workspaceNames.size())
+	if (wkspc_id >= getCount())
 		wkspc_id = current_workspace->workspaceID();
 
 	if (w->getWorkspaceNumber() == wkspc_id)
