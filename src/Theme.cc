@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.14 2002/01/11 10:43:55 fluxgen Exp $
+// $Id: Theme.cc,v 1.15 2002/01/18 01:28:34 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -664,8 +664,10 @@ void Theme::loadRootCommand() {
 		string displaystring("DISPLAY=");
 		displaystring.append(DisplayString(m_display));
 		displaystring.append(tmpstring); // append m_screennum				
+		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.c_str()<<endl;
-		 
+		#endif
+		
 		bexec(m_rootcommand.c_str(), const_cast<char *>(displaystring.c_str()));
 
 		#else //         __EMX__
