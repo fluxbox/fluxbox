@@ -1,4 +1,9 @@
 Changes for 0.1.5:
+*01/12/12:
+   * Updated russian translation (Thanks Sergey Volozhanin)
+   * Updated man-page (Thanks Matthew Hawkins)
+*01/12/11:
+   * Fixed alt+resize and pressing button1 bugg 	
 *01/12/09
    * Added execCommand to keybindings
 	 * Added new theme qnx-photon
