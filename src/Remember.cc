@@ -20,22 +20,28 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.3 2003/04/26 12:01:55 rathnor Exp $
+// $Id: Remember.cc,v 1.4 2003/04/26 12:46:18 fluxgen Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
+#include "Screen.hh"
+#include "Window.hh"
 #include "WinClient.hh"
 #include "FbMenu.hh"
 #include "MenuItem.hh"
+#include "App.hh"
 
 // TODO get rid of these
 #define RC_PATH "fluxbox"
 #define RC_INIT_FILE "init"
 
+#include <X11/Xlib.h>
+
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
+
 
 #include <iostream>
 #include <sstream>
@@ -43,11 +49,11 @@
 #include <string>
 #include <memory>
 
+using namespace std;
+
 #ifndef    MAXPATHLEN
 #define    MAXPATHLEN 255
 #endif // MAXPATHLEN
-
-using namespace std;
 
 namespace {
 
@@ -98,57 +104,27 @@ FbTk::Menu *createRememberMenu(Remember &remember, FluxboxWindow &win) {
 
     // TODO: nls
     menu->insert(new RememberMenuItem("Workspace", remember, win,
-                                     Remember::REM_WORKSPACE));
+                                      Remember::REM_WORKSPACE));
     menu->insert(new RememberMenuItem("Jump to workspace", remember, win,
-                                     Remember::REM_JUMPWORKSPACE));
+                                      Remember::REM_JUMPWORKSPACE));
     menu->insert(new RememberMenuItem("Dimensions", remember, win,
-                                     Remember::REM_DIMENSIONS));
+                                      Remember::REM_DIMENSIONS));
     menu->insert(new RememberMenuItem("Position", remember, win,
-                                     Remember::REM_POSITION));
+                                      Remember::REM_POSITION));
     menu->insert(new RememberMenuItem("Sticky", remember, win,
-                                     Remember::REM_STUCKSTATE));
+                                      Remember::REM_STUCKSTATE));
     menu->insert(new RememberMenuItem("Decorations", remember, win,
-                                     Remember::REM_DECOSTATE));
+                                      Remember::REM_DECOSTATE));
     menu->insert(new RememberMenuItem("Shaded", remember, win,
-                                     Remember::REM_SHADEDSTATE));
-//    menu->insert(new RememberMenuItem("Tab", remember, win,
-//                                     Remember::REM_TABSTATE));
+                                      Remember::REM_SHADEDSTATE));
+    //    menu->insert(new RememberMenuItem("Tab", remember, win,
+    //                                     Remember::REM_TABSTATE));
     menu->insert(new RememberMenuItem("Save on close", remember, win,
-                                     Remember::REM_SAVEONCLOSE));
+                                      Remember::REM_SAVEONCLOSE));
 
     menu->update();
     return menu;
 };
-
-};
-
-Application::Application() {
-    workspace_remember =
-	dimensions_remember =
-	position_remember =
-	stuckstate_remember =
-	decostate_remember =
-	shadedstate_remember =
-	tabstate_remember =
-	jumpworkspace_remember =
-	save_on_close_remember = false;
-}
-
-Remember::Remember() {
-    load();
-}
-
-Application* Remember::add(const char* app_name) {
-    if (!app_name)
-        return NULL;
-    Application* a = new Application();
-    apps[app_name] = a;
-    return a;
-}
-
-// FIXME, I am evil
-#include "X11/Xlib.h"
-#include "App.hh"
 
 const char * getWMClass(Window w) {
     XClassHint ch;
@@ -174,24 +150,49 @@ const char * getWMClass(Window w) {
     }
 }
 
+};
+
+Application::Application() {
+    workspace_remember =
+	dimensions_remember =
+	position_remember =
+	stuckstate_remember =
+	decostate_remember =
+	shadedstate_remember =
+	tabstate_remember =
+	jumpworkspace_remember =
+	save_on_close_remember = false;
+}
+
+Remember::Remember() {
+    load();
+}
+
+Application* Remember::add(const char* app_name) {
+    if (!app_name)
+        return 0;
+    Application* a = new Application();
+    apps[app_name] = a;
+    return a;
+}
 
 Application* Remember::find(WinClient &winclient) {
-    return find(getWMClass(winclient.fbwindow()->getClientWindow())); //FIXME
+    return find(getWMClass(winclient.window()));
 }
 
 Application* Remember::add(WinClient &winclient) {
-    return add(getWMClass(winclient.fbwindow()->getClientWindow())); //FIXME
+    return add(getWMClass(winclient.window));
 }
 
 
 Application* Remember::find(const char* app_name) {
     if (!app_name)
-        return NULL;
+        return 0;
     Apps::iterator i = apps.find(app_name);
     if (i!=apps.end())
         return i->second;
     else
-        return NULL;
+        return 0;
 }
 
 int Remember::parseApp(ifstream &file, Application *a) {
@@ -206,7 +207,9 @@ int Remember::parseApp(ifstream &file, Application *a) {
                 err = StringUtil::getStringBetween(str_key, line.c_str(), '[', ']');
                 if (err > 0 ) {
                     parse_pos += err;
-                    err = StringUtil::getStringBetween(str_label, line.c_str() + parse_pos, '{', '}');
+                    err = StringUtil::getStringBetween(str_label, 
+                                                       line.c_str() + parse_pos, 
+                                                       '{', '}');
                     if (err>0) {
                         parse_pos += err;
                     }
@@ -240,15 +243,15 @@ int Remember::parseApp(ifstream &file, Application *a) {
                         a->rememberDecostate((unsigned int) 0xfffffff);
                     } else if (str_label == "TINY") {
                         a->rememberDecostate((unsigned int)
-                            FluxboxWindow::DECORM_TITLEBAR 
-                            | FluxboxWindow::DECORM_ICONIFY
-                            | FluxboxWindow::DECORM_MENU
-                           );
+                                             FluxboxWindow::DECORM_TITLEBAR 
+                                             | FluxboxWindow::DECORM_ICONIFY
+                                             | FluxboxWindow::DECORM_MENU
+                                             );
                     } else if (str_label == "TOOL") {
                         a->rememberDecostate((unsigned int)
-                            FluxboxWindow::DECORM_TITLEBAR
-                            | FluxboxWindow::DECORM_MENU
-                           );
+                                             FluxboxWindow::DECORM_TITLEBAR
+                                             | FluxboxWindow::DECORM_MENU
+                                             );
                     } else {
                         unsigned int mask;
                         const char * str = str_label.c_str();
@@ -280,11 +283,13 @@ int Remember::parseApp(ifstream &file, Application *a) {
 }
 
 void Remember::load() {
-#ifdef DEBUG
-    cerr << "Loading apps file..." << endl;
-#endif // DEBUG
+
     string apps_string = getenv("HOME")+string("/.")+RC_PATH+string("/")+"apps";
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): Loading apps file ["<<apps_string<<"]"<<endl;
+#endif // DEBUG
     ifstream apps_file(apps_string.c_str());
+
     if (!apps_file.fail()) {
         if (!apps_file.eof()) {
             string line;
@@ -318,7 +323,7 @@ void Remember::load() {
             }
         } else {
 #ifdef DEBUG
-            cerr<<__FILE__<<"("<<__LINE__<< ") Empty apps file" << endl;
+            cerr<<__FILE__<<"("<<__FUNCTION__<< ") Empty apps file" << endl;
 #endif
         }
     } else {
@@ -328,7 +333,7 @@ void Remember::load() {
 
 void Remember::save() {
 #ifdef DEBUG
-    cerr << "Saving apps file..." << endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): Saving apps file..."<<endl;
 #endif // DEBUG
     string apps_string = getenv("HOME")+string("/.")+RC_PATH+string("/")+"apps";
     ofstream apps_file(apps_string.c_str());
@@ -410,9 +415,9 @@ bool Remember::isRemembered(WinClient &winclient, Attribute attrib) {
     case REM_SHADEDSTATE:
         return app->shadedstate_remember;
         break;
-//    case REM_TABSTATE:
-//        return app->tabstate_remember;
-//        break;
+        //    case REM_TABSTATE:
+        //        return app->tabstate_remember;
+        //        break;
     case REM_JUMPWORKSPACE:
         return app->jumpworkspace_remember;
         break;
@@ -452,8 +457,8 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_SHADEDSTATE:
         app->rememberStuckstate(win->isStuck());
         break;
-//    case REM_TABSTATE:
-//        break;
+        //    case REM_TABSTATE:
+        //        break;
     case REM_JUMPWORKSPACE:
         app->rememberJumpworkspace(true);
         break;
@@ -555,7 +560,9 @@ void Remember::setupWindow(FluxboxWindow &win) {
 
     // add the menu, this -2 is somewhat dodgy... :-/
     // TODO: nls
-    win.getWindowmenu().insert("Remember...", createRememberMenu(*this, win), win.getWindowmenu().numberOfItems()-2);
+    win.getWindowmenu().insert("Remember...", 
+                               createRememberMenu(*this, win), 
+                               win.getWindowmenu().numberOfItems()-2);
     win.getWindowmenu().update();
 }
 
