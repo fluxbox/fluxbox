@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.6 2003/05/12 19:58:47 fluxgen Exp $
+# $Id: fbsetbg,v 1.7 2003/06/06 02:18:34 rathnor Exp $
 
 #
 # Portability notes:
@@ -38,12 +38,13 @@
 # compensate for that.
 #
 
-wpsetters='Esetroot wmsetbg display qiv xv xsri xli xsetbg'
+# The wallpapersetter is selected in this order
+wpsetters='Esetroot wmsetbg display qiv xv xsri xli xsetbg' # broken icewmbg'
 lastwallpaper=${HOME}/.fluxbox/lastwallpaper
 
 
 WHOAMI=`whoami`
-[ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
+[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
 
 # Functions
@@ -131,7 +132,6 @@ debugfbsetbg (){
 }
 
 # Find the default wallpapersetter
-# The precise order is up for debate.
 for wpsetter in $wpsetters; do
     if find_it $wpsetter; then
         WPSETTER=$wpsetter
@@ -151,7 +151,7 @@ case $WPSETTER in
         aspect=$full
         debugstory="This is a RedHat specific app. I can't find docs about it."
         ;;
-    display)        
+    display)
         full="`xwininfo -root|grep geom` -window root"
         tile='-window root'
         center='-backdrop -window root'
@@ -200,6 +200,14 @@ case $WPSETTER in
         aspect='-maxpect -smooth -root -quit'
         debugstory=$standardrant
         ;;
+    icewmbg)
+        tile='-s'
+        full=$tile
+        center=$tile
+        aspect=$tile
+        debugstory="icewmbg does support transparency, but only tiling. And I noticed odd
+errormessages with aterm. Don't use it unless you have to."
+        ;;
     '')
         message "I can't find an app to set the wallpaper with. You can install one in
 many many ways but I will give you some simple advice: install Eterm and
@@ -232,7 +240,7 @@ case "${COMMAND_LINE_ARGUMENT}" in
             option=`head -n1 $lastwallpaper`
             wallpaper=`tail -n1 $lastwallpaper`
         else
-            message 'No previous wallpaper recorded.'
+            message 'No previous wallpaper recorded. You have never used fbsetbg before.'
         fi
         ;;
     h) display_help ; exit 0 ;;

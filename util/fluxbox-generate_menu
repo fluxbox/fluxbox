@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.35 2003/05/22 13:10:59 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.36 2003/06/06 02:18:34 rathnor Exp $
 
 #
 # Portability notes:
@@ -72,9 +72,9 @@ Options:
 
   Only for packagers:
 
-    -p  Package-datadir; default is /usr/share
-    -n  Gnome-datadir; default is Package-datadir
-    -q  KDE-datadir; default is Package-datadir
+    -p  Package-datadir; /usr/local/share
+    -n  Gnome-datadir
+    -q  KDE-datadir
 
 
 Files:
@@ -526,7 +526,11 @@ if [ ! "${INSTALL}" = "Yes" ];then
 # location with your own menu-entries
 # USERMENU=~/.fluxbox/usermenu
 
-# Boolean variables.
+# Sepparate the list of background-dirs with semicolumns ':'
+# BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:/usr/local/share/fluxbox/backgrounds/:/usr/share/wallpapers"
+
+
+# --- Boolean variables.
 # Setting a variable to no won't help. Comment them out if you don't want them.
 # Setting are overruled by the command-line options.
 
@@ -613,6 +617,10 @@ if [ ! -d "${KPKGDATADIR}" -o -z "${KPKGDATADIR}" ]; then
     KPKGDATADIR=${PKGDATADIR}
 fi
 
+# directory for the backgrounds
+if [ -z "$BACKGROUND_DIRS" ]; then
+    BACKGROUND_DIRS="${HOME}/.fluxbox/backgrounds/:${PKGDATADIR}/fluxbox/backgrounds/"
+fi
 
 # find the default terminal
 find_it $MY_TERM
@@ -635,7 +643,7 @@ find_it $MY_BROWSER
 if [ $? -ne 0 ]; then
     [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
-    for browser in firebird opera skipstone phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
+    for browser in MozillaFirebird firebird opera skipstone phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
         if find_it $browser; then
             DEFAULT_BROWSER=$browser
             break
@@ -768,7 +776,7 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
        append_submenu "${XUTILSMENU}"
-           normal_find xfontsel xman xload xfigxbiff editres viewres xclock xmag wmagnify
+           normal_find xfontsel xman xload xfigxbiff editres viewres xclock xmag wmagnify gkrellm
        append_menu_end
 append_menu_end
 
@@ -854,32 +862,36 @@ append_submenu "${FBSETTINGSMENU}"
                 picturename=`basename "$1"`
                 append "[exec] (${picturename%.???}) {fbsetbg -f \"$1\" }"
     }
+
     if [ "$BACKGROUNDMENUITEM" = "yes" ]; then
-        [ -d ${HOME}/.fluxbox/backgrounds/ ] && \
-            BACKGROUNDS="${HOME}/.fluxbox/backgrounds/*"
-        [ -d ${PKGDATADIR}/fluxbox/backgrounds/ ] && \
-            BACKGROUNDS="${BACKGROUNDS} ${PKGDATADIR}/fluxbox/backgrounds/*"
-        append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
-        if [ `ls -1 ${BACKGROUNDS} 2>/dev/null |wc -l` -gt 30 ]; then
-            menucounter=1 ; counter=1
-            append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
-            for i in ${BACKGROUNDS} ; do
-                counter=`expr $counter + 1`
-                if [ $counter -eq 30 ]; then
-                    counter=1
-                    menucounter=`expr $menucounter + 1`
-                    append_menu_end
-                    append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
-                fi
-                addbackground $i
-            done
+        IFS=: # set delimetor for find
+        NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2>/dev/null|wc -l`
+        if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
+            append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
+            if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
+                menucounter=1 ; counter=1
+                append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
+                find $BACKGROUND_DIRS -follow -type f|sort|while read i; do
+                    counter=`expr $counter + 1`
+                    if [ $counter -eq 30 ]; then
+                        counter=1
+                        menucounter=`expr $menucounter + 1`
+                        append_menu_end
+                        append_menu "[submenu] (${BACKGROUNDMENU} $menucounter) {${BACKGROUNDMENUTITLE}}"
+                    fi
+                    addbackground "$i"
+                done
+                append_menu_end
+            else
+                find $BACKGROUND_DIRS -follow -type f|sort|while read i; do
+                addbackground "$i"
+                done
+            fi
             append_menu_end
         else
-            for i in ${BACKGROUNDS} ; do
-                addbackground $i
-            done
+            echo "Warning: You wanted a background-menu but I couldn't find any backgrounds in:
+    $BACKGROUND_DIRS"
         fi
-        append_menu_end
     fi
 
     append "[workspaces]   (${WORKSPACEMENU})"
