@@ -305,4 +305,5 @@ nls/it_IT/Makefile
 nls/pt_PT/Makefile
 nls/bg_BG/Makefile
 nls/ja_JP/Makefile
+nls/lv_LV/Makefile
 version.h)
