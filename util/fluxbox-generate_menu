@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.50 2003/08/17 13:30:35 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.51 2003/09/12 22:33:25 fluxgen Exp $
 
 #
 # Portability notes:
@@ -803,20 +803,23 @@ append_submenu "${NETMENU}"
 
 append_menu_end
 
+# vmware
 
 append_submenu "${EDITORMENU}"
-    normal_find nedit gvim xemacs emacs gedit xedit kword kwrite kate
+    normal_find nedit gvim xemacs emacs gedit xedit kword kwrite kate anjuta wings
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
     normal_find konqueror
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
-    find_it     mc append "[exec]   (mc) {${DEFAULT_TERM} -e mc}"
+    find_it     mc       append "[exec] (mc) {${DEFAULT_TERM} -e mc}"
+    find_it     rox      append "[exec] (rox) {rox}"
 append_menu_end
 
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
-               normal_find gimp xv gqview xpaint kpaint kiconedit xscreensaver-demo blender
+               normal_find gimp xv gqview xpaint kpaint kiconedit xscreensaver-demo xlock
+               find_it blender          append "[exec] (blender) {blender -w}"
                find_it gears            append "[exec] (Mesa gears) {gears}"
                find_it morph3d          append "[exec] (Mesa morph) {morph3d}"
                find_it reflect          append "[exec] (Mesa reflect) {reflect}"
@@ -838,7 +841,8 @@ append_submenu "${MULTIMEDIAMENU}"
        append_menu_end
 
        append_submenu "${XUTILSMENU}"
-           normal_find xfontsel xman xload xfigxbiff editres viewres xclock xmag wmagnify gkrellm
+           normal_find xfontsel xman xload xfigxbiff editres viewres xclock \
+                       xmag wmagnify gkrellm vmware
        append_menu_end
 append_menu_end
 
