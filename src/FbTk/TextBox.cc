@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.14 2004/10/06 19:05:12 akir Exp $
+// $Id: TextBox.cc,v 1.15 2004/10/08 11:52:33 akir Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -217,7 +217,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
     // a modifier key by itself doesn't do anything
     if (IsModifierKey(ks)) return;
 
-    if (event.state) { // handle keybindings without state
+    if (event.state) { // handle keybindings with state
         if (event.state == ControlMask) {
 
             switch (ks) {
@@ -247,7 +247,7 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
                 m_end_pos = 0;
                 break;
             }
-        } else if (event.state == ShiftMask || event.state == 0x2000) {
+        } else if (event.state == ShiftMask || event.state == 0x80) { // shif and altgr
             if (isprint(keychar[0])) {
                 std::string val;
                 val += keychar[0];
@@ -277,6 +277,41 @@ void TextBox::keyPressEvent(XKeyEvent &event) {
             deleteForward();
             break;
         default:
+            switch (ks) {
+            case XK_KP_Insert:
+                keychar[0] = '0';
+                break;
+            case XK_KP_End:
+                keychar[0] = '1';
+                break;
+            case XK_KP_Down:
+                keychar[0] = '2';
+                break;
+            case XK_KP_Page_Down:
+                keychar[0] = '3';
+                break;
+            case XK_KP_Left:
+                keychar[0] = '4';
+                break;
+            case XK_KP_Begin:
+                keychar[0] = '5';
+                break;
+            case XK_KP_Right:
+                keychar[0] = '6';
+                break;
+            case XK_KP_Home:
+                keychar[0] = '7';
+                break;
+            case XK_KP_Up:
+                keychar[0] = '8';
+                break;
+            case XK_KP_Page_Up:
+                keychar[0] = '9';
+                break;
+            case XK_KP_Delete:
+                keychar[0] = ',';
+                break;
+            };
             if (isprint(keychar[0])) {
                 std::string val;
                 val += keychar[0];
