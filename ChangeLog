@@ -29,6 +29,7 @@ Changes for 0.9.1:
 	 Window.cc, Screen.hh/cc, Toolbar.hh/cc, FbCommands.cc, 
 	 Workspace.cc, Gnome.cc
    * Add most recently used/stacked window cycling, set as default (Simon)
+     Thanks also to Sean Seefried for his initial patch.
      Window.cc Screen.hh/cc fluxbox.hh/cc Keys.hh/cc     
 *03/04/14:
    * merged embedded-tab-branch into main branch (Henrik)
