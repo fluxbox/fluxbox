@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.11 2004/08/31 20:27:08 fluxgen Exp $
+//$Id: Font.hh,v 1.12 2004/08/31 21:24:05 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -119,6 +119,8 @@ private:
     std::string m_halo_color; ///< halo color
 #ifdef HAVE_ICONV
     iconv_t m_iconv;
+#else
+    int m_iconv;
 #endif // HAVE_ICONV
 };
 

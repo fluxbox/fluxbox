@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.15 2004/08/31 20:27:08 fluxgen Exp $
+//$Id: Font.cc,v 1.16 2004/08/31 21:24:05 fluxgen Exp $
 
 
 #include "StringUtil.hh"
@@ -119,8 +119,15 @@ char* recode(iconv_t cd,
     char *new_msg_ptr = new_msg;
     char *msg_ptr = strdup(msg);
     char *orig_msg_ptr = msg_ptr; // msg_ptr modified in iconv call
+    size_t result = (size_t)(-1);
 
-    if (iconv(cd, &msg_ptr, &inbytesleft, &new_msg, &outbytesleft) == -1) {
+#ifdef HAVE_CONST_ICONV    
+    result = iconv(cd, const_cast<char **>(&msg_ptr), &inbytesleft, &new_msg, &outbytesleft);
+#else
+    result = iconv(cd, &msg_ptr, &inbytesleft, &new_msg, &outbytesleft);
+#endif  // HAVE_CONST_ICONV
+
+    if (result == (size_t)(-1)) {
         // iconv can fail for three reasons
         // 1) Invalid multibyte sequence is encountered in the input
         // 2) An incomplete multibyte sequence 
@@ -143,7 +150,7 @@ char* recode(iconv_t cd,
 }
 #else
 
-char *recode(iconv_t cd,
+char *recode(int cd,
              const char *msg, size_t size) {
     return 0;
 }
@@ -232,8 +239,13 @@ Font::Font(const char *name, bool antialias):
     m_antialias(false), m_rotated(false), 
     m_shadow(false), m_shadow_color("#000000"), 
     m_shadow_offx(1), m_shadow_offy(1),
-    m_halo(false), m_halo_color("#ffffff"),
-    m_iconv((iconv_t)-1) {
+    m_halo(false), m_halo_color("#ffffff") {
+
+#ifdef HAVE_ICONV
+    m_iconv = (iconv_t)(-1);
+#else
+    m_iconv = -1;
+#endif // HAVE_ICONV
 
     // MB_CUR_MAX returns the size of a char in the current locale
     if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
@@ -252,6 +264,8 @@ Font::Font(const char *name, bool antialias):
 #ifdef DEBUG
         cerr<<"FbTk::Font: check UTF-8 convert for codeset = "<<locale_codeset<<endl;
 #endif // DEBUG
+
+#ifdef HAVE_ICONV
         m_iconv = iconv_open("UTF-8", locale_codeset);
         if(m_iconv == (iconv_t)(-1)) {
             cerr<<"FbTk::Font: code error: from "<<locale_codeset<<" to: UTF-8"<<endl;
@@ -266,6 +280,7 @@ Font::Font(const char *name, bool antialias):
             m_utf8mode = true;
         }
     }
+#endif // HAVE_ICONV
 
 #ifdef DEBUG
     cerr<<"FbTk::Font m_iconv = "<<(int)m_iconv<<endl;
