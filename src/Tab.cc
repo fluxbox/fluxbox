@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.51 2003/01/09 22:08:27 fluxgen Exp $
+// $Id: Tab.cc,v 1.52 2003/01/12 18:31:33 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -842,21 +842,6 @@ void Tab::motionNotifyEvent(XMotionEvent *me) {
                     dx = m_win->getScreen()->getWidth() - 1;
 
                 int dtty, dbby, dty, dby;
-		
-                switch (m_win->getScreen()->getToolbarPlacement()) {
-                case Toolbar::TOPLEFT:
-                case Toolbar::TOPCENTER:
-                case Toolbar::TOPRIGHT:
-                    dtty = m_win->getScreen()->getToolbar()->exposedHeight() +
-                        m_win->getScreen()->getBorderWidth();
-                    dbby = m_win->getScreen()->getHeight();
-                    break;
-
-                default:
-                    dtty = 0;
-                    dbby = m_win->getScreen()->getToolbar()->y();
-                    break;
-                }
 		
                 dty = dy - dtty;
                 dby = dbby - (dy + 1);
