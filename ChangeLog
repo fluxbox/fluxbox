@@ -1,5 +1,29 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/13:
+   * Fixed default values for FbTk::Texture theme items (Henrik)
+     Theme.cc
+   * Added border theme items to ToolbarItems (Henrik)
+     ToolTheme.hh/cc, BorderTheme.hh/cc, ClockTool.hh/cc, 
+     WorkspaceNameTool.hh/cc, IconbarTool.hh/cc
+     * New theme items
+       toolbar.clock.borderWidth: <integer>
+       toolbar.clock.borderColor: <color>
+
+       toolbar.iconbar.borderWidth: <integer>
+       toolbar.iconbar.borderColor: <color>
+
+       toolbar.workspace.borderWidth: <integer>
+       toolbar.workspace.borderColor: <color>
+
+   * Removed IconBar.hh/cc (Henrik)
+   * Changed FbTk::Button to a FbWindow (Henrik)
+     WinButton.cc, ArrowButton.cc, Button.hh/cc, FbWinFrame.cc, Window.cc,
+     TextButton.cc
+*03/08/12:
+   * Added new texture type: Tiled  (Henrik)
+     This will just affect pixmap loaded from file, and it will not scale them.
+     Texture.hh/cc, TextureRender.cc
 *03/08/11:
    * Fixed a minor focus bug, the m_focused_window was out of sync after revertFocus (Henrik)
      fluxbox.cc
