@@ -17,10 +17,11 @@
   struct really be affected by this function.
 * Some kind of Config class instead of the Screen and Fluxbox class
   with all the resources/config values
-
+* Fix some kind of "global" double click interval.  see IntResMenuItem.cc
 
 --------- Features:
-
+* you type a key and then you have a little menu which lets you 
+  choose a window to group with the one where you are
 * Fix configurable toolbar
   so the user can configure toolbar in a config file
 * Finnish (Finland) translation
