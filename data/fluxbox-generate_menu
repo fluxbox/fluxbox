@@ -170,6 +170,84 @@ if [ -z "${MENUTITLE}" ]; then
 	MENUTITLE="Fluxbox"
 fi
 
+# menu defaults (if translation forget to set one of them)
+BROWSERMENU="Browsers"
+EDITORMENU="Editors"
+NETMENU="Net"
+GRAPHICMENU="Graphics"
+MUSICMENU="Music"
+TERMINALMENU="Terminals"
+MISCMENU="Misc"
+XUTILSMENU="X-utils"
+FBSETTINGSMENU="FB-Settings"
+KDEMENUTEXT="KDE-menus"
+GNOMEMENUTEXT="Gnome-menus"
+RESTARTITEM="Restart"
+EXITITEM="Exit"
+CONFIGUREMENU="Configure"
+RELOADITEM="Reload config"
+STYLEMENU="Styles"
+STYLEMENUTITLE="Choose a style..."
+WORKSPACEMENU="Workspace List"
+
+# Check translation
+case ${LC_ALL} in
+	sv_SE) #Swedish locales
+		BROWSERMENU="Browsers"
+		EDITORMENU="Editorer"
+		NETMENU="Net"
+		GRAPHICMENU="Grafik"
+		MUSICMENU="Musik"
+		TERMINALMENU="Terminaler"
+		MISCMENU="Blandat"
+		XUTILSMENU="X-program"
+		FBSETTINGSMENU="FB-inställningar"
+		KDEMENUTEXT="KDE-menyer"
+		GNOMEMENUTEXT="Gnome-menyer"
+		RESTARTITEM="Starta om"
+		EXITITEM="Exit"
+		CONFIGUREMENU="Konfiguration"
+		RELOADITEM="Ladda om konfig"
+		STYLEMENU="Stiler"
+		STYLEMENUTITLE="Välj en stil"
+		WORKSPACEMENU="Arbetsytor"
+	;;
+	nl_NL) #Nederlande locales		
+		BROWSERMENU="Browsers"
+		EDITORMENU="Editors"
+		NETMENU="Net"
+		GRAPHICMENU="Grafisch"
+		MUSICMENU="Muziek"
+		TERMINALMENU="Terminals"
+		MISCMENU="Onregelmatig"
+		XUTILSMENU="X-utils"
+		FBSETTINGSMENU="FB-Instellingen"
+		KDEMENUTEXT="KDE-menu"
+		GNOMEMENUTEXT="Gnome-menu"
+	;;
+	fi_FI) #Finnish locales
+		BROWSERMENU="Selaimet"
+		EDITORMENU="Editorit"
+		NETMENU="Verkko"
+		GRAPHICMENU="Grafiikka"
+		MUSICMENU="Musikki"
+		TERMINALMENU="Terminaalit"
+		MISCMENU="Sekalaista"
+		XUTILSMENU="X-Ohjelmat"
+		FBSETTINGSMENU="FB:n Asetukset"
+		KDEMENUTEXT="KDE:n valikot"
+		GNOMEMENUTEXT="Gnomen valikot"
+		RESTARTITEM="Käynnistä uudelleen"
+		EXITITEM="Lopeta"
+		CONFIGUREMENU="Konfigurointi"
+		RELOADITEM="Päivitä"
+		STYLEMENU="Tyylit"
+		STYLEMENUTITLE="Valitse tyyli"
+		WORKSPACEMENU="Työaluet"
+	;;
+	*)
+	;;
+esac
 
 # Start of menu
 
@@ -179,7 +257,7 @@ find_it xterm           append "[exec]   (xterm) {xterm -fg white -bg black}"
 find_it nedit           append "[exec]   (nedit) {nedit}"
 
 
-append_submenu Browsers
+append_submenu ${BROWSERMENU}
 	find_it netscape    append "[exec]   (netscape) {netscape}"
 	find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
 	find_it galeon      append "[exec]   (galeon) {galeon}"
@@ -191,7 +269,7 @@ append_submenu Browsers
 	find_it dillo       append "[exec]   (dillo) {dillo}"
 append_menu_end
 
-append_submenu Editors
+append_submenu ${EDITORMENU}
 	find_it nedit       append "[exec]   (nedit) {nedit}"
 	find_it vim         append "[exec]   (vim) {vim -g}"
 	find_it xemacs      append "[exec]   (xemacs) {xemacs}"
@@ -202,7 +280,7 @@ append_submenu Editors
 	find_it kwrite      append "[exec]   (kwrite) {kwrite}"
 append_menu_end
 
-append_submenu Net
+append_submenu ${NETMENU}
 	find_it realplay    append "[exec]   (realplayer) {realplay}"
 	find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
 	find_it gaim        append "[exec]   (gaim) {gaim}"
@@ -218,7 +296,7 @@ append_submenu Net
 	find_it ircii       append "[exec]   (ircii) {xterm -title ircii -fg white -bg black -e ircii -s}"
 append_menu_end
 
-append_submenu Graphics
+append_submenu ${GRAPHICMENU}
 	find_it gimp        append "[exec]   (gimp) {gimp}"
 	find_it xv          append "[exec]   (xv) {xv}"
 	find_it gqview      append "[exec]   (gqview) {gqview}"
@@ -228,7 +306,7 @@ append_submenu Graphics
 	find_it xscreensaver-demo  append "[exec]   (xscreensaver-demo) {xscreensaver-demo}"
 append_menu_end
 
-append_submenu Music
+append_submenu ${MUSICMENU}
 	find_it xmms        append "[exec]   (xmms) {xmms}"
 	find_it gqmpeg      append "[exec]   (gqmpeg) {gqmpeg}"
 	find_it xmixer      append "[exec]   (xmixer) {xmixer}"
@@ -242,7 +320,7 @@ append_submenu Music
 	find_it grip        append "[exec]   (grip) {grip}"
 append_menu_end
 
-append_submenu Terminals
+append_submenu ${TERMINALMENU}
 	append "[exec] (xterm) {xterm -fg white -bg black}"
 	find_it gnome-terminal append "[exec] (gnome-terminal) {gnome-terminal}"
 	find_it Eterm       append "[exec] (Eterm) {Eterm}"
@@ -251,7 +329,7 @@ append_submenu Terminals
 	find_it rxvt        append "[exec] (rxvt) {rxvt}"
 append_menu_end
 
-append_submenu Misc
+append_submenu ${MISCMENU}
 	find_it acroread    append "[exec] (acroread) {acroread}"
 	find_it gcalc       append "[exec] (gcalc) {gcalc}"
 	find_it kcalc       append "[exec] (kcalc) {kcalc}"
@@ -262,7 +340,7 @@ append_submenu Misc
 append_menu_end
 
 
-append_submenu X-utils
+append_submenu ${XUTILSMENU}
 	find_it xpenguins   append "[exec] (xpenguins) {xpenguins}"
 	find_it xcalc       append "[exec] (xcalc) {xcalc}"
 	find_it xfontsel    append "[exec] (xfontsel) {xfontsel}"
@@ -278,7 +356,7 @@ append_menu_end
 
 # gnome menu
 if [ -d ${PKGDATADIR}/gnome/apps -a "${GNOMEMENU}" ]; then
-	append_submenu Gnome-menus
+	append_submenu ${GNOMEMENUTEXT}
 	for a in `ls ${PKGDATADIR}/gnome/apps`; do
                 if [ -d ${PKGDATADIR}/gnome/apps/"${a}" ] ; then
                         append_submenu "${a}"
@@ -292,7 +370,7 @@ fi
 
 # kde submenu
 if [ -d ${PKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
-	append_submenu KDE-menus
+	append_submenu ${KDEMENUTEXT}
 	for a in `ls ${PKGDATADIR}/applnk/`; do
 		if [ -d ${PKGDATADIR}/applnk/"${a}" ]; then
 			append_submenu "${a}"
@@ -312,23 +390,23 @@ if [ -d ${PKGDATADIR}/applnk/ -a "${KDEMENU}" ]; then
 fi
 
 
-append_submenu FB-Settings
-	append "[workspaces]   (Workspace List)"
+append_submenu ${FBSETTINGSMENU}
+	append "[workspaces]   (${WORKSPACEMENU})"
 
-	append_menu "[submenu] (Styles) {Choose a style...}"
+	append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
 		append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
 		append "[stylesdir] (${HOME}/.fluxbox/styles)"
 	append_menu_end
 
-	append "[config] (Configuration)"
-	append "[reconfig] (Reload config)"
+	append "[config] (${CONFIGUREMENU})"
+	append "[reconfig] (${RELOADITEM})"
 	
 	find_it fluxconf append "[exec] (Fluxconf) {fluxconf}"
 
 append_menu_end
 
-	append "[restart] (Restart)"
-	append "[exit] (Exit)"
+	append "[restart] (${RESTARTITEM})"
+	append "[exit] (${EXITITEM})"
 
 append_menu_end
 
