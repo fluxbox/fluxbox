@@ -1,7 +1,7 @@
 dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
-AM_INIT_AUTOMAKE(fluxbox,0.1.10,no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.1.10-cvs,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -287,6 +287,7 @@ AM_CONFIG_HEADER(config.h)
 AC_OUTPUT(Makefile
 src/Makefile
 util/Makefile
+util/fbrun/Makefile
 data/Makefile
 data/styles/Makefile
 doc/Makefile
