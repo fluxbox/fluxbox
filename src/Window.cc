@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.190 2003/06/12 14:35:36 fluxgen Exp $
+// $Id: Window.cc,v 1.191 2003/06/13 20:49:05 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -292,6 +292,9 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
 FluxboxWindow::~FluxboxWindow() {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<")"<<endl;
+    cerr<<__FILE__<<"("<<__LINE__<<"): num clients = "<<numClients()<<endl;
+    cerr<<__FILE__<<"("<<__LINE__<<"): curr client = "<<m_client<<endl;
+    cerr<<__FILE__<<"("<<__LINE__<<"): m_labelbuttons.size = "<<m_labelbuttons.size()<<endl;
 #endif // DEBUG
     if (moving || resizing || m_attaching_tab) {
         screen().hideGeometry();
@@ -589,9 +592,10 @@ void FluxboxWindow::attachClient(WinClient &client) {
         ClientList::iterator client_it = old_win->clientList().begin();
         ClientList::iterator client_it_end = old_win->clientList().end();
         for (; client_it != client_it_end; ++client_it) {
+            // setup eventhandlers for client
             fb->saveWindowSearch((*client_it)->window(), this);
             evm.add(*this, (*client_it)->window());
-
+            
             // reparent window to this
             frame().setClientWindow(**client_it);
             resizeClient(**client_it, 
@@ -624,8 +628,8 @@ void FluxboxWindow::attachClient(WinClient &client) {
         // add client and move over all attached clients 
         // from the old window to this list
         m_clientlist.splice(m_clientlist.end(), old_win->m_clientlist);           
-        
         old_win->m_client = 0;
+
         delete old_win;
         
     } else { // client.fbwindow() == 0
@@ -656,9 +660,6 @@ void FluxboxWindow::attachClient(WinClient &client) {
 
     // keep the current window on top
     m_client->raise();
-
-
-
 }
 
 
@@ -1275,6 +1276,9 @@ void FluxboxWindow::iconify() {
 }
 
 void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
+    if (numClients() == 0)
+        return;
+
     if (oplock) return;
     oplock = true;
 
@@ -1693,10 +1697,14 @@ void FluxboxWindow::saveBlackboxHints() {
  Sets state on each client in our list
  */
 void FluxboxWindow::setState(unsigned long new_state) {
+    if (numClients() == 0)
+        return;
+
     m_current_state = new_state;
     unsigned long state[2];
     state[0] = (unsigned long) m_current_state;
     state[1] = (unsigned long) None;
+
     for_each(m_clientlist.begin(), m_clientlist.end(),
              FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
                             PropModeReplace,
@@ -2015,11 +2023,12 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 }
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
+
     // we're only conserned about client window event
     WinClient *client = findClient(re.window);
     if (client == 0) {
 #ifdef DEBUG
-        cerr<<"mapRequestEvent: Can't find client!"<<endl;
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): Can't find client!"<<endl;
 #endif // DEBUG
         return;
     }
@@ -2045,12 +2054,13 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
         withdraw();
 	break;
 
-    case NormalState:
-        // check WM_CLASS only when we changed state to NormalState from 
-        // WithdrawnState (ICCC 4.1.2.5)
-				
-        XClassHint ch;
+    case NormalState: {
+        // if the window was destroyed while autogrouping
+        bool destroyed = false;
 
+        // check WM_CLASS only when we changed state to NormalState from 
+        // WithdrawnState (ICCC 4.1.2.5)				
+        XClassHint ch;
         if (XGetClassHint(display, client->window(), &ch) == 0) {
             cerr<<"Failed to read class hint!"<<endl;
         } else {
@@ -2066,19 +2076,20 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
             } else 
                 m_class_name = "";
 
-            /*
-              Workspace *wsp = screen().getWorkspace(m_workspace_number);
-              // we must be resizable AND maximizable to be autogrouped
-              //!! TODO: there should be an isGroupable() function
-              if (wsp != 0 && isResizable() && isMaximizable()) {
-              wsp->checkGrouping(*this);
-              }
-            */
-        }		
-		
-        deiconify(false);
+            
+            Workspace *wsp = screen().getWorkspace(m_workspace_number);
+            // we must be resizable AND maximizable to be autogrouped
+            //!! TODO: there should be an isGroupable() function
+            if (wsp != 0 && isResizable() && isMaximizable()) {
+                destroyed = wsp->checkGrouping(*this);
+            }
+            
+        }
+	// if we wasn't grouped with another window we deiconify ourself
+	if (!destroyed)
+            deiconify(false);
 
-	break;
+    } break;
     case InactiveState:
     case ZoomState:
     default:
