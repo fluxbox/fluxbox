@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.4 2003/05/18 22:12:23 fluxgen Exp $
+// $Id: Theme.hh,v 1.5 2003/08/11 14:55:14 fluxgen Exp $
 
 /**
  @file holds ThemeItem<T>, Theme and ThemeManager which is the base for any theme
@@ -33,6 +33,7 @@
 #include <string>
 
 #include "XrmDatabaseHelper.hh"
+#include "Subject.hh"
 
 namespace FbTk {
 
@@ -101,10 +102,12 @@ public:
     /// remove ThemeItem
     template <typename T>
     void remove(ThemeItem<T> &item);
+    FbTk::Subject &reconfigSig() { return m_reconfig_sig; }
 private:
     const int m_screen_num;
     typedef std::list<ThemeItem_base *> ItemList;
     ItemList m_themeitems;
+    FbTk::Subject m_reconfig_sig;
 };
 
 
@@ -115,7 +118,7 @@ private:
 class ThemeManager {
 public:
     static ThemeManager &instance();
-    bool load(const char *filename);
+    bool load(const std::string &filename);
     std::string resourceValue(const std::string &name, const std::string &altname);
     void loadTheme(Theme &tm);
 private:
