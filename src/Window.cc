@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.200 2003/06/30 15:02:39 fluxgen Exp $
+// $Id: Window.cc,v 1.201 2003/07/02 05:27:40 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1065,9 +1065,9 @@ bool FluxboxWindow::setInputFocus() {
                 return (*it)->fbwindow()->setCurrentClient(**it, true);
         }
     } else {
-        if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE || m_client->getFocusMode() == WinClient::F_PASSIVE) {
-            XSetInputFocus(display, m_client->window(),
-                           RevertToPointerRoot, CurrentTime);
+        if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
+            m_client->getFocusMode() == WinClient::F_PASSIVE) {
+            m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
         } else {
             return false;
         }
