@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.8 2003/07/02 05:14:48 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.9 2003/07/24 03:19:02 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -113,7 +113,7 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
     else if (command == "minimizewindow" || command == "minimize" || command == "iconify")
         return new CurrentWindowCmd(&FluxboxWindow::iconify);
     else if (command == "maximizewindow" || command == "maximize")
-        return new CurrentWindowCmd(&FluxboxWindow::maximize);
+        return new CurrentWindowCmd(&FluxboxWindow::maximizeFull);
     else if (command == "maximizevertical")
         return new CurrentWindowCmd(&FluxboxWindow::maximizeVertical);
     else if (command == "maximizehorizontal")

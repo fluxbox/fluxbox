@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/07/24:
+   * Fix some maximisation issues (Simon)
+     Window.hh/cc FbCommandFactory.cc
 *03/07/23:
    * Fixed KDE dockapp bug (Henrik)
      Slit.cc, fluxbox.hh/cc

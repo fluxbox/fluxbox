@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.85 2003/07/20 08:12:36 rathnor Exp $
+// $Id: Window.hh,v 1.86 2003/07/24 03:19:02 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -180,12 +180,14 @@ public:
     void close();
     /// set the window in withdrawn state
     void withdraw();
-    /// toggel maximize
-    void maximize();
+    /// toggle maximize
+    void maximize(int type = MAX_FULL);
     /// maximizes the window horizontal
     void maximizeHorizontal();
     /// maximizes the window vertical
     void maximizeVertical();
+    /// maximizes the window fully
+    void maximizeFull();
     /// toggles shade
     void shade();
     /// toggles sticky

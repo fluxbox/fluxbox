@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.209 2003/07/21 17:54:07 rathnor Exp $
+// $Id: Window.cc,v 1.210 2003/07/24 03:19:02 rathnor Exp $
 
 #include "Window.hh"
 
@@ -533,8 +533,11 @@ void FluxboxWindow::init() {
     }
 
     if (maximized && functions.maximize) { // start maximized
-        maximized = MAX_NONE;
-        maximize();
+        // This will set it to the appropriate style of maximisation
+        int req_maximized = maximized;
+        // NOTE: don't manually change maximized ANYWHERE else, it isn't safe
+        maximized = MAX_NONE; // it is not maximized now
+        maximize(req_maximized);
     }	
 
     if (stuck) {
@@ -1291,64 +1294,101 @@ void FluxboxWindow::withdraw() {
 /**
    Maximize window both horizontal and vertical
 */
-void FluxboxWindow::maximize() {
+void FluxboxWindow::maximize(int type) {
     if (isIconic())
         deiconify();
 
-    if (!maximized) {
-        // save old values
-        int head = screen().getHead(frame().window());
-        m_old_width = frame().width();
-        m_old_height = frame().height();
-        m_old_pos_x = frame().x();
-        m_old_pos_y = frame().y();
-        unsigned int left_x = screen().maxLeft(head);
-        unsigned int max_width = screen().maxRight(head);
-        unsigned int max_top = screen().maxTop(head);
-        moveResize(left_x, max_top, 
-                   max_width - left_x - 2*frame().window().borderWidth(), 
-                   screen().maxBottom(head) - max_top - 2*frame().window().borderWidth());
-        maximized = MAX_FULL;
-    } else { // demaximize, restore to old values
-        moveResize(m_old_pos_x, m_old_pos_y,
-                   m_old_width, m_old_height);
-        maximized = MAX_NONE;
+    int head = screen().getHead(frame().window());
+    int new_x = frame().x(),
+        new_y = frame().y(),
+        new_w = frame().width(),
+        new_h = frame().height();
+
+    int orig_max = maximized;
+
+    // These evaluate whether we need to TOGGLE the value for that field
+    // Why? If maximize is only set to zero outside this, 
+    // and we only EVER toggle them, then:
+    // 1) We will never loose the old_ values 
+    // 2) It shouldn't get confused
+
+    // Worst case being that some action will toggle the wrong way, but 
+    // we still won't lose the state in that case.
+
+    // NOTE: There is one option to the way this works - what it does when 
+    // fully maximised and maximise(vert, horz) is selected.
+    // There are 2 options here - either:
+    // 1) maximiseVertical results in a vertically (not horz) maximised window, or
+    // 2) " toggles vertical maximisation, thus resulting in a horizontally 
+    //      maximised window.
+    //
+    // The current implementation uses style 1, to change this, removed the 
+    // item corresponding to the [[ ]] comment
+
+    // toggle maximize vertically?
+    // when _don't_ we want to toggle?
+    // - type is horizontal maximise, [[and we aren't fully maximised]] or
+    // - [[ type is vertical maximise and we are fully maximised ]]
+    // - type is none and we are not vertically maximised, or
+    // - type is full and we are not horizontally maximised, but already vertically
+    if (!(type == MAX_HORZ && orig_max != MAX_FULL ||
+          type == MAX_VERT && orig_max == MAX_FULL ||
+          type == MAX_NONE && !(orig_max & MAX_VERT) ||
+          type == MAX_FULL && orig_max == MAX_VERT)) {
+        // already maximized in that direction?
+        if (orig_max & MAX_VERT) {
+            new_y = m_old_pos_y;
+            new_h = m_old_height;
+        } else {
+            m_old_pos_y  = new_y;
+            m_old_height = new_h;
+            new_y = screen().maxTop(head);
+            new_h = screen().maxBottom(head) - new_y - 2*frame().window().borderWidth();
+        }
+        maximized ^= MAX_VERT;
     }
+
+    // maximize horizontally?
+    if (!(type == MAX_VERT && orig_max != MAX_FULL ||
+          type == MAX_HORZ && orig_max == MAX_FULL ||
+          type == MAX_NONE && !(orig_max & MAX_HORZ) ||
+          type == MAX_FULL && orig_max == MAX_HORZ)) {
+        // already maximized in that direction?
+        if (orig_max & MAX_HORZ) {
+            new_x = m_old_pos_x;
+            new_w = m_old_width;
+        } else {
+            // only save if we weren't already maximized
+            m_old_pos_x = new_x;
+            m_old_width = new_w;
+            new_x = screen().maxLeft(head);
+            new_w = screen().maxRight(head) - new_x - 2*frame().window().borderWidth();
+        }
+        maximized ^= MAX_HORZ;
+    }
+            
+    moveResize(new_x, new_y, new_w, new_h);
 
 }
 /**
  * Maximize window horizontal
  */
 void FluxboxWindow::maximizeHorizontal() {
-    if (! (maximized & MAX_HORZ) ) {
-        const int head = screen().getHead(frame().window());
-        const unsigned int left_x = screen().maxLeft(head);
-        const unsigned int max_width = screen().maxRight(head);
-        m_old_width = frame().width();
-        m_old_pos_x = frame().x();
-        moveResize(left_x, frame().y(), max_width - left_x, frame().height());
-        maximized |= MAX_HORZ;
-    } else {
-        moveResize(m_old_pos_x, frame().y(), m_old_width, frame().height());
-        maximized &= ~MAX_HORZ;
-    }
+    maximize(MAX_HORZ);
 }
 
 /**
  * Maximize window vertical
  */
 void FluxboxWindow::maximizeVertical() {
-    if (! (maximized & MAX_VERT) ) {
-        const int head = screen().getHead(frame().window());
-        const unsigned int max_top = screen().maxTop(head);
-        m_old_height = frame().height();
-        m_old_pos_y = frame().y();
-        moveResize(frame().x(), max_top, frame().width(), screen().maxBottom(head) - max_top);
-        maximized |= MAX_VERT;
-    } else {
-        moveResize(frame().x(), m_old_pos_y, frame().width(), m_old_height);
-        maximized &= ~MAX_VERT;
-    }
+    maximize(MAX_VERT);
+}
+
+/**
+ * Maximize window fully
+ */
+void FluxboxWindow::maximizeFull() {
+    maximize(MAX_FULL);
 }
 
 
@@ -1853,9 +1893,9 @@ void FluxboxWindow::restoreAttributes() {
             (m_blackbox_attrib.flags & ATTRIB_MAXVERT))
             maximized = MAX_FULL;
         else if (m_blackbox_attrib.flags & ATTRIB_MAXVERT)
-            maximizeVertical();
+            maximized = MAX_VERT;
         else if (m_blackbox_attrib.flags & ATTRIB_MAXHORIZ)
-            maximizeHorizontal();
+            maximized = MAX_HORZ;
 
         m_blackbox_attrib.premax_x = x;
         m_blackbox_attrib.premax_y = y;
@@ -3144,22 +3184,35 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
          (net.attrib & ATTRIB_SHADED)))
         shade();
 
-    if ((net.flags & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) &&
-        ((m_blackbox_attrib.attrib & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) !=
-         (net.attrib & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)))) {
-        if (maximized) {
-            maximize();
-        } else {
-            if ((net.flags & ATTRIB_MAXHORIZ) && (net.flags & ATTRIB_MAXVERT))
-            	maximize();
-            else if (net.flags & ATTRIB_MAXVERT)
-                maximizeVertical();
-            else if (net.flags & ATTRIB_MAXHORIZ)
-                maximizeHorizontal();
+    if (net.flags & (ATTRIB_MAXVERT | ATTRIB_MAXHORIZ)) {
+        // make maximise look like the net maximise flags
+        int want_max = MAX_NONE;
+        
+        if (net.flags & ATTRIB_MAXVERT)
+            want_max |= MAX_VERT;
+        if (net.flags & ATTRIB_MAXHORIZ)
+            want_max |= MAX_HORZ;
 
+        if (want_max == MAX_NONE && maximized != MAX_NONE) {
+            maximize(MAX_NONE);
+        } else if (want_max == MAX_FULL && maximized != MAX_FULL) {
+            maximize(MAX_FULL);
+            // horz and vert are a little trickier to morph
+        }
+            // to toggle vert
+            // either we want vert and aren't 
+            // or we want horizontal, and are vertically (or full) at present
+        if (want_max == MAX_VERT && !(maximized & MAX_VERT) ||
+            want_max == MAX_HORZ && (maximized & MAX_VERT)) {
+            maximize(MAX_VERT);
+        }
+        // note that if we want horz, it WONT be vert any more from above
+        if (want_max == MAX_HORZ && !(maximized & MAX_HORZ) ||
+            want_max == MAX_VERT && (maximized & MAX_HORZ)) {
+            maximize(MAX_HORZ);
         }
     }
-    
+
     if ((net.flags & ATTRIB_OMNIPRESENT) &&
         ((m_blackbox_attrib.attrib & ATTRIB_OMNIPRESENT) !=
          (net.attrib & ATTRIB_OMNIPRESENT)))
@@ -3384,7 +3437,7 @@ void FluxboxWindow::setupWindow() {
     typedef SimpleCommand<FluxboxWindow> WindowCmd;
 
     CommandRef iconify_cmd(new WindowCmd(*this, &FluxboxWindow::iconify));
-    CommandRef maximize_cmd(new WindowCmd(*this, &FluxboxWindow::maximize));
+    CommandRef maximize_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeFull));
     CommandRef maximize_vert_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeVertical));
     CommandRef maximize_horiz_cmd(new WindowCmd(*this, &FluxboxWindow::maximizeHorizontal));
     CommandRef close_cmd(new WindowCmd(*this, &FluxboxWindow::close));
