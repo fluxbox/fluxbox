@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.22 2002/01/20 02:14:20 fluxgen Exp $
+// $Id: Window.cc,v 1.23 2002/01/27 13:13:33 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -458,11 +458,11 @@ FluxboxWindow::~FluxboxWindow(void) {
 		client.transient->client.transient_for = client.transient_for;
 	
 	while ( !buttonlist.empty()) {	//destroy all buttons on titlebar
-		fluxbox->removeWindowSearch(buttonlist.back().win);
+		fluxbox->removeWindowSearch(buttonlist.back().win);	
 		XDestroyWindow(display, buttonlist.back().win);
 		buttonlist.pop_back();
 	}
- 
+
 	if (frame.title) {
 		if (frame.ftitle)
 			image_ctrl->removeImage(frame.ftitle);
@@ -495,12 +495,13 @@ FluxboxWindow::~FluxboxWindow(void) {
 		if (frame.ugrip)
 			image_ctrl->removeImage(frame.ugrip);
 
-		fluxbox->removeWindowSearch(frame.handle);
 		fluxbox->removeWindowSearch(frame.right_grip);
 		fluxbox->removeWindowSearch(frame.left_grip);
-		XDestroyWindow(display, frame.handle);
+		fluxbox->removeWindowSearch(frame.handle);
+		
 		XDestroyWindow(display, frame.right_grip);
-		XDestroyWindow(display, frame.left_grip);		
+		XDestroyWindow(display, frame.left_grip);
+		XDestroyWindow(display, frame.handle);
 	}
 
 	if (frame.fbutton)
@@ -528,8 +529,9 @@ FluxboxWindow::~FluxboxWindow(void) {
 		screen->removeNetizen(client.window);
 	}
 
-	#ifdef DEBUG	
-	fprintf(stderr, "%s(%d): ~FluxboxWindow(this=%p) done\n", __FILE__, __LINE__, this);
+
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow(this="<<this<<") done"<<endl;
 	#endif
 }
 
@@ -811,11 +813,11 @@ void FluxboxWindow::decorate(void) {
 		if (tmp) image_ctrl->removeImage(tmp);
 
 		XSetWindowBorder(display, frame.handle,
-										 screen->getBorderColor()->getPixel());
+			screen->getBorderColor()->getPixel());
 		XSetWindowBorder(display, frame.left_grip,
-										 screen->getBorderColor()->getPixel());
+			screen->getBorderColor()->getPixel());
 		XSetWindowBorder(display, frame.right_grip,
-										 screen->getBorderColor()->getPixel());
+			screen->getBorderColor()->getPixel());
 	}
 		
 	XSetWindowBorder(display, frame.window,
@@ -1163,13 +1165,13 @@ void FluxboxWindow::positionWindows(void) {
 		XSetWindowBorderWidth(display, frame.right_grip, screen->getBorderWidth());
 
 		XMoveResizeWindow(display, frame.handle, -screen->getBorderWidth(),
-											frame.y_handle - screen->getBorderWidth(),
-								frame.width, frame.handle_h);
+			frame.y_handle - screen->getBorderWidth(),
+			frame.width, frame.handle_h);
 		XMoveResizeWindow(display, frame.left_grip, -screen->getBorderWidth(),
-						-screen->getBorderWidth(), frame.grip_w, frame.grip_h);
+			-screen->getBorderWidth(), frame.grip_w, frame.grip_h);
 		XMoveResizeWindow(display, frame.right_grip,
-						frame.width - frame.grip_w - screen->getBorderWidth(),
-						-screen->getBorderWidth(), frame.grip_w, frame.grip_h);
+			frame.width - frame.grip_w - screen->getBorderWidth(),
+			-screen->getBorderWidth(), frame.grip_w, frame.grip_h);
 		XMapSubwindows(display, frame.handle);
 	} else if (frame.handle)
 		XUnmapWindow(display, frame.handle);
@@ -1757,7 +1759,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool raise) {
 	XSelectInput(display, client.window, NoEventMask);
 	XMapWindow(display, client.window);
 	XSelectInput(display, client.window,
-							 PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
+		PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
 
 	XMapSubwindows(display, frame.window);
 	XMapWindow(display, frame.window);
@@ -2582,7 +2584,11 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 	}
 }
 
-
+//----------- destroyNotifyEvent -------------
+// Checks if event is for client.window.
+// Unmaps frame.window and returns true for destroy
+// of this FluxboxWindow else returns false.
+//--------------------------------------------
 bool FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
 	if (de->window == client.window) {
 		#ifdef DEBUG
@@ -3080,8 +3086,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 		}
 	} else if (functions.resize &&
 			(((me->state & Button1Mask) && (me->window == frame.right_grip ||
-							 me->window == frame.left_grip)) ||
-									 me->window == frame.window)) {
+			 me->window == frame.left_grip)) ||
+			 me->window == frame.window)) {
 		bool left = (me->window == frame.left_grip);
 
 		if (! resizing) {
