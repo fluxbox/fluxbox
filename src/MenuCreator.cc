@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.9 2004/06/10 11:43:24 fluxgen Exp $
+// $Id: MenuCreator.cc,v 1.10 2004/07/05 09:27:04 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -301,6 +301,8 @@ FbTk::Menu *MenuCreator::createFromFile(const std::string &filename, int screen_
     FbMenuParser parser(real_filename);
     if (!parser.isLoaded())
         return 0;
+
+    Fluxbox::instance()->saveMenuFilename(real_filename.c_str());
 
     std::string label;
     if (!getStart(parser, label))
