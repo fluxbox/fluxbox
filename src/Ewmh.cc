@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.44 2004/02/20 09:05:38 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.45 2004/03/07 23:37:39 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -498,15 +498,30 @@ void Ewmh::updateWorkspace(FluxboxWindow &win) {
 bool Ewmh::checkClientMessage(const XClientMessageEvent &ce, 
                               BScreen * screen, WinClient * const winclient) {
     if (ce.message_type == m_net_wm_desktop) {
-        if (screen == 0)
-            return true;
         // ce.data.l[0] = workspace number
-        // valid window and workspace number?
-        if (winclient == 0 || winclient->fbwindow() == 0 ||
-            static_cast<unsigned int>(ce.data.l[0]) >= screen->getCount())
+        // valid window
+
+        if (winclient == 0 || winclient->fbwindow() == 0)
             return true;
-		
-        screen->sendToWorkspace(ce.data.l[0], winclient->fbwindow(), false);		
+
+        FluxboxWindow *fbwin = winclient->fbwindow();
+
+        // if it's stick, make sure it is stuck.
+        // otherwise, make sure it isn't stuck
+        if (ce.data.l[0] == 0xFFFFFFFF) {
+            if (!fbwin->isStuck())
+                fbwin->stick();
+            return true;
+        } else if (fbwin->isStuck())
+            fbwin->stick();
+
+        // the screen is the root window of the message,
+        // which doesn't apply here (so borrow the variable :) )
+        screen = &fbwin->screen();
+        // valid workspace number?
+        if (static_cast<unsigned int>(ce.data.l[0]) < screen->getCount())
+            screen->sendToWorkspace(ce.data.l[0], fbwin, false);		
+
         return true;
     } else if (ce.message_type == m_net_wm_state) {
         if (winclient == 0 || winclient->fbwindow() == 0)
