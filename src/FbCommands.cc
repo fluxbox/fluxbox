@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.25 2004/07/19 13:52:15 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.26 2004/08/30 12:19:52 akir Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -123,7 +123,8 @@ void SetStyleCmd::execute() {
 }
 
 void ShowRootMenuCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    Fluxbox *fb = Fluxbox::instance();
+    BScreen *screen = fb->mouseScreen();
     if (screen == 0)
         return;
 
@@ -134,7 +135,7 @@ void ShowRootMenuCmd::execute() {
     int wx, wy;
     unsigned int mask;
 
-    if (XQueryPointer(FbTk::App::instance()->display(),
+    if (XQueryPointer(fb->display(),
                       screen->rootWindow().window(), &root_ret, &window_ret,
                       &rx, &ry, &wx, &wy, &mask) ) {
 
@@ -142,19 +143,20 @@ void ShowRootMenuCmd::execute() {
             rx-= screen->getRootmenu().width()/2;
         screen->getRootmenu().move(rx, ry);
     }
-
+    fb->checkMenu();
     screen->getRootmenu().show();
     screen->getRootmenu().grabInputFocus();
 
 }
 
 void ShowWorkspaceMenuCmd::execute() {
-    BScreen *screen = Fluxbox::instance()->mouseScreen();
+
+    Fluxbox *fb = Fluxbox::instance();
+    BScreen *screen = fb->mouseScreen();
     if (screen == 0)
         return;
 
  
-
     Window root_ret;
     Window window_ret;
 
@@ -162,7 +164,7 @@ void ShowWorkspaceMenuCmd::execute() {
     int wx, wy;
     unsigned int mask;
 
-    if ( XQueryPointer(FbTk::App::instance()->display(),
+    if ( XQueryPointer(fb->display(),
                        screen->rootWindow().window(), &root_ret, &window_ret,
                        &rx, &ry, &wx, &wy, &mask) ) {
 
@@ -170,6 +172,7 @@ void ShowWorkspaceMenuCmd::execute() {
             rx-= screen->getWorkspacemenu().width()/2;
         screen->getWorkspacemenu().move(rx, ry);
     }
+    fb->checkMenu(); 
     screen->getWorkspacemenu().show();
     screen->getWorkspacemenu().grabInputFocus();
  
