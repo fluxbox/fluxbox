@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.27 2003/12/18 18:03:21 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.28 2004/01/02 13:25:55 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -108,8 +108,6 @@ public:
     /// which button is to be rendered focused
     void setLabelButtonFocus(FbTk::TextButton &btn);
     /// attach a client window for client area
-    void setClientWindow(Window win);
-    /// same as above but with FbWindow
     void setClientWindow(FbTk::FbWindow &win);
     /// remove attached client window
     void removeClient();
