@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.hh,v 1.1 2003/07/10 12:04:46 fluxgen Exp $
+// $Id: Shape.hh,v 1.2 2003/08/24 15:02:15 fluxgen Exp $
 
 #ifndef SHAPE_HH
 #define SHAPE_HH
@@ -49,6 +49,10 @@ public:
     void update(); 
     /// assign a new window
     void setWindow(FbTk::FbWindow &win);
+    // sets shape notify mask
+    static void setShapeNotify(const FbTk::FbWindow &win);
+    /// @return true if window has shape
+    static bool isShaped(const FbTk::FbWindow &win);
 private:
     FbTk::FbWindow *m_win; ///< window to be shaped
     Pixmap m_shape; ///< our shape pixmap
