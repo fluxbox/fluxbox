@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.82 2003/10/06 06:22:43 rathnor Exp $
+// $Id: Workspace.cc,v 1.83 2003/10/25 22:10:43 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -30,11 +30,12 @@
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
-#include "StringUtil.hh"
-#include "SimpleCommand.hh"
 #include "WinClient.hh"
 #include "FbWinFrame.hh"
 #include "MenuItem.hh"
+
+#include "FbTk/StringUtil.hh"
+#include "FbTk/SimpleCommand.hh"
 
 // use GNU extensions
 #ifndef  _GNU_SOURCE
@@ -358,14 +359,7 @@ bool Workspace::checkGrouping(FluxboxWindow &win) {
 
 bool Workspace::loadGroups(const std::string &filename) {
     string real_filename = filename;
-    // strip trailing whitespace
-    string::size_type first_pos = real_filename.find_first_not_of(" \t");
-    if (first_pos != string::npos) {
-        string::size_type last_pos = real_filename.find_first_of(" \t", last_pos);
-        if (last_pos != string::npos)
-            real_filename.erase(last_pos);
-    }
-
+    FbTk::StringUtil::removeTrailingWhitespace(real_filename);
     ifstream infile(real_filename.c_str());
     if (!infile)
         return false;
