@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/05:
+  * Make focusLast work for sloppy focus when changing workspace or
+    closing a window (Simon)
+    - also generalises event redirects (e.g. for window moving)
+    fluxbox.hh/cc Window.hh/cc Screen.cc
 *03/10/04:
   * Fix NLS bad message errors by adding explicit codeset entries (Simon)
     - thanks to Matt Hope for pointing us to the recent workaround from 

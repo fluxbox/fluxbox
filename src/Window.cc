@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.238 2003/10/02 16:14:41 rathnor Exp $
+// $Id: Window.cc,v 1.239 2003/10/05 02:31:22 rathnor Exp $
 
 #include "Window.hh"
 
@@ -888,7 +888,7 @@ void FluxboxWindow::updateClientLeftWindow() {
     }
 }
 
-bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
+bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput, long ignore_event) {
     // make sure it's in our list
     if (client.m_win != this)
         return false;
@@ -896,7 +896,7 @@ bool FluxboxWindow::setCurrentClient(WinClient &client, bool setinput) {
     m_client = &client;
     m_client->raise();
     frame().setLabelButtonFocus(*m_labelbuttons[m_client]);
-    return setinput && setInputFocus();
+    return setinput && setInputFocus(ignore_event);
 }
 
 bool FluxboxWindow::isGroupable() const {
@@ -1138,7 +1138,7 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
 // tried. A FocusqIn event should eventually arrive for that
 // window if it actually got the focus, then setFocusedFlag is called,
 // which updates all the graphics etc
-bool FluxboxWindow::setInputFocus() {
+bool FluxboxWindow::setInputFocus(long ignore_event) {
 
     if (((signed) (frame().x() + frame().width())) < 0) {
         if (((signed) (frame().y() + frame().height())) < 0) {
@@ -1181,6 +1181,14 @@ bool FluxboxWindow::setInputFocus() {
     if (m_client->getFocusMode() == WinClient::F_LOCALLYACTIVE ||
         m_client->getFocusMode() == WinClient::F_PASSIVE) {
         m_client->setInputFocus(RevertToPointerRoot, CurrentTime);
+
+        // People can ignore an event until the focus comes through
+        // this is most likely to be an EnterNotify for sloppy focus
+        if (ignore_event)
+            Fluxbox::instance()->addRedirectEvent(
+                &screen(), ignore_event, None,
+                FocusIn, m_client->window(), None);
+                                                  
         // this may or may not send, but we've setInputFocus already, so return true
         m_client->sendFocus(); 
         return true;
@@ -2724,7 +2732,16 @@ void FluxboxWindow::startMoving(Window win) {
     if (m_windowmenu.isVisible())
         m_windowmenu.hide();
 
-    fluxbox->maskWindowEvents(screen().rootWindow().window(), this);
+    // The "stop" window and event aren't going to happen (since it's
+    // grabbed, so they are just so we can remove it in stopMoving)
+    fluxbox->addRedirectEvent(&screen(), 
+                              MotionNotify, screen().rootWindow().window(), 
+                              MotionNotify, fbWindow().window(),
+                              fbWindow().window());
+    fluxbox->addRedirectEvent(&screen(), 
+                              ButtonRelease, screen().rootWindow().window(), 
+                              ButtonRelease, fbWindow().window(),
+                              fbWindow().window());
 
     m_last_move_x = frame().x();
     m_last_move_y = frame().y();
@@ -2742,8 +2759,8 @@ void FluxboxWindow::stopMoving() {
     moving = false;
     Fluxbox *fluxbox = Fluxbox::instance();
 
-    fluxbox->maskWindowEvents(0, 0);
-
+    fluxbox->removeRedirectEvent(MotionNotify, fbWindow().window());
+    fluxbox->removeRedirectEvent(ButtonRelease, fbWindow().window());
    
     if (! screen().doOpaqueMove()) {
         parent().drawRectangle(screen().rootTheme().opGC(),

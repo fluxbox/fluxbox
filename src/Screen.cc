@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.236 2003/10/02 16:14:41 rathnor Exp $
+// $Id: Screen.cc,v 1.237 2003/10/05 02:31:22 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -836,6 +836,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         return;
 
     XSync(FbTk::App::instance()->display(), true);
+
     WinClient *focused_client = Fluxbox::instance()->getFocusedWindow();
     FluxboxWindow *focused = 0;
     if (focused_client)

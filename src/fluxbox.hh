@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.72 2003/09/10 09:51:58 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.73 2003/10/05 02:31:23 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -148,13 +148,11 @@ public:
     inline unsigned int getCacheLife() const { return *m_rc_cache_life * 60000; }
     inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
 
-    inline void maskWindowEvents(Window w, FluxboxWindow *bw)
-        { m_masked = w; m_masked_window = bw; }
-
     void watchKeyRelease(BScreen &screen, unsigned int mods);
 
     void setFocusedWindow(WinClient *w);
-    void revertFocus(BScreen &screen);
+    // focus revert gets delayed until the end of the event handle
+    void revertFocus(BScreen &screen, bool wait_for_end = true);
     void shutdown();
     void load_rc(BScreen &scr);
     void loadRootCommand(BScreen &scr);
@@ -204,6 +202,21 @@ public:
     // screen we are watching for modifier changes
     BScreen *watchingScreen() { return m_watching_screen; }
     const XEvent &lastEvent() const { return m_last_event; }
+
+    /**
+     * Allows people to create special event exclusions/redirects
+     * useful for getting around X followup events, or for
+     * effectively grabbing things
+     * The ignore is automatically removed when it finds the stop_win
+     * with an event matching the stop_type
+     * ignore None means all windows
+     */
+    void addRedirectEvent(BScreen *screen, long catch_type, Window catch_win, 
+                          long stop_type, Window stop_win, Window redirect_win);
+
+    // So that an object may remove the ignore on its own
+    void removeRedirectEvent(long stop_type, Window stop_win);
+
 private:
 
     typedef struct MenuTimestamp {
@@ -264,9 +277,20 @@ private:
     ScreenList m_screen_list;
 
     WinClient *m_focused_window;
-    FluxboxWindow *m_masked_window;
     FbTk::Timer m_timer;
 
+    typedef struct RedirectEvent {
+        BScreen *screen;
+        long catch_type;
+        Window catch_win;
+        long stop_type;
+        Window stop_win;
+        Window redirect_win;
+    } RedirectEvent;
+
+    typedef std::list<RedirectEvent *> RedirectEvents;
+
+    RedirectEvents m_redirect_events;
     BScreen *m_mousescreen, *m_keyscreen;
     BScreen *m_watching_screen;
     unsigned int m_watch_keyrelease;
@@ -275,7 +299,6 @@ private:
 
     bool m_reconfigure_wait, m_reread_menu_wait;
     Time m_last_time;
-    Window m_masked;
     std::string m_rc_file; ///< resource filename
     char **m_argv;
     int m_argc;
@@ -296,6 +319,9 @@ private:
     const char *m_RC_PATH;
     const char *m_RC_INIT_FILE;
     Atom m_kwm1_dockwindow, m_kwm2_dockwindow;
+
+    // each event can only affect one screen (right?)
+    BScreen *m_focus_revert_screen;
 };
 
 

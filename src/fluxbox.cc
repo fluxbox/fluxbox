@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.193 2003/09/14 12:03:40 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.194 2003/10/05 02:31:23 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -403,12 +403,11 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                           "session.titlebar.right", "Session.Titlebar.Right"),
       m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
       m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
-      m_focused_window(0), m_masked_window(0),
+      m_focused_window(0),
       m_mousescreen(0),
       m_keyscreen(0),
       m_watching_screen(0), m_watch_keyrelease(0),
       m_last_time(0),
-      m_masked(0),
       m_rc_file(rcfilename ? rcfilename : ""),
       m_argv(argv), m_argc(argc),
       m_starting(true),
@@ -416,7 +415,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_server_grabs(0),
       m_randr_event_type(0),
       m_RC_PATH("fluxbox"),
-      m_RC_INIT_FILE("init") {
+      m_RC_INIT_FILE("init"),
+      m_focus_revert_screen(0)
+{
       
 
     if (s_singleton != 0)
@@ -610,6 +611,10 @@ void Fluxbox::eventLoop() {
             } else {
                 last_bad_window = None;
                 handleEvent(&e);
+                if (m_focus_revert_screen != 0) {
+                    revertFocus(*m_focus_revert_screen, false);
+                    m_focus_revert_screen = 0;
+                }
             }
         } else {
             FbTk::Timer::updateTimers(ConnectionNumber(display())); //handle all timers
@@ -700,17 +705,52 @@ void Fluxbox::handleEvent(XEvent * const e) {
     m_last_event = *e;
 
     // it is possible (e.g. during moving) for a window
-    // to mask all events to go to it 
-    if ((m_masked == e->xany.window) && m_masked_window) {
-        if (e->type == MotionNotify) {
-            m_last_time = e->xmotion.time;
-            m_masked_window->motionNotifyEvent(e->xmotion);
-            return;
-        } else if (e->type == ButtonRelease) {
-            e->xbutton.window = m_masked_window->fbWindow().window();
+    // to mask certain events to go somewhere (e.g. to that window)
+    if (!m_redirect_events.empty()) {
+
+        bool drop_event = false;
+        RedirectEvents::iterator it = m_redirect_events.begin();
+        RedirectEvents::iterator it_end = m_redirect_events.end();
+        RedirectEvent *re = 0;
+        bool matched = false;
+        Window orig_win = e->xany.window;
+
+        // look through all registered redirects
+        while (it != it_end) {
+            matched = false;
+            re = *it;
+            // do we affect this event?
+            if (e->type == re->catch_type &&
+                (re->catch_win == None ||
+                 re->catch_win == orig_win)) {
+                matched = true;
+                // redirect?
+                if (re->redirect_win != None) {
+                    e->xany.window = re->redirect_win;
+                } else {
+                    drop_event = true;
+                }
+            }
+
+            // does this event stop this redirect?
+            if (e->type == re->stop_type &&
+                ((re->stop_win == None && matched) ||
+                 re->stop_win == orig_win)) {
+                RedirectEvents::iterator next_it = it;
+                ++next_it;
+                delete (*it);
+                m_redirect_events.erase(it);
+                it = next_it;
+            } else
+                ++it;
         }
 
+        // if one of the redirects says to drop it, we do
+        if (drop_event)
+            return;
     }
+
+
     // try FbTk::EventHandler first
     FbTk::EventManager::instance()->handleEvent(*e);
 
@@ -1905,7 +1945,6 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
         return;
     }
 #ifdef DEBUG
-    cerr<<"-----------------"<<endl;
     cerr<<"Setting Focused window = "<<client<<endl;
     cerr<<"Current Focused window = "<<m_focused_window<<endl;
     cerr<<"------------------"<<endl;
@@ -1978,16 +2017,38 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
  * last_focused is set to something if we want to make use of the
  * previously focused window (it must NOT be set focused now, it 
  *   is probably dying).
+ *
+ * ignore_event means that it ignores the given event until
+ * it gets a focusIn
  */
-void Fluxbox::revertFocus(BScreen &screen) {
+void Fluxbox::revertFocus(BScreen &screen, bool wait_for_end) {
     // Relevant resources:
     // resource.focus_last = whether we focus last focused when changing workspace
     // Fluxbox::FocusModel = sloppy, click, whatever
-    WinClient *next_focus = screen.getLastFocusedWindow(screen.currentWorkspaceID());
+    if (wait_for_end) {
+        if (m_focus_revert_screen == 0) {
+            m_focus_revert_screen = &screen;
+            return;
+        } else if (m_focus_revert_screen == &screen)
+            return;
+        else 
+            cerr<<"Unexpected screen in revertFocus()"<<endl;
+    }
+
+    WinClient *next_focus = 0;
+    long ignore_event = 0;
+    if (screen.doFocusLast()) {
+        next_focus = screen.getLastFocusedWindow(screen.currentWorkspaceID());
+
+        // when doFocusLast is set, we don't do exact sloppy focus - we 
+        // go to the last focused window, rather than the pointer window
+        // i.e. we ignore any EnterNotify events until the focus sending arrives
+        ignore_event = EnterNotify;
+    }
 
     // if setting focus fails, or isn't possible, fallback correctly
     if (!(next_focus && next_focus->fbwindow() &&
-          next_focus->fbwindow()->setCurrentClient(*next_focus, true))) {
+          next_focus->fbwindow()->setCurrentClient(*next_focus, true, ignore_event))) {
         setFocusedWindow(0); // so we don't get dangling m_focused_window pointer
         switch (screen.getFocusModel()) {
         case SLOPPYFOCUS:
@@ -2016,4 +2077,42 @@ void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
     XGrabKeyboard(FbTk::App::instance()->display(),
                   screen.rootWindow().window(), True, 
                   GrabModeAsync, GrabModeAsync, CurrentTime);
+}
+
+/**
+ * Allows people to create special event exclusions/redirects
+ * useful for getting around X followup events, or for
+ * effectively grabbing things
+ * The ignore is automatically removed when it finds the wakeup_win
+ * with an event matching the wakeup_mask
+ * ignore None means all windows
+ */
+void Fluxbox::addRedirectEvent(BScreen *screen, 
+                               long catch_type, Window catch_win, 
+                               long stop_type, Window stop_win, 
+                               Window redirect_win) {
+    RedirectEvent * re = new RedirectEvent();
+    re->screen = screen;
+    re->catch_type = catch_type;
+    re->catch_win = catch_win;
+    re->stop_type = stop_type;
+    re->stop_win = stop_win;
+    re->redirect_win = redirect_win;
+
+    m_redirect_events.push_back(re);
+}
+
+// So that an object may remove the ignore on its own
+void Fluxbox::removeRedirectEvent(long stop_type, Window stop_win) {
+    RedirectEvents::iterator it = m_redirect_events.begin();
+    RedirectEvents::iterator it_end = m_redirect_events.end();
+    RedirectEvent *re = 0;
+    for (; it != it_end; ++it) {
+        re = *it;
+        if (re->stop_type == re->stop_type && re->stop_win == stop_win) {
+            m_redirect_events.erase(it);
+            delete re;
+            return;
+        }
+    }
 }
