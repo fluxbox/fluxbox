@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.9 2003/06/22 14:16:25 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.10 2003/06/30 15:00:32 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
 #include "FbTk/Theme.hh"
+#include "Screen.hh"
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -43,7 +44,16 @@ void ExecuteCmd::execute() {
         std::string displaystring("DISPLAY=");
         displaystring += DisplayString(FbTk::App::instance()->display());
         char intbuff[64];
-        sprintf(intbuff, "%d", m_screen_num);
+        int screen_num = m_screen_num;
+        if (screen_num < 0) {
+            if (Fluxbox::instance()->keyScreen() == 0)
+                screen_num = 0;
+            else
+                screen_num = Fluxbox::instance()->keyScreen()->screenNumber();
+        } 
+
+        sprintf(intbuff, "%d", screen_num);
+
         // remove last number of display and add screen num
         displaystring.erase(displaystring.size()-1);
         displaystring += intbuff;
