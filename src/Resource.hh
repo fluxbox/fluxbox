@@ -19,6 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+// $Id: Resource.hh,v 1.2 2002/01/21 02:11:49 fluxgen Exp $
+
 #ifndef _RESOURCE_HH_
 #define _RESOURCE_HH_
 
@@ -102,6 +104,5 @@ private:
 	ResourceList m_resourcelist;
 
 };
-
 
 #endif //_RESOURCE_HH_

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.11 2002/01/20 02:25:35 fluxgen Exp $
+// $Id: Screen.hh,v 1.12 2002/01/21 02:12:11 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
@@ -30,8 +30,6 @@
 
 #include "Theme.hh"
 
-// forward declaration
-class BScreen;
 #ifndef _BASEDISPLAY_HH_
 #include "BaseDisplay.hh"
 #endif
@@ -105,8 +103,8 @@ public:
 	inline const bool doMaxOverSlit(void) { return *resource.max_over_slit; }
 	inline const bool doOpaqueMove(void) { return *resource.opaque_move; }
 	inline const bool doFullMax(void) { return *resource.full_max; }
-	inline const bool doFocusNew(void) { return resource.focus_new; }
-	inline const bool doFocusLast(void) { return resource.focus_last; }
+	inline const bool doFocusNew(void) { return *resource.focus_new; }
+	inline const bool doFocusLast(void) { return *resource.focus_last; }
 
 	inline const GC &getOpGC() const { return theme->getOpGC(); }
 	
@@ -156,32 +154,30 @@ public:
 
 	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r; }
 	inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd; }
-	inline void saveSloppyFocus(Bool s) { resource.sloppy_focus = s; }
-	inline void saveSemiSloppyFocus(Bool s) { resource.semi_sloppy_focus = s; }
-	inline void saveAutoRaise(Bool a) { resource.auto_raise = a; }
-	inline void saveWorkspaces(int w) { resource.workspaces = w; }
-	inline void saveToolbarOnTop(Bool r) { resource.toolbar_on_top = r; }
-	inline void saveToolbarAutoHide(Bool r) { resource.toolbar_auto_hide = r; }
-	inline void saveToolbarWidthPercent(int w) { resource.toolbar_width_percent = w; }
+	inline void saveSloppyFocus(bool s) { resource.sloppy_focus = s; }
+	inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s; }
+	inline void saveAutoRaise(bool a) { resource.auto_raise = a; }
+	inline void saveWorkspaces(int w) { *resource.workspaces = w; }
+	inline void saveToolbarOnTop(bool r) { *resource.toolbar_on_top = r; }
+	inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r; }
+	inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w; }
 	inline void saveToolbarPlacement(Toolbar::Placement p) { *resource.toolbar_placement = p; }
 	inline void savePlacementPolicy(int p) { resource.placement_policy = p; }
 	inline void saveRowPlacementDirection(int d) { resource.row_direction = d; }
 	inline void saveColPlacementDirection(int d) { resource.col_direction = d; }
 	inline void saveEdgeSnapThreshold(int t) { resource.edge_snap_threshold = t; }
-	inline void saveImageDither(Bool d) { resource.image_dither = d; }
-	inline void saveMaxOverSlit(Bool m) { resource.max_over_slit = m; }
-	inline void saveOpaqueMove(Bool o) { resource.opaque_move = o; }
-	inline void saveFullMax(Bool f) { resource.full_max = f; }
-	inline void saveFocusNew(Bool f) { resource.focus_new = f; }
-	inline void saveFocusLast(Bool f) { resource.focus_last = f; }
+	inline void saveImageDither(bool d) { resource.image_dither = d; }
+	inline void saveMaxOverSlit(bool m) { resource.max_over_slit = m; }
+	inline void saveOpaqueMove(bool o) { resource.opaque_move = o; }
+	inline void saveFullMax(bool f) { resource.full_max = f; }
+	inline void saveFocusNew(bool f) { resource.focus_new = f; }
+	inline void saveFocusLast(bool f) { resource.focus_last = f; }
 	inline void saveTabWidth(unsigned int w) { resource.tab_width = w; }
 	inline void saveTabHeight(unsigned int h) { resource.tab_height = h; }
 	inline void saveTabPlacement(Tab::Placement p) { *resource.tab_placement = p; }
 	inline void saveTabAlignment(Tab::Alignment a) { *resource.tab_alignment = a; }
-	inline void saveTabRotateVertical(Bool r)
-	{ resource.tab_rotate_vertical = r; }
-	inline void saveSloppyWindowGrouping(Bool s)
-	{ resource.sloppy_window_grouping = s; }
+	inline void saveTabRotateVertical(Bool r) { resource.tab_rotate_vertical = r; }
+	inline void saveSloppyWindowGrouping(Bool s) { resource.sloppy_window_grouping = s; }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
 
@@ -287,9 +283,9 @@ private:
 		Resource<bool> toolbar_on_top, toolbar_auto_hide,
 			image_dither, opaque_move, full_max,
 			max_over_slit, tab_rotate_vertical,
-			sloppy_window_grouping;
-		Resource<std::string> rootcommand;
-		bool auto_raise, sloppy_focus, semi_sloppy_focus, focus_new, focus_last,
+			sloppy_window_grouping, focus_last, focus_new;
+		Resource<std::string> rootcommand;		
+		bool auto_raise, sloppy_focus, semi_sloppy_focus,
 			ordered_dither;
 		Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold,
 			tab_width, tab_height;
