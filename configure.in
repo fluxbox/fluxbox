@@ -101,6 +101,20 @@ AC_ARG_ENABLE(
   AC_DEFINE(SLIT, 1, " compile with slit")
 )
 
+dnl Check for Remember options
+AC_MSG_CHECKING([whether to include remember functionality])
+AC_ARG_ENABLE(
+  remember, [  --enable-remember           include code for Remembering attributes [default=yes]],
+  if test x$enableval = "xyes"; then
+    AC_MSG_RESULT([yes])
+    AC_DEFINE(REMEMBER, 1, " compile with remember")
+  else
+    AC_MSG_RESULT([no])
+  fi,
+  AC_MSG_RESULT([yes])
+  AC_DEFINE(REMEMBER, 1, " compile with remember")
+)
+
 AC_MSG_CHECKING([whether to include the new WM Spec])
 AC_ARG_ENABLE(
   newwmspec,
