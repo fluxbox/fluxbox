@@ -19,19 +19,55 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.3 2003/04/25 17:35:28 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.4 2003/04/28 22:41:28 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
 #include "Window.hh"
+#include "WinButtonTheme.hh"
+
+#include <iostream>
+using namespace std;
+
+namespace {
+
+inline void scale(const FbTk::Button &btn, WinButtonTheme::PixmapWithMask &pm) {
+    // copy pixmap and scale it
+    pm.pixmap_scaled = pm.pixmap;
+    pm.mask_scaled = pm.mask;
+
+    if (pm.pixmap_scaled.drawable() != 0)
+        pm.pixmap_scaled.scale(btn.width(), btn.height());
+    if (pm.mask_scaled.drawable() != 0)
+        pm.mask_scaled.scale(btn.width(), btn.height());
+}
+
+void updateScale(const FbTk::Button &btn, WinButtonTheme &theme) {
+
+    // we need to scale our pixmaps to right size
+    scale(btn, theme.closePixmap());
+    scale(btn, theme.closePressedPixmap());
+    scale(btn, theme.maximizePixmap());
+    scale(btn, theme.maximizePressedPixmap());
+    scale(btn, theme.iconifyPixmap());
+    scale(btn, theme.iconifyPressedPixmap());
+    scale(btn, theme.shadePixmap());
+    scale(btn, theme.shadePressedPixmap());
+    scale(btn, theme.stickPixmap());
+    scale(btn, theme.stickPressedPixmap());
+}
+
+};
 
 WinButton::WinButton(const FluxboxWindow &listen_to, 
+                     WinButtonTheme &theme,
                      Type buttontype, const FbTk::FbWindow &parent,
                      int x, int y,
                      unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
-    m_type(buttontype), m_listen_to(listen_to) {
+    m_type(buttontype), m_listen_to(listen_to), m_theme(theme) {
 
+    theme.reconfigSig().attach(this);
 }
 
 void WinButton::exposeEvent(XExposeEvent &event) {
@@ -45,41 +81,123 @@ void WinButton::buttonReleaseEvent(XButtonEvent &event) {
 }
 
 void WinButton::drawType() {
-    if (gc() == 0) // must have valid graphic context
-        return;
+
 
     switch (m_type) {
     case MAXIMIZE:
-        window().drawRectangle(gc(),
-                               2, 2, width() - 5, height() - 5);
-        window().drawLine(gc(),
-                          2, 3, width() - 3, 3);
+        if (m_theme.maximizePixmap().pixmap_scaled.drawable() != 0) {
+            if (pressed()) { 
+                window().setBackgroundPixmap(m_theme.
+                                             maximizePressedPixmap().
+                                             pixmap_scaled.drawable());
+            } else if (m_theme.maximizePixmap().pixmap_scaled.drawable()) {
+                window().setBackgroundPixmap(m_theme.
+                                             maximizePixmap().
+                                             pixmap_scaled.drawable());
+            }
+            
+            window().clear();
+            
+        } else {
+            if (gc() == 0) // must have valid graphic context
+                return;
+            window().drawRectangle(gc(),
+                                   2, 2, width() - 5, height() - 5);
+            window().drawLine(gc(),
+                              2, 3, width() - 3, 3);
+        }
         break;
     case MINIMIZE:
-        window().drawRectangle(gc(),
-                               2, height() - 5, width() - 5, 2);
+        if (m_theme.iconifyPixmap().pixmap_scaled.drawable() != 0) {
+            if (pressed()) { 
+                window().setBackgroundPixmap(m_theme.
+                                             iconifyPressedPixmap().
+                                             pixmap_scaled.drawable());
+            } else if (m_theme.iconifyPixmap().pixmap_scaled.drawable()){
+                window().setBackgroundPixmap(m_theme.
+                                             iconifyPixmap().
+                                             pixmap_scaled.drawable());
+            }
+            
+            window().clear();
+            
+        } else {
+            if (gc() == 0) // must have valid graphic context
+                return;
+            window().drawRectangle(gc(),
+                                   2, height() - 5, width() - 5, 2);
+        }
         break;
     case STICK:
-        if (m_listen_to.isStuck()) {
-            window().fillRectangle(gc(),
-                                   width()/2 - width()/4, height()/2 - height()/4,
-                                   width()/2, height()/2);
-        } else {
-            window().fillRectangle(gc(),
-                           width()/2, height()/2,
-                           width()/5, height()/5);
-        }
+        if (m_theme.stickPixmap().pixmap_scaled.drawable() != 0) {
+            if (pressed()) { 
+                window().setBackgroundPixmap(m_theme.
+                                             stickPressedPixmap().
+                                             pixmap_scaled.drawable());
 
+            } else if (m_theme.closePixmap().pixmap_scaled.drawable()) {
+                window().setBackgroundPixmap(m_theme.
+                                             stickPixmap().
+                                             pixmap_scaled.drawable());
+            }
+            
+            window().clear();
+            
+        } else {
+            if (m_listen_to.isStuck()) {
+                window().fillRectangle(gc(),
+                                       width()/2 - width()/4, height()/2 - height()/4,
+                                       width()/2, height()/2);
+            } else {
+                if (gc() == 0) // must have valid graphic context
+                    return;
+                window().fillRectangle(gc(),
+                                       width()/2, height()/2,
+                                       width()/5, height()/5);
+            }
+        }
         break;
-    case CLOSE:    
-        window().drawLine(gc(), 
-                          2, 2,
-                          width() - 3, height() - 3);
-        window().drawLine(gc(), 
-                          2, width() - 3, 
-                          height() - 3, 2);
+    case CLOSE:
+        
+        if (m_theme.closePixmap().pixmap_scaled.drawable() != 0) {
+            if (pressed()) { 
+                window().setBackgroundPixmap(m_theme.
+                                             closePressedPixmap().
+                                             pixmap_scaled.drawable());
+
+            } else if (m_theme.closePixmap().pixmap_scaled.drawable()) {
+                window().setBackgroundPixmap(m_theme.
+                                             closePixmap().
+                                             pixmap_scaled.drawable());
+            }
+            
+            window().clear();
+            
+        } else {
+            if (gc() == 0) // must have valid graphic context
+                return;
+            window().drawLine(gc(), 
+                              2, 2,
+                              width() - 3, height() - 3);
+            window().drawLine(gc(), 
+                              2, width() - 3, 
+                              height() - 3, 2);
+        }
         break;
     case SHADE:
+        if (m_theme.shadePixmap().pixmap_scaled.drawable() != 0) {
+            if (pressed()) { 
+                window().setBackgroundPixmap(m_theme.
+                                             shadePressedPixmap().
+                                             pixmap_scaled.drawable());
+            } else if (m_theme.shadePixmap().pixmap_scaled.drawable()) {
+                window().setBackgroundPixmap(m_theme.
+                                             shadePixmap().
+                                             pixmap_scaled.drawable());
+            }
+            
+            window().clear();            
+        }
         break;
     }
 }
@@ -91,4 +209,10 @@ void WinButton::clear() {
 
 void WinButton::update(FbTk::Subject *subj) {
     clear();
+
+    //!! TODO 
+    // We need to optimize this
+    // This shouldn't be run on every button in every fluxbox window
+    updateScale(*this, m_theme);
+    drawType();
 }
