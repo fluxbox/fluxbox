@@ -107,7 +107,7 @@ Minor Features:
  - fix up focus issues                  (Simon)
  * snap to windows                      (Simon)
  - improved command-line help option    (Henrik)
- - pixmap buttons                       (Henrik)
+ = pixmap buttons                       (Henrik)
  + Shaped menu/slit/toolbar             (Henrik)
 Bugfixes/lower priority:
  - Bugs from 0.9.1                      (Both)
