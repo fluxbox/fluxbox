@@ -3,14 +3,19 @@ Changes for 0.1.7:
    * Added leftWorkspace and rightWorkspace, now those keybindings
      actually work. (Claes Nästén)
    * Fixed small glitch in Tab.cc. (Claes Nästén)
-
+*02/01/31:
+   * Fixed _WIN_WORKSPACE and _WIN_WORKSPACE_COUNT (Gnome support)
+*02/01/30:
+   * Fixed width or height less than zero problem in 
+     FluxboxWindow::configure
+   * Added numObjects() (Thanks Jesper Louis Andersen)
 *02/01/27:
    * Clean up in menu loading
-   * Moved from old C style file reading to c++ istream
-     in menu loading
+   * Moved from old C style file reading to c++ istream in menu loading
    * Fixed small bug in StringUtil::expandFilename (Thanks Mauro Persano)
 *02/01/26:
-   * Fixed BadWindow error from ~FluxboxWindow (frame.handle was destroyed before the children)
+   * Fixed BadWindow error from ~FluxboxWindow (frame.handle was destroyed 
+     before the children)
    * Fixed indentation in BaseDisplay.hh/.cc and changed some variables
    * Updated Russian translation (Thanks Anton Denisov)
    * Clean up in Tab code (Thanks Jesper Louis Andersen)
@@ -72,7 +77,7 @@ Changes for 0.1.6:
 *02/01/06:
    * Changed toolbar placement enums to uppercase letters (Claes Nästén)
    * Moved strcasestr from Theme.cc to StringUtil 
-   * Created StringUtil and DrawUtil and moved all functions from Misc to them   
+   * Created StringUtil and DrawUtil and moved all functions from Misc to them
 *02/01/05:
    * Changed placement/alignment enums to uppercase letters (Claes Nästén)
    * Fixed tab/iconbar resource bug (Claes Nästén)
