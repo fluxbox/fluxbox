@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.8 2002/01/27 13:08:53 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.9 2002/02/04 06:58:50 fluxgen Exp $
 
 #ifndef	 _BASEDISPLAY_HH_
 #define	 _BASEDISPLAY_HH_
@@ -64,6 +64,20 @@ public:
 		ATTRIB_STACK = 0x20,		
 		ATTRIB_DECORATION = 0x40
 	};
+	#ifdef GNOME
+	enum WinState {
+		WIN_STATE_STICKY = (1<<0), // everyone knows sticky
+		WIN_STATE_MINIMIZED = (1<<1), // Reserved - definition is unclear
+		WIN_STATE_MAXIMIZED_VERT  = (1<<2), // window in maximized V state
+		WIN_STATE_MAXIMIZED_HORIZ = (1<<3), // window in maximized H state
+		WIN_STATE_HIDDEN          = (1<<4), // not on taskbar but window visible
+		WIN_STATE_SHADED          = (1<<5), // shaded (MacOS / Afterstep style)
+		WIN_STATE_HID_WORKSPACE   = (1<<6), // not on current desktop
+		WIN_STATE_HID_TRANSIENT   = (1<<7), // owner of transient is hidden
+		WIN_STATE_FIXED_POSITION  = (1<<8), // window is fixed in position even
+		WIN_STATE_ARRANGE_IGNORE  = (1<<9) // ignore for auto arranging
+	};
+	#endif
 	enum Decor {DECOR_NONE=0, DECOR_NORMAL, DECOR_TINY, DECOR_TOOL};
 	enum Stack {STACK_TOP=0, STACK_NORMAL, STACK_BOTTOM};
 	
@@ -86,6 +100,7 @@ public:
 	inline Atom &getGnomeWorkspaceAtom() { return gnome_wm_win_workspace; }
 	inline Atom &getGnomeWorkspaceCountAtom() { return gnome_wm_win_workspace_count; }
 	inline Atom &getGnomeWorkspaceNamesAtom() { return gnome_wm_win_workspace_names; }
+	inline Atom &getGnomeStateAtom() { return gnome_wm_win_state; }
 #endif //GNOME
 
 	inline const Atom &getWMChangeStateAtom(void) const
@@ -150,7 +165,7 @@ public:
 	inline const Atom &getFluxboxCycleWindowFocusAtom(void) const
 		{ return blackbox_cycle_window_focus; }
 
-#ifdef		NEWWMSPEC
+#ifdef NEWWMSPEC
 
 	// root window properties
 	inline const Atom &getNETSupportedAtom(void) const
