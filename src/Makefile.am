@@ -49,7 +49,7 @@ fluxbox_SOURCES= BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 						Workspace.cc Workspace.hh Workspacemenu.cc Workspacemenu.hh \
 						fluxbox.cc fluxbox.hh bsd-snprintf.c bsd-snprintf.h \
 						i18n.cc i18n.hh main.cc	Tab.hh Tab.cc Keys.cc Keys.hh\
-						IconBar.cc IconBar.hh Theme.hh Theme.cc misc.hh misc.cc \
-						Rotated.hh				
+						IconBar.cc IconBar.hh Theme.hh Theme.cc misc.hh misc.cc
+								
 MAINTAINERCLEANFILES= Makefile.in
 
