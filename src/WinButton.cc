@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.12 2003/09/12 23:36:16 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.13 2003/09/14 10:22:45 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -40,7 +40,6 @@ WinButton::WinButton(const FluxboxWindow &listen_to,
 void WinButton::exposeEvent(XExposeEvent &event) {
     FbTk::Button::exposeEvent(event);
     drawType();
-    updateTransparent();
 }
 
 void WinButton::buttonReleaseEvent(XButtonEvent &event) {
