@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.60 2002/06/14 09:59:49 fluxgen Exp $
+// $Id: Window.cc,v 1.61 2002/07/13 21:37:52 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -212,8 +212,7 @@ tab(0)
 	// adjust the window decorations based on transience and window sizes
 	if (transient) {
 		decorations.maximize =  functions.maximize = false;
-		//we can still use the handles to resize it
-		decorations.handle = decorations.border = true;
+		decorations.handle = decorations.border = false;
 	}	
 	
 	if ((client.normal_hint_flags & PMinSize) &&
