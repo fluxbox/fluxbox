@@ -21,15 +21,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.35 2002/11/25 14:07:21 fluxgen Exp $
+// $Id: Theme.cc,v 1.36 2002/11/30 20:14:04 fluxgen Exp $
 
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
-#endif // _GNU_SOURCE
-
-#ifdef HAVE_CONFIG_H
-#	include "config.h"
-#endif //HAVE_CONFIG_H_
 
 #include "Theme.hh"
 
@@ -37,11 +30,22 @@
 #include "Basemenu.hh"
 #include "StringUtil.hh"
 
+#ifndef   _GNU_SOURCE
+#define   _GNU_SOURCE
+#endif // _GNU_SOURCE
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif //HAVE_CONFIG_H_
+
 #include <X11/Xresource.h>
 
-#ifdef		HAVE_CTYPE_H
-#	include <ctype.h>
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
 #endif // HAVE_CTYPE_H
+
+// note: obsolete
+extern void bexec(const char *command, char *displaystring);
 
 #include <cstdio>
 #include <cstdarg>
@@ -51,20 +55,14 @@ using namespace std;
 
 Theme::Theme(Display *display, Window rootwindow, Colormap colormap, 
 	int screennum, BImageControl *ic, const char *filename, const char *rootcommand):
-m_imagecontrol(ic),
 m_display(display),
 m_colormap(colormap),
 m_screennum(screennum),
 m_rootcommand(rootcommand==0 ? "" : rootcommand) //we dont want to send 0-pointer to std::string	
 {
-#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): Creating."<<endl;
-#endif //DEBUG
-	//default settings	
-
 	load(filename);
+
 	//-------- create gc for the styles ------------
-	
 	
 	XGCValues gcv;
 	unsigned long gc_value_mask = GCForeground;

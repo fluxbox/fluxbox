@@ -22,19 +22,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.18 2002/11/25 14:07:21 fluxgen Exp $
+// $Id: Theme.hh,v 1.19 2002/11/30 20:14:04 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
 
-#include "Image.hh"
 #include "DrawUtil.hh"
 #include "Font.hh"
+#include "Color.hh"
+#include "Texture.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 #include <string>
+
+class BImageControl;
+
 /**
 	Main theme class, holds themes for 
 	Window, toolbar, slit, menu and the rootCommand, for a specific screen.
@@ -143,7 +147,6 @@ private:
 	unsigned int m_bevel_width, m_border_width, m_handle_width, m_frame_width;
 	FbTk::Color m_border_color;
 	GC m_opgc;
-	BImageControl *m_imagecontrol;
 	Display *m_display;	 
 	XrmDatabase m_database;
 	Colormap m_colormap;
