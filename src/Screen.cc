@@ -676,8 +676,6 @@ void BScreen::changeWorkspaceID(int id) {
 			current_workspace->getLastFocusedWindow()->setInputFocus();
 		}
 	}
-	
-
 
 	updateNetizenCurrentWorkspace();
 }

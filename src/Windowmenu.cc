@@ -136,10 +136,15 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 #endif // NLS
 			  "Close"),
 	 BScreen::WindowClose);
+  insert(i18n->getMessage(
+#ifdef    NLS
+			  WindowmenuSet, WindowmenuTab,
+#else // !NLS
+			  0, 0,
+#endif // NLS
+			  "Tab"),
+	 BScreen::WindowTab);
 
-	//TODO: nls
-  insert("Tab", BScreen::WindowTab);
-	 
   update();
 
   setItemEnabled(1, window->hasTitlebar());

@@ -256,7 +256,7 @@ Configmenu::Focusmenu::Focusmenu(Configmenu *cm) : Basemenu(cm->screen) {
 #else // !NLS
 				0, 0,
 #endif // NLS
-				"Auto Raise"), 3);
+				"Auto Raise"), 4);
 
 	update();
 

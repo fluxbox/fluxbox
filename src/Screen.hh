@@ -168,6 +168,10 @@ public:
 	{ return resource.row_direction; }
 	inline const int &getColPlacementDirection(void) const
 	{ return resource.col_direction; }
+	inline const unsigned int &getTabWidth(void) const
+	{ return resource.tab_width; }
+	inline const unsigned int &getTabHeight(void) const
+	{ return resource.tab_height; }
 	inline const int getTabPlacement(void)
 	{ return resource.tab_placement; }
 	inline const int getTabAlignment(void)
@@ -193,6 +197,8 @@ public:
 	inline void saveFullMax(Bool f) { resource.full_max = f; }
 	inline void saveFocusNew(Bool f) { resource.focus_new = f; }
 	inline void saveFocusLast(Bool f) { resource.focus_last = f; }
+	inline void saveTabWidth(unsigned int w) { resource.tab_width = w; }
+	inline void saveTabHeight(unsigned int h) { resource.tab_height = h; }
 	inline void saveTabPlacement(unsigned int p) { resource.tab_placement = p; }
 	inline void saveTabAlignment(unsigned int a) { resource.tab_alignment = a; }
 	inline void saveTabRotateVertical(Bool r)
@@ -309,7 +315,7 @@ private:
 		int workspaces, toolbar_placement, toolbar_width_percent, placement_policy,
 			edge_snap_threshold, row_direction, col_direction;
 
-		unsigned int tab_placement, tab_alignment;
+		unsigned int tab_placement, tab_alignment, tab_width, tab_height;
 
 #ifdef		SLIT
 		Bool slit_on_top, slit_auto_hide;

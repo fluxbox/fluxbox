@@ -1798,32 +1798,6 @@ void Fluxbox::load_rc(void) {
 	} else
 		resource.tabs = true;
 
-	if (XrmGetResource(database, "session.tab.width", "Session.Tab.Width",
-				&value_type, &value)) {
-		if (sscanf(value.addr, "%d", &resource.tabwidth) != 1)
-			resource.tabwidth = 64; // default tab width
-		else {
-			if (resource.tabwidth < 5) // are these values sane?
-				resource.tabwidth = 5; 
-			if (resource.tabwidth > 256)
-				resource.tabwidth = 256;
-		}
-	} else
-		resource.tabwidth = 64; // default tab width
-
-	if (XrmGetResource(database, "session.tab.height", "Session.Tab.Height",
-				&value_type, &value)) {
-		if (sscanf(value.addr, "%d", &resource.tabheight) != 1)
-			resource.tabheight = 16; // default tab height
-		else {
-			if (resource.tabheight < 5) // are these values sane?
-				resource.tabheight = 5; 
-			if (resource.tabheight > 50)
-				resource.tabheight = 50;
-		}
-	} else
-		resource.tabheight = 16; // default tab height
-
 	if (XrmGetResource(database, "session.colorsPerChannel",
 			"Session.ColorsPerChannel", &value_type, &value)) {
 		if (sscanf(value.addr, "%d", &resource.colors_per_channel) != 1)
@@ -2323,6 +2297,46 @@ void Fluxbox::load_rc(BScreen *screen) {
       screen->saveOpaqueMove(False);
   } else
     screen->saveOpaqueMove(False);
+
+	sprintf(name_lookup,  "session.screen%d.tab.width", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Tab.Width", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup,
+			&value_type, &value)) {
+		unsigned int tmp_val;
+
+		if (sscanf(value.addr, "%d", &tmp_val) != 1)
+			screen->saveTabWidth(64); // default tab width
+		else {	
+			//TODO: should we remove checks for max/min?
+			if (tmp_val > 512)
+				screen->saveTabWidth(512);
+			else if (tmp_val < 5)
+				screen->saveTabWidth(5);
+			else
+				screen->saveTabWidth(tmp_val);
+		}
+	} else
+		screen->saveTabWidth(64); // default tab width
+
+  sprintf(name_lookup,  "session.screen%d.tab.height", screen_number);
+  sprintf(class_lookup, "Session.Screen%d.Tab.Height", screen_number);
+	if (XrmGetResource(database, name_lookup, class_lookup,
+				&value_type, &value)) {
+		unsigned int tmp_val;
+
+		if (sscanf(value.addr, "%d", &tmp_val) != 1)
+			screen->saveTabHeight(16); // default tab height
+		else {
+			//TODO: should we remove checks for max/min?
+			if (tmp_val > 50)
+				screen->saveTabHeight(50);
+			else if (tmp_val < 5)
+				screen->saveTabHeight(5);
+			else
+				screen->saveTabHeight(tmp_val);
+		}
+	} else
+		screen->saveTabHeight(16); // default tab height
 
   sprintf(name_lookup,  "session.screen%d.tab.placement", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Tab.Placement", screen_number);

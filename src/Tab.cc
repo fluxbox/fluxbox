@@ -60,11 +60,11 @@ Tab::Tab(FluxboxWindow *win, Tab *prev, Tab *next) {
 	if ((m_win->screen->getTabPlacement() == PLeft ||
 			m_win->screen->getTabPlacement() == PRight) &&
 			m_win->screen->isTabRotateVertical()) {
-		m_size_w = Fluxbox::instance()->getTabHeight();
-		m_size_h = Fluxbox::instance()->getTabWidth();
+		m_size_w = m_win->screen->getTabHeight();
+		m_size_h = m_win->screen->getTabWidth();
 	} else {
-		m_size_w = Fluxbox::instance()->getTabWidth();
-		m_size_h = Fluxbox::instance()->getTabHeight();
+		m_size_w = m_win->screen->getTabWidth();
+		m_size_h = m_win->screen->getTabHeight();
 	}
 
 	createTabWindow();
@@ -297,7 +297,7 @@ void Tab::shade() {
 	for(Tab *first = getFirst(this); first != 0; first = first->m_next) {
 		if (first==this)
 			continue;
-			first->m_win->shade();
+		first->m_win->shade();
 	}
 
 	if (m_win->screen->getTabPlacement() == PLeft ||
@@ -633,7 +633,7 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 							dest_y -= (m_win->frame.height / 2) - (m_size_h / 2);
 							break;
 						case ALeft:
-							dest_y -= m_win->frame.height + m_size_h;
+							dest_y -= m_win->frame.height - m_size_h;
 							break;
 						}
 					break;
@@ -645,13 +645,13 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 							dest_y -= (m_win->frame.height / 2) - (m_size_h / 2);
 							break;
 						case ALeft:
-							dest_y -= m_win->frame.height + m_size_h;
+							dest_y -= m_win->frame.height - m_size_h;
 							break;
 						}
 					break;
 				}
-				//TODO: this causes an calculate increase event, even if
-				// only moving a tab!
+				//TODO: this causes an calculate increase event, even if we
+				// only are moving a window
 				m_win->configure(dest_x, dest_y, m_win->frame.width, m_win->frame.height);
 			}
 		}
@@ -831,73 +831,56 @@ void Tab::insert(Tab *tab) {
 
 	m_next = tab;	
 
+	bool resize_tabs = false;
+
 	//TODO: cleanup and optimize
 	//move and resize all windows in the tablist we inserted
 	//only from first tab of the inserted chain to the last
 	for (; tab!=last->m_next; tab=tab->m_next) {
 		if (m_win->isShaded() != tab->m_win->isShaded()) {
+			tab->m_stoptabs = true; // we don't want any actions performed on the
+															// tabs, just the tab windows!
 			if (m_win->screen->getTabPlacement() == PLeft ||
-					m_win->screen->getTabPlacement() == PRight) {
-				// if window were grouping to, we need to shade the tab window
-				// _after_ reconfigure
-				if(m_win->isShaded()) {
-						tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-							m_win->frame.width, m_win->frame.height);
-						tab->m_win->shade();
-				// don't need unshading as configure will fix that for me
-				} else {
-					if ((m_win->frame.width != tab->m_win->frame.width) ||
-							(m_win->frame.height != tab->m_win->frame.height)) {
-						tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-							m_win->frame.width, m_win->frame.height);
-					} else // need to change shade state as configure _won't_
-							// do the trick if the new and old size is the same
-						tab->m_win->shade();
-				}
+					m_win->screen->getTabPlacement() == PRight)
+				resize_tabs = true;
 
-				tab->resizeGroup();
-				tab->calcIncrease();
-
-			} else { // PTop & PBottom
-				if(m_win->isShaded()) {
-
+			// if the window we are grouping to, we need to shade the tab window
+			// _after_ reconfigure
+			if(m_win->isShaded()) {
 					tab->m_win->configure(m_win->frame.x, m_win->frame.y,
 							m_win->frame.width, m_win->frame.height);
 					tab->m_win->shade();
-				// don't need unshading as configure will fix that for me
-				} else {
-					if ((m_win->frame.width != tab->m_win->frame.width) ||
-							(m_win->frame.height != tab->m_win->frame.height)) {
-
-						tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-							m_win->frame.width, m_win->frame.height);
-					} else
-						tab->m_win->shade();
-				}
+			} else {
+					tab->m_win->shade(); // switch to correct shade state
+					tab->m_win->configure(m_win->frame.x, m_win->frame.y,
+						m_win->frame.width, m_win->frame.height);
 			}
 
-		// both window have the same shaded state
-		} else {
-			if ((m_win->frame.width != tab->m_win->frame.width) ||
-					(m_win->frame.height != tab->m_win->frame.height)) {
+			tab->m_stoptabs = false;
 
-				tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-					m_win->frame.width, m_win->frame.height);
+		// both window have the same shaded state and have different sizes,
+		// checking this so that I'll only do shade on windows if configure did
+		// anything.
+		} else if ((m_win->frame.width != tab->m_win->frame.width) ||
+				(m_win->frame.height != tab->m_win->frame.height)) {
 
-				// need to shade the tab window as configure will mess it up
-				if (m_win->isShaded())
-					tab->m_win->shade();
-			}
+			tab->m_win->configure(m_win->frame.x, m_win->frame.y,
+				m_win->frame.width, m_win->frame.height);
+
+			// need to shade the tab window as configure will mess it up
+			if (m_win->isShaded())
+				tab->m_win->shade();
 		}
+	}
 
-		// TODO: should check if alignemnt is left or right,
-		// cus then resize is allready done resize tabs 
-		if(m_win->screen->getTabAlignment() == ARelative) {
-			tab->resizeGroup();
-			tab->calcIncrease();
-		}
-		m_win->tab->setPosition();
-	}	
+	// resize if in relative mode or resize_tabs is true
+	if(m_win->screen->getTabAlignment() == ARelative ||
+			resize_tabs) {
+		resizeGroup();
+		calcIncrease();
+	}
+	// reposition tabs
+	setPosition();
 }
 
 //---------- disconnect() --------------
@@ -970,11 +953,11 @@ void Tab::resizeGroup(void) {
 				m_win->screen->getTabPlacement() == PRight) &&
 				m_win->screen->isTabRotateVertical() &&
 				!m_win->isShaded()) {
-			first->setTabWidth(Fluxbox::instance()->getTabHeight());
-			first->setTabHeight(Fluxbox::instance()->getTabWidth());
+			first->setTabWidth(m_win->screen->getTabHeight());
+			first->setTabHeight(m_win->screen->getTabWidth());
 		} else {
-			first->setTabWidth(Fluxbox::instance()->getTabWidth());
-			first->setTabHeight(Fluxbox::instance()->getTabHeight());
+			first->setTabWidth(m_win->screen->getTabWidth());
+			first->setTabHeight(m_win->screen->getTabHeight());
 		}
 		//TODO: do I have to set this all the time?
 		first->m_configured = true; //used in Fluxbox::reconfigure()
@@ -1032,8 +1015,7 @@ unsigned int Tab::calcCenterYPos() {
 
 //------- getTabPlacementString ----------
 // Returns the tabplacement string of the 
-// tabplacement number on success else
-// 0.
+// tabplacement number on success else 0.
 //----------------------------------------
 const char *Tab::getTabPlacementString(int placement) {	
 	for (int i=0; i<(pnone / 5); i++) {
@@ -1059,8 +1041,7 @@ int Tab::getTabPlacementNum(const char *string) {
 
 //------- getTabAlignmentString ----------
 // Returns the tabplacement string of the 
-// tabplacement number on success else
-// 0.
+// tabplacement number on success else 0.
 //----------------------------------------
 const char *Tab::getTabAlignmentString(int placement) {	
 	for (int i=0; i<anone; i++) {

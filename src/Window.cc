@@ -291,12 +291,41 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 			client.normal_hint_flags & (PPosition|USPosition)) {
 		setGravityOffsets();
 
-		if ((fluxbox->isStartup()) ||
+		if (! fluxbox->isStartup()) { // is going to be used when position
+			if (decorations.tab) {			// window is cleanly fixed 
+				int real_x = frame.x;
+				int real_y = frame.y;
+
+				if (screen->getTabPlacement() == Tab::PTop)
+					real_y -= screen->getTabHeight();
+
+				else if (screen->getTabPlacement() == Tab::PLeft) {
+					if (screen->isTabRotateVertical())
+						real_x -= screen->getTabHeight();
+					else
+						real_x -= screen->getTabWidth();
+				}
+
+				if (real_x >= 0 && 
+						real_y + frame.y_border >= 0 &&
+						real_x <= (signed) screen->getWidth() &&
+						real_y <= (signed) screen->getHeight())
+					place_window = false;
+
+			} else if (frame.x >= 0 && // non tab
+					(signed) (frame.y + frame.y_border) >= 0 &&
+					frame.x <= (signed) screen->getWidth() &&
+					frame.y <= (signed) screen->getHeight())
+				place_window = false;
+		} else
+			place_window = false;
+
+/*		if ((fluxbox->isStartup()) ||
 				(frame.x >= 0 &&
 				(signed) (frame.y + frame.y_border) >= 0 &&
 				frame.x <= (signed) screen->getWidth() &&
 				frame.y <= (signed) screen->getHeight()))
-			place_window = false;
+			place_window = false; */
 			
 	}
 
@@ -1671,6 +1700,9 @@ void FluxboxWindow::setTab(bool flag) {
 	if (flag) {
 		if (!tab)
 			tab = new Tab(this, 0, 0);
+		tab->focus(); // draws the tab with correct texture
+		tab->setPosition(); // set tab windows position
+
 	} else if (tab) {
 		delete tab;
 		tab = 0;		
@@ -1846,30 +1878,30 @@ void FluxboxWindow::maximize(unsigned int button) {
 		if (decorations.tab && Fluxbox::instance()->useTabs()) { // Want to se the tabs
 			switch(screen->getTabPlacement()) {			
 			case Tab::PTop:
-				dy += Fluxbox::instance()->getTabHeight(); 
-				dh -= Fluxbox::instance()->getTabHeight() + screen->getBorderWidth();
+				dy += screen->getTabHeight(); 
+				dh -= screen->getTabHeight() + screen->getBorderWidth();
 				break;
 			case Tab::PLeft:
 				if (screen->isTabRotateVertical()) {
-					dx += Fluxbox::instance()->getTabHeight();
-					dw -= Fluxbox::instance()->getTabHeight();
+					dx += screen->getTabHeight();
+					dw -= screen->getTabHeight();
 				} else {
-					dx += Fluxbox::instance()->getTabWidth();
-					dw -= Fluxbox::instance()->getTabWidth();
+					dx += screen->getTabWidth();
+					dw -= screen->getTabWidth();
 				}	
 				break;
 			case Tab::PRight:
 				if (screen->isTabRotateVertical())
-					dw -= Fluxbox::instance()->getTabHeight();
+					dw -= screen->getTabHeight();
 				else
-					dw -= Fluxbox::instance()->getTabWidth();	
+					dw -= screen->getTabWidth();	
 				break;
 			case Tab::PBottom:
-				dh -= Fluxbox::instance()->getTabHeight() + screen->getBorderWidth();
+				dh -= screen->getTabHeight() + screen->getBorderWidth();
 				break;
 			default:
-				dy += Fluxbox::instance()->getTabHeight();
-				dh -= Fluxbox::instance()->getTabHeight() + screen->getBorderWidth();
+				dy += screen->getTabHeight();
+				dh -= screen->getTabHeight() + screen->getBorderWidth();
 				break;
 			}
 		}
