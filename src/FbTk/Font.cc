@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.10 2004/08/14 09:33:09 fluxgen Exp $
+//$Id: Font.cc,v 1.11 2004/08/18 16:30:33 rathnor Exp $
 
 
 #include "StringUtil.hh"
@@ -59,7 +59,7 @@
 #include <cstdlib>
 #include <list>
 #include <typeinfo>
-
+#include <langinfo.h>
 
 #ifdef HAVE_SSTREAM
 #include <sstream>
@@ -97,12 +97,12 @@ char* recode(iconv_t cd,
     if(strlen(msg) == 0) 
         return 0;
 
-
     size_t inbytesleft = strlen(msg);
     size_t outbytesleft = 4*inbytesleft;
     char *new_msg = new char[outbytesleft];
     char *new_msg_ptr = new_msg;
     char *msg_ptr = strdup(msg);
+    char *orig_msg_ptr = msg_ptr; // msg_ptr modified in iconv call
 
     if (iconv(cd, &msg_ptr, &inbytesleft, &new_msg, &outbytesleft) == -1) {
         // iconv can fail for three reasons
@@ -110,20 +110,20 @@ char* recode(iconv_t cd,
         // 2) An incomplete multibyte sequence 
         // 3) The output buffer has no more room for the next converted character.
         // So we the delete new message and return original message
-        delete new_msg;
-        free(msg_ptr);
+        delete new_msg_ptr;
+        free(orig_msg_ptr);
         return 0;
     }
-    free(msg_ptr);
+    free(orig_msg_ptr);
 
-    *new_msg_ptr = '\0';
+    *new_msg = '\0';
  
     if(inbytesleft != 0) {
-        delete new_msg;
+        delete new_msg_ptr;
         return 0;
     }
- 
-    return new_msg;
+
+    return new_msg_ptr;
 }
 
 
@@ -200,6 +200,11 @@ namespace FbTk {
 bool Font::m_multibyte = false; 
 bool Font::m_utf8mode = false;
 
+// some initialisation for using fonts
+void fontInit() {
+    setlocale(LC_CTYPE, "");
+}
+
 Font::Font(const char *name, bool antialias):
     m_fontimp(0),
     m_antialias(false), m_rotated(false), 
@@ -212,34 +217,22 @@ Font::Font(const char *name, bool antialias):
     if (MB_CUR_MAX > 1) // more than one byte, then we're multibyte
         m_multibyte = true;
 
-    char *envstr; // temporary string for enviroment variable
     // check for utf-8 mode
-    if (((envstr = getenv("LC_ALL")) && *envstr) ||
-        ((envstr = getenv("LC_CTYPE")) && *envstr) ||
-        ((envstr = getenv("LANG")) && *envstr)) {
-        if (strstr(envstr, "UTF-8"))
-            m_utf8mode = true;
-        m_locale = envstr;
-        int index = m_locale.find(".");
-        if (index != 0)
-            m_locale = m_locale.substr(index + 1);
-        else
-            m_locale = "UTF-8";
-    }
+    char *locale_codeset = nl_langinfo(CODESET);
 
-    if (m_locale.empty())
-        m_locale = "C";
+    if (strcmp("UTF-8", locale_codeset) == 0) {
+        m_utf8mode = true;
+    } else {
+        // if locale isn't UTF-8 we try to
+        // create a iconv pointer so we can
+        // convert non utf-8 strings to utf-8
 
-    // if locale isn't UTF-8 we try to
-    // create a iconv pointer so we can
-    // convert non utf-8 strings to utf-8
-    if (m_locale != "UTF-8") {
 #ifdef DEBUG
-        cerr<<"FbTk::Font: m_locale = "<<m_locale<<endl;
+        cerr<<"FbTk::Font: check UTF-8 convert for codeset = "<<locale_codeset<<endl;
 #endif // DEBUG
-        m_iconv = iconv_open(m_locale.c_str(), "UTF-8");
+        m_iconv = iconv_open("UTF-8", locale_codeset);
         if(m_iconv == (iconv_t)(-1)) {
-            cerr<<"FbTk::Font: code error: from "<<m_locale<<" to: UTF-8"<<endl;
+            cerr<<"FbTk::Font: code error: from "<<locale_codeset<<" to: UTF-8"<<endl;
             // if we failed with iconv then we can't convert
             // the strings to utf-8, so we disable utf8 mode
             m_utf8mode = false;

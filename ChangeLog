@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/18:
+  * Fix handling of font encodings, and related bugs (Simon)
+    FbTk/Font.hh/cc fluxbox.cc
 *04/08/17:
   * New manpage for startfluxbox (Han)
     startfluxbox.1

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.248 2004/07/15 18:23:03 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.249 2004/08/18 16:30:33 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -452,6 +452,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                              "Can not connect to X server.\nMake sure you started X before you start Fluxbox.",
                              "Error message when no X display appears to exist"));
     }
+
+    FbTk::fontInit();
+
     // For KDE dock applets
     // KDE v1.x
     m_kwm1_dockwindow = XInternAtom(FbTk::App::instance()->display(), 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.9 2004/08/10 18:08:37 fluxgen Exp $
+//$Id: Font.hh,v 1.10 2004/08/18 16:30:33 rathnor Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -33,6 +33,8 @@
 #include <iconv.h>
 
 namespace FbTk {
+
+void fontInit();
 
 class FontImp;
 
@@ -109,7 +111,6 @@ private:
     int m_shadow_offy; ///< offset x for shadow
     bool m_halo; ///< halo text
     std::string m_halo_color; ///< halo color
-    std::string m_locale; ///< system encoding
     iconv_t m_iconv;
 };
 
