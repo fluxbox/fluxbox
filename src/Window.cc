@@ -1443,6 +1443,9 @@ void FluxboxWindow::maximize(int type) {
     if (isIconic())
         deiconify();
 
+    if (isShaded())
+        shade();
+
     int head = screen().getHead(frame().window());
     int new_x = frame().x(),
         new_y = frame().y(),
