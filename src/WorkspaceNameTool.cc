@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.5 2003/08/26 23:20:07 fluxgen Exp $
+// $Id: WorkspaceNameTool.cc,v 1.6 2003/12/07 16:39:43 fluxgen Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -109,7 +109,7 @@ void WorkspaceNameTool::hide() {
 
 void WorkspaceNameTool::renderTheme() {
     Pixmap tmp = m_pixmap;
-    if (m_theme.texture().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!m_theme.texture().usePixmap()) {
         m_pixmap = 0;
         m_button.setBackgroundColor(m_theme.texture().color());
     } else {

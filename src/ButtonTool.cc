@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ButtonTool.cc,v 1.1 2003/10/13 23:38:17 fluxgen Exp $
+// $Id: ButtonTool.cc,v 1.2 2003/12/07 16:39:43 fluxgen Exp $
 
 #include "ButtonTool.hh"
 
@@ -56,7 +56,7 @@ void ButtonTool::renderTheme() {
     btn.setBorderWidth(theme().border().width());
 
     Pixmap old_pm = m_cache_pm;
-    if (theme().texture().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!theme().texture().usePixmap()) {
         m_cache_pm = 0;
         btn.setBackgroundColor(theme().texture().color());
     } else {
@@ -68,8 +68,7 @@ void ButtonTool::renderTheme() {
         m_image_ctrl.removeImage(old_pm);
 
     old_pm = m_cache_pressed_pm;
-    if (static_cast<const ButtonTheme &>(theme()).pressed().type() == 
-        (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (! static_cast<const ButtonTheme &>(theme()).pressed().usePixmap()) {
         m_cache_pressed_pm = 0;
         btn.setPressedColor(static_cast<const ButtonTheme &>(theme()).pressed().color());
     } else {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.81 2003/11/01 00:12:53 rathnor Exp $
+// $Id: Slit.cc,v 1.82 2003/12/07 16:39:43 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -708,9 +708,8 @@ void Slit::reconfigure() {
     Pixmap tmp = frame.pixmap;
     FbTk::ImageControl &image_ctrl = screen().imageControl();
     const FbTk::Texture &texture = m_slit_theme->texture();
-    if (texture.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID) &&
-        texture.pixmap().drawable() == 0) {
-        frame.pixmap = None;
+    if (!texture.usePixmap()) {
+        frame.pixmap = 0;
         frame.window.setBackgroundColor(texture.color());
     } else {
         frame.pixmap = image_ctrl.renderImage(frame.width, frame.height,

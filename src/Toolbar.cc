@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.128 2003/12/07 15:27:52 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.129 2003/12/07 16:39:43 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -432,7 +432,7 @@ void Toolbar::reconfigure() {
 
     // render frame window
     Pixmap tmp = m_window_pm;
-    if (theme().toolbar().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!theme().toolbar().usePixmap()) {
         m_window_pm = 0;
         frame.window.setBackgroundColor(theme().toolbar().color());
     } else {

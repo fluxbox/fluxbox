@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.18 2003/12/03 00:16:56 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.19 2003/12/07 16:39:43 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -416,7 +416,7 @@ void IconbarTool::renderWindow(FluxboxWindow &win) {
 
 void IconbarTool::renderTheme() {
     Pixmap tmp = m_focused_pm;
-    if (m_theme.focusedTexture().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!m_theme.focusedTexture().usePixmap()) {
         m_focused_pm = 0;        
     } else {
         m_focused_pm = m_screen.imageControl().renderImage(m_icon_container.maxWidthPerClient(),
@@ -428,7 +428,7 @@ void IconbarTool::renderTheme() {
         m_screen.imageControl().removeImage(tmp);
 
     tmp = m_unfocused_pm;
-    if (m_theme.unfocusedTexture().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!m_theme.unfocusedTexture().usePixmap()) {
         m_unfocused_pm = 0;        
     } else {
         m_unfocused_pm = m_screen.imageControl().renderImage(m_icon_container.maxWidthPerClient(),
@@ -440,7 +440,7 @@ void IconbarTool::renderTheme() {
 
     // if we dont have any icons then we should render empty texture
     tmp = m_empty_pm;
-    if (m_theme.emptyTexture().type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!m_theme.emptyTexture().usePixmap()) {
         m_empty_pm = 0;
         m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
     } else {

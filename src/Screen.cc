@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.244 2003/12/04 21:31:02 fluxgen Exp $
+// $Id: Screen.cc,v 1.245 2003/12/07 16:39:43 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2160,8 +2160,7 @@ void BScreen::renderGeomWindow() {
     Pixmap tmp = geom_pixmap;
 
     if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
-        if (winFrameTheme().titleFocusTexture().type() ==
-            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+        if (!winFrameTheme().titleFocusTexture().usePixmap()) {
             geom_pixmap = None;
             m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
@@ -2170,8 +2169,7 @@ void BScreen::renderGeomWindow() {
             m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
-        if (winFrameTheme().labelFocusTexture().type() ==
-            (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+        if (!winFrameTheme().labelFocusTexture().usePixmap()) {
             geom_pixmap = None;
             m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {

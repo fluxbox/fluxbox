@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.62 2003/10/31 10:37:09 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.63 2003/12/07 16:39:43 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -1024,7 +1024,7 @@ void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
                         unsigned int w, unsigned int h) {
 
     Pixmap tmp = pm;
-    if (tex.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+    if (!tex.usePixmap()) {
         pm = None;
         col = tex.color();
     } else
