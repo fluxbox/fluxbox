@@ -207,6 +207,14 @@ enum {
 	mainUsage = 12,
 	mainWarnDisplaySet = 13,
 
+	LayerSet = 20,
+	LayerAboveDock = 1,
+	LayerBottom = 2,
+	LayerDesktop = 3,
+	LayerDock = 4,
+	LayerNormal = 5,
+	LayerTop = 6,
+
 	dummy_not_used = 0 // just for the end
 
 }; // end enum
