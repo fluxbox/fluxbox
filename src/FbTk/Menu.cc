@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.1 2002/12/25 11:46:50 fluxgen Exp $
+// $Id: Menu.cc,v 1.2 2003/01/07 02:10:24 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -238,12 +238,27 @@ int Menu::remove(unsigned int index) {
     return menuitems.size();
 }
 
+void Menu::removeAll() {
+    while (!menuitems.empty()) {
+        delete menuitems.back();
+        menuitems.pop_back();
+    }
+}
+
 void Menu::raise() {
     menu.window.raise();
 }
 
 void Menu::lower() {
     menu.window.lower();
+}
+
+void Menu::disableTitle() {
+    setTitleVisibility(false);
+}
+
+void Menu::enableTitle() {
+    setTitleVisibility(true);
 }
 
 void Menu::update() {
