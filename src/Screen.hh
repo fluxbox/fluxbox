@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.85 2003/04/25 11:40:22 fluxgen Exp $
+// $Id: Screen.hh,v 1.86 2003/04/25 11:56:12 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -129,7 +129,7 @@ public:
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
 
     unsigned int getCurrentWorkspaceID() const;
-    Pixmap rootPixmap() const { return m_root_pm; }
+    Pixmap rootPixmap() const;
     /*
       maximum screen surface
     */
@@ -412,8 +412,6 @@ private:
 
     std::auto_ptr<RootTheme> m_root_theme;
     ToolbarHandler *m_toolbarhandler;
-    Pixmap m_root_pm;
-  
 };
 
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.132 2003/04/25 11:05:11 fluxgen Exp $
+// $Id: Screen.cc,v 1.133 2003/04/25 11:56:13 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -544,21 +544,6 @@ BScreen::BScreen(ResourceManager &rm,
                     (unsigned char *) &bpid, 1);
 #endif // HAVE_GETPID
 
-    Atom real_type;
-    int real_format;
-    unsigned long items_read, items_left;
-    unsigned int *data;
-    if (XGetWindowProperty(disp, getRootWindow(),
-                           XInternAtom(disp, "_XROOTPMAP_ID", false),
-                           0L, 1L, 
-                           false, XA_PIXMAP, &real_type,
-                           &real_format, &items_read, &items_left, 
-                           (unsigned char **) &data) == Success && 
-        items_read) { 
-        m_root_pm = (Pixmap) (*data);                  
-        XFree(data);
-    } else 
-        m_root_pm = 0;
 
     cycling_window = focused_list.end();
 
@@ -783,6 +768,29 @@ FbTk::Menu &BScreen::getToolbarModemenu() {
 
 unsigned int BScreen::getCurrentWorkspaceID() const { 
     return current_workspace->workspaceID(); 
+}
+
+Pixmap BScreen::rootPixmap() const {
+
+    Pixmap root_pm = 0;
+    Display *disp = FbTk::App::instance()->display();
+    Atom real_type;
+    int real_format;
+    unsigned long items_read, items_left;
+    unsigned int *data;
+    if (XGetWindowProperty(disp, getRootWindow(),
+                           XInternAtom(disp, "_XROOTPMAP_ID", false),
+                           0L, 1L, 
+                           false, XA_PIXMAP, &real_type,
+                           &real_format, &items_read, &items_left, 
+                           (unsigned char **) &data) == Success && 
+        items_read) { 
+        root_pm = (Pixmap) (*data);                  
+        XFree(data);
+    }
+
+    return root_pm;
+
 }
     
 /// TODO
