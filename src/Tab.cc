@@ -262,7 +262,7 @@ void Tab::stick() {
 			win->blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->stuck = false;
-			if (!win->iconic)
+			if (!win->isIconic())
       	win->getScreen()->reassociateWindow(win, -1, true);
 				    
 		} else {
@@ -285,8 +285,8 @@ void Tab::resize() {
 	//now move and resize the windows in the list
 	for (; first != 0; first = first->m_next) {
 		if (first!=this) {
-			first->m_win->configure(m_win->frame.x, m_win->frame.y,
-								m_win->frame.width, m_win->frame.height);
+			first->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+								m_win->getWidth(), m_win->getHeight());
 		}
 	}
 
@@ -326,7 +326,7 @@ void Tab::shade() {
 void Tab::draw(bool pressed) {	
 	unsigned int tabtext_w;
 
-	GC gc = ((m_win->focused) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
+	GC gc = ((m_win->isFocused()) ? m_win->getScreen()->getWindowStyle()->tab.l_text_focus_gc :
 		   m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
 
 	// Different routines for drawing rotated text
@@ -386,23 +386,23 @@ void Tab::setPosition() {
 
 	//Tab placement
 	if (m_win->getScreen()->getTabPlacement() == PTOP) {
-		pos_y = m_win->frame.y - m_size_h; 
+		pos_y = m_win->getYFrame() - m_size_h; 
 
 	} else if (m_win->getScreen()->getTabPlacement() == PBOTTOM ||
 				m_win->isShaded()) { 
 		if (m_win->isShaded())
-			pos_y = m_win->frame.y + m_win->getTitleHeight() +
+			pos_y = m_win->getYFrame() + m_win->getTitleHeight() +
 					m_win->getScreen()->getBorderWidth2x();
 
 		else
-			pos_y = m_win->frame.y + m_win->getHeight() +
+			pos_y = m_win->getYFrame() + m_win->getHeight() +
 					m_win->getScreen()->getBorderWidth2x();
 
 	} else if (m_win->getScreen()->getTabPlacement() == PLEFT) {
-		pos_x = m_win->frame.x - m_size_w;
+		pos_x = m_win->getXFrame() - m_size_w;
 			
 	} else if (m_win->getScreen()->getTabPlacement() == PRIGHT) {
-		pos_x = m_win->frame.x + m_win->frame.width +
+		pos_x = m_win->getXFrame() + m_win->getWidth() +
 				m_win->getScreen()->getBorderWidth2x();	
 	}
 
@@ -413,20 +413,20 @@ void Tab::setPosition() {
 		switch(m_win->getScreen()->getTabAlignment()) {
 			case ARELATIVE:
 			case ALEFT:
-				pos_x = m_win->frame.x; 
+				pos_x = m_win->getXFrame(); 
 				break;
 			case ACENTER:
 				pos_x = calcCenterXPos(); 
 				break;
 			case ARIGHT:
-				pos_x = m_win->frame.x + m_win->frame.width +
+				pos_x = m_win->getXFrame() + m_win->getWidth() +
 						m_win->getScreen()->getBorderWidth2x() - m_size_w;
 				break;
 		}
 	} else { //PLeft | PRight
 		switch(m_win->getScreen()->getTabAlignment()) {
 			case ALEFT:
-				pos_y = m_win->frame.y - m_size_h + m_win->frame.height +
+				pos_y = m_win->getYFrame() - m_size_h + m_win->getHeight() +
 						m_win->getScreen()->getBorderWidth2x();
 				break;
 			case ACENTER:
@@ -434,7 +434,7 @@ void Tab::setPosition() {
 				break;
 			case ARELATIVE:
 			case ARIGHT:
-				pos_y = m_win->frame.y;
+				pos_y = m_win->getYFrame();
 				break;
 		}
 	}
@@ -448,8 +448,8 @@ void Tab::setPosition() {
 				
 		//dont move fluxboxwindow if the itterator = this
 		if (first!=this) {
-			first->m_win->configure(m_win->frame.x, m_win->frame.y, 
-					m_win->frame.width, m_win->frame.height);
+			first->m_win->configure(m_win->getXFrame(), m_win->getYFrame(), 
+					m_win->getWidth(), m_win->getHeight());
 		}	
 	}	
 
@@ -517,9 +517,9 @@ void Tab::calcIncrease(void) {
 				m_win->getScreen()->getTabPlacement() == PBOTTOM ||
 				m_win->isShaded()) &&
 				m_win->getScreen()->getTabAlignment() == ARELATIVE) {
-			if (!((m_win->frame.width +
+			if (!((m_win->getWidth() +
 					m_win->getScreen()->getBorderWidth2x()) % tabs) ||
-					i >= ((m_win->frame.width +
+					i >= ((m_win->getWidth() +
 					m_win->getScreen()->getBorderWidth2x()) % tabs)) {
 				first->setTabWidth(inc_x);
 				first->m_inc_x = inc_x;
@@ -529,9 +529,9 @@ void Tab::calcIncrease(void) {
 			}
 			first->m_inc_y = inc_y;
 		} else if (m_win->getScreen()->getTabAlignment() == ARELATIVE) {
-			if (!((m_win->frame.height +
+			if (!((m_win->getHeight() +
 				m_win->getScreen()->getBorderWidth2x()) % tabs) ||
-				i >= ((m_win->frame.height +
+				i >= ((m_win->getHeight() +
 				m_win->getScreen()->getBorderWidth2x()) % tabs)) {
 
 				first->setTabHeight(inc_y);
@@ -623,7 +623,7 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 
 				if (placement == PTOP || placement == PBOTTOM || m_win->isShaded()) {
 					if (placement == PBOTTOM && !m_win->isShaded())
-						dest_y -= m_win->frame.height;
+						dest_y -= m_win->getHeight();
 					else if (placement != PTOP && m_win->isShaded())
 						dest_y -= m_win->getTitleHeight();
 					else // PTOP
@@ -631,29 +631,29 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 
 					switch(m_win->getScreen()->getTabAlignment()) {
 						case ACENTER:
-							dest_x -= (m_win->frame.width / 2) - (m_size_w / 2);
+							dest_x -= (m_win->getWidth() / 2) - (m_size_w / 2);
 							break;
 						case ARIGHT:
-							dest_x -= m_win->frame.width - m_size_w;
+							dest_x -= m_win->getWidth() - m_size_w;
 							break;
 					}
 
 				} else { // PLEFT & PRIGHT
 					if (placement == PRIGHT)
-						dest_x = be->x_root - m_win->frame.width;
+						dest_x = be->x_root - m_win->getWidth();
 
 					switch(m_win->getScreen()->getTabAlignment()) {
 						case ACENTER:
-							dest_y -= (m_win->frame.height / 2) - (m_size_h / 2);
+							dest_y -= (m_win->getHeight() / 2) - (m_size_h / 2);
 							break;
 						case ALEFT:
-							dest_y -= m_win->frame.height - m_size_h;
+							dest_y -= m_win->getHeight() - m_size_h;
 							break;
 					}
 				}
 				//TODO: this causes an calculate increase event, even if we
 				// only are moving a window
-				m_win->configure(dest_x, dest_y, m_win->frame.width, m_win->frame.height);
+				m_win->configure(dest_x, dest_y, m_win->getWidth(), m_win->getHeight());
 			}
 		}
 	} else {
@@ -848,13 +848,13 @@ void Tab::insert(Tab *tab) {
 			// if the window we are grouping to, we need to shade the tab window
 			// _after_ reconfigure
 			if(m_win->isShaded()) {
-					tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-							m_win->frame.width, m_win->frame.height);
+					tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+							m_win->getWidth(), m_win->getHeight());
 					tab->m_win->shade();
 			} else {
 					tab->m_win->shade(); // switch to correct shade state
-					tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-						m_win->frame.width, m_win->frame.height);
+					tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+						m_win->getWidth(), m_win->getHeight());
 			}
 
 			tab->m_stoptabs = false;
@@ -862,11 +862,11 @@ void Tab::insert(Tab *tab) {
 		// both window have the same shaded state and have different sizes,
 		// checking this so that I'll only do shade on windows if configure did
 		// anything.
-		} else if ((m_win->frame.width != tab->m_win->frame.width) ||
-				(m_win->frame.height != tab->m_win->frame.height)) {
+		} else if ((m_win->getWidth() != tab->m_win->getWidth()) ||
+				(m_win->getHeight() != tab->m_win->getHeight())) {
 
-			tab->m_win->configure(m_win->frame.x, m_win->frame.y,
-				m_win->frame.width, m_win->frame.height);
+			tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+				m_win->getWidth(), m_win->getHeight());
 
 			// need to shade the tab window as configure will mess it up
 			if (m_win->isShaded())
@@ -982,7 +982,7 @@ unsigned int Tab::calcRelativeWidth() {
 	//calculate num objs in list (extract this to a function?)
 	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
 
-	return ((m_win->frame.width + m_win->getScreen()->getBorderWidth2x())/num);
+	return ((m_win->getWidth() + m_win->getScreen()->getBorderWidth2x())/num);
 }
 
 //------------- calcRelativeHeight -------
@@ -994,7 +994,7 @@ unsigned int Tab::calcRelativeHeight() {
 	//calculate num objs in list (extract this to a function?)
 	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
 
-	return ((m_win->frame.height + m_win->getScreen()->getBorderWidth2x())/num);
+	return ((m_win->getHeight() + m_win->getScreen()->getBorderWidth2x())/num);
 }
 
 //------------- calcCenterXPos -----------
@@ -1006,7 +1006,7 @@ unsigned int Tab::calcCenterXPos() {
 	//calculate num objs in list (extract this to a function?)
 	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
 
-	return (m_win->frame.x + ((m_win->frame.width - (m_size_w * num)) / 2));
+	return (m_win->getXFrame() + ((m_win->getWidth() - (m_size_w * num)) / 2));
 }
 
 //------------- calcCenterYPos -----------
@@ -1018,7 +1018,7 @@ unsigned int Tab::calcCenterYPos() {
 	//calculate num objs in list (extract this to a function?)
 	for (Tab *first=getFirst(this); first!=0; first=first->m_next, num++);	
 
-	return (m_win->frame.y + ((m_win->frame.height - (m_size_h * num)) / 2));
+	return (m_win->getYFrame() + ((m_win->getHeight() - (m_size_h * num)) / 2));
 }
 
 
