@@ -62,7 +62,7 @@ bool FileUtil::isRegularFile(const char* filename) {
 
 bool FileUtil::isExecutable(const char* filename) {
     struct stat buf;
-    if (!filename || !stat(filename, &buf))
+    if (!filename || stat(filename, &buf))
         return false;
 
     return buf.st_mode & S_IXUSR || 
