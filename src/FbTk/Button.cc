@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.cc,v 1.12 2003/08/15 13:58:56 fluxgen Exp $
+// $Id: Button.cc,v 1.13 2003/09/08 15:37:37 fluxgen Exp $
 
 #include "Button.hh"
 
@@ -112,11 +112,16 @@ void Button::buttonReleaseEvent(XButtonEvent &event) {
         XCopyArea(disp, m_foreground_pm, window(), m_gc, 0, 0, width(), height(), 0, 0);
     }
 
+    FbWindow::updateTransparent();
+
+    // finaly, execute command (this must be done last since this object might be deleted by the command)
     if (event.button > 0 && event.button <= 5 &&
+        event.x > 0 && event.x < width() &&
+        event.y > 0 && event.y < height() &&
         m_onclick[event.button -1].get() != 0)
         m_onclick[event.button - 1]->execute();
 
-    FbWindow::updateTransparent();
+
 }
 
 void Button::exposeEvent(XExposeEvent &event) {
