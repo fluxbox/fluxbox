@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*04/12/28:
+  * Fixed minor shape bug (Henrik)
+    Window.cc
 *04/12/21:
   * Added Imlib2 support to fluxbox (Mathias)
     allows us to load other image-formats than just xpm, but we need
