@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.3 2003/04/29 11:26:34 rathnor Exp $
+# $Id: fbsetbg,v 1.4 2003/04/29 13:50:05 fluxgen Exp $
 
 #
 # Portability notes:
@@ -49,7 +49,7 @@ WHOAMI=`whoami`
 # Functions
 display_usage() {
     cat <<EOF
-Usage: fbsetbg [-fct /path/to/wallpaper ] [ -l ] [ -h ]
+Usage: fbsetbg [ -fcta /path/to/wallpaper ] [ -l ] [ -h ] [ -d ]
 EOF
 }
 
@@ -229,8 +229,8 @@ case "${COMMAND_LINE_ARGUMENT}" in
         ;;
     l)
         if [ -r $lastwallpaper ];then
-            option=$(head -n1 $lastwallpaper)
-            wallpaper=$(tail -n1 $lastwallpaper)
+            option=`head -n1 $lastwallpaper`
+            wallpaper=`tail -n1 $lastwallpaper`
         else
             message 'No previous wallpaper recorded.'
         fi
@@ -238,19 +238,26 @@ case "${COMMAND_LINE_ARGUMENT}" in
     h) display_help ; exit 0 ;;
     T) display_tips ; exit 0 ;;
     -) echo "fbsetbg doesn't recognize -- gnu-longopts."
-        echo "Use fbsetbg -h for a long help message."
+        echo 'Use fbsetbg -h for a long help message.'
         display_usage
         exit 1
         ;;
+    *) if [ ! -r "$1" ]; then
+           echo "$1 isn't an existing wallpaper or a valid option." >&2
+           display_usage
+           exit 1
+       fi
+       if [ -z "$1" ];then
+           message 'No wallpaper to set' >&2
+           display_usage
+           exit 1
+       fi
+       ;;
 esac
 
 option=${option:=$full}
 wallpaper=${wallpaper:=$1}
 
-if [ -z "$wallpaper" ];then
-    message 'No wallpaper to set'
-    exit 1
-fi
 
 if [ ! -r "$wallpaper" ];then
     message "Can't find wallpaper $wallpaper"
