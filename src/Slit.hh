@@ -60,13 +60,31 @@ private:
 		Placementmenu(Slitmenu *);
 	};
 
+#ifdef XINERAMA
+	class Headmenu : public Basemenu {
+	public:
+		Headmenu(Slitmenu *);
+	private:
+		Slitmenu *slitmenu;
+
+	protected: 
+		virtual void itemSelected(int, int);
+
+	};
+#endif // XINERAMA
+
 	Directionmenu *directionmenu;
 	Placementmenu *placementmenu;
-
+#ifdef XINERAMA
+	Headmenu *headmenu;
+#endif // XINERAMA
 	Slit *slit;
 
 	friend class Directionmenu;
 	friend class Placementmenu;
+#ifdef XINERAMA
+	friend class Headmenu;
+#endif // XINERAMA
 	friend class Slit;
 
 
@@ -81,6 +99,9 @@ public:
 
 	inline Basemenu *getDirectionmenu(void) { return directionmenu; }
 	inline Basemenu *getPlacementmenu(void) { return placementmenu; }
+#ifdef XINERAMA
+	inline Basemenu *getHeadmenu(void) { return headmenu; }
+#endif // XINERAMA
 
 	void reconfigure(void);
 };
@@ -158,6 +179,9 @@ private:
 	friend class Slitmenu;
 	friend class Slitmenu::Directionmenu;
 	friend class Slitmenu::Placementmenu;
+	#ifdef XINERAMA
+	friend class Slitmenu::Headmenu;
+	#endif // XINERAMA
 };
 
 

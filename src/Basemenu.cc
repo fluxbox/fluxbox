@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.11 2002/03/18 15:42:34 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.12 2002/03/19 14:30:42 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -580,21 +580,59 @@ void Basemenu::drawSubmenu(int index) {
 				y = (((shifted) ? menu.y_shift : menu.y) +
 					 menu.height - item->submenu()->menu.height);
 			}
+
+			#ifdef XINERAMA
+			int head_x = 0,
+					head_y = 0,
+					head_w,
+					head_h;
+
+			unsigned int head = 0;
+			if (screen->hasXinerama()) {
+				head = screen->getHead(menu.x, menu.y);
+				head_x = screen->getHeadX(head);
+				head_y = screen->getHeadY(head);
+				head_w = screen->getHeadWidth(head);
+				head_h = screen->getHeadHeight(head);
+			} else {
+				head_w = screen->getWidth();
+				head_h = screen->getHeight();
+			}
+
+			if ((x + item->submenu()->getWidth()) > (head_x + head_w)) {
+				x = ((shifted) ? menu.x_shift : menu.x) -
+					item->submenu()->getWidth() - screen->getBorderWidth();
+			}
 			
+			if (x < head_x)
+				x = head_x;
+
+			if ((y + item->submenu()->getHeight()) > (head_y + head_h)) {
+				y = head_y + head_h -
+					item->submenu()->getHeight() - screen->getBorderWidth2x();
+			}
+
+			if (y < head_y)
+				y = head_y;
+			#else // !XINERAMA
+
 			if ((x + item->submenu()->getWidth()) > screen->getWidth()) {
 				x = ((shifted) ? menu.x_shift : menu.x) -
 					item->submenu()->getWidth() - screen->getBorderWidth();
 			}
 			
-			if (x < 0) x = 0;
+			if (x < 0)
+				x = 0;
 
 			if ((y + item->submenu()->getHeight()) > screen->getHeight()) {
 				y = screen->getHeight() - item->submenu()->getHeight() -
 					screen->getBorderWidth2x();
 			}
 			
-			if (y < 0) y = 0;
-			
+			if (y < 0)
+				y = 0;
+			#endif // XINERAMA
+
 			item->submenu()->move(x, y);
 			if (! moving)
 				drawItem(index, True);
@@ -1007,6 +1045,33 @@ void Basemenu::exposeEvent(XExposeEvent *ee) {
 
 
 void Basemenu::enterNotifyEvent(XCrossingEvent *ce) {
+#ifdef XINERAMA
+	int head = screen->hasXinerama() ? screen->getCurrHead() : 0;
+
+	if (ce->window == menu.frame) {
+		menu.x_shift = menu.x, menu.y_shift = menu.y;
+		if (menu.x + menu.width >
+				(screen->getHeadX(head) + screen->getHeadWidth(head))) {
+			menu.x_shift = screen->getHeadX(head) +  screen->getHeadWidth(head) -
+				menu.width - screen->getBorderWidth2x();
+			shifted = True;
+		} else if (menu.x < screen->getHeadX(head)) {
+			menu.x_shift = screen->getHeadX(head);
+			shifted = True;
+		}
+
+		if (menu.y + menu.height >
+				(screen->getHeadY(head) + screen->getHeadHeight(head))) {
+			menu.y_shift = screen->getHeadY(head) + screen->getHeadHeight(head) -
+				menu.height - screen->getBorderWidth2x();
+			shifted = True;
+		} else if (menu.y + (signed) menu.title_h < screen->getHeadY(head)) {
+			menu.y_shift = screen->getHeadY(head);
+			shifted = True;
+		}
+
+#else // !XINERAMA
+
 	if (ce->window == menu.frame) {
 		menu.x_shift = menu.x, menu.y_shift = menu.y;
 		if (menu.x + menu.width > screen->getWidth()) {
@@ -1027,8 +1092,15 @@ void Basemenu::enterNotifyEvent(XCrossingEvent *ce) {
 			shifted = True;
 		}
 
-		if (shifted)
+#endif // XINERAMA
+
+		if (shifted) {
+		#ifdef XINERAMA
+			menu.x = menu.x_shift; // need to do this to avoid jumping beetween heads
+			menu.y = menu.y_shift;
+		#endif // XINERAMA
 			XMoveWindow(display, menu.window, menu.x_shift, menu.y_shift);
+		}
 
 		if (which_sub >= 0) {
 			BasemenuItem *tmp = menuitems[which_sub];

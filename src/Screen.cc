@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.36 2002/03/19 00:05:49 fluxgen Exp $
+// $Id: Screen.cc,v 1.37 2002/03/19 14:30:42 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -215,6 +215,9 @@ tab_width(rm, 64, scrname+".tab.width", altscrname+".Tab.Width"),
 tab_height(rm, 16, scrname+".tab.height", altscrname+".Tab.Height"),
 tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
 tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
+#ifdef XINERAMA
+toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
+#endif // XINERAMA
 toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
 
@@ -1025,11 +1028,21 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	#ifdef		SLIT
 	session_stack[i++] = slit->getMenu().getDirectionmenu()->getWindowID();
 	session_stack[i++] = slit->getMenu().getPlacementmenu()->getWindowID();
+	#ifdef XINERAMA
+	if (hasXinerama()) {
+		session_stack[i++] = slit->getMenu().getHeadmenu()->getWindowID();
+	}
+	#endif // XINERAMA
 	session_stack[i++] = slit->getMenu().getWindowID();
 	#endif // SLIT
 
 	session_stack[i++] =
 		toolbar->getMenu()->getPlacementmenu()->getWindowID();
+	#ifdef XINERAMA
+	if (hasXinerama()) {
+		session_stack[i++] = toolbar->getMenu()->getHeadmenu()->getWindowID();
+	}
+	#endif // XINERAMA
 	session_stack[i++] = toolbar->getMenu()->getWindowID();
 
 	Rootmenus::iterator rit = rootmenuList.begin();
@@ -1667,9 +1680,18 @@ void BScreen::shutdown(void) {
 
 void BScreen::showPosition(int x, int y) {
 	if (! geom_visible) {
+#ifdef XINERAMA
+		unsigned int head = hasXinerama() ? getCurrHead() : 0;
+
+		XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
+			getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
+			getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, geom_w, geom_h);
+#else // !XINERMA
 		XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
 			(getWidth() - geom_w) / 2,
 			(getHeight() - geom_h) / 2, geom_w, geom_h);
+#endif // XINERAMA
+
 		XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
 		XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
 
@@ -1707,9 +1729,17 @@ void BScreen::showPosition(int x, int y) {
 
 void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 	if (! geom_visible) {
+#ifdef XINERAMA
+		unsigned int head = hasXinerama() ? getCurrHead() : 0;
+
 		XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
-											(getWidth() - geom_w) / 2,
-											(getHeight() - geom_h) / 2, geom_w, geom_h);
+			getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
+			getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, geom_w, geom_h);
+#else // !XINERMA
+		XMoveResizeWindow(getBaseDisplay()->getXDisplay(), geom_window,
+			(getWidth() - geom_w) / 2,
+			(getHeight() - geom_h) / 2, geom_w, geom_h);
+#endif // XINERAMA
 		XMapWindow(getBaseDisplay()->getXDisplay(), geom_window);
 		XRaiseWindow(getBaseDisplay()->getXDisplay(), geom_window);
 

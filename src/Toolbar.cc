@@ -1,3 +1,6 @@
+// Toolbar.cc for Fluxbox
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+//
 // Toolbar.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -13,13 +16,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.13 2002/03/19 00:12:36 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.14 2002/03/19 14:30:42 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -215,9 +218,38 @@ void Toolbar::delIcon(FluxboxWindow *w) {
 }
 		
 void Toolbar::reconfigure(void) {
+	int head_x = 0,
+			head_y = 0,
+			head_w,
+			head_h;
+
 	frame.bevel_w = screen->getBevelWidth();
+#ifdef XINERAMA
+	int head = (screen->hasXinerama())
+		? screen->getToolbarOnHead()
+		: -1;
+
+	if (head >= 0) { // toolbar on head nr, if -1 then over ALL heads
+		head_x = screen->getHeadX(head);
+		head_y = screen->getHeadY(head);
+		head_w = screen->getHeadWidth(head);
+		head_h = screen->getHeadHeight(head);
+
+		frame.width =
+			(screen->getHeadWidth(head) * screen->getToolbarWidthPercent() / 100);
+	}	else {
+		head_w = screen->getHeadWidth(head);
+		head_h = screen->getHeadHeight(head);
+
+		frame.width = screen->getWidth() * screen->getToolbarWidthPercent() / 100;
+	}
+#else // !XINERAMA
+	head_w = screen->getWidth();
+	head_h = screen->getHeight();
+
 	frame.width = screen->getWidth() * screen->getToolbarWidthPercent() / 100;
-	
+#endif // XINERAMA
+
 	I18n *i18n = I18n::instance();
 	
 	if (i18n->multibyte())
@@ -233,50 +265,51 @@ void Toolbar::reconfigure(void) {
 	
 	switch (screen->getToolbarPlacement()) {
 	case TOPLEFT:
-		frame.x = 0;
-		frame.y = 0;
-		frame.x_hidden = 0;
-		frame.y_hidden = screen->getBevelWidth() - screen->getBorderWidth() - frame.height;
+		frame.x = head_x;
+		frame.y = head_y;
+		frame.x_hidden = head_x;
+		frame.y_hidden = head_y +
+			screen->getBevelWidth() - screen->getBorderWidth() - frame.height;
 		break;
 
 	case BOTTOMLEFT:
-		frame.x = 0;
-		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
-		frame.x_hidden = 0;
-		frame.y_hidden = screen->getHeight() - screen->getBevelWidth() - 
+		frame.x = head_x;
+		frame.y = head_y + head_h - frame.height - screen->getBorderWidth2x();
+		frame.x_hidden = head_x;
+		frame.y_hidden = head_y + head_h - screen->getBevelWidth() - 
 			screen->getBorderWidth();
 		break;
 
 	case TOPCENTER:
-		frame.x = (screen->getWidth() - frame.width) / 2;
-		frame.y = 0;
+		frame.x = head_x + ((head_w - frame.width) / 2);
+		frame.y = head_y;
 		frame.x_hidden = frame.x;
-		frame.y_hidden = screen->getBevelWidth() - screen->getBorderWidth() -
-			frame.height;
+		frame.y_hidden = head_y +
+			screen->getBevelWidth() - screen->getBorderWidth() - frame.height;
 		break;
 
 	case BOTTOMCENTER:
 	default:
-		frame.x = (screen->getWidth() - frame.width) / 2;
-		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
+		frame.x = head_x + ((head_w - frame.width) / 2);
+		frame.y = head_y + head_h - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = frame.x;
-		frame.y_hidden = screen->getHeight() - screen->getBevelWidth() - 
+		frame.y_hidden = head_y + head_h - screen->getBevelWidth() - 
 			screen->getBorderWidth();
 		break;
 
 	case TOPRIGHT:
-		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
-		frame.y = 0;
+		frame.x = head_x + head_w - frame.width - screen->getBorderWidth2x();
+		frame.y = head_y;
 		frame.x_hidden = frame.x;
-		frame.y_hidden = screen->getBevelWidth() - screen->getBorderWidth() - 
-			frame.height;
+		frame.y_hidden = head_y +
+			screen->getBevelWidth() - screen->getBorderWidth() - frame.height;
 		break;
 
 	case BOTTOMRIGHT:
-		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
-		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
+		frame.x = head_x + head_w - frame.width - screen->getBorderWidth2x();
+		frame.y = head_y + head_h - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = frame.x;
-		frame.y_hidden = screen->getHeight() - screen->getBevelWidth() - 
+		frame.y_hidden = head_y + head_h - screen->getBevelWidth() - 
 			screen->getBorderWidth();
 		break;
 	}
@@ -1226,6 +1259,11 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 	setInternalMenu();
 
 	placementmenu = new Placementmenu(this);
+#ifdef XINERAMA
+	if (toolbar->screen->hasXinerama()) { // only create if we need it
+		headmenu = new Headmenu(this);
+	}
+#endif // XINERAMA
 
 	insert(i18n->getMessage(
 #ifdef		NLS
@@ -1235,6 +1273,13 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 #endif // NLS
 				"Placement"),
 				placementmenu);
+
+#ifdef XINERAMA
+	if (toolbar->screen->hasXinerama()) { //TODO: NLS
+		insert(i18n->getMessage(0, 0, "Place on Head"), headmenu);
+	}
+#endif // XINERAMA
+
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonAlwaysOnTop,
@@ -1271,6 +1316,12 @@ Toolbarmenu::Toolbarmenu(Toolbar *tb) : Basemenu(tb->screen) {
 
 Toolbarmenu::~Toolbarmenu(void) {
 	delete placementmenu;
+#ifdef XINERAMA
+	if (toolbar->screen->hasXinerama()) {
+		delete headmenu;
+	}
+#endif // XINERAMA
+
 }
 
 
@@ -1321,6 +1372,11 @@ void Toolbarmenu::internal_hide(void) {
 
 void Toolbarmenu::reconfigure(void) {
 	placementmenu->reconfigure();
+#ifdef XINERAMA
+	if (toolbar->screen->hasXinerama()) {
+		headmenu->reconfigure();
+	}
+#endif // XINERAMA
 
 	Basemenu::reconfigure();
 }
@@ -1413,3 +1469,49 @@ void Toolbarmenu::Placementmenu::itemSelected(int button, int index) {
 
 	}
 }
+
+#ifdef XINERAMA
+
+Toolbarmenu::Headmenu::Headmenu(Toolbarmenu *tm)
+	: Basemenu(tm->toolbar->screen) {
+	toolbarmenu = tm;
+	I18n *i18n = I18n::instance();
+
+	setLabel(i18n->getMessage(0, 0, "Place on Head")); //TODO: NLS
+	setInternalMenu();
+
+	int numHeads = toolbarmenu->toolbar->screen->getNumHeads();
+	// fill menu with head entries
+	for (int i = 0; i < numHeads; i++) {
+		char headName[32];
+		sprintf(headName, "Head %i", i+1); //TODO: NLS
+		insert(i18n->getMessage(0, 0, headName), i);
+	}
+
+	insert(i18n->getMessage(0, 0, "All Heads"), -1); //TODO: NLS
+
+	update();
+}
+
+
+void Toolbarmenu::Headmenu::itemSelected(int button, int index) {
+	if (button == 1) {
+		BasemenuItem *item = find(index);
+		if (! item)
+			return;
+
+		toolbarmenu->toolbar->screen->saveToolbarOnHead(
+			static_cast<int>(item->function()));
+		hide();
+		toolbarmenu->toolbar->reconfigure();
+
+#ifdef SLIT
+		// reposition the slit as well to make sure it doesn't intersect the
+		// toolbar
+		toolbarmenu->toolbar->screen->getSlit()->reposition();
+#endif // SLIT
+
+	}
+}
+
+#endif // XINERAMA

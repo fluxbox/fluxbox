@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.8 2002/03/18 23:41:08 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.9 2002/03/19 14:30:42 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -423,4 +423,205 @@ ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
 		visual = DefaultVisual(basedisplay->getXDisplay(), screen_number);
 		colormap = DefaultColormap(basedisplay->getXDisplay(), screen_number);
 	}
+
+#ifdef XINERAMA
+	// check if we have Xinerama extension enabled
+	if (XineramaIsActive(basedisplay->getXDisplay())) {
+		m_hasXinerama = true;
+		xineramaLastHead = 0; // initialize this
+		xineramaInfos =
+			XineramaQueryScreens(basedisplay->getXDisplay(), &xineramaNumHeads);
+	} else {
+		m_hasXinerama = false;
+		xineramaInfos = 0; // make sure we don't point anywhere we shouldn't
+	}
+#endif // XINERAMA 
 }
+
+ScreenInfo::~ScreenInfo(void) {
+#ifdef XINERAMA
+	if (m_hasXinerama) { // only free if we first had it
+		XFree(xineramaInfos);
+		xineramaInfos = 0;
+	}
+#endif // XINERAMA
+}
+
+#ifdef XINERAMA
+
+//---------------- getHead ---------------
+// Searches for the head at the coordinates
+// x,y. If it fails or Xinerama isn't
+// activated it'll return head nr 0
+//-----------------------------------------
+unsigned int ScreenInfo::getHead(int x, int y) {
+	unsigned int head = 0;
+
+	// is Xinerama extensions enabled?
+	if (hasXinerama()) {
+		// check if last head is still active
+		if ((xineramaInfos[xineramaLastHead].x_org <= x) &&
+				((xineramaInfos[xineramaLastHead].x_org +
+				xineramaInfos[xineramaLastHead].width) > x) &&
+				(xineramaInfos[xineramaLastHead].y_org <= y) &&
+				((xineramaInfos[xineramaLastHead].y_org +
+				xineramaInfos[xineramaLastHead].height) > y)) {
+			head = xineramaLastHead;
+
+		} else {
+			// go trough all the heads, and search
+			for (int i = 0; (signed) head < xineramaNumHeads; i++) {
+				if ((xineramaInfos[i].x_org <= x) &&
+						((xineramaInfos[i].x_org + xineramaInfos[i].width) > x) &&
+						(xineramaInfos[i].y_org <= y) &&
+						((xineramaInfos[i].y_org + xineramaInfos[i].height) > y)) {
+					// TODO: actually set this to last head?
+					head = xineramaLastHead = i;
+
+					break; // we don't wanna spend CPU searching what we
+				}				 // allready have found, do we?
+			}
+		}
+	}
+
+	return head;
+}
+
+//------------- getCurrHead --------------
+// Searches for the head that the pointer
+// currently is on, if it isn't found
+// the first one is returned
+//----------------------------------------
+unsigned int ScreenInfo::getCurrHead(void) {
+	unsigned int head = 0;
+
+	// is Xinerama extensions enabled?
+	if (hasXinerama()) {
+		int pX, pY, wX, wY;
+		unsigned int mask;
+		Window rRoot, rChild;
+	
+		// check if last head is still active
+		if ((xineramaInfos[xineramaLastHead].x_org <= pX) &&
+				((xineramaInfos[xineramaLastHead].x_org +
+				xineramaInfos[xineramaLastHead].width) > pX) &&
+				(xineramaInfos[xineramaLastHead].y_org <= pY) &&
+				((xineramaInfos[xineramaLastHead].y_org +
+				xineramaInfos[xineramaLastHead].height) > pY)) {
+			head = xineramaLastHead;
+
+		} else {
+			// get pointer cordinates	, we need to know were we are!
+			if ( (XQueryPointer(basedisplay->getXDisplay(), root_window,
+					&rRoot, &rChild, &pX, &pY, &wX, &wY, &mask)) != 0 )  {
+
+				// go trough all the heads, and search
+				for (int i = 0; i < xineramaNumHeads; i++) {
+					if ((xineramaInfos[i].x_org <= pX) &&
+							((xineramaInfos[i].x_org + xineramaInfos[i].width) > pX) &&
+							(xineramaInfos[i].y_org <= pY) &&
+							((xineramaInfos[i].y_org + xineramaInfos[i].height) > pY)) {
+
+						head = xineramaLastHead = i;
+						break; // we don't wanna spend CPU searching what we
+					}				 // allready have found, do we?
+				}
+			}
+		}
+	}
+
+	return head;
+}
+
+//----------- getHeadWidth ------------
+// Returns the width of head nr head
+//-------------------------------------
+unsigned int ScreenInfo::getHeadWidth(unsigned int head) {
+	unsigned int width;
+
+	if (hasXinerama()) {
+		if ((signed) head >= xineramaNumHeads) {
+			#ifdef DEBUG
+			cerr << __FILE__ << ":" <<__LINE__ << ": " <<
+				"Head: " << head << " doesn't exist!" << endl;
+			#endif // DEBUG
+
+			head = xineramaNumHeads - 1;
+		}
+
+		width = xineramaInfos[head].width;
+	} else {
+		width = getWidth();
+	}
+
+	return width;
+}
+
+//----------- getHeadHeight ------------
+// Returns the heigt of head nr head
+//--------------------------------------
+unsigned int ScreenInfo::getHeadHeight(unsigned int head) {
+	unsigned int height;
+
+	if (hasXinerama()) {
+		if ((signed) head >= xineramaNumHeads) {
+			#ifdef DEBUG
+			cerr << __FILE__ << ":" <<__LINE__ << ": " <<
+				"Head: " << head << " doesn't exist!" << endl;
+			#endif // DEBUG
+
+			head = xineramaNumHeads - 1;
+		}
+
+		height = xineramaInfos[head].height;
+	} else {
+		height = getHeight();
+	}
+
+	return height;
+}
+
+
+//----------- getHeadX -----------------
+// Returns the X start of head nr head
+//--------------------------------------
+int ScreenInfo::getHeadX(unsigned int head) {
+	int x = 0;
+
+	if (hasXinerama()) {
+		if ((signed) head >= xineramaNumHeads) {
+			#ifdef DEBUG
+			cerr << __FILE__ << ":" <<__LINE__ << ": " <<
+				"Head: " << head << " doesn't exist!" << endl;
+			#endif // DEBUG
+
+			head = xineramaNumHeads - 1;
+		}
+		x = xineramaInfos[head].x_org;
+	}
+
+	return x;
+}
+
+//----------- getHeadY -----------------
+// Returns the Y start of head nr head
+//--------------------------------------
+int ScreenInfo::getHeadY(unsigned int head) {
+	int y = 0;
+
+	if (hasXinerama()) {
+		if ((signed) head >= xineramaNumHeads) {
+			#ifdef DEBUG
+			cerr << __FILE__ << ":" <<__LINE__ << ": " <<
+				"Head: " << head << " doesn't exist!" << endl;
+			#endif // DEBUG
+
+			head = xineramaNumHeads - 1;
+		}
+		y = xineramaInfos[head].y_org;
+	}
+
+	return y;
+}
+
+#endif // XINERAMA

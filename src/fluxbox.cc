@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.41 2002/03/19 00:16:44 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.42 2002/03/19 14:30:43 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1881,7 +1881,13 @@ void Fluxbox::save_rc(void) {
 		sprintf(rc_string, "session.screen%d.slit.autoHide: %s", screen_number,
 			((screen->getSlit()->doAutoHide()) ? "True" : "False"));
 		XrmPutLineResource(&new_blackboxrc, rc_string);
-		
+
+		#ifdef XINERAMA
+		sprintf(rc_string, "session.screen%d.slit.onHead: %d", screen_number,
+			screen->getSlitOnHead());
+		XrmPutLineResource(&new_blackboxrc, rc_string);
+		#endif // XINERAMA
+
 		#endif // SLIT
 
 		sprintf(rc_string, "session.screen%d.rowPlacementDirection: %s", screen_number,
@@ -2243,6 +2249,20 @@ void Fluxbox::load_rc(BScreen *screen) {
 			screen->saveSlitAutoHide(False);
 	else
 		screen->saveSlitAutoHide(False);
+
+	#ifdef XINERAMA
+	int tmp_head;
+	sprintf(name_lookup, "session.screen%d.slit.onHead", screen_number);
+	sprintf(class_lookup, "Session.Screen%d.Slit.OnHead", screen_number);
+	if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
+			&value)) {
+		if (sscanf(value.addr, "%d", &tmp_head) != 1)
+			tmp_head = 0;
+	} else
+		tmp_head = 0;
+	screen->saveSlitOnHead(tmp_head);
+	#endif // XINERAMA
+
 #endif // SLIT
 
 #ifdef HAVE_STRFTIME

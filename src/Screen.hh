@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.23 2002/03/18 20:20:09 fluxgen Exp $
+// $Id: Screen.hh,v 1.24 2002/03/19 14:30:42 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -102,6 +102,11 @@ public:
 	inline void saveSlitDirection(int d) { resource.slit_direction = d; }
 	inline void saveSlitOnTop(Bool t)		{ resource.slit_on_top = t; }
 	inline void saveSlitAutoHide(Bool t) { resource.slit_auto_hide = t; }
+#ifdef XINERAMA
+	inline const unsigned int getSlitOnHead(void) const { return resource.slit_on_head; }
+	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h; }
+#endif // XINERAMA
+
 #endif // SLIT
 
 	inline Toolbar *getToolbar(void) { return toolbar; }
@@ -125,6 +130,9 @@ public:
 
 	inline const int getNumberOfWorkspaces(void) { return *resource.workspaces; }
 	inline const Toolbar::Placement getToolbarPlacement(void) { return *resource.toolbar_placement; }
+#ifdef XINERAMA
+	inline const int getToolbarOnHead(void) { return *resource.toolbar_on_head; }
+#endif // XINERAMA
 	inline const int getToolbarWidthPercent(void) { return *resource.toolbar_width_percent; }
 	inline const int getPlacementPolicy(void) const { return resource.placement_policy; }
 	inline const int getEdgeSnapThreshold(void) { return *resource.edge_snap_threshold; }
@@ -145,6 +153,10 @@ public:
 	inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r; }
 	inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w; }
 	inline void saveToolbarPlacement(Toolbar::Placement p) { *resource.toolbar_placement = p; }
+#ifdef XINERAMA
+	inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head; }
+#endif // XINERAMA
+
 	inline void savePlacementPolicy(int p) { resource.placement_policy = p; }
 	inline void saveRowPlacementDirection(int d) { resource.row_direction = d; }
 	inline void saveColPlacementDirection(int d) { resource.col_direction = d; }
@@ -294,12 +306,21 @@ private:
 
 		Resource<Tab::Placement> tab_placement;
 		Resource<Tab::Alignment> tab_alignment;
+		#ifdef XINERAMA
+		Resource<int> toolbar_on_head;
+		#endif // XINERAMA
+
 		Resource<Toolbar::Placement> toolbar_placement;
 
 
 		#ifdef SLIT
 		Bool slit_on_top, slit_auto_hide;
 		int slit_placement, slit_direction;
+
+		#ifdef XINERAMA
+		unsigned int slit_on_head;
+		#endif // XINERAMA
+
 		#endif // SLIT
 
 

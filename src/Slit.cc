@@ -404,93 +404,114 @@ void Slit::reconfigure(void) {
 
 
 void Slit::reposition(void) {
+	int head_x = 0,
+			head_y = 0,
+			head_w,
+			head_h;
+#ifdef XINERMA
+	if (screen->hasXinerama()) {
+		unsigned int head = screen->getSlitOnHead();
+
+		head_x = screen->getHeadX(head);
+		head_y = screen->getHeadY(head);
+		head_w = screen->getHeadWidth(head);
+		head_h = screen->getHeadHeight(head);
+	} else {
+		head_w = screen->getWidth();
+		head_h = screen->getHeight();
+	}
+#else // !XINERAMA
+		head_w = screen->getWidth();
+		head_h = screen->getHeight();
+#endif // XINERAMA
+
 	// place the slit in the appropriate place
 	switch (screen->getSlitPlacement()) {
 	case TOPLEFT:
-		frame.x = 0;
-		frame.y = 0;
+		frame.x = head_x;
+		frame.y = head_y;
 		if (screen->getSlitDirection() == VERTICAL) {
 			frame.x_hidden = screen->getBevelWidth() -
 				screen->getBorderWidth() - frame.width;
-			frame.y_hidden = 0;
+			frame.y_hidden = head_y;
 		} else {
-			frame.x_hidden = 0;
+			frame.x_hidden = head_x;
 			frame.y_hidden = screen->getBevelWidth() -
 				screen->getBorderWidth() - frame.height;
 		}
 		break;
 
 	case CENTERLEFT:
-		frame.x = 0;
-		frame.y = (screen->getHeight() - frame.height) / 2;
-		frame.x_hidden = screen->getBevelWidth() -
+		frame.x = head_x;
+		frame.y = head_y + (head_h - frame.height) / 2;
+		frame.x_hidden = head_x + screen->getBevelWidth() -
 			screen->getBorderWidth() - frame.width;
 		frame.y_hidden = frame.y;
 		break;
 
 	case BOTTOMLEFT:
-		frame.x = 0;
-		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
+		frame.x = head_x;
+		frame.y = head_h - frame.height - screen->getBorderWidth2x();
 		if (screen->getSlitDirection() == VERTICAL) {
-			frame.x_hidden = screen->getBevelWidth() - screen->getBorderWidth()
-								 - frame.width;
+			frame.x_hidden = head_x + screen->getBevelWidth() -
+				screen->getBorderWidth() - frame.width;
 			frame.y_hidden = frame.y;
 		} else {
-			frame.x_hidden = 0;
-			frame.y_hidden = screen->getHeight() -
+			frame.x_hidden = head_x;
+			frame.y_hidden = head_y + head_h -
 				screen->getBevelWidth() - screen->getBorderWidth();
 		}
 		break;
 
 	case TOPCENTER:
-		frame.x = (screen->getWidth() - frame.width) / 2;
-		frame.y = 0;
+		frame.x = head_x + ((head_w - frame.width) / 2);
+		frame.y = head_y;
 		frame.x_hidden = frame.x;
-		frame.y_hidden = screen->getBevelWidth() -
+		frame.y_hidden = head_y + screen->getBevelWidth() -
 			screen->getBorderWidth() - frame.height;
 		break;
 
 	case BOTTOMCENTER:
-		frame.x = (screen->getWidth() - frame.width) / 2;
-		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
+		frame.x = head_x + ((head_w - frame.width) / 2);
+		frame.y = head_y + head_h - frame.height - screen->getBorderWidth2x();
 		frame.x_hidden = frame.x;
-		frame.y_hidden = screen->getHeight() -
+		frame.y_hidden = head_y + head_h -
 			screen->getBevelWidth() - screen->getBorderWidth();
 		break;
 
 	case TOPRIGHT:
-		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
-		frame.y = 0;
+		frame.x = head_x + head_w - frame.width - screen->getBorderWidth2x();
+		frame.y = head_y;
 		if (screen->getSlitDirection() == VERTICAL) {
-			frame.x_hidden = screen->getWidth() -
+			frame.x_hidden = head_x + head_w -
 				screen->getBevelWidth() - screen->getBorderWidth();
-			frame.y_hidden = 0;
+			frame.y_hidden = head_y;
 		} else {
 			frame.x_hidden = frame.x;
-			frame.y_hidden = screen->getBevelWidth() -
+			frame.y_hidden = head_y + screen->getBevelWidth() -
 				screen->getBorderWidth() - frame.height;
 		}
 		break;
 
 	case CENTERRIGHT:
 	default:
-		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
-		frame.y = (screen->getHeight() - frame.height) / 2;
-		frame.x_hidden = screen->getWidth() -
+		frame.x = head_x + head_w - frame.width - screen->getBorderWidth2x();
+		frame.y = head_y + ((head_h - frame.height) / 2);
+		frame.x_hidden = head_x + head_w -
 			screen->getBevelWidth() - screen->getBorderWidth();
 		frame.y_hidden = frame.y;
 		break;
 
 	case BOTTOMRIGHT:
-		frame.x = screen->getWidth() - frame.width - screen->getBorderWidth2x();
-		frame.y = screen->getHeight() - frame.height - screen->getBorderWidth2x();
+		frame.x = head_x + head_w - frame.width - screen->getBorderWidth2x();
+		frame.y = head_y + head_h - frame.height - screen->getBorderWidth2x();
 		if (screen->getSlitDirection() == VERTICAL) {
-			frame.x_hidden = screen->getWidth() - 
+			frame.x_hidden = head_x + head_w - 
 				screen->getBevelWidth() - screen->getBorderWidth();
 			frame.y_hidden = frame.y;
 		} else {
 			frame.x_hidden = frame.x;
-			frame.y_hidden = screen->getHeight() - 
+			frame.y_hidden = head_y + head_h - 
 				screen->getBevelWidth() - screen->getBorderWidth();
 		}
 		break;
@@ -654,6 +675,11 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 
 	directionmenu = new Directionmenu(this);
 	placementmenu = new Placementmenu(this);
+#ifdef XINERAMA
+	if (slit->screen->hasXinerama()) { // only create if we need
+		headmenu = new Headmenu(this);
+	}
+#endif // XINERAMA
 
 	insert(i18n->getMessage(
 #ifdef		NLS
@@ -671,6 +697,14 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 #endif // NLS
 				"Placement"),
 	 placementmenu);
+
+#ifdef XINERAMA
+	//TODO: NLS
+	if (slit->screen->hasXinerama()) {
+		insert(i18n->getMessage(0, 0, "Place on Head"), headmenu);
+	}
+#endif // XINERAMA
+
 	insert(i18n->getMessage(
 #ifdef		NLS
 				CommonSet, CommonAlwaysOnTop,
@@ -696,6 +730,11 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 Slitmenu::~Slitmenu(void) {
 	delete directionmenu;
 	delete placementmenu;
+#ifdef XINERAMA
+	if (slit->screen->hasXinerama()) {
+		delete headmenu;
+	}
+#endif // XINERAMA
 }
 
 
@@ -738,6 +777,11 @@ void Slitmenu::internal_hide(void) {
 void Slitmenu::reconfigure(void) {
 	directionmenu->reconfigure();
 	placementmenu->reconfigure();
+#ifdef XINERAMA
+	if (slit->screen->hasXinerama()) {
+		headmenu->reconfigure();
+	}
+#endif // XINERAMA
 
 	Basemenu::reconfigure();
 }
@@ -900,5 +944,39 @@ void Slitmenu::Placementmenu::itemSelected(int button, int index) {
 	}
 }
 
+#ifdef XINERAMA
+
+Slitmenu::Headmenu::Headmenu(Slitmenu *sm)
+	: Basemenu(sm->slit->screen) {
+	slitmenu = sm;
+	I18n *i18n = I18n::instance();
+
+	setLabel(i18n->getMessage(0, 0, "Place on Head")); //TODO: NLS
+	setInternalMenu();
+
+	int numHeads = slitmenu->slit->screen->getNumHeads();
+	// fill menu with head entries
+	for (int i = 0; i < numHeads; i++) {
+		char headName[32];
+		sprintf(headName, "Head %i", i+1); //TODO: NLS
+		insert(i18n->getMessage(0, 0, headName), i);
+	}
+
+	update();
+}
+
+void Slitmenu::Headmenu::itemSelected(int button, int index) {
+	if (button == 1) {
+		BasemenuItem *item = find(index);
+		if (! item)
+			return;
+
+		slitmenu->slit->screen->saveSlitOnHead(item->function());
+		hide();
+		slitmenu->slit->reconfigure();
+	}
+}
+
+#endif // XINERAMA
 
 #endif // SLIT

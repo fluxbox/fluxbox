@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.33 2002/03/19 00:15:58 fluxgen Exp $
+// $Id: Window.cc,v 1.34 2002/03/19 14:30:42 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -265,32 +265,44 @@ tab(0)
 			client.normal_hint_flags & (PPosition|USPosition)) {
 		setGravityOffsets();
 
-		if (! fluxbox->isStartup()) { // is going to be used when position
-			if (decorations.tab) {			// window is cleanly fixed 
-				int real_x = frame.x;
-				int real_y = frame.y;
+		if (! fluxbox->isStartup()) {
+			#ifdef XINERAMA
+			unsigned int head = 0;
+			if (screen->hasXinerama()) {
+				head = screen->getHead(frame.x, frame.y);
+			}
+			#endif // XINERAMA
 
-				if (screen->getTabPlacement() == Tab::PTOP)
+			int real_x = frame.x;
+			int real_y = frame.y;
+
+			if (decorations.tab) {
+				if (screen->getTabPlacement() == Tab::PTOP) {
 					real_y -= screen->getTabHeight();
-
-				else if (screen->getTabPlacement() == Tab::PLEFT) {
-					if (screen->isTabRotateVertical())
-						real_x -= screen->getTabHeight();
-					else
-						real_x -= screen->getTabWidth();
+				} else if (screen->getTabPlacement() == Tab::PLEFT) {
+					real_x -= (screen->isTabRotateVertical())
+						? screen->getTabHeight()
+						: screen->getTabWidth();
 				}
+			}
 
-				if (real_x >= 0 && 
-						real_y + frame.y_border >= 0 &&
-						real_x <= (signed) screen->getWidth() &&
-						real_y <= (signed) screen->getHeight())
-					place_window = false;
-
-			} else if (frame.x >= 0 && // non tab
-					(signed) (frame.y + frame.y_border) >= 0 &&
-					frame.x <= (signed) screen->getWidth() &&
-					frame.y <= (signed) screen->getHeight())
+			#ifdef XINERAMA
+			// check is within the current head, so it won't overlap heads
+			if (real_x >= screen->getHeadX(head) && 
+					real_y + frame.y_border >= screen->getHeadY(head) &&
+					(real_x + frame.width) <=
+						(screen->getHeadX(head) + screen->getHeadWidth(head)) &&
+					(real_y + frame.height) <=
+						(screen->getHeadY(head) + screen->getHeadHeight(head)) )
 				place_window = false;
+			#else // !XINERAMA
+			if (real_x >= 0 && 
+					real_y + frame.y_border >= 0 &&
+					real_x <= (signed) screen->getWidth() &&
+					real_y <= (signed) screen->getHeight())
+				place_window = false;
+			#endif // XIENRAMA
+
 		} else
 			place_window = false;
 
@@ -2083,7 +2095,25 @@ void FluxboxWindow::maximize(unsigned int button) {
 	if (! maximized) {
 		int dx, dy;
 		unsigned int dw, dh, slitModL = 0, slitModR = 0, slitModT = 0, slitModB = 0;
+
+#ifdef XINERAMA
+		// get the head the window is on, taking the middle of the window to
+		// make it feel right, maybe someone will like client.x, client.y better
+		// tough?
+		unsigned int head = (screen->hasXinerama()) ?
+			screen->getHead(client.x + (client.width / 2), client.y + (client.height / 2))
+			: 0;
+#endif // XINERAMA
+
+
 #ifdef	SLIT
+
+#ifdef XINERAMA
+// take the slit in account if it's on the same head
+// (always true if we don't have xinerama
+if (!screen->hasXinerama() || screen->getSlitOnHead() == head) {
+#endif // XINERAMA
+
 		Slit* mSlt = screen->getSlit();
 
 		if(!screen->doMaxOverSlit() && !screen->doFullMax() && (mSlt->getWidth() > 1))
@@ -2138,6 +2168,10 @@ void FluxboxWindow::maximize(unsigned int button) {
 				break;
 			}
 		}		
+#ifdef XINERAMA
+}
+#endif // XINERAMA
+
 #endif // SLIT
 	
 		blackbox_attrib.premax_x = frame.x;
@@ -2145,21 +2179,44 @@ void FluxboxWindow::maximize(unsigned int button) {
 		blackbox_attrib.premax_w = frame.width;
 		blackbox_attrib.premax_h = frame.height;
 
+#ifdef XINERAMA
+		dw = screen->getHeadWidth(head) - slitModL - slitModR;
+#else // !XINERAMA
 		dw = screen->getWidth() - slitModL - slitModR;
+#endif // XINERAMA
 		dw -= screen->getBorderWidth2x();
 		dw -= frame.mwm_border_w * 2;
 		dw -= client.base_width;
 
+#ifdef XINERAMA
+		dh = screen->getHeadHeight(head) - slitModT - slitModB;
+#else // !XINERAMA
 		dh = screen->getHeight() - slitModT - slitModB;
+#endif // XINERAMA
 		dh -= screen->getBorderWidth2x();
 		dh -= frame.mwm_border_w * 2;
 		dh -= ((frame.handle_h + screen->getBorderWidth()) * decorations.handle);
 		dh -= client.base_height;
 		dh -= frame.y_border;
 
-		if (! screen->doFullMax())
+		if (! screen->doFullMax()) {
+#ifdef XINERAMA
+			if (screen->hasXinerama()) {
+				// is the toolbar on this head?
+				if ((screen->getToolbarOnHead() == (signed) head) ||
+						(screen->getToolbarOnHead() < 0)) {
+					dh -= screen->getToolbar()->getExposedHeight() +
+						screen->getBorderWidth2x();
+				}
+			} else {
+				dh -= screen->getToolbar()->getExposedHeight() +
+					screen->getBorderWidth2x();
+			}
+#else // !XINERAMA
 			dh -= screen->getToolbar()->getExposedHeight() +
 						screen->getBorderWidth2x();
+#endif // XINERAMA
+		}
 
 		if (dw < client.min_width) dw = client.min_width;
 		if (dh < client.min_height) dh = client.min_height;
@@ -2177,20 +2234,61 @@ void FluxboxWindow::maximize(unsigned int button) {
 		dh += (frame.handle_h + screen->getBorderWidth());
 		dh += frame.mwm_border_w * 2;
 
+#ifdef XINERAMA
+		dx = screen->getHeadX(head) +
+			((screen->getHeadWidth(head) + slitModL - slitModR - dw) / 2)
+			- screen->getBorderWidth();
+#else // !XINERAMA
 		dx = ((screen->getWidth()+ slitModL - slitModR - dw) / 2) - screen->getBorderWidth();
+#endif // XINERAMA
 
 		if (screen->doFullMax()) {
+#ifdef XINERAMA
+			dy = screen->getHeadY(head) +
+				((screen->getHeadHeight(head) - dh) / 2) - screen->getBorderWidth();
+#else // !XINERAMA
 			dy = ((screen->getHeight() - dh) / 2) - screen->getBorderWidth();
+#endif // XINERAMA
 		} else {
+#ifdef XINERAMA
+			if (screen->hasXinerama()) { // xinerama
+				dy = screen->getHeadY(head);
+				// is the toolbar on this head?
+				if ((screen->getToolbarOnHead() == (signed) head) ||
+						(screen->getToolbarOnHead() < 0)) {
+					dy += (((screen->getHeadHeight(head) + slitModT - slitModB
+						- (screen->getToolbar()->getExposedHeight())) - dh) / 2)
+						- screen->getBorderWidth2x();
+			 	} else {
+					dy += ((screen->getHeadHeight(head) + slitModT - slitModB - dh) / 2) -
+						screen->getBorderWidth();
+				}
+			} else { // no xinerama
+				dy = (((screen->getHeight() + slitModT - slitModB -
+					(screen->getToolbar()->getExposedHeight())) - dh) / 2) -
+					screen->getBorderWidth2x();
+			}
+#else // !XINERAMA
 			dy = (((screen->getHeight() + slitModT - slitModB - (screen->getToolbar()->getExposedHeight()))
 			 - dh) / 2) - screen->getBorderWidth2x();
+#endif // XINERAMA
 
 			switch (screen->getToolbarPlacement()) {
 			case Toolbar::TOPLEFT:
 			case Toolbar::TOPCENTER:
 			case Toolbar::TOPRIGHT:
+#ifdef XINERAMA
+				// if < 0 than it's over ALL heads, with no xinerama it's there too
+				if (!screen->hasXinerama() ||
+						(screen->getToolbarOnHead() == (signed) head) ||
+						(screen->getToolbarOnHead() < 0)) {
+					dy += screen->getToolbar()->getExposedHeight() +
+						screen->getBorderWidth2x();
+				}
+#else // !XINERAMA
 				dy += screen->getToolbar()->getExposedHeight() +
 						screen->getBorderWidth2x();
+#endif // XINERAMA
 				break;
 			default:
 				break;
