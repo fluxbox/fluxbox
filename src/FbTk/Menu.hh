@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.6 2003/02/02 16:32:41 rathnor Exp $
+// $Id: Menu.hh,v 1.7 2003/02/03 13:40:52 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -78,13 +78,9 @@ public:
     inline void setTorn() { torn = true; }
     inline void removeParent() { if (internal_menu) m_parent = 0; }
     /// raise this window
-    void raise();
+    virtual void raise();
     /// lower this window
-    void lower();
-
-    XLayerItem *getLayerItem() const { return menu.window.getLayerItem(); }
-    void setLayerItem(XLayerItem *item) { menu.window.setLayerItem(item); }
-
+    virtual void lower();
 
     void disableTitle();
     void enableTitle();
@@ -123,7 +119,7 @@ public:
     bool isTorn() const { return torn; }
     bool isVisible() const { return visible; }
     int screenNumber() const { return m_screen_num; }
-    Window windowID() const { return menu.window.window(); }
+    Window window() const { return menu.window.window(); }
     const std::string &label() const { return menu.label; }  
     int x() const { return menu.x; }
     int y() const { return menu.y; }
