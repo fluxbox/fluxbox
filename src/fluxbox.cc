@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.229 2004/01/21 15:30:27 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.230 2004/02/10 18:51:08 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -318,7 +318,7 @@ setFromString(const char *strval) {
         setDefaultValue();
 }
  
-
+template<>
 string FbTk::Resource<long>::
 getString() {
     char tmpstr[128];
