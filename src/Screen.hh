@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.21 2002/02/26 22:25:53 fluxgen Exp $
+// $Id: Screen.hh,v 1.22 2002/03/08 12:19:07 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -320,7 +320,7 @@ protected:
 	XFontSet createFontSet(char *);
 	void readDatabaseFont(char *, char *, XFontStruct **);
 
-	void InitMenu(void);
+	void initMenu(void);
 
 
 };
