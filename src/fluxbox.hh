@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.78 2003/12/20 17:40:50 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.79 2003/12/21 23:24:25 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -99,7 +99,7 @@ public:
 
     inline unsigned int getDoubleClickInterval() const { return *m_rc_double_click_interval; }
     inline unsigned int getUpdateDelayTime() const { return *m_rc_update_delay_time; }
-    inline unsigned int getLastTime() const { return m_last_time; }
+    inline Time getLastTime() const { return m_last_time; }
 
     void addAtomHandler(AtomHandler *atomh);
     void removeAtomHandler(AtomHandler *atomh);
