@@ -1,14 +1,14 @@
 News in 0.9.6:
-    * Add image search paths when loading a style
-      now looks for pixmaps in <stylebase> and <stylebase>/pixmaps
-      now looks for styles in <stylesdir>/<stylename>/theme.cfg
+    * Adding image search paths when loading a style
+      It now looks for pixmaps in <stylebase> and <stylebase>/pixmaps
+      and in file <stylesdir>/<stylename>/theme.cfg
       => for this, stylebase is the style directory
       pixmap styles should use the new format for portability
     * Added startup script to be used with startfluxbox, to get a 
       consistent frontend for both *dm and startx and your fluxbox-session
     * Added "!" as a comment line for keys file
     * Added new actions
-          * workspacemenu	  
+          * workspacemenu  
           * Move x y
           * Resize x y
           Next two commands are absolute coordinates
@@ -37,10 +37,10 @@ News in 0.9.6:
         * toolbar.button.color: <color>
         * toolbar.button.colorTo: <color>
         * toolbar.button.pixmap:  <filename>
-        * toolbar.button.picColor: <color>	
+        * toolbar.button.picColor: <color>
         * toolbar.button.pressed.color: <color>
         * toolbar.button.pressed.colorTo: <color>
-        * toolbar.button.pressed: <texture>	   
+        * toolbar.button.pressed: <texture>   
     * Support for _NET_WM_STATE_FULLSCREEN
     * Nearest-quadrant resizing
     * Improvements/Updates to fbsetbg and fluxbox-generate_menu
