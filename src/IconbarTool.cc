@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.17 2003/11/29 00:36:09 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.18 2003/12/03 00:16:56 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -202,6 +202,8 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     RefCount<Command> s_and_reconfig(save_and_reconfig);
     m_menu.insert(new BoolMenuItem("Show Pictures", *m_rc_use_pixmap, s_and_reconfig));
     m_menu.update();
+    // must be internal menu, otherwise toolbar main menu tries to delete it.
+    m_menu.setInternalMenu();
 
     // add iconbar menu to toolbar menu
     menu.insert(m_menu.label().c_str(), &m_menu);
