@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.8 2003/07/19 03:59:56 rathnor Exp $
+// $Id: MenuTheme.cc,v 1.9 2003/08/16 12:23:17 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -54,7 +54,10 @@ MenuTheme::MenuTheme(int screen_num):
     m_display(FbTk::App::instance()->display()),
     m_alpha(255)
 { 
-	
+    // set default values
+    *m_border_width = 0;
+    *m_bevel_width = 0;
+
     Window rootwindow = RootWindow(m_display, screen_num);
 
     XGCValues gcv;
@@ -86,7 +89,12 @@ MenuTheme::~MenuTheme() {
 }
 
 void MenuTheme::reconfigTheme() {
-	
+    // clamp to "normal" size
+    if (*m_bevel_width > 20)
+        *m_bevel_width = 20;
+    if (*m_border_width > 20)
+        *m_border_width = 20;
+
     XGCValues gcv;
     unsigned long gc_value_mask = GCForeground;
     
