@@ -42,27 +42,31 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
+// $Id: Theme.hh,v 1.5 2002/01/08 00:14:40 fluxgen Exp $
+
 #ifndef _THEME_HH_
 #define _THEME_HH_
 
 
 #ifndef _IMAGE_HH_
 #include "Image.hh"
-#endif //_IMAGE_HH_
+#endif //!_IMAGE_HH_
 
 #ifndef _DRAWUTIL_HH_
 #include "DrawUtil.hh"
-#endif //_MISC_HH_
+#endif //!_MISC_HH_
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
+#include <string>
 
 class Theme
 {
 public:	
 		
-	Theme(Display *display, Window rootwindow, Colormap colormap, int screennum, BImageControl *ic, const char *filename);
+	Theme(Display *display, Window rootwindow, Colormap colormap, 
+		int screennum, BImageControl *ic, const char *filename, const char *rootcommand);
 	~Theme();	
 	
 	
@@ -107,10 +111,8 @@ public:
 		GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
 		DrawUtil::Font font;
 
-	} ToolbarStyle;
+	} ToolbarStyle;	
 	
-	void load(const char *filename);
-	void reconfigure();
 	inline WindowStyle &getWindowStyle(void) { return m_windowstyle; }
 	inline MenuStyle &getMenuStyle(void) { return m_menustyle; }
 	inline ToolbarStyle &getToolbarStyle(void) { return m_toolbarstyle; }
@@ -120,7 +122,13 @@ public:
 	inline unsigned int getFrameWidth(void) const { return m_frame_width; }
 	inline const GC &getOpGC(void) const { return m_opgc; }
 	inline const BColor &getBorderColor(void) const { return m_border_color; }
-
+	void load(const char *filename);
+	void reconfigure();
+	
+	inline void setRootCommand(std::string command) { m_rootcommand = command; }
+	
+	
+	
 private:
 	
 	void loadMenuStyle();
@@ -155,7 +163,8 @@ private:
 	Display *m_display;	 
 	XrmDatabase m_database;
 	Colormap m_colormap;
-	int m_screennum;	
+	int m_screennum;
+	std::string m_rootcommand;
 
 };
 
