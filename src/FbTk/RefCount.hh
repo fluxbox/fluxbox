@@ -31,7 +31,7 @@ public:
     RefCount();
     explicit RefCount(Pointer *p);
     explicit RefCount(RefCount<Pointer> &copy);
-    explicit RefCount(const RefCount<Pointer> &copy);
+    RefCount(const RefCount<Pointer> &copy);
     ~RefCount();
     RefCount<Pointer> &operator = (const RefCount<Pointer> &copy);
     RefCount<Pointer> &operator = (Pointer *p);
