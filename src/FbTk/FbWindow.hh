@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.17 2003/05/19 22:38:54 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.18 2003/06/24 10:12:57 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -73,6 +73,10 @@ public:
     void setEventMask(long mask);
     /// clear window with background pixmap or color
     virtual void clear();
+    /// @param exposures wheter Expose event should be generated
+    virtual void clearArea(int x, int y, 
+                           unsigned int width, unsigned int height, 
+                           bool exposures = false);
     /// assign a new X window to this
     virtual FbWindow &operator = (Window win);
     virtual void hide();

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.20 2003/05/19 22:38:55 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.21 2003/06/24 10:12:57 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -113,6 +113,12 @@ void FbWindow::setEventMask(long mask) {
 
 void FbWindow::clear() {
     XClearWindow(s_display, m_window);
+}
+
+void FbWindow::clearArea(int x, int y, 
+                         unsigned int width, unsigned int height, 
+                         bool exposures) {
+    XClearArea(s_display, window(), x, y, width, height, exposures);
 }
 
 FbWindow &FbWindow::operator = (Window win) {
