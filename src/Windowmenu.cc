@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.22 2002/12/01 13:42:05 rathnor Exp $
+// $Id: Windowmenu.cc,v 1.23 2003/01/05 22:31:36 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -29,7 +29,7 @@
 #endif // _GNU_SOURCE
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
@@ -151,7 +151,7 @@ void Windowmenu::itemSelected(int button, unsigned int index) {
 	break;
 
     case BScreen::WINDOWMAXIMIZE:
-        window.maximize((unsigned int) button);
+        window.maximize();
 	break;
 
     case BScreen::WINDOWCLOSE:
