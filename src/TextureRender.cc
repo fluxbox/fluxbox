@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.4 2002/12/01 19:41:40 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.5 2002/12/02 20:15:22 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -31,6 +31,8 @@
 #include "App.hh"
 
 #include <iostream>
+#include <string>
+#include <cstdio>
 using namespace std;
 
 TextureRender::TextureRender(BImageControl &imgctrl, 
@@ -44,9 +46,27 @@ TextureRender::TextureRender(BImageControl &imgctrl,
     width = ((signed) w > 0) ? w : 1;
     height = ((signed) h > 0) ? h : 1;
 
-    red = new unsigned char[width * height];
-    green = new unsigned char[width * height];
-    blue = new unsigned char[width * height];
+    red = new (nothrow) unsigned char[width * height];
+    if (red == 0) {
+        char sbuf[128];
+        sprintf(sbuf, "%d", width*height);
+        throw string("TextureRender::TextureRender(): Out of memory while allocating red buffer."+ string(sbuf));
+    }
+
+
+    green = new (nothrow)  unsigned char[width * height];
+    if (green == 0) {
+        char sbuf[128];
+        sprintf(sbuf, "%d", width*height);
+        throw string("TextureRender::TextureRender(): Out of memory while allocating green buffer. size " + string(sbuf));
+    }
+
+    blue = new (nothrow) unsigned char[width * height];
+    if (blue == 0) {
+        char sbuf[128];
+        sprintf(sbuf, "%d", width*height);
+        throw string("TextureRender::TextureRender(): Out of memory while allocating blue buffer. size " + string(sbuf));
+    }
 
     cpc = imgctrl.colorsPerChannel();
     cpccpc = cpc * cpc;
