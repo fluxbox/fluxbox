@@ -1,20 +1,18 @@
+#include "bsetroot.hh"
+
+#include "../src/i18n.hh"
+
 #ifdef HAVE_CONFIG_H
 #  include "../config.h"
 #endif // HAVE_CONFIG_H
 
-#ifdef STDC_HEADERS
-#  include <string.h>
-#  include <stdlib.h>
-#endif // STDC_HEADERS
+#include <X11/Xatom.h>
 
-#ifdef HAVE_STDIO_H
-#  include <stdio.h>
-#endif // HAVE_STDIO_H
-
-#include "../src/i18n.hh"
-#include "bsetroot.hh"
-
+#include <cstring>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
+
 using namespace std;
 
 bsetroot::bsetroot(int argc, char **argv, char *dpy_name)

@@ -1,5 +1,5 @@
-#ifndef   __bsetroot2_hh
-#define   __bsetroot2_hh
+#ifndef BSETROOT_HH
+#define BSETROOT_HH
 
 #include "../src/BaseDisplay.hh"
 #include "../src/Image.hh"
@@ -30,4 +30,4 @@ protected:
 };
 
 
-#endif // __bsetroot2_hh
+#endif // BSETROOT_HH
