@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.14 2003/04/25 16:23:59 fluxgen Exp $
+// $Id: Menu.hh,v 1.15 2003/05/13 00:24:00 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -142,15 +142,16 @@ public:
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
     static unsigned char alpha() { return s_alpha; }
+    /// @return menuitem at index
+    inline const MenuItem *find(unsigned int index) const { return menuitems[index]; }
+    inline MenuItem *find(unsigned int index) { return menuitems[index]; }
     //@}
 
 protected:
 
-    inline MenuItem *find(unsigned int index) const { return menuitems[index]; }
     inline void setTitleVisibility(bool b) { title_vis = b; }
     inline void setMovable(bool b) { movable = b; }
     inline void setHideTree(bool h) { hide_tree = h; }
-
 
     virtual void itemSelected(int button, unsigned int index) { }
     virtual void drawItem(unsigned int index, bool highlight = false, 
