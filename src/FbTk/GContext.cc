@@ -1,5 +1,5 @@
 // GContext.cc for FbTk - fluxbox toolkit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.cc,v 1.6 2004/01/09 01:19:48 fluxgen Exp $
+// $Id: GContext.cc,v 1.7 2004/09/11 23:00:44 fluxgen Exp $
 
 #include "GContext.hh"
 
