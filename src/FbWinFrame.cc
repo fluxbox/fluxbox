@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.73 2004/01/23 10:37:01 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.74 2004/01/23 11:04:05 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -439,7 +439,7 @@ bool FbWinFrame::hideHandle() {
     m_use_handle = false;
 
     if (static_cast<signed int>(m_window.height() - m_handle.height() -
-                                m_handle.borderWidth())) {
+                                m_handle.borderWidth()) <= 0) {
         m_window.resize(m_window.width(), 1);
     } else {
         // only take away one borderwidth (as the other border is still the "top" border)
