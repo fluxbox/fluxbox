@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.cc,v 1.5 2003/02/09 14:11:13 rathnor Exp $
+// $Id: MultLayers.cc,v 1.6 2003/02/18 15:08:12 rathnor Exp $
 
 #include "MultLayers.hh"
 #include "XLayer.hh"
@@ -151,10 +151,7 @@ void MultLayers::moveToLayer(XLayerItem &item, int layernum) {
 
 void MultLayers::restack() {
 
-    int layernum=0, winnum=0, size=0;
-    for (; layernum < m_layers.size(); layernum++) {
-        size += m_layers[layernum]->countWindows();
-    }
+    int layernum=0, winnum=0, size = this->size();
 
     Window *winlist = new Window[size];
     for (layernum=0; layernum < m_layers.size(); layernum++) {
@@ -166,13 +163,14 @@ void MultLayers::restack() {
         for (; it != it_end; ++it) {
             XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
             XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
-            for (; wit != wit_end; ++wit, winnum++) {
-                winlist[winnum] = (*wit);
+            for (; wit != wit_end; ++wit) {
+                if ((*wit)->window()) 
+                    winlist[winnum++] = (*wit)->window();
             }
         }
     }
 
-    XRestackWindows(FbTk::App::instance()->display(), winlist, size);
+    XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
 
     delete [] winlist;
 }

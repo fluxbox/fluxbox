@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.5 2003/02/09 14:11:14 rathnor Exp $
+// $Id: XLayer.cc,v 1.6 2003/02/18 15:08:12 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -53,12 +53,13 @@ void XLayer::restack() {
     for (size_t i=0; it != it_end; ++it, i++) {
         XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
         XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
-        for (; wit != wit_end; ++wit, j++) {
-            winlist[j] = (*wit);
+        for (; wit != wit_end; ++wit) {
+            if ((*wit)->window())
+                winlist[j++] = (*wit)->window();
         }
     }
 
-    XRestackWindows(FbTk::App::instance()->display(), winlist, num_windows);
+    XRestackWindows(FbTk::App::instance()->display(), winlist, j);
 
     delete [] winlist;
 
@@ -84,7 +85,8 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     // if there are no windows provided for above us, 
     // then we must have to go right to the top of the stack
     if (!above) { // must need to go right to top
-        XRaiseWindow(FbTk::App::instance()->display(), item->getWindows().front());
+        if (item->getWindows().front()->window())
+            XRaiseWindow(FbTk::App::instance()->display(), item->getWindows().front()->window());
 
         // if this XLayerItem has more than one window, 
         // then we'll stack the rest in under the front one too
@@ -105,18 +107,20 @@ void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
         winnum = 1;
         size = num+1;
         winlist = new Window[size];
-        winlist[0] = above->getWindows().back();
+        // assume that above's window exists
+        winlist[0] = above->getWindows().back()->window();
     }
 
     // fill the rest of the array
     XLayerItem::Windows::iterator it = item->getWindows().begin();
     XLayerItem::Windows::iterator it_end = item->getWindows().end();
-    for (; it != it_end; ++it, winnum++) {
-        winlist[winnum] = (*it);
+    for (; it != it_end; ++it) {
+        if ((*it)->window()) 
+            winlist[winnum++] = (*it)->window();
     }
 
     // stack the windows
-    XRestackWindows(FbTk::App::instance()->display(), winlist, size);
+    XRestackWindows(FbTk::App::instance()->display(), winlist, winnum);
 
     delete [] winlist;
     

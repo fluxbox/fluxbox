@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.hh,v 1.5 2003/02/09 14:11:14 rathnor Exp $
+// $Id: XLayerItem.hh,v 1.6 2003/02/18 15:08:12 rathnor Exp $
 
 #ifndef FBTK_XLAYERITEM_HH
 #define FBTK_XLAYERITEM_HH
@@ -28,6 +28,7 @@
 #include "LayerItem.hh"
 #include "XLayer.hh"
 #include "NotCopyable.hh"
+#include "FbWindow.hh"
 
 #include <X11/Xlib.h>
 
@@ -36,9 +37,9 @@ namespace FbTk {
 
 class XLayerItem : public LayerItem, private NotCopyable {
 public:
-    typedef std::list<Window> Windows;
+    typedef std::list<FbWindow *> Windows;
 
-    XLayerItem(Window win, XLayer &layer);
+    XLayerItem(FbWindow &win, XLayer &layer);
     ~XLayerItem();
 
     void setLayer(XLayer &layer);
@@ -65,11 +66,11 @@ public:
 
     // an XLayerItem holds several windows that are equivalent in a layer 
     // (i.e. if one is raised, then they should all be).
-    void addWindow(Window win);
-    void removeWindow(Window win);
+    void addWindow(FbWindow &win);
+    void removeWindow(FbWindow &win);
 
     // using this you can bring one window to the top of this item (equivalent to add then remove)
-    void bringToTop(Window win);
+    void bringToTop(FbWindow &win);
 
     Windows &getWindows() { return m_windows; }
     size_t numWindows() const { return m_windows.size(); }

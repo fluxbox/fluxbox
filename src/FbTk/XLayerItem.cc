@@ -20,16 +20,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.cc,v 1.5 2003/02/09 14:11:14 rathnor Exp $
+// $Id: XLayerItem.cc,v 1.6 2003/02/18 15:08:12 rathnor Exp $
 
 #include "XLayerItem.hh"
 #include "XLayer.hh"
 
 using namespace FbTk;
 
-XLayerItem::XLayerItem(Window win, XLayer &layer) :
+XLayerItem::XLayerItem(FbWindow &win, XLayer &layer) :
     m_layer(&layer), m_layeriterator(0) {
-    m_windows.push_front(win);
+    m_windows.push_front(&win);
     m_layer->insert(*this);
 }
 
@@ -76,21 +76,21 @@ void XLayerItem::moveToLayer(int layernum) {
     m_layer->moveToLayer(*this, layernum);
 }
 
-void XLayerItem::addWindow(Window win) {
+void XLayerItem::addWindow(FbWindow &win) {
   // I'd like to think we can trust ourselves that it won't be added twice...
   // Otherwise we're always scanning through the list.
-  m_windows.push_back(win);
+  m_windows.push_back(&win);
 }
 
-void XLayerItem::removeWindow(Window win) {
+void XLayerItem::removeWindow(FbWindow &win) {
   // I'd like to think we can trust ourselves that it won't be added twice...
   // Otherwise we're always scanning through the list.
 
-  XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), win);
+  XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), &win);
   m_windows.erase(it);
 }
 
-void XLayerItem::bringToTop(Window win) {
+void XLayerItem::bringToTop(FbWindow &win) {
   removeWindow(win);
   addWindow(win);
 }
