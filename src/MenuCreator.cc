@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.6 2004/06/07 11:46:04 rathnor Exp $
+// $Id: MenuCreator.cc,v 1.7 2004/06/07 22:23:50 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -46,6 +46,8 @@
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/StringUtil.hh"
 #include "FbTk/Directory.hh"
+#include "FbTk/MenuSeparator.hh"
+#include "FbTk/MenuIcon.hh"
 
 #include <iostream>
 using namespace std;
@@ -212,14 +214,22 @@ static void translateMenuItem(Parser &parse,
             menu.insert(str_label.c_str(), &screen->getWorkspacemenu());
         }
     } else if (str_key == "separator") {
-        menu.insert("---"); //!! TODO: this will be better in the future
-    } else { // ok, if we didn't find any special menu item we try with command parser
+        menu.insert(new FbTk::MenuSeparator());
+    }/* else if (str_key == "icon") {
+        FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(str_cmd));
+        FbTk::MenuItem *item = new FbTk::MenuIcon(str_label, str_cmd, screen_number);
+        item->setCommand(cmd);
+        menu.insert(item);
+        
+        }*/
+    else { // ok, if we didn't find any special menu item we try with command parser
         // we need to attach command with arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
         FbTk::RefCount<FbTk::Command> command(CommandParser::instance().parseLine(line));
         if (*command != 0)
             menu.insert(str_label.c_str(), command);
     }
+
 }
 
 
@@ -402,7 +412,7 @@ bool MenuCreator::createWindowMenuItem(const std::string &type,
 
 
     } else if (type == "separator") {
-        menu.insert("---");
+        menu.insert(new FbTk::MenuSeparator());
     } else
         return false;
 
