@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
+*03/08/23:
+   * Fixed autohide and menu in Toolbar (Henrik)
+     Toolbar.cc, EventManager.hh/cc, WorkspaceNameTool.hh
 *03/08/22:
    * Added search path resource for images (Henrik)
      * session.screen<num>.imageSearchPath
