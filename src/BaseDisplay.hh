@@ -22,12 +22,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.31 2002/11/15 11:57:33 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.32 2002/11/26 16:05:34 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
 
 #include "NotCopyable.hh"
+#include "App.hh"
 #include "EventHandler.hh"
 
 #include <X11/Xlib.h>
@@ -52,7 +53,7 @@ void bexec(const char *command, char *displaystring);
 /**
 	Singleton class to manage display connection
 */
-class BaseDisplay:private NotCopyable, FbTk::EventHandler<XEvent>
+class BaseDisplay:public FbTk::App, private FbTk::NotCopyable, FbTk::EventHandler<XEvent>
 {
 public:
 	BaseDisplay(const char *app_name, const char *display_name = 0);
@@ -92,7 +93,7 @@ public:
 	inline bool isStartup() const { return m_startup; }
 
 	
-	static Display *getXDisplay() { return s_display; }
+	static Display *getXDisplay() { return App::instance()->display(); }
 
 	inline const char *getXDisplayName() const	{ return m_display_name; }
 	inline const char *getApplicationName() const { return m_app_name; }
@@ -117,7 +118,6 @@ private:
 	} shape;	
 
 	bool m_startup, m_shutdown;
-	static Display *s_display;
 
     typedef std::vector<ScreenInfo *> ScreenInfoList;
     ScreenInfoList screenInfoList;    

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.22 2002/11/12 14:40:26 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.23 2002/11/26 16:05:34 fluxgen Exp $
 
 
 
@@ -131,9 +131,8 @@ void bexec(const char *command, char *displaystring) {
 
 
 BaseDisplay *BaseDisplay::s_singleton = 0;
-Display *BaseDisplay::s_display = 0;
 
-BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):
+BaseDisplay::BaseDisplay(const char *app_name, const char *dpy_name):FbTk::App(dpy_name),
 m_startup(true), m_shutdown(false), 
 m_display_name(XDisplayName(dpy_name)), m_app_name(app_name),
 m_server_grabs(0)
@@ -146,7 +145,7 @@ m_server_grabs(0)
 	last_bad_window = None;
 	I18n *i18n = I18n::instance();
 
-	if (! (s_display = XOpenDisplay(dpy_name))) {
+	if (display() == 0) {
 		fprintf(stderr,
 			i18n->
 			getMessage(
@@ -154,7 +153,7 @@ m_server_grabs(0)
 				"BaseDisplay::BaseDisplay: connection to X server failed.\n"));
 		
 		throw static_cast<int>(2); //throw error 2
-	} else if (fcntl(ConnectionNumber(s_display), F_SETFD, 1) == -1) {
+	} else if (fcntl(ConnectionNumber(display()), F_SETFD, 1) == -1) {
 		fprintf(stderr,
 			i18n->
 				getMessage(
@@ -165,10 +164,10 @@ m_server_grabs(0)
 	}
 	
 
-	number_of_screens = ScreenCount(s_display);
+	number_of_screens = ScreenCount(display());
 
 #ifdef		SHAPE
-	shape.extensions = XShapeQueryExtension(s_display, &shape.event_basep,
+	shape.extensions = XShapeQueryExtension(display(), &shape.event_basep,
 		&shape.error_basep);
 #else // !SHAPE
 	shape.extensions = False;
@@ -191,9 +190,7 @@ BaseDisplay::~BaseDisplay() {
 	for (; it != it_end; ++it) {
 		delete (*it);
 	}
-	
-	XCloseDisplay(s_display);
-	s_display = 0;
+		
 	s_singleton = 0;
 }
 
@@ -208,9 +205,9 @@ void BaseDisplay::eventLoop() {
 	run();
 
 	while ((! m_shutdown) && (! internal_error)) {
-		if (XPending(s_display)) {
+		if (XPending(display())) {
 			XEvent e;
-			XNextEvent(s_display, &e);
+			XNextEvent(display(), &e);
 
 			if (last_bad_window != None && e.xany.window == last_bad_window) {
 #ifdef DEBUG
@@ -226,7 +223,7 @@ void BaseDisplay::eventLoop() {
 				handleEvent(&e);
 			}
 		} else {
-			BTimer::updateTimers(ConnectionNumber(s_display)); //handle all timers
+			BTimer::updateTimers(ConnectionNumber(display())); //handle all timers
 		}
 	}
 }
@@ -234,8 +231,8 @@ void BaseDisplay::eventLoop() {
 
 bool BaseDisplay::validateWindow(Window window) {
 	XEvent event;
-	if (XCheckTypedWindowEvent(s_display, window, DestroyNotify, &event)) {
-		XPutBackEvent(s_display, &event);
+	if (XCheckTypedWindowEvent(display(), window, DestroyNotify, &event)) {
+		XPutBackEvent(display(), &event);
 		return false;
 	}
 
@@ -245,13 +242,13 @@ bool BaseDisplay::validateWindow(Window window) {
 
 void BaseDisplay::grab() {
 	if (! m_server_grabs++)
-		XGrabServer(s_display);
+		XGrabServer(display());
 }
 
 
 void BaseDisplay::ungrab() {
 	if (! --m_server_grabs)
-		XUngrabServer(s_display);
+		XUngrabServer(display());
 	if (m_server_grabs < 0)
 		m_server_grabs = 0;
 }
