@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.29 2002/10/13 21:55:56 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.30 2002/10/15 20:49:00 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -275,7 +275,7 @@ private:
 	std::string rc_file; ///< resource filename
 	char **argv;
 	int argc;
-	Keys *key;
+	std::auto_ptr<Keys> key;
 	std::string slitlist_path;
 	//default arguments for titlebar left and right
 	static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
