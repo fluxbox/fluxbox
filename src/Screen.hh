@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.143 2004/08/31 15:26:38 rathnor Exp $
+// $Id: Screen.hh,v 1.144 2004/09/09 14:29:04 akir Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -137,7 +137,6 @@ public:
 
 
     unsigned int currentWorkspaceID() const;
-    Pixmap rootPixmap() const;
     /*
       maximum screen bounds for given window
     */

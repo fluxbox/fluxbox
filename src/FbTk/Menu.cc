@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.79 2004/08/31 15:26:39 rathnor Exp $
+// $Id: Menu.cc,v 1.80 2004/09/09 14:29:10 akir Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -44,6 +44,7 @@
 #include "Transparent.hh"
 #include "SimpleCommand.hh"
 #include "I18n.hh"
+#include "FbPixmap.hh"
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -73,28 +74,6 @@ namespace FbTk {
 static Menu *shown = 0;
 
 Menu *Menu::s_focused = 0;
-
-static Pixmap getRootPixmap(int screen_num) {
-    Pixmap root_pm = 0;
-    // get root pixmap for transparency
-    Display *disp = FbTk::App::instance()->display();
-    Atom real_type;
-    int real_format;
-    unsigned long items_read, items_left;
-    unsigned int *data;
-    if (XGetWindowProperty(disp, RootWindow(disp, screen_num), 
-                           XInternAtom(disp, "_XROOTPMAP_ID", false),
-                           0L, 1L, 
-                           false, XA_PIXMAP, &real_type,
-                           &real_format, &items_read, &items_left, 
-                           (unsigned char **) &data) == Success && 
-        items_read) { 
-        root_pm = (Pixmap) (*data);                  
-        XFree(data);
-    }
-
-    return root_pm; 
-}
 
 Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_theme(tm),
@@ -1406,7 +1385,7 @@ void Menu::reconfigure() {
     } else if (alpha () < 255) {
 
         if (m_transp.get() == 0) {
-            m_transp.reset(new Transparent(getRootPixmap(screenNumber()),
+            m_transp.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()),
                                            m_real_frame_pm.drawable(), alpha(),
                                            screenNumber()));
         } else
@@ -1497,7 +1476,7 @@ void Menu::renderTransp(int x, int y,
     // render the root background
 #ifdef HAVE_XRENDER
 
-    Pixmap root = getRootPixmap(screenNumber());
+    Pixmap root = FbPixmap::getRootPixmap(screenNumber());
     if (m_transp->source() != root)
         m_transp->setSource(root, screenNumber());
 

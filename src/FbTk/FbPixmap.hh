@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.12 2004/07/05 23:51:57 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.13 2004/09/09 14:29:10 akir Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -68,6 +68,7 @@ public:
     inline unsigned int height() const { return m_height; }
     inline int depth() const { return m_depth; }
 
+    static Pixmap getRootPixmap(int screen_num);
 
 private:
     void free();

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.288 2004/09/06 13:17:56 akir Exp $
+// $Id: Screen.cc,v 1.289 2004/09/09 14:29:03 akir Exp $
 
 
 #include "Screen.hh"
@@ -231,7 +231,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_shutdown(false) {
 
 
-    Display *disp = FbTk::App::instance()->display();
+    Fluxbox *fluxbox = Fluxbox::instance();
+    Display *disp = fluxbox->display();
 
     initXinerama();
 
@@ -242,7 +243,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                               SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
                               ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask);
 
-    FbTk::App::instance()->sync(false);
+    fluxbox->sync(false);
 
     XSetErrorHandler((XErrorHandler) old);
 
@@ -263,7 +264,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     
     rootWindow().setCursor(XCreateFontCursor(disp, XC_left_ptr));
 
-    Fluxbox *fluxbox = Fluxbox::instance();
     // load this screens resources
     fluxbox->load_rc(*this);
 
@@ -378,7 +378,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // So we lock root theme temporary so it doesn't uses RootTheme::reconfigTheme
     // This must be fixed in the future.
     m_root_theme->lock(true);
-    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
+    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename());
     m_root_theme->lock(false);
     m_root_theme->setLineAttributes(*resource.gc_line_width,
                                     *resource.gc_line_style,
@@ -386,8 +386,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                                     *resource.gc_join_style);
 
 #ifdef SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
-                 Fluxbox::instance()->getSlitlistFilename().c_str()));
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(fluxbox->getDesktopLayer()),
+                 fluxbox->getSlitlistFilename().c_str()));
 #endif // SLIT
 
     rm.unlock();
@@ -445,7 +445,7 @@ void BScreen::initWindows() {
     Fluxbox *fluxbox = Fluxbox::instance();
 
     // preen the window list of all icon windows... for better dockapp support
-    for (int i = 0; i < (int) nchild; i++) {
+    for (unsigned int i = 0; i < nchild; i++) {
 		
         if (children[i] == None)
             continue;
@@ -455,7 +455,7 @@ void BScreen::initWindows() {
         if (wmhints) {
             if ((wmhints->flags & IconWindowHint) &&
                 (wmhints->icon_window != children[i]))
-                for (int j = 0; j < (int) nchild; j++) {
+                for (unsigned int j = 0; j < nchild; j++) {
                     if (children[j] == wmhints->icon_window) {
 #ifdef DEBUG
                         cerr<<"BScreen::initWindows(): children[j] = 0x"<<hex<<children[j]<<dec<<endl;
@@ -474,7 +474,7 @@ void BScreen::initWindows() {
     // complexity: O(n^2) if we have lots of transients to transient_for
     // but usually O(n)
     Window transient_for = 0;    
-    for (int i = 0; i < (int) nchild; ++i) {
+    for (unsigned int i = 0; i < nchild; ++i) {
         if (children[i] == None)
             continue;
         else if (!fluxbox->validateWindow(children[i])) {
@@ -493,7 +493,7 @@ void BScreen::initWindows() {
             fluxbox->searchWindow(transient_for) == 0) {
             // search forward for transient_for
             // and swap place with it so it gets created first
-            int j = i + 1;
+            unsigned int j = i + 1;
             for (; j < nchild; ++j) {
                 if (children[j] == transient_for) {                        
                     swap(children[i], children[j]);
@@ -548,28 +548,6 @@ unsigned int BScreen::currentWorkspaceID() const {
     return m_current_workspace->workspaceID(); 
 }
 
-Pixmap BScreen::rootPixmap() const {
-
-    Pixmap root_pm = 0;
-    Display *disp = FbTk::App::instance()->display();
-    Atom real_type;
-    int real_format;
-    unsigned long items_read, items_left;
-    unsigned int *data;
-    if (rootWindow().property(XInternAtom(disp, "_XROOTPMAP_ID", false),
-                              0L, 1L, 
-                              false, XA_PIXMAP, &real_type,
-                              &real_format, &items_read, &items_left, 
-                              (unsigned char **) &data) && 
-        items_read) { 
-        root_pm = (Pixmap) (*data);                  
-        XFree(data);
-    }
-
-    return root_pm;
-
-}
-    
 unsigned int BScreen::maxLeft(int head) const {
     // we ignore strut if we're doing full maximization
     if (hasXinerama())

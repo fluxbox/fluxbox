@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.12 2004/07/06 10:47:36 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.13 2004/09/09 14:29:10 akir Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
 #include "GContext.hh"
 
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 #include <iostream>
 using namespace std;
 
@@ -203,6 +204,7 @@ void FbPixmap::rotate() {
 }
 
 void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
+    
     if (drawable() == 0 || 
         (dest_width == width() && dest_height == height()))
         return;
@@ -282,6 +284,43 @@ Pixmap FbPixmap::release() {
     m_height = 0;
     m_depth = 0;
     return ret;
+}
+
+Pixmap FbPixmap::getRootPixmap(int screen_num) {
+    
+    Pixmap root_pm = 0;
+    // get root pixmap for transparency
+    Display *disp = FbTk::App::instance()->display();
+    Atom real_type;
+    int real_format;
+    unsigned long items_read, items_left;
+    unsigned int *data;
+    if (XGetWindowProperty(disp, RootWindow(disp, screen_num), 
+                           XInternAtom(disp, "_XROOTPMAP_ID", false),
+                           0L, 1L, 
+                           false, XA_PIXMAP, &real_type,
+                           &real_format, &items_read, &items_left, 
+                           (unsigned char **) &data) == Success && 
+        items_read) { 
+        root_pm = (Pixmap) (*data);                  
+        XFree(data);
+/* TODO: analyze why this doesnt work
+    } else if (XGetWindowProperty(disp, RootWindow(disp, screen_num),
+                                  XInternAtom(disp, "_XSETROOT_ID", false),
+                                              0L, 1L,
+                                              false, XA_PIXMAP, &real_type,
+                                              &real_format, &items_read, &items_left,
+                                              (unsigned char **) &data) == Success &&
+               items_read) {
+        root_pm = (Pixmap) (*data);
+        XFree(data);
+*/
+    }
+    
+
+    return root_pm; 
+
+
 }
 
 void FbPixmap::free() {

@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.37 2004/08/31 15:26:39 rathnor Exp $
+// $Id: FbWindow.cc,v 1.38 2004/09/09 14:29:10 akir Exp $
 
 #include "FbWindow.hh"
+#include "FbPixmap.hh"
 
 #include "EventManager.hh"
 #include "Color.hh"
@@ -42,31 +43,6 @@
 #endif
 
 namespace FbTk {
-
-namespace {
-Pixmap getRootPixmap(int screen_num) {
-    Pixmap root_pm = 0;
-    // get root pixmap for transparency
-    Display *disp = FbTk::App::instance()->display();
-    Atom real_type;
-    int real_format;
-    unsigned long items_read, items_left;
-    unsigned int *data;
-    if (XGetWindowProperty(disp, RootWindow(disp, screen_num), 
-                           XInternAtom(disp, "_XROOTPMAP_ID", false),
-                           0L, 1L, 
-                           false, XA_PIXMAP, &real_type,
-                           &real_format, &items_read, &items_left, 
-                           (unsigned char **) &data) == Success && 
-        items_read) { 
-        root_pm = (Pixmap) (*data);                  
-        XFree(data);
-    }
-
-    return root_pm; 
-}
-
-}; // end anonymous namespace
 
 Display *FbWindow::s_display = 0;
 
@@ -207,7 +183,7 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
         return;
 
     // update source and destination if needed
-    Pixmap root = getRootPixmap(screenNumber());
+    Pixmap root = FbPixmap::getRootPixmap(screenNumber());
     if (m_transparent->source() != root)
         m_transparent->setSource(root, screenNumber());
 
@@ -245,7 +221,7 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
 void FbWindow::setAlpha(unsigned char alpha) {
 #ifdef HAVE_XRENDER
     if (m_transparent.get() == 0 && alpha < 255) {
-        m_transparent.reset(new Transparent(getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
+        m_transparent.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
     } else if (alpha < 255 && alpha != m_transparent->alpha())
         m_transparent->setAlpha(alpha);
     else if (alpha == 255)
