@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.100 2002/11/17 12:50:20 fluxgen Exp $
+// $Id: Window.cc,v 1.101 2002/11/23 16:07:19 rathnor Exp $
 
 #include "Window.hh"
 
@@ -94,6 +94,7 @@ tab(0) {
 	blackbox_attrib.premax_w = blackbox_attrib.premax_h = 0;
 	//use tab as default
 	decorations.tab = true;
+	decorations.enabled = true;
 	client.window = w;
 	frame.window = frame.plate = frame.title = frame.handle = None;
 	frame.right_grip = frame.left_grip = None;
@@ -3175,17 +3176,16 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 }
 
 void FluxboxWindow::toggleDecoration() {
-	static bool decor = false;
 	//don't toggle decor if the window is shaded
 	if (isShaded())
 		return;
 	
-	if (!decor) { //remove decorations
+	if (decorations.enabled) { //remove decorations
 		setDecoration(DECOR_NONE); 
-		decor = true;
+		decorations.enabled = false;
 	} else { //revert back to old decoration
 		setDecoration(old_decoration);
-		decor = false;
+		decorations.enabled = true;
 	}
 }
 

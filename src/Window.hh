@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.36 2002/11/15 12:14:39 fluxgen Exp $
+// $Id: Window.hh,v 1.37 2002/11/23 16:07:19 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -278,7 +278,7 @@ private:
 
 	struct _decorations {
 		bool titlebar, handle, border, iconify,
-			maximize, close, menu, sticky, shade, tab;
+			maximize, close, menu, sticky, shade, tab, enabled;
 	} decorations;
 
 	struct _functions {
