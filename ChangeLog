@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/11/24:
+  * Fix for segfault at startup (Mathias)
+    main.cc
 *04/11/22:
   * fbrun doesnt overlap screenborders anymore (Mathias)
     util/fbrun/main.cc
