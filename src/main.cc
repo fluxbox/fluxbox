@@ -22,42 +22,42 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.4 2002/02/02 21:54:31 pekdon Exp $
+// $Id: main.cc,v 1.5 2002/03/08 12:21:46 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
 #include "../version.h"
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
+#ifdef		HAVE_CONFIG_H
+#	include "../config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
 #include "fluxbox.hh"
 
-#ifdef    HAVE_STDIO_H
-#  include <stdio.h>
+#ifdef		HAVE_STDIO_H
+#	include <stdio.h>
 #endif // HAVE_STDIO_H
 
-#ifdef    STDC_HEADERS
-#  include <stdlib.h>
-#  include <string.h>
+#ifdef		STDC_HEADERS
+#	include <stdlib.h>
+#	include <string.h>
 #endif // STDC_HEADERS
 
-#ifdef    HAVE_UNISTD_H
+#ifdef		HAVE_UNISTD_H
 #include <sys/types.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef    HAVE_SYS_PARAM_H
-#  include <sys/param.h>
+#ifdef		HAVE_SYS_PARAM_H
+#	include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
 
-#ifndef   MAXPATHLEN
-#define   MAXPATHLEN 255
+#ifndef	 MAXPATHLEN
+#define	 MAXPATHLEN 255
 #endif // MAXPATHLEN
 
 #include <iostream>
@@ -72,6 +72,17 @@ using namespace std;
 uds::uds_flags_t uds::flags = uds::leak_check;
 
 #endif //!DEBUG_UDS
+const char *getNLSYesNoMsg(bool val) {
+	if (val) {
+		return I18n::instance()->getMessage(
+			CommonSet, CommonYes,
+			"yes");
+	}
+	
+	return I18n::instance()->getMessage(
+		CommonSet, CommonNo,
+		"no");
+}
 
 int main(int argc, char **argv) {
 	#ifdef DEBUG_UDS
@@ -91,192 +102,114 @@ int main(int argc, char **argv) {
 
 			if ((++i) >= argc) {
 				fprintf(stderr,
-				i18n->getMessage(
-#ifdef    NLS
-				 mainSet, mainRCRequiresArg,
-#else // !NLS
-				 0, 0,
-#endif // NLS
-				 "error: '-rc' requires and argument\n"));
-
-				::exit(1);
-      }
+					i18n->getMessage(
+					mainSet, mainRCRequiresArg,
+					"error: '-rc' requires and argument\n"));	
+				exit(1);
+			}
 
 			rc_file = argv[i];
-    } else if (! strcmp(argv[i], "-display")) {
+		} else if (! strcmp(argv[i], "-display")) {
 			// check for -display option... to run on a display other than the one
 			// set by the environment variable DISPLAY
 
 			if ((++i) >= argc) {
 				fprintf(stderr,
-					i18n->getMessage(
-#ifdef    NLS
-					 mainSet, mainDISPLAYRequiresArg,
-#else // !NLS
-					 0, 0,
-#endif // NLS
-					 "error: '-display' requires an argument\n"));
+					i18n->getMessage(				
+					mainSet, mainDISPLAYRequiresArg,				
+					"error: '-display' requires an argument\n"));
+				exit(1);
+			}
 
-				::exit(1);
-      }
+			session_display = argv[i];
+			char dtmp[MAXPATHLEN];
+			sprintf(dtmp, "DISPLAY=%s", session_display);
 
-      session_display = argv[i];
-      char dtmp[MAXPATHLEN];
-      sprintf(dtmp, "DISPLAY=%s", session_display);
-
-      if (putenv(dtmp)) {
+			if (putenv(dtmp)) {
 				fprintf(stderr,
 					i18n->
 					getMessage(
-#ifdef    NLS
-				   mainSet, mainWarnDisplaySet,
-#else // !NLS
-				   0, 0,
-#endif // NLS
-				   "warning: couldn't set environment variable 'DISPLAY'\n"));
+					 mainSet, mainWarnDisplaySet,
+					 "warning: couldn't set environment variable 'DISPLAY'\n"));
 				perror("putenv()");
-      }
-    } else if (! strcmp(argv[i], "-version")) {
+			}
+		} else if (! strcmp(argv[i], "-version")) {
 			// print current version string
 			printf("Fluxbox %s : (c) 2001-2002 Henrik Kinnunen \n\n",
 						__fluxbox_version);
 
-      ::exit(0);
-    } else if (! strcmp(argv[i], "-help")) {
-      // print program usage and command line options
-      printf(i18n->
-	     getMessage(
-#ifdef    NLS
+			exit(0);
+		} else if (! strcmp(argv[i], "-help")) {
+			// print program usage and command line options
+			printf(i18n->
+			getMessage(
 			mainSet, mainUsage,
-#else // !NLS
-			0, 0,
-#endif // NLS
 			"Fluxbox %s : (c) 2001-2002 Henrik Kinnunen\n\n"
-			"  -display <string>\t\tuse display connection.\n"
-			"  -rc <string>\t\t\tuse alternate resource file.\n"
-			"  -version\t\t\tdisplay version and exit.\n"
-			"  -help\t\t\t\tdisplay this help text and exit.\n\n"),
-	     __fluxbox_version);
+			"	-display <string>\t\tuse display connection.\n"
+			"	-rc <string>\t\t\tuse alternate resource file.\n"
+			"	-version\t\t\tdisplay version and exit.\n"
+			"	-help\t\t\t\tdisplay this help text and exit.\n\n"),
+			 __fluxbox_version);
 
-      // some people have requested that we print out command line options
-      // as well
-      printf(i18n->
-	     getMessage(
-#ifdef    NLS
+			// some people have requested that we print out command line options
+			// as well
+			printf(i18n->
+			 getMessage(
+			#ifdef NLS
 			mainSet, mainCompileOptions,
-#else // !NLS
+			#else // !NLS
 			0, 0,
-#endif // NLS
+			#endif // NLS
 			"Compile time options:\n"
-			"  Debugging:\t\t\t%s\n"
-			"  Interlacing:\t\t\t%s\n"
-			"  Shape:\t\t\t%s\n"
-			"  Slit:\t\t\t\t%s\n"
-			"  8bpp Ordered Dithering:\t%s\n\n"),
-#ifdef    DEBUG
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonYes,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "yes"),
-#else // !DEBUG
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonNo,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "no"),
-#endif // DEBUG
+			"	Debugging:\t\t\t%s\n"
+			"	Interlacing:\t\t\t%s\n"
+			"	Shape:\t\t\t%s\n"
+			"	Slit:\t\t\t\t%s\n"
+			"	8bpp Ordered Dithering:\t%s\n\n"),
+			#ifdef DEBUG
+			getNLSYesNoMsg(true),
+			#else // !DEBUG
+			getNLSYesNoMsg(false),
+			#endif // DEBUG
 
-#ifdef    INTERLACE
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonYes,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "yes"),
-#else // !INTERLACE
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonNo,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "no"),
-#endif // INTERLACE
+			#ifdef INTERLACE
+			getNLSYesNoMsg(true),
+			#else // !INTERLACE
+			getNLSYesNoMsg(false),
+			#endif // INTERLACE
 
-#ifdef    SHAPE
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonYes,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "yes"),
-#else // !SHAPE
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonNo,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "no"),
-#endif // SHAPE
+			#ifdef SHAPE
+			getNLSYesNoMsg(true),
+			#else // !SHAPE
+			getNLSYesNoMsg(false),
+			#endif // SHAPE
 
-#ifdef    SLIT
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonYes,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "yes"),
-#else // !SLIT
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonNo,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "no"),
-#endif // SLIT
+			#ifdef SLIT
+			getNLSYesNoMsg(true),
+			#else // !SLIT
+			getNLSYesNoMsg(false),
+			#endif // SLIT
 
-#ifdef    ORDEREDPSEUDO
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonYes,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "yes")
-#else // !ORDEREDPSEUDO
-	     i18n->getMessage(
-#ifdef    NLS
-			      CommonSet, CommonNo,
-#else // !NLS
-			      0, 0,
-#endif // NLS
-			      "no")
-#endif // ORDEREDPSEUDO
+			#ifdef		ORDEREDPSEUDO
+			getNLSYesNoMsg(true)
+			#else // !ORDEREDPSEUDO
+			getNLSYesNoMsg(false)
+			#endif // ORDEREDPSEUDO
 
-	     );
+			);
 
-      ::exit(0);
-    }
-  }
+			::exit(0);
+		}
+	}
 
-#ifdef    __EMX__
-  _chdir2(getenv("X11ROOT"));
+#ifdef		__EMX__
+	_chdir2(getenv("X11ROOT"));
 #endif // __EMX__
 	Fluxbox *fluxbox=0;
 	int exitcode=EXIT_SUCCESS;
-  try	{
+	try {
 		
-		fluxbox = new Fluxbox(argc, argv, session_display, rc_file);	  
+		fluxbox = new Fluxbox(argc, argv, session_display, rc_file);
 		fluxbox->eventLoop();
 		
 	} catch (int _exitcode) {
@@ -287,5 +220,5 @@ int main(int argc, char **argv) {
 	
 	if (fluxbox)
 		delete fluxbox;
-  exit(exitcode);
+	exit(exitcode);
 }
