@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.19 2003/02/18 15:11:08 rathnor Exp $
+/// $Id: Slit.hh,v 1.20 2003/02/20 16:38:17 fluxgen Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -39,6 +39,7 @@
 #include <list>
 #include <string>
 #include <memory>
+
 class BScreen;
 class SlitClient;
 
@@ -88,8 +89,8 @@ public:
     /// cycle slit clients down one step
     void cycleClientsDown();
 
-    BScreen *screen() { return m_screen; }
-    const BScreen *screen() const { return m_screen; }
+    BScreen &screen() { return m_screen; }
+    const BScreen &screen() const { return m_screen; }
     /**
        @name eventhandlers
     */
@@ -118,14 +119,14 @@ private:
     Direction m_direction;
     Placement m_placement;
 
-    BScreen *m_screen;
+    BScreen &m_screen;
     FbTk::Timer timer;
 
     typedef std::list<SlitClient *> SlitClients;
 
     SlitClients clientList;
     FbTk::Menu slitmenu, placement_menu, clientlist_menu;
-    LayerMenu<Slit> *slit_layermenu;
+    std::auto_ptr<LayerMenu<Slit> > slit_layermenu;
     std::string clientListPath;
     std::string m_filename;
 
@@ -139,7 +140,7 @@ private:
     // for KDE
     Atom kwm1_dockwindow, kwm2_dockwindow;
 
-    FbTk::XLayerItem *m_layeritem;
+    std::auto_ptr<FbTk::XLayerItem> m_layeritem;
 };
 
 
