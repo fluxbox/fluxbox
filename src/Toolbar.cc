@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.21 2002/04/09 23:16:28 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.22 2002/05/03 13:14:06 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -724,9 +724,9 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 			XClearWindow(display, frame.window_label);
 
 		FluxboxWindow *foc = Fluxbox::instance()->getFocusedWindow();
-		if (foc->getScreen() != screen)
+		if (foc->getScreen() != screen || foc->getTitle().size() == 0)
 			return;
-
+		
 		int dx = (frame.bevel_w * 2), dlen = foc->getTitle().size();
 		unsigned int l;
 		I18n *i18n = I18n::instance();
@@ -1146,7 +1146,7 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 		if (ks == XK_Return || ks == XK_Escape) {
 			
 
-			editing = False;
+			editing = false;
 			
 			fluxbox->setNoFocus(False);
 			if (fluxbox->getFocusedWindow()) {
@@ -1170,6 +1170,9 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			screen->getWorkspacemenu()->update();
 
 			reconfigure();
+			//save workspace names
+			Fluxbox::instance()->save_rc();
+
 		} else if (! (ks == XK_Shift_L || ks == XK_Shift_R ||
 			ks == XK_Control_L || ks == XK_Control_R ||
 			ks == XK_Caps_Lock || ks == XK_Shift_Lock ||
@@ -1308,27 +1311,31 @@ void Toolbarmenu::itemSelected(int button, unsigned int index) {
 		if (! item) return;
 
 		switch (item->function()) {
-		case 1: // always on top
-			{
-			bool change = ((toolbar->isOnTop()) ? False : True);
+		case 1:  {// always on top
+			bool change = ((toolbar->isOnTop()) ? false : true);
 			toolbar->on_top = change;
-				setItemSelected(1, change);
-
-			if (toolbar->isOnTop()) toolbar->screen->raiseWindows((Window *) 0, 0);
+			screen()->saveToolbarOnTop(toolbar->on_top);
+			setItemSelected(1, change);
+			
+			if (toolbar->isOnTop())
+				toolbar->screen->raiseWindows((Window *) 0, 0);
+			
+			Fluxbox::instance()->save_rc();
 			break;
-			}
+		}
 
-		case 2: // auto hide
-			{
-	bool change = ((toolbar->doAutoHide()) ?	False : True);
-	toolbar->do_auto_hide = change;
-	setItemSelected(2, change);
+		case 2: { // auto hide
+			bool change = ((toolbar->doAutoHide()) ? false : true);
+			toolbar->do_auto_hide = change;
+			screen()->saveToolbarAutoHide(toolbar->do_auto_hide);
+			setItemSelected(2, change);
 
-#ifdef		SLIT
-	toolbar->screen->getSlit()->reposition();
-#endif // SLIT
-	break;
-			}
+			#ifdef		SLIT
+				toolbar->screen->getSlit()->reposition();
+			#endif // SLIT
+			Fluxbox::instance()->save_rc();
+		break;
+		}
 
 		case 3: // edit current workspace name
 			toolbar->edit();	//set edit mode
