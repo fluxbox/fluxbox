@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.21 2002/04/09 12:22:06 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.22 2002/04/28 15:54:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -58,9 +58,9 @@ static Basemenu *shown = (Basemenu *) 0;
 Basemenu::Basemenu(BScreen *screen):
 m_fluxbox(Fluxbox::instance()),
 m_screen(screen),
-m_display(m_fluxbox->getXDisplay()),
+m_display(Fluxbox::instance()->getXDisplay()),
 m_parent(0),
-m_image_ctrl(m_screen->getImageControl()),
+m_image_ctrl(screen->getImageControl()),
 m_alignment(ALIGNDONTCARE) {
 
 	title_vis =
@@ -439,7 +439,8 @@ void Basemenu::hide(void) {
 	if ((! torn) && hide_tree && m_parent && m_parent->isVisible()) {
 		Basemenu *p = m_parent;
 
-		while (p->isVisible() && (! p->torn) && p->m_parent) p = p->m_parent;
+		while (p->isVisible() && (! p->torn) && p->m_parent)
+			p = p->m_parent;
 		p->internal_hide();
 	} else
 		internal_hide();
@@ -459,7 +460,7 @@ void Basemenu::internal_hide(void) {
 	} else if (shown && shown->menu.window == menu.window)
 		shown = (Basemenu *) 0;
 
-	torn = visible = False;
+	torn = visible = false;
 	which_sub = which_press = which_sub = -1;
 
 	XUnmapWindow(m_display, menu.window);
@@ -635,7 +636,8 @@ bool Basemenu::hasSubmenu(unsigned int index) const {
 void Basemenu::drawItem(unsigned int index, bool highlight, bool clear,
 			 int x, int y, unsigned int w, unsigned int h)
 {
-	if (index >= menuitems.size()) return;
+	if (index >= menuitems.size() || menuitems.size() == 0)
+		return;
 
 	BasemenuItem *item = menuitems[index];
 	if (! item) return;
@@ -880,7 +882,7 @@ void Basemenu::buttonPressEvent(XButtonEvent *be) {
 void Basemenu::buttonReleaseEvent(XButtonEvent *re) {
 	if (re->window == menu.title) {
 		if (moving) {
-			moving = False;
+			moving = false;
 			
 			if (which_sub >= 0)
 				drawSubmenu(which_sub);
@@ -1071,7 +1073,7 @@ void Basemenu::enterNotifyEvent(XCrossingEvent *ce) {
 			XMoveWindow(m_display, menu.window, menu.x_shift, menu.y_shift);
 		}
 
-		if (which_sub >= 0) {
+		if (which_sub >= 0 && static_cast<size_t>(which_sub) < menuitems.size()) {
 			BasemenuItem *tmp = menuitems[which_sub];
 			if (tmp->submenu()->isVisible()) {
 				int sbl = (ce->x / menu.item_w), i = (ce->y / menu.item_h),
@@ -1094,16 +1096,17 @@ void Basemenu::leaveNotifyEvent(XCrossingEvent *ce) {
 		if (which_press != -1 && which_sbl != -1 && menuitems.size() > 0) {
 			int p = (which_sbl * menu.persub) + which_press;
 
-			drawItem(p, (p == which_sub), True);
+			drawItem(p, (p == which_sub), true);
 
 			which_sbl = which_press = -1;
 		}
 
 		if (shifted) {
 			XMoveWindow(m_display, menu.window, menu.x, menu.y);
-			shifted = False;
+			shifted = false;
 
-			if (which_sub >= 0) drawSubmenu(which_sub);
+			if (which_sub >= 0)
+				drawSubmenu(which_sub);
 		}
 	}
 }
