@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.28 2002/08/17 22:22:57 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.29 2002/08/24 19:31:24 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -81,9 +81,10 @@ iconbar(0) {
 	
 	fluxbox = Fluxbox::instance();
 
-	timeval now;
-	gettimeofday(&now, 0);
-	clock_timer.setTimeout((60 - (now.tv_sec % 60)) * 1000);
+	timeval delay;
+	delay.tv_sec = 1;
+	delay.tv_usec = 0;
+	clock_timer.setTimeout(delay);
 	clock_timer.start();
 
 	hide_handler.toolbar = this;
@@ -584,6 +585,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
 	
 
 	if (redraw) {
+		XClearWindow(display, frame.clock);
 		#ifdef HAVE_STRFTIME
 		char t[1024];
 		if (! strftime(t, 1024, screen->getStrftimeFormat(), tt))
@@ -1221,9 +1223,10 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 void Toolbar::timeout() {
 	checkClock(true);
 
-	timeval now;
-	gettimeofday(&now, 0);
-	clock_timer.setTimeout((60 - (now.tv_sec % 60)) * 1000);
+	timeval delay;
+	delay.tv_sec = 1;
+	delay.tv_usec = 0;	
+	clock_timer.setTimeout(delay);
 }
 
 
