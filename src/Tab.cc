@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.33 2002/09/12 14:55:11 rathnor Exp $
+// $Id: Tab.cc,v 1.34 2002/10/15 17:06:29 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -366,7 +366,8 @@ void Tab::draw(bool pressed) const {
 		m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
 
 	// Different routines for drawing rotated text
-	if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
+	// TODO: rotated font
+	/*if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
 			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
 			(!m_win->isShaded() && m_win->getScreen()->isTabRotateVertical())) {
 
@@ -381,24 +382,21 @@ void Tab::draw(bool pressed) const {
 				m_win->frame.bevel_w, m_win->getTitle().c_str());
 
 	} else {
-		if (I18n::instance()->multibyte()) { // TODO: maybe move this out from here?
-			XRectangle ink, logical;
-			XmbTextExtents(m_win->getScreen()->getWindowStyle()->tab.font.set,
-					m_win->getTitle().c_str(), m_win->getTitle().size(),
-					&ink, &logical);
-			tabtext_w = logical.width;
-		} else {
-			tabtext_w = XTextWidth(
-					m_win->getScreen()->getWindowStyle()->tab.font.fontstruct,
-					m_win->getTitle().c_str(), m_win->getTitle().size());
-		}
-		tabtext_w += (m_win->frame.bevel_w * 4);
+	*/
+		XClearWindow(m_display, m_tabwin);
 
-		DrawUtil::DrawString(m_display, m_tabwin, gc,
-				&m_win->getScreen()->getWindowStyle()->tab.font,
-				tabtext_w, m_size_w,
-				m_win->frame.bevel_w, m_win->getTitle().c_str());
-	}
+		tabtext_w = m_win->getScreen()->getWindowStyle()->tab.font.textWidth(
+			m_win->getTitle().c_str(), m_win->getTitle().size());
+		tabtext_w += (m_win->frame.bevel_w * 4);
+		
+		m_win->getScreen()->getWindowStyle()->tab.font.drawText(
+			m_tabwin,
+			m_win->getScreen()->getScreenNumber(),
+			gc,
+			m_win->getTitle().c_str(), m_win->getTitle().size(),
+			m_win->frame.bevel_w, 
+			m_win->getScreen()->getWindowStyle()->tab.font.height());
+	//}
 }
 
 //-----------------------------------------------
