@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.12 2002/04/08 22:26:58 fluxgen Exp $
+// $Id: Slit.cc,v 1.13 2002/05/08 14:12:28 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -44,7 +44,7 @@
 #include <algorithm>
 
 
-Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(this) {
+Slit::Slit(BScreen *scr):screen(scr), timer(this), slitmenu(*this) {
 	fluxbox = Fluxbox::instance();
 
 	on_top = screen->isSlitOnTop();
@@ -96,6 +96,10 @@ Slit::~Slit() {
 
 
 void Slit::addClient(Window w) {
+	//Can't add non existent window
+	if (w == None)
+		return;
+
 	fluxbox->grab();
 	if (fluxbox->validateWindow(w)) {
 		SlitClient *client = new SlitClient;
@@ -660,8 +664,9 @@ void Slit::timeout(void) {
 }
 
 
-Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
-	slit = sl;
+Slitmenu::Slitmenu(Slit &sl) : Basemenu(sl.screen),
+slit(sl) {
+
 	I18n *i18n = I18n::instance();
 	using namespace FBNLS;
 	setLabel(i18n->getMessage(
@@ -672,7 +677,7 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 	directionmenu = new Directionmenu(this);
 	placementmenu = new Placementmenu(this);
 #ifdef XINERAMA
-	if (slit->screen->hasXinerama()) { // only create if we need
+	if (screen()->hasXinerama()) { // only create if we need
 		headmenu = new Headmenu(this);
 	}
 #endif // XINERAMA
@@ -688,7 +693,7 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 
 #ifdef XINERAMA
 	//TODO: NLS
-	if (slit->screen->hasXinerama()) {
+	if (screen()->hasXinerama()) {
 		insert(i18n->getMessage(0, 0, "Place on Head"), headmenu);
 	}
 #endif // XINERAMA
@@ -700,10 +705,11 @@ Slitmenu::Slitmenu(Slit *sl) : Basemenu(sl->screen) {
 		CommonSet, CommonAutoHide,
 		"Auto hide"), 2);
 
+	setItemSelected(2, slit.isOnTop());
+	setItemSelected(3, slit.doAutoHide());
+	
 	update();
 
-	if (slit->isOnTop()) setItemSelected(2, true);
-	if (slit->doAutoHide()) setItemSelected(3, true);
 }
 
 
@@ -711,7 +717,7 @@ Slitmenu::~Slitmenu(void) {
 	delete directionmenu;
 	delete placementmenu;
 #ifdef XINERAMA
-	if (slit->screen->hasXinerama()) {
+	if (screen()->hasXinerama()) {
 		delete headmenu;
 	}
 #endif // XINERAMA
@@ -726,33 +732,37 @@ void Slitmenu::itemSelected(int button, unsigned int index) {
 		switch (item->function()) {
 		case 1: // always on top
 		{
-			bool change = ((slit->isOnTop()) ?	false : true);
-			slit->on_top = change;
+			bool change = ((slit.isOnTop()) ?	false : true);
+			slit.on_top = change;
+			screen()->saveSlitOnTop(change);
 			setItemSelected(2, change);
-
-			if (slit->isOnTop())
-				slit->screen->raiseWindows((Window *) 0, 0);
 			
+			if (slit.isOnTop())
+				screen()->raiseWindows(0, 0);
+		
 		break;
 		}
 
 		case 2: // auto hide
 		{
-			bool change = ((slit->doAutoHide()) ?	false : true);
-			slit->do_auto_hide = change;
+			bool change = (slit.doAutoHide() ?	false : true);
+			slit.do_auto_hide = change;
+			screen()->saveSlitAutoHide(change);
 			setItemSelected(3, change);
-
 		break;
 		}
 		}
+		//save the new configuration
+		Fluxbox::instance()->save_rc();
+		update();
 	}
 }
 
 
 void Slitmenu::internal_hide(void) {
 	Basemenu::internal_hide();
-	if (slit->doAutoHide())
-		slit->timeout();
+	if (slit.doAutoHide())
+		slit.timeout();
 }
 
 
@@ -760,17 +770,20 @@ void Slitmenu::reconfigure(void) {
 	directionmenu->reconfigure();
 	placementmenu->reconfigure();
 #ifdef XINERAMA
-	if (slit->screen->hasXinerama()) {
+	if (screen()->hasXinerama()) {
 		headmenu->reconfigure();
 	}
 #endif // XINERAMA
+	setItemSelected(2, slit.isOnTop());
+	setItemSelected(3, slit.doAutoHide());
 
 	Basemenu::reconfigure();
 }
 
 
-Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->slit->screen) {
-	slitmenu = sm;
+Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->screen()),
+slitmenu(sm) {
+
 	I18n *i18n = I18n::instance();
 	using namespace FBNLS;	
 	setLabel(i18n->getMessage(
@@ -789,7 +802,7 @@ Slitmenu::Directionmenu::Directionmenu(Slitmenu *sm) : Basemenu(sm->slit->screen
 
 	update();
 
-	if (sm->slit->screen->getSlitDirection() == Slit::HORIZONTAL)
+	if (screen()->getSlitDirection() == Slit::HORIZONTAL)
 		setItemSelected(0, true);
 	else
 		setItemSelected(1, true);
@@ -801,7 +814,7 @@ void Slitmenu::Directionmenu::itemSelected(int button, unsigned int index) {
 		BasemenuItem *item = find(index);
 		if (! item) return;
 
-		slitmenu->slit->screen->saveSlitDirection(item->function());
+		screen()->saveSlitDirection(item->function());
 
 		if (item->function() == Slit::HORIZONTAL) {
 			setItemSelected(0, true);
@@ -810,15 +823,16 @@ void Slitmenu::Directionmenu::itemSelected(int button, unsigned int index) {
 			setItemSelected(0, false);
 			setItemSelected(1, true);
 		}
-
-		hide();
-		slitmenu->slit->reconfigure();
+		Fluxbox::instance()->save_rc();
+		hide();		
+		slitmenu->slit.reconfigure();
 	}
 }
 
 
-Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->slit->screen) {
-	slitmenu = sm;
+Slitmenu::Placementmenu::Placementmenu(Slitmenu *sm) : Basemenu(sm->screen()),
+slitmenu(sm) {
+
 	I18n *i18n = I18n::instance();
 	using namespace FBNLS;	
 	setLabel(i18n->getMessage(
@@ -871,24 +885,25 @@ void Slitmenu::Placementmenu::itemSelected(int button, unsigned int index) {
 		if (! item) return;
 
 		if (item->function()) {
-			slitmenu->slit->screen->saveSlitPlacement(item->function());
+			screen()->saveSlitPlacement(item->function());
 			hide();
-			slitmenu->slit->reconfigure();
+			slitmenu->slit.reconfigure();
+			Fluxbox::instance()->save_rc();
 		}
 	}
 }
 
 #ifdef XINERAMA
 
-Slitmenu::Headmenu::Headmenu(Slitmenu *sm)
-	: Basemenu(sm->slit->screen) {
-	slitmenu = sm;
+Slitmenu::Headmenu::Headmenu(Slitmenu *sm): Basemenu(sm->screen()),
+slitmenu(sm) {
+
 	I18n *i18n = I18n::instance();
 
 	setLabel(i18n->getMessage(0, 0, "Place on Head")); //TODO: NLS
 	setInternalMenu();
 
-	int numHeads = slitmenu->slit->screen->getNumHeads();
+	int numHeads = screen()->getNumHeads();
 	// fill menu with head entries
 	for (int i = 0; i < numHeads; i++) {
 		char headName[32];
@@ -905,9 +920,10 @@ void Slitmenu::Headmenu::itemSelected(int button, unsigned int index) {
 		if (! item)
 			return;
 
-		slitmenu->slit->screen->saveSlitOnHead(item->function());
+		screen()->saveSlitOnHead(item->function());
 		hide();
-		slitmenu->slit->reconfigure();
+		slitmenu->slit.reconfigure();
+		Fluxbox::instance()->save_rc();
 	}
 }
 
