@@ -1,5 +1,5 @@
 // FbWinFrame.cc for Fluxbox Window Manager
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.71 2004/01/21 14:12:31 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.72 2004/01/21 19:47:30 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -404,10 +404,15 @@ bool FbWinFrame::hideTitlebar() {
 
     m_titlebar.hide();
     m_use_titlebar = false;
+    if (static_cast<signed int>(m_window.height() - m_titlebar.height() -
+                                m_titlebar.borderWidth()) <= 0) {
+        m_window.resize(m_window.width(), 1);
+    } else {
+        // only take away one borderwidth (as the other border is still the "top" border)
+        m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
+                        m_titlebar.borderWidth());
+    }
 
-    // only take away one borderwidth (as the other border is still the "top" border)
-    m_window.resize(m_window.width(), m_window.height() - m_titlebar.height() -
-                    m_titlebar.borderWidth());
     return true;
 }
 
@@ -432,8 +437,16 @@ bool FbWinFrame::hideHandle() {
     m_grip_left.hide();
     m_grip_right.hide();
     m_use_handle = false;
-    m_window.resize(m_window.width(), m_window.height() - m_handle.height() -
-                    m_handle.borderWidth());
+
+    if (static_cast<signed int>(m_window.height() - m_handle.height() -
+                                m_handle.borderWidth())) {
+        m_window.resize(m_window.width(), 1);
+    } else {
+        // only take away one borderwidth (as the other border is still the "top" border)
+        m_window.resize(m_window.width(), m_window.height() - m_handle.height() -
+                        m_handle.borderWidth());
+    }
+
     return true;
 
 }
@@ -695,7 +708,6 @@ void FbWinFrame::reconfigure() {
         m_shape->update();
 
     // titlebar stuff rendered already by reconftitlebar
-
 }
 
 void FbWinFrame::setUseShape(bool value) {
