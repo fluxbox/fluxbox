@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.88 2004/01/30 11:06:25 rathnor Exp $
+// $Id: Slit.cc,v 1.89 2004/02/06 12:09:14 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -1131,20 +1131,20 @@ void Slit::loadClientList(const char *filename) {
     m_filename = FbTk::StringUtil::expandFilename(filename); 
 
     struct stat buf;
-    if (stat(filename, &buf) != 0) {
-        std::ifstream file(filename);
+    if (stat(m_filename.c_str(), &buf) != 0) {
+        std::ifstream file(m_filename.c_str());
         std::string name;
         while (! file.eof()) {
             name = "";
             std::getline(file, name); // get the entire line
-            if (name.size() <= 0)
+            if (name.empty())
                 continue;
              
             // remove whitespaces from start and end
             FbTk::StringUtil::removeFirstWhitespace(name);
 
             // the cleaned string could still be a comment, or blank
-            if ( name.size() <= 0 || name[0] == '#' || name[0] == '!' )
+            if ( name.empty() || name[0] == '#' || name[0] == '!' )
                 continue;
 
             // trailing whitespace won't affect the above test
