@@ -20,15 +20,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.cc,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: XLayerItem.cc,v 1.2 2003/01/29 21:42:53 rathnor Exp $
 
 #include "XLayerItem.hh"
 #include "XLayer.hh"
 
 using namespace FbTk;
 
-XLayerItem::XLayerItem() :
-    m_layer(0), m_layeriterator(0) {}
+XLayerItem::XLayerItem(Window win) :
+    m_layer(0), m_layeriterator(0) {
+    m_windows.push_front(win);
+}
 
 /*
 XLayerItem::XLayerItem(XLayer &layer): 
@@ -59,4 +61,23 @@ void XLayerItem::stepUp() {
 
 void XLayerItem::stepDown() {
     m_layer->stepDown(*this);
+}
+
+void XLayerItem::addWindow(Window win) {
+  // I'd like to think we can trust ourselves that it won't be added twice...
+  // Otherwise we're always scanning through the list.
+  m_windows.push_back(win);
+}
+
+void XLayerItem::removeWindow(Window win) {
+  // I'd like to think we can trust ourselves that it won't be added twice...
+  // Otherwise we're always scanning through the list.
+
+  XLayerItem::Windows::iterator it = std::find(m_windows.begin(), m_windows.end(), win);
+  m_windows.erase(it);
+}
+
+void XLayerItem::bringToTop(Window win) {
+  removeWindow(win);
+  addWindow(win);
 }

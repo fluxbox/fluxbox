@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.cc,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: MultLayers.cc,v 1.2 2003/01/29 21:42:52 rathnor Exp $
 
 #include "MultLayers.hh"
 #include "XLayer.hh"
@@ -51,9 +51,19 @@ XLayerItem *MultLayers::getLowestItemAboveLayer(int layernum) {
 
 }    
 
+
 void MultLayers::addToTop(XLayerItem &item, int layernum) {
     if (layernum < 0 || layernum >= m_numlayers) return;
     m_layers[layernum]->insert(item);
+}
+
+void MultLayers::remove(XLayerItem &item) {
+    XLayer *curr_layer = item.getLayer();
+    if (!curr_layer || curr_layer->getLayerNum() < 0 || curr_layer->getLayerNum() >= m_numlayers) {
+        // do nothing
+        return;
+    }
+    curr_layer->remove(item);
 }
 
 /* raise the item one level */

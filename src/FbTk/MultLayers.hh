@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultLayers.hh,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: MultLayers.hh,v 1.2 2003/01/29 21:42:53 rathnor Exp $
 
 #ifndef FBTK_MULTLAYERS_HH
 #define FBTK_MULTLAYERS_HH
@@ -38,9 +38,14 @@ public:
     ~MultLayers();
     XLayerItem *getLowestItemAboveLayer(int layernum);
     void addToTop(XLayerItem &item, int layernum);
+    void remove(XLayerItem &item);
+    
     //void move(XLayerItem &item, int layernum);
+
+    // raise/lower the item a whole layer, not just to top of current layer
     void raise(XLayerItem &item);
     void lower(XLayerItem &item);
+
     //void moveToTop(XLayerItem &item);
     //void moveToBottom(XLayerItem &item);
 

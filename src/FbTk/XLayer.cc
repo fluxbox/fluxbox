@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayer.cc,v 1.1 2003/01/16 12:41:27 rathnor Exp $
+// $Id: XLayer.cc,v 1.2 2003/01/29 21:42:53 rathnor Exp $
 
 #include "XLayer.hh"
 #include "XLayerItem.hh"
@@ -38,13 +38,24 @@ XLayer::~XLayer() {
 }
 
 void XLayer::restack() {
-    int numWindows = size();
-    Window *winlist = new Window[numWindows];
-    typedef FbTk::Layer<XLayerItem> BaseClass;
+    int numWindows = 0;
     iterator it = itemList().begin();
     iterator it_end = itemList().end();
     for (size_t i=0; it != it_end; ++it, i++) {
-        winlist[i] = (*it)->window();
+        numWindows += (*it)->numWindows();
+    }
+
+    // each LayerItem can contain several windows
+    it = itemList().begin();
+    it_end = itemList().end();
+    Window *winlist = new Window[numWindows];
+    size_t j=0;
+    for (size_t i=0; it != it_end; ++it, i++) {
+        XLayerItem::Windows::const_iterator wit = (*it)->getWindows().begin();
+        XLayerItem::Windows::const_iterator wit_end = (*it)->getWindows().end();
+        for (; wit != wit_end; ++wit, j++) {
+            winlist[j] = (*wit);
+        }
     }
 
     XRestackWindows(FbTk::App::instance()->display(), winlist, numWindows);
@@ -54,16 +65,36 @@ void XLayer::restack() {
 
 void XLayer::stackBelowItem(XLayerItem *item, XLayerItem *above) {
     // little optimisation
+    Window *winlist;
+    size_t i, size, num = item->numWindows();
+
     if (!above) { // must need to go right to top
-        XRaiseWindow(FbTk::App::instance()->display(), item->window());
-        return;
+        XRaiseWindow(FbTk::App::instance()->display(), item->getWindows().front());
+        if (num > 1) {
+            i = 0;
+            // stack relative to top one (just raised)
+            size = num;
+            winlist = new Window[size];
+        } else {
+            return;
+        }
+    } else {
+        i=1;
+        // stack relative to one above
+
+        size = num+1;
+        winlist = new Window[size];
+        winlist[0] = above->getWindows().front();
     }
 
-    Window * winlist = new Window[2];
-    winlist[0] = above->window();
-    winlist[1] = item->window();
     
-    XRestackWindows(FbTk::App::instance()->display(), winlist, 2);
+    XLayerItem::Windows::iterator it = item->getWindows().begin();
+    XLayerItem::Windows::iterator it_end = item->getWindows().end();
+    for (; it != it_end; ++it, i++) {
+        winlist[i] = (*it);
+    }
+    
+    XRestackWindows(FbTk::App::instance()->display(), winlist, size);
 
     delete [] winlist;
 }
