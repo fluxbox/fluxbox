@@ -1,7 +1,6 @@
+.\" $Id: startfluxbox.1,v 1.4 2004/08/17 02:52:41 rathnor Exp $
 .\"
-.\" Man page for Bsetroot
-.\"
-.\" Copyright (c) 2000 by Wilbert Berendsen <wbsoft@xs4all.nl>
+.\" Copyright (c) 2004, Han Boetes <han@fluxbox.org>
 .\"
 .\" Permission to use, copy, modify, and distribute this documentation for
 .\" any purpose with or without fee is hereby granted, provided that the
@@ -16,22 +15,45 @@
 .\" TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 .\" PERFORMANCE OF THIS DOCUMENTATION
 .\"
-.TH STARTFLUXBOX 1 "16 December 2003"
-.SH NAME
-startfluxbox \- customizable fluxbox start script
-.SH SYNOPSIS
-\fBstartfluxbox\fP
-.SH DESCRIPTION
-Before starting fluxbox this script can set background images, styles,
-pixmaps, splash screens, keyboard layout and miscellaneous helper
-applications.
-.SH FILES
-.TP
-\fB~/.fluxbox/startup\fP
-If this file exists it is executed before starting fluxbox.
-.SH AUTHOR
-This manpage was originally written by Bastian Kleineidam
-<calvin@debian.org> for the Debian distribution of fluxbox
-(but may be used by others).
-
-The main author of fluxbox is Henrik Kinnunen <fluxgen@fluxbox.org>.
+.Dd Aug 10, 2004
+.Dt STARTFLUXBOX 1
+.Os
+.Sh NAME
+.Nm startfluxbox
+.Nd "start a fluxbox session"
+.Sh SYNOPSIS
+.Nm startfluxbox
+.Sh DESCRIPTION
+.Nm
+is a script which runs the file
+.Bl -tag -width "~/.fluxbox/startup" -compact
+.It Pa ~/.fluxbox/startup
+.El
+If it doesn't exist it will be generated.
+.Pp
+.Nm
+should be started from your
+.Bl -tag -width "~/.xinitrc" -compact
+.It Pa ~/.xinitrc
+if you use startx, or
+.El
+.Bl -tag -width "~/.xsession" -compact
+.It Pa ~/.xsession
+if you run a display manager, like xdm.
+.Pp
+.El
+.Sh FILES
+.Bl -tag -width "~/.fluxbox/startup" -compact
+.It Pa ~/.fluxbox/startup
+.El
+This file contains all commands that should be executed before fluxbox
+is started. The initial file contains helpful comments for beginners.
+.Sh ONLINE DOCUMENTATION:
+More extensive documentation for
+.Nm
+can be found at:
+http://www.xs4all.nl/~hanb/software/fluxbox/startfluxbox.html
+.Sh AUTHOR
+The author of
+.Nm
+is Han Boetes <han@fluxbox.org>

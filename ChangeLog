@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/17:
+  * New manpage for startfluxbox (Han)
+    startfluxbox.1
 *04/08/13:
   * Fixed slow resize of windows like xmms playlist.
     We called setupWindow() in XA_WM_NORMAL_HINTS even if
