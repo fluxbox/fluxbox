@@ -1,6 +1,29 @@
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 1997 - 2000 Brad Hughes <bhughes at trolltech.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation
+// the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+
+// $Id: bsetroot.cc,v 1.8 2002/08/18 09:47:03 fluxgen Exp $
+
 #include "bsetroot.hh"
 
 #include "../src/i18n.hh"
+#include "../src/Image.hh"
 
 #ifdef HAVE_CONFIG_H
 #  include "../config.h"
@@ -81,7 +104,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 			usage();
 	}
 
-	if ((mod + sol + grd) != True) {
+	if ((mod + sol + grd) != true) {
 		fprintf(stderr,
 			I18n::instance()->
 			getMessage(
@@ -107,7 +130,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 }
 
 
-bsetroot::~bsetroot(void) {
+bsetroot::~bsetroot() {
 	XKillClient(display, AllTemporary);
 
 	if (pixmaps) { // should always be true
@@ -181,7 +204,7 @@ void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 //-------------- solid --------------------
 // draws pixmaps with a single color 
 //-----------------------------------------
-void bsetroot::solid(void) {
+void bsetroot::solid() {
   register int screen = 0;
 
 	pixmaps = new Pixmap[getNumberOfScreens()];
