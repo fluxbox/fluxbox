@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/03:
+  * window menu inside clientmenu inside workspacemenu (Henrik)
+    Workspace.cc
+  * Added new command "reloadstyle" (Henrik)
+    FbCommands.hh/cc, FbCommandFactory.cc
   * Fixed so toolbar menu hides when you click on root window/desktop (Henrik)
     fluxbox.cc
   * Removed ToolbarHandler (Henrik)
