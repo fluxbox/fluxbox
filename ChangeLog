@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/12/02:
+  * New features for the Slit (Mathias)
+    - left click on Slitclient-menu enables/disables item
+    - minor visual change of the menu, added a "Save SlitList" - entry
+    - wheel on the items move them up / down in the slit
+    Slit.cc/hh
 *04/11/30:
   * Fix for notworing bsetroot (thanx Rob Stevens)
     bsetroot.cc
