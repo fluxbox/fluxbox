@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.24 2003/02/23 00:51:40 fluxgen Exp $
+// $Id: IconBar.cc,v 1.25 2003/02/23 14:29:08 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -231,7 +231,8 @@ void IconBar::repositionIcons() {
 	
     //max width on every icon
     unsigned int icon_width = width / m_iconlist.size();
-	
+    if (m_vertical)
+        icon_width = height / m_iconlist.size();
     //load right size of theme
     loadTheme(icon_width, height);
 
@@ -239,9 +240,15 @@ void IconBar::repositionIcons() {
     IconList::iterator it_end = m_iconlist.end();
     for (x = 0; it != it_end; ++it, x += icon_width) {
         Window iconwin = (*it)->getIconWin();
-        XMoveResizeWindow(m_display, iconwin,
-                          x, 0,
-                          icon_width, height);	
+        if (!m_vertical) {
+            XMoveResizeWindow(m_display, iconwin,
+                              x, 0,
+                              icon_width, height);	
+        } else {
+            XMoveResizeWindow(m_display, iconwin,
+                              0, x,
+                              height, icon_width);	
+        }
         draw((*it), icon_width);
         decorate(iconwin);
     }
