@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.57 2003/10/05 09:03:43 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.58 2003/10/06 09:28:35 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -665,8 +665,6 @@ void FbWinFrame::reconfigure() {
         }
     }        
 
-    if (!m_visible) return;
-
     // render the theme
     renderButtons();
     if (!m_shaded)
@@ -845,7 +843,7 @@ void FbWinFrame::renderTitlebar() {
 
 
 void FbWinFrame::renderHandles() {
-    if (!m_use_handle || !m_visible)
+    if (!m_use_handle)
         return;
 
     render(m_theme.handleFocusTexture(), m_handle_focused_color, 
@@ -910,7 +908,6 @@ void FbWinFrame::renderHandles() {
 }
 
 void FbWinFrame::renderButtons() {
-    if (!m_visible) return;
 
     render(m_theme.buttonFocusTexture(), m_button_color, m_button_pm,
            m_button_size, m_button_size);
@@ -1054,7 +1051,6 @@ void FbWinFrame::getUnfocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
 }
 
 void FbWinFrame::renderLabelButtons() {
-    if (!m_visible) return;
     Pixmap label_pm = 0;
     Pixmap not_used_pm = 0;
     FbTk::Color label_color;
