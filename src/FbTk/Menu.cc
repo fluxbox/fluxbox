@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.14 2003/04/25 12:32:57 fluxgen Exp $
+// $Id: Menu.cc,v 1.15 2003/04/25 16:23:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -449,17 +449,7 @@ void Menu::update() {
             m_parent->drawSubmenu(m_parent->which_sub);
     }
 
-    menu.frame.clear();
-
-    if (m_trans.get() && m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
-
-    m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());
-    m_trans->render(menu.window.x() + menu.frame.x() - menu.window.borderWidth(),
-                    menu.window.y() + menu.frame.y() - menu.window.borderWidth(),
-                    0, 0,
-                    menu.frame.width(), menu.frame.height());
-
+    renderTransFrame();
                     
     m_need_update = false;
     menu.window.showSubwindows();
@@ -519,25 +509,7 @@ void Menu::internal_hide() {
 
 
 void Menu::move(int x, int y) {
-    if (m_trans.get() && m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
 
-    if ((menu.x != x || menu.y != y) && m_trans->alpha() != 255) {
-
-        Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
-
-        if (m_root_pm != root_pm) {
-            m_trans->setSource(root_pm, menu.window.screenNumber());
-            m_root_pm = root_pm;
-        }
-        menu.frame.clear();
-        m_trans->setDest(menu.frame.window(), menu.window.screenNumber());
-        m_trans->render(x, y,
-                        0, 0,
-                        menu.frame.width(), menu.frame.height());
-
-    }
-        
     menu.x = x;
     menu.y = y;
     menu.window.move(x, y);
@@ -545,6 +517,8 @@ void Menu::move(int x, int y) {
     if (which_sub != -1)
         drawSubmenu(which_sub);
 
+    if (m_parent && !m_parent->moving && !torn)
+        renderTransFrame();
 }
 
 
@@ -573,23 +547,24 @@ void Menu::redrawTitle() {
                   m_theme.titleTextGC(), // graphic context
                   text, len,  // text string with lenght
                   dx, font.ascent() + menu.bevel_w);  // position
-    if (m_trans.get() && m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
+    if (m_trans.get()) {
+        if (m_trans->alpha() != s_alpha)
+            m_trans->setAlpha(s_alpha);
 
-    if (m_trans->alpha() != 255) {
-        Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
+        if (m_trans->alpha() != 255) {
+            Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
 
-        if (m_root_pm != root_pm) {
-            m_trans->setSource(root_pm, menu.title.screenNumber());
-            m_root_pm = root_pm;
+            if (m_root_pm != root_pm) {
+                m_trans->setSource(root_pm, menu.title.screenNumber());
+                m_root_pm = root_pm;
+            }
+            m_trans->setDest(menu.title.window(), menu.title.screenNumber());
+            m_trans->render(menu.window.x() + menu.title.x() - menu.window.borderWidth(), 
+                            menu.window.y() + menu.title.y() - menu.window.borderWidth(), 
+                            menu.title.x(), menu.title.y(),                      
+                            menu.title.width(), menu.title.height());
         }
-        m_trans->setDest(menu.title.window(), menu.title.screenNumber());
-        m_trans->render(menu.window.x() + menu.title.x() - menu.window.borderWidth(), 
-                        menu.window.y() + menu.title.y() - menu.window.borderWidth(), 
-                        menu.title.x(), menu.title.y(),                      
-                        menu.title.width(), menu.title.height());
     }
-
 }
 
 
@@ -864,26 +839,27 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
                item_x, item_y,
                menu.item_w, menu.item_h, False);
 
-    if (m_trans.get() && m_trans->alpha() != s_alpha)
-        m_trans->setAlpha(s_alpha);
+    if (m_trans.get() && render_trans) {
+        if (m_trans->alpha() != s_alpha)
+            m_trans->setAlpha(s_alpha);
 
-    if (m_trans->alpha() != 255) {                               
-        Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
+        if (m_trans->alpha() != 255) {                               
+            Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
 
-        if (m_root_pm != root_pm) {
-            m_trans->setSource(root_pm, menu.window.screenNumber());
-            m_root_pm = root_pm;
-        }
+            if (m_root_pm != root_pm) {
+                m_trans->setSource(root_pm, menu.window.screenNumber());
+                m_root_pm = root_pm;
+            }
         
-        m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());        
-        m_trans->render(menu.window.x() + menu.frame.x() + item_x - 
-                        menu.window.borderWidth(), 
-                        menu.window.y() + menu.frame.y() + item_y - 
-                        menu.window.borderWidth(),
-                        item_x, item_y,
-                        menu.item_w, menu.item_h);
+            m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());        
+            m_trans->render(menu.window.x() + menu.frame.x() + item_x - 
+                            menu.window.borderWidth(), 
+                            menu.window.y() + menu.frame.y() + item_y - 
+                            menu.window.borderWidth(),
+                            item_x, item_y,
+                            menu.item_w, menu.item_h);
+        }
     }
-
     XSync(m_display, False);
     
 }
@@ -945,7 +921,7 @@ bool Menu::isItemEnabled(unsigned int index) const {
 
 
 void Menu::buttonPressEvent(XButtonEvent &be) {
-    if (be.window == menu.frame) {
+    if (be.window == menu.frame && menu.item_h != 0 && menu.item_w != 0) {
         int sbl = (be.x / menu.item_w), i = (be.y / menu.item_h);
         int w = (sbl * menu.persub) + i;
 
@@ -1022,7 +998,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                     m_parent->which_sub = -1;
                 }
 
-                moving = torn = True;
+                moving = torn = true;
 
                 if (which_sub >= 0)
                     drawSubmenu(which_sub);
@@ -1208,5 +1184,30 @@ void Menu::reconfigure() {
     update();
 }
 
+
+void Menu::renderTransFrame() {
+    if (m_trans.get() == 0 || moving)
+        return;
+
+    if (m_trans->alpha() != s_alpha)
+        m_trans->setAlpha(s_alpha);
+
+    if (m_trans->alpha() != 255) {
+
+        Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
+
+        if (m_root_pm != root_pm) {
+            m_trans->setSource(root_pm, menu.window.screenNumber());
+            m_root_pm = root_pm;
+        }
+        menu.frame.clear();
+        m_trans->setDest(menu.frame.window(), menu.window.screenNumber());
+        m_trans->render(menu.window.x() + menu.frame.x(), 
+                        menu.window.y() + menu.frame.y(),
+                        0, 0,
+                        menu.frame.width(), menu.frame.height());
+
+    }
+}
 
 }; // end namespace FbTk

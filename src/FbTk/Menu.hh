@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.13 2003/04/25 12:32:11 fluxgen Exp $
+// $Id: Menu.hh,v 1.14 2003/04/25 16:23:59 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -163,6 +163,7 @@ protected:
     inline const Menu *parent() const { return m_parent; }
 
 private: 
+    void renderTransFrame();
 
     typedef std::vector<MenuItem *> Menuitems;
     const MenuTheme &m_theme;
