@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.2 2003/01/09 16:51:52 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.3 2003/01/10 00:54:12 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -29,6 +29,8 @@
 #include "App.hh"
 //TODO change this
 #include "../StringUtil.hh"
+
+#include <cstdio>
 
 namespace FbTk {
 
