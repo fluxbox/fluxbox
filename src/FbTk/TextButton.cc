@@ -19,11 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.cc,v 1.4 2003/10/31 20:02:49 rathnor Exp $
+// $Id: TextButton.cc,v 1.5 2004/01/09 02:19:02 fluxgen Exp $
 
 #include "TextButton.hh"
 #include "Font.hh"
 #include "GContext.hh"
+#include <iostream>
+using namespace std;
 
 namespace FbTk {
 
@@ -96,11 +98,12 @@ void TextButton::clearArea(int x, int y,
                               width, height);
 
         } else { // fill with background color
-            FbTk::GContext gc(drawable());        
+            FbTk::GContext gc(m_buffer);        
             gc.setForeground(backgroundColor());
             m_buffer.fillRectangle(gc.gc(),
                                    x, y,
                                    width, height);
+            
         }
 
         drawText();
