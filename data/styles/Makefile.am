@@ -3,7 +3,9 @@
 styledir = $(pkgdatadir)/styles
 MAINTAINERCLEANFILES = Makefile.in
 
-style_DATA = Makro MerleyKay Clean CleanColor Artwiz Cthulhain Flux Minimal Nyz Operation Outcomes Rampage Rancor Results Shade Spiff lemonspace Twice Blue Carbondioxide qnx-photon
+style_DATA = Makro MerleyKay Clean CleanColor Artwiz Cthulhain Flux Minimal \
+	Nyz Operation Outcomes Rampage Rancor Results Shade Spiff LemonSpace \ 
+	Twice Blue Carbondioxide qnx-photon
 EXTRA_DIST=$(style_DATA)
 
 uninstall-local:
