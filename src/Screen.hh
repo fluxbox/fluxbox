@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.33 2002/05/08 14:25:40 fluxgen Exp $
+// $Id: Screen.hh,v 1.34 2002/05/17 11:02:30 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -95,17 +95,17 @@ public:
 	inline Rootmenu *getRootmenu(void) { return rootmenu; }
 	inline std::string &getRootCommand(void) { return *resource.rootcommand; }
 #ifdef	 SLIT
-	inline const bool isSlitOnTop(void) const { return resource.slit_on_top; }
-	inline const bool doSlitAutoHide(void) const { return resource.slit_auto_hide; }
+	inline bool isSlitOnTop(void) const { return resource.slit_on_top; }
+	inline bool doSlitAutoHide(void) const { return resource.slit_auto_hide; }
 	inline Slit *getSlit(void) { return slit; }
-	inline const int getSlitPlacement(void) const { return resource.slit_placement; }
-	inline const int getSlitDirection(void) const { return resource.slit_direction; }
+	inline int getSlitPlacement(void) const { return resource.slit_placement; }
+	inline int getSlitDirection(void) const { return resource.slit_direction; }
 	inline void saveSlitPlacement(int p) { resource.slit_placement = p;  }
 	inline void saveSlitDirection(int d) { resource.slit_direction = d;  }
 	inline void saveSlitOnTop(bool t) { resource.slit_on_top = t;  }
 	inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
 #ifdef XINERAMA
-	inline const unsigned int getSlitOnHead(void) const { return resource.slit_on_head; }
+	inline unsigned int getSlitOnHead(void) const { return resource.slit_on_head; }
 	inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 #endif // XINERAMA
 
@@ -118,22 +118,22 @@ public:
 
 	inline Workspacemenu *getWorkspacemenu(void) { return workspacemenu; }
 
-	inline const unsigned int getHandleWidth(void) const { return theme->getHandleWidth(); }
-	inline const unsigned int getBevelWidth(void) const	{ return theme->getBevelWidth(); }
-	inline const unsigned int getFrameWidth(void) const { return theme->getFrameWidth(); }
-	inline const unsigned int getBorderWidth(void) const { return theme->getBorderWidth(); }
-	inline const unsigned int getBorderWidth2x(void) const { return theme->getBorderWidth()*2; }
-	inline const unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
+	inline unsigned int getHandleWidth(void) const { return theme->getHandleWidth(); }
+	inline unsigned int getBevelWidth(void) const	{ return theme->getBevelWidth(); }
+	inline unsigned int getFrameWidth(void) const { return theme->getFrameWidth(); }
+	inline unsigned int getBorderWidth(void) const { return theme->getBorderWidth(); }
+	inline unsigned int getBorderWidth2x(void) const { return theme->getBorderWidth()*2; }
+	inline unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
 
     typedef std::vector<FluxboxWindow *> Icons;
-	inline const unsigned int getCount(void) const { return workspacesList.size(); }
-	inline const unsigned int getIconCount(void) const { return iconList.size(); }
+	inline unsigned int getCount(void) const { return workspacesList.size(); }
+	inline unsigned int getIconCount(void) const { return iconList.size(); }
 	inline Icons &getIconList(void) { return iconList; }
 
-	inline const int getNumberOfWorkspaces(void) { return *resource.workspaces; }
+	inline int getNumberOfWorkspaces(void) { return *resource.workspaces; }
 	inline const Toolbar::Placement getToolbarPlacement(void) { return *resource.toolbar_placement; }
 #ifdef XINERAMA
-	inline const int getToolbarOnHead(void) { return *resource.toolbar_on_head; }
+	inline int getToolbarOnHead(void) { return *resource.toolbar_on_head; }
 #endif // XINERAMA
 	inline int getToolbarWidthPercent(void) { return *resource.toolbar_width_percent; }
 	inline int getPlacementPolicy(void) const { return resource.placement_policy; }
@@ -182,12 +182,12 @@ public:
 
 	
 	#ifdef HAVE_STRFTIME
-	inline char *getStrftimeFormat(void) { return resource.strftime_format; }
-	void saveStrftimeFormat(char *);
+	inline const char *getStrftimeFormat(void) { return resource.strftime_format.c_str(); }
+	void saveStrftimeFormat(const char *format);
 	#else // !HAVE_STRFTIME
 	inline int getDateFormat(void) { return resource.date_format; }
 	inline void saveDateFormat(int f) { resource.date_format = f; }
-	inline Bool isClock24Hour(void) { return resource.clock24hour; }
+	inline bool isClock24Hour(void) { return resource.clock24hour; }
 	inline void saveClock24Hour(Bool c) { resource.clock24hour = c; }
 	#endif // HAVE_STRFTIME
 
@@ -329,7 +329,7 @@ private:
 
 
 		#ifdef	HAVE_STRFTIME
-		char *strftime_format;
+		std::string strftime_format;
 		#else // !HAVE_STRFTIME
 		Bool clock24hour;
 		int date_format;

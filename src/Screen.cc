@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.50 2002/05/08 14:24:57 fluxgen Exp $
+// $Id: Screen.cc,v 1.51 2002/05/17 11:02:30 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -258,10 +258,6 @@ resource(rm, screenname, altscreenname)
 
 	rootmenu = 0;
 		
-	#ifdef HAVE_STRFTIME
-	resource.strftime_format = 0;
-	#endif // HAVE_STRFTIME
-
 	#ifdef HAVE_GETPID
 	pid_t bpid = getpid();
 
@@ -512,11 +508,6 @@ BScreen::~BScreen(void) {
 		netizenList.begin(),
 		netizenList.end(),
 		delete_obj<Netizen>);
-
-#ifdef		HAVE_STRFTIME
-	if (resource.strftime_format)
-		delete [] resource.strftime_format;
-#endif // HAVE_STRFTIME
 
 	delete rootmenu;
 	delete workspacemenu;
@@ -1055,11 +1046,9 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 }
 
 #ifdef		HAVE_STRFTIME
-void BScreen::saveStrftimeFormat(char *format) {
-	if (resource.strftime_format)
-		delete [] resource.strftime_format;
-
-	resource.strftime_format = StringUtil::strdup(format);
+void BScreen::saveStrftimeFormat(const char *format) {
+	//make sure std::string don't get 0 string
+	resource.strftime_format = (format ? format : "");
 }
 #endif // HAVE_STRFTIME
 
