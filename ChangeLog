@@ -1,6 +1,17 @@
 (Format: Year/Month/Day)
 Changes for 0.9.5:
 *03/08/27:
+   * Added new theme item for toolbar: (Henrik)
+  	  * toolbar.height      
+   * Added new theme items for menu:  (Henrik)
+      * menu.selected.pixmap
+	  * menu.unselected.pixmap
+	  * menu.submenu.pixmap
+	  One can now specify pixmap to use for toggle items and
+	  what "arrow" to show on submenu items
+   * Changed FbRun to use FbPixmap and GContext (Henrik)
+     FbRun.hh/cc
+   * Added FbTk::GContext a wrapper for X GC (Henrik)
    * Changed FbRun to use FbTk::TextBox
      FbRun.hh/cc
    * Added a workspace name setting tool (Henrik)
