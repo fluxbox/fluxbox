@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.18 2002/12/13 20:36:36 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.19 2003/01/09 22:10:53 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -39,6 +39,9 @@
 
 class Toolbar;
 
+namespace FbTk {
+class ImageControl;
+};
 /**
 	Menu for toolbar.
 	@see Toolbar
@@ -96,7 +99,7 @@ private:
 /**
    Handles iconbar, workspace name view and clock view
  */
-class Toolbar : public TimeoutHandler, public FbTk::EventHandler {
+class Toolbar : public FbTk::TimeoutHandler, public FbTk::EventHandler {
 public:
        
     ///Toolbar placement on the screen
@@ -186,7 +189,7 @@ private:
             button_w, bevel_w, label_h;
     } frame;
 
-    class HideHandler : public TimeoutHandler {
+    class HideHandler : public FbTk::TimeoutHandler {
     public:
         Toolbar *toolbar;
 
@@ -194,9 +197,9 @@ private:
     } hide_handler;
 
     BScreen *m_screen;
-    BImageControl &image_ctrl; 
-    BTimer clock_timer; ///< timer to update clock
-    BTimer hide_timer; ///< timer to for auto hide toolbar
+    FbTk::ImageControl &image_ctrl; 
+    FbTk::Timer clock_timer; ///< timer to update clock
+    FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
     Toolbarmenu m_toolbarmenu;
     std::auto_ptr<IconBar> m_iconbar;
 	
