@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.228 2003/08/27 14:26:37 fluxgen Exp $
+// $Id: Screen.cc,v 1.229 2003/08/29 10:50:32 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -653,12 +653,6 @@ void BScreen::reconfigure() {
 
         }
     }
-
-
-#ifdef SLIT    
-    if (slit())
-        slit()->reconfigure();
-#endif // SLIT
 
     // reconfigure workspaces
     for_each(m_workspaces_list.begin(),
@@ -2020,11 +2014,6 @@ void BScreen::shutdown() {
              m_workspaces_list.end(),
              mem_fun(&Workspace::shutdown));
 
-#ifdef SLIT
-    if (m_slit.get())
-        m_slit->shutdown();
-#endif // SLIT
-
 }
 
 
@@ -2250,11 +2239,6 @@ void BScreen::updateSize() {
 
     // reset background
     m_root_theme->reconfigTheme();
-
-#ifdef SLIT
-    if (slit())
-        slit()->reconfigure();
-#endif // SLIT
 
     m_resize_sig.notify();
 }
