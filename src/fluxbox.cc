@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.255 2004/09/11 20:29:29 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.256 2004/09/12 14:01:29 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -149,224 +149,6 @@ class Toolbar { };
 
 using namespace std;
 using namespace FbTk;
-
-//-----------------------------------------------------------------
-//---- accessors for int, bool, and some enums with Resource ------
-//-----------------------------------------------------------------
-
-template<>
-void FbTk::Resource<int>::
-setFromString(const char* strval) {
-    int val;
-    if (sscanf(strval, "%d", &val)==1)
-        *this = val;
-}
-
-template<>
-void FbTk::Resource<std::string>::
-setFromString(const char *strval) {
-    *this = strval;
-}
-
-template<>
-void FbTk::Resource<bool>::
-setFromString(char const *strval) {
-    *this = (bool)!strcasecmp(strval, "true");
-}
-
-template<>
-void FbTk::Resource<Fluxbox::TitlebarList>::
-setFromString(char const *strval) {
-    vector<std::string> val;
-    StringUtil::stringtok(val, strval);
-    int size=val.size();
-    //clear old values
-    m_value.clear();
-		
-    for (int i=0; i<size; i++) {
-        if (strcasecmp(val[i].c_str(), "Maximize")==0)
-            m_value.push_back(Fluxbox::MAXIMIZE);
-        else if (strcasecmp(val[i].c_str(), "Minimize")==0)
-            m_value.push_back(Fluxbox::MINIMIZE);
-        else if (strcasecmp(val[i].c_str(), "Shade")==0)
-            m_value.push_back(Fluxbox::SHADE);
-        else if (strcasecmp(val[i].c_str(), "Stick")==0)
-            m_value.push_back(Fluxbox::STICK);
-        else if (strcasecmp(val[i].c_str(), "Menu")==0)
-            m_value.push_back(Fluxbox::MENU);
-        else if (strcasecmp(val[i].c_str(), "Close")==0)
-            m_value.push_back(Fluxbox::CLOSE);
-    }
-}
-
-template<>
-void FbTk::Resource<Fluxbox::TabsAttachArea>::
-setFromString(char const *strval) {
-    if (strcasecmp(strval, "Titlebar")==0)
-        m_value= Fluxbox::ATTACH_AREA_TITLEBAR;
-    else
-        m_value= Fluxbox::ATTACH_AREA_WINDOW;
-}
-
-template<>
-void FbTk::Resource<unsigned int>::
-setFromString(const char *strval) {	
-    if (sscanf(strval, "%ul", &m_value) != 1)
-        setDefaultValue();
-}
-
-template<>
-void FbTk::Resource<long long>::
-setFromString(const char *strval) {	
-    if (sscanf(strval, "%ul", &m_value) != 1)
-        setDefaultValue();
-}
-
-
-//-----------------------------------------------------------------
-//---- manipulators for int, bool, and some enums with Resource ---
-//-----------------------------------------------------------------
-template<>
-std::string FbTk::Resource<bool>::
-getString() {				
-    return std::string(**this == true ? "true" : "false");
-}
-
-template<>
-std::string FbTk::Resource<int>::
-getString() {
-    char strval[256];
-    sprintf(strval, "%d", **this);
-    return std::string(strval);
-}
-
-template<>
-std::string FbTk::Resource<std::string>::
-getString() { return **this; }
-
-
-template<>
-std::string FbTk::Resource<Fluxbox::TitlebarList>::
-getString() {
-    string retval;
-    int size=m_value.size();
-    for (int i=0; i<size; i++) {
-        switch (m_value[i]) {
-        case Fluxbox::SHADE:
-            retval.append("Shade");
-            break;
-        case Fluxbox::MINIMIZE:
-            retval.append("Minimize");
-            break;
-        case Fluxbox::MAXIMIZE:
-            retval.append("Maximize");
-            break;
-        case Fluxbox::CLOSE:
-            retval.append("Close");
-            break;
-        case Fluxbox::STICK:
-            retval.append("Stick");
-            break;
-        case Fluxbox::MENU:
-            retval.append("Menu");
-            break;
-        default:
-            break;
-        }
-        retval.append(" ");
-    }
-
-    return retval;
-}
-
-template<>
-std::string FbTk::Resource<Fluxbox::TabsAttachArea>::
-getString() {
-    if (m_value == Fluxbox::ATTACH_AREA_TITLEBAR)
-        return "Titlebar";
-    else
-        return "Window";
-}
-
-template<>
-string FbTk::Resource<unsigned int>::
-getString() {
-    char tmpstr[128];
-    sprintf(tmpstr, "%ul", m_value);
-    return string(tmpstr);
-}
-
-template<>
-string FbTk::Resource<long long>::
-getString() {
-    char tmpstr[128];
-    sprintf(tmpstr, "%ul", m_value);
-    return string(tmpstr);
-}
-
-template<>
-void FbTk::Resource<Fluxbox::Layer>::
-setFromString(const char *strval) {
-    int tempnum = 0;
-    if (sscanf(strval, "%d", &tempnum) == 1)
-        m_value = tempnum;
-    else if (strcasecmp(strval, "Menu") == 0)
-        m_value = Fluxbox::instance()->getMenuLayer();
-    else if (strcasecmp(strval, "AboveDock") == 0)
-        m_value = Fluxbox::instance()->getAboveDockLayer();
-    else if (strcasecmp(strval, "Dock") == 0)
-        m_value = Fluxbox::instance()->getDockLayer();
-    else if (strcasecmp(strval, "Top") == 0)
-        m_value = Fluxbox::instance()->getTopLayer();
-    else if (strcasecmp(strval, "Normal") == 0)
-        m_value = Fluxbox::instance()->getNormalLayer();
-    else if (strcasecmp(strval, "Bottom") == 0)
-        m_value = Fluxbox::instance()->getBottomLayer();
-    else if (strcasecmp(strval, "Desktop") == 0)
-        m_value = Fluxbox::instance()->getDesktopLayer();
-    else 
-        setDefaultValue();
-}
-
-
-template<>
-string FbTk::Resource<Fluxbox::Layer>::
-getString() {
-
-    if (m_value.getNum() == Fluxbox::instance()->getMenuLayer()) 
-        return string("Menu");
-    else if (m_value.getNum() == Fluxbox::instance()->getAboveDockLayer()) 
-        return string("AboveDock");
-    else if (m_value.getNum() == Fluxbox::instance()->getDockLayer()) 
-        return string("Dock");
-    else if (m_value.getNum() == Fluxbox::instance()->getTopLayer()) 
-        return string("Top");
-    else if (m_value.getNum() == Fluxbox::instance()->getNormalLayer()) 
-        return string("Normal");
-    else if (m_value.getNum() == Fluxbox::instance()->getBottomLayer()) 
-        return string("Bottom");
-    else if (m_value.getNum() == Fluxbox::instance()->getDesktopLayer()) 
-        return string("Desktop");
-    else {
-        char tmpstr[128];
-        sprintf(tmpstr, "%d", m_value.getNum());
-        return string(tmpstr);
-    }
-}
-template<>
-void FbTk::Resource<long>::
-setFromString(const char *strval) {   
-    if (sscanf(strval, "%ld", &m_value) != 1)
-        setDefaultValue();
-}
- 
-template<>
-string FbTk::Resource<long>::
-getString() {
-    char tmpstr[128];
-    sprintf(tmpstr, "%ld", m_value);
-    return string(tmpstr);
-}
 
 static Window last_bad_window = None;
 namespace {
@@ -1097,11 +879,11 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         if (be.button == 1) {
             if (! screen->isRootColormapInstalled())
                 screen->imageControl().installRootColormap();
-
-            if (screen->getWorkspacemenu().isVisible())
-                screen->getWorkspacemenu().hide();
+            // hide menus
             if (screen->getRootmenu().isVisible())
                 screen->getRootmenu().hide();
+            if (screen->getWorkspacemenu().isVisible())
+                screen->getWorkspacemenu().hide();
 
         } else if (be.button == 2) {
             FbCommands::ShowWorkspaceMenuCmd cmd;
@@ -1248,7 +1030,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
     switch (ke.type) {
     case KeyPress:
         m_key->doAction(ke);
-    break;
+        break;
     case KeyRelease: {
         // we ignore most key releases unless we need to use
         // a release to stop something (e.g. window cycling).

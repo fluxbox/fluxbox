@@ -114,6 +114,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FocusModelMenuItem.hh \
 	ToggleMenu.hh \
 	HeadArea.hh HeadArea.cc \
+	Resources.cc \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
