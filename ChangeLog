@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/02/16:
+  * Added remember hidden state for apps (Thanks Mathias Gumz)
+    You mark apps in the apps-file with
+    [Hidden] {yes}
+    With this you can configure any app to be hidden from the toolbar
+    Remember.cc/hh, IconbarTool.cc
   * Fixed window size bug in no-decor windows on start/restart (Henrik)
     Window.cc
 *04/02/14:
