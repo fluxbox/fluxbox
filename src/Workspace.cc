@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.44 2003/02/02 16:32:40 rathnor Exp $
+// $Id: Workspace.cc,v 1.45 2003/02/03 13:56:12 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -175,7 +175,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
             // this bit is pretty dodgy at present
             // it gets the next item down, then scans through our windowlist to see if it is 
             // in this workspace. If not, goes down more
-            FbTk::XLayerItem *item = 0, *lastitem = w->getLayerItem();
+            /* //!! TODO! FbTk::XLayerItem *item = 0, *lastitem = w->getLayerItem();
             do {
                 item = m_layermanager.getItemBelow(*lastitem);
                 Windows::iterator it = m_windowlist.begin();
@@ -208,7 +208,7 @@ int Workspace::removeWindow(FluxboxWindow *w) {
                 } while (item && !top);
 
             }
-
+            */
             if (top == 0|| !top->setInputFocus()) {
                 Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
             }

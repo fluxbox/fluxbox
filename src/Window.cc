@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.113 2003/02/02 16:32:39 rathnor Exp $
+// $Id: Window.cc,v 1.114 2003/02/03 13:55:08 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -95,8 +95,10 @@ void grabButton(Display *display, unsigned int button,
 
 };
 
-FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
-                             FbTk::MenuTheme &menutheme):
+FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, 
+                             FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
+                             FbTk::MenuTheme &menutheme, 
+                             FbTk::XLayer &layer):
     m_hintsig(*this),
     m_statesig(*this),
     m_layersig(*this),
@@ -110,11 +112,13 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
     display(0),
     lastButtonPressTime(0),
     m_windowmenu(menutheme, screen_num, imgctrl),
-    m_layeritem(0),
+    m_layeritem(getFrameWindow(), layer),
     m_layernum(4),
     old_decoration(DECOR_NORMAL),
     tab(0),
     m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100) {
+
+
 
     // redirect events from frame to us
     m_frame.setEventHandler(*this); 
@@ -252,7 +256,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageCo
 		
     positionWindows();
 
-    m_layeritem = new FbTk::XLayerItem(getFrameWindow());
+
 
     if (workspace_number < 0 || workspace_number >= screen->getCount())
         workspace_number = screen->getCurrentWorkspaceID();
@@ -357,15 +361,6 @@ FluxboxWindow::~FluxboxWindow() {
 
     if (client.window)
         fluxbox->removeWindowSearch(client.window);
-
-    if (m_layeritem) {
-        m_layeritem->removeWindow(getFrameWindow());
-        //if (hasTab())
-        //   m_layeritem->removeWindow(get tab window)
-        if (m_layeritem->isEmpty()) {
-            screen->removeLayerItem(m_layeritem);
-        }
-    }
 
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
