@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/28:
+  * Some more menu rendering fixes (Simon)
+    Thanks Florian Pigorsch for nice bug reports + debugging
+    FbTk/Menu.cc
   * Fix some blank fonts problem for i18n (I think)  (Simon)
     FbTk/Font.cc FbTk/XmbFontImp.cc
   * Fix menu render bug with previously highlighted items (Simon)

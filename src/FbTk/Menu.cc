@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.73 2004/08/28 14:25:52 rathnor Exp $
+// $Id: Menu.cc,v 1.74 2004/08/28 19:03:09 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -177,6 +177,7 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
 
     menu.title.raise();
 
+    reconfigure();
 }
 
 Menu::~Menu() {
@@ -389,6 +390,7 @@ void Menu::enterParent() {
     if (submenu)
         submenu->internal_hide();
 
+    m_active_index = -1;
     drawItem(which_press, 
              true,  // clear
              true); // transp
