@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.51 2003/09/14 10:32:31 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.52 2003/09/15 20:14:49 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -534,13 +534,13 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
         m_label.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_handle == event.window) {
         m_handle.clearArea(event.x, event.y, event.width, event.height);
-        m_handle.updateTransparent();
+        m_handle.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_grip_left == event.window) {
         m_grip_left.clearArea(event.x, event.y, event.width, event.height);
-        m_grip_left.updateTransparent();
+        m_grip_left.updateTransparent(event.x, event.y, event.width, event.height);
     } else if (m_grip_right == event.window) {
         m_grip_right.clearArea(event.x, event.y, event.width, event.height);
-        m_grip_right.updateTransparent();
+        m_grip_right.updateTransparent(event.x, event.y, event.width, event.height);
     } else {
         // create compare function
         // that we should use with find_if
