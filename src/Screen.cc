@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.137 2003/04/26 15:00:25 fluxgen Exp $
+// $Id: Screen.cc,v 1.138 2003/04/26 18:27:01 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1352,15 +1352,15 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
 #endif // DEBUG
             } else if ((*dir)[i] == Fluxbox::STICK) {
                 WinButton *winbtn = new WinButton(win, WinButton::STICK,
-                                          frame.titlebar(),
-                                          0, 0, 10, 10);
+                                                  frame.titlebar(),
+                                                  0, 0, 10, 10);
                 win.stateSig().attach(winbtn);
                 winbtn->setOnClick(stick_cmd);
                 newbutton = winbtn;                
             } else if ((*dir)[i] == Fluxbox::SHADE) {
                 WinButton *winbtn = new WinButton(win, WinButton::SHADE,
-                                          frame.titlebar(),
-                                          0, 0, 10, 10);               
+                                                  frame.titlebar(),
+                                                  0, 0, 10, 10);               
                 winbtn->setOnClick(shade_cmd);
             }
         
@@ -1754,12 +1754,18 @@ void BScreen::initMenu() {
                     if (line[0] != '#') {
                         string key;
                         int pos=0;
-                        int err = StringUtil::getStringBetween(key, line.c_str(), '[', ']');
+                        int err = FbTk::StringUtil::
+                            getStringBetween(key, 
+                                             line.c_str(), 
+                                             '[', ']');
 						
                         if (key == "begin") {
                             pos += err;
                             string label;
-                            err = StringUtil::getStringBetween(label, line.c_str()+pos, '(', ')');
+                            err = FbTk::StringUtil::
+                                getStringBetween(label, 
+                                                 line.c_str()+pos, 
+                                                 '(', ')');
                             if (err>0) {
                                 m_rootmenu->setLabel(label.c_str());
                                 defaultMenu = parseMenuFile(menu_file, *m_rootmenu.get(), row);
@@ -1819,13 +1825,22 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
 
                 std::string str_key, str_label, str_cmd;
 				
-                err = StringUtil::getStringBetween(str_key, line.c_str(), '[', ']');
+                err = FbTk::StringUtil::
+                    getStringBetween(str_key, 
+                                     line.c_str(),
+                                     '[', ']');
                 if (err > 0 ) {
                     parse_pos += err;	
-                    err = StringUtil::getStringBetween(str_label, line.c_str() + parse_pos, '(', ')');
+                    err = FbTk::StringUtil::
+                        getStringBetween(str_label, 
+                                         line.c_str() + parse_pos,
+                                         '(', ')');
                     if (err>0) {
                         parse_pos += err;	
-                        StringUtil::getStringBetween(str_cmd, line.c_str() + parse_pos, '{', '}');
+                       FbTk::StringUtil::
+                           getStringBetween(str_cmd, 
+                                            line.c_str() + parse_pos,
+                                            '{', '}');
                     }
                 } else 
                     continue; //read next line
@@ -1880,7 +1895,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                         // and insert style                        
                         FbTk::RefCount<FbTk::Command> 
                             setstyle_cmd(new FbCommands::
-                                         SetStyleCmd(StringUtil::
+                                         SetStyleCmd(FbTk::StringUtil::
                                                      expandFilename(str_cmd)));
                         menu.insert(str_label.c_str(), setstyle_cmd);
 						
@@ -1913,7 +1928,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                         cerr<<"Row: "<<row<<endl;
                     } else {	// start of else 'x'
                         // perform shell style ~ home directory expansion
-                        string newfile(StringUtil::expandFilename(str_label));
+                        string newfile(FbTk::StringUtil::expandFilename(str_label));
 
                         if (newfile.size() != 0) {
                             FILE *submenufile = fopen(newfile.c_str(), "r");
@@ -2160,7 +2175,7 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
                               const char *label, const char *directory) {
     
     // perform shell style ~ home directory expansion
-    string stylesdir(StringUtil::expandFilename(directory ? directory : ""));
+    string stylesdir(FbTk::StringUtil::expandFilename(directory ? directory : ""));
 
     I18n *i18n = I18n::instance();						
     struct stat statbuf;

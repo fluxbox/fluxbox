@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.26 2003/04/20 12:21:35 rathnor Exp $
+//$Id: Keys.cc,v 1.27 2003/04/26 18:27:56 fluxgen Exp $
 
 
 #include "Keys.hh"
@@ -28,7 +28,7 @@
 #include "App.hh"
 
 #ifdef HAVE_CONFIG_H
-#include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 
@@ -213,7 +213,7 @@ bool Keys::load(const char *filename) {
         line++;
         vector<string> val;
         //Parse arguments
-        StringUtil::stringtok(val, linebuffer.c_str());
+        FbTk::StringUtil::stringtok(val, linebuffer.c_str());
 
         //must have at least 1 argument
         if (val.size() <= 0)
@@ -297,7 +297,7 @@ bool Keys::load(const char *filename) {
                     case Keys::EXECUTE:
                         last_key->execcommand = 
                             const_cast<char *>
-                            (StringUtil::strcasestr(linebuffer.c_str(),
+                            (FbTk::StringUtil::strcasestr(linebuffer.c_str(),
                                                     getActionStr(Keys::EXECUTE))+
                              strlen(getActionStr(Keys::EXECUTE)));
                         break;
