@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.226 2003/08/25 13:15:53 rathnor Exp $
+// $Id: Screen.cc,v 1.227 2003/08/25 16:07:09 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -358,7 +358,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
-    attrib.border_pixel = m_root_theme->borderColor().pixel();
+    attrib.border_pixel = winFrameTheme().border().color().pixel();
     attrib.colormap = rootWindow().colormap();
     attrib.save_under = true;
 
@@ -366,7 +366,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     m_geom_window = 
         XCreateWindow(disp, rootWindow().window(),
-                      0, 0, geom_w, geom_h, rootTheme().borderWidth(), rootWindow().depth(),
+                      0, 0, geom_w, geom_h, winFrameTheme().border().width(), rootWindow().depth(),
                       InputOutput, rootWindow().visual(), mask, &attrib);
     geom_visible = false;
     geom_pixmap = 0;
@@ -1463,7 +1463,7 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
 
     FluxboxWindow *foundwin = 0;
     int weight = 999999, exposure = 0; // extreme values
-    int borderW = m_root_theme->borderWidth(),
+    int borderW = winFrameTheme().border().width(),
         top = win.y(), 
         bottom = win.y() + win.height() + 2*borderW,
         left = win.x(),
@@ -2165,8 +2165,8 @@ void BScreen::renderGeomWindow() {
     int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
     m_geom_window.resize(geom_w, geom_h);
 
-    m_geom_window.setBorderWidth(m_root_theme->borderWidth());
-    m_geom_window.setBorderColor(m_root_theme->borderColor());
+    m_geom_window.setBorderWidth(winFrameTheme().border().width());
+    m_geom_window.setBorderColor(winFrameTheme().border().color());
 
 
     Pixmap tmp = geom_pixmap;

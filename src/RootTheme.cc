@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.cc,v 1.3 2003/08/16 10:01:57 fluxgen Exp $
+// $Id: RootTheme.cc,v 1.4 2003/08/25 16:02:24 fluxgen Exp $
 
 #include "RootTheme.hh"
 
@@ -29,13 +29,10 @@
 RootTheme::RootTheme(int screen_num, std::string &screen_root_command):
     FbTk::Theme(screen_num),
     m_root_command(*this, "rootCommand", "RootCommand"), 
-    m_border_width(*this, "borderWidth", "BorderWidth"),
     m_bevel_width(*this,  "bevelWidth", "BevelWidth"),
     m_handle_width(*this, "handleWidth", "HandleWidth"),
-    m_border_color(*this, "borderColor", "BorderColor"),
     m_screen_root_command(screen_root_command) {
 
-    *m_border_width = 0;
     *m_bevel_width = 0;
     *m_handle_width = 0;
 
@@ -55,10 +52,6 @@ RootTheme::~RootTheme() {
 }
 
 void RootTheme::reconfigTheme() {
-    // clamp values to "normal" size
-    if (*m_border_width > 20)
-        *m_border_width = 20;
-
     if (*m_bevel_width > 20)
         *m_bevel_width = 20;
 
