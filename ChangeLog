@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.1.10:
+*02/05/31:
+   * Added ru_RU locales to fluxbox-generate_menu (Thanks Anton Denisov)
 *02/05/29:
    * Made some cleaning in class FluxboxWindow:
      Removed unused variable, moved Mwm* defines into enums in
