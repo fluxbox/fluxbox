@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.79 2003/08/29 10:30:46 fluxgen Exp $
+// $Id: Slit.cc,v 1.80 2003/08/30 01:01:47 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -283,6 +283,7 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
     // attach to theme and root window change signal
     m_slit_theme->reconfigSig().attach(this);
     scr.resizeSig().attach(this);
+    scr.reconfigureSig().attach(this); // if alpha changed (we disablethis signal when we get theme change sig)
 
     frame.pixmap = None;
     // setup timer
