@@ -107,6 +107,12 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	BorderTheme.hh BorderTheme.cc \
 	CommandDialog.hh CommandDialog.cc SendToMenu.hh SendToMenu.cc \
 	CompareWindow.hh \
+	Parser.hh Parser.cc FbMenuParser.hh FbMenuParser.cc \
+	StyleMenuItem.hh StyleMenuItem.cc \
+	MenuCreator.hh MenuCreator.cc \
+	IconMenu.hh IconMenu.cc \
+	WorkspaceMenu.hh WorkspaceMenu.cc \
+	FocusModelMenuItem.hh \
 	${newwmspec_SOURCE} ${gnome_SOURCE} \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
