@@ -19,11 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.4 2002/12/02 19:31:05 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.5 2003/02/17 23:36:43 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
 #include "App.hh"
+
+//!! TODO: Change this
+#include "../StringUtil.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -47,7 +50,7 @@ using namespace std;
 namespace {
 
 #ifndef HAVE_STRCASESTR
-//
+//!! TODO this is moved to StringUtil 
 // Tries to find a string in another and
 // ignoring the case of the characters
 // Returns 0 on success else pointer to str.
@@ -101,7 +104,7 @@ const char *getFontElement(const char *pattern, char *buf, int bufsiz, ...) {
     buf[bufsiz-1] = 0;
     buf[bufsiz-2] = '*';
     while((v = va_arg(va, char *)) != 0) {
-        p = ::strcasestr(pattern, v);
+        p = StringUtil::strcasestr(pattern, v);
         if (p) {
             std::strncpy(buf, p+1, bufsiz-2);
             p2 = strchr(buf, '-');
