@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.179 2003/06/08 13:47:30 rathnor Exp $
+// $Id: Screen.cc,v 1.180 2003/06/11 00:51:07 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -2207,48 +2207,38 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         menu.insert("Slit", &slit()->menu());
     }
 #endif // SLIT
-    menu.insert(i18n->getMessage(
-                                 ToolbarSet, ToolbarToolbarTitle,
+    menu.insert(i18n->getMessage(ToolbarSet, ToolbarToolbarTitle,
                                  "Toolbar"), &m_toolbarhandler->getToolbarMenu());
     menu.insert(new
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuImageDithering,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuImageDithering,
                                               "Image Dithering"),
                              *resource.image_dither, save_and_reconfigure));
     menu.insert(new 
-                BoolMenuItem(
-                             i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuOpaqueMove,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuOpaqueMove,
                                               "Opaque Window Moving"),
                              *resource.opaque_move, saverc_cmd));
     menu.insert(new 
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuFullMax,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFullMax,
                                               "Full Maximization"),
                              *resource.full_max, saverc_cmd));
     menu.insert(new 
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuFocusNew,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFocusNew,
                                               "Focus New Windows"),
                              *resource.focus_new, saverc_cmd));
     menu.insert(new 
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuFocusLast,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFocusLast,
                                               "Focus Last Window on Workspace"),
                              *resource.focus_last, saverc_cmd));
     menu.insert(new 
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuMaxOverSlit,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuMaxOverSlit,
                                               "Maximize Over Slit"),
                              *resource.max_over_slit, saverc_cmd));
     menu.insert(new 
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuWorkspaceWarping,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuWorkspaceWarping,
                                               "Workspace Warping"),
                              *resource.workspace_warping, saverc_cmd));
     menu.insert(new 
-                BoolMenuItem(i18n->getMessage(
-                                              ConfigmenuSet, ConfigmenuDesktopWheeling,
+                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuDesktopWheeling,
                                               "Desktop MouseWheel Switching"),
                              *resource.desktop_wheeling, saverc_cmd));
 
@@ -2256,7 +2246,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
 				 *resource.click_raises,
 				 saverc_cmd));    
     // setup antialias cmd to reload style and save resource on toggle
-    menu.insert(new BoolMenuItem("antialias", *resource.antialias, 
+    menu.insert(new BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuAntiAlias,
+                                                  "AntiAlias"), 
+                                 *resource.antialias, 
                                  save_and_reconfigure));
 
     FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
