@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.4 2003/10/13 19:31:56 fluxgen Exp $
+// $Id: KeyUtil.cc,v 1.5 2003/12/30 18:11:44 fluxgen Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
@@ -57,6 +57,41 @@ void KeyUtil::loadModmap() {
         XFreeModifiermap(m_modmap);
 
     m_modmap = XGetModifierMapping(App::instance()->display());
+    // mask to use for modifier
+    int mods[] = {
+        ShiftMask,
+        LockMask,
+        ControlMask,
+        Mod1Mask,
+        Mod2Mask,
+        Mod3Mask,
+        Mod4Mask,
+        Mod5Mask,
+        0
+    };
+	
+    // find modifiers and set them
+    for (int i=0, realkey=0; i<8; ++i) {
+        for (int key=0; key<m_modmap->max_keypermod; ++key, ++realkey) {
+
+            if (m_modmap->modifiermap[realkey] == 0)
+                continue;
+
+            KeySym ks = XKeycodeToKeysym(App::instance()->display(), m_modmap->modifiermap[realkey], 0);
+
+            switch (ks) {
+            case XK_Caps_Lock:
+                m_capslock = mods[i];
+                break;
+            case XK_Scroll_Lock:
+                m_scrolllock = mods[i];
+                break;
+            case XK_Num_Lock:
+                m_numlock = mods[i];
+                break;
+            }
+        }
+    }
 }
 
 
@@ -67,9 +102,9 @@ void KeyUtil::loadModmap() {
 */
 void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
     Display *display = App::instance()->display();
-    const unsigned int capsmod = LockMask;
-    const unsigned int nummod = Mod2Mask;
-    const unsigned int scrollmod = Mod5Mask;
+    const unsigned int capsmod = instance().m_capslock;
+    const unsigned int nummod = instance().m_numlock;
+    const unsigned int scrollmod = instance().m_scrolllock;
     
     for (int screen=0; screen<ScreenCount(display); screen++) {
 		

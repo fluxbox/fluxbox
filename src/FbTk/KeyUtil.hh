@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.4 2003/12/16 17:06:51 fluxgen Exp $
+// $Id: KeyUtil.hh,v 1.5 2003/12/30 18:10:43 fluxgen Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
@@ -65,9 +65,9 @@ public:
         Strip out modifiers we want to ignore
         @return the cleaned state number
     */
-    static unsigned int cleanMods(unsigned int mods) {
-        //remove numlock(Mod2), capslock and scrolllock(Mod5)
-         return mods & ~(LockMask | Mod2Mask | Mod5Mask);
+    unsigned int cleanMods(unsigned int mods) {
+        //remove numlock, capslock and scrolllock
+         return mods & ~(m_capslock | m_numlock | m_scrolllock);
     }
 
     /**
@@ -80,6 +80,7 @@ private:
     void loadModmap();
 
     XModifierKeymap *m_modmap;
+    int m_capslock, m_numlock, m_scrolllock;
     static std::auto_ptr<KeyUtil> s_keyutil;
 };
 
