@@ -342,7 +342,7 @@ if [ "$setterfromcommandline" != true ]; then
 fi
 
 standardrant=\
-"$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and
+"$WPSETTER doesn't set the wallpaper properly. Transparency for fluxbox and
 apps like aterm and xchat won't work right with it. Consider installing
 feh, wmsetbg (from windowmaker) or Esetroot (from Eterm) and I'll use
 them instead."
