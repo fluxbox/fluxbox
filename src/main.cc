@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.18 2003/06/12 14:37:21 fluxgen Exp $
+// $Id: main.cc,v 1.19 2003/07/10 12:01:17 fluxgen Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -176,7 +176,7 @@ int main(int argc, char **argv) {
             exit(0);
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
             showInfo(cout);
-            ::exit(0);
+            exit(0);
         }
     }
 
