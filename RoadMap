@@ -92,7 +92,7 @@ Major Features:
 Minor Features:
  * fix outline window moving            (Simon)
 Bugfixes/lower priority:
- - Bugs from 0.9.0                      (Both)
+ * Bugs from 0.9.0                      (Both)
  * Doesn't redraw properly after unshade (Simon)
 
 ----------------------------------------------------------
@@ -100,7 +100,7 @@ Release:      0.9.2
 Approx Date:  5 May, 2003
 Major Features:
  - Integration of Remember patch        (Simon)
- - Transparency                         (Henrik)
+ = Transparency                         (Henrik)
 Minor Features:
  - more keybinding actions              (Both)
  * directional focus movement           (?)

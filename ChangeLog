@@ -5,6 +5,13 @@ Changes for 0.9.2:
      Window.hh/cc
    * Directional focus movement (key actions FocusUp/Down/Left/Right) (Simon)
      Keys.hh/cc Screen.hh/cc fluxbox.cc
+   * Added transparent menus, session.screen<num>.menuAlpha (Henrik)
+     Menu.hh/cc, Transparent.hh/cc, Screen.hh/cc
+02/04/17:
+   * Fixed menu bug
+     Menu.cc, Screen.cc
+
+--------------------------------------------------------------
 Changes for 0.9.1:
 *03/04/16:
    * Fixed resize bug (Henrik)
