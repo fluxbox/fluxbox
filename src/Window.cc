@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.75 2002/08/31 10:52:30 fluxgen Exp $
+// $Id: Window.cc,v 1.76 2002/09/01 11:44:12 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2771,7 +2771,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
 		XClassHint ch;
 
 		if (XGetClassHint(display, getClientWindow(), &ch) == 0) {
-			cerr<<"Faild to ready class hint!"<<endl;
+			cerr<<"Failed to ready class hint!"<<endl;
 		} else {
 			if (ch.res_name != 0) {
 				m_instance_name = const_cast<char *>(ch.res_name);
