@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.35 2004/06/13 10:58:34 fluxgen Exp $
+// $Id: Menu.hh,v 1.36 2004/06/14 12:23:57 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -159,7 +159,13 @@ public:
 
 protected:
 
-    inline void setTitleVisibility(bool b) { title_vis = b; m_need_update = true; }
+    inline void setTitleVisibility(bool b) { 
+        title_vis = b; m_need_update = true; 
+        if (!b)
+            titleWindow().lower();
+        else
+            titleWindow().raise();
+    }
 
     virtual void itemSelected(int button, unsigned int index) { }
     virtual int drawItem(unsigned int index, bool highlight = false, 
