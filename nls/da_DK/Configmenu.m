@@ -44,5 +44,7 @@ $ #TabRotateVertical
 # Rotate Vertical Tabs
 $ #SemiSloppyFocus
 # Semi Sloppy Focus
+$ #MaxOverSlit
+# Maximize Over Slit
 $ #SloppyWindowGrouping
 # Sloppy Window Grouping

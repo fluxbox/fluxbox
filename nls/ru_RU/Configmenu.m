@@ -46,5 +46,7 @@ $ #TabRotateVertical
 # Закладки вертикально
 $ #SemiSloppyFocus
 # Размытый фокус
+$ #MaxOverSlit
+# Maximize Over Slit
 $ #SloppyWindowGrouping
 # Sloppy Window Grouping
