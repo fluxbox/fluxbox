@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.282 2004/06/19 15:04:27 rathnor Exp $
+// $Id: Screen.cc,v 1.283 2004/06/21 15:23:41 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1096,28 +1096,6 @@ bool BScreen::addKdeDockapp(Window client) {
         evm->add(*evh, client);
 
     return true;
-}
-
-void BScreen::setupKdeDockapps() {
-#ifdef SLIT
-    if (slit() == 0)
-        return;
-    // kde dockapps end up in the slit at start
-    Slit::SlitClients::iterator it = slit()->clients().begin();
-    Slit::SlitClients::iterator it_end = slit()->clients().end();
-    std::list<Window> winlist;
-    for (; it != it_end; ++it) {
-        if (isKdeDockapp((*it)->window())) {
-            winlist.push_back((*it)->window());
-            slit()->removeClient((*it)->window());
-        }
-    }
-    std::list<Window>::iterator win_it = winlist.begin();
-    std::list<Window>::iterator win_it_end = winlist.end();
-    for (; win_it != win_it_end; ++win_it) {
-        createWindow(*win_it);
-    }
-#endif // SLIT    
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.145 2004/06/20 10:29:51 rathnor Exp $
+// $Id: Toolbar.cc,v 1.146 2004/06/21 15:23:42 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -230,7 +230,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_theme.reconfigSig().attach(this);
     // listen to screen size changes
     screen().resizeSig().attach(this);
-    screen().reconfigureSig().attach(this); // if alpha value changes
 
     moveToLayer((*m_rc_layernum).getNum());
 
@@ -267,7 +266,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     // setup to listen to child events
     FbTk::EventManager::instance()->addParent(*this, window());
     // get everything together
-    //reconfigure(); 
+    reconfigure(); 
     // this gets done by the screen later as it loads
 
 }

@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/06/21:
+  * Fix and tidy KDE dockapps on [re]start (Simon)
+    - and don't listen to screen reconfigure sig anymore in toolbar
+    Screen.hh/cc Toolbar.cc fluxbox.cc
   * Fix autogrouping issue where windows wouldn't show (Simon)
     Workspace.cc
 *04/06/20:

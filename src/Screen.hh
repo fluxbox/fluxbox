@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.141 2004/05/02 21:10:30 fluxgen Exp $
+// $Id: Screen.hh,v 1.142 2004/06/21 15:23:42 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -145,7 +145,6 @@ public:
     bool isKdeDockapp(Window win) const;
     /// @return true if dock app was added, else false
     bool addKdeDockapp(Window win);
-    void setupKdeDockapps();
 
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.244 2004/06/13 11:01:47 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.245 2004/06/21 15:23:42 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -540,7 +540,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
         // now we can create menus (which needs this screen to be in screen_list)
         screen->initMenus();
-        screen->initWindows();
 
 #ifdef HAVE_GETPID
         pid_t bpid = getpid();
@@ -569,8 +568,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
                                          *screen->layerManager().
                                          getLayer(Fluxbox::instance()->getNormalLayer())));
 #endif // USE_TOOLBAR
-        // must do this after systray is created
-        screen->setupKdeDockapps();
+
+        // must do this after toolbar is created
+        screen->initWindows();
 
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
