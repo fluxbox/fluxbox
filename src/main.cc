@@ -22,37 +22,34 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.6 2002/04/04 11:28:19 fluxgen Exp $
+// $Id: main.cc,v 1.7 2002/08/13 23:56:02 fluxgen Exp $
+
+
+
+#include "i18n.hh"
+#include "fluxbox.hh"
+
+#include "../version.h"
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif // HAVE_CONFIG_H
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include "../version.h"
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
-#endif // HAVE_CONFIG_H
-
-#include "i18n.hh"
-#include "fluxbox.hh"
-
-#ifdef		HAVE_STDIO_H
-#	include <stdio.h>
-#endif // HAVE_STDIO_H
-
-#ifdef		STDC_HEADERS
-#	include <stdlib.h>
-#	include <string.h>
-#endif // STDC_HEADERS
-
-#ifdef		HAVE_UNISTD_H
+#ifdef HAVE_UNISTD_H
 #include <sys/types.h>
 #endif // HAVE_UNISTD_H
 
-#ifdef		HAVE_SYS_PARAM_H
-#	include <sys/param.h>
+#ifdef HAVE_SYS_PARAM_H
+#include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
 
 #ifndef	 MAXPATHLEN
@@ -71,6 +68,7 @@ using namespace std;
 uds::uds_flags_t uds::flags = uds::leak_check;
 
 #endif //!DEBUG_UDS
+
 const char *getNLSYesNoMsg(bool val) {
 	if (val) {
 		return I18n::instance()->getMessage(
@@ -132,13 +130,12 @@ int main(int argc, char **argv) {
 					 "warning: couldn't set environment variable 'DISPLAY'\n"));
 				perror("putenv()");
 			}
-		} else if (! strcmp(argv[i], "-version")) {
+		} else if (strcmp(argv[i], "-version") == 0) {
 			// print current version string
 			printf("Fluxbox %s : (c) 2001-2002 Henrik Kinnunen \n\n",
 						__fluxbox_version);
-
 			exit(0);
-		} else if (! strcmp(argv[i], "-help")) {
+		} else if (strcmp(argv[i], "-help") == 0) {
 			// print program usage and command line options
 			printf(i18n->
 			getMessage(
