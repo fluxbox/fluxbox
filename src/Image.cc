@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.cc,v 1.12 2002/07/23 17:11:58 fluxgen Exp $
+// $Id: Image.cc,v 1.13 2002/08/11 20:44:48 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -2466,9 +2466,6 @@ void BImageControl::parseTexture(FbTk::Texture *texture, const char *texture_str
 		*(ts + byte_pos) = tolower(*(texture_string + byte_pos));
 
 	using namespace FbTk;
-#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): texture_string = "<<texture_string<<endl;
-#endif // DEBUG
 
 	if (strstr(ts, "parentrelative")) {
 		texture->setType(Texture::PARENTRELATIVE);
