@@ -1,7 +1,7 @@
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,cvs-2003-12-17, no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.9.7, no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
@@ -465,6 +465,10 @@ util/Makefile
 util/fbrun/Makefile
 data/Makefile
 data/styles/Makefile
+data/styles/BlueFlux/Makefile
+data/styles/BlueFlux/pixmaps/Makefile
+data/styles/Emerge/Makefile
+data/styles/Emerge/pixmaps/Makefile
 doc/Makefile
 nls/Makefile
 nls/C/Makefile
