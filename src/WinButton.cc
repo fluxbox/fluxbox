@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.17 2004/01/10 00:37:35 rathnor Exp $
+/// $Id: WinButton.cc,v 1.18 2004/02/27 12:29:13 fluxgen Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -228,7 +228,7 @@ void WinButton::drawType(bool clear, bool no_trans) {
             
         if (used || clear)
             FbTk::FbWindow::clear();            
-        
+
         if (!used && gc() != 0) { // must have valid graphic context
 
             drawLine(gc(), 
@@ -276,8 +276,8 @@ void WinButton::drawType(bool clear, bool no_trans) {
 
         break;
     }
-    if ((used || clear) && !no_trans)
-        updateTransparent();
+    //    if ((used || clear) && !no_trans)
+    updateTransparent();
 }
 
 void WinButton::clear() {
