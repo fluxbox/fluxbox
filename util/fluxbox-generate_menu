@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.37 2003/06/10 12:14:35 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.38 2003/06/22 12:50:03 fluxgen Exp $
 
 #
 # Portability notes:
@@ -361,30 +361,30 @@ case ${LC_ALL} in
         XUTILSMENU='X¥æ¡¼¥Æ¥£¥ê¥Æ¥£'
         ;;
     fr_FR*) # french locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
-        #FILEUTILSMENU='File utils'
-        #OFFICEMENU='Office'
-        #SYSTEMSTYLES='Styles de la Systeme'
-        #USERSTYLES='Styles de la'
-        #WINDOWMANAGERS='Window Managers'
+        BACKGROUNDMENU="Fond d'écran"
+        BACKGROUNDMENUTITLE="Changer le fond d'écran"
         BROWSERMENU='Navigateurs'
         CONFIGUREMENU='Configurer'
         EDITORMENU='Editeurs'
         EXITITEM='Sortir'
-        FBSETTINGSMENU='FB-Settings'
-        GNOMEMENUTEXT='menus-Gnome'
+        FBSETTINGSMENU='Configurer Fluxbox'
+        FILEUTILSMENU='Outils fichiers'
+        GNOMEMENUTEXT='Menus Gnome'
         GRAPHICMENU='Graphisme'
-        KDEMENUTEXT='menus-KDE'
-        MISCMENU='Misc'
+        KDEMENUTEXT='Menus KDE'
+        MISCMENU='Divers'
         MUSICMENU='Musique'
-        NETMENU='Net'
-        RELOADITEM='Recharger config'
-        RESTARTITEM='Redémarrer'
+        NETMENU='Réseau'
+        OFFICEMENU='Bureautique'
+        RELOADITEM='Recharger la configuration'
+        RESTARTITEM='Redémarrer Fluxbox'
         STYLEMENUTITLE='Choisir un style...'
+        SYSTEMSTYLES='Styles Systeme'
         TERMINALMENU='Terminaux'
+        USERSTYLES='Styles Utilisateur'
+        WINDOWMANAGERS='Gestionnaires de fenêtres'
         WORKSPACEMENU='Liste des bureaux'
-        XUTILSMENU='X-utils'
+        XUTILSMENU='Outils X'
         ;;
     it_IT*) # italian locales
         #BACKGROUNDMENU='Backgrounds'
@@ -780,7 +780,7 @@ append_menu_end
 
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
-               normal_find gimp xv gqview xpaint kpaint kiconedit xscreensaver-demo
+               normal_find gimp xv gqview xpaint kpaint kiconedit xscreensaver-demo blender
                find_it gears            append "[exec] (Mesa gears) {gears}"
                find_it morph3d          append "[exec] (Mesa morph) {morph3d}"
                find_it reflect          append "[exec] (Mesa reflect) {reflect}"
@@ -829,6 +829,7 @@ append_submenu "${GAMESMENU}"
         gnotski iagno knights eboard xboard freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins \
         quake2 quake3 skoosh same-gnome enigma xbill
+        find_it et append "[exec] (Enemy Territory) {et}"
 append_menu_end
 
 # gnome menu
