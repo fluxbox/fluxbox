@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.19 2003/05/27 11:55:23 rathnor Exp $
+// $Id: Remember.cc,v 1.20 2003/05/31 01:07:36 rathnor Exp $
 
 #include "Remember.hh"
 #include "StringUtil.hh"
@@ -478,13 +478,13 @@ void Remember::rememberAttrib(WinClient &winclient, Attribute attrib) {
     case REM_POSITION:
         app->rememberPosition(win->x(), win->y());
         break;
-    case REM_STUCKSTATE:
+    case REM_SHADEDSTATE:
         app->rememberShadedstate(win->isShaded());
         break;
     case REM_DECOSTATE:
         app->rememberDecostate(win->decorationMask());
         break;
-    case REM_SHADEDSTATE:
+    case REM_STUCKSTATE:
         app->rememberStuckstate(win->isStuck());
         break;
         //    case REM_TABSTATE:
