@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.75 2004/02/27 12:20:01 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.76 2004/02/28 16:54:04 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -28,6 +28,7 @@
 #include "FbTk/TextButton.hh"
 #include "FbTk/App.hh"
 #include "FbTk/SimpleCommand.hh"
+#include "FbTk/Compose.hh"
 #include "CompareWindow.hh"
 #include "FbWinFrameTheme.hh"
 
@@ -140,6 +141,7 @@ void FbWinFrame::show() {
     m_visible = true;
     m_window.showSubwindows();
     m_window.show();
+    updateTransparent();
 }
 
 /**
@@ -550,7 +552,6 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
                                                           event.window));
     if (button_it != m_labelbuttons.end())
         (*button_it)->buttonReleaseEvent(event);
-
 
     if (event.window == m_grip_right.window() ||
         event.window == m_grip_left.window() ||
@@ -1223,23 +1224,74 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_unfocused_color);
 
 }
+namespace {
+class IgnoreEvent {
+public:
+    typedef void result_type;
+    typedef Window argument_type;
+    explicit IgnoreEvent(long eventmask):
+        m_display(FbTk::App::instance()->display()),
+        m_event_mask(eventmask) {
+    }
+
+    void operator()(Window win) const {
+        static XEvent event;
+        while (XCheckWindowEvent(m_display, win, m_event_mask, &event))
+            continue;
+    }
+private:
+    Display *m_display;
+    long m_event_mask;
+};
+}
 
 void FbWinFrame::updateTransparent() {
-    redrawTitlebar();
+
+    m_label.clear();
+    m_label.updateTransparent();
+    m_titlebar.clear();
+    m_titlebar.updateTransparent();
     
+    for_each(m_labelbuttons.begin(),
+             m_labelbuttons.end(),
+             mem_fun(&FbTk::Button::clear));
+
     for_each(m_buttons_left.begin(),
              m_buttons_left.end(),
              mem_fun(&FbTk::Button::clear));
+
     for_each(m_buttons_right.begin(),
              m_buttons_right.end(),
              mem_fun(&FbTk::Button::clear));
+    // ignore exposure events, since we already cleared
+    // and redrawn the windows
+    IgnoreEvent ign(ExposureMask);
+
+    // base windows
+    ign(m_label.window());
+    ign(m_titlebar.window());
+
+    // labels
+    for_each(m_labelbuttons.begin(),
+             m_labelbuttons.end(),
+             FbTk::Compose(ign, mem_fun(&FbTk::Button::window)));
+    // win buttons
+    for_each(m_buttons_right.begin(),
+             m_buttons_right.end(),
+             FbTk::Compose(ign, mem_fun(&FbTk::Button::window)));
+    for_each(m_buttons_left.begin(),
+             m_buttons_left.end(),
+             FbTk::Compose(ign, mem_fun(&FbTk::Button::window)));
 
     m_grip_left.clear();
     m_grip_left.updateTransparent();
+    ign(m_grip_left.window());
     m_grip_right.clear();
     m_grip_right.updateTransparent();
+    ign(m_grip_right.window());
     m_handle.clear();
     m_handle.updateTransparent();
+    ign(m_handle.window());
 }
 
 
