@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.5 2002/11/13 16:43:52 fluxgen Exp $
+// $Id: FbRun.cc,v 1.6 2002/11/13 16:44:42 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -42,8 +42,7 @@ m_display(BaseDisplay::getXDisplay()),
 m_bevel(4),
 m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
 m_end(false),
-m_current_history_item(0),
-m_drawstart_x(0) {
+m_current_history_item(0) {
 	createWindow(x, y, width + m_bevel, m_font.height());
 }
 
