@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.26 2002/08/14 23:01:05 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.27 2002/08/17 22:13:00 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -68,7 +68,8 @@
 	main class for the window manager.
 	singleton type
 */
-class Fluxbox : public BaseDisplay, public TimeoutHandler, public FbTk::SignalHandler::EventHandler,
+class Fluxbox : public BaseDisplay, public TimeoutHandler, 
+	public FbTk::EventHandler<FbTk::SignalEvent>,
 	public FbAtoms {
 public:
 	Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
@@ -150,12 +151,18 @@ public:
 	void rereadMenu();
 	void checkMenu();
 	
-	/// handle any signal sent to the application
-	void handleSignal(int signum);
+	/// handle any system signal sent to the application
+	void handleEvent(FbTk::SignalEvent * const signum);
 
 	virtual void timeout();
+	
+	inline const Cursor &getSessionCursor() const { return cursor.session; }
+	inline const Cursor &getMoveCursor() const { return cursor.move; }
+	inline const Cursor &getLowerLeftAngleCursor() const { return cursor.ll_angle; }
+	inline const Cursor &getLowerRightAngleCursor() const { return cursor.lr_angle; }
 
-#ifdef		SLIT
+
+#ifdef	SLIT
 	Slit *searchSlit(Window);
 
 	void saveSlitSearch(Window, Slit *);
@@ -170,6 +177,10 @@ public:
 	typedef std::vector<Fluxbox::Titlebar> TitlebarList;
 		
 private:
+	struct cursor {
+		Cursor session, move, ll_angle, lr_angle;
+	} cursor;
+
 	void setupConfigFiles();
 	void handleButtonEvent(XButtonEvent &be);
 	void handleUnmapNotify(XUnmapEvent &ue);
@@ -252,7 +263,7 @@ private:
 	void real_rereadMenu();
 	void real_reconfigure();
 
-	virtual void process_event(XEvent *);
+	void handleEvent(XEvent *xe);
 	static Fluxbox *singleton;
 
 };
