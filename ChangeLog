@@ -1,5 +1,46 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/11:
+  * Updated Cthulhain style for toolbar.workspace.*  
+    and fixed a minor error in fluxbox.1.in
+   (Thanks php-coder (php-coder at ngs dot ru)
+  * Fixed bug: fbrun segfaults when history item is
+    bigger than entry box
+    patch: [ 1005182 ] fix for Bug with RequestID #877004
+    bug: [ 877004 ] fbrun segfaults when history item is bigger than entry box
+    (Thanks Mangala)
+    TextBox.cc
+*04/08/10:
+  * Fixed minor bug when generating buttons for titlebar,
+    it didn't call setupWindow unless we had a special option
+    like remember enabled
+    (Henrik)
+    Window.cc/hh
+  * Fixed so one can use to use this in the apps-file:
+    [Layer] {number | literal}
+    ex:
+	[Layer] {BOTTOM}
+    while literal is one of
+    DESKTOP BOTTOM NORMAL TOP DOCK ABOVEDOCK MENU
+    (Thanks Mathias Gumz)
+    Remember.cc
+  * Added some new options font loading:
+     *.font:  fontname-size:option,specoption1:key=val;key2=val2 etc
+     eg:
+      *.font: Verdana-10:bold,shadow:offsetx=2;offsety=4;color=green
+      *.font: Verdana-10:halo:color=blue
+    possible specoptions atm:
+    halo:
+      color=colorname
+    shadow:
+      color=colorname
+      offsetx=number  (negative allowed)
+      offsety=number  (negative allowed)
+    (Thanks Mathiaz Gumz and C. Mccreesh)
+    FbTk/Font.hh/cc
+  * Fixed utf-8 problems, needs testing.
+    (Patch from Sergey Kuleshov)
+    FbTk/*Font.cc/hh
 *04/08/05:
   * Enable dutch menu for flemish people as well. 
     (Thanks Mathieu De Zutter <mathieu at dezutter dot org>)
