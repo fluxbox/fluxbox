@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.30 2003/04/16 22:25:12 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.31 2003/04/23 13:57:26 fluxgen Exp $
 
 #
 # Portability notes:
@@ -44,8 +44,8 @@ WHOAMI=`whoami`
 # Functions
 display_usage() {
     cat <<EOF
-Usage: fluxbox-generate_menu [-kgrB] [-t terminal] [-w url] [-b browser]
-         [-m menu-title] [-p /path] [-n /path] [-q /path] [-o /path] [-u /path]
+Usage: fluxbox-generate_menu [-kgrBh] [-t terminal] [-w url] [-b browser]
+         [-m menu-title] [-o /path] [-u /path] [-p /path] [-n /path] [-q /path]
 EOF
 }
 
@@ -60,11 +60,11 @@ Options:
     -B  enable backgroundmenu
     -r  Don't remove empty menu-entries; for templates.
 
+    -t  Favourite terminal
+    -w  Homepage for console-browsers. Default is fluxbox.org.
+    -b  Favourite browser
     -m  Menu-title; default is "Fluxbox"
     -o  Outputfile; default is ~/.fluxbox/menu
-    -t  Favourite terminal
-    -b  Favourite browser
-    -w  Homepage for console-browsers. Default is fluxbox.org.
     -u  user sub-menu; default is ~/.fluxbox/usermenu
 
     -h  Display this help
@@ -549,7 +549,7 @@ EOF
     fi
 fi
 # Get options.
-while getopts ":Bkhragb:t:p:w:u:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
+while getopts ":Bkhragb:t:p:w:u:n:q:o:m:-:" COMMAND_LINE_ARGUMENT ; do
    case "${COMMAND_LINE_ARGUMENT}" in
        B) BACKGROUNDMENUITEM=yes ;;
        k) KDEMENU=yes ;;
@@ -566,7 +566,13 @@ while getopts ":Bkhragb:t:p:w:u:n:q:o:m:" COMMAND_LINE_ARGUMENT ; do
        r) REMOVE=no ;;
        h) display_help ; exit 0 ;;
        a) display_authors ; exit 0 ;;
-       *) display_usage ; exit 1 ;;
+       -) echo "fluxbox-generate_menu doesn't recognize -- gnu-longopts."
+          echo 'Use fluxbox-generate_menu -h for a long help message.'
+          display_usage
+          exit 1 ;;
+       *) echo 'Use fluxbox-generate_menu -h for a long help message.'
+          display_usage
+          exit 1 ;;
    esac
 done
 # Check defaults
@@ -768,7 +774,15 @@ append_submenu "${OFFICEMENU}"
     find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
     find_it ooffice append "[exec] (Open Office) {ooffice}"
+    find_it oocalc append "[exec] (OO Calc) {oocalc}"
+    find_it oowriter append "[exec] (OO Writer) {oowriter}"
+    find_it ooimpress append "[exec] (OO Impress) {ooimpress}"
+    find_it oodraw append "[exec] (OO Draw) {oodraw}"
+    find_it oomath append "[exec] (OO Math) {oomath}"
+    find_it oopadmin append "[exec] (OO Printer Administration) {oopadmin}"
+    find_it mrproject append "[exec] (Mr.Project) {mrproject}"
     find_it soffice append "[exec] (Star Office) {soffice}"
+
     normal_find abiword kword wordperfect katoob acroread xpdf
 append_menu_end
 
