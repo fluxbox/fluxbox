@@ -19,16 +19,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.29 2004/08/31 15:26:39 rathnor Exp $
+// $Id: Theme.cc,v 1.30 2004/10/21 16:45:30 akir Exp $
 
 #include "Theme.hh"
 
 #include "XrmDatabaseHelper.hh"
 #include "App.hh"
 #include "StringUtil.hh"
-#include "ThemeItems.hh"
 #include "Directory.hh"
 #include "I18n.hh"
+#include "Image.hh"
 
 #ifdef HAVE_CSTDIO
   #include <cstdio>
