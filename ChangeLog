@@ -3,6 +3,10 @@ Changes for 0.9.6:
 *03/09/21:
   * Fix disappearing close button (Simon)
     WinClient.hh/cc
+*03/09/20:
+  * Add nls/pl_PL (Thanks Offtza).
+  * Add nls/translators.txt saying that offtza contributed the pl_PL.
+  * Fixed WorkspaceCmd.cc ArrangeWindows for greater odd numbers (5,7,..).
 *03/09/19:
   * fbsetbg update (Thanks Han)
     - fixes fbsetbg -l after a changing the wallpapersetter.
@@ -159,7 +163,7 @@ Changes for 0.9.5:
    * Changed FbRun to use FbPixmap and GContext (Henrik)
      FbRun.hh/cc
    * Added FbTk::GContext a wrapper for X GC (Henrik)
-   * Changed FbRun to use FbTk::TextBox
+red   * Changed FbRun to use FbTk::TextBox
      FbRun.hh/cc
    * Added a workspace name setting tool (Henrik)
      new action name: SetWorkspaceName
