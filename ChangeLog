@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/24:
+  * Fix crash when closing active window while cycling focus (Simon)
+    Screen.cc
   * Fix updates to mwm_hints, and make configure request
     move and resize atomic (Simon)
     - fixes mplayer fullscreen window being moveable
