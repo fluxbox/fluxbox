@@ -392,9 +392,6 @@ the new menu's title is the same as the item label.
 An
 .B [end]
 tag is required to end the submenu.
-.IP
-If you create a submenu labelled 'Startup', applications located in this
-submenu will be launched on fluxbox startup.
 .TP
 .B [reconfig] (label)
 When selected, this item rereads the current style and menu files and
@@ -446,12 +443,6 @@ Here is a short example of a menu file:
     [exec] (mail) {mozilla -mail}
     [exec] (edit) {mozilla -edit}
     [exec] (compose) {mozilla -compose}
-  [end]
-  [submenu] (Startup)
-    [exec] (gkrellm) {gkrellm -w}
-    [exec] (xmms) {xmms -p}
-    [exec] (galeon) {galeon -s}
-    [exec] (kdeinit) {kdeinit}
   [end]
   [submenu] (Window Manager)
     [exec] (Edit Menus) {nedit ~/.fluxbox/menu}
