@@ -7,7 +7,7 @@ COMPILEFILE=$(CXX) -c $(CXXFLAGS)
 FONT_OBJ = ../FbTk/libFbTk.a
 COMPILE = ${CXX} ${CXXFLAGS} ${XLIBS}
 
-all: testFont testTexture
+all: testFont testTexture movetest
 
 .cc.o:
 	$(CXX) -c $(CXXFLAGS) $<
@@ -24,8 +24,8 @@ testKeys:  testKeys.o
 testResource: Resourcetest.o Resource.o
 	${CXX} ${LIBS} ${XLIBS} Resourcetest.o Resource.o -o testResource
 
-testSignal: signaltest.cc 
-	${CXX} ${LIBS} signaltest.cc -o testSignal
+signaltest:
+	${COMPILE} ../FbTk/SignalHandler.o signaltest.cc -o signaltest
 
 testFont: testFont.cc ${FONT_OBJ}
 	${CXX} testFont.cc -o testFont ${CXXFLAGS} ${XLIBS} 
@@ -42,7 +42,17 @@ testScale: scaleTest.cc
 testTexture: texturetest.cc
 	${COMPILE} texturetest.cc ../FbTk/libFbTk.a -lXpm -o testTexture
 
+Parser.o: ../Parser.hh ../Parser.cc
+	${COMPILE} ${CXXFLAGS} -c ../Parser.cc
 
+FbMenuParser.o: ../FbMenuParser.hh ../FbMenuParser.cc ../Parser.hh
+	${COMPILE} ${CXXFLAGS} -c ../FbMenuParser.cc
+
+parsertest: parsertest.cc  ../Parser.hh FbMenuParser.o Parser.o
+	${COMPILE} parsertest.cc FbMenuParser.o Parser.o ../FbTk/StringUtil.o -o parsertest
+
+movetest: movetest.cc
+	${COMPILE} movetest.cc ../FbTk/libFbTk.a -lXpm -o movetest
 run: testLayers testResource testKeys testStringUtil testFont
 	./testLayers
 	./testKeys
