@@ -13,20 +13,19 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
-#ifndef   _GNU_SOURCE
-#define   _GNU_SOURCE
+//use GNU extensions
+#ifndef	 _GNU_SOURCE
+#define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef    HAVE_CONFIG_H
-#  include "../config.h"
+#ifdef		HAVE_CONFIG_H
+#	include "../config.h"
 #endif // HAVE_CONFIG_H
 
 #include "i18n.hh"
@@ -36,262 +35,262 @@
 #include "Windowmenu.hh"
 #include "Workspace.hh"
 
-#ifdef    STDC_HEADERS
-#  include <string.h>
+#ifdef		STDC_HEADERS
+#	include <string.h>
 #endif // STDC_HEADERS
 
 
-Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
-  window = win;
-  screen = window->getScreen();
+Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()),
+window(win),
+screen(window->getScreen()){
 
-  setTitleVisibility(False);
-  setMovable(False);
-  setInternalMenu();
+	setTitleVisibility(False);
+	setMovable(False);
+	setInternalMenu();
 	
 	I18n *i18n = I18n::instance();
 	
-  sendToMenu = new SendtoWorkspacemenu(this);
-  sendGroupToMenu = new SendGroupToWorkspacemenu(this);
+	sendToMenu = new SendtoWorkspacemenu(this);
+	sendGroupToMenu = new SendGroupToWorkspacemenu(this);
 	
 	insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuSendTo,
+#ifdef		NLS
+				WindowmenuSet, WindowmenuSendTo,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Send To ..."),
+				"Send To ..."),
 	 sendToMenu);
 	 
 	insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuSendGroupTo,
+#ifdef		NLS
+				WindowmenuSet, WindowmenuSendGroupTo,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Send Group To ..."),
-	 sendGroupToMenu);
+				"Send Group To ..."),
+	sendGroupToMenu);
 	 
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuShade,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuShade,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Shade"),
+				"Shade"),
 	 BScreen::WINDOWSHADE);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuIconify,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuIconify,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Iconify"),
+				"Iconify"),
 	 BScreen::WINDOWICONIFY);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuMaximize,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuMaximize,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Maximize"),
+				"Maximize"),
 	 BScreen::WINDOWMAXIMIZE);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuRaise,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuRaise,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Raise"),
+				"Raise"),
 	 BScreen::WINDOWRAISE);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuLower,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuLower,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Lower"),
+				"Lower"),
 	 BScreen::WINDOWLOWER);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuStick,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuStick,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Stick"),
+				"Stick"),
 	 BScreen::WINDOWSTICK);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuKillClient,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuKillClient,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Kill Client"),
+				"Kill Client"),
 	 BScreen::WINDOWKILL);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuClose,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuClose,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Close"),
+				"Close"),
 	 BScreen::WINDOWCLOSE);
-  insert(i18n->getMessage(
-#ifdef    NLS
-			  WindowmenuSet, WindowmenuTab,
+	insert(i18n->getMessage(
+#ifdef		NLS
+				WindowmenuSet, WindowmenuTab,
 #else // !NLS
-			  0, 0,
+				0, 0,
 #endif // NLS
-			  "Tab"),
+				"Tab"),
 	 BScreen::WINDOWTAB);
 
-  update();
+	update();
 
-  setItemEnabled(2, window->hasTitlebar());
-  setItemEnabled(3, window->isIconifiable());
-  setItemEnabled(4, window->isMaximizable());
-  setItemEnabled(9, window->isClosable());
-  setItemEnabled(10, window->hasTab());
+	setItemEnabled(2, window->hasTitlebar());
+	setItemEnabled(3, window->isIconifiable());
+	setItemEnabled(4, window->isMaximizable());
+	setItemEnabled(9, window->isClosable());
+	setItemEnabled(10, window->hasTab());
 
 }
 
 
 Windowmenu::~Windowmenu(void) {
-  delete sendToMenu;
+	delete sendToMenu;
 	delete sendGroupToMenu;
 }
 
 
 void Windowmenu::show(void) {
-  if (isItemEnabled(2)) setItemSelected(2, window->isShaded());
-  if (isItemEnabled(4)) setItemSelected(4, window->isMaximized());
-  if (isItemEnabled(7)) setItemSelected(7, window->isStuck());
+	if (isItemEnabled(2)) setItemSelected(2, window->isShaded());
+	if (isItemEnabled(4)) setItemSelected(4, window->isMaximized());
+	if (isItemEnabled(7)) setItemSelected(7, window->isStuck());
 
-  Basemenu::show();
+	Basemenu::show();
 }
 
 
 void Windowmenu::itemSelected(int button, int index) {
-  BasemenuItem *item = find(index);
+	BasemenuItem *item = find(index);
 
-  switch (item->function()) {
-  case BScreen::WINDOWSHADE:
-    hide();
+	switch (item->function()) {
+	case BScreen::WINDOWSHADE:
+		hide();
 
-    window->shade();
+		window->shade();
 		if (window->hasTab())
 			window->getTab()->shade();
-    break;
+		break;
 
-  case BScreen::WINDOWICONIFY:
-    hide();
-    window->iconify();
-    break;
+	case BScreen::WINDOWICONIFY:
+		hide();
+		window->iconify();
+		break;
 
-  case BScreen::WINDOWMAXIMIZE:
-    hide();
-    window->maximize((unsigned int) button);
-    break;
+	case BScreen::WINDOWMAXIMIZE:
+		hide();
+		window->maximize((unsigned int) button);
+		break;
 
-  case BScreen::WINDOWCLOSE:
-    hide();
-    window->close();
-    break;
+	case BScreen::WINDOWCLOSE:
+		hide();
+		window->close();
+		break;
 
-  case BScreen::WINDOWRAISE:
-    hide();
+	case BScreen::WINDOWRAISE:
+		hide();
 		if (window->hasTab())
 			window->getTab()->raise(); //raise tabs
-    screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
-    break;
+		screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
+		break;
 
-  case BScreen::WINDOWLOWER:
-    hide();
-   	screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
+	case BScreen::WINDOWLOWER:
+		hide();
+	 	screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
 		if (window->hasTab())
 			window->getTab()->lower(); //lower tabs AND all it's windows
-    break;
+		break;
 
-  case BScreen::WINDOWSTICK:
-    hide();
-    window->stick();
-    break;
+	case BScreen::WINDOWSTICK:
+		hide();
+		window->stick();
+		break;
 
-  case BScreen::WINDOWKILL:
-    hide();
-    XKillClient(screen->getBaseDisplay()->getXDisplay(),
-                window->getClientWindow());
-    break;
+	case BScreen::WINDOWKILL:
+		hide();
+		XKillClient(screen->getBaseDisplay()->getXDisplay(),
+								window->getClientWindow());
+		break;
 	case BScreen::WINDOWTAB:
 		hide();
 		window->setTab(!window->hasTab());
 		break;
-  }
+	}
 }
 
 
 void Windowmenu::reconfigure(void) {
-  setItemEnabled(1, window->hasTitlebar());
-  setItemEnabled(2, window->isIconifiable());
-  setItemEnabled(3, window->isMaximizable());
-  setItemEnabled(8, window->isClosable());
+	setItemEnabled(1, window->hasTitlebar());
+	setItemEnabled(2, window->isIconifiable());
+	setItemEnabled(3, window->isMaximizable());
+	setItemEnabled(8, window->isClosable());
 
-  sendToMenu->reconfigure();
+	sendToMenu->reconfigure();
 	sendGroupToMenu->reconfigure();
 	
-  Basemenu::reconfigure();
+	Basemenu::reconfigure();
 }
 
 
 Windowmenu::SendtoWorkspacemenu::SendtoWorkspacemenu(Windowmenu *w)
-  : Basemenu(w->screen)
+	: Basemenu(w->screen)
 {
-  windowmenu = w;
+	windowmenu = w;
 
-  setTitleVisibility(False);
-  setMovable(False);
-  setInternalMenu();
-  update();
+	setTitleVisibility(False);
+	setMovable(False);
+	setInternalMenu();
+	update();
 }
 
 
 void Windowmenu::SendtoWorkspacemenu::itemSelected(int button, int index) {
-  if (button > 2) return;
+	if (button > 2) return;
 
-  if (index <= windowmenu->screen->getCount()) {
-    if (index == windowmenu->screen->getCurrentWorkspaceID()) return;
-    if (windowmenu->window->isStuck()) windowmenu->window->stick();
+	if (index <= windowmenu->screen->getCount()) {
+		if (index == windowmenu->screen->getCurrentWorkspaceID()) return;
+		if (windowmenu->window->isStuck()) windowmenu->window->stick();
 
-    if (button == 1) windowmenu->window->withdraw();
-    windowmenu->screen->reassociateWindow(windowmenu->window, index, True);
+		if (button == 1) windowmenu->window->withdraw();
+		windowmenu->screen->reassociateWindow(windowmenu->window, index, True);
 		if (windowmenu->window->getTab()) {
 			windowmenu->window->getTab()->disconnect();
 			windowmenu->window->getTab()->setPosition();
 		}
-    if (button == 2) windowmenu->screen->changeWorkspaceID(index);
-  }
-  hide();
+		if (button == 2) windowmenu->screen->changeWorkspaceID(index);
+	}
+	hide();
 }
 
 
 void Windowmenu::SendtoWorkspacemenu::update(void) {
-  int i, r = getCount();
+	int i, r = getCount();
 
-  if (getCount() != 0)
-    for (i = 0; i < r; ++i)
-      remove(0);
+	if (getCount() != 0) {
+		for (i = 0; i < r; ++i)
+			remove(0);
+	}
+	for (i = 0; i < windowmenu->screen->getCount(); ++i)
+		insert(windowmenu->screen->getWorkspace(i)->getName());
 
-  for (i = 0; i < windowmenu->screen->getCount(); ++i)
-    insert(windowmenu->screen->getWorkspace(i)->getName());
-
-  Basemenu::update();
+	Basemenu::update();
 }
 
 
 void Windowmenu::SendtoWorkspacemenu::show(void) {
-  update();
+	update();
 
-  Basemenu::show();
+	Basemenu::show();
 }
 
 void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, int index) {
@@ -307,13 +306,13 @@ void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, int index) {
 		if (button == 1) {
 			if (getWindowMenu()->window->hasTab()) {
 				for (Tab *first = Tab::getFirst(getWindowMenu()->window->getTab());
-							first!=0; first=first->next()) {
-						first->withdraw();
-						first->getWindow()->withdraw();
-						getWindowMenu()->screen->reassociateWindow(first->getWindow(), index, True);
+						first!=0; first=first->next()) {
+					first->withdraw();
+					first->getWindow()->withdraw();
+					getWindowMenu()->screen->reassociateWindow(first->getWindow(), index, True);
 					
 				}
-			} else  {
+			} else	{
 				getWindowMenu()->window->withdraw();
 				getWindowMenu()->screen->reassociateWindow(getWindowMenu()->window, index, True);
 			}
