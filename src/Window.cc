@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.187 2003/05/26 04:24:24 rathnor Exp $
+// $Id: Window.cc,v 1.188 2003/06/06 14:45:13 rathnor Exp $
 
 #include "Window.hh"
 
@@ -298,6 +298,9 @@ FluxboxWindow::~FluxboxWindow() {
         XUngrabPointer(display, CurrentTime);
     }
 
+    // no longer a valid window to do stuff with
+    Fluxbox::instance()->removeWindowSearch(frame().window().window());
+
     Client2ButtonMap::iterator it = m_labelbuttons.begin();
     Client2ButtonMap::iterator it_end = m_labelbuttons.end();
     for (; it != it_end; ++it) {
@@ -321,7 +324,7 @@ FluxboxWindow::~FluxboxWindow() {
             detachClient(*m_clientlist.back());
         }
     }
-    Fluxbox::instance()->removeWindowSearch(frame().window().window());
+
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
 #endif // DEBUG
