@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: testFont.cc,v 1.2 2002/10/19 10:04:20 fluxgen Exp $
+// $Id: testFont.cc,v 1.3 2002/10/19 14:13:05 fluxgen Exp $
 
 #include "Font.hh"
 #include "BaseDisplay.hh"
@@ -27,7 +27,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
-
+#include <X11/Xft/Xft.h>
 #include <string>
 #include <iostream>
 using namespace std;
@@ -72,11 +72,22 @@ public:
 		}
 	}
 	void redraw() {
+		size_t text_w = m_font.textWidth(m_text.c_str(), m_text.size());
+		size_t text_h = m_font.height();
+		int x = 640/2 - text_w/2;
+		int y = 480/2 - text_h/2;
 		XClearWindow(getXDisplay(), m_win);
 		GC wingc = DefaultGC(getXDisplay(), 0);
+
+		XDrawLine(getXDisplay(), m_win, wingc,
+			x, y + m_font.descent(), x + text_w, y + m_font.descent());	
+		XSetForeground(getXDisplay(), wingc, 0xFF00FF); // don't care what color it is
+		XDrawLine(getXDisplay(), m_win, wingc,
+			x, y - text_h , x + text_w, y - text_h );		
+		XSetForeground(getXDisplay(), wingc, 0);
 		m_font.drawText(m_win, 0, wingc,
-		m_text.c_str(), m_text.size(),
-		640/2 - m_font.textWidth(m_text.c_str(), m_text.size())/2, 480/2);
+			m_text.c_str(), m_text.size(),
+		x, y);
 
 	}
 	Window win() const { return m_win; }
@@ -92,7 +103,7 @@ int main(int argc, char **argv) {
 	bool antialias = false;
 	string fontname("fixed");
 	string displayname("");
-	string text("testTEST0123456789,-+.;:\\!{}[]()");
+	string text("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,.-_¯åäöÅÄÖ^~+=`\"!#¤%&/()=¡@£$½¥{[]}¶½§±");
 	for (int a=1; a<argc; ++a) {
 		if (strcmp("-font", argv[a])==0 && a + 1 < argc) {
 			fontname = argv[++a];
@@ -104,7 +115,7 @@ int main(int argc, char **argv) {
 			text = argv[++a];
 		}
 	}
-	
+
 	App app(displayname.c_str());
 	app.font().setAntialias(antialias);
 	if (!app.font().load(fontname.c_str()))
