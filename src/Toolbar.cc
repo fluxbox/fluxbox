@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.66 2003/03/23 01:33:31 rathnor Exp $
+// $Id: Toolbar.cc,v 1.67 2003/03/23 04:18:59 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -94,12 +94,12 @@ void setupMenus(Toolbar &tbar) {
     
     RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
     menu.insert(i18n->getMessage(
-                                 ToolbarSet, ToolbarEditWkspcName,
+                                 FBNLS::ToolbarSet, FBNLS::ToolbarEditWkspcName,
                                  "Edit current workspace name"),
                 start_edit);
 
     menu.setLabel(i18n->getMessage(
-                                   ToolbarSet, ToolbarToolbarTitle,
+                                   FBNLS::ToolbarSet, FBNLS::ToolbarToolbarTitle,
                                    "Toolbar"));
     menu.setInternalMenu();
 
@@ -406,12 +406,13 @@ void Toolbar::reconfigure() {
         frame.clock_w = 0;
 #else // !HAVE_STRFTIME
 	
+    I18n *i18n = I18n::instance();
     frame.clock_w = m_theme.font().textWidth(
                                              i18n->getMessage(
-                                                              ToolbarSet, ToolbarNoStrftimeLength,
+                                                              FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeLength,
                                                               "00:00000"),
                                              strlen(i18n->getMessage(
-                                                                     ToolbarSet, ToolbarNoStrftimeLength,
+                                                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeLength,
                                                                      "00:00000"))) + (frame.bevel_w * 4);
 	
 #endif // HAVE_STRFTIME
@@ -660,20 +661,21 @@ void Toolbar::checkClock(bool redraw, bool date) {
     if (! strftime(t, 1024, screen().getStrftimeFormat(), tt))
         return;
 #else // !HAVE_STRFTIME
+    I18n *i18n = I18n::instance();
     char t[9];
     if (date) {
         // format the date... with special consideration for y2k ;)
         if (screen().getDateFormat() == Fluxbox::B_EUROPEANDATE) {
             sprintf(t,
                     i18n->getMessage(
-                                     ToolbarSet, ToolbarNoStrftimeDateFormatEu,
+                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeDateFormatEu,
                                      "%02d.%02d.%02d"),
                     tt->tm_mday, tt->tm_mon + 1,
                     (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
         } else {
             sprintf(t,
                     i18n->getMessage(
-                                     ToolbarSet, ToolbarNoStrftimeDateFormat,
+                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeDateFormat,
                                      "%02d/%02d/%02d"),
                     tt->tm_mon + 1, tt->tm_mday,
                     (tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
@@ -682,22 +684,22 @@ void Toolbar::checkClock(bool redraw, bool date) {
         if (screen().isClock24Hour()) {
             sprintf(t,
                     i18n->getMessage(
-                                     ToolbarSet, ToolbarNoStrftimeTimeFormat24,
+                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormat24,
                                      "	%02d:%02d "),
                     frame.hour, frame.minute);
         } else {
             sprintf(t,
                     i18n->getMessage(
-                                     ToolbarSet, ToolbarNoStrftimeTimeFormat12,
+                                     FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormat12,
                                      "%02d:%02d %sm"),
                     ((frame.hour > 12) ? frame.hour - 12 :
                      ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
                     ((frame.hour >= 12) ?
                      i18n->getMessage(
-                                      ToolbarSet, ToolbarNoStrftimeTimeFormatP,
+                                      FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormatP,
                                       "p") :
                      i18n->getMessage(
-                                      ToolbarSet, ToolbarNoStrftimeTimeFormatA,
+                                      FBNLS::ToolbarSet, FBNLS::ToolbarNoStrftimeTimeFormatA,
                                       "a")));
         }
     }
@@ -900,7 +902,7 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
             screen().raiseFocus();
 #ifndef	 HAVE_STRFTIME
         else if (re.window == frame.clock) {
-            XClearWindow(display, frame.clock);
+            frame.clock.clear();
             checkClock(true);
         }
 #endif // HAVE_STRFTIME
