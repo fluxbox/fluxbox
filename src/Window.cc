@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.145 2003/04/25 09:07:09 rathnor Exp $
+// $Id: Window.cc,v 1.146 2003/04/25 11:11:27 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -37,6 +37,8 @@
 #include "TextButton.hh"
 #include "EventManager.hh"
 #include "FbAtoms.hh"
+#include "RootTheme.hh"
+#include "Workspace.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -773,19 +775,19 @@ void FluxboxWindow::reconfigure() {
 
 void FluxboxWindow::positionWindows() {
 
-    m_frame.window().setBorderWidth(screen.getBorderWidth());
+    m_frame.window().setBorderWidth(screen.rootTheme().borderWidth());
     m_frame.clientArea().setBorderWidth(0); // client area bordered by other things
 
-    m_frame.titlebar().setBorderWidth(screen.getBorderWidth());
+    m_frame.titlebar().setBorderWidth(screen.rootTheme().borderWidth());
     if (decorations.titlebar) {
         m_frame.showTitlebar();
     } else {
         m_frame.hideTitlebar();
     }
     
-    m_frame.handle().setBorderWidth(screen.getBorderWidth());
-    m_frame.gripLeft().setBorderWidth(screen.getBorderWidth());
-    m_frame.gripRight().setBorderWidth(screen.getBorderWidth());
+    m_frame.handle().setBorderWidth(screen.rootTheme().borderWidth());
+    m_frame.gripLeft().setBorderWidth(screen.rootTheme().borderWidth());
+    m_frame.gripRight().setBorderWidth(screen.rootTheme().borderWidth());
 
     if (decorations.handle)
         m_frame.showHandle();
@@ -1096,18 +1098,18 @@ bool FluxboxWindow::setInputFocus() {
     //TODO hint skip focus
     if (((signed) (m_frame.x() + m_frame.width())) < 0) {
         if (((signed) (m_frame.y() + m_frame.height())) < 0) {
-            moveResize(screen.getBorderWidth(), screen.getBorderWidth(),
+            moveResize(screen.rootTheme().borderWidth(), screen.rootTheme().borderWidth(),
                        m_frame.width(), m_frame.height());
         } else if (m_frame.y() > (signed) screen.getHeight()) {
-            moveResize(screen.getBorderWidth(), screen.getHeight() - m_frame.height(),
+            moveResize(screen.rootTheme().borderWidth(), screen.getHeight() - m_frame.height(),
                        m_frame.width(), m_frame.height());
         } else {
-            moveResize(screen.getBorderWidth(), m_frame.y() + screen.getBorderWidth(),
+            moveResize(screen.rootTheme().borderWidth(), m_frame.y() + screen.rootTheme().borderWidth(),
                        m_frame.width(), m_frame.height());
         }
     } else if (m_frame.x() > (signed) screen.getWidth()) {
         if (((signed) (m_frame.y() + m_frame.height())) < 0) {
-            moveResize(screen.getWidth() - m_frame.width(), screen.getBorderWidth(),
+            moveResize(screen.getWidth() - m_frame.width(), screen.rootTheme().borderWidth(),
                        m_frame.width(), m_frame.height());
         } else if (m_frame.y() > (signed) screen.getHeight()) {
             moveResize(screen.getWidth() - m_frame.width(),
@@ -1115,7 +1117,7 @@ bool FluxboxWindow::setInputFocus() {
                        m_frame.width(), m_frame.height());
         } else {
             moveResize(screen.getWidth() - m_frame.width(),
-                       m_frame.y() + screen.getBorderWidth(), 
+                       m_frame.y() + screen.rootTheme().borderWidth(), 
                        m_frame.width(), m_frame.height());
         }
     }
@@ -2205,8 +2207,8 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
                 raise();
             XAllowEvents(display, ReplayPointer, be.time);			
         } else {            
-            button_grab_x = be.x_root - m_frame.x() - screen.getBorderWidth();
-            button_grab_y = be.y_root - m_frame.y() - screen.getBorderWidth();      
+            button_grab_x = be.x_root - m_frame.x() - screen.rootTheme().borderWidth();
+            button_grab_y = be.y_root - m_frame.y() - screen.rootTheme().borderWidth();      
         }
         
         if (m_windowmenu.isVisible())
@@ -2265,8 +2267,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             int dx = me.x_root - button_grab_x, 
                 dy = me.y_root - button_grab_y;
 
-            dx -= screen.getBorderWidth();
-            dy -= screen.getBorderWidth();
+            dx -= screen.rootTheme().borderWidth();
+            dy -= screen.rootTheme().borderWidth();
 
             // Warp to next or previous workspace?, must have moved sideways some
             int moved_x = me.x_root - last_resize_x;
@@ -2307,12 +2309,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             doSnapping(dx, dy);
             
             if (! screen.doOpaqueMove()) {
-                XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+                XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                                last_move_x, last_move_y, 
                                m_frame.width() + 2*frame().window().borderWidth()-1,
                                m_frame.height() + 2*frame().window().borderWidth()-1);
 
-                XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+                XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                                dx, dy, 
                                m_frame.width() + 2*frame().window().borderWidth()-1,
                                m_frame.height() + 2*frame().window().borderWidth()-1);
@@ -2336,7 +2338,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             startResizing(me.window, me.x, me.y, left); 
         } else if (resizing) {
             // draw over old rect
-            XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+            XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                            last_resize_x, last_resize_y,
                            last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                            last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2364,7 +2366,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             }
 
             // draw resize rectangle
-            XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+            XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                            last_resize_x, last_resize_y,
                            last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
                            last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2388,7 +2390,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             last_move_y = me.y_root - 1;
         
             XDrawRectangle(display, getScreen().getRootWindow(), 
-                           getScreen().getOpGC(),
+                           getScreen().rootTheme().opGC(),
                            last_move_x, last_move_y,
                            m_labelbuttons[client]->width(), 
                            m_labelbuttons[client]->height());
@@ -2397,8 +2399,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             // so we update drag'n'drop-rectangle
             int dx = me.x_root - 1, dy = me.y_root - 1;
 
-            dx -= getScreen().getBorderWidth();
-            dy -= getScreen().getBorderWidth();
+            dx -= getScreen().rootTheme().borderWidth();
+            dy -= getScreen().rootTheme().borderWidth();
 
             if (getScreen().getEdgeSnapThreshold()) {
                 int drx = getScreen().getWidth() - (dx + 1);
@@ -2422,7 +2424,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 		
             //erase rectangle
             XDrawRectangle(display, getScreen().getRootWindow(),
-                           getScreen().getOpGC(),
+                           getScreen().rootTheme().opGC(),
                            last_move_x, last_move_y, 
                            m_labelbuttons[client]->width(), 
                            m_labelbuttons[client]->height());
@@ -2432,7 +2434,7 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             last_move_x = dx;
             last_move_y = dy;			
             XDrawRectangle(display, getScreen().getRootWindow(), 
-                           getScreen().getOpGC(),
+                           getScreen().rootTheme().opGC(),
                            last_move_x, last_move_y,
                            m_labelbuttons[client]->width(), 
                            m_labelbuttons[client]->height());
@@ -2576,7 +2578,7 @@ void FluxboxWindow::startMoving(Window win) {
     last_move_y = frame().y();
     if (! screen.doOpaqueMove()) {
         fluxbox->grab();
-        XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+        XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                        frame().x(), frame().y(),
                        frame().width() + 2*frame().window().borderWidth()-1, 
                        frame().height() + 2*frame().window().borderWidth()-1);
@@ -2592,7 +2594,7 @@ void FluxboxWindow::stopMoving() {
 
    
     if (! screen.doOpaqueMove()) {
-        XDrawRectangle(FbTk::App::instance()->display(), screen.getRootWindow(), screen.getOpGC(),
+        XDrawRectangle(FbTk::App::instance()->display(), screen.getRootWindow(), screen.rootTheme().opGC(),
                        last_move_x, last_move_y, 
                        frame().width() + 2*frame().window().borderWidth()-1,
                        frame().height() + 2*frame().window().borderWidth()-1);
@@ -2616,7 +2618,8 @@ void FluxboxWindow::pauseMoving() {
         return;
     }
 
-    XDrawRectangle(display, getScreen().getRootWindow(), getScreen().getOpGC(),
+    XDrawRectangle(display, getScreen().getRootWindow(), 
+                   getScreen().rootTheme().opGC(),
                    last_move_x, last_move_y, 
                    m_frame.width() + 2*frame().window().borderWidth()-1,
                    m_frame.height() + 2*frame().window().borderWidth()-1);
@@ -2633,7 +2636,7 @@ void FluxboxWindow::resumeMoving() {
         m_frame.show();
     }
     XSync(display,false);
-    XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+    XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                    last_move_x, last_move_y, 
                    m_frame.width() + 2*frame().window().borderWidth()-1,
                    m_frame.height() + 2*frame().window().borderWidth()-1);
@@ -2779,7 +2782,7 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
     if (screen.doShowWindowPos())
         screen.showGeometry(gx, gy);
 
-    XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+    XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                    last_resize_x, last_resize_y,
                    last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                    last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2788,7 +2791,7 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
 void FluxboxWindow::stopResizing(Window win) {
     resizing = false;
 	
-    XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
+    XDrawRectangle(display, screen.getRootWindow(), screen.rootTheme().opGC(),
                    last_resize_x, last_resize_y,
                    last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                    last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2816,7 +2819,7 @@ void FluxboxWindow::attachTo(int x, int y) {
 
 
     XDrawRectangle(display, getScreen().getRootWindow(),
-                   getScreen().getOpGC(),
+                   getScreen().rootTheme().opGC(),
                    last_move_x, last_move_y, 
                    m_labelbuttons[m_attaching_tab]->width(), 
                    m_labelbuttons[m_attaching_tab]->height());
@@ -3024,9 +3027,11 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
 }
 
 void FluxboxWindow::upsize() {
-    m_frame.setBevel(screen.getBevelWidth());
-    m_frame.handle().resize(m_frame.handle().width(), screen.getHandleWidth());
-    m_frame.gripLeft().resize(m_frame.buttonHeight(), screen.getHandleWidth());
+    m_frame.setBevel(screen.rootTheme().bevelWidth());
+    m_frame.handle().resize(m_frame.handle().width(), 
+                            screen.rootTheme().handleWidth());
+    m_frame.gripLeft().resize(m_frame.buttonHeight(), 
+                              screen.rootTheme().handleWidth());
     m_frame.gripRight().resize(m_frame.gripLeft().width(), 
                                m_frame.gripLeft().height());
 }
