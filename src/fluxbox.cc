@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.208 2003/12/19 00:35:08 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.209 2003/12/19 03:58:36 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -575,7 +575,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     // For dumping theme items
     // FbTk::ThemeManager::instance().listItems();
     //
-    m_resourcemanager.dump();
+    //    m_resourcemanager.dump();
 }
 
 
@@ -751,6 +751,19 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
 
 
+    // update key/mouse screen before we enter other eventhandlers
+    if (e->type == KeyPress ||
+        e->type == KeyRelease) {
+        m_keyscreen = searchScreen(e->xkey.root);
+    } else if (e->type == ButtonPress ||
+               e->type == ButtonRelease ||
+               e->type == MotionNotify ) {
+        m_mousescreen = searchScreen(e->xbutton.root);
+    } else if (e->type == EnterNotify ||
+               e->type == LeaveNotify) {
+        m_mousescreen = searchScreen(e->xcrossing.root);
+    }
+    
     // try FbTk::EventHandler first
     FbTk::EventManager::instance()->handleEvent(*e);
 
@@ -942,7 +955,6 @@ void Fluxbox::handleEvent(XEvent * const e) {
 }
 
 void Fluxbox::handleButtonEvent(XButtonEvent &be) {
-    m_mousescreen = searchScreen(be.root);
 
     switch (be.type) {
     case ButtonPress: {
@@ -1160,16 +1172,6 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
  Handles KeyRelease and KeyPress events
 */
 void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
-    m_keyscreen = searchScreen(ke.window);
-
-    m_mousescreen = keyScreen();
-    Window root, ignorew; 
-    int ignored;
-    if (!XQueryPointer(FbTk::App::instance()->display(),
-                       ke.window, &root, &ignorew, &ignored, &ignored, 
-                       &ignored, &ignored, (unsigned int *)&ignored))
-        // pointer on different screen to ke.window
-        m_mousescreen = searchScreen(root);
     
     if (keyScreen() == 0 || mouseScreen() == 0)
         return;
