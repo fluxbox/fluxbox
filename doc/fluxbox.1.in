@@ -42,7 +42,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH fluxbox 1 "September 26th, 2003" "0.9.6"
+.TH fluxbox 1 "January 5th, 2004" "0.9.7"
 .SH NAME
 fluxbox \- a window manager for X11
 .SH SYNOPSIS
@@ -148,7 +148,10 @@ The contents can be configured in fluxbox init-file in the entry
 .EX
 session.screen0.toolbar.tools: clock, iconbar, workspacename
 .EE
-
+or the toolbar can be turned off by
+.EX
+session.screen0.toolbar.visible: false
+.EE
 .\" A left click on the toolbar will bring it to the foreground, a
 .\" middle click will hide it behind other windows (if AlwaysOnTop is not set), and
 .\" the right button brings up a little menu.
@@ -194,10 +197,13 @@ as well as in the toolbar.
 (Un)Maximize window. Depending on toolbar and slit configuration maximize does
 cover slit and toolbar or not.
 .TP
-.B Maximize Vertical
+.B Button1
+(usually left button) Maximize Normal, i.e. Vertical and Horizontal
+.TP
+.B Button2
 (Un)Maximize window only vertically.
 .TP
-.B Maximize Horizontal
+.B Button3
 (Un)Maximize window only horizontal.
 .TP
 .B Raise
@@ -254,6 +260,12 @@ titlebar, you can press Alt + button 1 anywhere in the window and then
 drag it around.
 You can also use Alt + button 1 to raise a partially visible window.
 Finally, Alt + button 2 lowers a window, and Alt + button 3 resizes the window.
+.PP
+This can be disabled in the resource file
+.I ~/.fluxbox/init
+with 
+.TP
+session.useMod1: \fItrue\fR or \fIfalse\fR
 .SH MENU FILE
 A default menu file is installed in
 .IR @pkgdatadir@/menu .
@@ -276,6 +288,17 @@ Be sure that your menu is usable, then choose `Restart' from the default
 Fluxbox root menu. If only the contents of the menu file changed, only
 .I reload config
 is needed.
+.SS Menu behaviour
+The behaviour of the menu can be configured in the 
+.I ~/.fluxbox/init
+file, with the following entries:
+.TP
+session.screen0.menuMode:  can be either Click or Delay (default: Delay)
+.TP
+session.screen0.menuDelay:  in msec  (default: 0 )
+.TP
+session.screen0.menuDelayClose: in msec (default: 0 )
+.EE
 .SS Menu syntax
 The menu syntax is very simple and very effective.
 There are up to three fields in a menu line.
@@ -325,6 +348,9 @@ if so desired.
 .B [nop]
 does accept a label, but it is not required, and a blank item will be used
 if none is supplied.
+.TP
+.B [separator]
+will create a nice separator line.
 .TP
 .B [style] (label) {filename}
 This tells Fluxbox to insert an item that, when selected, reads style file
@@ -633,6 +659,7 @@ menu.frame.colorTo:	Color
 menu.frame.textColor:	Color
 menu.frame.disableColor:	Color
 menu.frame.font:	Font
+! Font can have a shadow. e.g. menu.frame.font: Verdana-8:shadow 
 menu.frame.justify:	\fIcenter\fR, \fIleft\fR, or \fIright\fR
 
 ! Bullets for submenu items
@@ -665,6 +692,10 @@ window.label.unfocus:	Texture or \fIParentRelative\fR
 window.label.unfocus.color:	Color
 window.label.unfocus.colorTo:	Color
 window.label.unfocus.textColor:	Color
+
+! window label for active tab if window is not focussed
+window.label.active:   Texture
+window.label.active.textColor:  Color
 
 ! Handlebar
 window.handle.focus:	Texture
@@ -836,14 +867,19 @@ PrevWindow \fIby-number\fR
 NextGroup \fIby-number\fR
 PrevGroup \fIby-number\fR
 ArrangeWindows
-ShowDesktop : Iconifies all windows.
+ShowDesktop - Iconifies all windows.
 RootMenu
 WorkspaceMenu
-SetWorkspaceName
+WorkspaceNameDialog - edit workspaces name dialog (old SetWorkspaceName)
+SetWorkspaceName \fIname\fR
 .EE
 .B special commands
 .EX
 MacroCmd
+ReloadStyle
+SetResourceValueCmd \fIresourcename\fR \fIresource value\fR
+BindKey \fIkey string : action\fR   - this will append key string and 
+    action to your keys file and bind the key
 .EE
 .\" --- groups ---
 .SH GROUPS FILE
@@ -1055,6 +1091,15 @@ or
 .IR False
 to enable or disable Fluxbox using the toolbar to display iconified windows.
 .TP
+.B session.screen0.iconbar.alignment:
+.IR LEFT, RELATIVE or RIGHT
+can be changed in the iconbar mode menu. If LEFT or RIGHT is specified the
+iconbar buttons have a fixed with and are left/right aligned.
+.TP
+.B session.screen0.iconbar.clientWidth: 
+.IR Integer
+is used to specify the iconbar button width for LEFT/RIGHT alignment.
+.TP
 .B session.tabs:
 .IR True
 or
@@ -1113,8 +1158,8 @@ the application from another workspace.
 .B Dimensions [Width Height]
 Remember the current dimensions.
 .TP
-.B Position [X Y]
-Remember the current position.
+.B Position ([WINCENTER|CENTER|UPPERLEFT|UPPERRIGHT|LOWERLEFT|LOWERRIGHT]) [X Y]
+Remember the current position. X and Y are relative to e.g. WINCENTER .
 .TP
 .B Shaded state [yes|no]
 Remember the current shaded state.
@@ -1140,7 +1185,7 @@ Here is a short example of an apps file:
 .PP
 .nf
 [app] (kate)
-  [Dimensions]  {1022 747}
+  [Dimensions]  (WINCENTER) {1022 747}
   [Position]    {0 0}
   [Close]       {yes}
 [end]
