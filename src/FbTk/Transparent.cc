@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.4 2003/05/07 09:31:29 fluxgen Exp $
+// $Id: Transparent.cc,v 1.5 2003/05/13 20:50:56 fluxgen Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
@@ -79,6 +79,8 @@ Picture createAlphaPic(Window drawable, unsigned char alpha) {
     color.blue = 0xFF;
     color.green = 0xFF;
     color.alpha = ((unsigned short) (255 * alpha) << 8);
+    if (alpha == 0)
+        color.alpha = 0xFF00;
 
     XRenderFillRectangle(disp, PictOpSrc, alpha_pic, &color,
                          0, 0, 1, 1);
