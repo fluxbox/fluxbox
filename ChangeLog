@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/01/21:
+  * Fixed cursor bug in fbrun (Thanks Mathias Gumz (gumz<at>cs.uni-magdeburg.de))
+    TextBox.cc
   * Added support for:             (Henrik)
     _NET_WM_WINDOW_TYPE
     _NET_WM_WINDOW_TYPE_DOCK
