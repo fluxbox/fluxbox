@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.74 2003/10/05 06:28:47 rathnor Exp $
+// $Id: fluxbox.hh,v 1.75 2003/12/03 00:29:39 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -65,6 +65,7 @@ class WinClient;
 class Keys;
 class BScreen;
 class FbAtoms;
+class Toolbar;
 
 
 ///	main class for the window manager.
@@ -310,6 +311,8 @@ private:
     static Fluxbox::Titlebar s_titlebar_left[], s_titlebar_right[];
     static Fluxbox *s_singleton;
     std::vector<AtomHandler *> m_atomhandler;
+    std::vector<Toolbar *> m_toolbars;
+
     bool m_starting;
     bool m_shutdown;
     int m_server_grabs;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.201 2003/10/28 02:17:03 rathnor Exp $
+// $Id: fluxbox.cc,v 1.202 2003/12/03 00:30:22 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -68,7 +68,8 @@
 #endif // REMEMBER
 #ifdef USE_TOOLBAR
 #include "Toolbar.hh"
-#include "ToolbarHandler.hh"
+#else
+class Toolbar { };
 #endif // USE_TOOLBAR
 
 // X headers
@@ -552,7 +553,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
         m_screen_list.push_back(screen);
 #ifdef USE_TOOLBAR
-        m_atomhandler.push_back(new ToolbarHandler(*screen));
+        m_toolbars.push_back(new Toolbar(*screen, 
+                                         *screen->layerManager().getLayer(Fluxbox::instance()->getNormalLayer())));
 #endif // USE_TOOLBAR
 
         // attach screen signals to this
@@ -565,9 +567,12 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
             m_atomhandler[atomh]->initForScreen(*screen);
         }
+
         revertFocus(*screen, false); // make sure focus style is correct
 
-    }
+    } // end init screens
+
+
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
     if (m_screen_list.size() == 0) {
@@ -605,11 +610,18 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 
 Fluxbox::~Fluxbox() {
+    // destroy toolbars
+    while (!m_toolbars.empty()) {
+        delete m_toolbars.back();
+        m_toolbars.pop_back();
+    }
+
     // destroy atomhandlers
     while (!m_atomhandler.empty()) {
         delete m_atomhandler.back();
         m_atomhandler.pop_back();
     }
+
 
     clearMenuFilenames();	
 }

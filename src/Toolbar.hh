@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.48 2003/10/13 23:49:12 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.49 2003/12/03 00:31:40 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -71,7 +71,7 @@ public:
     };
 
     /// Create a toolbar on the screen with specific width
-    Toolbar(BScreen &screen, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width = 200);
+    Toolbar(BScreen &screen, FbTk::XLayer &layer, size_t width = 200);
 
     virtual ~Toolbar();
 
@@ -162,9 +162,10 @@ private:
     BScreen &m_screen; ///< screen connection
 
     FbTk::Timer m_hide_timer; ///< timer to for auto hide toolbar
-    FbTk::Menu &m_toolbarmenu;
-    FbMenu m_placementmenu;
+
     LayerMenu<Toolbar> m_layermenu;
+    FbMenu  m_placementmenu, m_toolbarmenu;
+
 
     // themes
     ToolbarTheme m_theme;

@@ -60,7 +60,7 @@ REGEXP_SOURCE = RegExp.hh RegExp.cc ClientPattern.hh ClientPattern.cc
 endif
 endif
 if TOOLBAR_SRC
-TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc ToolbarHandler.hh ToolbarHandler.cc \
+TOOLBAR_SOURCE = Toolbar.hh Toolbar.cc \
 	ToolbarTheme.hh ToolbarTheme.cc ToolbarItem.hh ToolbarItem.cc \
 	ClockTool.hh ClockTool.cc \
 	WorkspaceNameTool.hh WorkspaceNameTool.cc WorkspaceNameTheme.hh \

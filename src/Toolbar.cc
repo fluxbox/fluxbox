@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.126 2003/10/31 10:37:09 rathnor Exp $
+// $Id: Toolbar.cc,v 1.127 2003/12/03 00:32:13 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -186,21 +186,23 @@ Toolbar::Frame::~Frame() {
     evm.remove(window);
 }
 
-Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width):
+Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_hidden(false),
     frame(*this, scrn.screenNumber()),
     m_window_pm(0),
     m_screen(scrn),
-    m_toolbarmenu(menu),
-    m_placementmenu(*scrn.menuTheme(),
-                    scrn.screenNumber(), scrn.imageControl(),
-                    *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_layermenu(*scrn.menuTheme(), 
                 scrn.screenNumber(), 
                 scrn.imageControl(),
                 *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
                 this,
                 true),
+    m_placementmenu(*scrn.menuTheme(),
+                    scrn.screenNumber(), scrn.imageControl(),
+                    *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
+    m_toolbarmenu(*scrn.menuTheme(),
+                  scrn.screenNumber(), scrn.imageControl(),
+                  *scrn.layerManager().getLayer(Fluxbox::instance()->getMenuLayer())),
     m_theme(scrn.screenNumber()),
     m_layeritem(frame.window, layer),
     m_tool_factory(scrn),
@@ -270,6 +272,10 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
 
 Toolbar::~Toolbar() {
     FbTk::EventManager::instance()->remove(window());
+    // remove menu items before we delete tools so we dont end up
+    // with dangling pointers to old submenu items (internal menus)
+    // from the tools
+    menu().removeAll();
 
     deleteItems();
     clearStrut();
@@ -445,7 +451,7 @@ void Toolbar::reconfigure() {
 
     rearrangeItems();
 
-    m_toolbarmenu.reconfigure();
+    menu().reconfigure();
     // we're done with all resizing and stuff now we can request a new 
     // area to be reserved on screen
     updateStrut();
@@ -458,26 +464,26 @@ void Toolbar::buttonPressEvent(XButtonEvent &be) {
     if (be.button != 3)
         return;
 
-    if (! m_toolbarmenu.isVisible()) {
+    if (! menu().isVisible()) {
         int x, y;
 
-        x = be.x_root - (m_toolbarmenu.width() / 2);
-        y = be.y_root - (m_toolbarmenu.height() / 2);
+        x = be.x_root - (menu().width() / 2);
+        y = be.y_root - (menu().height() / 2);
 
         if (x < 0)
             x = 0;
-        else if (x + m_toolbarmenu.width() > screen().width())
-            x = screen().width() - m_toolbarmenu.width();
+        else if (x + menu().width() > screen().width())
+            x = screen().width() - menu().width();
 
         if (y < 0)
             y = 0;
-        else if (y + m_toolbarmenu.height() > screen().height())
-            y = screen().height() - m_toolbarmenu.height();
+        else if (y + menu().height() > screen().height())
+            y = screen().height() - menu().height();
 
-        m_toolbarmenu.move(x, y);
-        m_toolbarmenu.show();
+        menu().move(x, y);
+        menu().show();
     } else
-        m_toolbarmenu.hide();
+        menu().hide();
 	
 }
 
@@ -512,7 +518,7 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &not_used) {
     if (isHidden()) {
         if (m_hide_timer.isTiming()) 
             m_hide_timer.stop();
-    } else if (! m_toolbarmenu.isVisible() && ! m_hide_timer.isTiming()) 
+    } else if (! menu().isVisible() && ! m_hide_timer.isTiming()) 
         m_hide_timer.start();
 
 }
