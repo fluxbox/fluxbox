@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.5 2003/07/10 11:55:01 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.6 2003/08/11 14:59:07 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
@@ -45,6 +45,7 @@ public:
     ~FbPixmap();
 
     void copy(const FbPixmap &the_copy);
+    void copy(Pixmap pixmap);
     /// rotates the pixmap 90 deg, not implemented!
     void rotate();
     /// scales the pixmap to specified size
