@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.15 2002/12/01 13:42:02 rathnor Exp $
+// $Id: Toolbar.hh,v 1.16 2002/12/02 21:52:30 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -30,6 +30,8 @@
 #include "Basemenu.hh"
 #include "Timer.hh"
 #include "IconBar.hh"
+#include "ToolbarTheme.hh"
+#include "EventHandler.hh"
 
 #include <memory>
 
@@ -86,10 +88,11 @@ private:
 
 };
 
+
 /**
 	the toolbar.
 */
-class Toolbar : public TimeoutHandler {
+class Toolbar : public TimeoutHandler, public FbTk::EventHandler {
 public:
     /**
        Toolbar placement on the screen
@@ -97,7 +100,7 @@ public:
     enum Placement{ TOPLEFT = 1, BOTTOMLEFT, TOPCENTER,
                     BOTTOMCENTER, TOPRIGHT, BOTTOMRIGHT };
 
-    explicit Toolbar(BScreen *screen);
+    explicit Toolbar(BScreen *screen, size_t width = 200);
     virtual ~Toolbar();
 
     /// add icon to iconbar
@@ -125,16 +128,18 @@ public:
     inline int y() const { return ((hidden) ? frame.y_hidden : frame.y); }
     /// @return pointer to iconbar if it got one, else 0
     inline const IconBar *iconBar()  const { return m_iconbar.get(); }
+    inline const ToolbarTheme &theme() const { return m_theme; }
+    inline ToolbarTheme &theme() { return m_theme; }
     /**
        @name eventhandlers
     */
     //@{
-    void buttonPressEvent(XButtonEvent *be);
-    void buttonReleaseEvent(XButtonEvent *be);
-    void enterNotifyEvent(XCrossingEvent *ce);
-    void leaveNotifyEvent(XCrossingEvent *ce);
-    void exposeEvent(XExposeEvent *ee);
-    void keyPressEvent(XKeyEvent *ke);
+    void buttonPressEvent(XButtonEvent &be);
+    void buttonReleaseEvent(XButtonEvent &be);
+    void enterNotifyEvent(XCrossingEvent &ce);
+    void leaveNotifyEvent(XCrossingEvent &ce);
+    void exposeEvent(XExposeEvent &ee);
+    void keyPressEvent(XKeyEvent &ke);
     //@}
 	
     void redrawWindowLabel(bool redraw= false);
@@ -146,7 +151,7 @@ public:
     /// enter edit mode on workspace label
     void edit();
     void reconfigure();
-
+    void setPlacement(Placement where);
     void checkClock(bool redraw = false, bool date = false);
 
     virtual void timeout();
@@ -178,13 +183,16 @@ private:
     } hide_handler;
 
     BScreen *m_screen;
-    BImageControl *image_ctrl; 
+    BImageControl &image_ctrl; 
     BTimer clock_timer; ///< timer to update clock
     BTimer hide_timer; ///< timer to for auto hide toolbar
     Toolbarmenu m_toolbarmenu;
     std::auto_ptr<IconBar> m_iconbar;
 	
     std::string new_workspace_name; ///< temp variable in edit workspace name mode
+
+    ToolbarTheme m_theme;
+    Placement m_place;
 
     friend class HideHandler;
     friend class Toolbarmenu;
