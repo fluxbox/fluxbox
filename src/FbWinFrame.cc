@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.11 2003/02/22 18:31:00 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.12 2003/02/23 00:57:55 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
@@ -725,13 +725,13 @@ void FbWinFrame::setupButton(FbTk::Button &btn) {
     //TODO button pressed color
 
     if (m_focused) {
-        btn.setGC(m_theme.labelTextFocusGC());
+        btn.setGC(m_theme.buttonPicFocusGC());
         if (m_button_pm)
             btn.setBackgroundPixmap(m_button_pm);
         else
             btn.setBackgroundColor(m_button_color);
     } else {
-        btn.setGC(m_theme.labelTextUnfocusGC());
+        btn.setGC(m_theme.buttonPicUnfocusGC());
         if (m_button_unfocused_pm)
             btn.setBackgroundPixmap(m_button_unfocused_pm);
         else
