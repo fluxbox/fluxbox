@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.3 2003/01/09 16:43:54 fluxgen Exp $
+// $Id: Menu.hh,v 1.4 2003/01/10 00:46:54 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -36,12 +36,11 @@
 #include "RefCount.hh"
 #include "Command.hh"
 
-class BImageControl;
-
 namespace FbTk {
 
 class MenuItem;
 class MenuTheme;
+class ImageControl;
 
 
 ///   Base class for menus
@@ -55,7 +54,7 @@ public:
     */
     enum { EMPTY = 0, SQUARE, TRIANGLE, DIAMOND };
 	
-    Menu(MenuTheme &tm, int screen_num, BImageControl &imgctrl);
+    Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl);
     virtual ~Menu();
 
     /**
@@ -154,7 +153,7 @@ private:
     Display *m_display;
     const int m_screen_num;
     Menu *m_parent;
-    BImageControl &m_image_ctrl;
+    ImageControl &m_image_ctrl;
     Menuitems menuitems;
 
     const unsigned int m_screen_width, m_screen_height;
