@@ -19,9 +19,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.2 2002/12/01 13:42:14 rathnor Exp $
+// $Id: EventManager.cc,v 1.3 2002/12/03 17:06:49 fluxgen Exp $
 
 #include "EventManager.hh"
+#include "FbWindow.hh"
 
 #include <iostream>
 using namespace std;
@@ -41,7 +42,7 @@ EventManager::~EventManager() {
 void EventManager::handleEvent(XEvent &ev) {
     // find eventhandler for event window
     if (m_eventhandlers.find(ev.xany.window) == m_eventhandlers.end()) {
-        cerr<<"Can't find window="<<ev.xany.window<<endl;
+        //cerr<<"Can't find window="<<ev.xany.window<<endl;
         return;
     }
     EventHandler *evhand = m_eventhandlers[ev.xany.window];
@@ -79,6 +80,14 @@ void EventManager::handleEvent(XEvent &ev) {
         evhand->handleEvent(ev);
 	break;
     };
+}
+
+void EventManager::add(EventHandler &ev, const FbWindow &win) {
+    registerEventHandler(ev, win.window());
+}
+
+void EventManager::remove(const FbWindow &win) {
+    unregisterEventHandler(win.window());
 }
 
 void EventManager::registerEventHandler(EventHandler &ev, Window win) {

@@ -19,12 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.hh,v 1.3 2002/12/02 19:36:58 fluxgen Exp $
+// $Id: EventManager.hh,v 1.4 2002/12/03 17:05:45 fluxgen Exp $
 
 #include "EventHandler.hh"
 #include <map>
 
 namespace FbTk {
+
+class FbWindow;
 
 /**
    singleton mediator for EventHandlers
@@ -34,6 +36,8 @@ public:
     static EventManager *instance();
 	
     void handleEvent(XEvent &ev);
+    void add(EventHandler &ev, const FbWindow &win);
+    void remove(const FbWindow &win);
     void add(EventHandler &ev, Window win) { registerEventHandler(ev, win); }
     void remove(Window win) { unregisterEventHandler(win); }
     void registerEventHandler(EventHandler &ev, Window win);
