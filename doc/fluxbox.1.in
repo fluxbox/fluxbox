@@ -1134,6 +1134,7 @@ session.screen1.strftimeFormat: %a %d %R [%s]
 This way the main workspace (screen0) has the maximum amount of space available
 and the secondary workspace could show the time and run some withdrawn apps like
 gkrellm in the slit, always visible yet out of the way of real work.
+.\" -- apps file
 .SH APPLICATIONS SETTINGS
 Sometimes, you want to force an application to have always the same dimensions,
 position, and other settings.  It is now possible with the new window-submenu
@@ -1171,10 +1172,22 @@ to the workspace containing the application being launched.
 .B Save settings on close [yes|no]
 By default, application settings are not saved when a window is closed.  Set
 this option if you want previous settings to be saved when the window is closed.
+.PP
+The 
+.B apps-file
+also allows to specify applications that should be started on fluxbox start
+using
+.B [startup] (options) {application}
+lines . 
+.B options
+could be used to specify the screen, not the workspace, on which
+the application should started. startup is not yet setable by menu.
+
 .SS Applications example
 Here is a short example of an apps file:
 .PP
 .nf
+[startup] {xterm}
 [app] (kate)
   [Dimensions]  (WINCENTER) {1022 747}
   [Position]    {0 0}
