@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.25 2002/08/18 23:35:31 fluxgen Exp $
+// $Id: Workspace.cc,v 1.26 2002/08/31 10:40:50 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -221,15 +221,22 @@ void Workspace::raiseWindow(FluxboxWindow *w) {
 	FluxboxWindow *win = (FluxboxWindow *) 0, *bottom = w;
 
 	while (bottom->isTransient() && bottom->getTransientFor() &&
-			bottom->getTransientFor() != bottom) //prevent infinite loop
+			bottom->getTransientFor() != bottom) { //prevent infinite loop
+#ifdef DEBUG
+		assert(bottom != bottom->getTransientFor());		
+#endif // DEBUG
 		bottom = bottom->getTransientFor();
+		
+	}
 
 	int i = 1;
 	win = bottom;
 	while (win->hasTransient() && win->getTransient() &&
 			win->getTransient() != win) {//prevent infinite loop
+#ifdef DEBUG
+		assert(win != win->getTransient());
+#endif // DEBUG
 		win = win->getTransient();
-
 		i++;
 	}
 
@@ -237,7 +244,7 @@ void Workspace::raiseWindow(FluxboxWindow *w) {
 	Workspace *wkspc;
 
 	win = bottom;
-	while (True) {
+	while (1) {
 		*(curr++) = win->getFrameWindow();
 		screen->updateNetizenWindowRaise(win->getClientWindow());
 
