@@ -1,10 +1,27 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/24:
+   * Fixed minor bug in transparent Slit (Henrik)
+     Slit.cc/hh, Screen.cc
+   * Emacs keybindings and tab completion for FbRun (Thanks David J Burger)
+     FbRun.hh/cc
 *03/06/23:
    * Add group persistence over a restart,
      Move most winclient initialisation from FluxboxWindow to WinClient,
      And fix a few bugs (Simon)
      Screen.hh/cc WinClient.hh/cc Window.hh/cc Gnome.cc Slit.hh
+   * Moved toolbar resources from BScreen to Toolbar (Henrik)
+     Screen.hh/cc, Toolbar.hh/cc
+*03/06/22:
+   * fluxbox-generate_menu: 
+      French locales, (Thanks Tarax <tarax(aT)arkitekts.org> )
+      Two additions to the menu (Thanks Pol)
+   * Added Xutil for getWMName in Slit, SlitClient and WinClient and made some
+     cleaning (Henrik)
+     WinClient.cc, Slit.cc, SlitClient.cc
+   * New resource name session.screen<num>.slit.maxOver: <bool>   (Henrik)
+     This will prevent windows from maximize over the slit
+     Slit.cc	
 *03/06/20:
    * Moved SlitTheme and SlitClient out from Slit.cc into new files (Henrik)
      SlitClient.hh/cc, SlitTheme.hh
