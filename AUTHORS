@@ -38,6 +38,9 @@ Contributors:
     Steve Cooper <stevencooper(at)isomedia.com>
       - Workspace warping, window cycling with optional parameters,
         slit order
+    David J Burger <dburger<at>hawaii.edu>
+	  - emacs style keybindings for FbRun and
+	    tab completion for FbRun
     Jeramy B. Smith
       - Packaging assistance, gnome and kde menu system.
     Artis Trops <hornet at navigator.lv >
