@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.81 2003/04/20 12:21:35 rathnor Exp $
+// $Id: Screen.hh,v 1.82 2003/04/20 13:45:07 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -142,7 +142,8 @@ public:
     inline unsigned int getBorderWidth() const { return theme->getBorderWidth(); }
     inline unsigned int getBorderWidth2x() const { return theme->getBorderWidth()*2; }
     inline unsigned int getCurrentWorkspaceID() const { return current_workspace->workspaceID(); }
-
+    
+    Pixmap rootPixmap() const { return m_root_pm; }
     /*
       maximum screen surface
     */
@@ -406,7 +407,8 @@ private:
         Resource<std::string> rootcommand;		
         Resource<Fluxbox::FocusModel> focus_model;
         bool ordered_dither;
-        Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold;            
+        Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold, 
+            menu_alpha;
         Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;
         int placement_policy, row_direction, col_direction;
 
@@ -429,6 +431,7 @@ private:
 
     std::auto_ptr<RootTheme> m_root_theme;
     ToolbarHandler *m_toolbarhandler;
+    Pixmap m_root_pm;
 };
 
 
