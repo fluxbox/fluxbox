@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.13 2002/03/01 15:28:56 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.14 2002/03/19 00:16:44 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -45,42 +45,15 @@
 #	endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-#ifndef _RESOURCE_HH_
 #include "Resource.hh"
-#endif
-
-#ifndef _KEYS_HH_
 #include "Keys.hh"
-#endif
-
-#ifndef _BASEDISPLAY_HH_
 #include "BaseDisplay.hh"
-#endif
-
-#ifndef _IMAGE_HH_
 #include "Image.hh"
-#endif
-
-#ifndef _LINKEDLIST_HH_
 #include "LinkedList.hh"
-#endif
-
-#ifndef _TIMER_HH_
 #include "Timer.hh"
-#endif 
-
-#ifndef _WINDOW_HH_
 #include "Window.hh"
-#endif 
-
-#ifndef _TAB_HH_
 #include "Tab.hh"
-#endif
-
-#ifndef _TOOLBAR_HH_
 #include "Toolbar.hh"
-#endif
-
 #ifdef		SLIT
 #	include "Slit.hh"
 #endif // SLIT
@@ -264,7 +237,7 @@ private:
 	LinkedList<BScreen> *screenList;
 
 	FluxboxWindow *focused_window, *masked_window;
-	BTimer *timer;
+	BTimer timer;
 
 #ifdef		HAVE_GETPID
 	Atom fluxbox_pid;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.40 2002/03/18 20:26:32 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.41 2002/03/19 00:16:44 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -306,8 +306,8 @@ m_rc_titlebar_left(m_resourcemanager, TitlebarList(&m_titlebar_left[0], &m_title
 m_rc_titlebar_right(m_resourcemanager, TitlebarList(&m_titlebar_right[0], &m_titlebar_right[3]), "session.titlebar.right", "Session.Titlebar.Right"),
 m_rc_cache_life(m_resourcemanager, 5, "session.cacheLife", "Session.CacheLife"),
 m_rc_cache_max(m_resourcemanager, 200, "session.cacheMax", "Session.CacheMax"),
-focused_window(0),
-masked_window(0),
+focused_window(0), masked_window(0),
+timer(this),
 no_focus(false),
 rc_file(rc),
 argv(m_argv), argc(m_argc), 
@@ -394,10 +394,9 @@ key(0)
 	XSync(getXDisplay(), False);
 
 	reconfigure_wait = reread_menu_wait = false;
-
-	timer = new BTimer(this, this);
-	timer->setTimeout(0);
-	timer->fireOnce(True);
+	
+	timer.setTimeout(0);
+	timer.fireOnce(True);
 
 	//create keybindings handler and load keys file
 	char *keyfilename = StringUtil::expandFilename((*m_rc_keyfile).c_str());
@@ -424,8 +423,6 @@ Fluxbox::~Fluxbox(void) {
 	
 	delete key;
 	key = 0;
-
-	delete timer;
 
 	delete screenList;
 	delete menuTimestamps;
@@ -2327,7 +2324,7 @@ void Fluxbox::reload_rc(void) {
 void Fluxbox::reconfigure(void) {
 	reconfigure_wait = true;
 
-	if (! timer->isTiming()) timer->start();
+	if (! timer.isTiming()) timer.start();
 }
 
 
@@ -2421,7 +2418,7 @@ void Fluxbox::checkMenu(void) {
 void Fluxbox::rereadMenu(void) {
 	reread_menu_wait = True;
 
-	if (! timer->isTiming()) timer->start();
+	if (! timer.isTiming()) timer.start();
 }
 
 
