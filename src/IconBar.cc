@@ -19,10 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.7 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: IconBar.cc,v 1.8 2002/01/20 02:10:37 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
+#include "Screen.hh"
 
 IconBarObj::IconBarObj(FluxboxWindow *fluxboxwin, Window iconwin)
 {
