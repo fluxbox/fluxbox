@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.199 2003/06/26 12:22:43 rathnor Exp $
+// $Id: Window.cc,v 1.200 2003/06/30 15:02:39 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -305,6 +305,7 @@ FluxboxWindow::~FluxboxWindow() {
 void FluxboxWindow::init() { 
     // so parent menu don't kill us
     m_layermenu->setInternalMenu();
+    m_layermenu->disableTitle();
 
     m_attaching_tab = 0;
 
@@ -365,8 +366,6 @@ void FluxboxWindow::init() {
     btn->setOnClick(set_client_cmd);
     evm.add(*this, btn->window()); // we take care of button events for this
     evm.add(*this, m_client->window());
-
-    //    frame().reconfigure();
 
     // redirect events from frame to us
 
@@ -1002,7 +1001,10 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
             new_y = 0;
 
         downsize();
-
+        if (!isResizable()) {
+            new_width = width();
+            new_height = height();
+        }
         frame().moveResize(new_x, new_y, new_width, new_height);
 
         setFocusFlag(focused);
