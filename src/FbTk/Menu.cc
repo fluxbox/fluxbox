@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.56 2004/02/27 14:21:13 fluxgen Exp $
+// $Id: Menu.cc,v 1.57 2004/04/14 14:02:41 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -363,7 +363,8 @@ void Menu::update(int active_index) {
     menu.title_h = m_theme.titleFont().height() + menu.bevel_w*2;
 
     if (title_vis) {
-        menu.item_w = m_theme.frameFont().textWidth(menu.label.c_str(), menu.label.size());
+        menu.item_w = m_theme.titleFont().textWidth(menu.label.c_str(),
+                                                    menu.label.size());
 		
         menu.item_w += (menu.bevel_w * 2);
     }	else
