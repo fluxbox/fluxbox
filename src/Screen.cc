@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.280 2004/06/07 21:22:42 fluxgen Exp $
+// $Id: Screen.cc,v 1.281 2004/06/14 12:25:31 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1683,6 +1683,7 @@ void BScreen::initMenu() {
                            exit_fb);
     }
 
+    m_rootmenu->update();
 }
 
 
@@ -1701,6 +1702,7 @@ void BScreen::removeConfigMenu(FbTk::Menu &menu) {
         }
     }
     setupConfigmenu(*m_configmenu.get());
+
 }    
 
 void BScreen::setupConfigmenu(FbTk::Menu &menu) {
