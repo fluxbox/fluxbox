@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.8 2003/12/31 00:41:02 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.9 2004/01/03 00:23:48 fluxgen Exp $
 
 #
 # Portability notes:
@@ -1074,7 +1074,7 @@ append_submenu "${FBSETTINGSMENU}"
     append "[commanddialog] (Fluxbox Command)"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
-    append "[nop] (---)"
+    append "[separator]"
     append "[exit] (${EXITITEM})"
 
     append_menu_end
