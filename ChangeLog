@@ -1,5 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/09:
+  * Added forgotten [macrocmd] to menuitems (Mathias)
+    MenuCreator.cc
+  * Cleanup of code (Mathias)
+    - removed codeduplicates of ::getRootPixmap, added FbPixmap::getRootPixmap instead
+    Screen.(cc|hh) FbTk/Menu.cc FbTk/FbWindow.cc FbTk/FbPixmap.cc
 *04/09/04:
   * Fix duplicate icons in icon list with amsn (Henrik)
     - Check Fluxbox::update(FluxboxWindow::stateSig), 
