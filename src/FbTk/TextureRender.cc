@@ -22,12 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.1 2003/01/09 21:09:49 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.2 2003/01/10 01:02:02 fluxgen Exp $
 
 #include "TextureRender.hh"
 
 #include "ImageControl.hh"
-#include "i18n.hh"
 #include "App.hh"
 
 #include <iostream>
@@ -118,10 +117,7 @@ Pixmap TextureRender::renderSolid(const FbTk::Texture &texture) {
                                   RootWindow(disp, control.screenNum()), width,
                                   height, control.depth());
     if (pixmap == None) {
-        cerr<<I18n::instance()->
-            getMessage(
-                       FBNLS::ImageSet, FBNLS::ImageErrorCreatingSolidPixmap,
-                       "BImage::render_solid: error creating pixmap")<<endl;
+        cerr<<"FbTk::TextureRender::render_solid(): error creating pixmap"<<endl;
         return None;
     }
 
@@ -263,7 +259,6 @@ Pixmap TextureRender::renderGradient(const FbTk::Texture &texture) {
 
 
 XImage *TextureRender::renderXImage() {
-    I18n *i18n = I18n::instance();
     Display *disp = FbTk::App::instance()->display();
     XImage *image =
         XCreateImage(disp,
@@ -271,11 +266,7 @@ XImage *TextureRender::renderXImage() {
                      width, height, 32, 0);
 
     if (! image) {
-        fprintf(stderr,
-                i18n->
-                getMessage(
-                    FBNLS::ImageSet, FBNLS::ImageErrorCreatingXImage,
-                    "BImage::renderXImage: error creating XImage\n"));
+        cerr<<"FbTk::TextureRender::renderXImage(): error creating XImage"<<endl;
         return 0;
     }
 
@@ -546,11 +537,7 @@ XImage *TextureRender::renderXImage() {
         */
 
     default:
-        fprintf(stderr,
-                i18n->
-                getMessage(
-                    FBNLS::ImageSet, FBNLS::ImageUnsupVisual,
-                    "BImage::renderXImage: unsupported visual\n"));
+        cerr<<"TextureRender::renderXImage(): unsupported visual"<<endl;
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
@@ -649,11 +636,7 @@ XImage *TextureRender::renderXImage() {
 	break;
 
     default:
-        fprintf(stderr,
-                i18n->
-                getMessage(
-                           FBNLS::ImageSet, FBNLS::ImageUnsupVisual,
-                           "BImage::renderXImage: unsupported visual\n"));
+        cerr<<"TextureRender::renderXImage(): unsupported visual"<<endl;
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
@@ -667,16 +650,12 @@ return image;
 
 Pixmap TextureRender::renderPixmap() {
     Display *disp = FbTk::App::instance()->display();
-    I18n *i18n = I18n::instance();
     Pixmap pixmap =
         XCreatePixmap(disp,
                       RootWindow(disp, control.screenNum()), width, height, control.depth());
 
     if (pixmap == None) {
-        fprintf(stderr,
-                i18n->getMessage(
-                                 FBNLS::ImageSet, FBNLS::ImageErrorCreatingPixmap,
-                                 "BImage::renderPixmap: error creating pixmap\n"));
+        cerr<<"TextureRender::renderPixmap(): error creating pixmap"<<endl;
         return None;
     }
 
