@@ -1,5 +1,5 @@
 // Keys.hh for Fluxbox - an X11 Window manager
-// Copyright (c) 2001 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.16 2002/11/13 14:35:01 fluxgen Exp $
+// $Id: Keys.hh,v 1.17 2002/11/27 22:07:42 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
