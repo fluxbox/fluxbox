@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.1 2003/11/15 19:29:18 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.2 2003/11/23 01:19:01 rathnor Exp $
 
 #
 # Portability notes:
@@ -84,7 +84,7 @@ Options:
 
 
 Files:
-    ~/.fluxbux/usermenu     your own submenu which will be included in the menu
+    ~/.fluxbox/usermenu     your own submenu which will be included in the menu
     ~/.fluxbox/menuconfig   rc file for fluxbox-generate_menu
 
 EOF
@@ -877,7 +877,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu ftp
-    normal_find gftp IglooFTP-PRO
+        normal_find gftp IglooFTP-PRO
         find_it pftp      append "[exec]   (pftp) {${DEFAULT_TERM} -e pftp}"
         find_it ftp       append "[exec]   (ftp) {${DEFAULT_TERM} -e ftp}"
         find_it lftp      append "[exec]   (lftp) {${DEFAULT_TERM} -e lftp}"
@@ -907,7 +907,7 @@ append_menu_end
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
                normal_find gimp xv gqview showimg xpaint kpaint kiconedit \
-               ee xscreensaver-demo xlock
+               ee xzgv xscreensaver-demo xlock
                find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
                find_it blender          append "[exec] (blender) {blender -w}"
                find_it gears            append "[exec] (Mesa gears) {gears}"
@@ -950,7 +950,6 @@ append_submenu "${OFFICEMENU}"
     find_it oopadmin append "[exec] (OO Printer Administration) {oopadmin}"
     find_it mrproject append "[exec] (Mr.Project) {mrproject}"
     find_it soffice append "[exec] (Star Office) {soffice}"
-
     normal_find abiword kword wordperfect katoob acroread xpdf
 append_menu_end
 
@@ -960,7 +959,7 @@ append_submenu "${GAMESMENU}"
         gnotski iagno knights eboard xboard freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins smclone openmortal \
         quake2 quake3 skoosh same-gnome enigma xbill icebreaker
-        find_it et append "[exec] (Enemy Territory) {et}"
+    find_it et append "[exec] (Enemy Territory) {et}"
 append_menu_end
 
 # We'll only use this once

@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/11/23:
+  * Some util/ updates from Han
+    .cvsignore fbsetbg fluxbox_generate_menu.in
 *03/11/19:
   * Fix menu draw bug for empty submenus (Simon)
     Menu.cc

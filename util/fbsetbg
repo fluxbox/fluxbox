@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.22 2003/10/16 15:54:20 rathnor Exp $
+# $Id: fbsetbg,v 1.23 2003/11/23 01:19:01 rathnor Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -279,7 +279,7 @@ done
 standardrant=\
 "$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and
 apps like aterm and xchat won't work right with it. Consider installing
-chbg, wmsetbg (from windowmaker) or Esetroot (from Eterm) and I'll use
+feh, wmsetbg (from windowmaker) or Esetroot (from Eterm) and I'll use
 them instead."
 
 standardok=\
