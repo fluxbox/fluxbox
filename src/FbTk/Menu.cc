@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.84 2004/09/11 22:59:15 fluxgen Exp $
+// $Id: Menu.cc,v 1.85 2004/09/12 14:56:19 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1379,10 +1379,14 @@ void Menu::keyPressEvent(XKeyEvent &event) {
 
 void Menu::reconfigure() {
 
-    if (alpha() == 255 && m_transp.get() != 0) {
+    if (FbTk::Transparent::haveComposite()) {
+        if (m_transp.get() != 0)
+            m_transp.reset(0);
+
+        menu.window.setOpaque(alpha());
+    } else if (alpha() == 255 && m_transp.get() != 0) {
         m_transp.reset(0);
     } else if (alpha () < 255) {
-
         if (m_transp.get() == 0) {
             m_transp.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()),
                                            m_real_frame_pm.drawable(), alpha(),
@@ -1483,7 +1487,6 @@ void Menu::renderTransp(int x, int y,
     Pixmap root = FbPixmap::getRootPixmap(screenNumber());
     if (m_transp->source() != root)
         m_transp->setSource(root, screenNumber());
-
 
     if (m_transp->dest() != m_real_frame_pm.drawable())
         m_transp->setDest(m_real_frame_pm.drawable(), screenNumber());

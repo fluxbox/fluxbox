@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.256 2004/09/12 14:01:29 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.257 2004/09/12 14:56:19 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -49,6 +49,7 @@
 #include "FbTk/RefCount.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/CompareEqual.hh"
+#include "FbTk/Transparent.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -203,6 +204,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       m_screen_rm(m_resourcemanager),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
+      m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4, 
                               "session.colorsPerChannel", "Session.ColorsPerChannel"),
       m_rc_numlayers(m_resourcemanager, 13, "session.numLayers", "Session.NumLayers"),
@@ -1469,6 +1471,9 @@ void Fluxbox::load_rc() {
 	
     if (m_rc_menufile->empty()) 
         m_rc_menufile.setDefaultValue();
+
+    if (FbTk::Transparent::haveComposite())
+        FbTk::Transparent::usePseudoTransparent(*m_rc_pseudotrans);
  
     if (!m_rc_slitlistfile->empty()) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.hh,v 1.15 2004/08/29 08:33:12 rathnor Exp $
+// $Id: IconbarTool.hh,v 1.16 2004/09/12 14:56:18 rathnor Exp $
 
 #ifndef ICONBARTOOL_HH
 #define ICONBARTOOL_HH
@@ -87,6 +87,7 @@ private:
     void renderButton(IconButton &button, bool clear = true);
     /// render all buttons
     void renderTheme();
+    void renderTheme(unsigned char alpha);
     /// destroy all icons
     void deleteIcons();
     /// remove a single window
@@ -121,6 +122,7 @@ private:
     FbTk::Resource<bool> m_rc_use_pixmap; ///< if iconbar should use win pixmap or not
     FbTk::Timer m_focus_timer; ///< so we can update current window without flicker while changing attached clients
     FbMenu m_menu;
+    unsigned char m_alpha;
 };
 
 #endif // ICONBARTOOL_HH

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.101 2004/09/11 18:58:27 fluxgen Exp $
+// $Id: Slit.cc,v 1.102 2004/09/12 14:56:19 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -296,7 +296,12 @@ Slit::Slit(BScreen &scr, FbTk::XLayer &layer, const char *filename)
 
     FbTk::EventManager::instance()->add(*this, frame.window);
     
-    frame.window.setAlpha(*m_rc_alpha);
+    if (FbTk::Transparent::haveComposite()) {
+        frame.window.setOpaque(*m_rc_alpha);
+    } else {
+        frame.window.setAlpha(*m_rc_alpha);
+    }
+
     m_layeritem.reset(new FbTk::XLayerItem(frame.window, layer));
     m_layermenu.reset(new LayerMenu<Slit>(scr.menuTheme(),
                                           scr.imageControl(),
@@ -679,7 +684,11 @@ void Slit::reconfigure() {
     if (tmp) 
         image_ctrl.removeImage(tmp);
 
-    frame.window.setAlpha(*m_rc_alpha);
+    if (FbTk::Transparent::haveComposite()) {
+        frame.window.setOpaque(*m_rc_alpha);
+    } else {
+        frame.window.setAlpha(*m_rc_alpha);
+    }
     clearWindow();
 
     int x = 0, y = 0;
@@ -1195,9 +1204,9 @@ void Slit::setupMenu() {
                            0, 255);
     // setup command for alpha value
     MacroCommand *alpha_macrocmd = new MacroCommand(); 
-    RefCount<Command> clear_cmd(new SimpleCommand<Slit>(*this, &Slit::clearWindow));
+    RefCount<Command> alpha_cmd(new SimpleCommand<Slit>(*this, &Slit::updateAlpha));
     alpha_macrocmd->add(saverc_cmd);
-    alpha_macrocmd->add(clear_cmd);
+    alpha_macrocmd->add(alpha_cmd);
     RefCount<Command> set_alpha_cmd(alpha_macrocmd);
     alpha_menuitem->setCommand(set_alpha_cmd);
 
@@ -1263,3 +1272,12 @@ void Slit::saveOnHead(int head) {
     reconfigure();
 }
 
+void Slit::updateAlpha() {
+    // called when the alpha resource is changed
+    if (FbTk::Transparent::haveComposite()) {
+        frame.window.setOpaque(*m_rc_alpha);
+    } else {
+        frame.window.setAlpha(*m_rc_alpha);
+        clearWindow();
+    }
+}

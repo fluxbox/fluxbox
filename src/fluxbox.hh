@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.90 2004/08/31 15:26:39 rathnor Exp $
+// $Id: fluxbox.hh,v 1.91 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -114,8 +114,8 @@ public:
     enum TabsAttachArea{ATTACH_AREA_WINDOW= 0, ATTACH_AREA_TITLEBAR};
 
 
-
     inline bool getIgnoreBorder() const { return *m_rc_ignoreborder; }
+    inline bool &getPseudoTrans() { return *m_rc_pseudotrans; }
 
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
@@ -251,6 +251,7 @@ private:
     //--- Resources
 
     FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;
+    FbTk::Resource<bool> m_rc_pseudotrans;
     FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers,
         m_rc_double_click_interval, m_rc_update_delay_time;
     FbTk::Resource<std::string> m_rc_stylefile, 

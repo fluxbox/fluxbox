@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.8 2004/08/26 15:09:33 rathnor Exp $
+// $Id: ArrowButton.cc,v 1.9 2004/09/12 14:56:18 rathnor Exp $
 
 #include "ArrowButton.hh"
 #include "ButtonTheme.hh"
@@ -52,11 +52,13 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
 
 void ArrowButton::clear() {
     FbTk::Button::clear();
+    updateTransparent();
     drawArrow();
 }
 
 void ArrowButton::exposeEvent(XExposeEvent &event) {
     FbTk::Button::exposeEvent(event);
+    updateTransparent(event.x, event.y, event.width, event.height);
     drawArrow();
 }
 

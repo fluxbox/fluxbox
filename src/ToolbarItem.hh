@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarItem.hh,v 1.6 2004/08/29 08:33:13 rathnor Exp $
+// $Id: ToolbarItem.hh,v 1.7 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef TOOLBARITEM_HH
 #define TOOLBARITEM_HH
@@ -55,7 +55,7 @@ public:
 
     // Tools should NOT listen to theme changes - they'll get notified by 
     // the toolbar instead. Otherwise there are ordering problems.
-    virtual void renderTheme() = 0;
+    virtual void renderTheme(unsigned char alpha) = 0;
 
     // just update theme items that affect the size
     virtual void updateSizing() = 0;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.53 2004/06/07 21:32:11 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.54 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -131,7 +131,8 @@ public:
     bool isVertical() const;
 
     inline int getOnHead() const { return *m_rc_on_head; }
-		
+
+    inline unsigned char alpha() const { return *m_rc_alpha; }
 private:
     void rearrangeItems();
     void deleteItems();
@@ -140,6 +141,7 @@ private:
     void setupMenus();
     void clearStrut();
     void updateStrut();
+    void updateAlpha();
 
     bool m_hidden;       ///< hidden state
 
@@ -179,6 +181,7 @@ private:
     // resources
     FbTk::Resource<bool> m_rc_auto_hide, m_rc_maximize_over, m_rc_visible;
     FbTk::Resource<int> m_rc_width_percent;
+    FbTk::Resource<int> m_rc_alpha;
     FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
     FbTk::Resource<int> m_rc_on_head;
     FbTk::Resource<Placement> m_rc_placement;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.154 2004/09/11 13:34:01 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.155 2004/09/12 14:56:19 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -46,6 +46,7 @@
 #include "FbTk/EventManager.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/StringUtil.hh"
+#include "FbTk/Transparent.hh"
 
 
 // use GNU extensions
@@ -170,7 +171,7 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
            0, 0, // pos
            10, 10, // size
            // event mask
-           ButtonPressMask | ButtonReleaseMask | 
+           ButtonPressMask | ButtonReleaseMask | ExposureMask |
            EnterWindowMask | LeaveWindowMask | SubstructureNotifyMask,
 
            true) // override redirect 
@@ -216,6 +217,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     m_rc_visible(scrn.resourceManager(), true, scrn.name() + ".toolbar.visible", scrn.altName() + ".Toolbar.Visible"),
     m_rc_width_percent(scrn.resourceManager(), 65, 
                        scrn.name() + ".toolbar.widthPercent", scrn.altName() + ".Toolbar.WidthPercent"),  
+    m_rc_alpha(scrn.resourceManager(), 255, 
+                       scrn.name() + ".toolbar.alpha", scrn.altName() + ".Toolbar.Alpha"),  
     m_rc_layernum(scrn.resourceManager(), Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
                   scrn.name() + ".toolbar.layer", scrn.altName() + ".Toolbar.Layer"),
     m_rc_on_head(scrn.resourceManager(), 0,
@@ -450,7 +453,13 @@ void Toolbar::reconfigure() {
         
     frame.window.setBorderColor(theme().border().color());
     frame.window.setBorderWidth(theme().border().width());
-    frame.window.setAlpha(theme().alpha());
+
+    bool have_composite = FbTk::Transparent::haveComposite();
+    if (have_composite) {
+        frame.window.setOpaque(alpha());
+    } else {
+        frame.window.setAlpha(alpha());
+    }
     frame.window.clear();
     frame.window.updateTransparent();
     
@@ -466,7 +475,7 @@ void Toolbar::reconfigure() {
     rearrangeItems();
 
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
-        (*item_it)->renderTheme();
+        (*item_it)->renderTheme(alpha());
     }
 
     menu().reconfigure();
@@ -872,6 +881,22 @@ void Toolbar::setupMenus() {
     }
     menu().insert(_FBTEXT(Menu, Placement, "Placement", "Title of Placement menu"), &placementMenu());
     placementMenu().update();
+
+
+    // this saves resources and clears the slit window to update alpha value
+    FbTk::MenuItem *alpha_menuitem = 
+        new IntResMenuItem(_FBTEXT(Common, Alpha, "Alpha", "Transparency level"),
+                           m_rc_alpha,
+                           0, 255);
+    // setup command for alpha value
+    MacroCommand *alpha_macrocmd = new MacroCommand(); 
+    RefCount<Command> alpha_cmd(new SimpleCommand<Toolbar>(*this, &Toolbar::updateAlpha));
+    alpha_macrocmd->add(save_resources);
+    alpha_macrocmd->add(alpha_cmd);
+    RefCount<Command> set_alpha_cmd(alpha_macrocmd);
+    alpha_menuitem->setCommand(set_alpha_cmd);
+
+    menu().insert(alpha_menuitem);
     menu().update();
 }
 
@@ -1011,4 +1036,21 @@ void Toolbar::deleteItems() {
         m_item_list.pop_back();
     }
     m_tools.clear();
+}
+
+void Toolbar::updateAlpha() {
+    // called when the alpha resource is changed
+    if (FbTk::Transparent::haveComposite()) {
+        frame.window.setOpaque(*m_rc_alpha);
+    } else {
+        frame.window.setAlpha(*m_rc_alpha);
+        frame.window.clear();
+        frame.window.updateTransparent();
+
+        ItemList::iterator item_it = m_item_list.begin();
+        ItemList::iterator item_it_end = m_item_list.end();
+        for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+            (*item_it)->renderTheme(alpha());
+        }
+    }
 }

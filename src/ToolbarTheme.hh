@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.11 2004/05/24 15:30:52 rathnor Exp $
+// $Id: ToolbarTheme.hh,v 1.12 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
@@ -46,7 +46,6 @@ public:
 
     inline int bevelWidth() const { return *m_bevel_width; }    
     inline bool shape() const { return *m_shape; }
-    inline unsigned char alpha() const { return *m_alpha; }
     inline int height() const { return *m_height; }
     inline int buttonSize() const { return *m_button_size; }
 private:
@@ -55,7 +54,7 @@ private:
 
     FbTk::ThemeItem<int> m_bevel_width;
     FbTk::ThemeItem<bool> m_shape;
-    FbTk::ThemeItem<int> m_alpha, m_height, m_button_size;
+    FbTk::ThemeItem<int> m_height, m_button_size;
 };
 
 #endif // TOOLBARTHEME_HH

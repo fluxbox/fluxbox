@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.8 2004/09/11 13:40:57 fluxgen Exp $
+// $Id: ToolFactory.cc,v 1.9 2004/09/12 14:56:19 rathnor Exp $
 
 #include "ToolFactory.hh"
 
@@ -83,25 +83,26 @@ ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
 }
 
 ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &parent, Toolbar &tbar) {
+    ToolbarItem * item;
 
     unsigned int button_size = 24;
     if (tbar.theme().buttonSize() > 0)
         button_size = tbar.theme().buttonSize();
 
     if (name == "workspacename") {
-        WorkspaceNameTool *item = new WorkspaceNameTool(parent,
+        WorkspaceNameTool *witem = new WorkspaceNameTool(parent,
                                                         *m_workspace_theme, screen());
         using namespace FbTk;
         RefCount<Command> showmenu(new ShowMenuAboveToolbar(tbar));
-        item->button().setOnClick(showmenu);
-        return item;
+        witem->button().setOnClick(showmenu);
+        item = witem;
     } else if (name == "iconbar") {
-        return new IconbarTool(parent, m_iconbar_theme, 
+        item = new IconbarTool(parent, m_iconbar_theme, 
                                screen(), tbar.menu());
     } else if (name == "systemtray") {
-        return new SystemTray(parent);
+        item = new SystemTray(parent);
     } else if (name == "clock") {
-        return new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
+        item = new ClockTool(parent, m_clock_theme, screen(), tbar.menu());
     } else if (name == "nextworkspace" || 
                name == "prevworkspace") {
 
@@ -118,7 +119,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                                            0, 0,
                                            button_size, button_size);
         win->setOnClick(cmd);
-        return new ButtonTool(win, ToolbarItem::SQUARE, 
+        item = new ButtonTool(win, ToolbarItem::SQUARE, 
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
 
@@ -137,13 +138,16 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                                            0, 0,
                                            button_size, button_size);
         win->setOnClick(cmd);
-        return new ButtonTool(win, ToolbarItem::SQUARE, 
+        item = new ButtonTool(win, ToolbarItem::SQUARE, 
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
 
     }
 
-    return 0;
+    if (item)
+        item->renderTheme(tbar.alpha());
+
+    return item;
 }
 
 void ToolFactory::updateThemes() {

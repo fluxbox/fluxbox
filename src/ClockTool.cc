@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.14 2004/08/31 15:26:38 rathnor Exp $
+// $Id: ClockTool.cc,v 1.15 2004/09/12 14:56:18 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -178,13 +178,15 @@ void ClockTool::move(int x, int y) {
 
 void ClockTool::resize(unsigned int width, unsigned int height) {
     m_button.resize(width, height);
-    renderTheme();
+    reRender();
+    m_button.clear();
 }
 
 void ClockTool::moveResize(int x, int y,
                       unsigned int width, unsigned int height) {
     m_button.moveResize(x, y, width, height);
-    renderTheme();
+    reRender();
+    m_button.clear();
 }
 
 void ClockTool::show() {
@@ -255,22 +257,29 @@ void ClockTool::updateSizing() {
     m_button.setBorderWidth(m_theme.border().width());
 }
 
-void ClockTool::renderTheme() {
-    Pixmap old_pm = m_pixmap;
+void ClockTool::reRender() {
+    if (m_theme.texture().usePixmap()) {
+        if (m_pixmap) 
+            m_screen.imageControl().removeImage(m_pixmap);
+        m_pixmap = m_screen.imageControl().renderImage(width(), height(),
+                                                       m_theme.texture());
+        m_button.setBackgroundPixmap(m_pixmap);
+    }
+}
+
+void ClockTool::renderTheme(unsigned char alpha) {
     if (!m_theme.texture().usePixmap()) {
+        if (m_pixmap)
+            m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = 0;
         m_button.setBackgroundColor(m_theme.texture().color());
     } else {
-        m_pixmap = m_screen.imageControl().renderImage(m_button.width(), m_button.height(), m_theme.texture());
-        m_button.setBackgroundPixmap(m_pixmap);
+        reRender();
     }
-
-    if (old_pm)
-        m_screen.imageControl().removeImage(old_pm);
 
     m_button.setJustify(m_theme.justify());
     m_button.setBorderWidth(m_theme.border().width());
     m_button.setBorderColor(m_theme.border().color());
-    m_button.setAlpha(m_theme.alpha());
+    m_button.setAlpha(alpha);
     m_button.clear();
 }

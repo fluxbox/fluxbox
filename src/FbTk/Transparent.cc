@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Transparent.cc,v 1.8 2004/09/11 15:52:23 rathnor Exp $
+// $Id: Transparent.cc,v 1.9 2004/09/12 14:56:20 rathnor Exp $
 
 #include "Transparent.hh"
 #include "App.hh"
@@ -99,6 +99,57 @@ namespace FbTk {
 
 bool Transparent::s_init = false;
 bool Transparent::s_render = false;
+bool Transparent::s_composite = false;
+
+void Transparent::init() {
+    Display *disp = FbTk::App::instance()->display();
+
+    int major_opcode, first_event, first_error;
+    if (XQueryExtension(disp, "RENDER",
+                        &major_opcode,
+                        &first_event, &first_error) == False) {
+        s_render = false;
+        s_composite = false;
+    } else { // we have RENDER support
+        s_render = true;
+
+        if (XQueryExtension(disp, "Composite",
+                            &major_opcode,
+                            &first_event, &first_error) == False) {
+            s_composite = false;
+        } else { // we have Composite support
+            s_composite = true;
+        }
+    }
+    s_init = true;
+}
+
+void Transparent::usePseudoTransparent(bool no_composite) {
+    if (s_composite != no_composite)
+        return;
+
+    s_init = false;
+    init(); // only use render if we have it
+
+    if (no_composite)
+        s_composite = false;
+}
+
+bool Transparent::haveComposite(bool for_real) {
+    if (for_real) {
+        Display *disp = FbTk::App::instance()->display();
+        int major_opcode, first_event, first_error;
+
+        return (XQueryExtension(disp, "Composite",
+                               &major_opcode,
+                               &first_event, &first_error) == True);
+    } else {
+        if (!s_init)
+            init();
+
+        return s_composite;
+    }
+}
 
 Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int screen_num):
     m_alpha_pic(0), m_src_pic(0), m_dest_pic(0),
@@ -106,26 +157,15 @@ Transparent::Transparent(Drawable src, Drawable dest, unsigned char alpha, int s
 
     Display *disp = FbTk::App::instance()->display();
 
-    // check for RENDER support
-    if (!s_init) {
-        int major_opcode, first_event, first_error;
-        if (XQueryExtension(disp, "RENDER",
-                            &major_opcode,
-                            &first_event, &first_error) == False) {
-            s_render = false;
-        } else { // we got RENDER support
-            s_render = true;
-        }
-        s_init = true;
-    }
-
+    // check for Extension support
+    if (!s_init)
+        init();
 
 #ifdef HAVE_XRENDER
     if (!s_render)
         return;
 
     allocAlpha(m_alpha);
-
 
     XRenderPictFormat *format =
         XRenderFindVisualFormat(disp,

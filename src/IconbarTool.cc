@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.45 2004/09/05 00:37:16 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.46 2004/09/12 14:56:18 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -309,6 +309,7 @@ IconbarTool::IconbarTool(const FbTk::FbWindow &parent, IconbarTheme &theme, BScr
     screen.iconListSig().attach(this);
     screen.currentWorkspaceSig().attach(this);
     // setup focus timer
+
     FbTk::RefCount<FbTk::Command> timer_cmd(new FbTk::SimpleCommand<IconbarTool>(*this, &IconbarTool::timedRender));
     timeval to;
     to.tv_sec = 0;
@@ -557,6 +558,12 @@ void IconbarTool::updateSizing() {
 
 }
 
+void IconbarTool::renderTheme(unsigned char alpha) {
+
+    m_alpha = alpha;
+    renderTheme();
+}
+
 void IconbarTool::renderTheme() {
 
     // update button sizes before we get max width per client!
@@ -619,7 +626,7 @@ void IconbarTool::renderTheme() {
     // set to zero so its consistent and not ugly
     m_icon_container.setBorderWidth(m_theme.border().width());
     m_icon_container.setBorderColor(m_theme.border().color());
-    m_icon_container.setAlpha(m_theme.alpha());
+    m_icon_container.setAlpha(m_alpha);
 
     // update buttons
     IconList::iterator icon_it = m_icon_list.begin();
@@ -632,7 +639,7 @@ void IconbarTool::renderTheme() {
 void IconbarTool::renderButton(IconButton &button, bool clear) {
 
     button.setPixmap(*m_rc_use_pixmap);
-    button.setAlpha(m_theme.alpha());
+    button.setAlpha(m_alpha);
 
     // The last button is always the regular width
     bool wider_button = false;

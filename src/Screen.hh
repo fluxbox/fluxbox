@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.145 2004/09/11 13:29:35 fluxgen Exp $
+// $Id: Screen.hh,v 1.146 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -434,7 +434,8 @@ private:
         FbTk::Resource<std::string> windowmenufile;
         FbTk::Resource<FocusModel> focus_model;
         bool ordered_dither;
-        FbTk::Resource<int> workspaces, edge_snap_threshold, menu_alpha, menu_delay, menu_delay_close;
+        FbTk::Resource<int> workspaces, edge_snap_threshold, focused_alpha,
+            unfocused_alpha, menu_alpha, menu_delay, menu_delay_close;
         FbTk::Resource<FbTk::MenuTheme::MenuMode> menu_mode;
         FbTk::Resource<PlacementPolicy> placement_policy;
         FbTk::Resource<RowDirection> row_direction;

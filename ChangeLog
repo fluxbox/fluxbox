@@ -1,6 +1,24 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/12:
+  * Preliminary support for Composite extension (Simon)
+    - Relies on external compositing manager using _NET_WM_WINDOW_OPACITY
+    - NOTE: Also make alpha resource setting more consistent. 
+      Alpha values are no longer in theme, but are in init file. Possible
+      values are (all beginning with session.screenN.), * means changed/new:
+        -  menu.alpha (*)
+        -  slit.alpha 
+        -  window.focus.alpha (*)
+        -  window.unfocus.alpha (*)
+        -  toolbar.alpha (*)
+    - Changed menu around a bit. If you don't have/want a compositing 
+      manager, but Composite is enabled, you can override it by setting
+        session.forcePseudoTransparency: true 
+    - Fix a couple of bugs with transparency in toolbar/buttons
+   fluxbox.hh/cc Screen.hh/cc FbWinFrame.hh/cc FbWinFrameTheme.hh/cc 
+    Slit.hh/cc Toolbar.hh/cc ToolbarTheme.hh/cc ToolbarItem.hh 
+    ToolFactory.cc *Tool.hh/cc ArrowButton.cc FbTk/FbWindow.hh/cc 
+    FbTk/Transparent.hh/cc FbTk/Menu.cc
   * Minor cleaning, moved Resource<> from fluxbox.cc to Resources.cc (Henrik)
 *04/09/11:
   * The include directive in menu can now take

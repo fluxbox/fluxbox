@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.hh,v 1.15 2004/01/11 16:13:09 fluxgen Exp $
+// $Id: FbWinFrameTheme.hh,v 1.16 2004/09/12 14:56:18 rathnor Exp $
 
 #ifndef FBWINFRAMETHEME_HH
 #define FBWINFRAMETHEME_HH
@@ -94,11 +94,15 @@ public:
 
     inline Shape::ShapePlace shapePlace() const { return *m_shape_place; }
     inline const BorderTheme &border() const { return m_border; }
-    unsigned char alpha() const { return *m_alpha; }
 
     unsigned int titleHeight() const { return *m_title_height; }
     unsigned int bevelWidth() const { return *m_bevel_width; }
     unsigned int handleWidth() const { return *m_handle_width; }
+
+    unsigned char focusedAlpha() const { return m_focused_alpha; }
+    unsigned char unfocusedAlpha() const { return m_unfocused_alpha; }
+    void setFocusedAlpha(unsigned char alpha) { m_focused_alpha = alpha; }
+    void setUnfocusedAlpha(unsigned char alpha) { m_unfocused_alpha = alpha; }
 
 private:
     FbTk::ThemeItem<FbTk::Texture> m_label_focus, m_label_unfocus, m_label_active;
@@ -114,7 +118,7 @@ private:
     FbTk::ThemeItem<FbTk::Justify> m_textjustify;
     FbTk::ThemeItem<Shape::ShapePlace> m_shape_place;
 
-    FbTk::ThemeItem<int> m_alpha, m_title_height, m_bevel_width, m_handle_width;
+    FbTk::ThemeItem<int> m_title_height, m_bevel_width, m_handle_width;
     BorderTheme m_border;
 
     FbTk::GContext m_label_text_focus_gc, m_label_text_unfocus_gc, m_label_text_active_gc;
@@ -125,6 +129,8 @@ private:
     Cursor m_cursor_lower_right_angle;
     Cursor m_cursor_upper_left_angle;
     Cursor m_cursor_upper_right_angle;
+    unsigned char m_focused_alpha;
+    unsigned char m_unfocused_alpha;
 };
 
 #endif // FBWINFRAMETHEME_HH

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.10 2004/08/29 08:33:13 rathnor Exp $
+// $Id: WorkspaceNameTool.cc,v 1.11 2004/09/12 14:56:19 rathnor Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -46,7 +46,6 @@ WorkspaceNameTool::WorkspaceNameTool(const FbTk::FbWindow &parent,
     screen.currentWorkspaceSig().attach(this);
     theme.reconfigSig().attach(this);
 
-    renderTheme();
 }
 
 WorkspaceNameTool::~WorkspaceNameTool() {
@@ -74,7 +73,8 @@ void WorkspaceNameTool::update(FbTk::Subject *subj) {
         resize(width(), height());
         resizeSig().notify();
     }
-    renderTheme();
+    reRender();
+    m_button.clear();
 }
 
 unsigned int WorkspaceNameTool::width() const {
@@ -113,22 +113,29 @@ void WorkspaceNameTool::updateSizing() {
     m_button.setBorderWidth(m_theme.border().width());
 }
 
-void WorkspaceNameTool::renderTheme() {
-    Pixmap tmp = m_pixmap;
-    if (!m_theme.texture().usePixmap()) {
-        m_pixmap = 0;
-        m_button.setBackgroundColor(m_theme.texture().color());
-    } else {
+void WorkspaceNameTool::reRender() {
+    if (m_theme.texture().usePixmap()) {
+        if (m_pixmap) 
+            m_screen.imageControl().removeImage(m_pixmap);
         m_pixmap = m_screen.imageControl().renderImage(width(), height(),
                                                        m_theme.texture());
         m_button.setBackgroundPixmap(m_pixmap);
     }
-    if (tmp)
-        m_screen.imageControl().removeImage(tmp);
+}
+
+void WorkspaceNameTool::renderTheme(unsigned char alpha) {
+    if (!m_theme.texture().usePixmap()) {
+        if (m_pixmap)
+            m_screen.imageControl().removeImage(m_pixmap);
+        m_pixmap = 0;
+        m_button.setBackgroundColor(m_theme.texture().color());
+    } else {
+        reRender();
+    }
 
     m_button.setJustify(m_theme.justify());
     m_button.setBorderWidth(m_theme.border().width());
     m_button.setBorderColor(m_theme.border().color());
-    m_button.setAlpha(m_theme.alpha());
+    m_button.setAlpha(alpha);
     m_button.clear();
 }

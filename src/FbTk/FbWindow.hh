@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.34 2004/09/11 12:33:14 rathnor Exp $
+// $Id: FbWindow.hh,v 1.35 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -162,6 +162,9 @@ public:
     /// compare two windows
     inline bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
     inline bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
+
+    // used for composite
+    void setOpaque(unsigned char alpha);
 
 protected:
     /// creates a window with x window client (m_window = client)

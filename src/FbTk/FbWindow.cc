@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.42 2004/09/11 22:59:15 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.43 2004/09/12 14:56:19 rathnor Exp $
 
 #include "FbWindow.hh"
 #include "FbPixmap.hh"
@@ -161,6 +161,9 @@ void FbWindow::clearArea(int x, int y,
 
 void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, unsigned int the_height) {
 #ifdef HAVE_XRENDER
+    if (!m_transparent.get())
+        return;
+
     if (width() == 0 || height() == 0)
         return;
 
@@ -173,9 +176,6 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
         the_x = 0;
         the_y = 0;
     }
-
-    if (!m_transparent.get())
-        return;
 
     // update source and destination if needed
     Pixmap root = FbPixmap::getRootPixmap(screenNumber());
@@ -215,7 +215,13 @@ void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, u
 
 void FbWindow::setAlpha(unsigned char alpha) {
 #ifdef HAVE_XRENDER
-    if (m_transparent.get() == 0 && alpha < 255) {
+    if (FbTk::Transparent::haveComposite()) {
+        if (m_transparent.get() != 0)
+            m_transparent.reset(0);
+
+        // don't setOpaque, let controlling objects do that
+        // since it's only needed on toplevel windows
+    } else if (m_transparent.get() == 0 && alpha < 255) {
         m_transparent.reset(new Transparent(FbPixmap::getRootPixmap(screenNumber()), window(), alpha, screenNumber()));
     } else if (alpha < 255 && alpha != m_transparent->alpha())
         m_transparent->setAlpha(alpha);
@@ -393,6 +399,14 @@ long FbWindow::eventMask() const {
                          &attrib);
     return attrib.your_event_mask;
 
+}
+
+void FbWindow::setOpaque(unsigned char alpha) {
+#ifdef HAVE_XRENDER
+    static Atom m_alphaatom = XInternAtom(display(), "_NET_WM_WINDOW_OPACITY", False);
+    unsigned int opacity = alpha << 24;
+    changeProperty(m_alphaatom, XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &opacity, 1l);
+#endif // HAVE_XRENDER
 }
 
 void FbWindow::setBufferPixmap(Pixmap pm) {

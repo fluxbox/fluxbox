@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.291 2004/09/11 23:01:34 fluxgen Exp $
+// $Id: Screen.cc,v 1.292 2004/09/12 14:56:18 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -68,6 +68,7 @@
 #include "FbTk/StringUtil.hh"
 #include "FbTk/ImageControl.hh"
 #include "FbTk/EventManager.hh"
+#include "FbTk/Transparent.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -176,7 +177,9 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     focus_model(rm, CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
-    menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
+    focused_alpha(rm, 255, scrname+".window.focus.alpha", altscrname+".Window.Focus.Alpha"),
+    unfocused_alpha(rm, 255, scrname+".window.unfocus.alpha", altscrname+".Window.Unfocus.Alpha"),
+    menu_alpha(rm, 255, scrname+".menu.alpha", altscrname+".Menu.Alpha"),
     menu_delay(rm, 0, scrname + ".menuDelay", altscrname+".MenuDelay"),
     menu_delay_close(rm, 0, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
     menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode"),
@@ -276,8 +279,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     imageControl().installRootColormap();
     root_colormap_installed = true;
 
-
-
+    m_windowtheme->setFocusedAlpha(*resource.focused_alpha);
+    m_windowtheme->setUnfocusedAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
     m_menutheme->setMenuMode(*resource.menu_mode);
     // clamp values
@@ -654,6 +657,8 @@ void BScreen::hideWindowMenus(const FluxboxWindow* except) {
 
 
 void BScreen::reconfigure() {
+    m_windowtheme->setFocusedAlpha(*resource.focused_alpha);
+    m_windowtheme->setUnfocusedAlpha(*resource.unfocused_alpha);
     m_menutheme->setAlpha(*resource.menu_alpha);
     m_menutheme->setMenuMode(*resource.menu_mode);
 
@@ -1814,14 +1819,41 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
               "AntiAlias", "Use Anti-aliased fonts",
               *resource.antialias, save_and_reconfigure);
 #endif // USE_XFT
-#undef _BOOLITEM
 
 #ifdef HAVE_XRENDER
-    FbTk::MenuItem *menu_alpha_item = new IntResMenuItem("Menu Alpha", resource.menu_alpha,
-                                              0, 255);
-    menu_alpha_item->setCommand(saverc_cmd);
-    menu.insert(menu_alpha_item);
+    if (FbTk::Transparent::haveRender() ||
+        FbTk::Transparent::haveComposite()) {
+
+        const char *alphamenu_label = _FBTEXT(Configmenu, Transparency,
+                                          "Transparency", "Menu containing various transparency options");
+        FbTk::Menu *alpha_menu = createMenu(alphamenu_label ? alphamenu_label : "");
+
+        if (FbTk::Transparent::haveComposite(true)) {
+            alpha_menu->insert(new BoolMenuItem(_FBTEXT(Configmenu, ForcePseudoTrans,
+                               "Force Pseudo-Transparency", "When composite is available, still use old pseudo-transparency"),
+                    Fluxbox::instance()->getPseudoTrans(), save_and_reconfigure));
+        }
+
+        FbTk::MenuItem *focused_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, FocusedAlpha, "Focused Window Alpha", "Transparency level of the focused window"),
+                    resource.focused_alpha, 0, 255);
+        focused_alpha_item->setCommand(saverc_cmd);
+        alpha_menu->insert(focused_alpha_item);
+
+        FbTk::MenuItem *unfocused_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, UnfocusedAlpha, "Unfocused Window Alpha", "Transparency level of unfocused windows"),
+                    resource.unfocused_alpha, 0, 255);
+        unfocused_alpha_item->setCommand(saverc_cmd);
+        alpha_menu->insert(unfocused_alpha_item);
+
+        FbTk::MenuItem *menu_alpha_item = new IntResMenuItem(_FBTEXT(Configmenu, MenuAlpha, "Menu Alpha", "Transparency level of menu"),
+                    resource.menu_alpha, 0, 255);
+        menu_alpha_item->setCommand(saverc_cmd);
+        alpha_menu->insert(menu_alpha_item);
+
+        alpha_menu->update();
+        menu.insert(alphamenu_label, alpha_menu);
+    }
 #endif // HAVE_XRENDER
+#undef _BOOLITEM
 
 
     // finaly update menu 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.42 2004/09/11 18:58:27 fluxgen Exp $
+/// $Id: Slit.hh,v 1.43 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -120,6 +120,7 @@ public:
     const SlitClients &clients() const { return m_client_list; }
     SlitClients &clients() { return m_client_list; }
 private:
+    void updateAlpha();
     void clearWindow();
     void setupMenu();
 	

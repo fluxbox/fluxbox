@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GenericTool.cc,v 1.3 2004/01/13 14:41:32 rathnor Exp $
+// $Id: GenericTool.cc,v 1.4 2004/09/12 14:56:18 rathnor Exp $
 
 #include "GenericTool.hh"
 #include "FbTk/FbWindow.hh"
@@ -76,13 +76,13 @@ unsigned int GenericTool::borderWidth() const {
     return m_window->borderWidth();
 }
 
-
-void GenericTool::renderTheme() {
-    m_window->setAlpha(theme().alpha());
+void GenericTool::renderTheme(unsigned char alpha) {
+    m_window->setAlpha(alpha);
     m_window->clear();
     m_window->updateTransparent();
 }
 
 void GenericTool::update(FbTk::Subject *subj) {
-    renderTheme();
+    m_window->clear();
+    m_window->updateTransparent();
 }

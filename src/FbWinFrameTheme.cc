@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrameTheme.cc,v 1.18 2004/05/24 15:30:52 rathnor Exp $
+// $Id: FbWinFrameTheme.cc,v 1.19 2004/09/12 14:56:18 rathnor Exp $
 
 #include "FbWinFrameTheme.hh"
 #include "App.hh"
@@ -58,7 +58,6 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_font(*this, "window.font", "Window.Font"),
     m_textjustify(*this, "window.justify", "Window.Justify"),
     m_shape_place(*this, "window.roundCorners", "Window.RoundCorners"),
-    m_alpha(*this, "window.alpha", "Window.Alpha"),
     m_title_height(*this, "window.title.height", "Window.Title.Height"),
     m_bevel_width(*this, "window.bevelWidth", "Window.BevelWidth"),
     m_handle_width(*this, "window.handleWidth", "Window.handleWidth"),
@@ -67,12 +66,13 @@ FbWinFrameTheme::FbWinFrameTheme(int screen_num):
     m_label_text_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_label_text_active_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
     m_button_pic_focus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
-    m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)) {
+    m_button_pic_unfocus_gc(RootWindow(FbTk::App::instance()->display(), screen_num)),
+    m_focused_alpha(255),
+    m_unfocused_alpha(255) {
 
     *m_title_height = 0;
     // set defaults
     m_font->load("fixed");
-    *m_alpha = 255;
 
     // create cursors
     Display *disp = FbTk::App::instance()->display();
@@ -105,20 +105,12 @@ bool FbWinFrameTheme::fallback(FbTk::ThemeItem_base &item) {
     } else if (item.name() == "window.label.active.textColor") {
         return FbTk::ThemeManager::instance().loadItem(item, "window.label.unfocus.textColor", 
                                                        "Window.Label.Unfocus.TextColor");
-    } else if (item.name() == "window.alpha") {
-        *m_alpha = 255;
-        return true;
     }
 
     return false;
 }
 
 void FbWinFrameTheme::reconfigTheme() {
-    if (*m_alpha > 255)
-        *m_alpha = 255;
-    else if (*m_alpha < 0)
-        *m_alpha = 0;
-
     if (*m_bevel_width > 20)
         *m_bevel_width = 20;
     else if (*m_bevel_width < 0)

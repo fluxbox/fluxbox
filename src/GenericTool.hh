@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GenericTool.hh,v 1.2 2003/10/26 20:11:27 fluxgen Exp $
+// $Id: GenericTool.hh,v 1.3 2004/09/12 14:56:18 rathnor Exp $
 
 #ifndef GENERICTOOL_HH
 #define GENERICTOOL_HH
@@ -57,7 +57,7 @@ public:
     const FbTk::FbWindow &window() const { return *m_window; }
 
 protected:
-    virtual void renderTheme();
+    virtual void renderTheme(unsigned char alpha);
 
 private:
     void update(FbTk::Subject *subj);

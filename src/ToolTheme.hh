@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.hh,v 1.5 2004/01/13 14:41:32 rathnor Exp $
+// $Id: ToolTheme.hh,v 1.6 2004/09/12 14:56:19 rathnor Exp $
 
 #ifndef TOOLTHEME_HH
 #define TOOLTHEME_HH
@@ -48,7 +48,8 @@ public:
     // textures
     const FbTk::Texture &texture() const { return *m_texture; }
     const BorderTheme &border() const { return m_border; }
-    inline unsigned char alpha() const { return *m_alpha; }
+    inline unsigned char alpha() const { return m_alpha; }
+    inline void setAlpha(unsigned char alpha) { m_alpha = alpha; }
 
 protected:
     FbTk::ThemeItem<FbTk::Texture> &textureTheme() { return m_texture; }
@@ -56,7 +57,7 @@ protected:
 private:
     FbTk::ThemeItem<FbTk::Texture> m_texture;
     BorderTheme m_border;
-    FbTk::ThemeItem<int> m_alpha;
+    unsigned char m_alpha;
 };
 
 #endif // TOOLTHEME_HH

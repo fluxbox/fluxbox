@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ButtonTool.cc,v 1.5 2004/08/29 08:33:12 rathnor Exp $
+// $Id: ButtonTool.cc,v 1.6 2004/09/12 14:56:18 rathnor Exp $
 
 #include "ButtonTool.hh"
 
@@ -36,7 +36,6 @@ ButtonTool::ButtonTool(FbTk::Button *button,
     m_cache_pressed_pm(0),
     m_image_ctrl(img_ctrl) {
 
-    renderTheme();
 }
 
 ButtonTool::~ButtonTool() {
@@ -53,13 +52,13 @@ void ButtonTool::updateSizing() {
     btn.setBorderWidth(theme().border().width());
 }
 
-void ButtonTool::renderTheme() {
+void ButtonTool::renderTheme(unsigned char alpha) {
     FbTk::Button &btn = static_cast<FbTk::Button &>(window());
 
     btn.setGC(static_cast<const ButtonTheme &>(theme()).gc());
     btn.setBorderColor(theme().border().color());
     btn.setBorderWidth(theme().border().width());
-    btn.setAlpha(theme().alpha());
+    btn.setAlpha(alpha);
     btn.updateTheme(static_cast<const FbTk::Theme &>(theme()));
 
     Pixmap old_pm = m_cache_pm;

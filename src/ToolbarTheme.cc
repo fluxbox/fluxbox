@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.16 2004/08/25 17:16:40 rathnor Exp $
+// $Id: ToolbarTheme.cc,v 1.17 2004/09/12 14:56:19 rathnor Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -50,7 +50,6 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_border(*this, "toolbar", "Toolbar"),
     m_bevel_width(*this, "toolbar.bevelWidth", "Toolbar.BevelWidth"),
     m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),    
-    m_alpha(*this, "toolbar.alpha", "Toolbar.Alpha"),
     m_height(*this, "toolbar.height", "Toolbar.Height"),
     m_button_size(*this, "toolbar.button.size", "Toolbar.Button.Size") {
     // set default value
@@ -69,9 +68,6 @@ bool ToolbarTheme::fallback(FbTk::ThemeItem_base &item) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
     } else if (item.name().find(".borderColor") != std::string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
-    } else if (item.name() == "toolbar.alpha") {
-        *m_alpha = 255;
-        return true;
     } else if (item.name() == "toolbar.bevelWidth") {
         return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "BevelWidth");
     }
@@ -79,11 +75,6 @@ bool ToolbarTheme::fallback(FbTk::ThemeItem_base &item) {
 }
 
 void ToolbarTheme::reconfigTheme() {
-    if (*m_alpha > 255)
-        *m_alpha = 255;
-    else if (*m_alpha < 0)
-        *m_alpha = 0;
-
     if (*m_bevel_width > 20)
         *m_bevel_width = 20;
 

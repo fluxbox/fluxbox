@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.78 2004/08/11 13:17:56 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.79 2004/09/12 14:56:18 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -29,6 +29,7 @@
 #include "FbTk/App.hh"
 #include "FbTk/SimpleCommand.hh"
 #include "FbTk/Compose.hh"
+#include "FbTk/Transparent.hh"
 #include "CompareWindow.hh"
 #include "FbWinFrameTheme.hh"
 
@@ -215,7 +216,8 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
     } else if (move) {
         m_window.move(x, y);
         // this stuff will be caught by reconfigure if resized
-        if (theme().alpha() != 255) {
+        unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+        if (alpha != 255) {
             // restart update timer
             m_update_timer.start();
         }
@@ -238,6 +240,13 @@ void FbWinFrame::setFocus(bool newvalue) {
             renderButtonFocus(*m_current_label);       
         else // unfocused
             renderButtonActive(*m_current_label);
+    }
+
+    if (theme().focusedAlpha() != theme().unfocusedAlpha() && FbTk::Transparent::haveComposite()) {
+        if (m_focused)
+            m_window.setOpaque(theme().focusedAlpha());
+        else
+            m_window.setOpaque(theme().unfocusedAlpha());
     }
 
     renderTitlebar();
@@ -894,8 +903,9 @@ void FbWinFrame::renderTitlebar() {
     else
         m_titlebar.setBackgroundColor(title_color);
 
-    m_titlebar.setAlpha(theme().alpha());
-    m_label.setAlpha(theme().alpha());
+    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    m_titlebar.setAlpha(alpha);
+    m_label.setAlpha(alpha);
 
     renderLabelButtons();
     redrawTitlebar();
@@ -953,9 +963,10 @@ void FbWinFrame::renderHandles() {
         }                
     }
 
-    m_handle.setAlpha(theme().alpha());
-    m_grip_left.setAlpha(theme().alpha());
-    m_grip_right.setAlpha(theme().alpha());
+    unsigned char alpha = (m_focused?theme().focusedAlpha():theme().unfocusedAlpha());
+    m_handle.setAlpha(alpha);
+    m_grip_left.setAlpha(alpha);
+    m_grip_right.setAlpha(alpha);
 
     m_grip_left.clear();
     m_grip_left.updateTransparent();
@@ -999,12 +1010,19 @@ void FbWinFrame::renderButtons() {
 
 void FbWinFrame::init() {
 
-    // setup update timer
-    FbTk::RefCount<FbTk::Command> update_transp(new FbTk::SimpleCommand<FbWinFrame>(*this, 
-                                                                                    &FbWinFrame::updateTransparent));
-    m_update_timer.setCommand(update_transp);
-    m_update_timer.setTimeout(10L);
-    m_update_timer.fireOnce(true);
+    if (FbTk::Transparent::haveComposite()) {
+        if (m_focused)
+            m_window.setOpaque(theme().focusedAlpha());
+        else
+            m_window.setOpaque(theme().unfocusedAlpha());
+    } else {
+        // setup update timer
+        FbTk::RefCount<FbTk::Command> update_transp(new FbTk::SimpleCommand<FbWinFrame>(*this, 
+                                                                                        &FbWinFrame::updateTransparent));
+        m_update_timer.setCommand(update_transp);
+        m_update_timer.setTimeout(10L);
+        m_update_timer.fireOnce(true);
+    }
 
     if (theme().handleWidth() == 0)
         m_use_handle = false;
@@ -1052,6 +1070,7 @@ void FbWinFrame::setupButton(FbTk::Button &btn) {
             btn.setBackgroundPixmap(m_button_pm);
         else
             btn.setBackgroundColor(m_button_color);
+        btn.setAlpha(theme().focusedAlpha());
     } else { // unfocused
         btn.setGC(m_theme.buttonPicUnfocusGC());
         if (m_button_unfocused_pm)
@@ -1059,9 +1078,9 @@ void FbWinFrame::setupButton(FbTk::Button &btn) {
         else
             btn.setBackgroundColor(m_button_unfocused_color);
 
+        btn.setAlpha(theme().unfocusedAlpha());
     }
 
-    btn.setAlpha(theme().alpha());
 }
 
 void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
@@ -1182,7 +1201,7 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
     button.setGC(theme().labelTextFocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
-    button.setAlpha(theme().alpha());
+    button.setAlpha(theme().focusedAlpha());
 
     if (m_label_focused_pm != 0) {
         // already set
@@ -1198,7 +1217,7 @@ void FbWinFrame::renderButtonActive(FbTk::TextButton &button) {
     button.setGC(theme().labelTextActiveGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
-    button.setAlpha(theme().alpha());
+    button.setAlpha(theme().focusedAlpha());
 
     if (m_label_active_pm != 0) {
         // already set
@@ -1214,7 +1233,7 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
     button.setGC(theme().labelTextUnfocusGC());
     button.setJustify(theme().justify());
     button.setBorderWidth(1);
-    button.setAlpha(theme().alpha());
+    button.setAlpha(theme().unfocusedAlpha());
 
     if (m_label_unfocused_pm != 0) {
         // already set
@@ -1246,6 +1265,8 @@ private:
 }
 
 void FbWinFrame::updateTransparent() {
+    if (FbTk::Transparent::haveComposite())
+        return;
 
     m_label.clear();
     m_label.updateTransparent();
