@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.2 2003/07/10 14:47:53 fluxgen Exp $
+// $Id: Shape.cc,v 1.3 2003/08/13 22:52:35 fluxgen Exp $
 
 #include "Shape.hh"
 #include "FbWindow.hh"
@@ -144,6 +144,18 @@ Shape::Shape(FbTk::FbWindow &win, int shapeplaces):
 Shape::~Shape() {
     if (m_shape != 0)
         XFreePixmap(FbTk::App::instance()->display(), m_shape);
+
+#ifdef SHAPE
+    if (m_win != 0 && m_win->window()) {
+        // reset shape of window
+        XShapeCombineMask(FbTk::App::instance()->display(),
+                          m_win->window(),
+                          ShapeBounding,
+                          0, 0,
+                          0,
+                          ShapeSet);
+    }
+#endif // SHAPE
 }
 
 void Shape::setPlaces(int shapeplaces) {
@@ -164,9 +176,8 @@ void Shape::update() {
 
     }
 
-    if (m_shape == 0)
-        return;
-
+    // the m_shape can be = 0 which will just reset the shape mask
+    // and make the window normal 
     XShapeCombineMask(FbTk::App::instance()->display(),
                       m_win->window(),
                       ShapeBounding,
