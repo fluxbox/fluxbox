@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.271 2004/03/21 09:00:25 rathnor Exp $
+// $Id: Window.cc,v 1.272 2004/03/28 17:48:20 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2951,15 +2951,23 @@ void FluxboxWindow::doSnapping(int &orig_left, int &orig_top) {
     /////////////////////////////////////
     // begin by checking the screen (or Xinerama head) edges
 
-    // head "0" == whole screen width + height, which we skip since the
-    // sum of all the heads covers those edges
-    for (int h = 1; h <= screen().numHeads(); h++) {
+    if (screen().numHeads() > 0) {
+        // head "0" == whole screen width + height, which we skip since the
+        // sum of all the heads covers those edges
+        for (int h = 1; h <= screen().numHeads(); h++) {
+            snapToWindow(dx, dy, left, right, top, bottom, 
+                         screen().maxLeft(h),
+                         screen().maxRight(h),
+                         screen().maxTop(h),
+                         screen().maxBottom(h));
+        }
+    } else {
         snapToWindow(dx, dy, left, right, top, bottom, 
-                     screen().maxLeft(h),
-                     screen().maxRight(h),
-                     screen().maxTop(h),
-                     screen().maxBottom(h));
-    }    
+                     screen().maxLeft(0),
+                     screen().maxRight(0),
+                     screen().maxTop(0),
+                     screen().maxBottom(0));
+    }
     /////////////////////////////////////
     // now check window edges
 
