@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.18 2002/10/29 15:53:45 fluxgen Exp $
+// $Id: IconBar.cc,v 1.19 2002/11/27 21:46:14 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -118,7 +118,7 @@ Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
 	BImageControl *image_ctrl = m_screen->getImageControl();
 	Pixmap tmp = m_focus_pm;
-	FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
+	const FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
 	
 	//If we are working on a PARENTRELATIVE, change to right focus value
 	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
@@ -130,7 +130,7 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 			m_focus_pixel = texture->color().pixel();
 	} else {
 		m_focus_pm =
-			image_ctrl->renderImage(width, height, texture);	 
+			image_ctrl->renderImage(width, height, *texture);
 	}
 
 	if (tmp)

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.44 2002/11/27 13:03:04 fluxgen Exp $
+// $Id: Tab.cc,v 1.45 2002/11/27 21:51:33 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -191,13 +191,13 @@ void Tab::lower() {
 void Tab::loadTheme() {
 	BImageControl *image_ctrl = m_win->getScreen()->getImageControl();
 	Pixmap tmp = m_focus_pm;
-	FbTk::Texture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
+	const FbTk::Texture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
 
 	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
-		FbTk::Texture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_focus);
-		if (pt->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+		const FbTk::Texture &pt = m_win->getScreen()->getWindowStyle()->tab.t_focus;
+		if (pt.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			m_focus_pm = None;
-			m_focus_pixel = pt->color().pixel();
+			m_focus_pixel = pt.color().pixel();
 		} else
 			m_focus_pm =
 				image_ctrl->renderImage(m_size_w, m_size_h, pt);
@@ -210,7 +210,7 @@ void Tab::loadTheme() {
 			m_focus_pixel = texture->color().pixel();
 		} else
 			m_focus_pm =
-				image_ctrl->renderImage(m_size_w, m_size_h, texture);
+				image_ctrl->renderImage(m_size_w, m_size_h, *texture);
 		if (tmp) image_ctrl->removeImage(tmp);
 	}
 
@@ -218,10 +218,10 @@ void Tab::loadTheme() {
 	texture = &(m_win->getScreen()->getWindowStyle()->tab.l_unfocus);
 
 	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
-		FbTk::Texture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_unfocus);
-		if (pt->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+		const FbTk::Texture &pt = m_win->getScreen()->getWindowStyle()->tab.t_unfocus;
+		if (pt.type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			m_unfocus_pm = None;
-			m_unfocus_pixel = pt->color().pixel();
+			m_unfocus_pixel = pt.color().pixel();
 		} else
 			m_unfocus_pm =
 			image_ctrl->renderImage(m_size_w, m_size_h, pt);
@@ -231,7 +231,7 @@ void Tab::loadTheme() {
 			m_unfocus_pixel = texture->color().pixel();
 		} else
 			m_unfocus_pm =
-				image_ctrl->renderImage(m_size_w, m_size_h, texture);
+				image_ctrl->renderImage(m_size_w, m_size_h, *texture);
 	}
 	
 	if (tmp) image_ctrl->removeImage(tmp);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.42 2002/11/27 12:20:23 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.43 2002/11/27 21:48:41 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -384,14 +384,14 @@ void Toolbar::reconfigure() {
 		frame.label_h);
 
 	Pixmap tmp = frame.base;
-	FbTk::Texture *texture = &(screen()->getToolbarStyle()->toolbar);
+	const FbTk::Texture *texture = &(screen()->getToolbarStyle()->toolbar);
 	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.base = None;
 		XSetWindowBackground(display, frame.window,
 			 texture->color().pixel());
 	} else {
 		frame.base =
-			image_ctrl->renderImage(frame.width, frame.height, texture);
+			image_ctrl->renderImage(frame.width, frame.height, *texture);
 		XSetWindowBackgroundPixmap(display, frame.window, frame.base);
 	}
 	if (tmp) image_ctrl->removeImage(tmp);
@@ -404,7 +404,7 @@ void Toolbar::reconfigure() {
 			 texture->color().pixel());
 	} else {
 		frame.label =
-			image_ctrl->renderImage(frame.window_label_w, frame.label_h, texture);
+			image_ctrl->renderImage(frame.window_label_w, frame.label_h, *texture);
 		XSetWindowBackgroundPixmap(display, frame.window_label, frame.label);
 	}
 	if (tmp) image_ctrl->removeImage(tmp);
@@ -417,7 +417,7 @@ void Toolbar::reconfigure() {
 			 texture->color().pixel());
 	} else {
 		frame.wlabel =
-			image_ctrl->renderImage(frame.workspace_label_w, frame.label_h, texture);
+			image_ctrl->renderImage(frame.workspace_label_w, frame.label_h, *texture);
 		XSetWindowBackgroundPixmap(display, frame.workspace_label, frame.wlabel);
 	}
 	if (tmp) image_ctrl->removeImage(tmp);
@@ -426,11 +426,10 @@ void Toolbar::reconfigure() {
 	texture = &(screen()->getToolbarStyle()->clock);
 	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.clk = None;
-		XSetWindowBackground(display, frame.clock,
-			 texture->color().pixel());
+		XSetWindowBackground(display, frame.clock, texture->color().pixel());
 	} else {
 		frame.clk =
-			image_ctrl->renderImage(frame.clock_w, frame.label_h, texture);
+			image_ctrl->renderImage(frame.clock_w, frame.label_h, *texture);
 		XSetWindowBackgroundPixmap(display, frame.clock, frame.clk);
 	}
 	if (tmp) image_ctrl->removeImage(tmp);
@@ -447,14 +446,15 @@ void Toolbar::reconfigure() {
 		XSetWindowBackground(display, frame.nwbutton, frame.button_pixel);
 	} else {
 		frame.button =
-			image_ctrl->renderImage(frame.button_w, frame.button_w, texture);
+			image_ctrl->renderImage(frame.button_w, frame.button_w, *texture);
 
 		XSetWindowBackgroundPixmap(display, frame.psbutton, frame.button);
 		XSetWindowBackgroundPixmap(display, frame.nsbutton, frame.button);
 		XSetWindowBackgroundPixmap(display, frame.pwbutton, frame.button);
 		XSetWindowBackgroundPixmap(display, frame.nwbutton, frame.button);
 	}
-	if (tmp) image_ctrl->removeImage(tmp);
+	if (tmp) 
+		image_ctrl->removeImage(tmp);
 
 	tmp = frame.pbutton;
 	texture = &(screen()->getToolbarStyle()->pressed);
@@ -463,8 +463,9 @@ void Toolbar::reconfigure() {
 		frame.pbutton_pixel = texture->color().pixel();
 	} else
 		frame.pbutton =
-			image_ctrl->renderImage(frame.button_w, frame.button_w, texture);
-	if (tmp) image_ctrl->removeImage(tmp);
+			image_ctrl->renderImage(frame.button_w, frame.button_w, *texture);
+	if (tmp) 
+		image_ctrl->removeImage(tmp);
 
 	XSetWindowBorder(display, frame.window,
 			 screen()->getBorderColor()->pixel());

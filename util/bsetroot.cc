@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.11 2002/11/26 17:48:58 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.12 2002/11/27 21:52:34 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -349,7 +349,7 @@ void bsetroot::gradient(void) {
 			texture.colorTo().setPixel(BlackPixel(getXDisplay(), screen));
 
 		tmp = img_ctrl[screen]->renderImage(getScreenInfo(screen)->getWidth(),
-			getScreenInfo(screen)->getHeight(), &texture);
+			getScreenInfo(screen)->getHeight(), texture);
 
 		pixmaps[screen] = XCreatePixmap(getXDisplay(), 
 			getScreenInfo(screen)->getRootWindow(),
@@ -365,7 +365,7 @@ void bsetroot::gradient(void) {
 
 		setRootAtoms(pixmaps[screen], screen);
 
-    XSetWindowBackgroundPixmap(getXDisplay(),
+	    XSetWindowBackgroundPixmap(getXDisplay(),
 			getScreenInfo(screen)->getRootWindow(), pixmaps[screen]);
 
 		XClearWindow(getXDisplay(), getScreenInfo(screen)->getRootWindow());
