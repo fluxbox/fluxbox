@@ -1,5 +1,6 @@
 Changes for 0.1.6:
 *02/01/05:
+   * Fixed tab/iconbar resource bug (Claes Nästén)
    * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay )
    * Fixed stickytoggle bug in Windowmenu (Thanks Chris Elston)
    * Fixed shade bug in Windowmenu 
