@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.2 2002/12/01 13:42:14 rathnor Exp $
+//$Id: Font.cc,v 1.3 2002/12/08 19:12:07 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -156,10 +156,28 @@ int Font::ascent() const {
 int Font::descent() const { 
     return m_fontimp->descent();
 }
-void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
+void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y, 
+                    bool rotate) const {
     if (text == 0 || len == 0)
         return;
-    m_fontimp->drawText(w, screen, gc, text, len, x, y);		
+    if (!rotate && isRotated()) {
+        // if this was called with request to not rotated the text
+        // we just forward it to the implementation that handles rotation
+        // currently just XFontImp
+        // Using dynamic_cast just temporarly until there's a better solution 
+        // to put in FontImp
+        try {
+            XFontImp *font = dynamic_cast<XFontImp *>(m_fontimp.get());
+            font->setRotate(false); // disable rotation temporarly
+            font->drawText(w, screen, gc, text, len, x, y);
+            font->setRotate(true); // enable rotation
+        } catch (std::bad_cast &bc) {
+            // draw normal...
+            m_fontimp->drawText(w, screen, gc, text, len, x, y);
+        }
+
+    } else
+        m_fontimp->drawText(w, screen, gc, text, len, x, y);		
 }	
 
 void Font::rotate(float angle) {
@@ -173,12 +191,15 @@ void Font::rotate(float angle) {
     // if we're going to rotate this font
     if (angle != 0 && isAntialias() && !isRotated()) {
         m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
+        if (!m_fontimp->loaded()) // if it failed to load font, try default font fixed
+            m_fontimp->load("fixed");
     }
 
     //Note: only XFontImp implements FontImp::rotate
     m_fontimp->rotate(angle);
 
     m_rotated = (angle == 0 ? false : true);
+    m_angle = angle;
 }
 
 };
