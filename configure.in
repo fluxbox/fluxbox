@@ -470,6 +470,7 @@ data/styles/BlueFlux/pixmaps/Makefile
 data/styles/Emerge/Makefile
 data/styles/Emerge/pixmaps/Makefile
 doc/Makefile
+doc/ru/Makefile
 nls/Makefile
 nls/C/Makefile
 nls/da_DK/Makefile

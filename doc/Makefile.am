@@ -1,7 +1,6 @@
 # doc/Makefile.am for Fluxbox 0.9  - an X11 Window manager
 # Makefile.am for fluxbox/doc
 
-# BUG SUBDIRS does not work for me.
 SUBDIRS = ru
 CLEANFILES = fluxbox.1
 MAINTAINERCLEANFILES = Makefile.in
