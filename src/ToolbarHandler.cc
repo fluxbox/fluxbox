@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.3 2003/03/10 22:25:18 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.4 2003/03/23 05:07:03 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -101,6 +101,7 @@ ToolbarHandler::ToolbarHandler(BScreen &screen, ToolbarMode mode)
 void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
     if (mode < 0 || mode >= LASTMODE || (mode == m_mode && initialise)) return;
     if (mode == OFF) {
+        m_mode = mode;
         m_toolbarmenu.removeAll();
         //TODO: nls
         m_toolbarmenu.insert("Mode...", &m_modemenu);
