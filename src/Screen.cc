@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.242 2003/12/03 23:08:48 fluxgen Exp $
+// $Id: Screen.cc,v 1.243 2003/12/04 00:08:05 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -866,8 +866,9 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
 
 void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS) {
-    if (! m_current_workspace || id >= m_workspaces_list.size())
+    if (! m_current_workspace || id >= m_workspaces_list.size()) {
         return;
+    }
 
     if (!win) {
         WinClient *client = Fluxbox::instance()->getFocusedWindow();
@@ -875,28 +876,33 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
             win = client->fbwindow();
     }
 
-    if (id != currentWorkspace()->workspaceID()) {
-        XSync(FbTk::App::instance()->display(), True);
 
-        if (win && &win->screen() == this &&
-            (! win->isStuck())) {
+    XSync(FbTk::App::instance()->display(), True);
 
-            if (win->isIconic()) {
-                win->deiconify();
-            }
+    if (win && &win->screen() == this &&
+        (! win->isStuck())) {
 
+        if (win->isIconic()) {
+            win->deiconify();
+        }
+
+        if (id != currentWorkspace()->workspaceID())
             win->withdraw();
-            reassociateWindow(win, id, true);
-			
-            // change workspace ?
-            if (changeWS) {
-                changeWorkspaceID(id);
-                win->setInputFocus();
-            }
 
+
+        reassociateWindow(win, id, true);
+			
+        if (id == currentWorkspace()->workspaceID())
+            win->deiconify(false, false);
+
+        // change workspace ?
+        if (changeWS && id != currentWorkspace()->workspaceID()) {
+            changeWorkspaceID(id);
+            win->setInputFocus();
         }
 
     }
+
 }
 
 

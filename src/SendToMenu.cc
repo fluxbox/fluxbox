@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.cc,v 1.3 2003/11/28 13:39:41 fluxgen Exp $
+// $Id: SendToMenu.cc,v 1.4 2003/12/04 00:08:55 fluxgen Exp $
 
 #include "SendToMenu.hh"
 
@@ -53,9 +53,11 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
     // workspace count signal
     // workspace names signal
     // current workspace signal
+    // and window's workspace sig
     win.screen().workspaceCountSig().attach(this);
     win.screen().workspaceNamesSig().attach(this);
     win.screen().currentWorkspaceSig().attach(this);
+    win.workspaceSig().attach(this);
 
     disableTitle();
     // build menu
@@ -64,13 +66,15 @@ SendToMenu::SendToMenu(FluxboxWindow &win):
 
 void SendToMenu::update(FbTk::Subject *subj) {
     // if workspace changed we enable all workspaces except the current one
-    if (subj != 0 && subj == &(m_win.screen().currentWorkspaceSig())) {
+    if (subj != 0 && (subj == &(m_win.screen().currentWorkspaceSig()) || 
+                      subj == &(m_win.workspaceSig()))) {
         // enabled all workspaces
         const BScreen::Workspaces &wlist = m_win.screen().getWorkspacesList();
         for (size_t i = 0; i < wlist.size(); ++i)
             setItemEnabled(i, true);
-        // disable current workspace
-        setItemEnabled(m_win.screen().currentWorkspaceID(), false);
+        // disable send to on the workspace which the window exist
+        setItemEnabled(m_win.workspaceNumber(), false);
+        FbMenu::update();
         // we're done
         return;
     }
@@ -83,7 +87,10 @@ void SendToMenu::update(FbTk::Subject *subj) {
     for (size_t i = 0; i < wlist.size(); ++i) {
         FbTk::RefCount<FbTk::Command> sendto_cmd(new SendToCmd(m_win, i));
         insert(wlist[i]->name().c_str(), sendto_cmd);
+
     }
+
+    setItemEnabled(m_win.workspaceNumber(), false);
 
     FbMenu::update();
 }
