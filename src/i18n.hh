@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.3 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: i18n.hh,v 1.4 2002/01/11 11:54:48 fluxgen Exp $
 
 #ifndef   _I18N_HH_
 #define   _I18N_HH_
@@ -42,6 +42,9 @@ extern "C" {
 }
 #endif // HAVE_NL_TYPES_H
 
+#ifdef __CYGWIN32__
+#  include "nl_types_cygnus.h"
+#endif
 
 class I18n {
 private:
