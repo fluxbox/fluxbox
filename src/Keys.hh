@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.19 2003/02/02 16:32:38 rathnor Exp $
+// $Id: Keys.hh,v 1.20 2003/02/28 23:37:41 fluxgen Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -28,8 +28,9 @@
 #include <vector>
 #include <X11/Xlib.h>
 
-class Keys 
-{
+#include "NotCopyable.hh"
+
+class Keys:private FbTk::NotCopyable  {
 public:
     /**
        Key actions
@@ -69,7 +70,7 @@ public:
        @param display display connection
        @param filename file to load, default none
     */
-    Keys(Display *display, const char *filename=0);
+    explicit Keys(const char *filename=0);
     /// destructor
     ~Keys();
     /**
