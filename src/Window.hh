@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.100 2003/10/28 02:17:03 rathnor Exp $
+// $Id: Window.hh,v 1.101 2003/12/07 17:47:42 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -344,6 +344,7 @@ public:
     FbTk::Subject &dieSig() { return m_diesig; }
     const FbTk::Subject &dieSig() const { return m_diesig; }
     FbTk::Subject &focusSig() { return m_focussig; }
+    FbTk::Subject &titleSig() { return m_titlesig; }
     /** @} */ // end group signals
 
     const timeval &lastFocusTime() const { return m_last_focus_time;}
@@ -375,7 +376,6 @@ private:
     void stopMoving();
     void startResizing(Window win, int x, int y);
     void stopResizing(Window win=0);
-    void updateIcon();
     /// try to attach current attaching client to a window at pos x, y
     void attachTo(int x, int y);
 
@@ -385,7 +385,7 @@ private:
     /// gets icon name from client window
     void updateIconNameFromClient(WinClient &client);
     void updateMWMHintsFromClient(WinClient &client);
-    void updateBlackboxHintsFromClient(WinClient &client);
+    void updateBlackboxHintsFromClient(const WinClient &client);
     void saveBlackboxAttribs();
     void setNetWMAttributes();
     void associateClientWindow(bool use_attrs = false, int x = 0, int y = 0, unsigned int width = 1, unsigned int height = 1);
@@ -404,7 +404,7 @@ private:
     /// sends configurenotify to all clients
     void sendConfigureNotify(bool send_to_netizens = true);
     // state and hint signals
-    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig;
+    WinSubject m_hintsig, m_statesig, m_layersig, m_workspacesig, m_diesig, m_focussig, m_titlesig;
 
     // Window states
     bool moving, resizing, shaded, iconic,

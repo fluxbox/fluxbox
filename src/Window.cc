@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.247 2003/12/04 21:31:02 fluxgen Exp $
+// $Id: Window.cc,v 1.248 2003/12/07 17:47:42 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -257,6 +257,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_workspacesig(*this),
     m_diesig(*this),
     m_focussig(*this),
+    m_titlesig(*this),
     moving(false), resizing(false), shaded(false), 
     iconic(false), focused(false),
     stuck(false), m_managed(false),
@@ -1057,7 +1058,7 @@ void FluxboxWindow::updateFunctions() {
         setupWindow();
 }
 
-void FluxboxWindow::updateBlackboxHintsFromClient(WinClient &client) {
+void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
     const FluxboxWindow::BlackboxHints *hint = client.getBlackboxHint();
     if (!hint) return;
 
@@ -1225,7 +1226,7 @@ void FluxboxWindow::iconify() {
     if (isIconic()) // no need to iconify if we're already
         return;
 
-    m_windowmenu.hide();
+    menu().hide();
     iconic = true;
 
     setState(IconicState);
@@ -2133,20 +2134,11 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         break;
 
     case XA_WM_ICON_NAME:
-        client.updateIconTitle();
-        updateIconNameFromClient(client);
-        updateIcon();
-        break;
-
+        // update icon title and then do normal XA_WM_NAME stuff
+        client.updateIconTitle(); 
     case XA_WM_NAME:
         updateTitleFromClient(client);
-
-        if (! iconic)
-            screen().getWorkspace(m_workspace_number)->update();
-        else
-            updateIcon();
-		 
-
+        m_titlesig.notify();
         break;
 
     case XA_WM_NORMAL_HINTS: {
@@ -3026,10 +3018,6 @@ void FluxboxWindow::attachTo(int x, int y) {
                     
     }
     m_attaching_tab = 0;
-}
-
-void FluxboxWindow::updateIcon() {
-    //!! TODO: notify listeners about icon name change
 }
 
 void FluxboxWindow::restore(WinClient *client, bool remap) {
