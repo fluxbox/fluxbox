@@ -135,8 +135,10 @@ bool ThemeManager::load(const std::string &filename, int screen_num) {
     theme_it = m_themelist.begin();
     for (; theme_it != theme_it_end; ++theme_it) {
         // send reconfiguration signal to theme and listeners
-        (*theme_it)->reconfigTheme();
-        (*theme_it)->reconfigSig().notify();
+        if (screen_num < 0 || (*theme_it)->screenNum() == screen_num) {
+            (*theme_it)->reconfigTheme();
+            (*theme_it)->reconfigSig().notify();
+        }
     }
     return true;
 }

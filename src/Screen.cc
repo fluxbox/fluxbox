@@ -368,7 +368,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // So we lock root theme temporary so it doesn't uses RootTheme::reconfigTheme
     // This must be fixed in the future.
     m_root_theme->lock(true);
-    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename());
+    FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename(),
+                                        m_root_theme->screenNum());
     m_root_theme->lock(false);
     m_root_theme->setLineAttributes(*resource.gc_line_width,
                                     *resource.gc_line_style,
