@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.110 2003/01/09 20:44:09 fluxgen Exp $
+// $Id: Window.cc,v 1.111 2003/01/09 22:18:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -31,7 +31,6 @@
 #include "Screen.hh"
 #include "StringUtil.hh"
 #include "Netizen.hh"
-#include "ImageControl.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
 
@@ -96,7 +95,7 @@ void grabButton(Display *display, unsigned int button,
 
 };
 
-FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, BImageControl &imgctrl, FbWinFrameTheme &tm,
+FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme):
     m_hintsig(*this),
     m_statesig(*this),
