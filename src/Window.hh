@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.8 2002/02/11 11:47:37 fluxgen Exp $
+// $Id: Window.hh,v 1.9 2002/02/16 11:26:22 fluxgen Exp $
 
 #ifndef	 _WINDOW_HH_
 #define	 _WINDOW_HH_
@@ -162,14 +162,14 @@ public:
 	bool destroyNotifyEvent(XDestroyWindowEvent *);
 	void mapRequestEvent(XMapRequestEvent *);
 	void mapNotifyEvent(XMapEvent *);
-	void unmapNotifyEvent(XUnmapEvent *);
+	bool unmapNotifyEvent(XUnmapEvent *);
 	void propertyNotifyEvent(Atom);
 	void exposeEvent(XExposeEvent *);
 	void configureRequestEvent(XConfigureRequestEvent *);
 
-#ifdef		SHAPE
+	#ifdef SHAPE
 	void shapeEvent(XShapeEvent *);
-#endif // SHAPE
+	#endif // SHAPE
 
 	virtual void timeout(void);
 	
@@ -261,6 +261,8 @@ private:
 
 	enum { F_NOINPUT = 0, F_PASSIVE, F_LOCALLYACTIVE, F_GLOBALLYACTIVE };
 
+	void grabButtons();
+	
 	void createButton(int type, ButtonEventProc, ButtonEventProc, ButtonDrawProc);
 	#ifdef GNOME
 	void updateGnomeAtoms();
