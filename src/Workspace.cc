@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.59 2003/05/07 16:21:26 rathnor Exp $
+// $Id: Workspace.cc,v 1.60 2003/05/10 23:07:04 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -514,7 +514,7 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         Window ignore_w;
 
         XQueryPointer(FbTk::App::instance()->display(),
-                      screen.getRootWindow(), &ignore_w, 
+                      screen.rootWindow().window(), &ignore_w, 
                       &ignore_w, &root_x, &root_y,
                       &ignore_i, &ignore_i, &ignore_ui);
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.133 2003/05/10 15:22:28 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.134 2003/05/10 23:07:42 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1631,7 +1631,7 @@ BScreen *Fluxbox::searchScreen(Window window) {
 
     for (; it != it_end; ++it) {
         if (*it) {
-            if ((*it)->getRootWindow() == window) {
+            if ((*it)->rootWindow() == window) {
                 screen = (*it);
                 return screen;
             }
@@ -2375,7 +2375,7 @@ void Fluxbox::revertFocus(BScreen *screen) {
         int ignored;
         BScreen *tempscr = m_screen_list.front();
         XQueryPointer(FbTk::App::instance()->display(),
-                      tempscr->getRootWindow(), &root, &ignorew, &ignored, 
+                      tempscr->rootWindow().window(), &root, &ignorew, &ignored, 
                       &ignored, &ignored, &ignored, (unsigned int *)&ignored);
         screen = searchScreen(root);
         if (screen == 0) {
@@ -2402,7 +2402,7 @@ void Fluxbox::revertFocus(BScreen *screen) {
             break;
         case CLICKTOFOCUS:
             XSetInputFocus(FbTk::App::instance()->display(), 
-                           screen->getRootWindow(),
+                           screen->rootWindow().window(),
                            RevertToPointerRoot, CurrentTime);
             break;
         }
@@ -2419,6 +2419,6 @@ void Fluxbox::watchKeyRelease(BScreen &screen, unsigned int mods) {
     m_watching_screen = &screen;
     m_watch_keyrelease = mods;
     XGrabKeyboard(FbTk::App::instance()->display(),
-                  screen.getRootWindow(), True, 
+                  screen.rootWindow().window(), True, 
                   GrabModeAsync, GrabModeAsync, CurrentTime);
 }
