@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.33 2003/12/15 20:20:20 rathnor Exp $
+// $Id: WinClient.cc,v 1.34 2003/12/21 13:31:12 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -386,6 +386,20 @@ void WinClient::updateWMHints() {
         initial_state = NormalState;
     } else {
         wm_hint_flags = wmhint->flags;
+        /*
+         * ICCCM 4.1.7
+         *---------------------------------------------
+         * Input Model      Input Field   WM_TAKE_FOCUS
+         *---------------------------------------------
+         * No Input          False         Absent
+         * Passive           True          Absent
+         * Locally Active    True          Present
+         * Globally Active   False         Present
+         *---------------------------------------------
+         * Here: WM_TAKE_FOCUS = send_focus_message
+         *       Input Field   = wmhint->input
+         *       Input Model   = m_focus_mode
+         */
         if (wmhint->flags & InputHint) {
             if (wmhint->input) {
                 if (send_focus_message)
@@ -398,13 +412,14 @@ void WinClient::updateWMHints() {
                 else
                     m_focus_mode = F_NOINPUT;
             }
-        } else // not present => false (check?). 
+        } else { // not present => assuming False. 
             // note that mozilla has no value, and has send_focus
             // and requires globally active
             if (send_focus_message)
                 m_focus_mode = F_GLOBALLYACTIVE;
             else // lots of apps have no hint, but need focus
                 m_focus_mode = F_PASSIVE; 
+        }
 
         if (wmhint->flags & StateHint)
             initial_state = wmhint->initial_state;
