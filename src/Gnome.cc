@@ -19,13 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.15 2003/04/14 12:11:59 fluxgen Exp $
+// $Id: Gnome.cc,v 1.16 2003/04/15 00:17:59 fluxgen Exp $
 
 #include "Gnome.hh"
 
 #include "fluxbox.hh"
 #include "Window.hh"
 #include "Screen.hh"
+#include "WinClient.hh"
 
 #include <iostream>
 #include <new>
@@ -125,10 +126,17 @@ void Gnome::setupWindow(FluxboxWindow &win) {
 void Gnome::updateClientList(BScreen &screen) {
     size_t num=0;
 
-    BScreen::Workspaces::const_iterator workspace_it = screen.getWorkspacesList().begin();
-    BScreen::Workspaces::const_iterator workspace_it_end = screen.getWorkspacesList().end();
+    BScreen::Workspaces::const_iterator workspace_it = 
+        screen.getWorkspacesList().begin();
+    BScreen::Workspaces::const_iterator workspace_it_end = 
+        screen.getWorkspacesList().end();
     for (; workspace_it != workspace_it_end; ++workspace_it) {
-        num += (*workspace_it)->getWindowList().size();
+        Workspace::Windows::iterator win_it = 
+            (*workspace_it)->getWindowList().begin();
+        Workspace::Windows::iterator win_it_end = 
+            (*workspace_it)->getWindowList().end();
+        for (; win_it != win_it_end; ++win_it)
+            num += (*win_it)->numClients();
     }
     //int num = getCurrentWorkspace()->getWindowList().size();
 	
@@ -143,14 +151,21 @@ void Gnome::updateClientList(BScreen &screen) {
     for (; workspace_it != workspace_it_end; ++workspace_it) {
 	
         // Fill in array of window ID's
-        Workspace::Windows::const_iterator it = (*workspace_it)->getWindowList().begin();
-        Workspace::Windows::const_iterator it_end = (*workspace_it)->getWindowList().end();		
+        Workspace::Windows::const_iterator it = 
+            (*workspace_it)->getWindowList().begin();
+        Workspace::Windows::const_iterator it_end = 
+            (*workspace_it)->getWindowList().end();		
         for (; it != it_end; ++it) {
             // TODO!
             //check if the window don't want to be visible in the list
             //if (! ( (*it)->getGnomeHints() & WIN_STATE_HIDDEN) ) {
-            wl[win++] = (*it)->getClientWindow();
-            //}
+            std::list<WinClient *>::iterator client_it = 
+                (*it)->clientList().begin();
+            std::list<WinClient *>::iterator client_it_end = 
+                (*it)->clientList().end();
+            for (; client_it != client_it_end; ++client_it)
+                wl[win++] = (*client_it)->window();
+
         }
     }
     //number of windows to show in client list

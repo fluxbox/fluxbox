@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.15 2003/04/14 12:11:21 fluxgen Exp $
+// $Id: Ewmh.cc,v 1.16 2003/04/15 00:14:24 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -128,10 +128,19 @@ void Ewmh::setupWindow(FluxboxWindow &win) {
 void Ewmh::updateClientList(BScreen &screen) {
     size_t num=0;
 
-    BScreen::Workspaces::const_iterator workspace_it = screen.getWorkspacesList().begin();
-    BScreen::Workspaces::const_iterator workspace_it_end = screen.getWorkspacesList().end();
+    BScreen::Workspaces::const_iterator workspace_it = 
+        screen.getWorkspacesList().begin();
+    BScreen::Workspaces::const_iterator workspace_it_end = 
+        screen.getWorkspacesList().end();
     for (; workspace_it != workspace_it_end; ++workspace_it) {
-        num += (*workspace_it)->getWindowList().size();
+        Workspace::Windows::iterator win_it = 
+            (*workspace_it)->getWindowList().begin();
+        Workspace::Windows::iterator win_it_end = 
+            (*workspace_it)->getWindowList().end();
+        for (; win_it != win_it_end; ++win_it) {
+            num += (*win_it)->numClients();
+        }
+
     }
     //int num = getCurrentWorkspace()->getWindowList().size();
 	
@@ -146,15 +155,19 @@ void Ewmh::updateClientList(BScreen &screen) {
     for (; workspace_it != workspace_it_end; ++workspace_it) {
 	
         // Fill in array of window ID's
-        Workspace::Windows::const_iterator it = (*workspace_it)->getWindowList().begin();
-        Workspace::Windows::const_iterator it_end = (*workspace_it)->getWindowList().end();		
+        Workspace::Windows::const_iterator it = 
+            (*workspace_it)->getWindowList().begin();
+        Workspace::Windows::const_iterator it_end = 
+            (*workspace_it)->getWindowList().end();		
         for (; it != it_end; ++it) {
             if ((*it)->numClients() == 1)
                 wl[win++] = (*it)->getClientWindow();
             else {
                 // add every client in fluxboxwindow to list window list
-                std::list<WinClient *>::iterator client_it = (*it)->clientList().begin();
-                std::list<WinClient *>::iterator client_it_end = (*it)->clientList().end();
+                std::list<WinClient *>::iterator client_it = 
+                    (*it)->clientList().begin();
+                std::list<WinClient *>::iterator client_it_end = 
+                    (*it)->clientList().end();
                 for (; client_it != client_it_end; ++client_it)
                     wl[win++] = (*client_it)->window();
             }
