@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.18 2003/04/28 01:32:47 fluxgen Exp $
+// $Id: Menu.cc,v 1.19 2003/05/01 14:33:36 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -521,8 +521,10 @@ void Menu::move(int x, int y) {
     if (which_sub != -1)
         drawSubmenu(which_sub);
 
-    if (m_parent && !m_parent->moving && !torn)
+    if (!(m_parent && m_parent->moving) && !torn) {
+        redrawTitle();
         renderTransFrame();
+    }
 }
 
 
@@ -544,7 +546,7 @@ void Menu::redrawTitle() {
     default:
         break;
     }
-
+    menu.title.clear();
     font.drawText( 
                   menu.title.window(), // drawable
                   screenNumber(),
@@ -561,9 +563,9 @@ void Menu::redrawTitle() {
                 m_root_pm = root_pm;
             }
             m_trans->setDest(menu.title.window(), menu.title.screenNumber());
-            m_trans->render(menu.window.x() + menu.title.x() - menu.window.borderWidth(), 
-                            menu.window.y() + menu.title.y() - menu.window.borderWidth(), 
-                            menu.title.x(), menu.title.y(),                      
+            m_trans->render(menu.window.x() + menu.title.x() + menu.window.borderWidth()*2, 
+                            menu.window.y() + menu.title.y() + menu.window.borderWidth()*2, 
+                            0, 0,
                             menu.title.width(), menu.title.height());
         }
     }
@@ -855,9 +857,9 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
             }
         
             m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());        
-            m_trans->render(menu.window.x() + menu.frame.x() + item_x - 
+            m_trans->render(menu.window.x() + menu.frame.x() + item_x +
                             menu.window.borderWidth(), 
-                            menu.window.y() + menu.frame.y() + item_y - 
+                            menu.window.y() + menu.frame.y() + item_y + 
                             menu.window.borderWidth(),
                             item_x, item_y,
                             menu.item_w, menu.item_h);
@@ -1184,8 +1186,7 @@ void Menu::reconfigure() {
 
     update();
 }
-
-
+    
 void Menu::renderTransFrame() {
     if (m_trans.get() == 0 || moving)
         return;
@@ -1203,8 +1204,8 @@ void Menu::renderTransFrame() {
         }
         menu.frame.clear();
         m_trans->setDest(menu.frame.window(), menu.window.screenNumber());
-        m_trans->render(menu.window.x() + menu.frame.x(), 
-                        menu.window.y() + menu.frame.y(),
+        m_trans->render(menu.window.x() + menu.frame.x() + menu.window.borderWidth(), 
+                        menu.window.y() + menu.frame.y() + menu.window.borderWidth(),
                         0, 0,
                         menu.frame.width(), menu.frame.height());
 
