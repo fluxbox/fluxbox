@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.216 2003/08/12 00:27:57 fluxgen Exp $
+// $Id: Screen.cc,v 1.217 2003/08/12 01:03:25 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -773,11 +773,8 @@ void BScreen::removeClient(WinClient &client) {
             Fluxbox::instance()->revertFocus(focused->screen());
     }
 
-    Workspaces::iterator workspace_it = getWorkspacesList().begin();
-    Workspaces::iterator workspace_it_end = getWorkspacesList().end();
-    for (; workspace_it != workspace_it_end; ++workspace_it) {
-        (*workspace_it)->removeWindow(client);
-    }
+    for_each(getWorkspacesList().begin(), getWorkspacesList().end(),
+             mem_fun(&Workspace::updateClientmenu));
 
     // remove any grouping this is expecting
     Groupables::iterator it = m_expecting_groups.begin();
@@ -791,8 +788,7 @@ void BScreen::removeClient(WinClient &client) {
     }
     // the client could be on icon menu so we update it
     updateIconMenu();
-    // finaly send notify signal
-    updateNetizenWindowDel(client.window());
+
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {

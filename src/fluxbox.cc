@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.182 2003/08/12 00:26:42 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.183 2003/08/12 01:04:16 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1345,6 +1345,8 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         BScreen &screen = client.screen();
         
         screen.removeClient(client);
+        // finaly send notify signal
+        screen.updateNetizenWindowDel(client.window());
 
         if (m_focused_window == &client) 
             revertFocus(screen);
