@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.hh,v 1.11 2003/04/26 15:46:03 fluxgen Exp $
+// $Id: I18n.hh,v 1.1 2003/06/12 14:24:25 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH

@@ -1,7 +1,7 @@
-// i18n.hh for Fluxbox Window Manager
+// I18n.hh for Fluxbox Window Manager
 // Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 //
-// i18n.cc for Blackbox - an X11 Window manager
+// I18n.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -22,14 +22,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.10 2003/05/16 00:17:16 fluxgen Exp $
+// $Id: I18n.cc,v 1.1 2003/06/12 14:24:26 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#include "i18n.hh"
+#include "I18n.hh"
 
 #include <X11/Xlocale.h>
 
@@ -72,10 +72,11 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 		
         // truncate any encoding off the end of the locale
 				
+        // remove everything after @
         string::size_type index = m_locale.find('@');
         if (index != string::npos)
             m_locale.erase(index); //erase all characters starting at index 				
-		
+        // remove everything after .		
         index = m_locale.find('.');
         if (index != string::npos) 
             m_locale.erase(index); //erase all characters starting at index 
