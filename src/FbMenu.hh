@@ -1,4 +1,4 @@
-// LayeredMenu.hh for Fluxbox Window Manager
+// FbMenu.hh for Fluxbox Window Manager
 // Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -19,24 +19,24 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayeredMenu.hh,v 1.1 2003/02/03 13:58:09 fluxgen Exp $
+// $Id: FbMenu.hh,v 1.1 2003/02/18 15:06:25 rathnor Exp $
 
-#ifndef LAYEREDMENU_HH
-#define LAYEREDMENU_HH
+#ifndef FBMENU_HH
+#define FBMENU_HH
 
 #include "Menu.hh"
 #include "XLayerItem.hh"
 
 /// a layered menu
-class LayeredMenu:public FbTk::Menu {
+class FbMenu:public FbTk::Menu {
 public:
-    LayeredMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
-                FbTk::XLayer &layer):FbTk::Menu(tm, screen_num, imgctrl), m_layeritem(window(), layer) { }
+    FbMenu(FbTk::MenuTheme &tm, int screen_num, FbTk::ImageControl &imgctrl,
+                FbTk::XLayer &layer):FbTk::Menu(tm, screen_num, imgctrl), m_layeritem(fbwindow(), layer) { }
     void raise() { m_layeritem.raise(); }
     void lower() { m_layeritem.lower(); }
 private:
     FbTk::XLayerItem m_layeritem;
 };
 
-#endif // LAYEREDMENU_HH
+#endif // FBMENU_HH
 
