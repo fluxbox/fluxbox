@@ -36,8 +36,16 @@ uninstall-local:
 
 Translation.m: $(MFILES)
 	@if test x$(NLSTEST) = "x-DNLS"; then \
+		echo -e "//This file is generated from nls/C" > ../blackbox-nls.hh; \
+		echo -e "#ifndef BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
+		echo -e "#define BLACKBOX_NLS_HH" >> ../blackbox-nls.hh; \
+		echo -e "namespace FBNLS {" >> ../blackbox-nls.hh;	\
+		echo -e "enum {" >> ../blackbox-nls.hh;	\
 		awk -f ../convert.awk header=../blackbox-nls.hh \
 			output=Translation.m $(MFILES); \
+		echo -e "}; //end enum\n" >> ../blackbox-nls.hh; \
+		echo -e "}; //end namespace\n" >> ../blackbox-nls.hh; \
+		echo -e "#endif //BLACKBOX_NLS_HH\n" >> ../blackbox-nls.hh; \
 	fi
 
 blackbox.cat: Translation.m
