@@ -19,42 +19,83 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+#ifndef _MISC_HH_
+#define _MISC_HH_
+
 
 #ifdef HAVE_CONFIG_H
 #	include "config.h"
 #endif //HAVE_CONFIG_H
 
 #include <X11/Xlib.h>
-#include "Theme.hh"
 
-#ifndef _MISC_HH_
-#define _MISC_HH_
+class Misc 
+{
+public:
+	typedef struct FFont 
+	{
+		enum FontJustify {LEFT=0, RIGHT, CENTER};
+	
+		XFontSet set;
+		XFontSetExtents *set_extents;
+		XFontStruct *fontstruct;
+		FontJustify justify;
+	} Font;
+	
+static char *strdup(const char *);
 
-// ---- start code stealing -----
+static void DrawString(Display *display, Window w, GC gc, Misc::Font *font,
+					unsigned int text_w, unsigned int size_w,
+					unsigned int bevel_w, char *text);
 
 // ----------------------------------------------------------------------
 // xvertext, Copyright (c) 1992 Alan Richardson (mppa3@uk.ac.sussex.syma)
 // ----------------------------------------------------------------------
 
-#define XV_NOFONT	 1  // no such font on X server
-#define XV_NOMEM	 2  // couldn't do malloc
-#define XV_NOXIMAGE	 3  // couldn't create an XImage
+	/* *** The font structures *** */
 
-unsigned int XRotTextWidth(XRotFontStruct *rotfont, char *str, int len);
-void XRotDrawString(Display *dpy, XRotFontStruct *rotfont, Drawable drawable,
+	struct BitmapStruct {
+		int			 bit_w;
+		int			 bit_h;
+
+		Pixmap bm;
+	};
+
+	struct XRotCharStruct {
+		int			 ascent;
+		int			 descent;
+		int			 lbearing;
+		int			 rbearing;
+		int			 width;
+
+		BitmapStruct	 glyph;
+	};
+
+	struct XRotFontStruct {
+		int			 dir;
+		int			 height;
+		int			 max_ascent;
+		int			 max_descent;
+		int			 max_char;
+		int			 min_char;
+		char 		*name;
+
+		XFontStruct		*xfontstruct;
+
+		Misc::XRotCharStruct	 per_char[95];
+	};
+static unsigned int XRotTextWidth(Misc::XRotFontStruct *rotfont, char *str, int len);
+static void XRotDrawString(Display *dpy, Misc::XRotFontStruct *rotfont, Drawable drawable,
 					GC gc, int x, int y, char *str, int len);
 
-//int xv_errno; //TODO: ?
-
-// --- stop code stealing ---
-
-void DrawString(Display *display, Window w, GC gc, FFont *font,
-					unsigned int text_w, unsigned int size_w,
-					unsigned int bevel_w, char *text);
-
-void DrawRotString(Display *display, Window w, GC gc, XRotFontStruct *font,
+static void DrawRotString(Display *display, Window w, GC gc, Misc::XRotFontStruct *font,
 					unsigned int align, unsigned int text_w,
 					unsigned int size_w, unsigned int size_h,
 					unsigned int bevel_w, char *text);
+					
+static Misc::XRotFontStruct *Misc::XRotLoadFont(Display *dpy, char *fontname, float angle);
+static void Misc::XRotUnloadFont(Display *dpy, Misc::XRotFontStruct *rotfont);
+
+};
 
 #endif //_MISC_HH_
