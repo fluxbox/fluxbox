@@ -1,6 +1,6 @@
 // AtomHandler for fluxbox
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
-//                    2003 Simon Bowden    (rathnor at users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+//               2003-2004 Simon Bowden    (rathnor at users.sourceforge.net)
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: AtomHandler.hh,v 1.13 2004/01/09 02:06:55 fluxgen Exp $
+// $Id: AtomHandler.hh,v 1.14 2004/01/19 18:22:37 fluxgen Exp $
 
 #ifndef ATOMHANDLER_HH
 #define ATOMHANDLER_HH
@@ -39,10 +39,12 @@ public:
     virtual void setupFrame(FluxboxWindow &win) = 0;
     virtual void setupClient(WinClient &winclient) = 0;
 
+    virtual void updateFocusedWindow(BScreen &screen, Window win) = 0; 
     virtual void updateClientList(BScreen &screen) = 0;
     virtual void updateWorkspaceNames(BScreen &screen) = 0;
     virtual void updateCurrentWorkspace(BScreen &screen) = 0;
     virtual void updateWorkspaceCount(BScreen &screen) = 0;
+    virtual void updateWorkarea(BScreen &screen) = 0;
 
     virtual void updateFrameClose(FluxboxWindow &win) = 0;
     virtual void updateClientClose(WinClient &winclient) = 0;
