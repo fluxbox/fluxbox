@@ -41,6 +41,8 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
+// $Id: Theme.cc,v 1.8 2002/01/08 00:12:51 fluxgen Exp $
+
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -49,31 +51,35 @@
 #	include "config.h"
 #endif //HAVE_CONFIG_H_
 
+#include "Theme.hh"
+
+#include "i18n.hh"
+#include "Basemenu.hh"
+#include "StringUtil.hh"
+
+#include <X11/Xresource.h>
+
 #ifdef		HAVE_CTYPE_H
 #	include <ctype.h>
 #endif // HAVE_CTYPE_H
 
-#include "Theme.hh"
-#include "i18n.hh"
-#include "Basemenu.hh"
-#include "fluxbox.hh"
-#include "StringUtil.hh"
+#include <cstdio>
+#include <cstdarg>
+#include <string>
+#include <strstream>
+#include <iostream>
+using namespace std;
 
-#include <X11/Xresource.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
 
-#ifndef	 FONT_ELEMENT_SIZE
-#	define	 FONT_ELEMENT_SIZE 50
-#endif // FONT_ELEMENT_SIZE
+Theme::Theme(Display *display, Window rootwindow, Colormap colormap, 
+	int screennum, BImageControl *ic, const char *filename, const char *rootcommand):
+m_imagecontrol(ic),
+m_display(display),
+m_colormap(colormap),
+m_screennum(screennum),
+m_rootcommand(rootcommand)
+{
 
-Theme::Theme(Display *display, Window rootwindow, Colormap colormap, int screennum, BImageControl *ic, const char *filename) {
-
-	m_screennum = screennum;
-	m_display = display;
-	m_imagecontrol = ic;
-	m_colormap = colormap;
 	//default settings	
 	m_menustyle.titlefont.set = m_menustyle.framefont.set = m_toolbarstyle.font.set =
 		m_windowstyle.font.set = m_windowstyle.tab.font.set =  0;
@@ -285,7 +291,7 @@ void Theme::freeToolbarStyle() {
 //---------- load ------------
 // Loads a theme from a file
 //----------------------------
-void Theme::load(const char *filename) {
+void Theme::load(const char *filename){
 	m_database = XrmGetFileDatabase(filename);
 	if (!m_database)
 		m_database = XrmGetFileDatabase(DEFAULTSTYLE);
@@ -648,39 +654,42 @@ void Theme::loadToolbarStyle() {
 void Theme::loadRootCommand() {
 	XrmValue value;
 	char *value_type;
- Fluxbox *fb=Fluxbox::instance();
 
- const char *root_cmd=fb->getRootCommand();
-
-	if (root_cmd) {
+	if (m_rootcommand.size()) {
 		#ifndef         __EMX__
-		const int display_strlen = 1024;
-		char displaystring[display_strlen];
-		snprintf(displaystring, display_strlen, "DISPLAY=%s%d",
-		DisplayString(m_display), m_screennum);
+		//const int display_strlen = 1024;
+		//char displaystring[display_strlen];
+		strstream displaystring; 
+		displaystring<<"DISPLAY="<<DisplayString(m_display)<<m_screennum;
+		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.str()<<endl;
+		//snprintf(displaystring, display_strlen, "DISPLAY=%s%d",
+		//DisplayString(m_display), m_screennum);
  
-		bexec(root_cmd, displaystring);
+		bexec(m_rootcommand.c_str(), displaystring.str());
 		#else //         __EMX__
-		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", root_cmd, NULL);  
+		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", m_rootcommand.c_str(), NULL);  
 		#endif // !__EMX__     
 		
 		#ifdef DEBUG
-    fprintf(stderr, "rootcommand:%s\n", root_cmd);
-  	#endif //!DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): Rootcommand: "<<m_rootcommand<<endl;
+		#endif //!DEBUG
 	
 	} else if (XrmGetResource(m_database, "rootCommand",
 										 "RootCommand", &value_type, &value)) {
-#ifndef		__EMX__
-		const int display_strlen = 1024;
-		char displaystring[display_strlen];
-		
-		snprintf(displaystring, display_strlen, "DISPLAY=%s%d", 
-			DisplayString(m_display), m_screennum);	
+	#ifndef		__EMX__
+		//const int display_strlen = 1024;
+		//char displaystring[display_strlen];
+		strstream displaystring; 
+		displaystring<<"DISPLAY="<<DisplayString(m_display)<<m_screennum;
+		cerr<<__FILE__<<"("<<__LINE__<<"): displaystring="<<displaystring.str()<<endl;
+		//snprintf(displaystring, display_strlen, "DISPLAY=%s%d", 
+		//	DisplayString(m_display), m_screennum);	
 			
-		bexec(value.addr, displaystring);
-#else //	 __EMX__
+		bexec(value.addr, displaystring.str());
+	#else //	 __EMX__
 		spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", value.addr, NULL);
-#endif // !__EMX__
+	#endif // !__EMX__
+	
 	#ifdef DEBUG
 		fprintf(stderr, "rootcommand:%s\n", value.addr); 
 	#endif 	
@@ -1049,6 +1058,7 @@ void Theme::reconfigure() {
 
 XFontSet Theme::createFontSet(char *fontname) {
 	XFontSet fs;
+	const int FONT_ELEMENT_SIZE=50;
 	char **missing, *def = "-";
 	int nmissing, pixel_size = 0, buf_size = 0;
 	char weight[FONT_ELEMENT_SIZE], slant[FONT_ELEMENT_SIZE];
