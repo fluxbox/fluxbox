@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.29 2002/02/21 12:03:40 fluxgen Exp $
+// $Id: Screen.cc,v 1.30 2002/02/26 22:25:20 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -815,6 +815,40 @@ void BScreen::changeWorkspaceID(int id) {
 	updateNetizenCurrentWorkspace();
 }
 
+void BScreen::sendToWorkspace(int id) {
+	 BScreen::sendToWorkspace(id, true);
+}
+
+void BScreen::sendToWorkspace(int id, bool changeWS) {
+	FluxboxWindow *win;
+	if (! current_workspace || id >= workspacesList.size() || id < 0)
+		return;
+
+	if (id != current_workspace->getWorkspaceID()) {
+		XSync(fluxbox->getXDisplay(), True);
+
+		win = fluxbox->getFocusedWindow();
+
+		if (win && win->getScreen() == this &&
+				(! win->isStuck())) {
+
+					if ( win->getTab() ) {
+						Tab *tab = win->getTab();
+						tab->disconnect();
+						tab->setPosition();
+					}
+
+					win->withdraw();
+					BScreen::reassociateWindow(win, id, True);
+					if (changeWS) {
+						BScreen::changeWorkspaceID(id);
+						win->setInputFocus();
+					}
+				}
+
+		}
+}
+
 
 void BScreen::addNetizen(Netizen *n) {
 	netizenList.push_back(n);
@@ -967,9 +1001,9 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 
 
 void BScreen::raiseWindows(Window *workspace_stack, int num) {
-	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 30)];
-	int i = 0;
 
+	Window session_stack[(num + workspacesList.size() + rootmenuList.size() + 30)];
+	int i = 0;	
 	XRaiseWindow(getBaseDisplay()->getXDisplay(), iconmenu->getWindowID());
 	session_stack[i++] = iconmenu->getWindowID();
 
@@ -986,11 +1020,11 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	session_stack[i++] = configmenu->getTabmenu()->getWindowID();
 	session_stack[i++] = configmenu->getWindowID();
 
-#ifdef		SLIT
+	#ifdef		SLIT
 	session_stack[i++] = slit->getMenu()->getDirectionmenu()->getWindowID();
 	session_stack[i++] = slit->getMenu()->getPlacementmenu()->getWindowID();
 	session_stack[i++] = slit->getMenu()->getWindowID();
-#endif // SLIT
+	#endif // SLIT
 
 	session_stack[i++] =
 		toolbar->getMenu()->getPlacementmenu()->getWindowID();
@@ -1006,10 +1040,10 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	if (toolbar->isOnTop())
 		session_stack[i++] = toolbar->getWindowID();
 
-#ifdef		SLIT
+	#ifdef		SLIT
 	if (slit->isOnTop())
 		session_stack[i++] = slit->getWindowID();
-#endif // SLIT
+	#endif // SLIT
 	
 	int k=num;
 	while (k--)
@@ -1018,7 +1052,6 @@ void BScreen::raiseWindows(Window *workspace_stack, int num) {
 	XRestackWindows(getBaseDisplay()->getXDisplay(), session_stack, i);
 
 }
-
 
 #ifdef		HAVE_STRFTIME
 void BScreen::saveStrftimeFormat(char *format) {

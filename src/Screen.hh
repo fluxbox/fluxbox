@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.20 2002/02/20 23:04:35 fluxgen Exp $
+// $Id: Screen.hh,v 1.21 2002/02/26 22:25:53 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -199,6 +199,8 @@ public:
 	void removeIcon(FluxboxWindow *);
 	void getNameOfWorkspace(int, char **);
 	void changeWorkspaceID(int);
+	void sendToWorkspace(int);
+	void sendToWorkspace(int, bool);
 	void raiseWindows(Window *, int);
 	void reassociateWindow(FluxboxWindow *, int, Bool);
 	void prevFocus(void);
