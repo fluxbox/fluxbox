@@ -936,6 +936,7 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
     //   2) sends an synthetic unampevent (which is handled below)
     } else if (screen && ue.send_event) {
         XDeleteProperty(display(), ue.window, FbAtoms::instance()->getWMStateAtom());
+        XUngrabButton(display(), AnyButton, AnyModifier, ue.window);
     }
 
 }
