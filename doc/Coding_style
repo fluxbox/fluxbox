@@ -4,7 +4,7 @@ It might look strange now in some places, that is because
 the code hasnt been "translated" to tab 100% yet.
 Use a tab size of 2 and you will be fine.
 
-note if-statement:
+if-statements:
 
 	if ( stuff ) 
 		function(stuff, more stuff, 
@@ -15,7 +15,7 @@ note if-statement:
 			stuff,
 			stuff);
 			
-if the functionline needs to be split up, like above, right after a if-statement
+if the functionline needs to be split up, like above, right after an if-statement
 use { and }, so its clear when the if-statement ends.
 It should look like this
 
@@ -29,7 +29,8 @@ It should look like this
 			stuff);
 	}
 	
-The includeguards:
+
+The include guards:
 _FILENAME_HH_ 
 
 
@@ -43,3 +44,8 @@ Function comments:
 type classname::function(...) {
 
 }
+
+
+enums must be in uppercase letters:
+enum {WHITE, RED, BLUE};
+
