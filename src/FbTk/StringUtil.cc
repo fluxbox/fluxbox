@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.9 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: StringUtil.cc,v 1.10 2004/02/28 10:46:02 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -188,7 +188,7 @@ string::size_type removeFirstWhitespace(std::string &str) {
 
 string::size_type removeTrailingWhitespace(std::string &str) {
     // strip trailing whitespace
-    string::size_type first_pos = str.find_first_not_of(" \t");
+    string::size_type first_pos = str.find_last_not_of(" \t");
     if (first_pos != string::npos) {	
         string::size_type last_pos = str.find_first_of(" \t", first_pos);
         while (last_pos != string::npos) {
