@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.94 2004/10/19 09:01:49 akir Exp $
+// $Id: fluxbox.hh,v 1.95 2004/10/21 10:16:55 akir Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -119,7 +119,7 @@ public:
 
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() const { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() const { return *m_rc_titlebar_left; }
-    inline const Fluxbox::TabsAttachArea getTabsAttachArea() const { return *m_rc_tabs_attach_area; }
+    inline Fluxbox::TabsAttachArea getTabsAttachArea() const { return *m_rc_tabs_attach_area; }
     inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
 
     inline const std::string &getMenuFilename() const { return *m_rc_menufile; }
