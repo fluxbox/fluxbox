@@ -142,8 +142,7 @@ int main(int argc, char **argv) {
             
     }
     
-    FbTk::fontInit();
-    
+
     App app(displayname.c_str(), foreground, background);
     app.font().setAntialias(antialias);
     if (!app.font().load(fontname.c_str()))
