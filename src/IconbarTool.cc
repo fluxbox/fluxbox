@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.44 2004/08/30 13:42:13 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.45 2004/09/05 00:37:16 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -257,7 +257,7 @@ void removeDuplicate(const IconbarTool::IconList &iconlist, std::list<FluxboxWin
 
     // remove already existing windows
     windowlist.erase(remove_it, windowlist.end());
-
+    windowlist.unique();
 }
 
 }; // end anonymous namespace
@@ -694,9 +694,12 @@ void IconbarTool::removeWindow(FluxboxWindow &win) {
             break;
     }
     // did we find it?
-    if (it == m_icon_list.end())
+    if (it == m_icon_list.end()) {
         return;
-    
+    }
+#ifdef DEBUG
+    cerr<<"IconbarTool::"<<__FUNCTION__<<"( 0x"<<&win<<" title = "<<win.title()<<") found!"<<endl;
+#endif // DEBUG    
     // detach from all signals
     win.focusSig().detach(this);
     win.dieSig().detach(this);
@@ -719,7 +722,9 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     // we just want windows that has clients
     if (win.clientList().empty() || win.isIconHidden() )
         return;
-
+#ifdef DEBUG
+    cerr<<"IconbarTool::addWindow(0x"<<&win<<" title = "<<win.title()<<")"<<endl;
+#endif // DEBUG
     IconButton *button = new IconButton(m_icon_container, m_theme.focusedText().font(), win);
 
     renderButton(*button, false); // update the attributes, but don't clear it
@@ -732,6 +737,7 @@ void IconbarTool::addWindow(FluxboxWindow &win) {
     win.workspaceSig().attach(this);
     win.stateSig().attach(this);
     win.titleSig().attach(this);
+
 }
 
 void IconbarTool::updateIcons() {
