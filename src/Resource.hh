@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Resource.hh,v 1.7 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Resource.hh,v 1.8 2002/11/26 16:37:18 fluxgen Exp $
 
 #ifndef RESOURCE_HH
 #define RESOURCE_HH
@@ -30,7 +30,7 @@
 /**
 	Base class for resources
 */
-class Resource_base:private NotCopyable
+class Resource_base:private FbTk::NotCopyable
 {
 public:
 	virtual ~Resource_base() { };	
