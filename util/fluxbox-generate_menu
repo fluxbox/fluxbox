@@ -22,21 +22,26 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.47 2003/08/04 14:13:33 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.48 2003/08/05 12:36:54 rathnor Exp $
 
 #
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
 # please keep the following restrictions in mind:
 #
-# don't use if ! command;, use command; if [ $? -ne 0 ];
-# don't use [ -e file ] use [ -r file ]
-# don't use $(), use ``
-# don't use ~, use ${HOME}
-# don't use id -u, use whoami
-# getopts won't work on all platforms, but the config-file can
-# compensate for that.
-#
+# - don't use if ! command;, use command; if [ $? -ne 0 ];
+# - don't use [ -e file ] use [ -r file ]
+# - don't use $(), use ``
+# - don't use ~, use ${HOME}
+# - don't use id -u, use whoami
+# - getopts won't work on all platforms, but the config-file can
+#   compensate for that.
+# - various software like grep/sed/perl may be not present or not
+#   the version you have. for example grep '\W' only works on gnu-grep.
+#   Keep this in mind, use bare basic defaults.
+# - Do _NOT_ suggest to use #!/bin/bash. Not everybody uses bash.
+#   Non portable features like getopts in this script can be achieved in 
+#   other ways. 
 
 
 WHOAMI=`whoami`
@@ -143,14 +148,12 @@ append_menu_end() {
 
 menu_entry() {
     if [ -f "$1" ]; then
-        append "[exec] (`grep '^[ 	]*Name=' \"$1\" | head -1 | cut -d = -f 2`) \
-        {`grep '^[ 	]*Exec=' \"$1\" | head -1 | cut -d = -f 2`}"
-    fi
-}
-
-menu_entry_dircheck() {
-    if [ -d "$*" ]; then
-        menu_entry_dir "$*"
+        #                   space&tab here
+        entry_name=`grep '^[	 ]*Name=' "$1" | head -1 | cut -d = -f 2`
+        entry_exec=`grep '^[	 ]*Exec=' "$1" | head -1 | cut -d = -f 2`
+        if [ -n "$entry_name" -a -n "$entry_exec" ]; then
+            append "[exec] ($entry_name) {$entry_exec}"
+        fi
     fi
 }
 
@@ -158,6 +161,12 @@ menu_entry_dir() {
     for b in  "$*"/*.desktop; do
         menu_entry "${b}"
     done
+}
+
+menu_entry_dircheck() {
+    if [ -d "$*" ]; then
+        menu_entry_dir "$*"
+    fi
 }
 
 
@@ -693,7 +702,7 @@ fi
 
 # find the default browser
 find_it $MY_BROWSER
-if [ $? -ne 0]; then
+if [ $? -ne 0 ]; then
     echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
     for browser in MozillaFirebird firebird opera skipstone phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
