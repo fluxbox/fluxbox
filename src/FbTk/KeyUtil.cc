@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.7 2004/02/10 18:55:12 fluxgen Exp $
+// $Id: KeyUtil.cc,v 1.8 2004/09/01 00:08:14 akir Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
@@ -95,7 +95,6 @@ void KeyUtil::loadModmap() {
 }
 
 
-
 /**
  Grabs a key with the modifier
  and with numlock,capslock and scrollock
@@ -156,6 +155,7 @@ void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
 /**
  @return keycode of keystr on success else 0
 */
+
 unsigned int KeyUtil::getKey(const char *keystr) {
     if (!keystr)
         return 0;
@@ -163,19 +163,22 @@ unsigned int KeyUtil::getKey(const char *keystr) {
                             XStringToKeysym(keystr));
 }
 
+
+struct t_modlist{
+    char *str;
+    unsigned int mask;
+    bool operator == (const char *modstr) const {
+        return  (strcasecmp(str, modstr) == 0 && mask !=0);
+    }
+};
+
 /**
  @return the modifier for the modstr else zero on failure.
 */
 unsigned int KeyUtil::getModifier(const char *modstr) {
     if (!modstr)
         return 0;
-    struct t_modlist{
-        char *str;
-        unsigned int mask;
-        bool operator == (const char *modstr) const {
-            return  (strcasecmp(str, modstr) == 0 && mask !=0);
-        }
-    } modlist[] = {
+    const static struct t_modlist modlist[] = {
         {"SHIFT", ShiftMask},
         {"CONTROL", ControlMask},
         {"MOD1", Mod1Mask},
