@@ -1,5 +1,5 @@
 // Menu.cc for FbTk - Fluxbox Toolkit 
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Basemenu.cc for blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.12 2003/04/17 14:17:33 fluxgen Exp $
+// $Id: Menu.cc,v 1.13 2003/04/20 13:49:26 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -36,20 +36,21 @@
 #include "MenuTheme.hh"
 #include "App.hh"
 #include "EventManager.hh"
+#include "Transparent.hh"
 
+#include <X11/Xatom.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
-
-#ifdef DEBUG
 #include <iostream>
+
 using namespace std;
-#endif //DEBUG
 
 namespace FbTk {
 
 static Menu *shown = 0;
+
+unsigned char Menu::s_alpha = 255;
 
 Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_theme(tm),
@@ -61,7 +62,7 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     m_screen_height(DisplayHeight(m_display, screen_num)),
     m_alignment(ALIGNDONTCARE),
     m_border_width(0),
-    m_themeobserver(*this) {
+    m_themeobserver(*this), m_trans(new Transparent(0, 0, 255, screen_num)) {
 
     // make sure we get updated when the theme is reloaded
     tm.addListener(m_themeobserver);
@@ -104,7 +105,28 @@ Menu::Menu(MenuTheme &tm, int screen_num, ImageControl &imgctrl):
     menu.item_h = m_theme.frameFont().height() + menu.bevel_w;
 
     menu.height = menu.title_h + 2 + menu.frame_h;
-	
+
+    // get root pixmap for transparency
+    Display *disp = FbTk::App::instance()->display();
+    Atom real_type;
+    int real_format;
+    unsigned long items_read, items_left;
+    unsigned int *data;
+    if (XGetWindowProperty(disp, RootWindow(disp, screen_num), 
+                           XInternAtom(disp, "_XROOTPMAP_ID", false),
+                           0L, 1L, 
+                           false, XA_PIXMAP, &real_type,
+                           &real_format, &items_read, &items_left, 
+                           (unsigned char **) &data) == Success && 
+        items_read) { 
+        m_root_pm = (Pixmap) (*data);                  
+        XFree(data);
+    } else 
+        m_root_pm = 0;
+
+    m_trans->setSource(m_root_pm, screen_num);
+    m_trans->setAlpha(s_alpha);
+
     //set attributes for menu window
     unsigned long attrib_mask = CWOverrideRedirect | CWEventMask;
     XSetWindowAttributes attrib;
@@ -210,13 +232,13 @@ int Menu::remove(unsigned int index) {
     if (item) {
         menuitems.erase(it);
         /*if ((! internal_menu) && (item->submenu())) {
-            Menu *tmp = item->submenu();
+          Menu *tmp = item->submenu();
 
-            if (! tmp->internal_menu) {
-                delete tmp;				
-            } else
-                tmp->internal_hide();
-        }
+          if (! tmp->internal_menu) {
+          delete tmp;				
+          } else
+          tmp->internal_hide();
+          }
         */
 		
         delete item;
@@ -373,7 +395,8 @@ void Menu::update() {
                               menu.width + menu.title.borderWidth(), menu.title_h);
     }
 
-    menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + menu.title.borderWidth()*2 : 0), 
+    menu.frame.moveResize(0, ((title_vis) ? menu.title.y() + menu.title.height() + 
+                              menu.title.borderWidth()*2 : 0), 
                           menu.window.width(), menu.frame_h);
     clearWindow();
 
@@ -383,15 +406,22 @@ void Menu::update() {
     unsigned int i = 0;
     for (i = 0; visible && i < menuitems.size(); i++) {
         if (i == (unsigned int)which_sub) {
-            drawItem(i, true, 0);
+            drawItem(i, true, false, false);
             drawSubmenu(i);
         } else
-            drawItem(i, false, 0);
+            drawItem(i, false, false, false);
     }
 
     if (m_parent && visible)
         m_parent->drawSubmenu(m_parent->which_sub);
 
+    m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());
+    m_trans->render(menu.window.x() + menu.frame.x() - menu.window.borderWidth(),
+                    menu.window.y() + menu.frame.y() - menu.window.borderWidth(),
+                    0, 0,
+                    menu.frame.width(), menu.frame.height());
+
+                      
     menu.window.showSubwindows();
 }
 
@@ -408,6 +438,11 @@ void Menu::show() {
         shown = this;
     }
 
+    m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());
+    m_trans->render(menu.window.x() + menu.frame.x(), 
+                    menu.window.y() + menu.frame.y(),
+                    0, 0,
+                    menu.frame.width(), menu.frame.height());
 }
 
 
@@ -435,7 +470,7 @@ void Menu::internal_hide() {
     }
 
     if (m_parent && (! torn)) {
-        m_parent->drawItem(m_parent->which_sub, False, True);
+        m_parent->drawItem(m_parent->which_sub, false, true);
 
         m_parent->which_sub = -1;
     } else if (shown && shown->menu.window == menu.window)
@@ -483,6 +518,12 @@ void Menu::redrawTitle() {
                   m_theme.titleTextGC(), // graphic context
                   text, len,  // text string with lenght
                   dx, font.ascent() + menu.bevel_w);  // position
+
+    m_trans->setDest(menu.title.window(), menu.title.screenNumber());
+    m_trans->render(menu.window.x() + menu.title.x() - menu.window.borderWidth(), 
+                    menu.window.y() + menu.title.y() - menu.window.borderWidth(), 
+                    menu.title.x(), menu.title.y(),                      
+                    menu.title.width(), menu.title.height());
 
 
 }
@@ -547,7 +588,7 @@ void Menu::drawSubmenu(unsigned int index) {
 
             item->submenu()->move(x, y);
             if (! moving)
-                drawItem(index, True);
+                drawItem(index, true);
 		
             if (! item->submenu()->isVisible()) {
                 item->submenu()->show();
@@ -573,7 +614,7 @@ bool Menu::hasSubmenu(unsigned int index) const {
 }
 
 
-void Menu::drawItem(unsigned int index, bool highlight, bool clear,
+void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_trans,
                     int x, int y, unsigned int w, unsigned int h)
 {
     if (index >= menuitems.size() || menuitems.size() == 0 || 
@@ -691,7 +732,6 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
                                      tgc,
                                      text, len, // text string and lenght
                                      text_x, text_y); // position
-
     }
 
     if (dosel && item->submenu()) {
@@ -742,6 +782,18 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear,
             break;
         }
     }
+
+    if (render_trans) {
+        m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());
+        m_trans->render(menu.window.x() + menu.frame.x() + item_x - 
+                        menu.window.borderWidth(), 
+                         menu.window.y() + menu.frame.y() + item_y - 
+                        menu.window.borderWidth(),
+
+                         item_x, item_y,
+                         menu.item_w, menu.item_h);
+                        
+    }
 }
 
 
@@ -759,7 +811,10 @@ void Menu::setItemSelected(unsigned int index, bool sel) {
     if (! item) return;
 
     item->setSelected(sel);
-    if (visible) drawItem(index, (index == (unsigned int)which_sub), true);
+    if (visible) {
+        drawItem(index, (index == (unsigned int)which_sub), true, true);
+        
+    }
 }
 
 
@@ -782,7 +837,7 @@ void Menu::setItemEnabled(unsigned int index, bool enable) {
 
     item->setEnabled(enable);
     if (visible) 
-        drawItem(index, (index == static_cast<unsigned int>(which_sub)), True);
+        drawItem(index, (index == static_cast<unsigned int>(which_sub)), true, true);
 }
 
 
@@ -811,7 +866,7 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
             if (item->submenu())
                 drawSubmenu(w);
             else
-                drawItem(w, (item->isEnabled()), true);
+                drawItem(w, (item->isEnabled()), true, true);
         }
     } else {
         menu.x_move = be.x_root - menu.x;
@@ -827,6 +882,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
 			
             if (which_sub >= 0)
                 drawSubmenu(which_sub);
+            update();
         }
 
         if (re.x >= 0 && re.x <= (signed) menu.width &&
@@ -846,7 +902,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
             p = (which_sbl * menu.persub) + which_press;
 
         if (w < static_cast<int>(menuitems.size()) && w >= 0) {
-            drawItem(p, (p == which_sub), True);
+            drawItem(p, (p == which_sub), true, true);
 
             if (p == w && isItemEnabled(w)) {
                 if (re.x > ix && re.x < (signed) (ix + menu.item_w) &&
@@ -858,7 +914,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                 }
             }
         } else
-            drawItem(p, false, true);
+            drawItem(p, false, true, true);
 				
         
     }
@@ -870,7 +926,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
         if (movable) {
             if (! moving) {
                 if (m_parent && (! torn)) {
-                    m_parent->drawItem(m_parent->which_sub, false, true);
+                    m_parent->drawItem(m_parent->which_sub, false, true, true);
                     m_parent->which_sub = -1;
                 }
 
@@ -900,7 +956,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                 int p = (which_sbl * menu.persub) + which_press;
                 MenuItem *item = menuitems[p];
 
-                drawItem(p, False, True);
+                drawItem(p, false, true, true);
                 if (item->submenu()) {
                     if (item->submenu()->isVisible() &&
                         (! item->submenu()->isTorn())) {
@@ -918,7 +974,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             if (itmp->submenu())
                 drawSubmenu(w);
             else
-                drawItem(w, (itmp->isEnabled()), True);
+                drawItem(w, (itmp->isEnabled()), true, true);
         }
     }
 }
@@ -955,7 +1011,7 @@ void Menu::exposeEvent(XExposeEvent &ee) {
                 Menuitems::iterator it_end = menuitems.end();
                 for (ii = id; ii <= id_d && it != it_end; ++it, ii++) {
                     unsigned int index = ii + (i * menu.persub);
-                    drawItem(index, (which_sub == index), true,
+                    drawItem(index, (which_sub == index), true, true,
                              ee.x, ee.y, ee.width, ee.height);
                 }
             }
@@ -999,7 +1055,7 @@ void Menu::enterNotifyEvent(XCrossingEvent &ce) {
             if (w != which_sub && (! tmp->submenu()->isTorn())) {
                 tmp->submenu()->internal_hide();
 
-                drawItem(which_sub, false, true);
+                drawItem(which_sub, false, true, true);
                 which_sub = -1;
             }
         }
@@ -1013,7 +1069,7 @@ void Menu::leaveNotifyEvent(XCrossingEvent &ce) {
     if (which_press != -1 && which_sbl != -1 && menuitems.size() > 0) {
         int p = (which_sbl * menu.persub) + which_press;
 
-        drawItem(p, (p == which_sub), true);
+        drawItem(p, (p == which_sub), true, true);
 
         which_sbl = which_press = -1;
     }
@@ -1051,8 +1107,11 @@ void Menu::reconfigure() {
     menu.window.setBorderWidth(m_border_width);
     menu.title.setBorderWidth(m_border_width);
 
+    if (m_trans.get())
+        m_trans->setAlpha(s_alpha);
 
     update();
 }
+
 
 }; // end namespace FbTk

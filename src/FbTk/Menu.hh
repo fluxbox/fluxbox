@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.10 2003/02/23 00:59:13 fluxgen Exp $
+// $Id: Menu.hh,v 1.11 2003/04/20 13:47:20 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -43,6 +43,7 @@ namespace FbTk {
 class MenuItem;
 class MenuTheme;
 class ImageControl;
+class Transparent;
 
 ///   Base class for menus
 class Menu: public FbTk::EventHandler {
@@ -85,6 +86,9 @@ public:
 
     void disableTitle();
     void enableTitle();
+
+    static void setAlpha(unsigned char alpha) { s_alpha = alpha; }
+
     /**
        @name event handlers
     */
@@ -135,6 +139,7 @@ public:
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
+    static unsigned char alpha() { return s_alpha; }
     //@}
 
 protected:
@@ -147,7 +152,7 @@ protected:
 
     virtual void itemSelected(int button, unsigned int index) { }
     virtual void drawItem(unsigned int index, bool highlight = false, 
-                          bool clear= false,
+                          bool clear= false, bool render_trans = true,
                           int x= -1, int y= -1, 
                           unsigned int width= 0, unsigned int height= 0);
     virtual void redrawTitle();
@@ -156,6 +161,7 @@ protected:
     inline const Menu *parent() const { return m_parent; }
 
 private: 
+
     typedef std::vector<MenuItem *> Menuitems;
     const MenuTheme &m_theme;
     Display *m_display;
@@ -193,6 +199,9 @@ private:
     };
 
     ThemeObserver m_themeobserver;
+    std::auto_ptr<Transparent> m_trans;
+    Drawable m_root_pm;
+    static unsigned char s_alpha;
 };
 
 }; // end namespace FbTk
