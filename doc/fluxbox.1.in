@@ -1000,12 +1000,12 @@ When no other display was given on the command line, Fluxbox will start on the
 display specified by this variable.
 .SH SIGNALS
 Upon receipt of 
-.B SIGHUP
-fluxbox loads the configuration, 
 .B SIGUSR1
-forces reloading of configuration and 
+fluxbox loads the configuration, 
 .B SIGUSR2
-reloads the menu file.
+forces reloading of configuration and 
+.B SIGHUP
+restarts itself.
 .SH AUTHOR and CREDITS
 Blackbox was written and maintained by Brad Hughes
 .nh \" hyphenation off
