@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.17 2002/12/14 23:58:13 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.18 2002/12/16 11:10:44 fluxgen Exp $
 
 WHOAMI=`whoami`
 [ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
@@ -283,7 +283,8 @@ NETMENU="Net"
 OFFICEMENU="Office"
 RELOADITEM="Reload config"
 RESTARTITEM="Restart"
-STYLEMENU="Styles"
+SYSTEMSTYLES="System Styles"
+USERSTYLES="User Styles"
 STYLEMENUTITLE="Choose a style..."
 TERMINALMENU="Terminals"
 WORKSPACEMENU="Workspace List"
@@ -308,7 +309,8 @@ case ${LC_ALL} in
                 NETMENU="Û≈‘ÿ"
                 RELOADITEM="≈“≈Œ¡”‘“œ…‘ÿ"
                 RESTARTITEM="≈“≈⁄¡–’”‘…‘ÿ"
-                STYLEMENU="Û‘…Ã…"
+              SYSTEMSTYLES="Û‘…Ã…"
+              USERSTYLES="Û‘…Ã…"
                 STYLEMENUTITLE="˜Ÿ¬≈“…‘≈ ”‘…Ãÿ"
                 TERMINALMENU="Ù≈“Õ…Œ¡ÃŸ"
                 WORKSPACEMENU="Ú¡¬œﬁ…≈ –“œ”‘“¡Œ”‘◊¡"
@@ -331,7 +333,8 @@ case ${LC_ALL} in
                 NETMENU="Net"
                 RELOADITEM="Ladda om konfig"
                 RESTARTITEM="Starta om"
-                STYLEMENU="Stiler"
+              SYSTEMSTYLES="Stiler"
+              USERSTYLES="Stiler"
                 STYLEMENUTITLE="V‰lj en stil"
                 TERMINALMENU="Terminaler"
                 WORKSPACEMENU="Arbetsytor"
@@ -354,7 +357,8 @@ case ${LC_ALL} in
                 NETMENU="Net"
                 RELOADITEM="Vernieuw instellingen"
                 RESTARTITEM="Restart"
-                STYLEMENU="Stylen"
+                SYSTEMSTYLES="Systeem Stylen"
+                USERSTYLES="Gebruikers Stylen"
                 STYLEMENUTITLE="Kies een styl"
                 TERMINALMENU="Terminals"
                 WORKSPACEMENU="Werkveld Lijst"
@@ -377,7 +381,8 @@ case ${LC_ALL} in
                 NETMENU="Verkko"
                 RELOADITEM="P‰ivit‰"
                 RESTARTITEM="K‰ynnist‰ uudelleen"
-                STYLEMENU="Tyylit"
+              SYSTEMSTYLES="Tyylit"
+              USERSTYLES="Tyylit"
                 STYLEMENUTITLE="Valitse tyyli"
                 TERMINALMENU="Terminaalit"
                 WORKSPACEMENU="Tyˆaluet"
@@ -400,7 +405,8 @@ case ${LC_ALL} in
                 NETMENU="•Õ•√•»•Ô°º•Ø"
                 RELOADITEM="∫∆∆…§ﬂπ˛§ﬂ"
                 RESTARTITEM="∫∆µØ∆∞"
-                STYLEMENU="•π•ø•§•Î"
+              SYSTEMSTYLES="•π•ø•§•Î"
+              USERSTYLES="•π•ø•§•Î"
                 STYLEMENUTITLE="•π•ø•§•Î¡™¬Ú..."
                 TERMINALMENU="•ø°º•ﬂ• •Î"
                 WORKSPACEMENU="•Ô°º•Ø•π•⁄°º•π"
@@ -423,7 +429,8 @@ case ${LC_ALL} in
                 NETMENU="Net"
                 RELOADITEM="Recharger config"
                 RESTARTITEM="RedÈmarrer"
-                STYLEMENU="Styles"
+              SYSTEMSTYLES="Styles de la Systeme"
+              USERSTYLES="Styles"
                 STYLEMENUTITLE="Choisir un style..."
                 TERMINALMENU="Terminaux"
                 WORKSPACEMENU="Liste des bureaux"
@@ -447,8 +454,9 @@ case ${LC_ALL} in
                 NETMENU="Internet"
                 RELOADITEM="Rileggi la configurazione"
                 RESTARTITEM="Riavvia"
-                STYLEMENU="Scegli uno stile..."
-                STYLEMENUTITLE="Scegli uno stile..."
+              SYSTEMSTYLES="Stile"
+              USERSTYLES="Stile"
+                STYLEMENUTITLE="Scegli uno stile"
                 TERMINALMENU="Terminali"
                 WORKSPACEMENU="Aree di lavoro"
                 XUTILSMENU="X-utils"
@@ -600,13 +608,15 @@ fi
          append_submenu Fluxbox-menu
             append "[config] (${CONFIGUREMENU})"
 
-
-            append_menu "[submenu] (${STYLEMENU}) {${STYLEMENUTITLE}}"
+            append_menu "[submenu] (${SYSTEMSTYLES}) {${STYLEMENUTITLE}}"
                 append "[stylesdir] (${PKGDATADIR}/fluxbox/styles)"
+            append_menu_end
+
+            append_menu "[submenu] (${USERSTYLES}) {${STYLEMENUTITLE}}"
                 append "[stylesdir] (~/.fluxbox/styles)"
             append_menu_end
 
-            if [ $BACKGROUNDMENUITEM="yes" ];then
+            if [ "$BACKGROUNDMENUITEM" = "yes" ];then
                 append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
                 for i in ~/.fluxbox/backgrounds/* ; do
                     append "[exec] (`basename "$i"`) {bsetbg -f $i }"
