@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.252 2003/12/12 14:59:16 fluxgen Exp $
+// $Id: Window.cc,v 1.253 2003/12/14 01:06:22 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1288,7 +1288,7 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
         (*client_it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
     }
 
-    frame().show();
+    show();
 
     if (was_iconic && screen().doFocusNew())
         setInputFocus();
@@ -3008,9 +3008,17 @@ void FluxboxWindow::attachTo(int x, int y) {
 
         if (attach_to_win != this &&
             attach_to_win != 0) {
+
             attach_to_win->attachClient(*m_attaching_tab);
-        } else if (attach_to_win != this) { // disconnect client if we didn't drop on a window
+
+        } else if (attach_to_win != this) { 
+            // disconnect client if we didn't drop on a window
+            WinClient &client = *m_attaching_tab;
             detachClient(*m_attaching_tab);
+            // move to drop zone
+            if (client.m_win != 0)
+                client.m_win->move(x, y);
+
         }
                     
     }
