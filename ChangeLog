@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/05/18:
+  * Make the size of arrows in buttons half the button size (grubert).
+  * Add UP and DOWN buttons.
 *04/05/17:
   * Fix rendering of transparency on menu exposes (Simon)
     - also enable save unders for menu windows

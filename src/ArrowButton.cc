@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.5 2003/10/13 23:51:04 fluxgen Exp $
+// $Id: ArrowButton.cc,v 1.6 2004/05/18 08:35:22 grubert Exp $
 
 #include "ArrowButton.hh"
 
@@ -82,22 +82,32 @@ void ArrowButton::leaveNotifyEvent(XCrossingEvent &ce) {
 */
 void ArrowButton::drawArrow() {
     XPoint pts[3];
-    unsigned int w = width() / 2;
-    unsigned int h = height() / 2;
+    unsigned int w = width();
+    unsigned int h = height();
+	// arrow size: half of the button
+	unsigned int ax = w / 2;
+	unsigned int ay = h / 2;
     switch (m_arrow_type) {
     case LEFT:
-        pts[0].x = w - 2; pts[0].y = h;
-        pts[1].x = 4; pts[1].y = 2;
-        pts[2].x = 0; pts[2].y = -4;
+		// start at the tip
+        pts[0].x = (w / 2) - (ax / 2); pts[0].y = h / 2;
+        pts[1].x = ax; pts[1].y = ay / 2;
+        pts[2].x = 0; pts[2].y = - ay;
         break;
     case RIGHT:
-        pts[0].x = w - 2; pts[0].y = h - 2;
-        pts[1].x = 4; pts[1].y = 2;
-        pts[2].x = -4; pts[2].y = 2;
+        pts[0].x = (w / 2) + (ax / 2); pts[0].y = h / 2;
+        pts[1].x = - ax; pts[1].y = ay / 2;
+        pts[2].x = 0; pts[2].y = - ay;
         break;
-    case UP: // TODO
+    case UP:
+        pts[0].x = (w / 2); pts[0].y = (h / 2) - (ay / 2);
+        pts[1].x = ax / 2; pts[1].y = ay;
+        pts[2].x = - ax; pts[2].y = 0;
         break;
-    case DOWN: // TODO
+    case DOWN:
+        pts[0].x = (w / 2); pts[0].y = (h / 2) + (ay / 2);
+        pts[1].x = ax / 2; pts[1].y = - ay;
+        pts[2].x = - ax; pts[2].y = 0;
         break;
     }
 

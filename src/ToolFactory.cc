@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.3 2004/01/11 16:09:50 fluxgen Exp $
+// $Id: ToolFactory.cc,v 1.4 2004/05/18 08:35:22 grubert Exp $
 
 #include "ToolFactory.hh"
 
@@ -108,6 +108,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
         if (*cmd == 0) // we need a command
             return 0;
 
+		// TODO maybe direction of arrows should depend on toolbar layout ?
         ArrowButton::Type arrow_type = ArrowButton::LEFT;
         if (name == "nextworkspace")
             arrow_type = ArrowButton::RIGHT;
