@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/06/05:
+   * Optimise window placement (much better now) (Simon)
+     Workspace.cc
 *03/05/26:
    * Fix usage of decorations.border, add BORDER decoration to remember 
        (Simon)

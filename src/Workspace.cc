@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.69 2003/05/21 23:59:54 rathnor Exp $
+// $Id: Workspace.cc,v 1.70 2003/06/05 13:21:10 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -545,27 +545,36 @@ void Workspace::placeWindow(FluxboxWindow &win) {
     } // end case UNDERMOUSEPLACEMENT
 
     case BScreen::ROWSMARTPLACEMENT: {
+        int next_x, next_y;
+        bool top_bot = screen().getColPlacementDirection() == BScreen::TOPBOTTOM;
+        bool left_right = screen().getRowPlacementDirection() == BScreen::LEFTRIGHT;
 
-        test_y = 0;
+        if (top_bot)
+            test_y = head_top;
+        else
+            test_y = head_bot - win_h;
 
-        if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
-            test_y = head_bot - win_h - test_y;
+        while (!placed && 
+               (top_bot ? test_y + win_h < head_bot
+                        : test_y > head_top)) {
 
+            if (left_right)
+                test_x = head_left;
+            else
+                test_x = head_right - win_w;
 
-        while (((screen().getColPlacementDirection() == BScreen::BOTTOMTOP) ?
-                test_y > 0 : test_y + win_h < head_bot) && 
-               ! placed) {
+            if (top_bot)
+                next_y = head_right; // it will get shrunk
+            else
+                next_y = head_left;
 
-            test_x = 0;
-
-            if (screen().getRowPlacementDirection() == BScreen::RIGHTLEFT)
-                test_x = head_right - win_w - test_x;
-
-
-            while (((screen().getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-                    test_x > 0 : test_x + win_w < head_right) && ! placed) {
+            while (!placed &&
+                   (left_right ? test_x + win_w < head_right
+                               : test_x > head_left)) {
 
                 placed = true;
+
+                next_x = test_x + change_x;
 
                 Windows::iterator win_it = m_windowlist.begin();
                 const Windows::iterator win_it_end = m_windowlist.end();
@@ -582,7 +591,28 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                         curr_x + curr_w > test_x &&
                         curr_y < test_y + win_h &&
                         curr_y + curr_h > test_y) {
+                        // this window is in the way
                         placed = false;
+
+                        // we find the next x that we can go to (a window will be in the way
+                        // all the way to its far side)
+                        if (left_right) {
+                            if (curr_x + curr_w > next_x) 
+                                next_x = curr_x + curr_w;
+                        } else {
+                            if (curr_x - win_w < next_x)
+                                next_x = curr_x - win_w;
+                        }
+
+                        // but we can only go to the nearest y, since that is where the 
+                        // next time current windows in the way will change
+                        if (top_bot) {
+                            if (curr_y + curr_h < next_y)
+                                next_y = curr_y + curr_h;
+                        } else {
+                            if (curr_y - win_h > next_y)
+                                next_y = curr_y - win_h;
+                        }
                     }
                 }
 
@@ -594,33 +624,45 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                     break;
                 }
 
-                test_x += change_x;
+                test_x = next_x;
             } // end while
 
-            test_y += change_y;
+            test_y = next_y;
         } // end while
 
         break; 
     } // end case ROWSMARTPLACEMENT
 
     case BScreen::COLSMARTPLACEMENT: {
-        test_x = head_left;
+        int next_x, next_y;
+        bool top_bot = screen().getColPlacementDirection() == BScreen::TOPBOTTOM;
+        bool left_right = screen().getRowPlacementDirection() == BScreen::LEFTRIGHT;
 
-        if (screen().getRowPlacementDirection() == BScreen::RIGHTLEFT)
+        if (left_right)
+            test_x = head_left;
+        else
             test_x = head_right - win_w;
 
-        while (((screen().getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-                test_x > head_left : test_x + win_w < head_right) && 
-               !placed) {
+        while (!placed &&
+               (left_right ? test_x + win_w < head_right
+                           : test_x > head_left)) {
+                
+            if (left_right)
+                next_x = head_right; // it will get shrunk
+            else 
+                next_x = head_left;
 
-            test_y = head_top;
-            if (screen().getColPlacementDirection() == BScreen::BOTTOMTOP)
+            if (top_bot)
+                test_y = head_top;
+            else
                 test_y = head_bot - win_h;
 
-            while (((screen().getColPlacementDirection() == BScreen::BOTTOMTOP) ?
-                    test_y > head_top : test_y + win_h < head_bot) && 
-                   !placed) {
+            while (!placed && 
+                   (top_bot ? test_y + win_h < head_bot
+                            : test_y > head_top)) {
                 placed = True;
+
+                next_y = test_y + change_y;
 
                 Windows::iterator it = m_windowlist.begin();
                 Windows::iterator it_end = m_windowlist.end();
@@ -634,7 +676,28 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                         curr_x + curr_w > test_x &&
                         curr_y < test_y + win_h &&
                         curr_y + curr_h > test_y) {
+                        // this window is in the way
                         placed = False;
+
+                        // we find the next y that we can go to (a window will be in the way
+                        // all the way to its bottom)
+                        if (top_bot) {
+                            if (curr_y + curr_h > next_y)
+                                next_y = curr_y + curr_h;
+                        } else {
+                            if (curr_y - win_h < next_y)
+                                next_y = curr_y - win_h;
+                        }
+
+                        // but we can only go to the nearest x, since that is where the 
+                        // next time current windows in the way will change
+                        if (left_right) {
+                            if (curr_x + curr_w < next_x) 
+                                next_x = curr_x + curr_w;
+                        } else {
+                            if (curr_x - win_w > next_x)
+                                next_x = curr_x - win_w;
+                        }
                     }
                 }
 
@@ -643,10 +706,10 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                     place_y = test_y;
                 }
 
-                test_y += change_y;
+                test_y = next_y;
             } // end while
 
-            test_x += change_x;
+            test_x = next_x;
         } // end while
 
         break; 
