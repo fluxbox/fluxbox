@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.141 2003/04/28 12:58:08 rathnor Exp $
+// $Id: Screen.cc,v 1.142 2003/04/28 22:43:26 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -41,7 +41,7 @@
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
 #include "RootTheme.hh"
-//#include "WinButtonTheme.hh"
+#include "WinButtonTheme.hh"
 #include "FbCommands.hh"
 #include "BoolMenuItem.hh"
 #include "IntResMenuItem.hh"
@@ -504,12 +504,15 @@ BScreen::BScreen(ResourceManager &rm,
     cycling_focus(false),
     cycling_last(0),
     m_windowtheme(new FbWinFrameTheme(scrn)), 
+    // the order of windowtheme and winbutton theme is important
+    // because winbutton need to rescale the pixmaps in winbutton theme
+    // after fbwinframe have resized them
+    m_winbutton_theme(new WinButtonTheme(scrn)),
     m_menutheme(new FbTk::MenuTheme(scrn)),
-    resource(rm, screenname, altscreenname),
     m_root_theme(new 
                  RootTheme(scrn, 
                            *resource.rootcommand)),
-    //    m_winbutton_theme(new WinButtonTheme(scrn)),
+    resource(rm, screenname, altscreenname),
     m_toolbarhandler(0) {
 
 
@@ -827,14 +830,14 @@ void BScreen::reconfigure() {
     winFrameTheme().font().setAntialias(*resource.antialias);
     m_menutheme->titleFont().setAntialias(*resource.antialias);
     m_menutheme->frameFont().setAntialias(*resource.antialias);
+
     // load theme
     std::string theme_filename(Fluxbox::instance()->getStyleFilename());
     FbTk::ThemeManager::instance().load(theme_filename.c_str());
 
     I18n *i18n = I18n::instance();
 
-    const char *s = i18n->getMessage(
-                                     FBNLS::ScreenSet, 
+    const char *s = i18n->getMessage(FBNLS::ScreenSet, 
                                      FBNLS::ScreenPositionLength,
                                      "W: 0000 x H: 0000");
     int l = strlen(s);
@@ -907,6 +910,7 @@ void BScreen::reconfigure() {
              mem_fun(&FluxboxWindow::reconfigure));
 
     image_control->timeout();
+
 }
 
 
@@ -1332,14 +1336,14 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
             //create new buttons
             FbTk::Button *newbutton = 0;
             if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
-                newbutton = new WinButton(win, //*m_winbutton_theme.get(),
+                newbutton = new WinButton(win, *m_winbutton_theme.get(),
                                           WinButton::MINIMIZE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
                 newbutton->setOnClick(iconify_cmd);
 
             } else if (win.isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
-                newbutton = new WinButton(win, //*m_winbutton_theme.get(),
+                newbutton = new WinButton(win, *m_winbutton_theme.get(),
                                           WinButton::MAXIMIZE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
@@ -1349,7 +1353,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 newbutton->setOnClick(maximize_vert_cmd, 2);
 
             } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
-                newbutton = new WinButton(win, //*m_winbutton_theme.get(),
+                newbutton = new WinButton(win, *m_winbutton_theme.get(),
                                           WinButton::CLOSE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
@@ -1359,7 +1363,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 cerr<<__FILE__<<": Creating close button"<<endl;
 #endif // DEBUG
             } else if ((*dir)[i] == Fluxbox::STICK) {
-                WinButton *winbtn = new WinButton(win, // *m_winbutton_theme.get(),
+                WinButton *winbtn = new WinButton(win, *m_winbutton_theme.get(),
                                                   WinButton::STICK,
                                                   frame.titlebar(),
                                                   0, 0, 10, 10);
@@ -1367,7 +1371,7 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 winbtn->setOnClick(stick_cmd);
                 newbutton = winbtn;                
             } else if ((*dir)[i] == Fluxbox::SHADE) {
-                WinButton *winbtn = new WinButton(win, // *m_winbutton_theme.get(),
+                WinButton *winbtn = new WinButton(win, *m_winbutton_theme.get(),
                                                   WinButton::SHADE,
                                                   frame.titlebar(),
                                                   0, 0, 10, 10);               
@@ -2031,10 +2035,6 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                            "no menu label defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        /*  if (str_cmd.size())
-                            menu.insert(str_label.c_str(), BScreen::RESTARTOTHER, str_cmd.c_str());
-                            else
-                        */
                         FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
                         menu.insert(str_label.c_str(), restart_fb);
                     }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.88 2003/04/27 14:36:04 rathnor Exp $
+// $Id: Screen.hh,v 1.89 2003/04/28 22:42:29 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -48,6 +48,7 @@ class Netizen;
 class Toolbar;
 class FbWinFrameTheme;
 class RootTheme;
+class WinButtonTheme;
 class WinClient;
 class Workspace;
 
@@ -373,7 +374,9 @@ private:
     Window auto_group_window;
 
     std::auto_ptr<FbWinFrameTheme> m_windowtheme;
+    std::auto_ptr<WinButtonTheme> m_winbutton_theme;
     std::auto_ptr<FbTk::MenuTheme> m_menutheme;
+    std::auto_ptr<RootTheme> m_root_theme;
 
     struct ScreenResource {
         ScreenResource(ResourceManager &rm, const std::string &scrname,
@@ -411,7 +414,6 @@ private:
 
     } resource;
 
-    std::auto_ptr<RootTheme> m_root_theme;
     ToolbarHandler *m_toolbarhandler;
 };
 
