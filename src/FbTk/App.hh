@@ -25,20 +25,31 @@
 #include <X11/Xlib.h>
 
 namespace FbTk {
+
+///   Main class for applications, every application must create an instance of this class
 /**
-   Main class for applications, every application must create an instance of this class
-*/
+ * Usage: \n
+ * App app; \n
+ * ... \n
+ * init some other stuff; \n
+ * ... \n
+ *  main loop starts here: \n
+ * app.eventLoop(); \n
+ *
+ * To end main loop you call App::instance()->end()
+ */
 class App {
 public:
     /// @return singleton instance of App
     static App *instance();
+    /// creates a display connection
     explicit App(const char *displayname=0);
     virtual ~App();
     /// display connection
     Display *display() const { return m_display; }
     /// starts event loop
     virtual void eventLoop();
-    /// ends event loop
+    /// forces an end to event loop
     void end();
 private:
     static App *s_app;
