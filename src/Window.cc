@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.226 2003/09/12 22:48:49 fluxgen Exp $
+// $Id: Window.cc,v 1.227 2003/09/12 23:34:13 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2600,7 +2600,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
 
     unsigned int border_width = 0;
-    if (decorations.border) 
+    if (decorations.border)
         border_width = frame().theme().border().width();
 
     if (initial || frame().window().borderWidth() != border_width)
@@ -3133,13 +3133,7 @@ void FluxboxWindow::changeBlackboxHints(const BlackboxHints &net) {
 }
 
 void FluxboxWindow::upsize() {
-    frame().setBevel(screen().rootTheme().bevelWidth());
-    frame().handle().resize(frame().handle().width(), 
-                            screen().rootTheme().handleWidth());
-    frame().gripLeft().resize(frame().buttonHeight(), 
-                              screen().rootTheme().handleWidth());
-    frame().gripRight().resize(frame().gripLeft().width(), 
-                               frame().gripLeft().height());
+
 }
 
 
