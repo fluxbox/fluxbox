@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.15 2004/05/24 15:30:52 rathnor Exp $
+// $Id: ToolbarTheme.cc,v 1.16 2004/08/25 17:16:40 rathnor Exp $
 
 #include "ToolbarTheme.hh"
 
@@ -65,9 +65,15 @@ ToolbarTheme::~ToolbarTheme() {
 }
 
 bool ToolbarTheme::fallback(FbTk::ThemeItem_base &item) {
-    if (item.name() == "toolbar.alpha") {
+    if (item.name().find(".borderWidth") != std::string::npos) {
+        return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
+    } else if (item.name().find(".borderColor") != std::string::npos) {
+        return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
+    } else if (item.name() == "toolbar.alpha") {
         *m_alpha = 255;
         return true;
+    } else if (item.name() == "toolbar.bevelWidth") {
+        return FbTk::ThemeManager::instance().loadItem(item, "bevelWidth", "BevelWidth");
     }
     return false;
 }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.11 2004/06/16 15:38:19 rathnor Exp $
+// $Id: ClockTool.cc,v 1.12 2004/08/25 17:16:40 rathnor Exp $
 
 #include "ClockTool.hh"
 
@@ -204,7 +204,11 @@ void ClockTool::update(FbTk::Subject *subj) {
     for (size_t i=0; i<m_button.text().size() + 2; ++i)
         text += '0';
 
-    resize(m_theme.font().textWidth(text.c_str(), text.size()), m_button.height());
+    int new_width = m_theme.font().textWidth(text.c_str(), text.size());
+    if (new_width != m_button.width()) {
+        resize(m_theme.font().textWidth(text.c_str(), text.size()), m_button.height());
+        resizeSig().notify();
+    }
 }
 
 unsigned int ClockTool::borderWidth() const { 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.6 2004/05/18 08:35:22 grubert Exp $
+// $Id: ArrowButton.cc,v 1.7 2004/08/25 17:16:40 rathnor Exp $
 
 #include "ArrowButton.hh"
 
@@ -84,9 +84,9 @@ void ArrowButton::drawArrow() {
     XPoint pts[3];
     unsigned int w = width();
     unsigned int h = height();
-	// arrow size: half of the button
-	unsigned int ax = w / 2;
-	unsigned int ay = h / 2;
+    // arrow size: half of the button
+    unsigned int ax = w / 2;
+    unsigned int ay = h / 2;
     switch (m_arrow_type) {
     case LEFT:
 		// start at the tip

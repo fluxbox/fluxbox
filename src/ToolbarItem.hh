@@ -20,20 +20,21 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarItem.hh,v 1.4 2004/06/20 10:29:51 rathnor Exp $
+// $Id: ToolbarItem.hh,v 1.5 2004/08/25 17:16:40 rathnor Exp $
 
 #ifndef TOOLBARITEM_HH
 #define TOOLBARITEM_HH
 
 #include "FbTk/Subject.hh"
 
-/// An item in the toolbar that has either fixed or realive size to the toolbar
+/// An item in the toolbar that has either fixed or relative size to the toolbar
 class ToolbarItem {
 public:
     /// size type in the toolbar
     enum Type { 
         FIXED,  ///< the size can not be changed
-        RELATIVE ///< the size can be changed
+        RELATIVE, ///< the size can be changed
+        SQUARE ///< the size is fixed relative to the parent, and in both dimensions
     };
 
     explicit ToolbarItem(Type type);
@@ -51,6 +52,10 @@ public:
     virtual unsigned int borderWidth() const = 0;
     // some items might be there, but effectively empty, so shouldn't appear
     virtual bool active() { return true; }
+
+    // Tools should NOT listen to theme changes - they'll get notified by 
+    // the toolbar instead. Otherwise there are ordering problems.
+    virtual void renderTheme() = 0;
 
     FbTk::Subject &resizeSig() { return m_resize_sig; }
 

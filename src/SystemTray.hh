@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.hh,v 1.4 2004/04/19 22:48:19 fluxgen Exp $
+// $Id: SystemTray.hh,v 1.5 2004/08/25 17:16:40 rathnor Exp $
 
 #ifndef SYSTEMTRAY_HH
 #define SYSTEMTRAY_HH
@@ -65,11 +65,12 @@ public:
     int numClients() const { return m_clients.size(); }
     const FbTk::FbWindow &window() const { return m_window; }
 
+    inline void renderTheme() {}
+
 private:
     typedef std::list<FbTk::FbWindow *> ClientList;
     ClientList::iterator findClient(Window win);
 
-    void renderTheme();
     void rearrangeClients();
     void removeAllClients();
 

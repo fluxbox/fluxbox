@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolFactory.cc,v 1.4 2004/05/18 08:35:22 grubert Exp $
+// $Id: ToolFactory.cc,v 1.5 2004/08/25 17:16:40 rathnor Exp $
 
 #include "ToolFactory.hh"
 
@@ -117,7 +117,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                                            0, 0,
                                            button_size, button_size);
         win->setOnClick(cmd);
-        return new ButtonTool(win, ToolbarItem::FIXED, 
+        return new ButtonTool(win, ToolbarItem::SQUARE, 
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
 
@@ -136,7 +136,7 @@ ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &
                                            0, 0,
                                            button_size, button_size);
         win->setOnClick(cmd);
-        return new ButtonTool(win, ToolbarItem::FIXED, 
+        return new ButtonTool(win, ToolbarItem::SQUARE, 
                               dynamic_cast<ButtonTheme &>(*m_button_theme),
                               screen().imageControl());
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.41 2004/06/27 13:45:20 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.42 2004/08/25 17:16:40 rathnor Exp $
 
 #include "IconbarTool.hh"
 
@@ -611,7 +611,8 @@ void IconbarTool::renderTheme() {
         m_screen.imageControl().removeImage(tmp);
 
     // set to zero so its consistent and not ugly
-    m_icon_container.setBorderWidth(0);
+    m_icon_container.setBorderWidth(m_theme.border().width());
+    m_icon_container.setBorderColor(m_theme.border().color());
     m_icon_container.setAlpha(m_theme.alpha());
 
     // update buttons

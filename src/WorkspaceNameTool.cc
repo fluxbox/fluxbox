@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.8 2004/06/16 15:38:19 rathnor Exp $
+// $Id: WorkspaceNameTool.cc,v 1.9 2004/08/25 17:16:40 rathnor Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -70,8 +70,10 @@ void WorkspaceNameTool::moveResize(int x, int y,
 
 void WorkspaceNameTool::update(FbTk::Subject *subj) {
     m_button.setText(m_screen.currentWorkspace()->name());
-    if (m_button.width() != width())
+    if (m_button.width() != width()) {
         resize(width(), height());
+        resizeSig().notify();
+    }
     renderTheme();
 }
 

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTheme.cc,v 1.10 2004/05/24 15:30:52 rathnor Exp $
+// $Id: IconbarTheme.cc,v 1.11 2004/08/25 17:16:40 rathnor Exp $
 
 #include "IconbarTheme.hh"
 #include "FbTk/App.hh"
@@ -75,14 +75,12 @@ bool IconbarTheme::fallback(FbTk::ThemeItem_base &item) {
                 tm.loadItem(item, "toolbar.windowLabel", "toolbar.windowLabel") ||
                 tm.loadItem(item, "toolbar", "toolbar")
             ); 
-    } else if (item.name() == m_name + ".borderWidth" || 
-               item.name() == m_name + ".focused.borderWidth" ||
+    } else if (item.name() == m_name + ".focused.borderWidth" ||
                item.name() == m_name + ".unfocused.borderWidth")
-
+        // don't fallback for base border, for theme backwards compatibility
         return tm.loadItem(item, "borderWidth", "BorderWidth");
 
-    else if (item.name() == m_name + ".borderColor" || 
-             item.name() == m_name + ".focused.borderColor" ||
+    else if (item.name() == m_name + ".focused.borderColor" ||
              item.name() == m_name + ".unfocused.borderColor")
 
         return tm.loadItem(item, "borderColor", "BorderColor");

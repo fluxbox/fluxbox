@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.147 2004/07/14 23:39:29 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.148 2004/08/25 17:16:40 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -63,10 +63,7 @@
 #include <X11/keysym.h>
 
 #include <cstring>
-#include <cstdio>
 #include <iterator>
-
-#include <iostream>
 
 using namespace std;
 
@@ -248,9 +245,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, size_t width):
     frame.bevel_w = 1;
     frame.grab_x = frame.grab_y = 0;
     
-    // set antialias on themes
-    m_tool_factory.updateThemes();
-
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
     FbTk::RefCount<FbTk::Command> toggle_hidden(new FbTk::SimpleCommand<Toolbar>(*this, &Toolbar::toggleHidden));
@@ -457,6 +451,11 @@ void Toolbar::reconfigure() {
     if (theme().shape() && m_shape.get())
         m_shape->update();
 
+    ItemList::iterator item_it = m_item_list.begin();
+    ItemList::iterator item_it_end = m_item_list.end();
+    for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+        (*item_it)->renderTheme();
+    }
 
     rearrangeItems();
 
@@ -554,12 +553,14 @@ void Toolbar::exposeEvent(XExposeEvent &ee) {
 
 void Toolbar::handleEvent(XEvent &event) {
     /* Commented out by Simon 16jun04, since it causes LOTS of rearrangeItems
-       particularly on startup. Can't figure out why this is needed.
+       particularly on startup. This was needed to resize when tool changes its own
+       size, but it has too many side effects. Use the resizeSig in ToolbarItem instead.
+
     if (event.type == ConfigureNotify &&
         event.xconfigure.window != window().window()) {
         rearrangeItems();
     }
-    */
+*/  
 }
 
 void Toolbar::update(FbTk::Subject *subj) {
@@ -870,16 +871,24 @@ void Toolbar::saveOnHead(int head) {
     reconfigure();
 }
 
+/*
+ * Place items next to each other, with a bevel width between, 
+ * above and below each item. BUT, if there is no bevel width, then
+ * borders should be merged for evenness.
+ */
+
 void Toolbar::rearrangeItems() {
     if (m_resize_lock || screen().isShuttingdown() ||
         m_item_list.empty())
         return;
+
     // lock this
     m_resize_lock = true;
     // calculate size for fixed items
     ItemList::iterator item_it = m_item_list.begin();
     ItemList::iterator item_it_end = m_item_list.end();
-    int fixed_width = 0; // combined size of all fixed items
+    int bevel_width = theme().bevelWidth();
+    int fixed_width = bevel_width; // combined size of all fixed items
     int fixed_items = 0; // number of fixed items
     int relative_items = 0;
     int last_bw = 0; // we show the largest border of adjoining items
@@ -888,20 +897,32 @@ void Toolbar::rearrangeItems() {
         if (!(*item_it)->active())
             continue;
 
-        if (!first) {
-            if ((*item_it)->borderWidth() > last_bw)
-                fixed_width += (*item_it)->borderWidth();
-            else
-                fixed_width += last_bw;
-        } else
-                first = false;
+        int borderW = (*item_it)->borderWidth();
 
-        last_bw = (*item_it)->borderWidth();
+        if (bevel_width > 0) {
+            // the bevel and border are fixed whether relative or not
+            fixed_width += bevel_width + 2*borderW;
+        } else {
+            if (!first) {
+                if (borderW > last_bw)
+                    fixed_width += borderW;
+                else
+                    fixed_width += last_bw;
+            } else {
+                first = false;
+            }
+        }
+
+        last_bw = borderW;
 
         if ((*item_it)->type() == ToolbarItem::FIXED) {
             fixed_width += (*item_it)->width();
             fixed_items++;
-        } else if ((*item_it)->type() == ToolbarItem::RELATIVE) {
+        } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
+            fixed_width += height() - 2*bevel_width;
+            if (bevel_width != 0) fixed_width -= 2*borderW;
+            fixed_items++;
+        } else {
             relative_items++;
         }
     }
@@ -916,26 +937,36 @@ void Toolbar::rearrangeItems() {
             relative_width = 0;
         else { // size left after fixed items / number of relative items
             relative_width = (width() - fixed_width)/relative_items;
-            rounding_error = width() - fixed_width - relative_items*relative_width;
+            rounding_error = width() - fixed_width - relative_items*(relative_width);
         }
     }
+
     // now move and resize the items
     // borderWidth added back on straight away
     int next_x = -m_item_list.front()->borderWidth(); // list isn't empty
+    if (bevel_width != 0)
+        next_x = 0;
+
     last_bw = 0;
     for (item_it = m_item_list.begin(); item_it != item_it_end; ++item_it) {
+        int borderW = (*item_it)->borderWidth();
         if (!(*item_it)->active()) {
             (*item_it)->hide();
             // make sure it still gets told the toolbar height
-            (*item_it)->resize(1, height());  // width of 0 changes to 1 anyway
+            (*item_it)->resize(1, height()-2*(bevel_width+borderW));  // width of 0 changes to 1 anyway
             continue;
         }
-        int borderW = (*item_it)->borderWidth();
+        int offset = bevel_width;
+        int size_offset = 2*(borderW + bevel_width);
 
-        if (borderW > last_bw) 
-            next_x += borderW;
-        else
-            next_x += last_bw;
+        if (bevel_width == 0) {
+            offset = -borderW;
+            size_offset = 0;
+            if (borderW > last_bw) 
+                next_x += borderW;
+            else
+                next_x += last_bw;
+        }
         last_bw = borderW;
 
         if ((*item_it)->type() == ToolbarItem::RELATIVE) {
@@ -944,14 +975,19 @@ void Toolbar::rearrangeItems() {
                 extra = 1;
                 --rounding_error;
             }
-
-            (*item_it)->moveResize(next_x - borderW, -borderW, extra + relative_width, height());
+            (*item_it)->moveResize(next_x + offset, offset, extra + relative_width, height() - size_offset);
+        } else if ((*item_it)->type() == ToolbarItem::SQUARE) {
+            (*item_it)->moveResize(next_x + offset, offset,
+                                   height() - size_offset, height() - size_offset); 
         } else { // fixed size
-            (*item_it)->moveResize(next_x - borderW, -borderW,
-                                   (*item_it)->width(), height()); 
+            (*item_it)->moveResize(next_x + offset, offset,
+                                   (*item_it)->width(), height() - size_offset); 
         }
         (*item_it)->show();
-        next_x += (*item_it)->width();
+        next_x += (*item_it)->width() + bevel_width;
+        if (bevel_width != 0)
+            next_x += 2*borderW;
+
     }
     // unlock
     m_resize_lock = false;

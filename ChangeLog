@@ -1,7 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/08/26:
+  * Re-implement bevels in toolbar, plus numerous toolbar-related theme
+    fixes => old styles now look like they used to! (Simon)
+    Toolbar.cc ToolbarItem.h ToolTheme.cc ToolbarTheme.cc ToolFactory.cc
+    ArrowButton.cc ButtonTheme.cc ClockTool.cc IconbarTheme.cc 
+    IconbarTool.cc SystemTray.hh WorkspaceNameTool.cc
 *04/08/25:
-	* Fix to draw Cursors in Textboxes correctly again (Mathias)
+  * Fix to draw Cursors in Textboxes correctly again (Mathias)
+    Font.cc
 *04/08/22:
   * Preliminary basic support for icons in fluxbox-generate_menu (Han)
     - put a <progname>.xpm into ~/.fluxbox/icons. e.g. Eterm.xpm

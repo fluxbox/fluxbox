@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolTheme.cc,v 1.6 2004/05/24 15:30:52 rathnor Exp $
+// $Id: ToolTheme.cc,v 1.7 2004/08/25 17:16:40 rathnor Exp $
 
 #include "ToolTheme.hh"
 
@@ -43,6 +43,13 @@ void ToolTheme::reconfigTheme() {
 }
 
 bool ToolTheme::fallback(FbTk::ThemeItem_base &item) {
+    /* Don't fallback these for theme backwards compatibility
+    if (item.name().find(".borderWidth") != std::string::npos) {
+        return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
+    } else if (item.name().find(".borderColor") != std::string::npos) {
+        return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
+    } else
+    */
     if (item.name().find(".justify") != std::string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item, 
                                                        "toolbar.justify",

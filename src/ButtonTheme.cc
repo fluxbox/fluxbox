@@ -14,6 +14,7 @@ ButtonTheme::ButtonTheme(int screen_num,
 
 bool ButtonTheme::fallback(FbTk::ThemeItem_base &item) {
 
+/* Don't fallback these for theme backwards compatibility
     if (item.name().find(".borderWidth") != std::string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderWidth", "BorderWidth");
     }
@@ -21,7 +22,7 @@ bool ButtonTheme::fallback(FbTk::ThemeItem_base &item) {
     if (item.name().find(".borderColor") != std::string::npos) {
         return FbTk::ThemeManager::instance().loadItem(item, "borderColor", "BorderColor");
     }
-
+*/
     if (item.name().find(".pressed") != std::string::npos) {
         // copy texture
         *m_pressed_texture = texture();
