@@ -23,7 +23,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
-# $Id: fbsetbg,v 1.23 2003/11/23 01:19:01 rathnor Exp $
+# $Id: fbsetbg,v 1.24 2003/12/08 19:31:40 fluxgen Exp $
 
 # Portability notes:
 # To guarantee this script works on all platforms that support fluxbox
@@ -59,8 +59,8 @@ command="`basename \"$0\"`"
 # Functions
 display_usage() {
     cat << EOF
-Usage: $command [-u wallpapersetter] [-fFcCtTaA /path/to/wallpaper] [-l] [-h] [-i] [-p]
-Use $command -h for a complete help message.
+Usage: $command [-u/-U [wallpapersetter]] [-fFcCtTaA /path/to/wallpaper] [-l] [-h] [-i] [-p]
+Use \`\`$command -h'' for a complete help message.
 
 EOF
 }
@@ -77,8 +77,9 @@ Options:
     -a  Set maximized wallpaper, preserving aspect.
         ( if your bgsetter doesn't support this
           we fall back to -f )
+    -u  Use specified wallpapersetter, use no argument to forget
 
-    -F,-C,-T,-A same as uncapsed but without remembering.
+    -F,-C,-T,-A,-U same as uncapsed but without remembering.
 
     -h  Display this help
 
@@ -87,7 +88,7 @@ Options:
     -i  Information about selected wallpaper command
     -d  (deprecated, use -i) Debug info
     -p  Tips
-    -u  Use specified wallpapersetter
+
 
 Files:
 
@@ -120,7 +121,7 @@ Common tips to use with $command:
    session.screen0.rootCommand:    $command -l
 
 3) Use $command -i to find out what wallpapersetter $command will be
-   used and what I think about it.
+   used and what $command thinks about it.
 
 EOF
 }
@@ -178,19 +179,37 @@ debugfbsetbg() {
 
 if [ $# -eq 0 ]; then
     message "no options given"
-    display_help
+    display_usage
     exit 1
 fi
 
 
-unset debug
-
+unset debug setterfromcommandline
 # Parse command-line options
 while [ $# -gt 0 ]; do
     case "$1" in
         -u)
             if find_it "$2"; then
-                wpsetters=$2
+                grep -v wpsetters $lastwallpaper > ${lastwallpaper}.tmp
+                echo "wpsetters $2" >> ${lastwallpaper}.tmp
+                mv ${lastwallpaper}.tmp $lastwallpaper
+                WPSETTER=$2
+                setterfromcommandline=true
+            elif [ -z "$2" ]; then
+                grep -v wpsetters $lastwallpaper > ${lastwallpaper}.tmp
+                mv ${lastwallpaper}.tmp $lastwallpaper
+                message "wpsetter removed from historyfile"
+                exit 0
+            else
+                message "Couldn't find \"$2\" for wallpapersetter"
+                display_usage
+                exit 1
+            fi
+            shift 2 ;;
+        -U)
+            if find_it "$2"; then
+                WPSETTER=$2
+                setterfromcommandline=true
             else
                 message "Couldn't find \"$2\" for wallpapersetter"
                 display_usage
@@ -242,22 +261,22 @@ while [ $# -gt 0 ]; do
         -p) display_tips ; exit 0 ;;
         -h) display_help ; exit 0 ;;
         --)
-            echo "$command doesn't recognize -- gnu-longopts."
-            echo 'Use $command -h for a help message.'
+            message "$command doesn't recognize -- gnu-longopts."
+            message 'Use $command -h for a help message.'
             display_usage
             exit 1 ;;
         -*)
-            echo 1>&2 "$command: unrecognized option "\`"$1'"
+            message "unrecognized option "\`"$1'"
             display_usage
             exit 1
             ;;
         *)
             if [ ! -r "$1" ]; then
-                echo "$1 isn't an existing wallpaper or a valid option." >&2
+                message "$1 isn't an existing wallpaper or a valid option."
                 display_usage
                 exit 1
             elif [ -z "$1" ]; then
-                message 'No wallpaper to set' >&2
+                message 'No wallpaper to set'
                 display_usage
                 exit 1
             else
@@ -269,12 +288,15 @@ while [ $# -gt 0 ]; do
 done
 
 # Find the default wallpapersetter
-for wpsetter in $wpsetters; do
-    if find_it $wpsetter; then
-        WPSETTER=$wpsetter
-        break
-    fi
-done
+if [ "$setterfromcommandline" != true ]; then
+    wpsetters="`awk '/wpsetters/ {print $2}' $lastwallpaper` $wpsetters"
+    for wpsetter in $wpsetters; do
+        if find_it $wpsetter; then
+            WPSETTER=$wpsetter
+            break
+        fi
+    done
+fi
 
 standardrant=\
 "$WPSETTER sets the 'wrong' wallpaper. Transparency for fluxbox and
