@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.6 2003/12/16 17:06:51 fluxgen Exp $
+// $Id: GContext.hh,v 1.7 2004/01/09 01:19:48 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -98,7 +98,7 @@ public:
 private:
     GContext(const GContext &cont);
 
-    Display *m_display; // worth caching
+    static Display *m_display; // worth caching
     GC m_gc;
 };
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.cc,v 1.5 2003/11/28 22:50:55 fluxgen Exp $
+// $Id: GContext.cc,v 1.6 2004/01/09 01:19:48 fluxgen Exp $
 
 #include "GContext.hh"
 
@@ -31,27 +31,33 @@
 
 namespace FbTk {
 
+Display *GContext::m_display = 0;
+
 GContext::GContext(const FbTk::FbDrawable &drawable): 
-    m_display(FbTk::App::instance()->display()),     
-    m_gc(XCreateGC(m_display,
+    m_gc(XCreateGC(m_display != 0 ? m_display : FbTk::App::instance()->display(),
                    drawable.drawable(),
                    0, 0)) {
+    if (m_display == 0)
+        m_display = FbTk::App::instance()->display();
+
     setGraphicsExposure(false);
 }
 
 GContext::GContext(Drawable drawable):
-    m_display(FbTk::App::instance()->display()), 
-    m_gc(XCreateGC(m_display,
+    m_gc(XCreateGC(m_display != 0 ? m_display : FbTk::App::instance()->display(),
                    drawable,
                    0, 0)) {
+    if (m_display == 0)
+        m_display = FbTk::App::instance()->display();
     setGraphicsExposure(false);
 }
 
 GContext::GContext(Drawable d, const GContext &gc):
-    m_display(FbTk::App::instance()->display()),
-    m_gc(XCreateGC(m_display,
+    m_gc(XCreateGC(m_display != 0 ? m_display : FbTk::App::instance()->display(),
                    d,
                    0, 0)) {
+    if (m_display == 0)
+        m_display = FbTk::App::instance()->display();
     setGraphicsExposure(false);
     copy(gc);
 }
