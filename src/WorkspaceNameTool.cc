@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.cc,v 1.3 2003/08/12 00:22:11 fluxgen Exp $
+// $Id: WorkspaceNameTool.cc,v 1.4 2003/08/13 10:19:38 fluxgen Exp $
 
 #include "WorkspaceNameTool.hh"
 
@@ -92,6 +92,9 @@ unsigned int WorkspaceNameTool::height() const {
     return m_button.height();
 }
 
+unsigned int WorkspaceNameTool::borderWidth() const {
+    return m_button.borderWidth();
+}
 
 void WorkspaceNameTool::show() {
     m_button.show();
@@ -115,5 +118,7 @@ void WorkspaceNameTool::renderTheme() {
         m_screen.imageControl().removeImage(tmp);
 
     m_button.setJustify(m_theme.justify());
+    m_button.setBorderWidth(m_theme.border().width());
+    m_button.setBorderColor(m_theme.border().color());
     m_button.clear();
 }

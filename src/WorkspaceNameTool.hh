@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceNameTool.hh,v 1.1 2003/08/11 14:32:39 fluxgen Exp $
+// $Id: WorkspaceNameTool.hh,v 1.2 2003/08/13 10:19:57 fluxgen Exp $
 
 #ifndef WORKSPACENAMETOOL_HH
 #define WORKSPACENAMETOOL_HH
@@ -47,6 +47,7 @@ public:
     void hide();
     unsigned int width() const;
     unsigned int height() const;
+    unsigned int borderWidth() const;
 
     void update(FbTk::Subject *subj);
 
