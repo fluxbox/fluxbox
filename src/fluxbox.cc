@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.28 2002/02/06 17:12:09 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.29 2002/02/07 14:23:01 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -579,8 +579,11 @@ void Fluxbox::process_event(XEvent *e) {
 	case UnmapNotify:
 	{
 
-		FluxboxWindow *win = (FluxboxWindow *) 0;
-
+		FluxboxWindow *win = 0;
+		#ifdef DEBUG 
+		cerr<<__FILE__<<"("<<__LINE__<<"): Unmapnotify 0x"<<hex<<
+			e->xunmap.window<<dec<<endl;
+		#endif
 		#ifdef SLIT
 		Slit *slit = (Slit *) 0;
 		#endif // SLIT
@@ -589,8 +592,9 @@ void Fluxbox::process_event(XEvent *e) {
 			// only process windows with StructureNotify selected 
 	     	// (ignore SubstructureNotify)				
 			if (win->getClientWindow() != e->xunmap.window ||
-					win->isTransient())
+					win->isTransient()) {
 				win->unmapNotifyEvent(&e->xunmap);
+			}
 		#ifdef SLIT
 		} else if ((slit = searchSlit(e->xunmap.window))!=0) {
 			slit->removeClient(e->xunmap.window);
@@ -598,9 +602,7 @@ void Fluxbox::process_event(XEvent *e) {
 			cerr<<__FILE__<<"("<<__LINE__<<"): Here"<<endl;
 			#endif 
 		#endif // SLIT
-
 		}
-
 	}
 	break;	
 	case CreateNotify:
@@ -962,7 +964,9 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
 //-----------------------------------------
 void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]="<<ce.data.l[0]<<endl;
+	cerr<<__FILE__<<"("<<__LINE__<<"): ClientMessage. data.l[0]=0x"<<hex<<ce.data.l[0]<<
+		"  type=0x"<<ce.message_type<<dec<<endl;
+	
 	#endif
 
 	if (ce.format != 32)
@@ -1333,10 +1337,56 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 					
 		} else if ((screen = searchScreen(ce.window))!=0 && //the message sent to root window?
 				ce.data.l[0] >= 0 &&
-				ce.data.l[0] < screen->getCount()) {
-
+				ce.data.l[0] < screen->getCount())
 			screen->changeWorkspaceID(ce.data.l[0]);
+		
+	} else if (ce.message_type == getGnomeStateAtom()) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
+		#endif
+		FluxboxWindow *win = 0;
+
+		if ((win = searchWindow(ce.window))!=0) {
+			cerr<<__FILE__<<"("<<__LINE__<<"): Mask of members to change:"<<
+				hex<<ce.data.l[0]<<dec<<endl; // mask_of_members_to_change
+			cerr<<"New members:"<<ce.data.l[1]<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_STICKY) {
+				cerr<<"Sticky"<<endl;
+				if (!win->isStuck())
+					win->stick();
+			} else if (win->isStuck())
+				win->stick();
+			
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_MINIMIZED) {
+				cerr<<"Minimized"<<endl;
+				if (!win->isIconic())
+					win->iconify();
+			} else if (win->isIconic())
+				win->deiconify(true, true);
+			
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_MAXIMIZED_VERT)
+				cerr<<"Maximize Vert"<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_MAXIMIZED_HORIZ)
+				cerr<<"Maximize Horiz"<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_HIDDEN)
+				cerr<<"Hidden"<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_SHADED) {
+				cerr<<"Shaded"<<endl;
+				if (!win->isShaded()) win->shade();
+			}
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_HID_WORKSPACE)
+				cerr<<"HID Workspace"<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_HID_TRANSIENT)
+				cerr<<"HID Transient"<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_FIXED_POSITION)
+				cerr<<"Fixed Position"<<endl;
+			if (ce.data.l[0] & BaseDisplay::WIN_STATE_ARRANGE_IGNORE)
+				cerr<<"Arrange Ignore"<<endl;			
 		}
+	} if (ce.message_type == getGnomeHintsAtom()) {
+		#ifdef DEBUG
+		cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_HINTS"<<endl;
+		#endif
 	} else 
 		return false; //no gnome atom
 
