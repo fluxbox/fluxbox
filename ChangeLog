@@ -1,6 +1,19 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/02/17:
+   * Added shade option for button config (Henrik)
+     Screen.cc
+   * Fixed antialias toggle for menus (Henrik)
+     Screen.cc
+   * Added toolbar width percent change menu item (Henrik) 
+     Screen.cc, Toolbar.cc
+   * Added IntResMenuItem, for resource<int> changes in the menu (Henrik)
+     IntResMenuItem.hh/cc
 *03/02/16:
+   * Fixed configurable titlebar buttons (Henrik)
+     Screen.cc
+   * Fixed workspace menu and clientmenu (Henrik)
+     Workspace.hh/cc, Screen.cc, Window.hh
    * Added layer submenu to window menu + small fix (Simon)
      Screen.cc Window.hh/cc fluxbox.hh     
    * Fixed gnome workspace initialisation issues (Simon)
@@ -12,7 +25,7 @@ Changes for 0.1.15:
    * Moved Observer.hh/cc and Subject.hh/cc to FbTk directory and 
      change Subject to use std::list instead of std::vector (Henrik)
    * Added SetStyleCmd command, which takes argument for style filename (Henrik)
-     FbCommands.hh/cc	
+     FbCommands.hh/cc
 *03/02/10:
    * More fiddling of Layer code, cleaning up (Henrik + Simon)
      FbTk/MultLayers.hh/cc FbTk/XLayer.hh/cc FbTk/XLayerItem.hh/cc 
