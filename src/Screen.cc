@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.58 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Screen.cc,v 1.59 2002/08/02 12:52:44 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -474,7 +474,7 @@ namespace {
 	}
 }
 
-BScreen::~BScreen(void) {
+BScreen::~BScreen() {
 	#ifdef GNOME
 	XDestroyWindow(getBaseDisplay()->getXDisplay(), gnome_win);
 	#endif
@@ -548,7 +548,7 @@ BScreen::~BScreen(void) {
 
 }
 
-void BScreen::reconfigure(void) {
+void BScreen::reconfigure() {
 	#ifdef DEBUG
 	cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
 	#endif
@@ -653,7 +653,7 @@ void BScreen::reconfigure(void) {
 }
 
 
-void BScreen::rereadMenu(void) {
+void BScreen::rereadMenu() {
 	initMenu();
 	raiseWindows(0, 0);
 
@@ -661,11 +661,11 @@ void BScreen::rereadMenu(void) {
 }
 
 
-void BScreen::removeWorkspaceNames(void) {
+void BScreen::removeWorkspaceNames() {
 	workspaceNames.erase(workspaceNames.begin(), workspaceNames.end());
 }
 
-void BScreen::updateWorkspaceNamesAtom(void) {
+void BScreen::updateWorkspaceNamesAtom() {
 
 #ifdef GNOME	
 	XTextProperty	text;
@@ -741,7 +741,7 @@ FluxboxWindow *BScreen::getIcon(unsigned int index) {
 }
 
 
-int BScreen::addWorkspace(void) {
+int BScreen::addWorkspace() {
 	Workspace *wkspc = new Workspace(this, workspacesList.size());
 	workspacesList.push_back(wkspc);
 	//add workspace to workspacemenu
@@ -760,7 +760,7 @@ int BScreen::addWorkspace(void) {
 }
 
 
-int BScreen::removeLastWorkspace(void) {
+int BScreen::removeLastWorkspace() {
 	if (workspacesList.size() > 1) {
 		Workspace *wkspc = workspacesList.back();
 
@@ -888,7 +888,7 @@ void BScreen::removeNetizen(Window w) {
 }
 
 
-void BScreen::updateNetizenCurrentWorkspace(void) {
+void BScreen::updateNetizenCurrentWorkspace() {
 	#ifdef NEWWMSPEC
 	//update _NET_WM_CURRENT_DESKTOP
 	int workspace = getCurrentWorkspaceID();
@@ -914,7 +914,7 @@ void BScreen::updateNetizenCurrentWorkspace(void) {
 }
 
 
-void BScreen::updateNetizenWorkspaceCount(void) {
+void BScreen::updateNetizenWorkspaceCount() {
 
 	Netizens::iterator it = netizenList.begin();
 	Netizens::iterator it_end = netizenList.end();
@@ -941,7 +941,7 @@ void BScreen::updateNetizenWorkspaceCount(void) {
 }
 
 
-void BScreen::updateNetizenWindowFocus(void) {
+void BScreen::updateNetizenWindowFocus() {
 
 	Netizens::iterator it = netizenList.begin();
 	Netizens::iterator it_end = netizenList.end();
@@ -1194,7 +1194,7 @@ void BScreen::prevFocus(int opts) {
 //--------- raiseFocus -----------
 // Raise the current focused window
 //--------------------------------
-void BScreen::raiseFocus(void) {
+void BScreen::raiseFocus() {
 	bool have_focused = false;
 	int focused_window_number = -1;
 
@@ -1210,7 +1210,7 @@ void BScreen::raiseFocus(void) {
 			raiseWindow(fluxbox->getFocusedWindow());
 }
 
-void BScreen::initMenu(void) {
+void BScreen::initMenu() {
 	I18n *i18n = I18n::instance();
 	
 	if (rootmenu) {
@@ -1571,7 +1571,7 @@ void BScreen::createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, c
 
 }
 
-void BScreen::shutdown(void) {
+void BScreen::shutdown() {
 	fluxbox->grab();
 
 	XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), NoEventMask);
@@ -1688,7 +1688,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 }
 
 
-void BScreen::hideGeometry(void) {
+void BScreen::hideGeometry() {
 	if (geom_visible) {
 		XUnmapWindow(getBaseDisplay()->getXDisplay(), geom_window);
 		geom_visible = false;
@@ -1735,8 +1735,17 @@ bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
 			(opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
 }
 
+//----------- useAutoGroupWindow -------------
+// Access and clear the auto-group window
+//--------------------------------------------
+FluxboxWindow* BScreen::useAutoGroupWindow() {
+	Window w = auto_group_window;
+	auto_group_window = 0;
+	return w ? Fluxbox::instance()->searchWindow(w) : 0;
+}
+
 #ifdef GNOME
-void BScreen::initGnomeAtoms(void) {
+void BScreen::initGnomeAtoms() {
 
 	/* create the GNOME window */
 	gnome_win = XCreateSimpleWindow(getBaseDisplay()->getXDisplay(),

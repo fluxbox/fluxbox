@@ -32,6 +32,7 @@ class BScreen;
 class Rootmenu : public Basemenu {
 private:
   BScreen *screen;
+  Window auto_group_window;
 
 
 protected:
@@ -40,6 +41,11 @@ protected:
 
 public:
   Rootmenu(BScreen *);
+  void setAutoGroupWindow(Window window);
+
+
+private:
+  Window useAutoGroupWindow();
 };
 
 

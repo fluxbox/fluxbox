@@ -50,7 +50,10 @@
 #endif // MAXPATHLEN
 
 
-Rootmenu::Rootmenu(BScreen *scrn) : Basemenu(scrn) {
+Rootmenu::Rootmenu(BScreen *scrn)
+: Basemenu(scrn),
+  auto_group_window(0)
+{
   screen = scrn;  
 }
 
@@ -73,7 +76,10 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 					sprintf(displaystring + strlen(displaystring) - 1, "%d",
 						screen->getScreenNumber());
 
+					screen->setAutoGroupWindow(useAutoGroupWindow());
+
 					bexec(item->exec().c_str(), displaystring);
+
 					#else //   __EMX__
 					spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), NULL);
 					#endif // !__EMX__
@@ -113,3 +119,22 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 	}
 }
 
+void Rootmenu::setAutoGroupWindow(Window window)
+{
+	auto_group_window = window;
+}
+
+Window Rootmenu::useAutoGroupWindow()
+{
+	// Return and clear the auto-grouping state.
+	Window w = auto_group_window;
+	if (w)
+		auto_group_window = 0;	// clear it immediately
+	// If not set check the parent and the parent's parent, ...
+	else {
+		Rootmenu* parent = dynamic_cast<Rootmenu*>(GetParent());
+		if (parent)
+			w = parent->useAutoGroupWindow();
+	}
+	return w;
+}

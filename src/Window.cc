@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.63 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Window.cc,v 1.64 2002/08/02 12:58:37 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -758,7 +758,7 @@ void FluxboxWindow::grabButtons() {
 		frame.plate, True, ButtonPressMask,
 		GrabModeSync, GrabModeSync, None, None);		
 	XUngrabButton(display, Button1, Mod1Mask|Mod2Mask|Mod3Mask, frame.plate);
-		
+
 
 	XGrabButton(display, Button1, Mod1Mask, frame.window, True,
 		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
@@ -768,7 +768,7 @@ void FluxboxWindow::grabButtons() {
 	grabButton(display, Button1, frame.window, fluxbox->getMoveCursor());
 	
 	XGrabButton(display, Button2, Mod1Mask, frame.window, True,
-		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);	
+		ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None, None);
 		
 	XGrabButton(display, Button3, Mod1Mask, frame.window, True,
 		ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
@@ -2787,6 +2787,17 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 
 		visible = true;
 		iconic = false;
+
+		// Auto-group?
+		if (!transient) {
+			// Grab and clear the auto-group window
+			FluxboxWindow* autoGroupWindow = screen->useAutoGroupWindow();
+			if (autoGroupWindow) {
+				Tab *groupTab = autoGroupWindow->getTab();
+				if (groupTab)
+					groupTab->addWindowToGroup(this);
+			}
+		}
 
 		fluxbox->ungrab();
 	}

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.14 2002/05/19 12:57:47 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.15 2002/08/02 12:52:44 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -126,6 +126,8 @@ protected:
 			int x= -1, int y= -1, unsigned int width= 0, unsigned int height= 0);
 	virtual void redrawTitle();
 	virtual void internal_hide();
+	inline Basemenu *GetParent() { return m_parent; }
+	inline const Basemenu *GetParent() const { return m_parent; }
 };
 
 class BasemenuItem {

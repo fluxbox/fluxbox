@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.39 2002/07/23 18:37:05 fluxgen Exp $
+// $Id: Screen.hh,v 1.40 2002/08/02 12:52:44 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -181,6 +181,7 @@ public:
 	inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
 	inline void iconUpdate(void) { iconmenu->update(); }
 	inline Iconmenu *getIconmenu(void) { return iconmenu; }
+	inline void setAutoGroupWindow(Window w = 0) { auto_group_window = w; }
 
 	
 	#ifdef HAVE_STRFTIME
@@ -229,6 +230,8 @@ public:
 	void showPosition(int, int);
 	void showGeometry(unsigned int, unsigned int);
 	void hideGeometry(void);
+
+	FluxboxWindow* useAutoGroupWindow(void);
 
 	void updateNetizenCurrentWorkspace(void);
 	void updateNetizenWorkspaceCount(void);
@@ -293,6 +296,8 @@ private:
 
     WorkspaceNames workspaceNames;
     Workspaces workspacesList;
+
+	Window auto_group_window;
 	
 	struct ScreenResource {
 		ScreenResource(ResourceManager &rm, const std::string &scrname,

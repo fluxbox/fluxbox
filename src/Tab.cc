@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.29 2002/07/23 17:11:59 fluxgen Exp $
+// $Id: Tab.cc,v 1.30 2002/08/02 12:57:19 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -654,11 +654,25 @@ void Tab::buttonPressEvent(XButtonEvent *be) {
 	//draw in pressed mode
 	draw(true);
 	
-	//set window to titlewindow so we can take advatage of drag function
-	be->window = m_win->frame.title;
+	//invoke root menu with auto-glueing?
+	if (be->button == 3) {
+		BScreen *screen = m_win->getScreen();
+		Rootmenu *rootmenu = screen->getRootmenu();
+		if (! rootmenu->isVisible()) {
+			Fluxbox::instance()->checkMenu();
+			screen->getRootmenu()->move(be->x_root, be->y_root-rootmenu->titleHeight());
+			rootmenu->setAutoGroupWindow(m_win->getClientWindow());
+			rootmenu->show();
+		}
+	}
+	//otherwise let the window handle the event
+	else {
+		//set window to titlewindow so we can take advantage of drag function
+		be->window = m_win->frame.title;
 	
-	//call windows buttonpress eventhandler
-	m_win->buttonPressEvent(be);
+		//call windows buttonpress eventhandler
+		m_win->buttonPressEvent(be);
+	}
 }
 
 //----------- buttonReleaseEvent ----------
@@ -1185,4 +1199,18 @@ Tab::Alignment Tab::getTabAlignmentNum(const char *string) {
 		}
 	}
 	return ANONE;
+}
+
+//---------- addWindowToGroup ------------
+// Add a window the the tabbed group
+//----------------------------------------
+bool Tab::addWindowToGroup(FluxboxWindow *otherWindow)
+{
+	if (!otherWindow || otherWindow == m_win)
+		return false;
+	Tab *otherTab = otherWindow->getTab();
+	if (!otherTab)
+		return false;
+	insert(otherTab);
+	return true;
 }
