@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/15:
+  * Added menutest.cc to src/tests (Henrik)
+    testing menu parser and theme
 *05/01/14:
   * Fix for #1091710 (SystemTray is not covered by StyleStuff) (Mathias)
     SystemTray is not configurable via styles thru the 
