@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.38 2004/04/01 14:06:42 rathnor Exp $
+// $Id: WinClient.cc,v 1.39 2004/04/28 14:59:12 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -145,6 +145,12 @@ void WinClient::updateRect(int x, int y,
 
     XSendEvent(disp, window(), False, StructureNotifyMask, &event);
 
+}
+
+bool WinClient::acceptsFocus() const {
+    return (m_focus_mode == F_LOCALLYACTIVE || 
+            m_focus_mode == F_PASSIVE || 
+            m_focus_mode == F_GLOBALLYACTIVE && send_focus_message);
 }
 
 bool WinClient::sendFocus() {

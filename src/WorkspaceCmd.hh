@@ -20,11 +20,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.hh,v 1.2 2003/07/01 09:47:41 fluxgen Exp $
+// $Id: WorkspaceCmd.hh,v 1.3 2004/04/28 14:59:12 rathnor Exp $
 
 #ifndef WORKSPACECMD_HH
 #define WORKSPACECMD_HH
 #include "Command.hh"
+#include "Screen.hh"
 
 class NextWindowCmd: public FbTk::Command {
 public:
@@ -40,6 +41,14 @@ public:
     void execute();
 private:
     const int m_option;
+};
+
+class DirFocusCmd: public FbTk::Command {
+public:
+    explicit DirFocusCmd(const BScreen::FocusDir dir): m_dir(dir) { }
+    void execute();
+private:
+    const BScreen::FocusDir m_dir;
 };
 
 class NextWorkspaceCmd: public FbTk::Command {

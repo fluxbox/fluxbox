@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.139 2004/04/19 22:44:42 fluxgen Exp $
+// $Id: Screen.hh,v 1.140 2004/04/28 14:59:11 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -259,7 +259,7 @@ public:
     void setFocusedWindow(WinClient &winclient);
 
 
-    void dirFocus(FluxboxWindow &win, FocusDir dir);
+    void dirFocus(FluxboxWindow &win, const FocusDir dir);
 
     void reconfigure();	
     void rereadMenu();

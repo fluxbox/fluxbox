@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.16 2003/12/17 01:20:49 fluxgen Exp $
+// $Id: WinClient.hh,v 1.17 2004/04/28 14:59:12 rathnor Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -54,6 +54,7 @@ public:
 
     bool sendFocus(); // returns whether we sent a message or not 
                       // i.e. whether we assume the focus will get taken
+    bool acceptsFocus() const; // will this window accept focus (according to hints)
     void sendClose(bool forceful = false);
     // not aware of anything that makes this false at present
     inline bool isClosable() const { return true; }

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommandFactory.cc,v 1.29 2004/04/22 21:12:34 fluxgen Exp $
+// $Id: FbCommandFactory.cc,v 1.30 2004/04/28 14:59:11 rathnor Exp $
 
 #include "FbCommandFactory.hh"
 
@@ -69,6 +69,10 @@ FbCommandFactory::FbCommandFactory() {
         "exec",
         "execcommand",
         "execute",
+        "focusup",
+        "focusdown",
+        "focusleft",
+        "focusright",
         "iconify",
         "killwindow",
         "leftworkspace",
@@ -276,6 +280,14 @@ FbTk::Command *FbCommandFactory::stringToCommand(const std::string &command,
         return new NextWindowCmd(atoi(arguments.c_str()));
     else if (command == "prevwindow")
         return new PrevWindowCmd(atoi(arguments.c_str()));
+    else if (command == "focusup")
+        return new DirFocusCmd(BScreen::FOCUSUP);
+    else if (command == "focusdown")
+        return new DirFocusCmd(BScreen::FOCUSDOWN);
+    else if (command == "focusleft")
+        return new DirFocusCmd(BScreen::FOCUSLEFT);
+    else if (command == "focusright")
+        return new DirFocusCmd(BScreen::FOCUSRIGHT);
     else if (command == "nextgroup")
         return new NextWindowCmd(atoi(arguments.c_str()) ^ BScreen::CYCLEGROUPS);
     else if (command == "prevgroup")

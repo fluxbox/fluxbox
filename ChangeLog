@@ -1,8 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/04/28:
+  * Fix key bindings for directional focus movement (Simon)
+    - reminder, key actions are: FocusUp, FocusDown, FocusLeft, FocusRight
+    WorkspaceCmd.hh/cc Screen.hh/cc WinClient.hh/cc FbCommandFactory.cc
   * Add apps file matching on WM_WINDOW_ROLE (Simon)
-    - use "role=string". Particularly useful for gaim windows
+    - use "role=string". Particularly useful for gaim+gimp windows
       [app] (role=buddy_list) ...
     ClientPattern.hh/cc FbWindow.hh/cc
 *04/04/27:

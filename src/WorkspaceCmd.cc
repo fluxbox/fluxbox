@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.10 2004/01/16 09:21:31 fluxgen Exp $
+// $Id: WorkspaceCmd.cc,v 1.11 2004/04/28 14:59:12 rathnor Exp $
 
 #include "WorkspaceCmd.hh"
 
@@ -28,6 +28,7 @@
 #include "Window.hh"
 #include "Screen.hh"
 #include "fluxbox.hh"
+#include "WinClient.hh"
 
 #include "FbTk/KeyUtil.hh"
 
@@ -77,6 +78,18 @@ void PrevWindowCmd::execute() {
         } else
             screen->nextFocus(m_option);
     }
+}
+
+void DirFocusCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->keyScreen();
+    if (screen == 0)
+        return;
+
+    WinClient *client = Fluxbox::instance()->getFocusedWindow();
+    if (client == 0 || client->fbwindow() == 0)
+        return;
+
+    screen->dirFocus(*client->fbwindow(), m_dir);
 }
 
 void NextWorkspaceCmd::execute() {

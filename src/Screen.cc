@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.275 2004/04/19 22:44:42 fluxgen Exp $
+// $Id: Screen.cc,v 1.276 2004/04/28 14:59:11 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -1640,7 +1640,7 @@ void BScreen::setFocusedWindow(WinClient &winclient) {
     }
 }
 
-void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
+void BScreen::dirFocus(FluxboxWindow &win, const FocusDir dir) {
     // change focus to the window in direction dir from the given window
 
     // we scan through the list looking for the window that is "closest"
@@ -1657,7 +1657,11 @@ void BScreen::dirFocus(FluxboxWindow &win, FocusDir dir) {
     Workspace::Windows &wins = currentWorkspace()->windowList();
     Workspace::Windows::iterator it = wins.begin();
     for (; it != wins.end(); ++it) {
-        if ((*it) == &win) continue; // skip slef
+        if ((*it) == &win 
+            || (*it)->isIconic() 
+            || (*it)->isFocusHidden() 
+            || !(*it)->winClient().acceptsFocus()) 
+            continue; // skip self
         
         // we check things against an edge, and within the bounds (draw a picture)
         int edge=0, upper=0, lower=0, oedge=0, oupper=0, olower=0;
