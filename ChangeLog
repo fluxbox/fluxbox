@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/24:
+  * Fixed the "aterm"-bug  (Henrik)
+    Window.cc
 *03/09/23:
   * Add support for _NET_WM_STATE_FULLSCREEN (Simon)
     - fixes mozilla/firebird fullscreen
