@@ -1,4 +1,8 @@
 Changes for 0.1.6:
+*02/01/05:
+   * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay )
+*02/01/04:
+   * Fixed keybinding bug (Thanks Devaux Fabien)
 *02/01/01:
    * Updated the man page (Thanks Matthew Hawkins)
    * Fixed windowmenu bug when resizing with num/caps/scrollock on (Thanks Devaux Fabien)
@@ -19,7 +23,6 @@ Changes for 0.1.6:
    * Fixed a bug in Tab::buttonReleaseEvent and added sloppyWindowGrouping
 	 wich lets you release windows tabs on other windows and not only other
 	 tabs to group them (Claes Nästén)
-
 *01/12/19:
    * Moved some structs from file scope of BaseDisplay.hh in to class BaseDisplay
    * Fixed redraw bug when changing workspace
