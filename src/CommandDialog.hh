@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: CommandDialog.hh,v 1.1 2003/12/19 03:53:21 fluxgen Exp $
+// $Id: CommandDialog.hh,v 1.2 2003/12/19 18:15:19 fluxgen Exp $
 
 #ifndef RUNCOMMANDDIALOG_HH
 #define RUNCOMMANDDIALOG_HH
@@ -29,6 +29,8 @@
 #include "FbTk/TextButton.hh"
 #include "FbTk/Font.hh"
 #include "FbTk/GContext.hh"
+#include "FbTk/Command.hh"
+#include "FbTk/RefCount.hh"
 
 class BScreen;
 
@@ -40,10 +42,11 @@ public:
     virtual ~CommandDialog();
 
     void setText(const std::string &text);
-
+    void setPostCommand(FbTk::RefCount<FbTk::Command> &postcommand) { m_postcommand = postcommand; }
     void show();
     void hide();
 
+    void exposeEvent(XExposeEvent &event);
     void motionNotifyEvent(XMotionEvent &event);
     void buttonPressEvent(XButtonEvent &event);
     void handleEvent(XEvent &event);
@@ -51,13 +54,14 @@ public:
 
 private:
     void init();
-
     void render();
+    void updateSizes();
 
     FbTk::Font m_font;
     FbTk::TextBox m_textbox;
     FbTk::TextButton m_label;
     FbTk::GContext m_gc;
+    FbTk::RefCount<FbTk::Command> m_postcommand; ///< command to do after the first command was issued (like reconfigure)
     BScreen &m_screen;
     int m_move_x, m_move_y;
     Pixmap m_pixmap;
