@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: i18n.cc,v 1.9 2003/04/26 15:46:03 fluxgen Exp $
+// $Id: i18n.cc,v 1.10 2003/05/16 00:17:16 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -112,8 +112,10 @@ void I18n::openCatalog(const char *catalog) {
     m_catalog_fd = catopen(catalog_filename.c_str(), NL_CAT_LOCALE);
 #endif // MCLoadBySet
 
-    if (m_catalog_fd == (nl_catd)-1)
-        cerr<<"Warning: Failed to open catalog, using default messages."<<endl;
+    if (m_catalog_fd == (nl_catd)-1) {
+        cerr<<"Warning: Failed to open file("<<catalog_filename<<")"<<endl;
+        cerr<<"for translation, using default messages."<<endl;
+    }
 	
 #else // !HAVE_CATOPEN
 	
