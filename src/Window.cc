@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.222 2003/08/25 17:07:32 fluxgen Exp $
+// $Id: Window.cc,v 1.223 2003/09/10 09:56:18 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -952,6 +952,7 @@ void FluxboxWindow::reconfigure() {
     grabButtons();
 
     frame().setDoubleClickTime(Fluxbox::instance()->getDoubleClickInterval());
+    frame().setUpdateDelayTime(Fluxbox::instance()->getUpdateDelayTime());
 
     m_windowmenu.reconfigure();
 	
