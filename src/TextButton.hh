@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextButton.hh,v 1.2 2003/04/14 12:08:50 fluxgen Exp $
+// $Id: TextButton.hh,v 1.3 2003/08/11 14:42:03 fluxgen Exp $
 
 #ifndef TEXTBUTTON_HH
 #define TEXTBUTTON_HH
@@ -48,7 +48,12 @@ public:
     inline FbTk::Justify justify() const { return m_justify; }
     inline const std::string &text() const { return m_text; }
     inline const FbTk::Font &font() const { return *m_font; }
+    unsigned int textWidth() const;
     int bevel() const { return m_bevel; }
+
+protected:
+    void drawText(int x_offset = 0, int y_offset = 0);
+
 private:
     const FbTk::Font *m_font;
     std::string m_text;
