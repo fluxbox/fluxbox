@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.1 2002/11/26 16:01:27 fluxgen Exp $
+// $Id: XFontImp.cc,v 1.2 2002/11/26 19:48:17 fluxgen Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
@@ -27,7 +27,9 @@
 #include <X11/Xutil.h>
 
 #include <iostream>
+#include <new>
 using namespace std;
+
 namespace FbTk {
 
 XFontImp::XFontImp(const char *fontname):m_rotfont(0), m_fontstruct(0),

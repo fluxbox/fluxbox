@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.4 2002/10/16 19:06:51 fluxgen Exp $
+// $Id: Gnome.cc,v 1.5 2002/11/26 19:49:40 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -27,6 +27,7 @@
 #include "Screen.hh"
 
 #include <iostream>
+#include <new>
 using namespace std;
 
 Gnome::Gnome() {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.5 2002/11/23 14:54:50 rathnor Exp $
+// $Id: Ewmh.cc,v 1.6 2002/11/26 19:49:40 fluxgen Exp $
 
 #include "Ewmh.hh" 
 
@@ -28,6 +28,7 @@
 #include "fluxbox.hh"
 
 #include <iostream>
+#include <new>
 using namespace std;
 
 Ewmh::Ewmh() {
