@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.253 2003/12/19 00:34:22 fluxgen Exp $
+// $Id: Screen.cc,v 1.254 2003/12/29 01:06:32 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -445,18 +445,12 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     // load this screens resources
     fluxbox->load_rc(*this);
 
-    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
-
     // setup image cache engine
     m_image_control.reset(new FbTk::ImageControl(scrn, true, fluxbox->colorsPerChannel(),
                                                  fluxbox->getCacheLife(), fluxbox->getCacheMax()));
     imageControl().installRootColormap();
     root_colormap_installed = true;
 
-#ifdef SLIT
-    if (slit()) // this will load theme and reconfigure slit
-        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
-#endif // SLIT
 
 
     m_menutheme->setAlpha(*resource.menu_alpha);
@@ -539,9 +533,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 #ifdef SLIT
     m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
                  Fluxbox::instance()->getSlitlistFilename().c_str()));
-
 #endif // SLIT
-
 
     //!! TODO: we shouldn't do this more than once, but since slit handles their
     // own resources we must do this.
@@ -752,8 +744,6 @@ void BScreen::reconfigure() {
 
     m_menutheme->setDelayOpen(*resource.menu_delay);
     m_menutheme->setDelayClose(*resource.menu_delay_close);
-
-    Fluxbox::instance()->loadRootCommand(*this);
 
     // setup windowtheme, toolbartheme for antialias
     winFrameTheme().font().setAntialias(*resource.antialias);
@@ -2414,6 +2404,7 @@ WinClient *BScreen::getLastFocusedWindow(int workspace) {
 }
 
 void BScreen::updateSize() {
+    cerr<<"update Size"<<endl;
     // force update geometry
     rootWindow().updateGeometry();
 
