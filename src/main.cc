@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.15 2003/05/07 22:19:59 fluxgen Exp $
+// $Id: main.cc,v 1.16 2003/05/07 23:17:24 rathnor Exp $
 
 
 
@@ -118,46 +118,61 @@ int main(int argc, char **argv) {
                               "	-display <string>\t\tuse display connection.\n"
                               "	-rc <string>\t\t\tuse alternate resource file.\n"
                               "	-version\t\t\tdisplay version and exit.\n"
+                              "	-info\t\t\tdisplay some useful information.\n"
                               "	-help\t\t\t\tdisplay this help text and exit.\n\n"),
                    __fluxbox_version);
-
-            cout<<"Compiled with: "<<endl<<
-#ifdef DEBUG
-                "DEBUG"<<endl<<
+            ::exit(0);
+        } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
+#define NOT "-"
+            cout<<"Compiled options ("<<NOT<<" => disabled): "<<endl<<
+#ifndef DEBUG
+                NOT<<
 #endif // DEBUG                
-#ifdef SLIT
-                "SLIT"<<endl<<
+                "DEBUG"<<endl<<
+#ifndef SLIT
+                NOT<<
 #endif // SLIT
-#ifdef HAVE_XPM
-                "XPM"<<endl<<
+                "SLIT"<<endl<<
+#ifndef HAVE_XPM
+                NOT<<
 #endif // HAVE_XPM
-#ifdef USE_GNOME
-                "GNOME"<<endl<<
+                "XPM"<<endl<<
+#ifndef USE_GNOME
+                NOT<<
 #endif // USE_GNOME 
-#ifdef KDE
-                "KDE"<<endl<<
+                "GNOME"<<endl<<
+#ifndef KDE
+                NOT<<
 #endif // KDE
-#ifdef USE_NEWWMSPEC
-                "EWMH"<<endl<<
+                "KDE"<<endl<<
+#ifndef USE_NEWWMSPEC
+                NOT<<
 #endif // USE_NEWWMSPEC
-#ifdef REMEMBER
-                "REMEMBER"<<endl<<
+                "EWMH"<<endl<<
+#ifndef REMEMBER
+                NOT<<
 #endif // REMEMBER
-#ifdef SHAPE
-                "SHAPE"<<endl<<
+                "REMEMBER"<<endl<<
+#ifndef SHAPE
+                NOT<<
 #endif // SHAPE
-#ifdef USE_XFT
-                "XFT"<<endl<<
+                "SHAPE"<<endl<<
+#ifndef USE_XFT
+                NOT<<
 #endif // USE_XFT
-#ifdef USE_XMB
-                "XMB"<<endl<<
+                "XFT"<<endl<<
+#ifndef USE_XMB
+                NOT<<
 #endif // USE_XMB
-#ifdef XINERAMA
-                "XINERAMA"<<endl<<
+                "XMB"<<endl<<
+#ifndef XINERAMA
+                NOT<<
 #endif // XINERAMA
-#ifdef HAVE_XRENDER
-                "RENDER"<<endl<<
+                "XINERAMA"<<endl<<
+#ifndef HAVE_XRENDER
+                NOT<<
 #endif // HAVE_XRENDER
+                "RENDER"<<endl<<
                 endl;
             ::exit(0);
         }
