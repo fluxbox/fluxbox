@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextTheme.cc,v 1.4 2003/08/13 15:25:58 fluxgen Exp $
+// $Id: TextTheme.cc,v 1.5 2003/08/16 11:33:13 fluxgen Exp $
 
 #include "TextTheme.hh"
 
@@ -37,8 +37,10 @@ TextTheme::TextTheme(FbTk::Theme &theme,
                         RootWindow(FbTk::App::instance()->display(), 
                                    theme.screenNum()), 0, 0)) {
     *m_justify = FbTk::LEFT;
-    // load default font
+    // set default values
     m_font->load("fixed");
+    m_text_color->setFromString("white", theme.screenNum());
+
     update();
 }
 
