@@ -2,23 +2,25 @@ News in 0.1.13:
    * Antialias support (Xft)
    * UTF-8 support
    * Extended window manager support (i.e Gnome2...)
-     * supports:
-	    * _NET_WM_DESKTOP,
-        * _NET_NUMBER_OF_DESKTOPS,
-        * _NET_CURRENT_DESKTOP,
-        * _NET_ACTIVE_WINDOW,
-        * _NET_CLOSE_WINDOW
-		* _NET_WM_STATE 
-		   * _NET_WM_STATE_STICKY
-           * _NET_WM_STATE_SHADED
-   * fbrun command history
+     * atom support:
+       * _NET_WM_DESKTOP,
+       * _NET_NUMBER_OF_DESKTOPS,
+       * _NET_CURRENT_DESKTOP,
+       * _NET_ACTIVE_WINDOW,
+       * _NET_CLOSE_WINDOW
+       * _NET_WM_STATE 
+       * _NET_WM_STATE_STICKY
+       * _NET_WM_STATE_SHADED
+   * fbrun command history and horizontal scrolling
    * Default terminal and browser choice in fluxbox-generate_menu
-
+   * Workspace menu popups if you click with first mouse button on workspace label
 Bug fixes:
    * Fixed bug [ 604958 ] Menu not (full) visible when tabs bottom
    * Fixed bug [ 581588 ] Toolbar auto-hiding
    * Fixed bug [ 608945 ] xmms crashes fluxbox
    * Fixed bug [ 522673 ] Numlock not handled correctly in Solaris
    * Fixed bug [ 604634 ] Fluxbox 0.1.11 menu on iconbar problem
+   * Fixed bug [ 627897 ] Clicking tab leads to crashing X-Server.
+   * Fixed bug [ 609267 ] Sending minimized group
 
 See ChangeLog for details
