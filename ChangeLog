@@ -1,7 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.1.9:
+*02/05/19:
+   * Removed titlebar from src/Makefile.am and doc/fluxbox.1.in (Thanks Matt Hope)
+   * Added configurable geometry show (Thanks Rando Christensen)
 *02/05/18:
    * Fixed style save_rc when changing style
+   * const-correct in class Tab
 *02/05/17:
    * Removed some unnessesary const return values on fundamental types
    * Fixed const-correct on Resource class and BTexture class
