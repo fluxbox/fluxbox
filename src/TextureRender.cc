@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.5 2002/12/02 20:15:22 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.6 2002/12/09 23:43:50 fluxgen Exp $
 
 #include "TextureRender.hh"
 
@@ -79,9 +79,9 @@ TextureRender::TextureRender(BImageControl &imgctrl,
 
 
 TextureRender::~TextureRender() {
-    if (red) delete [] red;
-    if (green) delete [] green;
-    if (blue) delete [] blue;	
+    delete [] red;
+    delete [] green;
+    delete [] blue;	
 }
 
 
@@ -640,8 +640,8 @@ XImage *TextureRender::renderXImage() {
         fprintf(stderr,
                 i18n->
                 getMessage(
-                    FBNLS::ImageSet, FBNLS::ImageUnsupVisual,
-                    "BImage::renderXImage: unsupported visual\n"));
+                           FBNLS::ImageSet, FBNLS::ImageUnsupVisual,
+                           "BImage::renderXImage: unsupported visual\n"));
         delete [] d;
         XDestroyImage(image);
         return (XImage *) 0;
