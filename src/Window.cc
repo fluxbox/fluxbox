@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.229 2003/09/14 11:23:47 rathnor Exp $
+// $Id: Window.cc,v 1.230 2003/09/15 20:27:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3436,7 +3436,7 @@ void FluxboxWindow::setupWindow() {
         menu.insert(it->first, it->second);
     }
 
-    menu.insert("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
+    menu.insert("------------------");
     menu.insert("Close", close_cmd);
 
     menu.reconfigure(); // update graphics
