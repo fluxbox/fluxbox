@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.11 2002/02/07 15:12:23 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.12 2002/02/20 23:13:32 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1033,13 +1033,13 @@ void Toolbar::buttonReleaseEvent(XButtonEvent *re) {
 
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
-			 screen->prevWorkspace();
+			 screen->prevWorkspace(1);
 		} else if (re->window == frame.nsbutton) {
 			redrawNextWorkspaceButton(False, True);
 
 			if (re->x >= 0 && re->x < (signed) frame.button_w &&
 					re->y >= 0 && re->y < (signed) frame.button_w)
-				screen->nextWorkspace();
+				screen->nextWorkspace(1);
 		} else if (re->window == frame.pwbutton) {
 			redrawPrevWindowButton(False, True);
 
@@ -1061,9 +1061,9 @@ void Toolbar::buttonReleaseEvent(XButtonEvent *re) {
 		}
 #endif // HAVE_STRFTIME
 	} else if (re->button == 4) //mousewheel scroll up
-		screen->nextWorkspace();
+		screen->nextWorkspace(1);
 	else if (re->button == 5)	//mousewheel scroll down
-		screen->prevWorkspace();
+		screen->prevWorkspace(1);
 }
 
 
