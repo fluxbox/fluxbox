@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Xutil.cc,v 1.1 2003/06/22 12:23:57 fluxgen Exp $
+// $Id: Xutil.cc,v 1.2 2003/10/02 16:14:41 rathnor Exp $
 
 #include "Xutil.hh"
 
@@ -41,6 +41,7 @@ std::string getWMName(Window window) {
     Display *display = FbTk::App::instance()->display();
 
     XTextProperty text_prop;
+    text_prop.value = 0;
     char **list;
     int num;
     I18n *i18n = I18n::instance();
@@ -62,6 +63,9 @@ std::string getWMName(Window window) {
 					
             } else				
                 name = text_prop.value ? (char *)text_prop.value : "";
+
+            XFree(text_prop.value);
+
         } else { // default name
             name = i18n->getMessage(FBNLS::WindowSet, FBNLS::WindowUnnamed,
                                     "Unnamed");

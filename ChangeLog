@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/02:
+  * Fix couple of memory leaks and uninitialised uses shown up with 
+    valgrind (Simon)
+    EventManager.cc TextureRender.cc Gnome.cc Screen.cc Window.cc 
+    WinClient.cc Xutil.cc main.cc
   * Make grips children of handle (Simon)
     - Fixes parentrelative grip texture
     FbWinFrame.hh/cc

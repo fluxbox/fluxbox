@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextureRender.cc,v 1.4 2003/08/12 11:44:41 fluxgen Exp $
+// $Id: TextureRender.cc,v 1.5 2003/10/02 16:14:41 rathnor Exp $
 
 #include "TextureRender.hh"
 
@@ -57,7 +57,7 @@ TextureRender::TextureRender(ImageControl &imgctrl,
         height = 3200;
     }
 
-    red = new (nothrow) unsigned char[width * height];
+    red = new unsigned char[width * height];
     if (red == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
@@ -65,14 +65,14 @@ TextureRender::TextureRender(ImageControl &imgctrl,
     }
 
 
-    green = new (nothrow)  unsigned char[width * height];
+    green = new unsigned char[width * height];
     if (green == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);
         throw string("TextureRender::TextureRender(): Out of memory while allocating green buffer. size " + string(sbuf));
     }
 
-    blue = new (nothrow) unsigned char[width * height];
+    blue = new unsigned char[width * height];
     if (blue == 0) {
         char sbuf[128];
         sprintf(sbuf, "%d", width*height);

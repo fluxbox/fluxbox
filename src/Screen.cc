@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.235 2003/09/29 12:53:58 rathnor Exp $
+// $Id: Screen.cc,v 1.236 2003/10/02 16:14:41 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -731,7 +731,10 @@ void BScreen::removeWindow(FluxboxWindow *win) {
 
 void BScreen::removeClient(WinClient &client) {
 
-    WinClient *cyc = *cycling_window;
+    WinClient *cyc = 0;
+    if (cycling_window != focused_list.end())
+        cyc = *cycling_window;
+
     WinClient *focused = Fluxbox::instance()->getFocusedWindow();
     focused_list.remove(&client);
     if (cyc == &client) {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: EventManager.cc,v 1.8 2003/08/27 00:21:54 fluxgen Exp $
+// $Id: EventManager.cc,v 1.9 2003/10/02 16:14:41 rathnor Exp $
 
 #include "EventManager.hh"
 #include "FbWindow.hh"
@@ -114,19 +114,18 @@ void EventManager::dispatch(Window win, XEvent &ev, bool parent) {
     Window root, parent_win, *children = 0;
     unsigned int num_children;
     if (XQueryTree(FbTk::App::instance()->display(), win, 
-                   &root, &parent_win, &children, &num_children) != 0 && 
-        parent_win != 0 &&
-        parent_win != root) {
-
-        if (children != 0)
+                   &root, &parent_win, &children, &num_children) != 0) {
+        if (children != 0) 
             XFree(children);
 
-        if (m_parent[parent_win] == 0)
-            return;
+        if (parent_win != 0 &&
+            parent_win != root) {
+            if (m_parent[parent_win] == 0)
+                return;
 
-        // dispatch event to parent
-        dispatch(parent_win, ev, true);
-
+            // dispatch event to parent
+            dispatch(parent_win, ev, true);
+        }
     }
 
 }

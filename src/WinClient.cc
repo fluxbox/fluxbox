@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.28 2003/09/29 14:58:15 rathnor Exp $
+// $Id: WinClient.cc,v 1.29 2003/10/02 16:14:41 rathnor Exp $
 
 #include "WinClient.hh"
 
@@ -61,7 +61,8 @@ WinClient::WinClient(Window win, BScreen &screen, FluxboxWindow *fbwin):FbTk::Fb
                      m_blackbox_hint(0),
                      m_mwm_hint(0),
                      m_focus_mode(F_PASSIVE),
-                     m_diesig(*this), m_screen(screen) {
+                     m_diesig(*this), m_screen(screen), 
+                     m_strut(0) {
     updateBlackboxHints();
     updateMWMHints();
     updateWMHints();

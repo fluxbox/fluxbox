@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.31 2003/07/28 15:06:33 rathnor Exp $
+// $Id: Gnome.cc,v 1.32 2003/10/02 16:14:41 rathnor Exp $
 
 #include "Gnome.hh"
 
@@ -147,7 +147,7 @@ void Gnome::updateClientList(BScreen &screen) {
             num += (*win_it)->numClients();
     }
 	
-    Window *wl = new (nothrow) Window[num];
+    Window *wl = new Window[num];
     if (wl == 0) {
         cerr<<"Fatal: Out of memory, can't allocate ("<<num*sizeof (Window)<<") for gnome client list"<<endl;
         return;

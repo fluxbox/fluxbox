@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.237 2003/09/29 15:00:06 rathnor Exp $
+// $Id: Window.cc,v 1.238 2003/10/02 16:14:41 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1126,6 +1126,11 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
     }
 
     shape();
+
+    if (!moving) {
+        m_last_resize_x = new_x;
+        m_last_resize_y = new_y;
+    }
 }	
 
 // returns whether the focus was "set" to this window

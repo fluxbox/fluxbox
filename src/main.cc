@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: main.cc,v 1.23 2003/08/28 23:18:37 fluxgen Exp $
+// $Id: main.cc,v 1.24 2003/10/02 16:14:41 rathnor Exp $
 
 #include "fluxbox.hh"
 #include "I18n.hh"
@@ -135,7 +135,7 @@ void showInfo(ostream &ostr) {
 
 int main(int argc, char **argv) {
 	
-    std::string session_display;
+    std::string session_display = "";
     std::string rc_file;
     std::string log_filename;
 
