@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.288 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Window.cc,v 1.289 2004/06/07 21:48:14 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -560,27 +560,13 @@ void FluxboxWindow::init() {
 
     setState(m_current_state);
 
-    // add extra menus
-    /*    addExtraMenu("Send To...", new SendToMenu(*this));
-    addExtraMenu("Layer...",
-                 new LayerMenu<FluxboxWindow>(screen().menuTheme(), 
-                                              screen().imageControl(), 
-                                              *screen().layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                              this,
-                                              false));
-    */
-    // the layermenu will get deleted as an extra menu
-    // don't call setupWindow here as the addExtraMenu call should
-
     sendConfigureNotify();
     // no focus default
     setFocusFlag(false);
 
     if (m_shaped)
         shape();
-
-    FbTk::App::instance()->sync(false);
-
+     FbTk::App::instance()->sync(false);
 }
 
 /// apply shape to this window
@@ -2573,7 +2559,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             grabPointer(me.window, False, ButtonMotionMask |
                         ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
                         None, frame(). theme().moveCursor(), CurrentTime);
-            int borderw = active_button.borderWidth();
             // relative position on button
             m_button_grab_x = me.x;
             m_button_grab_y = me.y;
