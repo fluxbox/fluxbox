@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.6 2003/12/28 23:59:57 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.7 2003/12/29 14:05:16 fluxgen Exp $
 
 #
 # Portability notes:
@@ -387,7 +387,7 @@ case ${LC_ALL} in
         GRAPHICMENU='Grafiikka'
         KDEMENUTEXT='KDE:n valikot'
         MISCMENU='Sekalaista'
-        MUSICMENU='Musikki'
+        MUSICMENU='Musiikki'
         NETMENU='Verkko'
         OFFICEMENU='Toimistotyökalut'
         RELOADITEM='Päivitä'
@@ -397,7 +397,7 @@ case ${LC_ALL} in
         TERMINALMENU='Terminaalit'
         USERSTYLES='Käyttäjän tyylit'
         WINDOWMANAGERS='Ikkunanhallintaohjelmat'
-        WORKSPACEMENU='Työaluet'
+        WORKSPACEMENU='Työalueet'
         XUTILSMENU='X-Ohjelmat'
         ;;
     ja_JP*) #Japanese locales
