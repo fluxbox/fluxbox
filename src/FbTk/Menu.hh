@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.11 2003/04/20 13:47:20 fluxgen Exp $
+// $Id: Menu.hh,v 1.12 2003/04/20 14:20:14 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -30,6 +30,7 @@
 #include <X11/Xlib.h>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "FbWindow.hh"
 #include "EventHandler.hh"
