@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.3 2003/04/27 23:56:13 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.4 2003/04/29 08:53:24 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -60,48 +60,6 @@ FbPixmap::FbPixmap(Drawable src,
 
 FbPixmap::~FbPixmap() {
     free();
-}
-
-void FbPixmap::copyArea(Drawable src, GC gc,
-                        int src_x, int src_y,
-                        int dest_x, int dest_y,
-                        unsigned int width, unsigned int height) {
-    if (m_pm == 0 || src == 0 || gc == 0)
-        return;
-    XCopyArea(FbTk::App::instance()->display(),
-              src, m_pm, gc,
-              src_x, src_y,
-              width, height,
-              dest_x, dest_y);
-}
-
-void FbPixmap::fillRectangle(GC gc, int x, int y,
-                             unsigned int width, unsigned int height) {
-    if (m_pm == 0 || gc == 0)
-        return;
-    XFillRectangle(FbTk::App::instance()->display(),
-                   m_pm, gc,
-                   x, y,
-                   width, height);
-}
-
-void FbPixmap::drawRectangle(GC gc, int x, int y, 
-                             unsigned int width, unsigned int height) {
-    if (m_pm == 0 || gc == 0)
-        return;
-    XDrawRectangle(FbTk::App::instance()->display(),
-                   m_pm, gc,
-                   x, y,
-                   width, height);
-}
-
-void FbPixmap::fillPolygon(GC gc, XPoint *points, int npoints,
-                           int shape, int mode) {
-    if (m_pm == 0 || gc == 0 || points == 0 || npoints == 0)
-        return;
-    XFillPolygon(FbTk::App::instance()->display(),
-                 m_pm, gc, points, npoints,
-                 shape, mode);
 }
 
 FbPixmap &FbPixmap::operator = (const FbPixmap &the_copy) {
@@ -207,7 +165,6 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
                                               static_cast<int>(src_x),
                                               static_cast<int>(src_y)));
             XDrawPoint(dpy, new_pm.drawable(), gc, tx, ty);
-
  
         }
     }

@@ -19,17 +19,19 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.hh,v 1.3 2003/04/27 23:55:08 fluxgen Exp $
+// $Id: FbPixmap.hh,v 1.4 2003/04/29 08:52:51 fluxgen Exp $
 
 #ifndef FBTK_FBPIXMAP_HH
 #define FBTK_FBPIXMAP_HH
+
+#include "FbDrawable.hh"
 
 #include <X11/Xlib.h>
 
 namespace FbTk {
 
 /// a wrapper for X Pixmap
-class FbPixmap {
+class FbPixmap:public FbDrawable {
 public:    
     FbPixmap();
     /// copy pixmap 
@@ -42,16 +44,6 @@ public:
 
     ~FbPixmap();
 
-    void copyArea(Drawable src, GC gc,
-                  int src_x, int src_y,
-                  int dest_x, int dest_y,
-                  unsigned int width, unsigned int height);
-    void fillRectangle(GC gc, int x, int y,
-                       unsigned int width, unsigned int height);
-    void drawRectangle(GC gc, int x, int y, 
-                  unsigned int width, unsigned int height);
-    void fillPolygon(GC gc, XPoint *points, int npoints,
-                     int shape, int mode);
     void copy(const FbPixmap &the_copy);
     /// scales the pixmap to specified size
     void scale(unsigned int width, unsigned int height);
