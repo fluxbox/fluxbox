@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.20 2003/12/19 03:56:51 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.21 2003/12/19 17:22:04 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -174,10 +174,8 @@ void SetWorkspaceNameCmd::execute() {
     BScreen *screen = Fluxbox::instance()->mouseScreen();
     if (screen == 0) {
         screen = Fluxbox::instance()->keyScreen();
-        if (screen == 0) {
-            cerr<<"Screen == 0!"<<endl;
+        if (screen == 0)
             return;
-        }
     }
 
     if (m_workspace < 0) {
@@ -212,5 +210,30 @@ void CommandDialogCmd::execute() {
     FbTk::FbWindow *win = new CommandDialog(*screen, "Fluxbox Command");
     win->show();
 }
+
+    
+SetResourceValueCmd::SetResourceValueCmd(const std::string &resname, 
+                                         const std::string &value):
+    m_resname(resname),
+    m_value(value) {
+
+}
+
+void SetResourceValueCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+    screen->resourceManager().setResourceValue(m_resname, m_value);
+    Fluxbox::instance()->save_rc();
+}
+
+void SetResourceValueDialogCmd::execute() {
+    BScreen *screen = Fluxbox::instance()->mouseScreen();
+    if (screen == 0)
+        return;
+
+    FbTk::FbWindow *win = new CommandDialog(*screen,  "Type resource name and the value", "SetResourceValue ");
+    win->show();
+};
 
 }; // end namespace FbCommands

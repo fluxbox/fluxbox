@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.hh,v 1.15 2003/12/19 03:56:51 fluxgen Exp $
+// $Id: FbCommands.hh,v 1.16 2003/12/19 17:19:56 fluxgen Exp $
 
 // \file contains basic commands to restart, reconfigure, execute command and exit fluxbox
 
@@ -113,5 +113,19 @@ public:
 };
 
 } // end namespace FbCommands
+
+class SetResourceValueCmd: public FbTk::Command {
+public:
+    SetResourceValueCmd(const std::string &resourcename, const std::string &value);
+    void execute();
+private:
+    const std::string m_resname;
+    const std::string m_value;
+};
+
+class SetResourceValueDialogCmd: public FbTk::Command {
+public:
+    void execute();
+};
 
 #endif // FBCOMMANDS_HH
