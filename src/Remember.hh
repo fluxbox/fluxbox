@@ -1,7 +1,7 @@
 // Remember.hh for Fluxbox Window Manager
-// Copyright (c) 2002 Xavier Brouckaert
-// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                     and Simon Bowden    (rathnor at users.sourceforge.net)
+// Copyright (c) 2002 Xavier Brouckaert
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

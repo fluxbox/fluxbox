@@ -1,5 +1,5 @@
 // Keys.cc for Fluxbox - an X11 Window manager
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

@@ -1,5 +1,5 @@
 // Netizen.hh for Fluxbox 
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Netizen.hh for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)

@@ -1,5 +1,5 @@
 // ToolbarTheme.cc  a theme class for Toolbar
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

@@ -1,5 +1,5 @@
 // main.cc for Fluxbox Window manager
-// Copyright (c) 2001 - 2005 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //               and 2003-2005 Simon Bowden (rathnor at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
