@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.8 2004/06/08 13:15:30 rathnor Exp $
+// $Id: MenuCreator.cc,v 1.9 2004/06/10 11:43:24 fluxgen Exp $
 
 #include "MenuCreator.hh"
 
@@ -92,37 +92,49 @@ static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
 
 }
 
-static void translateMenuItem(Parser &parse,
-                              const std::string &str_key, 
-                              const std::string &str_label, 
-                              const std::string &str_cmd,
-                              FbTk::Menu &menu);
+class ParseItem {
+public:
+    explicit ParseItem(FbTk::Menu *menu):m_menu(menu) {}
+
+    inline void load(Parser &p) {
+        p>>m_key>>m_label>>m_cmd>>m_icon;
+    }
+    inline const std::string &icon() const { return m_icon.second; }
+    inline const std::string &command() const { return m_cmd.second; }
+    inline const std::string &label() const { return m_label.second; }
+    inline const std::string &key() const { return m_key.second; }
+    inline FbTk::Menu *menu() { return m_menu; }
+private:
+    Parser::Item m_key, m_label, m_cmd, m_icon;
+    FbTk::Menu *m_menu;
+};
+
+
+static void translateMenuItem(Parser &parse, ParseItem &item);
 
 
 static void parseMenu(Parser &pars, FbTk::Menu &menu) {
-    Parser::Item item, item2, item3;
+    ParseItem pitem(&menu);
     while (!pars.eof()) {
-        pars>>item>>item2>>item3;
-        if (item.second == "end")
+        pitem.load(pars);
+        if (pitem.key() == "end")
             return;
-        translateMenuItem(pars,
-                          item.second,
-                          item2.second,
-                          item3.second,
-                          menu);
-
+        translateMenuItem(pars, pitem);
     }
 }
 
-static void translateMenuItem(Parser &parse,
-                              const std::string &str_key, 
-                              const std::string &str_label, 
-                              const std::string &str_cmd,
-                              FbTk::Menu &menu) {
-    
+static void translateMenuItem(Parser &parse, ParseItem &pitem) {
+    if (pitem.menu() == 0)
+        throw string("translateMenuItem: We must have a menu in ParseItem!");
+
+    FbTk::Menu &menu = *pitem.menu();
+    const std::string &str_key = pitem.key();
+    const std::string &str_cmd = pitem.command();
+    const std::string &str_label = pitem.label();
+
     const int screen_number = menu.screenNumber();
     _FB_USES_NLS;
-
+    
     if (str_key == "end") {
         return;
     } else if (str_key == "nop") { 
@@ -215,13 +227,7 @@ static void translateMenuItem(Parser &parse,
         }
     } else if (str_key == "separator") {
         menu.insert(new FbTk::MenuSeparator());
-    }/* else if (str_key == "icon") {
-        FbTk::RefCount<FbTk::Command> cmd(CommandParser::instance().parseLine(str_cmd));
-        FbTk::MenuItem *item = new FbTk::MenuIcon(str_label, str_cmd, screen_number);
-        item->setCommand(cmd);
-        menu.insert(item);
-        
-        }*/
+    }
     else { // ok, if we didn't find any special menu item we try with command parser
         // we need to attach command with arguments so command parser can parse it
         string line = str_key + " " + str_cmd;
@@ -229,28 +235,32 @@ static void translateMenuItem(Parser &parse,
         if (*command != 0)
             menu.insert(str_label.c_str(), command);
     }
-
+    if (menu.numberOfItems() != 0) {
+        FbTk::MenuItem *item = menu.find(menu.numberOfItems() - 1);
+        if (item != 0 && !pitem.icon().empty())
+            item->setIcon(pitem.icon().c_str(), menu.screenNumber());
+    }
 }
 
 
 static void parseWindowMenu(Parser &parse, FbTk::Menu &menu, FluxboxWindow &win) {
 
-    Parser::Item item, item2, item3;
+    ParseItem pitem(&menu);
     while (!parse.eof()) {
-        parse>>item>>item2>>item3;
-        if (MenuCreator::createWindowMenuItem(item.second, item2.second, menu, win))
+        pitem.load(parse);
+        if (MenuCreator::createWindowMenuItem(pitem.key(), pitem.label(), menu, win))
             continue;
 
-        if (item.second == "end") {
+        if (pitem.key() == "end") {
             return;
-        } else if (item.second == "submenu") {
-            FbTk::Menu *submenu = MenuCreator::createMenu(item2.second, menu.screenNumber());
+        } else if (pitem.key() == "submenu") {
+            FbTk::Menu *submenu = MenuCreator::createMenu(pitem.label(), menu.screenNumber());
             parseWindowMenu(parse, *submenu, win);
             submenu->update();
-            menu.insert(item2.second.c_str(), submenu);
+            menu.insert(pitem.label().c_str(), submenu);
 
         } else { // try non window menu specific stuff
-            translateMenuItem(parse, item.second, item2.second, item3.second, menu);
+            translateMenuItem(parse, pitem);
         }
     }
 }
@@ -271,17 +281,18 @@ FbTk::Menu *MenuCreator::createMenu(const std::string &label, int screen_number)
 }
 
 bool getStart(FbMenuParser &parser, std::string &label) {
-    Parser::Item item, item2, item3;
+    ParseItem pitem(0);
     while (!parser.eof()) {
         // get first begin line
-        parser>>item>>item2>>item3;
-        if (item.second == "begin") {
+        pitem.load(parser);
+        if (pitem.key() == "begin") {
             break;
         }
     }
     if (parser.eof())
         return false;
-    label = item2.second;
+
+    label = pitem.label();
     return true;
 }
 
