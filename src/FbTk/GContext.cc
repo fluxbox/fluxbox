@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.cc,v 1.4 2003/10/09 16:48:09 rathnor Exp $
+// $Id: GContext.cc,v 1.5 2003/11/28 22:50:55 fluxgen Exp $
 
 #include "GContext.hh"
 
@@ -43,9 +43,17 @@ GContext::GContext(Drawable drawable):
     m_display(FbTk::App::instance()->display()), 
     m_gc(XCreateGC(m_display,
                    drawable,
-                   0, 0))
-{
+                   0, 0)) {
     setGraphicsExposure(false);
+}
+
+GContext::GContext(Drawable d, const GContext &gc):
+    m_display(FbTk::App::instance()->display()),
+    m_gc(XCreateGC(m_display,
+                   d,
+                   0, 0)) {
+    setGraphicsExposure(false);
+    copy(gc);
 }
 
 GContext::~GContext() {
@@ -57,5 +65,17 @@ GContext::~GContext() {
 //void GContext::setFont(const FbTk::Font &font) {
     //!! TODO
 //}
+void GContext::copy(GC gc) {
+    // copy gc with mask: all
+    XCopyGC(m_display, gc, ~0, m_gc);
+}
+
+void GContext::copy(const GContext &gc) {
+    // copy X gc
+    copy(gc.gc());
+    
+    //!! TODO: copy our extended gcontext
+
+}
 
 } // end namespace FbTk

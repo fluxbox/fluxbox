@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: GContext.hh,v 1.4 2003/10/09 16:48:09 rathnor Exp $
+// $Id: GContext.hh,v 1.5 2003/11/28 22:50:55 fluxgen Exp $
 
 #ifndef FBTK_GCONTEXT_HH
 #define FBTK_GCONTEXT_HH
@@ -41,7 +41,7 @@ public:
     explicit GContext(const FbTk::FbDrawable &drawable);
     /// for X drawable
     explicit GContext(Drawable drawable);
-
+    GContext(Drawable d, const FbTk::GContext &gc);
     virtual ~GContext();
 
     inline void setForeground(const FbTk::Color &color) {
@@ -89,9 +89,15 @@ public:
         XSetSubwindowMode(m_display, m_gc, mode);
     }
 
+    void copy(GC gc);
+    void copy(const GContext &gc);
+    inline GContext &operator = (const GContext &copy_gc) { copy(copy_gc); return *this; }
+    inline GContext &operator = (GC copy_gc) { copy(copy_gc); return *this; }
     inline GC gc() const { return m_gc; }
 
 private:
+    GContext(const GContext &cont);
+
     Display *m_display; // worth caching
     GC m_gc;
 };
