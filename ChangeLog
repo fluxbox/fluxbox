@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/13:
+  * Moving client to drop zone when drag'n'drop to root window (Henrik)
+    Window.cc
 *03/12/12:
   * Added menu delay/click to open or close submenus (Henrik)  
     In menuMode: Click you need to click on the menu item to open it.
