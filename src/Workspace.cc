@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.37 2002/12/01 13:42:05 rathnor Exp $
+// $Id: Workspace.cc,v 1.38 2002/12/04 14:16:42 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -447,8 +447,8 @@ void Workspace::setName(const std::string &name) {
         char tname[128];
         sprintf(tname, I18n::instance()->
                 getMessage(
-                    FBNLS::WorkspaceSet, FBNLS::WorkspaceDefaultNameFormat,
-                    "Workspace %d"), m_id + 1); //m_id starts at 0
+                           FBNLS::WorkspaceSet, FBNLS::WorkspaceDefaultNameFormat,
+                           "Workspace %d"), m_id + 1); //m_id starts at 0
         m_name = tname;
     }
 	
@@ -543,12 +543,112 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 
         while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 #ifdef XINERAMA
-                test_y >= head_y : test_y + win_h <= (head_y + head_h)) &&
+                test_y >= head_y : test_y + win_h <= (head_y + head_h)
 #else // !XINERAMA
-               test_y > 0 : test_y + win_h < (signed) screen->getHeight()) &&
+                test_y > 0 : test_y + win_h < (signed) screen->getHeight()
 #endif // XINERAMA
-                                                                               ! placed) {
+                ) && ! placed) {
 
+#ifdef XINERAMA
+            test_x = head_x;
+#else // !XINERAMA
+            test_x = 0;
+#endif // XINERAMA
+            if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
+#ifdef XINERAMA
+                test_x = (head_x + head_w) - win_w - test_x;
+#else // !XINERAMA
+            test_x = screen->getWidth() - win_w - test_x;
+#endif // XINERAMA
+
+            while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
+#ifdef XINERAMA
+                    test_x >= head_x : test_x + win_w <= (head_x + head_w)
+#else // !XINERAMA
+                    test_x > 0 : test_x + win_w < (signed) screen->getWidth()
+#endif // XINERAMA
+                    ) && ! placed) {
+
+                placed = True;
+
+                Windows::iterator it = m_windowlist.begin();
+                Windows::iterator it_end = m_windowlist.end();
+
+                for (; it != it_end && placed; ++it) {
+                    curr_x = (*it)->getXFrame();
+                    curr_y = (*it)->getYFrame();
+                    curr_w = (*it)->getWidth() + screen->getBorderWidth2x();
+                    curr_h =
+                        (((*it)->isShaded())
+                         ? (*it)->getTitleHeight()
+                         : (*it)->getHeight()) +
+                        screen->getBorderWidth2x();	
+
+                    if ((*it)->hasTab()) {
+                        if (! (*it)->isShaded()) { // not shaded window
+                            switch(screen->getTabPlacement()) {
+                            case Tab::PTOP:
+                                curr_y -= screen->getTabHeight();
+                            case Tab::PBOTTOM:
+                                curr_h += screen->getTabHeight();
+                                break;
+                            case Tab::PLEFT:
+                                curr_x -= (screen->isTabRotateVertical())
+                                    ? screen->getTabHeight()
+                                    : screen->getTabWidth();
+                            case Tab::PRIGHT:
+                                curr_w += (screen->isTabRotateVertical())
+                                    ? screen->getTabHeight()
+                                    : screen->getTabWidth();
+                                break;
+                            case Tab::PNONE:
+                                break;
+                            }
+                        } else { // shaded window
+                            if (screen->getTabPlacement() == Tab::PTOP)
+                                curr_y -= screen->getTabHeight();
+                            curr_h += screen->getTabHeight();
+                        }
+                    } // tab cheking done
+
+                    if (curr_x < test_x + win_w &&
+                        curr_x + curr_w > test_x &&
+                        curr_y < test_y + win_h &&
+                        curr_y + curr_h > test_y) {
+                        placed = False;
+                    }
+                }
+
+                if ((toolbar_x < test_x + win_w &&
+                     toolbar_x + toolbar_w > test_x &&
+                     toolbar_y < test_y + win_h &&
+                     toolbar_y + toolbar_h > test_y)
+#ifdef SLIT
+                    ||
+                    (slit_x < test_x + win_w &&
+                     slit_x + slit_w > test_x &&
+                     slit_y < test_y + win_h &&
+                     slit_y + slit_h > test_y)
+#endif // SLIT
+                    )
+                    placed = False;
+
+                if (placed) {
+                    place_x = test_x;
+                    place_y = test_y;
+
+                    break;
+                }
+
+                test_x += change_x;
+            }
+
+            test_y += change_y;
+        }
+
+        break; }
+
+    case BScreen::COLSMARTPLACEMENT: {
 #ifdef XINERAMA
         test_x = head_x;
 #else // !XINERAMA
@@ -563,307 +663,207 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 
         while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
 #ifdef XINERAMA
-                test_x >= head_x : test_x + win_w <= (head_x + head_w)) &&
+                test_x >= 0 : test_x + win_w <= (head_x + head_w)
 #else // !XINERAMA
-               test_x > 0 : test_x + win_w < (signed) screen->getWidth()) &&
+                test_x > 0 : test_x + win_w < (signed) screen->getWidth()
 #endif // XINERAMA
-                                                                              ! placed) {
-
-                                                                                   placed = True;
-
-                                                                                   Windows::iterator it = m_windowlist.begin();
-                                                                                   Windows::iterator it_end = m_windowlist.end();
-
-                                                                                   for (; it != it_end && placed; ++it) {
-                                                                                       curr_x = (*it)->getXFrame();
-                                                                                       curr_y = (*it)->getYFrame();
-                                                                                       curr_w = (*it)->getWidth() + screen->getBorderWidth2x();
-                                                                                       curr_h =
-                                                                                           (((*it)->isShaded())
-                                                                                            ? (*it)->getTitleHeight()
-                                                                                            : (*it)->getHeight()) +
-                                                                                           screen->getBorderWidth2x();	
-
-                                                                                       if ((*it)->hasTab()) {
-                                                                                           if (! (*it)->isShaded()) { // not shaded window
-                                                                                               switch(screen->getTabPlacement()) {
-                                                                                               case Tab::PTOP:
-                                                                                                   curr_y -= screen->getTabHeight();
-                                                                                               case Tab::PBOTTOM:
-                                                                                                   curr_h += screen->getTabHeight();
-                                                                                                   break;
-                                                                                               case Tab::PLEFT:
-                                                                                                   curr_x -= (screen->isTabRotateVertical())
-                                                                                                       ? screen->getTabHeight()
-                                                                                                       : screen->getTabWidth();
-                                                                                               case Tab::PRIGHT:
-                                                                                                   curr_w += (screen->isTabRotateVertical())
-                                                                                                       ? screen->getTabHeight()
-                                                                                                       : screen->getTabWidth();
-                                                                                                   break;
-                                                                                               case Tab::PNONE:
-                                                                                                   break;
-                                                                                               }
-                                                                                           } else { // shaded window
-                                                                                               if (screen->getTabPlacement() == Tab::PTOP)
-                                                                                                   curr_y -= screen->getTabHeight();
-                                                                                               curr_h += screen->getTabHeight();
-                                                                                           }
-                                                                                       } // tab cheking done
-
-                                                                                       if (curr_x < test_x + win_w &&
-                                                                                           curr_x + curr_w > test_x &&
-                                                                                           curr_y < test_y + win_h &&
-                                                                                           curr_y + curr_h > test_y) {
-                                                                                           placed = False;
-                                                                                       }
-                                                                                   }
-
-                                                                                   if ((toolbar_x < test_x + win_w &&
-                                                                                        toolbar_x + toolbar_w > test_x &&
-                                                                                        toolbar_y < test_y + win_h &&
-                                                                                        toolbar_y + toolbar_h > test_y)
-#ifdef SLIT
-                                                                                       ||
-                                                                                       (slit_x < test_x + win_w &&
-                                                                                        slit_x + slit_w > test_x &&
-                                                                                        slit_y < test_y + win_h &&
-                                                                                        slit_y + slit_h > test_y)
-#endif // SLIT
-                                                                                       )
-                                                                                       placed = False;
-
-                                                                                   if (placed) {
-                                                                                       place_x = test_x;
-                                                                                       place_y = test_y;
-
-                                                                                       break;
-                                                                                   }
-
-                                                                                   test_x += change_x;
-                                                                               }
-
-    test_y += change_y;
-    }
-
-    break; }
-
-case BScreen::COLSMARTPLACEMENT: {
-#ifdef XINERAMA
-    test_x = head_x;
-#else // !XINERAMA
-    test_x = 0;
-#endif // XINERAMA
-    if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
-#ifdef XINERAMA
-        test_x = (head_x + head_w) - win_w - test_x;
-#else // !XINERAMA
-    test_x = screen->getWidth() - win_w - test_x;
-#endif // XINERAMA
-
-    while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
-#ifdef XINERAMA
-            test_x >= 0 : test_x + win_w <= (head_x + head_w)) &&
-#else // !XINERAMA
-           test_x > 0 : test_x + win_w < (signed) screen->getWidth()) &&
-#endif // XINERAMA
-                                                                          ! placed) {
+                ) && ! placed) {
 
 #ifdef XINERAMA
-    test_y = head_y;
+            test_y = head_y;
 #else // !XINERAMA
-    test_y = 0;
+            test_y = 0;
 #endif // XINERAMA
-    if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
+            if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
 #ifdef XINERAMA
-        test_y = (head_y + head_h) - win_h - test_y;
+                test_y = (head_y + head_h) - win_h - test_y;
 #else // !XINERAMA
-    test_y = screen->getHeight() - win_h - test_y;
+            test_y = screen->getHeight() - win_h - test_y;
 #endif // XINERAMA
 
-    while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
+            while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 #ifdef XINERAMA
-            test_y >= head_y : test_y + win_h <= (head_y + head_h)) &&
+                    test_y >= head_y : test_y + win_h <= (head_y + head_h)
 #else // !XINERAMA
-           test_y > 0 : test_y + win_h < (signed) screen->getHeight()) &&
+                    test_y > 0 : test_y + win_h < (signed) screen->getHeight()
 #endif // XINERAMA
-                                                                           ! placed) {
-    placed = True;
+                    ) && ! placed) {
+                placed = True;
 
-    Windows::iterator it = m_windowlist.begin();
-    Windows::iterator it_end = m_windowlist.end();
-    for (; it != it_end && placed; ++it) {
-        curr_x = (*it)->getXFrame();
-        curr_y = (*it)->getYFrame();
-        curr_w = (*it)->getWidth() + screen->getBorderWidth2x();
-        curr_h =
-            (((*it)->isShaded())
-             ? (*it)->getTitleHeight()
-             : (*it)->getHeight()) +
-            screen->getBorderWidth2x();;
+                Windows::iterator it = m_windowlist.begin();
+                Windows::iterator it_end = m_windowlist.end();
+                for (; it != it_end && placed; ++it) {
+                    curr_x = (*it)->getXFrame();
+                    curr_y = (*it)->getYFrame();
+                    curr_w = (*it)->getWidth() + screen->getBorderWidth2x();
+                    curr_h =
+                        (((*it)->isShaded())
+                         ? (*it)->getTitleHeight()
+                         : (*it)->getHeight()) +
+                        screen->getBorderWidth2x();;
 
-        if ((*it)->hasTab()) {
-            if (! (*it)->isShaded()) { // not shaded window
-                switch(screen->getTabPlacement()) {
-                case Tab::PTOP:
-                    curr_y -= screen->getTabHeight();
-                case Tab::PBOTTOM:
-                    curr_h += screen->getTabHeight();
-                    break;
-                case Tab::PLEFT:
-                    curr_x -= (screen->isTabRotateVertical())
-                        ? screen->getTabHeight()
-                        : screen->getTabWidth();
-                case Tab::PRIGHT:
-                    curr_w += (screen->isTabRotateVertical())
-                        ? screen->getTabHeight()
-                        : screen->getTabWidth();
-                    break;
-                default:
+                    if ((*it)->hasTab()) {
+                        if (! (*it)->isShaded()) { // not shaded window
+                            switch(screen->getTabPlacement()) {
+                            case Tab::PTOP:
+                                curr_y -= screen->getTabHeight();
+                            case Tab::PBOTTOM:
+                                curr_h += screen->getTabHeight();
+                                break;
+                            case Tab::PLEFT:
+                                curr_x -= (screen->isTabRotateVertical())
+                                    ? screen->getTabHeight()
+                                    : screen->getTabWidth();
+                            case Tab::PRIGHT:
+                                curr_w += (screen->isTabRotateVertical())
+                                    ? screen->getTabHeight()
+                                    : screen->getTabWidth();
+                                break;
+                            default:
 #ifdef DEBUG
-                    cerr << __FILE__ << ":" <<__LINE__ << ": " <<
-                        "Unsupported Placement" << endl;
+                                cerr << __FILE__ << ":" <<__LINE__ << ": " <<
+                                    "Unsupported Placement" << endl;
 #endif // DEBUG
-                    break;
+                                break;
+                            }
+                        } else { // shaded window
+                            if (screen->getTabPlacement() == Tab::PTOP)
+                                curr_y -= screen->getTabHeight();
+                            curr_h += screen->getTabHeight();
+                        }
+                    } // tab cheking done
+
+                    if (curr_x < test_x + win_w &&
+                        curr_x + curr_w > test_x &&
+                        curr_y < test_y + win_h &&
+                        curr_y + curr_h > test_y) {
+                        placed = False;
+                    }
                 }
-            } else { // shaded window
-                if (screen->getTabPlacement() == Tab::PTOP)
-                    curr_y -= screen->getTabHeight();
-                curr_h += screen->getTabHeight();
-            }
-        } // tab cheking done
 
-        if (curr_x < test_x + win_w &&
-            curr_x + curr_w > test_x &&
-            curr_y < test_y + win_h &&
-            curr_y + curr_h > test_y) {
-            placed = False;
-        }
-    }
-
-    if ((toolbar_x < test_x + win_w &&
-         toolbar_x + toolbar_w > test_x &&
-         toolbar_y < test_y + win_h &&
-         toolbar_y + toolbar_h > test_y)
+                if ((toolbar_x < test_x + win_w &&
+                     toolbar_x + toolbar_w > test_x &&
+                     toolbar_y < test_y + win_h &&
+                     toolbar_y + toolbar_h > test_y)
 #ifdef SLIT
-        ||
-        (slit_x < test_x + win_w &&
-         slit_x + slit_w > test_x &&
-         slit_y < test_y + win_h &&
-         slit_y + slit_h > test_y)
+                    ||
+                    (slit_x < test_x + win_w &&
+                     slit_x + slit_w > test_x &&
+                     slit_y < test_y + win_h &&
+                     slit_y + slit_h > test_y)
 #endif // SLIT
-        )
-        placed = False;
+                    )
+                    placed = False;
 
-    if (placed) {
-        place_x = test_x;
-        place_y = test_y;
+                if (placed) {
+                    place_x = test_x;
+                    place_y = test_y;
+                }
+
+                test_y += change_y;
+            }
+
+            test_x += change_x;
+        }
+
+        break; }
     }
 
-    test_y += change_y;
-                                                                          }
-
-test_x += change_x;
-}
-
-break; }
-}
-
-// cascade placement or smart placement failed
-if (! placed) {
+    // cascade placement or smart placement failed
+    if (! placed) {
 #ifdef XINERAMA
-if ((cascade_x > (head_w / 2)) ||
-(cascade_y > (head_h / 2)))
+        if ((cascade_x > (head_w / 2)) ||
+            (cascade_y > (head_h / 2)))
 #else // !XINERAMA
-    if (((unsigned) cascade_x > (screen->getWidth() / 2)) ||
-    ((unsigned) cascade_y > (screen->getHeight() / 2)))
+            if (((unsigned) cascade_x > (screen->getWidth() / 2)) ||
+                ((unsigned) cascade_y > (screen->getHeight() / 2)))
 #endif // XINERAMA
 
-        cascade_x = cascade_y = 32;
+                cascade_x = cascade_y = 32;
 #ifdef XINERAMA
-place_x = head_x + cascade_x;
-place_y = head_y + cascade_y;
+        place_x = head_x + cascade_x;
+        place_y = head_y + cascade_y;
 #else // !XINERAMA
-place_x = cascade_x;
-place_y = cascade_y;
+        place_x = cascade_x;
+        place_y = cascade_y;
 #endif // XINERAMA
-cascade_x += win->getTitleHeight();
-cascade_y += win->getTitleHeight();
-}
+        cascade_x += win->getTitleHeight();
+        cascade_y += win->getTitleHeight();
+    }
 
 #ifdef XINERAMA
-if (place_x + win_w > (head_x + head_w))
-    place_x = head_x + ((head_w - win_w) / 2);
-if (place_y + win_h > (head_y + head_h))
-    place_y = head_y + ((head_h - win_h) / 2);
+    if (place_x + win_w > (head_x + head_w))
+        place_x = head_x + ((head_w - win_w) / 2);
+    if (place_y + win_h > (head_y + head_h))
+        place_y = head_y + ((head_h - win_h) / 2);
 #else // !XINERAMA
-if (place_x + win_w > (signed) screen->getWidth())
-    place_x = (((signed) screen->getWidth()) - win_w) / 2;
-if (place_y + win_h > (signed) screen->getHeight())
-    place_y = (((signed) screen->getHeight()) - win_h) / 2;
+    if (place_x + win_w > (signed) screen->getWidth())
+        place_x = (((signed) screen->getWidth()) - win_w) / 2;
+    if (place_y + win_h > (signed) screen->getHeight())
+        place_y = (((signed) screen->getHeight()) - win_h) / 2;
 #endif // XINERAMA
 
-// fix window placement, think of tabs
-if (win->hasTab()) {
-if (screen->getTabPlacement() == Tab::PTOP) 
-    place_y += screen->getTabHeight();
-else if (screen->getTabPlacement() == Tab::PLEFT)
-    place_x += (screen->isTabRotateVertical())
-    ? screen->getTabHeight()
-        : screen->getTabWidth();
-}
+    // fix window placement, think of tabs
+    if (win->hasTab()) {
+        if (screen->getTabPlacement() == Tab::PTOP) 
+            place_y += screen->getTabHeight();
+        else if (screen->getTabPlacement() == Tab::PLEFT)
+            place_x += (screen->isTabRotateVertical())
+                ? screen->getTabHeight()
+                : screen->getTabWidth();
+    }
 
-win->configure(place_x, place_y, win->getWidth(), win->getHeight());
+    win->configure(place_x, place_y, win->getWidth(), win->getHeight());
 }
 
 
 void Workspace::raiseAndFillStack(Stack::iterator &stackit, const FluxboxWindow &w) {
-if (w.getTransients().empty())
-    return;
+    if (w.getTransients().empty())
+        return;
 
-std::list<FluxboxWindow *>::const_iterator it = w.getTransients().begin();
-std::list<FluxboxWindow *>::const_iterator it_end = w.getTransients().end();
-for (; it != it_end; ++it) {		
-*stackit++ = (*it)->getFrameWindow();
+    std::list<FluxboxWindow *>::const_iterator it = w.getTransients().begin();
+    std::list<FluxboxWindow *>::const_iterator it_end = w.getTransients().end();
+    for (; it != it_end; ++it) {		
+        *stackit++ = (*it)->getFrameWindow();
 		
-screen->updateNetizenWindowRaise((*it)->getClientWindow());
+        screen->updateNetizenWindowRaise((*it)->getClientWindow());
 
-if (! (*it)->isIconic()) {
-Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
-wkspc->stackingList.remove((*it));
-wkspc->stackingList.push_front((*it));
-}
+        if (! (*it)->isIconic()) {
+            Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
+            wkspc->stackingList.remove((*it));
+            wkspc->stackingList.push_front((*it));
+        }
 
 		
-}
+    }
 	
-it = w.getTransients().begin();
-for (; it != it_end; ++it)
-    raiseAndFillStack(stackit, *(*it));
+    it = w.getTransients().begin();
+    for (; it != it_end; ++it)
+        raiseAndFillStack(stackit, *(*it));
 	
 
 }
 
 void Workspace::lowerAndFillStack(Stack::iterator &stackit, const FluxboxWindow &win) {
-if (win.getTransients().empty()) // nothing to lower and stack
-    return;
+    if (win.getTransients().empty()) // nothing to lower and stack
+        return;
 
-std::list<FluxboxWindow *>::const_reverse_iterator it = win.getTransients().rbegin();
-std::list<FluxboxWindow *>::const_reverse_iterator it_end = win.getTransients().rend();
-for (; it != it_end; ++it)
-    lowerAndFillStack(stackit, *(*it));
+    std::list<FluxboxWindow *>::const_reverse_iterator it = win.getTransients().rbegin();
+    std::list<FluxboxWindow *>::const_reverse_iterator it_end = win.getTransients().rend();
+    for (; it != it_end; ++it)
+        lowerAndFillStack(stackit, *(*it));
 	
-it = win.getTransients().rbegin();
+    it = win.getTransients().rbegin();
 	
-for (; it != it_end; ++it) {
-(*stackit) = (*it)->getFrameWindow();
-++stackit;
-screen->updateNetizenWindowLower((*it)->getClientWindow());
-if (! (*it)->isIconic()) {
-Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
-wkspc->stackingList.remove((*it));
-wkspc->stackingList.push_back((*it));
-}
-}
+    for (; it != it_end; ++it) {
+        (*stackit) = (*it)->getFrameWindow();
+        ++stackit;
+        screen->updateNetizenWindowLower((*it)->getClientWindow());
+        if (! (*it)->isIconic()) {
+            Workspace *wkspc = screen->getWorkspace((*it)->getWorkspaceNumber());
+            wkspc->stackingList.remove((*it));
+            wkspc->stackingList.push_back((*it));
+        }
+    }
 
 }
