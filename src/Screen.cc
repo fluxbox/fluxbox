@@ -22,15 +22,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.70 2002/10/11 10:22:06 fluxgen Exp $
+// $Id: Screen.cc,v 1.71 2002/10/13 22:30:18 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
 
-#ifdef		HAVE_CONFIG_H
-#	include "../config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include "Screen.hh"
@@ -41,7 +41,7 @@
 #include "Image.hh"
 #include "StringUtil.hh"
 
-#ifdef		SLIT
+#ifdef SLIT
 #include "Slit.hh"
 #endif // SLIT
 
