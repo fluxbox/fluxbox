@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.10 2003/07/26 16:17:01 rathnor Exp $
+// $Id: FbWinFrame.hh,v 1.11 2003/07/28 12:11:57 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -32,6 +32,7 @@
 #include "FbPixmap.hh"
 
 #include <vector>
+#include <list>
 #include <string>
 #include <memory>
 
@@ -93,6 +94,10 @@ public:
     void addLabelButton(FbTk::Button &btn);
     /// removes a specific button from label window
     void removeLabelButton(FbTk::Button &btn);
+    /// move label button to the left
+    void moveLabelButtonLeft(const FbTk::Button &btn);
+    /// move label button to the right
+    void moveLabelButtonRight(const FbTk::Button &btn);
     /// which button is to be rendered focused
     void setLabelButtonFocus(FbTk::Button &btn);
     /// attach a client window for client area
@@ -208,8 +213,9 @@ private:
     typedef std::vector<FbTk::Button *> ButtonList;
     ButtonList m_buttons_left, ///< buttons to the left
         m_buttons_right; ///< buttons to the right
-    ButtonList m_labelbuttons; ///< holds buttons inside label window
-    FbTk::Button *m_current_label; ///< which button is focused at the moment
+    typedef std::list<FbTk::Button *> LabelList;
+    LabelList m_labelbuttons; ///< holds label buttons inside label window
+    FbTk::Button *m_current_label; ///< which client button is focused at the moment
     std::string m_titletext; ///< text to be displayed int m_label
     int m_bevel;  ///< bevel between titlebar items and titlebar
     bool m_use_titlebar; ///< if we should use titlebar
