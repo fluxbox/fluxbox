@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *04/01/02:
+  * Added menu item [separator] (Henrik)
+    Screen.cc
   * Fixed bug in ThemeItem<int>::setFromString   (Henrik)
     It didn't check if sscanf returned error
     ThemeItems.hh
@@ -120,8 +122,8 @@ Changes for 0.9.7:
     session.screen0.menuDelayClose: in msec (default: 0 )
     example:
     session.screen0.menuMode: Delay
-    session.screen0.menuDelay: 400000
-    session.screen0.menuDelayClose: 300000
+    session.screen0.menuDelay: 400
+    session.screen0.menuDelayClose: 300
     Notice how the menuDelay is a bit larger than menuCloseDelay
     this is so the previous menu can close before you open the next
 
