@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-/// $Id: WinButton.cc,v 1.5 2003/05/06 23:58:08 fluxgen Exp $
+/// $Id: WinButton.cc,v 1.6 2003/05/07 12:16:09 rathnor Exp $
 
 #include "WinButton.hh"
 #include "App.hh"
@@ -207,7 +207,7 @@ void WinButton::drawType() {
                 if (gc() == 0) // must have valid graphic context
                     return;
                 window().fillRectangle(gc(),
-                                       width()/2, height()/2,
+                                       width()/2 - width()/10, height()/2 - height()/10,
                                        width()/5, height()/5);
             }
         }
