@@ -1405,11 +1405,11 @@ void FluxboxWindow::getMWMHints(void) {
 	unsigned long num, len;
 	Fluxbox *fluxbox = Fluxbox::instance();
 	if (XGetWindowProperty(display, client.window,
-												 fluxbox->getMotifWMHintsAtom(), 0,
-												 PropMwmHintsElements, false,
-												 fluxbox->getMotifWMHintsAtom(), &atom_return,
-												 &format, &num, &len,
-												 (unsigned char **) &client.mwm_hint) == Success &&
+			fluxbox->getMotifWMHintsAtom(), 0,
+			PropMwmHintsElements, false,
+			fluxbox->getMotifWMHintsAtom(), &atom_return,
+			 &format, &num, &len,
+			(unsigned char **) &client.mwm_hint) == Success &&
 			client.mwm_hint)
 		if (num == PropMwmHintsElements) {
 			if (client.mwm_hint->flags & MwmHintsDecorations)
@@ -1437,10 +1437,10 @@ void FluxboxWindow::getMWMHints(void) {
 				}
 
 			if (client.mwm_hint->flags & MwmHintsFunctions)
-				if (client.mwm_hint->functions & MwmFuncAll)
+				if (client.mwm_hint->functions & MwmFuncAll) {
 					functions.resize = functions.move = functions.iconify =
 						functions.maximize = functions.close = true;
-				else {
+				} else {
 					functions.resize = functions.move = functions.iconify =
 						functions.maximize = functions.close = false;
 
@@ -2688,7 +2688,16 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 	default:
 		if (atom == fluxbox->getWMProtocolsAtom()) {
 			getWMProtocols();
-	
+		
+			if (decorations.close && !findTitleButton(Fluxbox::Close)) {	
+				createButton(Fluxbox::Close, FluxboxWindow::closePressed_cb, 
+					FluxboxWindow::closeButton_cb, FluxboxWindow::closeDraw_cb);
+
+				if (decorations.titlebar)
+					positionButtons(true);
+				if (windowmenu)
+					windowmenu->reconfigure();
+      }
 		}
 
 		break;
