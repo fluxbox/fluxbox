@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*04/12/13:
+  * Fixed DragNDrop - Sorting of tabs (thanx Rob Stevens)
+    Window.cc/hh FbWinFrame.cc
 *04/12/10:
   * Added Tab command, which goes to a specific tab number 
     action:
