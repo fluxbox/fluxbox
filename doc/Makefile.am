@@ -1,6 +1,8 @@
 # doc/Makefile.am for Fluxbox 0.9  - an X11 Window manager
+# Makefile.am for fluxbox/doc
 
-# SUBDIRS = ru
+# BUG SUBDIRS does not work for me.
+SUBDIRS = ru
 CLEANFILES = fluxbox.1
 MAINTAINERCLEANFILES = Makefile.in
 man_MANS = fluxbox.1 bsetroot.1 fbrun.1 fbsetbg.1 \
