@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.39 2003/07/03 13:05:38 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.40 2003/07/17 23:39:34 rathnor Exp $
 
 #
 # Portability notes:
@@ -100,7 +100,7 @@ EOF
 }
 
 # ugly code for solaris compat.
-case $(uname) in
+case `uname` in
     Linux|*BSD)
         find_it() {
             which $1 > /dev/null 2>&1 && shift && $*
@@ -931,6 +931,8 @@ append_submenu "${FBSETTINGSMENU}"
               "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
         find_it fbrun append "[exec] (Run) {fbrun}"
+        find_it switch append "[exec] (gtk-theme-switch) {switch}"
+        find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
         find_it fluxbox-generate_menu append "[exec] (regenerate menu) {fluxbox-generate_menu}"
     append_menu_end
 
