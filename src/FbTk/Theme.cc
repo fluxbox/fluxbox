@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.15 2003/08/28 15:12:36 fluxgen Exp $
+// $Id: Theme.cc,v 1.16 2003/08/28 15:46:13 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -147,8 +147,8 @@ template <>
 void FbTk::ThemeItem<PixmapWithMask>::
 setDefaultValue() {
     // create empty pixmap
-    (*this)->pixmap() = FbTk::FbPixmap(); // pixmap
-    (*this)->mask() = FbTk::FbPixmap(); // mask
+    (*this)->pixmap() = 0;
+    (*this)->mask() = 0;
 }
 
 template <>
