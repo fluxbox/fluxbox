@@ -1,5 +1,5 @@
 // Timer.cc for FbTk - Fluxbox Toolkit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003 - 2005 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Timer.cc for Blackbox - An X11 Window Manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)

@@ -1,5 +1,5 @@
 // i18n.hh for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // i18n.hh for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)

@@ -1,5 +1,5 @@
 // EventManager.hh
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),

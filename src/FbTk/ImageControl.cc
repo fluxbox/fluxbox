@@ -1,5 +1,5 @@
 // ImageControl.cc for FbTk - Fluxbox Toolkit
-// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxbox at users.sourceforge.net)
+// Copyright (c) 2001 - 2005 Henrik Kinnunen (fluxbox at users.sourceforge.net)
 //
 // Image.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)

@@ -1,5 +1,5 @@
 // LayerItem.hh for fluxbox 
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003 Henrik Kinnunen (fluxgen at fluxbox dot org)
 //                and Simon Bowden    (rathnor at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
