@@ -22,9 +22,10 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.14 2002/11/19 11:31:31 fluxgen Exp $
+# $Id: fluxbox-generate_menu,v 1.15 2002/11/29 13:39:37 rathnor Exp $
 
-[ `id -u` -eq 0 ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
+WHOAMI=`whoami`
+[ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
 # Functions
 display_usage() {
@@ -65,33 +66,31 @@ EOF
 }
 
 display_authors() {
-WHOAMI=`whoami`
     cat <<EOF
 
 fluxbox-generate_menu was brought to you by:
 
-    Henrik Kinnunen:   Project leader.
+    Henrik Kinnunen:    Project leader.
     Han Boetes:         Packaging, debugging and scripts.
     Jeramy B. Smith:    Packaging assistance, gnome and kde menu system.
-    Xyrnix:             Mysterious guest developer who made find_it module.
     Filippo Pappalardo: Italian locales and -t option.
+    Simon Bowden:       Cleanups and compatibility for sun.
     $WHOAMI:            Innocent bystander.
 
 EOF
 }
 
 find_it() {
-    if [ -z "$1" ]; then
-        # echo "Nothing found"
+    file=`which $1 2> /dev/null`
+    if [ -x "$file" ]; then
+        if [ $# -gt 1 ]; then
+            shift
+            $*
+        fi
+        return 0
+    else
         return 1
     fi
-    which $1 > /dev/null 2> /dev/null
-    found=$?
-    if [ $found -eq 0 -a $# -gt 1 ]; then
-        shift
-        $*
-    fi
-    return $found
 }
 
 append() {
