@@ -292,6 +292,26 @@ case ${LC_ALL} in
 		STYLEMENUTITLE="¥¹¥¿¥¤¥ëÁªÂò..."
 		WORKSPACEMENU="¥ï¡¼¥¯¥¹¥Ú¡¼¥¹"
 	;;
+	fr_FR) # french		
+		BROWSERMENU="Navigateurs"
+		EDITORMENU="Editeurs"
+		NETMENU="Net"
+		GRAPHICMENU="Graphisme"
+		MUSICMENU="Musique"
+		TERMINALMENU="Terminaux"
+		MISCMENU="Misc"
+		XUTILSMENU="X-utils"
+		FBSETTINGSMENU="FB-Settings"
+		KDEMENUTEXT="menus-KDE"
+		GNOMEMENUTEXT="menus-Gnome"
+		RESTARTITEM="Redémarrer"
+		EXITITEM="Sortir"
+		CONFIGUREMENU="Configurer"
+		RELOADITEM="Recharger config"
+		STYLEMENU="Styles"
+		STYLEMENUTITLE="Choisir un style..."
+		WORKSPACEMENU="Liste des bureaux"
+	;;
 	*)
 	;;
 esac
