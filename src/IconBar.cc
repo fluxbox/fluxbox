@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.12 2002/04/03 23:01:49 fluxgen Exp $
+// $Id: IconBar.cc,v 1.13 2002/07/20 00:06:45 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -106,7 +106,7 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 		
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
   		m_focus_pm = None;
-	    	m_focus_pixel = texture->getColor()->getPixel();
+	    	m_focus_pixel = texture->color().pixel();
   	} else {
 		m_focus_pm =
 		  image_ctrl->renderImage(width, height, texture);	 
@@ -122,7 +122,7 @@ void IconBar::loadTheme(unsigned int width, unsigned int height) {
 void IconBar::decorate(Window win) {
 
 	XSetWindowBorderWidth(m_display, win, m_screen->getWindowStyle()->tab.border_width);
-	XSetWindowBorder(m_display, win, m_screen->getWindowStyle()->tab.border_color.getPixel());
+	XSetWindowBorder(m_display, win, m_screen->getWindowStyle()->tab.border_color.pixel());
 	if (m_focus_pm)
 		XSetWindowBackgroundPixmap(m_display, win, m_focus_pm);
 	else
@@ -216,8 +216,8 @@ Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
 	XSetWindowAttributes attrib;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-		fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.getPixel();
-	attrib.colormap = fluxboxwin->getScreen()->getColormap();
+		fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.pixel();
+	attrib.colormap = fluxboxwin->getScreen()->colormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
 		ButtonMotionMask | ExposureMask | EnterWindowMask;
