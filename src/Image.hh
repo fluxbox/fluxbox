@@ -22,19 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.15 2002/10/13 21:57:07 fluxgen Exp $
+// $Id: Image.hh,v 1.16 2002/11/24 20:22:38 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
 
-#include "Timer.hh"
+
 #include "BaseDisplay.hh"
 #include "Color.hh"
 #include "Texture.hh"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
+#include "Timer.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -47,7 +44,7 @@ class BImageControl;
 */
 class BImage {
 public:
-	BImage(BImageControl *ic, unsigned int, unsigned int);
+	BImage(BImageControl *ic, unsigned int width, unsigned int height);
 	~BImage();
 	/// render to pixmap
 	Pixmap render(const FbTk::Texture *src_texture);
@@ -86,10 +83,7 @@ protected:
 
 private:
 	BImageControl *control;
-
-#ifdef		INTERLACE
 	bool interlaced;
-#endif // INTERLACE
 
 	XColor *colors; // color table
 
@@ -105,14 +99,12 @@ private:
 */
 class BImageControl : public TimeoutHandler {
 public:
-	BImageControl(BaseDisplay *disp, ScreenInfo *screen, bool = False, int = 4,
-		unsigned long = 300000l, unsigned long = 200l);
+	BImageControl(const ScreenInfo *screen, bool dither = false, int colors_per_channel = 4,
+		unsigned long cache_timeout = 300000l, unsigned long cache_max = 200l);
 	virtual ~BImageControl();
 
-	inline BaseDisplay *baseDisplay() { return basedisplay; }
-
-	inline bool doDither() { return dither; }
-	inline const Colormap &colormap() const { return m_colormap; }
+	inline bool doDither() const { return m_dither; }
+	inline Colormap colormap() const { return m_colormap; }
 	inline const ScreenInfo *getScreenInfo() const { return screeninfo; }
 	inline Window drawable() const { return window; }
 	
@@ -142,7 +134,7 @@ public:
 	void getXColorTable(XColor **, int *);
 	void getGradientBuffers(unsigned int, unsigned int,
 			unsigned int **, unsigned int **);
-	void setDither(bool d) { dither = d; }
+	void setDither(bool d) { m_dither = d; }
 	void setColorsPerChannel(int cpc);
 
 	virtual void timeout();
@@ -156,12 +148,10 @@ protected:
 		const FbTk::Color &color, const FbTk::Color &color_to);
 
 private:
-	bool dither;
-	BaseDisplay *basedisplay;
-	ScreenInfo *screeninfo;
-#ifdef		TIMEDCACHE
-	BTimer timer;
-#endif // TIMEDCACHE
+	bool m_dither;
+	const ScreenInfo *screeninfo;
+
+	BTimer m_timer;
 
 	Colormap m_colormap;
 
