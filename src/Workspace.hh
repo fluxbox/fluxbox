@@ -34,26 +34,9 @@ class FluxboxWindow;
 
 
 class Workspace {
-private:
-  BScreen *screen;
-  FluxboxWindow *lastfocus;
-  Clientmenu *clientmenu;
-
-  typedef std::list<FluxboxWindow *> WindowStack;
-  typedef std::vector<FluxboxWindow *> Windows;
-
-  WindowStack stackingList;
-  Windows windowList;
-
-  std::string name;
-  int id, cascade_x, cascade_y;
-
-
-protected:
-  void placeWindow(FluxboxWindow *);
-
-
 public:
+  typedef std::vector<FluxboxWindow *> Windows;
+  
   Workspace(BScreen *, int = 0);
   ~Workspace(void);
 
@@ -70,6 +53,7 @@ public:
   inline void setLastFocusedWindow(FluxboxWindow *w) { lastfocus = w; }
 
   FluxboxWindow *getWindow(int);
+  inline Windows &getWindowList() { return windowList; }
 
   bool isCurrent(void);
   bool isLastWindow(FluxboxWindow *);
@@ -77,7 +61,7 @@ public:
   const int addWindow(FluxboxWindow *, Bool = False);
   const int removeWindow(FluxboxWindow *);
   const int getCount(void);
-
+ 
   void showAll(void);
   void hideAll(void);
   void removeAll(void);
@@ -88,6 +72,27 @@ public:
   void setCurrent(void);
   void setName(char *);
   void shutdown(void);
+
+private:
+  BScreen *screen;
+  FluxboxWindow *lastfocus;
+  Clientmenu *clientmenu;
+
+  typedef std::list<FluxboxWindow *> WindowStack;
+ 
+
+  WindowStack stackingList;
+  Windows windowList;
+
+  std::string name;
+  int id, cascade_x, cascade_y;
+
+
+protected:
+  void placeWindow(FluxboxWindow *);
+
+
+
 };
 
 
