@@ -64,7 +64,6 @@ Major Features:
  - Smarter config menus                 (Henrik)
 Minor Features:
  - Proper initialisation from hints     (Simon)
- - Shaped menu/slit/toolbar             (Henrik)
  - layer configuration things           (Simon)
 Bugfixes/lower priority:
 
@@ -80,6 +79,7 @@ Minor Features:
  - per workspace backgrounds            (Simon)
  - more keybinding actions              (Both)
  - pixmap buttons                       (Henrik)
+ - Shaped menu/slit/toolbar             (Henrik)
  - fix outline window moving
 Bugfixes/lower priority:
  - Bugs from 0.9.0                      (Both)
