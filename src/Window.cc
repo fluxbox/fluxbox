@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.58 2002/06/02 23:42:10 fluxgen Exp $
+// $Id: Window.cc,v 1.59 2002/06/04 09:50:58 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3387,8 +3387,9 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 		decorations.titlebar = decorations.border = decorations.handle =
 		decorations.iconify = decorations.maximize =
 			decorations.menu = decorations.tab = false; //tab is also a decor
-		functions.resize = functions.move = functions.iconify =
-			functions.maximize = false;
+		functions.iconify = functions.maximize = false;
+		functions.move = true;   // We need to move even without decor
+		functions.resize = true; // We need to resize even without decor
 	break;
 
 	default:
@@ -3431,10 +3432,10 @@ void FluxboxWindow::toggleDecoration() {
 	if (isShaded())
 		return;
 	
-	if (!decor) {
+	if (!decor) { //remove decorations
 		setDecoration(DECOR_NONE); 
 		decor = true;
-	} else {
+	} else { //revert back to old decoration
 		setDecoration(old_decoration);
 		decor = false;
 	}
