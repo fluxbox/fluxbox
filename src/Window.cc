@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.43 2002/04/12 14:54:57 fluxgen Exp $
+// $Id: Window.cc,v 1.44 2002/04/14 11:54:59 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -80,6 +80,7 @@ tab(0)
 ,gnome_hints(0)
 #endif
 {
+	
 	lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
 
 	fprintf(stderr,
@@ -1744,7 +1745,7 @@ void FluxboxWindow::configure(int dx, int dy,
 		frame.y = dy;
 		frame.width = dw;
 		frame.height = dh;
-
+		
 		downsize();
 
 #ifdef		SHAPE
@@ -1772,7 +1773,6 @@ void FluxboxWindow::configure(int dx, int dy,
 						xrect, num, ShapeUnion, Unsorted);
 		}
 #endif // SHAPE
-
 		XMoveResizeWindow(display, frame.window, frame.x, frame.y,
 							frame.width, frame.height);
 		positionWindows();
@@ -2042,9 +2042,9 @@ void FluxboxWindow::maximize(unsigned int button) {
 #ifdef	SLIT
 
 #ifdef XINERAMA
-// take the slit in account if it's on the same head
-// (always true if we don't have xinerama
-if (!screen->hasXinerama() || screen->getSlitOnHead() == head) {
+	// take the slit in account if it's on the same head
+	// (always true if we don't have xinerama
+	if (!screen->hasXinerama() || screen->getSlitOnHead() == head) {
 #endif // XINERAMA
 
 		Slit* mSlt = screen->getSlit();
@@ -2102,7 +2102,7 @@ if (!screen->hasXinerama() || screen->getSlitOnHead() == head) {
 			}
 		}		
 #ifdef XINERAMA
-}
+	}
 #endif // XINERAMA
 
 #endif // SLIT
@@ -3002,10 +3002,11 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 			if (client.max_width <= client.min_width &&
 					client.max_height <= client.min_height)
 				decorations.maximize = decorations.handle =
-			functions.resize = functions.maximize = false;
-			else
-				decorations.maximize = decorations.handle =
-			functions.resize = functions.maximize = true;
+					functions.resize = functions.maximize = false;
+			else {
+				decorations.handle = false;
+				decorations.maximize = functions.resize = functions.maximize = true;
+			}
 		}
 
 		int x = frame.x, y = frame.y;
@@ -3083,10 +3084,11 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent *cr) {
 		if (cr->value_mask & CWWidth)
 			cw = cr->width + (frame.mwm_border_w * 2);
 
-		if (cr->value_mask & CWHeight)
-			ch = cr->height + frame.y_border + (frame.mwm_border_w * 2) +
-				(screen->getBorderWidth() * decorations.handle) + frame.handle_h;
-
+		if (cr->value_mask & CWHeight) {
+			ch = cr->height + (frame.y_border + (frame.mwm_border_w * 2) +
+				screen->getBorderWidth()) * decorations.border + 
+				frame.handle_h*decorations.handle;			
+		}
 		if (frame.x != cx || frame.y != cy ||
 			frame.width != cw || frame.height != ch) {
 			configure(cx, cy, cw, ch);
@@ -3448,7 +3450,6 @@ void FluxboxWindow::shapeEvent(XShapeEvent *) {
 
 
 void FluxboxWindow::setDecoration(Decoration decoration) {
-
 	switch (decoration) {
 	case DECOR_NONE:
 		decorations.titlebar = decorations.border = decorations.handle =
