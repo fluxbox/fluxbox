@@ -39,8 +39,8 @@ $set 3 #Configmenu
 23 カーソルオーバーでフォーカス(SemiSloppy)
 24 Slitを越えて最大化
 25 Window内にタブドロップでもタブグループに
-26 Workspace Warping
-27 Desktop Wheeling
+26 ウィンドウドラッグでワークスペースを移動
+27 マウスホイールでワークスペース切り換え
 
 $set 4 #Icon
 
@@ -121,8 +121,8 @@ $set 9 #Window
 
 $set 10 #Windowmenu
 
-1 移動先ワークスペース ...
-2 移動先グループ ...
+1 送る ...
+2 グループを送る ...
 3 バーに格納
 4 アイコン化（タイトルバーに格納）
 5 最大化
@@ -131,6 +131,7 @@ $set 10 #Windowmenu
 8 すべてのワークスペースで表示
 9 強制終了
 10 閉じる
+11 タブ
 
 $set 11 #Workspace
 

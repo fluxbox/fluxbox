@@ -84,10 +84,10 @@ IGNORE_PREFIX          =
 #---------------------------------------------------------------------------
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
-HTML_FILE_EXTENSION    = .html # .php for fluxbox webpage
+HTML_FILE_EXTENSION    = .html # .php           # for fluxbox webpage
 HTML_HEADER            =      # doc/header.html # note: only for fluxbox webpage 
 HTML_FOOTER            =      # doc/footer.html # note: only for fluxbox webpage
-HTML_STYLESHEET        =      # doc/style.css # note: only for fluxbox webpage
+HTML_STYLESHEET        =      # doc/style.css   # note: only for fluxbox webpage
 HTML_ALIGN_MEMBERS     = YES
 GENERATE_HTMLHELP      = NO
 CHM_FILE               = 

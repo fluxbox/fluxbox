@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.1.11:
+*02/08/04:
+   * Fixed doxygen comments and minor clean up.
 *02/08/02:
    * autogrouping-from-tab patch (Thanks Steve Cooper)
 *02/07/23:
