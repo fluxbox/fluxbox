@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.89 2002/10/15 17:17:00 fluxgen Exp $
+// $Id: Window.cc,v 1.90 2002/10/15 17:37:28 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2439,7 +2439,7 @@ void FluxboxWindow::redrawLabel() {
 			screen->getScreenNumber(),
 			gc,
 			getTitle().c_str(), getTitle().size(),
-			frame.bevel_w, frame.bevel_w + screen->getWindowStyle()->font.height());
+			frame.bevel_w, frame.bevel_w/4 + screen->getWindowStyle()->font.height());
 	}
 }
 
