@@ -234,7 +234,7 @@ public:
     /// move and resize frame to pox x,y and size width, height
     void moveResize(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity);
 
-    void setWorkspace(int n, bool notify = true);
+    void setWorkspace(int n);
     void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
     void restoreAttributes();
@@ -286,7 +286,8 @@ public:
 
     inline bool isFocusHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
     inline bool isIconHidden() const { return m_icon_hidden; }
-    inline bool isManaged() const { return m_managed; }
+    inline bool isManaged() const { return m_initialized; }
+    inline bool isInitialized() const { return m_initialized; }
     inline bool isFocused() const { return focused; }
     bool isVisible() const;
     inline bool isIconic() const { return iconic; }
@@ -459,7 +460,7 @@ private:
 
     // Window states
     bool moving, resizing, shaded, iconic,
-        focused, stuck, m_managed, fullscreen;
+        focused, stuck, m_initialized, fullscreen;
 
     int maximized;
 

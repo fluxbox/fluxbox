@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *05/01/05:
+  * Tidy up initialisation a bit better. Handlers can still use "action" 
+    functions (e.g. stick()), but those functions should now check if 
+    isInitialised and only set the state variables (not send signals 
+    etc) if not.
+    Window.hh/cc Ewmh.cc
   * Fix for BScreen::reassociateWindow (Mathias)
     Simon's last changes made fluxbox crash when "Sticky" or "Workspace"
 	options in the apps-file where used. This fix also solves <Current> and

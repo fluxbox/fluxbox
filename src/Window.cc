@@ -280,7 +280,7 @@ FluxboxWindow::FluxboxWindow(WinClient &client, FbWinFrameTheme &tm,
     m_themelistener(*this),
     moving(false), resizing(false), shaded(false),
     iconic(false), focused(false),
-    stuck(false), m_managed(false), fullscreen(false),
+    stuck(false), m_initialized(false), fullscreen(false),
     maximized(MAX_NONE),
     m_attaching_tab(0),
     m_screen(client.screen()),
@@ -490,10 +490,15 @@ void FluxboxWindow::init() {
         return;
     }
 
-    m_managed = true; //this window is managed
-
     Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
     Fluxbox::instance()->attachSignals(*this);
+
+    /**************************************************/
+    /* Read state above here, apply state below here. */
+    /**************************************************/
+
+    // this window is managed, we are now allowed to modify actual state
+    m_initialized = true;
 
     // update transient infomation
     m_client->updateTransientInfo();
@@ -566,12 +571,12 @@ void FluxboxWindow::init() {
             m_client->transientFor()->fbwindow()->title()<<endl;
     }
 #endif // DEBUG
+
     if (!place_window)
         moveResize(frame().x(), frame().y(), frame().width(), frame().height());
 
-
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
-    setWorkspace(m_workspace_number, true);
+    setWorkspace(m_workspace_number);
 
     if (shaded) { // start shaded
         shaded = false;
@@ -602,6 +607,7 @@ void FluxboxWindow::init() {
     setupWindow();
 
     FbTk::App::instance()->sync(false);
+
 }
 
 /// apply shape to this window
@@ -1748,7 +1754,7 @@ void FluxboxWindow::maximizeFull() {
 }
 
 
-void FluxboxWindow::setWorkspace(int n, bool notify) {
+void FluxboxWindow::setWorkspace(int n) {
     unsigned int old_wkspc = m_workspace_number;
 
     m_workspace_number = n;
@@ -1757,7 +1763,7 @@ void FluxboxWindow::setWorkspace(int n, bool notify) {
     m_blackbox_attrib.workspace = m_workspace_number;
 
     // notify workspace change
-    if (notify && !stuck && old_wkspc != m_workspace_number) {
+    if (isInitialized() && !stuck && old_wkspc != m_workspace_number) {
 #ifdef DEBUG
         cerr<<this<<" notify workspace signal"<<endl;
 #endif // DEBUG
@@ -1770,13 +1776,16 @@ void FluxboxWindow::setLayerNum(int layernum) {
 
     m_blackbox_attrib.flags |= ATTRIB_STACK;
     m_blackbox_attrib.stack = layernum;
-    saveBlackboxAttribs();
+
+    if (isInitialized()) {
+        saveBlackboxAttribs();
 
 #ifdef DEBUG
-    cerr<<this<<" notify layer signal"<<endl;
+        cerr<<this<<" notify layer signal"<<endl;
 #endif // DEBUG
 
-    m_layersig.notify();
+        m_layersig.notify();
+    }
 }
 
 void FluxboxWindow::shade() {
@@ -1791,13 +1800,15 @@ void FluxboxWindow::shade() {
         m_blackbox_attrib.flags ^= ATTRIB_SHADED;
         m_blackbox_attrib.attrib ^= ATTRIB_SHADED;
 
-        setState(NormalState, false);
+        if (isInitialized())
+            setState(NormalState, false);
     } else {
         shaded = true;
         m_blackbox_attrib.flags |= ATTRIB_SHADED;
         m_blackbox_attrib.attrib |= ATTRIB_SHADED;
         // shading is the same as iconic
-        setState(IconicState, false);
+        if (isInitialized())
+            setState(IconicState, false);
     }
 
 }
@@ -1819,9 +1830,11 @@ void FluxboxWindow::stick() {
 
     }
 
-    setState(m_current_state, false);
-    // notify since some things consider "stuck" to be a pseudo-workspace
-    m_workspacesig.notify();
+    if (isInitialized()) {
+        setState(m_current_state, false);
+        // notify since some things consider "stuck" to be a pseudo-workspace
+        m_workspacesig.notify();
+    }
 
 }
 
@@ -1882,6 +1895,11 @@ void FluxboxWindow::raiseLayer() {
     if (layerNum() == (Fluxbox::instance()->getMenuLayer()+1))
         return;
 
+    if (!isInitialized()) {
+        m_layernum++;
+        return;
+    }
+
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
@@ -1914,6 +1932,12 @@ void FluxboxWindow::raiseLayer() {
 }
 
 void FluxboxWindow::lowerLayer() {
+    if (!isInitialized()) {
+        if (m_layernum > 0)
+            m_layernum--;
+        return;
+    }
+
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
@@ -1957,6 +1981,11 @@ void FluxboxWindow::moveToLayer(int layernum) {
         layernum = fluxbox->getMenuLayer() + 1;
     }
 
+    if (!isInitialized()) {
+        m_layernum = layernum;
+        return;
+    }
+
     // get root window
     WinClient *client = getRootTransientFor(m_client);
 
@@ -1993,12 +2022,14 @@ void FluxboxWindow::setFocusHidden(bool value) {
     else
         m_blackbox_attrib.flags ^= ATTRIB_HIDDEN;
 
-    m_statesig.notify();
+    if (isInitialized())
+        m_statesig.notify();
 }
 
 void FluxboxWindow::setIconHidden(bool value) {
     m_icon_hidden= value;
-    m_statesig.notify();
+    if (isInitialized())
+        m_statesig.notify();
 }
 
 
