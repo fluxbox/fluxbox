@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 // DEALINGS IN THE SOFTWARE.
 	
-/// $Id: Slit.hh,v 1.24 2003/04/25 16:55:39 fluxgen Exp $
+/// $Id: Slit.hh,v 1.25 2003/05/06 01:45:17 rathnor Exp $
 
 #ifndef	 SLIT_HH
 #define	 SLIT_HH
@@ -43,6 +43,7 @@
 class SlitTheme;
 class SlitClient;
 class BScreen;
+class FbMenu;
 
 /// Handles dock apps
 class Slit : public FbTk::TimeoutHandler, public FbTk::EventHandler {
@@ -125,7 +126,7 @@ private:
     typedef std::list<SlitClient *> SlitClients;
 
     SlitClients clientList;
-    FbTk::Menu slitmenu, placement_menu, clientlist_menu;
+    FbMenu slitmenu, placement_menu, clientlist_menu;
     std::auto_ptr<LayerMenu<Slit> > m_slit_layermenu;
     std::string m_filename;
 
