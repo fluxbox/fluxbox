@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/04/28:
+   * Fix a bunch of alignment + size issues with toolbar (particularly 
+      when vertical)  (Simon)
+     Toolbar.cc Iconbar.cc
    * Fix remembering (and general init) of decorations (Simon)
      Window.hh/cc
    * Fix handleEvent issues, plus detachClient crash (Simon)

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.31 2003/04/25 10:40:31 fluxgen Exp $
+// $Id: IconBar.cc,v 1.32 2003/04/28 16:48:22 rathnor Exp $
 
 #include "IconBar.hh"
 
@@ -339,8 +339,9 @@ void IconBar::draw(const IconBarObj * const obj, int width) const {
     if (m_vertical) {
         int tmp = dy;
         dy = obj->height() - dx;
-        dx = tmp;
-    }
+        dx = tmp + bevel_w;
+    } else 
+        dy += bevel_w;
 
     m_font.drawText(
         iconwin,

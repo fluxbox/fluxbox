@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.76 2003/04/27 04:28:03 rathnor Exp $
+// $Id: Toolbar.cc,v 1.77 2003/04/28 16:48:23 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -462,10 +462,27 @@ void Toolbar::reconfigure() {
     else if (frame.workspace_label_w > frame.clock_w)
         frame.clock_w = frame.workspace_label_w;
 
-    frame.window_label_w =
-        (frame.width - (frame.clock_w + (frame.button_w * 4) +
-                        frame.workspace_label_w + (frame.bevel_w * 8) + 6));
-    
+    // Right, let's break this one down....
+    // full width, minus clock, workspace label and the 4 arrow buttons.
+    // each of the (6) aforementioned items are separated by a bevel width, 
+    // plus outside (+1), plus the window label (+1).
+
+    i = frame.clock_w + (frame.button_w * 4) +
+        frame.workspace_label_w + (frame.bevel_w * 8) + 6;
+
+    // of course if your toolbar is set too small, this could go negative.
+    // which is bad mmmkay. Since we are unsigned, we check that *first*.
+    if (vertical) 
+        w = frame.height;
+    else
+        w = frame.width;
+
+    if (i > w)
+        frame.window_label_w = 0;
+    else 
+        frame.window_label_w = w - i;
+
+
     if (hidden)
         frame.window.moveResize(frame.x_hidden, frame.y_hidden,
                                 frame.width, frame.height);
@@ -477,6 +494,12 @@ void Toolbar::reconfigure() {
 
     unsigned int next_x = frame.workspace_label_w;
     unsigned int next_y = frame.window.height();
+    unsigned int text_x=0, text_y=0;
+    if (vertical) 
+        text_x = frame.bevel_w;
+    else
+        text_y = frame.bevel_w;
+
     
     if (vertical) {
         next_x = frame.window.width();
@@ -507,12 +530,11 @@ void Toolbar::reconfigure() {
     if (vertical) {
         next_y += frame.nsbutton.height() + 1;
         label_w = frame.width;
-        label_h = frame.window_label_w - frame.width + frame.height;
+        label_h = frame.window_label_w/* - frame.width + frame.height*/;
 
     } else
         next_x += frame.nsbutton.width() + 1;
        
-
     frame.window_label.moveResize(next_x, next_y,
                                   label_w, label_h);
     if (vertical)
@@ -538,7 +560,7 @@ void Toolbar::reconfigure() {
     } else
         next_x += frame.nwbutton.width() + 1;
 
-    frame.clock.moveResize(next_x, next_y,
+    frame.clock.moveResize(next_x + text_x, next_y + text_y,
                            clock_w, clock_h);
 
     Pixmap tmp = frame.base;
@@ -650,6 +672,9 @@ void Toolbar::reconfigure() {
     frame.nwbutton.clear();
 	
     redrawWindowLabel();
+    if (m_iconbar.get()) 
+        m_iconbar->reconfigure();
+
     redrawWorkspaceLabel();
     checkClock(true);
 
@@ -775,8 +800,9 @@ void Toolbar::redrawWindowLabel(bool redraw) {
         if (m_theme.font().isRotated()) {
             int tmp = dy;
             dy = frame.window_label.height() - dx;
-            dx = tmp;
-        }
+            dx = tmp + frame.bevel_w;
+        } else 
+            dy += frame.bevel_w;
     
         m_theme.font().drawText(
                                 frame.window_label.window(),
@@ -1151,28 +1177,28 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         break;
     case LEFTBOTTOM:
         frame.x = head_x;
-        frame.y = head_y + head_h - frame.height;
+        frame.y = head_y + head_h - frame.height - screen().rootTheme().borderWidth()*2;
         frame.x_hidden = frame.x - frame.width + 
             screen().rootTheme().bevelWidth() + screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTCENTER:
-        frame.x = head_x + head_w - frame.width;
+        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
         frame.y = head_y + (head_h - frame.height)/2;
         frame.x_hidden = frame.x + frame.width - 
             screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTTOP:
-        frame.x = head_x + head_w - frame.width;
+        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
         frame.y = head_y;
         frame.x_hidden = frame.x + frame.width - 
             screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
         break;
     case RIGHTBOTTOM:
-        frame.x = head_x + head_w - frame.width;
-        frame.y = head_y + head_h - frame.height;
+        frame.x = head_x + head_w - frame.width - screen().rootTheme().borderWidth()*2;
+        frame.y = head_y + head_h - frame.height - screen().rootTheme().borderWidth()*2;
         frame.x_hidden = frame.x + frame.width - 
             screen().rootTheme().bevelWidth() - screen().rootTheme().borderWidth();
         frame.y_hidden = frame.y;
