@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.35 2002/11/03 15:02:21 fluxgen Exp $
+// $Id: Workspace.cc,v 1.36 2002/11/15 12:17:44 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -77,7 +77,7 @@ Workspace::GroupList Workspace::m_groups;
 Workspace::Workspace(BScreen *scrn, unsigned int i):
 screen(scrn),
 lastfocus(0),
-m_clientmenu(this),
+m_clientmenu(*this),
 m_name(""),
 m_id(i),
 cascade_x(32), cascade_y(32) {
