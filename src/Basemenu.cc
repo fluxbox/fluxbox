@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.26 2002/07/19 21:18:29 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.27 2002/07/23 17:11:58 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -344,11 +344,11 @@ void Basemenu::update(void) {
 	if (menu.height < 1) menu.height = 1;
 
 	Pixmap tmp;
-	BTexture *texture;
+	FbTk::Texture *texture;
 	if (title_vis) {
 		tmp = menu.title_pixmap;
 		texture = &(m_screen->getMenuStyle()->title);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			menu.title_pixmap = None;
 			XSetWindowBackground(m_display, menu.title,
 				 texture->color().pixel());
@@ -363,7 +363,7 @@ void Basemenu::update(void) {
 
 	tmp = menu.frame_pixmap;
 	texture = &(m_screen->getMenuStyle()->frame);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		menu.frame_pixmap = None;
 		XSetWindowBackground(m_display, menu.frame,
 			 texture->color().pixel());
@@ -376,7 +376,7 @@ void Basemenu::update(void) {
 
 	tmp = menu.hilite_pixmap;
 	texture = &(m_screen->getMenuStyle()->hilite);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID))
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
 		menu.hilite_pixmap = None;
 	else
 		menu.hilite_pixmap =
@@ -384,7 +384,7 @@ void Basemenu::update(void) {
 	if (tmp) m_image_ctrl->removeImage(tmp);
 
 	tmp = menu.sel_pixmap;
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID))
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID))
 		menu.sel_pixmap = None;
 	else {
 		int hw = menu.item_h / 2;

@@ -22,10 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// stupid macros needed to access some functions in version 2 of the GNU C
-// library
-
-// $Id: Image.cc,v 1.11 2002/07/22 22:33:45 fluxgen Exp $
+// $Id: Image.cc,v 1.12 2002/07/23 17:11:58 fluxgen Exp $
 
 //use GNU extensions
 #ifndef _GNU_SOURCE
@@ -69,9 +66,16 @@ typedef unsigned int u_int32_t;
 #	include <ctype.h>
 #endif // HAVE_CTYPE_H
 
+#include <iostream>
+
+using namespace std;
+
+// lookup table for texture
 unsigned long *BImageControl::sqrt_table = 0;
 
-static unsigned long bsqrt(unsigned long x) {
+namespace { // anonymous
+
+unsigned long bsqrt(unsigned long x) {
 	if (x <= 0) return 0;
 	if (x == 1) return 1;
 
@@ -85,6 +89,7 @@ static unsigned long bsqrt(unsigned long x) {
 	}
 }
 
+};
 
 BImage::BImage(BImageControl *c, unsigned int w, unsigned int h) {
 	control = c;
@@ -117,19 +122,20 @@ BImage::~BImage(void) {
 }
 
 
-Pixmap BImage::render(BTexture *texture) {
-	if (texture->getTexture() & BImage::PARENTRELATIVE)
+Pixmap BImage::render(const FbTk::Texture *texture) {
+	using namespace FbTk;
+	if (texture->type() & Texture::PARENTRELATIVE)
 		return ParentRelative;
-	else if (texture->getTexture() & BImage::SOLID)
-		return render_solid(texture);
-	else if (texture->getTexture() & BImage::GRADIENT)
-		return render_gradient(texture);
+	else if (texture->type() & Texture::SOLID)
+		return renderSolid(texture);
+	else if (texture->type() & Texture::GRADIENT)
+		return renderGradient(texture);
 
 	return None;
 }
 
 
-Pixmap BImage::render_solid(BTexture *texture) {
+Pixmap BImage::renderSolid(const FbTk::Texture *texture) {
 	Pixmap pixmap = XCreatePixmap(control->baseDisplay()->getXDisplay(),
 		control->drawable(), width,
 		height, control->depth());
@@ -160,8 +166,9 @@ Pixmap BImage::render_solid(BTexture *texture) {
 	XFillRectangle(control->baseDisplay()->getXDisplay(), pixmap, gc, 0, 0,
 		width, height);
 
-#ifdef		INTERLACE
-	if (texture->getTexture() & BImage::INTERLACED) {
+	using namespace FbTk;
+#ifdef INTERLACE
+	if (texture->type() & Texture::INTERLACED) {
 		gcv.foreground = texture->colorTo().pixel();
 		GC igc = XCreateGC(control->baseDisplay()->getXDisplay(), pixmap,
 			GCForeground, &gcv);
@@ -176,8 +183,8 @@ Pixmap BImage::render_solid(BTexture *texture) {
 #endif // INTERLACE
 
 
-	if (texture->getTexture() & BImage::BEVEL1) {
-		if (texture->getTexture() & BImage::RAISED) {
+	if (texture->type() & Texture::BEVEL1) {
+		if (texture->type() & Texture::RAISED) {
 			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
 								0, height - 1, width - 1, height - 1);
 			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
@@ -187,7 +194,7 @@ Pixmap BImage::render_solid(BTexture *texture) {
 								0, 0, width - 1, 0);
 			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
 								0, height - 1, 0, 0);
-		} else if (texture->getTexture() & BImage::SUNKEN) {
+		} else if (texture->type() & Texture::SUNKEN) {
 			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
 								0, height - 1, width - 1, height - 1);
 			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
@@ -198,8 +205,8 @@ Pixmap BImage::render_solid(BTexture *texture) {
 			XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
 								0, height - 1, 0, 0);
 		}
-	} else if (texture->getTexture() & BImage::BEVEL2) {
-			if (texture->getTexture() & BImage::RAISED) {
+	} else if (texture->type() & Texture::BEVEL2) {
+			if (texture->type() & Texture::RAISED) {
 				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
 							1, height - 3, width - 3, height - 3);
 				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, lgc,
@@ -209,7 +216,7 @@ Pixmap BImage::render_solid(BTexture *texture) {
 							1, 1, width - 3, 1);
 				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
 							1, height - 3, 1, 1);
-			} else if (texture->getTexture() & BImage::SUNKEN) {
+			} else if (texture->type() & Texture::SUNKEN) {
 				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
 							1, height - 3, width - 3, height - 3);
 				XDrawLine(control->baseDisplay()->getXDisplay(), pixmap, hgc,
@@ -230,38 +237,53 @@ Pixmap BImage::render_solid(BTexture *texture) {
 }
 
 
-Pixmap BImage::render_gradient(BTexture *texture) {
- int inverted = 0;
+Pixmap BImage::renderGradient(const FbTk::Texture *texture) {
 
-#ifdef		INTERLACE
-	interlaced = texture->getTexture() & BImage::INTERLACED;
+	bool inverted = false;
+
+	using namespace FbTk;
+
+#ifdef INTERLACE
+	interlaced = texture->type() & Texture::INTERLACED;
 #endif // INTERLACE
 
-	if (texture->getTexture() & BImage::SUNKEN) {
+	if (texture->type() & Texture::SUNKEN) {
 		from = &(texture->colorTo());
 		to = &(texture->color());
 
-		if (! (texture->getTexture() & BImage::INVERT)) inverted = 1;
+		if (! (texture->type() & Texture::INVERT)) 
+			inverted = true;
 	} else {
 		from = &(texture->color());
 		to = &(texture->colorTo());
 
-		if (texture->getTexture() & BImage::INVERT) inverted = 1;
+		if (texture->type() & Texture::INVERT) 
+			inverted = true;
 	}
 
 	control->getGradientBuffers(width, height, &xtable, &ytable);
 
-	if (texture->getTexture() & BImage::DIAGONAL) dgradient();
-	else if (texture->getTexture() & BImage::ELLIPTIC) egradient();
-	else if (texture->getTexture() & BImage::HORIZONTAL) hgradient();
-	else if (texture->getTexture() & BImage::PYRAMID) pgradient();
-	else if (texture->getTexture() & BImage::RECTANGLE) rgradient();
-	else if (texture->getTexture() & BImage::VERTICAL) vgradient();
-	else if (texture->getTexture() & BImage::CROSSDIAGONAL) cdgradient();
-	else if (texture->getTexture() & BImage::PIPECROSS) pcgradient();
+	if (texture->type() & Texture::DIAGONAL) 
+		dgradient();
+	else if (texture->type() & Texture::ELLIPTIC) 
+		egradient();
+	else if (texture->type() & Texture::HORIZONTAL) 
+		hgradient();
+	else if (texture->type() & Texture::PYRAMID) 
+		pgradient();
+	else if (texture->type() & Texture::RECTANGLE) 
+		rgradient();
+	else if (texture->type() & Texture::VERTICAL) 
+		vgradient();
+	else if (texture->type() & Texture::CROSSDIAGONAL) 
+		cdgradient();
+	else if (texture->type() & Texture::PIPECROSS) 
+		pcgradient();
 
-	if (texture->getTexture() & BImage::BEVEL1) bevel1();
-	else if (texture->getTexture() & BImage::BEVEL2) bevel2();
+	if (texture->type() & Texture::BEVEL1)
+		bevel1();
+	else if (texture->type() & Texture::BEVEL2)
+		bevel2();
 
 	if (inverted)
 		invert();
@@ -2163,9 +2185,8 @@ BImageControl::~BImageControl(void) {
 	if (colors) {
 		unsigned long *pixels = new unsigned long [ncolors];
 
-		int i;
-		for (i = 0; i < ncolors; i++)
-			*(pixels + i) = (*(colors + i)).pixel;
+		for (int color = 0; color < ncolors; color++)
+			*(pixels + color) = (*(colors + color)).pixel;
 
 		XFreeColors(basedisplay->getXDisplay(), colormap(), pixels, ncolors, 0);
 
@@ -2192,17 +2213,17 @@ BImageControl::~BImageControl(void) {
 
 
 Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
-			unsigned long texture,
-			BColor *c1, BColor *c2) {
+			unsigned long texture_type,
+			const FbTk::Color &color, const FbTk::Color &color_to) {
 	CacheList::iterator it = cache.begin();
 	CacheList::iterator it_end = cache.end();
 	for (; it != it_end; ++it) {
 		if (((*it)->width == width) &&
 				((*it)->height == height) &&
-				((*it)->texture == texture) &&
-				((*it)->pixel1 == c1->pixel())) {
-			if (texture & BImage::GRADIENT) {
-				if ((*it)->pixel2 == c2->pixel()) {
+				((*it)->texture == texture_type) &&
+				((*it)->pixel1 == color.pixel())) {
+			if (texture_type & FbTk::Texture::GRADIENT) {
+				if ((*it)->pixel2 == color_to.pixel()) {
 					(*it)->count++;
 					return (*it)->pixmap;
 				}
@@ -2218,11 +2239,12 @@ Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
 
 
 Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
-			BTexture *texture) {
-	if (texture->getTexture() & BImage::PARENTRELATIVE) return ParentRelative;
+			const FbTk::Texture *texture) {
+	if (texture->type() & FbTk::Texture::PARENTRELATIVE)
+		return ParentRelative;
 
-	Pixmap pixmap = searchCache(width, height, texture->getTexture(),
-						&texture->color(), &texture->colorTo());
+	Pixmap pixmap = searchCache(width, height, texture->type(),
+						texture->color(), texture->colorTo());
 	if (pixmap) return pixmap;
 
 	BImage image(this, width, height);
@@ -2235,10 +2257,10 @@ Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
 		tmp->width = width;
 		tmp->height = height;
 		tmp->count = 1;
-		tmp->texture = texture->getTexture();
+		tmp->texture = texture->type();
 		tmp->pixel1 = texture->color().pixel();
 
-		if (texture->getTexture() & BImage::GRADIENT)
+		if (texture->type() & FbTk::Texture::GRADIENT)
 			tmp->pixel2 = texture->colorTo().pixel();
 		else
 			tmp->pixel2 = 0l;
@@ -2431,65 +2453,71 @@ unsigned long BImageControl::getSqrt(unsigned int x) {
 }
 
 
-void BImageControl::parseTexture(BTexture *texture, char *t) {
-	if ((! texture) || (! t)) return;
+void BImageControl::parseTexture(FbTk::Texture *texture, const char *texture_string) {
+	if ((! texture) || (! texture_string))
+		return;
 
-	int t_len = strlen(t) + 1, i;
+	int t_len = strlen(texture_string) + 1;
 	char *ts = new char[t_len];
 	if (! ts) return;
 
 	// convert to lower case
-	for (i = 0; i < t_len; i++)
-		*(ts + i) = tolower(*(t + i));
+	for (int byte_pos = 0; byte_pos < t_len; byte_pos++)
+		*(ts + byte_pos) = tolower(*(texture_string + byte_pos));
+
+	using namespace FbTk;
+#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): texture_string = "<<texture_string<<endl;
+#endif // DEBUG
 
 	if (strstr(ts, "parentrelative")) {
-		texture->setTexture(BImage::PARENTRELATIVE);
+		texture->setType(Texture::PARENTRELATIVE);
 	} else {
-		texture->setTexture(0);
+		texture->setType(Texture::NONE);
 
 		if (strstr(ts, "solid"))
-			texture->addTexture(BImage::SOLID);
+			texture->addType(Texture::SOLID);
 		else if (strstr(ts, "gradient")) {
-			texture->addTexture(BImage::GRADIENT);
+			texture->addType(Texture::GRADIENT);
 			if (strstr(ts, "crossdiagonal"))
-				texture->addTexture(BImage::CROSSDIAGONAL);
+				texture->addType(Texture::CROSSDIAGONAL);
 			else if (strstr(ts, "rectangle"))
-				texture->addTexture(BImage::RECTANGLE);
+				texture->addType(Texture::RECTANGLE);
 			else if (strstr(ts, "pyramid"))
-				texture->addTexture(BImage::PYRAMID);
+				texture->addType(Texture::PYRAMID);
 			else if (strstr(ts, "pipecross"))
-				texture->addTexture(BImage::PIPECROSS);
+				texture->addType(Texture::PIPECROSS);
 			else if (strstr(ts, "elliptic"))
-				texture->addTexture(BImage::ELLIPTIC);
+				texture->addType(Texture::ELLIPTIC);
 			else if (strstr(ts, "diagonal"))
-				texture->addTexture(BImage::DIAGONAL);
+				texture->addType(Texture::DIAGONAL);
 			else if (strstr(ts, "horizontal"))
-				texture->addTexture(BImage::HORIZONTAL);
+				texture->addType(Texture::HORIZONTAL);
 			else if (strstr(ts, "vertical"))
-				texture->addTexture(BImage::VERTICAL);
+				texture->addType(Texture::VERTICAL);
 			else
-				texture->addTexture(BImage::DIAGONAL);
+				texture->addType(Texture::DIAGONAL);
 		} else
-			texture->addTexture(BImage::SOLID);
+			texture->addType(Texture::SOLID);
 
 		if (strstr(ts, "raised"))
-			texture->addTexture(BImage::RAISED);
+			texture->addType(Texture::RAISED);
 		else if (strstr(ts, "sunken"))
-			texture->addTexture(BImage::SUNKEN);
+			texture->addType(Texture::SUNKEN);
 		else if (strstr(ts, "flat"))
-			texture->addTexture(BImage::FLAT);
+			texture->addType(Texture::FLAT);
 		else
-			texture->addTexture(BImage::RAISED);
+			texture->addType(Texture::RAISED);
 
-		if (! (texture->getTexture() & BImage::FLAT))
+		if (! (texture->type() & Texture::FLAT))
 			if (strstr(ts, "bevel2"))
-				texture->addTexture(BImage::BEVEL2);
+				texture->addType(Texture::BEVEL2);
 			else
-				texture->addTexture(BImage::BEVEL1);
+				texture->addType(Texture::BEVEL1);
 
-#ifdef		INTERLACE
+#ifdef INTERLACE
 		if (strstr(ts, "interlaced"))
-			texture->addTexture(BImage::INTERLACED);
+			texture->addType(Texture::INTERLACED);
 #endif // INTERLACE
 	}
 
@@ -2497,7 +2525,7 @@ void BImageControl::parseTexture(BTexture *texture, char *t) {
 }
 
 
-void BImageControl::parseColor(BColor *col, char *c) {
+void BImageControl::parseColor(FbTk::Color *col, const char *color_string) {
 	if (!col) return;
 
 	if (col->isAllocated()) {
@@ -2507,13 +2535,13 @@ void BImageControl::parseColor(BColor *col, char *c) {
 
 		col->setPixel(0l);
 		col->setRGB(0, 0, 0);
-		col->setAllocated(False);
+		col->setAllocated(false);
 	}
 
-	if (c) {
+	if (color_string != 0) {
 		unsigned char r, g, b;
 
-		col->setPixel(color(c, &r, &g, &b));
+		col->setPixel(color(color_string, &r, &g, &b));
 		col->setRGB(r, g, b);
 		col->setAllocated(true);
 	}

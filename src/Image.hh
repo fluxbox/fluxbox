@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.9 2002/07/22 22:33:45 fluxgen Exp $
+// $Id: Image.hh,v 1.10 2002/07/23 17:11:59 fluxgen Exp $
 
 #ifndef	 IMAGE_HH
 #define	 IMAGE_HH
@@ -33,124 +33,62 @@
 #include "Timer.hh"
 #include "BaseDisplay.hh"
 
+#include "Color.hh"
+#include "Texture.hh"
+
 #include <list>
 
-class BImage;
 class BImageControl;
 
-
-class BColor {
-public:
-	BColor(unsigned char red = 0, unsigned char green = 0, unsigned char blue = 0):
-	m_red(red),	m_green(green), m_blue(blue), m_pixel(0), m_allocated(false) { }
-
-	inline int isAllocated() const { return m_allocated; }
-
-	inline unsigned char red() const { return m_red; }
-	inline unsigned char green() const { return m_green; }
-	inline unsigned char blue() const { return m_blue; }
-
-	inline unsigned long pixel() const { return m_pixel; }
-
-	inline void setAllocated(bool a) { m_allocated = a; }
-	inline void setRGB(char red, char green, char blue) { m_red = red; m_green = green; m_blue = blue; }
-	inline void setPixel(unsigned long pixel) { m_pixel = pixel; }
-
-private:
-	unsigned char m_red, m_green, m_blue;
-	unsigned long m_pixel;
-	bool m_allocated;
-};
-
-
-class BTexture {
-public:
-	BTexture():m_texture(0) { }
-
-	inline const BColor &color() const { return m_color; }
-	inline const BColor &colorTo() const { return m_color_to; }
-	inline const BColor &hiColor() const { return m_hicolor; }
-	inline const BColor &loColor() const { return m_locolor; }
-
-	inline BColor &color() { return m_color; }
-	inline BColor &colorTo() { return m_color_to; }
-	inline BColor &hiColor() { return m_hicolor; }
-	inline BColor &loColor() { return m_locolor; }
-
-	inline unsigned long getTexture() const { return m_texture; }
-
-	inline void setTexture(unsigned long t) { m_texture = t; }
-	inline void addTexture(unsigned long t) { m_texture |= t; }
-
-private:
-	BColor m_color, m_color_to, m_hicolor, m_locolor;
-	unsigned long m_texture;
-};
-
-
-
 class BImage {
+public:
+	BImage(BImageControl *ic, unsigned int, unsigned int);
+	~BImage();
+	/// render to pixmap
+	Pixmap render(const FbTk::Texture *src_texture);
+	/// render solid texture to pixmap
+	Pixmap renderSolid(const FbTk::Texture *src_texture);
+	/// render gradient texture to pixmap
+	Pixmap renderGradient(const FbTk::Texture *src_texture);
+
+protected:
+	/**
+		Render to pixmap
+		@return rendered pixmap
+	*/
+	Pixmap renderPixmap();
+	/**
+		Render to XImage
+		@returns allocated and rendered XImage, user is responsible to deallocate
+	*/
+	XImage *renderXImage();
+
+	void invert();
+	void bevel1();
+	void bevel2();
+	void dgradient();
+	void egradient();
+	void hgradient();
+	void pgradient();
+	void rgradient();
+	void vgradient();
+	void cdgradient();
+	void pcgradient();
+
 private:
 	BImageControl *control;
 
 #ifdef		INTERLACE
-	Bool interlaced;
+	bool interlaced;
 #endif // INTERLACE
 
-	XColor *colors;
+	XColor *colors; // color table
 
-	BColor *from, *to;
+	const FbTk::Color *from, *to;
 	int red_offset, green_offset, blue_offset, red_bits, green_bits, blue_bits,
 		ncolors, cpc, cpccpc;
 	unsigned char *red, *green, *blue, *red_table, *green_table, *blue_table;
 	unsigned int width, height, *xtable, *ytable;
-
-
-protected:
-	Pixmap renderPixmap(void);
-
-	XImage *renderXImage(void);
-
-	void invert(void);
-	void bevel1(void);
-	void bevel2(void);
-	void dgradient(void);
-	void egradient(void);
-	void hgradient(void);
-	void pgradient(void);
-	void rgradient(void);
-	void vgradient(void);
-	void cdgradient(void);
-	void pcgradient(void);
-
-
-public:
-	enum Bevel{FLAT=0x00002, SUNKEN=0x00004, RAISED=0x00008};
-	enum Textures{SOLID=0x00010, GRADIENT=0x00020};
-	enum Gradients{
-		HORIZONTAL=0x00040,
-		VERTICAL=0x00080,
-		DIAGONAL=0x00100,
-		CROSSDIAGONAL=0x00200,
-		RECTANGLE=0x00400,
-		PYRAMID=0x00800,
-		PIPECROSS=0x01000,
-		ELLIPTIC=0x02000		
-	};
-	
-	enum {
-		BEVEL1=0x04000, BEVEL2=0x08000, // bevel types
-		INVERT=0x010000, //inverted image
-		PARENTRELATIVE=0x20000,
-		INTERLACED=0x40000
-	};
-	
-	BImage(BImageControl *, unsigned int, unsigned int);
-	~BImage(void);
-
-	Pixmap render(BTexture *);
-	Pixmap render_solid(BTexture *);
-	Pixmap render_gradient(BTexture *);
 };
 
 
@@ -166,20 +104,21 @@ public:
 	inline const Colormap &colormap() const { return m_colormap; }
 	inline ScreenInfo *getScreenInfo() { return screeninfo; }
 
-	inline const Window &drawable() const { return window; }
+	inline Window drawable() const { return window; }
 
 	inline Visual *visual() { return screeninfo->getVisual(); }
 
 	inline int bitsPerPixel() const { return bits_per_pixel; }
 	inline int depth() const { return screen_depth; }
-	inline int colorsPerChannel(void) const	{ return colors_per_channel; }
+	inline int colorsPerChannel() const	{ return colors_per_channel; }
 
 	unsigned long color(const char *colorname);
 	unsigned long color(const char *, unsigned char *, unsigned char *,
 												 unsigned char *);
 	unsigned long getSqrt(unsigned int val);
 
-	Pixmap renderImage(unsigned int, unsigned int, BTexture *);
+	Pixmap renderImage(unsigned int width, unsigned int height,
+		const FbTk::Texture *src_texture);
 
 	void installRootColormap();
 	void removeImage(Pixmap thepix);
@@ -190,10 +129,18 @@ public:
 			unsigned int **, unsigned int **);
 	void setDither(bool d) { dither = d; }
 	void setColorsPerChannel(int cpc);
-	void parseTexture(BTexture *ret_texture, char *sval);
-	void parseColor(BColor *ret_color, char *sval = 0);
+	void parseTexture(FbTk::Texture *ret_texture, const char *sval);
+	void parseColor(FbTk::Color *ret_color, const char *sval = 0);
 
 	virtual void timeout();
+
+protected:
+	/** 
+		Search cache for a specific pixmap
+		@return None if no cache was found
+	*/
+	Pixmap searchCache(unsigned int width, unsigned int height, unsigned long texture_type, 
+		const FbTk::Color &color, const FbTk::Color &color_to);
 
 private:
 	bool dither;
@@ -206,16 +153,17 @@ private:
 	Colormap m_colormap;
 
 	Window window;
-	XColor *colors;
+	XColor *colors; // color table
 	int colors_per_channel, ncolors, screen_number, screen_depth,
 		bits_per_pixel, red_offset, green_offset, blue_offset,
 		red_bits, green_bits, blue_bits;
+
 	unsigned char red_color_table[256], green_color_table[256],
 		blue_color_table[256];
 	unsigned int *grad_xbuffer, *grad_ybuffer, grad_buffer_width,
 		grad_buffer_height;
-	static unsigned long *sqrt_table;
-	unsigned long cache_max;
+
+	static unsigned long *sqrt_table; /// sqrt lookup table
 
 	typedef struct Cache {
 		Pixmap pixmap;
@@ -223,13 +171,11 @@ private:
 		unsigned int count, width, height;
 		unsigned long pixel1, pixel2, texture;
 	} Cache;
-
+	
+	unsigned long cache_max;
 	typedef std::list<Cache *> CacheList;
 
 	CacheList cache;
-
-protected:
-	Pixmap searchCache(unsigned int, unsigned int, unsigned long, BColor *, BColor *);
 };
 
 

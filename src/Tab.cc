@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.28 2002/07/20 09:49:21 fluxgen Exp $
+// $Id: Tab.cc,v 1.29 2002/07/23 17:11:59 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -189,11 +189,11 @@ void Tab::lower() {
 void Tab::loadTheme() {
 	BImageControl *image_ctrl = m_win->getScreen()->getImageControl();
 	Pixmap tmp = m_focus_pm;
-	BTexture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
+	FbTk::Texture *texture = &(m_win->getScreen()->getWindowStyle()->tab.l_focus);
 
-	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
-		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_focus);
-		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
+		FbTk::Texture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_focus);
+		if (pt->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			m_focus_pm = None;
 			m_focus_pixel = pt->color().pixel();
 		} else
@@ -203,7 +203,7 @@ void Tab::loadTheme() {
 		if (tmp) image_ctrl->removeImage(tmp);
 
 	} else {
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			m_focus_pm = None;
 			m_focus_pixel = texture->color().pixel();
 		} else
@@ -215,16 +215,16 @@ void Tab::loadTheme() {
 	tmp = m_unfocus_pm;
 	texture = &(m_win->getScreen()->getWindowStyle()->tab.l_unfocus);
 
-	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
-		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_unfocus);
-		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
+		FbTk::Texture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_unfocus);
+		if (pt->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			m_unfocus_pm = None;
 			m_unfocus_pixel = pt->color().pixel();
 		} else
 			m_unfocus_pm =
 			image_ctrl->renderImage(m_size_w, m_size_h, pt);
 	} else {
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			m_unfocus_pm = None;
 			m_unfocus_pixel = texture->color().pixel();
 		} else

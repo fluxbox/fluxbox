@@ -41,7 +41,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.22 2002/07/19 21:45:00 fluxgen Exp $
+// $Id: Theme.cc,v 1.23 2002/07/23 17:11:59 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -577,6 +577,7 @@ void Theme::loadToolbarStyle() {
 	readDatabaseTexture("toolbar.clock", "Toolbar.Clock",
 		&m_toolbarstyle.clock,
 		BlackPixel(m_display, m_screennum));
+
 	readDatabaseColor("toolbar.label.textColor", "Toolbar.Label.TextColor",
 		&m_toolbarstyle.l_text,
 		WhitePixel(m_display, m_screennum));
@@ -625,7 +626,7 @@ void Theme::loadRootCommand() {
 	char *value_type;
 	
 	if (m_rootcommand.size()) {
-		#ifndef         __EMX__		
+		#ifndef  __EMX__		
 		char tmpstring[256]; //to hold m_screennum 
 		tmpstring[0]=0;
 		sprintf(tmpstring, "%d", m_screennum);
@@ -708,7 +709,7 @@ void Theme::loadMisc(void) {
 
 
 bool Theme::readDatabaseTexture(char *rname, char *rclass,
-	BTexture *texture,
+	FbTk::Texture *texture,
 	unsigned long default_pixel)
 {
 	XrmValue value;
@@ -719,9 +720,9 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 			&value))
 		m_imagecontrol->parseTexture(texture, value.addr);
 	else
-		texture->setTexture(BImage::SOLID | BImage::FLAT);
+		texture->setType(FbTk::Texture::SOLID | FbTk::Texture::FLAT);
 
-	if (texture->getTexture() & BImage::SOLID) {
+	if (texture->type() & FbTk::Texture::SOLID) {
 		int clen = strlen(rclass) + 32, nlen = strlen(rname) + 32;
 
 		char *colorclass = new char[clen], *colorname = new char[nlen];
@@ -744,7 +745,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 		delete [] colorname;
 
 		if ((! texture->color().isAllocated()) ||
-				(texture->getTexture() & BImage::FLAT))
+				(texture->type() & FbTk::Texture::FLAT))
 			return retval;
 
 		XColor xcol;
@@ -781,7 +782,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 			xcol.pixel = 0;
 
 		texture->loColor().setPixel(xcol.pixel);
-	} else if (texture->getTexture() & BImage::GRADIENT) {
+	} else if (texture->type() & FbTk::Texture::GRADIENT) {
 		int clen = strlen(rclass) + 10, nlen = strlen(rname) + 10;
 
 		char *colorclass = new char[clen], *colorname = new char[nlen],
@@ -812,7 +813,7 @@ bool Theme::readDatabaseTexture(char *rname, char *rclass,
 }
 
 
-bool Theme::readDatabaseColor(char *rname, char *rclass, BColor *color,
+bool Theme::readDatabaseColor(char *rname, char *rclass, FbTk::Color *color,
 				unsigned long default_pixel)
 {
 	XrmValue value;

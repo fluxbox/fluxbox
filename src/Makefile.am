@@ -49,6 +49,6 @@ fluxbox_SOURCES= BaseDisplay.cc BaseDisplay.hh Basemenu.cc Basemenu.hh \
 	IconBar.cc IconBar.hh Theme.hh Theme.cc \
 	StringUtil.cc StringUtil.hh DrawUtil.cc DrawUtil.hh nl_types_cygnus.h \
 	XrmDatabaseHelper.hh NotCopyable.hh Resource.hh Resource.cc Font.hh Font.cc \
-	FbAtoms.hh FbAtoms.cc
+	FbAtoms.hh FbAtoms.cc Color.hh Texture.hh
 MAINTAINERCLEANFILES= Makefile.in
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.57 2002/07/23 13:47:05 fluxgen Exp $
+// $Id: Screen.cc,v 1.58 2002/07/23 17:11:59 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -330,9 +330,9 @@ resource(rm, screenname, altscreenname)
 			InputOutput, getVisual(), mask, &attrib);
 	geom_visible = false;
 
-	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
-		if (theme->getWindowStyle().t_focus.getTexture() ==
-			(BImage::FLAT | BImage::SOLID)) {
+	if (theme->getWindowStyle().l_focus.type() & FbTk::Texture::PARENTRELATIVE) {
+		if (theme->getWindowStyle().t_focus.type() ==
+			(FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				 theme->getWindowStyle().t_focus.color().pixel());
@@ -343,8 +343,8 @@ resource(rm, screenname, altscreenname)
 				 geom_window, geom_pixmap);
 		}
 	} else {
-		if (theme->getWindowStyle().l_focus.getTexture() ==
-				(BImage::FLAT | BImage::SOLID)) {
+		if (theme->getWindowStyle().l_focus.type() ==
+				(FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				 theme->getWindowStyle().l_focus.color().pixel());
@@ -581,9 +581,9 @@ void BScreen::reconfigure(void) {
 	geom_h += getBevelWidth()*2;
 
 	Pixmap tmp = geom_pixmap;
-	if (theme->getWindowStyle().l_focus.getTexture() & BImage::PARENTRELATIVE) {
-		if (theme->getWindowStyle().t_focus.getTexture() ==
-				(BImage::FLAT | BImage::SOLID)) {
+	if (theme->getWindowStyle().l_focus.type() & FbTk::Texture::PARENTRELATIVE) {
+		if (theme->getWindowStyle().t_focus.type() ==
+				(FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				theme->getWindowStyle().t_focus.color().pixel());
@@ -594,8 +594,8 @@ void BScreen::reconfigure(void) {
 				geom_window, geom_pixmap);
 		}
 	} else {
-		if (theme->getWindowStyle().l_focus.getTexture() ==
-				(BImage::FLAT | BImage::SOLID)) {
+		if (theme->getWindowStyle().l_focus.type() ==
+				(FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			geom_pixmap = None;
 			XSetWindowBackground(getBaseDisplay()->getXDisplay(), geom_window,
 				theme->getWindowStyle().l_focus.color().pixel());
@@ -1076,9 +1076,8 @@ void BScreen::saveStrftimeFormat(const char *format) {
 #endif // HAVE_STRFTIME
 
 
-void BScreen::addWorkspaceName(char *name) {
+void BScreen::addWorkspaceName(const char *name) {
 	workspaceNames.push_back(name);
-	
 }
 
 

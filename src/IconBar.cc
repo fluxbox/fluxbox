@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.13 2002/07/20 00:06:45 fluxgen Exp $
+// $Id: IconBar.cc,v 1.14 2002/07/23 17:11:58 fluxgen Exp $
 
 #include "IconBar.hh"
 #include "i18n.hh"
@@ -97,22 +97,23 @@ Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
 void IconBar::loadTheme(unsigned int width, unsigned int height) {
 	BImageControl *image_ctrl = m_screen->getImageControl();
 	Pixmap tmp = m_focus_pm;
-	BTexture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
+	FbTk::Texture *texture = &(m_screen->getWindowStyle()->tab.l_focus);
 	
 	//If we are working on a PARENTRELATIVE, change to right focus value
-	if (texture->getTexture() & BImage::PARENTRELATIVE ) {
+	if (texture->type() & FbTk::Texture::PARENTRELATIVE ) {
 		texture = &(m_screen->getWindowStyle()->tab.t_focus);
 	}
 		
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
-  		m_focus_pm = None;
-	    	m_focus_pixel = texture->color().pixel();
-  	} else {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
+		m_focus_pm = None;
+			m_focus_pixel = texture->color().pixel();
+	} else {
 		m_focus_pm =
-		  image_ctrl->renderImage(width, height, texture);	 
+			image_ctrl->renderImage(width, height, texture);	 
 	}
 
-	if (tmp) image_ctrl->removeImage(tmp);
+	if (tmp)
+		image_ctrl->removeImage(tmp);
 }
 
 //------------ decorate ------------------

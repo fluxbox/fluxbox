@@ -42,7 +42,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.10 2002/07/19 21:44:06 fluxgen Exp $
+// $Id: Theme.hh,v 1.11 2002/07/23 17:11:59 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -68,8 +68,8 @@ public:
 	typedef struct MenuStyle {
 		MenuStyle(Display *display):titlefont(display, "fixed"),
 			framefont(display, "fixed") { }
-		BColor t_text, f_text, h_text, d_text;
-		BTexture title, frame, hilite;
+		FbTk::Color t_text, f_text, h_text, d_text;
+		FbTk::Texture title, frame, hilite;
 		GC t_text_gc, f_text_gc, h_text_gc, d_text_gc, hilite_gc;
 		FbTk::Font titlefont, framefont;
 		DrawUtil::Font::FontJustify framefont_justify;
@@ -79,23 +79,23 @@ public:
 	
 	typedef struct LabelStyle
 	{
-		BTexture l_focus, l_unfocus,
+		FbTk::Texture l_focus, l_unfocus,
 			t_focus, t_unfocus;	
 		GC l_text_focus_gc, l_text_unfocus_gc;
 		DrawUtil::Font font;
-		BColor l_text_focus, l_text_unfocus;
+		FbTk::Color l_text_focus, l_text_unfocus;
 	} LabelStyle;
 
 	
 	typedef struct WindowStyle:public LabelStyle {
-		BColor f_focus, f_unfocus, b_pic_focus,
+		FbTk::Color f_focus, f_unfocus, b_pic_focus,
 			b_pic_unfocus;
-		BTexture h_focus, h_unfocus,
+		FbTk::Texture h_focus, h_unfocus,
 			b_focus, b_unfocus, b_pressed, g_focus, g_unfocus;
 		GC b_pic_focus_gc, b_pic_unfocus_gc;
 
 		struct t_tab:public LabelStyle {
-			BColor border_color;
+			FbTk::Color border_color;
 			unsigned int border_width;
 			unsigned int border_width_2x;
 			DrawUtil::XRotFontStruct *rot_font;
@@ -105,8 +105,8 @@ public:
 
 	
 	typedef struct ToolbarStyle {
-		BColor l_text, w_text, c_text, b_pic;
-		BTexture toolbar, label, window, button, pressed, clock;
+		FbTk::Color l_text, w_text, c_text, b_pic;
+		FbTk::Texture toolbar, label, window, button, pressed, clock;
 		GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
 		DrawUtil::Font font;
 
@@ -120,7 +120,7 @@ public:
 	inline unsigned int getHandleWidth(void) const { return m_handle_width; }
 	inline unsigned int getFrameWidth(void) const { return m_frame_width; }
 	inline const GC &getOpGC(void) const { return m_opgc; }
-	inline const BColor &getBorderColor(void) const { return m_border_color; }
+	inline const FbTk::Color &getBorderColor(void) const { return m_border_color; }
 	void load(const char *filename);
 	void reconfigure();
 	
@@ -141,8 +141,8 @@ private:
 	void freeTabStyle();
 	void freeToolbarStyle();
 	
-	bool readDatabaseTexture(char *, char *, BTexture *, unsigned long);
-	bool readDatabaseColor(char *, char *, BColor *, unsigned long);
+	bool readDatabaseTexture(char *, char *, FbTk::Texture *, unsigned long);
+	bool readDatabaseColor(char *, char *, FbTk::Color *, unsigned long);
 
 	void readDatabaseFontSet(char *, char *, XFontSet *);
 	XFontSet createFontSet(char *);
@@ -156,7 +156,7 @@ private:
 	MenuStyle m_menustyle;
 	ToolbarStyle	m_toolbarstyle;
 	unsigned int m_bevel_width, m_border_width, m_handle_width, m_frame_width;
-	BColor m_border_color;
+	FbTk::Color m_border_color;
 	GC m_opgc;
 	BImageControl *m_imagecontrol;
 	Display *m_display;	 

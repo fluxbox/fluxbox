@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.24 2002/07/20 09:49:57 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.25 2002/07/23 17:11:59 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -430,8 +430,8 @@ void Toolbar::reconfigure(void) {
 		frame.label_h);
 
 	Pixmap tmp = frame.base;
-	BTexture *texture = &(screen->getToolbarStyle()->toolbar);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	FbTk::Texture *texture = &(screen->getToolbarStyle()->toolbar);
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.base = None;
 		XSetWindowBackground(display, frame.window,
 			 texture->color().pixel());
@@ -444,7 +444,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.label;
 	texture = &(screen->getToolbarStyle()->window);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.label = None;
 		XSetWindowBackground(display, frame.window_label,
 			 texture->color().pixel());
@@ -457,7 +457,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.wlabel;
 	texture = &(screen->getToolbarStyle()->label);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.wlabel = None;
 		XSetWindowBackground(display, frame.workspace_label,
 			 texture->color().pixel());
@@ -470,7 +470,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.clk;
 	texture = &(screen->getToolbarStyle()->clock);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.clk = None;
 		XSetWindowBackground(display, frame.clock,
 			 texture->color().pixel());
@@ -483,7 +483,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.button;
 	texture = &(screen->getToolbarStyle()->button);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.button = None;
 
 		frame.button_pixel = texture->color().pixel();
@@ -504,7 +504,7 @@ void Toolbar::reconfigure(void) {
 
 	tmp = frame.pbutton;
 	texture = &(screen->getToolbarStyle()->pressed);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.pbutton = None;
 		frame.pbutton_pixel = texture->color().pixel();
 	} else

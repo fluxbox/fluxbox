@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.62 2002/07/19 21:35:37 fluxgen Exp $
+// $Id: Window.cc,v 1.63 2002/07/23 17:11:59 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -609,8 +609,8 @@ void FluxboxWindow::decorate() {
 		tab->decorate();
 
 	Pixmap tmp = frame.fbutton;
-	BTexture *texture = &(screen->getWindowStyle()->b_focus);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	FbTk::Texture *texture = &(screen->getWindowStyle()->b_focus);
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.fbutton = None;
 		frame.fbutton_pixel = texture->color().pixel();
 	} else
@@ -620,7 +620,7 @@ void FluxboxWindow::decorate() {
 
 	tmp = frame.ubutton;
 	texture = &(screen->getWindowStyle()->b_unfocus);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.ubutton = None;
 		frame.ubutton_pixel = texture->color().pixel();
 	} else
@@ -630,7 +630,7 @@ void FluxboxWindow::decorate() {
 
 	tmp = frame.pbutton;
 	texture = &(screen->getWindowStyle()->b_pressed);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.pbutton = None;
 		frame.pbutton_pixel = texture->color().pixel();
 	} else
@@ -641,7 +641,7 @@ void FluxboxWindow::decorate() {
 	if (decorations.titlebar) {
 		tmp = frame.ftitle;
 		texture = &(screen->getWindowStyle()->t_focus);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			frame.ftitle = None;
 			frame.ftitle_pixel = texture->color().pixel();
 		} else
@@ -653,7 +653,7 @@ void FluxboxWindow::decorate() {
 
 		tmp = frame.utitle;
 		texture = &(screen->getWindowStyle()->t_unfocus);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			frame.utitle = None;
 			frame.utitle_pixel = texture->color().pixel();
 		} else
@@ -676,7 +676,7 @@ void FluxboxWindow::decorate() {
 	if (decorations.handle) {
 		tmp = frame.fhandle;
 		texture = &(screen->getWindowStyle()->h_focus);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			frame.fhandle = None;
 			frame.fhandle_pixel = texture->color().pixel();
 		} else
@@ -686,7 +686,7 @@ void FluxboxWindow::decorate() {
 
 		tmp = frame.uhandle;
 		texture = &(screen->getWindowStyle()->h_unfocus);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			frame.uhandle = None;
 			frame.uhandle_pixel = texture->color().pixel();
 		} else
@@ -697,7 +697,7 @@ void FluxboxWindow::decorate() {
 
 		tmp = frame.fgrip;
 		texture = &(screen->getWindowStyle()->g_focus);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			frame.fgrip = None;
 			frame.fgrip_pixel = texture->color().pixel();
 		} else
@@ -708,7 +708,7 @@ void FluxboxWindow::decorate() {
 
 		tmp = frame.ugrip;
 		texture = &(screen->getWindowStyle()->g_unfocus);
-		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+		if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 			frame.ugrip = None;
 			frame.ugrip_pixel = texture->color().pixel();
 		} else
@@ -731,8 +731,8 @@ void FluxboxWindow::decorate() {
 
 void FluxboxWindow::decorateLabel() {
 	Pixmap tmp = frame.flabel;
-	BTexture *texture = &(screen->getWindowStyle()->l_focus);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	FbTk::Texture *texture = &(screen->getWindowStyle()->l_focus);
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.flabel = None;
 		frame.flabel_pixel = texture->color().pixel();		
 	} else
@@ -742,7 +742,7 @@ void FluxboxWindow::decorateLabel() {
 
 	tmp = frame.ulabel;
 	texture = &(screen->getWindowStyle()->l_unfocus);
-	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
+	if (texture->type() == (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
 		frame.ulabel = None;
 		frame.ulabel_pixel = texture->color().pixel();
 	} else
