@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspacemenu.cc,v 1.8 2002/08/14 22:57:55 fluxgen Exp $
+// $Id: Workspacemenu.cc,v 1.9 2002/09/07 10:21:27 fluxgen Exp $
 
 #include "Workspacemenu.hh"
 
@@ -60,11 +60,13 @@ Workspacemenu::Workspacemenu(BScreen *scrn) : Basemenu(scrn) {
 
 void Workspacemenu::itemSelected(int button, unsigned int index) {
 	if (button == 1) {
-		if (index == 0)
+		if (index == 0) {
 			screen()->addWorkspace();
-		else if (index == 1)
+			Fluxbox::instance()->save_rc();
+		} else if (index == 1) {
 			screen()->removeLastWorkspace();
-		else if ((screen()->getCurrentWorkspace()->workspaceID() !=
+			Fluxbox::instance()->save_rc();
+		} else if ((screen()->getCurrentWorkspace()->workspaceID() !=
 			(index - 2)) && ((index - 2) < screen()->getCount())) {
 			screen()->changeWorkspaceID(index - 2);
 		}
