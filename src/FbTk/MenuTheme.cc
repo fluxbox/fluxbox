@@ -1,5 +1,5 @@
 // MenuTheme.cc for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.6 2003/02/23 01:00:48 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.7 2003/04/26 22:10:53 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -27,8 +27,8 @@
 #include "Texture.hh"
 #include "Font.hh"
 #include "App.hh"
-//TODO change this
-#include "../StringUtil.hh"
+#include "StringUtil.hh"
+
 #include <cstdio>
 
 namespace FbTk {
