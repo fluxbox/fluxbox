@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.159 2003/06/18 13:51:37 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.160 2003/06/23 13:35:45 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -830,7 +830,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             break;
         // most of them are handled in FluxboxWindow::handleEvent
         // but some special cases like ewmh propertys needs to be checked 
-        for (int i=0; i<m_atomhandler.size(); ++i) {
+        for (size_t i=0; i<m_atomhandler.size(); ++i) {
             if (m_atomhandler[i]->propertyNotify(*win, e->xproperty.atom))
                 break;
         }
@@ -2129,11 +2129,6 @@ void Fluxbox::load_rc(BScreen &screen) {
     } else
         screen.saveClock24Hour(false);
 #endif // HAVE_STRFTIME
-
-    //check size on toolbarwidth percent	
-    if (screen.getToolbarWidthPercent() <= 0 || 
-        screen.getToolbarWidthPercent() > 100)
-        screen.saveToolbarWidthPercent(66);
 
 }
 
