@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.cc,v 1.9 2002/02/08 13:20:23 fluxgen Exp $
+// $Id: Basemenu.cc,v 1.10 2002/02/08 13:47:11 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -238,7 +238,7 @@ int Basemenu::insert(const char **ulabel, int pos, int function) {
 int Basemenu::remove(int index) {
 	if (index < 0 || index > menuitems.size()) return -1;
 
-	Menuitems::iterator it = menuitems.erase(menuitems.begin() + index);
+	Menuitems::iterator it = menuitems.begin() + index;
 	BasemenuItem *item = (*it);
 
 	if (item) {
