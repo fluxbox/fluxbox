@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/04/18:
+  * Minor fix for decor/position remember state (Thanks Mathias Gumz)
+    Remember.cc
+  * Fixed drawing issue with big menus (Thanks Mathias Gumz)
+    FbTk/Menu.cc
   * fbrun: Tab complete on all apps in $PATH
     (To tab complete on history Ctrl+Tab)
     (Thanks Mathias Gumz)
