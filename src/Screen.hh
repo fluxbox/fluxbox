@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.129 2003/12/19 00:34:23 fluxgen Exp $
+// $Id: Screen.hh,v 1.130 2003/12/19 01:46:58 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -97,7 +97,6 @@ public:
     inline bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
     inline bool doAutoRaise() const { return *resource.auto_raise; }
     inline bool clickRaises() const { return *resource.click_raises; }
-    inline bool doImageDither() const { return *resource.image_dither; }
     inline bool doOpaqueMove() const { return *resource.opaque_move; }
     inline bool doFullMax() const { return *resource.full_max; }
     inline bool doFocusNew() const { return *resource.focus_new; }
@@ -184,12 +183,8 @@ public:
 
     inline void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
-    inline void saveResizeMode(std::string resizem) { *resource.resizemode = resizem; }
     inline void saveFocusModel(FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
-    inline void saveEdgeSnapThreshold(int t) { resource.edge_snap_threshold = t;  }
-    inline void saveImageDither(bool d) { resource.image_dither = d;  }
-
 
 
     void setAntialias(bool value);
@@ -211,6 +206,9 @@ public:
     const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
     const std::string &name() const { return m_name; }
     const std::string &altName() const { return m_altname; }
+    bool isShuttingdown() const { return m_shutdown; }
+
+
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
@@ -305,6 +303,7 @@ public:
     void updateNetizenConfigNotify(XEvent &ev);
     void updateNetizenWindowRaise(Window);
     void updateNetizenWindowLower(Window);
+
     /// create window frame for client window and attach it
     FluxboxWindow *createWindow(Window clientwin);
     FluxboxWindow *createWindow(WinClient &client);
@@ -322,7 +321,7 @@ public:
     void addConfigMenu(const char *label, FbTk::Menu &menu);
     void removeConfigMenu(FbTk::Menu &menu);
 
-    bool isShuttingdown() const { return m_shutdown; }
+
 
 
 
