@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.13 2004/02/10 12:57:42 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.14 2004/03/01 13:15:30 fluxgen Exp $
 
 #
 # Portability notes:
@@ -33,7 +33,7 @@
 # - don't use [ -e file ] use [ -r file ]
 # - don't use $(), use ``
 # - don't use ~, use ${HOME}
-# - don't use id -u, use whoami
+# - don't use id -u or $UID, use whoami
 # - getopts won't work on all platforms, but the config-file can
 #   compensate for that.
 # - various software like grep/sed/perl may be not present or not
@@ -319,42 +319,37 @@ case ${LC_ALL} in
         XUTILSMENU='X-ÕÔÉÌÉÔÙ'
         ;;
     de_DE*) # german locales
-# Ah my German hero. Please help me update the translation
-# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
-# $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
-# email fbgm.diff to han@mijncomputer.nl
         BACKGROUNDMENU='Hintergrundbilder'
         BACKGROUNDMENUTITLE='Hintergrundbild setzen'
-        BROWSERMENU='Internet-Browser (CHANGE ME!)'
-        CONFIGUREMENU='Einstellungen (CHANGE ME!)'
+        BROWSERMENU='Internet-Browser'
+        CONFIGUREMENU='Einstellungen'
         EDITORMENU='Editoren'
         EXITITEM='Beenden'
         FBSETTINGSMENU='Fluxbox-Einstellungen'
         FILEUTILSMENU='Datei-Utilities'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
-        GAMESMENU='Games (CHANGE ME!)'
+        FLUXBOXCOMMAND='Fluxbox Befehl'
+        GAMESMENU='Spiele'
         GNOMEMENUTEXT='Gnome-Menues'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='Kde-Menues'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        LOCKSCREEN='Bildschirmsperre'
         MISCMENU='Sonstiges'
         MUSICMENU='Musik'
         NETMENU='Netzwerk'
         OFFICEMENU='Bueroprogramme'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        RANDOMBACKGROUND='Zufaelliger Hintergrund'
+        REGENERATEMENU='Menu-Regeneration'
         RELOADITEM='Konfiguration neu laden'
         RESTARTITEM='Neustarten'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='Ausführen'
+        SCREENSHOT='Bildschirmfoto'
         STYLEMENUTITLE='Einen Stil auswaehlen...'
         SYSTEMSTYLES='Systemweite Stile'
-        TERMINALMENU='Terminals (CHANGE ME!)'
-        TOOLS='Tools (CHANGE ME!)'
+        TERMINALMENU='Terminals'
+        TOOLS='Helfer'
         USERSTYLES='Eigene Stile'
-        WINDOWMANAGERS='Window Managers (CHANGE ME!)'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWMANAGERS='Window Manager'
+        WINDOWNAME='Window Name'
         WORKSPACEMENU='Arbeitsflaechenliste'
         XUTILSMENU='X-Anwendungen'
         ;;
@@ -984,7 +979,7 @@ if find_it_options $MY_BROWSER; then
 else
     [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
-    for browser in mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
+    for browser in firefox mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
         if find_it $browser; then
             DEFAULT_BROWSER=$browser
             break
@@ -1049,7 +1044,7 @@ append_menu_end
 
 append_submenu "${NETMENU}"
     append_submenu "${BROWSERMENU}"
-        normal_find mozilla-firefox MozillaFirefox galeon mozilla dillo netscape
+        normal_find firefox mozilla-firefox MozillaFirefox galeon mozilla dillo netscape
         find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
         find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
         find_it links       append "[exec]   (links) {${DEFAULT_TERM} -e links ${HOMEPAGE}}"
@@ -1102,7 +1097,7 @@ append_submenu "${EDITORMENU}"
     find_it     vim    append "[exec]   (vim)      {${DEFAULT_TERM} -e vim}"
     normal_find nedit gedit xedit kword kwrite kate anjuta wings xemacs emacs
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
-    find_it     xemacs append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
+    find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
@@ -1171,7 +1166,7 @@ append_menu_end
 append_submenu "${GAMESMENU}"
     normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
-        gnotski iagno knights eboard xboard freecell pysol \
+        gnotski iagno knights eboard xboard scid freecell pysol \
         gtali tuxracer xpenguins xsnow xeyes xpenguins smclone openmortal \
         quake2 quake3 skoosh same-gnome enigma xbill icebreaker
     find_it et append "[exec] (Enemy Territory) {et}"
