@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.114 2003/02/22 16:09:44 rathnor Exp $
+// $Id: Screen.cc,v 1.115 2003/02/23 00:56:09 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -373,7 +373,8 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     toolbar_layernum(rm, Fluxbox::instance()->getDesktopLayer(), scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
     tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
     tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
-    toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead")
+    toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
+    toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
 {
 
 };
@@ -524,6 +525,7 @@ BScreen::BScreen(ResourceManager &rm,
 #endif // SLIT
 
     m_toolbar.reset(new Toolbar(*this, *layerManager().getLayer(getToolbarLayerNum())));
+    m_toolbar->setPlacement(*resource.toolbar_placement);
     // setup toolbar width menu item
     FbTk::MenuItem *toolbar_menuitem = new IntResMenuItem("Toolbar width percent",
                                                     resource.toolbar_width_percent,
@@ -542,7 +544,7 @@ BScreen::BScreen(ResourceManager &rm,
 
     toolbar_menuitem->setCommand(reconfig_toolbar_and_save_resource);    
 
-    m_toolbar->menu().insert(toolbar_menuitem);
+    m_toolbar->menu().insert(toolbar_menuitem, 0);
     
     setupWorkspacemenu(*this, *workspacemenu);
 
@@ -758,8 +760,11 @@ void BScreen::reconfigure() {
         m_toolbar->theme().font().setAntialias(*resource.antialias);
    
 #ifdef SLIT    
-    if (m_slit.get())
+    if (m_slit.get()) {
+        m_slit->setPlacement(static_cast<Slit::Placement>(getSlitPlacement()));
+        m_slit->setDirection(static_cast<Slit::Direction>(getSlitDirection()));
         m_slit->reconfigure();
+    }
 #endif // SLIT
 
     //reconfigure workspaces

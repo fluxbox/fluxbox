@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.71 2003/02/22 16:09:44 rathnor Exp $
+// $Id: Screen.hh,v 1.72 2003/02/23 00:55:07 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -79,6 +79,7 @@ public:
     ~BScreen();
 
     inline bool doToolbarAutoHide() const { return *resource.toolbar_auto_hide; }
+    inline Toolbar::Placement toolbarPlacement() const { return *resource.toolbar_placement; }
     inline bool isSloppyFocus() const { return (*resource.focus_model == Fluxbox::SLOPPYFOCUS); }
     inline bool isSemiSloppyFocus() const { return (*resource.focus_model == Fluxbox::SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
@@ -196,7 +197,7 @@ public:
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
     inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
     inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
-
+    inline void saveToolbarPlacement(Toolbar::Placement place) { *resource.toolbar_placement = place; }
     inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
 
 
@@ -394,7 +395,7 @@ private:
         Resource<Tab::Placement> tab_placement;
         Resource<Tab::Alignment> tab_alignment;
         Resource<int> toolbar_on_head;
-
+        Resource<Toolbar::Placement> toolbar_placement;
         bool slit_auto_hide;
         int slit_placement, slit_direction;
 
