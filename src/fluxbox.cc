@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.97 2003/02/18 15:11:12 rathnor Exp $
+// $Id: fluxbox.cc,v 1.98 2003/02/22 15:10:43 rathnor Exp $
 
 
 #include "fluxbox.hh"
@@ -143,25 +143,6 @@ char *basename (char *s) {
 #define RC_PATH "fluxbox"
 #define RC_INIT_FILE "init"
 
-
-// X event scanner for enter/leave notifies - adapted from twm
-typedef struct scanargs {
-    Window w;
-    Bool leave, inferior, enter;
-} scanargs;
-
-static Bool queueScanner(Display *, XEvent *e, char *args) {
-    if ((e->type == LeaveNotify) &&
-        (e->xcrossing.window == ((scanargs *) args)->w) &&
-        (e->xcrossing.mode == NotifyNormal)) {
-        ((scanargs *) args)->leave = True;
-        ((scanargs *) args)->inferior = (e->xcrossing.detail == NotifyInferior);
-    } else if ((e->type == EnterNotify) &&
-               (e->xcrossing.mode == NotifyUngrab))
-        ((scanargs *) args)->enter = True;
-
-    return False;
-}
 //-----------------------------------------------------------------
 //---- accessors for int, bool, and some enums with Resource ------
 //-----------------------------------------------------------------
@@ -186,6 +167,19 @@ setFromString(char const *strval) {
         *this = true;
     else
         *this = false;
+}
+
+template<>
+void Resource<Fluxbox::FocusModel>::
+setFromString(char const *strval) {
+    if (strcasecmp(strval, "SloppyFocus") == 0) 
+        m_value = Fluxbox::SLOPPYFOCUS;
+    else if (strcasecmp(strval, "SemiSloppyFocus") == 0) 
+        m_value = Fluxbox::SEMISLOPPYFOCUS;
+    else if (strcasecmp(strval, "ClickToFocus") == 0) 
+        m_value = Fluxbox::CLICKTOFOCUS;
+    else
+        setDefaultValue();
 }
 
 template<>
@@ -240,6 +234,21 @@ getString() {
 template<>
 std::string Resource<std::string>::
 getString() { return **this; }
+
+template<>
+std::string Resource<Fluxbox::FocusModel>::
+getString() {
+    switch (m_value) {
+    case Fluxbox::SLOPPYFOCUS:
+        return string("SloppyFocus");
+    case Fluxbox::SEMISLOPPYFOCUS:
+        return string("SemiSloppyFocus");
+    case Fluxbox::CLICKTOFOCUS:
+        return string("ClickToFocus");
+    }
+    // default string
+    return string("ClickToFocus");
+}
 
 template<>
 std::string Resource<Fluxbox::TitlebarList>::
@@ -691,18 +700,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 
     }
         break;
-    case MotionNotify: {
-        last_time = e->xmotion.time;
-
-        FluxboxWindow *win = 0;
-        Tab *tab = 0;
-			
-        if ((win = searchWindow(e->xmotion.window)) !=0)
-            win->motionNotifyEvent(e->xmotion);
-        else if ((tab = searchTab(e->xmotion.window)) !=0)
-            tab->motionNotifyEvent(&e->xmotion);
-
-    }
+    case MotionNotify: 
         break;
     case PropertyNotify: {
 			
@@ -719,63 +717,26 @@ void Fluxbox::handleEvent(XEvent * const e) {
         break;
     case EnterNotify: {
         last_time = e->xcrossing.time;
-
         BScreen *screen = 0;
-        FluxboxWindow *win = 0;
-        Tab *tab = 0;
 
         if (e->xcrossing.mode == NotifyGrab)
             break;
 
-        XEvent dummy;
-        scanargs sa;
-        sa.w = e->xcrossing.window;
-        sa.enter = sa.leave = False;
-        XCheckIfEvent(getXDisplay(), &dummy, queueScanner, (char *) &sa);
-
         if ((e->xcrossing.window == e->xcrossing.root) &&
             (screen = searchScreen(e->xcrossing.window))) {
             screen->getImageControl()->installRootColormap();
-        } else if ((win = searchWindow(e->xcrossing.window))) {
-            if ((win->getScreen()->isSloppyFocus() ||
-                 win->getScreen()->isSemiSloppyFocus()) &&
-                (! win->isFocused()) && (! no_focus)) {
 
-                grab();
-
-                if (((! sa.leave) || sa.inferior) && win->isVisible() &&
-                    win->setInputFocus())
-                    win->installColormap(True);
-
-                ungrab();
-            }
-        } else if ((tab = searchTab(e->xcrossing.window))) {
-            win = tab->getWindow();
-            if (win->getScreen()->isSloppyFocus() && (! win->isFocused()) &&
-                (! no_focus)) {
-                win->raise();
-					
-                grab();
-
-                if (((! sa.leave) || sa.inferior) && win->isVisible() &&
-                    win->setInputFocus())
-                    win->installColormap(True);
-
-                ungrab();
-            }
-        } 		
+            // if sloppy focus, then remove focus from windows
+            if (screen->isSloppyFocus() ||
+                screen->isSemiSloppyFocus())
+                setFocusedWindow(0);
+        }
 			
     }
         break;
     case LeaveNotify:
         {
             last_time = e->xcrossing.time;
-
-            FluxboxWindow *win = (FluxboxWindow *) 0;
-			
-            if ((win = searchWindow(e->xcrossing.window)))
-                win->installColormap(false);
-			
         }
         break;
     case Expose:
@@ -841,6 +802,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         FluxboxWindow *win = 0;
         Tab *tab = 0; 
 
+        /*
         if ((win = searchWindow(be.window))) {
 
             win->buttonPressEvent(be);
@@ -848,7 +810,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             if (be.button == 1)
                 win->installColormap(True);
         }
-        else if ((tab = searchTab(be.window))) {
+        else*/ if ((tab = searchTab(be.window))) {
             tab->buttonPressEvent(&be);
         } else {
             ScreenList::iterator it = screenList.begin();
@@ -1782,6 +1744,8 @@ void Fluxbox::save_rc() {
                 placement.c_str());
         XrmPutLineResource(&new_blackboxrc, rc_string);
 
+        //TODO 
+/*
         std::string focus_mode;
         if (screen->isSloppyFocus() && screen->doAutoRaise())
             focus_mode = "AutoRaiseSloppyFocus";
@@ -1797,7 +1761,7 @@ void Fluxbox::save_rc() {
         sprintf(rc_string, "session.screen%d.focusModel: %s", screen_number,
                 focus_mode.c_str());
         XrmPutLineResource(&new_blackboxrc, rc_string);
-
+*/
         //		load_rc(screen);
         // these are static, but may not be saved in the users resource file,
         // writing these resources will allow the user to edit them at a later
@@ -2024,6 +1988,8 @@ void Fluxbox::load_rc(BScreen *screen) {
         delete [] search;
     }
 
+//TODO (use Fluxbox::FocusModel enum)
+    /*
     sprintf(name_lookup, "session.screen%d.focusModel", screen_number);
     sprintf(class_lookup, "Session.Screen%d.FocusModel", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
@@ -2058,7 +2024,7 @@ void Fluxbox::load_rc(BScreen *screen) {
         screen->saveSloppyFocus(true); 
         screen->saveAutoRaise(false);
     }
-
+    */
     sprintf(name_lookup, "session.screen%d.windowPlacement", screen_number);
     sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,

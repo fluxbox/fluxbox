@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.112 2003/02/20 23:31:13 fluxgen Exp $
+// $Id: Screen.cc,v 1.113 2003/02/22 15:10:43 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -139,22 +139,21 @@ FbTk::Menu *createMenuFromScreen(BScreen &screen) {
     return menu;
 }
 
-/*
-class WindowLayerMenuItem : public FbTk::MenuItem {
+class FocusModelMenuItem : public FbTk::MenuItem {
 public:
-    WindowLayerMenuItem(const char *label, FluxboxWindow &win, int layernum):
-        FbTk::MenuItem(label), m_window(win), m_layernum(layernum) {
+    FocusModelMenuItem(const char *label, BScreen &screen, Fluxbox::FocusModel model, FbTk::RefCount<FbTk::Command> &cmd):
+        FbTk::MenuItem(label, cmd), m_screen(screen), m_focusmodel(model) {
     }
-    bool isEnabled() const { return m_window.getLayerNum() != m_layernum; }
+    bool isEnabled() const { return m_screen.getFocusModel() != m_focusmodel; }
     void click(int button, int time) {
-        m_window.moveToLayer(m_layernum);
+        m_screen.saveFocusModel(m_focusmodel);
+        FbTk::MenuItem::click(button, time);
     }
 
 private:
-    FluxboxWindow &m_window;
-    int m_layernum;
+    BScreen &m_screen;
+    Fluxbox::FocusModel m_focusmodel;
 };
-*/
 
 
 }; // End anonymous namespace
@@ -363,6 +362,7 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
     antialias(rm, false, scrname+".antialias", altscrname+".Antialias"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
+    focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     toolbar_width_percent(rm, 65, scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
@@ -616,7 +616,7 @@ BScreen::BScreen(ResourceManager &rm,
         }
     }
 
-    if (! resource.sloppy_focus) {
+    if (! isSloppyFocus()) {
         XSetInputFocus(disp, m_toolbar->getWindowID(),
                        RevertToParent, CurrentTime);
     }
@@ -1733,21 +1733,27 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     // create focus menu
     FbTk::Menu *focus_menu = createMenuFromScreen(*this);
 
-    /*    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
-          ConfigmenuSet, ConfigmenuClickToFocus,
-          "Click To Focus"),*/
-    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
+    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
                                                          ConfigmenuSet, 
+                                                         ConfigmenuClickToFocus,
+                                                         "Click To Focus"), 
+                                              *this,
+                                              Fluxbox::CLICKTOFOCUS,
+                                              save_and_reconfigure));
+    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
+        ConfigmenuSet, 
                                                          ConfigmenuSloppyFocus,
                                                          "Sloppy Focus"), 
-                                        resource.sloppy_focus, 
-                                        save_and_reconfigure));
-    focus_menu->insert(new BoolMenuItem(i18n->getMessage(
+                                              *this,
+                                              Fluxbox::SLOPPYFOCUS,
+                                              save_and_reconfigure));
+    focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
                                                          ConfigmenuSet, 
                                                          ConfigmenuSemiSloppyFocus,
                                                          "Semi Sloppy Focus"),
-                                        resource.semi_sloppy_focus,
-                                        save_and_reconfigure));
+                                              *this,
+                                              Fluxbox::SEMISLOPPYFOCUS,
+                                              save_and_reconfigure));
     focus_menu->insert(new BoolMenuItem(i18n->getMessage(
                                                          ConfigmenuSet, 
                                                          ConfigmenuAutoRaise,

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.50 2003/02/18 15:11:11 rathnor Exp $
+// $Id: Window.hh,v 1.51 2003/02/22 15:10:43 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -173,6 +173,8 @@ public:
     void exposeEvent(XExposeEvent &ee);
     void configureRequestEvent(XConfigureRequestEvent &ce);
     void propertyNotifyEvent(Atom a);
+    void enterNotifyEvent(XCrossingEvent &ev);
+    void leaveNotifyEvent(XCrossingEvent &ev);
     //@}
 
     void setDecoration(Decoration decoration);

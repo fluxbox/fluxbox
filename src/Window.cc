@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.122 2003/02/20 23:17:36 fluxgen Exp $
+// $Id: Window.cc,v 1.123 2003/02/22 15:10:43 rathnor Exp $
 
 #include "Window.hh"
 
@@ -91,6 +91,26 @@ void grabButton(Display *display, unsigned int button,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 	
+}
+
+// X event scanner for enter/leave notifies - adapted from twm
+typedef struct scanargs {
+    Window w;
+    Bool leave, inferior, enter;
+} scanargs;
+
+// look for valid enter or leave events (that may invalidate the earlier one we are interested in)
+static Bool queueScanner(Display *, XEvent *e, char *args) {
+    if ((e->type == LeaveNotify) &&
+        (e->xcrossing.window == ((scanargs *) args)->w) &&
+        (e->xcrossing.mode == NotifyNormal)) {
+        ((scanargs *) args)->leave = True;
+        ((scanargs *) args)->inferior = (e->xcrossing.detail == NotifyInferior);
+    } else if ((e->type == EnterNotify) &&
+               (e->xcrossing.mode == NotifyUngrab))
+        ((scanargs *) args)->enter = True;
+
+    return False;
 }
 
 /// raise window and do the same for each transient it holds
@@ -2066,12 +2086,12 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                     m_frame.x() < int(me.x_root - button_grab_x - screen->getBorderWidth())) {
                     //warp right
                     new_id = (cur_id + 1) % screen->getCount();
-                    dx = - me.x_root;
+                    dx = - me.x_root; // move mouse back to x=0
                 } else if (me.x_root <= warpPad &&
                            m_frame.x() > int(me.x_root - button_grab_x - screen->getBorderWidth())) {
                     //warp left
                     new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
-                    dx = screen->getWidth() - me.x_root-1;
+                    dx = screen->getWidth() - me.x_root-1; // move mouse to screen width - 1
                 }
 
                 if (new_id != cur_id) {
@@ -2081,8 +2101,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
                     last_resize_x = me.x_root + dx;
                     
-                    dx += m_frame.x(); // for window in correct position
-                
+                    // change dx to be relative to window rather than motion event
+                    dx += m_frame.x();
                 }
             }
 
@@ -2098,7 +2118,6 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 last_move_x = dx;
                 last_move_y = dy;
             } else {
-            
                 moveResize(dx, dy, m_frame.width(), m_frame.height());
             }
 
@@ -2152,6 +2171,41 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
         }
     }
 
+}
+
+void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) { 
+
+    // ignore grab activates, or if we're not visible
+    if (ev.mode == NotifyGrab ||
+        !isVisible()) {
+        return;
+    }
+
+    if (ev.window == getFrameWindow() ||
+        (!getFrameWindow() && ev.window == client.window)) {
+        if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus()) 
+            && !isFocused()) {
+            Fluxbox::instance()->grab();
+            
+            // check that there aren't any subsequent leave notify events in the 
+            // X event queue
+            XEvent dummy;
+            scanargs sa;
+            sa.w = ev.window;
+            sa.enter = sa.leave = False;
+            XCheckIfEvent(display, &dummy, queueScanner, (char *) &sa);   
+    
+            if ((!sa.leave || sa.inferior) && setInputFocus())
+                installColormap(True);
+            
+            Fluxbox::instance()->ungrab();
+        }        
+    }
+}
+
+void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) { 
+    if (ev.window == getFrameWindow())
+        installColormap(False);
 }
 
 // TODO: functions should not be affected by decoration

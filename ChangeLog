@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.1.15:
+*03/02/22:
+   * Fixed sloppy focus to use new event handler model (Simon)
+     Screen.hh/cc Window.hh/cc fluxbox.hh/cc   
 *03/02/20:
    * Fixed a size bug without titlebar (Henrik)
      Window.cc, FbWinFrame.cc

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.69 2003/02/20 23:33:08 fluxgen Exp $
+// $Id: Screen.hh,v 1.70 2003/02/22 15:10:43 rathnor Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -79,8 +79,8 @@ public:
     ~BScreen();
 
     inline bool doToolbarAutoHide() const { return *resource.toolbar_auto_hide; }
-    inline bool isSloppyFocus() const { return resource.sloppy_focus; }
-    inline bool isSemiSloppyFocus() const { return resource.semi_sloppy_focus; }
+    inline bool isSloppyFocus() const { return (*resource.focus_model == Fluxbox::SLOPPYFOCUS); }
+    inline bool isSemiSloppyFocus() const { return (*resource.focus_model == Fluxbox::SEMISLOPPYFOCUS); }
     inline bool isRootColormapInstalled() const { return root_colormap_installed; }
     inline bool isScreenManaged() const { return managed; }
     inline bool isTabRotateVertical() const { return *resource.tab_rotate_vertical; }
@@ -104,6 +104,7 @@ public:
     FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
+    inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
 
     inline bool doSlitAutoHide() const { return resource.slit_auto_hide; }
 #ifdef SLIT
@@ -188,9 +189,10 @@ public:
 
     inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
-    inline void saveSloppyFocus(bool s) { resource.sloppy_focus = s;  }
-    inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s;  }
-    inline void saveAutoRaise(bool a) { resource.auto_raise = a;  }
+    inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
+    //DEL inline void saveSloppyFocus(bool s) { resource.sloppy_focus = s;  }
+    //DEL inline void saveSemiSloppyFocus(bool s) { resource.semi_sloppy_focus = s;  }
+    //DEL inline void saveAutoRaise(bool a) { resource.auto_raise = a;  }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
     inline void saveToolbarAutoHide(bool r) { *resource.toolbar_auto_hide = r;  }
     inline void saveToolbarWidthPercent(int w) { *resource.toolbar_width_percent = w;  }
@@ -382,8 +384,8 @@ private:
             focus_last, focus_new,
             antialias;
         Resource<std::string> rootcommand;		
-        bool auto_raise, sloppy_focus, semi_sloppy_focus,
-            ordered_dither;
+        Resource<Fluxbox::FocusModel> focus_model;
+        bool auto_raise, ordered_dither;
         Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold,
             tab_width, tab_height;
         Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.43 2003/02/18 15:11:12 rathnor Exp $
+// $Id: fluxbox.hh,v 1.44 2003/02/22 15:10:43 rathnor Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -103,7 +103,9 @@ public:
 	
     /// obsolete
     enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
-    
+
+    enum FocusModel { SLOPPYFOCUS=0, SEMISLOPPYFOCUS, CLICKTOFOCUS };
+
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarRight() { return *m_rc_titlebar_right; }
     inline const std::vector<Fluxbox::Titlebar>& getTitlebarLeft() { return *m_rc_titlebar_left; }
     inline const std::string &getStyleFilename() const { return *m_rc_stylefile; }
