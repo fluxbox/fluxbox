@@ -9,7 +9,6 @@ bugs:
 * After startup the font of the toolbar is to big; reload config works 
   around this.
 * Transient windows seem to not have a X border - is this right?
-* toggle horz/vertical maximise should restore the orig value
 * saving of number of workspaces on restart
 * multiple transients -> in openoffice - focus jumps between until user 
                          does something
@@ -27,8 +26,11 @@ FAQ items for:
     around" => outline moving does this, it's not a bug, etc etc.
 
 fixed bugs (or not-our-fault bugs):
+* toggle horz/vertical maximise should restore the orig value (fixed in cvs)
 * Some people get weird transparency behaviour.
   -> this appears to be a problem with nvidia drivers, make sure
      RenderAccel is off (Option "RenderAccel" "false").
      (thanks RJNFC on #fluxbox, and barlad in gentoo forums)
 * Disabling full-maximize doesn't work (fixed in cvs).
+* Workspace1... Workspace12 are disabled
+* MoveTab* actions are disabled

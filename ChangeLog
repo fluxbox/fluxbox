@@ -1,5 +1,17 @@
 (Format: Year/Month/Day)
 Changes for 0.9.4:
+*03/06/30:
+   * Added command "ShowDesktop" (Henrik)
+     This command iconifies all windows and shows the desktop
+     WorkspaceCmd.hh/cc, FbCommandFactory.cc
+   * Added command "ArrangeWindows"  (Thanks Ricardo Martins <thecrown<a(t)>softhome.net> )
+     This command arranges so all windows are in a nice row/col order
+     WorkspaceCmd.hh/cc, FbCommandFactory.cc
+   * Changed class Keys to use FbTk::Command (Henrik)
+     Keys.hh/cc, fluxbox.cc
+   * Added Files:  (Henrik)
+      CommandParser.hh/cc, FbCommandFactory.hh/cc, 
+      WorkspaceCmd.hh/cc, CurrentWindowCmd.hh/cc
 *03/06/29:
    * Add chbg support to fbsetbg (Thanks Han and Michael T. Dean)
      fbsetbg
