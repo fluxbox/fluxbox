@@ -22,9 +22,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.53 2002/04/20 10:27:13 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.54 2002/04/28 18:57:10 fluxgen Exp $
 
-//Use some GNU extensions
+//Use GNU extensions
 #ifndef	 _GNU_SOURCE
 #define	 _GNU_SOURCE
 #endif // _GNU_SOURCE
@@ -61,7 +61,6 @@
 #ifdef		SHAPE
 #include <X11/extensions/shape.h>
 #endif // SHAPE
-
 
 #ifdef		HAVE_STDIO_H
 #	include <stdio.h>
@@ -1463,7 +1462,6 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 	FluxboxWindow *win = 0;
 	win = searchWindow(ce.window);
 	screen = searchScreen(ce.window);
-	
 	if (ce.message_type == getGnomeWorkspaceAtom()) {
 		#ifdef DEBUG
 		cerr<<__FILE__<<"("<<__LINE__<<"): Got workspace atom="<<ce.data.l[0]<<endl;
@@ -1479,7 +1477,6 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 			screen->changeWorkspaceID(ce.data.l[0]);
 		return true;
 	} else if (win) {
-	
 		if (ce.message_type == getGnomeStateAtom()) {
 			#ifdef DEBUG
 			cerr<<__FILE__<<"("<<__LINE__<<"): _WIN_STATE"<<endl;
@@ -1691,17 +1688,16 @@ void Fluxbox::shutdown(void) {
 
 	XSetInputFocus(getXDisplay(), PointerRoot, None, CurrentTime);
 
+	//send shutdown to all screens
 	std::list<BScreen *>::iterator it = screenList.begin();
 	std::list<BScreen *>::iterator it_end = screenList.end();
 	for (; it != it_end; ++it) {
-		if(*it) {
+		if(*it)
 			(*it)->shutdown();
-		}
 	}
 
 	XSync(getXDisplay(), False);
 
-	save_rc();
 }
 
 //------ save_rc --------
@@ -2243,8 +2239,6 @@ void Fluxbox::reconfigure(void) {
 
 
 void Fluxbox::real_reconfigure(void) {
-	BaseDisplay::GrabGuard gg(*this);
-	grab();
 
 	XrmDatabase new_blackboxrc = (XrmDatabase) 0;
 
@@ -2273,9 +2267,8 @@ void Fluxbox::real_reconfigure(void) {
 
 	std::list<BScreen *>::iterator sit = screenList.begin();
 	std::list<BScreen *>::iterator sit_end = screenList.end();
-	for (; sit != sit_end; ++sit) {
+	for (; sit != sit_end; ++sit)
 		(*sit)->reconfigure();
-	}
 	
 	//reconfigure keys
 	char *keyfilename = StringUtil::expandFilename(m_rc_keyfile->c_str());	
@@ -2285,7 +2278,6 @@ void Fluxbox::real_reconfigure(void) {
 	//reconfigure tabs
 	reconfigureTabs();
 
-	ungrab();
 }
 
 //------------- reconfigureTabs ----------
@@ -2293,8 +2285,8 @@ void Fluxbox::real_reconfigure(void) {
 // ---------------------------------------
 void Fluxbox::reconfigureTabs(void) {
 	//tab reconfiguring
-	std::map<Window, Tab *>::iterator it = tabSearch.begin();
-	std::map<Window, Tab *>::iterator it_end = tabSearch.end();
+	TabList::iterator it = tabSearch.begin();
+	TabList::iterator it_end = tabSearch.end();
 	//setting all to unconfigured
 	for (; it != it_end; ++it) {
 		it->second->setConfigured(false);
