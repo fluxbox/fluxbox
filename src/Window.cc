@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.172 2003/05/11 23:44:08 rathnor Exp $
+// $Id: Window.cc,v 1.173 2003/05/13 11:14:05 rathnor Exp $
 
 #include "Window.hh"
 
@@ -1240,6 +1240,8 @@ void FluxboxWindow::iconify() {
                     (*it)->fbwindow()->iconify();
         }
     }
+    if (Fluxbox::instance()->getFocusedWindow() == this) 
+        Fluxbox::instance()->revertFocus(screen());
 
 }
 
