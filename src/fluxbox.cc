@@ -22,11 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.156 2003/06/11 14:53:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.157 2003/06/12 14:32:08 fluxgen Exp $
 
 #include "fluxbox.hh"
 
-#include "i18n.hh"
+#include "I18n.hh"
 #include "Screen.hh"
 #include "Toolbar.hh"
 #include "Window.hh"
@@ -71,7 +71,7 @@
 #include <X11/Xresource.h>
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
-#include <X11/cursorfont.h>
+
 // X extensions
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -94,10 +94,6 @@
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif // HAVE_SYS_PARAM_H
-
-#ifndef	 MAXPATHLEN
-#define	 MAXPATHLEN 255
-#endif // MAXPATHLEN
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -447,11 +443,6 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     sigh.registerHandler(SIGUSR2, this);
 
     Display *disp = FbTk::App::instance()->display();
-    //setup cursor bitmaps
-    cursor.session = XCreateFontCursor(disp, XC_left_ptr);
-    cursor.move = XCreateFontCursor(disp, XC_fleur);
-    cursor.ll_angle = XCreateFontCursor(disp, XC_ll_angle);
-    cursor.lr_angle = XCreateFontCursor(disp, XC_lr_angle);
 
     s_singleton = this;
     m_have_shape = false;
@@ -510,6 +501,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             delete screen;			
             continue;
         }
+
+#ifdef HAVE_GETPID
+        pid_t bpid = getpid();
+
+        screen->rootWindow().changeProperty(getFluxboxPidAtom(), XA_CARDINAL,
+                                            sizeof(pid_t) * 8, PropModeReplace,
+                                            (unsigned char *) &bpid, 1);
+#endif // HAVE_GETPID
+
 #ifdef HAVE_RANDR
         // setup RANDR for this screens root window
         // we need to determine if we should use old randr select input function or not
