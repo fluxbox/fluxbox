@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.71 2004/07/14 18:30:37 fluxgen Exp $
+// $Id: Menu.cc,v 1.72 2004/08/03 21:25:51 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -36,6 +36,7 @@
 #endif //HAVE_CONFIG_H
 
 #include "MenuItem.hh"
+#include "MenuSeparator.hh"
 #include "ImageControl.hh"
 #include "MenuTheme.hh"
 #include "App.hh"
@@ -51,6 +52,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <typeinfo>
 
 using namespace std;
 
@@ -309,6 +311,11 @@ void Menu::nextItem() {
         return;
     }
 
+    if (!isItemSelectable(which_press)) {
+        nextItem();
+        return;
+    }
+
     m_active_index = which_press;    
 
     drawItem(which_press, 
@@ -341,6 +348,11 @@ void Menu::prevItem() {
 
     if (menuitems[which_press] == 0) {
         m_active_index = -1;
+        return;
+    }
+
+    if (!isItemSelectable(which_press)) {
+        prevItem();
         return;
     }
 
@@ -1038,6 +1050,18 @@ bool Menu::isItemEnabled(unsigned int index) const {
     return item->isEnabled();
 }
 
+bool Menu::isItemSelectable(unsigned int index) const {
+
+    if (index >= menuitems.size()) return false;
+
+    const MenuItem *item = find(index);
+    if (!item)
+        return false;
+
+    return (typeid(*item) != typeid(FbTk::MenuSeparator));
+}
+
+
 void Menu::handleEvent(XEvent &event) {
     if (event.type == FocusOut) {
         if (s_focused == this)
@@ -1189,6 +1213,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                         !item->submenu()->isTorn()) {
                         // setup hide timer for submenu
                         item->submenu()->startHide();
+                        which_sub = -1;
                     }
                 }                
 
@@ -1231,7 +1256,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
             }
 
-        } else { 
+        } else if (isItemSelectable(w)){
             // else normal menu item
             // draw highlighted
             m_submenu_timer.stop();

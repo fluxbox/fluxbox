@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.37 2004/06/27 13:51:24 fluxgen Exp $
+// $Id: Menu.hh,v 1.38 2004/08/03 21:25:51 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -151,6 +151,7 @@ public:
     bool hasSubmenu(unsigned int index) const;
     bool isItemSelected(unsigned int index) const;
     bool isItemEnabled(unsigned int index) const;
+    bool isItemSelectable(unsigned int index) const;
     inline const MenuTheme &theme() const { return m_theme; }
     inline unsigned char alpha() const { return theme().alpha(); }
     inline static Menu *focused() { return s_focused; }
