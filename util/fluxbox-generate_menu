@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.48 2003/08/05 12:36:54 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.49 2003/08/07 10:35:19 fluxgen Exp $
 
 #
 # Portability notes:
@@ -40,16 +40,16 @@
 #   the version you have. for example grep '\W' only works on gnu-grep.
 #   Keep this in mind, use bare basic defaults.
 # - Do _NOT_ suggest to use #!/bin/bash. Not everybody uses bash.
-#   Non portable features like getopts in this script can be achieved in 
-#   other ways. 
+#   Non portable features like getopts in this script can be achieved in
+#   other ways.
 
 
 WHOAMI=`whoami`
-[ "$WHOAMI" = "root" ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
+[ "$WHOAMI" = root ] && PATH=/bin:/usr/bin/:/usr/local/bin:/usr/X11R6/bin
 
 # Functions
 display_usage() {
-    cat <<EOF
+    cat << EOF
 Usage: fluxbox-generate_menu [-kgrBh] [-t terminal] [-w url] [-b browser]
          [-m menu-title] [-o /path] [-u /path] [-p /path] [-n /path] [-q /path]
 EOF
@@ -57,7 +57,7 @@ EOF
 
 display_help() {
     display_usage
-    cat <<EOF
+    cat << EOF
 
 Options:
 
@@ -91,7 +91,7 @@ EOF
 }
 
 display_authors() {
-    cat <<EOF
+    cat << EOF
 
 fluxbox-generate_menu was brought to you by:
 
@@ -110,7 +110,7 @@ case `uname` in
     Linux|*BSD)
         find_it() {
             which $1 > /dev/null 2>&1 && shift && $*
-            }
+        }
         ;;
     *)
         find_it() {
@@ -142,7 +142,7 @@ append_submenu() {
 }
 
 append_menu_end() {
-    append_menu "[end]"
+    append_menu '[end]'
     [ "${REMOVE}" ] && echo >> ${MENUFILENAME} # only an empty line in templates
 }
 
@@ -547,13 +547,13 @@ USERMENU="${USERMENU:=${HOME}/.fluxbox/usermenu}"
 
 # Read the menuconfig file if it exists or else create it.
 # But not during install time, use envvar for sun
-if [ ! "${INSTALL}" = "Yes" ];then
+if [ ! "${INSTALL}" = Yes ]; then
     if [ -r ${HOME}/.fluxbox/menuconfig ]; then
         . ${HOME}/.fluxbox/menuconfig
     else
         if [ ! "$WHOAMI" = root ]; then # this is only for users.
             if touch ${HOME}/.fluxbox/menuconfig; then
-                cat<<EOF> ${HOME}/.fluxbox/menuconfig
+                cat << EOF > ${HOME}/.fluxbox/menuconfig
 # This file is read by fluxbox-generate_menu.  If you don't like a
 # default you can change it here.  Don't forget to remove the # in front
 # of the line.
@@ -644,7 +644,7 @@ done
 # Check defaults
 
 # Can we actually create ${MENUFILENAME}
-touch ${MENUFILENAME} 2>/dev/null
+touch ${MENUFILENAME} 2> /dev/null
 if [ $? -ne 0 ]; then
     echo "Fatal error: can't create or write to $MENUFILENAME" >&2
     exit 1
@@ -685,9 +685,11 @@ if [ -z "$BACKGROUND_DIRS" ]; then
 fi
 
 # find the default terminal
-find_it $MY_TERM
-if [ $? -ne 0 ]; then
-    echo "Warning: you chose an invalid term." >&2
+
+if find_it $MY_TERM; then
+    DEFAULT_TERM=$MY_TERM
+else
+    [ -n "$MY_TERM" ] && echo "Warning: you chose an invalid term." >&2
     #The precise order is up for debate.
     for term in Eterm aterm rxvt wterm xterm konsole gnome-terminal; do
         if find_it $term; then
@@ -695,30 +697,27 @@ if [ $? -ne 0 ]; then
             break
         fi
     done
-else
-    DEFAULT_TERM=$MY_TERM
 fi
 
 
 # find the default browser
-find_it $MY_BROWSER
-if [ $? -ne 0 ]; then
-    echo "Warning: you chose an invalid browser." >&2
+if find_it $MY_BROWSER; then
+    DEFAULT_BROWSER=$MY_BROWSER
+else
+    [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
     #The precise order is up for debate.
-    for browser in MozillaFirebird firebird opera skipstone phoenix mozilla galeon konqueror dillo netscape links w3m lynx; do
+    for browser in mozilla-firebird MozillaFirebird opera skipstone mozilla galeon konqueror dillo netscape w3m links lynx; do
         if find_it $browser; then
             DEFAULT_BROWSER=$browser
             break
         fi
     done
-else
-    DEFAULT_BROWSER=$MY_BROWSER
 fi
 
 
 # a unix system without any terms. that's odd
 if [ -z "$DEFAULT_TERM" ]; then
-    cat <<EOF>&2
+    cat << EOF >&2
 Warning: I can't find any terminal-emulators in your PATH.
 Please fix your PATH or specify your favourite terminal with the -t option
 EOF
@@ -910,9 +909,9 @@ append_submenu "${FBSETTINGSMENU}"
                 append "[exec] (${picturename%.???}) {fbsetbg -f \"$1\" }"
     }
 
-    if [ "$BACKGROUNDMENUITEM" = "yes" ]; then
+    if [ "$BACKGROUNDMENUITEM" = yes ]; then
         IFS=: # set delimetor for find
-        NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2>/dev/null|wc -l`
+        NUMBER_OF_BACKGROUNDS=`find $BACKGROUND_DIRS -follow -type f 2> /dev/null|wc -l`
         if [ "$NUMBER_OF_BACKGROUNDS" -gt 0 ]; then
             append_menu "[submenu] (${BACKGROUNDMENU}) {${BACKGROUNDMENUTITLE}}"
             if [ "$NUMBER_OF_BACKGROUNDS" -gt 30 ]; then
@@ -959,7 +958,7 @@ append_submenu "${FBSETTINGSMENU}"
 
     append_submenu ${WINDOWMANAGERS}
     #hard to properly maintain since there are so many exceptions to the rule.
-    for wm in icewm ion kde sawfish enlightenment openbox evilwm waimea xfce pekwm;do
+    for wm in icewm ion kde sawfish enlightenment openbox evilwm waimea xfce pekwm; do
         find_it start${wm} append "[restart] (${wm}) {start${wm}}" ||\
             find_it ${wm} append "[restart] (${wm}) {${wm}}"
     done
