@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.12 2004/09/10 16:12:01 akir Exp $
+// $Id: XmbFontImp.cc,v 1.13 2004/09/11 22:58:20 fluxgen Exp $
 
 #include "XmbFontImp.hh"
 
 #include "App.hh"
 #include "StringUtil.hh"
+#include "FbDrawable.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -224,22 +225,21 @@ bool XmbFontImp::load(const std::string &fontname) {
     return true;
 }
 
-void XmbFontImp::drawText(Drawable w, int screen, GC gc, const char *text,
+void XmbFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text,
                           size_t len, int x, int y) const {
 
-    if (text == 0 || len == 0 || w == 0 || m_fontset == 0)
+    if (m_fontset == 0)
         return;
 
-    Display* disp = App::instance()->display();
 #ifdef X_HAVE_UTF8_STRING
     if (m_utf8mode) {
-        Xutf8DrawString(disp, w, m_fontset,
-            gc, x, y,
-            text, len);
+        Xutf8DrawString(w.display(), w.drawable(), m_fontset,
+                        gc, x, y,
+                        text, len);
     } else
 #endif //X_HAVE_UTF8_STRING
     {
-        XmbDrawString(disp, w, m_fontset,
+        XmbDrawString(w.display(), w.drawable(), m_fontset,
                       gc, x, y,
                       text, len);
     }

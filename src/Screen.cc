@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.290 2004/09/11 13:30:37 fluxgen Exp $
+// $Id: Screen.cc,v 1.291 2004/09/11 23:01:34 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1871,7 +1871,7 @@ void BScreen::showPosition(int x, int y) {
 
     m_pos_window.clear();
 
-    winFrameTheme().font().drawText(m_pos_window.window(),
+    winFrameTheme().font().drawText(m_pos_window,
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),
@@ -1916,13 +1916,13 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     sprintf(label,
             _FBTEXT(Screen, GeometryFormat,
                     "W: %4d x H: %4d",
-                    "Format for width and height window, %4d for widht, and %4d for height"),
+                    "Format for width and height window, %4d for width, and %4d for height"),
             gx, gy);
 
     m_geom_window.clear();
 
     //!! TODO: geom window again?! repeated
-    winFrameTheme().font().drawText(m_geom_window.window(),
+    winFrameTheme().font().drawText(m_geom_window,
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),

@@ -1,5 +1,5 @@
 // XFontImp.cc for FbTk fluxbox toolkit
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.cc,v 1.9 2004/08/31 15:26:39 rathnor Exp $
+// $Id: XFontImp.cc,v 1.10 2004/09/11 22:58:20 fluxgen Exp $
 
 #include "XFontImp.hh"
 #include "App.hh"
@@ -79,18 +79,17 @@ bool XFontImp::load(const std::string &fontname) {
     return true;
 }
 
-void XFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
+void XFontImp::drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
     if (m_fontstruct == 0)
         return;
     // use roated font functions?
     if (m_rotfont != 0 && m_rotate) {
-        drawRotText(w, screen, gc, text, len, x, y);
+        drawRotText(w.drawable(), screen, gc, text, len, x, y);
         return;
     }
 
-    Display *disp = App::instance()->display();
-    XSetFont(disp, gc, m_fontstruct->fid);
-    XDrawString(disp, w, gc, x, y, text, len);
+    XSetFont(w.display(), gc, m_fontstruct->fid);
+    XDrawString(w.display(), w.drawable(), gc, x, y, text, len);
 }
 
 unsigned int XFontImp::textWidth(const char * const text, unsigned int size) const {

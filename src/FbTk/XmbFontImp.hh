@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: XmbFontImp.hh,v 1.5 2004/09/11 22:58:20 fluxgen Exp $
 
 #ifndef FBTK_XMBFONTIMP_HH
 #define FBTK_XMBFONTIMP_HH
@@ -36,7 +36,7 @@ public:
     XmbFontImp(const char *fontname, bool utf8);
     ~XmbFontImp();
     bool load(const std::string &name);
-    virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    virtual void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
     unsigned int textWidth(const char * const text, unsigned int len) const;
     unsigned int height() const;
     int ascent() const { return m_setextents ? -m_setextents->max_ink_extent.y : 0; }

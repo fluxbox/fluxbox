@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.12 2004/08/31 15:26:39 rathnor Exp $
+// $Id: TextBox.cc,v 1.13 2004/09/11 22:58:20 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -157,7 +157,7 @@ void TextBox::clear() {
     if (gc() == 0)
         setGC(DefaultGC(FbTk::App::instance()->display(), screenNumber()));
 
-    font().drawText(window(), screenNumber(), 
+    font().drawText(*this, screenNumber(), 
                     gc(),                     
                     text().c_str() + m_start_pos, 
                     m_end_pos - m_start_pos, 

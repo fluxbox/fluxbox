@@ -1,5 +1,5 @@
 // FbDrawable.hh for FbTk - Fluxbox ToolKit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.hh,v 1.6 2004/09/11 20:30:28 fluxgen Exp $
+// $Id: FbDrawable.hh,v 1.7 2004/09/11 22:58:20 fluxgen Exp $
 #ifndef FBTK_FBDRAWABLE_HH
 #define FBTK_FBDRAWABLE_HH
 
@@ -56,7 +56,7 @@ public:
     virtual Drawable drawable() const = 0;
     virtual unsigned int width() const = 0;
     virtual unsigned int height() const = 0;
-    inline Display *display() const { return s_display; }
+    static inline Display *display() { return s_display; }
 protected:
     static Display *s_display; // display connection // display connection
 };

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.41 2004/09/11 15:52:23 rathnor Exp $
+// $Id: FbWindow.cc,v 1.42 2004/09/11 22:59:15 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "FbPixmap.hh"
@@ -74,7 +74,7 @@ FbWindow::FbWindow(int screen_num,
     m_destroy(true),
     m_buffer_pm(0) {
 	
-    create(RootWindow(s_display, screen_num), 
+    create(RootWindow(display(), screen_num), 
            x, y, width, height, eventmask,
            override_redirect, save_unders, depth, class_type);
 };
@@ -119,44 +119,44 @@ FbWindow::~FbWindow() {
         // so we don't get any dangling eventhandler for this window
         FbTk::EventManager::instance()->remove(m_window); 
         if (m_destroy)
-            XDestroyWindow(s_display, m_window);     
+            XDestroyWindow(display(), m_window);     
     }
 }
 
 
 void FbWindow::setBackgroundColor(const FbTk::Color &bg_color) {
-    XSetWindowBackground(s_display, m_window, bg_color.pixel());
+    XSetWindowBackground(display(), m_window, bg_color.pixel());
 }
 
 void FbWindow::setBackgroundPixmap(Pixmap bg_pixmap) {
-    XSetWindowBackgroundPixmap(s_display, m_window, bg_pixmap);
+    XSetWindowBackgroundPixmap(display(), m_window, bg_pixmap);
 }
 
 void FbWindow::setBorderColor(const FbTk::Color &border_color) {
-    XSetWindowBorder(s_display, m_window, border_color.pixel());
+    XSetWindowBorder(display(), m_window, border_color.pixel());
 }
 
 void FbWindow::setBorderWidth(unsigned int size) {	
-    XSetWindowBorderWidth(s_display, m_window, size);
+    XSetWindowBorderWidth(display(), m_window, size);
     m_border_width = size;
 }
 
 void FbWindow::setName(const char *name) {
-    XStoreName(s_display, m_window, name);
+    XStoreName(display(), m_window, name);
 }
 
 void FbWindow::setEventMask(long mask) {
-    XSelectInput(s_display, m_window, mask);
+    XSelectInput(display(), m_window, mask);
 }
 
 void FbWindow::clear() {
-    XClearWindow(s_display, m_window);
+    XClearWindow(display(), m_window);
 }
 
 void FbWindow::clearArea(int x, int y, 
                          unsigned int width, unsigned int height, 
                          bool exposures) {
-    XClearArea(s_display, window(), x, y, width, height, exposures);
+    XClearArea(display(), window(), x, y, width, height, exposures);
 }
 
 void FbWindow::updateTransparent(int the_x, int the_y, unsigned int the_width, unsigned int the_height) {
@@ -255,7 +255,7 @@ FbWindow &FbWindow::operator = (Window win) {
 void FbWindow::setNew(Window win) {
 
     if (m_window != 0 && m_destroy)
-        XDestroyWindow(s_display, m_window);
+        XDestroyWindow(display(), m_window);
 
     m_window = win;
 
@@ -264,7 +264,7 @@ void FbWindow::setNew(Window win) {
         XWindowAttributes attr;
         attr.screen = 0;
         //get screen number
-        if (XGetWindowAttributes(s_display,
+        if (XGetWindowAttributes(display(),
                                  m_window,
                                  &attr) != 0 && attr.screen != 0) {
             m_screen_num = XScreenNumberOfScreen(attr.screen);
@@ -288,39 +288,39 @@ void FbWindow::setNew(Window win) {
 }
 
 void FbWindow::show() {
-    XMapWindow(s_display, m_window);
+    XMapWindow(display(), m_window);
 }
 
 void FbWindow::showSubwindows() {
-    XMapSubwindows(s_display, m_window);
+    XMapSubwindows(display(), m_window);
 }
 
 void FbWindow::hide() {
-    XUnmapWindow(s_display, m_window);
+    XUnmapWindow(display(), m_window);
 }
 
 void FbWindow::lower() {
-    XLowerWindow(s_display, window());
+    XLowerWindow(display(), window());
 }
 
 void FbWindow::raise() {
-    XRaiseWindow(s_display, window());
+    XRaiseWindow(display(), window());
 }
 
 void FbWindow::setInputFocus(int revert_to, int time) {
-    XSetInputFocus(s_display, window(), revert_to, time);
+    XSetInputFocus(display(), window(), revert_to, time);
 }
 
 void FbWindow::setCursor(Cursor cur) {
-    XDefineCursor(s_display, window(), cur); 
+    XDefineCursor(display(), window(), cur); 
 }
 
 void FbWindow::unsetCursor() {
-    XUndefineCursor(s_display, window());
+    XUndefineCursor(display(), window());
 }
 
 void FbWindow::reparent(const FbWindow &parent, int x, int y, bool continuing) {
-    XReparentWindow(s_display, window(), parent.window(), x, y);
+    XReparentWindow(display(), window(), parent.window(), x, y);
     m_parent = &parent;
     if (continuing) // we will continue managing this window after reparent
         updateGeometry();
@@ -332,7 +332,7 @@ std::string FbWindow::textProperty(Atom property) const {
     int count;
     std::string ret;
 
-    if (XGetTextProperty(s_display, window(), &text_prop, property) == 0)
+    if (XGetTextProperty(display(), window(), &text_prop, property) == 0)
         return "";
 
     if (text_prop.value == 0 || text_prop.nitems == 0)
@@ -340,7 +340,7 @@ std::string FbWindow::textProperty(Atom property) const {
 
     if (text_prop.encoding != XA_STRING) {
         // still returns a "StringList" despite the different name
-        if (XmbTextPropertyToTextList(s_display, &text_prop, &stringlist, &count) == 0 || count == 0)
+        if (XmbTextPropertyToTextList(display(), &text_prop, &stringlist, &count) == 0 || count == 0)
             return "";
     } else {
         if (XTextPropertyToStringList(&text_prop, &stringlist, &count) == 0 || count == 0)
@@ -362,7 +362,7 @@ bool FbWindow::property(Atom property,
                         unsigned long *nitems_return,
                         unsigned long *bytes_after_return,
                         unsigned char **prop_return) const {
-    if (XGetWindowProperty(s_display, window(), 
+    if (XGetWindowProperty(display(), window(), 
                            property, long_offset, long_length, do_delete, 
                            req_type, actual_type_return,
                            actual_format_return, nitems_return,
@@ -378,7 +378,7 @@ void FbWindow::changeProperty(Atom property, Atom type,
                               unsigned char *data,
                               int nelements) {
     
-    XChangeProperty(s_display, m_window, property, type,
+    XChangeProperty(display(), m_window, property, type,
                     format, mode, 
                     data, nelements);
 }
@@ -389,7 +389,7 @@ int FbWindow::screenNumber() const {
 
 long FbWindow::eventMask() const {
     XWindowAttributes attrib;
-    XGetWindowAttributes(s_display, window(), 
+    XGetWindowAttributes(display(), window(), 
                          &attrib);
     return attrib.your_event_mask;
 
@@ -405,7 +405,7 @@ void FbWindow::updateGeometry() {
 
     Window root;
     unsigned int border_width, depth;
-    XGetGeometry(s_display, m_window, &root, &m_x, &m_y,
+    XGetGeometry(display(), m_window, &root, &m_x, &m_y,
                  (unsigned int *)&m_width, (unsigned int *)&m_height, 
                  &border_width, &depth);
     m_depth = depth;
@@ -433,7 +433,7 @@ void FbWindow::create(Window parent, int x, int y,
         values.save_under = True;
     }
 
-    m_window = XCreateWindow(s_display, parent, x, y, width, height,
+    m_window = XCreateWindow(display(), parent, x, y, width, height,
                              0, // border width  
                              depth, // depth
                              class_type, // class

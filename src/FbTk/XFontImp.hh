@@ -1,5 +1,5 @@
 // XFontImp.hh for FbTk fluxbox toolkit
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.5 2003/12/16 17:06:52 fluxgen Exp $
+// $Id: XFontImp.hh,v 1.6 2004/09/11 22:58:20 fluxgen Exp $
 
 #ifndef FBTK_XFONTIMP_HH
 #define FBTK_XFONTIMP_HH
@@ -41,7 +41,7 @@ public:
     float angle() const { return m_angle; }
     int ascent() const;
     int descent() const { return m_fontstruct ? m_fontstruct->descent : 0; }
-    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
     bool loaded() const { return m_fontstruct != 0; }
     void rotate(float angle);
     /// enable/disable rotation witout alloc/dealloc rotfont structures

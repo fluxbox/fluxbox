@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.9 2004/09/10 16:48:15 akir Exp $
+// $Id: MenuItem.cc,v 1.10 2004/09/11 23:00:08 fluxgen Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -104,7 +104,7 @@ void MenuItem::draw(FbDrawable &draw,
         break;
     }
 
-    theme.frameFont().drawText(draw.drawable(), // drawable
+    theme.frameFont().drawText(draw, // drawable
                                theme.screenNum(),
                                tgc.gc(),
                                m_label.c_str(), m_label.size(), // text string and lenght

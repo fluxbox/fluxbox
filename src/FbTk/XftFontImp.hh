@@ -1,5 +1,5 @@
 // XftFontImp.hh  Xft font implementation for FbTk
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.hh,v 1.4 2003/12/16 17:06:52 fluxgen Exp $
+//$Id: XftFontImp.hh,v 1.5 2004/09/11 22:58:20 fluxgen Exp $
 
 #ifndef FBTK_XFTFONTIMP_HH
 #define FBTK_XFTFONTIMP_HH
@@ -36,7 +36,7 @@ public:
     XftFontImp(const char *fontname, bool utf8);
     ~XftFontImp();
     bool load(const std::string &name);
-    void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
+    void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
     unsigned int textWidth(const char * const text, unsigned int len) const;
     unsigned int height() const;
     int ascent() const { return m_xftfont ? m_xftfont->ascent : 0; }

@@ -1,5 +1,5 @@
 // Font.cc for FbTk
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.12 2004/08/31 21:24:05 fluxgen Exp $
+//$Id: Font.hh,v 1.13 2004/09/11 22:58:20 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -43,6 +43,7 @@ namespace FbTk {
 void fontInit();
 
 class FontImp;
+class FbDrawable;
 
 /**
    Handles the client to fontimp bridge.
@@ -92,7 +93,7 @@ public:
        @param y position
        @param rotate if the text should be drawn rotated (if it's rotated before)
     */	
-    void drawText(Drawable w, int screen, GC gc, 
+    void drawText(const FbDrawable &w, int screen, GC gc, 
                   const char *text, size_t len, 
                   int x, int y, bool rotate=true) const;
     bool isAntialias() const { return m_antialias; }

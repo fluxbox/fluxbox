@@ -1,5 +1,5 @@
 // FbDrawable.cc for FbTk - Fluxbox ToolKit
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbDrawable.cc,v 1.3 2004/09/10 15:46:08 akir Exp $
+// $Id: FbDrawable.cc,v 1.4 2004/09/11 22:58:20 fluxgen Exp $
 
 #include "FbDrawable.hh"
 
@@ -37,9 +37,9 @@ FbDrawable::FbDrawable() {
 }
 
 void FbDrawable::copyArea(Drawable src, GC gc,
-                        int src_x, int src_y,
-                        int dest_x, int dest_y,
-                        unsigned int width, unsigned int height) {
+                          int src_x, int src_y,
+                          int dest_x, int dest_y,
+                          unsigned int width, unsigned int height) {
     if (drawable() == 0 || src == 0 || gc == 0)
         return;
     XCopyArea(s_display,
@@ -50,7 +50,7 @@ void FbDrawable::copyArea(Drawable src, GC gc,
 }
 
 void FbDrawable::fillRectangle(GC gc, int x, int y,
-                             unsigned int width, unsigned int height) {
+                               unsigned int width, unsigned int height) {
     if (drawable() == 0 || gc == 0)
         return;
     XFillRectangle(s_display,
@@ -60,7 +60,7 @@ void FbDrawable::fillRectangle(GC gc, int x, int y,
 }
 
 void FbDrawable::drawRectangle(GC gc, int x, int y, 
-                             unsigned int width, unsigned int height) {
+                               unsigned int width, unsigned int height) {
     if (drawable() == 0 || gc == 0)
         return;
     XDrawRectangle(s_display,
@@ -70,7 +70,7 @@ void FbDrawable::drawRectangle(GC gc, int x, int y,
 }
 
 void FbDrawable::drawLine(GC gc, int start_x, int start_y, 
-                        int end_x, int end_y) {
+                          int end_x, int end_y) {
     if (drawable() == 0 || gc == 0)
         return;
     XDrawLine(s_display,
@@ -81,7 +81,7 @@ void FbDrawable::drawLine(GC gc, int start_x, int start_y,
 }
 
 void FbDrawable::fillPolygon(GC gc, XPoint *points, int npoints,
-                           int shape, int mode) {
+                             int shape, int mode) {
     if (drawable() == 0 || gc == 0 || points == 0 || npoints == 0)
         return;
     XFillPolygon(s_display,

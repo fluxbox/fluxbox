@@ -1,5 +1,5 @@
 // Font.cc
-// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.20 2004/09/03 14:17:47 akir Exp $
+//$Id: Font.cc,v 1.21 2004/09/11 22:58:20 fluxgen Exp $
 
 
 #include "StringUtil.hh"
@@ -350,7 +350,7 @@ void Font::setAntialias(bool flag) {
 bool Font::load(const std::string &name) {
     if (name.size() == 0)
         return false;
-
+    // default values for font options
     m_shadow = false;
     m_halo = false;
 
@@ -380,12 +380,12 @@ bool Font::load(const std::string &name) {
             else if ( (*token).find("shadow", 0) != std::string::npos ) {
                 m_shadow= true;
                 extract_shadow_options(*token, m_shadow_color, m_shadow_offx, m_shadow_offy);
-                }
+            }
             else {
                 if ( !firstone )
-                  fname+= ", ";
+                    fname+= ", ";
                 else
-                  firstone= false;
+                    firstone= false;
                 fname= fname + *token;
             }
         }
@@ -424,7 +424,7 @@ int Font::descent() const {
     return m_fontimp->descent();
 }
 
-void Font::drawText(Drawable w, int screen, GC gc,
+void Font::drawText(const FbDrawable &w, int screen, GC gc,
                     const char *text, size_t len, int x, int y, 
                     bool rotate) const {
     if (text == 0 || len == 0)
@@ -450,12 +450,12 @@ void Font::drawText(Drawable w, int screen, GC gc,
     // draw "effects" first
     if (first_run) {
         if (m_shadow) {
-        FbTk::GContext shadow_gc(w);
+            FbTk::GContext shadow_gc(w);
             shadow_gc.setForeground(FbTk::Color(m_shadow_color.c_str(), screen));
             first_run = false;
             drawText(w, screen, shadow_gc.gc(), real_text, len,
                      x + m_shadow_offx, y + m_shadow_offy, rotate);
-        first_run = true;
+            first_run = true;
         } else if (m_halo) {
             FbTk::GContext halo_gc(w);
             halo_gc.setForeground(FbTk::Color(m_halo_color.c_str(), screen));

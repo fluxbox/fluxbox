@@ -1,5 +1,5 @@
 // FontImp.cc for FbTk
-// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
+// Copyright (c) 2002-2004 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FontImp.hh,v 1.3 2003/04/20 13:52:29 fluxgen Exp $
+// $Id: FontImp.hh,v 1.4 2004/09/11 22:58:20 fluxgen Exp $
 
 #ifndef FBTK_FONTIMP_HH
 #define FBTK_FONTIMP_HH
@@ -32,6 +32,8 @@
 
 namespace FbTk {
 
+class FbDrawable;
+
 /**
    FontImp, second part of the bridge pattern for fonts
    pure interface class.
@@ -41,7 +43,7 @@ class FontImp {
 public:
     virtual ~FontImp() { }
     virtual bool load(const std::string &name) = 0;
-    virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const = 0;
+    virtual void drawText(const FbDrawable &w, int screen, GC gc, const char *text, size_t len, int x, int y) const = 0;
     virtual unsigned int textWidth(const char * const text, unsigned int size) const = 0;
     virtual int ascent() const = 0;
     virtual int descent() const = 0;

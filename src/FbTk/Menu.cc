@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.83 2004/09/11 15:52:23 rathnor Exp $
+// $Id: Menu.cc,v 1.84 2004/09/11 22:59:15 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -312,7 +312,7 @@ void Menu::nextItem() {
     drawItem(which_press, 
              true,  // clear
              true); // transp
-
+    
 }
 
 void Menu::prevItem() {
@@ -774,7 +774,7 @@ void Menu::redrawTitle() {
     // difference between height based on font, and style-set height
     int height_offset = theme().titleHeight() - (font.height() + 2*theme().bevelWidth());
     menu.title.updateTransparent();
-    font.drawText(m_real_title_pm.drawable(), // drawable
+    font.drawText(m_real_title_pm, // drawable
                   screenNumber(),
                   theme().titleTextGC().gc(), // graphic context
                   text, len,  // text string with length
@@ -1144,21 +1144,13 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                     re.y > iy && re.y < (signed) (iy + theme().itemHeight())) {
                     menuitems[w]->click(re.button, re.time);
                     itemSelected(re.button, w);
-                    drawItem(w,
-                             true,  // clear
-                             true); // transparent
                 }
-
-            } else {
-                drawItem(p,
-                         true,  // clear
-                         true); // transparent
             }
-        } else {
-            drawItem(p,
-                     true,  // clear
-                     true); // transparent
         }
+
+        drawItem(p,
+                 true,  // clear
+                 true); // transparent
     }
 }
 

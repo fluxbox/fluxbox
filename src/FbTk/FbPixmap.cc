@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.15 2004/09/11 12:33:14 rathnor Exp $
+// $Id: FbPixmap.cc,v 1.16 2004/09/11 22:58:20 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -90,7 +90,7 @@ FbPixmap &FbPixmap::operator = (Pixmap pm) {
     Window root;
     int x, y;
     unsigned int border_width, bpp;
-    XGetGeometry(s_display,
+    XGetGeometry(display(),
                  pm,
                  &root,
                  &x, &y,
@@ -148,7 +148,7 @@ void FbPixmap::copy(Pixmap pm) {
     unsigned int border_width, bpp;
     unsigned int new_width, new_height;
 
-    XGetGeometry(s_display,
+    XGetGeometry(display(),
                  pm,
                  &root,
                  &x, &y,
@@ -158,20 +158,20 @@ void FbPixmap::copy(Pixmap pm) {
     // create new pixmap and copy area
     create(root, new_width, new_height, bpp);
 
-    GC gc = XCreateGC(s_display, drawable(), 0, 0);
+    GC gc = XCreateGC(display(), drawable(), 0, 0);
 
-    XCopyArea(s_display, pm, drawable(), gc,
+    XCopyArea(display(), pm, drawable(), gc,
               0, 0,
               width(), height(),
               0, 0);
 
-    XFreeGC(s_display, gc);
+    XFreeGC(display(), gc);
 }
 
 void FbPixmap::rotate() {
 
     // make an image copy
-    XImage *src_image = XGetImage(s_display, drawable(),
+    XImage *src_image = XGetImage(display(), drawable(),
                                   0, 0, // pos
                                   width(), height(), // size
                                   ~0, // plane mask
@@ -186,7 +186,7 @@ void FbPixmap::rotate() {
         for (unsigned int x = 0; x < width(); ++x) {
             gc.setForeground(XGetPixel(src_image, x, y));
             // revers coordinates
-            XDrawPoint(s_display, new_pm.drawable(), gc.gc(), y, x);
+            XDrawPoint(display(), new_pm.drawable(), gc.gc(), y, x);
         }
     }
 
@@ -206,7 +206,7 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
         (dest_width == width() && dest_height == height()))
         return;
 
-    XImage *src_image = XGetImage(s_display, drawable(),
+    XImage *src_image = XGetImage(display(), drawable(),
                                   0, 0, // pos
                                   width(), height(), // size
                                   ~0, // plane mask
@@ -230,7 +230,7 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
             gc.setForeground(XGetPixel(src_image,
                                        static_cast<int>(src_x),
                                        static_cast<int>(src_y)));
-            XDrawPoint(s_display, new_pm.drawable(), gc.gc(), tx, ty);
+            XDrawPoint(display(), new_pm.drawable(), gc.gc(), tx, ty);
         }
     }
 
@@ -306,9 +306,9 @@ Pixmap FbPixmap::getRootPixmap(int screen_num) {
 
     Pixmap root_pm = None;
     for (prop = 0; prop_ids[prop]; prop++) {
-        if (XGetWindowProperty(s_display,
-                               RootWindow(s_display, screen_num),
-                               XInternAtom(s_display, prop_ids[prop], False),
+        if (XGetWindowProperty(display(),
+                               RootWindow(display(), screen_num),
+                               XInternAtom(display(), prop_ids[prop], False),
                                0l, 4l,
                                False, XA_PIXMAP,
                                &real_type, &real_format,
@@ -333,7 +333,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num) {
 
 void FbPixmap::free() {
     if (m_pm != 0) {
-        XFreePixmap(s_display, m_pm);
+        XFreePixmap(display(), m_pm);
         m_pm = 0;
     }
     m_width = 0;
@@ -347,7 +347,7 @@ void FbPixmap::create(Drawable src,
     if (src == 0)
         return;
 
-    m_pm = XCreatePixmap(s_display,
+    m_pm = XCreatePixmap(display(),
                          src, width, height, depth);
     if (m_pm == 0)
         return;
