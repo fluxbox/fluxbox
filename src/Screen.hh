@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.91 2003/05/10 13:46:31 fluxgen Exp $
+// $Id: Screen.hh,v 1.92 2003/05/10 22:45:08 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -33,6 +33,7 @@
 #include "MultLayers.hh"
 #include "ToolbarHandler.hh"
 #include "Slit.hh"
+#include "FbRootWindow.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -139,6 +140,9 @@ public:
     unsigned int getMaxTop() const;
     unsigned int getMaxBottom() const;
 
+    inline unsigned int getWidth() const { return rootWindow().width(); }
+    inline unsigned int getHeight() const { return rootWindow().height(); }
+
     typedef std::vector<FluxboxWindow *> Icons;
     typedef std::list<WinClient *> FocusedWindows;
 
@@ -185,7 +189,7 @@ public:
     inline int getToolbarLayerNum() const { return (*resource.toolbar_layernum).getNum(); }
 
 
-    inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r;  }
+    inline void setRootColormapInstalled(bool r) { root_colormap_installed = r;  }
     inline void saveRootCommand(std::string rootcmd) { *resource.rootcommand = rootcmd;  }
     inline void saveFocusModel(Fluxbox::FocusModel model) { resource.focus_model = model; }
     inline void saveWorkspaces(int w) { *resource.workspaces = w;  }
@@ -227,6 +231,8 @@ public:
     inline FbTk::MenuTheme *menuTheme() { return m_menutheme.get(); }
     inline const FbTk::MenuTheme *menuTheme() const { return m_menutheme.get(); }
     inline const RootTheme &rootTheme() const { return *m_root_theme.get(); }
+    FbRootWindow &rootWindow() { return m_root_window; }
+    const FbRootWindow &rootWindow() const { return m_root_window; }
 
     FluxboxWindow *getIcon(unsigned int index);
     FbTk::MultLayers &layerManager() { return m_layermanager; }
@@ -299,14 +305,7 @@ public:
 
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
            UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
-    enum { LEFTJUSTIFY = 1, RIGHTJUSTIFY, CENTERJUSTIFY };
 
-    /// obsolete
-    enum { ROUNDBULLET = 1, TRIANGELBULLET, SQUAERBULLET, NOBULLET };
-    /// obsolete
-    enum { RESTART = 1, RESTARTOTHER, EXIT, SHUTDOWN, EXECUTE, RECONFIGURE,
-           WINDOWSHADE, WINDOWICONIFY, WINDOWMAXIMIZE, WINDOWCLOSE, WINDOWRAISE,
-           WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
     // prevFocus/nextFocus option bits
     enum { CYCLESKIPLOWERTABS = 0x01, CYCLESKIPSTUCK = 0x02, CYCLESKIPSHADED = 0x04,
            CYCLELINEAR = 0x08, CYCLEDEFAULT = 0x00 };
@@ -338,7 +337,7 @@ private:
 		
     FbTk::MultLayers m_layermanager;
 	
-    Bool root_colormap_installed, managed, geom_visible, cycling_focus;
+    bool root_colormap_installed, managed, geom_visible, cycling_focus;
     GC opGC;
     Pixmap geom_pixmap;
     FbTk::FbWindow geom_window;
@@ -378,6 +377,8 @@ private:
     std::auto_ptr<WinButtonTheme> m_winbutton_theme;
     std::auto_ptr<FbTk::MenuTheme> m_menutheme;
     std::auto_ptr<RootTheme> m_root_theme;
+
+    FbRootWindow m_root_window;
 
     struct ScreenResource {
         ScreenResource(ResourceManager &rm, const std::string &scrname,
