@@ -2,7 +2,7 @@ dnl configure.in for Fluxbox  - created from configure.in Blackbox 0.61.1
 dnl Initialize autoconf and automake
 AC_INIT(src/main.cc)
 AC_PREREQ(2.52)
-AM_INIT_AUTOMAKE(fluxbox,0.1.15-cvs,no-define)
+AM_INIT_AUTOMAKE(fluxbox,0.9.0,no-define)
 
 dnl Determine default prefix
 test x$prefix = "xNONE" && prefix="$ac_default_prefix"
