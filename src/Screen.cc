@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.31 2002/02/26 22:40:31 fluxgen Exp $
+// $Id: Screen.cc,v 1.32 2002/02/27 23:47:47 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -737,9 +737,9 @@ FluxboxWindow *BScreen::getIcon(int index) {
 int BScreen::addWorkspace(void) {
 	Workspace *wkspc = new Workspace(this, workspacesList.size());
 	workspacesList.push_back(wkspc);
-
-	workspacemenu->insert(wkspc->getName(), wkspc->getMenu(),
-		wkspc->getWorkspaceID() + 1);
+	//add workspace to workspacemenu
+	workspacemenu->addWorkspace(wkspc);
+	
 	workspacemenu->update();
 	saveWorkspaces(workspacesList.size());
 	toolbar->reconfigure();
@@ -761,10 +761,11 @@ int BScreen::removeLastWorkspace(void) {
 
 		wkspc->removeAll();
 
-		workspacemenu->remove(wkspc->getWorkspaceID() + 2);
+		workspacemenu->removeWorkspace(wkspc->getWorkspaceID());
 		workspacemenu->update();
-
-		workspacesList.erase(workspacesList.begin() + wkspc->getWorkspaceID());
+		
+		//remove last workspace
+		workspacesList.pop_back();		
 		delete wkspc;
 
 		toolbar->reconfigure();
@@ -1835,3 +1836,4 @@ void BScreen::updateGnomeClientList() {
 }
 
 #endif //!GNOME
+
