@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.20 2002/12/01 13:41:54 rathnor Exp $
+// $Id: Basemenu.hh,v 1.21 2002/12/03 23:21:42 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -31,15 +31,18 @@
 #include <vector>
 #include <string>
 
+#include "FbWindow.hh"
+#include "EventHandler.hh"
+
 class Basemenu;
 class BasemenuItem;
-class Fluxbox;
 class BImageControl;
 class BScreen;
+
 /**
    Base class for menus
 */
-class Basemenu {
+class Basemenu: public FbTk::EventHandler {
 public:
     enum Alignment{ ALIGNDONTCARE = 1, ALIGNTOP, ALIGNBOTTOM };
     enum { RIGHT = 1, LEFT };
@@ -69,12 +72,12 @@ public:
        @name event handlers
     */
     //@{
-    void buttonPressEvent(XButtonEvent *bp);
-    void buttonReleaseEvent(XButtonEvent *br);
-    void motionNotifyEvent(XMotionEvent *mn);
-    void enterNotifyEvent(XCrossingEvent *en);
-    void leaveNotifyEvent(XCrossingEvent *ce);
-    void exposeEvent(XExposeEvent *ee);
+    void buttonPressEvent(XButtonEvent &bp);
+    void buttonReleaseEvent(XButtonEvent &br);
+    void motionNotifyEvent(XMotionEvent &mn);
+    void enterNotifyEvent(XCrossingEvent &en);
+    void leaveNotifyEvent(XCrossingEvent &ce);
+    void exposeEvent(XExposeEvent &ee);
     //@}
 
     void reconfigure();
@@ -98,7 +101,7 @@ public:
     bool isVisible() const { return visible; }
     const BScreen *screen() const { return m_screen; }
     BScreen *screen() { return m_screen; }
-    Window windowID() const { return menu.window; }
+    Window windowID() const { return menu.window.window(); }
     const std::string &label() const { return menu.label; }  
     int x() const { return menu.x; }
     int y() const { return menu.y; }
@@ -145,7 +148,7 @@ private:
 
     struct _menu {
         Pixmap frame_pixmap, title_pixmap, hilite_pixmap, sel_pixmap;
-        Window window, frame, title;
+        FbTk::FbWindow window, frame, title;
 
         std::string label;
         int x, y, x_move, y_move, x_shift, y_shift, sublevels, persub, minsub,
