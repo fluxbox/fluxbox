@@ -8,7 +8,7 @@ bsetroot_LDADD=		../src/FbRootWindow.o ../src/I18n.o \
 			../src/FbAtoms.o ../src/FbTk/libFbTk.a
 
 MAINTAINERCLEANFILES=	Makefile.in
-EXTRA_DIST=		fbsetbg fluxbox-generate_menu startfluxbox
+EXTRA_DIST=		fbsetbg fluxbox-generate_menu startfluxbox.in
 
 all-local:	startfluxbox
 
