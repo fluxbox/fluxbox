@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.47 2002/04/28 19:54:10 fluxgen Exp $
+// $Id: Screen.cc,v 1.48 2002/05/07 13:54:42 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1759,13 +1759,14 @@ void BScreen::updateGnomeClientList() {
 	//int num = getCurrentWorkspace()->getWindowList().size();
 	
 	Window *wl = new Window[num];
+	//start the iterator from begining
 	workspace_it = workspacesList.begin();
 	int win=0;
 	for (; workspace_it != workspace_it_end; ++workspace_it) {
 	
 		// Fill in array of window ID's
-		Workspace::Windows::iterator it = (*workspace_it)->getWindowList().begin();
-		Workspace::Windows::iterator it_end = (*workspace_it)->getWindowList().end();		
+		Workspace::Windows::const_iterator it = (*workspace_it)->getWindowList().begin();
+		Workspace::Windows::const_iterator it_end = (*workspace_it)->getWindowList().end();		
 		for (; it != it_end; ++it) {
 			//check if the window don't want to be visible in the list
 			if (! ( (*it)->getGnomeHints() & FluxboxWindow::WIN_STATE_HIDDEN) ) {
