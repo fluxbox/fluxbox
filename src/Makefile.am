@@ -33,6 +33,7 @@ AM_CPPFLAGS=@CPPFLAGS@ -I$(srcdir)/FbTk
 
 bin_PROGRAMS= fluxbox
 BUILT_SOURCES = defaults.hh
+CONFIG_CLEAN_FILES = defaults.hh
 defaults.hh: Makefile
 	echo '// This file is generated from makefile. Do not edit!' > defaults.hh
 	echo '#define DEFAULTMENU "$(DEFAULT_MENU)"' >> defaults.hh
