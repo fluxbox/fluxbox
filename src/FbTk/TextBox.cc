@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.10 2004/07/15 13:48:54 fluxgen Exp $
+// $Id: TextBox.cc,v 1.11 2004/08/11 12:41:28 fluxgen Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -278,7 +278,10 @@ void TextBox::adjustEndPos() {
 }
 
 void TextBox::adjustStartPos() {
-    int text_width = font().textWidth(text().c_str() + m_start_pos, m_end_pos - m_start_pos);
+    // reset global start po
+    m_start_pos = 0;
+
+    int text_width = font().textWidth(text().c_str(), m_end_pos);
     if (text_width < static_cast<signed>(width()))
         return;
 
