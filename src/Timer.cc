@@ -42,7 +42,7 @@ BTimer::BTimer(BaseDisplay *d, TimeoutHandler *h) {
 
 
 BTimer::~BTimer(void) {
-  if (timing) stop();
+  if (isTiming()) stop();
 }
 
 
