@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.30 2004/01/14 23:06:13 fluxgen Exp $
+// $Id: IconbarTool.cc,v 1.31 2004/01/19 18:28:08 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -188,30 +188,33 @@ void setupModeMenu(FbTk::Menu &menu, IconbarTool &handler) {
 }
                 
 inline bool checkAddWindow(IconbarTool::Mode mode, const FluxboxWindow &win) {
-
+    bool ret_val = false;
     // just add the icons that are on the this workspace
     switch (mode) {
     case IconbarTool::NONE:
         break;
     case IconbarTool::ICONS:
         if (win.isIconic())
-            return true;
+            ret_val = true;
         break;
     case IconbarTool::WORKSPACEICONS:
         if(win.workspaceNumber() == win.screen().currentWorkspaceID() &&
            win.isIconic())
-            return true;
+            ret_val = true;
         break;
     case IconbarTool::WORKSPACE:
         if (win.workspaceNumber() == win.screen().currentWorkspaceID())
-            return true;
+            ret_val = true;
         break;
     case IconbarTool::ALLWINDOWS:
-        return true;
+        ret_val = true;
         break;
     }
 
-    return false;
+    if (win.isHidden())
+        ret_val = false;
+
+    return ret_val;
 }
 
 void removeDuplicate(const IconbarTool::IconList &iconlist, std::list<FluxboxWindow *> &windowlist) {
@@ -433,17 +436,11 @@ void IconbarTool::update(FbTk::Subject *subj) {
             renderTheme();
             return; // we don't need to update the entire list
         } else if (subj == &(winsubj->win().stateSig())) {
-            if (mode() == ICONS || mode() == WORKSPACEICONS) {
-                if (!winsubj->win().isIconic()) {
-                    removeWindow(winsubj->win());
-                    renderTheme();
-                }
-            } else if (mode() != WORKSPACE) {
-                if (winsubj->win().isIconic() && mode() != ALLWINDOWS) {
-                    removeWindow(winsubj->win());
-                    renderTheme();
-                }
+            if (!checkAddWindow(mode(), winsubj->win())) {
+                removeWindow(winsubj->win());            
+                renderTheme();
             }
+
             return;
 
         } else if (subj == &(winsubj->win().titleSig())) {
