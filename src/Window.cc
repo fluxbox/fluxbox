@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.79 2002/09/07 20:16:43 fluxgen Exp $
+// $Id: Window.cc,v 1.80 2002/09/08 19:51:30 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -139,7 +139,7 @@ tab(0) {
 	functions.close = decorations.close = false;
 
 	client.wm_hint_flags = client.normal_hint_flags = 0;
-	client.transient_for = client.transient = 0;
+	client.transient_for = 0;
 	client.mwm_hint = (MwmHints *) 0;
 	client.blackbox_hint = 0;
 
@@ -335,7 +335,8 @@ tab(0) {
 FluxboxWindow::~FluxboxWindow() {
 	if (screen == 0) //the window wasn't created 
 		return;
-	
+	timer.stop();
+
 	Fluxbox *fluxbox = Fluxbox::instance();
 	
 	if (moving || resizing) {
@@ -343,13 +344,11 @@ FluxboxWindow::~FluxboxWindow() {
 		XUngrabPointer(display, CurrentTime);
 	}
 	
-	if (!iconic) {
-		Workspace *workspace = screen->getWorkspace(workspace_number);		
-		if (workspace)
-			workspace->removeWindow(this);
-	} else //it's iconic
+	if (iconic)
 		screen->removeIcon(this);
 
+	screen->removeWindow(this);
+	
 	if (windowmenu) {
 		delete windowmenu;
 		windowmenu = 0;
@@ -371,32 +370,20 @@ FluxboxWindow::~FluxboxWindow() {
 	}
 
 
-	if (isTransient()) {
-		//guard from having transient_for = this
-		if (client.transient_for == this) {
-#ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<"): WARNING! client.transient_for == this WARNING!"<<endl;
-			assert(0);
-#endif //DEBUG
-			client.transient_for = 0;
-			
-		}
-		if (client.transient == this) {
-			client.transient = 0;
-			assert(0);
-		}
-		fluxbox->setFocusedWindow(client.transient_for);
+	if (client.transient_for != 0) {
+		client.transient_for->client.transients.remove(this);
+		client.transient_for = 0;			
+	}
+	
+	while (!client.transients.empty()) {
+		client.transients.back()->client.transient_for = 0;
+		client.transients.pop_back();
 	}
 	
 	if (client.window_group) {
 		fluxbox->removeGroupSearch(client.window_group);
 		client.window_group = 0;
 	}
-
-	if (transient && client.transient_for)
-		client.transient_for->client.transient = client.transient;
-	if (client.transient)
-		client.transient->client.transient_for = client.transient_for;
 		
 	destroyTitlebar();	
 
@@ -430,17 +417,11 @@ FluxboxWindow::~FluxboxWindow() {
 		frame.window = 0;
 	}
 
-	// Make sure we don't remove
-	// a slit client from the list
-	if (managed) {
-		fluxbox->removeWindowSearch(client.window);
-		screen->removeNetizen(client.window);
-	}
+	fluxbox->removeWindowSearch(client.window);
 
-
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow(this="<<this<<") done"<<endl;
-	#endif
+#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
+#endif // DEBUG
 }
 
 Window FluxboxWindow::createToplevelWindow(
@@ -1524,37 +1505,38 @@ bool FluxboxWindow::setInputFocus() {
 								frame.y + screen->getBorderWidth(), frame.width, frame.height);
 	}
 
-	Fluxbox *fluxbox = Fluxbox::instance();
-	fluxbox->grab();
 	if (! validateClient())
 		return false;
 
 	bool ret = false;
 
-	if (client.transient && modal) {
-		fluxbox->ungrab();
-		return client.transient->setInputFocus();
+	if (client.transients.size() && modal) {
+		std::list<FluxboxWindow *>::iterator it = client.transients.begin();
+		std::list<FluxboxWindow *>::iterator it_end = client.transients.end();
+		for (; it != it_end; ++it) {
+			if ((*it)->modal)
+				return (*it)->setInputFocus();
+		}
 	} else {
 		if (! focused) {
 			if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
 				XSetInputFocus(display, client.window,
 					RevertToPointerRoot, CurrentTime);
 			} else {
-				fluxbox->ungrab();
 				return false;
 			}
-
-			fluxbox->setFocusedWindow(this);
+			Fluxbox *fb = Fluxbox::instance();
+			fb->setFocusedWindow(this);
 			
 			if (send_focus_message) {
 				XEvent ce;
 				ce.xclient.type = ClientMessage;
-				ce.xclient.message_type = fluxbox->getWMProtocolsAtom();
+				ce.xclient.message_type = fb->getWMProtocolsAtom();
 				ce.xclient.display = display;
 				ce.xclient.window = client.window;
 				ce.xclient.format = 32;
-				ce.xclient.data.l[0] = fluxbox->getWMTakeFocusAtom();
-				ce.xclient.data.l[1] = fluxbox->getLastTime();
+				ce.xclient.data.l[0] = fb->getWMTakeFocusAtom();
+				ce.xclient.data.l[1] = fb->getLastTime();
 				ce.xclient.data.l[2] = 0l;
 				ce.xclient.data.l[3] = 0l;
 				ce.xclient.data.l[4] = 0l;
@@ -1568,8 +1550,6 @@ bool FluxboxWindow::setInputFocus() {
 			ret = true;
 		}
 	}
-
-	fluxbox->ungrab();
 
 	return ret;
 }
@@ -1624,9 +1604,13 @@ void FluxboxWindow::iconify() {
 	if (tab) //if this window got a tab then iconify it too
 		tab->iconify();
 		
-	if (client.transient) {
-		if (! client.transient->iconic)
-			client.transient->iconify();
+	if (client.transients.size()) {
+		std::list<FluxboxWindow *>::iterator it = client.transients.begin();
+		std::list<FluxboxWindow *>::iterator it_end = client.transients.end();
+		for (; it != it_end; ++it) {
+			if (! (*it)->iconic)
+				(*it)->iconify();
+		}
 	}
 
 }
@@ -1648,12 +1632,20 @@ void FluxboxWindow::deiconify(bool reassoc, bool raise) {
 	XMapSubwindows(display, frame.window);
 	XMapWindow(display, frame.window);
 
-	if (iconic && screen->doFocusNew()) setInputFocus();
+	if (iconic && screen->doFocusNew())
+		setInputFocus();
 
 	visible = true;
 	iconic = false;
 
-	if (reassoc && client.transient) client.transient->deiconify(true, false);
+	if (reassoc && client.transients.size()) {
+		// deiconify all transients
+		std::list<FluxboxWindow *>::iterator it = client.transients.begin();
+		std::list<FluxboxWindow *>::iterator it_end = client.transients.end();
+		for (; it != it_end; ++it) {
+			(*it)->deiconify(true, false);
+		}
+	}
 	
 	if (tab)
 		tab->deiconify();
@@ -2405,18 +2397,18 @@ void FluxboxWindow::restoreGravity() {
 	// restore y coordinate
 	switch (client.win_gravity) {
 		// handle Northbound gravity
-	case NorthWestGravity:
-	case NorthGravity:
-	case NorthEastGravity:
-	default:
-		client.y = frame.y;
+		case NorthWestGravity:
+		case NorthGravity:
+		case NorthEastGravity:
+		default:
+			client.y = frame.y;
 		break;
 
 		// handle Southbound gravity
-	case SouthWestGravity:
-	case SouthGravity:
-	case SouthEastGravity:
-		client.y = (frame.y + frame.height) - client.height;
+		case SouthWestGravity:
+		case SouthGravity:
+		case SouthEastGravity:
+			client.y = (frame.y + frame.height) - client.height;
 		break;
 	}
 }
@@ -2710,11 +2702,12 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 					windowmenu->reconfigure();
 			}
 		} else {
+
+#ifdef NEWWMSPEC
 			bool val = false;
-			#ifdef NEWWMSPEC
 			if (!val)
 				handleNETWMPropertyNotify(atom);
-			#endif
+#endif // NEWWMSPEC
 		}
 		break;
 	}
@@ -3485,77 +3478,49 @@ void FluxboxWindow::destroyHandle() {
 }
 
 void FluxboxWindow::checkTransient() {
-	// default values
+	// remove us from parent
+	if (client.transient_for != 0) {
+		client.transient_for->client.transients.remove(this);
+	}
 	client.transient_for = 0;
-	client.transient = 0;
 	
-	Fluxbox *fluxbox = Fluxbox::instance();
 	// determine if this is a transient window
 	Window win;
 	if (!XGetTransientForHint(display, client.window, &win)) {
 		client.transient_for = 0;
 		return;
 	}
-
+	
+	
 	if (win == client.window)
 		return;
-
-	if (win && (win != client.window)) {
-		FluxboxWindow *tr = fluxbox->searchWindow(win);
-		if (tr != 0) {
-
-			while (tr->client.transient != 0) {
-				tr = tr->client.transient;
-				if (tr == tr->client.transient) { //ops! something is wrong with transient
-					tr->client.transient = 0;
-					if (tr->client.transient_for == tr)
-						tr->client.transient_for = 0;
-					break;
-				}
-			}
-			
-			if (tr != this) {
-				client.transient_for = tr;
-				tr->client.transient = this;
-				transient = true;
-			} else {
-				client.transient_for = 0;
-				client.transient = 0;
-			}			
-			if (client.transient_for != 0) {
-				stuck = client.transient_for->stuck;
-			}
-			
-		} else if (win == client.window_group) {
-			if ((tr = fluxbox->searchGroup(win, this))) {
-					
-				while (tr->client.transient != 0) {
-					tr = tr->client.transient;
-					if (tr && tr == tr->client.transient) { //ops! somehtin is wrong with transient
-						tr->client.transient = 0;
-					}
-				}
-			
-				if (tr != this) {
-					client.transient_for = tr;
-					tr->client.transient = this;
-					transient = true;
-				} else {	
-					client.transient_for = 0;
-					client.transient = 0;
-				}
-				
-				if (client.transient_for != 0) {
-					stuck = client.transient_for->stuck;
-				}
-				
-			}
-		}
-	}
-
+	
 	if (win == screen->getRootWindow())
 		modal = true;
-
+	
+	client.transient_for = Fluxbox::instance()->searchWindow(win);
+	if (client.transient_for != 0 && 
+		client.window_group != None && win == client.window_group) {
+		
+		FluxboxWindow *leader = Fluxbox::instance()->searchGroup(win, this);
+		if (leader != 0) 
+			client.transient_for = leader;
+		return;
+	}
+	
+	// make sure we don't have deadlock loop in transient chain
+	for (FluxboxWindow *w = this; w != 0; w = w->client.transient_for) {
+		if (w == w->client.transient_for) {
+			w->client.transient_for = 0;
+		}
+	}
+	
+	if (client.transient_for != 0) {
+		client.transient_for->client.transients.push_back(this);
+		// make sure we only have on instance of this
+		client.transient_for->client.transients.unique(); 
+		stuck = client.transient_for->stuck;
+	}
 }
 
 void FluxboxWindow::restore(bool remap) {
