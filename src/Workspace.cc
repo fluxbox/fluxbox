@@ -455,14 +455,14 @@ void Workspace::placeWindow(FluxboxWindow &win) {
         if (test_x < head_left)
             test_x = head_left;
 
-        if (test_x > head_right)
-            test_x = head_right;
+        if (test_x + win_w > head_right)
+            test_x = head_right - win_w;
 
         if (test_y < head_top)
             test_y = head_top;
 
-        if (test_y > head_bot)
-            test_y = head_bot;
+        if (test_y + win_h > head_bot)
+            test_y = head_bot - win_h;
 
         place_x = test_x;
         place_y = test_y;
