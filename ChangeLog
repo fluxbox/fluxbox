@@ -1,6 +1,17 @@
 Changes for 0.1.7:
+*02/20/20:
+   * Added _WIN_CLIENT_LIST
+   * Fixed parameter to keybindings (Thanks Tomer Kol)
+   * Fixed a bug in BScreen::raiseWindow 
+*02/02/17:
+   * Fixed _WIN_WORKSPACE_COUNT
+   * Clean up in menu parsing
+   * Fixed WIN_HINTS_SKIP_FOCUS
+   * Fixed iconbar bug
 *02/02/16:
    * Updated include guards
+   * Added _WIN_LAYER 
+   * Fixed more on _WIN_STATE
 *02/02/13:
    * Fixed bug in Window.cc
 *02/02/11:
@@ -33,7 +44,7 @@ Changes for 0.1.7:
      actually work. (Claes Nästén)
    * Fixed small glitch in Tab.cc. (Claes Nästén)
 *02/01/31:
-   * Fixed _WIN_WORKSPACE and _WIN_WORKSPACE_COUNT (Gnome support)
+   * Fixed _WIN_WORKSPACE and _WIN_WORKSPACE_COUNT
 *02/01/30:
    * Fixed width or height less than zero problem in 
      FluxboxWindow::configure
