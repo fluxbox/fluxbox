@@ -19,16 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.16 2003/04/09 17:20:01 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.17 2003/04/14 14:40:30 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 #include "ImageControl.hh"
 #include "EventManager.hh"
+#include "TextButton.hh"
 #include "App.hh"
 #ifdef SHAPE
 //#include "Shape.hh"
 #endif // SHAPE
 
+#include <algorithm>
 #include <iostream>
 using namespace std;
 
@@ -63,17 +65,18 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
                  ButtonPressMask | ButtonReleaseMask |
                  ButtonMotionMask | ExposureMask |
                  EnterWindowMask | LeaveWindowMask),
-    m_clientwin(0),
     m_bevel(1),
     m_use_titlebar(true), 
     m_use_handle(true),
     m_focused(false),
     m_button_pm(0),
     m_themelistener(*this) {
+
     //    m_shape(new Shape(m_window, 0)) { //Shape::TOPLEFT | Shape::TOPRIGHT)) {
     theme.addListener(m_themelistener);
     init();
 }
+
 /*
   FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl, const FbTk::FbWindow &parent, int x, int y,
   unsigned int width, unsigned int height):
@@ -88,7 +91,6 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
   m_grip_left(m_window, 0, 0, 100, 100, ExposureMask | ButtonPressMask | ButtonReleaseMask),
   m_handle(m_window, 0, 0, 100, 100, ExposureMask | ButtonPressMask | ButtonReleaseMask),
   m_clientarea(m_window, 0, 0, 100, 100, SubstructureRedirectMask),
-  m_clientwin(0),
   m_bevel(1),
   m_use_titlebar(true), 
   m_use_handles(true),
@@ -101,7 +103,6 @@ FbWinFrame::FbWinFrame(FbWinFrameTheme &theme, FbTk::ImageControl &imgctrl,
 FbWinFrame::~FbWinFrame() {
     removeEventHandler();
     removeAllButtons();
-
 }
 
 bool FbWinFrame::setOnClickTitlebar(FbTk::RefCount<FbTk::Command> &ref, int mousebutton_num, 
@@ -215,7 +216,6 @@ void FbWinFrame::addLeftButton(FbTk::Button *btn) {
     setupButton(*btn); // setup theme and other stuff
 
     m_buttons_left.push_back(btn);
-    reconfigureTitlebar();
 }
 
 void FbWinFrame::addRightButton(FbTk::Button *btn) {
@@ -225,7 +225,6 @@ void FbWinFrame::addRightButton(FbTk::Button *btn) {
     setupButton(*btn); // setup theme and other stuff
 
     m_buttons_right.push_back(btn);
-    reconfigureTitlebar();
 }
 
 void FbWinFrame::removeAllButtons() {
@@ -239,21 +238,44 @@ void FbWinFrame::removeAllButtons() {
         delete m_buttons_right.back();
         m_buttons_right.pop_back();
     }
+}
 
-    // update titlebar
-    reconfigureTitlebar();
+void FbWinFrame::addLabelButton(FbTk::Button &btn) {
+    ButtonList::iterator found_it = find(m_labelbuttons.begin(),
+                                         m_labelbuttons.end(),
+                                         &btn);
+    
+    if (found_it != m_labelbuttons.end())
+        return;
+    
+    m_labelbuttons.push_back(&btn);
+}
+
+void FbWinFrame::removeLabelButton(FbTk::Button &btn) {
+    ButtonList::iterator erase_it = remove(m_labelbuttons.begin(),
+                                           m_labelbuttons.end(),
+                                           &btn);
+    if (erase_it == m_labelbuttons.end())
+        return;
+
+    m_labelbuttons.erase(erase_it);
+}
+
+void FbWinFrame::setClientWindow(FbTk::FbWindow &win) {
+    setClientWindow(win.window());
 }
 
 void FbWinFrame::setClientWindow(Window win) {
-    m_clientwin = win;
     Display *display = FbTk::App::instance()->display();
     XSetWindowBorderWidth(display, win, 0);
 
     XChangeSaveSet(display, win, SetModeInsert);
     XSetWindowAttributes attrib_set;
-    // no events for client window while we reparent it
-    XSelectInput(display, m_clientarea.window(), NoEventMask);
+    // sync old events so we can discard events from reparent later
+    XSync(display, False);
     XReparentWindow(display, win, m_clientarea.window(), 0, 0);
+    XSync(display, True); // discard unmap notify event
+    // redirected events from client window 
     XSelectInput(display, m_clientarea.window(), SubstructureRedirectMask);
 
     XFlush(display);
@@ -266,10 +288,6 @@ void FbWinFrame::setClientWindow(Window win) {
     m_clientarea.raise();
     m_clientarea.showSubwindows();
 
-}
-
-void FbWinFrame::removeClient() {
-    m_clientwin = 0;
 }
 
 void FbWinFrame::hideTitlebar() {
@@ -373,10 +391,16 @@ void FbWinFrame::removeEventHandler() {
 }
 
 void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
-    if (event.window != m_titlebar.window() &&
-        event.window != m_label.window())
-        return;
-
+    // we can ignore which window the event was generated for
+    ButtonList::iterator btn_it = m_labelbuttons.begin();
+    ButtonList::iterator btn_it_end = m_labelbuttons.end();
+    for (; btn_it != btn_it_end; ++btn_it) {
+        if ((*btn_it)->window() == event.window) {
+            (*btn_it)->buttonPressEvent(event);
+            break;
+        }
+    }
+    
     if (event.button > 5 || event.button < 1)
         return;
 
@@ -385,11 +409,19 @@ void FbWinFrame::buttonPressEvent(XButtonEvent &event) {
 }
 
 void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
-    if (event.window != m_titlebar.window() &&
-        event.window != m_label.window())
-        return;
+    // we can ignore which window the event was generated for
+    
+    ButtonList::iterator btn_it = m_labelbuttons.begin();
+    ButtonList::iterator btn_it_end = m_labelbuttons.end();
+    for (; btn_it != btn_it_end; ++btn_it) {
+        if ((*btn_it)->window() == event.window) {
+            (*btn_it)->buttonReleaseEvent(event);
+            break;
+        }
+    }
 
-    if (event.button < 1 || event.button > 5)
+    if (event.button < 1 || event.button > 5 || 
+        event.window == m_clientarea.window())
         return;
 
     static int last_release_time = 0;
@@ -405,14 +437,15 @@ void FbWinFrame::buttonReleaseEvent(XButtonEvent &event) {
 }
 
 void FbWinFrame::exposeEvent(XExposeEvent &event) {
-    if (m_titlebar == event.window)
-        redrawTitlebar();
-    else if (m_label == event.window) 
+    if (m_label == event.window) 
         redrawTitle();
     else if (m_handle == event.window ||
              m_grip_left == event.window ||
              m_grip_right == event.window) 
         renderHandles();
+    else
+        redrawTitlebar();
+    
 }
 
 void FbWinFrame::handleEvent(XEvent &event) {
@@ -433,6 +466,7 @@ void FbWinFrame::reconfigure() {
     if (m_use_titlebar)
         reconfigureTitlebar();
 
+
     // leave client+grips alone if we're shaded (it'll get fixed when we unshade)
     if (!m_shaded) {
         int client_top = 0;
@@ -451,12 +485,6 @@ void FbWinFrame::reconfigure() {
         m_clientarea.moveResize(0, client_top,
                                 m_window.width(), client_height);
         
-        if (m_clientwin != 0) {
-            XMoveResizeWindow(FbTk::App::instance()->display(), m_clientwin,
-                              0, 0,
-                              m_clientarea.width(), m_clientarea.height());
-        }
-        
         
         if (!m_use_handle) // no need to do anything more
             return;
@@ -471,7 +499,8 @@ void FbWinFrame::reconfigure() {
                                grip_width, grip_height);
         
         m_handle.moveResize(grip_width, ypos,
-                            m_window.width() - grip_width*2 - m_handle.borderWidth()*2, grip_height);
+                            m_window.width() - grip_width*2 - m_handle.borderWidth()*2, 
+                            grip_height);
         
         m_grip_right.moveResize(m_window.width() - grip_width -  m_handle.borderWidth(), ypos,
                                 grip_width, grip_height);
@@ -500,24 +529,22 @@ unsigned int FbWinFrame::buttonHeight() const {
    aligns and redraws title
 */
 void FbWinFrame::redrawTitle() {
-    GC gc = m_theme.labelTextFocusGC();
-    m_label.clear(); // clear window
-    unsigned int textlen = m_titletext.size();
-    const FbTk::Font &font = m_theme.font();
-    // do text alignment
-    int align_x = FbTk::doAlignment(m_label.width(),
-                                    m_bevel,
-                                    m_theme.justify(),
-                                    font,
-                                    m_titletext.c_str(), m_titletext.size(),
-                                    textlen // return new text len
-                                    );
+    if (m_labelbuttons.size() == 0)
+        return;
 
-    font.drawText(m_label.window(), // drawable
-                  m_window.screenNumber(),
-                  gc, // graphic context
-                  m_titletext.c_str(), textlen, // string and string size
-                  align_x, font.ascent());// position
+    int button_width = label().width()/m_labelbuttons.size();
+    //!! TODO: bevel
+    ButtonList::iterator btn_it = m_labelbuttons.begin();
+    ButtonList::iterator btn_it_end = m_labelbuttons.end();
+    for (unsigned int last_x = 0;
+         btn_it != btn_it_end; 
+         ++btn_it, last_x += button_width) {
+        (*btn_it)->moveResize(last_x, 0,
+                              button_width, label().height());
+        (*btn_it)->setGC(theme().labelTextFocusGC());        
+        (*btn_it)->clear();        
+    }
+        
 }
 
 void FbWinFrame::redrawTitlebar() {
@@ -549,7 +576,7 @@ void FbWinFrame::reconfigureTitlebar() {
         m_buttons_left[i]->moveResize(next_x, m_bevel, 
                                       button_size, button_size);
     }
-	
+    
     next_x += m_bevel;
 	
     // space left on titlebar between left and right buttons
@@ -600,23 +627,32 @@ void FbWinFrame::renderTitlebar() {
            m_label.width(), m_label.height());
 
     // finaly set up pixmaps for titlebar windows
-
+    Pixmap labelpm = None;
+    FbTk::Color labelcolor;
+   
     if (m_focused) {
-        if (m_label_focused_pm != 0)
+        if (m_label_focused_pm != 0){
+            labelpm = m_label_focused_pm;            
             m_label.setBackgroundPixmap(m_label_focused_pm);
-        else
+        } else {
+            labelcolor = m_label_focused_color;            
             m_label.setBackgroundColor(m_label_focused_color);
-			
+        }
+    
         if (m_title_focused_pm != 0)
-            m_titlebar.setBackgroundPixmap(m_title_focused_pm);
+            m_titlebar.setBackgroundPixmap(m_title_focused_pm);            
         else
             m_titlebar.setBackgroundColor(m_title_focused_color);
 			
     } else {
-        if (m_label_unfocused_pm != 0)
+        if (m_label_unfocused_pm != 0) {
+            labelpm = m_label_unfocused_pm;            
             m_label.setBackgroundPixmap(m_label_unfocused_pm);
-        else
+        } else {
+            labelcolor = m_label_unfocused_color;            
             m_label.setBackgroundColor(m_label_unfocused_color);
+        }
+        
 			
         if (m_title_unfocused_pm != 0)
             m_titlebar.setBackgroundPixmap(m_title_unfocused_pm);
@@ -625,6 +661,15 @@ void FbWinFrame::renderTitlebar() {
 
     }
 
+    ButtonList::iterator btn_it = m_labelbuttons.begin();
+    ButtonList::iterator btn_it_end = m_labelbuttons.end();        
+    for (; btn_it != btn_it_end; ++btn_it) {
+        if (labelpm)
+            (*btn_it)->setBackgroundPixmap(labelpm);        
+        else
+            (*btn_it)->setBackgroundColor(labelcolor);
+    }
+    
     redrawTitle();
 }
 

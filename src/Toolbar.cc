@@ -1,5 +1,5 @@
 // Toolbar.cc for Fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Toolbar.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.68 2003/04/09 17:20:04 rathnor Exp $
+// $Id: Toolbar.cc,v 1.69 2003/04/14 14:53:56 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -736,7 +736,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
 
         FluxboxWindow *foc = Fluxbox::instance()->getFocusedWindow();
         // don't draw focused window if it's not on the same screen
-        if (foc->getScreen() != &screen() || foc->getTitle().size() == 0)
+        if (&foc->getScreen() != &screen() || foc->getTitle().size() == 0)
             return;
 		
         unsigned int newlen = foc->getTitle().size();

@@ -22,10 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.130 2003/04/09 17:20:06 rathnor Exp $
+// $Id: Window.cc,v 1.131 2003/04/14 14:58:12 fluxgen Exp $
 
 #include "Window.hh"
 
+#include "WinClient.hh"
 #include "i18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
@@ -33,6 +34,9 @@
 #include "Netizen.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
+
+#include "TextButton.hh"
+#include "EventManager.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -49,6 +53,7 @@
 #include <cstring>
 #include <cstdio>
 #include <iostream>
+
 
 using namespace std;
 
@@ -82,7 +87,8 @@ void grabButton(Display *display, unsigned int button,
                 GrabModeAsync, None, cursor);
 	
     //capslock+numlock+scrolllock
-    XGrabButton(display, button, Mod1Mask|LockMask|Mod2Mask|Mod5Mask, window, True,
+    XGrabButton(display, button, Mod1Mask|LockMask|Mod2Mask|Mod5Mask, window, 
+                True,
                 ButtonReleaseMask | ButtonMotionMask, GrabModeAsync,
                 GrabModeAsync, None, cursor);
 
@@ -117,7 +123,7 @@ static Bool queueScanner(Display *, XEvent *e, char *args) {
 void raiseFluxboxWindow(FluxboxWindow &win) {
 
     if (!win.isIconic()) {
-        win.getScreen()->updateNetizenWindowRaise(win.getClientWindow());
+        win.getScreen().updateNetizenWindowRaise(win.getClientWindow());
         win.getLayerItem().raise();
     }
 
@@ -134,7 +140,7 @@ void raiseFluxboxWindow(FluxboxWindow &win) {
 void lowerFluxboxWindow(FluxboxWindow &win) {
 
     if (!win.isIconic()) {
-        win.getScreen()->updateNetizenWindowLower(win.getClientWindow());
+        win.getScreen().updateNetizenWindowLower(win.getClientWindow());
         win.getLayerItem().lower();
     }
 
@@ -147,10 +153,24 @@ void lowerFluxboxWindow(FluxboxWindow &win) {
     }
 }
 
+class SetClientCmd:public FbTk::Command {
+public:
+    explicit SetClientCmd(WinClient &client):m_client(client) {
+    }
+    void execute() {
+#ifdef DEBUG
+        cerr<<"SetClientCmd"<<endl;
+#endif // DEBUG
+        if (m_client.m_win != 0)
+            m_client.m_win->setCurrentClient(m_client);
+    }
+private:
+    WinClient &m_client;
 };
 
-FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num, 
-                             FbTk::ImageControl &imgctrl, FbWinFrameTheme &tm,
+};
+
+FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &tm,
                              FbTk::MenuTheme &menutheme, 
                              FbTk::XLayer &layer):
     m_hintsig(*this),
@@ -161,30 +181,131 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     moving(false), resizing(false), shaded(false), maximized(false),
     visible(false), iconic(false), transient(false), focused(false),
     stuck(false), modal(false), send_focus_message(false), m_managed(false),
-    screen(s),
+    screen(scr),
     timer(this),
     display(0),
     lastButtonPressTime(0),
-    m_windowmenu(menutheme, screen_num, imgctrl),
-    m_layermenu(0),
+    m_windowmenu(menutheme, scr.getScreenNumber(), *scr.getImageControl()),
+    m_layermenu(menutheme, 
+                scr.getScreenNumber(),
+                *scr.getImageControl(), 
+                *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                this),
     old_decoration(DECOR_NORMAL),
-    tab(0),
-    m_frame(tm, imgctrl, screen_num, 0, 0, 100, 100),
+    m_client(&client),   
+    m_frame(tm, *scr.getImageControl(), scr.getScreenNumber(), 0, 0, 100, 100),
     m_layeritem(m_frame.window(), layer),
-    m_layernum(layer.getLayerNum())
-{
+    m_layernum(layer.getLayerNum())  {
 
-    m_layermenu = new LayerMenu<FluxboxWindow>(
-                                               menutheme, 
-                                               screen_num, 
-                                               imgctrl, 
-                                               *s->layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
-                                               this);
+    init();
+}
 
+
+FluxboxWindow::FluxboxWindow(Window w, BScreen &scr, FbWinFrameTheme &tm,
+                             FbTk::MenuTheme &menutheme, 
+                             FbTk::XLayer &layer):
+    m_hintsig(*this),
+    m_statesig(*this),
+    m_layersig(*this),
+    m_workspacesig(*this),
+    m_diesig(*this),
+    moving(false), resizing(false), shaded(false), maximized(false),
+    visible(false), iconic(false), transient(false), focused(false),
+    stuck(false), modal(false), send_focus_message(false), m_managed(false),
+    screen(scr),
+    timer(this),
+    display(0),
+    lastButtonPressTime(0),
+    m_windowmenu(menutheme, scr.getScreenNumber(), *scr.getImageControl()),
+    m_layermenu(menutheme, 
+                scr.getScreenNumber(), 
+                *scr.getImageControl(),
+                *scr.layerManager().getLayer(Fluxbox::instance()->getMenuLayer()), 
+                this),
+    old_decoration(DECOR_NORMAL),
+    m_client(new WinClient(w, *this)),
+    m_frame(tm, *scr.getImageControl(), scr.getScreenNumber(), 0, 0, 100, 100),
+    m_layeritem(m_frame.window(), layer),
+    m_layernum(layer.getLayerNum()) {
+    assert(w != 0);
+    init();
+
+}
+
+
+
+FluxboxWindow::~FluxboxWindow() {
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__LINE__<<"): starting ~FluxboxWindow("<<this<<")"<<endl;
+#endif // DEBUG
+    if (moving || resizing) {
+        screen.hideGeometry();
+        XUngrabPointer(display, CurrentTime);
+    }
+
+    Client2ButtonMap::iterator it = m_labelbuttons.begin();
+    Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+    for (; it != it_end; ++it) {
+        m_frame.removeLabelButton(*(*it).second);
+        delete (*it).second;
+    }
+    m_labelbuttons.clear();
+
+    timer.stop();
+    
+    // notify die
+    m_diesig.notify();
+
+    if (m_client != 0)
+        delete m_client; // this also removes client from our list
+    m_client = 0;
+
+    if (m_clientlist.size() > 1) {
+        cerr<<__FILE__<<"("<<__FUNCTION__<<") WARNING! clientlist > 1"<<endl;
+        while (!m_clientlist.empty()) {
+            detachClient(*m_clientlist.back());
+        }
+    }
+
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
+#endif // DEBUG
+}
+
+
+void FluxboxWindow::init() {
+    assert(m_client);
+    //!! TODO init of client should be better
+    // we don't want to duplicate code here and in attachClient
+    m_clientlist.push_back(m_client);
+#ifdef DEBUG
+    cerr<<"FluxboxWindow::init(this="<<this<<")"<<endl;
+#endif // DEBUG
+    TextButton *btn =  new TextButton(m_frame.label(), 
+                                      m_frame.theme().font(),
+                                      m_client->title());
+    m_labelbuttons[m_client] = btn;
+    m_frame.addLabelButton(*btn);
+    btn->show();
+    FbTk::EventManager &evm = *FbTk::EventManager::instance();
+    // we need motion notify so we mask it
+    btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
+                               ButtonMotionMask);
+
+    FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*m_client));
+    btn->setOnClick(set_client_cmd);
+    evm.add(*this, btn->window()); // we take care of button events for this
+
+    m_frame.reconfigure();
 
     // redirect events from frame to us
+#ifdef DEBUG
+    cerr<<"Setting up catch for events in frame"<<endl;
+#endif // DEBUG
     m_frame.setEventHandler(*this); 
-
+#ifdef DEBUG
+    cerr<<"setup for catching events....done"<<endl;
+#endif // DEBUG
     lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
 
     // display connection
@@ -200,9 +321,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     decorations.tab = true;
     // enable decorations
     decorations.enabled = true;
-    // set client window
-    client.window = w;
-    client.window_group = None;
 
     // set default values for decoration
     decorations.menu = true;	//override menu option
@@ -215,15 +333,9 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     functions.resize = functions.move = functions.iconify = functions.maximize = true;
     functions.close = decorations.close = false;
 
-    client.wm_hint_flags = client.normal_hint_flags = 0;
-    client.transient_for = 0;
-    client.mwm_hint = 0;
-    client.blackbox_hint = 0;
-
     getBlackboxHints();
-    if (! client.blackbox_hint) {
+    if (! m_client->blackbox_hint)
         getMWMHints();
-    }
     
     // get size, aspect, minimum/maximum size and other hints set
     // by the client
@@ -232,19 +344,18 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     getWMHints(); 
     getWMNormalHints();
 
+    //!!
     // fetch client size and placement
     XWindowAttributes wattrib;
-    if ((! XGetWindowAttributes(display, client.window, &wattrib)) ||
-        !wattrib.screen // no screen?
+    if (! m_client->getAttrib(wattrib) ||
+        !wattrib.screen // no screen? ??
         || wattrib.override_redirect) { // override redirect
         return;
     }
 
     // save old border width so we can restore it later
-    client.old_bw = wattrib.border_width;
-    client.x = wattrib.x; client.y = wattrib.y;
-    client.width = wattrib.width;
-    client.height = wattrib.height;
+    m_client->old_bw = wattrib.border_width;
+    m_client->x = wattrib.x; m_client->y = wattrib.y;
 
 
     Fluxbox *fluxbox = Fluxbox::instance();
@@ -252,7 +363,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     timer.setTimeout(fluxbox->getAutoRaiseDelay());
     timer.fireOnce(true);
 
-    if (client.initial_state == WithdrawnState) {
+    if (m_client->initial_state == WithdrawnState) {
         return;
     }
 
@@ -267,10 +378,10 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
         decorations.handle = decorations.border = false;
     }	
 	
-    if ((client.normal_hint_flags & PMinSize) &&
-        (client.normal_hint_flags & PMaxSize) &&
-        client.max_width != 0 && client.max_width <= client.min_width &&
-        client.max_height != 0 && client.max_height <= client.min_height) {
+    if ((m_client->normal_hint_flags & PMinSize) &&
+        (m_client->normal_hint_flags & PMaxSize) &&
+        m_client->max_width != 0 && m_client->max_width <= m_client->min_width &&
+        m_client->max_height != 0 && m_client->max_height <= m_client->min_height) {
         decorations.maximize = decorations.handle =
             functions.resize = functions.maximize = false;
         decorations.tab = false; //no tab for this window
@@ -283,7 +394,7 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 
     bool place_window = true;
     if (fluxbox->isStartup() || transient ||
-        client.normal_hint_flags & (PPosition|USPosition)) {
+        m_client->normal_hint_flags & (PPosition|USPosition)) {
         setGravityOffsets();
 
         if (! fluxbox->isStartup()) {
@@ -291,20 +402,10 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
             int real_x = m_frame.x();
             int real_y = m_frame.y();
 
-            if (decorations.tab) {
-                if (screen->getTabPlacement() == Tab::PTOP) {
-                    real_y -= screen->getTabHeight();
-                } else if (screen->getTabPlacement() == Tab::PLEFT) {
-                    real_x -= (screen->isTabRotateVertical())
-                        ? screen->getTabHeight()
-                        : screen->getTabWidth();
-                }
-            }
-
             if (real_x >= 0 && 
                 real_y + m_frame.y() >= 0 &&
-                real_x <= (signed) screen->getWidth() &&
-                real_y <= (signed) screen->getHeight())
+                real_x <= (signed) screen.getWidth() &&
+                real_y <= (signed) screen.getHeight())
                 place_window = false;
 
         } else
@@ -318,18 +419,18 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 		
     positionWindows();
 
-    if (workspace_number < 0 || workspace_number >= screen->getCount())
-        workspace_number = screen->getCurrentWorkspaceID();
+    if (workspace_number < 0 || workspace_number >= screen.getCount())
+        workspace_number = screen.getCurrentWorkspaceID();
 
     restoreAttributes();
 
     // if we're a transient then we should be on the same layer as our parent
-    if (isTransient()) {
+    if (isTransient())
         getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());       
-    } else // if no parent then set default layer
+    else // if no parent then set default layer
         moveToLayer(m_layernum);
     
-    screen->getWorkspace(workspace_number)->addWindow(this, place_window);
+    screen.getWorkspace(workspace_number)->addWindow(*this, place_window);
 
     moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
 
@@ -357,78 +458,221 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 
 }
 
-
-FluxboxWindow::~FluxboxWindow() {
-    // notify die
-    m_diesig.notify();
-
-    if (screen == 0) //the window wasn't created 
+/// attach a client to this window and destroy old window
+void FluxboxWindow::attachClient(WinClient &client) {
+    //!! TODO: check for isGroupable in client
+    if (client.m_win == this)
         return;
 
-    timer.stop();
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
+    cerr<<"attach client window = "<<hex<<client.window()<<dec<<endl;
+#endif // DEBUG    
+    // reparent client win to this frame 
+    m_frame.setClientWindow(client);
 
-    Fluxbox *fluxbox = Fluxbox::instance();
-	
-    if (moving || resizing) {
-        screen->hideGeometry();
-        XUngrabPointer(display, CurrentTime);
-    }
-	
-    if (!iconic) {
-        Workspace *workspace = screen->getWorkspace(workspace_number);
-        if (workspace)
-            workspace->removeWindow(this);
-    } else
-        screen->removeIcon(this);
-	
-    if (tab != 0) {
-        delete tab;	
-        tab = 0;
-    }
-	
-    if (client.mwm_hint != 0) {
-        XFree(client.mwm_hint);
-        client.mwm_hint = 0;
-    }
+    if (client.fbwindow() != 0) {
+        FluxboxWindow *old_win = client.fbwindow(); // store old window
 
-    if (client.blackbox_hint != 0) {
-        XFree(client.blackbox_hint);
-        client.blackbox_hint = 0;
-    }
+        Fluxbox *fb = Fluxbox::instance();
+        // make sure we set new window search for each client
+        ClientList::iterator client_it = old_win->clientList().begin();
+        ClientList::iterator client_it_end = old_win->clientList().end();
+        for (; client_it != client_it_end; ++client_it) {
+            fb->saveWindowSearch((*client_it)->window(), this);
+            // reparent window to this
+            m_frame.setClientWindow(*(*client_it));           
+            (*client_it)->m_win = this;
+            // create a labelbutton for this client and associate it with the pointer
+            TextButton *btn = new TextButton(m_frame.label(), 
+                                             m_frame.theme().font(),
+                                             (*client_it)->title());
+            m_labelbuttons[(*client_it)] = btn;
+            m_frame.addLabelButton(*btn);
+            btn->show();
+            FbTk::EventManager &evm = *FbTk::EventManager::instance();
+            // we need motion notify so we mask it
+            btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
+                                       ButtonMotionMask);
 
 
-    if (client.transient_for != 0) {
-        if (client.transient_for == this) {
-            client.transient_for = 0;
+            FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(*(*client_it)));
+            btn->setOnClick(set_client_cmd);
+            evm.add(*this, btn->window()); // we take care of button events for this
+
+            // update transients in client to have this as transient_for
+            WinClient::TransientList::iterator trans_it = (*client_it)->transientList().begin();
+            WinClient::TransientList::iterator trans_it_end = (*client_it)->transientList().end();
+            for (; trans_it != trans_it_end; ++trans_it) {
+                (*trans_it)->m_client->transient_for = this;
+            }
         }
 
-        fluxbox->setFocusedWindow(client.transient_for);
+        // add client and move over all attached clients 
+        // from the old window to this list
+        m_clientlist.splice(m_clientlist.end(), old_win->m_clientlist);           
+        
+        old_win->m_client = 0;
+        delete old_win;
+        
+    } else {
+        // create a labelbutton for this client and associate it with the pointer
+        TextButton *btn = new TextButton(m_frame.label(), 
+                                         m_frame.theme().font(),
+                                         client.title());
+        m_labelbuttons[&client] = btn;
+        m_frame.addLabelButton(*btn);
+        btn->show();
+        FbTk::EventManager &evm = *FbTk::EventManager::instance();
+        // we need motion notify so we mask it
+        btn->window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask | 
+                                   ButtonMotionMask);
 
-        if (client.transient_for) {
-            client.transient_for->client.transients.remove(this);			
-            client.transient_for->setInputFocus();
-            client.transient_for = 0;
+
+        FbTk::RefCount<FbTk::Command> set_client_cmd(new SetClientCmd(client));
+        btn->setOnClick(set_client_cmd);
+        evm.add(*this, btn->window()); // we take care of button events for this
+
+        client.m_win = this;    
+        // update transients in client to have this as transient_for
+        WinClient::TransientList::iterator trans_it = client.transientList().begin();
+        WinClient::TransientList::iterator trans_it_end = client.transientList().end();
+        for (; trans_it != trans_it_end; ++trans_it) {
+            (*trans_it)->m_client->transient_for = this;
         }
-    }
-	
-    while (!client.transients.empty()) {
-        client.transients.back()->client.transient_for = 0;
-        client.transients.pop_back();
-    }
-	
-    if (client.window_group) {
-        fluxbox->removeGroupSearch(client.window_group);
-        client.window_group = 0;
+
+        Fluxbox::instance()->saveWindowSearch(client.window(), this);
     }
 
-    if (m_layermenu) delete m_layermenu;
+    m_frame.reconfigure();
+#ifdef DEBUG
+    XSync(display, False); // so we see error/warnings in time
+    cerr<<"destroyed old window "<<client.window()<<endl;
+#endif // DEBUG
 
-    if (client.window)
-        fluxbox->removeWindowSearch(client.window);
+    // keep the current window on top
+    m_client->raise();
 
 #ifdef DEBUG
-    cerr<<__FILE__<<"("<<__LINE__<<"): ~FluxboxWindow("<<this<<")"<<endl;
+    XSync(display, False); // so we see error/warnings in time
+    cerr<<__FILE__<<"("<<__FUNCTION__<<") clientlist size: "<<m_clientlist.size()<<endl;
+    cerr<<endl<<endl<<endl;
 #endif // DEBUG
+
+}
+
+
+/// detach client from window and create a new window for it
+bool FluxboxWindow::detachClient(WinClient &client) {
+    if (client.m_win != this || numClients() <= 1)
+        return false;
+    
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"] client to detach: "<<
+        hex<<client.window()<<dec<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): number of clients = "<<numClients()<<endl;
+#endif // DEBUG
+
+    removeClient(client);
+
+    client.m_win = screen.createWindow(client);
+    m_client->raise();
+    setInputFocus();
+    return true;
+}
+
+/// removes client from client list, does not create new fluxboxwindow for it
+bool FluxboxWindow::removeClient(WinClient &client) {
+    if (client.m_win != this || numClients() == 0)
+        return false;
+
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
+#endif // DEBUG
+    
+    // set next client to be focused
+    // if the client we're about to remove is the last client then set prev client
+    if (&client == m_clientlist.back())
+        prevClient();
+    else
+        nextClient();
+
+    client.m_win = 0;
+    m_clientlist.remove(&client);
+
+    if (m_client == &client && m_clientlist.size() == 0)
+        m_client = 0;
+
+    FbTk::Button *label_btn = m_labelbuttons[&client];
+    if (label_btn != 0) {
+        m_frame.removeLabelButton(*label_btn);
+        FbTk::EventManager::instance()->remove(label_btn->window());
+        delete label_btn;
+        label_btn = 0;
+    }
+
+    m_labelbuttons.erase(&client);
+
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"] numClients = "<<numClients()<<endl;
+#endif // DEBUG   
+
+    return true;
+}
+
+/// returns WinClient of window we're searching for
+WinClient *FluxboxWindow::findClient(Window win) {
+    std::list<WinClient *>::iterator it = m_clientlist.begin();
+    std::list<WinClient *>::iterator it_end = m_clientlist.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->window() == win)
+            return (*it);
+    }
+    // failure
+    return 0;
+}
+
+/// raise and focus next client
+void FluxboxWindow::nextClient() {
+    if (numClients() == 1)
+        return;
+
+    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
+    assert(it != m_clientlist.end());
+    it++;
+    if (it == m_clientlist.end())
+        m_client = m_clientlist.front();
+    else
+        m_client = *it;
+    m_client->raise();
+    setInputFocus();
+}
+
+void FluxboxWindow::prevClient() {
+    if (numClients() == 1)
+        return;
+
+    ClientList::iterator it = find(m_clientlist.begin(), m_clientlist.end(), m_client);
+    assert(it != m_clientlist.end());
+
+    if (it == m_clientlist.begin())
+        m_client = m_clientlist.back();
+    else
+        m_client = *(--it);
+
+    m_client->raise();
+    setInputFocus();
+}
+
+void FluxboxWindow::setCurrentClient(WinClient &client) {
+    // make sure it's in our list
+    if (client.m_win != this)
+        return;
+
+    m_client = &client;
+    m_client->raise();
+    Fluxbox::instance()->setFocusedWindow(this);
+    setInputFocus();
 }
 
 bool FluxboxWindow::isGroupable() const {
@@ -438,12 +682,12 @@ bool FluxboxWindow::isGroupable() const {
 }
 
 void FluxboxWindow::associateClientWindow() {
-    XSetWindowBorderWidth(display, client.window, 0);
+    m_client->setBorderWidth(0);
     updateTitleFromClient();
     updateIconNameFromClient();
 
-    m_frame.setClientWindow(client.window);
-
+    m_frame.setClientWindow(*m_client);
+    m_frame.resizeForClient(m_client->width(), m_client->height());
     // make sure the frame reconfigures
     m_frame.reconfigure();
 }
@@ -498,19 +742,19 @@ void FluxboxWindow::reconfigure() {
 
 void FluxboxWindow::positionWindows() {
 
-    m_frame.window().setBorderWidth(screen->getBorderWidth());
+    m_frame.window().setBorderWidth(screen.getBorderWidth());
     m_frame.clientArea().setBorderWidth(0); // client area bordered by other things
 
-    m_frame.titlebar().setBorderWidth(screen->getBorderWidth());
+    m_frame.titlebar().setBorderWidth(screen.getBorderWidth());
     if (decorations.titlebar) {
         m_frame.showTitlebar();
     } else {
         m_frame.hideTitlebar();
     }
     
-    m_frame.handle().setBorderWidth(screen->getBorderWidth());
-    m_frame.gripLeft().setBorderWidth(screen->getBorderWidth());
-    m_frame.gripRight().setBorderWidth(screen->getBorderWidth());
+    m_frame.handle().setBorderWidth(screen.getBorderWidth());
+    m_frame.gripLeft().setBorderWidth(screen.getBorderWidth());
+    m_frame.gripRight().setBorderWidth(screen.getBorderWidth());
 
     if (decorations.handle)
         m_frame.showHandle();
@@ -518,115 +762,58 @@ void FluxboxWindow::positionWindows() {
         m_frame.hideHandle();
 	
     m_frame.reconfigure();
-	
-    if (tab)
-        tab->setPosition();
+
 }
 
-
+/// update current client title and title in our frame
 void FluxboxWindow::updateTitleFromClient() {
 
-    XTextProperty text_prop;
-    char **list;
-    int num;
-    I18n *i18n = I18n::instance();
-
-    if (XGetWMName(display, client.window, &text_prop)) {
-        if (text_prop.value && text_prop.nitems > 0) {
-            if (text_prop.encoding != XA_STRING) {
-				
-                text_prop.nitems = strlen((char *) text_prop.value);
-				
-                if ((XmbTextPropertyToTextList(display, &text_prop,
-                                               &list, &num) == Success) &&
-                    (num > 0) && *list) {
-                    client.title = static_cast<char *>(*list);
-                    XFreeStringList(list);
-                } else
-                    client.title = (char *)text_prop.value;
-					
-            } else
-                client.title = (char *)text_prop.value;
-            XFree((char *) text_prop.value);
-        } else { // ok, we don't have a name, set default name
-            client.title = i18n->getMessage(
-                                            FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                            "Unnamed");
-        }
-    } else {
-        client.title = i18n->getMessage(
-                                        FBNLS::WindowSet, FBNLS::WindowUnnamed,
-                                        "Unnamed");
-    }
-
-    m_frame.setTitle(client.title);	
+    m_client->updateTitle();
+    m_labelbuttons[m_client]->setText(m_client->title());    
+    m_labelbuttons[m_client]->clear(); // redraw text
 }
 
-
+/// update icon title from client
 void FluxboxWindow::updateIconNameFromClient() {
-
-    XTextProperty text_prop;
-    char **list;
-    int num;
-
-    if (XGetWMIconName(display, client.window, &text_prop)) {
-        if (text_prop.value && text_prop.nitems > 0) {
-            if (text_prop.encoding != XA_STRING) {
-                text_prop.nitems = strlen((char *) text_prop.value);
-
-                if ((XmbTextPropertyToTextList(display, &text_prop,
-                                               &list, &num) == Success) &&
-                    (num > 0) && *list) {
-                    client.icon_title = (char *)*list;
-                    XFreeStringList(list);
-                } else
-                    client.icon_title = (char *)text_prop.value;
-            } else
-                client.icon_title = (char *)text_prop.value;
-
-            XFree((char *) text_prop.value);
-        } else
-            client.icon_title = getTitle();
-    } else
-        client.icon_title = getTitle();
-	
+    m_client->updateIconTitle();
 }
 
 
 void FluxboxWindow::getWMProtocols() {
     Atom *proto = 0;
     int num_return = 0;
-    Fluxbox *fluxbox = Fluxbox::instance();
+    FbAtoms *fbatoms = FbAtoms::instance();
 
-    if (XGetWMProtocols(display, client.window, &proto, &num_return)) {
+    if (XGetWMProtocols(display, m_client->window(), &proto, &num_return)) {
 
         for (int i = 0; i < num_return; ++i) {
-            if (proto[i] == fluxbox->getWMDeleteAtom())
+            if (proto[i] == fbatoms->getWMDeleteAtom())
                 functions.close = true;
-            else if (proto[i] == fluxbox->getWMTakeFocusAtom())
+            else if (proto[i] == fbatoms->getWMTakeFocusAtom())
                 send_focus_message = true;
-            else if (proto[i] == fluxbox->getFluxboxStructureMessagesAtom())
-                screen->addNetizen(new Netizen(screen, client.window));
+            else if (proto[i] == fbatoms->getFluxboxStructureMessagesAtom())
+                screen.addNetizen(new Netizen(&screen, m_client->window()));
         }
 
         XFree(proto);
     } else {
-        cerr<<"Warning: Failed to read WM Protocols"<<endl;
+        cerr<<"Warning: Failed to read WM Protocols. "<<endl;
     }
 
 }
 
 
 void FluxboxWindow::getWMHints() {
-    XWMHints *wmhint = XGetWMHints(display, client.window);
+    //!!
+    XWMHints *wmhint = XGetWMHints(display, m_client->window());
     if (! wmhint) {
         visible = true;
         iconic = false;
         focus_mode = F_PASSIVE;
-        client.window_group = None;
-        client.initial_state = NormalState;
+        m_client->window_group = None;
+        m_client->initial_state = NormalState;
     } else {
-        client.wm_hint_flags = wmhint->flags;
+        m_client->wm_hint_flags = wmhint->flags;
         if (wmhint->flags & InputHint) {
             if (wmhint->input) {
                 if (send_focus_message)
@@ -643,17 +830,17 @@ void FluxboxWindow::getWMHints() {
             focus_mode = F_PASSIVE;
 
         if (wmhint->flags & StateHint)
-            client.initial_state = wmhint->initial_state;
+            m_client->initial_state = wmhint->initial_state;
         else
-            client.initial_state = NormalState;
+            m_client->initial_state = NormalState;
 
         if (wmhint->flags & WindowGroupHint) {
-            if (! client.window_group) {
-                client.window_group = wmhint->window_group;
-                Fluxbox::instance()->saveGroupSearch(client.window_group, this);
+            if (! m_client->window_group) {
+                m_client->window_group = wmhint->window_group;
+                Fluxbox::instance()->saveGroupSearch(m_client->window_group, this);
             }
         } else
-            client.window_group = None;
+            m_client->window_group = None;
 
         XFree(wmhint);
     }
@@ -663,57 +850,57 @@ void FluxboxWindow::getWMHints() {
 void FluxboxWindow::getWMNormalHints() {
     long icccm_mask;
     XSizeHints sizehint;
-    if (! XGetWMNormalHints(display, client.window, &sizehint, &icccm_mask)) {
-        client.min_width = client.min_height =
-            client.base_width = client.base_height =
-            client.width_inc = client.height_inc = 1;
-        client.max_width = 0; // unbounded
-        client.max_height = 0;
-        client.min_aspect_x = client.min_aspect_y =
-            client.max_aspect_x = client.max_aspect_y = 1;
-        client.win_gravity = NorthWestGravity;
+    if (! XGetWMNormalHints(display, m_client->window(), &sizehint, &icccm_mask)) {
+        m_client->min_width = m_client->min_height =
+            m_client->base_width = m_client->base_height =
+            m_client->width_inc = m_client->height_inc = 1;
+        m_client->max_width = 0; // unbounded
+        m_client->max_height = 0;
+        m_client->min_aspect_x = m_client->min_aspect_y =
+            m_client->max_aspect_x = m_client->max_aspect_y = 1;
+        m_client->win_gravity = NorthWestGravity;
     } else {
-        client.normal_hint_flags = sizehint.flags;
+        m_client->normal_hint_flags = sizehint.flags;
 
         if (sizehint.flags & PMinSize) {
-            client.min_width = sizehint.min_width;
-            client.min_height = sizehint.min_height;
+            m_client->min_width = sizehint.min_width;
+            m_client->min_height = sizehint.min_height;
         } else
-            client.min_width = client.min_height = 1;
+            m_client->min_width = m_client->min_height = 1;
 
         if (sizehint.flags & PMaxSize) {
-            client.max_width = sizehint.max_width;
-            client.max_height = sizehint.max_height;
+            m_client->max_width = sizehint.max_width;
+            m_client->max_height = sizehint.max_height;
         } else {
-            client.max_width = 0; // unbounded
-            client.max_height = 0;
+            m_client->max_width = 0; // unbounded
+            m_client->max_height = 0;
         }
 
         if (sizehint.flags & PResizeInc) {
-            client.width_inc = sizehint.width_inc;
-            client.height_inc = sizehint.height_inc;
+            m_client->width_inc = sizehint.width_inc;
+            m_client->height_inc = sizehint.height_inc;
         } else
-            client.width_inc = client.height_inc = 1;
+            m_client->width_inc = m_client->height_inc = 1;
 
         if (sizehint.flags & PAspect) {
-            client.min_aspect_x = sizehint.min_aspect.x;
-            client.min_aspect_y = sizehint.min_aspect.y;
-            client.max_aspect_x = sizehint.max_aspect.x;
-            client.max_aspect_y = sizehint.max_aspect.y;
+            m_client->min_aspect_x = sizehint.min_aspect.x;
+            m_client->min_aspect_y = sizehint.min_aspect.y;
+            m_client->max_aspect_x = sizehint.max_aspect.x;
+            m_client->max_aspect_y = sizehint.max_aspect.y;
         } else
-            client.min_aspect_x = client.min_aspect_y =
-                client.max_aspect_x = client.max_aspect_y = 1;
+            m_client->min_aspect_x = m_client->min_aspect_y =
+                m_client->max_aspect_x = m_client->max_aspect_y = 1;
 
         if (sizehint.flags & PBaseSize) {
-            client.base_width = sizehint.base_width;
-            client.base_height = sizehint.base_height;
+            m_client->base_width = sizehint.base_width;
+            m_client->base_height = sizehint.base_height;
         } else
-            client.base_width = client.base_height = 0;
+            m_client->base_width = m_client->base_height = 0;
 
         if (sizehint.flags & PWinGravity)
-            client.win_gravity = sizehint.win_gravity;
+            m_client->win_gravity = sizehint.win_gravity;
         else
-            client.win_gravity = NorthWestGravity;
+            m_client->win_gravity = NorthWestGravity;
     }
 }
 
@@ -723,20 +910,20 @@ void FluxboxWindow::getMWMHints() {
     Atom atom_return;
     unsigned long num, len;
     Fluxbox *fluxbox = Fluxbox::instance();
-    if (!XGetWindowProperty(display, client.window,
+    if (!XGetWindowProperty(display, m_client->window(),
                             fluxbox->getMotifWMHintsAtom(), 0,
                             PropMwmHintsElements, false,
                             fluxbox->getMotifWMHintsAtom(), &atom_return,
                             &format, &num, &len,
-                            (unsigned char **) &client.mwm_hint) == Success &&
-        client.mwm_hint) {
+                            (unsigned char **) &m_client->mwm_hint) == Success &&
+        m_client->mwm_hint) {
         return;
     }
     if (num != PropMwmHintsElements)
         return;
 	
-    if (client.mwm_hint->flags & MwmHintsDecorations) {
-        if (client.mwm_hint->decorations & MwmDecorAll) {
+    if (m_client->mwm_hint->flags & MwmHintsDecorations) {
+        if (m_client->mwm_hint->decorations & MwmDecorAll) {
             decorations.titlebar = decorations.handle = decorations.border =
                 decorations.iconify = decorations.maximize =
                 decorations.close = decorations.menu = true;
@@ -745,38 +932,41 @@ void FluxboxWindow::getMWMHints() {
                 decorations.iconify = decorations.maximize =
                 decorations.close = decorations.tab = false;
             decorations.menu = true;
-            if (client.mwm_hint->decorations & MwmDecorBorder)
+            if (m_client->mwm_hint->decorations & MwmDecorBorder)
                 decorations.border = true;
-            if (client.mwm_hint->decorations & MwmDecorHandle)
+            if (m_client->mwm_hint->decorations & MwmDecorHandle)
                 decorations.handle = true;
-            if (client.mwm_hint->decorations & MwmDecorTitle)
-                decorations.titlebar = decorations.tab = true; //only tab on windows with titlebar
-            if (client.mwm_hint->decorations & MwmDecorMenu)
+            if (m_client->mwm_hint->decorations & MwmDecorTitle) {                
+                //only tab on windows with titlebar
+                decorations.titlebar = decorations.tab = true;
+            }
+            
+            if (m_client->mwm_hint->decorations & MwmDecorMenu)
                 decorations.menu = true;
-            if (client.mwm_hint->decorations & MwmDecorIconify)
+            if (m_client->mwm_hint->decorations & MwmDecorIconify)
                 decorations.iconify = true;
-            if (client.mwm_hint->decorations & MwmDecorMaximize)
+            if (m_client->mwm_hint->decorations & MwmDecorMaximize)
                 decorations.maximize = true;
         }
     }
 	
-    if (client.mwm_hint->flags & MwmHintsFunctions) {
-        if (client.mwm_hint->functions & MwmFuncAll) {
+    if (m_client->mwm_hint->flags & MwmHintsFunctions) {
+        if (m_client->mwm_hint->functions & MwmFuncAll) {
             functions.resize = functions.move = functions.iconify =
                 functions.maximize = functions.close = true;
         } else {
             functions.resize = functions.move = functions.iconify =
                 functions.maximize = functions.close = false;
 
-            if (client.mwm_hint->functions & MwmFuncResize)
+            if (m_client->mwm_hint->functions & MwmFuncResize)
                 functions.resize = true;
-            if (client.mwm_hint->functions & MwmFuncMove)
+            if (m_client->mwm_hint->functions & MwmFuncMove)
                 functions.move = true;
-            if (client.mwm_hint->functions & MwmFuncIconify)
+            if (m_client->mwm_hint->functions & MwmFuncIconify)
                 functions.iconify = true;
-            if (client.mwm_hint->functions & MwmFuncMaximize)
+            if (m_client->mwm_hint->functions & MwmFuncMaximize)
                 functions.maximize = true;
-            if (client.mwm_hint->functions & MwmFuncClose)
+            if (m_client->mwm_hint->functions & MwmFuncClose)
                 functions.close = true;
         }
     }
@@ -791,38 +981,42 @@ void FluxboxWindow::getBlackboxHints() {
     unsigned long num, len;
     FbAtoms *atoms = FbAtoms::instance();
 	
-    if (XGetWindowProperty(display, client.window,
+    if (XGetWindowProperty(display, m_client->window(),
                            atoms->getFluxboxHintsAtom(), 0,
                            PropBlackboxHintsElements, False,
                            atoms->getFluxboxHintsAtom(), &atom_return,
                            &format, &num, &len,
-                           (unsigned char **) &client.blackbox_hint) == Success &&
-        client.blackbox_hint) {
+                           (unsigned char **) &m_client->blackbox_hint) == Success &&
+        m_client->blackbox_hint) {
 
         if (num == PropBlackboxHintsElements) {
-            if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_SHADED)
-                shaded = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_SHADED);
+            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_SHADED)
+                shaded = (m_client->blackbox_hint->attrib & BaseDisplay::ATTRIB_SHADED);
 
-            if ((client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
-                (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT))
-                maximized = ((client.blackbox_hint->attrib &
-                              (BaseDisplay::ATTRIB_MAXHORIZ | BaseDisplay::ATTRIB_MAXVERT)) ?	1 : 0);
-            else if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT)
-                maximized = ((client.blackbox_hint->attrib & BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
-            else if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ)
-                maximized = ((client.blackbox_hint->attrib & BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
+            if ((m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ) &&
+                (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT))
+                maximized = ((m_client->blackbox_hint->attrib &
+                              (BaseDisplay::ATTRIB_MAXHORIZ | 
+                               BaseDisplay::ATTRIB_MAXVERT)) ? 1 : 0);
+            else if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXVERT)
+                maximized = ((m_client->blackbox_hint->attrib & 
+                              BaseDisplay::ATTRIB_MAXVERT) ? 2 : 0);
+            else if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_MAXHORIZ)
+                maximized = ((m_client->blackbox_hint->attrib & 
+                              BaseDisplay::ATTRIB_MAXHORIZ) ? 3 : 0);
 
-            if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_OMNIPRESENT)
-                stuck = (client.blackbox_hint->attrib & BaseDisplay::ATTRIB_OMNIPRESENT);
+            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_OMNIPRESENT)
+                stuck = (m_client->blackbox_hint->attrib & 
+                         BaseDisplay::ATTRIB_OMNIPRESENT);
 
-            if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_WORKSPACE)
-                workspace_number = client.blackbox_hint->workspace;
+            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_WORKSPACE)
+                workspace_number = m_client->blackbox_hint->workspace;
 
-            if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_STACK)
-                workspace_number = client.blackbox_hint->stack;
+            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_STACK)
+                workspace_number = m_client->blackbox_hint->stack;
 
-            if (client.blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
-                old_decoration = static_cast<Decoration>(client.blackbox_hint->decoration);
+            if (m_client->blackbox_hint->flags & BaseDisplay::ATTRIB_DECORATION) {
+                old_decoration = static_cast<Decoration>(m_client->blackbox_hint->decoration);
                 setDecoration(old_decoration);
             }
         }
@@ -851,51 +1045,51 @@ void FluxboxWindow::moveResize(int new_x, int new_y,
         downsize();
 
         m_frame.moveResize(new_x, new_y, new_width, new_height);
-        if (tab)
-            tab->resize();
 
-        //positionWindows();
         setFocusFlag(focused);
         shaded = false;
         send_event = true;
     } else {
         m_frame.move(new_x, new_y);
-        //move the tab and the chain		
-        if (tab)
-            tab->setPosition();
 		
-        // if (! moving)
         send_event = true;
     }
 
     if (send_event && ! moving) {
-        /*
-          Send event telling where the root position 
-          of the client window is. (ie frame pos + client pos inside the frame = send pos)
-        */
+        ClientList::iterator client_it = m_clientlist.begin();
+        ClientList::iterator client_it_end = m_clientlist.end();
+        for (; client_it != client_it_end; ++client_it) {
+            WinClient &client = *(*client_it);
+            /*
+              Send event telling where the root position 
+              of the client window is. (ie frame pos + client pos inside the frame = send pos)
+            */
+            //!!
+            client.x = m_frame.x();
+            client.y = m_frame.y();
+            client.resize(m_frame.clientArea().width(),
+                          m_frame.clientArea().height());
+            client.updateRect(m_frame.x() + m_frame.clientArea().x(),
+                              m_frame.y() + m_frame.clientArea().y(),
+                              m_frame.clientArea().width(),
+                              m_frame.clientArea().height());
+        
+            XEvent event;
+            event.type = ConfigureNotify;
 
-        client.width = m_frame.clientArea().width();
-        client.height = m_frame.clientArea().height();
-        client.x = m_frame.x();
-        client.y = m_frame.y();
+            event.xconfigure.display = display;
+            event.xconfigure.event = client.window();
+            event.xconfigure.window = client.window();
+            event.xconfigure.x = m_frame.x() + m_frame.clientArea().x();
+            event.xconfigure.y = m_frame.y() + m_frame.clientArea().y();
+            event.xconfigure.width = client.width();
+            event.xconfigure.height = client.height();
+            event.xconfigure.border_width = client.old_bw;
+            event.xconfigure.above = m_frame.window().window();
+            event.xconfigure.override_redirect = false;
 
-        XEvent event;
-        event.type = ConfigureNotify;
-
-        event.xconfigure.display = display;
-        event.xconfigure.event = client.window;
-        event.xconfigure.window = client.window;
-        event.xconfigure.x = m_frame.x() + m_frame.clientArea().x();
-        event.xconfigure.y = m_frame.y() + m_frame.clientArea().y();
-        event.xconfigure.width = client.width;
-        event.xconfigure.height = client.height;
-        event.xconfigure.border_width = client.old_bw;
-        event.xconfigure.above = m_frame.window().window();
-        event.xconfigure.override_redirect = false;
-
-        XSendEvent(display, client.window, False, StructureNotifyMask, &event);
-
-        screen->updateNetizenConfigNotify(&event);
+            screen.updateNetizenConfigNotify(&event);
+        } // end for        
     }
 }	
 
@@ -904,25 +1098,27 @@ bool FluxboxWindow::setInputFocus() {
     //TODO hint skip focus
     if (((signed) (m_frame.x() + m_frame.width())) < 0) {
         if (((signed) (m_frame.y() + m_frame.height())) < 0) {
-            moveResize(screen->getBorderWidth(), screen->getBorderWidth(),
+            moveResize(screen.getBorderWidth(), screen.getBorderWidth(),
                        m_frame.width(), m_frame.height());
-        } else if (m_frame.y() > (signed) screen->getHeight()) {
-            moveResize(screen->getBorderWidth(), screen->getHeight() - m_frame.height(),
+        } else if (m_frame.y() > (signed) screen.getHeight()) {
+            moveResize(screen.getBorderWidth(), screen.getHeight() - m_frame.height(),
                        m_frame.width(), m_frame.height());
         } else {
-            moveResize(screen->getBorderWidth(), m_frame.y() + screen->getBorderWidth(),
+            moveResize(screen.getBorderWidth(), m_frame.y() + screen.getBorderWidth(),
                        m_frame.width(), m_frame.height());
         }
-    } else if (m_frame.x() > (signed) screen->getWidth()) {
+    } else if (m_frame.x() > (signed) screen.getWidth()) {
         if (((signed) (m_frame.y() + m_frame.height())) < 0) {
-            moveResize(screen->getWidth() - m_frame.width(), screen->getBorderWidth(),
+            moveResize(screen.getWidth() - m_frame.width(), screen.getBorderWidth(),
                        m_frame.width(), m_frame.height());
-        } else if (m_frame.y() > (signed) screen->getHeight()) {
-            moveResize(screen->getWidth() - m_frame.width(),
-                       screen->getHeight() - m_frame.height(), m_frame.width(), m_frame.height());
+        } else if (m_frame.y() > (signed) screen.getHeight()) {
+            moveResize(screen.getWidth() - m_frame.width(),
+                       screen.getHeight() - m_frame.height(), 
+                       m_frame.width(), m_frame.height());
         } else {
-            moveResize(screen->getWidth() - m_frame.width(),
-                       m_frame.y() + screen->getBorderWidth(), m_frame.width(), m_frame.height());
+            moveResize(screen.getWidth() - m_frame.width(),
+                       m_frame.y() + screen.getBorderWidth(), 
+                       m_frame.width(), m_frame.height());
         }
     }
 
@@ -931,16 +1127,16 @@ bool FluxboxWindow::setInputFocus() {
 
     bool ret = false;
 
-    if (client.transients.size() && modal) {
-        std::list<FluxboxWindow *>::iterator it = client.transients.begin();
-        std::list<FluxboxWindow *>::iterator it_end = client.transients.end();
+    if (m_client->transients.size() && modal) {
+        std::list<FluxboxWindow *>::iterator it = m_client->transients.begin();
+        std::list<FluxboxWindow *>::iterator it_end = m_client->transients.end();
         for (; it != it_end; ++it) {
             if ((*it)->modal)
                 return (*it)->setInputFocus();
         }
     } else {
         if (focus_mode == F_LOCALLYACTIVE || focus_mode == F_PASSIVE) {
-            XSetInputFocus(display, client.window,
+            XSetInputFocus(display, m_client->window(),
                            RevertToPointerRoot, CurrentTime);
         } else {
             return false;
@@ -948,26 +1144,13 @@ bool FluxboxWindow::setInputFocus() {
 
 	m_frame.setFocus(true);
 	
-        Fluxbox *fb = Fluxbox::instance();
-        fb->setFocusedWindow(this);
+        Fluxbox::instance()->setFocusedWindow(this);
 			
-        if (send_focus_message) {
-            XEvent ce;
-            ce.xclient.type = ClientMessage;
-            ce.xclient.message_type = fb->getWMProtocolsAtom();
-            ce.xclient.display = display;
-            ce.xclient.window = client.window;
-            ce.xclient.format = 32;
-            ce.xclient.data.l[0] = fb->getWMTakeFocusAtom();
-            ce.xclient.data.l[1] = fb->getLastTime();
-            ce.xclient.data.l[2] = 0l;
-            ce.xclient.data.l[3] = 0l;
-            ce.xclient.data.l[4] = 0l;
-            XSendEvent(display, client.window, false, NoEventMask, &ce);
-        }
+        if (send_focus_message)
+            m_client->sendFocus();
 
-        if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus())
-            && screen->doAutoRaise())
+        if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus())
+            && screen.doAutoRaise())
             timer.start();
 
         ret = true;
@@ -976,28 +1159,10 @@ bool FluxboxWindow::setInputFocus() {
     return ret;
 }
 
-/**
-   Enables or disables the tab on the window
-*/
-void FluxboxWindow::setTab(bool flag) {
-    /*    if (flag) {
-          if (!tab && isGroupable())
-          tab = new Tab(this, 0, 0);
-		
-          if (tab) {
-          tab->focus(); // draws the tab with correct texture
-          tab->setPosition(); // set tab windows position
-          }
-
-          } else if (tab) {
-          delete tab;
-          tab = 0;		
-          }	
-          decorations.tab = flag;
-    */
-}
-
 void FluxboxWindow::hide() {
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
+#endif // DEBUG
     m_windowmenu.hide();
     m_frame.hide();
 }
@@ -1011,51 +1176,43 @@ void FluxboxWindow::show() {
 */
 void FluxboxWindow::iconify() {
 
-    if (iconic) // no need to iconify if we're already
+    if (isIconic()) // no need to iconify if we're already
         return;
 
     m_windowmenu.hide();
-
-    XSelectInput(display, client.window, NoEventMask);
-    XUnmapWindow(display, client.window);
-    XSelectInput(display, client.window,
-                 PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
-
     visible = false;
     iconic = true;
-	
+
     setState(IconicState);
 
     m_frame.hide();
 
-    screen->getWorkspace(workspace_number)->removeWindow(this);
+    ClientList::iterator client_it = m_clientlist.begin();
+    const ClientList::iterator client_it_end = m_clientlist.end();
+    for (; client_it != client_it_end; ++client_it) {
+        WinClient &client = *(*client_it);
+        client.setEventMask(NoEventMask);
+        client.hide();
+        client.setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
+        if (client.transientFor()) {
+            if (! client.transientFor()->isIconic()) {
+                client.transientFor()->iconify();
+            }            
+        }
 
-    if (client.transient_for) {
-        if (! client.transient_for->iconic)
-            client.transient_for->iconify();
-    }
-
-    screen->addIcon(this);
-
-    if (tab) //if this window got a tab then iconify it too
-        tab->iconify();
-		
-    if (client.transients.size()) {
-        std::list<FluxboxWindow *>::iterator it = client.transients.begin();
-        std::list<FluxboxWindow *>::iterator it_end = client.transients.end();
-        for (; it != it_end; ++it) {
-            if (! (*it)->iconic)
-                (*it)->iconify();
+        if (client.transientList().size()) {
+            for_each(client.transientList().begin(),
+                     client.transientList().end(),
+                     mem_fun(&FluxboxWindow::iconify));
         }
     }
 
 }
 
-
 void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     if (iconic || reassoc) {
-        screen->reassociateWindow(this, screen->getCurrentWorkspace()->workspaceID(), false);
-    } else if (moving || workspace_number != screen->getCurrentWorkspace()->workspaceID())
+        screen.reassociateWindow(this, screen.getCurrentWorkspace()->workspaceID(), false);
+    } else if (moving || workspace_number != screen.getCurrentWorkspace()->workspaceID())
         return;
 
     bool was_iconic = iconic;
@@ -1064,32 +1221,39 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
     visible = true;
     setState(NormalState);
 
-    XSelectInput(display, client.window, NoEventMask);
-    XMapWindow(display, client.window);
-    XSelectInput(display, client.window,
-                 PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
-
+    ClientList::iterator client_it = clientList().begin();
+    ClientList::iterator client_it_end = clientList().end();
+    for (; client_it != client_it_end; ++client_it) {
+        (*client_it)->setEventMask(NoEventMask);        
+        (*client_it)->show();
+        (*client_it)->setEventMask(PropertyChangeMask | StructureNotifyMask | FocusChangeMask);
+    }
+    
     m_frame.show();
 
-    if (was_iconic && screen->doFocusNew())
+    if (was_iconic && screen.doFocusNew())
         setInputFocus();
 
     if (focused != m_frame.focused())
         m_frame.setFocus(focused);
 
 
-    if (reassoc && client.transients.size()) {
+    if (reassoc && m_client->transients.size()) {
         // deiconify all transients
-        std::list<FluxboxWindow *>::iterator it = client.transients.begin();
-        std::list<FluxboxWindow *>::iterator it_end = client.transients.end();
-        for (; it != it_end; ++it) {
-            (*it)->deiconify(true, false);
+        client_it = clientList().begin();
+        for (; client_it != client_it_end; ++client_it) {
+            
+            std::list<FluxboxWindow *>::iterator trans_it = 
+                (*client_it)->transientList().begin();
+            std::list<FluxboxWindow *>::iterator trans_it_end = 
+                (*client_it)->transientList().end();
+            for (; trans_it != trans_it_end; ++trans_it) {
+                (*trans_it)->deiconify(true, false);
+            }            
         }
+        
     }
-	
-    if (tab)
-        tab->deiconify();
-			
+
     if (do_raise)
 	raise();
 }
@@ -1098,20 +1262,10 @@ void FluxboxWindow::deiconify(bool reassoc, bool do_raise) {
    Send close request to client window
 */
 void FluxboxWindow::close() {
-    // fill in XClientMessage structure for delete message
-    XEvent ce;
-    ce.xclient.type = ClientMessage;
-    ce.xclient.message_type = FbAtoms::instance()->getWMProtocolsAtom();
-    ce.xclient.display = FbTk::App::instance()->display();
-    ce.xclient.window = client.window;
-    ce.xclient.format = 32;
-    ce.xclient.data.l[0] = FbAtoms::instance()->getWMDeleteAtom();
-    ce.xclient.data.l[1] = CurrentTime;
-    ce.xclient.data.l[2] = 0l;
-    ce.xclient.data.l[3] = 0l;
-    ce.xclient.data.l[4] = 0l;
-    // send event delete message to client window
-    XSendEvent(display, client.window, false, NoEventMask, &ce);
+#ifdef DEBUG
+    cerr<<__FILE__<<"("<<__FUNCTION__<<")"<<endl;
+#endif // DEBUG    
+    m_client->sendClose();
 }
 
 /**
@@ -1127,9 +1281,6 @@ void FluxboxWindow::withdraw() {
     m_frame.hide();
 
     m_windowmenu.hide();
-	
-    if (tab)
-        tab->withdraw();
 }
 
 /**
@@ -1145,12 +1296,12 @@ void FluxboxWindow::maximize() {
         m_old_height = frame().height();
         m_old_pos_x = frame().x();
         m_old_pos_y = frame().y();
-        unsigned int left_x = screen->getMaxLeft();
-        unsigned int max_width = screen->getMaxRight();
-        unsigned int max_top = screen->getMaxTop();
+        unsigned int left_x = screen.getMaxLeft();
+        unsigned int max_width = screen.getMaxRight();
+        unsigned int max_top = screen.getMaxTop();
         moveResize(left_x, max_top, 
                    max_width - left_x, 
-                   screen->getMaxBottom() - max_top - m_frame.window().borderWidth());
+                   screen.getMaxBottom() - max_top - m_frame.window().borderWidth());
     } else { // demaximize, restore to old values
         moveResize(m_old_pos_x, m_old_pos_y,
                    m_old_width, m_old_height);
@@ -1160,8 +1311,8 @@ void FluxboxWindow::maximize() {
 }
 
 void FluxboxWindow::maximizeHorizontal() {
-    unsigned int left_x = screen->getMaxLeft();
-    unsigned int max_width = screen->getMaxRight();
+    unsigned int left_x = screen.getMaxLeft();
+    unsigned int max_width = screen.getMaxRight();
     moveResize(left_x, m_frame.y(), 
                max_width - left_x, m_frame.height() - m_frame.window().borderWidth());
 
@@ -1171,10 +1322,10 @@ void FluxboxWindow::maximizeHorizontal() {
  Maximize window horizontal
  */
 void FluxboxWindow::maximizeVertical() {
-    unsigned int max_top = screen->getMaxTop();
+    unsigned int max_top = screen.getMaxTop();
     moveResize(m_frame.x(), max_top,
                m_frame.width() - m_frame.window().borderWidth(), 
-               screen->getMaxBottom() - max_top);
+               screen.getMaxBottom() - max_top);
 }
 
 
@@ -1207,13 +1358,11 @@ void FluxboxWindow::setLayerNum(int layernum) {
 }
 
 void FluxboxWindow::shade() {
+    // we can only shade if we have a titlebar
     if (!decorations.titlebar)
         return;
 
-    // toggle shade on tab and frame
     m_frame.shade();
-    if (tab)
-        tab->shade();
 
     if (shaded) {
         shaded = false;
@@ -1225,7 +1374,7 @@ void FluxboxWindow::shade() {
         shaded = true;
         blackbox_attrib.flags |= BaseDisplay::ATTRIB_SHADED;
         blackbox_attrib.attrib |= BaseDisplay::ATTRIB_SHADED;
-
+        // shading is the same as iconic
         setState(IconicState);
     }
 
@@ -1234,9 +1383,7 @@ void FluxboxWindow::shade() {
 
 void FluxboxWindow::stick() {
 
-    if (tab) //if it got a tab then do tab's stick on all of the objects in the list
-        tab->stick(); //this window will stick too.
-    else if (stuck) {
+    if (stuck) {
         blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
         blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 
@@ -1244,16 +1391,12 @@ void FluxboxWindow::stick() {
 
     } else {
         stuck = true;
-        if (screen->getCurrentWorkspaceID() != workspace_number) {
-            screen->reassociateWindow(this,screen->getCurrentWorkspaceID(), true);
-        }
-		
+
         blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
         blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 
     }
-    //TODO: make sure any button that listens to this state gets updated
-
+ 
     setState(current_state);
 }
 
@@ -1306,7 +1449,7 @@ void FluxboxWindow::raiseLayer() {
     }
 
     if (!win->isIconic()) {
-        screen->updateNetizenWindowRaise(win->getClientWindow());
+        screen.updateNetizenWindowRaise(win->getClientWindow());
         win->getLayerItem().raiseLayer();
         win->setLayerNum(win->getLayerItem().getLayerNum());
     }
@@ -1315,7 +1458,7 @@ void FluxboxWindow::raiseLayer() {
     std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
     for (; it != it_end; ++it) {
         if (!(*it)->isIconic()) {
-            screen->updateNetizenWindowRaise((*it)->getClientWindow());
+            screen.updateNetizenWindowRaise((*it)->getClientWindow());
             (*it)->getLayerItem().raiseLayer();
             (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
         }
@@ -1333,7 +1476,7 @@ void FluxboxWindow::lowerLayer() {
     win = bottom;
     
     if (!win->isIconic()) {
-        screen->updateNetizenWindowLower(win->getClientWindow());
+        screen.updateNetizenWindowLower(win->getClientWindow());
         win->getLayerItem().lowerLayer();
         win->setLayerNum(win->getLayerItem().getLayerNum());
     }
@@ -1341,7 +1484,7 @@ void FluxboxWindow::lowerLayer() {
     std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
     for (; it != it_end; ++it) {
         if (!(*it)->isIconic()) {
-            screen->updateNetizenWindowLower((*it)->getClientWindow());
+            screen.updateNetizenWindowLower((*it)->getClientWindow());
             (*it)->getLayerItem().lowerLayer();
             (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
         }
@@ -1365,7 +1508,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
     }
 
     if (!win->isIconic()) {
-        screen->updateNetizenWindowRaise(win->getClientWindow());
+        screen.updateNetizenWindowRaise(win->getClientWindow());
         win->getLayerItem().moveToLayer(layernum);
         win->setLayerNum(win->getLayerItem().getLayerNum());
     }
@@ -1373,10 +1516,9 @@ void FluxboxWindow::moveToLayer(int layernum) {
     std::list<FluxboxWindow *>::const_iterator it_end = win->getTransients().end();
     for (; it != it_end; ++it) {
         if (!(*it)->isIconic()) {
-            screen->updateNetizenWindowRaise((*it)->getClientWindow());
+            screen.updateNetizenWindowRaise((*it)->getClientWindow());
             (*it)->getLayerItem().moveToLayer(layernum);
             (*it)->setLayerNum((*it)->getLayerItem().getLayerNum());
-
         }
     }
 }
@@ -1386,17 +1528,14 @@ void FluxboxWindow::moveToLayer(int layernum) {
 void FluxboxWindow::setFocusFlag(bool focus) {
     focused = focus;
 
-    // Record focus timestamp for window cycling enhancements, such as skipping lower tabs
+    // Record focus timestamp for window cycling enhancements
     if (focused)
         gettimeofday(&lastFocusTime, 0);
 
     m_frame.setFocus(focus);
-	
-    if (tab)
-        tab->focus();
 
-    if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus()) &&
-        screen->doAutoRaise())
+    if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus()) &&
+        screen.doAutoRaise())
         timer.stop();
 }
 
@@ -1407,10 +1546,10 @@ void FluxboxWindow::installColormap(bool install) {
     if (! validateClient()) return;
 
     int i = 0, ncmap = 0;
-    Colormap *cmaps = XListInstalledColormaps(display, client.window, &ncmap);
+    Colormap *cmaps = XListInstalledColormaps(display, m_client->window(), &ncmap);
     XWindowAttributes wattrib;
-    if (cmaps) {
-        if (XGetWindowAttributes(display, client.window, &wattrib)) {
+    if (cmaps) { //!!
+        if (m_client->getAttrib(wattrib)) { //XGetWindowAttributes(display, m_client->window, &wattrib)) {
             if (install) {
                 // install the window's colormap
                 for (i = 0; i < ncmap; i++) {
@@ -1424,9 +1563,10 @@ void FluxboxWindow::installColormap(bool install) {
                 if (install)
                     XInstallColormap(display, wattrib.colormap);
             } else {				
-                for (i = 0; i < ncmap; i++) // uninstall the window's colormap
-                    if (*(cmaps + i) == wattrib.colormap)						
-                        XUninstallColormap(display, wattrib.colormap); // we found the colormap to uninstall
+                for (i = 0; i < ncmap; i++) { // uninstall the window's colormap
+                    if (*(cmaps + i) == wattrib.colormap)
+                       XUninstallColormap(display, wattrib.colormap);
+                }
             }
         }
 
@@ -1436,23 +1576,29 @@ void FluxboxWindow::installColormap(bool install) {
     fluxbox->ungrab();
 }
 
+/**
+ Saves blackbox hints for every client in our list
+ */
 void FluxboxWindow::saveBlackboxHints() {
-    Fluxbox *fluxbox = Fluxbox::instance();
-    XChangeProperty(display, client.window, fluxbox->getFluxboxAttributesAtom(),
-                    fluxbox->getFluxboxAttributesAtom(), 32, PropModeReplace,
-                    (unsigned char *) &blackbox_attrib, PropBlackboxAttributesElements);
+    for_each(m_clientlist.begin(), m_clientlist.end(), 
+             FbTk::ChangeProperty(display, FbAtoms::instance()->getFluxboxAttributesAtom(),
+                            PropModeReplace, 
+                            (unsigned char *)&blackbox_attrib,
+                            PropBlackboxAttributesElements));
 }
 
-
+/**
+ Sets state on each client in our list
+ */
 void FluxboxWindow::setState(unsigned long new_state) {
     current_state = new_state;
-    Fluxbox *fluxbox = Fluxbox::instance();
     unsigned long state[2];
     state[0] = (unsigned long) current_state;
     state[1] = (unsigned long) None;
-    XChangeProperty(display, client.window, fluxbox->getWMStateAtom(),
-                    fluxbox->getWMStateAtom(), 32, PropModeReplace,
-                    (unsigned char *) state, 2);
+    for_each(m_clientlist.begin(), m_clientlist.end(),
+             FbTk::ChangeProperty(display, FbAtoms::instance()->getWMStateAtom(),
+                            PropModeReplace,
+                            (unsigned char *)state, 2));
 
     saveBlackboxHints();
     //notify state changed
@@ -1467,7 +1613,7 @@ bool FluxboxWindow::getState() {
     int foo;
     unsigned long *state, ulfoo, nitems;
     Fluxbox *fluxbox = Fluxbox::instance();
-    if ((XGetWindowProperty(display, client.window, fluxbox->getWMStateAtom(),
+    if ((XGetWindowProperty(display, m_client->window(), fluxbox->getWMStateAtom(),
                             0l, 2l, false, fluxbox->getWMStateAtom(),
                             &atom_return, &foo, &nitems, &ulfoo,
                             (unsigned char **) &state) != Success) ||
@@ -1485,12 +1631,12 @@ bool FluxboxWindow::getState() {
     return ret;
 }
 
-//TODO: this functions looks odd
+//!! TODO: this functions looks odd
 void FluxboxWindow::setGravityOffsets() {
     int newx = m_frame.x();
     int newy = m_frame.y();
     // translate x coordinate
-    switch (client.win_gravity) {
+    switch (m_client->win_gravity) {
         // handle Westward gravity
     case NorthWestGravity:
     case WestGravity:
@@ -1526,7 +1672,7 @@ void FluxboxWindow::setGravityOffsets() {
     }
 
     // translate y coordinate
-    switch (client.win_gravity) {
+    switch (m_client->win_gravity) {
         // handle Northbound gravity
     case NorthWestGravity:
     case NorthGravity:
@@ -1554,8 +1700,8 @@ void FluxboxWindow::setGravityOffsets() {
         m_frame.move(newx, newy);
 }
 
-/* 
- * restoreAttributes sets the attributes to what they should be
+/** 
+ * Sets the attributes to what they should be
  * but doesn't change the actual state
  * (so the caller can set defaults etc as well)
  */
@@ -1569,7 +1715,7 @@ void FluxboxWindow::restoreAttributes() {
     Fluxbox *fluxbox = Fluxbox::instance();
 	
     BaseDisplay::BlackboxAttributes *net;
-    if (XGetWindowProperty(display, client.window,
+    if (XGetWindowProperty(display, m_client->window(),
                            fluxbox->getFluxboxAttributesAtom(), 0l,
                            PropBlackboxAttributesElements, false,
                            fluxbox->getFluxboxAttributesAtom(), &atom_return, &foo,
@@ -1598,8 +1744,8 @@ void FluxboxWindow::restoreAttributes() {
         current_state = save_state;
     }
 
-    if (( blackbox_attrib.workspace != screen->getCurrentWorkspaceID()) &&
-        ( blackbox_attrib.workspace < screen->getCount())) {
+    if (( blackbox_attrib.workspace != screen.getCurrentWorkspaceID()) &&
+        ( blackbox_attrib.workspace < screen.getCount())) {
         workspace_number = blackbox_attrib.workspace;
 
         if (current_state == NormalState) current_state = WithdrawnState;
@@ -1647,8 +1793,6 @@ void FluxboxWindow::showMenu(int mx, int my) {
     m_windowmenu.move(mx, my);
     m_windowmenu.show();		
     m_windowmenu.raise();
-    //    m_windowmenu.getSendToMenu().raise();
-    //    m_windowmenu.getSendGroupToMenu().raise();
 }
 
 /**
@@ -1672,38 +1816,38 @@ void FluxboxWindow::popupMenu() {
 
 void FluxboxWindow::restoreGravity() {
     // restore x coordinate
-    switch (client.win_gravity) {
+    switch (m_client->win_gravity) {
         // handle Westward gravity
     case NorthWestGravity:
     case WestGravity:
     case SouthWestGravity:
     default:
-        client.x = m_frame.x();
+        m_client->x = m_frame.x();
         break;
 
     // handle Eastward gravity
     case NorthEastGravity:
     case EastGravity:
     case SouthEastGravity:
-        client.x = (m_frame.x() + m_frame.width()) - client.width;
+        m_client->x = (m_frame.x() + m_frame.width()) - m_client->width();
         break;
     }
 
     // restore y coordinate
-    switch (client.win_gravity) {
+    switch (m_client->win_gravity) {
         // handle Northbound gravity
     case NorthWestGravity:
     case NorthGravity:
     case NorthEastGravity:
     default:
-        client.y = m_frame.y();
+        m_client->y = m_frame.y();
         break;
 
         // handle Southbound gravity
     case SouthWestGravity:
     case SouthGravity:
     case SouthEastGravity:
-        client.y = (m_frame.y() + m_frame.height()) - client.height;
+        m_client->y = (m_frame.y() + m_frame.height()) - m_client->height();
         break;
     }
 }
@@ -1712,15 +1856,8 @@ void FluxboxWindow::restoreGravity() {
    Determine if this is the lowest tab of them all
 */
 bool FluxboxWindow::isLowerTab() const {
-    Tab* chkTab = (tab ? tab->first() : 0);
-    while (chkTab) {
-        const FluxboxWindow* chkWin = chkTab->getWindow();
-        if (chkWin && chkWin != this &&
-            timercmp(&chkWin->lastFocusTime, &lastFocusTime, >))
-            return true;
-        chkTab = chkTab->next();
-    }
-    return false;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO!"<<endl;
+    return true;
 }
 
 /**
@@ -1742,16 +1879,16 @@ void FluxboxWindow::handleEvent(XEvent &event) {
 
 void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
     // we're only conserned about client window event
-    if (re.window != client.window)
+    if (re.window != m_client->window())
         return;
 
     Fluxbox *fluxbox = Fluxbox::instance();
 	
     bool get_state_ret = getState();
     if (! (get_state_ret && fluxbox->isStartup())) {
-        if ((client.wm_hint_flags & StateHint) &&
+        if ((m_client->wm_hint_flags & StateHint) &&
             (! (current_state == NormalState || current_state == IconicState))) {
-            current_state = client.initial_state;
+            current_state = m_client->initial_state;
         } else
             current_state = NormalState;
     } else if (iconic)
@@ -1787,12 +1924,14 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
             } else 
                 m_class_name = "";
 
-            Workspace *wsp = screen->getWorkspace(workspace_number);
-            // we must be resizable AND maximizable to be autogrouped
-            // TODO: there should be an isGroupable() function
-            if (wsp != 0 && isResizable() && isMaximizable()) {
-                wsp->checkGrouping(*this);
-            }
+            /*
+              Workspace *wsp = screen.getWorkspace(workspace_number);
+              // we must be resizable AND maximizable to be autogrouped
+              //!! TODO: there should be an isGroupable() function
+              if (wsp != 0 && isResizable() && isMaximizable()) {
+              wsp->checkGrouping(*this);
+              }
+            */
         }		
 		
         deiconify(false);
@@ -1809,7 +1948,7 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent &re) {
 
 
 void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
-    if (ne.window == client.window && !ne.override_redirect && visible) {
+    if (ne.window == m_client->window() && !ne.override_redirect && visible) {
         Fluxbox *fluxbox = Fluxbox::instance();
         fluxbox->grab();
         if (! validateClient())
@@ -1817,7 +1956,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         setState(NormalState);		
 			
-        if (transient || screen->doFocusNew())
+        if (transient || screen.doFocusNew())
             setInputFocus();
         else
             setFocusFlag(false);			
@@ -1830,13 +1969,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
         // Auto-group from tab?
         if (!transient) {
-            // Grab and clear the auto-group window
-            FluxboxWindow* autoGroupWindow = screen->useAutoGroupWindow();
-            if (autoGroupWindow) {
-                Tab *groupTab = autoGroupWindow->getTab();
-                if (groupTab)
-                    groupTab->addWindowToGroup(this);
-            }
+            cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO check grouping here"<<endl;
         }
 
         fluxbox->ungrab();
@@ -1845,32 +1978,33 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent &ne) {
 
 /**
    Unmaps frame window and client window if 
-   event.window == client.window
+   event.window == m_client->window
    Returns true if *this should die
    else false
 */
 void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
-    if (ue.window != client.window)
+    WinClient *client = findClient(ue.window);
+    if (client == 0)
         return;
 	
 #ifdef DEBUG
-    cerr<<__FILE__<<": unmapNotifyEvent() 0x"<<hex<<client.window<<dec<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
 #endif // DEBUG
-
-    restore(false);
-
+    
+    restore(client, false);
 
 }
 
 /**
-   Checks if event is for client.window.
+   Checks if event is for m_client->window.
 */
 void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent &de) {
-    if (de.window == client.window) {
+    if (de.window == m_client->window()) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): DestroyNotifyEvent this="<<this<<endl;
 #endif // DEBUG
-        m_frame.hide();
+        if (numClients() == 1)
+            m_frame.hide();
     }
 
 }
@@ -1884,11 +2018,15 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
     case XA_WM_COMMAND:
         break;
 
-    case XA_WM_TRANSIENT_FOR:
+    case XA_WM_TRANSIENT_FOR: {
+        bool was_transient = isTransient();
         updateTransientInfo();
         reconfigure();
-
-        break;
+        // update our layer to be the same layer as our transient for
+        if (isTransient() && isTransient() != was_transient)
+            getLayerItem().setLayer(getTransientFor()->getLayerItem().getLayer());
+            
+    } break;
 
     case XA_WM_HINTS:
         getWMHints();
@@ -1901,12 +2039,9 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
     case XA_WM_NAME:
         updateTitleFromClient();
- 
-        if (hasTab()) // update tab
-            getTab()->draw(false);
 
         if (! iconic)
-            screen->getWorkspace(workspace_number)->update();
+            screen.getWorkspace(workspace_number)->update();
         else
             updateIcon();
 		 
@@ -1916,11 +2051,11 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
     case XA_WM_NORMAL_HINTS: {
         getWMNormalHints();
 
-        if ((client.normal_hint_flags & PMinSize) &&
-            (client.normal_hint_flags & PMaxSize)) {
+        if ((m_client->normal_hint_flags & PMinSize) &&
+            (m_client->normal_hint_flags & PMaxSize)) {
 
-            if (client.max_width != 0 && client.max_width <= client.min_width &&
-                client.max_height != 0 && client.max_height <= client.min_height) {
+            if (m_client->max_width != 0 && m_client->max_width <= m_client->min_width &&
+                m_client->max_height != 0 && m_client->max_height <= m_client->min_height) {
                 decorations.maximize = false;
                 decorations.handle = false;
                 functions.resize=false;
@@ -1956,7 +2091,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
             getWMProtocols();
             //!!TODO  check this area            
             // reset window actions
-            screen->setupWindowActions(*this);
+            screen.setupWindowActions(*this);
             
         } 
         break;
@@ -1971,7 +2106,7 @@ void FluxboxWindow::exposeEvent(XExposeEvent &ee) {
 
 
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
-    if (cr.window != client.window)
+    if (cr.window != m_client->window())
         return;
 
     int cx = m_frame.x(), cy = m_frame.y();
@@ -1980,7 +2115,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
                                m_frame.titlebar().height() + frame().titlebar().borderWidth() 
                                : 0);
     if (cr.value_mask & CWBorderWidth)
-        client.old_bw = cr.border_width;
+        m_client->old_bw = cr.border_width;
 
     if (cr.value_mask & CWX)
         cx = cr.x;
@@ -2027,7 +2162,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
     m_frame.buttonPressEvent(be);
 
     if (be.button == 1 || (be.button == 3 && be.state == Mod1Mask)) {
-        if ((! focused) && (! screen->isSloppyFocus())) { //check focus 
+        if ((! focused) && (! screen.isSloppyFocus())) { //check focus 
             setInputFocus(); 
         }
 
@@ -2035,20 +2170,19 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             raise();
             XAllowEvents(display, ReplayPointer, be.time);			
         } else {            
-            button_grab_x = be.x_root - m_frame.x() - screen->getBorderWidth();
-            button_grab_y = be.y_root - m_frame.y() - screen->getBorderWidth();      
+            button_grab_x = be.x_root - m_frame.x() - screen.getBorderWidth();
+            button_grab_y = be.y_root - m_frame.y() - screen.getBorderWidth();      
         }
         
         if (m_windowmenu.isVisible())
-                m_windowmenu.hide();
+            m_windowmenu.hide();
     }
-
 }
 
 void FluxboxWindow::shapeEvent(XShapeEvent *) { }
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
-    m_frame.buttonReleaseEvent(re); // let the frame handle the event first
+
 
     if (isMoving())
         stopMoving();		
@@ -2057,54 +2191,72 @@ void FluxboxWindow::buttonReleaseEvent(XButtonEvent &re) {
     else if (re.window == m_frame.window()) {
         if (re.button == 2 && re.state == Mod1Mask)
             XUngrabPointer(display, CurrentTime);
+        m_frame.buttonReleaseEvent(re);
+    } else {
+        m_frame.buttonReleaseEvent(re);
     }
-
 }
 
 
 void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
-    if (isMoving() && me.window == screen->getRootWindow()) {
+    if (isMoving() && me.window == screen.getRootWindow()) {
         me.window = m_frame.window().window();
     }
+    bool inside_titlebar = (m_frame.titlebar() == me.window || m_frame.label() == me.window ||
+                            m_frame.handle() == me.window || m_frame.window() == me.window);
+
+    if (!inside_titlebar) {
+        // determine if we're in titlebar
+        Client2ButtonMap::iterator it = m_labelbuttons.begin();
+        Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+        for (; it != it_end; ++it) {
+            if ((*it).second->window() == me.window) {
+                inside_titlebar = true;
+                break;
+            }
+        }
+    }
+
     if ((me.state & Button1Mask) && functions.move &&
-        (m_frame.titlebar() == me.window || m_frame.label() == me.window ||
-         m_frame.handle() == me.window || m_frame.window() == me.window) && !isResizing()) {
-			 
+        inside_titlebar && 
+        !isResizing()) {
+
         if (! isMoving()) {
             startMoving(me.window);
         } else {			
             int dx = me.x_root - button_grab_x, 
                 dy = me.y_root - button_grab_y;
 
-            dx -= screen->getBorderWidth();
-            dy -= screen->getBorderWidth();
+            dx -= screen.getBorderWidth();
+            dy -= screen.getBorderWidth();
 
             // Warp to next or previous workspace?, must have moved sideways some
             int moved_x = me.x_root - last_resize_x;
             // save last event point
             last_resize_x = me.x_root;
             last_resize_y = me.y_root;
-            if (moved_x && screen->isWorkspaceWarping()) {
-                unsigned int cur_id = screen->getCurrentWorkspaceID();
+
+            if (moved_x && screen.isWorkspaceWarping()) {
+                unsigned int cur_id = screen.getCurrentWorkspaceID();
                 unsigned int new_id = cur_id;
-                const int warpPad = screen->getEdgeSnapThreshold();
+                const int warpPad = screen.getEdgeSnapThreshold();
                 // 1) if we're inside the border threshold
                 // 2) if we moved in the right direction
-                if (me.x_root >= int(screen->getWidth()) - warpPad - 1 &&
+                if (me.x_root >= int(screen.getWidth()) - warpPad - 1 &&
                     moved_x > 0) {
                     //warp right
-                    new_id = (cur_id + 1) % screen->getCount();
+                    new_id = (cur_id + 1) % screen.getCount();
                     dx = - me.x_root; // move mouse back to x=0
                 } else if (me.x_root <= warpPad &&
-                    moved_x < 0) {
+                           moved_x < 0) {
                     //warp left
-                    new_id = (cur_id + screen->getCount() - 1) % screen->getCount();
-                    dx = screen->getWidth() - me.x_root-1; // move mouse to screen width - 1
+                    new_id = (cur_id + screen.getCount() - 1) % screen.getCount();
+                    dx = screen.getWidth() - me.x_root-1; // move mouse to screen width - 1
                 }
                 if (new_id != cur_id) {
                     XWarpPointer(display, None, None, 0, 0, 0, 0, dx, 0);
-                    
-                    screen->changeWorkspaceID(new_id);
+
+                    screen.changeWorkspaceID(new_id);
 
                     last_resize_x = me.x_root + dx;
                     
@@ -2115,12 +2267,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             }
 
             
-            if (! screen->doOpaqueMove()) {
-                XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+            if (! screen.doOpaqueMove()) {
+                XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                                last_move_x, last_move_y, 
                                m_frame.width() + 2*frame().window().borderWidth(),
                                m_frame.height() + 2*frame().window().borderWidth());
-                XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+
+                XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                                dx, dy, 
                                m_frame.width() + 2*frame().window().borderWidth(),
                                m_frame.height() + 2*frame().window().borderWidth());
@@ -2130,21 +2283,21 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
                 moveResize(dx, dy, m_frame.width(), m_frame.height());
             }
 
-            if (screen->doShowWindowPos())
-                screen->showPosition(dx, dy);
+            if (screen.doShowWindowPos())
+                screen.showPosition(dx, dy);
         } // end if moving
     } else if (functions.resize &&
                (((me.state & Button1Mask) && (me.window == m_frame.gripRight() ||
                                               me.window == m_frame.gripLeft())) ||
                 me.window == m_frame.window())) {
-		
+
         bool left = (me.window == m_frame.gripLeft());
 
         if (! resizing) {			
             startResizing(me.window, me.x, me.y, left); 
         } else if (resizing) {
             // draw over old rect
-            XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+            XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                            last_resize_x, last_resize_y,
                            last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                            last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2172,13 +2325,13 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
             }
 
             // draw resize rectangle
-            XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+            XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                            last_resize_x, last_resize_y,
                            last_resize_w - 1 + 2 * m_frame.window().borderWidth(), 
                            last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
-            if (screen->doShowWindowPos())
-                screen->showGeometry(gx, gy);
+            if (screen.doShowWindowPos())
+                screen.showGeometry(gx, gy);
         }
     }
 
@@ -2193,8 +2346,8 @@ void FluxboxWindow::enterNotifyEvent(XCrossingEvent &ev) {
     }
 
     if (ev.window == frame().window() ||
-        ev.window == client.window) {
-        if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus()) 
+        ev.window == m_client->window()) {
+        if ((screen.isSloppyFocus() || screen.isSemiSloppyFocus()) 
             && !isFocused()) {
            
             
@@ -2287,8 +2440,8 @@ bool FluxboxWindow::validateClient() {
     XSync(display, false);
 
     XEvent e;
-    if (XCheckTypedWindowEvent(display, client.window, DestroyNotify, &e) ||
-        XCheckTypedWindowEvent(display, client.window, UnmapNotify, &e)) {
+    if (XCheckTypedWindowEvent(display, m_client->window(), DestroyNotify, &e) ||
+        XCheckTypedWindowEvent(display, m_client->window(), UnmapNotify, &e)) {
         XPutBackEvent(display, &e);
         Fluxbox::instance()->ungrab();
 
@@ -2303,7 +2456,7 @@ void FluxboxWindow::startMoving(Window win) {
     Fluxbox *fluxbox = Fluxbox::instance();
     // grabbing (and masking) on the root window allows us to 
     // freely map and unmap the window we're moving.
-    XGrabPointer(display, screen->getRootWindow(), False, Button1MotionMask |
+    XGrabPointer(display, screen.getRootWindow(), False, Button1MotionMask |
                  ButtonReleaseMask, GrabModeAsync, GrabModeAsync,
                  None, fluxbox->getMoveCursor(), CurrentTime);
 
@@ -2311,16 +2464,17 @@ void FluxboxWindow::startMoving(Window win) {
         m_windowmenu.hide();
 
     move_ws = workspace_number;
-    fluxbox->maskWindowEvents(screen->getRootWindow(), this);
+    fluxbox->maskWindowEvents(screen.getRootWindow(), this);
+
     last_move_x = frame().x();
     last_move_y = frame().y();
-    if (! screen->doOpaqueMove()) {
+    if (! screen.doOpaqueMove()) {
         fluxbox->grab();
-        XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+        XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                        frame().x(), frame().y(),
                        frame().width() + 2*frame().window().borderWidth(), 
                        frame().height() + 2*frame().window().borderWidth());
-        screen->showPosition(frame().x(), frame().y());
+        screen.showPosition(frame().x(), frame().y());
     }
 }
 
@@ -2331,32 +2485,32 @@ void FluxboxWindow::stopMoving() {
     fluxbox->maskWindowEvents(0, 0);
 
    
-    if (! screen->doOpaqueMove()) {
-        XDrawRectangle(FbTk::App::instance()->display(), screen->getRootWindow(), screen->getOpGC(),
+    if (! screen.doOpaqueMove()) {
+        XDrawRectangle(FbTk::App::instance()->display(), screen.getRootWindow(), screen.getOpGC(),
                        last_move_x, last_move_y, 
                        frame().width() + 2*frame().window().borderWidth(),
                        frame().height() + 2*frame().window().borderWidth());
         moveResize(last_move_x, last_move_y, m_frame.width(), m_frame.height());
-        if (workspace_number != screen->getCurrentWorkspaceID()) {
-            screen->reassociateGroup(this, screen->getCurrentWorkspaceID(), true);
+        if (workspace_number != getScreen().getCurrentWorkspaceID()) {
+            screen.reassociateGroup(this, getScreen().getCurrentWorkspaceID(), true);
             m_frame.show();
         }
         fluxbox->ungrab();
     } else
         moveResize(m_frame.x(), m_frame.y(), m_frame.width(), m_frame.height());
 
-    screen->hideGeometry();
+    screen.hideGeometry();
     XUngrabPointer(display, CurrentTime);
 	
     XSync(display, False); //make sure the redraw is made before we continue
 }
 
 void FluxboxWindow::pauseMoving() {
-    if (screen->doOpaqueMove()) {
+    if (getScreen().doOpaqueMove()) {
         return;
     }
 
-    XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+    XDrawRectangle(display, getScreen().getRootWindow(), getScreen().getOpGC(),
                    last_move_x, last_move_y, 
                    m_frame.width() + 2*frame().window().borderWidth(),
                    m_frame.height() + 2*frame().window().borderWidth());
@@ -2365,15 +2519,15 @@ void FluxboxWindow::pauseMoving() {
 
 
 void FluxboxWindow::resumeMoving() {
-    if (screen->doOpaqueMove()) {
+    if (screen.doOpaqueMove()) {
         return;
     }
     
-    if (workspace_number == screen->getCurrentWorkspaceID()) {
+    if (workspace_number == screen.getCurrentWorkspaceID()) {
         m_frame.show();
     }
     XSync(display,false);
-    XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+    XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                    last_move_x, last_move_y, 
                    m_frame.width() + 2*frame().window().borderWidth(),
                    m_frame.height() + 2*frame().window().borderWidth());
@@ -2402,10 +2556,10 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
     else
         right_fixsize(&gx, &gy);
 
-    if (screen->doShowWindowPos())
-        screen->showGeometry(gx, gy);
+    if (screen.doShowWindowPos())
+        screen.showGeometry(gx, gy);
 
-    XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+    XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                    last_resize_x, last_resize_y,
                    last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                    last_resize_h - 1 + 2 * m_frame.window().borderWidth());
@@ -2414,12 +2568,12 @@ void FluxboxWindow::startResizing(Window win, int x, int y, bool left) {
 void FluxboxWindow::stopResizing(Window win) {
     resizing = false;
 	
-    XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
+    XDrawRectangle(display, screen.getRootWindow(), screen.getOpGC(),
                    last_resize_x, last_resize_y,
                    last_resize_w - 1 + 2 * m_frame.window().borderWidth(),
                    last_resize_h - 1 + 2 * m_frame.window().borderWidth());
 
-    screen->hideGeometry();
+    screen.hideGeometry();
 
     if (win && win == m_frame.gripLeft())
         left_fixsize();
@@ -2439,7 +2593,7 @@ void FluxboxWindow::updateIcon() {
     if (Fluxbox::instance()->useIconBar()) {
         const IconBar *iconbar = 0;
         const IconBarObj *icon = 0;
-        if ((iconbar = screen->getToolbar()->iconBar()) != 0) {
+        if ((iconbar = screen.getToolbar()->iconBar()) != 0) {
             if ((icon = iconbar->findIcon(this)) != 0)
                 iconbar->draw(icon, icon->width());
         }
@@ -2447,89 +2601,118 @@ void FluxboxWindow::updateIcon() {
 }
 
 void FluxboxWindow::updateTransientInfo() {
-    // remove us from parent
-    if (client.transient_for != 0) {
-        client.transient_for->client.transients.remove(this);
-    }
-    client.transient_for = 0;
-	
-    // determine if this is a transient window
-    Window win;
-    if (!XGetTransientForHint(display, client.window, &win))
-        return;
-	
-    if (win == client.window)
-        return;
-	
-    if (win == screen->getRootWindow() && win != 0) {
-        modal = true;
-        return;
-    }
-	
-    client.transient_for = Fluxbox::instance()->searchWindow(win);
-    if (client.transient_for != 0 &&
-        client.window_group != None && win == client.window_group) {		
-        client.transient_for = Fluxbox::instance()->searchGroup(win, this);
-    }
-	
-    // make sure we don't have deadlock loop in transient chain
-    for (FluxboxWindow *w = this; w != 0; w = w->client.transient_for) {
-        if (w == w->client.transient_for) {
-            w->client.transient_for = 0;
-#ifdef DEBUG	
-            cerr<<"w = client.transient_for";
-#endif // DEBUG
-            break;
-        }
-    }
-	
-    if (client.transient_for != 0) {
-        client.transient_for->client.transients.push_back(this);
-        // make sure we only have on instance of this
-        client.transient_for->client.transients.unique(); 
-        stuck = client.transient_for->stuck;
-    }
-	
+    for_each(clientList().begin(),
+             clientList().end(),
+             mem_fun(&WinClient::updateTransientInfo));
 }
 
-void FluxboxWindow::restore(bool remap) {
-    XChangeSaveSet(display, client.window, SetModeDelete);
-    XSelectInput(display, client.window, NoEventMask);
+void FluxboxWindow::restore(WinClient *client, bool remap) {
+    if (client->m_win != this)
+        return;
 
-    restoreGravity();
+    XChangeSaveSet(display, client->window(), SetModeDelete);
+    client->setEventMask(NoEventMask);
 
-    m_frame.hide();
-    // make sure the frame doesn't change client window anymore
-    m_frame.removeClient();
+    //!! TODO
+    //restoreGravity();
 
-    XUnmapWindow(display, client.window);
+    client->hide();
 
     // restore old border width
-    XSetWindowBorderWidth(display, client.window, client.old_bw);
+    client->setBorderWidth(client->old_bw);
 
-    XEvent dummy;
-    if (! XCheckTypedWindowEvent(display, client.window, ReparentNotify,
-                                 &dummy)) {
+    XEvent not_used;
+    if (! XCheckTypedWindowEvent(display, client->window(), ReparentNotify,
+                                 &not_used)) {
 #ifdef DEBUG
-        cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client.window<<dec<<" to root"<<endl;
+        cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client->window()<<dec<<" to root"<<endl;
 #endif // DEBUG
 
-        // reparent to screen window
-        XReparentWindow(display, client.window, screen->getRootWindow(),
-			m_frame.x(), m_frame.y());
-
+        // reparent to root window
+        client->reparent(screen.getRootWindow(), m_frame.x(), m_frame.y());        
     }
 
     if (remap)
-        XMapWindow(display, client.window);
+        client->show();
+
+    delete client;
+
+    if (numClients() == 0)
+        m_frame.hide();
 
 }
 
+void FluxboxWindow::restore(bool remap) {
+    if (numClients() == 0)
+        return;
+
+    while (!clientList().empty()) {
+        restore(clientList().back(), remap);
+    }
+}
 
 void FluxboxWindow::timeout() {
     raise();
 }
 
+bool FluxboxWindow::isTransient() const { 
+    if (m_client == 0)
+        return false;
+    
+    return (m_client->transientFor() ? true : false); 
+}
+
+bool FluxboxWindow::hasTransient() const {
+    if (m_client == 0)
+        return false;
+    return (m_client->transients.size() ? true : false);
+}
+
+const std::list<FluxboxWindow *> &FluxboxWindow::getTransients() const { 
+    return m_client->transients; 
+} 
+
+std::list<FluxboxWindow *> &FluxboxWindow::getTransients() { 
+    return m_client->transients; 
+}
+
+const FluxboxWindow *FluxboxWindow::getTransientFor() const { 
+    if (m_client == 0)
+        return 0;
+    return m_client->transient_for; 
+}
+
+FluxboxWindow *FluxboxWindow::getTransientFor() { 
+    if (m_client == 0)
+        return 0;
+    return m_client->transient_for; 
+}
+
+Window FluxboxWindow::getClientWindow() const  { 
+    if (m_client == 0)
+        return 0;
+    return m_client->window(); 
+}
+
+const std::string &FluxboxWindow::getTitle() const { 
+    static string empty_string("");
+    if (m_client == 0)
+        return empty_string;
+    return m_client->title();
+}
+
+const std::string &FluxboxWindow::getIconTitle() const { 
+    static string empty_string("");
+    if (m_client == 0)
+        return empty_string;
+    return m_client->iconTitle();
+}
+
+int FluxboxWindow::getXClient() const { return m_client->x; }
+int FluxboxWindow::getYClient() const { return m_client->y; }
+unsigned int FluxboxWindow::getClientHeight() const { return m_client->height(); }
+unsigned int FluxboxWindow::getClientWidth() const { return m_client->width(); }
+int FluxboxWindow::initialState() const { return m_client->initial_state; }
 
 void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
     if ((net.flags & BaseDisplay::ATTRIB_SHADED) &&
@@ -2552,7 +2735,7 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
 
         }
     }
-
+    
     if ((net.flags & BaseDisplay::ATTRIB_OMNIPRESENT) &&
         ((blackbox_attrib.attrib & BaseDisplay::ATTRIB_OMNIPRESENT) !=
          (net.attrib & BaseDisplay::ATTRIB_OMNIPRESENT)))
@@ -2561,12 +2744,9 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
     if ((net.flags & BaseDisplay::ATTRIB_WORKSPACE) &&
         (workspace_number !=  net.workspace)) {
 
-        if (getTab()) // disconnect from tab chain before sending it to another workspace
-            getTab()->disconnect();
+        screen.reassociateWindow(this, net.workspace, true);
 
-        screen->reassociateWindow(this, net.workspace, true);
-
-        if (screen->getCurrentWorkspaceID() != net.workspace)
+        if (screen.getCurrentWorkspaceID() != net.workspace)
             withdraw();
         else 
             deiconify();
@@ -2586,10 +2766,11 @@ void FluxboxWindow::changeBlackboxHints(const BaseDisplay::BlackboxHints &net) {
 }
 
 void FluxboxWindow::upsize() {
-    m_frame.setBevel(screen->getBevelWidth());
-    m_frame.handle().resize(m_frame.handle().width(), screen->getHandleWidth());
-    m_frame.gripLeft().resize(m_frame.buttonHeight(), screen->getHandleWidth());
-    m_frame.gripRight().resize(m_frame.gripLeft().width(), m_frame.gripLeft().height());
+    m_frame.setBevel(screen.getBevelWidth());
+    m_frame.handle().resize(m_frame.handle().width(), screen.getHandleWidth());
+    m_frame.gripLeft().resize(m_frame.buttonHeight(), screen.getHandleWidth());
+    m_frame.gripRight().resize(m_frame.gripLeft().width(), 
+                               m_frame.gripLeft().height());
 }
 
 
@@ -2602,71 +2783,80 @@ void FluxboxWindow::downsize() {
 void FluxboxWindow::right_fixsize(int *gx, int *gy) {
     // calculate the size of the client window and conform it to the
     // size specified by the size hints of the client window...
-    int dx = last_resize_w - client.base_width;
-    int titlebar_height = (decorations.titlebar ? frame().titlebar().height()  + frame().titlebar().borderWidth() : 0);
-    int handle_height = (decorations.handle ? frame().handle().height() + frame().handle().borderWidth() : 0);
+    int dx = last_resize_w - m_client->base_width;
+    int titlebar_height = (decorations.titlebar ? 
+                           frame().titlebar().height() +
+                           frame().titlebar().borderWidth() : 0);
+    int handle_height = (decorations.handle ? 
+                         frame().handle().height() +
+                         frame().handle().borderWidth() : 0);
 
-    int dy = last_resize_h - client.base_height - titlebar_height - handle_height;
-    if (dx < (signed) client.min_width)
-        dx = client.min_width;
-    if (dy < (signed) client.min_height)
-        dy = client.min_height;
-    if (client.max_width > 0 && (unsigned) dx > client.max_width)
-        dx = client.max_width;
-    if (client.max_height > 0 && (unsigned) dy > client.max_height)
-        dy = client.max_height;
+    int dy = last_resize_h - m_client->base_height - titlebar_height - handle_height;
+    if (dx < (signed) m_client->min_width)
+        dx = m_client->min_width;
+    if (dy < (signed) m_client->min_height)
+        dy = m_client->min_height;
+    if (m_client->max_width > 0 && (unsigned) dx > m_client->max_width)
+        dx = m_client->max_width;
+    if (m_client->max_height > 0 && (unsigned) dy > m_client->max_height)
+        dy = m_client->max_height;
 
     // make it snap
 
-    if (client.width_inc == 0)
-        client.width_inc = 1;
-    if (client.height_inc == 0)
-        client.height_inc = 1;
+    if (m_client->width_inc == 0)
+        m_client->width_inc = 1;
+    if (m_client->height_inc == 0)
+        m_client->height_inc = 1;
 
-    dx /= client.width_inc;
-    dy /= client.height_inc;
+    dx /= m_client->width_inc;
+    dy /= m_client->height_inc;
 
     if (gx) *gx = dx;
     if (gy) *gy = dy;
 
-    dx = (dx * client.width_inc) + client.base_width;
-    dy = (dy * client.height_inc) + client.base_height + titlebar_height + handle_height;
+    dx = (dx * m_client->width_inc) + m_client->base_width;
+    dy = (dy * m_client->height_inc) + m_client->base_height + 
+        titlebar_height + handle_height;
     last_resize_w = dx;
     last_resize_h = dy;
 }
 
 void FluxboxWindow::left_fixsize(int *gx, int *gy) {   
-    int titlebar_height = (decorations.titlebar ? frame().titlebar().height()  + frame().titlebar().borderWidth() : 0);
-    int handle_height = (decorations.handle ? frame().handle().height() + frame().handle().borderWidth() : 0);
+    int titlebar_height = (decorations.titlebar ? 
+                           frame().titlebar().height()  + 
+                           frame().titlebar().borderWidth() : 0);
+    int handle_height = (decorations.handle ? 
+                         frame().handle().height() + 
+                         frame().handle().borderWidth() : 0);
     int decoration_height = titlebar_height + handle_height;
 
     // dx is new width = current width + difference between new and old x values
     int dx = m_frame.width() + m_frame.x() - last_resize_x;
 
     // dy = new height (w/o decorations), similarly
-    int dy = last_resize_h - client.base_height - decoration_height;
+    int dy = last_resize_h - m_client->base_height - decoration_height;
 
     // check minimum size
-    if (dx < static_cast<signed int>(client.min_width))
-        dx = client.min_width;
-    if (dy < static_cast<signed int>(client.min_height))
-        dy = client.min_height;
+    if (dx < static_cast<signed int>(m_client->min_width))
+        dx = m_client->min_width;
+    if (dy < static_cast<signed int>(m_client->min_height))
+        dy = m_client->min_height;
 
     // check maximum size
-    if (client.max_width > 0 && dx > static_cast<signed int>(client.max_width))
-        dx = client.max_width;
-    if (client.max_height > 0 && dy > static_cast<signed int>(client.max_height))
-        dy = client.max_height;
+    if (m_client->max_width > 0 && dx > static_cast<signed int>(m_client->max_width))
+        dx = m_client->max_width;
+    if (m_client->max_height > 0 && dy > static_cast<signed int>(m_client->max_height))
+        dy = m_client->max_height;
 
     // make sure we have valid increment
-    if (client.width_inc == 0)
-        client.width_inc = 1;
-    if (client.height_inc == 0)
-        client.height_inc = 1;
+    if (m_client->width_inc == 0)
+        m_client->width_inc = 1;
+    if (m_client->height_inc == 0)
+        m_client->height_inc = 1;
 
     // set snapping
-    dx /= client.width_inc;
-    dy /= client.height_inc;
+    dx /= m_client->width_inc;
+    dy /= m_client->height_inc;
 
     // set return values
     if (gx != 0)
@@ -2675,8 +2865,8 @@ void FluxboxWindow::left_fixsize(int *gx, int *gy) {
         *gy = dy;
 
     // snapping
-    dx = dx * client.width_inc + client.base_width;
-    dy = dy * client.height_inc + client.base_height + decoration_height;
+    dx = dx * m_client->width_inc + m_client->base_width;
+    dy = dy * m_client->height_inc + m_client->base_height + decoration_height;
 
     // update last resize 
     last_resize_w = dx;

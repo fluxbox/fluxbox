@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.28 2003/04/09 17:20:02 rathnor Exp $
+// $Id: IconBar.cc,v 1.29 2003/04/14 14:44:17 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -287,15 +287,15 @@ Window IconBar::createIconWindow(FluxboxWindow *fluxboxwin, Window parent) {
     XSetWindowAttributes attrib;
     attrib.background_pixmap = None;
     attrib.background_pixel = attrib.border_pixel =
-        fluxboxwin->getScreen()->getWindowStyle()->tab.border_color.pixel();
-    attrib.colormap = fluxboxwin->getScreen()->colormap();
+        fluxboxwin->getScreen().getWindowStyle()->tab.border_color.pixel();
+    attrib.colormap = fluxboxwin->getScreen().colormap();
     attrib.override_redirect = True;
     attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
         ButtonMotionMask | ExposureMask | EnterWindowMask;
 											
     //create iconwindow
     Window iconwin = XCreateWindow(m_display, parent, 0, 0, 1, 1, 0,
-                                   fluxboxwin->getScreen()->getDepth(), InputOutput, fluxboxwin->getScreen()->getVisual(),
+                                   fluxboxwin->getScreen().getDepth(), InputOutput, fluxboxwin->getScreen().getVisual(),
                                    attrib_mask, &attrib);
 		
     return iconwin;

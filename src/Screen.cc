@@ -1,5 +1,5 @@
 // Screen.cc for Fluxbox Window Manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Screen.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.118 2003/03/22 05:13:08 rathnor Exp $
+// $Id: Screen.cc,v 1.119 2003/04/14 14:49:47 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -47,6 +47,7 @@
 #include "MultLayers.hh"
 #include "FbMenu.hh"
 #include "LayerMenu.hh"
+#include "WinClient.hh"
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -111,6 +112,7 @@
 #include <iostream>
 #include <memory>
 #include <algorithm>
+#include <functional>
 
 using namespace std;
 
@@ -158,18 +160,6 @@ private:
 
 }; // End anonymous namespace
 
-//---------- resource manipulators ---------
-template<>
-void Resource<Tab::Alignment>::
-setFromString(const char *strval) {	
-    m_value = Tab::getTabAlignmentNum(strval);
-}
-
-template<>
-void Resource<Tab::Placement>::
-setFromString(const char *strval) {	
-    m_value = Tab::getTabPlacementNum(strval);
-}
 
 template<>
 void Resource<Toolbar::Placement>::
@@ -219,20 +209,6 @@ setFromString(const char *strval) {
         m_value = ToolbarHandler::ALLWINDOWS;
     else
         setDefaultValue();
-}
-
-
-//--------- resource accessors --------------
-template<>
-string Resource<Tab::Alignment>::
-getString() {
-    return Tab::getTabAlignmentString(m_value);
-}
-
-template<>
-string Resource<Tab::Placement>::
-getString() {
-    return Tab::getTabPlacementString(m_value);
 }
 
 template<>
@@ -401,7 +377,6 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
     full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
     max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
-    tab_rotate_vertical(rm, true, scrname+".tab.rotatevertical", altscrname+".Tab.RotateVertical"),
     sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
     desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
@@ -415,12 +390,8 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     toolbar_width_percent(rm, 65, scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
-    tab_width(rm, 64, scrname+".tab.width", altscrname+".Tab.Width"),
-    tab_height(rm, 16, scrname+".tab.height", altscrname+".Tab.Height"),
     slit_layernum(rm, Fluxbox::instance()->getDockLayer(), scrname+".slit.layer", altscrname+".Slit.Layer"),
     toolbar_layernum(rm, Fluxbox::instance()->getDesktopLayer(), scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
-    tab_placement(rm, Tab::PTOP, scrname+".tab.placement", altscrname+".Tab.Placement"),
-    tab_alignment(rm, Tab::ALEFT, scrname+".tab.alignment", altscrname+".Tab.Alignment"),
     toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
     toolbar_placement(rm, Toolbar::BOTTOMCENTER, scrname+".toolbar.placement", altscrname+".Toolbar.Placement")
@@ -502,14 +473,6 @@ BScreen::BScreen(ResourceManager &rm,
     // set database for new Theme Engine
     FbTk::ThemeManager::instance().load(fluxbox->getStyleFilename().c_str());
 
-    // special case for tab rotated
-    if (*resource.tab_rotate_vertical && 
-        ( *resource.tab_placement == Tab::PLEFT || *resource.tab_placement == Tab::PRIGHT)) {
-        theme->getWindowStyle().tab.font.rotate(90);
-    } else  {
-        theme->getWindowStyle().tab.font.rotate(0);
-    }
-
     const char *s = i18n->getMessage(
                                      FBNLS::ScreenSet, FBNLS::ScreenPositionLength,
                                      "W: 0000 x H: 0000");
@@ -583,6 +546,7 @@ BScreen::BScreen(ResourceManager &rm,
 
     m_configmenu.reset(createMenuFromScreen(*this));
     setupConfigmenu(*m_configmenu.get());
+    //    m_configmenu->setInternalMenu();
 
     workspacemenu->setItemSelected(2, true);
 
@@ -813,19 +777,14 @@ void BScreen::reconfigure() {
 #endif // SLIT
 
     //reconfigure workspaces
-    Workspaces::iterator wit = workspacesList.begin();
-    Workspaces::iterator wit_end = workspacesList.end();
-    for (; wit != wit_end; ++wit) {
-        (*wit)->reconfigure();
-    }
+    for_each(workspacesList.begin(),
+             workspacesList.end(),
+             mem_fun(&Workspace::reconfigure));
 
     //reconfigure Icons
-    Icons::iterator iit = iconList.begin();
-    Icons::iterator iit_end = iconList.end();
-    for (; iit != iit_end; ++iit) {
-        if ((*iit)->validateClient())
-            (*iit)->reconfigure();
-    }
+    for_each(iconList.begin(),
+             iconList.end(),
+             mem_fun(&FluxboxWindow::reconfigure));
 
     image_control->timeout();
 }
@@ -860,16 +819,13 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (! w)
         return;
 	
-    {
-	Icons::iterator it = iconList.begin();
-	Icons::iterator it_end = iconList.end();
-	for (; it != it_end; ++it) {
-            if (*it == w) {
-                iconList.erase(it);
-                break;
-            }
-        }
-    }
+
+    Icons::iterator erase_it = remove_if(iconList.begin(),
+                                         iconList.end(),
+                                         bind2nd(equal_to<FluxboxWindow *>(), w));
+    if (erase_it != iconList.end())
+        iconList.erase(erase_it);
+
     
     Icons::iterator it = iconList.begin();
     Icons::iterator it_end = iconList.end();
@@ -881,9 +837,8 @@ void BScreen::removeIcon(FluxboxWindow *w) {
 void BScreen::removeWindow(FluxboxWindow *win) {
     Workspaces::iterator it = workspacesList.begin();
     Workspaces::iterator it_end = workspacesList.end();
-    for (; it != it_end; ++it) {
+    for (; it != it_end; ++it)
         (*it)->removeWindow(win);
-    }
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {
@@ -967,12 +922,13 @@ void BScreen::changeWorkspaceID(unsigned int id) {
             focused->pauseMoving();
         }
 
+        // reassociate all windows that are stuck to the new workspace
         Workspace *wksp = getCurrentWorkspace();
         Workspace::Windows wins = wksp->getWindowList();
         Workspace::Windows::iterator it = wins.begin();
         for (; it != wins.end(); ++it) {
             if ((*it)->isStuck()) {
-                reassociateGroup(*it,id,true);
+                reassociateGroup(*it, id, true);
             }
         }
 
@@ -980,7 +936,7 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
         workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
 
-        if (focused && focused->getScreen() == this &&
+        if (focused && &focused->getScreen() == this &&
             (! focused->isStuck()) && (!focused->isMoving())) {
             current_workspace->setLastFocusedWindow(focused);
             Fluxbox::instance()->setFocusedWindow(0); // set focused window to none
@@ -1022,14 +978,8 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
     if (id != current_workspace->workspaceID()) {
         XSync(BaseDisplay::getXDisplay(), True);
 
-        if (win && win->getScreen() == this &&
+        if (win && &win->getScreen() == this &&
             (! win->isStuck())) {
-
-            if ( win->getTab() ) {
-                Tab *tab = win->getTab();
-                tab->disconnect();
-                tab->setPosition();
-            }
 
             if (win->isIconic()) {
                 win->deiconify();
@@ -1090,26 +1040,18 @@ void BScreen::removeNetizen(Window w) {
 
 void BScreen::updateNetizenCurrentWorkspace() {
     m_currentworkspace_sig.notify();
-	
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendCurrentWorkspace();
-    }
-
+    for_each(netizenList.begin(),
+             netizenList.end(),
+             mem_fun(&Netizen::sendCurrentWorkspace));
 }
 
 
 void BScreen::updateNetizenWorkspaceCount() {
-
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
-    for (; it != it_end; ++it) {
-        (*it)->sendWorkspaceCount();
-    }
+    for_each(netizenList.begin(),
+             netizenList.end(),
+             mem_fun(&Netizen::sendWorkspaceCount));
 
     m_workspacecount_sig.notify();	
-	
 }
 
 
@@ -1175,7 +1117,7 @@ void BScreen::updateNetizenConfigNotify(XEvent *e) {
 }
 
 FluxboxWindow *BScreen::createWindow(Window client) {
-    FluxboxWindow *win = new FluxboxWindow(client, this, getScreenNumber(), *getImageControl(), 
+    FluxboxWindow *win = new FluxboxWindow(client, *this, 
                                            winFrameTheme(), *menuTheme(),
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
  
@@ -1196,6 +1138,27 @@ FluxboxWindow *BScreen::createWindow(Window client) {
         win->show();      
     }
     XSync(FbTk::App::instance()->display(), False);
+    return win;
+}
+
+FluxboxWindow *BScreen::createWindow(WinClient &client) {
+    FluxboxWindow *win = new FluxboxWindow(client, *this, 
+                                           winFrameTheme(), *menuTheme(),
+                                           *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
+#ifdef SLIT
+    if (win->initialState() == WithdrawnState)
+        getSlit()->addClient(win->getClientWindow());
+#endif // SLIT
+    if (!win->isManaged()) {
+        delete win;
+        return 0;
+    }
+    Fluxbox::instance()->saveWindowSearch(client.window(), win);
+    Fluxbox::instance()->attachSignals(*win);
+    setupWindowActions(*win);
+    if (win->getWorkspaceNumber() == getCurrentWorkspaceID() || win->isStuck()) {
+        win->show();      
+    }
     return win;
 }
 
@@ -1267,7 +1230,6 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                                           frame.titlebar(),
                                           0, 0, 10, 10);
                 newbutton->setOnClick(shade_cmd);
-
             }
         
             if (newbutton != 0) {
@@ -1280,6 +1242,8 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
         } //end for i
         dir = &Fluxbox::instance()->getTitlebarRight();
     } // end for c
+
+    frame.reconfigure();
 
     // setup titlebar
     frame.setOnClickTitlebar(raise_and_focus_cmd, 1, false, true); // on press with button 1
@@ -1301,7 +1265,12 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
     menu.insert("Iconify", iconify_cmd);
     menu.insert("Raise", raise_cmd);
     menu.insert("Lower", lower_cmd);
-    menu.insert("Layer...", win.getLayermenu());
+    menu.insert("Layer...", &win.getLayermenu());
+    CommandRef next_client_cmd(new WindowCmd(win, &FluxboxWindow::nextClient));
+    CommandRef prev_client_cmd(new WindowCmd(win, &FluxboxWindow::prevClient));
+    menu.insert("Next Client", next_client_cmd);
+    menu.insert("Prev Client", prev_client_cmd);
+
     menu.insert("¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯");
     menu.insert("Close", close_cmd);
 
@@ -1330,19 +1299,13 @@ string BScreen::getNameOfWorkspace(unsigned int workspace) const {
 }
 
 void BScreen::reassociateGroup(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
-    if (w->hasTab() && (w->getTab()->next() || w->getTab()->prev())) {
-        Tab *tab_it = w->getTab()->first();
-        for (; tab_it; tab_it = tab_it->next()) {
-            reassociateWindow(tab_it->getWindow(), wkspc_id, ignore_sticky);
-        }
-    } else {
-        // no tab, juts move this one
-        reassociateWindow(w, wkspc_id, ignore_sticky);
-    }
+    //!! TODO
+    cerr<<__FILE__<<"("<<__FUNCTION__<<") TODO!"<<endl;
 }
 
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
-    if (! w) return;
+    if (w == 0)
+        return;
 
     if (wkspc_id >= getCount()) {
         wkspc_id = current_workspace->workspaceID();
@@ -1357,10 +1320,10 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 
     if (w->isIconic()) {
         removeIcon(w);
-        getWorkspace(wkspc_id)->addWindow(w);
+        getWorkspace(wkspc_id)->addWindow(*w);
     } else if (ignore_sticky || ! w->isStuck()) {
         getWorkspace(w->getWorkspaceNumber())->removeWindow(w);
-        getWorkspace(wkspc_id)->addWindow(w);
+        getWorkspace(wkspc_id)->addWindow(*w);
     }
 }
 
@@ -1372,7 +1335,7 @@ void BScreen::nextFocus(int opts) {
     const int num_windows = getCurrentWorkspace()->getCount();
 
     if (focused != 0) {
-        if (focused->getScreen()->getScreenNumber() == 
+        if (focused->getScreen().getScreenNumber() == 
             getScreenNumber()) {
             have_focused = true;
             focused_window_number = focused->getWindowNumber();
@@ -1385,9 +1348,9 @@ void BScreen::nextFocus(int opts) {
         Workspace::Windows::iterator it = wins.begin();
 
         if (!have_focused) {
-            focused = *it;
+            focused = (*it);
         } else {
-            for (; *it != focused; ++it) //get focused window iterator
+            for (; (*it) != focused; ++it) //get focused window iterator
                 continue;
         }
         do {
@@ -1395,11 +1358,11 @@ void BScreen::nextFocus(int opts) {
             if (it == wins.end())
                 it = wins.begin();
             // see if the window should be skipped
-            if (! (doSkipWindow(*it, opts) || !(*it)->setInputFocus()) )
+            if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
                 break;
-        } while (*it != focused);
+        } while ((*it) != focused);
 
-        if (*it != focused && it != wins.end())
+        if ((*it) != focused && it != wins.end())
             (*it)->raise();
 
     }
@@ -1414,7 +1377,7 @@ void BScreen::prevFocus(int opts) {
     int num_windows = getCurrentWorkspace()->getCount();
 	
     if ((focused = Fluxbox::instance()->getFocusedWindow())) {
-        if (focused->getScreen()->getScreenNumber() ==
+        if (focused->getScreen().getScreenNumber() ==
             getScreenNumber()) {
             have_focused = true;
             focused_window_number = focused->getWindowNumber();
@@ -1427,9 +1390,9 @@ void BScreen::prevFocus(int opts) {
         Workspace::Windows::iterator it = wins.begin();
 
         if (!have_focused) {
-            focused = *it;
+            focused = (*it);
         } else {
-            for (; *it != focused; ++it) //get focused window iterator
+            for (; (*it) != focused; ++it) //get focused window iterator
                 continue;
         }
 		
@@ -1438,11 +1401,11 @@ void BScreen::prevFocus(int opts) {
                 it = wins.end();
             --it;
             // see if the window should be skipped
-            if (! (doSkipWindow(*it, opts) || !(*it)->setInputFocus()) )
+            if (! (doSkipWindow((*it), opts) || !(*it)->setInputFocus()) )
                 break;
-        } while (*it != focused);
+        } while ((*it) != focused);
 
-        if (*it != focused && it != wins.end())
+        if ((*it) != focused && it != wins.end())
             (*it)->raise();
 
     }
@@ -1455,7 +1418,7 @@ void BScreen::raiseFocus() {
     Fluxbox * const fb = Fluxbox::instance();
 	
     if (fb->getFocusedWindow())
-        if (fb->getFocusedWindow()->getScreen()->getScreenNumber() ==
+        if (fb->getFocusedWindow()->getScreen().getScreenNumber() ==
             getScreenNumber()) {
             have_focused = true;
             focused_window_number = fb->getFocusedWindow()->getWindowNumber();
@@ -1469,6 +1432,15 @@ void BScreen::initMenu() {
     I18n *i18n = I18n::instance();
 	
     if (m_rootmenu.get()) {
+        /*        Rootmenus::iterator it = rootmenuList.begin();
+                  Rootmenus::iterator it_end = rootmenuList.end();
+                  for (; it != it_end; ++it) {
+                  if (*it != m_configmenu.get()) {
+                  delete *it;
+                  }
+                  }
+                  rootmenuList.clear();
+        */
         rootmenuList.erase(rootmenuList.begin(), rootmenuList.end());
 
         while (m_rootmenu->numberOfItems())
@@ -1938,17 +1910,13 @@ void BScreen::createStyleMenu(FbTk::Menu &menu,
 }
 
 void BScreen::shutdown() {
-    XSelectInput(getBaseDisplay()->getXDisplay(), getRootWindow(), NoEventMask);
-    XSync(getBaseDisplay()->getXDisplay(), False);
+    Display *disp = FbTk::App::instance()->display();
+    XSelectInput(disp, getRootWindow(), NoEventMask);
+    XSync(disp, False);
 
-
-    Workspaces::iterator it = workspacesList.begin();
-    Workspaces::iterator it_end = workspacesList.end();
-    for (; it != it_end; ++it) {
-        (*it)->shutdown();
-    }
-
-
+    for_each(workspacesList.begin(),
+             workspacesList.end(),
+             mem_fun(&Workspace::shutdown));
 
     while (!iconList.empty()) {
         iconList.back()->restore(true); // restore with remap

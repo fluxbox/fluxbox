@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.12 2003/04/09 12:59:57 fluxgen Exp $
+// $Id: IconBar.hh,v 1.13 2003/04/14 14:43:58 fluxgen Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
@@ -76,10 +76,8 @@ public:
 private:
     typedef std::list<IconBarObj *> IconList;
 
-//	void draw(IconBarObj *obj, int width);
     void loadTheme(unsigned int width, unsigned int height);
     void decorate(Window win);
-//	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
     void repositionIcons();
     Window createIconWindow(FluxboxWindow *fluxboxwin, Window parent);
     BScreen *m_screen;

@@ -38,6 +38,7 @@
 
 class BScreen;
 class FluxboxWindow;
+class WinClient;
 
 /**
 	Handles a single workspace
@@ -62,8 +63,9 @@ public:
     void update();
     void setCurrent();
     void shutdown();
-    int addWindow(FluxboxWindow *win, bool place = false);
+    int addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
+    void removeWindow(WinClient &client);
     BScreen &getScreen() { return screen; }
     FluxboxWindow *getLastFocusedWindow() { return lastfocus; }
 
@@ -92,7 +94,7 @@ public:
     void checkGrouping(FluxboxWindow &win);
     static bool loadGroups(const std::string &filename);
 protected:
-    void placeWindow(FluxboxWindow *win);
+    void placeWindow(FluxboxWindow &win);
 
 private:
     void updateClientmenu();

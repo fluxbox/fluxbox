@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.4 2003/03/23 05:07:03 rathnor Exp $
+// $Id: ToolbarHandler.cc,v 1.5 2003/04/14 15:01:55 fluxgen Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -45,7 +45,9 @@ namespace {
 
 class ToolbarModeMenuItem : public FbTk::MenuItem {
 public:
-    ToolbarModeMenuItem(const char *label, ToolbarHandler &handler, ToolbarHandler::ToolbarMode mode, FbTk::RefCount<FbTk::Command> &cmd):
+    ToolbarModeMenuItem(const char *label, ToolbarHandler &handler, 
+                        ToolbarHandler::ToolbarMode mode, 
+                        FbTk::RefCount<FbTk::Command> &cmd):
         FbTk::MenuItem(label, cmd), m_handler(handler), m_mode(mode) {
     }
     bool isEnabled() const { return m_handler.getMode() != m_mode; }
@@ -134,7 +136,8 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
 }
 
 void ToolbarHandler::initForScreen(BScreen &screen) {
-    if (&m_screen != &screen) return;
+    if (&m_screen != &screen) 
+        return;
     switch (m_mode) {
     case OFF:
         break;
@@ -149,7 +152,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
             Workspace::Windows::iterator wit = wins.begin();
             Workspace::Windows::iterator wit_end = wins.end();
             for (; wit != wit_end; ++wit) {
-                m_toolbar->addIcon(*wit);
+                //   m_toolbar->addIcon(*(*wit));
             }
         }
     }
@@ -161,7 +164,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         BScreen::Icons::iterator iconit = iconlist.begin();
         BScreen::Icons::iterator iconit_end = iconlist.end();
         for(; iconit != iconit_end; ++iconit) {
-            m_toolbar->addIcon(*iconit);
+            //            m_toolbar->addIcon(*iconit);
         }
     }
     break;
@@ -171,7 +174,7 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
         Workspace::Windows::iterator wit = wins.begin();
         Workspace::Windows::iterator wit_end = wins.end();
         for (; wit != wit_end; ++wit) {
-            m_toolbar->addIcon(*wit);
+            // m_toolbar->addIcon(*wit);
         }
     }
     // fall through and add icons for this workspace
@@ -192,7 +195,9 @@ void ToolbarHandler::initForScreen(BScreen &screen) {
 }
 
 void ToolbarHandler::setupWindow(FluxboxWindow &win) {
-    if (win.getScreen() != &m_screen) return;
+    if (&win.getScreen() != &m_screen)
+        return;
+
     switch (m_mode) {
     case OFF:
     case NONE:
@@ -218,7 +223,9 @@ void ToolbarHandler::setupWindow(FluxboxWindow &win) {
 }
 
 void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
-    if (win.getScreen() != &m_screen) return;
+    if (&win.getScreen() != &m_screen) 
+        return;
+
     // check status of window (in current workspace, etc) and remove if necessary
     switch (m_mode) {
     case OFF:
@@ -245,7 +252,8 @@ void ToolbarHandler::updateWindowClose(FluxboxWindow &win) {
 }
 
 void ToolbarHandler::updateState(FluxboxWindow &win) {
-    if (win.getScreen() != &m_screen) return;
+    if (&win.getScreen() != &m_screen)
+        return;
 
     // this function only relevant for icons
     switch (m_mode) {
@@ -274,12 +282,14 @@ void ToolbarHandler::updateState(FluxboxWindow &win) {
         
 
 void ToolbarHandler::updateWorkspace(FluxboxWindow &win) {
-    if (win.getScreen() != &m_screen) return;
+    if (&win.getScreen() != &m_screen) 
+        return;
+
     // don't care about current workspace except if in workspace mode
     if (!(m_mode == WORKSPACE || (m_mode == WORKSPACEICONS && win.isIconic()))) return;
     
     if (win.getWorkspaceNumber() == m_current_workspace) {
-        // TODO
+        //!! TODO
         // this shouldn't be needed, but is until Workspaces get fixed so that
         // you only move between them, you don't 'add' and 'remove'
         // alternatively, fix reassocaiteWindow so that the iconic stuff is
