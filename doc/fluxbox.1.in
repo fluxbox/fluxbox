@@ -881,7 +881,7 @@ SetWorkspaceName \fIname\fR
 .EX
 MacroCmd
 ReloadStyle
-SetResourceValueCmd \fIresourcename\fR \fIresource value\fR
+SetResourceValue \fIresourcename\fR \fIresource value\fR
 BindKey \fIkey string : action\fR   - this will append key string and 
     action to your keys file and bind the key
 .EE
