@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.33 2002/11/03 10:39:25 fluxgen Exp $
+// $Id: Theme.cc,v 1.34 2002/11/15 13:10:48 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -916,6 +916,10 @@ void Theme::reconfigure(bool antialias) {
 	gcv.foreground = m_menustyle.hilite.color().pixel();
 	XChangeGC(m_display, m_menustyle.hilite_gc,
 			gc_value_mask, &gcv);
+
+	// set antialias ?
+	if (m_toolbarstyle.font.isAntialias() != antialias)
+		m_toolbarstyle.font.setAntialias(antialias);
 
 	gcv.foreground = m_toolbarstyle.l_text.pixel();
 	XChangeGC(m_display, m_toolbarstyle.l_text_gc,
