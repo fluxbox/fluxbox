@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.15 2002/10/16 23:22:45 fluxgen Exp $
+//$Id: Font.cc,v 1.16 2002/10/19 14:01:05 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -152,6 +152,13 @@ unsigned int Font::height() const {
 	return m_fontimp->height();
 }
 
+int Font::ascent() const {
+	return m_fontimp->ascent();
+}
+
+int Font::descent() const { 
+	return m_fontimp->descent();
+}
 void Font::drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const {
 	if (text == 0 || len == 0)
 		return;

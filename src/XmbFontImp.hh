@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.hh,v 1.3 2002/10/16 23:30:17 fluxgen Exp $
+// $Id: XmbFontImp.hh,v 1.4 2002/10/19 13:58:58 fluxgen Exp $
 
 #ifndef XMBFONTIMP_HH
 #define XMBFONTIMP_HH
@@ -34,6 +34,8 @@ public:
 	virtual void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
 	unsigned int textWidth(const char * const text, unsigned int len) const;
 	unsigned int height() const;
+	int ascent() const { return m_setextents ? -m_setextents->max_ink_extent.y : 0; }
+	int descent() const { return m_setextents ? m_setextents->max_ink_extent.height + m_setextents->max_ink_extent.y : 0; }
 	bool loaded() const { return m_fontset != 0; }
 private:
 	XFontSet m_fontset;

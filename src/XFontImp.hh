@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XFontImp.hh,v 1.2 2002/10/15 16:44:26 fluxgen Exp $
+// $Id: XFontImp.hh,v 1.3 2002/10/19 13:58:47 fluxgen Exp $
 
 #ifndef XFONTIMP_HH
 #define XFONTIMP_HH
@@ -33,6 +33,8 @@ public:
 	bool load(const std::string &filename);
 	unsigned int textWidth(const char * const text, unsigned int size) const;
 	unsigned int height() const;
+	int ascent() const { return m_fontstruct ? m_fontstruct->ascent : 0; }
+	int descent() const { return m_fontstruct ? m_fontstruct->descent : 0; }
 	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
 	bool loaded() const { return m_fontstruct != 0; }
 private:

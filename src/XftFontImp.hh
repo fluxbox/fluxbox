@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.hh,v 1.3 2002/10/16 23:13:54 fluxgen Exp $
+//$Id: XftFontImp.hh,v 1.4 2002/10/19 13:58:21 fluxgen Exp $
 
 #ifndef XFTFONTIMP_HH
 #define XFTFONTIMP_HH
@@ -35,6 +35,8 @@ public:
 	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
 	unsigned int textWidth(const char * const text, unsigned int len) const;
 	unsigned int height() const;
+	int ascent() const { return m_xftfont ? m_xftfont->ascent : 0; }
+	int descent() const { return m_xftfont ? m_xftfont->descent : 0; }
 	bool loaded() const { return m_xftfont != 0; }
 private:
 	XftFont *m_xftfont;

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.7 2002/10/16 23:26:41 fluxgen Exp $
+//$Id: Font.hh,v 1.8 2002/10/19 14:00:37 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -60,6 +60,8 @@ public:
 	*/
 	unsigned int textWidth(const char * const text, unsigned int size) const;
 	unsigned int height() const;	
+	int ascent() const;
+	int descent() const;
 	void drawText(Drawable w, int screen, GC gc, const char *text, size_t len, int x, int y) const;
 	bool isAntialias() const { return m_antialias; }
 private:
