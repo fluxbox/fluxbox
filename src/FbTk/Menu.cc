@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.34 2003/08/18 11:49:50 fluxgen Exp $
+// $Id: Menu.cc,v 1.35 2003/08/24 16:57:38 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -743,6 +743,7 @@ void Menu::drawSubmenu(unsigned int index) {
         if (! item->submenu()->isVisible()) {
             item->submenu()->show();
             item->submenu()->raise();
+            item->submenu()->renderTransFrame();
         }
 			
         item->submenu()->moving = moving;
@@ -1383,6 +1384,7 @@ void Menu::renderTransFrame() {
 
     }
     */
+    menu.frame.clear();
     menu.frame.updateTransparent();
 }
 
