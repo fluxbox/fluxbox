@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.217 2003/08/13 09:42:22 fluxgen Exp $
+// $Id: Window.cc,v 1.218 2003/08/13 16:39:24 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -774,7 +774,7 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.remove(client.window());
 
-    FbTk::Button *label_btn = m_labelbuttons[&client];
+    TextButton *label_btn = m_labelbuttons[&client];
     if (label_btn != 0) {
         frame().removeLabelButton(*label_btn);
         evm.remove(label_btn->window());
