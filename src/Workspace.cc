@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.83 2003/10/25 22:10:43 fluxgen Exp $
+// $Id: Workspace.cc,v 1.84 2003/12/03 23:05:29 fluxgen Exp $
 
 #include "Workspace.hh"
 
@@ -76,7 +76,7 @@ int countTransients(const WinClient &client) {
 class ClientMenuItem:public FbTk::MenuItem {
 public:
     ClientMenuItem(WinClient &client, Workspace &space):
-        FbTk::MenuItem(client.title().c_str()),
+        FbTk::MenuItem(client.title().c_str(), client.fbwindow() ? &client.fbwindow()->menu() : 0),
         m_client(client), m_space(space) {
         
     }
