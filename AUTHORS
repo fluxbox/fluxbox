@@ -11,6 +11,8 @@ Contributors:
     Han Boetes <han(at)mijncomputer.nl>
       - RPM Packaging, debugging and scripts.
 	  - fbsetbg, fluxbox-generate_menu
+    Mathias Gumz <gumz at cs dot uni-magdeburg dot de>
+       - bug fixing and feature patches
     Joel Carlbark <skypher(at)linuxmail.org>
       - suggestions, bug reports, beta testing, styles
         and some code.
