@@ -1,7 +1,15 @@
+(Format: Year/Month/Day)
 changes for 0.1.8:
 *02/04/04:
+   * Moved NLS types from #define to enums and moved them into 
+     namespace FBNLS, this way we don't pollute the global namespace too much.
    * Fixed the i18n checking with MB_CUR_MAX and some other fixes 
      from the blackbox code (Thanks bb-developers).
+   * Fixed bug [ 528101 ] window dragging + workspace changing
+   * Fixed ToggleDecor key action (still some small decoration-bugs to fix)
+   * Moved enum Decor from BaseDisplay to FluxboxWindow 
+   * Updated Makefile.am in nls/C to generate namespace and enum for blackbox-nls.hh
+   * Fixed bug [ 533436 ] Minor taskbar issue, it will update iconbar-text now.   
 *02/04/03:
    * Fixed some signed/unsigned in Windowmenu.cc/hh, Slit.hh/cc, Basemenu.hh,
      Icon.hh/cc and Workspacemenu.cc/hh
