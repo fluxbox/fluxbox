@@ -1,6 +1,26 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/04/28:
+   * Added support for pixmap themes  (Henrik)
+    (this requires libXpm is installed, but you can disabled this with --disable-xpm)
+     * Texture type now has an extra option:  .pixmap
+       example:
+	    window.label.focus.pixmap: image.xpm
+		menu.title.pixmap: image.xpm
+	 * Standard buttons has one pixmap for pressed 
+	   and one for normal state
+	   example: 
+	     window.close.pressed.pixmap: image_pressed.xpm
+		 window.close.pixmap: image.xpm
+		 window.stick.pixmap: image.xpm
+		 window.shade.pixmap: image.xpm
+		 window.maximize.pixmap: image.xpm
+		 window.maximize.pressed.pixmap: image_pressed.xpm
+		 window.iconify.pixmap: image.xpm
+		 ...
+     Screen.cc/hh, WinButton.hh/cc, Texture.hh, TextureRender.cc/hh
+	 WinButtonTheme.hh/cc, configure.in
+   * Update fbsetbg and fluxbox-generate_menu (Han)
    * Fix a bunch of alignment + size issues with toolbar (particularly 
       when vertical)  (Simon)
      Toolbar.cc Iconbar.cc
