@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.21 2002/01/18 18:28:17 pekdon Exp $
+// $Id: Window.cc,v 1.22 2002/01/20 02:14:20 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -92,7 +92,8 @@ tab(0)
 
 	Fluxbox *fluxbox = Fluxbox::instance();
 	display = fluxbox->getXDisplay();
-
+	BaseDisplay::GrabGuard gg(*fluxbox);
+	
 	blackbox_attrib.workspace = workspace_number = window_number = -1;
 
 	blackbox_attrib.flags = blackbox_attrib.attrib = blackbox_attrib.stack = 0l;
@@ -161,7 +162,7 @@ tab(0)
 	XWindowAttributes wattrib;
 	if ((! XGetWindowAttributes(display, client.window, &wattrib)) ||
 			(! wattrib.screen) || wattrib.override_redirect) {		
-		fluxbox->ungrab();
+		//fluxbox->ungrab();
 		throw FluxboxWindow::XGETWINDOWATTRIB;
 	}
 
@@ -170,10 +171,9 @@ tab(0)
 	else
 		screen = fluxbox->searchScreen(RootWindowOfScreen(wattrib.screen));
 
-	if (!screen) {
-		fluxbox->ungrab();		
+	if (!screen)
 		throw FluxboxWindow::CANTFINDSCREEN;
-	}
+
 
 	image_ctrl = screen->getImageControl();
 
@@ -200,7 +200,6 @@ tab(0)
 #ifdef		SLIT
 	if (client.initial_state == WithdrawnState) {
 		screen->getSlit()->addClient(client.window);
-		fluxbox->ungrab();
 		throw NOERROR;
 	}
 #endif // SLIT
@@ -236,7 +235,8 @@ tab(0)
 			}
 		}
 
-		if (win == screen->getRootWindow()) modal = true;
+		if (win == screen->getRootWindow())
+			modal = true;
 	}
 
 	// adjust the window decorations based on transience and window sizes
@@ -393,7 +393,6 @@ tab(0)
 
 	setFocusFlag(false);
 
-	fluxbox->ungrab();
 	#ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
 	#endif
@@ -1644,7 +1643,7 @@ bool FluxboxWindow::setInputFocus(void) {
 	}
 
 	Fluxbox *fluxbox = Fluxbox::instance();
-	
+	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	if (! validateClient()) return false;
 
@@ -1851,21 +1850,27 @@ void FluxboxWindow::maximize(unsigned int button) {
 				case Slit::TOPRIGHT:
 					slitModT = mSlt->getHeight() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
-					case Toolbar::TOPLEFT:
-					case Toolbar::TOPCENTER:
-					case Toolbar::TOPRIGHT:
-						slitModT -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
-						break;
+						case Toolbar::TOPLEFT:
+						case Toolbar::TOPCENTER:
+						case Toolbar::TOPRIGHT:
+							slitModT -= screen->getToolbar()->getExposedHeight() + 
+								screen->getBorderWidth();
+							break;
+						default:
+							break;
 					}				
 					break;
 				default:
 					slitModB = mSlt->getHeight() + screen->getBevelWidth();
 					switch (screen->getToolbarPlacement()) {
-					case Toolbar::BOTTOMLEFT:
-					case Toolbar::BOTTOMCENTER:
-					case Toolbar::BOTTOMRIGHT:
-						slitModB -= screen->getToolbar()->getExposedHeight() + screen->getBorderWidth();
-						break;
+						case Toolbar::BOTTOMLEFT:
+						case Toolbar::BOTTOMCENTER:
+						case Toolbar::BOTTOMRIGHT:
+							slitModB -= screen->getToolbar()->getExposedHeight() + 
+								screen->getBorderWidth();
+							break;
+						default:
+							break;
 					}	
 					break;
 				}	
@@ -1925,6 +1930,8 @@ void FluxboxWindow::maximize(unsigned int button) {
 			case Toolbar::TOPRIGHT:
 				dy += screen->getToolbar()->getExposedHeight() +
 						screen->getBorderWidth2x();
+				break;
+			default:
 				break;
 			}
 		}
@@ -2147,6 +2154,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 
 void FluxboxWindow::installColormap(bool install) {
 	Fluxbox *fluxbox = Fluxbox::instance();
+	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	if (! validateClient()) return;
 
@@ -2196,7 +2204,7 @@ void FluxboxWindow::setState(unsigned long new_state) {
 					(unsigned char *) &blackbox_attrib, PropBlackboxAttributesElements);
 }
 
-
+//TODO: why ungrab in if-statement?
 bool FluxboxWindow::getState(void) {
 	current_state = 0;
 
@@ -2210,8 +2218,8 @@ bool FluxboxWindow::getState(void) {
 				&atom_return, &foo, &nitems, &ulfoo,
 				(unsigned char **) &state) != Success) ||
 			(! state)) {
-			fluxbox->ungrab();
-			return false;
+		fluxbox->ungrab();
+		return false;
 	}
 
 	if (nitems >= 1) {
@@ -2448,9 +2456,10 @@ void FluxboxWindow::mapRequestEvent(XMapRequestEvent *re) {
 						client.window);
 #endif // DEBUG
 		Fluxbox *fluxbox = Fluxbox::instance();
-		
+		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
-		if (! validateClient()) return;
+		if (! validateClient())
+			return;
 
 		bool get_state_ret = getState();
 		if (! (get_state_ret && fluxbox->isStartup())) {
@@ -2491,6 +2500,7 @@ void FluxboxWindow::mapNotifyEvent(XMapEvent *ne) {
 	
 	if ((ne->window == client.window) && (! ne->override_redirect) && (visible)) {
 		Fluxbox *fluxbox = Fluxbox::instance();
+		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
 		if (! validateClient())
 			return;
@@ -2531,8 +2541,10 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 #endif // DEBUG
 
 		Fluxbox *fluxbox = Fluxbox::instance();
+		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
-		if (! validateClient()) return;
+		if (! validateClient())
+			return;
 
 		XChangeSaveSet(display, client.window, SetModeDelete);
 		XSelectInput(display, client.window, NoEventMask);
@@ -2557,7 +2569,6 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 						 "FluxboxWindow::unmapNotifyEvent(): reparent 0x%lx to "
 						 "root.\n"), client.window);
 #endif // DEBUG
-
 			restoreGravity();
 			XReparentWindow(display, client.window, screen->getRootWindow(),
 				client.x, client.y);
@@ -2572,19 +2583,21 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent *ue) {
 }
 
 
-void FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
+bool FluxboxWindow::destroyNotifyEvent(XDestroyWindowEvent *de) {
 	if (de->window == client.window) {
 		#ifdef DEBUG
-		fprintf(stderr,"%s(%d): DestroyNotifyEvent this=%p\n", __FILE__, __LINE__, this);
+		cerr<<__FILE__<<"("<<__LINE__<<":) DestroyNotifyEvent this="<<this<<endl;
 		#endif
 		XUnmapWindow(display, frame.window);		
-		delete this;
+		return true;
 	}
+	return false;
 }
 
 
 void FluxboxWindow::propertyNotifyEvent(Atom atom) {
  	Fluxbox *fluxbox = Fluxbox::instance();
+	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	if (! validateClient()) return;
 
@@ -2723,6 +2736,7 @@ void FluxboxWindow::exposeEvent(XExposeEvent *ee) {
 void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent *cr) {
 	if (cr->window == client.window) {
 		Fluxbox *fluxbox = Fluxbox::instance();
+		BaseDisplay::GrabGuard gg(*fluxbox);
 		fluxbox->grab();
 		if (! validateClient())
 			return;
@@ -2785,6 +2799,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent *cr) {
 
 void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 	Fluxbox *fluxbox = Fluxbox::instance();
+	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 	
 	if (! validateClient())	
@@ -2909,6 +2924,7 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 
 void FluxboxWindow::buttonReleaseEvent(XButtonEvent *re) {
 	Fluxbox *fluxbox = Fluxbox::instance();
+	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
 
 	if (! validateClient())
@@ -3069,11 +3085,11 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 		bool left = (me->window == frame.left_grip);
 
 		if (! resizing) {
-				XGrabPointer(display, me->window, false, ButtonMotionMask |
-					ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None,
-						((left) ? fluxbox->getLowerLeftAngleCursor() :
-						fluxbox->getLowerRightAngleCursor()),
-						CurrentTime);
+			XGrabPointer(display, me->window, false, ButtonMotionMask |
+				ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None,
+				((left) ? fluxbox->getLowerLeftAngleCursor() :
+				fluxbox->getLowerRightAngleCursor()),
+				CurrentTime);
 
 			resizing = true;
 
@@ -3135,6 +3151,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 #ifdef		SHAPE
 void FluxboxWindow::shapeEvent(XShapeEvent *) {
 	Fluxbox *fluxbox = Fluxbox::instance();
+	BaseDisplay::GrabGuard gg(*fluxbox);
+	
 	if (fluxbox->hasShapeExtensions()) {
 		if (frame.shaped) {			
 			fluxbox->grab();
