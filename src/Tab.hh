@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.8 2002/01/20 02:15:23 fluxgen Exp $
+// $Id: Tab.hh,v 1.9 2002/01/27 12:52:02 fluxgen Exp $
 
 #ifndef _TAB_HH_
 #define _TAB_HH_
@@ -95,6 +95,9 @@ private:
 	bool m_focus, m_moving;  // moving and focus 
 	void createTabWindow(); // creates the X win of tab
 	void loadTheme(); // loads the textures with right width and height
+	int setPositionShadingHelper(bool shaded);
+	int setPositionTBAlignHelper(Alignment align);
+	int setPositionLRAlignHelper(Alignment align);
 	void setTabWidth(unsigned int w);
 	void setTabHeight(unsigned int h);
 	unsigned int calcRelativeWidth();

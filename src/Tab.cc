@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.17 2002/01/26 11:16:25 fluxgen Exp $
+// $Id: Tab.cc,v 1.18 2002/01/27 12:52:02 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -275,14 +275,11 @@ void Tab::withdraw() {
 // Set/reset the the sticky on all windows in the list
 //---------------------------------------
 void Tab::stick() {
+	Tab *tab;
  
-	//get first tab
-	Tab *first = 0;
-	first = getFirst(this);
-	
 	//now do stick for all windows in the list
-	for (; first!=0; first = first->m_next) {
-		FluxboxWindow *win = first->m_win; //just for convenient
+	for (tab = getFirst(this); tab != 0; tab = tab->m_next) {
+		FluxboxWindow *win = tab->m_win; //just for convenient
 		if (win->isStuck()) {
 			win->blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
@@ -305,12 +302,12 @@ void Tab::stick() {
 // Resize the window's in the tablist
 //----------------------------------
 void Tab::resize() {
-	Tab *first = getFirst(this);
+	Tab *tab;
 
 	//now move and resize the windows in the list
-	for (; first != 0; first = first->m_next) {
-		if (first!=this) {
-			first->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+	for (tab = getFirst(this); tab != 0; tab = tab->m_next) {
+		if (tab!=this) {
+			tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
 								m_win->getWidth(), m_win->getHeight());
 		}
 	}
@@ -326,10 +323,12 @@ void Tab::resize() {
 // Shades the windows in the tablist
 //--------------------------------
 void Tab::shade() {
-	for(Tab *first = getFirst(this); first != 0; first = first->m_next) {
-		if (first==this)
+	Tab *tab;
+
+	for(tab = getFirst(this); tab != 0; tab = tab->m_next) {
+		if (tab==this)
 			continue;
-		first->m_win->shade();
+		tab->m_win->shade();
 	}
 
 	if (m_win->getScreen()->getTabPlacement() == PLEFT ||
@@ -390,6 +389,75 @@ void Tab::draw(bool pressed) {
 	}
 }
 
+//-----------------------------------------------
+//Helper for the Tab::setPosition() call
+//returns the y position component correctly
+//according to shading in cases PBOTTOM and 
+//isShaded()
+//-----------------------------------------------
+int Tab::setPositionShadingHelper(bool shaded) {
+	if (shaded) {
+		return m_win->getYFrame() + m_win->getTitleHeight() + 
+				m_win->getScreen()->getBorderWidth2x();
+	} else {
+		return m_win->getYFrame() + m_win->getHeight() +
+				m_win->getScreen()->getBorderWidth2x();
+	}
+}
+
+//-----------------------------------------------
+//Helpers for correct alignment of tabs used
+//by the setPosition() call
+//return x/y positions correctly according to
+//alignment, the 1st for cases PTOP and PBOTTOM
+//the 2nd for cases PLEFT and PRIGHT
+//-----------------------------------------------
+int Tab::setPositionTBAlignHelper(Alignment align) {
+	switch(align) {
+
+	case ARELATIVE:
+	case ALEFT:
+		return m_win->getXFrame(); 
+		break;
+	case ACENTER:
+		return calcCenterXPos(); 
+		break;
+	case ARIGHT:
+		return m_win->getXFrame() + m_win->getWidth() +
+			m_win->getScreen()->getBorderWidth2x() - m_size_w;
+	default:
+#ifdef DEBUG
+		cerr << __FILE__ << ":" <<__LINE__ << ": " <<
+			"Unsupported Alignment" << endl;
+#endif //DEBUG
+		return 0;
+		break;
+	}
+}
+
+int Tab::setPositionLRAlignHelper(Alignment align) {
+	switch(align) {
+	case ALEFT:
+		return m_win->getYFrame() - m_size_h + m_win->getHeight() +
+				m_win->getScreen()->getBorderWidth2x();
+		break;
+	case ACENTER:
+		return calcCenterYPos();
+		break;
+	case ARELATIVE:
+	case ARIGHT:
+		return m_win->getYFrame();
+		break;
+	default:
+#ifdef DEBUG
+		cerr << __FILE__ << ":"<< __LINE__ << ": " <<
+			"Unsupported Alignment" << endl;
+#endif //DEBUG
+		return 0;
+		break;
+	}
+}
+
 //------------- setPosition -----------------
 // Position tab ( follow the m_win pos ).
 // (and resize)
@@ -400,85 +468,62 @@ void Tab::setPosition() {
 	if (m_stoptabs)
 		return;
 
-	Tab *first = 0;
+	Tab *tab;
 	int pos_x = 0, pos_y = 0;
 	
 	m_stoptabs = true; //freeze tablist
 	
 	//and check for max tabs
-	//TODO: optimize! There is many ways to implement this...		
-	//posible movement to a static member function
 
-	//Tab placement
-	if (m_win->getScreen()->getTabPlacement() == PTOP) {
-		pos_y = m_win->getYFrame() - m_size_h; 
-
-	} else if (m_win->getScreen()->getTabPlacement() == PBOTTOM ||
-				m_win->isShaded()) { 
-		if (m_win->isShaded())
-			pos_y = m_win->getYFrame() + m_win->getTitleHeight() +
-					m_win->getScreen()->getBorderWidth2x();
-
-		else
-			pos_y = m_win->getYFrame() + m_win->getHeight() +
-					m_win->getScreen()->getBorderWidth2x();
-
-	} else if (m_win->getScreen()->getTabPlacement() == PLEFT) {
+	//Tab placement + alignment
+	switch (m_win->getScreen()->getTabPlacement()) {
+	case PTOP:
+		pos_y = m_win->getYFrame() - m_size_h;
+		pos_x = setPositionTBAlignHelper(
+				m_win->getScreen()->getTabAlignment());
+		break;
+	case PBOTTOM:
+		pos_y = setPositionShadingHelper(m_win->isShaded());
+		pos_x = setPositionTBAlignHelper(
+				m_win->getScreen()->getTabAlignment());
+		break;
+	case PLEFT:
 		pos_x = m_win->getXFrame() - m_size_w;
-			
-	} else if (m_win->getScreen()->getTabPlacement() == PRIGHT) {
-		pos_x = m_win->getXFrame() + m_win->getWidth() +
-				m_win->getScreen()->getBorderWidth2x();	
+		pos_y = setPositionLRAlignHelper(
+				m_win->getScreen()->getTabAlignment());
+		break;
+	case PRIGHT:
+		pos_x = m_win->getXFrame() + m_win->getWidth() + 
+				m_win->getScreen()->getBorderWidth2x();
+		pos_y = setPositionLRAlignHelper(
+				m_win->getScreen()->getTabAlignment());
+		break;
+	default:
+		if(m_win->isShaded()) {
+			pos_y = setPositionShadingHelper(true);
+			pos_x = setPositionTBAlignHelper(
+				m_win->getScreen()->getTabAlignment());
+		} else {
+			setPositionShadingHelper(false);
+		}
+		break;
 	}
 
-	//Tab alignment
-	if (m_win->getScreen()->getTabPlacement() == PTOP ||
-			m_win->getScreen()->getTabPlacement() == PBOTTOM ||
-			m_win->isShaded()) {
-		switch(m_win->getScreen()->getTabAlignment()) {
-			case ARELATIVE:
-			case ALEFT:
-				pos_x = m_win->getXFrame(); 
-				break;
-			case ACENTER:
-				pos_x = calcCenterXPos(); 
-				break;
-			case ARIGHT:
-				pos_x = m_win->getXFrame() + m_win->getWidth() +
-						m_win->getScreen()->getBorderWidth2x() - m_size_w;
-				break;
-		}
-	} else { //PLeft | PRight
-		switch(m_win->getScreen()->getTabAlignment()) {
-			case ALEFT:
-				pos_y = m_win->getYFrame() - m_size_h + m_win->getHeight() +
-						m_win->getScreen()->getBorderWidth2x();
-				break;
-			case ACENTER:
-				pos_y = calcCenterYPos();
-				break;
-			case ARELATIVE:
-			case ARIGHT:
-				pos_y = m_win->getYFrame();
-				break;
-		}
-	}
-	
-	for (first = getFirst(this);
-			first!=0; 
-			pos_x += first->m_inc_x, pos_y += first->m_inc_y,
-			first = first->m_next){
+	for (tab = getFirst(this);
+			tab!=0; 
+			pos_x += tab->m_inc_x, pos_y += tab->m_inc_y,
+			tab = tab->m_next){
 		
-		XMoveWindow(m_display, first->m_tabwin, pos_x, pos_y);
+		XMoveWindow(m_display, tab->m_tabwin, pos_x, pos_y);
 				
-		//dont move fluxboxwindow if the itterator = this
-		if (first!=this) {
-			first->m_win->configure(m_win->getXFrame(), m_win->getYFrame(), 
+		//dont move FluxboxWindow if the iterator = this
+		if (tab!=this) {
+			tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(), 
 					m_win->getWidth(), m_win->getHeight());
 		}	
 	}	
-
-	m_stoptabs = false;
+	
+	m_stoptabs = false;//thaw tablist
 }
 
 //------------- calcIncrease ----------------
@@ -490,7 +535,7 @@ void Tab::calcIncrease(void) {
 	cerr << "Calculating tab increase" << endl;
 	#endif // DEBUG
 
-	Tab *first;
+	Tab *tab;
 	int inc_x = 0, inc_y = 0;
 	unsigned int tabs = 0, i = 0;
 
@@ -512,6 +557,8 @@ void Tab::calcIncrease(void) {
 			case ARELATIVE:
 				inc_x = calcRelativeWidth();
 				break;
+			default:
+				break;
 		}
 	} else if (m_win->getScreen()->getTabPlacement() == PLEFT ||
 					m_win->getScreen()->getTabPlacement() == PRIGHT) {
@@ -530,12 +577,14 @@ void Tab::calcIncrease(void) {
 			case ARELATIVE:
 				inc_y = calcRelativeHeight();
 				break;
+			default:
+				break;
 		}
 	}
 
-	for (first = getFirst(this); first!=0; first = first->m_next, tabs++);
+	for (tab = getFirst(this); tab!=0; tab = tab->m_next, tabs++);
 
-	for (first = getFirst(this); first!=0; first = first->m_next, i++){
+	for (tab = getFirst(this); tab!=0; tab = tab->m_next, i++){
 
 	//TODO: move this out from here?
 		if ((m_win->getScreen()->getTabPlacement() == PTOP ||
@@ -546,30 +595,30 @@ void Tab::calcIncrease(void) {
 					m_win->getScreen()->getBorderWidth2x()) % tabs) ||
 					i >= ((m_win->getWidth() +
 					m_win->getScreen()->getBorderWidth2x()) % tabs)) {
-				first->setTabWidth(inc_x);
-				first->m_inc_x = inc_x;
+				tab->setTabWidth(inc_x);
+				tab->m_inc_x = inc_x;
 			} else { // adding 1 extra pixel to get tabs like win width
-				first->setTabWidth(inc_x + 1);
-				first->m_inc_x = inc_x + 1;
+				tab->setTabWidth(inc_x + 1);
+				tab->m_inc_x = inc_x + 1;
 			}
-			first->m_inc_y = inc_y;
+			tab->m_inc_y = inc_y;
 		} else if (m_win->getScreen()->getTabAlignment() == ARELATIVE) {
 			if (!((m_win->getHeight() +
 				m_win->getScreen()->getBorderWidth2x()) % tabs) ||
 				i >= ((m_win->getHeight() +
 				m_win->getScreen()->getBorderWidth2x()) % tabs)) {
 
-				first->setTabHeight(inc_y);
-				first->m_inc_y = inc_y;
+				tab->setTabHeight(inc_y);
+				tab->m_inc_y = inc_y;
 			} else {
 				// adding 1 extra pixel to get tabs match window width
-				first->setTabHeight(inc_y + 1);
-				first->m_inc_y = inc_y + 1;
+				tab->setTabHeight(inc_y + 1);
+				tab->m_inc_y = inc_y + 1;
 			}
-			first->m_inc_x = inc_x;
+			tab->m_inc_x = inc_x;
 		} else { // non relative modes
-			first->m_inc_x = inc_x;
-			first->m_inc_y = inc_y;
+			tab->m_inc_x = inc_x;
+			tab->m_inc_y = inc_y;
 		}
 	}
 }
@@ -617,13 +666,11 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 							m_win->getScreen()->getRootWindow(),
 							be->x_root, be->y_root, &dest_x, &dest_y, &child)) {
 			
-			Tab *tab = 0;
-			FluxboxWindow *win = 0;
+			Tab *tab 	   = Fluxbox::instance()->searchTab(child);
+			FluxboxWindow *win = Fluxbox::instance()->searchWindow(child);
 			//search tablist for a tabwindow
-			if (((tab = Fluxbox::instance()->searchTab(child))!=0) ||
-					(m_win->getScreen()->isSloppyWindowGrouping() &&
-					((win = Fluxbox::instance()->searchWindow(child))!=0) &&
-					(tab = win->getTab())!=0)) {
+			if ( (tab!=0) || (m_win->getScreen()->isSloppyWindowGrouping() &&
+					(win!=0) && (tab = win->getTab())!=0)) {
 
 				if (tab == this) // inserting ourself to ourself causes a disconnect
 					return;
@@ -639,7 +686,7 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 			} else {	
 				disconnect();
 
-				// convinience
+				// convenience
 				unsigned int placement = m_win->getScreen()->getTabPlacement();
 
 				// (ab)using dest_x and dest_y
@@ -661,6 +708,8 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 						case ARIGHT:
 							dest_x -= m_win->getWidth() - m_size_w;
 							break;
+						default:
+							break;
 					}
 
 				} else { // PLEFT & PRIGHT
@@ -673,6 +722,8 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 							break;
 						case ALEFT:
 							dest_y -= m_win->getHeight() - m_size_h;
+							break;
+						default:
 							break;
 					}
 				}
@@ -979,7 +1030,7 @@ void Tab::setTabHeight(unsigned int h) {
 // ---------------------------------------
 void Tab::resizeGroup(void) {
 	#ifdef DEBUG
-	cerr << "Resising group" << endl;
+	cerr <<__FILE__<<"("<<__LINE__<<"): Resizing group"<<endl;
 	#endif //DEBUG
 	Tab *first;
 	for (first = getFirst(this); first != 0; first = first->m_next) {
