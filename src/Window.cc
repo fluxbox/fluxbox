@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.52 2002/05/17 16:35:58 fluxgen Exp $
+// $Id: Window.cc,v 1.53 2002/05/19 17:56:55 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1805,7 +1805,8 @@ bool FluxboxWindow::setInputFocus(void) {
 	Fluxbox *fluxbox = Fluxbox::instance();
 	BaseDisplay::GrabGuard gg(*fluxbox);
 	fluxbox->grab();
-	if (! validateClient()) return false;
+	if (! validateClient())
+		return false;
 
 	bool ret = false;
 
@@ -2689,7 +2690,7 @@ void FluxboxWindow::restoreGravity(void) {
 bool FluxboxWindow::isLowerTab(void) const {
 	Tab* chkTab = (tab ? tab->first() : 0);
 	while (chkTab) {
-		FluxboxWindow* chkWin = chkTab->getWindow();
+		const FluxboxWindow* chkWin = chkTab->getWindow();
 		if (chkWin && chkWin != this &&
 				timercmp(&chkWin->lastFocusTime, &lastFocusTime, >))
 			return true;
@@ -3338,7 +3339,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 				configure(dx, dy, frame.width, frame.height);
 			}
 
-			screen->showPosition(dx, dy);
+			if (screen->doShowWindowPos())
+				screen->showPosition(dx, dy);
         }
 	} else if (functions.resize &&
 			(((me->state & Button1Mask) && (me->window == frame.right_grip ||
@@ -3377,7 +3379,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 					frame.resize_x, frame.resize_y,
 					frame.resize_w, frame.resize_h);
 
-			screen->showGeometry(gx, gy);
+			if (screen->doShowWindowPos())
+				screen->showGeometry(gx, gy);
 		}
 	}
 }
@@ -3515,7 +3518,8 @@ void FluxboxWindow::startMoving(Window win) {
 		frame.resize_h = ((shaded) ? frame.title_h : frame.height) +
 			screen->getBorderWidth2x();
 
-		screen->showPosition(frame.x, frame.y);
+		if (screen->doShowWindowPos())
+			screen->showPosition(frame.x, frame.y);
 
 		XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 			frame.move_x, frame.move_y,
@@ -3565,8 +3569,9 @@ void FluxboxWindow::startResizing(XMotionEvent *me, bool left) {
 		left_fixsize(&gx, &gy);
 	else
 		right_fixsize(&gx, &gy);
-	
-	screen->showGeometry(gx, gy);
+
+	if (screen->doShowWindowPos())
+		screen->showGeometry(gx, gy);
 
 	XDrawRectangle(display, screen->getRootWindow(), screen->getOpGC(),
 		frame.resize_x, frame.resize_y,

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.52 2002/05/17 16:30:24 fluxgen Exp $
+// $Id: Screen.cc,v 1.53 2002/05/19 17:56:55 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -203,6 +203,7 @@ tab_rotate_vertical(rm, true, scrname+".tab.rotatevertical", altscrname+".Tab.Ro
 sloppy_window_grouping(rm, true, scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
 workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
 desktop_wheeling(rm, true, scrname+".desktopwheeling", altscrname+".DesktopWheeling"),
+show_window_pos(rm, true, scrname+".showwindowposition", altscrname+".ShowWindowPosition"),
 focus_last(rm, true, scrname+".focusLastWindow", altscrname+".FocusLastWindow"),
 focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
 rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),

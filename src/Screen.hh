@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.35 2002/05/17 11:55:02 fluxgen Exp $
+// $Id: Screen.hh,v 1.36 2002/05/19 17:56:55 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -87,6 +87,7 @@ public:
 	inline bool doFullMax(void) { return *resource.full_max; }
 	inline bool doFocusNew(void) { return *resource.focus_new; }
 	inline bool doFocusLast(void) { return *resource.focus_last; }
+	inline bool doShowWindowPos(void) { return *resource.show_window_pos; }
 
 	inline const GC &getOpGC() const { return theme->getOpGC(); }
 	
@@ -300,7 +301,8 @@ private:
 			image_dither, opaque_move, full_max,
 			max_over_slit, tab_rotate_vertical,
 			sloppy_window_grouping, workspace_warping,
-			desktop_wheeling, focus_last, focus_new;
+			desktop_wheeling, show_window_pos,
+			focus_last, focus_new;
 		Resource<std::string> rootcommand;		
 		bool auto_raise, sloppy_focus, semi_sloppy_focus,
 			ordered_dither;
