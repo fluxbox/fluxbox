@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.37 2003/08/19 16:13:25 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.38 2003/08/22 15:20:32 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -707,10 +707,13 @@ void FbWinFrame::reconfigureTitlebar() {
         return;
 
     // resize titlebar to window size with font height
+    int title_height = m_theme.font().height() == 0 ? 16 : 
+        m_theme.font().height() + m_bevel*2 + 2;
+    if (m_theme.titleHeight() != 0)
+        title_height = m_theme.titleHeight();
+
     m_titlebar.moveResize(-m_titlebar.borderWidth(), -m_titlebar.borderWidth(),
-                          m_window.width(),
-                          m_theme.font().height() == 0 ? 16 : 
-                          m_theme.font().height() + m_bevel*2 + 2);
+                          m_window.width(), title_height);
 
     // draw left buttons first
     unsigned int next_x = m_bevel; 
