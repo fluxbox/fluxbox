@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.19 2003/09/12 23:38:50 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.20 2003/09/14 10:32:31 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
@@ -81,8 +81,7 @@ public:
     /// resize client to specified size and resize frame to it
     void resizeForClient(unsigned int width, unsigned int height);
     void moveResize(int x, int y, unsigned int width, unsigned int height);
-    /// sets title on the titlebar label
-    void setTitle(const std::string &title);
+
     /// set focus/unfocus style
     void setFocus(bool newvalue);
     void setDoubleClickTime(unsigned int time);

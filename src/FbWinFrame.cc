@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.50 2003/09/12 23:38:50 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.51 2003/09/14 10:32:31 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -212,24 +212,19 @@ void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int heigh
         resize(width, height);
 }
 
-void FbWinFrame::setTitle(const std::string &titletext) {
-    m_titletext = titletext;
-    redrawTitle();
-}
-
 void FbWinFrame::setFocus(bool newvalue) {
-    if (m_focused == newvalue) // no need to change focus
+    if (m_focused == newvalue)
         return;
 
-
-
-    if (m_focused && !newvalue && currentLabel()) {        
-        renderButtonUnfocus(*m_current_label);
-    } else if (!m_focused && newvalue && currentLabel()) {
-        renderButtonFocus(*m_current_label);
+    if (currentLabel()) {
+        if (newvalue) // focused
+            renderButtonFocus(*m_current_label);       
+        else // unfocused
+            renderButtonUnfocus(*m_current_label);
     }
 
     m_focused = newvalue;
+
     renderButtons();
     renderHandles();
 }
@@ -243,7 +238,7 @@ void FbWinFrame::addLeftButton(FbTk::Button *btn) {
         return;
 
     setupButton(*btn); // setup theme and other stuff
-
+    
     m_buttons_left.push_back(btn);
 }
 
@@ -332,12 +327,13 @@ void FbWinFrame::moveLabelButtonRight(const FbTk::TextButton &btn) {
 }
 
 void FbWinFrame::setLabelButtonFocus(FbTk::TextButton &btn) {
+    if (&btn == currentLabel())
+        return;
     LabelList::iterator it = find(m_labelbuttons.begin(),
                                   m_labelbuttons.end(),
                                   &btn);
     if (it == m_labelbuttons.end())
         return;
-
 
     // render label buttons
     if (currentLabel() != 0)
@@ -703,13 +699,16 @@ void FbWinFrame::redrawTitle() {
         (*btn_it)->moveResize(last_x - border_width, - border_width,
                               button_width, 
                               label().height() + border_width);
-        (*btn_it)->clear();
-        (*btn_it)->updateTransparent();        
+        if (isVisible())
+            (*btn_it)->clear();
     }
-    m_titlebar.clear();
-    m_titlebar.updateTransparent();
-    m_label.clear();
-    m_label.updateTransparent();
+
+    if (isVisible()) {
+        m_titlebar.clear();
+        m_titlebar.updateTransparent();
+        m_label.clear();
+        m_label.updateTransparent();
+    }
 }
 
 void FbWinFrame::redrawTitlebar() {
@@ -868,15 +867,9 @@ void FbWinFrame::renderHandles() {
         }                
     }
 
-    m_grip_left.clear();
     m_grip_left.setAlpha(theme().alpha());
-    m_grip_left.updateTransparent();
-    m_grip_right.clear();
     m_grip_right.setAlpha(theme().alpha());
-    m_grip_right.updateTransparent();
-    m_handle.clear();
     m_handle.setAlpha(theme().alpha());
-    m_handle.updateTransparent();
     
 }
 
@@ -885,7 +878,7 @@ void FbWinFrame::renderButtons() {
 
     render(m_theme.buttonFocusTexture(), m_button_color, m_button_pm,
            m_button_size, m_button_size);
-		
+
     render(m_theme.buttonUnfocusTexture(), m_button_unfocused_color, 
            m_button_unfocused_pm,
            m_button_size, m_button_size);
@@ -895,12 +888,22 @@ void FbWinFrame::renderButtons() {
            m_button_size, m_button_size);
 
     // setup left and right buttons
-    for (size_t i=0; i < m_buttons_left.size(); ++i)
+    for (size_t i=0; i < m_buttons_left.size(); ++i) {        
         setupButton(*m_buttons_left[i]);
+        if (isVisible()) {
+            m_buttons_left[i]->clear();
+            m_buttons_left[i]->updateTransparent();
+        }
+    }
 
-    for (size_t i=0; i < m_buttons_right.size(); ++i)
+    for (size_t i=0; i < m_buttons_right.size(); ++i) {
         setupButton(*m_buttons_right[i]);
-
+        if (isVisible()) {
+            m_buttons_right[i]->clear();
+            m_buttons_right[i]->updateTransparent();
+        }
+    }
+    
 }
 
 void FbWinFrame::init() {
@@ -935,36 +938,33 @@ void FbWinFrame::init() {
     // Note: we don't show clientarea yet
 
     setEventHandler(*this);
-    //    reconfigure();
 }
 
 /**
    Setups upp background, pressed pixmap/color of the button to current theme
 */
 void FbWinFrame::setupButton(FbTk::Button &btn) {
-    if (m_button_pressed_pm) {
+    if (m_button_pressed_pm)
         btn.setPressedPixmap(m_button_pressed_pm);
-    }
 
     //!! TODO button pressed color
 
-    if (m_focused) {
+    if (focused()) { // focused
         btn.setGC(m_theme.buttonPicFocusGC());
         if (m_button_pm)
             btn.setBackgroundPixmap(m_button_pm);
         else
             btn.setBackgroundColor(m_button_color);
-    } else {
+    } else { // unfocused
         btn.setGC(m_theme.buttonPicUnfocusGC());
         if (m_button_unfocused_pm)
             btn.setBackgroundPixmap(m_button_unfocused_pm);
         else
-            btn.setBackgroundColor(m_button_color);
+            btn.setBackgroundColor(m_button_unfocused_color);
 
     }
 
     btn.setAlpha(theme().alpha());
-    btn.clear();
 }
 
 void FbWinFrame::render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
@@ -1089,7 +1089,6 @@ void FbWinFrame::renderButtonFocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_focused_color);
 
     button.clear();
-    button.updateTransparent();
 }
 
 void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
@@ -1107,7 +1106,6 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
         button.setBackgroundColor(m_label_unfocused_color);
 
     button.clear(); 
-    button.updateTransparent();
 }
 
 void FbWinFrame::updateTransparent() {
@@ -1127,8 +1125,11 @@ void FbWinFrame::updateTransparent() {
         (*button_it)->updateTransparent();
     }
 
+    m_grip_left.clear();
     m_grip_left.updateTransparent();
+    m_grip_right.clear();
     m_grip_right.updateTransparent();
+    m_handle.clear();
     m_handle.updateTransparent();
 }
 
