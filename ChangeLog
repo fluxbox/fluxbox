@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/05:
+  * Enable dutch menu for flemish people as well. 
+    (Thanks Mathieu De Zutter <mathieu at dezutter dot org>)
+    fluxbox-generate_menu.in
   * Check if init is consistent with menufile location (Han)
     fluxbox-generate_menu.in
   * Russion translation updates (thanks Roman Yepishev)

@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.24 2004/08/05 10:51:40 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.25 2004/08/05 22:53:49 rathnor Exp $
 
 #
 # Portability notes:
@@ -394,7 +394,7 @@ case ${LC_ALL} in
         WORKSPACEMENU='Arbetsytor'
         XUTILSMENU='X-program (CHANGE ME!)'
         ;;
-    nl_NL*) #Nederlandse locales
+    nl_*) #Nederlandse locales
         BACKGROUNDMENU='Achtergrond'
         BACKGROUNDMENUTITLE='Kies een achtergrond'
         BROWSERMENU='Browsers'
