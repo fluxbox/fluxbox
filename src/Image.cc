@@ -25,7 +25,7 @@
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 
-// $Id: Image.cc,v 1.4 2002/02/04 22:41:27 fluxgen Exp $
+// $Id: Image.cc,v 1.5 2002/03/18 15:32:50 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -1436,9 +1436,9 @@ void BImage::rgradient(void) {
     // normal rgradient
     for (yt = ytable, y = 0; y < height; y++, yt += 3) {
       for (xt = xtable, x = 0; x < width; x++) {
-        *(pr++) = (unsigned char) (tr - (rsign * max(*(xt++), *(yt))));
-        *(pg++) = (unsigned char) (tg - (gsign * max(*(xt++), *(yt + 1))));
-        *(pb++) = (unsigned char) (tb - (bsign * max(*(xt++), *(yt + 2))));
+        *(pr++) = (unsigned char) (tr - (rsign * std::max(*(xt++), *(yt))));
+        *(pg++) = (unsigned char) (tg - (gsign * std::max(*(xt++), *(yt + 1))));
+        *(pb++) = (unsigned char) (tb - (bsign * std::max(*(xt++), *(yt + 2))));
       }
     }
 
@@ -1450,32 +1450,32 @@ void BImage::rgradient(void) {
     for (yt = ytable, y = 0; y < height; y++, yt += 3) {
       for (xt = xtable, x = 0; x < width; x++) {
         if (y & 1) {
-          channel = (unsigned char) (tr - (rsign * max(*(xt++), *(yt))));
+          channel = (unsigned char) (tr - (rsign * std::max(*(xt++), *(yt))));
           channel2 = (channel >> 1) + (channel >> 2);
           if (channel2 > channel) channel2 = 0;
           *(pr++) = channel2;
 
-          channel = (unsigned char) (tg - (gsign * max(*(xt++), *(yt + 1))));
+          channel = (unsigned char) (tg - (gsign * std::max(*(xt++), *(yt + 1))));
           channel2 = (channel >> 1) + (channel >> 2);
           if (channel2 > channel) channel2 = 0;
           *(pg++) = channel2;
 
-          channel = (unsigned char) (tb - (bsign * max(*(xt++), *(yt + 2))));
+          channel = (unsigned char) (tb - (bsign * std::max(*(xt++), *(yt + 2))));
           channel2 = (channel >> 1) + (channel >> 2);
           if (channel2 > channel) channel2 = 0;
           *(pb++) = channel2;
         } else {
-          channel = (unsigned char) (tr - (rsign * max(*(xt++), *(yt))));
+          channel = (unsigned char) (tr - (rsign * std::max(*(xt++), *(yt))));
           channel2 = channel + (channel >> 3);
           if (channel2 < channel) channel2 = ~0;
           *(pr++) = channel2;
 
-          channel = (unsigned char) (tg - (gsign * max(*(xt++), *(yt + 1))));
+          channel = (unsigned char) (tg - (gsign * std::max(*(xt++), *(yt + 1))));
           channel2 = channel + (channel >> 3);
           if (channel2 < channel) channel2 = ~0;
           *(pg++) = channel2;
 
-          channel = (unsigned char) (tb - (bsign * max(*(xt++), *(yt + 2))));
+          channel = (unsigned char) (tb - (bsign * std::max(*(xt++), *(yt + 2))));
           channel2 = channel + (channel >> 3);
           if (channel2 < channel) channel2 = ~0;
           *(pb++) = channel2;
@@ -1681,9 +1681,9 @@ void BImage::pcgradient(void) {
     // normal pcgradient
     for (yt = ytable, y = 0; y < height; y++, yt += 3) {
       for (xt = xtable, x = 0; x < width; x++) {
-        *(pr++) = (unsigned char) (tr - (rsign * min(*(xt++), *(yt))));
-        *(pg++) = (unsigned char) (tg - (gsign * min(*(xt++), *(yt + 1))));
-        *(pb++) = (unsigned char) (tb - (bsign * min(*(xt++), *(yt + 2))));
+        *(pr++) = (unsigned char) (tr - (rsign * std::min(*(xt++), *(yt))));
+        *(pg++) = (unsigned char) (tg - (gsign * std::min(*(xt++), *(yt + 1))));
+        *(pb++) = (unsigned char) (tb - (bsign * std::min(*(xt++), *(yt + 2))));
       }
     }
 
@@ -1695,32 +1695,32 @@ void BImage::pcgradient(void) {
     for (yt = ytable, y = 0; y < height; y++, yt += 3) {
       for (xt = xtable, x = 0; x < width; x++) {
         if (y & 1) {
-          channel = (unsigned char) (tr - (rsign * min(*(xt++), *(yt))));
+          channel = (unsigned char) (tr - (rsign * std::min(*(xt++), *(yt))));
           channel2 = (channel >> 1) + (channel >> 2);
           if (channel2 > channel) channel2 = 0;
           *(pr++) = channel2;
 
-          channel = (unsigned char) (tg - (bsign * min(*(xt++), *(yt + 1))));
+          channel = (unsigned char) (tg - (bsign * std::min(*(xt++), *(yt + 1))));
           channel2 = (channel >> 1) + (channel >> 2);
           if (channel2 > channel) channel2 = 0;
           *(pg++) = channel2;
 
-          channel = (unsigned char) (tb - (gsign * min(*(xt++), *(yt + 2))));
+          channel = (unsigned char) (tb - (gsign * std::min(*(xt++), *(yt + 2))));
           channel2 = (channel >> 1) + (channel >> 2);
           if (channel2 > channel) channel2 = 0;
           *(pb++) = channel2;
         } else {
-          channel = (unsigned char) (tr - (rsign * min(*(xt++), *(yt))));
+          channel = (unsigned char) (tr - (rsign * std::min(*(xt++), *(yt))));
           channel2 = channel + (channel >> 3);
           if (channel2 < channel) channel2 = ~0;
           *(pr++) = channel2;
 
-          channel = (unsigned char) (tg - (gsign * min(*(xt++), *(yt + 1))));
+          channel = (unsigned char) (tg - (gsign * std::min(*(xt++), *(yt + 1))));
           channel2 = channel + (channel >> 3);
           if (channel2 < channel) channel2 = ~0;
           *(pg++) = channel2;
 
-          channel = (unsigned char) (tb - (bsign * min(*(xt++), *(yt + 2))));
+          channel = (unsigned char) (tb - (bsign * std::min(*(xt++), *(yt + 2))));
           channel2 = channel + (channel >> 3);
           if (channel2 < channel) channel2 = ~0;
           *(pb++) = channel2;
