@@ -22,15 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.116 2004/06/20 04:49:33 rathnor Exp $
+// $Id: Window.hh,v 1.117 2004/08/10 12:05:47 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
 
-#include "Timer.hh"
-#include "Subject.hh"
-#include "EventHandler.hh"
-#include "XLayerItem.hh"
+#include "FbTk/Timer.hh"
+#include "FbTk/Subject.hh"
+#include "FbTk/EventHandler.hh"
+#include "FbTk/XLayerItem.hh"
+
 #include "FbWinFrame.hh"
 
 #include <X11/Xlib.h>
@@ -411,8 +412,6 @@ private:
     void restoreGravity();
     void setGravityOffsets();
     void setState(unsigned long stateval, bool setting_up);
-    void upsize();
-    void downsize();
 
     // modifies left and top if snap is necessary
     void doSnapping(int &left, int &top);

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.293 2004/07/15 18:20:13 fluxgen Exp $
+// $Id: Window.cc,v 1.294 2004/08/10 12:05:47 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2188,7 +2188,6 @@ void FluxboxWindow::unmapNotifyEvent(XUnmapEvent &ue) {
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<client->window()<<dec<<endl;
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): title="<<client->title()<<endl;
 #endif // DEBUG
-    
     restore(client, false);
 
 }
@@ -3133,7 +3132,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
         if (client) {
             Fluxbox::TabsAttachArea area= Fluxbox::instance()->getTabsAttachArea();
             if (area == Fluxbox::ATTACH_AREA_WINDOW)
-            attach_to_win = client->fbwindow();
+                attach_to_win = client->fbwindow();
             else if (area == Fluxbox::ATTACH_AREA_TITLEBAR) {
                 if(client->fbwindow()->hasTitlebar() && 
                    client->fbwindow()->y() + client->fbwindow()->titlebarHeight() > dest_y)
@@ -3182,9 +3181,10 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
                                  &xev)) {
 #ifdef DEBUG
         cerr<<"FluxboxWindow::restore: reparent 0x"<<hex<<client->window()<<dec<<" to root"<<endl;
+
 #endif // DEBUG
         // reparent to root window
-        client->reparent(screen().rootWindow().window(), frame().x(), frame().y());
+        client->reparent(screen().rootWindow(), frame().x(), frame().y());
 
         if (!remap)
             client->hide();
@@ -3197,8 +3197,10 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 
     delete client;
 
+
 #ifdef DEBUG
-        cerr<<__FILE__<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
+    cerr<<"FluxboxWindow::restore: remap = "<<remap<<endl;
+    cerr<<__FILE__<<"("<<__FUNCTION__<<"): numClients() = "<<numClients()<<endl;
 #endif // DEBUG
     if (numClients() == 0) {
         hide(true);
@@ -3209,7 +3211,9 @@ void FluxboxWindow::restore(WinClient *client, bool remap) {
 void FluxboxWindow::restore(bool remap) {
     if (numClients() == 0)
         return;
-
+#ifdef DEBUG
+    cerr<<"restore("<<remap<<")"<<endl;
+#endif // DEBUG
     while (!clientList().empty()) {
         restore(clientList().back(), remap);
         // deleting winClient removes it from the clientList
