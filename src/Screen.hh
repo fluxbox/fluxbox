@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.58 2003/01/07 02:50:20 fluxgen Exp $
+// $Id: Screen.hh,v 1.59 2003/01/09 17:38:40 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -51,12 +51,12 @@
 class Configmenu;
 class Workspacemenu;
 class Iconmenu;
-class Rootmenu;
 class Netizen;
 class Slit;
 
 namespace FbTk {
 class MenuTheme;
+class Menu;
 };
 
 /// Handles screen connection and screen clients
@@ -96,8 +96,8 @@ public:
 	
     inline const FbTk::Color *getBorderColor() const { return &theme->getBorderColor(); }
     inline BImageControl *getImageControl() { return image_control; }
-    const Rootmenu * const getRootmenu() const { return m_rootmenu.get(); }
-    Rootmenu * const getRootmenu() { return m_rootmenu.get(); }
+    const FbTk::Menu * const getRootmenu() const { return m_rootmenu.get(); }
+    FbTk::Menu * const getRootmenu() { return m_rootmenu.get(); }
 	
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
 
@@ -117,14 +117,14 @@ public:
     inline unsigned int getSlitOnHead() const { return resource.slit_on_head; }
     inline void saveSlitOnHead(unsigned int h) { resource.slit_on_head = h;  }
 
-    inline const Toolbar * const getToolbar() const { return m_toolbar.get(); }
-    inline Toolbar * const getToolbar() { return m_toolbar.get(); }
+    inline const Toolbar *getToolbar() const { return m_toolbar.get(); }
+    inline Toolbar *getToolbar() { return m_toolbar.get(); }
 
     inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
     inline Workspace *getCurrentWorkspace() { return current_workspace; }
 
-    const Workspacemenu * const getWorkspacemenu() const { return workspacemenu; }
-    Workspacemenu * const getWorkspacemenu() { return workspacemenu; }
+    const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
+    FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
 
     inline unsigned int getHandleWidth() const { return theme->getHandleWidth(); }
     inline unsigned int getBevelWidth() const { return theme->getBevelWidth(); }
@@ -214,8 +214,7 @@ public:
     inline void saveWorkspaceWarping(bool s) { resource.workspace_warping = s; }
     inline void saveDesktopWheeling(bool s) { resource.desktop_wheeling = s; }
     void iconUpdate();
-    inline const Iconmenu *getIconmenu() const { return m_iconmenu; }
-    inline void setAutoGroupWindow(Window w = 0) { auto_group_window = w; }
+
     void setAntialias(bool value);
 	
     inline const char *getStrftimeFormat() { return resource.strftime_format.c_str(); }
@@ -310,9 +309,9 @@ public:
     };
 	
 private:
-    void createStyleMenu(Rootmenu *menu, bool newmenu, const char *label, const char *directory);
+    void createStyleMenu(FbTk::Menu &menu, bool newmenu, const char *label, const char *directory);
 
-    bool parseMenuFile(std::ifstream &, Rootmenu *, int&);
+    bool parseMenuFile(std::ifstream &filestream, FbTk::Menu &menu, int &row);
 
     void initMenu();
 
@@ -334,11 +333,10 @@ private:
 
     BImageControl *image_control;
     Configmenu *configmenu;
-    Iconmenu *m_iconmenu;
 
-    std::auto_ptr<Rootmenu> m_rootmenu;
+    std::auto_ptr<FbTk::Menu> m_rootmenu;
 
-    typedef std::list<Rootmenu *> Rootmenus;
+    typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;
 
     Rootmenus rootmenuList;
@@ -349,7 +347,7 @@ private:
 #endif // SLIT
     std::auto_ptr<Toolbar> m_toolbar;
     Workspace *current_workspace;
-    Workspacemenu *workspacemenu;
+    std::auto_ptr<FbTk::Menu> workspacemenu;
 
     unsigned int geom_w, geom_h;
     unsigned long event_mask;
