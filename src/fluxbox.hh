@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.49 2003/04/15 12:11:10 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.50 2003/04/25 15:52:58 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -31,17 +31,16 @@
 #include "BaseDisplay.hh"
 #include "Timer.hh"
 #include "Observer.hh"
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif // HAVE_CONFIG_H
-
 #include "SignalHandler.hh"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
 #include <cstdio>
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
 
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>
@@ -74,25 +73,29 @@ class Fluxbox : public BaseDisplay, public FbTk::TimeoutHandler,
                 public FbTk::SignalEventHandler,
                 public FbTk::Observer {
 public:
-    Fluxbox(int argc, char **argv, const char * dpy_name= 0, const char *rc = 0);	
+    Fluxbox(int argc, char **argv, const char * dpy_name= 0, 
+            const char *rcfilename = 0);
     virtual ~Fluxbox();
 	
-    static Fluxbox *instance() { return singleton; }
+    static Fluxbox *instance() { return s_singleton; }
 	
     inline bool useIconBar() const { return *m_rc_iconbar; }
     inline void saveIconBar(bool value) { m_rc_iconbar = value; }
 
-    inline Atom getFluxboxPidAtom() const { return fluxbox_pid; }
+    inline Atom getFluxboxPidAtom() const { return m_fluxbox_pid; }
 
     FluxboxWindow *searchGroup(Window, FluxboxWindow *);
     FluxboxWindow *searchWindow(Window);
-    inline FluxboxWindow *getFocusedWindow() { return focused_window; }
+    inline FluxboxWindow *getFocusedWindow() { return m_focused_window; }
 
 		
     BScreen *searchScreen(Window w);
 
     inline const Time &getDoubleClickInterval() const { return resource.double_click_interval; }
-    inline const Time &getLastTime() const { return last_time; }
+    inline const Time &getLastTime() const { return m_last_time; }
+
+    void addAtomHandler(AtomHandler *atomh);
+    void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
     enum Titlebar{SHADE=0, MINIMIZE, MAXIMIZE, CLOSE, STICK, MENU, EMPTY};		
@@ -136,8 +139,7 @@ public:
     inline unsigned int getCacheMax() const { return *m_rc_cache_max; }
 
     inline void maskWindowEvents(Window w, FluxboxWindow *bw)
-        { masked = w; masked_window = bw; }
-    inline void setNoFocus(bool f) { no_focus = f; }
+        { m_masked = w; m_masked_window = bw; }
 
     void watchKeyRelease(BScreen *screen, unsigned int mods);
 
@@ -184,7 +186,7 @@ private:
     } cursor;
 
     typedef struct MenuTimestamp {
-        char *filename;
+        std::string filename;
         time_t timestamp;
     } MenuTimestamp;
 
@@ -228,36 +230,37 @@ private:
     Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
 
 	
-    std::map<Window, FluxboxWindow *> windowSearch;
-    std::map<Window, FluxboxWindow *> groupSearch;
+    std::map<Window, FluxboxWindow *> m_window_search;
+    std::map<Window, FluxboxWindow *> m_group_search;
 	
-    std::list<MenuTimestamp *> menuTimestamps;
+    std::list<MenuTimestamp *> m_menu_timestamps;
     typedef std::list<BScreen *> ScreenList;
-    ScreenList screenList;
+    ScreenList m_screen_list;
 
-    FluxboxWindow *focused_window, *masked_window;
-    FbTk::Timer timer;
+    FluxboxWindow *m_focused_window, *m_masked_window;
+    FbTk::Timer m_timer;
 
-    BScreen *watching_screen;
-    unsigned int watch_keyrelease;
+    BScreen *m_watching_screen;
+    unsigned int m_watch_keyrelease;
 
-    Atom fluxbox_pid;
+    Atom m_fluxbox_pid;
 
-    bool no_focus, reconfigure_wait, reread_menu_wait;
-    Time last_time;
-    Window masked;
-    std::string rc_file; ///< resource filename
-    char **argv;
-    int argc;
-    std::auto_ptr<Keys> key;
-    std::string slitlist_path;
+    bool m_reconfigure_wait, m_reread_menu_wait;
+    Time m_last_time;
+    Window m_masked;
+    std::string m_rc_file; ///< resource filename
+    char **m_argv;
+    int m_argc;
+
+    std::auto_ptr<Keys> m_key;
+
     //default arguments for titlebar left and right
-    static Fluxbox::Titlebar m_titlebar_left[], m_titlebar_right[];
+    static Fluxbox::Titlebar s_titlebar_left[], s_titlebar_right[];
 	
-    static Fluxbox *singleton;
+    static Fluxbox *s_singleton;
     std::vector<AtomHandler *> m_atomhandler;
 
 };
 
 
-#endif // _FLUXBOX_HH_
+#endif // FLUXBOX_HH
