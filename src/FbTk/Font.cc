@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.18 2004/08/31 23:07:58 akir Exp $
+//$Id: Font.cc,v 1.19 2004/09/01 00:09:03 akir Exp $
 
 
 #include "StringUtil.hh"
@@ -122,7 +122,7 @@ char* recode(iconv_t cd,
     size_t result = (size_t)(-1);
 
 #ifdef HAVE_CONST_ICONV    
-    result = iconv(cd, const_cast<char **>(&msg_ptr), &inbytesleft, &new_msg, &outbytesleft);
+    result = iconv(cd, (const char**)(&msg_ptr), &inbytesleft, &new_msg, &outbytesleft);
 #else
     result = iconv(cd, &msg_ptr, &inbytesleft, &new_msg, &outbytesleft);
 #endif  // HAVE_CONST_ICONV
