@@ -197,8 +197,8 @@ Basemenu::~Basemenu(void) {
 int Basemenu::insert(const char *l, int function, const char *e, int pos) {
 	char *label = 0, *exec = 0;
 
-	if (l) label = bstrdup(l);
-	if (e) exec = bstrdup(e);
+	if (l) label = Misc::strdup(l);
+	if (e) exec = Misc::strdup(e);
 
 	BasemenuItem *item = new BasemenuItem(label, function, exec);
 	menuitems->insert(item, pos);
@@ -210,7 +210,7 @@ int Basemenu::insert(const char *l, int function, const char *e, int pos) {
 int Basemenu::insert(const char *l, Basemenu *submenu, int pos) {
 	char *label = 0;
 
-	if (l) label = bstrdup(l);
+	if (l) label = Misc::strdup(l);
 
 	BasemenuItem *item = new BasemenuItem(label, submenu);
 	menuitems->insert(item, pos);
@@ -507,11 +507,11 @@ void Basemenu::redrawTitle(void) {
 	l +=	(menu.bevel_w * 2);
 
 	switch (screen->getMenuStyle()->titlefont.justify) {
-	case FFont::Right:
+	case Misc::Font::RIGHT:
 		dx += menu.width - l;
 		break;
 
-	case FFont::Center:
+	case Misc::Font::CENTER:
 		dx += (menu.width - l) / 2;
 		break;
 	default:
@@ -644,11 +644,11 @@ void Basemenu::drawItem(int index, Bool highlight, Bool clear,
 		}
 		
 		switch(screen->getMenuStyle()->framefont.justify) {
-		case FFont::Left:
+		case Misc::Font::LEFT:
 			text_x = item_x + menu.bevel_w + menu.item_h + 1;
 			break;
 			
-		case FFont::Right:
+		case Misc::Font::RIGHT:
 			text_x = item_x + menu.item_w - (menu.item_h + menu.bevel_w + text_w);
 			break;			
 		default: //center
@@ -789,7 +789,7 @@ void Basemenu::setLabel(const char *l) {
 	if (menu.label)
 		delete [] menu.label;
 
-	if (l) menu.label = bstrdup(l);
+	if (l) menu.label = Misc::strdup(l);
 	else menu.label = 0;
 }
 
