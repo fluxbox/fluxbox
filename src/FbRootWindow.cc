@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRootWindow.cc,v 1.3 2004/09/11 14:13:06 rathnor Exp $
+// $Id: FbRootWindow.cc,v 1.4 2004/10/21 10:21:03 akir Exp $
 
 #include "FbRootWindow.hh"
 #include "App.hh"
@@ -64,5 +64,5 @@ FbRootWindow::FbRootWindow(int screen_num):
 }
 
 void FbRootWindow::updateGeometry() {
-    FbWindow::updateGeometry();
+    FbTk::FbWindow::updateGeometry();
 }
