@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.19 2003/05/01 14:33:36 rathnor Exp $
+// $Id: Menu.cc,v 1.20 2003/05/04 10:34:09 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -427,8 +427,12 @@ void Menu::update() {
                                     menu.frame.width(), menu.frame.height(),
                                     attr.depth);
 
-        if (m_frame_pm.drawable() == 0)
-            cerr<<"Can't create pixmap!"<<endl;
+        if (m_frame_pm.drawable() == 0) {
+            cerr<<"FbTk::Menu: Warning: Failed to create pixmap ("<<
+                menu.frame.window()<<", "<<menu.frame.width()<<", "<<
+                menu.frame.height()<<
+                ", "<<attr.depth<<") !"<<endl;
+        }
 
        
     }
@@ -660,8 +664,7 @@ bool Menu::hasSubmenu(unsigned int index) const {
 
 
 void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_trans,
-                    int x, int y, unsigned int w, unsigned int h)
-{
+                    int x, int y, unsigned int w, unsigned int h) {
     if (index >= menuitems.size() || menuitems.size() == 0 || 
         menu.persub == 0)
         return;
@@ -939,7 +942,7 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
             if (item->submenu())
                 drawSubmenu(w);
             else
-                drawItem(w, (item->isEnabled()), true, true);
+                drawItem(w, item->isEnabled(), true, true);
         }
     } else {
         menu.x_move = be.x_root - menu.x;
@@ -1045,7 +1048,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             if (itmp->submenu())
                 drawSubmenu(w);
             else
-                drawItem(w, (itmp->isEnabled()), true, true);
+                drawItem(w, itmp->isEnabled(), true, true);
         }
     }
 }
