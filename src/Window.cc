@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.30 2002/02/26 22:35:58 fluxgen Exp $
+// $Id: Window.cc,v 1.31 2002/02/27 22:04:01 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -406,6 +406,7 @@ FluxboxWindow::~FluxboxWindow(void) {
 	if (timer) {
 		if (timer->isTiming()) timer->stop();
 		delete timer;
+		timer = 0;
 	}
 
 	if (windowmenu)
@@ -417,18 +418,18 @@ FluxboxWindow::~FluxboxWindow(void) {
 	if (client.icon_title)
 		delete [] client.icon_title;
 
-	if (tab)
+	if (tab!=0)
 		delete tab;	
 	tab = 0;
 	
-	if (client.mwm_hint)
+	if (client.mwm_hint!=0)
 		XFree(client.mwm_hint);
 
-	if (client.blackbox_hint)
+	if (client.blackbox_hint!=0)
 		XFree(client.blackbox_hint);		
 
 	//TODO: Move this to Workspace::removeWindow
-	if (client.transient_for)	
+	if (client.transient_for!=0)	
 		fluxbox->setFocusedWindow(client.transient_for);	
 	
 	if (client.window_group)
@@ -2433,7 +2434,7 @@ void FluxboxWindow::setFocusFlag(bool focus) {
 	}
 
 	if ((screen->isSloppyFocus() || screen->isSemiSloppyFocus()) &&
-			screen->doAutoRaise())
+			screen->doAutoRaise() && timer!=0 )
 		timer->stop();
 }
 

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.36 2002/02/26 22:42:23 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.37 2002/02/27 22:04:01 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -2475,7 +2475,7 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 	Toolbar *old_tbar = 0, *tbar = 0;
 	Workspace *old_wkspc = 0, *wkspc = 0;
 
-	if (focused_window) {
+	if (focused_window!=0) {
 		old_win = focused_window;
 		old_screen = old_win->getScreen();
 		
@@ -2499,9 +2499,9 @@ void Fluxbox::setFocusedWindow(FluxboxWindow *win) {
 	} else
 		focused_window = (FluxboxWindow *) 0;
 
-	if (tbar)
+	if (tbar!=0)
 		tbar->redrawWindowLabel(True);
-	if (screen)
+	if (screen!=0)
 		screen->updateNetizenWindowFocus();
 
 	if (old_tbar && old_tbar != tbar)
