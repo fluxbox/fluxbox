@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.hh,v 1.1 2003/06/12 14:24:25 fluxgen Exp $
+// $Id: I18n.hh,v 1.2 2003/12/08 17:29:24 fluxgen Exp $
 
 #ifndef	 I18N_HH
 #define	 I18N_HH
@@ -54,7 +54,7 @@ public:
     inline const nl_catd &getCatalogFd() const { return m_catalog_fd; }
 
     const char *getMessage(int set_number, int message_number, 
-                           const char *default_messsage = 0);
+                           const char *default_messsage = 0) const;
     void openCatalog(const char *catalog);
 private:
     I18n();

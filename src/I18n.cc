@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.3 2003/08/26 23:53:49 fluxgen Exp $
+// $Id: I18n.cc,v 1.4 2003/12/08 17:29:24 fluxgen Exp $
 
 //usr GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -125,7 +125,7 @@ void I18n::openCatalog(const char *catalog) {
 
 
 const char *I18n::getMessage(int set_number, int message_number, 
-                             const char *default_message) {
+                             const char *default_message) const {
 
 #if defined(NLS) && defined(HAVE_CATGETS)
     if (m_catalog_fd != (nl_catd)-1)
