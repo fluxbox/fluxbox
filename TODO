@@ -1,10 +1,7 @@
 TODO for Fluxbox 0.2.0
-* "Dont use tab" doesnt save
 * Remove the cylic dep between class Tab and class Window
-* Remove the cylic dep between class Theme and class Fluxbox
-!* Fix "no font" crash
+* Fix "no font" crash
 * Remove cyclic dep on Basemenu with class Fluxbox
-* sloppy focus - auto-raise
 * Fix configurable toolbar
 	so the user can configure toolbar in a config file
 
@@ -16,18 +13,18 @@ TODO for Fluxbox 0.2.0
 
 * grabKillWindow to keygrabber grabCloseWindow
 
-* Fluxbox::real_reconfigure ...check "session.styleFile %s"
 * grabRootmenu
 * wheel-config support
 * separator in the menus
-* slit-maximize-stop
 (* restructure BImageControl::parseTexture)
-* slit.onTop and slit.placement "bugg" when changin in configurefile
 * fix "move group to..." without tab bugg.
 * 0,0-pos fix
-* reconfigure tar upp nya dekorationer
-
-* Create fbrun style app
+* gnome support 
+* net wm atom support
+* fix some more enums to uppercase
+* clean up in the global namespace
+* remove cyclic deps
+* Create fbinput style app
 (* Add wheelscroll-workspace-change configuration (reversed order or
   regular)- Add "system menu" for minimized apps in the toolbar.
   (Close, Kill, Send to, etc) )

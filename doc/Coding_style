@@ -49,3 +49,6 @@ type classname::function(...) {
 enums must be in uppercase letters:
 enum {WHITE, RED, BLUE};
 
+Class data members are prefixed by m_ 
+Class member function will be organized accordning to creator, 
+manipulator and accessor categories.
