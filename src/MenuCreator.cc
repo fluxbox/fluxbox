@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuCreator.cc,v 1.12 2004/08/29 12:35:29 rathnor Exp $
+// $Id: MenuCreator.cc,v 1.13 2004/08/29 21:11:24 akir Exp $
 
 #include "MenuCreator.hh"
 
@@ -38,6 +38,7 @@
 
 #include "FbMenuParser.hh"
 #include "StyleMenuItem.hh"
+#include "RootCmdMenuItem.hh"
 
 #include "FbTk/I18n.hh"
 #include "FbTk/MultiButtonMenuItem.hh"
@@ -92,6 +93,42 @@ static void createStyleMenu(FbTk::Menu &parent, const std::string &label,
     Fluxbox::instance()->saveMenuFilename(stylesdir.c_str());
 
 }
+
+static void createRootCmdMenu(FbTk::Menu &parent, const string &label, 
+                                const string &directory, const string &cmd) {
+    // perform shell style ~ home directory expansion
+    string rootcmddir(FbTk::StringUtil::expandFilename(directory));
+
+    if (!FbTk::Directory::isDirectory(rootcmddir))
+        return;
+
+    FbTk::Directory dir(rootcmddir.c_str());
+
+    // create a vector of all the filenames in the directory
+    // add sort it
+    vector<string> filelist(dir.entries());
+    for (size_t file_index = 0; file_index < dir.entries(); ++file_index)
+        filelist[file_index] = dir.readFilename();
+
+    sort(filelist.begin(), filelist.end(), less<string>());
+
+    // for each file in directory add filename and path to menu
+    for (size_t file_index = 0; file_index < dir.entries(); file_index++) {
+        
+        string rootcmd(rootcmddir+ '/' + filelist[file_index]);
+        // add to menu only if the file is a regular file, and not a
+        // .file or a backup~ file
+        if ((FbTk::Directory::isRegularFile(rootcmd) &&
+             (filelist[file_index][0] != '.') &&
+             (rootcmd[rootcmd.length() - 1] != '~'))) 
+            parent.insert(new RootCmdMenuItem(filelist[file_index], rootcmd, cmd));
+    }
+    // update menu graphics
+    parent.update();
+    Fluxbox::instance()->saveMenuFilename(rootcmddir.c_str());
+
+}
+
 
 class ParseItem {
 public:
@@ -165,8 +202,7 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         exec_and_hide->add(exec_cmd);
         RefCount<Command> exec_and_hide_cmd(exec_and_hide);
         menu.insert(str_label.c_str(), exec_and_hide_cmd);
-    }
-    else if (str_key == "style") {	// style
+    } else if (str_key == "style") {	// style
         menu.insert(new StyleMenuItem(str_label, str_cmd));
     } else if (str_key == "config") {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
@@ -224,7 +260,11 @@ static void translateMenuItem(Parser &parse, ParseItem &pitem) {
         createStyleMenu(menu, str_label, 
                         str_key == "themesmenu" ? str_cmd : str_label);
     } // end of themesdir
-
+    else if (str_key == "wallpapers" || str_key == "wallpapermenu" || 
+             str_key == "rootcommands") {
+         createRootCmdMenu(menu, str_label, str_label, 
+                          str_cmd == "" ? "fbsetbg" : str_cmd);
+    } // end of wallpapers
     else if (str_key == "workspaces") {
         BScreen *screen = Fluxbox::instance()->findScreen(screen_number);
         if (screen != 0) {

@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/29:
+  * Added [wallpapers|wallpapermenu|rootcommands] to possible
+    menuitems (Mathias)
+    MenuCreator.cc RootCmdMenuItem.cc RootCmdMenuItem.hh
   * Fix cycling using keys in menus (didn't wrap upwards) (Simon)
     FbTk/Menu.cc
   * Fix rendering bug when revisiting >1 column menus (Simon)
@@ -16,8 +19,8 @@ Changes for 0.9.10:
     FbCommandFactory.cc
   * More random render fixes (Simon)
     (font alignment in menu, menu optimisation, toolbar font/render)
-    FbTk/Menu.cc FbTk/MenuItem.cc FbTk/XftFontImp.cc 
-    TextTheme.cc Toolbar.cc ToolbarItem.hh <ToolbarTools>.hh/cc 
+    FbTk/Menu.cc FbTk/MenuItem.cc FbTk/XftFontImp.cc
+    TextTheme.cc Toolbar.cc ToolbarItem.hh <ToolbarTools>.hh/cc
 *04/08/28:
   * Some more menu rendering fixes (Simon)
     Thanks Florian Pigorsch for nice bug reports + debugging
@@ -37,12 +40,13 @@ Changes for 0.9.10:
     - in menufiles:
         [stylesdir] and [themesdir] allowed
         [stylesmenu] and [themesmenu] allowed
+    MenuCreator.cc
   * Fix bevel on solid colour textures (Simon)
     FbTk/Texture.hh/cc FbTk/ThemeItems.hh
   * Make arrow in toolbar buttons scalable size (Simon)
     - new theme item: toolbar.button.scale:  <number>
       The number is a scale factor, which is divided into 100 to give
-      the size relative to the button. 100 gives a arrow the same size 
+      the size relative to the button. 100 gives a arrow the same size
       as button, 200 gives half the size, 300 a third, etc.
     - default is now 300, not 200
     - also fix size balance with left/right arrows
@@ -52,7 +56,7 @@ Changes for 0.9.10:
   * Re-implement bevels in toolbar, plus numerous toolbar-related theme
     fixes => old styles now look like they used to! (Simon)
     Toolbar.cc ToolbarItem.h ToolTheme.cc ToolbarTheme.cc ToolFactory.cc
-    ArrowButton.cc ButtonTheme.cc ClockTool.cc IconbarTheme.cc 
+    ArrowButton.cc ButtonTheme.cc ClockTool.cc IconbarTheme.cc
     IconbarTool.cc SystemTray.hh WorkspaceNameTool.cc
 *04/08/25:
   * Fix to draw Cursors in Textboxes correctly again (Mathias)
@@ -77,12 +81,12 @@ Changes for 0.9.10:
     (Henrik)
     Window.cc
 *04/08/12:
-  * Moved fluxstyle.1 to fluxstyle.1.in and using regexp to 
+  * Moved fluxstyle.1 to fluxstyle.1.in and using regexp to
     replace pkgdatadir
     (Thanks php-coder at ngs dot ru)
     doc/fluxstyle.1.in, doc/Makefile.am
 *04/08/11:
-  * Updated Cthulhain style for toolbar.workspace.*  
+  * Updated Cthulhain style for toolbar.workspace.*
     and fixed a minor error in fluxbox.1.in
    (Thanks php-coder (php-coder at ngs dot ru)
   * Fixed bug: fbrun segfaults when history item is
@@ -123,7 +127,7 @@ Changes for 0.9.10:
     (Patch from Sergey Kuleshov)
     FbTk/*Font.cc/hh
 *04/08/05:
-  * Enable dutch menu for flemish people as well. 
+  * Enable dutch menu for flemish people as well.
     (Thanks Mathieu De Zutter <mathieu at dezutter dot org>)
     fluxbox-generate_menu.in
   * Check if init is consistent with menufile location (Han)
@@ -144,7 +148,7 @@ Changes for 0.9.10:
   * Fixed fallback for toolbar.button.pressed (Henrik)
     ButtonTheme.cc
 *04/07/15:
-  * Click on handle bar raises window even if 
+  * Click on handle bar raises window even if
     "click to raises" = false,
     Consistent with the title bar.
     (Henrik)
@@ -184,7 +188,7 @@ Changes for 0.9.10:
   * Fixed bug in systray (Henrik)
     (this fixes the problem with "sim" in systray)
     - It didn't force client position on configure request
-    SystemTray.cc 
+    SystemTray.cc
   * Added toggle menu (Henrik)
     - redraws each time a toggle menu item changes
     ToggleMenu.hh, FbMenu.hh, LayerMenu.hh, FbTk/Menu.cc
@@ -199,10 +203,10 @@ Changes for 0.9.10:
   * Fix autogrouping issue where windows wouldn't show (Simon)
     Workspace.cc
 *04/06/20:
-  * Clean out old nls stuff. Move in those strings that 
+  * Clean out old nls stuff. Move in those strings that
     are still in the new names, new Makefiles, etc (Simon)
     - need to get script to help people translate
-    nls/*/Makefile.am nls/*/Translation.m  -nls/*/*.m    
+    nls/*/Makefile.am nls/*/Translation.m  -nls/*/*.m
   * Fix various systray issues (Simon)
     SystemTray.cc Toolbar.cc ToolbarItem.hh
   * Support _NET_WM_WINDOW_TYPE_DESKTOP (Simon)
@@ -241,7 +245,7 @@ Changes for 0.9.10:
     MenuItem.cc/hh, FbMenuParser.hh/cc, MenuCreator.cc
 *04/06/08:
   * Fix up bsetroot nls, and couple of other tweaks (Simon)
-    util/Makefile.am bsetroot.cc nls/Makefile.am fluxbox-nls.hh nlsinfo 
+    util/Makefile.am bsetroot.cc nls/Makefile.am fluxbox-nls.hh nlsinfo
     MenuCreator.cc WorkspaceMenu.cc
   * Some man page license updates c/- Han
     fluxbox.1.in bsetroot.1 startfluxbox.1
@@ -265,17 +269,17 @@ Changes for 0.9.10:
     - regenerate fluxbox-nls.hh when adding new strings
     - This patch doesn't convert old translations, so for the mo,
       translations are broken, sorry. Thats next.
-    {nls,src,FbTk}/Makefile.am fluxbox-nls.hh nls/nlsinfo -src/I18n.hh/cc 
+    {nls,src,FbTk}/Makefile.am fluxbox-nls.hh nls/nlsinfo -src/I18n.hh/cc
     +FbTk/I18n.hh/cc Color.cc EventManager.cc Font.cc ImageControl.cc
-    Menu.cc Resource.cc TextureRender.cc Theme.cc Transparent.cc 
-    XFontImp.cc Gnome.cc Ewmh.cc FbCommandFactory.cc IconMenu.cc 
+    Menu.cc Resource.cc TextureRender.cc Theme.cc Transparent.cc
+    XFontImp.cc Gnome.cc Ewmh.cc FbCommandFactory.cc IconMenu.cc
     IconbarTool.cc Keys.cc MenuCreator.cc RegExp.cc Remember.cc Screen.cc
-    Slit.hh/cc Toolbar.cc WinClient.cc Window.cc Workspace.cc 
+    Slit.hh/cc Toolbar.cc WinClient.cc Window.cc Workspace.cc
     WorkspaceMenu.cc Xutil.cc fluxbox.cc main.cc
 *04/05/24:
   * Fix handling alpha value of zero (Simon)
     - also fix up defaulting of missing alpha theme items to 255
-    FbWindow.cc ToolbarTheme.hh/cc IconbarTheme.cc ToolTheme.cc 
+    FbWindow.cc ToolbarTheme.hh/cc IconbarTheme.cc ToolTheme.cc
     FbWinFrameTheme.cc
 *04/05/21:
   * fluxbox-generate_menu:
@@ -304,7 +308,7 @@ Changes for 0.9.10:
     EventManager.hh/cc
 *04/05/02:
   * Added new nls item for windowmenu: Layer
-    nls/C/Windowmenu.m    
+    nls/C/Windowmenu.m
   * New command: exit
     (Henrik)
     FbCommandFactory.cc
@@ -338,8 +342,8 @@ Changes for 0.9.10:
   * Fixed new menu parsing  (Henrik)
     everything goes through MenuCreator now.
     Window.cc, Screen.hh/cc, fluxbox.cc/hh
-    new files: 
-    MenuCreator.cc/hh, Parser.hh/cc, FbMenuParser.hh/cc, 
+    new files:
+    MenuCreator.cc/hh, Parser.hh/cc, FbMenuParser.hh/cc,
     IconMenu.hh/cc, WorkspaceMenu.hh/cc
 *04/04/30:
   * fix up reparent issue that affects java menus (thanks Scott Moser)
@@ -365,20 +369,20 @@ Changes for 0.9.9:
 *04/04/22:
   * New Command: Deiconify <mode> <dest>
     * Where mode is:
-      * last                         
+      * last
          - deiconify last iconified window
-      * lastworkspace (default)       
-         - deiconify last iconified window 
+      * lastworkspace (default)
+         - deiconify last iconified window
            from current workspace
       * all
          - deiconify all iconified windows
       * allworkspace
-         - deiconify all iconfiied windows 
+         - deiconify all iconfiied windows
            from current workspace
     * and dest is:
       * current (default)
         - deiconify them on current windows
-      * origin 
+      * origin
         - deiconify them where they were
       * originquiet
         - deiconify to old workspace but dont follow
@@ -393,8 +397,8 @@ Changes for 0.9.9:
     Titlebar - dropping tabs only to the titlebar of the destination-
                window leads to attaching to that frame
     (Thanks Mathias Gumz)
-  * FbRun: 
-    path completion and fixed so it loads apps on first tab-press 
+  * FbRun:
+    path completion and fixed so it loads apps on first tab-press
     (Thanks Mathias Gumz)
     FbRun.cc
 *04/04/19:
@@ -437,7 +441,7 @@ Changes for 0.9.9:
     new windows. Needs more testing though.
     Making sure there's not more than one GrabPointer at once in FluxboxWindow.
     (Henrik)
-    Window.hh/cc  
+    Window.hh/cc
 *04/04/10:
   * Some cleaning in Makefile.am's (Thanks  Frédéric L. W. Meunier (1 at pervalidus dot net))
 *04/04/03:
@@ -447,10 +451,10 @@ Changes for 0.9.9:
   * Support aspect ratio hints (Simon)
     WinClient.cc
 *04/03/31:
-  * Fixed _MOTIF_WM_HINTS decoration toggle bug (Henrik)  
+  * Fixed _MOTIF_WM_HINTS decoration toggle bug (Henrik)
     Window.cc
 *04/03/30:
-  * Fixed optional decoration on transient windows 
+  * Fixed optional decoration on transient windows
     (Thanks Scott Moser <ssmoser at us dot ibm dot com>)
     Screen.hh/cc, Window.cc, nls/C/Configmenu.m
 *04/03/28:
@@ -459,15 +463,15 @@ Changes for 0.9.9:
 *04/03/22:
   * Added screen resources to define line style for resize/move (Thanks Mathias Gumz)
     session.screen<num>.overlay.lineWidth: <integer>
-    session.screen<num>.overlay.lineStyle: <valid arguments: 
+    session.screen<num>.overlay.lineStyle: <valid arguments:
                                             LineSolid, LineOnOffDash
                                             LineDoubleDash
                                             >
-    session.screen<num>.overlay.joinStyle: <valid arguments: 
+    session.screen<num>.overlay.joinStyle: <valid arguments:
                                             JoinRound, JoindMiter,
                                             JoinBevel
                                             >
-    session.screen<num>.overlay.capStyle: <valid arguments: 
+    session.screen<num>.overlay.capStyle: <valid arguments:
                                            CapNotLast, CapRound,
                                            CapButt, CapProjecting>
 
@@ -477,12 +481,12 @@ Changes for 0.9.9:
   * A number of small fixes (Simon)
     - Fix up focus+highlights on tab close
     - Centralise focus fallbacks (fluxbox::unfocusWindow)
-      - we now prefer the last focused window in the current tabgroup to 
+      - we now prefer the last focused window in the current tabgroup to
         the actual last focused window on the whole screen.
     fluxbox.hh/cc Screen.hh/cc Window.hh/cc Workspace.hh/cc FbWinFrame.cc
 *04/03/19:
   * fluxbox-generate_menu:  (Han)
-    removes the reload-menu code which is obsolete  
+    removes the reload-menu code which is obsolete
     since Mathias's latest patch
     fluxbox-generate_menu.in
 *04/03/18:
@@ -523,8 +527,8 @@ Changes for 0.9.9:
 *04/03/03:
   * Fix update of keys on keymap change (Simon)
     fluxbox.cc
-  * Fix outline moving dropping on source workspace made window 
-    disappear [we now explicitly don't unfocus a moving window] (Simon) 
+  * Fix outline moving dropping on source workspace made window
+    disappear [we now explicitly don't unfocus a moving window] (Simon)
     Window.cc fluxbox.cc
   * Updated finnish locales for fluxbox-generate_menu (Thanks Lauri Hakkarainen)
 *04/03/02:
@@ -595,13 +599,13 @@ Changes for 0.9.9:
     fbsetbg
 *04/01/21:
   * Added more international keywords and     (Thanks Antonio Gomez)
-    Portuguese locales for fluxbox-generate_menu.in 
+    Portuguese locales for fluxbox-generate_menu.in
   * Added automatic reload of the new menu in   (Han)
     fluxbox-generate_menu
   * Fixed window size bug (Henrik)
     FbWinFrame::hideHandle and hideTitlebar could've
     caused window to have negative size
-    FbWinFrame.cc    
+    FbWinFrame.cc
   * Fixed cursor bug in fbrun (Thanks Mathias Gumz (gumz<at>cs.uni-magdeburg.de))
     TextBox.cc
   * Added support for:             (Henrik)
@@ -668,7 +672,7 @@ Changes for 0.9.8:
     fluxbox-generate_menu.in
 *04/01/11:
   * Fixed ImageControl cache problem (Henrik)
-    ImageControl.hh/cc	
+    ImageControl.hh/cc
   * Hide menus when click on iconbar (Henrik)
     Screen.hh/cc, fluxbox.hh/cc, IconButton.cc, Toolbar.cc
 *04/01/10:
@@ -684,18 +688,18 @@ Changes for 0.9.8:
   * Fixed an iconify bug in "All Windows" mode in IconbarTool (Henrik)
     IconbarTool.cc
 *04/01/08:
-  * Fixed some uninitialized variables (Henrik)      
+  * Fixed some uninitialized variables (Henrik)
   * Minor fixes for signed/unsigned warnings in FbTk (Henrik)
     FbTk/*
 
 ------------------------------------------------------------------------
 Changes for 0.9.7:
 *04/01/02:
-  * Added new styles Emerge (from Nuno Alexandre) and 
+  * Added new styles Emerge (from Nuno Alexandre) and
     BlueFlux (from Lauri Hakkarainen)
   * Removed styles: Clean (CleanColor renamed to Clean), Rancor and Blue  (Henrik)
-  * fbsetbg trivial: (Thanks Han) 
-    Add support for random_number, provided by:  
+  * fbsetbg trivial: (Thanks Han)
+    Add support for random_number, provided by:
     http://www.xs4all.nl/~hanb/software/arc4random.tar.bz2
     for the fans :)
     fbsetbg
@@ -712,11 +716,11 @@ Changes for 0.9.7:
     CommandDialog.hh
 *03/12/30:
   * Added resource session.useMod1 <boolean> to disable/enable mod1   (Henrik)
-    for Resize/Move window with mod1 + button 
+    for Resize/Move window with mod1 + button
     Window.cc, fluxbox.hh/cc
   * Fixed so it checks for caps, num and scrollock (Henrik)
     KeyUtil.hh/cc, fluxbox.cc, TextBox.cc, WorkspaceCmd.cc, Window.cc
-  * Focus issue (Henrik) 
+  * Focus issue (Henrik)
     Window.cc/hh, fluxbox.hh/cc
 *03/12/29:
   * Removed dublicate call to load theme in startup (Henrik)
@@ -750,7 +754,7 @@ Changes for 0.9.7:
     FbCommandFactory.cc, FbCommands.hh/cc, Keys.hh/cc
 *03/12/19:
   * Added Edit Clock Format menu item  (Henrik)
-    This allow the user to edit the clock format without open 
+    This allow the user to edit the clock format without open
     and edit the init file manualy
     ClockTool.cc
   * Added new commands:                      (Henrik)
@@ -766,16 +770,16 @@ Changes for 0.9.7:
     in Window.
     IconbarTool.hh/cc
   * Fixed bug in key/mouse screen updates in fluxbox.cc (Henrik)
-  * Old/New action: 
+  * Old/New action:
     SetWorkspaceName doesn't pop up dialog to edit workspace name  (Henrik)
-    it now sets the current workspace name direct 
+    it now sets the current workspace name direct
     example: SetWorkspaceName somespace
     this will set current workspace name to somespace
     The new action for editing workspace name is:
     WorkspaceNameDialog
-    FbCommands.hh/cc, FbCommandFactory.cc    
+    FbCommands.hh/cc, FbCommandFactory.cc
   * New Action: CommandDialog - with this action you'll get a dialog much like  (Henrik)
-    fbrun but in this you can issue fluxbox actions like NextWorkspace and so on.    
+    fbrun but in this you can issue fluxbox actions like NextWorkspace and so on.
   * Replaces WorkspaceNameEditing with a more generic dialog  (Henrik)
     CommandDialog.
     CommandDialog.hh/cc, FbCommandFactory.cc
@@ -788,7 +792,7 @@ Changes for 0.9.7:
     starts with "." or ends with "~" (backup files)
     doesn't gett added to style menu
   * Some cleaning (Henrik)
-    ...    
+    ...
   * nl_NL locales (Thanks Han Boetes)
   configure.in, nls/Makefile.am, nls/nl_NL/*, util/fluxbox-generate_menu.in
 *03/12/17:
@@ -808,7 +812,7 @@ Changes for 0.9.7:
   * Moving client to drop zone when drag'n'drop to root window (Henrik)
     Window.cc
 *03/12/12:
-  * Added menu delay/click to open or close submenus (Henrik)  
+  * Added menu delay/click to open or close submenus (Henrik)
     In menuMode: Click you need to click on the menu item to open it.
     The menuDelay is the delay to open an submenu.
     The menuDelayClose is so you don't need to aim that much when
@@ -865,8 +869,8 @@ Changes for 0.9.7:
     FbWinFrame.hh/cc FbWinFrameTheme.hh/cc
 *03/12/08:
   * fbsetbg now remembers -u option  and it also has   (Han)
-    a new -U option which does the same	thing without remembering 
-    fbsetbg  
+    a new -U option which does the same	thing without remembering
+    fbsetbg
   * Added "visible" menu item to Toolbar (Henrik)
     When this item is off the toolbar vill be completely
     hidden. (You can still access the toolbar menu via main
@@ -911,13 +915,13 @@ Changes for 0.9.7:
   * Fixed shadow bug with other options (Henrik)
     Font.cc
   * Fixed antialias bug in fbrun   (Henrik)
-    Antialias is enabled by default for FbRun 
+    Antialias is enabled by default for FbRun
 	Changed switch -a to -na (disable antialias)
 	FbRun/main.cc
 *03/11/29:
   * Added shadow text (Henrik)
     To use shadow in text you need to add option to your font style item.
-    The theme item will continue to work in old fluxbox and it'll just 
+    The theme item will continue to work in old fluxbox and it'll just
     ignore the "shadow" option
     Example:
     menu.title.font: Verdana-10:bold,shadow
@@ -942,7 +946,7 @@ Changes for 0.9.7:
 *03/11/19:
   * Fix menu draw bug for empty submenus (Simon)
     Menu.cc
-  * Fix menu placement for iconbar and titlebar activation, including 
+  * Fix menu placement for iconbar and titlebar activation, including
     xinerama awareness (Simon)
     Window.cc IconButton.cc
   * Fix win menu hide straight after show when right click icon (Simon)
@@ -974,7 +978,7 @@ Changes for 0.9.6:
     - also fix a bunch of rounding issues
     -> keep in mind that titlebar/iconbar width may not be exactly
        divisible by the number of clients/labels in it
-    Container.cc FbWinFrame.cc SystemTray.hh Screen.cc ToolbarItem.hh 
+    Container.cc FbWinFrame.cc SystemTray.hh Screen.cc ToolbarItem.hh
     Toolbar.cc
 *03/10/30:
   * Fix handling of theme's with a zero handleWidth (Simon)
@@ -985,10 +989,10 @@ Changes for 0.9.6:
 *03/10/27:
   * Change FbWinFrame to NOT reparent client windows into clientarea (Simon)
     - fixes (I think) java bug with missing drawing bits of window
-    - allows us to remove some dodgy "and for parent" hacks (not done in 
+    - allows us to remove some dodgy "and for parent" hacks (not done in
       this patch, but will be in new action system which depends on this)
-    - clientarea still exists for future implementation of improved 
-      sizing, particularly to provide a backing to clients that don't 
+    - clientarea still exists for future implementation of improved
+      sizing, particularly to provide a backing to clients that don't
       take up the whole area.
       FbWinFrame.hh/cc Window.hh/cc fluxbox.cc
 *03/10/26:
@@ -1011,7 +1015,7 @@ Changes for 0.9.6:
     - some other random fixes/updates
     fluxbox-generate_menu
 *03/10/17:
-  * fbsetbg update from Han - new option to explicitly say 
+  * fbsetbg update from Han - new option to explicitly say
     which wallpaper setting to use, plus minor changes
     fbsetbg
 *03/10/15:
@@ -1046,14 +1050,14 @@ Changes for 0.9.6:
    - GenericTool.hh/cc  helper class for simple tools like buttons
    - ButtonTool.hh/cc Tool class for buttons in toolbar
    - ToolFactory.hh/cc Creates tools
-   - ButtonTheme.hh/cc holds theme for simple buttons, 
+   - ButtonTheme.hh/cc holds theme for simple buttons,
      extends tooltheme with pressed texture and picColor
 *03/10/10:
   * Various drawing-related optimisations and bug fixes (Simon)
     - fixes toolbar random colour flicker on workspace change
     - speeds up pixmap rendering a little (inlining and friends!)
     - pixmap cache now a set rather than list (faster search)
-    FbWinFrame.cc GContext.hh/cc Color.hh ImageControl.hh/cc 
+    FbWinFrame.cc GContext.hh/cc Color.hh ImageControl.hh/cc
     IconbarTool.cc fluxbox.cc Container.cc
 *03/10/08:
   * fluxbox-generate_menu update from Han
@@ -1067,7 +1071,7 @@ Changes for 0.9.6:
   * Fix shaped windows+menus (Simon)
     - make sure all existing menus use shape
     - fix Shape itself, particularly to work properly with borders
-    Shape.cc IconBarTool.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc 
+    Shape.cc IconBarTool.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc
     Window.hh/cc Workspace.hh/cc WinClient.cc
 *03/10/05:
   * Fix frame size when changing titlebar size (Simon)
@@ -1085,14 +1089,14 @@ Changes for 0.9.6:
     fluxbox.hh/cc Window.hh/cc Screen.cc
 *03/10/04:
   * Fix NLS bad message errors by adding explicit codeset entries (Simon)
-    - thanks to Matt Hope for pointing us to the recent workaround from 
+    - thanks to Matt Hope for pointing us to the recent workaround from
       blackbox (and thanks to Matt Kraai who contrib-d to Blackbox)
     - also clean up the Makefiles so they are more generalised
     nls/*/Makefile.am nls/convert.awk
 *03/10/02:
-  * Fix couple of memory leaks and uninitialised uses shown up with 
+  * Fix couple of memory leaks and uninitialised uses shown up with
     valgrind (Simon)
-    EventManager.cc TextureRender.cc Gnome.cc Screen.cc Window.cc 
+    EventManager.cc TextureRender.cc Gnome.cc Screen.cc Window.cc
     WinClient.cc Xutil.cc main.cc
   * Make grips children of handle (Simon)
     - Fixes parentrelative grip texture
@@ -1107,12 +1111,12 @@ Changes for 0.9.6:
     Window.hh/cc WinClient.hh/cc
   * Nearest-quadrant resizing (Thanks Uwe Maurer and Mathias Gumz)
     Window.hh/cc Screen.hh/cc FbWinFrameTheme.hh/cc
-  * Update from Han 
+  * Update from Han
    - make startup executable to save one process
    - make pixmaps-dir
    - use -a which falls back to -f for wallpapers(testing)
    - some code cleanups.
-   fluxbox-generate_menu, fbsetbg, startfluxbox.in 
+   fluxbox-generate_menu, fbsetbg, startfluxbox.in
 *03/09/24:
   * Fix crash when closing active window while cycling focus (Simon)
     Screen.cc
@@ -1167,7 +1171,7 @@ Changes for 0.9.6:
      * menu.bevelWidth
      * window.handleWidth
      * window.bevelWidth
-     MenuTheme.cc, FbWinFrameTheme.cc/hh, RootTheme.hh/cc, 
+     MenuTheme.cc, FbWinFrameTheme.cc/hh, RootTheme.hh/cc,
      Window.cc, Screen.cc
    * Optimized rendering for windows (Henrik)
      Reduced flicker
@@ -1175,7 +1179,7 @@ Changes for 0.9.6:
    * Changed fallback options for window button pixmaps (Henrik)
      *.focus/unfocus will fallback to old style if no pixmap is detected
      WinButton.cc
-   * Added anjuta, blender -w, wings, rox filer, vmware, xlock 
+   * Added anjuta, blender -w, wings, rox filer, vmware, xlock
      to fluxbox-generate_menu  (Thanks Pol)
 *03/09/12:
    * Fix a couple of issues related to windows reparenting themselves
@@ -1219,16 +1223,16 @@ Changes for 0.9.6:
      in a dead_observer list which will be cleand after notify()
      Subject.cc
    * Fixed minor bug in FbTk::Button (Henrik)
-     It did a execute() and then a updateTransparent (in buttonRelease), 
+     It did a execute() and then a updateTransparent (in buttonRelease),
      which could be dangerous if the execute() killed the object
      Button.cc
    * Fix when selecting + unneeded submenu redraw on enter+motion (Simon)
      Menu.cc
 *03/09/07:
-   * Added startup script to be used with startfluxbox, to get a 
+   * Added startup script to be used with startfluxbox, to get a
      consistent frontend for both *dm and startx and your fluxbox-session  (Thanks Han)
      startfluxbox.in, startup.in
-   * Minor cleaning in some Makefile.am (Thanks Han)   
+   * Minor cleaning in some Makefile.am (Thanks Han)
 *03/09/06:
    * Added Resize x y as command (Thanks Mathias Gumz)
      FbCommands.cc/hh, FbCommandFactory.cc
@@ -1255,7 +1259,7 @@ Changes for 0.9.6:
 *03/08/28:
    * Fixed so ThemeManager::load expands ~  (Henrik)
      Theme.cc
-   * Fixed pixmap bug when changing between non-pixmap themes 
+   * Fixed pixmap bug when changing between non-pixmap themes
      and pixmap themes (Henrik)
      Theme.cc
    * Fixed so Theme items calls setDefaultValue in constructor (Henrik)
@@ -1282,7 +1286,7 @@ Changes for 0.9.5:
    * Added support for _NET_WM_STATE_MAXIMIZE_{HORZ/VERT} (Thanks stephan wezel <s.wezel<at>web <dot> de>)
      Ewmh.hh/cc
    * Added new theme item for toolbar: (Henrik)
-      * toolbar.height      
+      * toolbar.height
    * Added new theme items for menu:  (Henrik)
       * menu.selected.pixmap
       * menu.unselected.pixmap
@@ -1308,7 +1312,7 @@ red   * Changed FbRun to use FbTk::TextBox
    * Fixed transparent bug in Menus (submenu) (Henrik)
      Menu.cc
    * Fixed so shaped windows like xmms wont get theme  (Henrik)
-     specified shape (round corners) 
+     specified shape (round corners)
    * Added file Compose.hh (Henrik)
    * Fixed randr support in toolbar (Henrik)
      Toolbar.cc, Screen.hh/cc
@@ -1322,8 +1326,8 @@ red   * Changed FbRun to use FbTk::TextBox
      example: session.screen0.imageSearchPath: ~/.fluxbox/pixmaps, /usr/share/fluxbox/pixmaps
    * Added new files for image loading (Henrik)
      The new way to load pixmap is to call FbTk::Image::load(thefile, screen_num);
-     and to add more image file support you just have to extend FbTk::ImageBase 
-     and register it to FbTk::Image     
+     and to add more image file support you just have to extend FbTk::ImageBase
+     and register it to FbTk::Image
      Image.hh/cc, ImageXPM.hh/cc, PixmapWithMask.hh, Theme.cc, WinButtonTheme.hh/cc,
      WinButton.cc/hh, fluxbox.cc
    * Fixed scaling in WinButtonTheme (Henrik)
@@ -1357,7 +1361,7 @@ red   * Changed FbRun to use FbTk::TextBox
    * Fixed default values for FbTk::Texture theme items (Henrik)
      Theme.cc
    * Added border theme items to ToolbarItems (Henrik)
-     ToolTheme.hh/cc, BorderTheme.hh/cc, ClockTool.hh/cc, 
+     ToolTheme.hh/cc, BorderTheme.hh/cc, ClockTool.hh/cc,
      WorkspaceNameTool.hh/cc, IconbarTool.hh/cc
      * New theme items
        toolbar.clock.borderWidth: <integer>
@@ -1402,7 +1406,7 @@ red   * Changed FbRun to use FbTk::TextBox
        toolbar.workspace.textColor: <color>
        toolbar.workspace.font: <font>
 
-       This is for an empty iconbar: 
+       This is for an empty iconbar:
        toolbar.iconbar.empty: <texture>
        toolbar.iconbar.empty.pixmap: <filename>
        toolbar.iconbar.empty.color: <color>
@@ -1417,11 +1421,11 @@ red   * Changed FbRun to use FbTk::TextBox
        toolbar.iconbar.focused.font: <font>
        And the same for .unfocused:
        toolbar.iconbar.unfocused: <texture>
-       etc.   
+       etc.
 
 *03/08/10:
    * Fix session.menuFile to work with ~ properly (Simon)
-     fluxbox.hh/cc Screen.cc     
+     fluxbox.hh/cc Screen.cc
 *03/08/07:
    * Updated fluxbox-generate_menu (Thanks Han)
      Test before warning, browser details, minor indent issues
@@ -1436,7 +1440,7 @@ red   * Changed FbRun to use FbTk::TextBox
    * Fixed kde dockapp bug (Henrik)
      Screen.cc, fluxbox.cc
    * Added icon menu to workspace menu (Henrik)
-     Screen.cc/hh, IconMenuItem.hh, 
+     Screen.cc/hh, IconMenuItem.hh,
    * Change:    (Simon)
      - Fluxbox::window search
      - Fluxbox::m_focused_window
@@ -1444,11 +1448,11 @@ red   * Changed FbRun to use FbTk::TextBox
      - Some event handling
      - and more
      to use WinClient, not FluxboxWindow.
-     This should fix some bugs where things weren't consistent and 
-     hopefully sets the stage to fix various other things that get out of 
+     This should fix some bugs where things weren't consistent and
+     hopefully sets the stage to fix various other things that get out of
      whack.
      fluxbox.hh/cc Screen.hh/cc Window.hh/cc Workspace.cc WinClient.hh/cc
-     CurrentWindowCmd.hh/cc AtomHandler.hh Ewmh.hh/cc Gnome.hh/cc 
+     CurrentWindowCmd.hh/cc AtomHandler.hh Ewmh.hh/cc Gnome.hh/cc
      Remember.hh ToolbarHandler.hh Toolbar.cc CurrentWindowCmd.hh/cc
 *03/07/28:
    * Added MoveTabLeft and MoveTabRight commands (Henrik)
@@ -1457,13 +1461,13 @@ red   * Changed FbRun to use FbTk::TextBox
    * Fix window size when changing borderWidth [borderless wins] (Simon)
      Window.hh/cc FbWinFrame.hh/cc
    * Fix some keybinding issues with ShadeWindow, StickWindow,
-     SendToWorkspace, NextGroup, PrevGroup (Simon)  
+     SendToWorkspace, NextGroup, PrevGroup (Simon)
      CurrentWindowCmd.cc FbCommandFactory.cc
 *03/07/25:
    * Make fbrun work properly on multiple screens (Simon)
      FbRun.hh/cc
    * Make sure all the menus have titles, make -version go to stdout (Simon)
-     Screen.cc Slit.cc Toolbar.cc ToolbarHandler.cc Xinerama.hh 
+     Screen.cc Slit.cc Toolbar.cc ToolbarHandler.cc Xinerama.hh
      Workspace.cc main.cc
    * Fix pesky crash and phantom icons (diesig wasn't getting through) (Simon)
      ToolbarHandler.cc
@@ -1474,7 +1478,7 @@ red   * Changed FbRun to use FbTk::TextBox
    * Fixed KDE dockapp bug (Henrik)
      Slit.cc, fluxbox.hh/cc
 *03/07/21:
-   * Really fix focus stuff. Should be properly standards compliant now (I 
+   * Really fix focus stuff. Should be properly standards compliant now (I
      hope). This also fixes a crash introduced yesterday.   (Simon)
      WinClient.hh/cc Window.cc fluxbox.cc
 *03/07/20:
@@ -1490,7 +1494,7 @@ red   * Changed FbRun to use FbTk::TextBox
      screen's configure menu (Simon)
      Screen.hh/cc ToolbarHandler.cc
 *03/07/19:
-   * Make most Commands execute on mouse screen rather than screen 
+   * Make most Commands execute on mouse screen rather than screen
      of focused window (Simon)
      FbCommands.cc WorkspaceCmd.cc
    * Fix xinerama options (again) for Slit and Toolbar (Simon)
@@ -1512,7 +1516,7 @@ red   * Changed FbRun to use FbTk::TextBox
      Window.hh/cc Gnome.cc
 *03/07/12:
    * Fixed 8 bpp crash (Henrik)
-     ImageControl.cc 
+     ImageControl.cc
 *03/07/11:
    * Added TOOLBAR to -info (Henrik)
      main.cc
@@ -1524,14 +1528,14 @@ Changes for 0.9.4:
    * Add [startup] to Remember (Simon)
        Can now add entries to apps file like:
          [startup] {xterm}
-       Then "xterm" will be launched on fluxbox startup. 
+       Then "xterm" will be launched on fluxbox startup.
        Can also give a screen option:
          [startup] (screen=1) {xterm}
        will start it on screen 1 rather than the default 0.
    * Added new rounded theme items (Henrik)
       * toolbar.shaped: <bool> this will make the toolbar shape the corners that are towards center
         of the screen
-      * menu.roundCorners: <shape items> 
+      * menu.roundCorners: <shape items>
       * window.roundCorners: <shape items>
       Where shape items can be TopLeft TopRight BottomLeft and BottomRight
       example: menu.roundCorners: TopRight BottomLeft
@@ -1555,9 +1559,9 @@ Changes for 0.9.4:
      will group anything with the title "groupme" and will give that group
      no decorations. You can have multiple [app] lines in a [group].
      Recall that app lines can also use regular expressions.
-     - also includes split AtomHandler::setupWindow(fbw) into 
+     - also includes split AtomHandler::setupWindow(fbw) into
        setupFrame(fbw) and setupClient(winclient).
-     Remember.hh/cc Window.cc Screen.cc fluxbox.hh/cc 
+     Remember.hh/cc Window.cc Screen.cc fluxbox.hh/cc
      AtomHandler.hh Gnome.hh/cc Ewmh.hh/cc ToolbarHandler.hh/cc
 *03/07/03:
    * Added selected dot for style menu so one can see which style is selected (Henrik)
@@ -1589,7 +1593,7 @@ Changes for 0.9.4:
    * Changed class Keys to use FbTk::Command (Henrik)
      Keys.hh/cc, fluxbox.cc
    * Added Files:  (Henrik)
-      CommandParser.hh/cc, FbCommandFactory.hh/cc, 
+      CommandParser.hh/cc, FbCommandFactory.hh/cc,
       WorkspaceCmd.hh/cc, CurrentWindowCmd.hh/cc
 *03/06/29:
    * Add chbg support to fbsetbg (Thanks Han and Michael T. Dean)
@@ -1631,7 +1635,7 @@ Changes for 0.9.4:
    * Moved toolbar resources from BScreen to Toolbar (Henrik)
      Screen.hh/cc, Toolbar.hh/cc
 *03/06/22:
-   * fluxbox-generate_menu: 
+   * fluxbox-generate_menu:
       French locales, (Thanks Tarax <tarax(aT)arkitekts.org> )
       Two additions to the menu (Thanks Pol)
    * Added Xutil for getWMName in Slit, SlitClient and WinClient and made some
@@ -1656,7 +1660,7 @@ Changes for 0.9.4:
    * Fixed trailing whitespace in group file loading (Henrik)
      Workspace.cc
 *03/06/15:
-   * Apply workaround for strftime test - fails with gcc 3.3 due to 
+   * Apply workaround for strftime test - fails with gcc 3.3 due to
      compiler bug? - thanks Joshua Kwan (Simon)
      configure.in
    * Fix group cycling, also adding new "NextGroup/PrevGroup" keys (Simon)
@@ -1667,7 +1671,7 @@ Changes for 0.9.4:
    * Regular expression support for remember (Simon)
      Also ability to limit number of matches for a given rule
      Also ability to match several different window attributes
-     Can disable in compile using --disable-regexp (will just do plain 
+     Can disable in compile using --disable-regexp (will just do plain
      string equality then)
      - General format is:
        [app] (property=expr) ... {number}
@@ -1677,10 +1681,10 @@ Changes for 0.9.4:
        * name -> the name of the window - the first field of WM_CLASS
        * class -> the class of the window - the second field of WM_CLASS
        * title -> the title of the window - the WM_NAME property
-     - e.g. [app] (*[tT]erm) {2} 
+     - e.g. [app] (*[tT]erm) {2}
        will match anything ending with term, for up to 2 instances
-     - e.g. [app] (title=.*gaim.*) 
-       will match anything with gaim in the title ("gaim", "the gaim 
+     - e.g. [app] (title=.*gaim.*)
+       will match anything with gaim in the title ("gaim", "the gaim
        window", etc.
      RegExp.hh/cc ClientPattern.hh/cc configure.in Makefile.am Remember.hh/cc
      WinClient.hh/cc StringUtil.hh/cc
@@ -1710,7 +1714,7 @@ Changes for 0.9.3:
    * Optimise window placement (much better now) (Simon)
      Workspace.cc
 *03/05/26:
-   * Fix usage of decorations.border, add BORDER decoration to remember 
+   * Fix usage of decorations.border, add BORDER decoration to remember
        (Simon)
      Window.hh/cc Remember.cc
 *03/05/24:
@@ -1726,7 +1730,7 @@ Changes for 0.9.3:
      Screen.hh/cc Window.cc Workspace.cc
 *03/05/19:
    * Clean + change xinerama, plus add maximize smarts (Simon)
-     Screen.hh/cc Window.cc Workspace.cc Toolbar.cc Slit.cc     
+     Screen.hh/cc Window.cc Workspace.cc Toolbar.cc Slit.cc
    * Fixed minor bug in bsetroot (Henrik)
      bsetroot.cc
    * Add back some Xinerama support (still need placement + maximise) (Simon)
@@ -1734,7 +1738,7 @@ Changes for 0.9.3:
    * Fix bsetroot segfault (Simon)
      FbWindow.cc
 *03/05/18:
-   * Moved Resource.hh/cc, DirHelper.hh/cc and 
+   * Moved Resource.hh/cc, DirHelper.hh/cc and
      XrmDatabaseHelper.hh to FbTk (Henrik)
      Screen.hh/cc, fluxbox.hh/cc, IntResMenuItem.hh/cc
 *03/05/17:
@@ -1777,7 +1781,7 @@ Changes for 0.9.3:
      Screen.hh/cc, FbRootWindow.hh/cc, FbTk/FbWindow.hh
      fluxbox.cc/hh
 *03/05/11:
-   * Fixed dangling m_focused_window pointer, 
+   * Fixed dangling m_focused_window pointer,
      that didn't got set in Fluxbox::revertFocus   (Henrik)
      fluxbox.cc
 *03/05/10:
@@ -1803,7 +1807,7 @@ Changes for 0.9.2:
    * Fix crash when detaching client that isn't active (Simon)
      Window.cc
    * Fixed transient grouping issues (transients now WinClients) (Simon)
-     WinClient.hh/cc Window.hh/cc Workspace.cc Screen.cc     
+     WinClient.hh/cc Window.hh/cc Workspace.cc Screen.cc
    * Fixed screen problem with redrawing menus (Henrik)
      The m_screen_num wasn't set in X Window assignment operator
      FbTk/FbWindow.cc
@@ -1811,14 +1815,14 @@ Changes for 0.9.2:
      FbTk/Transparent.hh/cc
    * Fixed some bugs and minor cleaning (Thanks MrChuoi)
      fluxbox.cc, FbTk/Button.cc, FbTk/RefCount.hh
-     LayerMenu.hh, 
+     LayerMenu.hh,
      Resource.hh, Window.cc[focus on deiconify]
 *03/05/05:
    * Added window.<button name>.unfocus.pixmap  theme item  (Henrik)
      WinButtonTheme.hh/cc, WinButton.cc
-   * Rework focus somewhat - now use Fluxbox::revertFocus when a window 
+   * Rework focus somewhat - now use Fluxbox::revertFocus when a window
      dies/gets forced out of focus (Simon)
-     - should fix click focus sometimes acting sloppy     
+     - should fix click focus sometimes acting sloppy
      fluxbox.hh/cc Screen.hh/cc WinClient.cc Workspace.cc Ewmh.cc
 *03/05/04:
    * add session.ignoreBorder - ignores window border with movement (Simon)
@@ -1842,7 +1846,7 @@ Changes for 0.9.2:
    * fix fbsetbg relative path bug + simplify (Han)
      util/fbsetbg
    * Added FbDrawable.hh/cc (Henrik)
-     This is a basic class for drawables such as FbWindow 
+     This is a basic class for drawables such as FbWindow
      and FbPixmap
      FbWindow.hh/cc, FbDrawable.hh/cc, FbPixmap.hh/cc
 *03/04/28:
@@ -1852,9 +1856,9 @@ Changes for 0.9.2:
        example:
         window.label.focus.pixmap: image.xpm
         menu.title.pixmap: image.xpm
-     * Standard buttons has one pixmap for pressed 
+     * Standard buttons has one pixmap for pressed
        and one for normal state
-       example: 
+       example:
          window.close.pressed.pixmap: image_pressed.xpm
          window.close.pixmap: image.xpm
          window.stick.pixmap: image.xpm
@@ -1866,7 +1870,7 @@ Changes for 0.9.2:
      Screen.cc/hh, WinButton.hh/cc, Texture.hh, TextureRender.cc/hh
      WinButtonTheme.hh/cc, configure.in
    * Update fbsetbg and fluxbox-generate_menu (Han)
-   * Fix a bunch of alignment + size issues with toolbar (particularly 
+   * Fix a bunch of alignment + size issues with toolbar (particularly
       when vertical)  (Simon)
      Toolbar.cc Iconbar.cc
    * Fix remembering (and general init) of decorations (Simon)
@@ -1884,7 +1888,7 @@ Changes for 0.9.2:
      Window.cc WinClient.cc FbRun.cc signaltest.cc
 *03/04/26:
    * Moved StringUtil to FbTk (Henrik)
-     Screen.cc, Workspace.cc, Keys.cc, XmbFontImp.cc 
+     Screen.cc, Workspace.cc, Keys.cc, XmbFontImp.cc
    * Removed DrawUtil.hh/cc and nl_types_cygnus.h (Henrik)
    * Fixed menu bug (Henrik)
      Screen.cc, FbTk/Menu.cc
@@ -1894,7 +1898,7 @@ Changes for 0.9.2:
      - note: does not include "startup" menu
      - save on close disabled atm, due to other issues...
      - enabled in configure by default, disable with --disable-remember
-     - BIG thanks to Xavier Brouckaert (xbr at info.ucl.ac.be) for 
+     - BIG thanks to Xavier Brouckaert (xbr at info.ucl.ac.be) for
          the original remember patch!
      Makefile.am Remember.hh/cc Screen.cc Window.hh/cc fluxbox.cc
 *03/04/25:
@@ -1904,12 +1908,12 @@ Changes for 0.9.2:
      -> Patch originally contributed by "Mike" (lgn@users.sf)
      Screen.hh Workspace.cc fluxbox.cc Window.cc
    * Fixed so WinButton updates sticky state from FluxboxWindow (Henrik)
-     WinButton.hh/cc, Screen.cc   
+     WinButton.hh/cc, Screen.cc
    * Added basic drawable functions to FbWindow  (Henrik)
       * drawLine, drawRect, fillRect, copyArea
      FbWindow.hh/cc
    * Fixed SlitTheme (Henrik)
-     Slit.cc/hh 
+     Slit.cc/hh
    * Removed old theme engine (Henrik)
      Theme.hh/cc
    * Added RootTheme.hh/cc (Henrik)
@@ -1941,11 +1945,11 @@ Changes for 0.9.1:
 *03/04/16:
    * Fixed resize bug (Henrik)
      Window.cc
-   * Fixed saving of some other slit params - placement, direction, 
+   * Fixed saving of some other slit params - placement, direction,
      autohide (Simon)
      Screen.hh/cc Slit.hh/cc fluxbox.cc
    * Fixed saving of toolbar and slit layer (Simon)
-     LayerMenu.hh Screen.hh Slit.hh/cc Toolbar.hh/cc ToolbarHandler.hh 
+     LayerMenu.hh Screen.hh Slit.hh/cc Toolbar.hh/cc ToolbarHandler.hh
      Window.cc
    * Fixed toolbar width percent menu item (Henrik)
      Toolbar.cc
@@ -1964,22 +1968,22 @@ Changes for 0.9.1:
      Ewmh.cc
    * Cleaning (Henrik)
      fluxbox.hh/cc, FbAtoms.hh/cc, IconBar.hh/cc, WinClient.cc
-     Window.cc, Screen.hh/cc, Toolbar.hh/cc, FbCommands.cc, 
+     Window.cc, Screen.hh/cc, Toolbar.hh/cc, FbCommands.cc,
      Workspace.cc, Gnome.cc
    * Add most recently used/stacked window cycling, set as default (Simon)
      Thanks also to Sean Seefried for his initial patch.
-     Window.cc Screen.hh/cc fluxbox.hh/cc Keys.hh/cc     
+     Window.cc Screen.hh/cc fluxbox.hh/cc Keys.hh/cc
 *03/04/14:
    * merged embedded-tab-branch into main branch (Henrik)
    * Don't create menuconfig during install and style cleanups (Han)
-     fluxbox_generate_menu 
+     fluxbox_generate_menu
    * Sun compat in Makefile.am (Han)
      data/Makefile.am
 *03/04/11:
    * Icon list updates when window state changes and notifies
      observer fluxbox::update
      fluxbox.cc
-   * Reassociation of window when it changes to sticky is 
+   * Reassociation of window when it changes to sticky is
      done in fluxbox::update now
      fluxbox.cc
    * Fixed transient bug
@@ -2016,8 +2020,8 @@ Changes for 0.9.1:
      Window.hh/cc Screen.cc fluxbox.cc
 *03/03/03:
    * Add code for Toolbar modes (Simon)
-     AtomHandler.hh EventManager.cc Ewmh.hh/cc Gnome.hh/cc 
-     IconBar.hh/cc Screen.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc 
+     AtomHandler.hh EventManager.cc Ewmh.hh/cc Gnome.hh/cc
+     IconBar.hh/cc Screen.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc
      Window.cc fluxbox.cc
 *03/02/25:
    * Fixed freebsd error and some nls in fluxbox-generate_menu (Han)
@@ -2031,7 +2035,7 @@ Changes for 0.9.0:
    * Fixed vertical workspace name editing (Henrik)
      Toolbar.cc
    * Added Meta style (Thanks Joel)
-   * Disabled background image menu in fluxbox-generate_menu 
+   * Disabled background image menu in fluxbox-generate_menu
 *03/02/22:
    * Fix frame size and window moving/resizing/outline bugs (Simon)
      Window.cc FbWinFrame.cc
@@ -2044,7 +2048,7 @@ Changes for 0.9.0:
    * Fixed bug in menu bullet type (Henrik)
      FbTk/MenuTheme.cc
    * Fixed sloppy focus to use new event handler model (Simon)
-     Screen.hh/cc Window.hh/cc fluxbox.hh/cc   
+     Screen.hh/cc Window.hh/cc fluxbox.hh/cc
    * Fixed auto hide bug in Toolbar (Henrik)
      Toolbar.cc
    * Fixed default white color bug in Theme (Henrik)
@@ -2074,7 +2078,7 @@ Changes for 0.9.0:
      Screen.cc
    * Fixed antialias toggle for menus (Henrik)
      Screen.cc
-   * Added toolbar width percent change menu item (Henrik) 
+   * Added toolbar width percent change menu item (Henrik)
      Screen.cc, Toolbar.cc
    * Added IntResMenuItem, for resource<int> changes in the menu (Henrik)
      IntResMenuItem.hh/cc
@@ -2088,20 +2092,20 @@ Changes for 0.9.0:
    * Fixed workspace menu and clientmenu (Henrik)
      Workspace.hh/cc, Screen.cc, Window.hh
    * Added layer submenu to window menu + small fix (Simon)
-     Screen.cc Window.hh/cc fluxbox.hh     
+     Screen.cc Window.hh/cc fluxbox.hh
    * Fixed gnome workspace initialisation issues (Simon)
      Gnome.cc Window.hh/cc Screen.cc
 *03/02/15:
    * Added Style menu and fixed theme listeners for FbWinFrame, Menu and Toolbar (Henrik)
      ToolbarTheme.hh/cc, Toolbar.hh/cc, FbTk Menu.hh/cc, FbTk MenuTheme.hh/cc,
      Screen.cc, FbWinFrame.hh/cc, FbWinFrameTheme.hh/cc
-   * Moved Observer.hh/cc and Subject.hh/cc to FbTk directory and 
+   * Moved Observer.hh/cc and Subject.hh/cc to FbTk directory and
      change Subject to use std::list instead of std::vector (Henrik)
    * Added SetStyleCmd command, which takes argument for style filename (Henrik)
      FbCommands.hh/cc
 *03/02/10:
    * More fiddling of Layer code, cleaning up (Henrik + Simon)
-     FbTk/MultLayers.hh/cc FbTk/XLayer.hh/cc FbTk/XLayerItem.hh/cc 
+     FbTk/MultLayers.hh/cc FbTk/XLayer.hh/cc FbTk/XLayerItem.hh/cc
      Gnome.cc Screen.hh/cc Tab.cc Window.hh/cc Workspace.cc fluxbox.cc
 *03/02/03:
    * Integration of new Layering code, plus updates to the code (Simon)
@@ -2118,7 +2122,7 @@ Changes for 0.9.0:
    * Added polish locales to fluxbox-generate_menu (thanks Adam Byrtek)
 *03/01/16:
    * Added new Layering code into FbTk (Simon)
-     FbTk/... Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh 
+     FbTk/... Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh
      XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh
 *03/01/12:
    * Added RootTheme which redraws the background
@@ -2135,7 +2139,7 @@ Changes for 0.9.0:
    * Changed Slit to an FbTk::EventHandler
      Slit.hh/cc
    * Changed SlitMenu to FbTk::Menu in Slit and fixed a client menu
-     Slit.hh/cc   
+     Slit.hh/cc
    * Added MenuItem.hh/cc in FbTk
    * Fixed bug in FbTk::Menu
      Menu.cc
@@ -2165,7 +2169,7 @@ Changes for 0.9.0:
    * Moved Timer.hh/cc, ImageControl.hh/cc and TextureRender.hh/cc to FbTk
    * Removed Rootmenu.hh/cc
    * Added FbCommands.hh/cc which contains some default commands that
-     fluxbox handles, like RestartFluxboxCmd, ExitFluxboxCmd, 
+     fluxbox handles, like RestartFluxboxCmd, ExitFluxboxCmd,
      ReconfigureFluxboxCmd and ExecuteCmd
    * Changed Client menu in Workspace to FbTk::Menu
      Workspace.hh
@@ -2215,7 +2219,7 @@ Changes for 0.9.0:
      MenuTheme.hh/cc
 *02/12/20:
    * Fixes in fluxbox-generate_menu:
-     menu title with space, user menu, cleanups and 
+     menu title with space, user menu, cleanups and
      simplifications, whitespace. (Han)
 *02/12/17:
    * Comment and minor fixes in fluxbox-generate_menu (Han)
@@ -2230,7 +2234,7 @@ Changes for 0.9.0:
      Button.hh/cc
 *02/12/13:
    * Changed toolbar to use ArrowButton and Command
-   * Added Command.hh, SimpleCommand.hh, Button.hh/cc, 
+   * Added Command.hh, SimpleCommand.hh, Button.hh/cc,
      RefCount.hh, ArrowButton.hh/cc
 *02/12/10:
    * Changed blackbox.cat to fluxbox.cat
@@ -2267,7 +2271,7 @@ Changes for 0.9.0:
      fluxbox-generate_menu
 *02/11/27:
    * Added FbTk::EventManager and changed FbTk::EventHandler to interface
-     class for XEvents. 
+     class for XEvents.
      EventHandler.hh, SignalHandler.hh/cc, App.hh/cc, FbRun.hh/cc ...
 *02/11/26:
    * Fixed DrawUtil::doAligment
@@ -2331,7 +2335,7 @@ Changes for 0.1.13:
    * Updated fluxbox-generate_menu (Thanks Han)
 *02/10/23:
    * Fixed auto_ptr assignment so it compiles with gcc 2.95.x
-     fluxbox.cc, Window.cc 
+     fluxbox.cc, Window.cc
    * Minor cleaning in Windowmenu.cc/hh
 *02/10/22:
    * Fixed isGroupable for FluxboxWindow,
@@ -2377,12 +2381,12 @@ Changes for 0.1.13:
    * Fixed grab reconfigure bug
      Window.cc
    * Fixed UTF-8 support in XmbFontImp.cc
-   * Moved font system specific stuff from Font.hh/cc to 
+   * Moved font system specific stuff from Font.hh/cc to
      font implementation classes.
    * Added FontImp.hh, XFontImp.hh/cc, XmbFontImp.hh/cc
      For the new font implementation bridge pattern.
 *02/10/11:
-   * Fixed support for _NET_WM_STATE with _NET_WM_STATE_STICKY and 
+   * Fixed support for _NET_WM_STATE with _NET_WM_STATE_STICKY and
      _NET_WM_STATE_SHADED
      Ewmh.cc
 *02/10/02:
@@ -2394,7 +2398,7 @@ Changes for 0.1.13:
 *02/09/14:
    * Fixed bug [ 604463 ] mplayer fullscreen fails (Henrik)
      Window.cc
-   * Added Color.cc and moved color handling from Image.cc to it. 
+   * Added Color.cc and moved color handling from Image.cc to it.
      (Henrik)
    * Added Texture.cc and Texture::setFromString (Henrik)
    * Proper handling of sticky windows when cycling (Simon)
@@ -2407,7 +2411,7 @@ Changes for 0.1.12/13:
 *02/09/10:
    * Fixed deadlock in the new transient handling
      Window.cc
-   * Fixed minor issue with sending window to another workspace via 
+   * Fixed minor issue with sending window to another workspace via
      blackbox-atoms.
      Window.cc
    * Fixed focus issue for transients.
@@ -2451,7 +2455,7 @@ Changes for 0.1.11:
      Window.cc, Workspace.cc
 *02/08/28:
    * Minor fix in bsetbg (Thanks Han)
-   * Fixed bug [ 582574 ] borderless windows cant be horiz resized. 
+   * Fixed bug [ 582574 ] borderless windows cant be horiz resized.
      (Thanks Simon Bowden)
      Window.cc
    * Fixed bug [ 600811 ] undefined keys messes up
@@ -2483,10 +2487,10 @@ Changes for 0.1.11:
    * New menu items (Thanks Cosmic Flo)
    * Added Autogrouping
      * Add this line: session.groupFile: ~/.fluxbox/group
-       to the file ~/.fluxbox/init and edit ~/.fluxbox/group 
+       to the file ~/.fluxbox/init and edit ~/.fluxbox/group
        Groupfile format:
        There is one group for each line in the file
-       and you just type the instance name of the program 
+       and you just type the instance name of the program
        to be grouped. Ex:
        Navigator nedit
        xterm
@@ -2510,7 +2514,7 @@ Changes for 0.1.11:
    * Slit theme, you can now have theme on the slit:
       slit: <texture option>
       slit.color: <color value>
-      slit.colorTo: <color value>     
+      slit.colorTo: <color value>
      If slit isn't present in the theme it'll fall back to
      toolbar theme.
 *02/07/19:
@@ -2527,8 +2531,8 @@ Changes for 0.1.10:
    * Fixed bug [ 566277 ] xine fullscreen causes hard X lockup.
      Invalid win and screen pointer in Fluxbox::setFocusedWindow
 *02/07/10:
-   * Fixed border and handle in Window.cc so we don't show them as default, 
-     if the window is transient. 
+   * Fixed border and handle in Window.cc so we don't show them as default,
+     if the window is transient.
      (bug [ 554218 ] windows have wrong resizeableness)
 *02/06/14:
    * Extra checking for transient, so we don't get lockup
@@ -2538,7 +2542,7 @@ Changes for 0.1.10:
    * Fixed bug [ 562882 ] "bbpager in slit doesn't work correctly".
      The client was removed from netizenlist in ~FluxboxWindow.
    * Fixed bug [ 562713 ] "incorrect listings in workspace menu".
-     Normal insert of new clients in the list again, in 
+     Normal insert of new clients in the list again, in
      Workspace::addWindow
    * Fixed bug [ 554646 ] "Dialog boxes have tabs briefly"
      Windows that are not maximizable by default, such as
@@ -2556,7 +2560,7 @@ Changes for 0.1.10:
    * Fixed "Desktop Wheeling" translation in ru_RU (Thanks Anton Denisov)
    * Added slit order (Thanks Steve Cooper)
    * Fixed language support in fluxbox-generate_menu:
-      * sv_SE 
+      * sv_SE
       * nl_NL - Thanks Han Boetes
       * fi_FI - Thanks Christian Rönn
    * Fixed inverted highlight on toggle-items that are selected (Thanks Junichiro Kita)
@@ -2574,7 +2578,7 @@ Changes for 0.1.9:
 *02/05/23:
    * Fixed invalid iterator in Timer.cc
    * Fixed nls files (Thanks Anton Denisov)
-   * Updated generate_menu to fluxbox-generate_menu and fixed 
+   * Updated generate_menu to fluxbox-generate_menu and fixed
      new items and functionality (Thanks Han Boetes and Jeramy B. Smith)
 *02/05/21:
    * Moved transient checking into a function in class FluxboxWindow
@@ -2603,9 +2607,9 @@ Changes for 0.1.9:
    * fixed some const in Workspace and moved clientmenu from pointer to regular
    * Minor clean up in Workspacemenu.cc/hh, Clientmenu.cc/hh, Netizen.hh/cc
    * const fixes in FbAtoms.hh
-   * Added options direct to CXXFLAGS in configure.in, so we don't need to 
+   * Added options direct to CXXFLAGS in configure.in, so we don't need to
      add them in every Makefile.am-file.
-   * Updated src/Makefile.am and util/Makefile.am (see above) 
+   * Updated src/Makefile.am and util/Makefile.am (see above)
 *02/05/03:
    * Fixed so settings for tool bar saves when you change them i the menu
      in Toolbar.cc
@@ -2615,10 +2619,10 @@ Changes for 0.1.9:
    * Removed "NULL" from Font.cc
 *02/04/28:
    * Fixed shade bug while vertical rotated tabs and tabs off (Thanks signal9)
-   * Fluxbox doesn't save on exit anymore so restart of fluxbox will reread 
+   * Fluxbox doesn't save on exit anymore so restart of fluxbox will reread
      configuration
    * Minor clean up in Configmenu.hh/cc
-   * Fixed bug [ 515483 ] "XMMS Problem", in Window.cc, 
+   * Fixed bug [ 515483 ] "XMMS Problem", in Window.cc,
      decorations.handle and decorations.border now = true on transient windows
 *02/04/26:
    * Fixed m_multibyte in Font.cc (Thanks kita)
@@ -2639,7 +2643,7 @@ Changes for 0.1.8:
    * Added Workspace warping, this does only work with opaque moving (Thanks Steve Cooper)
    * Fixed menu bug
 *02/04/09:
-   * Added RootMenu action to Keys.cc/hh and fluxbox.cc , this will pop up the 
+   * Added RootMenu action to Keys.cc/hh and fluxbox.cc , this will pop up the
      Root menu. (Thanks Stanislav Karchebny)
    * Removed LinkedList.cc/hh
    * Fixed std::map, std::list, std::vector in class Fluxbox
@@ -2650,15 +2654,15 @@ Changes for 0.1.8:
 *02/04/05:
    * Fixed unsigned/signed in Basemenu.cc
 *02/04/04:
-   * Moved NLS types from #define to enums and moved them into 
+   * Moved NLS types from #define to enums and moved them into
      namespace FBNLS, this way we don't pollute the global namespace too much.
-   * Fixed the i18n checking with MB_CUR_MAX and some other fixes 
+   * Fixed the i18n checking with MB_CUR_MAX and some other fixes
      from the blackbox code (Thanks bb-developers).
    * Fixed bug [ 528101 ] window dragging + workspace changing
    * Fixed ToggleDecor key action (still some small decoration-bugs to fix)
-   * Moved enum Decor from BaseDisplay to FluxboxWindow 
+   * Moved enum Decor from BaseDisplay to FluxboxWindow
    * Updated Makefile.am in nls/C to generate namespace and enum for blackbox-nls.hh
-   * Fixed bug [ 533436 ] Minor taskbar issue, it will update iconbar-text now.   
+   * Fixed bug [ 533436 ] Minor taskbar issue, it will update iconbar-text now.
 *02/04/03:
    * Fixed some signed/unsigned in Windowmenu.cc/hh, Slit.hh/cc, Basemenu.hh,
      Icon.hh/cc and Workspacemenu.cc/hh
@@ -2668,7 +2672,7 @@ Changes for 0.1.8:
    * Removed int Basemenu::insert(char **, int = -1, int = 0);
 *02/04/02:
    * Fixed smarter next/prev focus in Screen.cc/.hh and addWindow in Workspace.cc
-     Makes new windows get inserted after the focused window in the cycling 
+     Makes new windows get inserted after the focused window in the cycling
      order instead of always at the end. (Thanks Ben Jansens)
    * Added doSkipWindow function in Screen.hh/cc
    * Fixed some signed/unsigened in fluxbox.cc
@@ -2685,11 +2689,11 @@ Changes for 0.1.8:
      in Timer.cc
    * Changed StringUtil to namespace instead of struct
 *02/03/19:
-   * Added Xinerama support   
+   * Added Xinerama support
 *02/03/18:
    * Fixed indentation to tabs in Image.cc/hh Slit.cc/hh and
      Timer.hh/cc
-   * Changed timer pointer in some classes to 
+   * Changed timer pointer in some classes to
      a non pointer variable
    * Clean up in class BTimer (Timer.cc/hh)
      BTimer now register it self to a static list in the class BTimer
@@ -2720,7 +2724,7 @@ Changes for 0.1.8:
 *02/03/11:
    * Fixed some KDE stuff in Slit.cc (Thanks Tommi Komulainen)
 *02/03/08:
-   * Fixed bug in BScreen::removeNetizen 
+   * Fixed bug in BScreen::removeNetizen
      if there was only one netizen object in the list
      delete *netizenList.erase(it) would segfault
    * Some clean up in main.cc
@@ -2746,7 +2750,7 @@ Changes for 0.1.7:
 *02/02/20:
    * Added _WIN_CLIENT_LIST
    * Fixed parameter to key bindings (Thanks Tomer Kol)
-   * Fixed a bug in BScreen::raiseWindow 
+   * Fixed a bug in BScreen::raiseWindow
 *02/02/17:
    * Fixed _WIN_WORKSPACE_COUNT
    * Clean up in menu parsing
@@ -2754,7 +2758,7 @@ Changes for 0.1.7:
    * Fixed icon bar bug
 *02/02/16:
    * Updated include guards
-   * Added _WIN_LAYER 
+   * Added _WIN_LAYER
    * Fixed more on _WIN_STATE
 *02/02/13:
    * Fixed bug in Window.cc
@@ -2775,7 +2779,7 @@ Changes for 0.1.7:
    * Added Gnome _WIN_STATE (sticky, minimized, shaded)
 *02/02/05:
    * Fixed a signed/unsigned problem
-   * Moved keyhandling, buttonevent and clientmessage to 
+   * Moved keyhandling, buttonevent and clientmessage to
      functions in fluxbox.cc
 *02/02/04:
    * Fixed some unsigned/signed warnings
@@ -2790,7 +2794,7 @@ Changes for 0.1.7:
 *02/01/31:
    * Fixed _WIN_WORKSPACE and _WIN_WORKSPACE_COUNT
 *02/01/30:
-   * Fixed width or height less than zero problem in 
+   * Fixed width or height less than zero problem in
      FluxboxWindow::configure
    * Added numObjects() (Thanks Jesper Louis Andersen)
 *02/01/27:
@@ -2798,7 +2802,7 @@ Changes for 0.1.7:
    * Moved from old C style file reading to c++ istream in menu loading
    * Fixed small bug in StringUtil::expandFilename (Thanks Mauro Persano)
 *02/01/26:
-   * Fixed BadWindow error from ~FluxboxWindow (frame.handle was destroyed 
+   * Fixed BadWindow error from ~FluxboxWindow (frame.handle was destroyed
      before the children)
    * Fixed indentation in BaseDisplay.hh/.cc and changed some variables
    * Updated Russian translation (Thanks Anton Denisov)
@@ -2813,9 +2817,9 @@ Changes for 0.1.7:
 *02/01/18:
    * Fixed bsetroot, now Eterm's, XChat's and similar will be able to use
      bsetroot's background images. (Claes Nästén)
-   * Fixed ResourceManager 
+   * Fixed ResourceManager
    * Changed resources to Resource<T> in class Fluxbox
-   * Added Resource.hh/.cc, XrmDatabaseHelper.hh, 
+   * Added Resource.hh/.cc, XrmDatabaseHelper.hh,
      NotCopyable.hh
 *02/01/16:
    * Fixed indent in Window.hh
@@ -2839,7 +2843,7 @@ Changes for 0.1.6:
    * Updated documentation (Thanks Rando Christensen)
    * All enums are now changed to uppercase letters. (Claes Nästén)
    * Now tabs won't appear on some apps where they shouldn't,
-     for example bbpager and mplayer. (Claes Nästén) 
+     for example bbpager and mplayer. (Claes Nästén)
    * Fixed rootCommand to screen, so we can have
      different rootcommands on the different screens
    * Fixed so we can disable lines in the keyfile with a #
@@ -2852,7 +2856,7 @@ Changes for 0.1.6:
 *02/01/08:
    * Made class Keys more independent (layer 2). class Keys now only
      depends on StringUtil.
-   * Replaced the old strtok in Keys with a new stringtok from 
+   * Replaced the old strtok in Keys with a new stringtok from
      StringUtil this should make the config file less restrictive
    * Added stringtok to StringUtil
    * Removed Fluxbox dependency from class Theme
@@ -2860,25 +2864,25 @@ Changes for 0.1.6:
    * Fixed memory leak in Keys
 *02/01/06:
    * Changed toolbar placement enums to uppercase letters (Claes Nästén)
-   * Moved strcasestr from Theme.cc to StringUtil 
+   * Moved strcasestr from Theme.cc to StringUtil
    * Created StringUtil and DrawUtil and moved all functions from Misc to them
 *02/01/05:
    * Changed placement/alignment enums to uppercase letters (Claes Nästén)
    * Fixed tab/iconbar resource bug (Claes Nästén)
    * Applied "maximize slit stop"-patch  (Thanks Andrew Livesay)
    * Fixed stickytoggle bug in Windowmenu (Thanks Chris Elston)
-   * Fixed shade bug in Windowmenu 
+   * Fixed shade bug in Windowmenu
    * Fixed error in nls/it_IT/Makefile.am
    * Updated french translation (Thanks Fabien Devaux)
-   * Fixed focus Configmenu bug 
+   * Fixed focus Configmenu bug
 *02/01/04:
    * Fixed keybinding bug (Thanks Devaux Fabien)
 *02/01/01:
    * Updated the man page (Thanks Matthew Hawkins)
    * Fixed windowmenu bug when resizing with num/caps/scrollock on (Thanks Devaux Fabien)
-   * Restored lower window with mouse feature 
+   * Restored lower window with mouse feature
 *01/12/29:
-   * Fixed slit:onTop with toolbar:onTop bug 
+   * Fixed slit:onTop with toolbar:onTop bug
    * Changed Keygrabbing constants to uppercase
    * Changed Texture constants to uppercase and moved them into class BImage
      to clean up the global namespace
@@ -2902,26 +2906,26 @@ Changes for 0.1.6:
    * Moved expandFilename from class Fluxbox to class Misc (me)
 *01/12/14
    * Moved Tab width and height functions to screen, new syntax is
-      session.screenX.tab.width (Claes Nästén) 
+      session.screenX.tab.width (Claes Nästén)
 *01/12/13:
-   * Moved all free functions in misc.cc/.hh into a class Misc  
+   * Moved all free functions in misc.cc/.hh into a class Misc
    * Moved struct FFont from Theme.hh to class Misc so the
-     cyclic dep between class Theme and class Misc is removed. 
-   * Updated Screen.hh to return reference instead of pointer in  
-     get*Style  
-   * Updated Window.cc, Toolbar.cc, Tab.cc to the new DrawString 
-     functions in class Misc 
+     cyclic dep between class Theme and class Misc is removed.
+   * Updated Screen.hh to return reference instead of pointer in
+     get*Style
+   * Updated Window.cc, Toolbar.cc, Tab.cc to the new DrawString
+     functions in class Misc
    * Moved and renamed bstrdup from BaseDisplay.hh/.cc to class Misc
 *01/12/12:
    * Updated russian translation (Thanks Sergey Volozhanin)
    * Updated man-page (Thanks Matthew Hawkins)
 *01/12/11:
    * Fixed alt+resize and pressing button1 bug (me)
-   * Cleaned Tab::insert up and fix a bug in it. (Claes Nästén) 
+   * Cleaned Tab::insert up and fix a bug in it. (Claes Nästén)
  *01/12/10
    * Added NLS for Windowmenu Tab toggle (Claes Nästén)
    * Fixed Tab toggle texture / positioning "bug" (Claes Nästén)
- 
+
 Changes for 0.1.5:
 
 *01/12/09
@@ -2961,18 +2965,18 @@ Changes for 0.1.5:
    * applied Tab position patch (Claes Nästén)
    * Fixed transient_for-bug, Fluxbox::~FluxboxWindow (me)
      client.transient_for didn't got focus and caused the (me)
-     Fluxbox::focused_window to be a badpointer since 
+     Fluxbox::focused_window to be a badpointer since
      the focused_window was pointing to an already destroyed
      FluxboxWindow. (me)
 *01/11/27:
    * Added alignment for tabs in Tab.cc  (me)
 *01/11/22:
    * Added wheelscroll to change tab on titlebar. Window.cc/.hh (me)
-*01/11/20:   
+*01/11/20:
    * Screen.hh/cc Added updateWorkspaceNamesAtom
      updates the gnome atom _WIN_WORKSPACE_NAMES (me)
 *01/11/18:
-   * Window.cc Fixed "invalid pixmap" error (me) 
+   * Window.cc Fixed "invalid pixmap" error (me)
 *01/11/17:
    * Gnome _WIN_WORKSPACE (me)
    * Gnome _WIN_WORKSPACE_COUNT (me)
@@ -2982,7 +2986,7 @@ Changes for 0.1.5:
 *01/11/14:
    * Added Gnome atoms (BaseDisplay.cc/hh) (me)
 *01/11/13:
-   * Fixed grabs for window. No we can Alt+Move window with 
+   * Fixed grabs for window. No we can Alt+Move window with
      Numlock, Capslock and Scrolllock on. (me)
    * Fixed nls for "Use Icons" and "Use Tabs" (Claes Nästén)
    * Removed BScreen::LoadStyle() (me)
@@ -2996,11 +3000,11 @@ Changes for 0.1.5:
    * Theme.cc/.hh added to source, handles all theme loading (me)
 *01/11/09:
    * Fixed bug in Fluxbox::getRcFilename() (me)
-*01/11/07: 
+*01/11/07:
    * Removed a not working wheelscroll on rootwindow in fluxbox.cc (me)
    * Moved wheelscroll in Toolbar.cc from pressEvent to releaseEvent (me)
    * Fixed some nls in data (me)
-*01/11/06: 
+*01/11/06:
    * Fixed syntaxerror in Makro and CleanColor theme (me)
    * First part of restructure for themes (me)
 *01/11/05:
@@ -3011,7 +3015,7 @@ Changes for 0.1.5:
 Changes for 0.1.4:
 
 *01/11/03: Added new theme: Carbondioxide by skypher
-*01/11/03: Fixed bsetbg in utils/Makefile.am 
+*01/11/03: Fixed bsetbg in utils/Makefile.am
 *01/11/02: Clean up
 *01/11/02: Added session.iconbar to config file
 *01/11/02: Changed the generate_menu skript to clean sh
@@ -3038,7 +3042,7 @@ Changes for 0.1.3:
 
 * fluxbox.hh
   added resource.tabs
- 
+
 * fluxbox.cc
   added enterNotify for tabs
   added load/save in load_rc() save_rc() for resource.tabs
@@ -3051,7 +3055,7 @@ Changes for 0.1.3:
   list to another workspace
 
 * Tab.hh,.cc:
-  Added functions: iconify, deiconfigy, withdraw, 
+  Added functions: iconify, deiconfigy, withdraw,
                    disconnect, insert, shade
                    EnterNotifyMask for tabwindow
 
@@ -3071,8 +3075,8 @@ Changes for Fluxbox 0.1.2:
 
 * Added doc/Coding_style
 
-* FluxboxWindow.cc: FluxboxWindow::buttonPressEvent 
-  fixed so the shade button is drawn in pressed mode.   
+* FluxboxWindow.cc: FluxboxWindow::buttonPressEvent
+  fixed so the shade button is drawn in pressed mode.
 
 * CleanColor theme: error fixed.
 
@@ -3084,7 +3088,7 @@ Changes for Fluxbox 0.1.2:
 * Window.cc: FluxboxWindow::FluxboxWindow
   Changed event_mask for XGrabButton frame.plate from 0 to AnyModifier
   and ungrabs Mod1-3.
-  This should fix the focus "bug" when num lock, caps lock or scroll lock 
+  This should fix the focus "bug" when num lock, caps lock or scroll lock
   are pressed.
 
 * fluxbox.cc: Fluxbox::process_event
@@ -3103,7 +3107,7 @@ Changes for Fluxbox 0.1.2:
 Changes from Blackbox 0.61.1 to Fluxbox 0.1.1:
 
 * Integrated bbkeys in code.
-  "session.keyFile: thekeyfile" in the file init 
+  "session.keyFile: thekeyfile" in the file init
 
 * "make dist" now creates a "functional" tarball
 
@@ -3116,7 +3120,7 @@ Changes from Blackbox 0.61.1 to Fluxbox 0.1.1:
 * Variable titlebar
   The buttons on the titlebar can now be configured.
 
-* Wheelscroll 
+* Wheelscroll
   Wheelscroll function on titlebar and toolbar changes workspace
 
 * Config path
