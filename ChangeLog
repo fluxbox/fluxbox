@@ -1,6 +1,18 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
+*03/05/07:
+   * Fixed screen problem with redrawing menus (Henrik)
+     The m_screen_num wasn't set in X Window assignment operator
+     FbTk/FbWindow.cc
+   * Fixed check for RENDER extension before we start using it (Henrik)
+     FbTk/Transparent.hh/cc
+   * Fixed some bugs and minor cleaning (Thanks MrChuoi)
+     fluxbox.cc, FbTk/Button.cc, FbTk/RefCount.hh
+	 LayerMenu.hh, 
+     Resource.hh, Window.cc[focus on deiconify]
 *03/05/05:
+   * Added window.<button name>.unfocus.pixmap  theme item  (Henrik)
+     WinButtonTheme.hh/cc, WinButton.cc
    * Rework focus somewhat - now use Fluxbox::revertFocus when a window 
      dies/gets forced out of focus (Simon)
      - should fix click focus sometimes acting sloppy     
