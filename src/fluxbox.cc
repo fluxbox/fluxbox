@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.155 2003/06/11 10:50:59 rathnor Exp $
+// $Id: fluxbox.cc,v 1.156 2003/06/11 14:53:54 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -436,8 +436,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
     XSetErrorHandler((XErrorHandler) handleXErrors);
 
     //catch system signals
-    SignalHandler &sigh = SignalHandler::instance();
-	
+    SignalHandler &sigh = SignalHandler::instance();	
     sigh.registerHandler(SIGSEGV, this);
     sigh.registerHandler(SIGFPE, this);
     sigh.registerHandler(SIGTERM, this);
@@ -512,7 +511,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             continue;
         }
 #ifdef HAVE_RANDR
-
+        // setup RANDR for this screens root window
+        // we need to determine if we should use old randr select input function or not
 #ifdef X_RRScreenChangeSelectInput
         // use old set randr event
         XRRScreenChangeSelectInput(disp, screen->rootWindow().window(), True);
@@ -894,6 +894,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
 }
 
 void Fluxbox::handleButtonEvent(XButtonEvent &be) {
+		
     switch (be.type) {
     case ButtonPress: {
         m_last_time = be.time;
@@ -901,6 +902,14 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         BScreen *screen = searchScreen(be.window);
         if (screen == 0)
             break; // end case
+#ifdef SLIT
+        // hide slit menu
+        if (screen->slit())
+            screen->slit()->menu().hide();
+#endif // SLIT
+        // hide toolbar menu
+        if (screen->toolbar())
+            screen->toolbar()->menu().hide();
 
         if (be.button == 1) {
             if (! screen->isRootColormapInstalled())
@@ -910,7 +919,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
                 screen->getWorkspacemenu()->hide();
             if (screen->getRootmenu()->isVisible())
                 screen->getRootmenu()->hide();
-						
+
         } else if (be.button == 2) {
             int mx = be.x_root -
                 (screen->getWorkspacemenu()->width() / 2);
