@@ -22,67 +22,61 @@
 #ifndef	 WINDOWMENU_HH
 #define	 WINDOWMENU_HH
 
-// forward declaration
-class Windowmenu;
-class SendtoWorkspaceMenu;
-
-class Fluxbox;
-class FluxboxWindow;
-class Toolbar;
-
 #include "Basemenu.hh"
+
+class FluxboxWindow;
 
 
 class Windowmenu : public Basemenu {
-private:
-	FluxboxWindow *window;
-	BScreen *screen;
+public:
+	Windowmenu(FluxboxWindow &fbwin);
+	virtual ~Windowmenu();
 
- 
-	class SendtoWorkspacemenu : public Basemenu {
-	private:
-		Windowmenu *windowmenu;
+	const Basemenu &getSendToMenu() const { return sendToMenu; }
+	Basemenu &getSendToMenu() { return sendToMenu; }
+	const Basemenu &getSendGroupToMenu() const { return sendGroupToMenu; }	
+	Basemenu &getSendGroupToMenu() { return sendGroupToMenu; }
 
-	protected:
-		virtual void itemSelected(int button, unsigned int index);
+	void reconfigure();
+	void setClosable();
 
-	public:
-		SendtoWorkspacemenu(Windowmenu *);
-		inline Windowmenu *getWindowMenu() const { return windowmenu; }
-		void update(void);
-
-		virtual void show(void);
-	};
- 	
-	class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
-	protected:	
-		virtual void itemSelected(int button, unsigned int index);
-	public:
-		SendGroupToWorkspacemenu(Windowmenu *winmenu);
-				
-	};
-	
-	SendtoWorkspacemenu *sendToMenu;
-	SendGroupToWorkspacemenu *sendGroupToMenu;
-	
-	friend class SendtoWorkspacemenu;
-	friend class SendGroupToWorkspacemenu;
+	virtual void show();
 
 protected:
 	virtual void itemSelected(int button, unsigned int index);
 
+private:
+	FluxboxWindow &window;
+	BScreen *screen;
 
-public:
-	Windowmenu(FluxboxWindow *);
-	virtual ~Windowmenu(void);
+ 
+	class SendtoWorkspacemenu : public Basemenu {
+	public:
+		SendtoWorkspacemenu(Windowmenu *);
+		inline Windowmenu *getWindowMenu() const { return windowmenu; }
+		void update();
 
-	inline Basemenu *getSendToMenu(void) { return static_cast<Basemenu *>(sendToMenu); }
-	inline Basemenu *getSendGroupToMenu(void) { return static_cast<Basemenu *>(sendGroupToMenu); }
-	void reconfigure(void);
-	void setClosable(void);
+		virtual void show();
+	protected:
+		virtual void itemSelected(int button, unsigned int index);
 
-	virtual void show(void);
+	private:
+		Windowmenu *windowmenu;
+	
+	};
+ 	
+	class SendGroupToWorkspacemenu : public SendtoWorkspacemenu {	
+	public:
+		SendGroupToWorkspacemenu(Windowmenu *winmenu);
+
+	protected:	
+		virtual void itemSelected(int button, unsigned int index);
+	};
+	
+	SendtoWorkspacemenu sendToMenu;
+	SendGroupToWorkspacemenu sendGroupToMenu;
+
 };
 
 
-#endif // __Windowmenu_hh
+#endif // WINDOWMENU_HH
