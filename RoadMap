@@ -145,8 +145,12 @@ Bugfixes/lower priority:
  * Fixes for 0.9.3 and previous               (Both)
 
 ----------------------------------------------------------
-Release:      0.9.5
-Approx Date:  31 July, 2003
+
+...
+
+----------------------------------------------------------
+Release:      0.9.? (remaining)
+Approx Date:  ?
 Major Features:
  - Mouse actions as keys (so you can, e.g. Mod1 Button1 :ResizeWindow) (?)
  - nls code - layers, remember, new stuff...  (Both)
@@ -173,7 +177,7 @@ Major Features:
    - web docs
    - FAQ
 Minor Features:
- - Transparent titlebars + toolbar  (?)
+ - Transparent titlebars + toolbar
 Bugfixes:
  - As many of those little niggly things as possible (some of which may be 
    non-trivial to fix).
@@ -184,19 +188,28 @@ Other:
 
 ----------------------------------------------------------
 Release:      1.0.0rc1
-Approx Date:  21 August, 2003
+Approx Date:  ?
 
  - Bug Fixes & tweaks. Nothing major.
 
 This release is aiming to be a very close approximation for 1.0.0.
 There is a fair amount of cooling time before the full release to allow 
-for an rc2 or mroe if necessary, but we'd really like to iron out all 
+for an rc2 or more if necessary, but we'd really like to iron out all 
 those little bugs that are remaining around here.
 
 ----------------------------------------------------------
 Release:      1.0.0
-Approx Date:  15 September, 2003
+Approx Date:  ?
 
  - Obviously any remaining bug-fixes and small tweaks.
  - Translations.
  - Documentation.
+
+
+The dates for later releases of the development branch are not estimated
+because they are difficult to estimate. New features add new bugs. There
+are always little things being added. The developers are also constantly
+interrupted by "real life" events.
+
+However, we really do want to get 1.0.0 released. So don't despair. It's coming.
+
