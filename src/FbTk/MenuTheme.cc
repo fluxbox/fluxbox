@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.9 2003/08/16 12:23:17 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.10 2003/08/27 14:12:45 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -51,41 +51,33 @@ MenuTheme::MenuTheme(int screen_num):
     m_border_width(*this, "borderWidth", "BorderWidth"),
     m_bevel_width(*this, "bevelWidth", "BevelWidth"),
     m_border_color(*this, "borderColor", "BorderColor"),
+    m_bullet_pixmap(*this, "menu.submenu.pixmap", "Menu.Submenu.Pixmap"),
+    m_selected_pixmap(*this, "menu.selected.pixmap", "Menu.Selected.Pixmap"),
+    m_unselected_pixmap(*this, "menu.unselected.pixmap", "Menu.Unselected.Pixmap"),
     m_display(FbTk::App::instance()->display()),
-    m_alpha(255)
-{ 
+    t_text_gc(RootWindow(m_display, screen_num)),
+    f_text_gc(RootWindow(m_display, screen_num)),
+    h_text_gc(RootWindow(m_display, screen_num)),
+    d_text_gc(RootWindow(m_display, screen_num)),
+    hilite_gc(RootWindow(m_display, screen_num)),
+    m_alpha(255) { 
+
     // set default values
     *m_border_width = 0;
     *m_bevel_width = 0;
 
     Window rootwindow = RootWindow(m_display, screen_num);
 
-    XGCValues gcv;
-    unsigned long gc_value_mask = GCForeground;
-    gcv.foreground = t_text->pixel();
+    t_text_gc.setForeground(*t_text);
+    f_text_gc.setForeground(*f_text);
+    h_text_gc.setForeground(*h_text);
+    d_text_gc.setForeground(*d_text);
+    hilite_gc.setForeground(hilite->color());
 
-    t_text_gc = XCreateGC(m_display, rootwindow, gc_value_mask, &gcv);
-
-    gcv.foreground = f_text->pixel();
-
-    f_text_gc = XCreateGC(m_display, rootwindow, gc_value_mask, &gcv);
-
-    gcv.foreground = h_text->pixel();
-    h_text_gc =	XCreateGC(m_display, rootwindow, gc_value_mask, &gcv);
-
-    gcv.foreground = d_text->pixel();
-    d_text_gc =	XCreateGC(m_display, rootwindow, gc_value_mask, &gcv);
-
-    gcv.foreground = hilite->color().pixel();
-    hilite_gc =	XCreateGC(m_display, rootwindow, gc_value_mask, &gcv);
 }
 
 MenuTheme::~MenuTheme() {
-    XFreeGC(m_display, t_text_gc);
-    XFreeGC(m_display, f_text_gc);
-    XFreeGC(m_display, h_text_gc);
-    XFreeGC(m_display, d_text_gc);
-    XFreeGC(m_display, hilite_gc);
+
 }
 
 void MenuTheme::reconfigTheme() {
@@ -95,30 +87,15 @@ void MenuTheme::reconfigTheme() {
     if (*m_border_width > 20)
         *m_border_width = 20;
 
-    XGCValues gcv;
-    unsigned long gc_value_mask = GCForeground;
-    
-    gcv.foreground = t_text->pixel();
-	
-    XChangeGC(m_display, t_text_gc,
-              gc_value_mask, &gcv);
+    m_bullet_pixmap->scale(frameFont().height(), frameFont().height());
+    m_selected_pixmap->scale(frameFont().height(), frameFont().height());
+    m_unselected_pixmap->scale(frameFont().height(), frameFont().height());
 
-    gcv.foreground = f_text->pixel();	
-	
-    XChangeGC(m_display, f_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = h_text->pixel();
-    XChangeGC(m_display, h_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = d_text->pixel();
-    XChangeGC(m_display, d_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = hilite->color().pixel();
-    XChangeGC(m_display, hilite_gc,
-              gc_value_mask, &gcv);
+    t_text_gc.setForeground(*t_text);
+    f_text_gc.setForeground(*f_text);
+    h_text_gc.setForeground(*h_text);
+    d_text_gc.setForeground(*d_text);
+    hilite_gc.setForeground(hilite->color());
 
     // notify any listeners
     m_theme_change_sig.notify();

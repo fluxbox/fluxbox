@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.35 2003/08/24 16:57:38 fluxgen Exp $
+// $Id: Menu.cc,v 1.36 2003/08/27 14:14:04 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -658,20 +658,20 @@ void Menu::redrawTitle() {
                   dx, font.ascent() + menu.bevel_w);  // position
     /*    if (m_trans.get()) {
 
-        if (m_trans->alpha() != 255) {
-            Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
+    if (m_trans->alpha() != 255) {
+    Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
 
-            if (m_root_pm != root_pm) {
-                m_trans->setSource(root_pm, menu.title.screenNumber());
-                m_root_pm = root_pm;
-            }
-            m_trans->setDest(menu.title.window(), menu.title.screenNumber());
-            m_trans->render(menu.window.x() + menu.title.x() + menu.window.borderWidth()*2, 
-                            menu.window.y() + menu.title.y() + menu.window.borderWidth()*2, 
-                            0, 0,
-                            menu.title.width(), menu.title.height());
-        }
-        }*/
+    if (m_root_pm != root_pm) {
+    m_trans->setSource(root_pm, menu.title.screenNumber());
+    m_root_pm = root_pm;
+    }
+    m_trans->setDest(menu.title.window(), menu.title.screenNumber());
+    m_trans->render(menu.window.x() + menu.title.x() + menu.window.borderWidth()*2, 
+    menu.window.y() + menu.title.y() + menu.window.borderWidth()*2, 
+    0, 0,
+    menu.title.width(), menu.title.height());
+    }
+    }*/
     menu.title.updateTransparent();
     
 }
@@ -820,21 +820,18 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     sel_y = item_y + quarter_w;
 
     if (clear) {
-
-        GC def_gc = XCreateGC(m_display, menu.frame.window(), 0, 0); 
+        FbTk::GContext def_gc(menu.frame.window());
         if (menu.frame_pixmap == 0) {
-
-            XSetForeground(m_display, def_gc, m_theme.frameTexture().color().pixel());
-            m_frame_pm.fillRectangle(def_gc, item_x, item_y, menu.item_w, menu.item_h);
+            def_gc.setForeground(m_theme.frameTexture().color());
+            m_frame_pm.fillRectangle(def_gc.gc(), item_x, item_y, menu.item_w, menu.item_h);
 
         } else {
 
-            m_frame_pm.copyArea(menu.frame_pixmap, def_gc,
+            m_frame_pm.copyArea(menu.frame_pixmap, def_gc.gc(),
                                 item_x, item_y,
                                 item_x, item_y,
                                 menu.item_w, menu.item_h);
         }    
-        XFreeGC(m_display, def_gc);
     } else if (! (x == y && y == -1 && w == h && h == 0)) {
         // calculate the which part of the hilite to redraw
         if (! (std::max(item_x, x) <= (signed) std::min(item_x + menu.item_w, x + w) &&
@@ -861,7 +858,7 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
             dosel = false;
 	
     }
-	
+    
     if (dohilite && highlight && (menu.hilite_pixmap != ParentRelative)) {
         if (menu.hilite_pixmap) {
             m_frame_pm.copyArea(menu.hilite_pixmap,
@@ -875,21 +872,60 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
         
     } 
 	
-    if (dosel && item->isSelected() &&
-        (menu.sel_pixmap != ParentRelative)) {
-        if (menu.sel_pixmap) {
-            m_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
-                                m_theme.hiliteGC(), 
-                                0, 0,                                 
-                                sel_x, sel_y,
-                                half_w, half_w);
+    
+    if (item->isToggleItem() && item->isSelected() &&
+        menu.sel_pixmap != ParentRelative) {
+        if (m_theme.selectedPixmap().pixmap().drawable()) {
+            // enable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         m_theme.selectedPixmap().mask().drawable());
+            XSetClipOrigin(FbTk::App::instance()->display(),
+                           gc, sel_x, item_y);
+            // copy bullet pixmap to frame
+            m_frame_pm.copyArea(m_theme.selectedPixmap().pixmap().drawable(),
+                                gc,
+                                0, 0,
+                                sel_x, item_y,
+                                m_theme.selectedPixmap().width(),
+                                m_theme.selectedPixmap().height());
+            // disable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         None);
         } else {
-            m_frame_pm.fillRectangle(m_theme.hiliteGC(),
-                                     sel_x, sel_y, half_w, half_w);
+            if (menu.sel_pixmap) {
+                m_frame_pm.copyArea(highlight ? menu.frame_pixmap : menu.sel_pixmap,
+                                    m_theme.hiliteGC(), 
+                                    0, 0,                                 
+                                    sel_x, sel_y,
+                                    half_w, half_w);
+            } else {
+                m_frame_pm.fillRectangle(m_theme.hiliteGC(),
+                                         sel_x, sel_y, half_w, half_w);
+            }
         }
         
+    } else if (item->isToggleItem() && m_theme.unselectedPixmap().pixmap().drawable() != 0) {
+         // enable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         m_theme.unselectedPixmap().mask().drawable());
+            XSetClipOrigin(FbTk::App::instance()->display(),
+                           gc, sel_x, item_y);
+            // copy bullet pixmap to frame
+            m_frame_pm.copyArea(m_theme.unselectedPixmap().pixmap().drawable(),
+                                gc,
+                                0, 0,
+                                sel_x, item_y,
+                                m_theme.unselectedPixmap().width(),
+                                m_theme.unselectedPixmap().height());
+            // disable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         None);
     }
-	
+    
     if (dotext && text) {
         m_theme.frameFont().drawText(m_frame_pm.drawable(), // drawable
                                      screenNumber(),
@@ -899,51 +935,71 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
     }
 
     if (dosel && item->submenu()) {
-        switch (m_theme.bullet()) {
-        case MenuTheme::SQUARE:
-            m_frame_pm.drawRectangle(gc, sel_x, sel_y, half_w, half_w);
-            break;
+        if (m_theme.bulletPixmap().pixmap().drawable() != 0) {
+            // enable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         m_theme.bulletPixmap().mask().drawable());
+            XSetClipOrigin(FbTk::App::instance()->display(),
+                           gc, sel_x, item_y);
+            // copy bullet pixmap to frame
+            m_frame_pm.copyArea(m_theme.bulletPixmap().pixmap().drawable(),
+                                gc,
+                                0, 0,
+                                sel_x, item_y,
+                                m_theme.bulletPixmap().width(),
+                                m_theme.bulletPixmap().height());
+            // disable clip mask
+            XSetClipMask(FbTk::App::instance()->display(),
+                         gc,
+                         None);
+        } else {
+            switch (m_theme.bullet()) {
+            case MenuTheme::SQUARE:
+                m_frame_pm.drawRectangle(gc, sel_x, sel_y, half_w, half_w);
+                break;
 
-        case MenuTheme::TRIANGLE:
-            XPoint tri[3];
+            case MenuTheme::TRIANGLE:
+                XPoint tri[3];
 
-            if (m_theme.bulletPos() == FbTk::RIGHT) {
-                tri[0].x = sel_x + quarter_w - 2;
-                tri[0].y = sel_y + quarter_w - 2;
-                tri[1].x = 4;
-                tri[1].y = 2;
-                tri[2].x = -4;
-                tri[2].y = 2;
-            } else {
-                tri[0].x = sel_x + quarter_w - 2;
-                tri[0].y = item_y + half_w;
-                tri[1].x = 4;
-                tri[1].y = 2;
-                tri[2].x = 0;
-                tri[2].y = -4;
+                if (m_theme.bulletPos() == FbTk::RIGHT) {
+                    tri[0].x = sel_x + quarter_w - 2;
+                    tri[0].y = sel_y + quarter_w - 2;
+                    tri[1].x = 4;
+                    tri[1].y = 2;
+                    tri[2].x = -4;
+                    tri[2].y = 2;
+                } else {
+                    tri[0].x = sel_x + quarter_w - 2;
+                    tri[0].y = item_y + half_w;
+                    tri[1].x = 4;
+                    tri[1].y = 2;
+                    tri[2].x = 0;
+                    tri[2].y = -4;
+                }
+			
+                m_frame_pm.fillPolygon(gc, tri, 3, Convex,
+                                       CoordModePrevious);
+                break;
+			
+            case MenuTheme::DIAMOND:
+                XPoint dia[4];
+
+                dia[0].x = sel_x + quarter_w - 3;
+                dia[0].y = item_y + half_w;
+                dia[1].x = 3;
+                dia[1].y = -3;
+                dia[2].x = 3;
+                dia[2].y = 3;
+                dia[3].x = -3;
+                dia[3].y = 3;
+
+                m_frame_pm.fillPolygon(gc, dia, 4, Convex,
+                                       CoordModePrevious);
+                break;
+            default:
+                break;
             }
-			
-            m_frame_pm.fillPolygon(gc, tri, 3, Convex,
-                                   CoordModePrevious);
-            break;
-			
-        case MenuTheme::DIAMOND:
-            XPoint dia[4];
-
-            dia[0].x = sel_x + quarter_w - 3;
-            dia[0].y = item_y + half_w;
-            dia[1].x = 3;
-            dia[1].y = -3;
-            dia[2].x = 3;
-            dia[2].y = 3;
-            dia[3].x = -3;
-            dia[3].y = 3;
-
-            m_frame_pm.fillPolygon(gc, dia, 4, Convex,
-                                   CoordModePrevious);
-            break;
-        default:
-            break;
         }
     }
 
@@ -951,38 +1007,12 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
                item_x, item_y,
                menu.item_w, menu.item_h, False);
 
-    //    if (m_trans->alpha() != alpha())
-    //        m_trans->setAlpha(alpha());
     menu.title.setAlpha(alpha());
     menu.frame.setAlpha(alpha());
     menu.window.setAlpha(alpha());
 
     menu.frame.updateTransparent(item_x, item_y,
                                  menu.item_w, menu.item_h);
-
-
-    /*
-    if (m_trans.get() && render_trans) {
-
-        if (m_trans->alpha() != 255) {                               
-            Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
-
-            if (m_root_pm != root_pm) {
-                m_trans->setSource(root_pm, menu.window.screenNumber());
-                m_root_pm = root_pm;
-            }
-        
-            m_trans->setDest(menu.frame.window(), menu.frame.screenNumber());        
-            m_trans->render(menu.window.x() + menu.frame.x() + item_x +
-                            menu.window.borderWidth(), 
-                            menu.window.y() + menu.frame.y() + item_y + 
-                            menu.window.borderWidth(),
-                            item_x, item_y,
-                            menu.item_w, menu.item_h);
-        }
-    }
-    XSync(m_display, False);
-    */
 }
 
 void Menu::setLabel(const char *labelstr) {
@@ -1354,35 +1384,35 @@ void Menu::reconfigure() {
     menu.title.setAlpha(alpha());
     menu.window.setAlpha(alpha());
     /*
-    if (m_trans.get() && m_trans->alpha() != alpha())
-        m_trans->setAlpha(alpha());
+      if (m_trans.get() && m_trans->alpha() != alpha())
+      m_trans->setAlpha(alpha());
     */
     update();
 }
     
 void Menu::renderTransFrame() {
     /*    if (m_trans.get() == 0 || moving)
-        return;
+          return;
 
-    if (m_trans->alpha() != alpha())
-        m_trans->setAlpha(alpha());
+          if (m_trans->alpha() != alpha())
+          m_trans->setAlpha(alpha());
 
-    if (m_trans->alpha() != 255) {
+          if (m_trans->alpha() != 255) {
 
-        Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
+          Pixmap root_pm = getRootPixmap(menu.window.screenNumber());
 
-        if (m_root_pm != root_pm) {
-            m_trans->setSource(root_pm, menu.window.screenNumber());
-            m_root_pm = root_pm;
-        }
-        menu.frame.clear();
-        m_trans->setDest(menu.frame.window(), menu.window.screenNumber());
-        m_trans->render(menu.window.x() + menu.frame.x() + menu.window.borderWidth(), 
-                        menu.window.y() + menu.frame.y() + menu.window.borderWidth(),
-                        0, 0,
-                        menu.frame.width(), menu.frame.height());
+          if (m_root_pm != root_pm) {
+          m_trans->setSource(root_pm, menu.window.screenNumber());
+          m_root_pm = root_pm;
+          }
+          menu.frame.clear();
+          m_trans->setDest(menu.frame.window(), menu.window.screenNumber());
+          m_trans->render(menu.window.x() + menu.frame.x() + menu.window.borderWidth(), 
+          menu.window.y() + menu.frame.y() + menu.window.borderWidth(),
+          0, 0,
+          menu.frame.width(), menu.frame.height());
 
-    }
+          }
     */
     menu.frame.clear();
     menu.frame.updateTransparent();
