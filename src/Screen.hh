@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.109 2003/06/23 14:16:04 rathnor Exp $
+// $Id: Screen.hh,v 1.110 2003/06/24 15:01:54 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -307,7 +307,7 @@ public:
     void updateNetizenWindowFocus();
     void updateNetizenWindowAdd(Window, unsigned long);
     void updateNetizenWindowDel(Window);
-    void updateNetizenConfigNotify(XEvent *);
+    void updateNetizenConfigNotify(XEvent &ev);
     void updateNetizenWindowRaise(Window);
     void updateNetizenWindowLower(Window);
     /// create window frame for client window and attach it
