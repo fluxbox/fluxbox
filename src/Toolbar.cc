@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.133 2003/12/19 03:57:40 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.134 2003/12/20 19:05:42 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -353,7 +353,10 @@ void Toolbar::lower() {
 
 void Toolbar::reconfigure() {
     updateVisibleState();
-    
+
+    if (!doAutoHide() && isHidden())
+        toggleHidden();
+
     m_tool_factory.updateThemes();
 
     // parse resource tools and determine if we need to rebuild toolbar
@@ -501,10 +504,12 @@ void Toolbar::buttonReleaseEvent(XButtonEvent &re) {
         screen().prevWorkspace(1);
 }
 
-
 void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {
-    if (! doAutoHide())
+    if (! doAutoHide()) {
+        if (isHidden())
+            toggleHidden();
         return;
+    }
 
     if (isHidden()) {
         if (! m_hide_timer.isTiming())
@@ -515,8 +520,12 @@ void Toolbar::enterNotifyEvent(XCrossingEvent &not_used) {
     }
 }
 
-void Toolbar::leaveNotifyEvent(XCrossingEvent &not_used) {
+void Toolbar::leaveNotifyEvent(XCrossingEvent &event) {
     if (! doAutoHide())
+        return;
+    // still inside?
+    if (event.x_root > x() && event.x_root <= (int)(x() + width()) &&
+        event.y_root > y() && event.y_root <= (int)(y() + height()))
         return;
 
     if (isHidden()) {
@@ -529,15 +538,12 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent &not_used) {
 
 
 void Toolbar::exposeEvent(XExposeEvent &ee) {
-    if (ee.window == frame.window)
+    if (ee.window == frame.window) {
         frame.window.clearArea(ee.x, ee.y,
                                ee.width, ee.height);
+    }
 }
 
-
-void Toolbar::keyPressEvent(XKeyEvent &ke) {
-
-}
 
 void Toolbar::handleEvent(XEvent &event) {
     if (event.type == ConfigureNotify &&
@@ -721,7 +727,7 @@ void Toolbar::updateVisibleState() {
 }
 
 void Toolbar::toggleHidden() {
-    m_hide_timer.fireOnce(true);
+
 
     // toggle hidden
     m_hidden = ! m_hidden;
