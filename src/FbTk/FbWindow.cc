@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.27 2003/10/14 21:49:21 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.28 2003/10/26 20:52:28 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -119,8 +119,15 @@ FbWindow::FbWindow(const FbWindow &parent,
 
 FbWindow::FbWindow(Window client):m_parent(0), m_window(0),
                                   m_screen_num(0),
+                                  m_x(0), m_y(0),
+                                  m_width(1), m_height(1),
+                                  m_border_width(0),
+                                  m_depth(0),
                                   m_destroy(false),  // don't destroy this window
                                   m_buffer_pm(0) {
+
+    if (s_display == 0)
+        s_display = App::instance()->display();
 
     setNew(client);
 }
@@ -263,7 +270,9 @@ void FbWindow::setNew(Window win) {
 
     if (m_window != 0 && m_destroy)
         XDestroyWindow(s_display, m_window);
+
     m_window = win;
+
     if (m_window != 0) {
         updateGeometry();
         XWindowAttributes attr;
@@ -273,7 +282,14 @@ void FbWindow::setNew(Window win) {
                                  m_window,
                                  &attr) != 0 && attr.screen != 0) {
             m_screen_num = XScreenNumberOfScreen(attr.screen);
+            m_width = attr.width;
+            m_height = attr.height ;
+            m_x = attr.x;
+            m_y = attr.y;
+            m_depth = attr.depth;
+            m_border_width = attr.border_width;
         }
+        
     }
 }
 
