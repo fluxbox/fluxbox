@@ -22,12 +22,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.90 2003/05/04 23:38:06 rathnor Exp $
+// $Id: Screen.hh,v 1.91 2003/05/10 13:46:31 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
 
-#include "BaseDisplay.hh"
+#include "ScreenInfo.hh"
 #include "Resource.hh"
 #include "Subject.hh"
 #include "MultLayers.hh"
