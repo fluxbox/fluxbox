@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.93 2003/02/02 16:32:40 rathnor Exp $
+// $Id: fluxbox.cc,v 1.94 2003/02/03 13:57:08 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -376,7 +376,7 @@ Fluxbox::Fluxbox(int m_argc, char **m_argv, const char *dpy_name, const char *rc
         char scrname[128], altscrname[128];
         sprintf(scrname, "session.screen%d", i);
         sprintf(altscrname, "session.Screen%d", i);
-        BScreen *screen = new BScreen(m_screen_rm, scrname, altscrname, i);
+        BScreen *screen = new BScreen(m_screen_rm, scrname, altscrname, i, getNumberOfLayers());
         if (! screen->isScreenManaged()) {
             delete screen;			
             continue;
@@ -896,6 +896,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             win->buttonReleaseEvent(be);
         else if ((tab = searchTab(be.window)))
             tab->buttonReleaseEvent(&be);
+
     }
     break;	
     default:
