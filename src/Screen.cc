@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.230 2003/08/30 01:02:38 fluxgen Exp $
+// $Id: Screen.cc,v 1.231 2003/09/08 16:37:27 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -265,6 +265,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                  const string &screenname, const string &altscreenname,
                  int scrn, int num_layers) : 
     m_clientlist_sig(*this),  // client signal
+    m_iconlist_sig(*this), // icon list signal
     m_workspacecount_sig(*this), // workspace count signal
     m_workspacenames_sig(*this), // workspace names signal 
     m_currentworkspace_sig(*this), // current workspace signal
@@ -685,6 +686,8 @@ void BScreen::addIcon(FluxboxWindow *w) {
 
     m_icon_list.push_back(w);
     updateIconMenu();
+
+    m_iconlist_sig.notify();
 }
 
 
@@ -699,6 +702,8 @@ void BScreen::removeIcon(FluxboxWindow *w) {
         m_icon_list.erase(erase_it);
 
     updateIconMenu();
+
+    m_iconlist_sig.notify();
 }
 
 

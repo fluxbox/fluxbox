@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.123 2003/08/25 13:15:53 rathnor Exp $
+// $Id: Screen.hh,v 1.124 2003/09/08 16:37:27 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -145,6 +145,8 @@ public:
     //@{
     /// client list signal
     FbTk::Subject &clientListSig() { return m_clientlist_sig; } 
+    /// icon list sig
+    FbTk::Subject &iconListSig() { return m_iconlist_sig; }
     /// workspace count signal
     FbTk::Subject &workspaceCountSig() { return m_workspacecount_sig; }
     /// workspace names signal 
@@ -324,6 +326,8 @@ public:
     void removeConfigMenu(FbTk::Menu &menu);
 
     bool isShuttingdown() const { return m_shutdown; }
+
+
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT,
            UNDERMOUSEPLACEMENT, LEFTRIGHT, RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
 
@@ -339,7 +343,7 @@ public:
     private:
         BScreen &m_scr;
     };
-	
+
 private:
     void setupConfigmenu(FbTk::Menu &menu);
     void createStyleMenu(FbTk::Menu &menu, const char *label, const char *directory);
@@ -355,6 +359,7 @@ private:
 
     ScreenSubject 
     m_clientlist_sig,  ///< client signal
+        m_iconlist_sig, ///< notify if a window gets iconified/deiconified
         m_workspacecount_sig, ///< workspace count signal
         m_workspacenames_sig, ///< workspace names signal 
         m_currentworkspace_sig, ///< current workspace signal
