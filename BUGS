@@ -4,7 +4,10 @@ BUGS:
 
   * Window handle is invisible sometimes.
 
-
+  * Default style stuff is completely broken (e.g. try breaking the path to 
+    your styleFile in init file)
+    => I also couldn't see an error about that, but maybe it got lost in 
+       debug output? Check that too.
 
   * Some menus don't close when you click on items.
 
