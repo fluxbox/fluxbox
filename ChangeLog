@@ -1,5 +1,14 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/11:
+  * Added remember position (Thanks Mathias Gumz)
+    Usage:  [app] (fbrun)
+            [Position]    (WINCENTER) ){0 0}
+            [end]
+    and inside the { } is the relative position
+    possible values for () are:
+    UPPERLEFT, UPPERRIGHT, LOWERLEFT, LOWERRIGHT, CENTER, WINCENTER
+    Remember.cc/hh
 *03/12/10:
   * Added temporarly nice separator line (Thanks Ciaran McCreesh)
     use [nop] (---) to get a nice separator line in the menu
