@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.52 2004/10/16 22:20:05 akir Exp $
+// $Id: Ewmh.cc,v 1.53 2004/10/21 10:57:38 akir Exp $
 
 #include "Ewmh.hh"
 
@@ -35,7 +35,16 @@
 #include <iostream>
 #include <algorithm>
 #include <new>
+
 using namespace std;
+
+// mipspro has no new(nothrow)
+#if defined sgi && ! defined GCC
+#define FB_new_nothrow new
+#else
+#define FB_new_nothrow new(std::nothrow)
+#endif
+
 
 Ewmh::Ewmh() {
     createAtoms();
@@ -264,7 +273,7 @@ void Ewmh::updateClientList(BScreen &screen) {
         num += (*icon_it)->numClients();
     }
 
-    Window *wl = new (nothrow) Window[num];
+    Window *wl = FB_new_nothrow Window[num];
     if (wl == 0) {
         _FB_USES_NLS;
         cerr<<_FBTEXT(Ewmh, OutOfMemoryClientList, "Fatal: Out of memory, can't allocate for EWMH client list", "")<<endl;
@@ -377,6 +386,7 @@ void Ewmh::updateWorkspaceNames(BScreen &screen) {
 
     for (size_t i = 0; i < number_of_desks; i++)
         delete [] names[i];
+
 }
 
 void Ewmh::updateCurrentWorkspace(BScreen &screen) {
