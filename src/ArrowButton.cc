@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.2 2003/04/27 01:54:18 fluxgen Exp $
+// $Id: ArrowButton.cc,v 1.3 2003/05/17 11:30:59 fluxgen Exp $
 
 #include "ArrowButton.hh"
 
@@ -28,7 +28,11 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
                          int x, int y,
                          unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
-    m_arrow_type(arrow_type) {
+    m_arrow_type(arrow_type),
+    m_mouse_handler(0) {
+
+    window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
+                          EnterWindowMask | LeaveWindowMask);
 }
 
 ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
@@ -36,8 +40,11 @@ ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
                          int x, int y,
                          unsigned int width, unsigned int height):
     FbTk::Button(screen_num, x, y, width, height),
-    m_arrow_type(arrow_type) {
+    m_arrow_type(arrow_type),
+    m_mouse_handler(0) {
 
+    window().setEventMask(ExposureMask | ButtonPressMask | ButtonReleaseMask |
+                          EnterWindowMask | LeaveWindowMask);
 }
 
 void ArrowButton::clear() {
@@ -58,6 +65,16 @@ void ArrowButton::buttonPressEvent(XButtonEvent &event) {
 void ArrowButton::buttonReleaseEvent(XButtonEvent &event) {
     FbTk::Button::buttonReleaseEvent(event);
     drawArrow();
+}
+
+void ArrowButton::enterNotifyEvent(XCrossingEvent &ce) {
+    if (m_mouse_handler)
+	m_mouse_handler->enterNotifyEvent(ce);
+}
+
+void ArrowButton::leaveNotifyEvent(XCrossingEvent &ce) {
+    if (m_mouse_handler)
+	m_mouse_handler->leaveNotifyEvent(ce);
 }
 
 /**

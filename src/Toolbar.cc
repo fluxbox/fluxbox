@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.83 2003/05/15 23:30:03 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.84 2003/05/17 11:30:59 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -235,6 +235,10 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
     evm.add(evh, window_label);
     evm.add(evh, clock);
 
+    psbutton.setMouseMotionHandler(&evh);
+    nsbutton.setMouseMotionHandler(&evh);
+    pwbutton.setMouseMotionHandler(&evh);
+    nwbutton.setMouseMotionHandler(&evh);
 }
 
 Toolbar::Frame::~Frame() {
@@ -287,6 +291,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     m_clock_timer.setTimeout(delay);
     m_clock_timer.start();
 
+    m_theme.font().setAntialias(screen().antialias());
+
     hide_handler.toolbar = this;
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
     m_hide_timer.fireOnce(true);
@@ -299,9 +305,6 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
         frame.pbutton = None;
 
     m_iconbar.reset(new IconBar(screen(), frame.window_label.window(), m_theme.font()));
-
-    XMapSubwindows(display, frame.window.window());
-    frame.window.show();
 
     // finaly: setup Commands for the buttons in the frame
     typedef FbTk::SimpleCommand<BScreen> ScreenCmd;
@@ -318,9 +321,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     frame.pwbutton.setOnClick(prevwindow);
     frame.nwbutton.setOnClick(nextwindow);
 
-
-    reconfigure();
-	
+    frame.window.showSubwindows();
+    frame.window.show();
 }
 
 
