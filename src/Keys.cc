@@ -19,48 +19,47 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.15 2002/04/19 09:33:42 fluxgen Exp $
+//$Id: Keys.cc,v 1.16 2002/05/02 07:10:03 fluxgen Exp $
 
-#ifdef		HAVE_CONFIG_H
-#	 include "config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
 #include "Keys.hh"
-
 #include "StringUtil.hh"
 
-#ifdef		HAVE_STDIO_H
-#	 include <stdio.h>
+#ifdef HAVE_STDIO_H
+#include <stdio.h>
 #endif	// HAVE_STDIO_H
 
-#ifdef		HAVE_CTYPE_H
-#	 include <ctype.h>
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
 #endif	// HAVE_CTYPE_H
 
-#ifdef		STDC_HEADERS
-#	 include <stdlib.h>
-#	 include <string.h>
-#  include <errno.h>
+#ifdef STDC_HEADERS
+#include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 #endif	// STDC_HEADERS
 
 #if HAVE_STRINGS_H
-# include <strings.h>
+#include <strings.h>
 #endif
 
-#ifdef		HAVE_SYS_TYPES_H
-#	 include <sys/types.h>
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
 #endif	// HAVE_SYS_TYPES_H
 
-#ifdef		HAVE_SYS_WAIT_H
-#	 include <sys/wait.h>
+#ifdef HAVE_SYS_WAIT_H
+#include <sys/wait.h>
 #endif	// HAVE_SYS_WAIT_H
 
-#ifdef		HAVE_UNISTD_H
-#	 include <unistd.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
 #endif	// HAVE_UNISTD_H
 
-#ifdef		HAVE_SYS_STAT_H
-#	 include <sys/stat.h>
+#ifdef	HAVE_SYS_STAT_H
+#include <sys/stat.h>
 #endif	// HAVE_SYS_STAT_H
 
 #include <X11/Xlib.h>
@@ -104,6 +103,10 @@ Keys::t_actionstr Keys::m_actionlist[] = {
 	{"PrevWindow", PREVWINDOW},
 	{"NextTab", NEXTTAB},
 	{"PrevTab", PREVTAB},
+	{"FirstTab", FIRSTTAB},
+	{"LastTab", LASTTAB},
+	{"MoveTabPrev", MOVETABPREV},
+	{"MoveTabNext", MOVETABNEXT},
 	{"ShadeWindow", SHADE},
 	{"MaximizeWindow", MAXIMIZE},
 	{"StickWindow", STICK},
