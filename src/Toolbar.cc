@@ -22,11 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.89 2003/06/11 14:51:22 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.90 2003/06/13 05:04:14 fluxgen Exp $
 
 #include "Toolbar.hh"
 
-#include "i18n.hh"
+#include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
 #include "Window.hh"
@@ -389,7 +389,9 @@ void Toolbar::enableIconBar() {
     if (m_iconbar.get() != 0) 
         return; // already on
 
-    m_iconbar.reset(new IconBar(screen(), frame.window_label.window(), m_theme.font()));
+    m_iconbar.reset(new IconBar(screen(), 
+                                frame.window_label.window(),
+                                m_theme.font()));
 }
 
 void Toolbar::disableIconBar() {

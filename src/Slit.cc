@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.59 2003/06/05 11:30:06 fluxgen Exp $
+// $Id: Slit.cc,v 1.60 2003/06/13 05:03:43 fluxgen Exp $
 
 #include "Slit.hh"
 
@@ -35,7 +35,7 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#include "i18n.hh"
+#include "I18n.hh"
 #include "Screen.hh"
 #include "ImageControl.hh"
 #include "RefCount.hh"

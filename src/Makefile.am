@@ -61,7 +61,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
 	IconBar.cc IconBar.hh \
-	i18n.cc i18n.hh \
+	I18n.cc I18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh \
 	RootTheme.hh RootTheme.cc \
