@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.37 2003/08/30 01:03:48 fluxgen Exp $
+// $Id: Menu.cc,v 1.38 2003/09/07 14:57:49 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -524,8 +524,8 @@ void Menu::update(int active_index) {
 
     if (title_vis && visible) 
         redrawTitle();
-    /*
-    if (m_need_update) {
+
+    if (active_index >= 0) {
         for (unsigned int i = 0; visible && i < menuitems.size(); i++) {
             if (i == (unsigned int)which_sub) {
                 drawItem(i, true, true, false);
@@ -536,7 +536,7 @@ void Menu::update(int active_index) {
         if (m_parent && visible)
             m_parent->drawSubmenu(m_parent->which_sub);
     }
-    */
+
     menu.window.clear();
     renderTransFrame();
                     
@@ -1067,9 +1067,10 @@ void Menu::buttonPressEvent(XButtonEvent &be) {
 
             MenuItem *item = menuitems[w];
 
-            if (item->submenu())
-                drawSubmenu(w);
-            else
+            if (item->submenu()) {
+                if (!item->submenu()->isVisible())
+                    drawSubmenu(w);
+            } else
                 drawItem(w, item->isEnabled(), true, true);
         }
     } else {
@@ -1109,6 +1110,9 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
                     re.y > iy && re.y < (signed) (iy + menu.item_h)) {
                     menuitems[w]->click(re.button, re.time);
                     itemSelected(re.button, w);
+                    // redraw whole menu as enableds for any item
+                    // may have changed
+                    update(w);
                 }
             } else {
                 drawItem(p, isItemEnabled(p) && (p == which_sub), true, true);
@@ -1172,9 +1176,10 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
             MenuItem *itmp = menuitems[w];
 
-            if (itmp->submenu())
-                drawSubmenu(w);
-            else
+            if (itmp->submenu()) {
+                if (!itmp->submenu()->isVisible())
+                    drawSubmenu(w);
+            } else
                 if (itmp->isEnabled())
                     drawItem(w, true, true, true);
         }

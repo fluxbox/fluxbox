@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/08:
+   * Fix when selecting + unneeded submenu redraw on enter+motion (Simon)
+     Menu.cc
 *03/09/06:
    * Added Resize x y as command (Thanks Mathias Gumz)
      FbCommands.cc/hh, FbCommandFactory.cc
