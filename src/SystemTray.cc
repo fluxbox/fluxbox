@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.5 2004/01/19 18:22:57 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.6 2004/01/21 13:35:10 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -215,7 +215,7 @@ void SystemTray::addClient(Window win) {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
-    if (m_clients.size() == 0)
+    if (m_clients.empty())
         show();
 
     FbTk::FbWindow *traywin = new TrayWindow(win);
@@ -244,7 +244,7 @@ void SystemTray::removeClient(Window win) {
     delete traywin;
     resize(width(), height());
     rearrangeClients();
-    if (m_clients.size() == 0) {
+    if (m_clients.empty()) {
         // so we send configurenotify signal to parent
         m_window.resize(1, 1);
         hide();

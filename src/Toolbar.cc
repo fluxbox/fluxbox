@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.137 2004/01/16 11:41:38 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.138 2004/01/21 13:36:09 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -370,7 +370,7 @@ void Toolbar::reconfigure() {
               tools.begin(),
               FbTk::StringUtil::toLower);
 
-    if (tools.size() == m_tools.size() && tools.size() != 0) {
+    if (!tools.empty() && tools.size() == m_tools.size()) {
         StringList::const_iterator tool_it = tools.begin();
         StringList::const_iterator current_tool_it = m_tools.begin();
         StringList::const_iterator tool_it_end = tools.end();

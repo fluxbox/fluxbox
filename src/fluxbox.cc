@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.227 2004/01/19 18:33:05 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.228 2004/01/21 13:33:50 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -508,8 +508,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         char scrname[128], altscrname[128];
         sprintf(scrname, "session.screen%d", i);
         sprintf(altscrname, "session.Screen%d", i);
-        BScreen *screen = new BScreen(m_screen_rm.lock(), 
-
+        BScreen *screen = new BScreen(m_screen_rm.lock(),
                                       scrname, altscrname,
                                       i, getNumberOfLayers());
         if (! screen->isScreenManaged()) {
@@ -563,7 +562,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     m_keyscreen = m_mousescreen = m_screen_list.front();
 
-    if (m_screen_list.size() == 0) {
+    if (m_screen_list.empty()) {
         //!! TODO: NLS
         throw string("Couldn't find screens to manage.\n"
                      "Make sure you don't have another window manager running.");
@@ -1544,7 +1543,7 @@ void Fluxbox::save_rc() {
 
     string dbfile(getRcFilename());
 	
-    if (dbfile.size() != 0) {
+    if (!dbfile.empty()) {
         m_resourcemanager.save(dbfile.c_str(), dbfile.c_str());
         m_screen_rm.save(dbfile.c_str(), dbfile.c_str());
     } else
@@ -1593,7 +1592,7 @@ void Fluxbox::save_rc() {
 /// @return filename of resource file
 string Fluxbox::getRcFilename() {
  
-    if (m_rc_file.size() == 0) { // set default filename
+    if (m_rc_file.empty()) { // set default filename
         string defaultfile(getenv("HOME") + string("/.") + m_RC_PATH + string("/") + m_RC_INIT_FILE);
         return defaultfile;
     }
@@ -1612,7 +1611,7 @@ void Fluxbox::load_rc() {
     //get resource filename
     string dbfile(getRcFilename());
 
-    if (dbfile.size() != 0) {
+    if (!dbfile.empty()) {
         if (!m_resourcemanager.load(dbfile.c_str())) {
             cerr<<"Failed to load database:"<<dbfile<<endl;
             cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
@@ -1624,10 +1623,10 @@ void Fluxbox::load_rc() {
             cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
     }
 	
-    if (m_rc_menufile->size() == 0)
+    if (m_rc_menufile->empty()) 
         m_rc_menufile.setDefaultValue();
  
-    if (m_rc_slitlistfile->size() != 0) {
+    if (!m_rc_slitlistfile->empty()) {
         *m_rc_slitlistfile = StringUtil::expandFilename(*m_rc_slitlistfile);
     } else {
         string filename;
@@ -1640,7 +1639,7 @@ void Fluxbox::load_rc() {
     else if (*m_rc_colors_per_channel > 6)
         *m_rc_colors_per_channel = 6;
 
-    if (m_rc_stylefile->size() == 0)
+    if (m_rc_stylefile->empty()) 
         *m_rc_stylefile = DEFAULTSTYLE;
     else // expand tilde
         *m_rc_stylefile = StringUtil::expandFilename(*m_rc_stylefile);
@@ -1711,7 +1710,7 @@ void Fluxbox::load_rc(BScreen &screen) {
             FbTk::Image::addSearchPath(paths[i]);
     }
     
-    if (dbfile.size() != 0) {
+    if (!dbfile.empty()) {
         if (!m_screen_rm.load(dbfile.c_str())) {
             cerr<<"Failed to load database:"<<dbfile<<endl;
             cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
@@ -1948,7 +1947,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (screen != 0) {
         screen->updateNetizenWindowFocus();
-        for (int i=0; i < m_atomhandler.size(); ++i) {
+        for (size_t i=0; i < m_atomhandler.size(); ++i) {
             
             m_atomhandler[i]->updateFocusedWindow(*screen, (m_focused_window ? 
                                                             m_focused_window->window() :
@@ -1958,7 +1957,7 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (old_screen && old_screen != screen) {
         old_screen->updateNetizenWindowFocus();
-        for (int i=0; i < m_atomhandler.size(); ++i)
+        for (size_t i=0; i < m_atomhandler.size(); ++i)
             m_atomhandler[i]->updateFocusedWindow(*old_screen, 0);
     }
 
