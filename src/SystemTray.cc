@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.3 2003/08/27 00:11:24 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.4 2003/08/28 13:44:58 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -30,7 +30,6 @@
 
 #include <X11/Xutil.h>
 
-#include <iostream>
 #include <string>
 
 using namespace std;
@@ -155,7 +154,7 @@ void SystemTray::show() {
 }
 
 unsigned int SystemTray::width() const {
-    return m_clients.size()*height(); //*m_tray_width;
+    return m_clients.size()*height();
 }
 
 unsigned int SystemTray::height() const {
@@ -214,16 +213,19 @@ void SystemTray::addClient(Window win) {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
+    if (m_clients.size() == 0)
+        show();
 
     FbTk::FbWindow *traywin = new TrayWindow(win);
     m_clients.push_back(traywin);
     FbTk::EventManager::instance()->add(*this, win);
+    FbTk::EventManager::instance()->addParent(*this, window());
     XChangeSaveSet(FbTk::App::instance()->display(), win, SetModeInsert);
     traywin->reparent(m_window, 0, 0);
     traywin->show();
 
     resize(width(), m_clients.size()*height());
-
+    
     rearrangeClients();
 }
 
@@ -235,12 +237,16 @@ void SystemTray::removeClient(Window win) {
 #ifdef DEBUG
     cerr<<__FILE__<<"("<<__FUNCTION__<<"): 0x"<<hex<<win<<dec<<endl;
 #endif // DEBUG
-
     FbTk::FbWindow *traywin = *tray_it;
     m_clients.erase(tray_it);
     delete traywin;
     resize(width(), height());
     rearrangeClients();
+    if (m_clients.size() == 0) {
+        // so we send configurenotify signal to parent
+        m_window.resize(1, 1);
+        hide();
+    }
 }
 
 void SystemTray::exposeEvent(XExposeEvent &event) {
@@ -248,9 +254,9 @@ void SystemTray::exposeEvent(XExposeEvent &event) {
 }
 
 void SystemTray::handleEvent(XEvent &event) {
-    if (event.type == DestroyNotify)
+    if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window);
-    else if (event.type == ConfigureNotify) {
+    } else if (event.type == ConfigureNotify) {
         // we got configurenotify from an client
         // check and see if we need to update it's size
         ClientList::iterator it = findClient(event.xconfigure.window);
