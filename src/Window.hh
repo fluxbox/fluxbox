@@ -178,6 +178,10 @@ public:
     void prevClient();
     void moveClientLeft();
     void moveClientRight();
+    void moveClientRightOf(WinClient &win, WinClient &dest);
+    void moveClientLeftOf(WinClient &win, WinClient &dest);
+    void moveClientTo(WinClient &win, int x, int y);
+    ClientList::iterator getClientInsertPosition(int x, int y);
 
     bool setInputFocus();
     void raiseAndFocus() { raise(); setInputFocus(); }

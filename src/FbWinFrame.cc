@@ -410,15 +410,11 @@ void FbWinFrame::moveLabelButtonLeftOf(const FbTk::TextButton &btn, const FbTk::
 				       &dest);
 
 	// make sure we found them
-	if (it == m_labelbuttons.end() || new_pos==m_labelbuttons.end())
-	{
-		cout<<"button to move not found"<<endl;
+	if (it == m_labelbuttons.end() || new_pos==m_labelbuttons.end()) {
 		return;
 	}
 	//moving a button to the left of itself results in no change
-	if( new_pos == it)
-	{
-		cout<<"source and dest button are the same"<<endl;
+	if( new_pos == it) {
 		return;
 	}
 	FbTk::TextButton *item = *it;
@@ -439,15 +435,11 @@ void FbWinFrame::moveLabelButtonRightOf(const FbTk::TextButton &btn, const FbTk:
 				       &dest);
 
 	// make sure we found them
-	if (it == m_labelbuttons.end() || new_pos==m_labelbuttons.end())
-	{
-		cout<<"button to move not found"<<endl;
+	if (it == m_labelbuttons.end() || new_pos==m_labelbuttons.end()){
 		return;
 	}
 	//moving a button to the right of itself results in no change
-	if( new_pos == it)
-	{
-		cout<<"source and dest button are the same"<<endl;
+	if( new_pos == it){
 		return;
 	}
 	FbTk::TextButton *item = *it;

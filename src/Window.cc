@@ -639,10 +639,16 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
     if (client.fbwindow() != 0) {
         FluxboxWindow *old_win = client.fbwindow(); // store old window
 
+	ClientList::iterator client_insert_pos=getClientInsertPosition(x,y);
+	FbTk::TextButton *button_insert_pos=NULL;
+	if(client_insert_pos!=m_clientlist.end())
+		button_insert_pos=m_labelbuttons[*client_insert_pos];
+		
+	
         // make sure we set new window search for each client
         ClientList::iterator client_it = old_win->clientList().begin();
         ClientList::iterator client_it_end = old_win->clientList().end();
-        for (; client_it != client_it_end; ++client_it) {
+	for (; client_it != client_it_end; ++client_it) {
             // setup eventhandlers for client
             evm.add(*this, (*client_it)->window());
 
@@ -666,8 +672,11 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
             btn->setJustify(frame().theme().justify());
             m_labelbuttons[(*client_it)] = btn;
             frame().addLabelButton(*btn);
-	    if(x >= 0)
-		    frame().moveLabelButtonTo(*btn, x ,y);
+	    if(x >= 0) {
+		    if(button_insert_pos){ //null if we want the new button at the end of the list
+			    frame().moveLabelButtonLeftOf(*btn, *button_insert_pos);
+		    }
+	    }
             btn->show();
             // we need motion notify so we mask it
             btn->setEventMask(ExposureMask | ButtonPressMask |
@@ -682,11 +691,11 @@ void FluxboxWindow::attachClient(WinClient &client, int x, int y) {
 
             (*client_it)->saveBlackboxAttribs(m_blackbox_attrib);
         }
-
+	
         // add client and move over all attached clients
         // from the old window to this list
-        // all the "left window"s will remain the same, except for the first.
-        m_clientlist.splice(m_clientlist.end(), old_win->m_clientlist);
+	m_clientlist.splice(client_insert_pos, old_win->m_clientlist);
+	updateClientLeftWindow();
         old_win->m_client = 0;
 
         delete old_win;
@@ -926,6 +935,140 @@ void FluxboxWindow::moveClientRight() {
     m_clientlist.insert(new_pos, &winClient());
 
     updateClientLeftWindow();
+}
+
+//std::list<*WinClient>::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
+FluxboxWindow::ClientList::iterator FluxboxWindow::getClientInsertPosition(int x, int y) {
+
+	int dest_x=0, dest_y=0;
+	Window labelbutton=0;
+	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
+				parent().window(), frame().label().window(),
+				x,y, &dest_x, &dest_y,
+				&labelbutton))
+		return m_clientlist.end();
+	Client2ButtonMap::iterator it = m_labelbuttons.begin();
+	Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+	//find the label button to move next to
+	for(; it!=it_end; it++) {
+		if( (*it).second->window()==labelbutton)
+			break;
+	}
+	//label button not found
+	if(it==it_end)	{
+		return m_clientlist.end();
+	}
+	Window child_return=0;
+	//make x and y relative to our labelbutton
+	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
+			        frame().label().window(),labelbutton,
+				dest_x,dest_y, &x, &y,
+				&child_return))
+		return m_clientlist.end();
+	ClientList::iterator client = find(m_clientlist.begin(),
+				       m_clientlist.end(),
+				       it->first);
+	if(x>(*it).second->width()/2)
+		client++;
+	return client;
+	
+
+}
+	
+
+
+void FluxboxWindow::moveClientTo(WinClient &win, int x, int y) {
+	int dest_x=0, dest_y=0;
+	Window labelbutton=0;
+	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
+				parent().window(), frame().label().window(),
+				x,y, &dest_x, &dest_y,
+				&labelbutton))
+		return;
+	Client2ButtonMap::iterator it = m_labelbuttons.begin();
+	Client2ButtonMap::iterator it_end = m_labelbuttons.end();
+	//find the label button to move next to
+	for(; it!=it_end; it++) {
+		if( (*it).second->window()==labelbutton)
+			break;
+	}
+	//label button not found
+	if(it==it_end)	{
+		return;
+	}
+	Window child_return=0;
+	//make x and y relative to our labelbutton
+	if(!XTranslateCoordinates(FbTk::App::instance()->display(),
+			        frame().label().window(),labelbutton,
+				dest_x,dest_y, &x, &y,
+				&child_return))
+		return;
+	if(x>(*it).second->width()/2) {
+		moveClientRightOf(win, *it->first);
+	} else {
+		moveClientLeftOf(win, *it->first);
+	}
+
+}
+
+
+void FluxboxWindow::moveClientLeftOf(WinClient &win, WinClient &dest) {
+	
+	frame().moveLabelButtonLeftOf(*m_labelbuttons[&win], *m_labelbuttons[&dest]);
+	
+	ClientList::iterator it = find(m_clientlist.begin(),
+                                  m_clientlist.end(),
+                                  &win);
+	ClientList::iterator new_pos = find(m_clientlist.begin(),
+				       m_clientlist.end(),
+				       &dest);
+
+	// make sure we found them
+	if (it == m_clientlist.end() || new_pos==m_clientlist.end()) {
+		return;
+	}
+	//moving a button to the left of itself results in no change
+	if( new_pos == it) {
+		return;
+	}
+	//remove from list
+	m_clientlist.erase(it);
+	//insert on the new place
+	m_clientlist.insert(new_pos, &win);
+	
+	updateClientLeftWindow();
+}
+
+
+void FluxboxWindow::moveClientRightOf(WinClient &win, WinClient &dest) {
+	frame().moveLabelButtonRightOf(*m_labelbuttons[&win], *m_labelbuttons[&dest]);
+
+	ClientList::iterator it = find(m_clientlist.begin(),
+                                  m_clientlist.end(),
+                                  &win);
+	ClientList::iterator new_pos = find(m_clientlist.begin(),
+				       m_clientlist.end(),
+				       &dest);
+
+	// make sure we found them
+	if (it == m_clientlist.end() || new_pos==m_clientlist.end()) {
+		return;
+	}
+	//moving a button to the right of itself results in no change
+	if( new_pos == it) {
+		return;
+	}
+	//remove from list
+	m_clientlist.erase(it);
+	//need to insert into the next position
+	new_pos++;
+	//insert on the new place
+	if(new_pos == m_clientlist.end())
+		m_clientlist.push_back(&win);
+	else
+		m_clientlist.insert(new_pos, &win);
+	
+	updateClientLeftWindow();
 }
 
 /// Update LEFT window atom on all clients.
@@ -3224,8 +3367,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
         }
 	else if(attach_to_win==this && attach_to_win->isTabable()) {
 		//reording of tabs within a frame
-		FbWinFrame *frame=&attach_to_win->frame();
-		frame->moveLabelButtonTo(*m_labelbuttons[old_attached], x, y);
+		moveClientTo(*old_attached, x, y);
 	}
 
     }
