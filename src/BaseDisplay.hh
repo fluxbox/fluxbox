@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.16 2002/03/19 14:30:42 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.17 2002/03/19 21:19:55 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -32,9 +32,9 @@
 #include <X11/Xlib.h>
 
 #ifdef XINERAMA
-	extern	"C" {
-		#include <X11/extensions/Xinerama.h>
-	}
+extern	"C" {
+#include <X11/extensions/Xinerama.h>
+}
 #endif // XINERAMA
 
 #include <list>
@@ -166,12 +166,12 @@ public:
 	inline const unsigned int getHeight(void) const { return height; }
 
 #ifdef XINERAMA
-	inline bool hasXinerama(void) { return m_hasXinerama; }
-	inline int getNumHeads(void) { return xineramaNumHeads; }
-	unsigned int getHead(int x, int y);
-	unsigned int getCurrHead(void);
-	unsigned int getHeadWidth(unsigned int head);
-	unsigned int getHeadHeight(unsigned int head);
+	inline bool hasXinerama(void) const { return m_hasXinerama; }
+	inline int getNumHeads(void) const { return xineramaNumHeads; }
+	unsigned int getHead(int x, int y) const;
+	unsigned int getCurrHead(void) const;
+	unsigned int getHeadWidth(unsigned int head) const;
+	unsigned int getHeadHeight(unsigned int head) const;
 	int getHeadX(unsigned int head);
 	int getHeadY(unsigned int head);
 #endif // XINERAMA
@@ -184,13 +184,14 @@ private:
 
 	int depth, screen_number;
 	unsigned int width, height;
-
-};
-
 #ifdef XINERAMA
 	bool m_hasXinerama;
 	int xineramaMajor, xineramaMinor, xineramaNumHeads, xineramaLastHead;
 	XineramaScreenInfo *xineramaInfos;
 #endif // XINERAMA
+
+};
+
+
 
 #endif // BASEDISPLAY_HH
