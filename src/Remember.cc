@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Remember.cc,v 1.43 2004/10/19 09:01:49 akir Exp $
+// $Id: Remember.cc,v 1.44 2004/11/09 11:28:55 akir Exp $
 
 #include "Remember.hh"
 #include "ClientPattern.hh"
@@ -76,7 +76,9 @@ public:
                      FluxboxWindow &fbwin,
                      Remember::Attribute attrib) :
         FbTk::MenuItem(label), m_remember(remember), 
-        m_win(fbwin), m_attrib(attrib) {}
+        m_win(fbwin), m_attrib(attrib) {
+        setToggleItem(true);        
+    }
 
     bool isSelected() const {
         if (m_win.numClients()) // ensure it HAS clients
