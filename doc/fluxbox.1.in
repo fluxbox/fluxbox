@@ -660,6 +660,11 @@ window.tab.font:                        fixed
 window.font:	Font
 window.justify:	\fIcenter\fR, \fIleft\fR, or \fIright\fR
 
+! Slit resources
+slit:
+slit.color:			Color
+slit.colorTo:			Color
+
 ! Miscellaneous resources
 
 ! A border can be drawn round all components
@@ -697,7 +702,7 @@ can easily set lots of keys with a single command, e.g.
 .EE
 This sets already nice defaults for many components.
 .SH KEYS FILE
-Fluxbox 0.1.5 has new keybinding code, and you can customise it through the
+Since version 0.1.5, Fluxbox has new keybinding code, and you can customise it through the
 .IR ~/.fluxbox/keys
 file.  The file takes the format of :
 .EX
@@ -780,15 +785,30 @@ HorizontalDecrement
 VerticalDecrement
 ToggleDecor
 .EE
-.SH TITLEBAR FILE
-Fluxbox lets you customise the button layout on the window titlebar.  This is
-done by modifying the
-.IR ~/.fluxbox/init
+.SH GROUPS FILE
+Since version 0.1.11, Fluxbox has a feature called autogrouping, that is apps are
+automatically grouped together if they are in the same group.
+You can create groups simply by editing the
+.IR ~/.fluxbox/groups
 file.
+The file takes the format of:
 .EX
-session.titlebar.right: minimize maximize close
-session.titlebar.left: sticky
+<app1> <app2> <app3> ... <appN>
 .EE
+where elements can be found with this command:
+.EX
+xprop WM_CLASS
+.EE
+Just launch this command in a terminal and click on the desired app after. It will
+tell you what to write as element.
+Each line forms a different group, e.g:
+.EX
+Navigator nedit
+xterm
+.EE
+This will create two groups, one with netscape and nedit, and one with xterm.
+The new window will only group itself to other windows on the same workspace
+and to the last window that was focused.
 .SH THE SLIT
 The slit is a special Fluxbox window frame that can contain dockable
 applications, e.g. the `bbtools.'
@@ -811,6 +831,33 @@ bbpager -w &
 exec fluxbox
 .EE
 Of course to use the slit you must have slit support compiled in.
+.SH SLITLIST FILE
+Since version 0.1.10, Fluxbox has the capacity to launch dockapps in the order told
+by the 
+.IR ~/.fluxbox/slitlist
+file.
+.PP
+A simple procedure for getting the slit sequences the way you like it is:
+.EX
+1) Run fluxbox with no pre-loaded dockapps.
+2) Run dockapps individually in the order you want them.
+3) Re-add dockapps to your auto-run script, e.g. .xinitrc or .xsession. Order doesn't matter here!
+.EE
+This sequence will be saved by default to
+.IR~/.fluxbox/slitlist
+should be maintained in future fluxbox sessions.
+.PP
+Users are free to manually edit the slitlist file. It is a simple list of window names,
+one per dockapp. Similar to the init file it should be edited while not running fluxbox.
+Otherwise changes may get overwritten.
+.PP
+The user also has the option of choosing a different path for the slit list file.
+The following example 
+.B init
+file entry changes the path:
+.EX
+session.slitlistFile: /home/me/etc/slitsort
+.EE
 .SH CONFIGURATION MENU
 Fluxbox has a few options that are configured by a configure menu.
 Most are self-explanatory, but here are a few notes:
@@ -848,13 +895,6 @@ This tells Fluxbox where to look for its menu file.
 session.menuFile: /home/myself/.fluxbox/menu
 .EE
 .TP
-.B session.titlebarFile:
-This tells Fluxbox where to find the file describing the layout of buttons
-on each windows' titlebar.
-.EX
-session.titlebarFile: /home/myself/.fluxbox/titlebar
-.EE
-.TP
 .B session.keyFile:
 This tells Fluxbox where to find the file describing the keybindings.
 .EX
@@ -865,6 +905,18 @@ session.keyFile: /home/myself/.fluxbox/keys
 This tells Fluxbox where to find the style (theme) file for this session.
 .EX
 session.styleFile: @pkgdatadir@/styles/Flux
+.EE
+.TP
+.B session.groupFile:
+This tells Fluxbox where to find the file for the autogrouping feature.
+.EX
+session.groupFile: /home/myself/.fluxbox/groups
+.EE
+.TP
+.B session.slitlistFile:
+This tells Fluxbox where to find the file that contains the order in which the apps are loaded in the slit.
+.EX
+session.slitlistFile: /home/myself/.fluxbox/slitlist
 .EE
 .TP
 .B session.screen0.toolbar.widthPercent:
@@ -1066,3 +1118,4 @@ from the original Blackbox man page by Wilbert Berendsen
 Numerous other languages will be available.
 .SH SEE ALSO
 .IR bsetroot (1), \ bbkeys (1)  \" not there, yet ;-(
+
