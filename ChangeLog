@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*02/12/08:
+   * Fixed better Xft checking in configure.in
 *02/12/04:
+   * Updated FbRun
    * Fixed Left and Right placement of toolbar with vertical text.
      Toolbar.hh/cc, Screen.cc
    * Changed Basemenu to FbWindow and EventHandler usage
