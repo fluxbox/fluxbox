@@ -272,6 +272,26 @@ case ${LC_ALL} in
 		STYLEMENUTITLE="Valitse tyyli"
 		WORKSPACEMENU="Työaluet"
 	;;
+	ja_JP) #Japanese locales
+		BROWSERMENU="¥Ö¥é¥¦¥¶"
+		EDITORMENU="¥¨¥Ç¥£¥¿"
+		NETMENU="¥Í¥Ã¥È¥ï¡¼¥¯"
+		GRAPHICMENU="²èÁü"
+		MUSICMENU="²»³Ú"
+		TERMINALMENU="¥¿¡¼¥ß¥Ê¥ë"
+		MISCMENU="¤¤¤í¤¤¤í"
+		XUTILSMENU="X¥æ¡¼¥Æ¥£¥ê¥Æ¥£"
+		FBSETTINGSMENU="FluxboxÀßÄê"
+		KDEMENUTEXT="KDE¥á¥Ë¥å¡¼"
+		GNOMEMENUTEXT="Gnome¥á¥Ë¥å¡¼"
+		RESTARTITEM="ºÆµ¯Æ°"
+		EXITITEM="½ªÎ»"
+		CONFIGUREMENU="ÀßÄê"
+		RELOADITEM="ºÆÆÉ¤ß¹þ¤ß"
+		STYLEMENU="¥¹¥¿¥¤¥ë"
+		STYLEMENUTITLE="¥¹¥¿¥¤¥ëÁªÂò..."
+		WORKSPACEMENU="¥ï¡¼¥¯¥¹¥Ú¡¼¥¹"
+	;;
 	*)
 	;;
 esac
