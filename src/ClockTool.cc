@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClockTool.cc,v 1.1 2003/08/11 14:32:39 fluxgen Exp $
+// $Id: ClockTool.cc,v 1.2 2003/08/11 20:29:30 fluxgen Exp $
 
 #include "ClockTool.hh"
 
@@ -36,9 +36,6 @@
 
 #include <ctime>
 
-#include <iostream>
-using namespace std;
-
 ClockTool::ClockTool(const FbTk::FbWindow &parent,
                      ToolTheme &theme, BScreen &screen):
     ToolbarItem(ToolbarItem::FIXED),
@@ -48,10 +45,8 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
     m_pixmap(0),
     m_timeformat(screen.resourceManager(), std::string("%k:%M"), 
                  screen.name() + ".strftimeFormat", screen.altName() + ".StrftimeFormat") {
-
+    // attach signals
     theme.reconfigSig().attach(this);
-    m_button.setGC(theme.textGC());
-    m_button.clear();
 
     // setup timer to update the graphics each second
     timeval delay;
@@ -62,6 +57,8 @@ ClockTool::ClockTool(const FbTk::FbWindow &parent,
                                                                                     &ClockTool::updateTime));
     m_timer.setCommand(update_graphic);
     m_timer.start();
+
+    m_button.setGC(m_theme.textGC());
 
     update(0);
 }
@@ -84,6 +81,7 @@ void ClockTool::resize(unsigned int width, unsigned int height) {
 void ClockTool::moveResize(int x, int y,
                       unsigned int width, unsigned int height) {
     m_button.moveResize(x, y, width, height);
+    renderTheme();
 }
 
 void ClockTool::show() {
@@ -96,11 +94,12 @@ void ClockTool::hide() {
 
 void ClockTool::update(FbTk::Subject *subj) {
     updateTime();
-    resize(m_button.textWidth(), m_button.height());
+    // + 3 to make the entire text fit inside
+    resize(m_button.textWidth() + 3, m_button.height());
 }
 
 unsigned int ClockTool::width() const {
-    return m_theme.font().textWidth(m_button.text().c_str(), m_button.text().size());
+    return m_button.width();
 }
 
 unsigned int ClockTool::height() const {
@@ -127,7 +126,6 @@ void ClockTool::updateTime() {
 #endif // HAVE_STRFTIME
     }
 
-
     m_button.clear();
 }
 
@@ -144,5 +142,6 @@ void ClockTool::renderTheme() {
     if (old_pm)
         m_screen.imageControl().removeImage(old_pm);
 
+    m_button.setJustify(m_theme.justify());
     m_button.clear();
 }
