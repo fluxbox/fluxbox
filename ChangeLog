@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/04/14:
+  * Half revert a bit of the below, since it broke click-to-focus (Simon)
+    -> adds back the grab, but as an async one
+    Window.cc
   * Hopefully fix the "stange" hang on restart (Simon)
     - remove big sync-ed grab on all Button1 events
     - Also tidy and fix tab moving
