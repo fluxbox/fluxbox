@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.2:
 *03/05/07:
+   * Fix crash when detaching client that isn't active (Simon)
+     Window.cc
    * Fixed transient grouping issues (transients now WinClients) (Simon)
      WinClient.hh/cc Window.hh/cc Workspace.cc Screen.cc     
    * Fixed screen problem with redrawing menus (Henrik)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.160 2003/05/07 16:21:26 rathnor Exp $
+// $Id: Window.cc,v 1.161 2003/05/07 16:44:51 rathnor Exp $
 
 #include "Window.hh"
 
@@ -631,18 +631,26 @@ bool FluxboxWindow::removeClient(WinClient &client) {
     cerr<<__FILE__<<"("<<__FUNCTION__<<")["<<this<<"]"<<endl;
 #endif // DEBUG
     
+    // if it is our active client, deal with it...
+    if (m_client == &client) {
     // set next client to be focused
     // if the client we're about to remove is the last client then set prev client
-    if (&client == m_clientlist.back())
-        prevClient();
-    else
-        nextClient();
+        if (&client == m_clientlist.back())
+            prevClient();
+        else
+            nextClient();
+    }
 
     client.m_win = 0;
     m_clientlist.remove(&client);
 
-    if (m_client == &client && m_clientlist.empty())
-        m_client = 0;
+    if (m_client == &client) {
+        if (m_clientlist.empty())
+            m_client = 0;
+        else
+            // this really shouldn't happen
+            m_client = m_clientlist.back();
+    }
 
     FbTk::EventManager &evm = *FbTk::EventManager::instance();
     evm.remove(client.window());
