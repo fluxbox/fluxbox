@@ -68,8 +68,8 @@ public:
 	static Tab *getLast(Tab *current);
 	void disconnect();
 	
-	enum { PTop = 0, PBottom = 5, PLeft = 10, PRight = 15, pnone = 20};
-	enum { ALeft = 0, ACenter, ARight, ARelative, anone };
+	enum { PTOP = 0, PBOTTOM = 5, PLEFT = 10, PRIGHT = 15, PNONE = 20};
+	enum { ALEFT = 0, ACENTER, ARIGHT, ARELATIVE, ANONE };
 
 	static const char *getTabPlacementString(int placement);
 	static int getTabPlacementNum(const char *string);

@@ -2336,7 +2336,7 @@ void Fluxbox::load_rc(BScreen *screen) {
   			&value_type, &value)) {		
 		screen->saveTabPlacement(Tab::getTabPlacementNum(value.addr));
   } else
-		screen->saveTabPlacement(Tab::PTop);
+		screen->saveTabPlacement(Tab::PTOP);
 
   sprintf(name_lookup,  "session.screen%d.tab.alignment", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Tab.Alignment", screen_number);
@@ -2344,7 +2344,7 @@ void Fluxbox::load_rc(BScreen *screen) {
   			&value_type, &value)) {		
 		screen->saveTabAlignment(Tab::getTabAlignmentNum(value.addr));
 	} else
-		screen->saveTabAlignment(Tab::ALeft);
+		screen->saveTabAlignment(Tab::ALEFT);
 
   sprintf(name_lookup,  "session.screen%d.tab.rotatevertical", screen_number);
   sprintf(class_lookup, "Session.Screen%d.Tab.RotateVertical", screen_number);

@@ -32,19 +32,19 @@ using namespace std;
 
 bool Tab::m_stoptabs = false;
 Tab::t_tabplacementlist Tab::m_tabplacementlist[] = {
-		{PTop, "Top"},
-		{PBottom, "Bottom"},
-		{PLeft, "Left"},
-		{PRight, "Right"},
-		{pnone, "none"}
+		{PTOP, "Top"},
+		{PBOTTOM, "Bottom"},
+		{PLEFT, "Left"},
+		{PRIGHT, "Right"},
+		{PNONE, "none"}
 	};
 
 Tab::t_tabplacementlist Tab::m_tabalignmentlist[] = {
-		{ALeft, "Left"},
-		{ACenter, "Center"},
-		{ARight, "Right"},
-		{ARelative, "Relative"},
-		{anone, "none"}
+		{ALEFT, "Left"},
+		{ACENTER, "Center"},
+		{ARIGHT, "Right"},
+		{ARELATIVE, "Relative"},
+		{ANONE, "none"}
 	};
 
 Tab::Tab(FluxboxWindow *win, Tab *prev, Tab *next) { 
@@ -57,8 +57,8 @@ Tab::Tab(FluxboxWindow *win, Tab *prev, Tab *next) {
 	m_win = win;
 	m_display = Fluxbox::instance()->getXDisplay();
 	
-	if ((m_win->getScreen()->getTabPlacement() == PLeft ||
-			m_win->getScreen()->getTabPlacement() == PRight) &&
+	if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
+			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
 			m_win->getScreen()->isTabRotateVertical()) {
 		m_size_w = m_win->getScreen()->getTabHeight();
 		m_size_h = m_win->getScreen()->getTabWidth();
@@ -290,7 +290,7 @@ void Tab::resize() {
 	}
 
 	// need to resize tabs if in relative mode
-	if (m_win->getScreen()->getTabAlignment() == ARelative) {
+	if (m_win->getScreen()->getTabAlignment() == ARELATIVE) {
 		calcIncrease();
 		setPosition();
 	}
@@ -306,13 +306,13 @@ void Tab::shade() {
 		first->m_win->shade();
 	}
 
-	if (m_win->getScreen()->getTabPlacement() == PLeft ||
-			m_win->getScreen()->getTabPlacement() == PRight) { 
+	if (m_win->getScreen()->getTabPlacement() == PLEFT ||
+			m_win->getScreen()->getTabPlacement() == PRIGHT) { 
 		resizeGroup();
 		calcIncrease();
 	}
 
-	if (!(m_win->getScreen()->getTabPlacement() == PTop))
+	if (!(m_win->getScreen()->getTabPlacement() == PTOP))
 		setPosition();
 }
 
@@ -329,8 +329,8 @@ void Tab::draw(bool pressed) {
 		   m_win->getScreen()->getWindowStyle()->tab.l_text_unfocus_gc);
 
 	// Different routines for drawing rotated text
-	if ((m_win->getScreen()->getTabPlacement() == PLeft ||
-			m_win->getScreen()->getTabPlacement() == PRight) &&
+	if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
+			m_win->getScreen()->getTabPlacement() == PRIGHT) &&
 			(!m_win->isShaded() && m_win->getScreen()->isTabRotateVertical())) {
 
 		tabtext_w = Misc::XRotTextWidth(m_win->getScreen()->getWindowStyle()->tab.rot_font,
@@ -384,10 +384,10 @@ void Tab::setPosition() {
 	//posible movement to a static member function
 
 	//Tab placement
-	if (m_win->getScreen()->getTabPlacement() == PTop) {
+	if (m_win->getScreen()->getTabPlacement() == PTOP) {
 		pos_y = m_win->frame.y - m_size_h; 
 
-	} else if (m_win->getScreen()->getTabPlacement() == PBottom ||
+	} else if (m_win->getScreen()->getTabPlacement() == PBOTTOM ||
 				m_win->isShaded()) { 
 		if (m_win->isShaded())
 			pos_y = m_win->frame.y + m_win->getTitleHeight() +
@@ -397,42 +397,42 @@ void Tab::setPosition() {
 			pos_y = m_win->frame.y + m_win->getHeight() +
 					m_win->getScreen()->getBorderWidth2x();
 
-	} else if (m_win->getScreen()->getTabPlacement() == PLeft) {
+	} else if (m_win->getScreen()->getTabPlacement() == PLEFT) {
 		pos_x = m_win->frame.x - m_size_w;
 			
-	} else if (m_win->getScreen()->getTabPlacement() == PRight) {
+	} else if (m_win->getScreen()->getTabPlacement() == PRIGHT) {
 		pos_x = m_win->frame.x + m_win->frame.width +
 				m_win->getScreen()->getBorderWidth2x();	
 	}
 
 	//Tab alignment
-	if (m_win->getScreen()->getTabPlacement() == PTop ||
-			m_win->getScreen()->getTabPlacement() == PBottom ||
+	if (m_win->getScreen()->getTabPlacement() == PTOP ||
+			m_win->getScreen()->getTabPlacement() == PBOTTOM ||
 			m_win->isShaded()) {
 		switch(m_win->getScreen()->getTabAlignment()) {
-			case ARelative:
-			case ALeft:
+			case ARELATIVE:
+			case ALEFT:
 				pos_x = m_win->frame.x; 
 				break;
-			case ACenter:
+			case ACENTER:
 				pos_x = calcCenterXPos(); 
 				break;
-			case ARight:
+			case ARIGHT:
 				pos_x = m_win->frame.x + m_win->frame.width +
 						m_win->getScreen()->getBorderWidth2x() - m_size_w;
 				break;
 		}
 	} else { //PLeft | PRight
 		switch(m_win->getScreen()->getTabAlignment()) {
-			case ALeft:
+			case ALEFT:
 				pos_y = m_win->frame.y - m_size_h + m_win->frame.height +
 						m_win->getScreen()->getBorderWidth2x();
 				break;
-			case ACenter:
+			case ACENTER:
 				pos_y = calcCenterYPos();
 				break;
-			case ARelative:
-			case ARight:
+			case ARELATIVE:
+			case ARIGHT:
 				pos_y = m_win->frame.y;
 				break;
 		}
@@ -468,40 +468,40 @@ void Tab::calcIncrease(void) {
 	int inc_x = 0, inc_y = 0;
 	unsigned int tabs = 0, i = 0;
 
-	if (m_win->getScreen()->getTabPlacement() == PTop ||
-			m_win->getScreen()->getTabPlacement() == PBottom ||
+	if (m_win->getScreen()->getTabPlacement() == PTOP ||
+			m_win->getScreen()->getTabPlacement() == PBOTTOM ||
 			m_win->isShaded()) {
 		inc_y = 0;
 
 		switch(m_win->getScreen()->getTabAlignment()) {
-			case ALeft:
+			case ALEFT:
 				inc_x = m_size_w;
 				break;
-			case ACenter:
+			case ACENTER:
 				inc_x = m_size_w;
 				break;
-			case ARight:
+			case ARIGHT:
 				inc_x = -m_size_w;
 				break;
-			case ARelative:
+			case ARELATIVE:
 				inc_x = calcRelativeWidth();
 				break;
 		}
-	} else if (m_win->getScreen()->getTabPlacement() == PLeft ||
-					m_win->getScreen()->getTabPlacement() == PRight) {
+	} else if (m_win->getScreen()->getTabPlacement() == PLEFT ||
+					m_win->getScreen()->getTabPlacement() == PRIGHT) {
 		inc_x = 0;
 
 		switch(m_win->getScreen()->getTabAlignment()) {
-			case ALeft:
+			case ALEFT:
 				inc_y = -m_size_h;
 				break;
-			case ACenter:
+			case ACENTER:
 				inc_y = m_size_h;
 				break;
-			case ARight:
+			case ARIGHT:
 				inc_y = m_size_h;
 				break;
-			case ARelative:
+			case ARELATIVE:
 				inc_y = calcRelativeHeight();
 				break;
 		}
@@ -512,10 +512,10 @@ void Tab::calcIncrease(void) {
 	for (first = getFirst(this); first!=0; first = first->m_next, i++){
 
 	//TODO: move this out from here?
-		if ((m_win->getScreen()->getTabPlacement() == PTop ||
-				m_win->getScreen()->getTabPlacement() == PBottom ||
+		if ((m_win->getScreen()->getTabPlacement() == PTOP ||
+				m_win->getScreen()->getTabPlacement() == PBOTTOM ||
 				m_win->isShaded()) &&
-				m_win->getScreen()->getTabAlignment() == ARelative) {
+				m_win->getScreen()->getTabAlignment() == ARELATIVE) {
 			if (!((m_win->frame.width +
 					m_win->getScreen()->getBorderWidth2x()) % tabs) ||
 					i >= ((m_win->frame.width +
@@ -527,7 +527,7 @@ void Tab::calcIncrease(void) {
 				first->m_inc_x = inc_x + 1;
 			}
 			first->m_inc_y = inc_y;
-		} else if (m_win->getScreen()->getTabAlignment() == ARelative) {
+		} else if (m_win->getScreen()->getTabAlignment() == ARELATIVE) {
 			if (!((m_win->frame.height +
 				m_win->getScreen()->getBorderWidth2x()) % tabs) ||
 				i >= ((m_win->frame.height +
@@ -620,32 +620,32 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
 				dest_x = be->x_root;
 				dest_y = be->y_root;
 
-				if (placement == PTop || placement == PBottom || m_win->isShaded()) {
-					if (placement == PBottom && !m_win->isShaded())
+				if (placement == PTOP || placement == PBOTTOM || m_win->isShaded()) {
+					if (placement == PBOTTOM && !m_win->isShaded())
 						dest_y -= m_win->frame.height;
-					else if (placement != PTop && m_win->isShaded())
+					else if (placement != PTOP && m_win->isShaded())
 						dest_y -= m_win->getTitleHeight();
-					else // PTop
+					else // PTOP
 						dest_y += m_win->getTitleHeight();
 
 					switch(m_win->getScreen()->getTabAlignment()) {
-						case ACenter:
+						case ACENTER:
 							dest_x -= (m_win->frame.width / 2) - (m_size_w / 2);
 							break;
-						case ARight:
+						case ARIGHT:
 							dest_x -= m_win->frame.width - m_size_w;
 							break;
 					}
 
-				} else { // PLeft & PRight
-					if (placement == PRight)
+				} else { // PLEFT & PRIGHT
+					if (placement == PRIGHT)
 						dest_x = be->x_root - m_win->frame.width;
 
 					switch(m_win->getScreen()->getTabAlignment()) {
-						case ACenter:
+						case ACENTER:
 							dest_y -= (m_win->frame.height / 2) - (m_size_h / 2);
 							break;
-						case ALeft:
+						case ALEFT:
 							dest_y -= m_win->frame.height - m_size_h;
 							break;
 					}
@@ -840,8 +840,8 @@ void Tab::insert(Tab *tab) {
 		if (m_win->isShaded() != tab->m_win->isShaded()) {
 			tab->m_stoptabs = true; // we don't want any actions performed on the
 															// tabs, just the tab windows!
-			if (m_win->getScreen()->getTabPlacement() == PLeft ||
-					m_win->getScreen()->getTabPlacement() == PRight)
+			if (m_win->getScreen()->getTabPlacement() == PLEFT ||
+					m_win->getScreen()->getTabPlacement() == PRIGHT)
 				resize_tabs = true;
 
 			// if the window we are grouping to, we need to shade the tab window
@@ -874,7 +874,7 @@ void Tab::insert(Tab *tab) {
 	}
 
 	// resize if in relative mode or resize_tabs is true
-	if(m_win->getScreen()->getTabAlignment() == ARelative ||
+	if(m_win->getScreen()->getTabAlignment() == ARELATIVE ||
 			resize_tabs) {
 		resizeGroup();
 		calcIncrease();
@@ -903,12 +903,12 @@ void Tab::disconnect() {
 	
 	//reposition the tabs
 	if (tmp) {
-		if (m_win->getScreen()->getTabAlignment() == ARelative)
+		if (m_win->getScreen()->getTabAlignment() == ARELATIVE)
 			tmp->calcIncrease();
 		tmp->setPosition();
 	}
 
-	if (m_win->getScreen()->getTabAlignment() == ARelative)
+	if (m_win->getScreen()->getTabAlignment() == ARELATIVE)
 		calcIncrease();
 	
 	setPosition();
@@ -957,8 +957,8 @@ void Tab::resizeGroup(void) {
 	#endif //DEBUG
 	Tab *first;
 	for (first = getFirst(this); first != 0; first = first->m_next) {
-		if ((m_win->getScreen()->getTabPlacement() == PLeft ||
-				m_win->getScreen()->getTabPlacement() == PRight) &&
+		if ((m_win->getScreen()->getTabPlacement() == PLEFT ||
+				m_win->getScreen()->getTabPlacement() == PRIGHT) &&
 				m_win->getScreen()->isTabRotateVertical() &&
 				!m_win->isShaded()) {
 			first->setTabWidth(m_win->getScreen()->getTabHeight());
@@ -1026,7 +1026,7 @@ unsigned int Tab::calcCenterYPos() {
 // tabplacement number on success else 0.
 //----------------------------------------
 const char *Tab::getTabPlacementString(int placement) {	
-	for (int i=0; i<(pnone / 5); i++) {
+	for (int i=0; i<(PNONE / 5); i++) {
 		if (m_tabplacementlist[i] == placement)
 			return m_tabplacementlist[i].string;
 	}
@@ -1039,12 +1039,12 @@ const char *Tab::getTabPlacementString(int placement) {
 // the type none on failure.
 //----------------------------------------
 int Tab::getTabPlacementNum(const char *string) {
-	for (int i=0; i<(pnone / 5); i ++) {
+	for (int i=0; i<(PNONE / 5); i ++) {
 		if (m_tabplacementlist[i] == string) {
 			return m_tabplacementlist[i].tp;
 		}
 	}
-	return pnone;
+	return PNONE;
 }
 
 //------- getTabAlignmentString ----------
@@ -1052,7 +1052,7 @@ int Tab::getTabPlacementNum(const char *string) {
 // tabplacement number on success else 0.
 //----------------------------------------
 const char *Tab::getTabAlignmentString(int placement) {	
-	for (int i=0; i<anone; i++) {
+	for (int i=0; i<ANONE; i++) {
 		if (m_tabalignmentlist[i] == placement)
 			return m_tabalignmentlist[i].string;
 	}
@@ -1065,10 +1065,10 @@ const char *Tab::getTabAlignmentString(int placement) {
 // the type none on failure.
 //----------------------------------------
 int Tab::getTabAlignmentNum(const char *string) {
-	for (int i=0; i<anone; i++) {
+	for (int i=0; i<ANONE; i++) {
 		if (m_tabalignmentlist[i] == string) {
 			return m_tabalignmentlist[i].tp;
 		}
 	}
-	return anone;
+	return ANONE;
 }

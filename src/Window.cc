@@ -296,10 +296,10 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s) {
 				int real_x = frame.x;
 				int real_y = frame.y;
 
-				if (screen->getTabPlacement() == Tab::PTop)
+				if (screen->getTabPlacement() == Tab::PTOP)
 					real_y -= screen->getTabHeight();
 
-				else if (screen->getTabPlacement() == Tab::PLeft) {
+				else if (screen->getTabPlacement() == Tab::PLEFT) {
 					if (screen->isTabRotateVertical())
 						real_x -= screen->getTabHeight();
 					else
@@ -1927,11 +1927,11 @@ void FluxboxWindow::maximize(unsigned int button) {
 
 		if (hasTab()) {
 			switch(screen->getTabPlacement()) {			
-			case Tab::PTop:
+			case Tab::PTOP:
 				dy += screen->getTabHeight(); 
 				dh -= screen->getTabHeight();
 				break;
-			case Tab::PLeft:
+			case Tab::PLEFT:
 				if (screen->isTabRotateVertical()) {
 					dx += screen->getTabHeight();
 					dw -= screen->getTabHeight();
@@ -1940,13 +1940,13 @@ void FluxboxWindow::maximize(unsigned int button) {
 					dw -= screen->getTabWidth();
 				}	
 				break;
-			case Tab::PRight:
+			case Tab::PRIGHT:
 				if (screen->isTabRotateVertical())
 					dw -= screen->getTabHeight();
 				else
 					dw -= screen->getTabWidth();	
 				break;
-			case Tab::PBottom:
+			case Tab::PBOTTOM:
 				dh -= screen->getTabHeight();
 				break;
 			default:
