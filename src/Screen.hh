@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.25 2002/03/23 15:14:45 fluxgen Exp $
+// $Id: Screen.hh,v 1.26 2002/04/02 23:14:54 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -245,6 +245,7 @@ public:
 				CYCLEDEFAULT = 0x00 };
 
 private:
+	bool doSkipWindow(const FluxboxWindow *w, int options);
 	#ifdef GNOME
 	void initGnomeAtoms();
 	void updateGnomeClientList();

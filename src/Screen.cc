@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.39 2002/03/27 18:47:12 fluxgen Exp $
+// $Id: Screen.cc,v 1.40 2002/04/02 23:14:54 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1112,100 +1112,94 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ig
 
 
 void BScreen::nextFocus(int opts) {
-	Bool have_focused = False;
+	bool have_focused = false;
 	int focused_window_number = -1;
-	FluxboxWindow *next;
+	FluxboxWindow *focused;
 	const int num_windows = getCurrentWorkspace()->getCount();
 	
-	if (fluxbox->getFocusedWindow()) {
-		if (fluxbox->getFocusedWindow()->getScreen()->getScreenNumber() ==
+	if ((focused = fluxbox->getFocusedWindow())) {
+		if (focused->getScreen()->getScreenNumber() ==
 			getScreenNumber()) {
-			have_focused = True;
-			focused_window_number = fluxbox->getFocusedWindow()->getWindowNumber();
+			have_focused = true;
+			focused_window_number = focused->getWindowNumber();
 		}
 	}
 
 	if (num_windows > 1 && have_focused) {
-		int next_window_number = focused_window_number;
-	
-		//try to set next window to focus		
+		Workspace *wksp = getCurrentWorkspace();
+		Workspace::Windows wins = wksp->getWindowList();
+		Workspace::Windows::iterator it = wins.begin();
+		for (; *it != focused; ++it);
 		do {
-			if ((++next_window_number) >= num_windows)
-				next_window_number = 0;	
-
-			next = getCurrentWorkspace()->getWindow(next_window_number);
-
-			if (! ( (opts & CYCLESKIPSTUCK) != 0 && next->isStuck() || // skip if stuck
-					(opts & CYCLESKIPLOWERTABS) != 0 && next->isLowerTab() || // skip if lower tab
-				    (opts & CYCLESKIPSHADED) != 0 && next->isShaded() || // skip if shaded
-					!next->setInputFocus())) // skip unless set input focus
+			++it;
+			if (it == wins.end())
+				it = wins.begin();
+			// see if the window should be skipped
+			if (! (doSkipWindow(*it, opts) || !(*it)->setInputFocus()) )
 				break;
-			
-		} while (next_window_number != focused_window_number);
+		} while (*it != focused);
 
-		if (next_window_number != focused_window_number) {
-			next->setInputFocus();
-			getCurrentWorkspace()->raiseWindow(next);
-		}
-
+		if (*it != focused)
+			wksp->raiseWindow(*it);
 	} else if (num_windows >= 1) {
-		next = current_workspace->getWindow(0);
-	 	
+		FluxboxWindow *next = current_workspace->getWindow(0);
 		//don't raise next window if input focus fails
 		if (next->setInputFocus())
 			current_workspace->raiseWindow(next);
 	}
+
 }
 
 
 void BScreen::prevFocus(int opts) {
-	Bool have_focused = False;
+	bool have_focused = false;
 	int focused_window_number = -1;
-	FluxboxWindow *prev;
-
-	if (fluxbox->getFocusedWindow())
-		if (fluxbox->getFocusedWindow()->getScreen()->getScreenNumber() ==
-	getScreenNumber()) {
-			have_focused = True;
-			focused_window_number = fluxbox->getFocusedWindow()->getWindowNumber();
+	FluxboxWindow *focused;
+	int num_windows = getCurrentWorkspace()->getCount();
+	
+	if ((focused = fluxbox->getFocusedWindow())) {
+		if (focused->getScreen()->getScreenNumber() ==
+				getScreenNumber()) {
+			have_focused = true;
+			focused_window_number = focused->getWindowNumber();
 		}
-
-	if ((getCurrentWorkspace()->getCount() > 1) && have_focused) {
-		int prev_window_number = focused_window_number;
-		do {
-			if ((--prev_window_number) < 0)
-				prev_window_number = getCurrentWorkspace()->getCount() - 1;
-
-			prev = getCurrentWorkspace()->getWindow(prev_window_number);
-
-			if (! ( (opts & CYCLESKIPSTUCK) != 0 && prev->isStuck() || // skip if stuck
-					(opts & CYCLESKIPLOWERTABS) != 0 && prev->isLowerTab() ||// skip if lower tab
-					(opts & CYCLESKIPSHADED) != 0 && prev->isShaded() ||// skip if shaded
-					!prev->setInputFocus()) ) // skip unless set input focus
-				break;
-		} while (prev_window_number != focused_window_number);
-
-		if (prev_window_number != focused_window_number)
-			getCurrentWorkspace()->raiseWindow(prev);
-	} else if (getCurrentWorkspace()->getCount() >= 1) {
-		prev = current_workspace->getWindow(0);
-
-		current_workspace->raiseWindow(prev);
-		prev->setInputFocus();
 	}
+
+	if (num_windows > 1 && have_focused) {
+		Workspace *wksp = getCurrentWorkspace();
+		Workspace::Windows wins = wksp->getWindowList();
+		Workspace::Windows::iterator it = wins.begin();
+		for (; *it != focused; ++it);
+		do {
+			if (it == wins.begin())
+				it = wins.end();
+			--it;
+			// see if the window should be skipped
+			if (! (doSkipWindow(*it, opts) ||	!(*it)->setInputFocus()) )
+				break;
+		} while (*it != focused);
+		if (*it != focused)
+			wksp->raiseWindow(*it);
+	} else if (num_windows >= 1) {
+		FluxboxWindow *next = current_workspace->getWindow(0);
+		//don't raise next window if input focus fails
+		if (next->setInputFocus())
+			current_workspace->raiseWindow(next);
+	}
+
 }
 
 //--------- raiseFocus -----------
 // Raise the current focused window
 //--------------------------------
 void BScreen::raiseFocus(void) {
-	Bool have_focused = False;
+	bool have_focused = false;
 	int focused_window_number = -1;
 
 	if (fluxbox->getFocusedWindow())
 		if (fluxbox->getFocusedWindow()->getScreen()->getScreenNumber() ==
 	getScreenNumber()) {
-			have_focused = True;
+			have_focused = true;
 			focused_window_number = fluxbox->getFocusedWindow()->getWindowNumber();
 		}
 
@@ -1546,11 +1540,7 @@ Bool BScreen::parseMenuFile(ifstream &file, Rootmenu *menu, int &row) {
 					if (!str_label.size()) {
 						fprintf(stderr,
 						i18n->getMessage(
-					#ifdef NLS
 						 ScreenSet, ScreenWORKSPACESError,
-					#else // !NLS
-						 0, 0,
-					#endif // NLS
 						 "BScreen:parseMenuFile: [workspaces] error, "
 						 "no menu label defined\n"));
 						 cerr<<"Row: "<<row<<endl;
@@ -1806,6 +1796,16 @@ void BScreen::rightWorkspace(const int delta) {
 void BScreen::leftWorkspace(const int delta) {
 	if (getCurrentWorkspaceID() >= static_cast<unsigned int>(delta))
 		changeWorkspaceID(getCurrentWorkspaceID()-delta);
+}
+
+//-------- doSkipWindow
+// Returns true if the windows should be skiped
+// else false
+//----------
+bool BScreen::doSkipWindow(const FluxboxWindow *w, int opts) {
+	return ((opts & CYCLESKIPSTUCK) != 0 && w->isStuck() || // skip if stuck
+			(opts & CYCLESKIPLOWERTABS) != 0 && w->isLowerTab() || // skip if lower tab
+			(opts & CYCLESKIPSHADED) != 0 && w->isShaded()); // skip if shaded
 }
 
 #ifdef GNOME
