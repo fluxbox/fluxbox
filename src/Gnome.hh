@@ -1,5 +1,5 @@
 // Gnome.hh for fluxbox
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@fluxbox.org)
+// Copyright (c) 2002 - 2004 Henrik Kinnunen (fluxgen<at>fluxbox.org)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -13,13 +13,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.10 2003/07/28 15:06:33 rathnor Exp $
+// $Id: Gnome.hh,v 1.11 2004/01/19 18:27:17 fluxgen Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -68,6 +68,8 @@ public:
     void setupFrame(FluxboxWindow &win);
     void setupClient(WinClient &winclient) {}
 
+    void updateWorkarea(BScreen &) { }
+    void updateFocusedWindow(BScreen &, Window) { }
     void updateClientList(BScreen &screen);
     void updateWorkspaceNames(BScreen &screen);
     void updateCurrentWorkspace(BScreen &screen);
