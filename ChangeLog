@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.1:
 *03/03/22:
+   * Added cursor to fbrun (Henrik)
+     FbRun.hh/cc
    * Fix outline moving, warping, etc (Simon)
      Window.hh/cc Screen.cc fluxbox.cc
 *03/03/03:
@@ -8,8 +10,9 @@ Changes for 0.9.1:
      AtomHandler.hh EventManager.cc Ewmh.hh/cc Gnome.hh/cc 
      IconBar.hh/cc Screen.hh/cc Toolbar.hh/cc ToolbarHandler.hh/cc 
      Window.cc fluxbox.cc
- 
-------------------------------------------- 
+*03/02/25:
+   * Fixed freebsd error and some nls in fluxbox-generate_menu (Han)
+---------------------------------------------------
 Changes for 0.9.0:
 *03/02/23:
    * Fixed auto hide option for toolbar menu (Henrik)
