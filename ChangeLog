@@ -1,5 +1,10 @@
 (Format: Year/Month/Day)
-Changes for 0.1.15:
+Changes for 0.9.0:
+*03/02/23:
+   * Fixed auto hide option for toolbar menu (Henrik)
+     Screen.cc, Toolbar.cc
+   * Fixed vertical workspace name editing (Henrik)
+     Toolbar.cc
 *03/02/22:
    * Fix frame size and window moving/resizing/outline bugs (Simon)
      Window.cc FbWinFrame.cc
