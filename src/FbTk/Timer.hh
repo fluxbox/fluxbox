@@ -40,7 +40,6 @@
 
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
-#include <sys/types.h>
 #endif // HAVE_INTTYPES_H
 
 #include <sys/select.h>
