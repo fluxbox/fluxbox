@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.14 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Tab.cc,v 1.15 2002/01/18 18:28:17 pekdon Exp $
 
 #include "Tab.hh"
 
@@ -155,6 +155,27 @@ void Tab::raise() {
 	//raise tabs
 	for (; first!=0; first = first->m_next)
 		m_win->getScreen()->raiseWindows(&first->m_tabwin, 1);
+}
+
+//-------------- lower --------------------
+// Lowers the tabs in the tablist AND
+// the windows the tabs relate to
+//-----------------------------------------
+void Tab::lower() {
+	Tab *current = this;
+	FluxboxWindow *win = 0; //convinence
+	//this have to be done in the correct order, otherwise we'll switch the window
+	//beeing ontop in the group
+	do { 
+		XLowerWindow(m_display, current->m_tabwin); //lower tabwin and tabs window
+		win = current->getWindow(); 
+		win->getScreen()->getWorkspace(win->getWorkspaceNumber())->lowerWindow(win);
+
+		current = current->next(); //get next
+		if (current == 0)
+			current = getFirst(this); //there weren't any after, get the first
+
+	} while (current != this);
 }
 
 //-------------- loadTheme -----------------

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.6 2002/01/11 09:44:35 fluxgen Exp $
+// $Id: Tab.hh,v 1.7 2002/01/18 18:28:17 pekdon Exp $
 
 #ifndef _TAB_HH_
 #define _TAB_HH_
@@ -55,6 +55,7 @@ public:
 	void deiconify();
 	void iconify();
 	void raise();
+	void lower();
 	void withdraw();	
 	void stick();
 	void resize();

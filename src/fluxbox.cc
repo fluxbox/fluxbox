@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.21 2002/01/18 01:23:54 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.22 2002/01/18 18:28:17 pekdon Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -1154,10 +1154,15 @@ void Fluxbox::doWindowAction(Keys::KeyAction action) {
 			focused_window->iconify();
 		break;
 		case Keys::RAISE:
-			focused_window->getScreen()->getWorkspace(focused_window->getWorkspaceNumber())->raiseWindow(focused_window);	
+			if (focused_window->hasTab())
+				focused_window->getTab()->raise(); //raise the tabs if we have any
+			focused_window->getScreen()->getWorkspace(focused_window->getWorkspaceNumber())->raiseWindow(focused_window);
 		break;
 		case Keys::LOWER:
-			XLowerWindow(getXDisplay(), focused_window->getFrameWindow());
+ 	   	focused_window->getScreen()->getWorkspace(focused_window->getWorkspaceNumber())->lowerWindow(focused_window);
+			if (focused_window->hasTab())
+				focused_window->getTab()->lower(); //lower the tabs AND it's windows
+
 		break;
 		case Keys::CLOSE:
 			focused_window->close();

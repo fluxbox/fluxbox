@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.20 2002/01/18 01:25:58 fluxgen Exp $
+// $Id: Window.cc,v 1.21 2002/01/18 18:28:17 pekdon Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -2834,13 +2834,15 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent *be) {
 			if (windowmenu && windowmenu->isVisible())
 				windowmenu->hide();
 			//raise tab first if there is any
-			if (tab)
+			if (hasTab())
 				tab->raise();
 		
 			screen->getWorkspace(workspace_number)->raiseWindow(this);
 		}
 	} else if (be->button == 2 && be->window == frame.label) {
 		screen->getWorkspace(workspace_number)->lowerWindow(this);
+		if (hasTab())
+			getTab()->lower(); //lower the tab AND it's windows
 
 	} else if (windowmenu && be->button == 3 &&
 			(frame.title == be->window || frame.label == be->window ||

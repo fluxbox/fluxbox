@@ -200,12 +200,16 @@ void Windowmenu::itemSelected(int button, int index) {
 
   case BScreen::WINDOWRAISE:
     hide();
+		if (window->hasTab())
+			window->getTab()->raise(); //raise tabs
     screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
     break;
 
   case BScreen::WINDOWLOWER:
     hide();
-    screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
+   	screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
+		if (window->hasTab())
+			window->getTab()->lower(); //lower tabs AND all it's windows
     break;
 
   case BScreen::WINDOWSTICK:

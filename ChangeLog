@@ -7,6 +7,8 @@ Changes for 0.1.7:
    * Fixed indent in Window.hh
 *02/01/15:
    * Fixed exception in FluxboxWindow::FluxboxWindow
+   * Fixed lower/raise of windows when using windowmenu/keybinding
+     so now tabs should follow. (Claes Nästén)
 *02/01/14:
    * Fixed throw statement in FluxboxWindow
 
