@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.36 2002/10/25 21:05:01 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.37 2002/10/29 16:09:37 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -75,12 +75,8 @@ do_auto_hide(scrn->doToolbarAutoHide()),
 screen(scrn),
 image_ctrl(scrn->getImageControl()),
 clock_timer(this), 	// get the clock updating every minute
+hide_timer(&hide_handler),
 iconbar(0) {
-
-	
-	
-	fluxbox = Fluxbox::instance();
-
 	timeval delay;
 	delay.tv_sec = 1;
 	delay.tv_usec = 0;
@@ -88,15 +84,14 @@ iconbar(0) {
 	clock_timer.start();
 
 	hide_handler.toolbar = this;
-	hide_timer = new BTimer(&hide_handler);
-	hide_timer->setTimeout(fluxbox->getAutoRaiseDelay());
-	hide_timer->fireOnce(true);
+	hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
+	hide_timer.fireOnce(true);
 
 	frame.grab_x = frame.grab_y = 0;
 
 	toolbarmenu = new Toolbarmenu(this);
 
-	display = fluxbox->getXDisplay();
+	display = BaseDisplay::getXDisplay();
 	XSetWindowAttributes attrib;
 	unsigned long create_mask = CWBackPixmap | CWBackPixel | CWBorderPixel |
 		CWColormap | CWOverrideRedirect | CWEventMask;
@@ -108,6 +103,8 @@ iconbar(0) {
 	attrib.override_redirect = true;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
 		EnterWindowMask | LeaveWindowMask;
+
+	Fluxbox * const fluxbox = Fluxbox::instance();
 
 	frame.window =
 		XCreateWindow(display, screen->getRootWindow(), 0, 0, 1, 1, 0,
@@ -180,7 +177,7 @@ Toolbar::~Toolbar() {
 	if (frame.button) image_ctrl->removeImage(frame.button);
 	if (frame.pbutton) image_ctrl->removeImage(frame.pbutton);
 
-	
+	Fluxbox * const fluxbox = Fluxbox::instance();	
 	fluxbox->removeToolbarSearch(frame.window);
 
 	fluxbox->removeToolbarSearch(frame.workspace_label);
@@ -197,7 +194,6 @@ Toolbar::~Toolbar() {
 
 	XDestroyWindow(display, frame.window);
 
-	delete hide_timer;
 	delete toolbarmenu;
 	if (iconbar)
 		delete iconbar; 
@@ -246,14 +242,7 @@ void Toolbar::reconfigure() {
 	frame.width = screen->getWidth() * screen->getToolbarWidthPercent() / 100;
 #endif // XINERAMA
 
-	I18n *i18n = I18n::instance();
-	
-	if (i18n->multibyte())
-		frame.height =
-			screen->getToolbarStyle()->font.set_extents->max_ink_extent.height;
-	else
-		frame.height = screen->getToolbarStyle()->font.fontstruct->ascent +
-			 screen->getToolbarStyle()->font.fontstruct->descent;
+	frame.height = screen->getToolbarStyle()->font.height();
 	frame.button_w = frame.height;
 	frame.height += 2;
 	frame.label_h = frame.height;
@@ -310,8 +299,8 @@ void Toolbar::reconfigure() {
 		break;
 	}
 
-	#ifdef		HAVE_STRFTIME
-	time_t ttmp = time(NULL);
+#ifdef HAVE_STRFTIME
+	time_t ttmp = time(0);
 	struct tm *tt = 0;
 
 	if (ttmp != -1) {
@@ -325,15 +314,7 @@ void Toolbar::reconfigure() {
 			memset(time_string, '0', len);
 			*(time_string + len) = '\0';
 
-			if (i18n->multibyte()) {
-				XRectangle ink, logical;
-				XmbTextExtents(screen->getToolbarStyle()->font.set, time_string, len,
-					&ink, &logical);
-				frame.clock_w = logical.width;
-			} else
-				frame.clock_w = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-					time_string, len);
-			
+			frame.clock_w = screen->getToolbarStyle()->font.textWidth(time_string, len);
 			frame.clock_w += (frame.bevel_w * 4);
 			
 			delete [] time_string;
@@ -341,35 +322,26 @@ void Toolbar::reconfigure() {
 			frame.clock_w = 0;
 	} else
 		frame.clock_w = 0;
-	#else // !HAVE_STRFTIME
+#else // !HAVE_STRFTIME
 	
-	frame.clock_w =
-		XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-				 i18n->getMessage(
+	frame.clock_w =	screen->getToolbarStyle()->font.textWidth(
+		i18n->getMessage(
 			ToolbarSet, ToolbarNoStrftimeLength,
 			"00:00000"),
 			strlen(i18n->getMessage(
 				 ToolbarSet, ToolbarNoStrftimeLength,
 			 "00:00000"))) + (frame.bevel_w * 4);
 	
-	#endif // HAVE_STRFTIME
+#endif // HAVE_STRFTIME
 
 	unsigned int i;
 	unsigned int w = 0;
 	frame.workspace_label_w = 0;
 
 	for (i = 0; i < screen->getCount(); i++) {
-		if (i18n->multibyte()) {
-			XRectangle ink, logical;
-			XmbTextExtents(screen->getToolbarStyle()->font.set,
-				 screen->getWorkspace(i)->name().c_str(),
-				 screen->getWorkspace(i)->name().size(),
-				 &ink, &logical);
-			w = logical.width;
-		} else
-			w = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-				screen->getWorkspace(i)->name().c_str(),
-				screen->getWorkspace(i)->name().size());
+		w = screen->getToolbarStyle()->font.textWidth(
+			screen->getWorkspace(i)->name().c_str(),
+			screen->getWorkspace(i)->name().size());
 
 		w += (frame.bevel_w * 4);
 
@@ -578,11 +550,11 @@ void Toolbar::checkClock(bool redraw, bool date) {
 
 	if (redraw) {
 		XClearWindow(display, frame.clock);
-		#ifdef HAVE_STRFTIME
+#ifdef HAVE_STRFTIME
 		char t[1024];
 		if (! strftime(t, 1024, screen->getStrftimeFormat(), tt))
 			return;
-		#else // !HAVE_STRFTIME
+#else // !HAVE_STRFTIME
 		char t[9];
 		if (date) {
 			// format the date... with special consideration for y2k ;)
@@ -602,52 +574,39 @@ void Toolbar::checkClock(bool redraw, bool date) {
 				(tt->tm_year >= 100) ? tt->tm_year - 100 : tt->tm_year);
 			}
 		} else {
-			if (screen->isClock24Hour())
-	sprintf(t,
-		i18n->getMessage(
-				 ToolbarSet, ToolbarNoStrftimeTimeFormat24,
-				 "	%02d:%02d "),
-		frame.hour, frame.minute);
-			else
-	sprintf(t,
-		i18n->getMessage(
-				ToolbarSet, ToolbarNoStrftimeTimeFormat12,
-				"%02d:%02d %sm"),
-		((frame.hour > 12) ? frame.hour - 12 :
-		 ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
-		((frame.hour >= 12) ?
-		 i18n->getMessage(
-				ToolbarSet, ToolbarNoStrftimeTimeFormatP,
-					"p") :
-		 i18n->getMessage(
-					ToolbarSet, ToolbarNoStrftimeTimeFormatA,
+			if (screen->isClock24Hour()) {
+				sprintf(t,
+				i18n->getMessage(
+					 ToolbarSet, ToolbarNoStrftimeTimeFormat24,
+					 "	%02d:%02d "),
+					frame.hour, frame.minute);
+			} else {
+				sprintf(t,
+					i18n->getMessage(
+					ToolbarSet, ToolbarNoStrftimeTimeFormat12,
+					"%02d:%02d %sm"),
+					((frame.hour > 12) ? frame.hour - 12 :
+					 ((frame.hour == 0) ? 12 : frame.hour)), frame.minute,
+					((frame.hour >= 12) ?
+				 i18n->getMessage(
+					ToolbarSet, ToolbarNoStrftimeTimeFormatP,
+						"p") :
+					 i18n->getMessage(
+						ToolbarSet, ToolbarNoStrftimeTimeFormatA,
 					"a")));
+			}
 		}
-		#endif // HAVE_STRFTIME
+#endif // HAVE_STRFTIME
 
 		int dx = (frame.bevel_w * 2), dlen = strlen(t);
 		unsigned int l;
-		I18n *i18n = I18n::instance();
-		
-		if (i18n->multibyte()) {
-			XRectangle ink, logical;
-			XmbTextExtents(screen->getToolbarStyle()->font.set,
-				 t, dlen, &ink, &logical);
-			l = logical.width;
-		} else
-			l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, t, dlen);
+		l = screen->getToolbarStyle()->font.textWidth(t, dlen);
 		
 		l += (frame.bevel_w * 4);
 		
 		if (l > frame.clock_w) {
 			for (; dlen >= 0; dlen--) {
-				if (i18n->multibyte()) {
-					XRectangle ink, logical;
-					XmbTextExtents(screen->getToolbarStyle()->font.set,
-						t, dlen, &ink, &logical);
-					l = logical.width;
-				} else
-					l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, t, dlen);
+				l = screen->getToolbarStyle()->font.textWidth(t, dlen);
 				l += (frame.bevel_w * 4);
 	
 				if (l < frame.clock_w)
@@ -656,7 +615,7 @@ void Toolbar::checkClock(bool redraw, bool date) {
 
 		}
 
-		switch (screen->getToolbarStyle()->font.justify) {
+		switch (screen->getToolbarStyle()->justify) {
 			case DrawUtil::Font::RIGHT:
 				dx += frame.clock_w - l;
 			break;
@@ -667,17 +626,12 @@ void Toolbar::checkClock(bool redraw, bool date) {
 			break;
 		}
 
-		if (i18n->multibyte()) {
-			XmbDrawString(display, frame.clock,
-				screen->getToolbarStyle()->font.set,
-				screen->getToolbarStyle()->c_text_gc, dx, 1 -
-				screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
-				t, dlen);
-		} else {
-			XDrawString(display, frame.clock,
-				screen->getToolbarStyle()->c_text_gc, dx,
-				screen->getToolbarStyle()->font.fontstruct->ascent + 1, t, dlen);
-		}
+		screen->getToolbarStyle()->font.drawText(
+			frame.clock,
+			screen->getScreenNumber(),
+			screen->getToolbarStyle()->c_text_gc,
+			t, dlen,
+			dx, 1 + screen->getToolbarStyle()->font.ascent());
 	}
 }
 
@@ -693,27 +647,14 @@ void Toolbar::redrawWindowLabel(bool redraw) {
 		
 		int dx = (frame.bevel_w * 2), dlen = foc->getTitle().size();
 		unsigned int l;
-		I18n *i18n = I18n::instance();
-		
-		if (i18n->multibyte()) {
-			XRectangle ink, logical;
-			XmbTextExtents(screen->getToolbarStyle()->font.set, foc->getTitle().c_str(), dlen,
-				 &ink, &logical);
-			l = logical.width;
-		} else
-			l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, foc->getTitle().c_str(), dlen);
+
+		l = screen->getToolbarStyle()->font.textWidth(foc->getTitle().c_str(), dlen);
 		
 		l += (frame.bevel_w * 4);
 
 		if (l > frame.window_label_w) {
 			for (; dlen >= 0; dlen--) {
-				if (i18n->multibyte()) {
-					XRectangle ink, logical;
-					XmbTextExtents(screen->getToolbarStyle()->font.set,
-						 foc->getTitle().c_str(), dlen, &ink, &logical);
-					l = logical.width;
-				} else
-					l = XTextWidth(screen->getToolbarStyle()->font.fontstruct, foc->getTitle().c_str(), dlen);
+				l = screen->getToolbarStyle()->font.textWidth(foc->getTitle().c_str(), dlen);
 	
 				l += (frame.bevel_w * 4);
 	
@@ -721,7 +662,7 @@ void Toolbar::redrawWindowLabel(bool redraw) {
 					break;
 			}
 		}
-		switch (screen->getToolbarStyle()->font.justify) {
+		switch (screen->getToolbarStyle()->justify) {
 		case DrawUtil::Font::RIGHT:
 			dx += frame.window_label_w - l;
 			break;
@@ -732,18 +673,12 @@ void Toolbar::redrawWindowLabel(bool redraw) {
 		default:
 			break;
 		}
-
-		if (i18n->multibyte())
-			XmbDrawString(display, frame.window_label,
-				screen->getToolbarStyle()->font.set,
-				screen->getToolbarStyle()->w_text_gc, dx, 1 -
-				screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
-				foc->getTitle().c_str(), dlen);
-		else
-			XDrawString(display, frame.window_label,
-				screen->getToolbarStyle()->w_text_gc, dx,
-				screen->getToolbarStyle()->font.fontstruct->ascent	+ 1,
-				foc->getTitle().c_str(), dlen);
+		screen->getToolbarStyle()->font.drawText(
+			frame.window_label,
+			screen->getScreenNumber(),
+			screen->getToolbarStyle()->w_text_gc,
+			foc->getTitle().c_str(), dlen,
+			dx, 1 + screen->getToolbarStyle()->font.ascent());
 	} else
 		XClearWindow(display, frame.window_label);
 }
@@ -754,43 +689,19 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
 		
 		if (redraw)
 			XClearWindow(display, frame.workspace_label);
-	/*	DrawString(
-					display, frame.label, screen->getToolbarStyle()->l_text_gc, 
-					&screen->getToolbarStyle()->font,
-					frame.workspace_label_w, frame.width,
-				frame.bevel_w, 
-				const_cast<char *>(screen->getCurrentWorkspace()->name().c_str()));*/
-		
+
 		int dx = (frame.bevel_w * 2), dlen =
 						screen->getCurrentWorkspace()->name().size();
 		unsigned int l;
-		I18n *i18n = I18n::instance();
 		
-		
-		if (i18n->multibyte()) {
-			XRectangle ink, logical;
-			XmbTextExtents(screen->getToolbarStyle()->font.set,
-						screen->getCurrentWorkspace()->name().c_str(), dlen,
-						&ink, &logical);
-			l = logical.width;
-		} else
-			l = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-					screen->getCurrentWorkspace()->name().c_str(), dlen);
+		l = screen->getToolbarStyle()->font.textWidth(screen->getCurrentWorkspace()->name().c_str(), dlen);
 		
 		l += (frame.bevel_w * 4);
 		
 		if (l > frame.workspace_label_w) {
 			for (; dlen >= 0; dlen--) {
-				if (i18n->multibyte()) {
-					XRectangle ink, logical;
-					XmbTextExtents(screen->getToolbarStyle()->font.set,
-						screen->getCurrentWorkspace()->name().c_str(), dlen,
-						&ink, &logical);
-						l = logical.width;
-				} else {
-					l = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-							screen->getCurrentWorkspace()->name().c_str(), dlen);
-				}
+				l = screen->getToolbarStyle()->font.textWidth(
+					screen->getCurrentWorkspace()->name().c_str(), dlen);
 	
 				l += (frame.bevel_w * 4);
 	
@@ -799,7 +710,7 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
 			}
 		}
 		
-		switch (screen->getToolbarStyle()->font.justify) {
+		switch (screen->getToolbarStyle()->justify) {
 		case DrawUtil::Font::RIGHT:
 			dx += frame.workspace_label_w - l;
 			break;
@@ -810,19 +721,13 @@ void Toolbar::redrawWorkspaceLabel(bool redraw) {
 		default:
 			break;
 		}
-
-		if (i18n->multibyte()) {
-			XmbDrawString(display, frame.workspace_label,
-				screen->getToolbarStyle()->font.set,
-				screen->getToolbarStyle()->l_text_gc, dx, 1 -
-				screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
-				(char *) screen->getCurrentWorkspace()->name().c_str(), dlen);
-		} else {
-			XDrawString(display, frame.workspace_label,
-				screen->getToolbarStyle()->l_text_gc, dx,
-				screen->getToolbarStyle()->font.fontstruct->ascent + 1,
-				(char *) screen->getCurrentWorkspace()->name().c_str(), dlen);
-		}
+		
+		screen->getToolbarStyle()->font.drawText(
+			frame.workspace_label,
+			screen->getScreenNumber(),
+			screen->getToolbarStyle()->l_text_gc,
+			screen->getCurrentWorkspace()->name().c_str(), dlen,
+			dx, 1 + screen->getToolbarStyle()->font.ascent());
 	}
 }
 
@@ -907,7 +812,7 @@ void Toolbar::redrawPrevWindowButton(bool pressed, bool redraw) {
 	pts[2].x = 0; pts[2].y = -4;
 
 	XFillPolygon(display, frame.pwbutton, screen->getToolbarStyle()->b_pic_gc,
-							 pts, 3, Convex, CoordModePrevious);
+		pts, 3, Convex, CoordModePrevious);
 }
 
 
@@ -956,7 +861,7 @@ void Toolbar::edit() {
 		RevertToPointerRoot : RevertToParent), CurrentTime);
 
 	XClearWindow(display, frame.workspace_label);	//clear workspace text
-
+	Fluxbox * const fluxbox = Fluxbox::instance();
 	fluxbox->setNoFocus(true);
 	if (fluxbox->getFocusedWindow())	//disable focus on current focused window
 		fluxbox->getFocusedWindow()->setFocusFlag(false);
@@ -1087,9 +992,11 @@ void Toolbar::enterNotifyEvent(XCrossingEvent *) {
 		return;
 
 	if (hidden) {
-		if (! hide_timer->isTiming()) hide_timer->start();
+		if (! hide_timer.isTiming())
+			hide_timer.start();
 	} else {
-		if (hide_timer->isTiming()) hide_timer->stop();
+		if (hide_timer.isTiming())
+			hide_timer.stop();
 	}
 }
 
@@ -1098,9 +1005,9 @@ void Toolbar::leaveNotifyEvent(XCrossingEvent *) {
 		return;
 
 	if (hidden) {
-		if (hide_timer->isTiming()) hide_timer->stop();
+		if (hide_timer.isTiming()) hide_timer.stop();
 	} else if (! toolbarmenu->isVisible()) {
-		if (! hide_timer->isTiming()) hide_timer->start();
+		if (! hide_timer.isTiming()) hide_timer.start();
 	}
 }
 
@@ -1131,7 +1038,7 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 			
 
 			editing = false;
-			
+			Fluxbox * const fluxbox = Fluxbox::instance();			
 			fluxbox->setNoFocus(false);
 			if (fluxbox->getFocusedWindow()) {
 				fluxbox->getFocusedWindow()->setInputFocus();
@@ -1167,33 +1074,18 @@ void Toolbar::keyPressEvent(XKeyEvent *ke) {
 
 			XClearWindow(display, frame.workspace_label);
 			int l = new_workspace_name.size(), tw, x;
-			I18n *i18n = I18n::instance();
-			
-			if (i18n->multibyte()) {
-				XRectangle ink, logical;
-				XmbTextExtents(screen->getToolbarStyle()->font.set,
-					new_workspace_name.c_str(), l, &ink, &logical);
-				tw = logical.width;
-			} else {
-				tw = XTextWidth(screen->getToolbarStyle()->font.fontstruct,
-					new_workspace_name.c_str(), l);
-			}
-				x = (frame.workspace_label_w - tw) / 2;
+
+			tw = screen->getToolbarStyle()->font.textWidth(new_workspace_name.c_str(), l);
+			x = (frame.workspace_label_w - tw) / 2;
 
 			if (x < (signed) frame.bevel_w) x = frame.bevel_w;
+			screen->getToolbarStyle()->font.drawText(
+				frame.workspace_label,
+				screen->getScreenNumber(),
+				screen->getWindowStyle()->l_text_focus_gc,
+				new_workspace_name.c_str(), l,
+				x, 1 + screen->getToolbarStyle()->font.ascent());
 
-			if (i18n->multibyte()) {
-				XmbDrawString(display, frame.workspace_label,
-					screen->getToolbarStyle()->font.set,
-					screen->getWindowStyle()->l_text_focus_gc, x, 1 -
-					screen->getToolbarStyle()->font.set_extents->max_ink_extent.y,
-					new_workspace_name.c_str(), l);
-			} else {
-				XDrawString(display, frame.workspace_label,
-					screen->getWindowStyle()->l_text_focus_gc, x,
-					screen->getToolbarStyle()->font.fontstruct->ascent + 1,
-					new_workspace_name.c_str(), l);
-			}
 			XDrawRectangle(display, frame.workspace_label,
 				screen->getWindowStyle()->l_text_focus_gc, x + tw, 0, 1,
 				frame.label_h - 1);
