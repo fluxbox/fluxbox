@@ -262,7 +262,6 @@ private:
 	char *rc_file, **argv;
 	int argc;
 	Keys *key;
-	char *expandFilename(char *filename);
 	void doWindowAction(Keys::KeyAction action);
 protected:
 	Fluxbox(int, char **, char * = 0, char * = 0);
