@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/07/18:
+  * Fixed fallback for toolbar.button.pressed (Henrik)
+    ButtonTheme.cc
 *04/07/15:
   * Click on handle bar raises window even if 
     "click to raises" = false,
