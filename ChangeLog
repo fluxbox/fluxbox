@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/06:
+  * Updates for startfluxbox.in (Han)
 *03/12/04:
   * Added new clock format menu item (Henrik)
     It'll toggle the clock in 24/12 format
