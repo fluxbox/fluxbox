@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.7 2002/01/09 14:11:20 fluxgen Exp $
+//$Id: Keys.cc,v 1.8 2002/01/10 14:24:09 fluxgen Exp $
 
 #ifdef		HAVE_CONFIG_H
 #	 include "config.h"
@@ -200,7 +200,9 @@ bool Keys::load(char *filename) {
 		//must have at least 1 argument
 		if (val.size()<=0)
 			continue;
-		
+			
+		if (val[0][0]=='#') //the line is commented
+			continue;
 		
 		unsigned int key=0, mod=0;		
 		char keyarg=0;
