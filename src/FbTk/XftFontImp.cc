@@ -1,6 +1,6 @@
 // XftFontImp.cc  Xft font implementation for FbTk
 // Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: XftFontImp.cc,v 1.4 2004/08/29 08:33:13 rathnor Exp $
+//$Id: XftFontImp.cc,v 1.5 2004/09/10 16:12:49 akir Exp $
 
 #include "XftFontImp.hh"
 #include "App.hh"
@@ -43,10 +43,10 @@ XftFontImp::~XftFontImp() {
 
 bool XftFontImp::load(const std::string &name) {
     //Note: assumes screen 0 for now, changes on draw if needed
-	
+
     Display *disp = App::instance()->display();
     XftFont *newxftfont = XftFontOpenName(disp, 0, name.c_str());
-		
+
     if (newxftfont == 0) { // failed to open font, lets test with XLFD
         newxftfont = XftFontOpenXlfd(disp, 0, name.c_str());
         if (newxftfont == 0)
@@ -87,7 +87,7 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
     rendcol.green = xcol.green;
     rendcol.blue = xcol.blue;
     rendcol.alpha = 0xFFFF;
-    XftColor xftcolor;	
+    XftColor xftcolor;
     XftColorAllocValue(disp, DefaultVisual(disp, screen), DefaultColormap(disp, screen),
                        &rendcol, &xftcolor);
 
@@ -107,14 +107,14 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
                               m_xftfont,
                               x, y,
                               (XftChar8 *)(text), len);
-            XftColorFree(disp, DefaultVisual(disp, screen), 
+            XftColorFree(disp, DefaultVisual(disp, screen),
                          DefaultColormap(disp, screen), &xftcolor);
             XftDrawDestroy(draw);
             return;
         }
     }
 #endif // HAVE_XFT_UTF8_STRING
-    
+
     XftDrawString8(draw,
                    &xftcolor,
                    m_xftfont,
@@ -122,7 +122,7 @@ void XftFontImp::drawText(Drawable w, int screen, GC gc, const char *text, size_
                    (XftChar8 *)(text), len);
 
 
-    XftColorFree(disp, DefaultVisual(disp, screen), 
+    XftColorFree(disp, DefaultVisual(disp, screen),
                  DefaultColormap(disp, screen), &xftcolor);
     XftDrawDestroy(draw);
 }
@@ -132,10 +132,11 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
         return 0;
 
     XGlyphInfo ginfo;
+    Display* disp = App::instance()->display();
 
 #ifdef HAVE_XFT_UTF8_STRING
     if (m_utf8mode) {
-        XftTextExtentsUtf8(App::instance()->display(),
+        XftTextExtentsUtf8(disp,
                            m_xftfont,
                            (XftChar8 *)text, len,
                            &ginfo);
@@ -146,7 +147,7 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
     }
 #endif  //HAVE_XFT_UTF8_STRING
 
-    XftTextExtents8(App::instance()->display(),
+    XftTextExtents8(disp,
                     m_xftfont,
                     (XftChar8 *)text, len,
                     &ginfo);
@@ -157,7 +158,7 @@ unsigned int XftFontImp::textWidth(const char * const text, unsigned int len) co
 unsigned int XftFontImp::height() const {
     if (m_xftfont == 0)
         return 0;
-    return m_xftfont->height; 
+    return m_xftfont->height;
     //m_xftfont->ascent + m_xftfont->descent;
     // curiously, fonts seem to have a smaller height, but the "height"
     // is specified within the actual font, so it must be right, right?
