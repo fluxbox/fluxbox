@@ -18,7 +18,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.10 2002/11/25 22:23:03 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.11 2002/11/26 17:48:58 fluxgen Exp $
 
 #include "bsetroot.hh"
 
@@ -47,7 +47,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 	bool mod = false, sol = false, grd = false;
 	int mod_x = 0, mod_y = 0, i = 0;
 
-	img_ctrl = new BImageControl*[10];
+	img_ctrl = new BImageControl*[getNumberOfScreens()];
 	for (; i < getNumberOfScreens(); i++) {
 		img_ctrl[i] = new BImageControl(getScreenInfo(i), true);
 	}
@@ -138,12 +138,8 @@ bsetroot::~bsetroot() {
 
 		delete [] pixmaps;
 	}
-	#ifdef DEBUG
-	else
-		cerr<<"~bsetroot: why don't we have any pixmaps?"<<endl;
-	#endif // DEBUG
 
-	if (img_ctrl) {
+	if (img_ctrl != 0) {
 		int i = 0;
 		for (; i < num_screens; i++)
 			delete img_ctrl[i];
@@ -152,11 +148,11 @@ bsetroot::~bsetroot() {
 	} 
 }
 
-//------------ setRootAtoms ---------------
-// set root pixmap atoms so that apps like
-// Eterm and xchat will be able to use
-// transparent background
-//-----------------------------------------
+/**
+ set root pixmap atoms so that apps like
+ Eterm and xchat will be able to use
+ transparent background
+*/
 void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 	Atom atom_root, atom_eroot, type;
 	unsigned char *data_root, *data_eroot;
