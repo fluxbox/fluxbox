@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.59 2002/06/04 09:50:58 fluxgen Exp $
+// $Id: Window.cc,v 1.60 2002/06/14 09:59:49 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3701,9 +3701,14 @@ void FluxboxWindow::checkTransient() {
 		FluxboxWindow *tr;
 		if ((tr = fluxbox->searchWindow(win))) {
 				
-			while (tr->client.transient) 
+			while (tr->client.transient) {
 				tr = tr->client.transient;
-				
+				if (tr == tr->client.transient) { //ops! something is wrong with transient
+					tr->client.transient = 0;
+				}
+			}
+			
+
 			client.transient_for = tr;
 			tr->client.transient = this;
 			stuck = client.transient_for->stuck;
@@ -3711,8 +3716,12 @@ void FluxboxWindow::checkTransient() {
 		} else if (win == client.window_group) {
 			if ((tr = fluxbox->searchGroup(win, this))) {
 					
-				while (tr->client.transient) 
+				while (tr->client.transient) {
 					tr = tr->client.transient;
+					if (tr == tr->client.transient) { //ops! somehtin is wrong with transient
+						tr->client.transient = 0;
+					}
+				}
 					
 				client.transient_for = tr;
 				tr->client.transient = this;
