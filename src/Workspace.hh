@@ -65,6 +65,7 @@ public:
     int addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
     void removeWindow(WinClient &client);
+    void updateClientmenu();
 
     BScreen &screen() { return m_screen; }
     const BScreen &screen() const { return m_screen; }	
@@ -93,7 +94,7 @@ protected:
     void placeWindow(FluxboxWindow &win);
 
 private:
-    void updateClientmenu();
+
 
     BScreen &m_screen;
     FluxboxWindow *m_lastfocus;
