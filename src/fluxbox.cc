@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.77 2002/10/15 20:41:08 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.78 2002/10/16 20:02:00 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -344,7 +344,7 @@ key(0)
 	
 	// setup atom handlers
 	m_atomhandler.push_back(new Gnome()); // for gnome 1 atom support
-//	m_atomhandler.push_back(new Ewmh()); // for Extended window manager atom support
+	m_atomhandler.push_back(new Ewmh()); // for Extended window manager atom support
 
 	//singleton pointer
 	singleton = this;
