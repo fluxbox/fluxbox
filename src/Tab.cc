@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.27 2002/05/19 15:37:29 fluxgen Exp $
+// $Id: Tab.cc,v 1.28 2002/07/20 09:49:21 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -97,8 +97,8 @@ void Tab::createTabWindow() {
 	XSetWindowAttributes attrib;
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-		m_win->getScreen()->getWindowStyle()->tab.border_color.getPixel();
-	attrib.colormap = m_win->getScreen()->getColormap();
+		m_win->getScreen()->getWindowStyle()->tab.border_color.pixel();
+	attrib.colormap = m_win->getScreen()->colormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
 		ButtonMotionMask | ExposureMask | EnterWindowMask;
@@ -195,7 +195,7 @@ void Tab::loadTheme() {
 		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_focus);
 		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_focus_pm = None;
-			m_focus_pixel = pt->getColor()->getPixel();
+			m_focus_pixel = pt->color().pixel();
 		} else
 			m_focus_pm =
 				image_ctrl->renderImage(m_size_w, m_size_h, pt);
@@ -205,7 +205,7 @@ void Tab::loadTheme() {
 	} else {
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_focus_pm = None;
-			m_focus_pixel = texture->getColor()->getPixel();
+			m_focus_pixel = texture->color().pixel();
 		} else
 			m_focus_pm =
 				image_ctrl->renderImage(m_size_w, m_size_h, texture);
@@ -219,14 +219,14 @@ void Tab::loadTheme() {
 		BTexture *pt = &(m_win->getScreen()->getWindowStyle()->tab.t_unfocus);
 		if (pt->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_unfocus_pm = None;
-			m_unfocus_pixel = pt->getColor()->getPixel();
+			m_unfocus_pixel = pt->color().pixel();
 		} else
 			m_unfocus_pm =
 			image_ctrl->renderImage(m_size_w, m_size_h, pt);
 	} else {
 		if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 			m_unfocus_pm = None;
-			m_unfocus_pixel = texture->getColor()->getPixel();
+			m_unfocus_pixel = texture->color().pixel();
 		} else
 			m_unfocus_pm =
 				image_ctrl->renderImage(m_size_w, m_size_h, texture);
@@ -244,7 +244,7 @@ void Tab::decorate() {
 	XSetWindowBorderWidth(m_display, m_tabwin,
 		m_win->getScreen()->getWindowStyle()->tab.border_width);
 	XSetWindowBorder(m_display, m_tabwin,
-		m_win->getScreen()->getWindowStyle()->tab.border_color.getPixel());
+		m_win->getScreen()->getWindowStyle()->tab.border_color.pixel());
 }
 
 //-------------- deiconify -----------------

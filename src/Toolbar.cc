@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.23 2002/05/24 11:38:32 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.24 2002/07/20 09:49:57 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -107,8 +107,8 @@ iconbar(0)
 		
 	attrib.background_pixmap = None;
 	attrib.background_pixel = attrib.border_pixel =
-		screen->getBorderColor()->getPixel();
-	attrib.colormap = screen->getColormap();
+		screen->getBorderColor()->pixel();
+	attrib.colormap = screen->colormap();
 	attrib.override_redirect = True;
 	attrib.event_mask = ButtonPressMask | ButtonReleaseMask |
 		EnterWindowMask | LeaveWindowMask;
@@ -434,7 +434,7 @@ void Toolbar::reconfigure(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.base = None;
 		XSetWindowBackground(display, frame.window,
-			 texture->getColor()->getPixel());
+			 texture->color().pixel());
 	} else {
 		frame.base =
 			image_ctrl->renderImage(frame.width, frame.height, texture);
@@ -447,7 +447,7 @@ void Toolbar::reconfigure(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.label = None;
 		XSetWindowBackground(display, frame.window_label,
-			 texture->getColor()->getPixel());
+			 texture->color().pixel());
 	} else {
 		frame.label =
 			image_ctrl->renderImage(frame.window_label_w, frame.label_h, texture);
@@ -460,7 +460,7 @@ void Toolbar::reconfigure(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.wlabel = None;
 		XSetWindowBackground(display, frame.workspace_label,
-			 texture->getColor()->getPixel());
+			 texture->color().pixel());
 	} else {
 		frame.wlabel =
 			image_ctrl->renderImage(frame.workspace_label_w, frame.label_h, texture);
@@ -473,7 +473,7 @@ void Toolbar::reconfigure(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.clk = None;
 		XSetWindowBackground(display, frame.clock,
-			 texture->getColor()->getPixel());
+			 texture->color().pixel());
 	} else {
 		frame.clk =
 			image_ctrl->renderImage(frame.clock_w, frame.label_h, texture);
@@ -486,7 +486,7 @@ void Toolbar::reconfigure(void) {
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.button = None;
 
-		frame.button_pixel = texture->getColor()->getPixel();
+		frame.button_pixel = texture->color().pixel();
 		XSetWindowBackground(display, frame.psbutton, frame.button_pixel);
 		XSetWindowBackground(display, frame.nsbutton, frame.button_pixel);
 		XSetWindowBackground(display, frame.pwbutton, frame.button_pixel);
@@ -506,14 +506,14 @@ void Toolbar::reconfigure(void) {
 	texture = &(screen->getToolbarStyle()->pressed);
 	if (texture->getTexture() == (BImage::FLAT | BImage::SOLID)) {
 		frame.pbutton = None;
-		frame.pbutton_pixel = texture->getColor()->getPixel();
+		frame.pbutton_pixel = texture->color().pixel();
 	} else
 		frame.pbutton =
 			image_ctrl->renderImage(frame.button_w, frame.button_w, texture);
 	if (tmp) image_ctrl->removeImage(tmp);
 
 	XSetWindowBorder(display, frame.window,
-			 screen->getBorderColor()->getPixel());
+			 screen->getBorderColor()->pixel());
 	XSetWindowBorderWidth(display, frame.window, screen->getBorderWidth());
 
 	XClearWindow(display, frame.window);
