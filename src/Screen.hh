@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.106 2003/06/18 13:42:21 fluxgen Exp $
+// $Id: Screen.hh,v 1.107 2003/06/20 01:28:16 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -31,7 +31,6 @@
 #include "Subject.hh"
 #include "MultLayers.hh"
 #include "ToolbarHandler.hh"
-#include "Slit.hh"
 #include "FbRootWindow.hh"
 #include "NotCopyable.hh"
 
@@ -53,6 +52,7 @@ class WinButtonTheme;
 class WinClient;
 class Workspace;
 class Strut;
+class Slit;
 
 namespace FbTk {
 class MenuTheme;
@@ -88,7 +88,6 @@ public:
     inline bool doAutoRaise() const { return *resource.auto_raise; }
     inline bool clickRaises() const { return *resource.click_raises; }
     inline bool doImageDither() const { return *resource.image_dither; }
-    inline bool doMaxOverSlit() const { return *resource.max_over_slit; }
     inline bool doOpaqueMove() const { return *resource.opaque_move; }
     inline bool doFullMax() const { return *resource.full_max; }
     inline bool doFocusNew() const { return *resource.focus_new; }
@@ -105,21 +104,8 @@ public:
     inline const std::string &getRootCommand() const { return *resource.rootcommand; }
     inline Fluxbox::FocusModel getFocusModel() const { return *resource.focus_model; }
 
-    inline bool &doSlitAutoHide() { return *resource.slit_auto_hide; }
-    inline const bool &doSlitAutoHide() const { return *resource.slit_auto_hide; }
-
     inline Slit *slit() { return m_slit.get(); }
     inline const Slit *slit() const { return m_slit.get(); }
-
-    inline Slit::Placement getSlitPlacement() const { return *resource.slit_placement; }
-    inline Slit::Direction getSlitDirection() const { return *resource.slit_direction; }
-    inline FbTk::Resource<int> &slitAlphaResource() { return resource.slit_alpha; }
-    inline void saveSlitPlacement(Slit::Placement p) { resource.slit_placement = p;  }
-    inline void saveSlitDirection(Slit::Direction d) { resource.slit_direction = d;  }
-    inline void saveSlitAutoHide(bool t) { resource.slit_auto_hide = t;  }
-    
-    inline int getSlitOnHead() const { return *resource.slit_on_head; }
-    inline void saveSlitOnHead(int h) { *resource.slit_on_head = h;  }
 
     inline const Toolbar *toolbar() const { return m_toolbarhandler->getToolbar(); }
     inline Toolbar *toolbar() { return m_toolbarhandler->getToolbar(); }
@@ -188,7 +174,6 @@ public:
     inline int getRowPlacementDirection() const { return resource.row_direction; }
     inline int getColPlacementDirection() const { return resource.col_direction; }
 
-    inline int getSlitLayerNum() const { return (*resource.slit_layernum).getNum(); }
     inline int getToolbarLayerNum() const { return (*resource.toolbar_layernum).getNum(); }
 
 
@@ -203,14 +188,13 @@ public:
     inline void saveToolbarPlacement(Toolbar::Placement place) { *resource.toolbar_placement = place; }
     inline void saveToolbarOnHead(int head) { *resource.toolbar_on_head = head;  }
     inline void saveToolbarLayer(Fluxbox::Layer layer) { *resource.toolbar_layernum = layer; }
-    inline void saveSlitLayer(Fluxbox::Layer layer) { *resource.slit_layernum = layer; }
 
     inline void savePlacementPolicy(int p) { resource.placement_policy = p;  }
     inline void saveRowPlacementDirection(int d) { resource.row_direction = d;  }
     inline void saveColPlacementDirection(int d) { resource.col_direction = d;  }
     inline void saveEdgeSnapThreshold(int t) { resource.edge_snap_threshold = t;  }
     inline void saveImageDither(bool d) { resource.image_dither = d;  }
-    inline void saveMaxOverSlit(bool m) { resource.max_over_slit = m;  }
+
     inline void saveOpaqueMove(bool o) { resource.opaque_move = o;  }
     inline void saveFullMax(bool f) { resource.full_max = f;  }
     inline void saveFocusNew(bool f) { resource.focus_new = f;  }
@@ -240,7 +224,10 @@ public:
     FluxboxWindow *getIcon(unsigned int index);
     FbTk::MultLayers &layerManager() { return m_layermanager; }
     const FbTk::MultLayers &layerManager() const { return m_layermanager; }
-
+    FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
+    const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
+    const std::string &name() const { return m_name; }
+    const std::string &altName() const { return m_altname; }
     int addWorkspace();
     int removeLastWorkspace();
     //scroll workspaces
@@ -425,7 +412,6 @@ private:
 
         FbTk::Resource<bool> toolbar_auto_hide,
             image_dither, opaque_move, full_max,
-            max_over_slit,
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
@@ -435,16 +421,12 @@ private:
         bool ordered_dither;
         FbTk::Resource<int> workspaces, toolbar_width_percent, edge_snap_threshold, 
             menu_alpha;
-        FbTk::Resource<Fluxbox::Layer> slit_layernum, toolbar_layernum;
+        FbTk::Resource<Fluxbox::Layer> toolbar_layernum;
         int placement_policy, row_direction, col_direction;
 
         FbTk::Resource<ToolbarHandler::ToolbarMode> toolbar_mode;
         FbTk::Resource<int> toolbar_on_head;
         FbTk::Resource<Toolbar::Placement> toolbar_placement;
-        FbTk::Resource<bool> slit_auto_hide;
-        FbTk::Resource<Slit::Placement> slit_placement;
-        FbTk::Resource<Slit::Direction> slit_direction;
-        FbTk::Resource<int> slit_alpha, slit_on_head;
 
         std::string strftime_format;
 
@@ -453,6 +435,9 @@ private:
 
 
     } resource;
+
+    const std::string m_name, m_altname;
+    FbTk::ResourceManager &m_resource_manager;
 
     std::auto_ptr<ToolbarHandler> m_toolbarhandler;
 

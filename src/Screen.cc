@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.185 2003/06/18 13:42:21 fluxgen Exp $
+// $Id: Screen.cc,v 1.186 2003/06/20 01:30:08 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -464,7 +464,6 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     image_dither(rm, false, scrname+".imageDither", altscrname+".ImageDither"),
     opaque_move(rm, false, "session.opaqueMove", "Session.OpaqueMove"),
     full_max(rm, true, scrname+".fullMaximization", altscrname+".FullMaximization"),
-    max_over_slit(rm, true, scrname+".maxOverSlit",altscrname+".MaxOverSlit"),
     sloppy_window_grouping(rm, true, 
                            scrname+".sloppywindowgrouping", altscrname+".SloppyWindowGrouping"),
     workspace_warping(rm, true, scrname+".workspacewarping", altscrname+".WorkspaceWarping"),
@@ -482,22 +481,13 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
                           scrname+".toolbar.widthPercent", altscrname+".Toolbar.WidthPercent"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
     menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
-    slit_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDockLayer()), 
-                  scrname+".slit.layer", altscrname+".Slit.Layer"),
+
     toolbar_layernum(rm, Fluxbox::Layer(Fluxbox::instance()->getDesktopLayer()), 
                      scrname+".toolbar.layer", altscrname+".Toolbar.Layer"),
     toolbar_mode(rm, ToolbarHandler::ICONS, scrname+".toolbar.mode", altscrname+".Toolbar.Mode"),
     toolbar_on_head(rm, 0, scrname+".toolbar.onhead", altscrname+".Toolbar.onHead"),
     toolbar_placement(rm, Toolbar::BOTTOMCENTER, 
-                      scrname+".toolbar.placement", altscrname+".Toolbar.Placement"),
-    slit_auto_hide(rm, false, 
-                   scrname+".slit.autoHide", altscrname+".Slit.AutoHide"),
-    slit_placement(rm, Slit::BOTTOMRIGHT,
-                   scrname+".slit.placement", altscrname+".Slit.Placement"),
-    slit_direction(rm, Slit::VERTICAL, 
-                   scrname+".slit.direction", altscrname+".Slit.Direction"),
-    slit_alpha(rm, 255, scrname+".slit.alpha", altscrname+".Slit.Alpha"),
-    slit_on_head(rm, 0, scrname+".slit.onhead", altscrname+".Slit.onHead") {
+                      scrname+".toolbar.placement", altscrname+".Toolbar.Placement") {
 
 };
 
@@ -522,6 +512,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
                            *resource.rootcommand)),
     m_root_window(scrn),
     resource(rm, screenname, altscreenname),
+    m_name(screenname),
+    m_altname(altscreenname),
+    m_resource_manager(rm),
     m_toolbarhandler(0),
     m_available_workspace_area(new Strut(0, 0, 0, 0)),
     m_xinerama_headinfo(0) {
@@ -618,7 +611,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     m_current_workspace = m_workspaces_list.front();
 
 #ifdef SLIT
-    m_slit.reset(new Slit(*this, *layerManager().getLayer(getSlitLayerNum()),
+    m_slit.reset(new Slit(*this, *layerManager().getLayer(Fluxbox::instance()->getDesktopLayer()),
                  Fluxbox::instance()->getSlitlistFilename().c_str()));
 #endif // SLIT
 
@@ -900,11 +893,8 @@ void BScreen::reconfigure() {
     }
 
 #ifdef SLIT    
-    if (slit()) {
-        slit()->setPlacement(static_cast<Slit::Placement>(getSlitPlacement()));
-        slit()->setDirection(static_cast<Slit::Direction>(getSlitDirection()));
+    if (slit())
         slit()->reconfigure();
-    }
 #endif // SLIT
 
     //reconfigure workspaces
@@ -2234,10 +2224,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                 BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuFocusLast,
                                               "Focus Last Window on Workspace"),
                              *resource.focus_last, saverc_cmd));
-    menu.insert(new 
-                BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuMaxOverSlit,
-                                              "Maximize Over Slit"),
-                             *resource.max_over_slit, saverc_cmd));
+
     menu.insert(new 
                 BoolMenuItem(i18n->getMessage(ConfigmenuSet, ConfigmenuWorkspaceWarping,
                                               "Workspace Warping"),
@@ -2689,13 +2676,3 @@ void BScreen::setOnHead<Toolbar>(Toolbar &tbar, int head) {
     tbar.reconfigure();
 }
 
-template <>
-int BScreen::getOnHead<Slit>(Slit &tbar) {
-    return getSlitOnHead();
-}
-
-template <>
-void BScreen::setOnHead<Slit>(Slit &slit, int head) {
-    saveSlitOnHead(head);
-    slit.reconfigure();
-}
