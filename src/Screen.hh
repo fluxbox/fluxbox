@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.66 2003/02/09 14:11:12 rathnor Exp $
+// $Id: Screen.hh,v 1.67 2003/02/16 00:36:17 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -297,7 +297,10 @@ public:
     enum { ROWSMARTPLACEMENT = 1, COLSMARTPLACEMENT, CASCADEPLACEMENT, LEFTRIGHT,
            RIGHTLEFT, TOPBOTTOM, BOTTOMTOP };
     enum { LEFTJUSTIFY = 1, RIGHTJUSTIFY, CENTERJUSTIFY };
+
+    /// obsolete
     enum { ROUNDBULLET = 1, TRIANGELBULLET, SQUAERBULLET, NOBULLET };
+    /// obsolete
     enum { RESTART = 1, RESTARTOTHER, EXIT, SHUTDOWN, EXECUTE, RECONFIGURE,
            WINDOWSHADE, WINDOWICONIFY, WINDOWMAXIMIZE, WINDOWCLOSE, WINDOWRAISE,
            WINDOWLOWER, WINDOWSTICK, WINDOWKILL, SETSTYLE, WINDOWTAB};
@@ -337,7 +340,7 @@ private:
     Bool root_colormap_installed, managed, geom_visible;
     GC opGC;
     Pixmap geom_pixmap;
-    Window geom_window;
+    FbTk::FbWindow geom_window;
 
     FbTk::ImageControl *image_control;
     std::auto_ptr<FbTk::Menu> m_configmenu;
