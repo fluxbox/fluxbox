@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: StringUtil.cc,v 1.4 2003/08/10 12:50:04 rathnor Exp $
+// $Id: StringUtil.cc,v 1.5 2003/08/22 19:38:00 fluxgen Exp $
 
 #include "StringUtil.hh"
 
@@ -29,6 +29,7 @@
 #include <cctype>
 #include <cassert>
 #include <memory>
+#include <algorithm>
 
 using namespace std;
 
@@ -85,6 +86,18 @@ string expandFilename(const std::string &filename) {
         return filename; //return unmodified value
 
     return retval;
+}
+
+/**
+@return string from last "." to end of string
+*/
+string findExtension(const std::string &filename) {
+    //get start of extension
+    std::string::size_type start_pos = filename.find_last_of(".");
+    if (start_pos == std::string::npos && start_pos != filename.size())
+        return "";
+    // return from last . to end of string
+    return filename.substr(start_pos + 1);
 }
 
 /**
@@ -146,16 +159,16 @@ int getStringBetween(std::string& out, const char *instr, const char first, cons
     return (j+1+total_add);
 }
 
-void toLower(char * const conv) {
-    for (size_t byte_pos = 0; byte_pos < strlen(conv); ++byte_pos)
-        conv[byte_pos] = tolower(conv[byte_pos]);
+std::string toLower(const std::string &conv) {
+    std::string ret = conv;
+    std::transform(ret.begin(), ret.end(), ret.begin(), tolower);
+    return ret;
 }
 
-std::string toLower(const std::string &conv) {
-    char ret_str[conv.size()+1]; 
-    ::strcpy(ret_str, conv.c_str());
-    toLower(ret_str);
-    return ret_str;
+std::string toUpper(const std::string &conv) {
+    std::string ret = conv;
+    std::transform(ret.begin(), ret.end(), ret.begin(), toupper);
+    return ret;
 }
 
 }; // end namespace StringUtil
