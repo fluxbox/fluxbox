@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*04/01/02:
+  * Fixed image cache bug (Henrik)
+    ImageControl.hh
+  * Fixed active/unfocus fallback bug (Henrik)
+    FbWinFrame.cc
+  * Tab completion in command dialog (Henrik)
+    CommandDialog.hh
 *03/12/30:
   * Added resource session.useMod1 <boolean> to disable/enable mod1   (Henrik)
     for Resize/Move window with mod1 + button 
