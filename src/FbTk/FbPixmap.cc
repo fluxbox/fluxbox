@@ -19,10 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.2 2003/04/27 00:12:17 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.3 2003/04/27 23:56:13 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
+
+#include <X11/Xutil.h>
+#include <iostream>
+using namespace std;
 
 namespace FbTk {
 
@@ -67,8 +71,8 @@ void FbPixmap::copyArea(Drawable src, GC gc,
     XCopyArea(FbTk::App::instance()->display(),
               src, m_pm, gc,
               src_x, src_y,
-              dest_x, dest_y,
-              width, height);
+              width, height,
+              dest_x, dest_y);
 }
 
 void FbPixmap::fillRectangle(GC gc, int x, int y,
@@ -168,6 +172,66 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
         }
          
     }
+}
+
+void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
+    if (drawable() == 0 || 
+        (dest_width == width() && dest_height == height()))
+        return;
+
+    Display *dpy = FbTk::App::instance()->display();
+
+    XImage *src_image = XGetImage(dpy, drawable(),
+                                  0, 0, // pos
+                                  width(), height(), // size
+                                  ~0, // plane mask
+                                  ZPixmap); // format
+    if (src_image == 0)
+        return;
+
+    // create new pixmap with dest size
+    FbPixmap new_pm(drawable(), dest_width, dest_height, depth());
+
+    GC gc = XCreateGC(dpy, drawable(), 0, 0);
+
+    // calc zoom
+    float zoom_x = static_cast<float>(width())/static_cast<float>(dest_width);
+    float zoom_y = static_cast<float>(height())/static_cast<float>(dest_height);
+
+    // start scaling
+    float src_x = 0, src_y = 0;
+    for (int tx=0; tx<dest_width; ++tx, src_x += zoom_x) {
+        src_y = 0;
+        for (int ty=0; ty<dest_height; ++ty, src_y += zoom_y) {	
+            XSetForeground(dpy, gc, XGetPixel(src_image,
+                                              static_cast<int>(src_x),
+                                              static_cast<int>(src_y)));
+            XDrawPoint(dpy, new_pm.drawable(), gc, tx, ty);
+
+ 
+        }
+    }
+
+    XFreeGC(dpy, gc);
+
+    XDestroyImage(src_image);
+
+    // free old pixmap and set new from new_pm
+    free();
+
+    m_width = new_pm.width();
+    m_height = new_pm.height();
+    m_depth = new_pm.depth();
+    m_pm = new_pm.release();
+}
+
+Pixmap FbPixmap::release() {
+    Pixmap ret = m_pm;
+    m_pm = 0;
+    m_width = 0;
+    m_height = 0;
+    m_depth = 0;
+    return ret;
 }
 
 void FbPixmap::free() {
