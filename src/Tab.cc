@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.48 2002/12/07 13:36:03 fluxgen Exp $
+// $Id: Tab.cc,v 1.49 2003/01/05 22:38:53 fluxgen Exp $
 
 #include "Tab.hh"
 
@@ -319,7 +319,7 @@ void Tab::resize() {
     //now move and resize the windows in the list
     for (tab = getFirst(this); tab != 0; tab = tab->m_next) {
         if (tab!=this) {
-            tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+            tab->m_win->moveResize(m_win->getXFrame(), m_win->getYFrame(),
                                   m_win->getWidth(), m_win->getHeight());
         }
     }
@@ -375,12 +375,12 @@ void Tab::draw(bool pressed) const {
     if (winstyle->tab.font.isRotated() && !m_win->isShaded())
         max_width = m_size_h;
 
-    int dx = DrawUtil::doAlignment(max_width, m_win->frame.bevel_w,
+    int dx = DrawUtil::doAlignment(max_width, 1, //m_win->frame.bevel_w,
                                    winstyle->tab.justify,
                                    winstyle->tab.font,
                                    m_win->getTitle().c_str(), m_win->getTitle().size(), dlen);
 	
-    int dy = winstyle->tab.font.ascent() + m_win->frame.bevel_w;
+    int dy = winstyle->tab.font.ascent() + 1; //m_win->frame.bevel_w;
     bool rotate = false;
     // swap dx and dy if we're rotated
     if (winstyle->tab.font.isRotated() && !m_win->isShaded()) {
@@ -533,8 +533,8 @@ void Tab::setPosition() {
         XMoveWindow(m_display, tab->m_tabwin, pos_x, pos_y);
 				
         //dont move FluxboxWindow if the iterator = this
-        if (tab!=this) {
-            tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(), 
+        if (tab != this) {
+            tab->m_win->moveResize(m_win->getXFrame(), m_win->getYFrame(), 
                                   m_win->getWidth(), m_win->getHeight());
         }	
     }	
@@ -669,10 +669,10 @@ void Tab::buttonPressEvent(XButtonEvent *be) {
     //otherwise let the window handle the event
     else {
         //set window to titlewindow so we can take advantage of drag function
-        be->window = m_win->frame.title;
+        be->window = m_win->frame().titlebar().window();
 	
         //call windows buttonpress eventhandler
-        m_win->buttonPressEvent(be);
+        m_win->buttonPressEvent(*be);
     }
 }
 
@@ -770,9 +770,10 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
                 }
 				//TODO: this causes an calculate increase event, even if we
 				// only are moving a window
-                m_win->configure(dest_x, dest_y, m_win->getWidth(), m_win->getHeight());
+                m_win->moveResize(dest_x, dest_y, m_win->getWidth(), m_win->getHeight());
+
                 if(!Fluxbox::instance()->useTabs())
-                    m_win->setTab(0);//Remove tab from window, as it is now alone...
+                    m_win->setTab(false);//Remove tab from window, as it is now alone...
             }
         }
     } else {
@@ -781,10 +782,10 @@ void Tab::buttonReleaseEvent(XButtonEvent *be) {
         raise();
 		
         //set window to title window soo we can use m_win handler for menu
-        be->window = m_win->frame.title;
+        be->window = m_win->frame().titlebar().window();
 		
         //call windows buttonrelease event handler so it can popup a menu if needed
-        m_win->buttonReleaseEvent(be);
+        m_win->buttonReleaseEvent(*be);
     }
 	
 }
@@ -968,12 +969,12 @@ void Tab::insert(Tab *tab) {
             // if the window we are grouping to, we need to shade the tab window
             // _after_ reconfigure
             if(m_win->isShaded()) {
-                tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+                tab->m_win->moveResize(m_win->getXFrame(), m_win->getYFrame(),
                                       m_win->getWidth(), m_win->getHeight());
                 tab->m_win->shade();
             } else {
                 tab->m_win->shade(); // switch to correct shade state
-                tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+                tab->m_win->moveResize(m_win->getXFrame(), m_win->getYFrame(),
                                       m_win->getWidth(), m_win->getHeight());
             }
 
@@ -985,7 +986,7 @@ void Tab::insert(Tab *tab) {
         } else if ((m_win->getWidth() != tab->m_win->getWidth()) ||
                    (m_win->getHeight() != tab->m_win->getHeight())) {
 
-            tab->m_win->configure(m_win->getXFrame(), m_win->getYFrame(),
+            tab->m_win->moveResize(m_win->getXFrame(), m_win->getYFrame(),
                                   m_win->getWidth(), m_win->getHeight());
 
             // need to shade the tab window as configure will mess it up
