@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Windowmenu.cc,v 1.16 2002/08/12 03:27:31 fluxgen Exp $
+// $Id: Windowmenu.cc,v 1.17 2002/08/31 10:42:25 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -274,6 +274,7 @@ void Windowmenu::SendGroupToWorkspacemenu::itemSelected(int button, unsigned int
 			getWindowMenu()->window->stick();
 
 		if (button == 1) {
+			// TODO: use reassociateGroup from BScreen instead
 			if (getWindowMenu()->window->hasTab()) {
 				for (Tab *first = Tab::getFirst(getWindowMenu()->window->getTab());
 						first!=0; first=first->next()) {
