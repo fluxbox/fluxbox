@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.19 2002/05/07 13:31:11 fluxgen Exp $
+// $Id: Window.hh,v 1.20 2002/05/17 16:34:27 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -319,6 +319,12 @@ private:
 	void stopResizing(Window win=0);
 	void updateIcon();
 	
+	//create decoration functions
+	void createTitlebar();
+	void destroyTitlebar();
+	void createHandle();
+	void destroyHandle();
+	
 	#ifdef GNOME
 	
 	void updateGnomeAtoms() const;
@@ -349,7 +355,7 @@ private:
 	#endif //NEWWMSPEC
 
 	Window findTitleButton(int type);	
-protected:
+private:
 	//event callbacks
 	static void stickyButton_cb(FluxboxWindow *, XButtonEvent *);
 	static void stickyPressed_cb(FluxboxWindow *, XButtonEvent *);
