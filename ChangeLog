@@ -1,5 +1,7 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/09/12:
+  * Minor cleaning, moved Resource<> from fluxbox.cc to Resources.cc (Henrik)
 *04/09/11:
   * The include directive in menu can now take
     a director as argument [include] (path)
