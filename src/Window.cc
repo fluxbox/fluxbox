@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.266 2004/01/23 10:37:08 rathnor Exp $
+// $Id: Window.cc,v 1.267 2004/02/16 09:19:45 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -446,7 +446,8 @@ void FluxboxWindow::init() {
     m_client->x = wattrib.x; m_client->y = wattrib.y;
 
     m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
-    FbTk::RefCount<FbTk::Command> raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::raise));
+    FbTk::RefCount<FbTk::Command> raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, 
+                                                                                   &FluxboxWindow::raise));
     m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
 
@@ -1108,7 +1109,7 @@ void FluxboxWindow::updateBlackboxHintsFromClient(const WinClient &client) {
 
     if (hint->flags & ATTRIB_DECORATION) {
         m_old_decoration = static_cast<Decoration>(hint->decoration);
-        setDecoration(m_old_decoration);
+        setDecoration(m_old_decoration, false);
     }
 }
 
@@ -2225,6 +2226,10 @@ void FluxboxWindow::propertyNotifyEvent(WinClient &client, Atom atom) {
         } else if (atom == fbatoms->getFluxboxHintsAtom()) {
             client.updateBlackboxHints();
             updateBlackboxHintsFromClient(client);
+            if (client.getBlackboxHint() != 0 &&
+                (client.getBlackboxHint()->flags & ATTRIB_DECORATION)) 
+                applyDecorations(); // update decoration
+                
         }
         break;
     }
@@ -2628,7 +2633,7 @@ void FluxboxWindow::leaveNotifyEvent(XCrossingEvent &ev) {
 }
 
 // TODO: functions should not be affected by decoration
-void FluxboxWindow::setDecoration(Decoration decoration) {
+void FluxboxWindow::setDecoration(Decoration decoration, bool apply) {
     switch (decoration) {
     case DECOR_NONE:
         decorations.titlebar = decorations.border = decorations.handle =
@@ -2663,16 +2668,20 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
             functions.iconify = false;
 	break;
     }
-    applyDecorations();
+
+    // we might want to wait with apply decorations    
+    if (apply)
+        applyDecorations();
+
+    //!! TODO: make sure this is correct
     // is this reconfigure necessary???
-    reconfigure();
+    //    reconfigure();
 
 }
 
 // commit current decoration values to actual displayed things
 void FluxboxWindow::applyDecorations(bool initial) {
     frame().clientArea().setBorderWidth(0); // client area bordered by other things
-
 
     int grav_x=0, grav_y=0;
     // negate gravity
@@ -2712,6 +2721,7 @@ void FluxboxWindow::applyDecorations(bool initial) {
     frame().reconfigure();
     if (!initial && client_move)
         sendConfigureNotify();
+
 }
 
 void FluxboxWindow::toggleDecoration() {
