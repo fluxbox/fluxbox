@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.72 2002/10/15 10:54:40 fluxgen Exp $
+// $Id: Screen.cc,v 1.73 2002/10/15 13:05:55 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -518,9 +518,9 @@ void BScreen::reconfigure() {
 #endif // DEBUG
 	Fluxbox::instance()->loadRootCommand(this);
 	theme->setRootCommand(getRootCommand());
-	theme->reconfigure(*resource.antialias);
 	theme->load(fluxbox->getStyleFilename());
-
+	theme->reconfigure(*resource.antialias);
+	
 	I18n *i18n = I18n::instance();
 
 	const char *s = i18n->getMessage(
