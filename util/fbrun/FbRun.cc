@@ -19,13 +19,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.16 2003/08/24 23:47:31 fluxgen Exp $
+// $Id: FbRun.cc,v 1.17 2003/08/25 01:18:00 fluxgen Exp $
 
 #include "FbRun.hh"
 
 #include "App.hh"
 #include "EventManager.hh"
 #include "Color.hh"
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif // HAVE_CONFIG_H
+
+#ifdef HAVE_XPM
+#include <X11/xpm.h>
+#include "fbrun.xpm"
+#endif // HAVE_XPM
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -35,16 +44,18 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <iterator>
 #include <fstream>
 #include <cassert>
 
 using namespace std;
 FbRun::FbRun(int x, int y, size_t width):
+    FbTk::FbWindow((int)DefaultScreen(FbTk::App::instance()->display()), 
+                   x, y,
+                   width, 10,
+                   KeyPressMask | ExposureMask),
     m_font("fixed"),
     m_display(FbTk::App::instance()->display()),
-    m_win((int)DefaultScreen(m_display), x, y,  //screen num and position
-          width + m_bevel, m_font.height() + 2,  // size
-          KeyPressMask|ExposureMask), // eventmask
     m_bevel(4),
     m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
     m_end(false),
@@ -52,30 +63,52 @@ FbRun::FbRun(int x, int y, size_t width):
     m_cursor(XCreateFontCursor(FbTk::App::instance()->display(), XC_xterm)),
     m_start_pos(0),
     m_end_pos(0),
-    m_cursor_pos(0)
-{
-    m_win.setCursor(m_cursor);
+    m_cursor_pos(0),
+    m_pixmap(0) {
+
+    setCursor(m_cursor);
     // setting nomaximize in local resize
     resize(width, m_font.height());
-    FbTk::EventManager::instance()->registerEventHandler(*this, m_win.window());
+    FbTk::EventManager::instance()->add(*this, *this);
     // setup class name
     XClassHint *class_hint = XAllocClassHint();
     if (class_hint == 0)
         throw string("Out of memory");
     class_hint->res_name = "fbrun";
-    class_hint->res_class = "FbRun";
-    XSetClassHint(m_display, m_win.window(), class_hint);
+    class_hint->res_class = "FbRun";    
+    XSetClassHint(m_display, window(), class_hint);
+    
     XFree(class_hint);
+#ifdef HAVE_XPM
+    Pixmap mask = 0;
+    XpmCreatePixmapFromData(m_display,
+                            window(),
+                            fbrun_xpm,
+                            &m_pixmap,
+                            &mask,
+                            0); // attribs
+    if (mask != 0)
+        XFreePixmap(m_display, mask);
+#endif // HAVE_XPM
+
+    XWMHints wmhints;
+    wmhints.flags = IconPixmapHint;
+    wmhints.icon_pixmap = m_pixmap;
+    XSetWMHints(m_display, window(), &wmhints);
 }
 
 
 FbRun::~FbRun() {
     hide();
-    FbTk::EventManager::instance()->unregisterEventHandler(m_win.window());
+    if (m_pixmap != 0)
+        XFreePixmap(FbTk::App::instance()->display(), m_pixmap);
 }
 
 void FbRun::run(const std::string &command) {
-    //fork and execute program
+    FbTk::App::instance()->end(); // end application
+    m_end = true; // mark end of processing
+
+    // fork and execute program
     if (!fork()) {
         setsid();
         execl("/bin/sh", "/bin/sh", "-c", command.c_str(), 0);
@@ -93,10 +126,12 @@ void FbRun::run(const std::string &command) {
             && m_runtext == m_history[m_current_history_item]) {
             // m_current_history_item is the duplicate
         } else {
-            int i;
-            for (i = 0; i < m_history.size(); i++)
-                if (m_runtext == m_history[i]) break;
-            m_current_history_item = i;
+            m_current_history_item = 0;
+            for (; m_current_history_item < m_history.size(); 
+                 ++m_current_history_item) {
+                if (m_history[m_current_history_item] == m_runtext)
+                    break;
+            }
         }
 
         // now m_current_history_item points at the duplicate, or
@@ -110,14 +145,13 @@ void FbRun::run(const std::string &command) {
             // write the history items that come after current
             for (i++; i < m_history.size(); i++)
                 inoutfile<<m_history[i]<<endl;
+            
             // and append the current one back to the end
             inoutfile<<m_runtext<<endl;
-            inoutfile.close();
         } else
             cerr<<"FbRun Warning: Can't write command history to file: "<<m_history_file<<endl;
     }
-    FbTk::App::instance()->end(); // end application
-    m_end = true; // mark end of processing
+
 }
 
 bool FbRun::loadHistory(const char *filename) {
@@ -150,17 +184,17 @@ bool FbRun::loadFont(const string &fontname) {
         return false;
 
     // resize to fit new font height
-    resize(m_win.width(), m_font.height() + m_bevel);
+    resize(width(), m_font.height() + m_bevel);
     return true;
 }
 
-void FbRun::setForeground(const FbTk::Color &color) {
+void FbRun::setForegroundColor(const FbTk::Color &color) {
     XSetForeground(m_display, m_gc, color.pixel());
     redrawLabel();
 }
 
-void FbRun::setBackground(const FbTk::Color &color) {
-    m_win.setBackgroundColor(color);
+void FbRun::setBackgroundColor(const FbTk::Color &color) {
+    FbTk::FbWindow::setBackgroundColor(color);
     redrawLabel();
 }
 
@@ -170,28 +204,16 @@ void FbRun::setText(const string &text) {
 }
 
 void FbRun::setTitle(const string &title) {
-    m_win.setName(title.c_str());
-}
-
-void FbRun::move(int x, int y) {
-    m_win.move(x, y);
+    setName(title.c_str());
 }
 
 void FbRun::resize(size_t width, size_t height) {
-    m_win.resize(width, height);    
+    FbTk::FbWindow::resize(width, height);    
     setNoMaximize();
 }
 
-void FbRun::show() {
-    m_win.show();
-}
-
-void FbRun::hide() {
-    m_win.hide();
-}
-
 void FbRun::redrawLabel() {
-    m_win.clear();
+    clear();
     drawString(m_bevel/2, m_font.ascent() + m_bevel/2,
                m_runtext.c_str(), m_runtext.size());
 
@@ -201,10 +223,12 @@ void FbRun::drawString(int x, int y,
                        const char *text, size_t len) {
     assert(m_gc);
 
-    m_font.drawText(m_win.window(), DefaultScreen(m_display), m_gc, text + m_start_pos, m_end_pos - m_start_pos, x, y - 2);
+    m_font.drawText(window(), screenNumber(), 
+                    m_gc, text + m_start_pos, 
+                    m_end_pos - m_start_pos, x, y - 2);
     // draw cursor position
     int cursor_pos = m_font.textWidth(text + m_start_pos, m_cursor_pos) + 1;
-    m_win.drawLine(m_gc, cursor_pos, 0, cursor_pos, m_font.height());
+    drawLine(m_gc, cursor_pos, 0, cursor_pos, m_font.height());
 }
 
 void FbRun::keyPressEvent(XKeyEvent &ke) {
@@ -304,11 +328,11 @@ void FbRun::setNoMaximize() {
     // we don't need to maximize this window
     XSizeHints sh;
     sh.flags = PMaxSize | PMinSize;
-    sh.max_width = m_win.width();
-    sh.max_height = m_win.height();
-    sh.min_width = m_win.width();
-    sh.min_height = m_win.height();
-    XSetWMNormalHints(m_display, m_win.window(), &sh);
+    sh.max_width = width();
+    sh.max_height = height();
+    sh.min_width = width();
+    sh.min_height = height();
+    XSetWMNormalHints(m_display, window(), &sh);
 }
 
 void FbRun::prevHistoryItem() {
@@ -449,7 +473,7 @@ void FbRun::adjustEndPos() {
     m_end_pos = m_runtext.size();
     const char *text = m_runtext.c_str();
     int text_width = m_font.textWidth(text + m_start_pos, m_end_pos - m_start_pos);
-    while (text_width > m_win.width()) {
+    while (text_width > width()) {
         m_end_pos--;
         text_width = m_font.textWidth(text + m_start_pos, m_end_pos - m_start_pos);
     }
@@ -458,10 +482,10 @@ void FbRun::adjustEndPos() {
 void FbRun::adjustStartPos() {
     const char *text = m_runtext.c_str();
     int text_width = m_font.textWidth(text + m_start_pos, m_end_pos - m_start_pos);
-    if (text_width < m_win.width()) return;
+    if (text_width < width()) return;
     int start_pos = 0;
     text_width = m_font.textWidth(text + start_pos, m_end_pos - start_pos);
-    while (text_width > m_win.width()) {
+    while (text_width > width()) {
         start_pos++;
         text_width = m_font.textWidth(text + start_pos, m_end_pos - start_pos);
     }
