@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
 *03/12/30:
+  * Added resource session.useMod1 <boolean> to disable/enable mod1   (Henrik)
+    for Resize/Move window with mod1 + button 
+    Window.cc, fluxbox.hh/cc
+  * Fixed so it checks for caps, num and scrollock (Henrik)
+    KeyUtil.hh/cc, fluxbox.cc, TextBox.cc, WorkspaceCmd.cc, Window.cc
   * Focus issue (Henrik) 
     Window.cc/hh, fluxbox.hh/cc
 *03/12/29:
