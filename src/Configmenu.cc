@@ -16,13 +16,13 @@
 //
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.	IN NO EVENT SHALL
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
 // THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Configmenu.cc,v 1.14 2002/04/28 16:00:27 fluxgen Exp $
+// $Id: Configmenu.cc,v 1.15 2002/05/08 14:19:12 fluxgen Exp $
 
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
@@ -40,7 +40,7 @@
 #include "Window.hh"
 
 enum {CMENU_USE_TABS=9, CMENU_USE_ICONS, CMENU_SLOPPY_WIN_GROUP,
-		CMENU_WORKSPACE_WARPING, CMENU_TAB_ROTATE=21};
+	CMENU_DESKTOP_WHEELING, CMENU_WORKSPACE_WARPING, CMENU_TAB_ROTATE=21};
 
 
 Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
@@ -97,6 +97,9 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	insert(i18n->getMessage(
 		ConfigmenuSet, ConfigmenuWorkspaceWarping,
 		"Workspace Warping"), CMENU_WORKSPACE_WARPING);
+	insert(i18n->getMessage(
+		ConfigmenuSet, ConfigmenuDesktopWheeling,
+		"Desktop MouseWheel Switching"), CMENU_DESKTOP_WHEELING);
 
 	update();
 	setItemSelected(8, screen->doMaxOverSlit());
@@ -110,6 +113,7 @@ Configmenu::Configmenu(BScreen *scr) : Basemenu(scr) {
 	setItemSelected(CMENU_USE_ICONS, Fluxbox::instance()->useIconBar());
 	setItemSelected(CMENU_SLOPPY_WIN_GROUP, screen->isSloppyWindowGrouping());
 	setItemSelected(CMENU_WORKSPACE_WARPING, screen->isWorkspaceWarping());
+	setItemSelected(CMENU_DESKTOP_WHEELING, screen->isDesktopWheeling());
 }
 
 
@@ -190,6 +194,13 @@ void Configmenu::itemSelected(int button, unsigned int index) {
 				{
 					screen->saveWorkspaceWarping(!screen->isWorkspaceWarping());
 					setItemSelected(index, screen->isWorkspaceWarping());
+					screen->reconfigure();
+				}
+				break;
+			case CMENU_DESKTOP_WHEELING:
+				{
+					screen->saveDesktopWheeling(!screen->isDesktopWheeling());
+					setItemSelected(index, screen->isDesktopWheeling());
 					screen->reconfigure();
 				}
 				break;
