@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.23 2003/08/26 23:45:36 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.24 2003/09/10 21:26:28 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -84,7 +84,7 @@ public:
 
     void setAlpha(unsigned char alpha);
 
-    FbWindow &operator = (const FbWindow &win);
+    virtual FbWindow &operator = (const FbWindow &win);
     /// assign a new X window to this
     virtual FbWindow &operator = (Window win);    
     virtual void hide();
