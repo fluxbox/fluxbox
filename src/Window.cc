@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.136 2003/04/15 18:55:33 fluxgen Exp $
+// $Id: Window.cc,v 1.137 2003/04/15 21:38:23 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -2092,9 +2092,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
 
     int cx = m_frame.x(), cy = m_frame.y();
     unsigned int cw = m_frame.width(), ch = m_frame.height();
-    unsigned int titlebar_y = (decorations.titlebar ? 
-                               m_frame.titlebar().height() + frame().titlebar().borderWidth() 
-                               : 0);
+
     if (cr.value_mask & CWBorderWidth)
         client->old_bw = cr.border_width;
 
@@ -2102,7 +2100,7 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
         cx = cr.x;
 
     if (cr.value_mask & CWY)
-        cy = cr.y - titlebar_y;
+        cy = cr.y;
 
     if (cr.value_mask & CWWidth)
         cw = cr.width;
@@ -2110,8 +2108,9 @@ void FluxboxWindow::configureRequestEvent(XConfigureRequestEvent &cr) {
     if (cr.value_mask & CWHeight)
         ch = cr.height;
 
-
+    // whether we should send ConfigureNotify to clients
     bool send_notify = false;
+
     // the request is for client window so we resize the frame to it first
     if (frame().width() != cw || frame().height() != ch) {        
         frame().resizeForClient(cw, ch);
