@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
 *03/05/13:
+   * Fix saving of Workspace Icons Toolbar mode (Simon)
+     Screen.cc
    * Fixed iconify problems when autoraise on (Simon)
      Window.cc Screen.cc
    * Fixed restoring submenus after a reconfigure (Thanks MrChuoi)

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.161 2003/05/13 11:14:04 rathnor Exp $
+// $Id: Screen.cc,v 1.162 2003/05/13 11:21:23 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -341,7 +341,7 @@ getString() {
         return string("Icons");
         break;
     case ToolbarHandler::WORKSPACEICONS:
-        return string("Workspace");
+        return string("WorkspaceIcons");
         break;
     case ToolbarHandler::WORKSPACE:
         return string("Workspace");
