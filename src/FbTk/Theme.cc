@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.5 2003/05/18 22:12:25 fluxgen Exp $
+// $Id: Theme.cc,v 1.6 2003/06/12 14:09:59 fluxgen Exp $
 
 #include "Theme.hh"
 
@@ -55,8 +55,8 @@ void ThemeItem<FbTk::Font>::setDefaultValue() {
 template <>
 void ThemeItem<FbTk::Font>::setFromString(const char *str) {
     if (m_value.load(str) == false) {
-        cerr<<"Failed to load font: "<<str<<endl;
-        cerr<<"Setting default value"<<endl;
+        cerr<<"FbTk::Theme: Error loading font for \""<<name()<<"\" or \""<<altName()<<"\": "<<str<<endl;
+        cerr<<"FbTk::Theme: Setting default value"<<endl;
         setDefaultValue();
     }
     
@@ -123,8 +123,10 @@ void ThemeItem<FbTk::Color>::setDefaultValue() {
 
 template <>
 void ThemeItem<FbTk::Color>::setFromString(const char *str) {
-    if (!m_value.setFromString(str, m_tm.screenNum()))
+    if (!m_value.setFromString(str, m_tm.screenNum())) {
+        cerr<<"FbTk::Theme: Error loading color value for \""<<name()<<"\" or \""<<altName()<<"\"."<<endl;
         setDefaultValue();
+    }
 }
 
 // does nothing
