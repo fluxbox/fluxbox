@@ -539,6 +539,17 @@ Instead of a texture description, also the option
 is available, which makes the component appear as a part of its parent, e.g.
 totally transparant.
 .PP
+Or for even more possibilities 
+.B Pixmap .
+If pixmap texture is specified (it might not be necessary on every occasion)
+the pixmap file is specified in a separate pixmap resource.
+.EX
+toolbar.clock: pixmap
+toolbar.clock.pixmap: .fluxbox/styles/mine/clock_background.xpm
+.EE
+This feature might need some investigations, reports say that sometimes
+the resources color and colorTo must be set and then they may not be set.
+.PP
 All gradiented textures are composed of two color values: the
 .IR color " and " colorTo " resources."
 When
@@ -959,9 +970,8 @@ This tells Fluxbox where to find the file that contains the order in which the a
 .EX
 session.slitlistFile: /home/myself/.fluxbox/slitlist
 .EE
-.\" 
 .TP
-.B session.screen0.toolbar.tools: <list of tools>
+.B session.screen0.toolbar.tools:
 This specifies the tools plugged ino the toolbar.
 Possible tools: 
 workspacename, prevworkspace, nextworkspace, iconbar, systemtray, prevwindow, nextwindow,
@@ -970,7 +980,6 @@ e.g. :
 .EX
 session.screen0.toolbar.tools: clock, iconbar, workspacename
 .EE
-.\" 
 .TP
 .B session.screen0.strftimeFormat:
 This adjusts the way the current time is displayed in the toolbar.
