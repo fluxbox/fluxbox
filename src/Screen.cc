@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.247 2003/12/10 23:08:03 fluxgen Exp $
+// $Id: Screen.cc,v 1.248 2003/12/12 18:18:12 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -154,7 +154,31 @@ private:
 
 }; // End anonymous namespace
 
+template <>
+void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setDefaultValue() {
+    *(*this) = FbTk::MenuTheme::DELAY_OPEN;
+}
 
+template <>
+string FbTk::Resource<FbTk::MenuTheme::MenuMode>::getString() {
+    switch (*(*this)) {
+    case FbTk::MenuTheme::DELAY_OPEN:
+        return string("Delay");
+    case FbTk::MenuTheme::CLICK_OPEN:
+        return string("Click");
+    }
+    return string("Delay");
+}
+
+template <>
+void FbTk::Resource<FbTk::MenuTheme::MenuMode>::setFromString(const char *str) {
+    if (strcasecmp(str, "Delay") == 0)
+        *(*this) = FbTk::MenuTheme::DELAY_OPEN;
+    else if (strcasecmp(str, "Click") == 0)
+        *(*this) = FbTk::MenuTheme::CLICK_OPEN;
+    else
+        setDefaultValue();
+}
 
 namespace {
 
@@ -222,7 +246,10 @@ BScreen::ScreenResource::ScreenResource(FbTk::ResourceManager &rm,
     focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
     edge_snap_threshold(rm, 0, scrname+".edgeSnapThreshold", altscrname+".EdgeSnapThreshold"),
-    menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha") {
+    menu_alpha(rm, 255, scrname+".menuAlpha", altscrname+".MenuAlpha"),
+    menu_delay(rm, 0, scrname + ".menuDelay", altscrname+".MenuDelay"),
+    menu_delay_close(rm, 0, scrname + ".menuDelayClose", altscrname+".MenuDelayClose"),
+    menu_mode(rm, FbTk::MenuTheme::DELAY_OPEN, scrname+".menuMode", altscrname+".MenuMode") {
 
 };
 
@@ -307,6 +334,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
 
     m_menutheme->setAlpha(*resource.menu_alpha);
+    m_menutheme->setMenuMode(*resource.menu_mode);
+    m_menutheme->setDelayOpen(*resource.menu_delay);
+    m_menutheme->setDelayClose(*resource.menu_delay_close);
 
     imageControl().setDither(*resource.image_dither);
 
@@ -570,6 +600,10 @@ FbTk::Menu *BScreen::createMenu(const std::string &label) {
 
 void BScreen::reconfigure() {
     m_menutheme->setAlpha(*resource.menu_alpha);
+    m_menutheme->setMenuMode(*resource.menu_mode);
+    m_menutheme->setDelayOpen(*resource.menu_delay);
+    m_menutheme->setDelayClose(*resource.menu_delay_close);
+
     Fluxbox::instance()->loadRootCommand(*this);
 
     // setup windowtheme, toolbartheme for antialias

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.hh,v 1.10 2003/11/28 22:53:10 fluxgen Exp $
+// $Id: MenuTheme.hh,v 1.11 2003/12/12 18:18:49 fluxgen Exp $
 
 #ifndef FBTK_MENUTHEME_HH
 #define FBTK_MENUTHEME_HH
@@ -37,6 +37,11 @@ namespace FbTk {
 
 class MenuTheme:public FbTk::Theme {
 public:
+    //!! TODO
+    // this isn't actually used with a theme item
+    // see setMenuMode() for more info
+    enum MenuMode {CLICK_OPEN, DELAY_OPEN};
+
     enum BulletType { EMPTY, SQUARE, TRIANGLE, DIAMOND};
     MenuTheme(int screen_num);
     virtual ~MenuTheme();
@@ -102,7 +107,16 @@ public:
 
     inline unsigned char alpha() const { return m_alpha; }
     void setAlpha(unsigned char alpha) { m_alpha = alpha; }
-
+    // this isn't actually a theme item
+    // but we'll let it be here for now, until there's a better way to
+    // get resources into menu
+    void setMenuMode(MenuMode mode) { m_menumode = mode; }
+    MenuMode menuMode() const { return m_menumode; }
+    void setDelayOpen(int usec) { m_delayopen = usec; }
+    void setDelayClose(int usec) { m_delayclose = usec; }
+    int delayOpen() const { return m_delayopen; }
+    int delayClose() const { return m_delayclose; }
+    
     const FbTk::Color &borderColor() const { return *m_border_color; }
     FbTk::Subject &themeChangeSig() { return m_theme_change_sig; }
     /// attach observer
@@ -126,6 +140,10 @@ private:
     FbTk::Subject m_theme_change_sig;
 
     unsigned char m_alpha;
+    MenuMode m_menumode;
+    unsigned int m_delayopen; ///< in usec
+    unsigned int m_delayclose; ///< in usec
+    
 };
 
 }; // end namespace FbTk

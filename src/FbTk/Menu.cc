@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.45 2003/12/10 23:33:15 fluxgen Exp $
+// $Id: Menu.cc,v 1.46 2003/12/12 18:18:49 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -37,6 +37,7 @@
 #include "App.hh"
 #include "EventManager.hh"
 #include "Transparent.hh"
+#include "SimpleCommand.hh"
 
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
@@ -64,6 +65,17 @@ Menu::Menu(MenuTheme &tm, ImageControl &imgctrl):
     m_border_width(0),
     m_themeobserver(*this), 
     m_need_update(true) {
+
+    // setup timers
+
+    RefCount<Command> show_cmd(new SimpleCommand<Menu>(*this, &Menu::openSubmenu));
+    m_submenu_timer.setCommand(show_cmd);
+    m_submenu_timer.fireOnce(true);
+
+
+    RefCount<Command> hide_cmd(new SimpleCommand<Menu>(*this, &Menu::closeMenu));
+    m_hide_timer.setCommand(hide_cmd);
+    m_hide_timer.fireOnce(true);
 
     // make sure we get updated when the theme is reloaded
     tm.addListener(m_themeobserver);
@@ -673,7 +685,7 @@ void Menu::drawSubmenu(unsigned int index) {
 			
         if (m_alignment == ALIGNBOTTOM &&
             (y + item->submenu()->height()) > ((shifted) ? menu.y_shift :
-                                                  menu.y) + height()) {
+                                               menu.y) + height()) {
             y = (((shifted) ? menu.y_shift : menu.y) +
                  height() - item->submenu()->height());
         }
@@ -864,23 +876,23 @@ void Menu::drawItem(unsigned int index, bool highlight, bool clear, bool render_
         }
         
     } else if (item->isToggleItem() && m_theme.unselectedPixmap().pixmap().drawable() != 0) {
-         // enable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         m_theme.unselectedPixmap().mask().drawable());
-            XSetClipOrigin(FbTk::App::instance()->display(),
-                           gc, sel_x, item_y);
-            // copy bullet pixmap to frame
-            m_frame_pm.copyArea(m_theme.unselectedPixmap().pixmap().drawable(),
-                                gc,
-                                0, 0,
-                                sel_x, item_y,
-                                m_theme.unselectedPixmap().width(),
-                                m_theme.unselectedPixmap().height());
-            // disable clip mask
-            XSetClipMask(FbTk::App::instance()->display(),
-                         gc,
-                         None);
+        // enable clip mask
+        XSetClipMask(FbTk::App::instance()->display(),
+                     gc,
+                     m_theme.unselectedPixmap().mask().drawable());
+        XSetClipOrigin(FbTk::App::instance()->display(),
+                       gc, sel_x, item_y);
+        // copy bullet pixmap to frame
+        m_frame_pm.copyArea(m_theme.unselectedPixmap().pixmap().drawable(),
+                            gc,
+                            0, 0,
+                            sel_x, item_y,
+                            m_theme.unselectedPixmap().width(),
+                            m_theme.unselectedPixmap().height());
+        // disable clip mask
+        XSetClipMask(FbTk::App::instance()->display(),
+                     gc,
+                     None);
     }
     
     if (dotext && text) {
@@ -1109,6 +1121,7 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
 
 
 void Menu::motionNotifyEvent(XMotionEvent &me) {
+    m_hide_timer.stop();
     if (me.window == menu.title && (me.state & Button1Mask)) {
         if (movable) {
             if (! moving) {
@@ -1128,7 +1141,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                 menu.window.move(menu.x, menu.y);
 
                 // if (which_sub >= 0)
-                 //     drawSubmenu(which_sub);
+                //     drawSubmenu(which_sub);
             }
         }
     } else if ((! (me.state & Button1Mask)) && me.window == menu.frame &&
@@ -1139,21 +1152,28 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
         if ((i != which_press || sbl != which_sbl) &&
             (w < static_cast<int>(menuitems.size()) && w >= 0)) {
+
             if (which_press != -1 && which_sbl != -1) {
+
                 int p = which_sbl * menu.persub + which_press;
                 MenuItem *item = menuitems[p];
-
                 // don't redraw disabled items on enter/leave
-                if (item->isEnabled()) {
+                if (item != 0 && item->isEnabled()) {
+
                     drawItem(p, false, true, true);
+
                     if (item->submenu()) {
+
                         if (item->submenu()->isVisible() &&
-                            (! item->submenu()->isTorn())) {
-                            item->submenu()->internal_hide();
+                            !item->submenu()->isTorn()) {
                             which_sub = -1;
+                            // setup hide timer for submenu
+                            item->submenu()->startHide();
                         }
                     }
+
                 }
+
             }
 
             which_press = i;
@@ -1162,11 +1182,27 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
             MenuItem *itmp = menuitems[w];
 
             if (itmp->submenu()) {
-                if (!itmp->submenu()->isVisible())
-                    drawSubmenu(w);
-            } else
+
+                drawItem(w, true);
+
+                if (theme().menuMode() == MenuTheme::DELAY_OPEN) {
+                    cerr<<"menuMode DELAY_OPEN"<<endl;
+                    // setup show menu timer
+                    stopHide();
+
+                    timeval timeout;
+                    timeout.tv_sec = 0;
+                    timeout.tv_usec = theme().delayOpen();
+                    m_submenu_timer.setTimeout(timeout);
+                    m_submenu_timer.start();
+
+                }
+
+            } else {
+                m_submenu_timer.stop();
                 if (itmp->isEnabled())
                     drawItem(w, true, true, true);
+            }
         }
     }
 }
@@ -1345,6 +1381,41 @@ void Menu::reconfigure() {
 void Menu::renderTransFrame() {
     menu.frame.clear();
     menu.frame.updateTransparent();
+}
+
+void Menu::openSubmenu() {
+    if (!isVisible() || which_press < 0 || which_press >= menuitems.size() ||
+        which_sbl < 0 || which_sbl >= menuitems.size())
+        return;
+
+    int item = which_sbl * menu.persub + which_press;
+    if (item < 0 || item >= menuitems.size())
+        return;
+
+    stopHide(); 
+
+    if (menuitems[item]->submenu() != 0 && !menuitems[item]->submenu()->isVisible())
+        drawSubmenu(item);
+
+}
+
+void Menu::closeMenu() {
+    if (isVisible() &&
+        !isTorn()) {
+        internal_hide();
+    }    
+}
+
+void Menu::startHide() {
+    timeval timeout;
+    timeout.tv_sec = 0;
+    timeout.tv_usec = theme().delayClose();
+    m_hide_timer.setTimeout(timeout);
+    m_hide_timer.start(); 
+}
+
+void Menu::stopHide() {
+    m_hide_timer.stop();
 }
 
 }; // end namespace FbTk

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.11 2003/09/12 23:32:02 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.12 2003/12/12 18:18:49 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -60,6 +60,9 @@ MenuTheme::MenuTheme(int screen_num):
     h_text_gc(RootWindow(m_display, screen_num)),
     d_text_gc(RootWindow(m_display, screen_num)),
     hilite_gc(RootWindow(m_display, screen_num)),
+    m_menumode(DELAY_OPEN),
+    m_delayopen(0), // no delay as default
+    m_delayclose(0), // no delay as default
     m_alpha(255) { 
 
     // set default values

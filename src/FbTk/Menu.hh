@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.hh,v 1.25 2003/12/10 23:08:06 fluxgen Exp $
+// $Id: Menu.hh,v 1.26 2003/12/12 18:18:49 fluxgen Exp $
 
 #ifndef	 FBTK_MENU_HH
 #define	 FBTK_MENU_HH
@@ -39,6 +39,7 @@
 #include "Observer.hh"
 #include "FbPixmap.hh"
 #include "MenuTheme.hh"
+#include "Timer.hh"
 
 namespace FbTk {
 
@@ -174,6 +175,11 @@ protected:
     inline const Menu *parent() const { return m_parent; }
 
 private: 
+    void openSubmenu();
+    void closeMenu();
+    void startHide();
+    void stopHide();
+
     void renderTransFrame();
 
     typedef std::vector<MenuItem *> Menuitems;
@@ -215,6 +221,8 @@ private:
     static Menu *s_focused; ///< holds current input focused menu, so one can determine if a menu is focused
     FbPixmap m_frame_pm;
     bool m_need_update;
+    Timer m_submenu_timer;
+    Timer m_hide_timer;
 };
 
 }; // end namespace FbTk
