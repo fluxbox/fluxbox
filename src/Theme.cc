@@ -271,7 +271,7 @@ void Theme::freeTabStyle() {
 		XFreeFont(m_display, m_windowstyle.tab.font.fontstruct);
 
 	if (m_windowstyle.tab.rot_font)
-		XRotUnloadFont(m_display, m_windowstyle.tab.rot_font);
+		Misc::XRotUnloadFont(m_display, m_windowstyle.tab.rot_font);
 
 	
 	XFreeGC(m_display, m_windowstyle.tab.l_text_focus_gc);
@@ -346,27 +346,27 @@ void Theme::loadMenuStyle() {
 				 "Menu.Title.Justify", &value_type, &value)) {
 				 
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_menustyle.titlefont.justify = FFont::Right;
+			m_menustyle.titlefont.justify = Misc::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_menustyle.titlefont.justify = FFont::Center;
+			m_menustyle.titlefont.justify = Misc::Font::CENTER;
 		else
-			m_menustyle.titlefont.justify = FFont::Left;
+			m_menustyle.titlefont.justify = Misc::Font::LEFT;
 			
 	} else
-		m_menustyle.titlefont.justify = FFont::Left;
+		m_menustyle.titlefont.justify = Misc::Font::LEFT;
 
 	if (XrmGetResource(m_database, "menu.frame.justify",
 				 "Menu.Frame.Justify", &value_type, &value)) {
 		
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_menustyle.framefont.justify = FFont::Right;
+			m_menustyle.framefont.justify = Misc::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_menustyle.framefont.justify = FFont::Center;
+			m_menustyle.framefont.justify = Misc::Font::CENTER;
 		else
-			m_menustyle.framefont.justify = FFont::Left;
+			m_menustyle.framefont.justify = Misc::Font::LEFT;
 			
 	} else
-		m_menustyle.framefont.justify = FFont::Left;
+		m_menustyle.framefont.justify = Misc::Font::LEFT;
 
 	if (XrmGetResource(m_database, "menu.bullet", "Menu.Bullet",
 										 &value_type, &value)) {
@@ -502,13 +502,13 @@ void Theme::loadWindowStyle() {
 	if (XrmGetResource(m_database, "window.justify", "Window.Justify",
 				 &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_windowstyle.font.justify = FFont::Right;
+			m_windowstyle.font.justify = Misc::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_windowstyle.font.justify = FFont::Center;
+			m_windowstyle.font.justify = Misc::Font::CENTER;
 		else
-			m_windowstyle.font.justify = FFont::Left;
+			m_windowstyle.font.justify = Misc::Font::LEFT;
 	} else
-		m_windowstyle.font.justify = FFont::Left;
+		m_windowstyle.font.justify = Misc::Font::LEFT;
 		
 }
 
@@ -583,22 +583,22 @@ void Theme::loadTabStyle() {
 	// TODO: add extra checking
 	if (XrmGetResource(m_database, "window.tab.font", "Window.Tab.Font",
 			&value_type, &value)) {		
-		if (! (m_windowstyle.tab.rot_font = XRotLoadFont(m_display, value.addr, 90.0)) )
-			m_windowstyle.tab.rot_font = XRotLoadFont(m_display, "fixed", 90);
+		if (! (m_windowstyle.tab.rot_font = Misc::XRotLoadFont(m_display, value.addr, 90.0)) )
+			m_windowstyle.tab.rot_font = Misc::XRotLoadFont(m_display, "fixed", 90);
 	} else
-		m_windowstyle.tab.rot_font = XRotLoadFont(m_display, "fixed", 90);
+		m_windowstyle.tab.rot_font = Misc::XRotLoadFont(m_display, "fixed", 90);
 
 
 	if (XrmGetResource(m_database, "window.tab.justify", "Window.Tab.Justify",
 			 &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_windowstyle.tab.font.justify = FFont::Right;
+			m_windowstyle.tab.font.justify = Misc::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_windowstyle.tab.font.justify = FFont::Center;
+			m_windowstyle.tab.font.justify = Misc::Font::CENTER;
 		else
-			m_windowstyle.tab.font.justify = FFont::Left;
+			m_windowstyle.tab.font.justify = Misc::Font::LEFT;
 	} else
-		m_windowstyle.tab.font.justify = FFont::Left;
+		m_windowstyle.tab.font.justify = Misc::Font::LEFT;
 		
 }
 
@@ -655,13 +655,13 @@ void Theme::loadToolbarStyle() {
 	if (XrmGetResource(m_database, "toolbar.justify",
 				 "Toolbar.Justify", &value_type, &value)) {
 		if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-			m_toolbarstyle.font.justify = FFont::Right;
+			m_toolbarstyle.font.justify = Misc::Font::RIGHT;
 		else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-			m_toolbarstyle.font.justify = FFont::Center;
+			m_toolbarstyle.font.justify = Misc::Font::CENTER;
 		else
-			m_toolbarstyle.font.justify = FFont::Left;
+			m_toolbarstyle.font.justify = Misc::Font::LEFT;
 	} else
-		m_toolbarstyle.font.justify = FFont::Left;
+		m_toolbarstyle.font.justify = Misc::Font::LEFT;
 
 }
 
