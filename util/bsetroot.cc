@@ -189,7 +189,7 @@ void bsetroot::solid(void) {
 	pixmaps = new Pixmap[getNumberOfScreens()];
 
   for (; screen < getNumberOfScreens(); screen++) {
-    BColor c;
+    FbTk::Color c;
 		GC gc;
 		XGCValues gcv;
 
@@ -250,7 +250,7 @@ void bsetroot::modula(int x, int y) {
 			}
 		}
 
-		BColor f, b;
+		FbTk::Color f, b;
 		GC gc;
 		Pixmap bitmap, r_bitmap;
 		XGCValues gcv;
@@ -317,7 +317,7 @@ void bsetroot::gradient(void) {
 	pixmaps = new Pixmap[getNumberOfScreens()];
 
 	for (screen = 0; screen < getNumberOfScreens(); screen++) {
-		BTexture texture;
+		FbTk::Texture texture;
 		GC gc;
 		XGCValues gcv;
 
