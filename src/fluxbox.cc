@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.89 2003/01/09 18:30:49 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.90 2003/01/10 00:44:17 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -1279,21 +1279,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
                     break;
                 case Keys::EXECUTE: //execute command on keypress
                     {
-#ifndef		__EMX__
-                        char displaystring[MAXPATHLEN];
-                        sprintf(displaystring, "DISPLAY=%s",
-                                DisplayString(getXDisplay()));
-                        sprintf(displaystring + strlen(displaystring) - 1, "%d",
-                                screen->getScreenNumber());		
-#ifdef DEBUG
-                        cerr<<__FILE__<<"("<<__LINE__<<"): Executing:"<<key->getExecCommand().c_str()<<endl;
-#endif // DEBUG
-						
-                        bexec(key->getExecCommand().c_str(), displaystring);
-#else
-                        spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec(), NULL);
-#endif // !__EMX__
-						
+                        cerr<<"TODO"<<endl;
 			
                     }
                     break;
