@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.hh,v 1.7 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: IconBar.hh,v 1.8 2002/10/29 15:52:44 fluxgen Exp $
 
 #ifndef ICONBAR_HH
 #define ICONBAR_HH
@@ -60,10 +60,11 @@ public:
 	Window delIcon(FluxboxWindow *fluxboxwin);
 	void buttonPressEvent(XButtonEvent *be);	
 	FluxboxWindow *findWindow(Window w);
-	IconBarObj *findIcon(FluxboxWindow *fluxboxwin);
+	IconBarObj *findIcon(FluxboxWindow * const fluxboxwin);
+	const IconBarObj *findIcon(const FluxboxWindow * const fluxboxwin) const;
 	void exposeEvent(XExposeEvent *ee);
 
-	void draw(IconBarObj *obj, int width);
+	void draw(const IconBarObj * const obj, int width) const;
 private:
 	typedef std::list<IconBarObj *> IconList;
 
