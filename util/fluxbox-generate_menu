@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu,v 1.54 2003/10/08 14:18:25 rathnor Exp $
+# $Id: fluxbox-generate_menu,v 1.55 2003/10/20 17:05:14 rathnor Exp $
 
 #
 # Portability notes:
@@ -79,7 +79,7 @@ Options:
   Only for packagers:
 
     -p  prefix; default is /usr/local
-    -n  Gnome-prefix; /opt, /usr and /usr/local autodetected
+    -n  Gnome-prefix; /opt, /usr, /usr/X11R6 and /usr/local autodetected
     -q  KDE-prefix; idem dito
 
 
@@ -111,6 +111,10 @@ case `uname` in
         find_it() {
             which $1 > /dev/null 2>&1 && shift && $*
         }
+
+        find_it_options() {
+            which $1 > /dev/null 2>&1
+        }
         ;;
     *)
         find_it() {
@@ -125,6 +129,16 @@ case `uname` in
                 return 1
             fi
         }
+
+        find_it_options() {
+            file=`which $1 2> /dev/null`
+            if [ -x "$file" ]; then
+                return 0
+            else
+                return 1
+            fi
+        }
+
         ;;
 esac
 
@@ -226,7 +240,7 @@ GRAPHICMENU='Graphics'
 KDEMENUTEXT='KDE-menus'
 MISCMENU='Misc'
 MULTIMEDIAMENU='Multimedia'
-MUSICMENU='Music'
+MUSICMENU='Audio'
 NETMENU='Net'
 OFFICEMENU='Office'
 RELOADITEM='Reload config'
@@ -337,11 +351,11 @@ case ${LC_ALL} in
         NETMENU='Net'
         OFFICEMENU='Office'
         RELOADITEM='Vernieuw instellingen'
-        RESTARTITEM='Restart'
-        STYLEMENUTITLE='Kies een styl'
-        SYSTEMSTYLES='Systeem Stylen'
+        RESTARTITEM='Herstart'
+        STYLEMENUTITLE='Kies een stijl'
+        SYSTEMSTYLES='Systeem Stijlen'
         TERMINALMENU='Terminals'
-        USERSTYLES='Gebruikers Stylen'
+        USERSTYLES='Gebruikers Stijlen'
         WINDOWMANAGERS='Window Managers'
         WORKSPACEMENU='Werkveld menu'
         XUTILSMENU='X-utils'
@@ -558,10 +572,12 @@ if [ ! "${INSTALL}" = Yes ]; then
 # default you can change it here.  Don't forget to remove the # in front
 # of the line.
 
-# Your favourite terminal
-# MY_TERM=aterm
+# Your favourite terminal. Put the command in quotes if you want to use
+# options. Put a backslash in before odd chars
+# MY_TERM='Eterm --tint \#123456'
+# MY_TERM='aterm -tint $(random_color)'
 
-# Your favourite browser
+# Your favourite browser. You can also specify options.
 # MY_BROWSER=mozilla
 
 # Name of the outputfile
@@ -575,12 +591,15 @@ if [ ! "${INSTALL}" = Yes ]; then
 # location with your own menu-entries
 # USERMENU=~/.fluxbox/usermenu
 
+# Options for fbrun
+# FBRUNOPTIONS='-font 10x20 -fg grey -bg black -title run'
 
 # --- PREFIX'es
 # These are prefixes; So if fluxbox is installed in /usr/bin/fluxbox
 # your prefix is: /usr
-# fluxbox-generate already looks in /usr, /usr/local and /opt so there should be no need
-# to specify them.
+
+# fluxbox-generate already looks in /usr/X11R6, /usr, /usr/local and /opt so
+# there should be no need to specify them.
 #
 # PREFIX=/usr
 # GNOME_PREFIX=/opt/gnome
@@ -705,12 +724,13 @@ fi
 
 # prefix
 PREFIX="${PREFIX:=@PREFIX@}"
-if [ ! -d "${PREFIX}" -o -z "${PREFIX}" ]; then
-    PREFIX=/usr/local
+if [  -z "${PREFIX}" -o ! -d "${PREFIX}" ]; then
+    PREFIX=`which fluxbox | sed 's,/bin/fluxbox$,,'`
 fi
 
+
 # gnome prefix
-for GNOME_PREFIX in "${GNOME_PREFIX}" /usr /opt /usr/local "${PREFIX}"; do
+for GNOME_PREFIX in "${GNOME_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; do
     if [ -n "${GNOME_PREFIX}" -a -d "$GNOME_PREFIX/share/gnome" ]; then
         break;
     fi
@@ -718,7 +738,7 @@ done
 # Will remain $PREFIX if all else fails
 
 # kde prefix
-for KDE_PREFIX in "${KDE_PREFIX}" /usr /opt /usr/local "${PREFIX}"; do
+for KDE_PREFIX in "${KDE_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; do
     if [ -n "${KDE_PREFIX}" -a -d "$KDE_PREFIX/share/applnk" ]; then
         break;
     fi
@@ -730,8 +750,7 @@ if [ -z "$BACKGROUND_DIRS" ]; then
 fi
 
 # find the default terminal
-
-if find_it $MY_TERM; then
+if find_it_options $MY_TERM; then
     DEFAULT_TERM=$MY_TERM
 else
     [ -n "$MY_TERM" ] && echo "Warning: you chose an invalid term." >&2
@@ -744,9 +763,8 @@ else
     done
 fi
 
-
 # find the default browser
-if find_it $MY_BROWSER; then
+if find_it_options $MY_BROWSER; then
     DEFAULT_BROWSER=$MY_BROWSER
 else
     [ -n "$MY_BROWSER" ] && echo "Warning: you chose an invalid browser." >&2
@@ -758,7 +776,6 @@ else
         fi
     done
 fi
-
 
 # a unix system without any terms. that's odd
 if [ -z "$DEFAULT_TERM" ]; then
@@ -792,19 +809,22 @@ EOF
 
 echo "[begin] (${MENUTITLE})" >> ${MENUFILENAME}
 
+DEFAULT_TERMNAME=`echo $DEFAULT_TERM|awk '{print $1}'`
+DEFAULT_TERMNAME=`basename $DEFAULT_TERMNAME`
+append "[exec]    (${DEFAULT_TERMNAME}) {${DEFAULT_TERM}}"
 
-append "[exec]    (${DEFAULT_TERM}) {${DEFAULT_TERM}}"
-
-case "$DEFAULT_BROWSER" in
-    links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
-    firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSER}) {${DEFAULT_BROWSER}}" ;;
+DEFAULT_BROWSERNAME=`echo $DEFAULT_BROWSER|awk '{print $1}'`
+DEFAULT_BROWSERNAME=`basename $DEFAULT_BROWSERNAME`
+case "$DEFAULT_BROWSERNAME" in
+    links|w3m|lynx)  append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_TERM} -e ${DEFAULT_BROWSER} ${HOMEPAGE}}" ;;
+    firebird|mozilla|phoenix|galeon|dillo|netscape) append "[exec] (${DEFAULT_BROWSERNAME}) {${DEFAULT_BROWSER}}" ;;
     konqueror) append "[exec] (konqueror) {kfmclient openProfile webbrowsing}" ;;
     opera) append "[exec] (opera) {env QT_XFT=true opera}" ;;
     MozillaFirebird) append "[exec] (firebird) {MozillaFirebird}" ;;
-    *) append "[exec] (`basename $DEFAULT_BROWSER`) {$DEFAULT_BROWSER}" ;;
+    *) append "[exec] ($DEFAULT_BROWSERNAME) {$DEFAULT_BROWSER}" ;;
 esac
 
-find_it fbrun           append "[exec]   (Run) {fbrun}"
+find_it fbrun           append "[exec]   (Run) {fbrun $FBRUNOPTIONS}"
 
 
 append_submenu "${TERMINALMENU}"
@@ -881,7 +901,7 @@ append_submenu "${MULTIMEDIAMENU}"
 
 
        append_submenu "${VIDEOMENU}"
-           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb ddd realplay xawtv
+           normal_find xine aviplay gtv gmplayer xmovie xcdroast xgdb realplay xawtv
            find_it dvdrip append "[exec] (dvdrip) {nohup dvdrip}"
        append_menu_end
 
@@ -999,7 +1019,7 @@ append_submenu "${FBSETTINGSMENU}"
             find_it xmessage append \
               "[exec] (Windowname) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (screenshot) {import screenshot.png && qiv -W 50 screenshot.png}"
-        find_it fbrun append "[exec] (Run) {fbrun}"
+        find_it fbrun append "[exec] (Run) {fbrun $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
         find_it switch2 append "[exec] (gtk2-theme-switch) {switch2}"
         find_it fluxbox-generate_menu append "[exec] (regenerate menu) {fluxbox-generate_menu}"

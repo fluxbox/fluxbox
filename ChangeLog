@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/20:
+  * fbgm updates from Han
+    - allow options in ~/.fluxbox/menuconfig
+    - update dutch locales a bit.
+    - fbrun options added in menuconfig
+    - added /usr/X11R6 to searchpath
+    - some other random fixes/updates
+    fluxbox-generate_menu
 *03/10/17:
   * fbsetbg update from Han - new option to explicitly say 
     which wallpaper setting to use, plus minor changes
