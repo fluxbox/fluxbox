@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.185 2003/08/15 13:57:18 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.186 2003/08/22 21:38:58 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -41,6 +41,8 @@
 #include "Keys.hh"
 #include "FbAtoms.hh"
 #include "defaults.hh"
+
+#include "FbTk/Image.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -118,10 +120,6 @@
 #endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-#ifdef HAVE_LIBGEN_H
-#include <libgen.h>
-#endif // HAVE_LIBGEN_H
-
 #include <sys/wait.h>
 
 #include <iostream>
@@ -132,24 +130,6 @@
 
 using namespace std;
 using namespace FbTk;
-
-#ifndef	 HAVE_BASENAME
-namespace {
-
-char *basename(char *s) {
-    char *save = s;
-
-    while (*s) {
-        if (*s++ == '/')
-            save = s;
-    }
-
-    return save;
-}
-
-}; // end anonymous namespace
-
-#endif // HAVE_BASENAME
 
 //-----------------------------------------------------------------
 //---- accessors for int, bool, and some enums with Resource ------
@@ -1442,7 +1422,7 @@ void Fluxbox::restart(const char *prog) {
 
     // fall back in case the above execlp doesn't work
     execvp(m_argv[0], m_argv);
-    execvp(basename(m_argv[0]), m_argv);
+    execvp(StringUtil::basename(m_argv[0]).c_str(), m_argv);
 }
 
 /// prepares fluxbox for a shutdown
@@ -1663,17 +1643,6 @@ void Fluxbox::load_rc() {
 void Fluxbox::load_rc(BScreen &screen) {
     //get resource filename
     string dbfile(getRcFilename());
-    if (dbfile.size() != 0) {
-        if (!m_screen_rm.load(dbfile.c_str())) {
-            cerr<<"Failed to load database:"<<dbfile<<endl;
-            cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
-            if (!m_screen_rm.load(DEFAULT_INITFILE))
-                cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
-        }
-    } else {
-        if (!m_screen_rm.load(DEFAULT_INITFILE))
-            cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
-    }
 	
     XrmDatabaseHelper database;
 
@@ -1735,6 +1704,17 @@ void Fluxbox::load_rc(BScreen &screen) {
         delete [] search;
     }
 
+    FbTk::Image::removeAllSearchPaths();
+    sprintf(name_lookup, "session.screen%d.imageSearchPath", screen_number);
+    sprintf(class_lookup, "Session.Screen%d.imageSearchPath", screen_number);
+    if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
+                       &value) && value.addr) {
+        std::vector<std::string> paths;        
+        StringUtil::stringtok(paths, value.addr, ", ");
+        for (unsigned int i=0; i<paths.size(); ++i)
+            FbTk::Image::addSearchPath(paths[i]);
+    }
+
     sprintf(name_lookup, "session.screen%d.windowPlacement", screen_number);
     sprintf(class_lookup, "Session.Screen%d.WindowPlacement", screen_number);
     if (XrmGetResource(*database, name_lookup, class_lookup, &value_type,
@@ -1750,6 +1730,18 @@ void Fluxbox::load_rc(BScreen &screen) {
     } else
         screen.savePlacementPolicy(BScreen::ROWSMARTPLACEMENT);
     
+    if (dbfile.size() != 0) {
+        if (!m_screen_rm.load(dbfile.c_str())) {
+            cerr<<"Failed to load database:"<<dbfile<<endl;
+            cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
+            if (!m_screen_rm.load(DEFAULT_INITFILE))
+                cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
+        }
+    } else {
+        if (!m_screen_rm.load(DEFAULT_INITFILE))
+            cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
+    }
+
 }
 
 void Fluxbox::loadRootCommand(BScreen &screen)	{
