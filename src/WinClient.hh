@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.hh,v 1.17 2004/04/28 14:59:12 rathnor Exp $
+// $Id: WinClient.hh,v 1.18 2004/08/10 13:36:07 fluxgen Exp $
 
 #ifndef WINCLIENT_HH
 #define WINCLIENT_HH
@@ -58,7 +58,6 @@ public:
     void sendClose(bool forceful = false);
     // not aware of anything that makes this false at present
     inline bool isClosable() const { return true; }
-    void reparent(Window win, int x, int y);
 
     void addModal(); // some transient of ours (or us) is modal
     void removeModal(); // some transient (or us) is no longer modal

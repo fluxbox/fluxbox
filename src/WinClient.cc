@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WinClient.cc,v 1.40 2004/06/07 11:46:04 rathnor Exp $
+// $Id: WinClient.cc,v 1.41 2004/08/10 13:36:07 fluxgen Exp $
 
 #include "WinClient.hh"
 
@@ -157,7 +157,10 @@ bool WinClient::acceptsFocus() const {
 bool WinClient::sendFocus() {
     if (!send_focus_message)
         return false;
-
+#ifdef DEBUG
+    cerr<<"WinClient::"<<__FUNCTION__<<": this = "<<this<<
+        " window = 0x"<<hex<<window()<<dec<<endl;
+#endif // DEBUG
     Display *disp = FbTk::App::instance()->display();
     // setup focus msg
     XEvent ce;
@@ -197,10 +200,6 @@ void WinClient::sendClose(bool forceful) {
         // send event delete message to client window
         XSendEvent(disp, window(), false, NoEventMask, &ce);
     }
-}
-
-void WinClient::reparent(Window win, int x, int y) {
-    XReparentWindow(FbTk::App::instance()->display(), window(), win, x, y);
 }
 
 bool WinClient::getAttrib(XWindowAttributes &attr) const {
@@ -248,8 +247,12 @@ void WinClient::updateWMClassHint() {
 }
 
 void WinClient::updateTransientInfo() {
+#ifdef DEBUG
+    cerr<<__FUNCTION__<<": m_win = "<<m_win<<endl;
+#endif // DEBUG
     if (m_win == 0)
         return;
+
     // remove us from parent
     if (transientFor() != 0) {
         transientFor()->transientList().remove(this);
@@ -258,13 +261,21 @@ void WinClient::updateTransientInfo() {
     transient_for = 0;
     Display *disp = FbTk::App::instance()->display();
     // determine if this is a transient window
-    Window win;
-    if (!XGetTransientForHint(disp, window(), &win))
+    Window win = 0;
+    if (!XGetTransientForHint(disp, window(), &win)) {
+#ifdef DEBUG
+        cerr<<__FUNCTION__<<": window() = 0x"<<hex<<window()<<dec<<"Failed to read transient for hint."<<endl;
+#endif // DEBUG
         return;
+    }
 
     // we can't be transient to ourself
-    if (win == window())
+    if (win == window()) {
+#ifdef DEBUG
+        cerr<<__FUNCTION__<<": transient to ourself"<<endl;
+#endif // DEBUG
         return;
+    }
 	
     if (win != None && m_win->screen().rootWindow() == win) {
         // transient for root window... =  transient for group
@@ -275,6 +286,10 @@ void WinClient::updateTransientInfo() {
 
     transient_for = Fluxbox::instance()->searchWindow(win);
 
+#ifdef DEBUG
+    cerr<<__FUNCTION__<<": transient_for window = 0x"<<hex<<win<<dec<<endl;
+    cerr<<__FUNCTION__<<": transient_for = "<<transient_for<<endl;
+#endif // DEBUG
     // make sure we don't have deadlock loop in transient chain
     for (WinClient *w = this; w != 0; w = w->transient_for) {
         if (w == w->transient_for) {
