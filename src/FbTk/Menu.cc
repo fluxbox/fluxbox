@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.63 2004/06/13 00:31:29 fluxgen Exp $
+// $Id: Menu.cc,v 1.64 2004/06/13 00:42:45 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1216,8 +1216,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
 
 void Menu::exposeEvent(XExposeEvent &ee) {
     if (ee.window == menu.title) {
-        if (alpha() < 255)
-            redrawTitle();
+        redrawTitle();
         menu.title.clearArea(ee.x, ee.y, ee.width, ee.height);
     } else if (ee.window == menu.frame) {
 
