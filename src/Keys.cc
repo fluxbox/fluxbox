@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.28 2003/06/08 14:32:28 rathnor Exp $
+//$Id: Keys.cc,v 1.29 2003/06/08 14:54:05 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -297,14 +297,21 @@ bool Keys::load(const char *filename) {
                     last_key->action = m_actionlist[i].action;
                     switch(last_key->action) {
                     case Keys::RESTART:
-                    case Keys::EXECUTE:
-                        last_key->execcommand = 
-                            const_cast<char *>
-                            (FbTk::StringUtil::strcasestr(
+                    case Keys::EXECUTE: {
+                        // skip past the command
+                        const char *str = 
+                            FbTk::StringUtil::strcasestr(
                                 linebuffer.c_str(),
                                 getActionStr(last_key->action))
-                             + strlen(getActionStr(last_key->action)) + 1);
-                        break;
+                            + strlen(getActionStr(last_key->action));
+
+                        int i=0;
+                        // skip past any trailing whitespace
+                        while (str[i] == ' ' || str[i] == '\t') 
+                            ++i;
+
+                        last_key->execcommand = str + i;
+                    } break;
                     case WORKSPACE:
                     case SENDTOWORKSPACE:
                         if (argc + 1 < val.size())
