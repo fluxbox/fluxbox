@@ -1,22 +1,24 @@
 $set 10 #Windowmenu
 
 $ #SendTo
-# Redirige vers...
+# Envoyer vers ...
+$ #SendGroupTo
+# Envoyer le groupe vers ...
 $ #Shade
-# Ombrage
+# Ombrer
 $ #Iconify
-# Iconifie
+# Iconifier
 $ #Maximize
-# Maximize
+# Maximiser
 $ #Raise
-# Résurrection
+# Lever
 $ #Lower
-# Réduit
+# Baisser
 $ #Stick
-# Epingle
+# Coller
 $ #KillClient
-# Massacre
+# Massacrer
 $ #Close
-# Ferme
+# Fermer
 $ #Tab
-# Tab
+# Onglet

@@ -37,16 +37,16 @@ $ #TopBottom
 $ #BottomTop
 # De bas en haut
 $ #Tabs
-# Use Tabs
+# Utiliser les onglets
 $ #Icons
-# Use Icons
+# Utiliser les icones
 $ #TabPlacement
-# Tab Placement
+# Emplacement des onglets
 $ #TabRotateVertical
-# Rotate Vertical Tabs
+# Rotation verticale des onglets
 $ #SemiSloppyFocus
-# Semi Sloppy Focus
+# Focus semi-stupide
 $ #MaxOverSlit
-# Maximize Over Slit
+# Maximisez au dessus du Slit
 $ #SloppyWindowGrouping
-# Sloppy Window Grouping
+# Groupement des fenêtres stupide
