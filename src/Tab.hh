@@ -42,6 +42,9 @@ public:
 	void draw(bool pressed);
 	inline Tab *next() const { return m_next; }
 	inline Tab *prev() const { return m_prev; }
+	inline Tab *last() { return getLast(this); }
+	inline Tab *first() { return getFirst(this); }
+	
 	inline FluxboxWindow *getWindow() const { return m_win; }
 	inline unsigned int getTabWidth() const { return m_size_w; } 
 	inline unsigned int getTabHeight() const { return m_size_h; }
@@ -62,6 +65,7 @@ public:
 	void exposeEvent(XExposeEvent *ee);	
 	void motionNotifyEvent(XMotionEvent *me);
 	static Tab *getFirst(Tab *current);
+	static Tab *getLast(Tab *current);
 	void disconnect();
 	
 	enum { PTop = 0, PBottom = 5, PLeft = 10, PRight = 15, pnone = 20};
