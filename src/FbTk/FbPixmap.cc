@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.10 2004/01/11 12:48:46 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.11 2004/07/05 23:51:57 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -247,6 +247,28 @@ void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
     m_depth = new_pm.depth();
     m_pm = new_pm.release();
 }
+
+void FbPixmap::tile(unsigned int dest_width, unsigned int dest_height) {
+    if (drawable() == 0 || 
+        (dest_width == width() && dest_height == height()))
+        return;
+ 
+    Display *dpy = FbTk::App::instance()->display();
+
+    FbPixmap new_pm(drawable(), width(), height(), depth());
+
+    new_pm.copy(m_pm);
+
+    resize(dest_width,dest_height);
+    
+    GC gc = XCreateGC(dpy, drawable(), 0, NULL);
+
+    XSetTile(dpy,gc,new_pm.release());
+    XSetFillStyle(dpy, gc, FillTiled);
+    XFillRectangle(dpy,drawable(),gc, 0, 0, dest_width, dest_height);
+}
+
+
 
 void FbPixmap::resize(unsigned int width, unsigned int height) {
     FbPixmap pm(drawable(), width, height, depth());
