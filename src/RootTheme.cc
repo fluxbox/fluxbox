@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RootTheme.cc,v 1.1 2003/04/25 10:14:54 fluxgen Exp $
+// $Id: RootTheme.cc,v 1.2 2003/04/28 00:38:42 fluxgen Exp $
 
 #include "RootTheme.hh"
 
@@ -54,10 +54,10 @@ void RootTheme::reconfigTheme() {
     // override resource root command?
     if (m_screen_root_command == "") { 
         // do root command
-        FbCommands::ExecuteCmd cmd(*m_root_command);
+        FbCommands::ExecuteCmd cmd(*m_root_command, screenNum());
         cmd.execute();
     } else {
-        FbCommands::ExecuteCmd cmd(m_screen_root_command);
+        FbCommands::ExecuteCmd cmd(m_screen_root_command, screenNum());
         cmd.execute();
     }
 }

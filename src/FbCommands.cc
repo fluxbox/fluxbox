@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbCommands.cc,v 1.3 2003/04/15 12:13:22 fluxgen Exp $
+// $Id: FbCommands.cc,v 1.4 2003/04/28 00:34:59 fluxgen Exp $
 
 #include "FbCommands.hh"
 #include "fluxbox.hh"
@@ -33,13 +33,20 @@ using namespace std;
 
 namespace FbCommands {
 
-ExecuteCmd::ExecuteCmd(const std::string &cmd):m_cmd(cmd) {
+ExecuteCmd::ExecuteCmd(const std::string &cmd, int screen_num):m_cmd(cmd), m_screen_num(screen_num) {
 
 }
 
 void ExecuteCmd::execute() {
 #ifndef    __EMX__
     if (! fork()) {
+        std::string displaystring("DISPLAY=");
+        displaystring += DisplayString(FbTk::App::instance()->display());
+        char intbuff[64];
+        sprintf(intbuff, "%d", m_screen_num);
+        // remove last number of display and add screen num
+        displaystring.erase(displaystring.size()-1);
+        displaystring += intbuff;
         setsid();
         execl("/bin/sh", "/bin/sh", "-c", m_cmd.c_str(), 0);
         exit(0);

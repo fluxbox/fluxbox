@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.139 2003/04/27 14:36:03 rathnor Exp $
+// $Id: Screen.cc,v 1.140 2003/04/28 00:36:50 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -41,6 +41,7 @@
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
 #include "RootTheme.hh"
+//#include "WinButtonTheme.hh"
 #include "FbCommands.hh"
 #include "BoolMenuItem.hh"
 #include "IntResMenuItem.hh"
@@ -493,21 +494,24 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
 
 BScreen::BScreen(ResourceManager &rm,
                  const string &screenname, const string &altscreenname,
-                 int scrn, int num_layers) : ScreenInfo(scrn),
-                             m_clientlist_sig(*this),  // client signal
-                             m_workspacecount_sig(*this), // workspace count signal
-                             m_workspacenames_sig(*this), // workspace names signal 
-                             m_currentworkspace_sig(*this), // current workspace signal
-                             m_layermanager(num_layers),
-                             cycling_focus(false),
-                             cycling_last(0),
-                             m_windowtheme(new FbWinFrameTheme(scrn)), 
-                             m_menutheme(new FbTk::MenuTheme(scrn)),
-                             resource(rm, screenname, altscreenname),
-                             m_root_theme(new 
-                                          RootTheme(scrn, 
-                                                    *resource.rootcommand)),
-                             m_toolbarhandler(0) {
+                 int scrn, int num_layers) : 
+    ScreenInfo(scrn),
+    m_clientlist_sig(*this),  // client signal
+    m_workspacecount_sig(*this), // workspace count signal
+    m_workspacenames_sig(*this), // workspace names signal 
+    m_currentworkspace_sig(*this), // current workspace signal
+    m_layermanager(num_layers),
+    cycling_focus(false),
+    cycling_last(0),
+    m_windowtheme(new FbWinFrameTheme(scrn)), 
+    m_menutheme(new FbTk::MenuTheme(scrn)),
+    resource(rm, screenname, altscreenname),
+    m_root_theme(new 
+                 RootTheme(scrn, 
+                           *resource.rootcommand)),
+    //    m_winbutton_theme(new WinButtonTheme(scrn)),
+    m_toolbarhandler(0) {
+
 
     Display *disp = FbTk::App::instance()->display();
 
@@ -1328,13 +1332,15 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
             //create new buttons
             FbTk::Button *newbutton = 0;
             if (win.isIconifiable() && (*dir)[i] == Fluxbox::MINIMIZE) {
-                newbutton = new WinButton(win, WinButton::MINIMIZE, 
+                newbutton = new WinButton(win, //*m_winbutton_theme.get(),
+                                          WinButton::MINIMIZE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
                 newbutton->setOnClick(iconify_cmd);
 
             } else if (win.isMaximizable() && (*dir)[i] == Fluxbox::MAXIMIZE) {
-                newbutton = new WinButton(win, WinButton::MAXIMIZE, 
+                newbutton = new WinButton(win, //*m_winbutton_theme.get(),
+                                          WinButton::MAXIMIZE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
 
@@ -1343,7 +1349,8 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 newbutton->setOnClick(maximize_vert_cmd, 2);
 
             } else if (win.isClosable() && (*dir)[i] == Fluxbox::CLOSE) {
-                newbutton = new WinButton(win, WinButton::CLOSE, 
+                newbutton = new WinButton(win, //*m_winbutton_theme.get(),
+                                          WinButton::CLOSE, 
                                           frame.titlebar(), 
                                           0, 0, 10, 10);
 
@@ -1352,14 +1359,16 @@ void BScreen::setupWindowActions(FluxboxWindow &win) {
                 cerr<<__FILE__<<": Creating close button"<<endl;
 #endif // DEBUG
             } else if ((*dir)[i] == Fluxbox::STICK) {
-                WinButton *winbtn = new WinButton(win, WinButton::STICK,
+                WinButton *winbtn = new WinButton(win, // *m_winbutton_theme.get(),
+                                                  WinButton::STICK,
                                                   frame.titlebar(),
                                                   0, 0, 10, 10);
                 win.stateSig().attach(winbtn);
                 winbtn->setOnClick(stick_cmd);
                 newbutton = winbtn;                
             } else if ((*dir)[i] == Fluxbox::SHADE) {
-                WinButton *winbtn = new WinButton(win, WinButton::SHADE,
+                WinButton *winbtn = new WinButton(win, // *m_winbutton_theme.get(),
+                                                  WinButton::SHADE,
                                                   frame.titlebar(),
                                                   0, 0, 10, 10);               
                 winbtn->setOnClick(shade_cmd);
@@ -1431,7 +1440,8 @@ string BScreen::getNameOfWorkspace(unsigned int workspace) const {
     }
 }
 
-void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, bool ignore_sticky) {
+void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, 
+                                bool ignore_sticky) {
     if (w == 0)
         return;
 
@@ -1816,7 +1826,7 @@ void BScreen::initMenu() {
     if (defaultMenu) {
         FbTk::RefCount<FbTk::Command> restart_fb(new FbCommands::RestartFluxboxCmd());
         FbTk::RefCount<FbTk::Command> exit_fb(new FbCommands::ExitFluxboxCmd());
-        FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm"));
+        FbTk::RefCount<FbTk::Command> execute_xterm(new FbCommands::ExecuteCmd("xterm", getScreenNumber()));
         m_rootmenu->setInternalMenu();
         m_rootmenu->insert(i18n->getMessage(
                                             FBNLS::ScreenSet, FBNLS::Screenxterm,
@@ -1888,7 +1898,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                                                  "no menu label and/or command defined\n"));
                         cerr<<"Row: "<<row<<endl;
                     } else {
-                        FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd));
+                        FbTk::RefCount<FbTk::Command> exec_cmd(new FbCommands::ExecuteCmd(str_cmd, getScreenNumber()));
                         FbTk::MacroCommand *exec_and_hide = new FbTk::MacroCommand();
                         exec_and_hide->add(hide_menu);
                         exec_and_hide->add(exec_cmd);
