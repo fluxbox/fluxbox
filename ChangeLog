@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/16:
+  * Fix the fix, and a bit more for placeWindow (Simon)
+    Workspace.cc
 *04/03/15:
   * bug in placeWindow caused spinning with screens higher than width
     e.g. vertical xinerama   (Simon)

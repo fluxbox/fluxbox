@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.93 2004/03/15 03:48:47 rathnor Exp $
+// $Id: Workspace.cc,v 1.94 2004/03/15 23:36:13 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -489,22 +489,25 @@ void Workspace::placeWindow(FluxboxWindow &win) {
             test_y = head_bot - win_h;
 
         while (!placed && 
-               (top_bot ? test_y + win_h < head_bot
-                        : test_y > head_top)) {
+               (top_bot ? test_y + win_h <= head_bot
+                        : test_y >= head_top)) {
 
             if (left_right)
                 test_x = head_left;
             else
                 test_x = head_right - win_w;
 
+            // The trick here is that we set it to the furthest away one,
+            // then the code brings it back down to the safest one that
+            // we can go to (i.e. the next untested area)
             if (top_bot)
-                next_y = head_top;
+                next_y = head_bot;  // will be shrunk
             else
-                next_y = head_bot - win_h; // will be shrunk
+                next_y = head_top-1;
 
             while (!placed &&
-                   (left_right ? test_x + win_w < head_right
-                    : test_x > head_left)) {
+                   (left_right ? test_x + win_w <= head_right
+                    : test_x >= head_left)) {
 
                 placed = true;
 
@@ -578,13 +581,13 @@ void Workspace::placeWindow(FluxboxWindow &win) {
             test_x = head_right - win_w;
 
         while (!placed &&
-               (left_right ? test_x + win_w < head_right
-                : test_x > head_left)) {
+               (left_right ? test_x + win_w <= head_right
+                : test_x >= head_left)) {
                 
             if (left_right)
                 next_x = head_right; // it will get shrunk
             else 
-                next_x = head_left;
+                next_x = head_left-1;
 
             if (top_bot)
                 test_y = head_top;
@@ -592,8 +595,8 @@ void Workspace::placeWindow(FluxboxWindow &win) {
                 test_y = head_bot - win_h;
 
             while (!placed && 
-                   (top_bot ? test_y + win_h < head_bot
-                            : test_y > head_top)) {
+                   (top_bot ? test_y + win_h <= head_bot
+                            : test_y >= head_top)) {
                 placed = True;
 
                 next_y = test_y + change_y;
