@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.132 2003/05/10 14:43:45 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.133 2003/05/10 15:22:28 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1871,14 +1871,14 @@ void Fluxbox::load_rc() {
 
     if (dbfile.size() != 0) {
         if (!m_resourcemanager.load(dbfile.c_str())) {
-            cerr<<"Faild to load database:"<<dbfile<<endl;
+            cerr<<"Failed to load database:"<<dbfile<<endl;
             cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
             if (!m_resourcemanager.load(DEFAULT_INITFILE))
-                cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
+                cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
         }
     } else {
         if (!m_resourcemanager.load(DEFAULT_INITFILE))
-            cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
+            cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
     }
 	
     XrmValue value;
@@ -1943,7 +1943,7 @@ void Fluxbox::load_rc() {
     cerr<<__FILE__<<": Loading groups ("<<*m_rc_groupfile<<")"<<endl;
 #endif // DEBUG
     if (!Workspace::loadGroups(*m_rc_groupfile)) {
-        cerr<<"Faild to load groupfile: "<<*m_rc_groupfile<<endl;
+        cerr<<"Failed to load groupfile: "<<*m_rc_groupfile<<endl;
     }
 }
 
@@ -1952,14 +1952,14 @@ void Fluxbox::load_rc(BScreen &screen) {
     string dbfile(getRcFilename());
     if (dbfile.size() != 0) {
         if (!m_screen_rm.load(dbfile.c_str())) {
-            cerr<<"Faild to load database:"<<dbfile<<endl;
+            cerr<<"Failed to load database:"<<dbfile<<endl;
             cerr<<"Trying with: "<<DEFAULT_INITFILE<<endl;
             if (!m_screen_rm.load(DEFAULT_INITFILE))
-                cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
+                cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
         }
     } else {
         if (!m_screen_rm.load(DEFAULT_INITFILE))
-            cerr<<"Faild to load database: "<<DEFAULT_INITFILE<<endl;
+            cerr<<"Failed to load database: "<<DEFAULT_INITFILE<<endl;
     }
 	
     XrmDatabaseHelper database;
