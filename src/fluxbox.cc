@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.243 2004/06/07 11:46:04 rathnor Exp $
+// $Id: fluxbox.cc,v 1.244 2004/06/13 11:01:47 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -1064,7 +1064,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             int mx = be.x_root -
                 (screen->getWorkspacemenu().width() / 2);
             int my = be.y_root -
-                (screen->getWorkspacemenu().titleHeight() / 2);
+                (screen->getWorkspacemenu().titleWindow().height() / 2);
 	
             if (mx < 0) mx = 0;
             if (my < 0) my = 0;
@@ -1094,7 +1094,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
             int mx = be.x_root -
                 (screen->getRootmenu().width() / 2);
             int my = be.y_root -
-                (screen->getRootmenu().titleHeight() / 2);
+                (screen->getRootmenu().titleWindow().height() / 2);
             int borderw = screen->getRootmenu().fbwindow().borderWidth();
 
             if (mx < 0) mx = 0;
@@ -2026,10 +2026,9 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
         screen->updateNetizenWindowFocus();
         for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
              it != m_atomhandler.end(); it++) {
-            
             (*it).first->updateFocusedWindow(*screen, (m_focused_window ? 
-                                                            m_focused_window->window() :
-                                                            0));
+                                                       m_focused_window->window() :
+                                                       0));
         }
     }
 
