@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.212 2003/12/21 15:24:28 rathnor Exp $
+// $Id: fluxbox.cc,v 1.213 2003/12/21 16:23:59 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -873,6 +873,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
     }
         break;
     case MotionNotify: 
+        m_last_time = e->xmotion.time;
         break;
     case PropertyNotify: {
         m_last_time = e->xproperty.time;
@@ -945,7 +946,7 @@ void Fluxbox::handleEvent(XEvent * const e) {
             cerr<<__FILE__<<"("<<__FUNCTION__<<") Focus out is not a FluxboxWindow !!"<<endl;
 #endif // DEBUG
         } else if (winclient && winclient == m_focused_window)
-             setFocusedWindow(0);
+            setFocusedWindow(0);
     }
 	break;
     case ClientMessage:
@@ -1064,6 +1065,7 @@ void Fluxbox::handleButtonEvent(XButtonEvent &be) {
         
     } break;
     case ButtonRelease:
+        m_last_time = be.time;
         break;	
     default:
         break;
