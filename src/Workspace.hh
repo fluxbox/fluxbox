@@ -62,7 +62,7 @@ public:
 	inline Clientmenu *menu() { return &m_clientmenu; }
 	inline const Clientmenu *menu() const { return &m_clientmenu; }
 	inline const std::string &name() const { return m_name; }
-	inline const unsigned int workspaceID() const { return m_id; }	
+	inline unsigned int workspaceID() const { return m_id; }	
 	
 	FluxboxWindow *getWindow(unsigned int id);
 	const FluxboxWindow *getWindow(unsigned int id) const;

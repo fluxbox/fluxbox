@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.12 2002/04/08 22:37:49 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.13 2002/05/17 11:57:02 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -74,7 +74,7 @@ public:
 	inline	bool isTorn() const { return torn; }
 	inline	bool isVisible() const { return visible; }
 	inline BScreen *screen() const { return m_screen; }
-	inline const Window windowID() const { return menu.window; }
+	inline Window windowID() const { return menu.window; }
 	inline const std::string &label() const { return menu.label; }	
 	inline int x() const { return menu.x; }
 	inline int y() const { return menu.y; }
