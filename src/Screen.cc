@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.286 2004/08/30 11:33:23 akir Exp $
+// $Id: Screen.cc,v 1.287 2004/09/05 01:11:41 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -407,8 +407,12 @@ void destroyAndClearList(A &a) {
 }
 
 BScreen::~BScreen() {
+    
     if (! managed)
         return;
+    // Since workspacemenu holds client list menus (from workspace)
+    // we need to destroy it before we destroy workspaces
+    m_workspacemenu.reset(0);
 
     if (m_rootmenu.get() != 0)
         m_rootmenu->removeAll();
@@ -651,7 +655,7 @@ void BScreen::hideWindowMenus(const FluxboxWindow* except) {
             const Workspace::Windows::iterator win_it_end = (*w_it)->windowList().end();
             for (; win_it != win_it_end; ++win_it) {
                 if (*win_it != except)
-                (*win_it)->menu().hide();
+                    (*win_it)->menu().hide();
             }
         }
     }
@@ -772,7 +776,12 @@ void BScreen::addIcon(FluxboxWindow *w) {
     if (w == 0) 
         return;
 
+    // make sure we have a unique list
+    if (find(getIconList().begin(), getIconList().end(), w) != getIconList().end())
+        return;
+
     m_icon_list.push_back(w);
+
     // notify listeners
     m_iconlist_sig.notify();
 }
@@ -782,20 +791,28 @@ void BScreen::removeIcon(FluxboxWindow *w) {
     if (w == 0)
         return;
 	
-    Icons::iterator erase_it = remove_if(m_icon_list.begin(),
-                                         m_icon_list.end(),
+    Icons::iterator erase_it = remove_if(getIconList().begin(),
+                                         getIconList().end(),
                                          bind2nd(equal_to<FluxboxWindow *>(), w));
-    if (erase_it != m_icon_list.end())
-        m_icon_list.erase(erase_it);
-    
-    m_iconlist_sig.notify();
+    // no need to send iconlist signal if we didn't 
+    // change the iconlist
+    if (erase_it != m_icon_list.end()) {
+        getIconList().erase(erase_it);
+        m_iconlist_sig.notify();
+    }
 }
 
 void BScreen::removeWindow(FluxboxWindow *win) {
-    if (win->isIconic())
-        removeIcon(win);
-    else
-        getWorkspace(win->workspaceNumber())->removeWindow(win, false);
+#ifdef DEBUG
+    cerr<<"BScreen::removeWindow("<<win<<")"<<endl;
+#endif // DEBUG
+    // extra precaution, if for some reason, the 
+    // icon list should be out of sync
+    removeIcon(win);
+    // remove from workspace
+    Workspace *space = getWorkspace(win->workspaceNumber());
+    if (space != 0)
+        space->removeWindow(win, false);
 }
 
 
