@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.42 2002/03/19 14:30:43 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.43 2002/04/02 23:13:38 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1094,7 +1094,7 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
 		BScreen *screen = searchScreen(ce.window);
 
 		if (screen && ce.data.l[0] >= 0 &&
-				ce.data.l[0] < screen->getCount())
+				ce.data.l[0] < (signed)screen->getCount())
 			screen->changeWorkspaceID(ce.data.l[0]);
 				
 	} else if (ce.message_type == getFluxboxChangeWindowFocusAtom()) {
@@ -1453,12 +1453,12 @@ bool Fluxbox::checkGnomeAtoms(XClientMessageEvent &ce) {
 		#endif//!DEBUG
 		if ( win !=0 && // the message sent to client window?
 				win->getScreen() && ce.data.l[0] >= 0 &&
-				ce.data.l[0] < win->getScreen()->getCount()) {
+				ce.data.l[0] < (signed)win->getScreen()->getCount()) {
 			win->getScreen()->changeWorkspaceID(ce.data.l[0]);
 					
 		} else if (screen!=0 && //the message sent to root window?
 				ce.data.l[0] >= 0 &&
-				ce.data.l[0] < screen->getCount())
+				ce.data.l[0] < (signed)screen->getCount())
 			screen->changeWorkspaceID(ce.data.l[0]);
 		return true;
 	} else if (win) {
@@ -1962,7 +1962,7 @@ void Fluxbox::save_rc(void) {
 		sprintf(rc_string, "session.screen%d.workspaceNames: ", screen_number);
 		string workspaces_string(rc_string);
 
-		for (int workspace=0; workspace < screen->getCount(); workspace++) {
+		for (unsigned int workspace=0; workspace < screen->getCount(); workspace++) {
 			if (screen->getWorkspace(workspace)->getName()!=0)
 				workspaces_string.append(screen->getWorkspace(workspace)->getName());
 			else
