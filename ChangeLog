@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.13
+*05/02/09:
+  * Fixed portability issues with fbgm (thanx to Dung)
+    fluxbox-generate_menu.in
 *05/02/04:
   * Fixed possible bug for invalid tools (Mathias)
     ToolFactory.cc
