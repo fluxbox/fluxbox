@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.43 2003/08/25 16:17:18 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.44 2003/09/10 09:53:21 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -28,6 +28,7 @@
 #include "FbTk/TextButton.hh"
 #include "FbTk/App.hh"
 #include "FbTk/Compose.hh"
+#include "FbTk/SimpleCommand.hh"
 
 #include "FbWinFrameTheme.hh"
 #ifdef SHAPE
@@ -169,26 +170,12 @@ void FbWinFrame::move(int x, int y) {
     if (theme().alpha() == 255)
         return;
 
-    redrawTitlebar();
+    // restart update timer
+    m_update_timer.start();
 
-    ButtonList::iterator btn_it = m_buttons_left.begin();
-    ButtonList::iterator btn_it_end = m_buttons_left.begin();
-    for (; btn_it != btn_it_end; ++btn_it) {
-        (*btn_it)->clear();
-        (*btn_it)->updateTransparent();
-    }
-    btn_it = m_buttons_right.begin();
-    btn_it_end = m_buttons_right.end();
-    for (; btn_it != btn_it_end; ++btn_it) {
-        (*btn_it)->clear();
-        (*btn_it)->updateTransparent();
-    }
-    m_grip_left.clear();
-    m_grip_right.clear();
-    m_handle.clear();
-    m_grip_left.updateTransparent();
-    m_grip_right.updateTransparent();
-    m_handle.updateTransparent();
+    /*
+
+    */
 }
 
 void FbWinFrame::resize(unsigned int width, unsigned int height) {
@@ -219,7 +206,8 @@ void FbWinFrame::resizeForClient(unsigned int width, unsigned int height) {
 
 void FbWinFrame::moveResize(int x, int y, unsigned int width, unsigned int height) {
     move(x, y);
-    resize(width, height);
+    if (width != FbWinFrame::width() || height != FbWinFrame::height())
+        resize(width, height);
 }
 
 void FbWinFrame::setTitle(const std::string &titletext) {
@@ -699,7 +687,8 @@ void FbWinFrame::redrawTitle() {
         (*btn_it)->clear();
         (*btn_it)->updateTransparent();
     }
-        
+    m_titlebar.clear();
+    m_label.clear();
 }
 
 void FbWinFrame::redrawTitlebar() {
@@ -894,6 +883,12 @@ void FbWinFrame::renderButtons() {
 }
 
 void FbWinFrame::init() {
+    // setup update timer
+    FbTk::RefCount<FbTk::Command> update_transp(new FbTk::SimpleCommand<FbWinFrame>(*this, 
+                                                                                    &FbWinFrame::updateTransparent));
+    m_update_timer.setCommand(update_transp);
+    m_update_timer.setTimeout(10L);
+    m_update_timer.fireOnce(true);
 
     m_disable_shape = false;
 
@@ -979,13 +974,13 @@ void FbWinFrame::getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
             title_color = m_title_focused_color;
      
     } else {
-        getUnFocusPixmap(label_pm, title_pm,
+        getUnfocusPixmap(label_pm, title_pm,
                          label_color, title_color);
     }
 
 }
 
-void FbWinFrame::getUnFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
+void FbWinFrame::getUnfocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                   FbTk::Color &label_color, 
                                   FbTk::Color &title_color) {
     if (m_label_unfocused_pm != 0) {
@@ -1086,4 +1081,24 @@ void FbWinFrame::renderButtonUnfocus(FbTk::TextButton &button) {
     button.clear(); 
 }
 
+void FbWinFrame::updateTransparent() {
+    redrawTitlebar();
 
+    ButtonList::iterator button_it = m_buttons_left.begin();
+    ButtonList::iterator button_it_end = m_buttons_left.begin();
+    for (; button_it != button_it_end; ++button_it) {
+        (*button_it)->clear();
+        (*button_it)->updateTransparent();
+    }
+
+    button_it = m_buttons_right.begin();
+    button_it_end = m_buttons_right.end();
+    for (; button_it != button_it_end; ++button_it) {
+        (*button_it)->clear();
+        (*button_it)->updateTransparent();
+    }
+
+    m_grip_left.updateTransparent();
+    m_grip_right.updateTransparent();
+    m_handle.updateTransparent();
+}

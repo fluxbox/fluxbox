@@ -19,17 +19,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.hh,v 1.14 2003/08/24 15:18:09 fluxgen Exp $
+// $Id: FbWinFrame.hh,v 1.15 2003/09/10 09:53:21 fluxgen Exp $
 
 #ifndef FBWINFRAME_HH
 #define FBWINFRAME_HH
 
-#include "FbWindow.hh"
-#include "EventHandler.hh"
-#include "RefCount.hh"
-#include "Observer.hh"
-#include "Color.hh"
-#include "FbPixmap.hh"
+#include "FbTk/FbWindow.hh"
+#include "FbTk/EventHandler.hh"
+#include "FbTk/RefCount.hh"
+#include "FbTk/Observer.hh"
+#include "FbTk/Color.hh"
+#include "FbTk/FbPixmap.hh"
+#include "FbTk/Timer.hh"
 
 #include <vector>
 #include <list>
@@ -112,7 +113,7 @@ public:
     void setEventHandler(FbTk::EventHandler &evh);
     /// remove any handler for the windows
     void removeEventHandler();
-    
+
     void hideTitlebar();
     void showTitlebar();
     void hideHandle();
@@ -135,6 +136,9 @@ public:
  
     void reconfigure();
     void setUseShape(bool value);
+
+    void setUpdateDelayTime(long t) { m_update_timer.setTimeout(t); }
+
     /**
        @name accessors
     */
@@ -188,7 +192,7 @@ private:
     /// renders to pixmap or sets color
     void render(const FbTk::Texture &tex, FbTk::Color &col, Pixmap &pm,
                 unsigned int width, unsigned int height);
-    void getUnFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
+    void getUnfocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                           FbTk::Color &label_color, FbTk::Color &title_color);
     void getCurrentFocusPixmap(Pixmap &label_pm, Pixmap &title_pm,
                                FbTk::Color &label_color, FbTk::Color &title_color);
@@ -199,6 +203,7 @@ private:
     void init();
     /// initiate inserted buttons for current theme
     void setupButton(FbTk::Button &btn);
+    void updateTransparent();
 
     FbWinFrameTheme &m_theme; ///< theme to be used 
     FbTk::ImageControl &m_imagectrl; ///< Image control for rendering
@@ -282,6 +287,7 @@ private:
     ThemeListener m_themelistener;
     std::auto_ptr<Shape> m_shape;
     bool m_disable_shape;
+    FbTk::Timer m_update_timer;
 };
 
 #endif // FBWINFRAME_HH
