@@ -18,13 +18,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.16 2003/05/10 15:44:15 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.17 2003/05/11 00:00:32 fluxgen Exp $
 
 #include "bsetroot.hh"
 
 #include "../src/i18n.hh"
 #include "../src/FbTk/ImageControl.hh"
-#include "../src/ScreenInfo.hh"
+#include "../src/FbRootWindow.hh"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -161,15 +161,17 @@ void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
 
     atom_root = XInternAtom(display(), "_XROOTMAP_ID", true);
     atom_eroot = XInternAtom(display(), "ESETROOT_PMAP_ID", true);
-    ScreenInfo screen_info(screen);
+    FbRootWindow root(screen);
+
     // doing this to clean up after old background
     if (atom_root != None && atom_eroot != None) {
-        XGetWindowProperty(display(), screen_info.getRootWindow(),
+
+        XGetWindowProperty(display(), root.window(),
                            atom_root, 0L, 1L, false, AnyPropertyType,
                            &type, &format, &length, &after, &data_root);
 
         if (type == XA_PIXMAP) {
-            XGetWindowProperty(display(), screen_info.getRootWindow(),
+            XGetWindowProperty(display(), root.window(),
                                atom_eroot, 0L, 1L, False, AnyPropertyType,
                                &type, &format, &length, &after, &data_eroot);
                 
@@ -190,9 +192,9 @@ void bsetroot::setRootAtoms(Pixmap pixmap, int screen) {
     }
 
     // setting new background atoms
-    XChangeProperty(display(), screen_info.getRootWindow(),
+    XChangeProperty(display(), root.window(),
                     atom_root, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap, 1);
-    XChangeProperty(display(), screen_info.getRootWindow(),
+    XChangeProperty(display(), root.window(),
                     atom_eroot, XA_PIXMAP, 32, PropModeReplace, (unsigned char *) &pixmap, 1);
 
 }
@@ -206,7 +208,7 @@ void bsetroot::solid() {
     pixmaps = new Pixmap[ScreenCount(display())];
 
     for (; screen < ScreenCount(display()); screen++) {
-        ScreenInfo screen_info(screen);
+        FbRootWindow root(screen);
 
         FbTk::Color c;
         GC gc;
@@ -218,23 +220,23 @@ void bsetroot::solid() {
             c.setPixel(BlackPixel(display(), screen));
 
         gcv.foreground = c.pixel();
-        gc = XCreateGC(display(), screen_info.getRootWindow(),
+        gc = XCreateGC(display(), root.window(),
                        GCForeground , &gcv);
 
         pixmaps[screen] = XCreatePixmap(display(), 
-                                        screen_info.getRootWindow(),
-                                        screen_info.getWidth(), screen_info.getHeight(),
-                                        screen_info.getDepth());
+                                        root.window(),
+                                        root.width(), root.height(),
+                                        root.depth());
 
         XFillRectangle(display(), pixmaps[screen], gc, 0, 0,
-                       screen_info.getWidth(), screen_info.getHeight());
+                       root.width(), root.height());
 
         setRootAtoms(pixmaps[screen], screen);
 
         XSetWindowBackgroundPixmap(display(),
-                                   screen_info.getRootWindow(), pixmaps[screen]);
+                                   root.window(), pixmaps[screen]);
 
-        XClearWindow(display(), screen_info.getRootWindow());
+        XClearWindow(display(), root.window());
 
         XFreeGC(display(), gc);
     }
@@ -253,7 +255,7 @@ void bsetroot::modula(int x, int y) {
     pixmaps = new Pixmap[ScreenCount(display())];
 
     for (pattern = 0, screen = 0; screen < ScreenCount(display()); screen++) {
-        ScreenInfo screen_info(screen);
+        FbRootWindow root(screen);
 
         for (i = 0; i < 16; i++) {
             pattern <<= 1;
@@ -277,12 +279,12 @@ void bsetroot::modula(int x, int y) {
         XGCValues gcv;
 
         bitmap = XCreateBitmapFromData(display(),
-                                       screen_info.getRootWindow(), data, 16, 16);
+                                       root.window(), data, 16, 16);
 
         // bitmap used as tile, needs to have the same depth as background pixmap
         r_bitmap = XCreatePixmap(display(),
-                                 screen_info.getRootWindow(), 16, 16,
-                                 screen_info.getDepth());
+                                 root.window(), 16, 16,
+                                 root.depth());
 
         f.setFromString(fore, screen);
         b.setFromString(back, screen);
@@ -295,7 +297,7 @@ void bsetroot::modula(int x, int y) {
         gcv.foreground = f.pixel();
         gcv.background = b.pixel();
 
-        gc = XCreateGC(display(), screen_info.getRootWindow(),
+        gc = XCreateGC(display(), root.window(),
                        GCForeground | GCBackground, &gcv);
 
         // copying bitmap to the one going to be used as tile
@@ -306,19 +308,19 @@ void bsetroot::modula(int x, int y) {
         XSetFillStyle(display(), gc, FillTiled);	
 
         pixmaps[screen] = XCreatePixmap(display(), 
-                                        screen_info.getRootWindow(),
-                                        screen_info.getWidth(), screen_info.getHeight(),
-                                        screen_info.getDepth());
+                                        root.window(),
+                                        root.width(), root.height(),
+                                        root.depth());
 
         XFillRectangle(display(), pixmaps[screen], gc, 0, 0,
-                       screen_info.getWidth(), screen_info.getHeight());
+                       root.width(), root.height());
 
         setRootAtoms(pixmaps[screen], screen);
 
         XSetWindowBackgroundPixmap(display(),
-                                   screen_info.getRootWindow(), pixmaps[screen]);
+                                   root.window(), pixmaps[screen]);
 
-        XClearWindow(display(), screen_info.getRootWindow());
+        XClearWindow(display(), root.window());
 
         XFreeGC(display(), gc);
         XFreePixmap(display(), bitmap);
@@ -337,7 +339,8 @@ void bsetroot::gradient(void) {
     pixmaps = new Pixmap[ScreenCount(display())];
 
     for (int screen = 0; screen < ScreenCount(display()); screen++) {
-        ScreenInfo screen_info(screen);
+        FbRootWindow root(screen);
+
         FbTk::Texture texture;
         GC gc;
         XGCValues gcv;
@@ -351,29 +354,29 @@ void bsetroot::gradient(void) {
         if (! texture.colorTo().isAllocated())
             texture.colorTo().setPixel(BlackPixel(display(), screen));
 
-        tmp = img_ctrl[screen]->renderImage(screen_info.getWidth(),
-                                            screen_info.getHeight(), texture);
+        tmp = img_ctrl[screen]->renderImage(root.width(),
+                                            root.height(), texture);
 
         pixmaps[screen] = XCreatePixmap(display(), 
-                                        screen_info.getRootWindow(),
-                                        screen_info.getWidth(), screen_info.getHeight(),
-                                        screen_info.getDepth());
+                                        root.window(),
+                                        root.width(), root.height(),
+                                        root.depth());
 
-        gc = XCreateGC(display(), screen_info.getRootWindow(),
+        gc = XCreateGC(display(), root.window(),
                        GCForeground , &gcv);
 
         XCopyArea(display(), tmp, pixmaps[screen], gc, 0, 0,
-                  screen_info.getWidth(), screen_info.getHeight(),
+                  root.width(), root.height(),
                   0, 0);
 
         setRootAtoms(pixmaps[screen], screen);
 
         XSetWindowBackgroundPixmap(display(),
-                                   screen_info.getRootWindow(), pixmaps[screen]);
+                                   root.window(), pixmaps[screen]);
 
-        XClearWindow(display(), screen_info.getRootWindow());
+        XClearWindow(display(), root.window());
 
-        if (! (screen_info.getVisual()->c_class & 1)) {
+        if (! (root.visual()->c_class & 1)) {
             img_ctrl[screen]->removeImage(tmp);
             img_ctrl[screen]->timeout();
         }
