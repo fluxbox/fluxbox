@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.6 2002/01/20 02:08:12 fluxgen Exp $
+// $Id: Workspace.cc,v 1.7 2002/02/08 14:04:51 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -51,6 +51,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 
+#include <algorithm>
+
 Workspace::Workspace(BScreen *scrn, int i):
 screen(scrn),
 lastfocus(0),
@@ -63,8 +65,6 @@ cascade_x(32), cascade_y(32)
 
 	id = i;
 
-	stackingList = new LinkedList<FluxboxWindow>;
-	windowList = new LinkedList<FluxboxWindow>;
 	clientmenu = new Clientmenu(this);
 
 	char *tmp;
@@ -77,8 +77,6 @@ cascade_x(32), cascade_y(32)
 
 
 Workspace::~Workspace() {
-	delete stackingList;
-	delete windowList;
 	delete clientmenu;
 }
 
@@ -91,10 +89,10 @@ const int Workspace::addWindow(FluxboxWindow *w, Bool place) {
 		placeWindow(w);
 
 	w->setWorkspace(id);
-	w->setWindowNumber(windowList->count());
+	w->setWindowNumber(windowList.size());
 
-	stackingList->insert(w, 0);
-	windowList->insert(w);
+	stackingList.push_front(w);
+	windowList.push_back(w);
 
 	clientmenu->insert((const char **) w->getTitle());
 	clientmenu->update();
@@ -110,7 +108,7 @@ const int Workspace::addWindow(FluxboxWindow *w, Bool place) {
 const int Workspace::removeWindow(FluxboxWindow *w) {
 	if (! w) return -1;
 
-	stackingList->remove(w);
+	stackingList.remove(w);
 
 	if (w->isFocused()) {
 		if (screen->isSloppyFocus())
@@ -120,7 +118,7 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 			w->getTransientFor()->setInputFocus();
 		else {
 			
-			FluxboxWindow *top = stackingList->first();
+			FluxboxWindow *top = stackingList.front();
 			
 			if (! top || ! top->setInputFocus()) {				
 				Fluxbox::instance()->setFocusedWindow((FluxboxWindow *) 0);
@@ -134,45 +132,49 @@ const int Workspace::removeWindow(FluxboxWindow *w) {
 	if (lastfocus == w)
 		lastfocus = (FluxboxWindow *) 0;
 
-	windowList->remove(w->getWindowNumber());
+	windowList.erase(windowList.begin() + w->getWindowNumber());
 	clientmenu->remove(w->getWindowNumber());
 	clientmenu->update();
 
 	screen->updateNetizenWindowDel(w->getClientWindow());
 
-	LinkedListIterator<FluxboxWindow> it(windowList);
-	for (int i = 0; it.current(); it++, i++)
-		it.current()->setWindowNumber(i);
+	{
+		Windows::iterator it = windowList.begin();
+		Windows::const_iterator it_end = windowList.end();
+		for (int i = 0; it != it_end; ++it, ++i) {
+			(*it)->setWindowNumber(i);
+		}
+	}
 
-	return windowList->count();
+	return windowList.size();
 }
 
 
 void Workspace::showAll(void) {
-	LinkedListIterator<FluxboxWindow> it(stackingList);
-	for (; it.current(); it++)
-		it.current()->deiconify(False, False);
+	WindowStack::iterator it = stackingList.begin();
+	WindowStack::iterator it_end = stackingList.end();
+	for (; it != it_end; ++it) {
+		(*it)->deiconify(False, False);
+	}
 }
 
 
 void Workspace::hideAll(void) {
-	LinkedList<FluxboxWindow> lst;
-
-	LinkedListIterator<FluxboxWindow> it(stackingList);
-	for (; it.current(); it++)
-		lst.insert(it.current(), 0);
-
-	LinkedListIterator<FluxboxWindow> it2(&lst);
-	for (; it2.current(); it2++)
-		if (! it2.current()->isStuck())
-			it2.current()->withdraw();
+	WindowStack::reverse_iterator it = stackingList.rbegin();
+	WindowStack::reverse_iterator it_end = stackingList.rend();
+	for (; it != it_end; ++it) {
+		if (! (*it)->isStuck())
+			(*it)->withdraw();
+	}
 }
 
 
 void Workspace::removeAll(void) {
-	LinkedListIterator<FluxboxWindow> it(windowList);
-	for (; it.current(); it++)
-		it.current()->iconify();
+	Windows::iterator it = windowList.begin();
+	Windows::const_iterator it_end = windowList.end();
+	for (; it != it_end; ++it) {
+		(*it)->iconify();
+	}
 }
 
 
@@ -200,8 +202,8 @@ void Workspace::raiseWindow(FluxboxWindow *w) {
 
 		if (! win->isIconic()) {
 			wkspc = screen->getWorkspace(win->getWorkspaceNumber());
-			wkspc->stackingList->remove(win);
-			wkspc->stackingList->insert(win, 0);
+			wkspc->stackingList.remove(win);
+			wkspc->stackingList.push_front(win);
 		}
 
 		if (! win->hasTransient() || ! win->getTransient())
@@ -239,8 +241,8 @@ void Workspace::lowerWindow(FluxboxWindow *w) {
 
 		if (! win->isIconic()) {
 			wkspc = screen->getWorkspace(win->getWorkspaceNumber());
-			wkspc->stackingList->remove(win);
-			wkspc->stackingList->insert(win);
+			wkspc->stackingList.remove(win);
+			wkspc->stackingList.push_back(win);
 		}
 
 		if (! win->getTransientFor())
@@ -263,23 +265,25 @@ void Workspace::lowerWindow(FluxboxWindow *w) {
 void Workspace::reconfigure(void) {
 	clientmenu->reconfigure();
 
-	LinkedListIterator<FluxboxWindow> it(windowList);
-	for (; it.current(); it++)
-		if (it.current()->validateClient())
-			it.current()->reconfigure();
+	Windows::iterator it = windowList.begin();
+	Windows::iterator it_end = windowList.end();
+	for (; it != it_end; ++it) {
+		if ((*it)->validateClient())
+			(*it)->reconfigure();
+	}
 }
 
 
 FluxboxWindow *Workspace::getWindow(int index) {
-	if ((index >= 0) && (index < windowList->count()))
-		return windowList->find(index);
+	if ((index >= 0) && (index < windowList.size()))
+		return windowList[index];
 	else
 		return 0;
 }
 
 
 const int Workspace::getCount(void) {
-	return windowList->count();
+	return windowList.size();
 }
 
 
@@ -295,7 +299,7 @@ Bool Workspace::isCurrent(void) {
 
 
 Bool Workspace::isLastWindow(FluxboxWindow *w) {
-	return (w == windowList->last());
+	return (w == windowList.back());
 }
 
 void Workspace::setCurrent(void) {
@@ -328,16 +332,17 @@ void Workspace::setName(char *new_name) {
 
 
 void Workspace::shutdown(void) {
-	while (windowList->count()) {
-		windowList->first()->restore();
-		delete windowList->first();
+	Windows::iterator it = windowList.begin();
+	Windows::iterator it_end= windowList.end();
+	for (; it != it_end; ++it) {
+		(*it)->restore();
+		delete (*it);
 	}
 }
 
 
 void Workspace::placeWindow(FluxboxWindow *win) {
 	Bool placed = False;
-	LinkedListIterator<FluxboxWindow> it(windowList);
 	int win_w = win->getWidth() + (screen->getBorderWidth2x() * 2),
 		win_h = win->getHeight() + (screen->getBorderWidth2x() * 2),
 #ifdef		SLIT
@@ -374,26 +379,29 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 		 ! placed) {
 			test_x = screen->getBorderWidth() + screen->getEdgeSnapThreshold();
 			if (screen->getRowPlacementDirection() == BScreen::RIGHTLEFT)
-	test_x = screen->getWidth() - win_w - test_x;
+				test_x = screen->getWidth() - win_w - test_x;
 
 			while (((screen->getRowPlacementDirection() == BScreen::RIGHTLEFT) ?
 				test_x > 0 : test_x + win_w < (signed) screen->getWidth()) &&
 			 ! placed) {
 				placed = True;
 
-				it.reset();
-				for (; it.current() && placed; it++) {
-					curr_w = it.current()->getWidth() + screen->getBorderWidth2x() +
+					Windows::iterator it = windowList.begin();
+					Windows::iterator it_end = windowList.end();
+					for (; it != it_end && placed; ++it) {
+					curr_w = (*it)->getWidth() + screen->getBorderWidth2x() +
 						screen->getBorderWidth2x();
 					curr_h =
-						((it.current()->isShaded()) ? it.current()->getTitleHeight() :
-																					it.current()->getHeight()) +
-						screen->getBorderWidth2x() + screen->getBorderWidth2x();
+						(((*it)->isShaded())
+							? (*it)->getTitleHeight()
+							: (*it)->getHeight()) +
+							  screen->getBorderWidth2x() +
+							  screen->getBorderWidth2x();
 
-					if (it.current()->getXFrame() < test_x + win_w &&
-							it.current()->getXFrame() + curr_w > test_x &&
-							it.current()->getYFrame() < test_y + win_h &&
-							it.current()->getYFrame() + curr_h > test_y)
+					if ((*it)->getXFrame() < test_x + win_w &&
+							(*it)->getXFrame() + curr_w > test_x &&
+							(*it)->getYFrame() < test_y + win_h &&
+							(*it)->getYFrame() + curr_h > test_y)
 						placed = False;
 				}
 
@@ -436,26 +444,29 @@ void Workspace::placeWindow(FluxboxWindow *win) {
 		 ! placed) {
 			test_y = screen->getBorderWidth() + screen->getEdgeSnapThreshold();
 			if (screen->getColPlacementDirection() == BScreen::BOTTOMTOP)
-	test_y = screen->getHeight() - win_h - test_y;
+				test_y = screen->getHeight() - win_h - test_y;
 
 			while (((screen->getColPlacementDirection() == BScreen::BOTTOMTOP) ?
 				test_y > 0 : test_y + win_h < (signed) screen->getHeight()) &&
 			 ! placed) {
 				placed = True;
 
-				it.reset();
-				for (; it.current() && placed; it++) {
-					curr_w = it.current()->getWidth() + screen->getBorderWidth2x() +
+				Windows::iterator it = windowList.begin();
+				Windows::iterator it_end = windowList.end();
+				for (; it != it_end && placed; ++it) {
+					curr_w = (*it)->getWidth() + screen->getBorderWidth2x() +
 						screen->getBorderWidth2x();
 					curr_h =
-						((it.current()->isShaded()) ? it.current()->getTitleHeight() :
-																					it.current()->getHeight()) +
-						screen->getBorderWidth2x() + screen->getBorderWidth2x();
+						(((*it)->isShaded())
+							? (*it)->getTitleHeight()
+							: (*it)->getHeight()) +
+							  screen->getBorderWidth2x() +
+								screen->getBorderWidth2x();
 
-					if (it.current()->getXFrame() < test_x + win_w &&
-							it.current()->getXFrame() + curr_w > test_x &&
-							it.current()->getYFrame() < test_y + win_h &&
-							it.current()->getYFrame() + curr_h > test_y)
+					if ((*it)->getXFrame() < test_x + win_w &&
+							(*it)->getXFrame() + curr_w > test_x &&
+							(*it)->getYFrame() < test_y + win_h &&
+							(*it)->getYFrame() + curr_h > test_y)
 						placed = False;
 				}
 

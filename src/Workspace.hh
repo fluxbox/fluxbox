@@ -22,9 +22,10 @@
 #ifndef   _WORKSPACE_HH_
 #define   _WORKSPACE_HH_
 
-#include "LinkedList.hh"
 #include <X11/Xlib.h>
 #include <string>
+#include <vector>
+#include <list>
 
 class BScreen;
 class Clientmenu;
@@ -38,7 +39,11 @@ private:
   FluxboxWindow *lastfocus;
   Clientmenu *clientmenu;
 
-  LinkedList<FluxboxWindow> *stackingList, *windowList;
+  typedef std::list<FluxboxWindow *> WindowStack;
+  typedef std::vector<FluxboxWindow *> Windows;
+
+  WindowStack stackingList;
+  Windows windowList;
 
   std::string name;
   int id, cascade_x, cascade_y;
