@@ -1,5 +1,5 @@
 // SystemTray.cc
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.cc,v 1.7 2004/04/18 21:18:28 fluxgen Exp $
+// $Id: SystemTray.cc,v 1.8 2004/04/19 22:48:19 fluxgen Exp $
 
 #include "SystemTray.hh"
 
@@ -27,8 +27,11 @@
 
 #include "AtomHandler.hh"
 #include "fluxbox.hh"
+#include "WinClient.hh"
+#include "Screen.hh"
 
 #include <X11/Xutil.h>
+#include <X11/Xatom.h>
 
 #include <string>
 
@@ -53,7 +56,18 @@ public:
 
     void initForScreen(BScreen &screen) { };
     void setupFrame(FluxboxWindow &win) { };
-    void setupClient(WinClient &winclient) { };
+    void setupClient(WinClient &winclient) { 
+        // we dont want a managed window
+        if (winclient.fbwindow() != 0)
+            return;
+        // if not kde dockapp...
+        if (!winclient.screen().isKdeDockapp(winclient.window()))
+            return;
+        winclient.setEventMask(StructureNotifyMask |
+                               SubstructureNotifyMask | EnterWindowMask);
+        m_tray.addClient(winclient.window());
+
+    };
 
     void updateWorkarea(BScreen &) { }
     void updateFocusedWindow(BScreen &, Window) { }
@@ -103,7 +117,7 @@ SystemTray::SystemTray(const FbTk::FbWindow &parent):
     // set owner
     XSetSelectionOwner(disp, tray_atom, m_window.window(), CurrentTime);
     m_handler.reset(new SystemTrayHandler(*this));
-    Fluxbox::instance()->addAtomHandler(m_handler.get(), "systray");
+    Fluxbox::instance()->addAtomHandler(m_handler.get(), atom_name);
     Window root_window = RootWindow(disp, m_window.screenNumber());
 
     // send selection owner msg
@@ -207,6 +221,7 @@ SystemTray::ClientList::iterator SystemTray::findClient(Window win) {
 void SystemTray::addClient(Window win) {
     if (win == 0)
         return;
+    cerr<<"Add client: "<<win<<endl;
 
     ClientList::iterator it = findClient(win);
     if (it != m_clients.end())
@@ -258,6 +273,11 @@ void SystemTray::exposeEvent(XExposeEvent &event) {
 void SystemTray::handleEvent(XEvent &event) {
     if (event.type == DestroyNotify) {
         removeClient(event.xdestroywindow.window);
+    } else if (event.type == UnmapNotify && event.xany.send_event) { 
+        // we ignore server-generated events, which can occur
+        // on restart. The ICCCM says that a client must send
+        // a synthetic event for the withdrawn state
+        removeClient(event.xunmap.window);
     } else if (event.type == ConfigureNotify) {
         // we got configurenotify from an client
         // check and see if we need to update it's size

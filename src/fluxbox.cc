@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.238 2004/04/18 21:16:06 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.239 2004/04/19 22:45:44 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -516,6 +516,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
             delete screen;			
             continue;
         }
+        // now it's safe to create windows
+        screen->initWindows();
 
 #ifdef HAVE_GETPID
         pid_t bpid = getpid();
@@ -543,6 +545,8 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         m_toolbars.push_back(new Toolbar(*screen, 
                                          *screen->layerManager().getLayer(Fluxbox::instance()->getNormalLayer())));
 #endif // USE_TOOLBAR
+        // must do this after systray is created
+        screen->setupKdeDockapps();
 
         // attach screen signals to this
         screen->currentWorkspaceSig().attach(this);
@@ -559,6 +563,10 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         }
 
         revertFocus(*screen); // make sure focus style is correct
+#ifdef SLIT
+        if (screen->slit())
+            screen->slit()->show();
+#endif // SLIT        
 
     } // end init screens
 
@@ -1474,7 +1482,7 @@ BScreen *Fluxbox::searchScreen(Window window) {
 }
 
 
-const AtomHandler* Fluxbox::getAtomHandler(std::string name) {
+AtomHandler* Fluxbox::getAtomHandler(const std::string &name) {
     if ( name != "" ) {
         for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
              it != m_atomhandler.end(); it++ ) {
@@ -1484,7 +1492,7 @@ const AtomHandler* Fluxbox::getAtomHandler(std::string name) {
     }
     return 0;
 }
-void Fluxbox::addAtomHandler(AtomHandler *atomh, std::string name) {
+void Fluxbox::addAtomHandler(AtomHandler *atomh, const std::string &name) {
     m_atomhandler[atomh]= name;;
 }
 

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SystemTray.hh,v 1.3 2003/10/31 10:37:09 rathnor Exp $
+// $Id: SystemTray.hh,v 1.4 2004/04/19 22:48:19 fluxgen Exp $
 
 #ifndef SYSTEMTRAY_HH
 #define SYSTEMTRAY_HH
@@ -55,6 +55,9 @@ public:
     void exposeEvent(XExposeEvent &event);
     void handleEvent(XEvent &event);
 
+    void addClient(Window win);
+    void removeClient(Window win);
+
     unsigned int width() const;
     unsigned int height() const;
     unsigned int borderWidth() const;
@@ -65,8 +68,7 @@ public:
 private:
     typedef std::list<FbTk::FbWindow *> ClientList;
     ClientList::iterator findClient(Window win);
-    void addClient(Window win);
-    void removeClient(Window win);
+
     void renderTheme();
     void rearrangeClients();
     void removeAllClients();

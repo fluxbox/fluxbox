@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.85 2004/04/18 21:16:06 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.86 2004/04/19 22:45:44 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -101,8 +101,8 @@ public:
     inline unsigned int getUpdateDelayTime() const { return *m_rc_update_delay_time; }
     inline Time getLastTime() const { return m_last_time; }
 
-    const AtomHandler* getAtomHandler(std::string name);
-    void addAtomHandler(AtomHandler *atomh, std::string name= "");
+    AtomHandler *getAtomHandler(const std::string &name);
+    void addAtomHandler(AtomHandler *atomh, const std::string &name);
     void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
