@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.3 2002/12/13 20:29:31 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.4 2002/12/16 11:14:08 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -64,23 +64,28 @@ public:
     FbWindow &operator = (Window win);
     void hide();
     void show();
+    void showSubwindows();
+
     virtual void move(int x, int y);
     virtual void resize(size_t width, size_t height);
     virtual void moveResize(int x, int y, size_t width, size_t height);
     void lower();
     void raise();
 
+    const FbWindow *parent() const { return m_parent; }
     Window window() const { return m_window; }
     int x() const { return m_x; }
     int y() const { return m_y; }
     size_t width() const { return m_width; }
     size_t height() const { return m_height; }
+    int screenNumber() const;
     /// compare X window
     bool operator == (Window win) const { return m_window == win; }	
     bool operator != (Window win) const { return m_window != win; }
     /// compare two windows
     bool operator == (const FbWindow &win) const { return m_window == win.m_window; }
     bool operator != (const FbWindow &win) const { return m_window != win.m_window; }
+
 private:
     void updateGeometry();
     void create(Window parent, int x, int y, size_t width, size_t height, long eventmask, 
@@ -88,6 +93,8 @@ private:
                 int depth, 
                 int class_type);
     static Display *s_display;
+    const FbWindow *m_parent;
+    int m_screen_num;
     Window m_window; ///< X window
     int m_x, m_y; ///< position
     size_t m_width, m_height; 

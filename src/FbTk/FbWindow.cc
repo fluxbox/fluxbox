@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.2 2002/12/03 21:59:58 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.3 2002/12/16 11:17:26 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -32,7 +32,8 @@ namespace FbTk {
 
 Display *FbWindow::s_display = 0;
 
-FbWindow::FbWindow():m_window(0) {
+FbWindow::FbWindow():m_parent(0), m_screen_num(0), m_window(0) {
+
     if (s_display == 0)
         s_display = App::instance()->display();
 }
@@ -41,7 +42,9 @@ FbWindow::FbWindow(int screen_num,
                    int x, int y, size_t width, size_t height, long eventmask, 
                    bool override_redirect,
                    int depth,
-                   int class_type) {
+                   int class_type):
+    m_screen_num(screen_num),
+    m_parent(0) {
 	
     create(RootWindow(FbTk::App::instance()->display(), screen_num), 
            x, y, width, height, eventmask,
@@ -51,7 +54,9 @@ FbWindow::FbWindow(int screen_num,
 FbWindow::FbWindow(const FbWindow &parent,
                    int x, int y, size_t width, size_t height, long eventmask,
                    bool override_redirect, 
-                   int depth, int class_type) { 
+                   int depth, int class_type):
+   m_parent(&parent),
+   m_screen_num(parent.screenNumber()) { 
 
     create(parent.window(), x, y, width, height, eventmask, 
            override_redirect, depth, class_type);
@@ -106,6 +111,10 @@ void FbWindow::show() {
     XMapWindow(s_display, m_window);
 }
 
+void FbWindow::showSubwindows() {
+    XMapSubwindows(s_display, m_window);
+}
+
 void FbWindow::hide() {
     XUnmapWindow(s_display, m_window);
 }
@@ -138,6 +147,9 @@ void FbWindow::raise() {
     XRaiseWindow(s_display, m_window);
 }
 
+int FbWindow::screenNumber() const {
+    return m_screen_num;
+}
 void FbWindow::updateGeometry() {
     if (m_window == 0)
         return;
