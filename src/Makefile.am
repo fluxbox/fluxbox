@@ -81,6 +81,10 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	Strut.hh \
 	Xinerama.hh \
 	Xutil.hh Xutil.cc \
+	CurrentWindowCmd.hh CurrentWindowCmd.cc \
+	WorkspaceCmd.hh WorkspaceCmd.cc \
+	CommandParser.hh CommandParser.cc \
+	FbCommandFactory.hh FbCommandFactory.cc \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
 
