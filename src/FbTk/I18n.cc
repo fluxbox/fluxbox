@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: I18n.cc,v 1.3 2004/08/31 15:26:39 rathnor Exp $
+// $Id: I18n.cc,v 1.4 2004/10/07 09:52:28 akir Exp $
 
 /* Note:
  * A good reference for the older non-gettext style I18n
@@ -88,6 +88,8 @@ I18n::I18n():m_multibyte(false), m_catalog_fd((nl_catd)(-1)) {
 #ifdef	HAVE_SETLOCALE
 
     } else {		
+
+        setlocale(LC_TIME, "");
         // MB_CUR_MAX returns the size of a char in the current locale
         if (MB_CUR_MAX > 1)
             m_multibyte = true;
