@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.hh,v 1.21 2002/12/01 13:42:00 rathnor Exp $
+// $Id: Theme.hh,v 1.22 2002/12/02 20:52:50 fluxgen Exp $
 
 #ifndef THEME_HH
 #define THEME_HH
@@ -88,19 +88,8 @@ public:
 	
     } WindowStyle;
 
-	
-    typedef struct ToolbarStyle {
-        ToolbarStyle():font("fixed") { } // default font 'fixed'
-        FbTk::Color l_text, w_text, c_text, b_pic;
-        FbTk::Texture toolbar, label, window, button, pressed, clock;
-        GC l_text_gc, w_text_gc, c_text_gc, b_pic_gc;
-        FbTk::Font font;
-        DrawUtil::Font::FontJustify justify;
-    } ToolbarStyle;	
-		
     inline WindowStyle &getWindowStyle() { return m_windowstyle; }
     inline MenuStyle &getMenuStyle() { return m_menustyle; }
-    inline ToolbarStyle &getToolbarStyle() { return m_toolbarstyle; }
     inline const FbTk::Texture &getSlitTexture() const { return m_slit_texture; }
     inline unsigned int getBevelWidth() const { return m_bevel_width; }
     inline unsigned int getBorderWidth() const { return m_border_width; }
@@ -120,13 +109,12 @@ private:
     void loadMenuStyle();
     void loadWindowStyle();
     void loadTabStyle();
-    void loadToolbarStyle();	
     void loadRootCommand();
     void loadMisc();
     void freeMenuStyle();
     void freeWindowStyle();
     void freeTabStyle();
-    void freeToolbarStyle();
+
     void loadFontFromDatabase(FbTk::Font &dest, const char *name, const char *altname);
     bool readDatabaseTexture(char *, char *, FbTk::Texture *, unsigned long);
     bool readDatabaseColor(char *, char *, FbTk::Color *, unsigned long);
@@ -141,7 +129,7 @@ private:
 
     WindowStyle m_windowstyle;
     MenuStyle m_menustyle;
-    ToolbarStyle	m_toolbarstyle;
+
     unsigned int m_bevel_width, m_border_width, m_handle_width, m_frame_width;
     FbTk::Color m_border_color;
     GC m_opgc;

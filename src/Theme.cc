@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Theme.cc,v 1.38 2002/12/01 13:42:00 rathnor Exp $
+// $Id: Theme.cc,v 1.39 2002/12/02 20:54:30 fluxgen Exp $
 
 
 #include "Theme.hh"
@@ -134,35 +134,12 @@ Theme::Theme(Display *display, Window rootwindow, Colormap colormap,
     m_menustyle.hilite_gc =
         XCreateGC(m_display, rootwindow,
                   gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.l_text.pixel();
-
-    m_toolbarstyle.l_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.w_text.pixel();
-    m_toolbarstyle.w_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.c_text.pixel();
-    m_toolbarstyle.c_text_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.b_pic.pixel();
-    m_toolbarstyle.b_pic_gc =
-        XCreateGC(m_display, rootwindow,
-                  gc_value_mask, &gcv);
-	
 }
 
 Theme::~Theme() {
 
     freeMenuStyle();
     freeWindowStyle();
-    freeToolbarStyle();
     freeTabStyle();
 }
 
@@ -197,19 +174,6 @@ void Theme::freeTabStyle() {
     XFreeGC(m_display, m_windowstyle.tab.l_text_unfocus_gc);			
 }
 
-//----- freeToolbarStyle -----
-// free memory allocated for m_toolbarstyle
-// should only be called from ~Theme
-//--------------------
-void Theme::freeToolbarStyle() {
-	
-    XFreeGC(m_display, m_toolbarstyle.l_text_gc);
-    XFreeGC(m_display, m_toolbarstyle.w_text_gc);
-    XFreeGC(m_display, m_toolbarstyle.c_text_gc);
-    XFreeGC(m_display, m_toolbarstyle.b_pic_gc);
-	
-}
-
 //---------- load ------------
 // Loads a theme from a file
 //----------------------------
@@ -219,7 +183,6 @@ void Theme::load(const char *filename){
         m_database = XrmGetFileDatabase(DEFAULTSTYLE);
 
     loadMenuStyle();
-    loadToolbarStyle();	
     loadWindowStyle();
     loadTabStyle();
     loadRootCommand();
@@ -482,64 +445,6 @@ void Theme::loadTabStyle() {
 		
 }
 
-void Theme::loadToolbarStyle() {
-
-    readDatabaseTexture("toolbar", "Toolbar",
-                        &m_toolbarstyle.toolbar,
-                        BlackPixel(m_display, m_screennum));
-    readDatabaseTexture("toolbar.label", "Toolbar.Label",
-                        &m_toolbarstyle.label,
-                        BlackPixel(m_display, m_screennum));
-    readDatabaseTexture("toolbar.windowLabel", "Toolbar.WindowLabel",
-                        &m_toolbarstyle.window,
-                        BlackPixel(m_display, m_screennum));
-    readDatabaseTexture("toolbar.button", "Toolbar.Button",
-                        &m_toolbarstyle.button,
-                        WhitePixel(m_display, m_screennum));
-    readDatabaseTexture("toolbar.button.pressed", "Toolbar.Button.Pressed",
-                        &m_toolbarstyle.pressed,
-                        BlackPixel(m_display, m_screennum));
-    readDatabaseTexture("toolbar.clock", "Toolbar.Clock",
-                        &m_toolbarstyle.clock,
-                        BlackPixel(m_display, m_screennum));
-
-    readDatabaseColor("toolbar.label.textColor", "Toolbar.Label.TextColor",
-                      &m_toolbarstyle.l_text,
-                      WhitePixel(m_display, m_screennum));
-
-    readDatabaseColor("toolbar.windowLabel.textColor",
-                      "Toolbar.WindowLabel.TextColor",
-                      &m_toolbarstyle.w_text,
-                      WhitePixel(m_display, m_screennum));
-
-    readDatabaseColor("toolbar.clock.textColor", "Toolbar.Clock.TextColor",
-                      &m_toolbarstyle.c_text,
-                      WhitePixel(m_display, m_screennum));
-    readDatabaseColor("toolbar.button.picColor", "Toolbar.Button.PicColor",
-                      &m_toolbarstyle.b_pic,
-                      BlackPixel(m_display, m_screennum));
-
-	
-    // ----------- load font
-	
-    loadFontFromDatabase(m_toolbarstyle.font, "toolbar.font", "Toolbar.Font");
-
-    XrmValue value;
-    char *value_type;
-
-    if (XrmGetResource(m_database, "toolbar.justify",
-                       "Toolbar.Justify", &value_type, &value)) {
-        if (strstr(value.addr, "right") || strstr(value.addr, "Right"))
-            m_toolbarstyle.justify = DrawUtil::Font::RIGHT;
-        else if (strstr(value.addr, "center") || strstr(value.addr, "Center"))
-            m_toolbarstyle.justify = DrawUtil::Font::CENTER;
-        else
-            m_toolbarstyle.justify = DrawUtil::Font::LEFT;
-    } else
-        m_toolbarstyle.justify = DrawUtil::Font::LEFT;
-
-}
-
 void Theme::loadRootCommand() {
     XrmValue value;
     char *value_type;
@@ -627,7 +532,7 @@ void Theme::loadMisc() {
     if (!readDatabaseTexture("slit", "Slit",
                              &m_slit_texture, 
                              BlackPixel(m_display, m_screennum)) ) {
-        m_slit_texture = m_toolbarstyle.toolbar;
+        // m_slit_texture = m_toolbarstyle.toolbar; ///!!! TODO !!!
     }
 
 }
@@ -779,12 +684,11 @@ void Theme::readDatabaseFontSet(char *rname, char *rclass, XFontSet *fontset) {
         *fontset = createFontSet(defaultFont);
 
         if (! *fontset) {
-            fprintf(stderr,
+            throw string(
                     I18n::instance()->
                     getMessage(
                         FBNLS::ScreenSet, FBNLS::ScreenDefaultFontLoadFail,
-                        "BScreen::LoadStyle(): couldn't load default font.\n"));
-            throw 2;
+                        "BScreen::LoadStyle(): couldn't load default font."));
         }
     }
 }
@@ -811,8 +715,8 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
             fprintf(stderr,
                     I18n::instance()->
                     getMessage(
-                        FBNLS::ScreenSet, FBNLS::ScreenFontLoadFail,
-                        "BScreen::LoadStyle(): couldn't load font '%s'\n"),
+                               FBNLS::ScreenSet, FBNLS::ScreenFontLoadFail,
+                               "BScreen::LoadStyle(): couldn't load font '%s'\n"),
                     value.addr);
 
             load_default = true;
@@ -822,12 +726,12 @@ void Theme::readDatabaseFont(char *rname, char *rclass, XFontStruct **font) {
 
     if (load_default) {
         if ((*font = XLoadQueryFont(m_display, defaultFont)) == 0) {
-            fprintf(stderr,
-                    I18n::instance()->
-                    getMessage(
-                        FBNLS::ScreenSet, FBNLS::ScreenDefaultFontLoadFail,
-                        "BScreen::LoadStyle(): couldn't load default font.\n"));
-            throw 2; //fatal!
+            throw string(
+                         I18n::instance()->
+                         getMessage(
+                                    FBNLS::ScreenSet, FBNLS::ScreenDefaultFontLoadFail,
+                                    "BScreen::LoadStyle(): couldn't load default font."));
+         
         }
     }
 }
@@ -904,26 +808,6 @@ void Theme::reconfigure(bool antialias) {
     XChangeGC(m_display, m_menustyle.hilite_gc,
               gc_value_mask, &gcv);
 
-    // set antialias ?
-    if (m_toolbarstyle.font.isAntialias() != antialias)
-        m_toolbarstyle.font.setAntialias(antialias);
-
-    gcv.foreground = m_toolbarstyle.l_text.pixel();
-    XChangeGC(m_display, m_toolbarstyle.l_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.w_text.pixel();
-    XChangeGC(m_display, m_toolbarstyle.w_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.c_text.pixel();
-    XChangeGC(m_display, m_toolbarstyle.c_text_gc,
-              gc_value_mask, &gcv);
-
-    gcv.foreground = m_toolbarstyle.b_pic.pixel();
-    XChangeGC(m_display, m_toolbarstyle.b_pic_gc,
-              gc_value_mask, &gcv);
-			
 }
 
 XFontSet Theme::createFontSet(char *fontname) {
