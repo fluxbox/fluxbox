@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.16 2004/09/11 22:58:20 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.17 2004/09/24 06:23:17 rathnor Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -317,7 +317,7 @@ Pixmap FbPixmap::getRootPixmap(int screen_num) {
             if (real_format == 32 && items_read == 1) {
 
                 if (print_error && strcmp(prop_ids[prop], "_XSETROOT_ID") == 0) {
-                    fprintf(stderr, "%s", error_message);
+                    cerr<<error_message;
                     print_error = false;
                 } else
                     root_pm = (Pixmap) (*data);
