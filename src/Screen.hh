@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.101 2003/05/19 15:32:46 rathnor Exp $
+// $Id: Screen.hh,v 1.102 2003/05/19 22:45:51 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -126,8 +126,8 @@ public:
     inline const ToolbarHandler &toolbarHandler() const { return *m_toolbarhandler; }
     inline ToolbarHandler &toolbarHandler() { return *m_toolbarhandler; }
 
-    inline Workspace *getWorkspace(unsigned int w) { return ( w < workspacesList.size() ? workspacesList[w] : 0); }
-    inline Workspace *currentWorkspace() { return current_workspace; }
+    inline Workspace *getWorkspace(unsigned int w) { return ( w < m_workspaces_list.size() ? m_workspaces_list[w] : 0); }
+    inline Workspace *currentWorkspace() { return m_current_workspace; }
 
     const FbTk::Menu *getWorkspacemenu() const { return workspacemenu.get(); }
     FbTk::Menu *getWorkspacemenu() { return workspacemenu.get(); }
@@ -137,10 +137,10 @@ public:
     /*
       maximum screen bounds for given window
     */
-    unsigned int maxLeft(FbTk::FbWindow &win) const;
-    unsigned int maxRight(FbTk::FbWindow &win) const;
-    unsigned int maxTop(FbTk::FbWindow &win) const;
-    unsigned int maxBottom(FbTk::FbWindow &win) const;
+    unsigned int maxLeft(const FbTk::FbWindow &win) const;
+    unsigned int maxRight(const FbTk::FbWindow &win) const;
+    unsigned int maxTop(const FbTk::FbWindow &win) const;
+    unsigned int maxBottom(const FbTk::FbWindow &win) const;
 
     inline unsigned int width() const { return rootWindow().width(); }
     inline unsigned int height() const { return rootWindow().height(); }
@@ -149,16 +149,16 @@ public:
     typedef std::list<WinClient *> FocusedWindows;
 
     /// @return number of workspaces
-    inline unsigned int getCount() const { return workspacesList.size(); }
+    inline unsigned int getCount() const { return m_workspaces_list.size(); }
     /// @return number of icons
-    inline unsigned int getIconCount() const { return iconList.size(); }
-    inline const Icons &getIconList() const { return iconList; }
-    inline Icons &getIconList() { return iconList; }
+    inline unsigned int getIconCount() const { return m_icon_list.size(); }
+    inline const Icons &getIconList() const { return m_icon_list; }
+    inline Icons &getIconList() { return m_icon_list; }
     inline const FocusedWindows &getFocusedList() const { return focused_list; }
     inline FocusedWindows &getFocusedList() { return focused_list; }
     WinClient *getLastFocusedWindow(int workspace = -1);
-    const Workspaces &getWorkspacesList() const { return workspacesList; }
-    const WorkspaceNames &getWorkspaceNames() const { return workspaceNames; }
+    const Workspaces &getWorkspacesList() const { return m_workspaces_list; }
+    const WorkspaceNames &getWorkspaceNames() const { return m_workspace_names; }
     /**
        @name Screen signals
     */
@@ -369,7 +369,8 @@ private:
     bool root_colormap_installed, managed, geom_visible, cycling_focus;
     GC opGC;
     Pixmap geom_pixmap;
-    FbTk::FbWindow geom_window;
+
+    FbTk::FbWindow m_geom_window;
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbTk::Menu> m_configmenu;
@@ -379,9 +380,9 @@ private:
     typedef std::list<FbTk::Menu *> Rootmenus;
     typedef std::list<Netizen *> Netizens;
 
-    Rootmenus rootmenuList;
-    Netizens netizenList;
-    Icons iconList;
+    Rootmenus m_rootmenu_list;
+    Netizens m_netizen_list;
+    Icons m_icon_list;
 
     // This list keeps the order of window focusing for this screen
     // Screen global so it works for sticky windows too.
@@ -391,14 +392,11 @@ private:
 
     std::auto_ptr<Slit> m_slit;
 
-    Workspace *current_workspace;
+    Workspace *m_current_workspace;
     std::auto_ptr<FbTk::Menu> workspacemenu;
 
-    unsigned int geom_w, geom_h;
-    unsigned long event_mask;
-
-    WorkspaceNames workspaceNames;
-    Workspaces workspacesList;
+    WorkspaceNames m_workspace_names;
+    Workspaces m_workspaces_list;
 
     Window auto_group_window;
 
@@ -449,15 +447,14 @@ private:
     bool m_xinerama_avail;
     int m_xinerama_num_heads;
 
-#ifdef XINERAMA
     // Xinerama related private data
-    
+   
     int m_xinerama_center_x, m_xinerama_center_y;
 
     struct XineramaHeadInfo {
         int x, y, width, height;        
     } *m_xinerama_headinfo;
-#endif
+
 };
 
 

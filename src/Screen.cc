@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.173 2003/05/19 15:32:46 rathnor Exp $
+// $Id: Screen.cc,v 1.174 2003/05/19 22:45:17 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -133,10 +133,9 @@ namespace {
 
 int anotherWMRunning(Display *display, XErrorEvent *) {
     cerr<<I18n::instance()->
-            getMessage(
-                FBNLS::ScreenSet, FBNLS::ScreenAnotherWMRunning,
-                "BScreen::BScreen: an error occured while querying the X server.\n"
-                "	another window manager already running on display ")<<DisplayString(display)<<endl;
+        getMessage(FBNLS::ScreenSet, FBNLS::ScreenAnotherWMRunning,
+                   "BScreen::BScreen: an error occured while querying the X server.\n"
+                   "	another window manager already running on display ")<<DisplayString(display)<<endl;
 
     running = false;
 
@@ -526,7 +525,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     initXinerama();
 
-    event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
+    unsigned long event_mask = ColormapChangeMask | EnterWindowMask | PropertyChangeMask |
         SubstructureRedirectMask | KeyPressMask | KeyReleaseMask |
         ButtonPressMask | ButtonReleaseMask| SubstructureNotifyMask;
 
@@ -555,10 +554,9 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 #ifdef HAVE_GETPID
     pid_t bpid = getpid();
 
-    XChangeProperty(disp, rootWindow().window(),
-                    Fluxbox::instance()->getFluxboxPidAtom(), XA_CARDINAL,
-                    sizeof(pid_t) * 8, PropModeReplace,
-                    (unsigned char *) &bpid, 1);
+    rootWindow().changeProperty(Fluxbox::instance()->getFluxboxPidAtom(), XA_CARDINAL,
+                                sizeof(pid_t) * 8, PropModeReplace,
+                                (unsigned char *) &bpid, 1);
 #endif // HAVE_GETPID
 
 
@@ -590,11 +588,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 	
     int l = strlen(s);
 
-    geom_h = winFrameTheme().font().height();
-    geom_w = winFrameTheme().font().textWidth(s, l);
-	
-    geom_w += m_root_theme->bevelWidth()*2;
-    geom_h += m_root_theme->bevelWidth()*2;
+    int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
+    int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
 
     XSetWindowAttributes attrib;
     unsigned long mask = CWBorderPixel | CWColormap | CWSaveUnder;
@@ -602,7 +597,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     attrib.colormap = rootWindow().colormap();
     attrib.save_under = true;
 
-    geom_window = 
+    m_geom_window = 
         XCreateWindow(disp, rootWindow().window(),
                       0, 0, geom_w, geom_h, rootTheme().borderWidth(), rootWindow().depth(),
                       InputOutput, rootWindow().visual(), mask, &attrib);
@@ -612,21 +607,21 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
         if (winFrameTheme().titleFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
-            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
                                                      winFrameTheme().titleFocusTexture());
-            geom_window.setBackgroundPixmap(geom_pixmap);
+            m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
         if (winFrameTheme().labelFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {
-            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
                                                      winFrameTheme().labelFocusTexture());
-            geom_window.setBackgroundPixmap(geom_pixmap);
+            m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
 
@@ -634,15 +629,15 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
 
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {
-            Workspace *wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
-            workspacesList.push_back(wkspc);
+            Workspace *wkspc = new Workspace(*this, m_layermanager, m_workspaces_list.size());
+            m_workspaces_list.push_back(wkspc);
         }
     } else { // create at least one workspace
-        Workspace *wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
-        workspacesList.push_back(wkspc);
+        Workspace *wkspc = new Workspace(*this, m_layermanager, m_workspaces_list.size());
+        m_workspaces_list.push_back(wkspc);
     }
 
-    current_workspace = workspacesList.front();
+    m_current_workspace = m_workspaces_list.front();
 
 #ifdef SLIT
     m_slit.reset(new Slit(*this, *layerManager().getLayer(getSlitLayerNum()),
@@ -750,27 +745,27 @@ BScreen::~BScreen() {
 
     removeWorkspaceNames();
 
-    Workspaces::iterator w_it = workspacesList.begin();
-    Workspaces::iterator w_it_end = workspacesList.end();
+    Workspaces::iterator w_it = m_workspaces_list.begin();
+    Workspaces::iterator w_it_end = m_workspaces_list.end();
     for(; w_it != w_it_end; ++w_it) {
         delete (*w_it);
     }
-    workspacesList.clear();
+    m_workspaces_list.clear();
 	
-    Icons::iterator i_it = iconList.begin();
-    Icons::iterator i_it_end = iconList.end();
+    Icons::iterator i_it = m_icon_list.begin();
+    Icons::iterator i_it_end = m_icon_list.end();
     for(; i_it != i_it_end; ++i_it) {
         delete (*i_it);
     }
-    iconList.clear();
+    m_icon_list.clear();
 	
-    Netizens::iterator n_it = netizenList.begin();
-    Netizens::iterator n_it_end = netizenList.end();
+    Netizens::iterator n_it = m_netizen_list.begin();
+    Netizens::iterator n_it_end = m_netizen_list.end();
     for(; n_it != n_it_end; ++n_it) {
         delete (*n_it);
     }
 
-    netizenList.clear();
+    m_netizen_list.clear();
 
 #ifdef XINERAMA
     if (hasXinerama() && m_xinerama_headinfo) {
@@ -788,7 +783,7 @@ FbTk::Menu &BScreen::toolbarModemenu() {
 }
 
 unsigned int BScreen::currentWorkspaceID() const { 
-    return current_workspace->workspaceID(); 
+    return m_current_workspace->workspaceID(); 
 }
 
 Pixmap BScreen::rootPixmap() const {
@@ -799,12 +794,11 @@ Pixmap BScreen::rootPixmap() const {
     int real_format;
     unsigned long items_read, items_left;
     unsigned int *data;
-    if (XGetWindowProperty(disp, rootWindow().window(),
-                           XInternAtom(disp, "_XROOTPMAP_ID", false),
-                           0L, 1L, 
-                           false, XA_PIXMAP, &real_type,
-                           &real_format, &items_read, &items_left, 
-                           (unsigned char **) &data) == Success && 
+    if (rootWindow().property(XInternAtom(disp, "_XROOTPMAP_ID", false),
+                              0L, 1L, 
+                              false, XA_PIXMAP, &real_type,
+                              &real_format, &items_read, &items_left, 
+                              (unsigned char **) &data) && 
         items_read) { 
         root_pm = (Pixmap) (*data);                  
         XFree(data);
@@ -814,7 +808,7 @@ Pixmap BScreen::rootPixmap() const {
 
 }
     
-unsigned int BScreen::maxLeft(FbTk::FbWindow &win) const {
+unsigned int BScreen::maxLeft(const FbTk::FbWindow &win) const {
     if (hasXinerama()) {
         int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
         // we MUST use a head, we use the center of the window, or if that
@@ -825,7 +819,7 @@ unsigned int BScreen::maxLeft(FbTk::FbWindow &win) const {
         return 0;
 }
 
-unsigned int BScreen::maxRight(FbTk::FbWindow &win) const {
+unsigned int BScreen::maxRight(const FbTk::FbWindow &win) const {
     if (hasXinerama()) {
         int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
         // we MUST use a head, we use the center of the window, or if that
@@ -836,7 +830,7 @@ unsigned int BScreen::maxRight(FbTk::FbWindow &win) const {
         return width();
 }
 
-unsigned int BScreen::maxTop(FbTk::FbWindow &win) const {
+unsigned int BScreen::maxTop(const FbTk::FbWindow &win) const {
     if (hasXinerama()) {
         int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
         // we MUST use a head, we use the center of the window, or if that
@@ -846,7 +840,8 @@ unsigned int BScreen::maxTop(FbTk::FbWindow &win) const {
     } else
         return 0;
 }
-unsigned int BScreen::maxBottom(FbTk::FbWindow &win) const {
+
+unsigned int BScreen::maxBottom(const FbTk::FbWindow &win) const {
     if (hasXinerama()) {
         int head = getHead(win.x() + win.width()/2, win.y() + win.height()/2);
         // we MUST use a head, we use the center of the window, or if that
@@ -883,38 +878,37 @@ void BScreen::reconfigure() {
     int l = strlen(s);
 
     //TODO: repeated from somewhere else?
-    geom_h = winFrameTheme().font().height();
-    geom_w = winFrameTheme().font().textWidth(s, l);
-    geom_w += m_root_theme->bevelWidth()*2;
-    geom_h += m_root_theme->bevelWidth()*2;
+    int geom_h = winFrameTheme().font().height() + m_root_theme->bevelWidth()*2;
+    int geom_w = winFrameTheme().font().textWidth(s, l) + m_root_theme->bevelWidth()*2;
+    m_geom_window.resize(geom_w, geom_h);
 
     Pixmap tmp = geom_pixmap;
     if (winFrameTheme().labelFocusTexture().type() & FbTk::Texture::PARENTRELATIVE) {
         if (winFrameTheme().titleFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme().titleFocusTexture().color());
         } else {
-            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
                                                      winFrameTheme().titleFocusTexture());
-            geom_window.setBackgroundPixmap(geom_pixmap);
+            m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     } else {
         if (winFrameTheme().labelFocusTexture().type() ==
             (FbTk::Texture::FLAT | FbTk::Texture::SOLID)) {
             geom_pixmap = None;
-            geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
+            m_geom_window.setBackgroundColor(winFrameTheme().labelFocusTexture().color());
         } else {
-            geom_pixmap = imageControl().renderImage(geom_w, geom_h,
+            geom_pixmap = imageControl().renderImage(m_geom_window.width(), m_geom_window.height(),
                                                      winFrameTheme().labelFocusTexture());
-            geom_window.setBackgroundPixmap(geom_pixmap);
+            m_geom_window.setBackgroundPixmap(geom_pixmap);
         }
     }
     if (tmp)
         imageControl().removeImage(tmp);
 
-    geom_window.setBorderWidth(m_root_theme->borderWidth());
-    geom_window.setBorderColor(m_root_theme->borderColor());
+    m_geom_window.setBorderWidth(m_root_theme->borderWidth());
+    m_geom_window.setBorderColor(m_root_theme->borderColor());
 
     //reconfigure menus
     workspacemenu->reconfigure();
@@ -978,13 +972,13 @@ void BScreen::reconfigure() {
 #endif // SLIT
 
     //reconfigure workspaces
-    for_each(workspacesList.begin(),
-             workspacesList.end(),
+    for_each(m_workspaces_list.begin(),
+             m_workspaces_list.end(),
              mem_fun(&Workspace::reconfigure));
 
     //reconfigure Icons
-    for_each(iconList.begin(),
-             iconList.end(),
+    for_each(m_icon_list.begin(),
+             m_icon_list.end(),
              mem_fun(&FluxboxWindow::reconfigure));
 
     imageControl().timeout();
@@ -1000,7 +994,7 @@ void BScreen::rereadMenu() {
 
 
 void BScreen::removeWorkspaceNames() {
-    workspaceNames.erase(workspaceNames.begin(), workspaceNames.end());
+    m_workspace_names.erase(m_workspace_names.begin(), m_workspace_names.end());
 }
 
 void BScreen::updateWorkspaceNamesAtom() {
@@ -1011,9 +1005,9 @@ void BScreen::updateWorkspaceNamesAtom() {
 void BScreen::addIcon(FluxboxWindow *w) {
     if (! w) return;
 
-    w->setWindowNumber(iconList.size());
+    w->setWindowNumber(m_icon_list.size());
 
-    iconList.push_back(w);
+    m_icon_list.push_back(w);
 }
 
 
@@ -1022,15 +1016,15 @@ void BScreen::removeIcon(FluxboxWindow *w) {
         return;
 	
 
-    Icons::iterator erase_it = remove_if(iconList.begin(),
-                                         iconList.end(),
+    Icons::iterator erase_it = remove_if(m_icon_list.begin(),
+                                         m_icon_list.end(),
                                          bind2nd(equal_to<FluxboxWindow *>(), w));
-    if (erase_it != iconList.end())
-        iconList.erase(erase_it);
+    if (erase_it != m_icon_list.end())
+        m_icon_list.erase(erase_it);
 
     
-    Icons::iterator it = iconList.begin();
-    Icons::iterator it_end = iconList.end();
+    Icons::iterator it = m_icon_list.begin();
+    Icons::iterator it_end = m_icon_list.end();
     for (int i = 0; it != it_end; ++it, ++i) {
         (*it)->setWindowNumber(i);
     }
@@ -1065,8 +1059,8 @@ void BScreen::removeClient(WinClient &client) {
 }
 
 FluxboxWindow *BScreen::getIcon(unsigned int index) {
-    if (index < iconList.size())
-        return iconList[index];
+    if (index < m_icon_list.size())
+        return m_icon_list[index];
 
     return 0;
 }
@@ -1079,34 +1073,34 @@ void BScreen::setAntialias(bool value) {
 }
 
 int BScreen::addWorkspace() {
-    Workspace *wkspc = new Workspace(*this, m_layermanager, workspacesList.size());
-    workspacesList.push_back(wkspc);
+    Workspace *wkspc = new Workspace(*this, m_layermanager, m_workspaces_list.size());
+    m_workspaces_list.push_back(wkspc);
     addWorkspaceName(wkspc->name().c_str()); // update names
     //add workspace to workspacemenu
     workspacemenu->insert(wkspc->name().c_str(), &wkspc->menu(),
                           wkspc->workspaceID() + 2); //+2 so we add it after "remove last"
 		
     workspacemenu->update();
-    saveWorkspaces(workspacesList.size());
+    saveWorkspaces(m_workspaces_list.size());
     if (toolbar() != 0)
         toolbar()->reconfigure();
     
     updateNetizenWorkspaceCount();	
 	
 	
-    return workspacesList.size();
+    return m_workspaces_list.size();
 	
 }
 
 /// removes last workspace
 /// @return number of desktops left
 int BScreen::removeLastWorkspace() {
-    if (workspacesList.size() <= 1)
+    if (m_workspaces_list.size() <= 1)
         return 0;
-    Workspace *wkspc = workspacesList.back();
+    Workspace *wkspc = m_workspaces_list.back();
 
-    if (current_workspace->workspaceID() == wkspc->workspaceID())
-        changeWorkspaceID(current_workspace->workspaceID() - 1);
+    if (m_current_workspace->workspaceID() == wkspc->workspaceID())
+        changeWorkspaceID(m_current_workspace->workspaceID() - 1);
 
     wkspc->removeAll();
 
@@ -1114,22 +1108,22 @@ int BScreen::removeLastWorkspace() {
     workspacemenu->update();
 	
     //remove last workspace
-    workspacesList.pop_back();		
+    m_workspaces_list.pop_back();		
     delete wkspc;
 
     if (toolbar() != 0)
         toolbar()->reconfigure();
 
     updateNetizenWorkspaceCount();
-    saveWorkspaces(workspacesList.size());
+    saveWorkspaces(m_workspaces_list.size());
 
-    return workspacesList.size();
+    return m_workspaces_list.size();
 }
 
 
 void BScreen::changeWorkspaceID(unsigned int id) {
-    if (! current_workspace || id >= workspacesList.size() ||
-        id == current_workspace->workspaceID())
+    if (! m_current_workspace || id >= m_workspaces_list.size() ||
+        id == m_current_workspace->workspaceID())
         return;
 
     XSync(FbTk::App::instance()->display(), true);
@@ -1155,18 +1149,18 @@ void BScreen::changeWorkspaceID(unsigned int id) {
         }
     }
 
-    current_workspace->hideAll();
+    currentWorkspace()->hideAll();
 
-    workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
+    workspacemenu->setItemSelected(currentWorkspace()->workspaceID() + 2, false);
 
     // set new workspace
-    current_workspace = getWorkspace(id);
+    m_current_workspace = getWorkspace(id);
 
-    workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, true);
+    workspacemenu->setItemSelected(currentWorkspace()->workspaceID() + 2, true);
     if (toolbar() != 0)
         toolbar()->redrawWorkspaceLabel(true);
 
-    current_workspace->showAll();
+    currentWorkspace()->showAll();
 
     if (focused && (focused->isStuck() || focused->isMoving())) {
         focused->setInputFocus();
@@ -1182,13 +1176,13 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 
 
 void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS) {
-    if (! current_workspace || id >= workspacesList.size())
+    if (! m_current_workspace || id >= m_workspaces_list.size())
         return;
 
     if (!win)
         win = Fluxbox::instance()->getFocusedWindow();
 
-    if (id != current_workspace->workspaceID()) {
+    if (id != currentWorkspace()->workspaceID()) {
         XSync(FbTk::App::instance()->display(), True);
 
         if (win && &win->screen() == this &&
@@ -1219,14 +1213,14 @@ void BScreen::sendToWorkspace(unsigned int id, FluxboxWindow *win, bool changeWS
 
 void BScreen::addNetizen(Window win) {
     Netizen *net = new Netizen(*this, win);
-    netizenList.push_back(net);
+    m_netizen_list.push_back(net);
 
     net->sendWorkspaceCount();
     net->sendCurrentWorkspace();
 
     // send all windows to netizen
-    Workspaces::iterator it = workspacesList.begin();
-    Workspaces::iterator it_end = workspacesList.end();
+    Workspaces::iterator it = m_workspaces_list.begin();
+    Workspaces::iterator it_end = m_workspaces_list.end();
     for (; it != it_end; ++it) {
         Workspace::Windows::iterator win_it = (*it)->windowList().begin();
         Workspace::Windows::iterator win_it_end = (*it)->windowList().end();
@@ -1242,13 +1236,13 @@ void BScreen::addNetizen(Window win) {
 }
 
 void BScreen::removeNetizen(Window w) {
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         if ((*it)->window() == w) {
             Netizen *n = *it;
             delete n;
-            netizenList.erase(it);			
+            m_netizen_list.erase(it);			
             break;
         }
     }
@@ -1257,15 +1251,15 @@ void BScreen::removeNetizen(Window w) {
 
 void BScreen::updateNetizenCurrentWorkspace() {
     m_currentworkspace_sig.notify();
-    for_each(netizenList.begin(),
-             netizenList.end(),
+    for_each(m_netizen_list.begin(),
+             m_netizen_list.end(),
              mem_fun(&Netizen::sendCurrentWorkspace));
 }
 
 
 void BScreen::updateNetizenWorkspaceCount() {
-    for_each(netizenList.begin(),
-             netizenList.end(),
+    for_each(m_netizen_list.begin(),
+             m_netizen_list.end(),
              mem_fun(&Netizen::sendWorkspaceCount));
 
     m_workspacecount_sig.notify();	
@@ -1274,8 +1268,8 @@ void BScreen::updateNetizenWorkspaceCount() {
 
 void BScreen::updateNetizenWindowFocus() {
 
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     Window f = ((Fluxbox::instance()->getFocusedWindow()) ?
                 Fluxbox::instance()->getFocusedWindow()->clientWindow() : None);
     for (; it != it_end; ++it) {
@@ -1285,8 +1279,8 @@ void BScreen::updateNetizenWindowFocus() {
 
 
 void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         (*it)->sendWindowAdd(w, p);
     }
@@ -1297,8 +1291,8 @@ void BScreen::updateNetizenWindowAdd(Window w, unsigned long p) {
 
 
 void BScreen::updateNetizenWindowDel(Window w) {
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         (*it)->sendWindowDel(w);
     }
@@ -1308,8 +1302,8 @@ void BScreen::updateNetizenWindowDel(Window w) {
 
 
 void BScreen::updateNetizenWindowRaise(Window w) {
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         (*it)->sendWindowRaise(w);
     }
@@ -1317,8 +1311,8 @@ void BScreen::updateNetizenWindowRaise(Window w) {
 
 
 void BScreen::updateNetizenWindowLower(Window w) {
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         (*it)->sendWindowLower(w);
     }
@@ -1326,8 +1320,8 @@ void BScreen::updateNetizenWindowLower(Window w) {
 
 
 void BScreen::updateNetizenConfigNotify(XEvent *e) {
-    Netizens::iterator it = netizenList.begin();
-    Netizens::iterator it_end = netizenList.end();
+    Netizens::iterator it = m_netizen_list.begin();
+    Netizens::iterator it_end = m_netizen_list.end();
     for (; it != it_end; ++it) {
         (*it)->sendConfigNotify(e);
     }
@@ -1523,13 +1517,13 @@ void BScreen::saveStrftimeFormat(const char *format) {
 
 
 void BScreen::addWorkspaceName(const char *name) {
-    workspaceNames.push_back(name);
+    m_workspace_names.push_back(name);
 }
 
 
 string BScreen::getNameOfWorkspace(unsigned int workspace) const {
-    if (workspace < workspaceNames.size()) {
-        return workspaceNames[workspace];
+    if (workspace < m_workspace_names.size()) {
+        return m_workspace_names[workspace];
     } else {
         return "";
     }
@@ -1541,7 +1535,7 @@ void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id,
         return;
 
     if (wkspc_id >= getCount()) {
-        wkspc_id = current_workspace->workspaceID();
+        wkspc_id = currentWorkspace()->workspaceID();
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__LINE__<<"): wkspc_id >= getCount()"<<endl;
 #endif // DEBUG
@@ -1860,10 +1854,10 @@ void BScreen::initMenu() {
 	
     if (m_rootmenu.get()) {
         // since all menus in root is submenus in m_rootmenu
-        // just remove every item in m_rootmenu and then clear rootmenuList
+        // just remove every item in m_rootmenu and then clear m_rootmenu_list
         while (m_rootmenu->numberOfItems())
             m_rootmenu->remove(0); 
-        rootmenuList.clear();
+        m_rootmenu_list.clear();
 
     } else
         m_rootmenu.reset(createMenuFromScreen(*this));
@@ -2109,7 +2103,7 @@ bool BScreen::parseMenuFile(ifstream &file, FbTk::Menu &menu, int &row) {
                         submenu->update();
                         menu.insert(str_label.c_str(), submenu);
                         // save to list so we can delete it later
-                        rootmenuList.push_back(submenu);
+                        m_rootmenu_list.push_back(submenu);
 					
                     }
                 } // end of sub
@@ -2361,8 +2355,8 @@ void BScreen::shutdown() {
     rootWindow().setEventMask(NoEventMask);
     XSync(disp, False);
 
-    for_each(workspacesList.begin(),
-             workspacesList.end(),
+    for_each(m_workspaces_list.begin(),
+             m_workspaces_list.end(),
              mem_fun(&Workspace::shutdown));
 
 #ifdef SLIT
@@ -2375,31 +2369,30 @@ void BScreen::shutdown() {
 
 void BScreen::showPosition(int x, int y) {
     if (! geom_visible) {
-#ifdef XINERAMA
-        unsigned int head = hasXinerama() ? getCurrHead() : 0;
+        if (hasXinerama()) {
+            unsigned int head = getCurrHead();
 
-        geom_window.moveResize(getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
-                               getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, 
-                               geom_w, geom_h);
-#else // !XINERMA
-        geom_window.moveResize((width() - geom_w) / 2,
-                               (height() - geom_h) / 2, geom_w, geom_h);
-#endif // XINERAMA
+            m_geom_window.move(getHeadX(head) + (getHeadWidth(head) - m_geom_window.width()) / 2,
+                             getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
+                            
+        } else {
+            m_geom_window.move((width() - m_geom_window.width()) / 2, (height() - m_geom_window.height()) / 2);
+        }
 
-        geom_window.show();
-        geom_window.raise();
+        m_geom_window.show();
+        m_geom_window.raise();
 
         geom_visible = true;
     }
     char label[256];
 	
     sprintf(label,
-             I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
-                                          "X: %4d x Y: %4d"), x, y);
+            I18n::instance()->getMessage(FBNLS::ScreenSet, FBNLS::ScreenPositionFormat,
+                                         "X: %4d x Y: %4d"), x, y);
 
-    geom_window.clear();
+    m_geom_window.clear();
 
-    winFrameTheme().font().drawText(geom_window.window(),
+    winFrameTheme().font().drawText(m_geom_window.window(),
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),
@@ -2412,18 +2405,17 @@ void BScreen::showPosition(int x, int y) {
 
 void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
     if (! geom_visible) {
-#ifdef XINERAMA
-        unsigned int head = hasXinerama() ? getCurrHead() : 0;
+        if (hasXinerama()) {
+            unsigned int head = getCurrHead();
 
-        geom_window.moveResize(getHeadX(head) + (getHeadWidth(head) - geom_w) / 2,
-                               getHeadY(head) + (getHeadHeight(head) - geom_h) / 2, 
-                               geom_w, geom_h);
-#else // !XINERMA
-        geom_window.moveResize((width() - geom_w) / 2,
-                               (height() - geom_h) / 2, geom_w, geom_h);
-#endif // XINERAMA
-        geom_window.show();
-        geom_window.raise();
+            m_geom_window.move(getHeadX(head) + (getHeadWidth(head) - m_geom_window.width()) / 2,
+                             getHeadY(head) + (getHeadHeight(head) - m_geom_window.height()) / 2);
+        } else {
+            m_geom_window.move((width() - m_geom_window.width()) / 2, (height() - m_geom_window.height()) / 2);
+
+        }
+        m_geom_window.show();
+        m_geom_window.raise();
 
         geom_visible = true;
     }
@@ -2435,10 +2427,10 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
                                          FBNLS::ScreenSet, FBNLS::ScreenGeometryFormat,
                                          "W: %4d x H: %4d"), gx, gy);
 
-    geom_window.clear();
+    m_geom_window.clear();
 
     //TODO: geom window again?! repeated
-    winFrameTheme().font().drawText(geom_window.window(),
+    winFrameTheme().font().drawText(m_geom_window.window(),
                                     screenNumber(),
                                     winFrameTheme().labelTextFocusGC(),
                                     label, strlen(label),
@@ -2450,7 +2442,7 @@ void BScreen::showGeometry(unsigned int gx, unsigned int gy) {
 
 void BScreen::hideGeometry() {
     if (geom_visible) {
-        geom_window.hide();
+        m_geom_window.hide();
         geom_visible = false;
     }
 }
@@ -2589,6 +2581,7 @@ void BScreen::initXinerama() {
         m_xinerama_headinfo[i].height = screen_info[i].height;
     }
 #else // XINERAMA
+    // no xinerama
     m_xinerama_avail = false;
     m_xinerama_num_heads = 0;
 #endif // XINERAMA
