@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconBar.cc,v 1.38 2003/06/26 12:22:42 rathnor Exp $
+// $Id: IconBar.cc,v 1.39 2003/07/10 11:09:19 fluxgen Exp $
 
 #include "IconBar.hh"
 
@@ -99,7 +99,17 @@ IconBar::~IconBar() {
  returns window to iconobj
 */
 Window IconBar::addIcon(FluxboxWindow *fluxboxwin) {
-	
+    if (fluxboxwin == 0)
+        return 0;
+
+     // we don't want dublicate instances
+    IconList::iterator it = m_iconlist.begin();
+    IconList::iterator it_end = m_iconlist.end();
+    for (; it != it_end; ++it) {
+        if ((*it)->getFluxboxWin() == fluxboxwin)
+            return 0;
+    }
+
     Window iconwin = createIconWindow(fluxboxwin, m_parent);
     decorate(iconwin);	
     //add window object to list	
@@ -121,6 +131,9 @@ Window IconBar::addIcon(FluxboxWindow *fluxboxwin) {
   returns None if no window was found
 */
 Window IconBar::delIcon(FluxboxWindow *fluxboxwin) {
+    if (fluxboxwin == 0)
+        return 0;
+
     Window retwin = None;
     IconBarObj *obj = findIcon(fluxboxwin);
     if (obj) {
