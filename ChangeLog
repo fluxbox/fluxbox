@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/08/31:
+  * Fixed restart issue with system tray (Henrik)
+    SystemTray.cc
   * Fixed multiple screen issues with system tray (Henrik)
     SystemTray.cc
   * Check for iconv function (Henrik)
