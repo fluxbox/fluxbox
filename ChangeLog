@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
+*04/03/13:
+  * Fixed so it compiles in cygwin (Henrik)
+    I18n.hh
 *04/03/11:
   * fbsetbg updates: (Han)
     * Check if Esetroot was linked with Imlib
