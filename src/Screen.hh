@@ -22,28 +22,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.7 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Screen.hh,v 1.8 2002/01/10 12:49:15 fluxgen Exp $
 
 #ifndef	 _SCREEN_HH_
 #define	 _SCREEN_HH_
 
-
-
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
-
-#ifdef		TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h>
-#else // !TIME_WITH_SYS_TIME
-#	ifdef		HAVE_SYS_TIME_H
-#		include <sys/time.h>
-#	else // !HAVE_SYS_TIME_H
-#		include <time.h>
-#	endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
-
-#include <stdio.h>
 
 #include "Theme.hh"
 
@@ -84,6 +67,24 @@ class BScreen;
 #	include "Slit.hh"
 #endif // SLIT
 
+
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
+
+#ifdef		TIME_WITH_SYS_TIME
+#	include <sys/time.h>
+#	include <time.h>
+#else // !TIME_WITH_SYS_TIME
+#	ifdef		HAVE_SYS_TIME_H
+#		include <sys/time.h>
+#	else // !HAVE_SYS_TIME_H
+#		include <time.h>
+#	endif // HAVE_SYS_TIME_H
+#endif // TIME_WITH_SYS_TIME
+
+#include <stdio.h>
+#include <string>
+
 class BScreen : public ScreenInfo {
 public:
 	BScreen(Fluxbox *, int);
@@ -120,7 +121,7 @@ public:
 	inline const BColor *getBorderColor(void) { return &theme->getBorderColor(); }
 	inline BImageControl *getImageControl(void) { return image_control; }
 	inline Rootmenu *getRootmenu(void) { return rootmenu; }
-
+	inline std::string &getRootCommand(void) { return rootcommand; }
 #ifdef	 SLIT
 	inline const Bool &isSlitOnTop(void) const { return resource.slit_on_top; }
 	inline const Bool &doSlitAutoHide(void) const
@@ -183,6 +184,7 @@ public:
 	{ return resource.tab_alignment; }
 
 	inline void setRootColormapInstalled(Bool r) { root_colormap_installed = r; }
+	inline void saveRootCommand(std::string rootcmd) { rootcommand = rootcmd; }
 	inline void saveSloppyFocus(Bool s) { resource.sloppy_focus = s; }
 	inline void saveSemiSloppyFocus(Bool s) { resource.semi_sloppy_focus = s; }
 	inline void saveAutoRaise(Bool a) { resource.auto_raise = a; }
@@ -278,6 +280,7 @@ public:
 
 private:
 	Theme *theme;
+	std::string rootcommand;
 	
 	Bool root_colormap_installed, managed, geom_visible;
 	GC opGC;

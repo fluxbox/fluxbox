@@ -125,7 +125,9 @@ static int dcmp(const void *one, const void *two) {
 	return (strcmp((*(char **) one), (*(char **) two)));
 }
 
-BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
+BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn),
+rootcommand("")
+{
 	theme = 0;
 	fluxbox = b;
 
@@ -192,7 +194,7 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 
 	image_control->setDither(resource.image_dither);
 	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
-			image_control, fluxbox->getStyleFilename(), fluxbox->getRootCommand());
+			image_control, fluxbox->getStyleFilename(), getRootCommand().c_str());
 	
 #ifdef GNOME
 	/* create the GNOME window */
@@ -203,14 +205,16 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
   XChangeProperty(getBaseDisplay()->getXDisplay(),
 			getRootWindow(), getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 			XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
+ 
   XChangeProperty(getBaseDisplay()->getXDisplay(), gnome_win, 
 		getBaseDisplay()->getGnomeSupportingWMCheckAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *) &gnome_win, 1);
-	 
+	
+	Atom gnomeatomlist[1] = {getBaseDisplay()->getGnomeWorkspaceAtom()};
   XChangeProperty(getBaseDisplay()->getXDisplay(),
 		getRootWindow(), getBaseDisplay()->getGnomeProtAtom(),
 		XA_ATOM, 32, PropModeReplace,
-		(unsigned char *)getBaseDisplay()->getGnomeListAtoms(), 10);			
+		(unsigned char *)gnomeatomlist, 1);
 #endif 
 
 
@@ -433,10 +437,11 @@ BScreen::~BScreen(void) {
 }
 
 void BScreen::reconfigure(void) {
-	if (Fluxbox::instance()->getRootCommand())
-		theme->setRootCommand(Fluxbox::instance()->getRootCommand());
-	else
-		theme->setRootCommand("");
+	#ifdef DEBUG
+	cerr<<__FILE__<<"("<<__LINE__<<"): BScreen::reconfigure"<<endl;
+	#endif
+	Fluxbox::instance()->loadRootCommand(this);
+	theme->setRootCommand(getRootCommand());
 
 	theme->load(fluxbox->getStyleFilename());
 	theme->reconfigure();
