@@ -1,3 +1,5 @@
+// Rootmenu.cc for fluxbox 
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 // Rootmenu.cc for Blackbox - an X11 Window manager
 // Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
 //
@@ -54,7 +56,7 @@ Rootmenu::Rootmenu(BScreen *scrn)
 : Basemenu(scrn),
   auto_group_window(0)
 {
-  screen = scrn;  
+
 }
 
 
@@ -69,20 +71,19 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 			switch (item->function()) {
 			case BScreen::EXECUTE:
 				if (item->exec().size()) {
-					#ifndef    __EMX__
+#ifndef    __EMX__
 					char displaystring[MAXPATHLEN];
 					sprintf(displaystring, "DISPLAY=%s",
-							DisplayString(screen->getBaseDisplay()->getXDisplay()));
+							DisplayString(screen()->getBaseDisplay()->getXDisplay()));
 					sprintf(displaystring + strlen(displaystring) - 1, "%d",
-						screen->getScreenNumber());
+						screen()->getScreenNumber());
 
-					screen->setAutoGroupWindow(useAutoGroupWindow());
+					screen()->setAutoGroupWindow(useAutoGroupWindow());
 
 					bexec(item->exec().c_str(), displaystring);
-
-					#else //   __EMX__
+#else //   __EMX__
 					spawnlp(P_NOWAIT, "cmd.exe", "cmd.exe", "/c", item->exec().c_str(), NULL);
-					#endif // !__EMX__
+#endif // !__EMX__
 				}
 				break;
 
@@ -111,7 +112,7 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 				fluxbox->reconfigure();
 				return;
 			}
-			if (! (screen->getRootmenu()->isTorn() || isTorn()) &&
+			if (! (screen()->getRootmenu()->isTorn() || isTorn()) &&
 					item->function() != BScreen::RECONFIGURE &&
 					item->function() != BScreen::SETSTYLE)
 				hide();
@@ -119,23 +120,39 @@ void Rootmenu::itemSelected(int button, unsigned int index) {
 	}
 }
 
-void Rootmenu::setAutoGroupWindow(Window window)
-{
+void Rootmenu::setAutoGroupWindow(Window window) {
 	auto_group_window = window;
 }
 
-Window Rootmenu::useAutoGroupWindow()
-{
+void Rootmenu::show() {
+	Basemenu::show();
+	// make sure it's full visible
+	
+	int newx = x(), newy = y();
+	if (x() < 0)
+		newx = 0;
+	else if (x() + width() > screen()->getWidth())
+		newx = screen()->getWidth() - width();
+	if (y() < 0)
+		newy = 0;
+	else if (y() + height() > screen()->getHeight())
+		newy = screen()->getHeight() - height();
+
+	move(newx, newy);
+}
+
+Window Rootmenu::useAutoGroupWindow() {
 	// Return and clear the auto-grouping state.
 	Window w = auto_group_window;
 	if (w)
 		auto_group_window = 0;	// clear it immediately
 	// If not set check the parent and the parent's parent, ...
-	else {
+	else if (parent()) {
 		// TODO: dynamic_cast throws std::bad_cast!
 		Rootmenu *p = dynamic_cast<Rootmenu*>(parent());
-		if (p)
-			w = p->useAutoGroupWindow();
+		w = p->useAutoGroupWindow();
 	}
 	return w;
 }
+
+
