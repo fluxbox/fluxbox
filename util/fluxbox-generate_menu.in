@@ -2,7 +2,7 @@
 #
 # generate_menu for Fluxbox
 #
-# Copyright (c) 2002 Han Boetes <han@mijncomputer.nl>
+# Copyright (c) 2002-2004 Han Boetes <han@mijncomputer.nl>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.7 2003/12/29 14:05:16 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.8 2003/12/31 00:41:02 fluxgen Exp $
 
 #
 # Portability notes:
@@ -1071,6 +1071,7 @@ append_submenu "${FBSETTINGSMENU}"
     append_menu_end
     find_it xlock append "[exec] (Lock Screen) {xlock}" ||\
         find_it xscreensaver-command append "[exec] (Lock Screen) {xscreensaver-command -lock}"
+    append "[commanddialog] (Fluxbox Command)"
     append "[reconfig] (${RELOADITEM})"
     append "[restart] (${RESTARTITEM})"
     append "[nop] (---)"
