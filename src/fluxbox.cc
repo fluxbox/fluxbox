@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.225 2004/01/16 18:07:40 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.226 2004/01/18 12:42:47 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -827,12 +827,33 @@ void Fluxbox::handleEvent(XEvent * const e) {
         FluxboxWindow *win = 0;
 
         if (! winclient) {
-            //!!! TODO
-            BScreen *scr = searchScreen(e->xmaprequest.parent);
-            if (scr != 0)
-                win = scr->createWindow(e->xmaprequest.window);
-            else
+            BScreen *screen = 0;
+            int screen_num;
+            XWindowAttributes attr;
+            // find screen
+            if (XGetWindowAttributes(display(),
+                                     e->xmaprequest.window,
+                                     &attr) && attr.screen != 0) {
+                screen_num = XScreenNumberOfScreen(attr.screen);
+            
+                // find screen
+                ScreenList::iterator screen_it = m_screen_list.begin();
+                const ScreenList::iterator screen_it_end = m_screen_list.end();
+                for (; screen_it != screen_it_end; ++screen_it) {
+                    if ((*screen_it)->screenNumber() == screen_num) {
+                        screen = (*screen_it);
+                        break;
+                    }
+                }
+            }
+            // try with parent if we failed to find screen num
+            if (screen == 0)
+               screen = searchScreen(e->xmaprequest.parent);
+           
+            if (screen == 0) {
                 cerr<<"Fluxbox Warning! Could not find screen to map window on!"<<endl;
+            } else
+                win = screen->createWindow(e->xmaprequest.window);
 
         } else {
             win = winclient->fbwindow();
