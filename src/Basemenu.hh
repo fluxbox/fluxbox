@@ -1,8 +1,8 @@
 // Basemenu.hh for Fluxbox Window manager
-// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2001 - 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 //
 // Basemenu.hh for Blackbox - an X11 Window manager
-// Copyright (c) 1997 - 2000 Brad Hughes (bhughes@tcac.net)
+// Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Basemenu.hh,v 1.21 2002/12/03 23:21:42 fluxgen Exp $
+// $Id: Basemenu.hh,v 1.22 2002/12/13 20:39:41 fluxgen Exp $
 
 #ifndef	 BASEMENU_HH
 #define	 BASEMENU_HH
@@ -34,7 +34,6 @@
 #include "FbWindow.hh"
 #include "EventHandler.hh"
 
-class Basemenu;
 class BasemenuItem;
 class BImageControl;
 class BScreen;
