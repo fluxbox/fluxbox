@@ -66,10 +66,10 @@ public:
     int addWindow(FluxboxWindow &win, bool place = false);
     int removeWindow(FluxboxWindow *win);
     void removeWindow(WinClient &client);
-    BScreen &getScreen() { return screen; }
+    BScreen &screen() { return m_screen; }
     FluxboxWindow *getLastFocusedWindow() { return lastfocus; }
 
-    const BScreen &getScreen() const { return screen; }	
+    const BScreen &screen() const { return m_screen; }	
     const FluxboxWindow *getLastFocusedWindow() const { return lastfocus; }	
     FbTk::Menu &menu() { return m_clientmenu; }
     inline const FbTk::Menu &menu() const { return m_clientmenu; }
@@ -99,7 +99,7 @@ protected:
 private:
     void updateClientmenu();
 
-    BScreen &screen;
+    BScreen &m_screen;
     FluxboxWindow *lastfocus;
     FbTk::Menu m_clientmenu;
 
