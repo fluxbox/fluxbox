@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.177 2003/05/24 05:49:31 rathnor Exp $
+// $Id: Screen.cc,v 1.178 2003/05/24 13:13:22 rathnor Exp $
 
 
 #include "Screen.hh"
@@ -520,7 +520,6 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     resource(rm, screenname, altscreenname),
     m_toolbarhandler(0) {
 
-
     Display *disp = FbTk::App::instance()->display();
 
     initXinerama();
@@ -626,6 +625,7 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     }
 
     workspacemenu.reset(createMenuFromScreen(*this));
+    workspacemenu->setInternalMenu();
 
     if (*resource.workspaces != 0) {
         for (int i = 0; i < *resource.workspaces; ++i) {

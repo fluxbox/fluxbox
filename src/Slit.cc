@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Slit.cc,v 1.57 2003/05/19 15:32:47 rathnor Exp $
+// $Id: Slit.cc,v 1.58 2003/05/24 13:13:22 rathnor Exp $
 
 #include "Slit.hh"
 
@@ -1253,7 +1253,8 @@ void Slit::setupMenu() {
                                              SlitSet, SlitSlitPlacement,
                                              "Slit Placement"));
     m_placement_menu.setMinimumSublevels(3);
-    m_placement_menu.setInternalMenu();
+    m_layermenu->setInternalMenu();
+    m_clientlist_menu.setInternalMenu();
    
 
     // setup items in sub menu

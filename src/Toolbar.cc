@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.87 2003/05/24 05:49:31 rathnor Exp $
+// $Id: Toolbar.cc,v 1.88 2003/05/24 13:13:22 rathnor Exp $
 
 #include "Toolbar.hh"
 
@@ -131,8 +131,6 @@ void setupMenus(Toolbar &tbar) {
                                                   "Auto hide"),
                                  tbar.screen().doToolbarAutoHide(),
                                  reconfig_toolbar_and_save_resource));
-
-    menu.setInternalMenu();
 
     menu.insert("Layer...", &tbar.layermenu());
 
@@ -286,6 +284,8 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     // we need to get notified when the theme is reloaded
     m_theme.addListener(m_themelistener);
 
+    m_layermenu.setInternalMenu();
+    m_placementmenu.setInternalMenu();
     setupMenus(*this);
 
     // geometry settings

@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarHandler.cc,v 1.13 2003/05/15 23:30:05 fluxgen Exp $
+// $Id: ToolbarHandler.cc,v 1.14 2003/05/24 13:13:22 rathnor Exp $
 
 /**
  * The ToolbarHandler class acts as a rough interface to the toolbar.
@@ -96,6 +96,7 @@ ToolbarHandler::ToolbarHandler(BScreen &screen, ToolbarMode mode)
                  screen.screenNumber(), screen.imageControl())
 {
     m_modemenu.setInternalMenu();
+    m_toolbarmenu.setInternalMenu();
     setupModeMenu(m_modemenu, *this);
     setMode(mode, false); // the atomhandler part will initialise it shortly
 }
@@ -116,9 +117,9 @@ void ToolbarHandler::setMode(ToolbarMode mode, bool initialise) {
         return;
     } else if (!m_toolbar.get()) {
         m_toolbarmenu.removeAll();
-
         m_toolbar.reset(new Toolbar(m_screen, 
                                     *m_screen.layerManager().getLayer(m_screen.getToolbarLayerNum()), m_toolbarmenu));
+        
         m_toolbarmenu.insert("Mode...", &m_modemenu);   
         m_toolbarmenu.update();
     }
