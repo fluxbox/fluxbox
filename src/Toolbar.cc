@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.53 2003/01/09 18:42:32 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.54 2003/01/12 18:04:39 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -73,6 +73,41 @@
 #include <iostream>
 
 using namespace std;
+
+namespace {
+class SetToolbarPlacementCmd: public FbTk::Command {
+    explicit SetToolbarPlacementCmd(Toolbar &tbar, Toolbar::Placement place):m_tbar(tbar), m_place(place) { }
+    void execute() {
+        m_tbar.setPlacement(m_place);
+    }
+private:
+    Toolbar &m_tbar;
+    Toolbar::Placement m_place;
+};
+
+void setupMenus(Toolbar &tbar) {
+    I18n *i18n = I18n::instance();
+    using namespace FBNLS;
+    FbTk::Menu &menu = tbar.menu();
+    menu.setLabel(i18n->getMessage(
+                                   ToolbarSet, ToolbarToolbarTitle,
+                                   "Toolbar"));
+    menu.setInternalMenu();
+
+    using namespace FbTk;
+    // add items
+    menu.insert("Toolbar width percent...");
+
+    RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
+    menu.insert(i18n->getMessage(
+                                 ToolbarSet, ToolbarEditWkspcName,
+                                 "Edit current workspace name"),
+                start_edit);
+
+    menu.update();
+}
+
+}; // end anonymous
 
 // toolbar frame
 Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
@@ -146,9 +181,11 @@ Toolbar::Toolbar(BScreen *scrn, size_t width):
     image_ctrl(*scrn->getImageControl()),
     clock_timer(this), 	// get the clock updating every minute
     hide_timer(&hide_handler),
-    m_toolbarmenu(*this),
+    m_toolbarmenu(*scrn->menuTheme(), scrn->getScreenNumber(), *scrn->getImageControl()),
     m_theme(scrn->getScreenNumber()),
     m_place(BOTTOMCENTER) {
+
+    setupMenus(*this);
 
     // geometry settings
     frame.width = width;
@@ -849,16 +886,6 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
                 screen()->getCurrentWorkspace()->setName(new_workspace_name.c_str());
 
             new_workspace_name.erase(); //erase temporary workspace name
-			
-            screen()->getCurrentWorkspace()->menu().hide();
-            screen()->getWorkspacemenu()->
-                remove(screen()->getCurrentWorkspace()->workspaceID() + 2);
-            screen()->getWorkspacemenu()->
-                insert(screen()->getCurrentWorkspace()->name().c_str(),
-                       &screen()->getCurrentWorkspace()->menu(),
-                       screen()->getCurrentWorkspace()->workspaceID() + 2);
-            screen()->getWorkspacemenu()->update();
-
             reconfigure();
             //save workspace names
             Fluxbox::instance()->save_rc();
@@ -914,24 +941,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     m_place = where;
 
-#ifdef XINERAMA
-    int head = (screen->hasXinerama())
-        ? screen->getToolbarOnHead()
-        : -1;
-
-    if (head >= 0) { // toolbar on head nr, if -1 then over ALL heads
-        head_x = screen()->getHeadX(head);
-        head_y = screen()->getHeadY(head);
-        head_w = screen()->getHeadWidth(head);
-        head_h = screen()->getHeadHeight(head);
-    }	else {
-        head_w = screen->getWidth();
-        head_h = screen->getHeight();
-    }
-#else // !XINERAMA
     head_w = screen()->getWidth();
     head_h = screen()->getHeight();
-#endif // XINERAMA
 
     frame.width = head_w * screen()->getToolbarWidthPercent() / 100;
     frame.height = m_theme.font().height();
@@ -1057,237 +1068,3 @@ void Toolbar::HideHandler::timeout() {
         toolbar->frame.window.move(toolbar->frame.x, toolbar->frame.y);
     }
 }
-
-
-Toolbarmenu::Toolbarmenu(Toolbar &tb) : Basemenu(tb.screen()), m_toolbar(tb),
-                                        m_placementmenu(*this) {
-
-    I18n *i18n = I18n::instance();
-    using namespace FBNLS;
-    setLabel(i18n->getMessage(
-        ToolbarSet, ToolbarToolbarTitle,
-        "Toolbar"));
-    setInternalMenu();
-
-#ifdef XINERAMA
-    if (m_toolbar.screen()->hasXinerama()) { // only create if we need it
-        m_headmenu.reset(new Headmenu(this));
-    }
-#endif // XINERAMA
-
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementTitle,
-        "Placement"),
-           &m_placementmenu);
-
-    if (m_headmenu.get()) { //TODO: NLS
-        insert(i18n->getMessage(0, 0, "Place on Head"), m_headmenu.get());
-    }
-
-    insert(i18n->getMessage(
-        CommonSet, CommonAlwaysOnTop,
-        "Always on top"),
-           1);
-    insert(i18n->getMessage(
-        CommonSet, CommonAutoHide,
-        "Auto hide"),
-           2);
-    insert(i18n->getMessage(
-        ToolbarSet, ToolbarEditWkspcName,
-        "Edit current workspace name"),
-           3);
-
-    update();
-
-    if (m_toolbar.isOnTop())
-        setItemSelected(1, true);
-    if (m_toolbar.doAutoHide())
-        setItemSelected(2, true);
-}
-
-
-Toolbarmenu::~Toolbarmenu() {
-
-}
-
-
-void Toolbarmenu::itemSelected(int button, unsigned int index) {
-    if (button == 1) {
-        BasemenuItem *item = find(index);
-        if (item == 0)
-            return;
-
-        switch (item->function()) {
-        case 1:  {// always on top
-            bool change = ((m_toolbar.isOnTop()) ? false : true);
-            m_toolbar.on_top = change;
-            screen()->saveToolbarOnTop(m_toolbar.on_top);
-            setItemSelected(1, change);
-			
-            if (m_toolbar.isOnTop())
-                m_toolbar.screen()->raiseWindows(Workspace::Stack());
-			
-            Fluxbox::instance()->save_rc();
-            break;
-        }
-
-        case 2: { // auto hide
-            bool change = ((m_toolbar.doAutoHide()) ? false : true);
-            m_toolbar.do_auto_hide = change;
-            screen()->saveToolbarAutoHide(m_toolbar.do_auto_hide);
-            setItemSelected(2, change);
-
-#ifdef SLIT
-            m_toolbar.screen()->getSlit()->reposition();
-#endif // SLIT
-            Fluxbox::instance()->save_rc();
-            break;
-        }
-
-        case 3: // edit current workspace name
-            m_toolbar.edit(); //set edit mode
-            hide();	//dont show menu while editing name
-
-            break;
-        }
-    }
-}
-
-
-void Toolbarmenu::internal_hide() {
-    Basemenu::internal_hide();
-    if (m_toolbar.doAutoHide() && ! m_toolbar.isEditing())
-        m_toolbar.hide_handler.timeout();
-}
-
-
-void Toolbarmenu::reconfigure() {
-    m_placementmenu.reconfigure();
-
-    if (m_headmenu.get()) {
-        m_headmenu->reconfigure();
-    }
-
-    Basemenu::reconfigure();
-}
-
-//TODO: fix placement
-Toolbarmenu::Placementmenu::Placementmenu(Toolbarmenu &tm)
-    : Basemenu(tm.m_toolbar.screen()), m_toolbarmenu(tm) {
-
-    I18n *i18n = I18n::instance();
-    using namespace FBNLS;
-    setLabel(i18n->getMessage(
-        ToolbarSet, ToolbarToolbarPlacement,
-        "Toolbar Placement"));
-    setInternalMenu();
-    setMinimumSublevels(5);
-
-    insert("Left Top", Toolbar::LEFTTOP);
-    insert("Left Center", Toolbar::LEFTCENTER);
-    insert("Left Bottom", Toolbar::LEFTBOTTOM);
-    
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementTopLeft,
-        "Top Left"),
-           Toolbar::TOPLEFT);
-    insert("");
-
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementBottomLeft,
-        "Bottom Left"),
-           Toolbar::BOTTOMLEFT);
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementTopCenter,
-        "Top Center"),
-           Toolbar::TOPCENTER);
-    insert("");
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementBottomCenter,
-        "Bottom Center"),
-           Toolbar::BOTTOMCENTER);
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementTopRight,
-        "Top Right"),
-           Toolbar::TOPRIGHT);
-    insert("");
-    insert(i18n->getMessage(
-        CommonSet, CommonPlacementBottomRight,
-        "Bottom Right"),
-           Toolbar::BOTTOMRIGHT);
-
-    insert("Right Top", Toolbar::RIGHTTOP);
-    insert("Right Center", Toolbar::RIGHTCENTER);
-    insert("Right Bottom", Toolbar::RIGHTBOTTOM);
-    update();
-}
-
-
-void Toolbarmenu::Placementmenu::itemSelected(int button, unsigned int index) {
-    if (button == 1) {
-        BasemenuItem *item = find(index);
-        if (! item)
-            return;
-
-        m_toolbarmenu.m_toolbar.screen()->saveToolbarPlacement(
-            static_cast<Toolbar::Placement>(item->function()));
-        m_toolbarmenu.m_toolbar.setPlacement(static_cast<Toolbar::Placement>(item->function()));
-        hide();
-        m_toolbarmenu.m_toolbar.reconfigure();
-
-#ifdef SLIT
-        // reposition the slit as well to make sure it doesn't intersect the
-        // toolbar
-        m_toolbarmenu.m_toolbar.screen()->getSlit()->reposition();
-#endif // SLIT
-        Fluxbox::instance()->save_rc();
-    }
-}
-
-#ifdef XINERAMA
-
-Toolbarmenu::Headmenu::Headmenu(Toolbarmenu &tm)
-    : Basemenu(tm.m_toolbar.screen()), m_toolbarmenu(tm) {
-
-    I18n *i18n = I18n::instance();
-
-    setLabel(i18n->getMessage(0, 0, "Place on Head")); //TODO: NLS
-    setInternalMenu();
-
-    int numHeads = toolbarmenu->toolbar->screen->getNumHeads();
-    // fill menu with head entries
-    for (int i = 0; i < numHeads; i++) {
-        char headName[32];
-        sprintf(headName, "Head %i", i+1); //TODO: NLS
-        insert(i18n->getMessage(0, 0, headName), i);
-    }
-
-    insert(i18n->getMessage(0, 0, "All Heads"), -1); //TODO: NLS
-
-    update();
-}
-
-
-void Toolbarmenu::Headmenu::itemSelected(int button, unsigned int index) {
-    if (button == 1) {
-        BasemenuItem *item = find(index);
-        if (! item)
-            return;
-
-        screen()->saveToolbarOnHead(
-            static_cast<int>(item->function()));
-        
-        hide();
-        m_toolbarmenu.m_toolbar.reconfigure();
-
-
-#ifdef SLIT
-        // reposition the slit as well to make sure it doesn't intersect the
-        // toolbar
-        m_toolbarmenu.m_toolbar.screen()->getSlit()->reposition();
-#endif // SLIT
-        Fluxbox::instance()->save_rc();
-    }
-}
-
-#endif // XINERAMA

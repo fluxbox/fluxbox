@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.19 2003/01/09 22:10:53 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.20 2003/01/12 18:03:24 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -42,58 +42,6 @@ class Toolbar;
 namespace FbTk {
 class ImageControl;
 };
-/**
-	Menu for toolbar.
-	@see Toolbar
-*/
-class Toolbarmenu:public Basemenu {
-public:
-    explicit Toolbarmenu(Toolbar &tb);
-    ~Toolbarmenu();
-
-    inline const Basemenu *headmenu() const { return m_headmenu.get(); }
-
-    inline Basemenu *placementmenu() { return &m_placementmenu; }
-    inline const Basemenu *placementmenu() const { return &m_placementmenu; }
-
-    void reconfigure();
-
-protected:
-    virtual void itemSelected(int button, unsigned int index);
-    virtual void internal_hide();
-
-private:
-    class Placementmenu : public Basemenu {
-    public:
-        Placementmenu(Toolbarmenu &tm);
-    protected:
-        virtual void itemSelected(int button, unsigned int index);
-    private:
-        Toolbarmenu &m_toolbarmenu;
-    };
-    friend class Placementmenu;
-
-    class Headmenu : public Basemenu {
-    public:
-        Headmenu(Toolbarmenu &tm);
-    protected:
-        virtual void itemSelected(int button, unsigned int index); 
-    private:
-        Toolbarmenu &m_toolbarmenu;
-    };
-    std::auto_ptr<Headmenu> m_headmenu;
-    friend class Headmenu;
- 
-
-    Toolbar &m_toolbar;
-    Placementmenu m_placementmenu;
-
-	
-    friend class Toolbar;
-
-};
-
-
 
 ///	The toolbar.
 /**
@@ -122,7 +70,9 @@ public:
     /// remove icon from iconbar
     void delIcon(FluxboxWindow *w);
 	
-    inline const Toolbarmenu &menu() const { return m_toolbarmenu; }
+    inline const FbTk::Menu &menu() const { return m_toolbarmenu; }
+    inline FbTk::Menu &menu() { return m_toolbarmenu; }
+
     /// are we in workspacename editing?
     inline bool isEditing() const { return editing; }
     /// always on top?
@@ -200,7 +150,7 @@ private:
     FbTk::ImageControl &image_ctrl; 
     FbTk::Timer clock_timer; ///< timer to update clock
     FbTk::Timer hide_timer; ///< timer to for auto hide toolbar
-    Toolbarmenu m_toolbarmenu;
+    FbTk::Menu m_toolbarmenu;
     std::auto_ptr<IconBar> m_iconbar;
 	
     std::string new_workspace_name; ///< temp variable in edit workspace name mode
@@ -209,10 +159,6 @@ private:
     Placement m_place;
 
     friend class HideHandler;
-    friend class Toolbarmenu;
-    friend class Toolbarmenu::Placementmenu;
-
-    friend class Toolbarmenu::Headmenu;
 };
 
 
