@@ -2,9 +2,9 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
-  * workspace menu sometimes rendered poorly when empty. Possibly only 
-    when the only window in it was iconified. Screenshot (Thanks EsKi):
-    http://www.cse.unsw.edu.au/~simonb/fluxbox/bad_workspace_menu.png
+  * Reported issues with gvim windows that have different sized fonts.
+    -> Tabbing them together makes them fight over the window size, and
+       thus shrink to minimum
 
   * vertical toolbar alignment reported broken with pixmap themes
 
@@ -96,5 +96,10 @@ Fixed bugs (or not-our-fault bugs):
     in openoffice - focus jumps between until user does something
     in mozilla    - alt-tabbing does strange thigns with other transient
                     layer-wise (other transient flashes)
+    => fixed
+
+  * workspace menu sometimes rendered poorly when empty. Possibly only 
+    when the only window in it was iconified. Screenshot (Thanks EsKi):
+    http://www.cse.unsw.edu.au/~simonb/fluxbox/bad_workspace_menu.png
     => fixed
 
