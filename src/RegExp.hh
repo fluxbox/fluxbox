@@ -21,7 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: RegExp.hh,v 1.2 2003/06/13 11:43:46 fluxgen Exp $
+// $Id: RegExp.hh,v 1.3 2003/07/10 19:59:21 fluxgen Exp $
 
 #ifndef REGEXP_HH
 #define REGEXP_HH
@@ -39,8 +39,8 @@
  */
 
 #ifdef USE_REGEXP
-#include <regex.h>
 #include <sys/types.h>
+#include <regex.h>
 #endif // USE_REGEXP
 
 class WinClient;
