@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.257 2004/09/12 14:56:19 rathnor Exp $
+// $Id: fluxbox.cc,v 1.258 2004/10/10 16:06:23 akir Exp $
 
 #include "fluxbox.hh"
 
@@ -203,6 +203,9 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
       // TODO: shouldn't need a separate one for screen
       m_screen_rm(m_resourcemanager),
       m_rc_tabs(m_resourcemanager, true, "session.tabs", "Session.Tabs"),
+      m_rc_tabs_padding(m_resourcemanager, 0, "session.tabPadding", "Session.TabPadding"),
+      m_rc_focused_tab_min_width(m_resourcemanager, 0, "session.focusTabMinWidth",
+              "Session.FocusTabMinWidth"),
       m_rc_ignoreborder(m_resourcemanager, false, "session.ignoreBorder", "Session.IgnoreBorder"),
       m_rc_pseudotrans(m_resourcemanager, false, "session.forcePseudoTransparency", "Session.forcePseudoTransparency"),
       m_rc_colors_per_channel(m_resourcemanager, 4, 

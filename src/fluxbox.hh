@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.91 2004/09/12 14:56:19 rathnor Exp $
+// $Id: fluxbox.hh,v 1.92 2004/10/10 16:06:24 akir Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -126,6 +126,8 @@ public:
     inline const std::string &getSlitlistFilename() const { return *m_rc_slitlistfile; }
     inline int colorsPerChannel() const { return *m_rc_colors_per_channel; }
     inline int getNumberOfLayers() const { return *m_rc_numlayers; }
+    inline int getTabsPadding() const { return *m_rc_tabs_padding; }
+    inline int getFocusedTabMinWidth() const { return *m_rc_focused_tab_min_width; }
 
     // class to store layer numbers (special Resource type)
     // we have a special resource type because we need to be able to name certain layers
@@ -253,7 +255,9 @@ private:
     FbTk::Resource<bool> m_rc_tabs, m_rc_ignoreborder;
     FbTk::Resource<bool> m_rc_pseudotrans;
     FbTk::Resource<int> m_rc_colors_per_channel, m_rc_numlayers,
-        m_rc_double_click_interval, m_rc_update_delay_time;
+        m_rc_double_click_interval, m_rc_update_delay_time,
+        m_rc_tabs_padding,
+        m_rc_focused_tab_min_width;
     FbTk::Resource<std::string> m_rc_stylefile, 
         m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
         m_rc_groupfile;
