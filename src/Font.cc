@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.14 2002/10/15 16:34:14 fluxgen Exp $
+//$Id: Font.cc,v 1.15 2002/10/16 23:22:45 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -86,7 +86,7 @@ m_antialias(false) {
 	// antialias is prio 1
 #ifdef USE_XFT
 	if (antialias) {
-		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp());
+		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp(0, m_utf8mode));
 		m_antialias = true;
 	}
 #endif //USE_XFT
@@ -95,7 +95,7 @@ m_antialias(false) {
 		if (m_multibyte || m_utf8mode)
 			m_fontimp = std::auto_ptr<FontImp>(new XmbFontImp(0, m_utf8mode));
 		else // basic font implementation
-			m_fontimp = std::auto_ptr<FontImp>(new XFontImp(0));
+			m_fontimp = std::auto_ptr<FontImp>(new XFontImp());
 	}
 	
 	if (name != 0) {
@@ -112,7 +112,7 @@ void Font::setAntialias(bool flag) {
 	bool loaded = m_fontimp->loaded();
 #ifdef USE_XFT
 	if (flag && !isAntialias()) {
-		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp(m_fontstr.c_str()));
+		m_fontimp = std::auto_ptr<FontImp>(new XftFontImp(m_fontstr.c_str(), m_utf8mode));
 	} else if (!flag && isAntialias()) 
 #endif // USE_XFT
 	{
@@ -144,7 +144,7 @@ bool Font::load(const char *name) {
 	return ret_val;
 }
 
-unsigned int Font::textWidth(const char *text, unsigned int size) const {
+unsigned int Font::textWidth(const char * const text, unsigned int size) const {
 	return m_fontimp->textWidth(text, size);
 }
 
