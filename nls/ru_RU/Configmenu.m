@@ -39,7 +39,7 @@ $ #BottomTop
 $ #Tabs
 # Использовать закладки
 $ #Icons
-# Сварачивать на панель инструментов
+# Сворачивать на панель инструментов
 $ #TabPlacement
 # Расположение закладок
 $ #TabRotateVertical
@@ -47,6 +47,6 @@ $ #TabRotateVertical
 $ #SemiSloppyFocus
 # Размытый фокус
 $ #MaxOverSlit
-# Maximize Over Slit
+# Максимизировать над докером
 $ #SloppyWindowGrouping
-# Sloppy Window Grouping
+# Группировка "размытых" окон

@@ -35,7 +35,7 @@
 #define ConfigmenuTabRotateVertical 0x16
 #define ConfigmenuSemiSloppyFocus 0x17
 #define ConfigmenuMaxOverSlit 0x18
-#define ConfigmenuSloppyWindowGrouping 0x18
+#define ConfigmenuSloppyWindowGrouping 0x19
 
 #define IconSet 0x4
 #define IconIcons 0x1

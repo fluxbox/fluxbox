@@ -7,7 +7,7 @@ $ #SignalCaught
 $ #ShuttingDown
 # отключение\n
 $ #Aborting
-# Отмена... создается дамп core\n
+# Отмена... создаётся дамп core\n
 $ #XConnectFail
 # BaseDisplay::BaseDisplay: неудачное соединение с X сервером.\n
 $ #CloseOnExecFail

@@ -2,7 +2,7 @@ $set 10 #Windowmenu
 
 $ #SendTo
 # Отправить на ...
-$ #Send Group To
+$ #SendGroupTo
 # Отправить группу на...
 $ #Shade
 # Свернуть в заголовок
@@ -21,4 +21,4 @@ $ #KillClient
 $ #Close
 # Закрыть
 $ #Tab
-# Tab
+# Убрать закладку
