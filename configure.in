@@ -221,38 +221,25 @@ AC_ARG_ENABLE(
 AM_CONDITIONAL(GNOME, test x$GNOME = xtrue)
 
 AC_MSG_CHECKING([whether to have Xft support])
-AC_ARG_ENABLE(
-  xft,
-[  --enable-xft            Xft (antialias) support [default=yes]],
-  if test x$enableval = "xyes"; then
-	AC_CHECK_LIB(Xft, XftFontOpen,
-		LIBS="$LIBS -lXft"
-		XFT=true
-		AC_DEFINE(USE_XFT, 1, "antialias support"),
-		AC_MSG_RESULT([no])
-		XFT=false
-	)
-        AC_CHECK_LIB(Xft, XftDrawStringUtf8,
-		LIBS="$LIBS -lXft"
-		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support"),
-        )
-  else
-    AC_MSG_RESULT([no])
+AM_PATH_XFT(yes,
+	XFT=true,
 	XFT=false
-  fi,
-  AC_CHECK_LIB(Xft, XftFontOpen,
-	LIBS="$LIBS -lXft"
-	XFT=true
-	AC_DEFINE(USE_XFT, 1, "antialias support"),
-	AC_MSG_RESULT([no])
-	XFT=false
-  )
-  AC_CHECK_LIB(Xft, XftDrawStringUtf8,
-	LIBS="$LIBS -lXft"
-	AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support"),
-  )
 )
+
+if test "x$XFT" = "xtrue" ; then
+	AC_DEFINE(USE_XFT, 1, "antialias support")	
+	AC_MSG_CHECKING([Xft UTF-8 support])
+	AC_TRY_LINK([
+			#include <X11/Xft/Xft.h>
+		], [ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; ],
+		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
+		AC_MSG_RESULT(yes),
+		AC_MSG_RESULT(no)
+		)
+fi
+
 AM_CONDITIONAL(XFT, test x$XFT = xtrue)
+
 
 AC_MSG_CHECKING([whether to have Xmb (multibyte font, utf-8) support])
 AC_ARG_ENABLE(
