@@ -1,5 +1,5 @@
 // Shape.cc
-// Copyright (c) 2003 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
+// Copyright (c) 2003-2004 Henrik Kinnunen (fluxgen(at)users.sourceforge.net)
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Shape.cc,v 1.10 2004/01/21 17:01:27 fluxgen Exp $
+// $Id: Shape.cc,v 1.11 2004/01/21 20:00:33 fluxgen Exp $
 
 #include "Shape.hh"
 
@@ -41,7 +41,7 @@ using namespace std;
 
 namespace {
 
-FbTk::FbPixmap *createShape(FbTk::FbWindow &win, int place) {
+FbTk::FbPixmap *createShape(const FbTk::FbWindow &win, int place) {
     if (win.window() == 0 || place == 0 || 
         win.width() < 3 || win.height() < 3)
         return 0;
