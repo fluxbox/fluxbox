@@ -22,28 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.22 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.23 2002/08/11 20:36:43 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
-
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
-
-#ifdef		HAVE_STDIO_H
-# include <stdio.h>
-#endif // HAVE_STDIO_H
-
-#ifdef		TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h>
-#else // !TIME_WITH_SYS_TIME
-#	ifdef		HAVE_SYS_TIME_H
-#		include <sys/time.h>
-#	else // !HAVE_SYS_TIME_H
-#		include <time.h>
-#	endif // HAVE_SYS_TIME_H
-#endif // TIME_WITH_SYS_TIME
 
 #include "Resource.hh"
 #include "Keys.hh"
@@ -53,9 +35,28 @@
 #include "Window.hh"
 #include "Tab.hh"
 #include "Toolbar.hh"
-#ifdef		SLIT
-#	include "Slit.hh"
+
+#ifdef	SLIT
+#include "Slit.hh"
 #endif // SLIT
+
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
+
+#ifdef		HAVE_STDIO_H
+# include <stdio.h>
+#endif // HAVE_STDIO_H
+
+#ifdef TIME_WITH_SYS_TIME
+#include <sys/time.h>
+#include <time.h>
+#else // !TIME_WITH_SYS_TIME
+#ifdef	HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else // !HAVE_SYS_TIME_H
+#include <time.h>
+#endif // HAVE_SYS_TIME_H
+#endif // TIME_WITH_SYS_TIME
 
 #include <string>
 #include <vector>
@@ -193,12 +194,12 @@ private:
 	Resource<bool> m_rc_tabs, m_rc_iconbar;
 	Resource<int> m_rc_colors_per_channel;
 	Resource<std::string> m_rc_stylefile, 
-		m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile;
+		m_rc_menufile, m_rc_keyfile, m_rc_slitlistfile,
+		m_rc_groupfile;
 	
 	Resource<TitlebarList> m_rc_titlebar_left, m_rc_titlebar_right;
 	Resource<unsigned int> m_rc_cache_life, m_rc_cache_max;
 
-	//std::vector<std::string> parseTitleArgs(const char *arg);
 	void setTitlebar(std::vector<Fluxbox::Titlebar>& dir, const char *arg);
 	
 	std::map<Window, FluxboxWindow *> windowSearch;
