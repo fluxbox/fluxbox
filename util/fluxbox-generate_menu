@@ -443,6 +443,11 @@ append_submenu ${FBSETTINGSMENU}
 	
 	find_it fluxconf append "[exec] (Fluxconf) {fluxconf}"
 
+	# if gxmessage exitst use it; else use xmessage
+	find_it gxmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}"
+	[ $? -ne 0 ] && \
+	find_it xmessage append "[exec] (Windowname) {xprop|grep WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+
 append_menu_end
 
 	append "[restart] (${RESTARTITEM})"
