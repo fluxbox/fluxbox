@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.9 2004/01/03 00:23:48 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.10 2004/01/03 00:43:43 fluxgen Exp $
 
 #
 # Portability notes:
@@ -320,19 +320,19 @@ case ${LC_ALL} in
         XUTILSMENU='X-Anwendungen'
         ;;
     sv_SE*) #Swedish locales
-        #BACKGROUNDMENU='Backgrounds'
-        #BACKGROUNDMENUTITLE='Set the Background'
+        BACKGROUNDMENU='Bakgrunder'
+        BACKGROUNDMENUTITLE='Sätt bakgrund'
         #FILEUTILSMENU='File utils'
         #OFFICEMENU='Office'
         #SYSTEMSTYLES='Stiler'
         #USERSTYLES='Stiler'
-        #WINDOWMANAGERS='Window Managers'
+        WINDOWMANAGERS='Fönsterhanterare'
         BROWSERMENU='Browsers'
         CONFIGUREMENU='Konfiguration'
         EDITORMENU='Editorer'
         EXITITEM='Exit'
         FBSETTINGSMENU='FB-inställningar'
-#        GAMESMENU='Games'
+        GAMESMENU='Spel'
         GNOMEMENUTEXT='Gnome-menyer'
         GRAPHICMENU='Grafik'
         KDEMENUTEXT='KDE-menyer'
