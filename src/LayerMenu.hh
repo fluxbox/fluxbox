@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: LayerMenu.hh,v 1.2 2003/04/16 13:43:41 rathnor Exp $
+// $Id: LayerMenu.hh,v 1.3 2003/05/07 11:30:28 fluxgen Exp $
 
 #ifndef LAYERMENU_HH
 #define LAYERMENU_HH
@@ -31,11 +31,11 @@
 #include "RefCount.hh"
 #include "SimpleCommand.hh"
 
-class Fluxbox;
+#include "fluxbox.hh"
 
 // provides a generic way for giving an object a layer menu
 
-// this class holds the layermenu items
+/// this class holds the layermenu items
 template <typename ItemType> 
 class LayerMenuItem : public FbTk::MenuItem {
 public:
@@ -57,7 +57,7 @@ private:
 };
 
 
-/* create a layer menu inside from the given menu */
+/// Create a layer menu inside from the given menu 
 template <typename ItemType>
 class LayerMenu : public FbMenu {
 public:
