@@ -19,8 +19,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-#ifndef   __Basemenu_hh
-#define   __Basemenu_hh
+#ifndef   _BASEMENU_HH_
+#define   _BASEMENU_HH_
 
 #include <X11/Xlib.h>
 
@@ -142,10 +142,6 @@ private:
 
   friend class Basemenu;
 
-
-protected:
-
-
 public:
   BasemenuItem(const char *lp, int fp, const char *ep = (const char *) 0) {
     l = lp;
@@ -189,4 +185,4 @@ public:
 };
 
 
-#endif // __Basemenu_hh
+#endif // _BASEMENU_HH_
