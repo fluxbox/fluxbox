@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.15 2004/09/09 21:13:10 akir Exp $
+// $Id: ImageControl.cc,v 1.16 2004/09/10 16:41:30 akir Exp $
 
 #include "ImageControl.hh"
 
@@ -120,7 +120,7 @@ ImageControl::ImageControl(int screen_num, bool dither,
         m_timer.setCommand(clean_cache);
         m_timer.start();
     }
-	
+
     createColorTable();
 }
 
@@ -140,7 +140,7 @@ ImageControl::~ImageControl() {
     }
 
     Display *disp = FbTk::App::instance()->display();
-    
+
     if (m_colors) {
         unsigned long *pixels = new unsigned long [m_num_colors];
 
@@ -167,7 +167,7 @@ ImageControl::~ImageControl() {
 
 Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
                                  const Texture &text) const {
-    
+
     if (text.pixmap().drawable() != None) {
         // do comparsion with width/height and texture_pixmap
         CacheList::iterator it = cache.begin();
@@ -191,28 +191,28 @@ Pixmap ImageControl::searchCache(unsigned int width, unsigned int height,
     tmp.pixel1 = text.color().pixel();
     tmp.pixel2 = text.colorTo().pixel();
     */
-    
-    CacheList::iterator it = cache.begin(); 	 
-    CacheList::iterator it_end = cache.end(); 	 
-    for (; it != it_end; ++it) { 	 
-        if (((*it)->width == width) && 	 
-            ((*it)->height == height) && 	 
-            ((*it)->texture == text.type()) && 	 
-            ((*it)->pixel1 == text.color().pixel())) { 	 
-            if (text.type() & FbTk::Texture::GRADIENT) { 	 
-                if ((*it)->pixel2 == text.colorTo().pixel()) { 	 
-                    (*it)->count++; 	 
-                    return (*it)->pixmap; 	 
-                } 	 
-            } else { 	 
-                (*it)->count++; 	 
-                return (*it)->pixmap; 	 
-            } 	 
-        } 	 
+
+    CacheList::iterator it = cache.begin();
+    CacheList::iterator it_end = cache.end();
+    for (; it != it_end; ++it) {
+        if (((*it)->width == width) &&
+            ((*it)->height == height) &&
+            ((*it)->texture == text.type()) &&
+            ((*it)->pixel1 == text.color().pixel())) {
+            if (text.type() & FbTk::Texture::GRADIENT) {
+                if ((*it)->pixel2 == text.colorTo().pixel()) {
+                    (*it)->count++;
+                    return (*it)->pixmap;
+                }
+            } else {
+                (*it)->count++;
+                return (*it)->pixmap;
+            }
+        }
     }
 
     return None;
-    
+
 }
 
 
@@ -250,7 +250,7 @@ Pixmap ImageControl::renderImage(unsigned int width, unsigned int height,
         else
             tmp->pixel2 = 0l;
 
-        cache.push_back(tmp); 
+        cache.push_back(tmp);
 
         if ((unsigned) cache.size() > cache_max)
             cleanCache();
@@ -343,10 +343,10 @@ void ImageControl::getGradientBuffers(unsigned int w,
 
 
 void ImageControl::installRootColormap() {
-    XGrabServer(FbTk::App::instance()->display());
-
 
     Display *disp = FbTk::App::instance()->display();
+    XGrabServer(disp);
+
     bool install = true;
     int i = 0, ncmap = 0;
     Colormap *cmaps =
@@ -357,14 +357,14 @@ void ImageControl::installRootColormap() {
             if (*(cmaps + i) == m_colormap)
                 install = false;
         }
-		
+
         if (install)
             XInstallColormap(disp, m_colormap);
 
         XFree(cmaps);
     }
 
-    XUngrabServer(FbTk::App::instance()->display());
+    XUngrabServer(disp);
 }
 
 
@@ -402,7 +402,7 @@ void ImageControl::cleanCache() {
             deadlist.push_back(it);
             delete tmp;
             tmp=0;
-        } 
+        }
     }
 
     std::list<CacheList::iterator>::iterator dead_it = deadlist.begin();
@@ -410,7 +410,7 @@ void ImageControl::cleanCache() {
     for (; dead_it != dead_it_end; ++dead_it) {
         cache.erase(*dead_it);
     }
-    
+
 }
 
 void ImageControl::createColorTable() {
@@ -511,7 +511,7 @@ void ImageControl::createColorTable() {
                 }
             }
         }
-		
+
         for (unsigned int i = 0; i < m_num_colors; i++) {
             if (! XAllocColor(disp, m_colormap, &m_colors[i])) {
                 fprintf(stderr, "couldn't alloc color %i %i %i\n",
@@ -520,7 +520,7 @@ void ImageControl::createColorTable() {
             } else
                 m_colors[i].flags = DoRed|DoGreen|DoBlue;
         }
-		
+
         XColor icolors[256];
         unsigned int incolors = (((1 << m_screen_depth) > 256) ? 256 : (1 << m_screen_depth));
 
@@ -532,7 +532,7 @@ void ImageControl::createColorTable() {
             if (! m_colors[i].flags) {
                 unsigned long chk = 0xffffffff, pixel, close = 0;
                 char p = 2;
-		
+
                 while (p--) {
                     for (unsigned int ii = 0; ii < incolors; ii++) {
                         int r = (m_colors[i].red - icolors[i].red) >> 8;

@@ -1,7 +1,7 @@
 // MenuIcon.cc for FbTk - Fluxbox ToolKit
 // Copyright (c) 2004 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //                and Simon Bowden (rathnor at users.sourceforge.net)
-//                 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
 // to deal in the Software without restriction, including without limitation
@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuIcon.cc,v 1.1 2004/06/07 22:28:39 fluxgen Exp $
+// $Id: MenuIcon.cc,v 1.2 2004/09/10 16:37:54 akir Exp $
 
 #include "MenuIcon.hh"
 
@@ -39,7 +39,7 @@ MenuIcon::MenuIcon(const std::string &filename, const std::string &label, int sc
         m_mask = pm->mask().release();
         delete pm;
     }
-    
+
 }
 
 void MenuIcon::updateTheme(const MenuTheme &theme) {
@@ -51,12 +51,13 @@ void MenuIcon::updateTheme(const MenuTheme &theme) {
     }
 }
 
-void MenuIcon::draw(FbDrawable &drawable, 
+void MenuIcon::draw(FbDrawable &drawable,
                     const MenuTheme &theme,
                     bool highlight,
                     int x, int y,
                     unsigned int width, unsigned int height) const {
 
+    Display *disp = FbTk::App::instance()->display();
     if (height - 2*theme.bevelWidth() != m_pixmap.height() &&
         !m_filename.empty()) {
         unsigned int scale_size = height - 2*theme.bevelWidth();
@@ -68,11 +69,8 @@ void MenuIcon::draw(FbDrawable &drawable,
         GC gc = theme.frameTextGC().gc();
 
         // enable clip mask
-        XSetClipMask(FbTk::App::instance()->display(),
-                     gc,
-                     m_mask.drawable());
-        XSetClipOrigin(FbTk::App::instance()->display(),
-                       gc, x + theme.bevelWidth(), y + theme.bevelWidth());
+        XSetClipMask(disp, gc, m_mask.drawable());
+        XSetClipOrigin(disp, gc, x + theme.bevelWidth(), y + theme.bevelWidth());
 
         drawable.copyArea(m_pixmap.drawable(),
                           gc,
@@ -81,9 +79,7 @@ void MenuIcon::draw(FbDrawable &drawable,
                           m_pixmap.width(), m_pixmap.height());
 
         // restore clip mask
-        XSetClipMask(FbTk::App::instance()->display(),
-                     gc,
-                     None);
+        XSetClipMask(disp, gc, None);
     }
     FbTk::MenuItem::draw(drawable, theme, highlight, x, y, width, height);
 }
