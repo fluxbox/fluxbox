@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.3:
+*03/05/18:
+   * Moved Resource.hh/cc, DirHelper.hh/cc and 
+     XrmDatabaseHelper.hh to FbTk (Henrik)
+	 Screen.hh/cc, fluxbox.hh/cc, IntResMenuItem.hh/cc
 *03/05/17:
    * Fixed autohide bug in toolbar (Thanks MrChuoi)
      Toolbar.cc, ArrowButton.hh/cc
