@@ -19,63 +19,175 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.cc,v 1.2 2003/09/08 19:18:22 fluxgen Exp $
+// $Id: KeyUtil.cc,v 1.3 2003/10/05 07:20:16 rathnor Exp $
 
 #include "KeyUtil.hh"
 #include "App.hh"
 
-#include <X11/keysym.h>
+#include <string>
 
 namespace FbTk {
 
-int KeyUtil::s_capslock_mod = 0;
-int KeyUtil::s_numlock_mod = 0;
-int KeyUtil::s_scrolllock_mod = 0;
-bool KeyUtil::s_init = false;
+KeyUtil *KeyUtil::s_keyutil = 0;
+
+KeyUtil *KeyUtil::instance() {
+    if (s_keyutil == 0)
+        s_keyutil = new KeyUtil();
+    return s_keyutil;
+}
+
+
+KeyUtil::KeyUtil()
+    : m_modmap(0)
+{
+    init();
+}
 
 void KeyUtil::init() {
-    Display *disp = FbTk::App::instance()->display();
-
-    XModifierKeymap *modmap = XGetModifierMapping(disp);
-
-    // mask to use for modifier
-    int mods[] = {
-        ShiftMask,
-        LockMask,
-        ControlMask,
-        Mod1Mask,
-        Mod2Mask,
-        Mod3Mask,
-        Mod4Mask,
-        Mod5Mask,
-        0
-    };
-	
-    // find modifiers and set them
-    for (int i = 0, realkey = 0; i < 8; ++i) {
-        for (int key = 0; key < modmap->max_keypermod; ++key, ++realkey) {
-
-            if (modmap->modifiermap[realkey] == 0)
-                continue;
-
-            KeySym ks = XKeycodeToKeysym(disp, modmap->modifiermap[realkey], 0);
-
-            switch (ks) {
-            case XK_Caps_Lock:
-                s_capslock_mod = mods[i];
-                break;
-            case XK_Scroll_Lock:
-                s_scrolllock_mod = mods[i];
-                break;
-            case XK_Num_Lock:
-                s_numlock_mod = mods[i];
-                break;
-            }
-        }
-    }
-
-    s_init = true;
-    XFreeModifiermap(modmap);
+    loadModmap();
 }
+
+KeyUtil::~KeyUtil() {
+    if (m_modmap)
+        XFreeModifiermap(m_modmap);
+}
+
+void KeyUtil::loadModmap() {
+    if (m_modmap)
+        XFreeModifiermap(m_modmap);
+
+    m_modmap = XGetModifierMapping(App::instance()->display());
+}
+
+
+
+/**
+ Grabs a key with the modifier
+ and with numlock,capslock and scrollock
+*/
+void KeyUtil::grabKey(unsigned int key, unsigned int mod) {
+    Display *display = App::instance()->display();
+    const unsigned int capsmod = LockMask;
+    const unsigned int nummod = Mod2Mask;
+    const unsigned int scrollmod = Mod5Mask;
+    
+    for (int screen=0; screen<ScreenCount(display); screen++) {
+		
+        Window root = RootWindow(display, screen);
+		
+        XGrabKey(display, key, mod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);
+						
+        // Grab with numlock, capslock and scrlock	
+
+        //numlock	
+        XGrabKey(display, key, mod|nummod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);		
+        //scrolllock
+        XGrabKey(display, key, mod|scrollmod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);	
+        //capslock
+        XGrabKey(display, key, mod|capsmod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);
+	
+        //capslock+numlock
+        XGrabKey(display, key, mod|capsmod|nummod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);
+
+        //capslock+scrolllock
+        XGrabKey(display, key, mod|capsmod|scrollmod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);						
+	
+        //capslock+numlock+scrolllock
+        XGrabKey(display, key, mod|capsmod|scrollmod|nummod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);						
+
+        //numlock+scrollLock
+        XGrabKey(display, key, mod|nummod|scrollmod,
+                 root, True,
+                 GrabModeAsync, GrabModeAsync);
+	
+    }
+			
+}
+
+/**
+ @return keycode of keystr on success else 0
+*/
+unsigned int KeyUtil::getKey(const char *keystr) {
+    if (!keystr)
+        return 0;
+    return XKeysymToKeycode(App::instance()->display(),
+                            XStringToKeysym(keystr));
+}
+
+/**
+ @return the modifier for the modstr else zero on failure.
+*/
+unsigned int KeyUtil::getModifier(const char *modstr) {
+    if (!modstr)
+        return 0;
+    struct t_modlist{
+        char *str;
+        unsigned int mask;
+        bool operator == (const char *modstr) {
+            return  (strcasecmp(str, modstr) == 0 && mask !=0);
+        }
+    } modlist[] = {
+        {"SHIFT", ShiftMask},
+        {"CONTROL", ControlMask},
+        {"MOD1", Mod1Mask},
+        {"MOD2", Mod2Mask},
+        {"MOD3", Mod3Mask},
+        {"MOD4", Mod4Mask},
+        {"MOD5", Mod5Mask},
+        {0, 0}
+    };
+
+    // find mod mask string
+    for (unsigned int i=0; modlist[i].str !=0; i++) {
+        if (modlist[i] == modstr)		
+            return modlist[i].mask;		
+    }
+	
+    return 0;	
+}
+
+/// Ungrabs the keys
+void KeyUtil::ungrabKeys() {
+    Display * display = App::instance()->display();
+    for (int screen=0; screen<ScreenCount(display); screen++) {
+        XUngrabKey(display, AnyKey, AnyModifier,
+                   RootWindow(display, screen));		
+    }
+}
+
+unsigned int KeyUtil::keycodeToModmask(unsigned int keycode) {
+    XModifierKeymap *modmap = instance()->m_modmap;
+
+    if (!modmap) return 0;
+
+    // search through modmap for this keycode
+    for (int mod=0; mod < 8; mod++) {
+        for (int key=0; key < modmap->max_keypermod; ++key) {
+            // modifiermap is an array with 8 sets of keycodes
+            // each max_keypermod long, but in a linear array.
+            if (modmap->modifiermap[modmap->max_keypermod*mod + key] == keycode) {
+                return (1<<mod);
+            }
+        } 
+    }
+    // no luck
+    return 0;
+}
+
+
 
 } // end namespace FbTk

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.195 2003/10/05 06:28:47 rathnor Exp $
+// $Id: fluxbox.cc,v 1.196 2003/10/05 07:19:38 rathnor Exp $
 
 #include "fluxbox.hh"
 
@@ -43,6 +43,7 @@
 #include "defaults.hh"
 
 #include "FbTk/Image.hh"
+#include "FbTk/KeyUtil.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -840,9 +841,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
 #ifdef DEBUG
         cerr<<__FILE__<<"("<<__FUNCTION__<<"): MappingNotify"<<endl;
 #endif // DEBUG        
-        if (m_key.get()) {
-            m_key->loadModmap();
-        }
+
+        FbTk::KeyUtil::instance()->init(); // reinitialise the key utils
+
         break;
     case CreateNotify:
 	break;
@@ -1182,7 +1183,7 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
         if (m_watching_screen && m_watch_keyrelease) {
             // mask the mod of the released key out
             // won't mask anything if it isn't a mod
-            ke.state &= ~m_key->keycodeToModmask(ke.keycode);
+            ke.state &= ~FbTk::KeyUtil::keycodeToModmask(ke.keycode);
             
             if ((m_watch_keyrelease & ke.state) == 0) {
                 

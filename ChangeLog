@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/10/05:
+  * Move a bunch of functionality from Keys into FbTk::KeyUtil (Simon)
+    - also fix issue where Capslock mod was taken to be whatever caps
+      key was mapped to (why??). Now uses LockMask (ditto num,scroll).
+    Keys.hh/cc KeyUtil.hh/cc TextBox.cc fluxbox.cc
   * Fix reading of auto raise delay (Simon)
     fluxbox.hh/cc Screen.cc Timer.hh/cc
   * Make focusLast work for sloppy focus when changing workspace or

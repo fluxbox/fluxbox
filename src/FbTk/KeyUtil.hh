@@ -19,34 +19,66 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: KeyUtil.hh,v 1.1 2003/09/06 15:46:00 fluxgen Exp $
+// $Id: KeyUtil.hh,v 1.2 2003/10/05 07:20:35 rathnor Exp $
 
 #ifndef FBTK_KEYUTIL_HH
 #define FBTK_KEYUTIL_HH
+
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
 
 namespace FbTk {
 
 class KeyUtil {
 public:
+
+    KeyUtil();
+    ~KeyUtil();
+
+    void init();
+    static KeyUtil *instance();
+
+    /**
+       Grab the specified key
+    */
+    static void grabKey(unsigned int key, unsigned int mod);
+
+    /**
+       convert the string to the keysym
+       @return the keysym corresponding to the string, or zero
+    */
+    static unsigned int getKey(const char *keystr);
+
+    /**
+       @return the modifier for the modstr else zero on failure.
+    */
+    static unsigned int KeyUtil::getModifier(const char *modstr);
+
+    /**
+       ungrabs all keys
+     */
+    static void ungrabKeys();
+
     /** 
         Strip out modifiers we want to ignore
         @return the cleaned state number
     */
     static unsigned int cleanMods(unsigned int mods) {
-        if (!s_init)
-            init();
-        //remove numlock, capslock and scrolllock
-         return mods & (~s_capslock_mod & ~s_numlock_mod & ~s_scrolllock_mod);
+        //remove numlock(Mod2), capslock and scrolllock(Mod5)
+         return mods & ~(LockMask | Mod2Mask | Mod5Mask);
     }
 
-    static int capslockMod() { if (!s_init) init(); return s_capslock_mod; }
-    static int numlockMod() { if (!s_init) init(); return s_numlock_mod; }
-    static int scrolllockMod() { if (!s_init) init(); return s_scrolllock_mod; }
-    /// so one can force a reinit of modifiers
-    static void init();    
+    /**
+       Convert the specified key into appropriate modifier mask
+       @return corresponding modifier mask
+    */
+    static unsigned int keycodeToModmask(unsigned int keycode);
+
 private:
-    static int s_capslock_mod, s_numlock_mod, s_scrolllock_mod; ///< modifiers
-    static bool s_init;
+    void loadModmap();
+
+    XModifierKeymap *m_modmap;
+    static KeyUtil *s_keyutil;
 };
 
 } // end namespace FbTk

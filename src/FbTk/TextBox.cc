@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: TextBox.cc,v 1.2 2003/09/08 21:26:19 fluxgen Exp $
+// $Id: TextBox.cc,v 1.3 2003/10/05 07:20:47 rathnor Exp $
 
 #include "TextBox.hh"
 #include "Font.hh"
@@ -185,8 +185,7 @@ void TextBox::buttonPressEvent(XButtonEvent &event) {
 
 void TextBox::keyPressEvent(XKeyEvent &event) {
     // strip numlock and scrolllock mask
-    event.state &= ~FbTk::KeyUtil::numlockMod();
-    event.state &= ~FbTk::KeyUtil::scrolllockMod();
+    event.state = KeyUtil::cleanMods(event.state);
 
     KeySym ks;
     char keychar[1];

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Keys.cc,v 1.37 2003/09/06 13:58:06 fluxgen Exp $
+//$Id: Keys.cc,v 1.38 2003/10/05 07:19:30 rathnor Exp $
 
 
 #include "Keys.hh"
@@ -74,20 +74,16 @@
 using namespace std;
 
 Keys::Keys(const char *filename):
-    m_display(FbTk::App::instance()->display()),
-    m_modmap(0) {
-
-    loadModmap();
+    m_display(FbTk::App::instance()->display())
+{
 
     if (filename != 0)
         load(filename);
 }
 
 Keys::~Keys() {	
-    if (m_modmap)
-        XFreeModifiermap(m_modmap);
 
-    ungrabKeys();
+    FbTk::KeyUtil::ungrabKeys();
     deleteTree();
 }
 
@@ -97,14 +93,6 @@ void Keys::deleteTree() {
         if (m_keylist.back())
             delete m_keylist.back();		
         m_keylist.pop_back();
-    }
-}
-
-/// Ungrabs the keys
-void Keys::ungrabKeys() {
-    for (int screen=0; screen<ScreenCount(m_display); screen++) {
-        XUngrabKey(m_display, AnyKey, AnyModifier,
-                   RootWindow(m_display, screen));		
     }
 }
 
@@ -118,7 +106,7 @@ bool Keys::load(const char *filename) {
         return false;
 	
     //ungrab all keys
-    ungrabKeys();
+    FbTk::KeyUtil::ungrabKeys();
 
     //free memory of previous grabs
     deleteTree();
@@ -158,15 +146,15 @@ bool Keys::load(const char *filename) {
             if (val[argc][0] != ':') { // parse key(s)
                 keyarg++;
                 if (keyarg==1) //first arg is modifier
-                    mod = getModifier(val[argc].c_str());
+                    mod = FbTk::KeyUtil::getModifier(val[argc].c_str());
                 else if (keyarg>1) {
 
                     //keyarg=0;
-                    int tmpmod = getModifier(val[argc].c_str());
+                    int tmpmod = FbTk::KeyUtil::getModifier(val[argc].c_str());
                     if(tmpmod)
                         mod|=tmpmod; //If it's a modifier
                     else { 
-                        key = getKey(val[argc].c_str()); // else get the key
+                        key = FbTk::KeyUtil::getKey(val[argc].c_str()); // else get the key
                         if (key == 0) {
                             cerr<<"["<<filename<<"]: Invalid key/modifier on line("<<
                                 line<<"): "<<linebuffer<<endl;
@@ -219,114 +207,6 @@ bool Keys::load(const char *filename) {
     } // end while eof
 
     return true;
-}
-
-void Keys::loadModmap() {
-    if (m_modmap)
-        XFreeModifiermap(m_modmap);
-
-    m_modmap = XGetModifierMapping(m_display);
-    // force reinit of modifiers
-    FbTk::KeyUtil::init();
-}
-
-/**
- Grabs a key with the modifier
- and with numlock,capslock and scrollock
-*/
-void Keys::grabKey(unsigned int key, unsigned int mod) {
-    const int capsmod = FbTk::KeyUtil::capslockMod();
-    const int nummod = FbTk::KeyUtil::numlockMod();
-    const int scrollmod = FbTk::KeyUtil::scrolllockMod();
-    
-    for (int screen=0; screen<ScreenCount(m_display); screen++) {
-		
-        Window root = RootWindow(m_display, screen);
-		
-        XGrabKey(m_display, key, mod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-						
-        // Grab with numlock, capslock and scrlock	
-
-        //numlock	
-        XGrabKey(m_display, key, mod|nummod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);		
-        //scrolllock
-        XGrabKey(m_display, key, mod|scrollmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);	
-        //capslock
-        XGrabKey(m_display, key, mod|capsmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-	
-        //capslock+numlock
-        XGrabKey(m_display, key, mod|capsmod|nummod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-
-        //capslock+scrolllock
-        XGrabKey(m_display, key, mod|capsmod|scrollmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);						
-	
-        //capslock+numlock+scrolllock
-        XGrabKey(m_display, key, mod|capsmod|scrollmod|nummod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);						
-
-        //numlock+scrollLock
-        XGrabKey(m_display, key, mod|nummod|scrollmod,
-                 root, True,
-                 GrabModeAsync, GrabModeAsync);
-	
-    }
-			
-}
-
-/**
- @return the modifier for the modstr else zero on failure.
- TODO fix more masks
-*/
-unsigned int Keys::getModifier(const char *modstr) {
-    if (!modstr)
-        return 0;
-    struct t_modlist{
-        char *str;
-        unsigned int mask;
-        bool operator == (const char *modstr) {
-            return  (strcasecmp(str, modstr) == 0 && mask !=0);
-        }
-    } modlist[] = {
-        {"SHIFT", ShiftMask},
-        {"CONTROL", ControlMask},
-        {"MOD1", Mod1Mask},
-        {"MOD2", Mod2Mask},
-        {"MOD3", Mod3Mask},
-        {"MOD4", Mod4Mask},
-        {"MOD5", Mod5Mask},
-        {0, 0}
-    };
-
-    // find mod mask string
-    for (unsigned int i=0; modlist[i].str !=0; i++) {
-        if (modlist[i] == modstr)		
-            return modlist[i].mask;		
-    }
-	
-    return 0;	
-}
-
-/**
- @return keycode of keystr on success else 0
-*/
-unsigned int Keys::getKey(const char *keystr) {
-    if (!keystr)
-        return 0;
-    return XKeysymToKeycode(m_display,
-                            XStringToKeysym(keystr));
 }
 
 /**
@@ -399,7 +279,7 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
         }
 
         if (baselist_i == m_keylist.size()) {
-            grabKey(newtree->key, newtree->mod);
+            FbTk::KeyUtil::grabKey(newtree->key, newtree->mod);
             m_keylist.push_back(new t_key(newtree));			
             if (newtree->keylist.size())
                 return mergeTree(newtree->keylist[0], m_keylist.back());
@@ -420,7 +300,7 @@ bool Keys::mergeTree(t_key *newtree, t_key *basetree) {
         }
         //if it wasn't in the list grab the key and add it to the list
         if (baselist_i==basetree->keylist.size()) {			
-            grabKey(newtree->key, newtree->mod);
+            FbTk::KeyUtil::grabKey(newtree->key, newtree->mod);
             basetree->keylist.push_back(new t_key(newtree));
             if (newtree->keylist.size())
                 return mergeTree(newtree->keylist[0], basetree->keylist.back());
@@ -452,21 +332,4 @@ Keys::t_key::~t_key() {
         }
     }
 
-}
-
-unsigned int Keys::keycodeToModmask(unsigned int keycode) {
-    if (!m_modmap) return 0;
-
-    // search through modmap for this keycode
-    for (int mod=0; mod < 8; mod++) {
-        for (int key=0; key < m_modmap->max_keypermod; ++key) {
-            // modifiermap is an array with 8 sets of keycodes
-            // each max_keypermod long, but in a linear array.
-            if (m_modmap->modifiermap[m_modmap->max_keypermod*mod + key] == keycode) {
-                return (1<<mod);
-            }
-        } 
-    }
-    // no luck
-    return 0;
 }

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Keys.hh,v 1.28 2003/09/06 13:58:06 fluxgen Exp $
+// $Id: Keys.hh,v 1.29 2003/10/05 07:19:36 rathnor Exp $
 
 #ifndef KEYS_HH
 #define KEYS_HH
@@ -46,9 +46,6 @@ public:
     /// destructor
     ~Keys();
 
-    unsigned int keycodeToModmask(unsigned int keycode);
-
-    void loadModmap();
     /**
        Load configuration from file
        @return true on success, else false
@@ -66,24 +63,13 @@ public:
 
 private:
     void deleteTree();
-    void ungrabKeys();
+
     void bindKey(unsigned int key, unsigned int mod);
     /**
        @param modstr modifier string (i.e Mod4, Mod5)
        @return modifier number that match modstr
     */
-    unsigned int getModifier(const char *modstr);
-    /**
-       @param keystr a key string (i.e F1, Enter)
-       @return key number that match keystr
-    */
-    unsigned int getKey(const char *keystr);
-    /**
-       grab a key
-       @param key the key
-       @param mod the modifier
-    */
-    void grabKey(unsigned int key, unsigned int mod);
+
     std::string filename;	
 	
     class t_key {	
@@ -127,7 +113,6 @@ private:
     std::vector<t_key *> m_keylist;	
 
     Display *m_display;  ///< display connection
-    XModifierKeymap *m_modmap;
     
 };
 
