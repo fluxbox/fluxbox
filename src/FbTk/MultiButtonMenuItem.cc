@@ -20,9 +20,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MultiButtonMenuItem.cc,v 1.2 2004/01/08 22:07:28 fluxgen Exp $
+// $Id: MultiButtonMenuItem.cc,v 1.3 2004/06/10 11:41:15 fluxgen Exp $
 
 #include "MultiButtonMenuItem.hh"
+#include "PixmapWithMask.hh"
 
 namespace FbTk {
 
