@@ -30,6 +30,7 @@
 #include "Color.hh"
 #include "Texture.hh"
 #include "Font.hh"
+#include "GContext.hh"
 #include "PixmapWithMask.hh"
 #include "Image.hh"
 #include "StringUtil.hh"
@@ -43,32 +44,35 @@
 #include <iostream>
 namespace FbTk {
 
-using namespace std;
+using std::string;
+using std::cerr;
+using std::endl;
+
 
 // create default handlers for Color, Font, Texture, int and string
 template <>
-void FbTk::ThemeItem<std::string>::load(const std::string *name, const std::string *altname) { }
+void ThemeItem<string>::load(const string *name, const string *altname) { }
 
 template <>
-void FbTk::ThemeItem<std::string>::setDefaultValue() {
+void ThemeItem<string>::setDefaultValue() {
     *(*this) = "";
 }
 
 template <>
-void FbTk::ThemeItem<std::string>::setFromString(const char *str) {
+void ThemeItem<string>::setFromString(const char *str) {
     *(*this) = (str ? str : "");
 }
 
 template <>
-void FbTk::ThemeItem<int>::load(const std::string *name, const std::string *altname) { }
+void ThemeItem<int>::load(const string *name, const string *altname) { }
 
 template<>
-void FbTk::ThemeItem<int>::setDefaultValue() {
+void ThemeItem<int>::setDefaultValue() {
     *(*this) = 0;
 }
 
 template <>
-void FbTk::ThemeItem<int>::setFromString(const char *str) {
+void ThemeItem<int>::setFromString(const char *str) {
     if (str == 0) {
         setDefaultValue();
         return;
@@ -77,20 +81,35 @@ void FbTk::ThemeItem<int>::setFromString(const char *str) {
     if (sscanf(str, "%d", &m_value) < 1)
         setDefaultValue();
 }
+template<>
+void FbTk::ThemeItem<bool>::load(const std::string *name, const std::string *altname) { }
+
+template<>
+void FbTk::ThemeItem<bool>::setDefaultValue() {
+    *(*this) = false;
+}
+
+template<>
+void FbTk::ThemeItem<bool>::setFromString(char const *strval) {
+    if (strcasecmp(strval, "true")==0)
+        *(*this) = true;
+    else
+        *(*this) = false;
+}
 
 template <>
-void ThemeItem<FbTk::Font>::setDefaultValue() {
+void ThemeItem<Font>::setDefaultValue() {
     if (!m_value.load("fixed")) {
-        cerr<<"FbTk::ThemeItem<FbTk::Font>: Warning! Failed to load default value 'fixed'"<<endl;
+        cerr<<"ThemeItem<Font>: Warning! Failed to load default value 'fixed'"<<endl;
     }
 }
 
 template <>
-void ThemeItem<FbTk::Font>::setFromString(const char *str) {
+void ThemeItem<Font>::setFromString(const char *str) {
 
     if (str == 0 || m_value.load(str) == false) {
-        if (FbTk::ThemeManager::instance().verbose()) {
-            cerr<<"FbTk::Theme: Error loading font "<<
+        if (ThemeManager::instance().verbose()) {
+            cerr<<"Theme: Error loading font "<<
                 ((m_value.isAntialias() || m_value.utf8()) ? "(" : "")<<
 
                 (m_value.isAntialias() ? "antialias" : "")<<
@@ -99,7 +118,7 @@ void ThemeItem<FbTk::Font>::setFromString(const char *str) {
                 ((m_value.isAntialias() || m_value.utf8()) ? ") " : "")<<
                 "for \""<<name()<<"\" or \""<<altName()<<"\": "<<str<<endl;
 
-            cerr<<"FbTk::Theme: Setting default value"<<endl;
+            cerr<<"Theme: Setting default value"<<endl;
         }
         setDefaultValue();
     }
@@ -108,14 +127,14 @@ void ThemeItem<FbTk::Font>::setFromString(const char *str) {
 
 // do nothing
 template <>
-void ThemeItem<FbTk::Font>::load(const std::string *name, const std::string *altname) {
+void ThemeItem<Font>::load(const string *name, const string *altname) {
 }
 
 
 template <>
-void ThemeItem<FbTk::Texture>::load(const std::string *o_name, const std::string *o_altname) {
-    const std::string &m_name = (o_name==0)?name():*o_name;
-    const std::string &m_altname = (o_altname==0)?altName():*o_altname;
+void ThemeItem<Texture>::load(const string *o_name, const string *o_altname) {
+    const string &m_name = (o_name==0)?name():*o_name;
+    const string &m_altname = (o_altname==0)?altName():*o_altname;
 
     string color_name(ThemeManager::instance().
                       resourceValue(m_name+".color", m_altname+".Color"));
@@ -135,7 +154,7 @@ void ThemeItem<FbTk::Texture>::load(const std::string *o_name, const std::string
         m_value.colorTo().setFromString("white", m_tm.screenNum());
 
 
-    if ((m_value.type() & FbTk::Texture::SOLID) != 0 && (m_value.type() & FbTk::Texture::FLAT) == 0)
+    if ((m_value.type() & Texture::SOLID) != 0 && (m_value.type() & Texture::FLAT) == 0)
         m_value.calcHiLoColors(m_tm.screenNum());
 
     StringUtil::removeFirstWhitespace(pixmap_name);
@@ -145,10 +164,10 @@ void ThemeItem<FbTk::Texture>::load(const std::string *o_name, const std::string
         return;
     }
 
-    std::auto_ptr<FbTk::PixmapWithMask> pm(FbTk::Image::load(pixmap_name,
+    std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name,
                                                              m_tm.screenNum()));
     if (pm.get() == 0) {
-        if (FbTk::ThemeManager::instance().verbose()) {
+        if (ThemeManager::instance().verbose()) {
             cerr<<"Resource("<<m_name+".pixmap"
                 <<"): Failed to load image: "<<pixmap_name<<endl;
         }
@@ -159,13 +178,13 @@ void ThemeItem<FbTk::Texture>::load(const std::string *o_name, const std::string
 }
 
 template <>
-void ThemeItem<FbTk::Texture>::setDefaultValue() {
-    m_value.setType(FbTk::Texture::FLAT | FbTk::Texture::SOLID);
+void ThemeItem<Texture>::setDefaultValue() {
+    m_value.setType(Texture::FLAT | Texture::SOLID);
     load(); // one might forget to add line something:  so we try to load something.*:  too
 }
 
 template <>
-void ThemeItem<FbTk::Texture>::setFromString(const char *str) {
+void ThemeItem<Texture>::setFromString(const char *str) {
     m_value.setFromString(str);
     if (m_value.type() == 0) // failed to set value
         setDefaultValue();
@@ -175,28 +194,27 @@ void ThemeItem<FbTk::Texture>::setFromString(const char *str) {
 
 // not used
 template <>
-void FbTk::ThemeItem<PixmapWithMask>::load(const std::string *name, const std::string *altname) { }
+void ThemeItem<PixmapWithMask>::load(const string *name, const string *altname) { }
 
 template <>
-void FbTk::ThemeItem<PixmapWithMask>::
-setDefaultValue() {
+void ThemeItem<PixmapWithMask>::setDefaultValue() {
     // create empty pixmap
     (*this)->pixmap() = 0;
     (*this)->mask() = 0;
 }
 
 template <>
-void FbTk::ThemeItem<PixmapWithMask>::
+void ThemeItem<PixmapWithMask>::
 setFromString(const char *str) {
     if (str == 0)
         setDefaultValue();
     else {
-        std::string filename(str);
+        string filename(str);
 
         StringUtil::removeFirstWhitespace(filename);
         StringUtil::removeTrailingWhitespace(filename);
 
-        std::auto_ptr<FbTk::PixmapWithMask> pm(Image::load(filename, m_tm.screenNum()));
+        std::auto_ptr<PixmapWithMask> pm(Image::load(filename, m_tm.screenNum()));
         if (pm.get() == 0)
             setDefaultValue();
         else {
@@ -208,22 +226,90 @@ setFromString(const char *str) {
 
 
 template <>
-void ThemeItem<FbTk::Color>::setDefaultValue() {
+void ThemeItem<Color>::setDefaultValue() {
     m_value.setFromString("white", m_tm.screenNum());
 }
 
 template <>
-void ThemeItem<FbTk::Color>::setFromString(const char *str) {
+void ThemeItem<Color>::setFromString(const char *str) {
     if (!m_value.setFromString(str, m_tm.screenNum())) {
-        if (FbTk::ThemeManager::instance().verbose())
-            cerr<<"FbTk::Theme: Error loading color value for \""<<name()<<"\" or \""<<altName()<<"\"."<<endl;
+        if (ThemeManager::instance().verbose())
+            cerr<<"Theme: Error loading color value for \""<<name()<<"\" or \""<<altName()<<"\"."<<endl;
         setDefaultValue();
     }
 }
 
 // does nothing
 template <>
-void ThemeItem<FbTk::Color>::load(const std::string *name, const std::string *altname) { }
+void ThemeItem<Color>::load(const string *name, const string *altname) { }
+
+template<>
+void ThemeItem<GContext::LineStyle>::setDefaultValue() {
+    *(*this) = GContext::LINESOLID;
+}
+
+template<>
+void ThemeItem<GContext::LineStyle>::setFromString(char const *strval) { 
+
+    if (strcasecmp(strval, "LineSolid") == 0 )
+        m_value = GContext::LINESOLID;
+    else if (strcasecmp(strval, "LineOnOffDash") == 0 )
+        m_value = GContext::LINEONOFFDASH;
+    else if (strcasecmp(strval, "LineDoubleDash") == 0)
+        m_value = GContext::LINEDOUBLEDASH;
+    else
+        setDefaultValue();
+}
+
+template<>
+void ThemeItem<GContext::LineStyle>::load(const string *name, const string *altname) { }
+
+
+template<>
+void ThemeItem<GContext::JoinStyle>::setDefaultValue() {
+    *(*this) = GContext::JOINMITER;
+}
+
+template<>
+void ThemeItem<GContext::JoinStyle>::setFromString(char const *strval) { 
+
+    if (strcasecmp(strval, "JoinRound") == 0 )
+        m_value = GContext::JOINROUND;
+    else if (strcasecmp(strval, "JoinMiter") == 0 )
+        m_value = GContext::JOINMITER;
+    else if (strcasecmp(strval, "JoinBevel") == 0) 
+        m_value = GContext::JOINBEVEL;
+    else
+        setDefaultValue();
+}
+
+template<>
+void ThemeItem<GContext::JoinStyle>::load(const string *name, const string *altname) { }
+
+template<>
+void ThemeItem<GContext::CapStyle>::setDefaultValue() {
+    *(*this) = GContext::CAPNOTLAST;
+}
+
+template<>
+void ThemeItem<GContext::CapStyle>::setFromString(char const *strval) { 
+
+    if (strcasecmp(strval, "CapNotLast") == 0 )
+        m_value = GContext::CAPNOTLAST;
+    else if (strcasecmp(strval, "CapProjecting") == 0 )
+        m_value = GContext::CAPPROJECTING;
+    else if (strcasecmp(strval, "CapRound") == 0) 
+        m_value = GContext::CAPROUND;
+    else if (strcasecmp(strval, "CapButt" ) == 0)
+        m_value = GContext::CAPBUTT;
+    else
+        setDefaultValue();
+}
+
+template<>
+void ThemeItem<GContext::CapStyle>::load(const string *name, const string *altname) { }
+
+
 
 } // end namespace FbTk
 

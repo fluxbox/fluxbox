@@ -28,22 +28,6 @@
 #include <iostream>
 using namespace std;
 
-template<>
-void FbTk::ThemeItem<bool>::load(const std::string *name, const std::string *altname) { }
-
-template<>
-void FbTk::ThemeItem<bool>::setDefaultValue() {
-    *(*this) = false;
-}
-
-template<>
-void FbTk::ThemeItem<bool>::setFromString(char const *strval) {
-    if (strcasecmp(strval, "true")==0)
-        *(*this) = true;
-    else
-        *(*this) = false;
-}
-
 ToolbarTheme::ToolbarTheme(int screen_num):
     FbTk::Theme(screen_num),
     m_toolbar(*this, "toolbar", "Toolbar"),
