@@ -1,0 +1,5 @@
+List of translators contrubutors
+--------------------------------
+
+pl_PL: offtza@gazeta.pl
+
