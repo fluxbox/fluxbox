@@ -43,6 +43,7 @@ Translation.m: $(MFILES)
 		echo -e "enum {" >> ../blackbox-nls.hh;	\
 		awk -f ../convert.awk header=../blackbox-nls.hh \
 			output=Translation.m $(MFILES); \
+		echo -e "	dummy_not_used = 0 //just for the ending" >> ../blackbox-nls.hh; \
 		echo -e "}; //end enum\n" >> ../blackbox-nls.hh; \
 		echo -e "}; //end namespace\n" >> ../blackbox-nls.hh; \
 		echo -e "#endif //BLACKBOX_NLS_HH\n" >> ../blackbox-nls.hh; \
