@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.5 2002/01/18 01:33:58 fluxgen Exp $
+// $Id: Window.hh,v 1.6 2002/01/20 02:12:52 fluxgen Exp $
 
 #ifndef	 _WINDOW_HH_
 #define	 _WINDOW_HH_
@@ -159,7 +159,7 @@ public:
 	void buttonPressEvent(XButtonEvent *);
 	void buttonReleaseEvent(XButtonEvent *);
 	void motionNotifyEvent(XMotionEvent *);
-	void destroyNotifyEvent(XDestroyWindowEvent *);
+	bool destroyNotifyEvent(XDestroyWindowEvent *);
 	void mapRequestEvent(XMapRequestEvent *);
 	void mapNotifyEvent(XMapEvent *);
 	void unmapNotifyEvent(XUnmapEvent *);
