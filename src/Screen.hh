@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.130 2003/12/19 01:46:58 fluxgen Exp $
+// $Id: Screen.hh,v 1.131 2003/12/30 17:57:12 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -197,23 +197,23 @@ public:
     inline WinButtonTheme &winButtonTheme() { return *m_winbutton_theme.get(); }
     inline const WinButtonTheme &winButtonTheme() const { return *m_winbutton_theme.get(); }
 
-    FbRootWindow &rootWindow() { return m_root_window; }
-    const FbRootWindow &rootWindow() const { return m_root_window; }
+    inline FbRootWindow &rootWindow() { return m_root_window; }
+    inline const FbRootWindow &rootWindow() const { return m_root_window; }
 
-    FbTk::MultLayers &layerManager() { return m_layermanager; }
-    const FbTk::MultLayers &layerManager() const { return m_layermanager; }
-    FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
-    const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
-    const std::string &name() const { return m_name; }
-    const std::string &altName() const { return m_altname; }
-    bool isShuttingdown() const { return m_shutdown; }
+    inline FbTk::MultLayers &layerManager() { return m_layermanager; }
+    inline const FbTk::MultLayers &layerManager() const { return m_layermanager; }
+    inline FbTk::ResourceManager &resourceManager() { return m_resource_manager; }
+    inline const FbTk::ResourceManager &resourceManager() const { return m_resource_manager; }
+    inline const std::string &name() const { return m_name; }
+    inline const std::string &altName() const { return m_altname; }
+    inline bool isShuttingdown() const { return m_shutdown; }
 
 
     int addWorkspace();
     int removeLastWorkspace();
     // scroll workspaces
-    void nextWorkspace() { nextWorkspace(1); }
-    void prevWorkspace() { prevWorkspace(1); }
+    inline void nextWorkspace() { nextWorkspace(1); }
+    inline void prevWorkspace() { prevWorkspace(1); }
     void nextWorkspace(int delta);
     void prevWorkspace(int delta);
     void rightWorkspace(int delta);
@@ -237,8 +237,8 @@ public:
                          bool changeworkspace=true);
     void reassociateWindow(FluxboxWindow *window, unsigned int workspace_id, 
                            bool ignore_sticky);
-    void prevFocus() { prevFocus(0); }
-    void nextFocus() { nextFocus(0); }
+    inline void prevFocus() { prevFocus(0); }
+    inline void nextFocus() { nextFocus(0); }
     void prevFocus(int options);
     void nextFocus(int options);
     void raiseFocus();
