@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.85 2002/09/11 15:12:40 fluxgen Exp $
+// $Id: Window.cc,v 1.86 2002/09/12 14:55:11 rathnor Exp $
 
 #include "Window.hh"
 
@@ -100,7 +100,7 @@ tab(0) {
 	frame.utitle = frame.ftitle = frame.uhandle = frame.fhandle = None;
 	frame.ulabel = frame.flabel = frame.ubutton = frame.fbutton = None;
 	frame.pbutton = frame.ugrip = frame.fgrip = None;
-	
+
 	//get decorations
 	vector<Fluxbox::Titlebar> dir = fluxbox->getTitlebarLeft();
 	for (char c=0; c<2; c++) {
@@ -164,7 +164,7 @@ tab(0) {
 		fluxbox->ungrab();
 		return;
 	}
-
+	
 	image_ctrl = screen->getImageControl();
 
 	client.x = wattrib.x;
@@ -186,7 +186,6 @@ tab(0) {
 	getWMProtocols();
 	getWMHints();
 	getWMNormalHints();
-
 #ifdef SLIT
 
 	if (client.initial_state == WithdrawnState) {
@@ -219,7 +218,7 @@ tab(0) {
 	}
 
 	upsize();
-
+	
 	bool place_window = true;
 	if (fluxbox->isStartup() || transient ||
 			client.normal_hint_flags & (PPosition|USPosition)) {
@@ -319,10 +318,15 @@ tab(0) {
 		int m = maximized;
 		maximized = false;
 		maximize(m);
+	}	
+
+	if (stuck) {
+		stuck = false;
+		stick();
+		deiconify(); //omnipresent, so show it
 	}
 
 	setFocusFlag(false);
-
 
 #ifdef DEBUG
 	fprintf(stderr, "%s(%d): FluxboxWindow(this=%p)\n", __FILE__, __LINE__, this);
@@ -1172,7 +1176,7 @@ void FluxboxWindow::getWMProtocols() {
 	Atom *proto;
 	int num_return = 0;
 	Fluxbox *fluxbox = Fluxbox::instance();
-	
+
 	if (XGetWMProtocols(display, client.window, &proto, &num_return)) {
 		for (int i = 0; i < num_return; ++i) {
 			if (proto[i] == fluxbox->getWMDeleteAtom())
@@ -2062,13 +2066,12 @@ void FluxboxWindow::stick() {
 
 		stuck = false;
 
-		if (! iconic)
-			screen->reassociateWindow(this, screen->getCurrentWorkspace()->workspaceID(), true);
-
-		
 	} else {
 		stuck = true;
-
+		if (screen->getCurrentWorkspaceID() != workspace_number) {
+			screen->reassociateWindow(this,screen->getCurrentWorkspaceID(), true);
+		}
+		
 		blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
 		blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 

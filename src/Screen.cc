@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.68 2002/09/10 10:59:57 fluxgen Exp $
+// $Id: Screen.cc,v 1.69 2002/09/12 14:55:11 rathnor Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -784,6 +784,15 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 			focused->pauseMoving();
 		}
 
+		Workspace *wksp = getCurrentWorkspace();
+		Workspace::Windows wins = wksp->getWindowList();
+		Workspace::Windows::iterator it = wins.begin();
+		for (; it != wins.end(); ++it) {
+			if ((*it)->isStuck()) {
+				reassociateGroup(*it,id,true);
+			}
+		}
+
 		current_workspace->hideAll();
 
 		workspacemenu->setItemSelected(current_workspace->workspaceID() + 2, false);
@@ -805,6 +814,8 @@ void BScreen::changeWorkspaceID(unsigned int id) {
 		if (*resource.focus_last && current_workspace->getLastFocusedWindow() &&
 				!(focused && focused->isMoving())) {
 			current_workspace->getLastFocusedWindow()->setInputFocus();		
+		} else if (focused && focused->isStuck()) {
+			focused->setInputFocus();
 		}
 
 		if (focused && focused->isMoving()) {
@@ -1110,7 +1121,7 @@ void BScreen::nextFocus(int opts) {
 	int focused_window_number = -1;
 	FluxboxWindow *focused = fluxbox->getFocusedWindow();
 	const int num_windows = getCurrentWorkspace()->getCount();
-	
+
 	if (focused != 0) {
 		if (focused->getScreen()->getScreenNumber() == 
 				getScreenNumber()) {
@@ -1119,14 +1130,17 @@ void BScreen::nextFocus(int opts) {
 		}
 	}
 
-	if (num_windows > 1 && have_focused) {
+	if (num_windows >= 1) {
 		Workspace *wksp = getCurrentWorkspace();
 		Workspace::Windows &wins = wksp->getWindowList();
 		Workspace::Windows::iterator it = wins.begin();
 
-		for (; *it != focused; ++it) //get focused window iterator
-			continue;
-
+		if (!have_focused) {
+			focused = *it;
+		} else {
+			for (; *it != focused; ++it) //get focused window iterator
+				continue;
+		}
 		do {
 			++it;
 			if (it == wins.end())
@@ -1139,11 +1153,6 @@ void BScreen::nextFocus(int opts) {
 		if (*it != focused && it != wins.end())
 			wksp->raiseWindow(*it);
 
-	} else if (num_windows >= 1) {
-		FluxboxWindow *next = current_workspace->getWindow(0);
-		//don't raise next window if input focus fails
-		if (next->setInputFocus())
-			current_workspace->raiseWindow(next);
 	}
 
 }
@@ -1163,28 +1172,31 @@ void BScreen::prevFocus(int opts) {
 		}
 	}
 
-	if (num_windows > 1 && have_focused) {
+	if (num_windows >= 1) {
 		Workspace *wksp = getCurrentWorkspace();
-		Workspace::Windows wins = wksp->getWindowList();
+		Workspace::Windows &wins = wksp->getWindowList();
 		Workspace::Windows::iterator it = wins.begin();
-		for (; *it != focused; ++it);
+
+		if (!have_focused) {
+			focused = *it;
+		} else {
+			for (; *it != focused; ++it) //get focused window iterator
+				continue;
+		}
+		
 		do {
 			if (it == wins.begin())
 				it = wins.end();
 			--it;
 			// see if the window should be skipped
-			if (! (doSkipWindow(*it, opts) ||	!(*it)->setInputFocus()) )
+			if (! (doSkipWindow(*it, opts) || !(*it)->setInputFocus()) )
 				break;
 		} while (*it != focused);
-		if (*it != focused)
-			wksp->raiseWindow(*it);
-	} else if (num_windows >= 1) {
-		FluxboxWindow *next = current_workspace->getWindow(0);
-		//don't raise next window if input focus fails
-		if (next->setInputFocus())
-			current_workspace->raiseWindow(next);
-	}
 
+		if (*it != focused && it != wins.end())
+			wksp->raiseWindow(*it);
+
+	}
 }
 
 //--------- raiseFocus -----------

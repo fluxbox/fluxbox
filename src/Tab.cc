@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.32 2002/09/08 19:41:59 fluxgen Exp $
+// $Id: Tab.cc,v 1.33 2002/09/12 14:55:11 rathnor Exp $
 
 #include "Tab.hh"
 
@@ -283,20 +283,24 @@ void Tab::withdraw() {
 void Tab::stick() {
 	Tab *tab;
  
+ 	bool wasstuck = m_win->isStuck();
+ 
 	//now do stick for all windows in the list
 	for (tab = getFirst(this); tab != 0; tab = tab->m_next) {
 		FluxboxWindow *win = tab->m_win; //just for convenience
-		if (win->isStuck()) {
+		if (wasstuck) {
 			win->blackbox_attrib.flags ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->blackbox_attrib.attrib ^= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->stuck = false;
-			if (!win->isIconic()) {
-				BScreen *screen = win->getScreen();
-				screen->reassociateWindow(win, screen->getCurrentWorkspace()->workspaceID(), true);
-			}
 
 		} else {
 			win->stuck = true;
+			BScreen *screen = win->getScreen();
+			if (!win->isIconic() && !(win->getWorkspaceNumber() !=
+					screen->getCurrentWorkspaceID())) {
+				screen->reassociateWindow(win, screen->getCurrentWorkspaceID(), true);
+			}
+
 			win->blackbox_attrib.flags |= BaseDisplay::ATTRIB_OMNIPRESENT;
 			win->blackbox_attrib.attrib |= BaseDisplay::ATTRIB_OMNIPRESENT;
 		}
@@ -936,9 +940,10 @@ void Tab::insert(Tab *tab) {
 	for (; last->m_next!=0; last=last->m_next); 
 	//do sticky before we connect it to the chain
 	//sticky bit on window
-	if (m_win->isStuck() && !tab->m_win->isStuck() ||
-			!m_win->isStuck() && tab->m_win->isStuck())
-			tab->m_win->stick(); //this will set all the m_wins in the list
+	if (m_win->isStuck() != tab->m_win->isStuck()) {
+			tab->m_win->stuck = !m_win->stuck; // it will toggle
+			tab->stick(); //this will set all the m_wins in the list
+	}
 	
 	//connect the tab to this chain
 	

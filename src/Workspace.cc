@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.29 2002/09/10 11:03:58 fluxgen Exp $
+// $Id: Workspace.cc,v 1.30 2002/09/12 14:55:11 rathnor Exp $
 
 #include "Workspace.hh"
 
@@ -137,7 +137,8 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	//update menugraphics
 	m_clientmenu.update();
 	
-	screen->updateNetizenWindowAdd(w->getClientWindow(), m_id);
+	if (!w->isStuck()) 
+		screen->updateNetizenWindowAdd(w->getClientWindow(), m_id);
 
 	raiseWindow(w);
 
@@ -191,8 +192,9 @@ int Workspace::removeWindow(FluxboxWindow *w) {
 
 	m_clientmenu.remove(w->getWindowNumber());
 	m_clientmenu.update();
-
-	screen->updateNetizenWindowDel(w->getClientWindow());
+	
+	if (!w->isStuck())
+		screen->updateNetizenWindowDel(w->getClientWindow());
 
 	{
 		Windows::iterator it = windowList.begin();
