@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.132 2004/01/11 16:05:55 fluxgen Exp $
+// $Id: Screen.hh,v 1.133 2004/01/16 11:58:45 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -253,6 +253,7 @@ public:
     void shutdown();
     /// show position window centered on the screen with "X x Y" text
     void showPosition(int x, int y);
+    void hidePosition();
     /// show geomentry with "width x height"-text, not size of window
     void showGeometry(unsigned int width, unsigned int height);
     void hideGeometry();
@@ -351,6 +352,7 @@ private:
     bool doSkipWindow(const WinClient &winclient, int options);
 
     void renderGeomWindow();
+    void renderPosWindow();
     void updateIconMenu();
 
     ScreenSubject 
@@ -364,11 +366,11 @@ private:
 		
     FbTk::MultLayers m_layermanager;
 	
-    bool root_colormap_installed, managed, geom_visible, cycling_focus;
+    bool root_colormap_installed, managed, geom_visible, pos_visible, cycling_focus;
     GC opGC;
-    Pixmap geom_pixmap;
+    Pixmap geom_pixmap, pos_pixmap;
 
-    FbTk::FbWindow m_geom_window;
+    FbTk::FbWindow m_geom_window, m_pos_window;
 
     std::auto_ptr<FbTk::ImageControl> m_image_control;
     std::auto_ptr<FbTk::Menu> m_configmenu;

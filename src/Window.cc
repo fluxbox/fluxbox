@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.260 2004/01/16 11:41:38 fluxgen Exp $
+// $Id: Window.cc,v 1.261 2004/01/16 11:58:45 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -294,6 +294,7 @@ FluxboxWindow::~FluxboxWindow() {
 
     if (moving || resizing || m_attaching_tab) {
         screen().hideGeometry();
+        screen().hidePosition();
         XUngrabPointer(display, CurrentTime);
     }
 
@@ -2811,7 +2812,7 @@ void FluxboxWindow::stopMoving() {
     }
 
 
-    screen().hideGeometry();
+    screen().hidePosition();
     XUngrabPointer(display, CurrentTime);
 	
     FbTk::App::instance()->sync(false); //make sure the redraw is made before we continue
