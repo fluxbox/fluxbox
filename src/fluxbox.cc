@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.223 2004/01/16 11:29:12 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.224 2004/01/16 11:38:30 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -759,20 +759,19 @@ void Fluxbox::handleEvent(XEvent * const e) {
     if (e->type == FocusOut && 
         FbTk::Menu::focused() != 0 &&
         FbTk::Menu::focused()->window() == e->xfocus.window) {
-            // find screen num
-            BScreen *screen = 0;
-            ScreenList::iterator it = m_screen_list.begin();
-            ScreenList::iterator it_end = m_screen_list.end();
-            for (; it != it_end; ++it) {
-                if ( (*it)->screenNumber() == 
-                     FbTk::Menu::focused()->fbwindow().screenNumber()) {
-                    screen = (*it);
-                    break; // found the screen, no more search
-                }
+        // find screen num
+        BScreen *screen = 0;
+        ScreenList::iterator it = m_screen_list.begin();
+        ScreenList::iterator it_end = m_screen_list.end();
+        for (; it != it_end; ++it) {
+            if ( (*it)->screenNumber() == 
+                 FbTk::Menu::focused()->fbwindow().screenNumber()) {
+                screen = (*it);
+                break; // found the screen, no more search
             }
-            if (screen != 0)
-                revertFocus(*screen);
         }
+        if (screen != 0)
+            revertFocus(*screen);
     }
 
     // try FbTk::EventHandler first
