@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Button.hh,v 1.3 2002/12/25 11:28:43 fluxgen Exp $
+// $Id: Button.hh,v 1.4 2003/04/28 22:22:25 fluxgen Exp $
 
 #ifndef FBTK_BUTTON_HH
 #define FBTK_BUTTON_HH
@@ -46,9 +46,9 @@ public:
     /// sets action when the button is clicked with #button mouse btn
     void setOnClick(RefCount<Command> &com, int button = 1);
 
-    void move(int x, int y);
-    void resize(unsigned int width, unsigned int height);
-    void moveResize(int x, int y, unsigned int width, unsigned int height);
+    virtual void move(int x, int y);
+    virtual void resize(unsigned int width, unsigned int height);
+    virtual void moveResize(int x, int y, unsigned int width, unsigned int height);
 
     /// sets foreground pixmap 
     void setPixmap(Pixmap pm);
