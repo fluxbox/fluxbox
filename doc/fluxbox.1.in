@@ -959,11 +959,18 @@ This tells Fluxbox where to find the file that contains the order in which the a
 .EX
 session.slitlistFile: /home/myself/.fluxbox/slitlist
 .EE
+.\" 
 .TP
-.B session.screen0.toolbar.widthPercent:
-This determines the amount (in %) of space the toolbar will take.
-Default value is:
-.IR 66 .
+.B session.screen0.toolbar.tools: <list of tools>
+This specifies the tools plugged ino the toolbar.
+Possible tools: 
+workspacename, prevworkspace, nextworkspace, iconbar, systemtray, prevwindow, nextwindow,
+clock
+e.g. :
+.EX
+session.screen0.toolbar.tools: clock, iconbar, workspacename
+.EE
+.\" 
 .TP
 .B session.screen0.strftimeFormat:
 This adjusts the way the current time is displayed in the toolbar.
