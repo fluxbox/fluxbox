@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
+*04/10/04:
+  * Fix handling of setlocale return (Thanks Victor Yegorov)
+    FbTk/XmbFontImp.cc
 *04/09/30:
   * Fix to show title of current tabbed-window as the label of the 
     iconbar-button-group (Mathias)

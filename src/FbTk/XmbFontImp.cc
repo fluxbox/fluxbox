@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XmbFontImp.cc,v 1.13 2004/09/11 22:58:20 fluxgen Exp $
+// $Id: XmbFontImp.cc,v 1.14 2004/10/04 12:43:52 rathnor Exp $
 
 #include "XmbFontImp.hh"
 
@@ -117,7 +117,7 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
     char **missing, *def = "-";
     int nmissing, pixel_size = 0, buf_size = 0;
     char weight[FONT_ELEMENT_SIZE], slant[FONT_ELEMENT_SIZE];
-    char * orig_locale = "";
+    std::string orig_locale = "";
 
 #ifdef HAVE_SETLOCALE
     if (utf8mode) {
@@ -131,7 +131,7 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
     if (fs && (! nmissing)) {
 #ifdef HAVE_SETLOCALE
         if (utf8mode)
-            setlocale(LC_CTYPE, orig_locale);
+            setlocale(LC_CTYPE, orig_locale.c_str());
 #endif // HAVE_SETLOCALE
         return fs;
     }
@@ -143,7 +143,7 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
         setlocale(LC_CTYPE, "C");
         fs = XCreateFontSet(display, fontname,
                             &missing, &nmissing, &def);
-        setlocale(LC_CTYPE, orig_locale);
+        setlocale(LC_CTYPE, orig_locale.c_str());
     }
 #endif // HAVE_SETLOCALE
 
@@ -189,7 +189,7 @@ XFontSet createFontSet(const char *fontname, bool utf8mode) {
 
 #ifdef HAVE_SETLOCALE
     if (utf8mode)
-        setlocale(LC_CTYPE, orig_locale);
+        setlocale(LC_CTYPE, orig_locale.c_str());
 #endif // HAVE_SETLOCALE
 
     return fs;
