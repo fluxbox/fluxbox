@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.4 2002/12/16 11:14:08 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.5 2002/12/25 11:29:34 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -35,7 +35,6 @@ class Color;
  */
 class FbWindow {
 public:
-
     FbWindow();
     FbWindow(const FbWindow &win_copy);
     FbWindow(int screen_num,
@@ -49,7 +48,6 @@ public:
              int depth = CopyFromParent, 
              int class_type = InputOutput);
 
-
     virtual ~FbWindow();
     void setBackgroundColor(const FbTk::Color &bg_color);
     void setBackgroundPixmap(Pixmap bg_pixmap);
@@ -61,10 +59,10 @@ public:
     /// clear window with background pixmap or color
     void clear();
     /// assign a new X window to this
-    FbWindow &operator = (Window win);
-    void hide();
-    void show();
-    void showSubwindows();
+    virtual FbWindow &operator = (Window win);
+    virtual void hide();
+    virtual void show();
+    virtual void showSubwindows();
 
     virtual void move(int x, int y);
     virtual void resize(size_t width, size_t height);
