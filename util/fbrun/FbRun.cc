@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.23 2003/12/31 01:34:33 fluxgen Exp $
+// $Id: FbRun.cc,v 1.24 2004/02/25 18:37:47 fluxgen Exp $
 
 #include "FbRun.hh"
 
@@ -208,6 +208,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
     // strip numlock, capslock and scrolllock mask
     ke.state = FbTk::KeyUtil::instance().cleanMods(ke.state);
 
+    int cp= cursorPosition();
     FbTk::TextBox::keyPressEvent(ke);
     KeySym ks;
     char keychar[1];
@@ -253,6 +254,7 @@ void FbRun::keyPressEvent(XKeyEvent &ke) {
             break;
         case XK_Tab:
             tabCompleteHistory();
+            setCursorPosition(cp);
             break;
         }
     }
@@ -317,7 +319,9 @@ void FbRun::tabCompleteHistory() {
     } else {
         int history_item = m_current_history_item - 1;
         string prefix = text().substr(0, cursorPosition());
-        while (history_item > - 1) {
+        while (history_item != m_current_history_item ) {
+            if (history_item == -1 )
+                history_item+= m_history.size();
             if (m_history[history_item].find(prefix) == 0) {
                 m_current_history_item = history_item;
                 setText(m_history[m_current_history_item]);
@@ -325,7 +329,7 @@ void FbRun::tabCompleteHistory() {
             }
             history_item--;
         }
-        if (history_item == -1) XBell(m_display, 0);
+        if (history_item == m_current_history_item) XBell(m_display, 0);
     }
 }
 
