@@ -563,6 +563,18 @@ WorkspaceMenu
 WorkspaceNameDialog - edit workspaces name dialog (old SetWorkspaceName)
 SetWorkspaceName \fIname\fR
 .EE
+.B Prev/NextWindow Parameter
+NextWindow and PrevWindow take an integer parameter.
+.EX
+0 or unspecified = Default/current behavior - no skipping
+1 = Skip lower tabs
+2 = Skip stuck windows
+3 = Skip lower tabs/stuck windows
+4 = Skip shaded windows
+5 = Skip lower tabs/shaded windows
+6 = Skip stuck windows/shaded windows
+7 = Skip lower tabs/stuck windows/shaded windows
+.EE
 .B special commands
 .EX
 MacroCmd
