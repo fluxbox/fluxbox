@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.121 2003/08/30 01:02:09 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.122 2003/09/08 18:17:19 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -433,7 +433,8 @@ void Toolbar::reconfigure() {
                     item->button().setOnClick(showmenu);
                     m_item_list.push_back(item);
                 } else if (*item_it == "iconbar") {
-                    m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, screen()));
+                    m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, 
+                                                          screen(), menu()));
                 } else if (*item_it == "systemtray") {
                     m_item_list.push_back(new SystemTray(frame.window));
                 } else if (*item_it == "clock") {
