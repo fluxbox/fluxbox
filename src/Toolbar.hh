@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.42 2003/08/13 09:51:22 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.43 2003/08/15 13:25:03 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -94,6 +94,7 @@ public:
     void leaveNotifyEvent(XCrossingEvent &ce);
     void exposeEvent(XExposeEvent &ee);
     void keyPressEvent(XKeyEvent &ke);
+    void handleEvent(XEvent &event);
     //@}
 	
     /// enter edit mode on workspace label
@@ -179,11 +180,12 @@ private:
     FbTk::Resource<Fluxbox::Layer> m_rc_layernum;
     FbTk::Resource<int> m_rc_on_head;
     FbTk::Resource<Placement> m_rc_placement;
+    FbTk::Resource<int> m_rc_height;
     std::auto_ptr<Shape> m_shape;
 
     ToolTheme m_clock_theme, m_workspace_theme;
     IconbarTheme m_iconbar_theme;
-
+    bool m_resize_lock; ///< to lock rearrangeItems or not
 };
 
 
