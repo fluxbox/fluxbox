@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuTheme.cc,v 1.4 2003/02/15 01:49:43 fluxgen Exp $
+// $Id: MenuTheme.cc,v 1.5 2003/02/22 19:08:28 fluxgen Exp $
 
 #include "MenuTheme.hh"
 
@@ -29,7 +29,6 @@
 #include "App.hh"
 //TODO change this
 #include "../StringUtil.hh"
-
 #include <cstdio>
 
 namespace FbTk {
@@ -88,7 +87,7 @@ void MenuTheme::reconfigTheme() {
 	
     XGCValues gcv;
     unsigned long gc_value_mask = GCForeground;
-	
+    
     gcv.foreground = t_text->pixel();
 	
     XChangeGC(m_display, t_text_gc,
@@ -123,13 +122,16 @@ void ThemeItem<MenuTheme::BulletType>::setDefaultValue() {
 
 template <>
 void ThemeItem<MenuTheme::BulletType>::setFromString(const char *str) {
+
     // do nothing
-    if (StringUtil::strcasestr(str, "EMPTY") == 0)
+    if (StringUtil::strcasestr(str, "empty") != 0)
         m_value = MenuTheme::EMPTY;
-    else if (StringUtil::strcasestr(str, "SQUARE") == 0)
+    else if (StringUtil::strcasestr(str, "square") != 0)
         m_value = MenuTheme::SQUARE;
-    else if (StringUtil::strcasestr(str, "TRIANGLE") == 0)
+    else if (StringUtil::strcasestr(str, "triangle") != 0)
         m_value = MenuTheme::TRIANGLE;
+    else if (StringUtil::strcasestr(str, "diamond") != 0)
+        m_value = MenuTheme::DIAMOND;
     else
         setDefaultValue();
 }
