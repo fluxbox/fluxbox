@@ -19,12 +19,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SlitTheme.hh,v 1.4 2003/08/29 10:34:41 fluxgen Exp $
+// $Id: SlitTheme.hh,v 1.5 2004/10/21 10:26:13 akir Exp $
 
 #ifndef SLITTHEME_HH
 #define SLITTHEME_HH
 
 #include "FbTk/Theme.hh"
+#include "FbTk/ThemeItems.hh"
 #include "FbTk/Texture.hh"
 #include "FbTk/Color.hh"
 
