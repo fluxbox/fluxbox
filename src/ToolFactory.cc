@@ -85,7 +85,7 @@ ToolFactory::ToolFactory(BScreen &screen):m_screen(screen),
 }
 
 ToolbarItem *ToolFactory::create(const std::string &name, const FbTk::FbWindow &parent, Toolbar &tbar) {
-    ToolbarItem * item;
+    ToolbarItem * item = 0;
 
     unsigned int button_size = 24;
     if (tbar.theme().buttonSize() > 0)
