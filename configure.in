@@ -229,21 +229,22 @@ AM_PATH_XFT(yes,
 if test "x$XFT" = "xtrue" ; then
 	AC_TRY_LINK([
 			#include <X11/Xft/Xft.h>
-		], [ XftCloseFont(0, 0); return 0; ],
-		AC_DEFINE(USE_XFT, 1, "antialias support"),
+		], [ XftFontClose(0, 0); return 1; ], 
+	[
 		
-	AC_DEFINE(USE_XFT, 1, "antialias support")	
-	AC_MSG_CHECKING([Xft UTF-8 support])
-	AC_TRY_LINK([
+		AC_DEFINE(USE_XFT, 1, "antialias support")
+	    AC_MSG_CHECKING([Xft UTF-8 support])
+   	     AC_TRY_LINK([
 			#include <X11/Xft/Xft.h>
 		], [ XftDrawStringUtf8(0, 0, 0, 0, 0, 0, 0); return 0; ],
 		AC_DEFINE(HAVE_XFT_UTF8_STRING, 1, "Xft UTF8 support")
 		AC_MSG_RESULT(yes),
 		AC_MSG_RESULT(no)
-		),
-		AC_MSG_RESULT([Could not link with Xft. Install Xft if you want support for it.])
-		XFT=false
 		)
+	],
+	[	AC_MSG_RESULT([Could not link with Xft. Install Xft if you want support for it.])
+		XFT=false
+	])
 fi
 
 AM_CONDITIONAL(XFT, test x$XFT = xtrue)
