@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: MenuItem.cc,v 1.6 2004/08/29 08:33:13 rathnor Exp $
+// $Id: MenuItem.cc,v 1.7 2004/09/01 07:53:45 akir Exp $
 
 #include "MenuItem.hh"
 #include "Command.hh"
@@ -247,7 +247,7 @@ unsigned int MenuItem::width(const MenuTheme &theme) const {
     if (m_icon.get() == 0) 
         return normal;
     else
-        return normal + 2 * (theme.bevelWidth()  + height(theme));
+        return normal + height(theme);
     
 }
 

@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
+*04/09/01:
+  * Fix width of a menuentry (Mathias)
+    FbTk/MenuItem.cc
 *04/08/31:
   * Fixed restart issue with system tray (Henrik)
     SystemTray.cc
