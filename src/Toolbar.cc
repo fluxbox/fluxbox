@@ -645,14 +645,14 @@ void Toolbar::checkClock(Bool redraw, Bool date) {
 		}
 
 		switch (screen->getToolbarStyle()->font.justify) {
-		case FFont::Right:
+		case Misc::Font::RIGHT:
 			dx += frame.clock_w - l;
 			break;
 
-		case FFont::Center:
+		case Misc::Font::CENTER:
 			dx += (frame.clock_w - l) / 2;
 			break;
-		default:
+		default: //LEFT
 			break;
 		}
 
@@ -711,11 +711,11 @@ void Toolbar::redrawWindowLabel(Bool redraw) {
 			}
 		}
 		switch (screen->getToolbarStyle()->font.justify) {
-		case FFont::Right:
+		case Misc::Font::RIGHT:
 			dx += frame.window_label_w - l;
 			break;
 
-		case FFont::Center:
+		case Misc::Font::CENTER:
 			dx += (frame.window_label_w - l) / 2;
 			break;
 		default:
@@ -789,11 +789,11 @@ void Toolbar::redrawWorkspaceLabel(Bool redraw) {
 		}
 		
 		switch (screen->getToolbarStyle()->font.justify) {
-		case FFont::Right:
+		case Misc::Font::RIGHT:
 			dx += frame.workspace_label_w - l;
 			break;
 
-		case FFont::Center:
+		case Misc::Font::CENTER:
 			dx += (frame.workspace_label_w - l) / 2;
 			break;
 		default:
