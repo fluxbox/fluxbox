@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.215 2003/07/28 16:29:25 rathnor Exp $
+// $Id: Window.cc,v 1.216 2003/08/11 17:04:32 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -251,12 +251,12 @@ FluxboxWindow::FluxboxWindow(WinClient &client, BScreen &scr, FbWinFrameTheme &t
     m_layersig(*this),
     m_workspacesig(*this),
     m_diesig(*this),
+    m_focussig(*this),
     moving(false), resizing(false), shaded(false), 
     iconic(false), focused(false),
     stuck(false), m_managed(false),
     maximized(MAX_NONE),
     m_screen(scr),
-    m_timer(this),
     display(0),
     m_windowmenu(*scr.menuTheme(), scr.screenNumber(), scr.imageControl()),
     m_old_decoration(DECOR_NORMAL),
@@ -439,6 +439,8 @@ void FluxboxWindow::init() {
     m_client->x = wattrib.x; m_client->y = wattrib.y;
 
     m_timer.setTimeout(fluxbox.getAutoRaiseDelay());
+    FbTk::RefCount<FbTk::Command> raise_cmd(new FbTk::SimpleCommand<FluxboxWindow>(*this, &FluxboxWindow::raise));
+    m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
 
     if (m_client->initial_state == WithdrawnState) {
@@ -1643,6 +1645,7 @@ void FluxboxWindow::moveToLayer(int layernum) {
 // window has actually RECEIVED focus (got a FocusIn event)
 // so now we make it a focused frame etc
 void FluxboxWindow::setFocusFlag(bool focus) {
+    bool was_focused = isFocused();
     focused = focus;
 
     // Record focus timestamp for window cycling enhancements
@@ -1655,11 +1658,16 @@ void FluxboxWindow::setFocusFlag(bool focus) {
     frame().setFocus(focus);
 
     if ((screen().isSloppyFocus() || screen().isSemiSloppyFocus())
-        && screen().doAutoRaise())
+        && screen().doAutoRaise()) {
         if (focused)
             m_timer.start();
         else 
             m_timer.stop();
+    }
+
+    // did focus change? notify listeners
+    if (was_focused != focus)
+        m_focussig.notify();
 }
 
 
@@ -2203,6 +2211,7 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
 
     case XA_WM_HINTS:
         m_client->updateWMHints();
+        hintSig().notify(); // notify listeners
         break;
 
     case XA_WM_ICON_NAME:
@@ -3109,10 +3118,6 @@ void FluxboxWindow::restore(bool remap) {
         restore(clientList().back(), remap);
         // deleting winClient removes it from the clientList
     }
-}
-
-void FluxboxWindow::timeout() {
-    raise();
 }
 
 bool FluxboxWindow::isVisible() const { 
