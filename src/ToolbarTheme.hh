@@ -1,5 +1,5 @@
 // ToolbarTheme.hh  a theme class for Toolbar
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,14 +19,14 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.hh,v 1.9 2003/08/27 20:13:32 fluxgen Exp $
+// $Id: ToolbarTheme.hh,v 1.10 2003/10/13 23:47:38 fluxgen Exp $
 
 #ifndef TOOLBARTHEME_HH
 #define TOOLBARTHEME_HH
 
 #include "FbTk/Theme.hh"
-#include "Texture.hh"
-#include "Color.hh"
+#include "FbTk/Texture.hh"
+#include "FbTk/Color.hh"
 
 #include "BorderTheme.hh"
 
@@ -46,16 +46,14 @@ public:
     inline bool shape() const { return *m_shape; }
     inline unsigned char alpha() const { return *m_alpha; }
     inline int height() const { return *m_height; }
+    inline int buttonSize() const { return *m_button_size; }
 private:
     FbTk::ThemeItem<FbTk::Texture> m_toolbar;
     BorderTheme m_border;
 
     FbTk::ThemeItem<int> m_bevel_width;
     FbTk::ThemeItem<bool> m_shape;
-    FbTk::ThemeItem<int> m_alpha, m_height;
-
-    Display *m_display;
-
+    FbTk::ThemeItem<int> m_alpha, m_height, m_button_size;
 };
 
 #endif // TOOLBARTHEME_HH

@@ -1,5 +1,5 @@
 // ToolbarTheme.cc  a theme class for Toolbar
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+// Copyright (c) 2002-2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
 // copy of this software and associated documentation files (the "Software"),
@@ -19,11 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ToolbarTheme.cc,v 1.12 2003/08/28 13:57:16 fluxgen Exp $
+// $Id: ToolbarTheme.cc,v 1.13 2003/10/13 23:47:38 fluxgen Exp $
 
 #include "ToolbarTheme.hh"
 
-#include "App.hh"
+#include "FbTk/App.hh"
+
 #include <iostream>
 using namespace std;
 
@@ -51,12 +52,13 @@ ToolbarTheme::ToolbarTheme(int screen_num):
     m_shape(*this, "toolbar.shaped", "Toolbar.Shaped"),    
     m_alpha(*this, "toolbar.alpha", "Toolbar.Alpha"),
     m_height(*this, "toolbar.height", "Toolbar.Height"),
-    m_display(FbTk::App::instance()->display()) {
+    m_button_size(*this, "toolbar.button.size", "Toolbar.Button.Size") {
     // set default value
     *m_bevel_width = 0;
     *m_alpha = 255;
     *m_shape = false;
     *m_height = 0;
+    *m_button_size = -1;
 }
 
 ToolbarTheme::~ToolbarTheme() {
@@ -76,4 +78,7 @@ void ToolbarTheme::reconfigTheme() {
         *m_height = 100;
     else if (*m_height < 0)
         *m_height = 0;
+
+    if (*m_button_size > 100)
+        *m_button_size = 100;
 }
