@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.29 2002/02/07 14:23:01 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.30 2002/02/10 11:18:17 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1706,7 +1706,8 @@ void Fluxbox::shutdown(void) {
 
 	LinkedListIterator<BScreen> it(screenList);
 	for (; it.current(); it++)
-		it.current()->shutdown();
+		if(it.current())
+			it.current()->shutdown();
 
 	XSync(getXDisplay(), False);
 
@@ -1975,14 +1976,8 @@ void Fluxbox::load_rc(void) {
 }
 
 void Fluxbox::load_rc(BScreen *screen) {
-	#ifdef DEBUG
-	cerr<<"Loading BScreen(this="<<screen<<") num="<<screen->getScreenNumber()<<"------------"<<endl;
-	#endif
 	//get resource filename
 	auto_ptr<char> dbfile(getRcFilename());
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"): dbfile="<<dbfile.get()<<endl;
-	#endif
 	if (dbfile.get()) {
 		if (!m_screen_rm.load(dbfile.get())) {
 			cerr<<"Faild to load database:"<<dbfile.get()<<endl;
@@ -2207,9 +2202,6 @@ void Fluxbox::load_rc(BScreen *screen) {
 		screen->saveTabHeight(512);
 	else if (screen->getTabHeight()<0)
 		screen->saveTabHeight(5);
-	#ifdef DEBUG
-	cerr<<__FILE__<<"("<<__LINE__<<"---------------------- LOADING DONE"<<endl;
-	#endif
 }
 
 void Fluxbox::loadRootCommand(BScreen *screen)	{
