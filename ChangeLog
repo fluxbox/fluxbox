@@ -1,6 +1,11 @@
 (Format: Year/Month/Day)
 Changes for 0.9.11
 *04/09/11:
+  * The include directive in menu can now take
+    a director as argument [include] (path)
+    It will include each file in the path into the menu
+    (Thanks Ciaran McCreesh)
+    MenuCreator.cc
   * Fix for backup of empty or non existing menu 
     (Thanks php-coder <php-coder at ngs.ru>)
     fluxbox-generate_menu.in
