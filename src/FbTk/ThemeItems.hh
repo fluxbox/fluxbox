@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ThemeItems.hh,v 1.3 2003/11/28 23:02:05 fluxgen Exp $
+// $Id: ThemeItems.hh,v 1.4 2004/01/02 21:59:52 fluxgen Exp $
 
 /// @file implements common theme items
 
@@ -64,9 +64,13 @@ void FbTk::ThemeItem<int>::setDefaultValue() {
 
 template <>
 void FbTk::ThemeItem<int>::setFromString(const char *str) {
-    if (str == 0)
+    if (str == 0) {
+        setDefaultValue();
         return;
-    sscanf(str, "%d", &m_value);
+    }
+
+    if (sscanf(str, "%d", &m_value) < 1)
+        setDefaultValue();
 }
 
 template <>
@@ -124,16 +128,21 @@ void ThemeItem<FbTk::Texture>::load() {
            
     StringUtil::removeFirstWhitespace(pixmap_name);
     StringUtil::removeTrailingWhitespace(pixmap_name);
-
+    if (pixmap_name.empty()) {
+        m_value.pixmap() = 0;
+        return;
+    }
     std::auto_ptr<PixmapWithMask> pm(Image::load(pixmap_name,
                                                  m_tm.screenNum()));
     if (pm.get() == 0) {
-        if (FbTk::ThemeManager::instance().verbose())
+        if (FbTk::ThemeManager::instance().verbose()) {
             cerr<<"Resource("<<name()+".pixmap"
                 <<"): Failed to load image: "<<pixmap_name<<endl;
+        }
         m_value.pixmap() = 0;
     } else
         m_value.pixmap() = pm->pixmap().release();
+
 }
 
 template <>
