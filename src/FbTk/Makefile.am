@@ -21,6 +21,7 @@ libFbTk_a_SOURCES = App.hh App.cc Color.cc Color.hh Command.hh \
 	Theme.hh Theme.cc Timer.hh Timer.cc \
 	XFontImp.cc XFontImp.hh \
 	Button.hh Button.cc \
+	TextButton.hh TextButton.cc \
 	Layer.hh LayerItem.hh MultLayers.cc MultLayers.hh \
 	XLayer.cc XLayer.hh XLayerItem.cc XLayerItem.hh \
 	Resource.hh Resource.cc \
