@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.57 2003/02/16 00:09:34 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.58 2003/02/17 12:32:21 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -93,9 +93,6 @@ void setupMenus(Toolbar &tbar) {
     menu.setInternalMenu();
 
     using namespace FbTk;
-    // add items
-    menu.insert("Toolbar width percent...");
-
     RefCount<Command> start_edit(new SimpleCommand<Toolbar>(tbar, &Toolbar::edit));
     menu.insert(i18n->getMessage(
                                  ToolbarSet, ToolbarEditWkspcName,
