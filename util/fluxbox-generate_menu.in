@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.17 2004/03/19 09:37:23 fluxgen Exp $
+# $Id: fluxbox-generate_menu.in,v 1.18 2004/04/03 09:10:36 fluxgen Exp $
 
 #
 # Portability notes:
@@ -520,29 +520,29 @@ case ${LC_ALL} in
         EXITITEM='Sortir'
         FBSETTINGSMENU='Configurer Fluxbox'
         FILEUTILSMENU='Outils fichiers'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
-        GAMESMENU='Games (CHANGE ME!)'
+        FLUXBOXCOMMAND='Commande Fluxbox'
+        GAMESMENU='Jeux'
         GNOMEMENUTEXT='Menus Gnome'
         GRAPHICMENU='Graphisme'
         KDEMENUTEXT='Menus KDE'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        LOCKSCREEN="Verouiller l'écran"
         MISCMENU='Divers'
         MUSICMENU='Musique'
         NETMENU='Réseau'
         OFFICEMENU='Bureautique'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        RANDOMBACKGROUND="Fond d'écran aléatoire"
+        REGENERATEMENU='Régénérer le menu'
         RELOADITEM='Recharger la configuration'
         RESTARTITEM='Redémarrer Fluxbox'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='Run'
+        SCREENSHOT="Capture d'écran"
         STYLEMENUTITLE='Choisir un style...'
         SYSTEMSTYLES='Styles Systeme'
         TERMINALMENU='Terminaux'
-        TOOLS='Tools (CHANGE ME!)'
+        TOOLS='Outils'
         USERSTYLES='Styles Utilisateur'
         WINDOWMANAGERS='Gestionnaires de fenêtres'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWNAME='Nom de la fenetre'
         WORKSPACEMENU='Liste des bureaux'
         XUTILSMENU='Outils X'
         ;;
