@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbPixmap.cc,v 1.4 2003/04/29 08:53:24 fluxgen Exp $
+// $Id: FbPixmap.cc,v 1.5 2003/07/10 11:55:01 fluxgen Exp $
 
 #include "FbPixmap.hh"
 #include "App.hh"
@@ -130,6 +130,41 @@ void FbPixmap::copy(const FbPixmap &the_copy) {
         }
          
     }
+}
+
+void FbPixmap::rotate() {
+
+    Display *dpy = FbTk::App::instance()->display();
+
+    // make an image copy
+    XImage *src_image = XGetImage(dpy, drawable(),
+                                  0, 0, // pos
+                                  width(), height(), // size
+                                  ~0, // plane mask
+                                  ZPixmap); // format
+    // reverse height/width for new pixmap
+    FbPixmap new_pm(drawable(), height(), width(), depth());
+
+    GC gc = XCreateGC(dpy, drawable(), 0, 0);
+
+    // copy new area
+    for (int y = 0; y < height(); ++y) {
+        for (int x = 0; x < width(); ++x) {
+            XSetForeground(dpy, gc, XGetPixel(src_image, x, y));
+            // revers coordinates
+            XDrawPoint(dpy, new_pm.drawable(), gc, y, x);
+        }
+    }
+    XFreeGC(dpy, gc);
+
+    XDestroyImage(src_image);
+    // free old pixmap and set new from new_pm
+    free();
+
+    m_width = new_pm.width();
+    m_height = new_pm.height();
+    m_depth = new_pm.depth();
+    m_pm = new_pm.release();
 }
 
 void FbPixmap::scale(unsigned int dest_width, unsigned int dest_height) {
