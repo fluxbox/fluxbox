@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.48 2002/04/28 20:09:31 fluxgen Exp $
+// $Id: Window.cc,v 1.49 2002/05/07 13:31:11 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -862,36 +862,35 @@ void FluxboxWindow::createButton(int type, ButtonEventProc pressed, ButtonEventP
 
 #ifdef GNOME
 //TODO
-void FluxboxWindow::updateGnomeAtoms() {
-	updateGnomeWorkspaceAtom();
+void FluxboxWindow::updateGnomeAtoms()  const {
 	updateGnomeStateAtom();
 	updateGnomeLayerAtom();
 	updateGnomeWorkspaceAtom();
 }
 
-void FluxboxWindow::updateGnomeStateAtom() {
-	BaseDisplay *bd = screen->getBaseDisplay();
+void FluxboxWindow::updateGnomeStateAtom()  const {
+	const BaseDisplay *bd = screen->getBaseDisplay();
 	int val = getGnomeWindowState();
 	XChangeProperty(display, client.window, bd->getGnomeStateAtom(),
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
 }
 
-void FluxboxWindow::updateGnomeLayerAtom() {
-	BaseDisplay *bd = screen->getBaseDisplay();
+void FluxboxWindow::updateGnomeLayerAtom()  const {
+	const BaseDisplay *bd = screen->getBaseDisplay();
 	int val = getGnomeLayer();
 	XChangeProperty(display, client.window, bd->getGnomeLayerAtom(),
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
 }
 
-void FluxboxWindow::updateGnomeWorkspaceAtom() {
-	BaseDisplay *bd = screen->getBaseDisplay();
+void FluxboxWindow::updateGnomeWorkspaceAtom() const {
+	const BaseDisplay *bd = screen->getBaseDisplay();
 	int val = workspace_number; 
 	XChangeProperty(display, client.window, bd->getGnomeWorkspaceAtom(), 
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);	
 }
 
 //TODO
-int FluxboxWindow::getGnomeWindowState() {
+int FluxboxWindow::getGnomeWindowState() const {
 	int state=0;
 	if (isStuck())
 		state |= WIN_STATE_STICKY;
@@ -912,7 +911,7 @@ int FluxboxWindow::getGnomeWindowState() {
 }
 
 //TODO
-int FluxboxWindow::getGnomeLayer() {
+int FluxboxWindow::getGnomeLayer() const {
 	switch (m_layer) {
 		case LAYER_NORMAL:
 			return WIN_LAYER_NORMAL;

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.18 2002/04/04 22:39:52 fluxgen Exp $
+// $Id: Window.hh,v 1.19 2002/05/07 13:31:11 fluxgen Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -321,17 +321,17 @@ private:
 	
 	#ifdef GNOME
 	
-	void updateGnomeAtoms();
-	void updateGnomeStateAtom();
-	void updateGnomeHintsAtom();
-	void updateGnomeLayerAtom();
-	void updateGnomeWorkspaceAtom();
+	void updateGnomeAtoms() const;
+	void updateGnomeStateAtom() const;
+	void updateGnomeHintsAtom() const;
+	void updateGnomeLayerAtom() const;
+	void updateGnomeWorkspaceAtom() const;
 	
 	void setGnomeLayer(int layer);
 
-	int getGnomeWindowState();	
+	int getGnomeWindowState() const;	
 	bool handleGnomePropertyNotify(Atom atom);
-	int getGnomeLayer();
+	int getGnomeLayer() const;
 	void loadGnomeAtoms();
 	void loadGnomeStateAtom();
 	void loadGnomeHintsAtom();
