@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.124 2003/02/22 18:28:32 fluxgen Exp $
+// $Id: Window.cc,v 1.125 2003/02/22 21:40:35 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -101,16 +101,16 @@ typedef struct scanargs {
 
 // look for valid enter or leave events (that may invalidate the earlier one we are interested in)
 static Bool queueScanner(Display *, XEvent *e, char *args) {
-    if ((e->type == LeaveNotify) &&
-        (e->xcrossing.window == ((scanargs *) args)->w) &&
-        (e->xcrossing.mode == NotifyNormal)) {
-        ((scanargs *) args)->leave = True;
+    if (e->type == LeaveNotify &&
+        e->xcrossing.window == ((scanargs *) args)->w &&
+        e->xcrossing.mode == NotifyNormal) {
+        ((scanargs *) args)->leave = true;
         ((scanargs *) args)->inferior = (e->xcrossing.detail == NotifyInferior);
-    } else if ((e->type == EnterNotify) &&
-               (e->xcrossing.mode == NotifyUngrab))
-        ((scanargs *) args)->enter = True;
+    } else if (e->type == EnterNotify &&
+               e->xcrossing.mode == NotifyUngrab)
+        ((scanargs *) args)->enter = true;
 
-    return False;
+    return false;
 }
 
 /// raise window and do the same for each transient it holds
@@ -277,6 +277,9 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
 
     upsize();
 
+    m_frame.move(wattrib.x, wattrib.y);
+    m_frame.resizeForClient(wattrib.width, wattrib.height);
+
     bool place_window = true;
     if (fluxbox->isStartup() || transient ||
         client.normal_hint_flags & (PPosition|USPosition)) {
@@ -313,9 +316,6 @@ FluxboxWindow::FluxboxWindow(Window w, BScreen *s, int screen_num,
     grabButtons();
 		
     positionWindows();
-
-    m_frame.move(wattrib.x, wattrib.y);
-    m_frame.resizeForClient(wattrib.width, wattrib.height);
 
     if (workspace_number < 0 || workspace_number >= screen->getCount())
         workspace_number = screen->getCurrentWorkspaceID();
