@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.41 2002/08/04 15:55:13 fluxgen Exp $
+// $Id: Screen.hh,v 1.42 2002/08/11 22:11:42 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -38,26 +38,25 @@
 #include "Workspacemenu.hh"
 #include "fluxbox.hh"
 
-#ifdef		SLIT
-#	include "Slit.hh"
+#ifdef SLIT
+#include "Slit.hh"
 #endif // SLIT
-
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-#ifdef		TIME_WITH_SYS_TIME
-#	include <sys/time.h>
-#	include <time.h>
+#ifdef TIME_WITH_SYS_TIME
+#include <sys/time.h>
+#include <time.h>
 #else // !TIME_WITH_SYS_TIME
-#	ifdef		HAVE_SYS_TIME_H
-#		include <sys/time.h>
-#	else // !HAVE_SYS_TIME_H
-#		include <time.h>
-#	endif // HAVE_SYS_TIME_H
+#ifdef	HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else // !HAVE_SYS_TIME_H
+#include <time.h>
+#endif // HAVE_SYS_TIME_H
 #endif // TIME_WITH_SYS_TIME
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <list>
 #include <vector>
@@ -216,7 +215,7 @@ public:
 	void removeNetizen(Window win);
 	void addIcon(FluxboxWindow *win);
 	void removeIcon(FluxboxWindow *win);
-	void getNameOfWorkspace(unsigned int workspace, char **name);
+	std::string getNameOfWorkspace(unsigned int workspace) const;
 	void changeWorkspaceID(unsigned int);
 	void sendToWorkspace(unsigned int workspace, FluxboxWindow *win=0, bool changeworkspace=true);
 	void raiseWindows(Window *workspace_stack, int num);
