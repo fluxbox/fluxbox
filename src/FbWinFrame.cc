@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.38 2003/08/22 15:20:32 fluxgen Exp $
+// $Id: FbWinFrame.cc,v 1.39 2003/08/23 15:46:06 fluxgen Exp $
 
 #include "FbWinFrame.hh"
 
@@ -581,7 +581,7 @@ void FbWinFrame::exposeEvent(XExposeEvent &event) {
 }
 
 void FbWinFrame::handleEvent(XEvent &event) {
-    if (event.type == ConfigureNotify)
+    if (event.type == ConfigureNotify && event.xconfigure.window == window().window())
         configureNotifyEvent(event.xconfigure);
 }
 
@@ -906,7 +906,6 @@ void FbWinFrame::init() {
     // Note: we don't show clientarea yet
 
     setEventHandler(*this);
-
     reconfigure();
 }
 
