@@ -222,7 +222,7 @@ void bsetroot::solid() {
 
         FbRootWindow root(screen);
 
-        FbTk::GContext gc(screen);
+        FbTk::GContext gc(root);
         gc.setForeground(c);
 
         pixmaps[screen] = XCreatePixmap(display(), 
@@ -290,7 +290,7 @@ void bsetroot::modula(int x, int y) {
         if (! b.isAllocated())
             b.setPixel(BlackPixel(display(), screen));
 
-        FbTk::GContext gc(screen);
+        FbTk::GContext gc(root);
 
         gc.setForeground(f);
         gc.setBackground(b);
