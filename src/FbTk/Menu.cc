@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Menu.cc,v 1.46 2003/12/12 18:18:49 fluxgen Exp $
+// $Id: Menu.cc,v 1.47 2003/12/12 19:45:46 fluxgen Exp $
 
 //use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -1121,8 +1121,9 @@ void Menu::buttonReleaseEvent(XButtonEvent &re) {
 
 
 void Menu::motionNotifyEvent(XMotionEvent &me) {
-    m_hide_timer.stop();
+
     if (me.window == menu.title && (me.state & Button1Mask)) {
+        stopHide();
         if (movable) {
             if (! moving) {
                 if (m_parent && (! torn)) {
@@ -1147,6 +1148,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
     } else if ((! (me.state & Button1Mask)) && me.window == menu.frame &&
                me.x >= 0 && me.x < (signed) width() &&
                me.y >= 0 && me.y < (signed) menu.frame_h) {
+        stopHide();
         int sbl = (me.x / menu.item_w), i = (me.y / menu.item_h),
             w = (sbl * menu.persub) + i;
 
@@ -1186,10 +1188,7 @@ void Menu::motionNotifyEvent(XMotionEvent &me) {
                 drawItem(w, true);
 
                 if (theme().menuMode() == MenuTheme::DELAY_OPEN) {
-                    cerr<<"menuMode DELAY_OPEN"<<endl;
                     // setup show menu timer
-                    stopHide();
-
                     timeval timeout;
                     timeout.tv_sec = 0;
                     timeout.tv_usec = theme().delayOpen();
@@ -1392,18 +1391,15 @@ void Menu::openSubmenu() {
     if (item < 0 || item >= menuitems.size())
         return;
 
-    stopHide(); 
-
+    drawItem(item, true);
     if (menuitems[item]->submenu() != 0 && !menuitems[item]->submenu()->isVisible())
         drawSubmenu(item);
 
 }
 
 void Menu::closeMenu() {
-    if (isVisible() &&
-        !isTorn()) {
+    if (isVisible() && !isTorn())
         internal_hide();
-    }    
 }
 
 void Menu::startHide() {
