@@ -22,7 +22,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 # DEALINGS IN THE SOFTWARE.
 #
-# $Id: fluxbox-generate_menu.in,v 1.21 2004/04/28 23:20:52 rathnor Exp $
+# $Id: fluxbox-generate_menu.in,v 1.22 2004/05/21 18:36:06 fluxgen Exp $
 
 #
 # Portability notes:
@@ -547,45 +547,39 @@ case ${LC_ALL} in
         XUTILSMENU='Outils X'
         ;;
     it_IT*) # italian locales
-# Ah my Italian hero. Please help me update the translation
-# $ cp fluxbox-generate-menu.in fluxbox-generate-menu.in.orig
-# $ $EDITOR fluxbox-generate-menu.in
-# $ diff u fluxbox-generate-menu.in.orig fluxbox-generate-menu.in > fbgm.diff
-# email fbgm.diff to han@mijncomputer.nl
-
-        BACKGROUNDMENU='Backgrounds (CHANGE ME!)'
-        BACKGROUNDMENUTITLE='Set the Background (CHANGE ME!)'
-        BROWSERMENU='Browsers (CHANGE ME!)'
+        BACKGROUNDMENU='Sfondi'
+        BACKGROUNDMENUTITLE='Imposta lo sfondo'
+        BROWSERMENU='Browsers'
         CONFIGUREMENU='Configurazione'
         EDITORMENU='Editori'
         EXITITEM='Esci'
         FBSETTINGSMENU='Preferenze'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        FILEUTILSMENU='Utilità'
+        FLUXBOXCOMMAND='Comando Fluxbox'
         GAMESMENU='Giochi'
         GNOMEMENUTEXT='Gnome'
         GRAPHICMENU='Grafica'
         KDEMENUTEXT='KDE'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
+        LOCKSCREEN='Blocca lo schermo'
         MISCMENU='Varie'
         MUSICMENU='Musica'
         NETMENU='Internet'
         OFFICEMENU='Office'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
+        RANDOMBACKGROUND='Sfondo casuale'
+        REGENERATEMENU='Rigenera il menu'
         RELOADITEM='Rileggi la configurazione'
         RESTARTITEM='Riavvia'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RUNCOMMAND='Esegui'
+        SCREENSHOT='Schermata'
         STYLEMENUTITLE='Scegli uno stile'
         SYSTEMSTYLES='Stile'
         TERMINALMENU='Terminali'
-        TOOLS='Tools (CHANGE ME!)'
+        TOOLS='Attrezzi'
         USERSTYLES='Stile'
-        WINDOWMANAGERS='Window Managers (CHANGE ME!)'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        WINDOWMANAGERS='Gestori finestre'
+        WINDOWNAME='Nome della finestra'
         WORKSPACEMENU='Aree di lavoro'
-        XUTILSMENU='X-utils (CHANGE ME!)'
+        XUTILSMENU='Utilità X'
         ;;
     ro_RO*) # Romanian locales
 # Ah my Russian hero. Please help me update the translation
@@ -660,16 +654,16 @@ case ${LC_ALL} in
 	WORKSPACEMENU='Lista de Escritorios'
 	XUTILSMENU='Utilidades X'
         BACKGROUNDMENU='Fondos'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
-        RANDOMBACKGROUND='Random Background (CHANGE ME!)'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
-        TOOLS='Tools (CHANGE ME!)'
-        WINDOWMANAGERS='WindowManagers (CHANGE ME!)'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        FILEUTILSMENU='Utilidades'
+        FLUXBOXCOMMAND='Comandos de Fluxbox'
+        LOCKSCREEN='Bloquear Pantalla'
+        RANDOMBACKGROUND='Fondo Aleatoreo'
+        REGENERATEMENU='Regenerar Menú'
+        RUNCOMMAND='Ejecutar'
+        SCREENSHOT='Captura de Pantalla'
+        TOOLS='Herramienta'
+        WINDOWMANAGERS='Gestores de Ventanas'
+        WINDOWNAME='Nombre de Ventana'
         ;;
     pl_PL*) # Polish locales
 # Ah my Russian hero. Please help me update the translation
@@ -679,39 +673,39 @@ case ${LC_ALL} in
 # email fbgm.diff to han@mijncomputer.nl
 
         BACKGROUNDMENU='Tapety'
-        BACKGROUNDMENUTITLE='Ustaw tapet?'
-        BROWSERMENU='Przegl?darki'
+        BACKGROUNDMENUTITLE='Ustaw tapetê'
+        BROWSERMENU='Przegl±darki'
         CONFIGUREMENU='Konfiguracja'
         EDITORMENU='Edytory'
-        EXITITEM='Wyj?cie'
+        EXITITEM='Wyj¶cie'
         FBSETTINGSMENU='Menu Fluxbox'
-        FILEUTILSMENU='File utils (CHANGE ME!)'
-        FLUXBOXCOMMAND='Fluxbox Command (CHANGE ME!)'
+        FILEUTILSMENU='Narzêdzia do plików'
+        FLUXBOXCOMMAND='Polecenia Fluxbox'
         GAMESMENU='Gry'
         GNOMEMENUTEXT='Menu Gnome'
         GRAPHICMENU='Grafika'
         KDEMENUTEXT='Menu KDE'
-        LOCKSCREEN='Lock screen (CHANGE ME!)'
-        MISCMENU='Ró?ne'
-        MULTIMEDIAMENU='Multimedia (CHANGE ME!)'
+        LOCKSCREEN='Zablokuj ekran'
+        MISCMENU='Ró¿ne'
+        MULTIMEDIAMENU='Multimedia'
         MUSICMENU='Muzyka'
-        NETMENU='Sie?'
+        NETMENU='Sieæ'
         OFFICEMENU='Aplikacje biurowe'
-        RANDOMBACKGROUND='Random Background'
-        REGENERATEMENU='Regen Menu (CHANGE ME!)'
-        RELOADITEM='Od?wie? konfiguracj?'
-        RESTARTITEM='Restart (CHANGE ME!)'
-        RUNCOMMAND='Run (CHANGE ME!)'
-        SCREENSHOT='Screenshot (CHANGE ME!)'
+        RANDOMBACKGROUND='Losowa tapeta'
+        REGENERATEMENU='Wygeneruj menu'
+        RELOADITEM='Od¶wie¿ konfiguracjê'
+        RESTARTITEM='Restartuj'
+        RUNCOMMAND='Uruchom...'
+        SCREENSHOT='Zrzut ekranu'
         STYLEMENUTITLE='Wybierz styl...'
         SYSTEMSTYLES='Style systemowe'
         TERMINALMENU='Terminale'
-        TOOLS='Tools (CHANGE ME!)'
-        USERSTYLES='Style u?ytkownika'
-        WINDOWMANAGERS='WindowManagers (CHANGE ME!)'
-        WINDOWNAME='Window name (CHANGE ME!)'
+        TOOLS='Narzêdzia'
+        USERSTYLES='Style u¿ytkownika'
+        WINDOWMANAGERS='Menad¿ery okien'
+        WINDOWNAME='Nazwy okien'
         WORKSPACEMENU='Lista pulpitów'
-        XUTILSMENU='Narz?dzia X'
+        XUTILSMENU='Narzêdzia X'
         ;;
     pt_PT*) # Portuguese locales
         BACKGROUNDMENU='Imagens de Fundo'
@@ -1041,6 +1035,7 @@ append_menu_end
 append_submenu "${NETMENU}"
     append_submenu "${BROWSERMENU}"
         normal_find firefox mozilla-firefox MozillaFirefox galeon mozilla dillo netscape
+        find_it links       append "[exec]   (links-graphic) {links -driver x ${HOMEPAGE}}"
         find_it opera       append "[exec]   (opera) {env QT_XFT=true opera}"
         find_it konqueror   append "[exec]   (konqueror) {kfmclient openProfile webbrowsing}"
         find_it links       append "[exec]   (links) {${DEFAULT_TERM} -e links ${HOMEPAGE}}"
@@ -1049,7 +1044,7 @@ append_submenu "${NETMENU}"
     append_menu_end
 
     append_submenu IM
-        normal_find gaim kopete gnomemeeting sim
+        normal_find gaim kopete gnomemeeting sim kadu
         find_it licq        append "[exec]   (licq) {env QT_XFT=true licq}"
     append_menu_end
 
@@ -1072,32 +1067,36 @@ append_submenu "${NETMENU}"
     append_submenu P2P
         normal_find gtk-gnutella lopster nicotine pyslsk xmule amule
         find_it TekNap      append "[exec]   (TekNap) {${DEFAULT_TERM} -e TekNap}"
+        find_it giFTcurs      append "[exec]   (giFTcurs) {${DEFAULT_TERM} -e giFTcurs}"
     append_menu_end
 
     append_submenu ftp
         normal_find gftp IglooFTP-PRO
+        find_it ncftp      append "[exec]   (ncftp) {${DEFAULT_TERM} -e ncftp}"
         find_it pftp      append "[exec]   (pftp) {${DEFAULT_TERM} -e pftp}"
         find_it ftp       append "[exec]   (ftp) {${DEFAULT_TERM} -e ftp}"
         find_it lftp      append "[exec]   (lftp) {${DEFAULT_TERM} -e lftp}"
         find_it yafc      append "[exec]   (yafc) {${DEFAULT_TERM} -e yafc}"
     append_menu_end
 
-    normal_find pan
+    normal_find pan xnmap
 
 append_menu_end
 
 append_submenu "${EDITORMENU}"
-    normal_find gvim
+    normal_find gvim bluefish nedit gedit xedit kword kwrite kate anjuta \
+        wings xemacs emacs
     find_it     nano   append "[exec]   (nano)     {${DEFAULT_TERM} -e nano}"
-    find_it     vi     append "[exec]   (vi)       {${DEFAULT_TERM} -e vi}"
-    find_it     vim    append "[exec]   (vim)      {${DEFAULT_TERM} -e vim}"
-    normal_find nedit gedit xedit kword kwrite kate anjuta wings xemacs emacs
+    find_it     vi     append "[exec]   (vi)       {${DEFAULT_TERM} -e vi}" ||\
+        find_it     vim    append "[exec]   (vim)      {${DEFAULT_TERM} -e vim}"
+    find_it     zile   append "[exec]   (zile)     {${DEFAULT_TERM} -e zile}"
+    find_it     jed    append "[exec]   (jed)      {${DEFAULT_TERM} -e jed}"
     find_it     emacs  append "[exec]   (emacs-nw) {${DEFAULT_TERM} -e emacs -nw}"
     find_it     xemacs append "[exec]   (xemacs-nw) {${DEFAULT_TERM} -e xemacs -nw}"
 append_menu_end
 
 append_submenu "${FILEUTILSMENU}"
-    normal_find konqueror gentoo krusader linuxcmd rox
+    normal_find konqueror gentoo krusader linuxcmd rox tuxcmd krename
     find_it     nautilus append "[exec] (nautilus) {nautilus --no-desktop}"
     find_it     mc       append "[exec] (mc) {${DEFAULT_TERM} -e mc}"
 append_menu_end
@@ -1105,7 +1104,7 @@ append_menu_end
 append_submenu "${MULTIMEDIAMENU}"
        append_submenu "${GRAPHICMENU}"
                normal_find gimp xv gqview showimg xpaint kpaint kiconedit \
-               ee xzgv xscreensaver-demo xlock
+                   ee xzgv xscreensaver-demo xlock
                find_it xnview           append "[exec] (xnview browser) {xnview -browser}"
                find_it blender          append "[exec] (blender) {blender -w}"
                find_it gears            append "[exec] (Mesa gears) {gears}"
@@ -1115,8 +1114,8 @@ append_submenu "${MULTIMEDIAMENU}"
 
        append_submenu "${MUSICMENU}"
                normal_find xmms noatun alsaplayer gqmpeg aumix xmixer gmix kmix kscd \
-                           grecord kmidi xplaycd soundtracker grip easytag audacity \
-                           zinf rhythmbox  kaboodle beep-media-player
+                   grecord kmidi xplaycd soundtracker grip easytag audacity \
+                   zinf rhythmbox  kaboodle beep-media-player
                find_it cdcd        append "[exec] (cdcd) {${DEFAULT_TERM} -e cdcd}"
                find_it cplay       append "[exec] (cplay) {${DEFAULT_TERM} -e cplay}"
                find_it alsamixer   append "[exec] (AlsaMixer) {${DEFAULT_TERM} -e alsamixer}"
@@ -1130,7 +1129,7 @@ append_submenu "${MULTIMEDIAMENU}"
 
        append_submenu "${XUTILSMENU}"
            normal_find xfontsel xman xload xfigxbiff editres viewres xclock \
-                       xmag wmagnify gkrellm vmware
+               xmag wmagnify gkrellm gkrellm2 vmware portagemaster celestia
        append_menu_end
 append_menu_end
 
@@ -1139,23 +1138,18 @@ append_submenu "${OFFICEMENU}"
     normal_find xclock xcalc kcalc
     find_it gcalc           append "[exec] (gcalc) {gcalc}" || \
         find_it gnome-calculator append "[exec] (gcalc) {gnome-calculator}"
-    find_it ooffice append "[exec] (Open Office) {ooffice}" || \
-        find_it ooffice append "[exec] (Ximian Open Office) {xooffice}"
-    find_it oocalc append "[exec] (OO Calc) {oocalc}" || \
-        find_it xoocalc append "[exec] (XOO Calc) {xoocalc}"
-    find_it oowriter append "[exec] (OO Writer) {oowriter}" || \
-        find_it xoowriter append "[exec] (XOO Writer) {xoowriter}"
-    find_it ooimpress append "[exec] (OO Impress) {ooimpress}" || \
-        find_it xooimpress append "[exec] (XOO Impress) {xooimpress}"
-    find_it oodraw append "[exec] (OO Draw) {oodraw}" || \
-        find_it xoodraw append "[exec] (XOO Draw) {xoodraw}"
-    find_it oomath append "[exec] (OO Math) {oomath}" || \
-        find_it xoomath append "[exec] (XOO Math) {xoomath}"
-    find_it oopadmin append "[exec] (OO Printer Administration) {oopadmin}" || \
-        find_it xoopadmin append "[exec] (XOO Printer Administration) {xoopadmin}"
-    find_it mrproject append "[exec] (Mr.Project) {mrproject}" || \
-        find_it xmrproject append "[exec] (XMr.Project) {xmrproject}"
-    find_it soffice append "[exec] (Star Office) {soffice}"
+
+    for ext in s o xo; do
+        find_it ${ext}office   append "[exec] (Open Office)      {${ext}office}"
+        find_it ${ext}ocalc    append "[exec] (OO Calc)          {${ext}ocalc}"
+        find_it ${ext}owriter  append "[exec] (OO Writer)        {${ext}owriter}"
+        find_it ${ext}oimpress append "[exec] (OO Impress)       {${ext}oimpress}"
+        find_it ${ext}odraw    append "[exec] (OO Draw)          {${ext}odraw}"
+        find_it ${ext}omath    append "[exec] (OO Math)          {${ext}omath}"
+        find_it ${ext}opadmin  append "[exec] (OO Printer Admin) {${ext}opadmin}"
+        find_it mrproject      append "[exec] (Mr.Project)       {mrproject}"
+    done
+
     normal_find abiword kword wordperfect katoob acroread xpdf
 append_menu_end
 
@@ -1163,12 +1157,12 @@ append_submenu "${GAMESMENU}"
     normal_find bzflag gnibbles gnobots2 tuxpuck gataxx glines \
         gnect mahjongg gnomine gnome-stones gnometris gnotravex \
         gnotski iagno knights eboard xboard scid freecell pysol \
-        gtali tuxracer xpenguins xsnow xeyes xpenguins smclone openmortal \
-        quake2 quake3 skoosh same-gnome enigma xbill icebreaker scorched3d
+        gtali tuxracer xpenguins xsnow xeyes xpenguins smclone \
+        openmortal quake2 quake3 skoosh same-gnome enigma xbill \
+        icebreaker scorched3d sol dosbox
     find_it et append "[exec] (Enemy Territory) {et}"
-    find_it ut append "[exec] (Unreal Tournament) {ut}" || \
-        find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
-
+    find_it ut append "[exec] (Unreal Tournament) {ut}"
+    find_it ut2003 append "[exec] (Unreal Tournament 2003) {ut2003}"
 append_menu_end
 
 # We'll only use this once
@@ -1250,9 +1244,9 @@ append_submenu "${FBSETTINGSMENU}"
         normal_find fluxconf fluxkeys fluxmenu
         # if gxmessage exitst use it; else use xmessage
         find_it gxmessage append \
-          "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
+            "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|gxmessage -file - -center}" || \
             find_it xmessage append \
-              "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
+            "[exec] (${WINDOWNAME}) {xprop WM_CLASS|cut -d \\\" -f 2|xmessage -file - -center}"
         find_it import append "[exec] (${SCREENSHOT}) {import screenshot.png && qiv -W 50 screenshot.png}"
         find_it fbrun append "[exec] (${RUNCOMMAND}) {fbrun $FBRUNOPTIONS}"
         find_it switch append "[exec] (gtk-theme-switch) {switch}"
