@@ -82,6 +82,7 @@ Options:
     -i  other path(s) to search for icons
         e.g., "/usr/kde/3.3/share/icons/crystalsvg/16x16/*"
     -is wider search for icons (worth the extra time)
+	-in skip icon search
 
     -t  Favourite terminal
     -w  Homepage for console-browsers. Default is fluxbox.org
@@ -188,7 +189,8 @@ convertIcon(){
 		return 0;
 	fi
 
-	local BASENAME="${1##*/}"
+	local BASENAME
+	BASENAME="${1##*/}"
 
 	# make sure it is an icon by checking if it has an extension
 	if [ "$BASENAME" = "${BASENAME%%.*}" ]; then
@@ -231,14 +233,16 @@ convertIcon(){
 
 removePath(){
 	execname="$1"
-	local progname="${execname%% *}"
+	local progname
+	progname="${execname%% *}"
 	# separate program name and its parameters
 	if [ "$progname" = "$execname" ]; then
 		# no params
 		# remove path from only program name
 		execname="${progname##*/}"
 	else
-		local params="${execname#* }"
+		local params
+		params="${execname#* }"
 		# remove path from only program name
 		execname="${progname##*/} $params"
 	fi
@@ -272,8 +276,9 @@ doSearchLoop(){
 
 doSearch(){
 	# remove '(' from '(fluxbox ...) | ...'
-	local execname=`replaceWithinString "$1" "\("`
-	local temp_icon="$2"
+	local execname temp_icon
+	execname=`replaceWithinString "$1" "\("`
+	temp_icon="$2"
 	# $dnlamVERBOSE "# Searching for icon $temp_icon for $execname" >> $ICONMAPPING
 
 	# check in $ICONMAPPING before searching directories
@@ -310,7 +315,8 @@ searchForIcon(){
 	if [ -n "$entry_icon" ] && [ ! "$entry_exec" = "$entry_icon" ] && [ ! -f "$entry_icon" ]; then
 		# to search for icon in other paths,
 		# get basename
-		local temp_icon="${entry_icon##*/}"
+		local temp_icon
+		temp_icon="${entry_icon##*/}"
 		# remove parameters
 		temp_icon="${temp_icon#* }"
 		# clear entry_icon until temp_icon is found
@@ -322,7 +328,8 @@ searchForIcon(){
 	fi
 
 	# remove parameters
-	local execname="${entry_exec%% *}"
+	local execname
+	execname="${entry_exec%% *}"
 
 	# echo "search for icon named $execname.{xpm,png,gif}"
 	if [ ! -f "$entry_icon" ]; then
@@ -339,7 +346,8 @@ searchForIcon(){
 	fi
 
 	# remove path to icon; just get basename
-	local icon_base="${entry_icon##*/}"
+	local icon_base
+	icon_base="${entry_icon##*/}"
 	# remove extension
 	icon_base="${icon_base%%.*}"
 	# echo "^.${entry_exec}.[[:space:]]*<.*/${icon_base}\....>" 
@@ -401,7 +409,8 @@ lookupIcon() {
 		return 1
 	fi
 	
-	local execname="$1"
+	local execname
+	execname="$1"
 	shift
 	[ -n "$1" ] && echo "!! Ignoring extra paramters: $*" >&2
 
@@ -429,12 +438,14 @@ lookupIcon() {
 append() {
  	if [ -z "${INSTALL}" ]; then
 		# $dnlamVERBOSE echo "append: $*" >&2
-		local iconString="`echo $* | grep -o '<.*>'`"
+		local iconString
+		iconString="`echo $* | grep -o '<.*>'`"
 		# echo "iconString=$iconString" >&2
-		if [ -z "$iconString" ]; then
+		if [ -z "$iconString" ] && [ -z "$NO_ICON" ]; then
 			echo -n "      $* " >> ${MENUFILENAME}
 			# get the program name between '{}' from parameters			
-			local execname="$*"
+			local execname
+			execname="$*"
 			execname=${execname#*\{}
 			execname=${execname%%\}*}
 			# $dnlamVERBOSE echo "execname=$execname" >&2
@@ -1235,6 +1246,7 @@ while [ $# -gt 0 ]; do
         -B) BACKGROUNDMENUITEM=yes; shift;;
         -k) KDEMENU=yes; shift;;
         -g) GNOMEMENU=yes; shift;;
+		-in) NO_ICON=yes; shift;;
 		-is) OTHER_ICONPATHS="
 				/usr{,/local}/share{,/xclass}/{icons,pixmaps}
 				/usr{,/local}/share/icons/mini
@@ -1334,7 +1346,7 @@ for KDE_PREFIX in "${KDE_PREFIX}" /usr/local /usr/X11R6 /usr /opt "${PREFIX}"; d
     fi
 done
 
-if [ -z "${INSTALL}" ]; then
+if [ -z "${INSTALL}" ] && [ -z "${NO_ICON}" ]; then
 	# [ -z "$dnlamVERBOSE" ] && dnlamVERBOSE=": echo"   # for debugging
 	FB_ICONDIR="$HOME/.fluxbox/icons"
 	[ -d "$FB_ICONDIR" ] || mkdir "$FB_ICONDIR"
@@ -1349,8 +1361,9 @@ if [ -z "${INSTALL}" ]; then
 		[ "OTHER_ICONPATHS" ] && OTHER_ICONPATHS="\"$HOME\"/.kde/share/icons/{,*} $OTHER_ICONPATHS"
 	fi
 	[ "$GNOMEMENU$KDEMENU" ] && OTHER_DESKTOP_PATHS="\"$ETCAPPLNK\" $OTHER_DESKTOP_PATHS"
-	
+
 	checkDirs(){
+		#echo checkDirs: $* >&2
 		local CHECKED_DIRS=""
 		for DIR in "$@"; do
 			if [ -d "$DIR" ]; then
@@ -1358,6 +1371,7 @@ if [ -z "${INSTALL}" ]; then
 				CHECKED_DIRS="$CHECKED_DIRS \"$DIR\""
 			fi
 		done
+		#echo checkDirs - $CHECKED_DIRS >&2
 		echo $CHECKED_DIRS
 	}
 
@@ -1369,7 +1383,7 @@ if [ -z "${INSTALL}" ]; then
 	# $dnlamVERBOSE "Using OTHER_DESKTOP_PATHS=$OTHER_DESKTOP_PATHS"
 	# $dnlamVERBOSE "Calling function: createIconMapping"
 	
-	# $dnlamVERBOSE echo "Creating $ICONMAPPING" >&2
+	# $dnlamVERBOSE "Creating $ICONMAPPING" >&2
 	touch "$ICONMAPPING"
 	eval createIconMapping $USER_DESKTOP_PATHS $OTHER_DESKTOP_PATHS
 	# $dnlamVERBOSE "Done createIconMapping."
