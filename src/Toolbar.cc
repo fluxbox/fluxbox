@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.108 2003/08/13 15:28:24 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.109 2003/08/15 13:51:43 fluxgen Exp $
 
 #include "Toolbar.hh"
 
@@ -36,6 +36,7 @@
 #include "IconbarTool.hh"
 #include "WorkspaceNameTool.hh"
 #include "ClockTool.hh"
+#include "SystemTray.hh"
  
 #include "I18n.hh"
 #include "fluxbox.hh"
@@ -189,7 +190,8 @@ Toolbar::Frame::Frame(FbTk::EventHandler &evh, int screen_num):
            10, 10, // size
            // event mask
            ButtonPressMask | ButtonReleaseMask | 
-           EnterWindowMask | LeaveWindowMask,
+           EnterWindowMask | LeaveWindowMask | SubstructureNotifyMask,
+
            true) // override redirect 
 {
 
@@ -235,10 +237,12 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                  scrn.name() + ".toolbar.onhead", scrn.altName() + ".Toolbar.onHead"),
     m_rc_placement(scrn.resourceManager(), Toolbar::BOTTOMCENTER, 
                    scrn.name() + ".toolbar.placement", scrn.altName() + ".Toolbar.Placement"),
+    m_rc_height(scrn.resourceManager(), 0, scrn.name() + ".toolbar.height", scrn.altName() + ".Toolbar.Height"),
     m_shape(new Shape(frame.window, 0)),
     m_clock_theme(scrn.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
     m_workspace_theme(scrn.screenNumber(), "toolbar.workspace", "Toolbar.Workspace"),
-    m_iconbar_theme(scrn.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar") {
+    m_iconbar_theme(scrn.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
+    m_resize_lock(false) {
 
     // we need to get notified when the theme is reloaded
     m_theme.reconfigSig().attach(this);
@@ -264,6 +268,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     // add toolbar items
     m_item_list.push_back(new WorkspaceNameTool(frame.window, m_workspace_theme, screen()));
     m_item_list.push_back(new IconbarTool(frame.window, m_iconbar_theme, screen()));
+    m_item_list.push_back(new SystemTray(frame.window));
     m_item_list.push_back(new ClockTool(frame.window, m_clock_theme, screen()));
 
     m_clock_theme.setAntialias(screen().antialias());
@@ -305,6 +310,7 @@ void Toolbar::clearStrut() {
 }
 
 void Toolbar::updateStrut() {
+
     bool had_strut = m_strut ? true : false;
     clearStrut();
     // we should request space if we're in autohide mode or
@@ -362,7 +368,6 @@ void Toolbar::lower() {
 }
 
 void Toolbar::reconfigure() {
-
     m_clock_theme.setAntialias(screen().antialias());
     m_iconbar_theme.setAntialias(screen().antialias());
     m_workspace_theme.setAntialias(screen().antialias());
@@ -484,6 +489,12 @@ void Toolbar::keyPressEvent(XKeyEvent &ke) {
 
 }
 
+void Toolbar::handleEvent(XEvent &event) {
+    if (event.type == ConfigureNotify && 
+        event.xconfigure.window != window().window()) {
+        rearrangeItems();
+    }
+}
 
 void Toolbar::update(FbTk::Subject *subj) {
 
@@ -499,7 +510,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_w = screen().width(),
         head_h = screen().height();
 
-#ifdef XINERAMA
     if (screen().hasXinerama()) {
         int head = *m_rc_on_head;
         head_x = screen().getHeadX(head);
@@ -507,7 +517,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
         head_w = screen().getHeadWidth(head);
         head_h = screen().getHeadHeight(head);
     }
-#endif // XINERAMA
 
     frame.width = head_w * (*m_rc_width_percent) / 100;
     //!! TODO: change this 
@@ -524,6 +533,9 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 
     if (max_height < m_iconbar_theme.unfocusedText().font().height())
         max_height = m_iconbar_theme.unfocusedText().font().height();
+
+    if (*m_rc_height != 0)
+        max_height = *m_rc_height;
 
     frame.height = max_height;
 
@@ -736,9 +748,11 @@ void Toolbar::setupMenus() {
         Toolbar::Placement placement;
     } place_menu[]  = {
         {0, 0, "Top Left", Toolbar::TOPLEFT},
+        /*
         {0, 0, "Left Top", Toolbar::LEFTTOP},
         {0, 0, "Left Center", Toolbar::LEFTCENTER},
         {0, 0, "Left Bottom", Toolbar::LEFTBOTTOM}, 
+        */
         {0, 0, "Bottom Left", Toolbar::BOTTOMLEFT},
         {0, 0, "Top Center", Toolbar::TOPCENTER},
         {0, 0, 0, Toolbar::TOPCENTER},
@@ -746,9 +760,11 @@ void Toolbar::setupMenus() {
         {0, 0, 0, Toolbar::BOTTOMCENTER},
         {0, 0, "Bottom Center", Toolbar::BOTTOMCENTER},
         {0, 0, "Top Right", Toolbar::TOPRIGHT},
+        /*
         {0, 0, "Right Top", Toolbar::RIGHTTOP},
         {0, 0, "Right Center", Toolbar::RIGHTCENTER},
         {0, 0, "Right Bottom", Toolbar::RIGHTBOTTOM},
+        */
         {0, 0, "Bottom Right", Toolbar::BOTTOMRIGHT}
     };
     tbar.placementMenu().setMinimumSublevels(3);
@@ -776,7 +792,10 @@ void Toolbar::saveOnHead(int head) {
 }
 
 void Toolbar::rearrangeItems() {
-
+    if (m_resize_lock || screen().isShuttingdown())
+        return;
+    // lock this
+    m_resize_lock = true;
     // calculate size for fixed items
     ItemList::iterator item_it = m_item_list.begin();
     ItemList::iterator item_it_end = m_item_list.end();
@@ -811,5 +830,6 @@ void Toolbar::rearrangeItems() {
         }
         next_x += (*item_it)->width() + (*item_it)->borderWidth()*2;
     }
-
+    // unlock
+    m_resize_lock = false;
 }
