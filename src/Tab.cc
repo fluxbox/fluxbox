@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.cc,v 1.18 2002/01/27 12:52:02 fluxgen Exp $
+// $Id: Tab.cc,v 1.19 2002/02/02 18:20:44 pekdon Exp $
 
 #include "Tab.hh"
 
@@ -488,15 +488,21 @@ void Tab::setPosition() {
 				m_win->getScreen()->getTabAlignment());
 		break;
 	case PLEFT:
-		pos_x = m_win->getXFrame() - m_size_w;
-		pos_y = setPositionLRAlignHelper(
-				m_win->getScreen()->getTabAlignment());
+		pos_x = m_win->isShaded() ?
+			setPositionTBAlignHelper(m_win->getScreen()->getTabAlignment()) :
+			m_win->getXFrame() - m_size_w;
+		pos_y = m_win->isShaded() ?
+			setPositionShadingHelper(true) :
+			setPositionLRAlignHelper(m_win->getScreen()->getTabAlignment());
 		break;
 	case PRIGHT:
-		pos_x = m_win->getXFrame() + m_win->getWidth() + 
+		pos_x = m_win->isShaded() ?
+			setPositionTBAlignHelper(m_win->getScreen()->getTabAlignment()) :
+			m_win->getXFrame() + m_win->getWidth() +
 				m_win->getScreen()->getBorderWidth2x();
-		pos_y = setPositionLRAlignHelper(
-				m_win->getScreen()->getTabAlignment());
+		pos_y = m_win->isShaded() ?
+			setPositionShadingHelper(true) :
+			setPositionLRAlignHelper(m_win->getScreen()->getTabAlignment());
 		break;
 	default:
 		if(m_win->isShaded()) {
