@@ -19,9 +19,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbRun.cc,v 1.2 2002/09/03 10:55:02 fluxgen Exp $
+// $Id: FbRun.cc,v 1.3 2002/11/12 17:10:13 fluxgen Exp $
 
 #include "FbRun.hh"
+
+#include "BaseDisplay.hh"
 
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
@@ -32,22 +34,14 @@
 #include <iostream>
 
 using namespace std;
-FbRun::FbRun(Display *disp, int x, int y, size_t width):
-m_font(disp, "fixed"),
+FbRun::FbRun(int x, int y, size_t width):
+m_font("fixed"),
 m_win(None),
-m_display(disp),
+m_display(BaseDisplay::getXDisplay()),
 m_bevel(4),
-m_gc(None),
+m_gc(DefaultGC(m_display, DefaultScreen(m_display))),
 m_end(false) {
-
 	createWindow(x, y, width + m_bevel, m_font.height());
-	// create GC
-	XGCValues gcv;
-
-	if (m_font.fontStruct())
-		gcv.font = 	m_font.fontStruct()->fid;
-
-	m_gc = XCreateGC(m_display, m_win, GCFont, &gcv);
 }
 
 FbRun::~FbRun() {
@@ -71,12 +65,6 @@ void FbRun::run(const std::string &command) {
 bool FbRun::loadFont(const string &fontname) {
 	if (!m_font.load(fontname.c_str()))
 		return false;
-
-	// reconfigure m_gc for the new font
-	XGCValues gcv;
-	if (m_font.fontStruct())
-		gcv.font = m_font.fontStruct()->fid;
-	XChangeGC(m_display, m_gc, GCFont, &gcv);
 
 	// resize to fit new font height
 	resize(m_width, m_font.height() + m_bevel);
@@ -139,16 +127,7 @@ void FbRun::drawString(int x, int y,
 	const char *text, size_t len) {
 	assert(m_win);
 	assert(m_gc);
-
-	if (FbTk::Font::multibyte()) {
-		XmbDrawString(m_display, m_win, m_font.fontSet(),
-			m_gc, x, y,
-			text, len);
-	} else {
-		XDrawString(m_display, m_win,
-			m_gc, x, y,
-			text, len);
-	}
+	m_font.drawText(m_win, DefaultScreen(m_display), m_gc, text, len, x, y);
 }
 
 
