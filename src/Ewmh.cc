@@ -238,13 +238,10 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
         if (desktop == 0xFFFFFFFF && !win.isStuck())
             win.stick();
         else
-            win.screen().sendToWorkspace(desktop, &win, false);
+            win.setWorkspace(desktop, false);
 
         XFree(data);
     }
-
-    updateWorkspace(win);
-
 
 }
 

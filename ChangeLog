@@ -1,5 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
+*05/01/04:
+  * Fix some initialisation states, especially window placement with no 
+    decorations through apps (e.g. aterm)
+    Window.hh/cc Screen.cc Ewmh.cc
 *05/01/02:
   * Fix for #996298, Windows dont respect toolbar.border.width (Mathias)
     Toolbar.cc

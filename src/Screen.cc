@@ -1220,9 +1220,9 @@ FluxboxWindow *BScreen::createWindow(Window client) {
     else
         focused_list.push_back(&win->winClient());
     
-    if (new_win) {
-        Fluxbox::instance()->attachSignals(*win);
-    }
+//    if (new_win) {
+//        Fluxbox::instance()->attachSignals(*win);
+//    }
 
     // we also need to check if another window expects this window to the left
     // and if so, then join it.
@@ -1240,27 +1240,28 @@ FluxboxWindow *BScreen::createWindow(Window client) {
 
 
 FluxboxWindow *BScreen::createWindow(WinClient &client) {
+
+    if (isKdeDockapp(client.window()) && addKdeDockapp(client.window())) {
+        // we need to save old handler and readd it later
+// I think rearranging the logic negates the need for this - sb 04jan2005
+//        FbTk::EventManager *evm = FbTk::EventManager::instance();
+//        FbTk::EventHandler *evh = evm->find(client.window());
+//        evm->add(*evh, client.window());
+        return 0;
+    }
+
     FluxboxWindow *win = new FluxboxWindow(client,
                                            winFrameTheme(),
                                            *layerManager().getLayer(Fluxbox::instance()->getNormalLayer()));
 
-    if (isKdeDockapp(client.window())) {
-        if (addKdeDockapp(client.window())) {
-            // we need to save old handler and readd it later
-            FbTk::EventManager *evm = FbTk::EventManager::instance();
-            FbTk::EventHandler *evh = evm->find(client.window());
-            delete win;
-            evm->add(*evh, client.window());
-            return 0;
-        }
-    } else {
-
+// Why not KDE? - sb 04jan2005
+//    if (!isKdeDockapp(client.window())) {
 #ifdef SLIT
         if (win->initialState() == WithdrawnState && slit() != 0) {
             slit()->addClient(win->clientWindow());
         }
 #endif // SLIT
-    }
+//    }
                  
 
     if (!win->isManaged()) {
@@ -1270,7 +1271,7 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     // don't add to focused_list, as it should already be in there (since the
     // WinClient already exists).
     
-    Fluxbox::instance()->attachSignals(*win);
+//    Fluxbox::instance()->attachSignals(*win);
 
     m_clientlist_sig.notify();
 

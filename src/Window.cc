@@ -485,6 +485,7 @@ void FluxboxWindow::init() {
     m_timer.setCommand(raise_cmd);
     m_timer.fireOnce(true);
 
+    // Slit client?
     if (m_client->initial_state == WithdrawnState) {
         return;
     }
@@ -492,6 +493,7 @@ void FluxboxWindow::init() {
     m_managed = true; //this window is managed
 
     Fluxbox::instance()->saveWindowSearchGroup(frame().window().window(), this);
+    Fluxbox::instance()->attachSignals(*this);
 
     // update transient infomation
     m_client->updateTransientInfo();
@@ -518,10 +520,10 @@ void FluxboxWindow::init() {
 
     grabButtons();
 
+    restoreAttributes();
+
     if (m_workspace_number < 0 || m_workspace_number >= screen().getCount())
         m_workspace_number = screen().currentWorkspaceID();
-
-    restoreAttributes();
 
     bool place_window = true;
     if (fluxbox.isStartup() || m_client->isTransient() ||
@@ -569,6 +571,7 @@ void FluxboxWindow::init() {
 
 
     screen().getWorkspace(m_workspace_number)->addWindow(*this, place_window);
+    setWorkspace(m_workspace_number, true);
 
     if (shaded) { // start shaded
         shaded = false;
@@ -1745,7 +1748,7 @@ void FluxboxWindow::maximizeFull() {
 }
 
 
-void FluxboxWindow::setWorkspace(int n) {
+void FluxboxWindow::setWorkspace(int n, bool notify) {
     unsigned int old_wkspc = m_workspace_number;
 
     m_workspace_number = n;
@@ -1754,7 +1757,7 @@ void FluxboxWindow::setWorkspace(int n) {
     m_blackbox_attrib.workspace = m_workspace_number;
 
     // notify workspace change
-    if (!stuck && old_wkspc != m_workspace_number) {
+    if (notify && !stuck && old_wkspc != m_workspace_number) {
 #ifdef DEBUG
         cerr<<this<<" notify workspace signal"<<endl;
 #endif // DEBUG

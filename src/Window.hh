@@ -234,7 +234,7 @@ public:
     /// move and resize frame to pox x,y and size width, height
     void moveResize(int x, int y, unsigned int width, unsigned int height, int gravity = ForgetGravity);
 
-    void setWorkspace(int n);
+    void setWorkspace(int n, bool notify = true);
     void changeBlackboxHints(const BlackboxHints &bh);
     void updateFunctions();
     void restoreAttributes();
