@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Tab.hh,v 1.14 2002/08/02 12:57:19 fluxgen Exp $
+// $Id: Tab.hh,v 1.15 2002/08/11 20:57:13 fluxgen Exp $
 
 #ifndef TAB_HH
 #define TAB_HH
@@ -59,7 +59,8 @@ public:
 	void setPosition();	//position tab to follow (FluxboxWindow *) m_win 
 	void moveNext();
 	void movePrev();
-	
+	void insert(Tab *next);
+
 	//event handlers
 	void buttonReleaseEvent(XButtonEvent *be);
 	void buttonPressEvent(XButtonEvent *be);
@@ -99,7 +100,7 @@ private:
 
 	bool m_configured;
 	
-	void insert(Tab *next);	
+	
 	//The size of the tab
 	unsigned int m_size_w;
 	unsigned int m_size_h;
