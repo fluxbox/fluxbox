@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.138 2003/04/15 23:09:13 rathnor Exp $
+// $Id: Window.cc,v 1.139 2003/04/16 00:38:06 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -320,13 +320,9 @@ void FluxboxWindow::init() {
     m_frame.reconfigure();
 
     // redirect events from frame to us
-#ifdef DEBUG
-    cerr<<"Setting up catch for events in frame"<<endl;
-#endif // DEBUG
+
     m_frame.setEventHandler(*this); 
-#ifdef DEBUG
-    cerr<<"setup for catching events....done"<<endl;
-#endif // DEBUG
+
     lastFocusTime.tv_sec = lastFocusTime.tv_usec = 0;
 
     // display connection
@@ -2192,8 +2188,9 @@ void FluxboxWindow::buttonPressEvent(XButtonEvent &be) {
             setInputFocus(); 
         }
 
-        if (m_frame.clientArea() == be.window) {
-            raise();
+        if (m_frame.clientArea() == be.window) {            
+            if (getScreen().clickRaises())
+                raise();
             XAllowEvents(display, ReplayPointer, be.time);			
         } else {            
             button_grab_x = be.x_root - m_frame.x() - screen.getBorderWidth();

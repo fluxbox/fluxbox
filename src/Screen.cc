@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.123 2003/04/15 23:09:12 rathnor Exp $
+// $Id: Screen.cc,v 1.124 2003/04/16 00:37:19 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -386,6 +386,7 @@ BScreen::ScreenResource::ScreenResource(ResourceManager &rm,
     focus_new(rm, true, scrname+".focusNewWindows", altscrname+".FocusNewWindows"),
     antialias(rm, false, scrname+".antialias", altscrname+".Antialias"),
     auto_raise(rm, false, scrname+".autoRaise", altscrname+".AutoRaise"),
+    click_raises(rm, true, scrname+".clickRaises", altscrname+".ClickRaises"),
     rootcommand(rm, "", scrname+".rootCommand", altscrname+".RootCommand"),
     focus_model(rm, Fluxbox::CLICKTOFOCUS, scrname+".focusModel", altscrname+".FocusModel"),
     workspaces(rm, 1, scrname+".workspaces", altscrname+".Workspaces"),
@@ -1864,23 +1865,23 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     FbTk::Menu *focus_menu = createMenuFromScreen(*this);
 
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
-                                                         ConfigmenuSet, 
-                                                         ConfigmenuClickToFocus,
-                                                         "Click To Focus"), 
+                                                               ConfigmenuSet, 
+                                                               ConfigmenuClickToFocus,
+                                                               "Click To Focus"), 
                                               *this,
                                               Fluxbox::CLICKTOFOCUS,
                                               save_and_reconfigure));
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
-        ConfigmenuSet, 
-                                                         ConfigmenuSloppyFocus,
-                                                         "Sloppy Focus"), 
+                                                               ConfigmenuSet, 
+                                                               ConfigmenuSloppyFocus,
+                                                               "Sloppy Focus"), 
                                               *this,
                                               Fluxbox::SLOPPYFOCUS,
                                               save_and_reconfigure));
     focus_menu->insert(new FocusModelMenuItem(i18n->getMessage(
-                                                         ConfigmenuSet, 
-                                                         ConfigmenuSemiSloppyFocus,
-                                                         "Semi Sloppy Focus"),
+                                                               ConfigmenuSet, 
+                                                               ConfigmenuSemiSloppyFocus,
+                                                               "Semi Sloppy Focus"),
                                               *this,
                                               Fluxbox::SEMISLOPPYFOCUS,
                                               save_and_reconfigure));
@@ -1894,6 +1895,7 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
     focus_menu->update();
     rootmenuList.push_back(focus_menu);
 
+
     menu.insert(i18n->getMessage(
                                  ConfigmenuSet, ConfigmenuFocusModel,
                                  "Focus Model"), 
@@ -1903,8 +1905,8 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
         menu.insert("Slit", &getSlit()->menu());
 #endif // SLIT
     menu.insert(i18n->getMessage(
-        ToolbarSet, ToolbarToolbarTitle,
-        "Toolbar"), &m_toolbarhandler->getToolbarMenu());
+                                 ToolbarSet, ToolbarToolbarTitle,
+                                 "Toolbar"), &m_toolbarhandler->getToolbarMenu());
     menu.insert(new
                 BoolMenuItem(i18n->getMessage(
                                               ConfigmenuSet, ConfigmenuImageDithering,
@@ -1947,6 +1949,9 @@ void BScreen::setupConfigmenu(FbTk::Menu &menu) {
                                               "Desktop MouseWheel Switching"),
                              *resource.desktop_wheeling, save_and_reconfigure));
 
+    menu.insert(new BoolMenuItem("Click Raises",
+				 *resource.click_raises,
+				 save_and_reconfigure));
     // setup antialias cmd to reload style and save resource on toggle
     menu.insert(new BoolMenuItem("antialias", *resource.antialias, 
                                  save_and_reconfigure));

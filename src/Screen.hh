@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.hh,v 1.76 2003/04/15 12:14:13 fluxgen Exp $
+// $Id: Screen.hh,v 1.77 2003/04/16 00:36:09 fluxgen Exp $
 
 #ifndef	 SCREEN_HH
 #define	 SCREEN_HH
@@ -89,6 +89,7 @@ public:
     inline bool isWorkspaceWarping() const { return *resource.workspace_warping; }
     inline bool isDesktopWheeling() const { return *resource.desktop_wheeling; }
     inline bool doAutoRaise() const { return *resource.auto_raise; }
+    inline bool clickRaises() const { return *resource.click_raises; }
     inline bool doImageDither() const { return *resource.image_dither; }
     inline bool doMaxOverSlit() const { return *resource.max_over_slit; }
     inline bool doOpaqueMove() const { return *resource.opaque_move; }
@@ -397,7 +398,7 @@ private:
             sloppy_window_grouping, workspace_warping,
             desktop_wheeling, show_window_pos,
             focus_last, focus_new,
-            antialias, auto_raise;
+            antialias, auto_raise, click_raises;
         Resource<std::string> rootcommand;		
         Resource<Fluxbox::FocusModel> focus_model;
         bool ordered_dither;
