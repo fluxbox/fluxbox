@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.hh,v 1.29 2002/09/08 19:12:33 fluxgen Exp $
+// $Id: BaseDisplay.hh,v 1.30 2002/10/25 20:52:42 fluxgen Exp $
 
 #ifndef	 BASEDISPLAY_HH
 #define	 BASEDISPLAY_HH
@@ -131,7 +131,7 @@ private:
 
 class ScreenInfo {
 public:
-	ScreenInfo(BaseDisplay *bdisp, int screen_num);
+	explicit ScreenInfo(int screen_num);
 	~ScreenInfo();
 
 	inline BaseDisplay *getBaseDisplay() { return basedisplay; }

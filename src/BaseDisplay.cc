@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: BaseDisplay.cc,v 1.20 2002/08/30 12:57:41 fluxgen Exp $
+// $Id: BaseDisplay.cc,v 1.21 2002/10/25 20:51:54 fluxgen Exp $
 
 
 
@@ -183,7 +183,7 @@ m_server_grabs(0)
 	XSetErrorHandler((XErrorHandler) handleXErrors);
 
 	for (int i = 0; i < number_of_screens; i++) {
-		ScreenInfo *screeninfo = new ScreenInfo(this, i);
+		ScreenInfo *screeninfo = new ScreenInfo(i);
 		screenInfoList.push_back(screeninfo);
 	}
 }
@@ -261,21 +261,18 @@ void BaseDisplay::ungrab() {
 		m_server_grabs = 0;
 }
 
-
-
-
-
-ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
-	basedisplay = d;
+ScreenInfo::ScreenInfo(int num) {
+	basedisplay = BaseDisplay::instance();
+	Display * const disp = basedisplay->getXDisplay();
 	screen_number = num;
 
-	root_window = RootWindow(basedisplay->getXDisplay(), screen_number);
-	depth = DefaultDepth(basedisplay->getXDisplay(), screen_number);
+	root_window = RootWindow(disp, screen_number);
+	depth = DefaultDepth(disp, screen_number);
 
 	width =
-		WidthOfScreen(ScreenOfDisplay(basedisplay->getXDisplay(), screen_number));
+		WidthOfScreen(ScreenOfDisplay(disp, screen_number));
 	height =
-		HeightOfScreen(ScreenOfDisplay(basedisplay->getXDisplay(), screen_number));
+		HeightOfScreen(ScreenOfDisplay(disp, screen_number));
 
 	// search for a TrueColor Visual... if we can't find one... we will use the
 	// default visual for the screen
@@ -287,7 +284,7 @@ ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
 
 	visual = (Visual *) 0;
 
-	if ((vinfo_return = XGetVisualInfo(basedisplay->getXDisplay(),
+	if ((vinfo_return = XGetVisualInfo(disp,
 			VisualScreenMask | VisualClassMask,
 			&vinfo_template, &vinfo_nitems)) &&
 			vinfo_nitems > 0) {
@@ -303,20 +300,20 @@ ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
 	}
 
 	if (visual) {
-		m_colormap = XCreateColormap(basedisplay->getXDisplay(), root_window,
+		m_colormap = XCreateColormap(disp, root_window,
 			visual, AllocNone);
 	} else {
-		visual = DefaultVisual(basedisplay->getXDisplay(), screen_number);
-		m_colormap = DefaultColormap(basedisplay->getXDisplay(), screen_number);
+		visual = DefaultVisual(disp, screen_number);
+		m_colormap = DefaultColormap(disp, screen_number);
 	}
 
 #ifdef XINERAMA
 	// check if we have Xinerama extension enabled
-	if (XineramaIsActive(basedisplay->getXDisplay())) {
+	if (XineramaIsActive(disp)) {
 		m_hasXinerama = true;
 		xineramaLastHead = 0;
 		xineramaInfos =
-			XineramaQueryScreens(basedisplay->getXDisplay(), &xineramaNumHeads);
+			XineramaQueryScreens(disp, &xineramaNumHeads);
 	} else {
 		m_hasXinerama = false;
 		xineramaInfos = 0; // make sure we don't point anywhere we shouldn't
@@ -324,7 +321,7 @@ ScreenInfo::ScreenInfo(BaseDisplay *d, int num) {
 #endif // XINERAMA 
 }
 
-ScreenInfo::~ScreenInfo(void) {
+ScreenInfo::~ScreenInfo() {
 #ifdef XINERAMA
 	if (m_hasXinerama) { // only free if we first had it
 		XFree(xineramaInfos);
