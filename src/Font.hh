@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.hh,v 1.2 2002/03/27 15:37:19 fluxgen Exp $
+//$Id: Font.hh,v 1.3 2002/05/15 09:36:57 fluxgen Exp $
 
 #ifndef FBTK_FONT_HH
 #define FBTK_FONT_HH
@@ -40,9 +40,9 @@ public:
 	bool loadFromDatabase(XrmDatabase &database, const char *rname, const char *rclass);
 	//accessors
 	inline bool isLoaded() const { return m_loaded; }
-	inline XFontStruct *getFontStruct() const { return m_font.fontstruct; }
-	inline XFontSet &getFontSet() { return m_font.set; }
-	inline XFontSetExtents *getFontSetExtents() const { return m_font.set_extents; }
+	inline const XFontStruct *getFontStruct() const { return m_font.fontstruct; }
+	inline const XFontSet &getFontSet() const { return m_font.set; }
+	inline const XFontSetExtents *getFontSetExtents() const { return m_font.set_extents; }
 	static inline bool multibyte() { return m_multibyte; }
 	unsigned int getTextWidth(const char *text, unsigned int size) const;
 	unsigned int getHeight() const;
