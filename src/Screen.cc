@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.218 2003/08/12 12:21:42 fluxgen Exp $
+// $Id: Screen.cc,v 1.219 2003/08/13 16:53:13 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -436,6 +436,8 @@ BScreen::BScreen(FbTk::ResourceManager &rm,
     //    if (slit()) // this will load theme and reconfigure slit
     //        FbTk::ThemeManager::instance().loadTheme(slit()->theme());
 #endif // SLIT
+
+    FbTk::ThemeManager::instance().load(Fluxbox::instance()->getStyleFilename());
 
     // start with workspace 0
     changeWorkspaceID(0);
