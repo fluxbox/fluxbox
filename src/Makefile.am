@@ -64,6 +64,7 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc Ba
 	ToolbarTheme.hh ToolbarTheme.cc \
 	WinButton.hh WinButton.cc Window.cc Window.hh \
 	Workspace.cc Workspace.hh \
-	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc LayeredMenu.hh
+	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc LayeredMenu.hh \
+	IntResMenuItem.hh IntResMenuItem.cc
 
 LDADD=FbTk/libFbTk.a
