@@ -2,6 +2,9 @@ Known bugs and missing features that will be fixed in future version:
 
 BUGS:
 
+  * Some builds/distros seem to require all supported locales to be 
+    installed to build properly (e.g. mdk, gentoo reported), this ok?
+
   * Icons menu isn't in Workspaces menu
 
   * Window handle is invisible sometimes.
