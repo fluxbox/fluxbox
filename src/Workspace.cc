@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Workspace.cc,v 1.20 2002/05/17 11:03:36 fluxgen Exp $
+// $Id: Workspace.cc,v 1.21 2002/06/02 22:57:52 fluxgen Exp $
 
 // use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -93,6 +93,7 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 	FluxboxWindow *focused = Fluxbox::instance()->getFocusedWindow();	
 
 	//if there isn't any window that's focused, just add it to the end of the list
+	/*
 	if (focused == 0) {
 		windowList.push_back(w);
 		//Add client to clientmenu
@@ -113,8 +114,10 @@ int Workspace::addWindow(FluxboxWindow *w, bool place) {
 		
 
 	}
-	
-	
+	*/
+	//add to list
+	m_clientmenu.insert(w->getTitle().c_str());
+	windowList.push_back(w);
 	
 	//update menugraphics
 	m_clientmenu.update();
