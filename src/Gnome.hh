@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.hh,v 1.11 2004/01/19 18:27:17 fluxgen Exp $
+// $Id: Gnome.hh,v 1.12 2004/06/28 13:33:05 fluxgen Exp $
 
 #ifndef GNOME_HH
 #define GNOME_HH
@@ -85,7 +85,7 @@ public:
     // ignore these ones
     void updateFrameClose(FluxboxWindow &win) {}
     void updateClientClose(WinClient &winclient) {}
-    bool propertyNotify(WinClient &winclient, Atom the_property) { return false; }
+    bool propertyNotify(WinClient &winclient, Atom the_property);
 
 private:
     void setLayer(FluxboxWindow *win, int layer);

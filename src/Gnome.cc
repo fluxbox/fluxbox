@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.35 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Gnome.cc,v 1.36 2004/06/28 13:33:05 fluxgen Exp $
 
 #include "Gnome.hh"
 
@@ -130,6 +130,18 @@ void Gnome::setupFrame(FluxboxWindow &win) {
     }
 
 }
+
+
+bool Gnome::propertyNotify(WinClient &winclient, Atom the_property) { 
+    if (the_property == m_gnome_wm_win_state) {
+#ifdef DEBUG
+        cerr<<__FILE__<<"("<<__FUNCTION__<<"): _WIN_STATE"<<endl;
+#endif // DEBUG
+        return true;
+    }
+    return false;
+}
+
 
 void Gnome::updateClientList(BScreen &screen) {
     size_t num=0;
@@ -255,10 +267,11 @@ void Gnome::updateState(FluxboxWindow &win) {
 	
     FluxboxWindow::ClientList::iterator client_it = win.clientList().begin();
     FluxboxWindow::ClientList::iterator client_it_end = win.clientList().end();
-    for (; client_it != client_it_end; ++client_it)
+    for (; client_it != client_it_end; ++client_it) {
         (*client_it)->changeProperty(m_gnome_wm_win_state,
                                      XA_CARDINAL, 32, 
                                      PropModeReplace, (unsigned char *)&state, 1);
+    }
 }
 
 void Gnome::updateLayer(FluxboxWindow &win) {
