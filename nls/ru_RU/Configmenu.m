@@ -53,4 +53,4 @@ $ #SloppyWindowGrouping
 $ #WorkspaceWarping
 # Перемещение окон между рабочими столами
 $ #DesktopWheeling
-# Desktop Wheeling
+# "Прокрутка" рабочего стола
