@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Screen.cc,v 1.248 2003/12/12 18:18:12 fluxgen Exp $
+// $Id: Screen.cc,v 1.249 2003/12/14 01:09:00 fluxgen Exp $
 
 
 #include "Screen.hh"
@@ -1175,9 +1175,9 @@ FluxboxWindow *BScreen::createWindow(WinClient &client) {
     
     Fluxbox::instance()->attachSignals(*win);
     // winclient actions should have been setup when the WinClient was created
-    if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck()) {
+    if (win->workspaceNumber() == currentWorkspaceID() || win->isStuck())
         win->show();      
-    }
+
     return win;
 }
 
@@ -1237,11 +1237,10 @@ void BScreen::addWorkspaceName(const char *name) {
 
 
 string BScreen::getNameOfWorkspace(unsigned int workspace) const {
-    if (workspace < m_workspace_names.size()) {
+    if (workspace < m_workspace_names.size())
         return m_workspace_names[workspace];
-    } else {
+    else
         return "";
-    }
 }
 
 void BScreen::reassociateWindow(FluxboxWindow *w, unsigned int wkspc_id, 
