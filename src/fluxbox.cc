@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.74 2002/09/07 20:25:39 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.75 2002/09/08 19:31:27 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -344,7 +344,7 @@ key(0)
 	
 	// setup atom handlers
 	m_atomhandler.push_back(new Gnome());
-//	m_atomhandler.push_back(new Ewmh()); // TODO
+//	m_atomhandler.push_back(new Ewmh());
 
 	//singleton pointer
 	singleton = this;
@@ -1264,12 +1264,12 @@ void Fluxbox::handleKeyEvent(XKeyEvent &ke) {
 			break;
 			case Keys::NEXTWINDOW:	//activate next window
 				screen->nextFocus(key->getParam());
-				if (focused_window)
+				if (focused_window && focused_window->getTab())
 					focused_window->getTab()->raise();
 			break;
 			case Keys::PREVWINDOW:	//activate prev window
 				screen->prevFocus(key->getParam());
-				if (focused_window)
+				if (focused_window && focused_window->getTab())
 					focused_window->getTab()->raise();
 			break;
 			case Keys::NEXTTAB: 
@@ -1613,25 +1613,32 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
 		FluxboxWindow &win = winsub->win();
 		if ((&(win.hintSig())) == changedsub) { // hint signal
 #ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<") hint signal from "<<&win<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<") WINDOW hint signal from "<<&win<<endl;
 #endif // DEBUG
 			for (size_t i=0; i<m_atomhandler.size(); ++i) {
 				if (m_atomhandler[i]->update())
-					m_atomhandler[i]->updateHints(&win);
+					m_atomhandler[i]->updateHints(win);
 			}
 		} else if ((&(win.stateSig())) == changedsub) { // state signal
 #ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<") state signal from "<<&win<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<") WINDOW state signal from "<<&win<<endl;
 #endif // DEBUG
 			for (size_t i=0; i<m_atomhandler.size(); ++i) {
 				if (m_atomhandler[i]->update())
-					m_atomhandler[i]->updateState(&win);
+					m_atomhandler[i]->updateState(win);
 			}
 		} else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
 #ifdef DEBUG
-			cerr<<__FILE__<<"("<<__LINE__<<") workspace signal from "<<&win<<endl;
+			cerr<<__FILE__<<"("<<__LINE__<<") WINDOW workspace signal from "<<&win<<endl;
 #endif // DEBUG
-			
+			for (size_t i=0; i<m_atomhandler.size(); ++i) {
+				if (m_atomhandler[i]->update())
+					m_atomhandler[i]->updateWorkspace(win);
+			}
+		} else {
+#ifdef DEBUG
+			cerr<<__FILE__<<"("<<__LINE__<<"): WINDOW uncought signal from "<<&win<<endl;
+#endif // DEBUG
 		}
 		
 	} else if (typeid(*changedsub) == typeid(BScreen::ScreenSubject)) {
@@ -1677,8 +1684,10 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
 	win.hintSig().attach(this);
 	win.stateSig().attach(this);
 	win.workspaceSig().attach(this);
+	for (size_t i=0; i<m_atomhandler.size(); ++i) {
+		m_atomhandler[i]->setupWindow(win);
+	}
 }
-
 
 BScreen *Fluxbox::searchScreen(Window window) {
 	BScreen *screen = (BScreen *) 0;
@@ -1775,11 +1784,9 @@ void Fluxbox::removeGroupSearch(Window window) {
 	groupSearch.erase(window);
 }
 
-
 void Fluxbox::removeMenuSearch(Window window) {
 	menuSearch.erase(window);
 }
-
 
 void Fluxbox::removeToolbarSearch(Window window) {
 	toolbarSearch.erase(window);
