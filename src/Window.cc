@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.46 2002/04/17 07:24:59 fluxgen Exp $
+// $Id: Window.cc,v 1.47 2002/04/26 18:27:39 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -3348,12 +3348,14 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent *me) {
 					int cur_id = screen->getCurrentWorkspaceID();
 					int new_id = cur_id;
 					const int warpPad = screen->getEdgeSnapThreshold();
-					if (me->x_root >= int(screen->getWidth()) - warpPad &&
+					if (me->x_root >= int(screen->getWidth()) - warpPad - 1 &&
 							frame.x < int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
+						//warp right
 						new_id = (cur_id + 1) % screen->getCount();
 						dx = -me->x_root;
 					} else if (me->x_root <= warpPad &&
 							frame.x > int(me->x_root - frame.grab_x - screen->getBorderWidth())) {
+						//warp left
 						new_id = (cur_id - 1 + screen->getCount()) % screen->getCount();
 						dx = screen->getWidth() - me->x_root;
 					}
