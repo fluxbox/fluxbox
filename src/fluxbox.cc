@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.161 2003/06/24 15:02:39 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.162 2003/06/24 18:34:52 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -41,7 +41,7 @@
 #include "WinClient.hh"
 #include "Keys.hh"
 #include "FbAtoms.hh"
-
+#include "ToolbarHandler.hh"
 
 //Use GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -523,7 +523,7 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
 #endif // HAVE_RANDR
 
-        m_screen_list.push_back(screen);        
+        m_screen_list.push_back(screen);
         m_atomhandler.push_back(&screen->toolbarHandler());
         
         // attach screen signals to this
