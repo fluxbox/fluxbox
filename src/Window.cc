@@ -22,20 +22,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.219 2003/08/19 16:13:25 fluxgen Exp $
+// $Id: Window.cc,v 1.220 2003/08/24 10:46:56 fluxgen Exp $
 
 #include "Window.hh"
+
+
+#include "FbTk/StringUtil.hh"
+#include "FbTk/TextButton.hh"
+#include "FbTk/Compose.hh"
+#include "FbTk/EventManager.hh"
 
 #include "WinClient.hh"
 #include "I18n.hh"
 #include "fluxbox.hh"
 #include "Screen.hh"
-#include "StringUtil.hh"
-#include "Netizen.hh"
 #include "FbWinFrameTheme.hh"
 #include "MenuTheme.hh"
-#include "FbTk/TextButton.hh"
-#include "EventManager.hh"
 #include "FbAtoms.hh"
 #include "RootTheme.hh"
 #include "Workspace.hh"
@@ -793,14 +795,11 @@ bool FluxboxWindow::removeClient(WinClient &client) {
 
 /// returns WinClient of window we're searching for
 WinClient *FluxboxWindow::findClient(Window win) {
-    std::list<WinClient *>::iterator it = m_clientlist.begin();
-    std::list<WinClient *>::iterator it_end = m_clientlist.end();
-    for (; it != it_end; ++it) {
-        if ((*it)->window() == win)
-            return (*it);
-    }
-    // failure
-    return 0;
+    ClientList::iterator it = find_if(clientList().begin(),
+                                      clientList().end(),
+                                      FbTk::Compose(bind2nd(equal_to<Window>(), win),
+                                                    mem_fun(&WinClient::window)));
+    return (it == clientList().end() ? 0 : *it);
 }
 
 /// raise and focus next client
@@ -2197,10 +2196,8 @@ void FluxboxWindow::propertyNotifyEvent(Atom atom) {
         // TODO: this property notify should be handled by winclient
         // but for now we'll justhave to update all transient info
         //bool was_transient = isTransient();
-        ClientList::iterator it = clientList().begin();
-        ClientList::iterator it_end = clientList().end();
-        for (; it != it_end; it++) 
-            (*it)->updateTransientInfo();
+        for_each(clientList().begin(), clientList().end(), 
+                 mem_fun(&WinClient::updateTransientInfo));
         reconfigure();
         // TODO: this is broken whilst we don't know which client
         // update our layer to be the same layer as our transient for
