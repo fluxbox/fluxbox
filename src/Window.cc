@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.99 2002/11/17 11:29:06 fluxgen Exp $
+// $Id: Window.cc,v 1.100 2002/11/17 12:50:20 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1541,8 +1541,11 @@ void FluxboxWindow::setTab(bool flag) {
 	if (flag) {
 		if (!tab && isGroupable())
 			tab = new Tab(this, 0, 0);
-		tab->focus(); // draws the tab with correct texture
-		tab->setPosition(); // set tab windows position
+		
+		if (tab) {
+			tab->focus(); // draws the tab with correct texture
+			tab->setPosition(); // set tab windows position
+		}
 
 	} else if (tab) {
 		delete tab;
@@ -3123,7 +3126,7 @@ void FluxboxWindow::shapeEvent(XShapeEvent *) {
 }
 #endif // SHAPE
 
-
+// TODO: functions should not be affected by decoration
 void FluxboxWindow::setDecoration(Decoration decoration) {
 	switch (decoration) {
 	case DECOR_NONE:
@@ -3131,9 +3134,9 @@ void FluxboxWindow::setDecoration(Decoration decoration) {
 		decorations.iconify = decorations.maximize =
 			decorations.tab = false; //tab is also a decor
 		decorations.menu = true; // menu is present
-		functions.iconify = functions.maximize = false;
-		functions.move = true;   // We need to move even without decor
-		functions.resize = true; // We need to resize even without decor
+	//	functions.iconify = functions.maximize = true;
+	//	functions.move = true;   // We need to move even without decor
+	//	functions.resize = true; // We need to resize even without decor
 		
 	break;
 
