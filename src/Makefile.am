@@ -1,5 +1,5 @@
 # Makefile.am for fluxbox
-# Copyright (c) 2001-2002 Henrik Kinnunen (fluxgen at users.sourceforge.net)
+# Copyright (c) 2001 - 2003 Henrik Kinnunen (fluxgen at users.sourceforge.net)
 #
 # src/Makefile.am for Blackbox 0.61.x  - an X11 Window manager
 # Copyright (c) 1997 - 2000 Brad Hughes (bhughes at tcac.net)
@@ -53,11 +53,11 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc Ba
 	DirHelper.hh DirHelper.cc DrawUtil.cc DrawUtil.hh ${newwmspec_SOURCE} \
 	FbAtoms.hh FbAtoms.cc FbWinFrame.hh FbWinFrame.cc FbWinFrameTheme.hh FbWinFrameTheme.cc \
 	fluxbox.cc fluxbox.hh ${gnome_SOURCE} \
-	IconBar.cc IconBar.hh Iconmenu.cc Iconmenu.hh \
+	IconBar.cc IconBar.hh \
 	ImageControl.cc ImageControl.hh i18n.cc i18n.hh \
 	Keys.cc Keys.hh main.cc \
 	Netizen.cc Netizen.hh nl_types_cygnus.h \
-	Rootmenu.cc Rootmenu.hh Resource.hh Resource.cc \
+	Resource.hh Resource.cc \
 	Screen.cc Screen.hh \
 	Slit.cc Slit.hh StringUtil.cc StringUtil.hh Subject.cc Subject.hh \
 	Tab.hh Tab.cc TextureRender.hh TextureRender.cc Theme.hh Theme.cc \
@@ -65,6 +65,6 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc BaseDisplay.cc Ba
 	ToolbarTheme.hh ToolbarTheme.cc Observer.cc Observer.hh \
 	WinButton.hh WinButton.cc Window.cc Window.hh Windowmenu.cc Windowmenu.hh \
 	Workspace.cc Workspace.hh Workspacemenu.cc Workspacemenu.hh \
-	XrmDatabaseHelper.hh
+	XrmDatabaseHelper.hh FbCommands.hh FbCommands.cc
 
 LDADD=FbTk/libFbTk.a
