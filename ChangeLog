@@ -1,6 +1,10 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
 *03/09/08:
+   * Fixed numlock and scrlock bug in FbTk TextBox (Henrik)
+     This will fix workspace edit window input when having
+     num- or scrolllock on.
+     TextBox.cc
    * Added iconbar mode menu (Henrik)
      * new resource item:
        session.screen<num>.iconbar.mode: <mode>
