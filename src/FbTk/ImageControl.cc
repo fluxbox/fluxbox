@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ImageControl.cc,v 1.3 2003/08/11 15:59:49 fluxgen Exp $
+// $Id: ImageControl.cc,v 1.4 2003/08/18 09:55:11 fluxgen Exp $
 
 #include "ImageControl.hh"
 
@@ -239,7 +239,7 @@ void ImageControl::removeImage(Pixmap pixmap) {
                 cleanCache();
 #else // !TIMEDCACHE
                 if (! (*it)->count) 
-                    cleanCache()
+                    cleanCache();
 #endif // TIMEDCACHE
             }
 
