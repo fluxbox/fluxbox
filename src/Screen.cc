@@ -649,6 +649,8 @@ void BScreen::changeWorkspaceID(int id) {
 		return;
 	
 	if (id != current_workspace->getWorkspaceID()) {
+		XSync(fluxbox->getXDisplay(), True);
+		
 		current_workspace->hideAll();
 
 		workspacemenu->setItemSelected(current_workspace->getWorkspaceID() + 2,
@@ -672,9 +674,8 @@ void BScreen::changeWorkspaceID(int id) {
 		current_workspace->showAll();
 
 		if (resource.focus_last && current_workspace->getLastFocusedWindow())
-			current_workspace->getLastFocusedWindow()->setInputFocus();
-		
-		XSync(fluxbox->getXDisplay(), True);
+			current_workspace->getLastFocusedWindow()->setInputFocus();		
+			
 	}
 
 	updateNetizenCurrentWorkspace();
