@@ -1,8 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.9:
 *04/01/16:
+  * Updated nl_NL locales (Han)
   * Different window for window position  (Thanks Junichiro Kita (kita<at>kitaj.no-ip.com)
-    Screen.cc
+    Screen.cc/hh, Window.cc,
   * New Command:      (Thanks Junichiro Kita (kita<at>kitaj.no-ip.com)
     WindowMenu  - this will show the window menu on the focused window
   * Revert to old focused window after menu keyboard navigation (Henrik)
