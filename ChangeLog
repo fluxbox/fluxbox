@@ -1,5 +1,16 @@
 (Format: Year/Month/Day)
 Changes for 0.1.14:
+*02/12/17:
+   * Comment and minor fixes in fluxbox-generate_menu (Han)
+*02/12/16:
+   * Updated Turkish translation (tr_TR) (Thanks Arman Aksoy)
+   * Updated fluxbox-generate_menu (Han Boetes)
+   * Updated man page (Tobias Klausmann)
+     fluxbox.1.in
+   * Fixed de_DE translation (Thanks Andreas)
+     configure.in, nls/Makefile.am, nls/de_DE/*, util/fluxbox-generate_menu
+   * Fixed minor bugs in Button
+     Button.hh/cc
 *02/12/13:
    * Changed toolbar to use ArrowButton and Command
    * Added Command.hh, SimpleCommand.hh, Button.hh/cc, 
