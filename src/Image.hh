@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Image.hh,v 1.3 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Image.hh,v 1.4 2002/02/04 22:41:27 fluxgen Exp $
 
 #ifndef   _IMAGE_HH_
 #define   _IMAGE_HH_
@@ -31,13 +31,9 @@
 #include <X11/Xutil.h>
 
 #include "Timer.hh"
-
-#ifndef _BASEDISPLAY_HH_
 #include "BaseDisplay.hh"
-#endif
-#ifndef _LINKEDLIST_HH_
-#include "LinkedList.hh"
-#endif
+
+#include <list>
 
 class BImage;
 class BImageControl;
@@ -182,7 +178,9 @@ private:
     unsigned long pixel1, pixel2, texture;
   } Cache;
 
-  LinkedList<Cache> *cache;
+  typedef std::list<Cache *> CacheList;
+
+  CacheList cache;
 
 
 protected:

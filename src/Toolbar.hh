@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.5 2002/01/21 00:54:38 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.6 2002/02/04 22:38:41 fluxgen Exp $
 
 #ifndef   _TOOLBAR_HH_
 #define   _TOOLBAR_HH_
@@ -27,9 +27,6 @@
 #include <X11/Xlib.h>
 #ifndef _BASEMENU_HH_
 #include "Basemenu.hh"
-#endif
-#ifndef _LINKEDLIST_HH_
-#include "LinkedList.hh"
 #endif
 #ifndef _TIMER_HH_
 #include "Timer.hh"

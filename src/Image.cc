@@ -25,7 +25,7 @@
 // stupid macros needed to access some functions in version 2 of the GNU C
 // library
 
-// $Id: Image.cc,v 1.3 2002/01/09 14:11:20 fluxgen Exp $
+// $Id: Image.cc,v 1.4 2002/02/04 22:41:27 fluxgen Exp $
 
 #ifndef   _GNU_SOURCE
 #define   _GNU_SOURCE
@@ -2188,8 +2188,6 @@ BImageControl::BImageControl(BaseDisplay *dpy, ScreenInfo *scrn, Bool _dither,
 		throw static_cast<int>(1); //throw error code 1
 	
 	}
-
-	cache = new LinkedList<Cache>;
 }
 
 
@@ -2218,8 +2216,7 @@ BImageControl::~BImageControl(void) {
     delete [] colors;
   }
 
-  if (cache->count()) {
-    int i, n = cache->count();
+  if (cache.size() > 0) {
     fprintf(stderr,
 	    I18n::instance()->
             getMessage(
@@ -2229,48 +2226,44 @@ BImageControl::~BImageControl(void) {
 		       0, 0,
 #endif // NLS
 		       "BImageContol::~BImageControl: pixmap cache - "
-	               "releasing %d pixmaps\n"), n);
+	               "releasing %d pixmaps\n"), cache.size());
 
-    for (i = 0; i < n; i++) {
-      Cache *tmp = cache->first();
-      XFreePixmap(basedisplay->getXDisplay(), tmp->pixmap);
-      cache->remove(tmp);
-      delete tmp;
+    CacheList::iterator it = cache.begin();
+    CacheList::iterator it_end = cache.end();
+    for (; it != it_end; ++it) {
+      XFreePixmap(basedisplay->getXDisplay(), (*it)->pixmap);
+      delete (*it);
     }
 
 #ifdef    TIMEDCACHE
     if (timer) {
-      timer->stop();
       delete timer;
     }
 #endif // TIMEDCACHE
   }
-
-  delete cache;
 }
 
 
 Pixmap BImageControl::searchCache(unsigned int width, unsigned int height,
 		  unsigned long texture,
 		  BColor *c1, BColor *c2) {
-  if (cache->count()) {
-    LinkedListIterator<Cache> it(cache);
-
-    for (; it.current(); it++) {
-      if ((it.current()->width == width) &&
-          (it.current()->height == height) &&
-          (it.current()->texture == texture) &&
-          (it.current()->pixel1 == c1->getPixel()))
-          if (texture & BImage::GRADIENT) {
-            if (it.current()->pixel2 == c2->getPixel()) {
-              it.current()->count++;
-              return it.current()->pixmap;
-            }
-          } else {
-            it.current()->count++;
-            return it.current()->pixmap;
-          }
-        }
+  CacheList::iterator it = cache.begin();
+  CacheList::iterator it_end = cache.end();
+  for (; it != it_end; ++it) {
+		if (((*it)->width == width) &&
+				((*it)->height == height) &&
+				((*it)->texture == texture) &&
+				((*it)->pixel1 == c1->getPixel())) {
+			if (texture & BImage::GRADIENT) {
+				if ((*it)->pixel2 == c2->getPixel()) {
+					(*it)->count++;
+					return (*it)->pixmap;
+				}
+			} else {
+				(*it)->count++;
+				return (*it)->pixmap;
+			}
+		}
   }
 
   return None;
@@ -2303,9 +2296,9 @@ Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
     else
       tmp->pixel2 = 0l;
 
-    cache->insert(tmp);
+		cache.push_back(tmp);
 
-    if ((unsigned) cache->count() > cache_max) {
+    if ((unsigned) cache.size() > cache_max) {
 #ifdef    DEBUG
       fprintf(stderr,
               I18n::instance()->
@@ -2331,22 +2324,21 @@ Pixmap BImageControl::renderImage(unsigned int width, unsigned int height,
 
 void BImageControl::removeImage(Pixmap pixmap) {
   if (pixmap) {
-    LinkedListIterator<Cache> it(cache);
-    for (; it.current(); it++) {
-      if (it.current()->pixmap == pixmap) {
-	Cache *tmp = it.current();
-
-        if (tmp->count) {
-	  tmp->count--;
+		CacheList::iterator it = cache.begin();
+		CacheList::iterator it_end = cache.end();
+		for (; it != it_end; ++it) {
+      if ((*it)->pixmap == pixmap) {
+        if ((*it)->count) {
+					(*it)->count--;
 
 #ifdef    TIMEDCACHE
-	   if (! timer) timeout();
+					if (! timer) timeout();
 #else // !TIMEDCACHE
-	   if (! tmp->count) timeout();
+					if (! (*it)->count) timeout();
 #endif // TIMEDCACHE
-        }
+				}
 
-	return;
+				return;
       }
     }
   }
@@ -2586,14 +2578,16 @@ void BImageControl::parseColor(BColor *color, char *c) {
 
 
 void BImageControl::timeout(void) {
-  LinkedListIterator<Cache> it(cache);
-  for (; it.current(); it++) {
-    Cache *tmp = it.current();
+	CacheList::iterator it = cache.begin();
+	CacheList::iterator it_end = cache.end();
+	for (; it != it_end; ++it) {
+    Cache *tmp = (*it);
 
     if (tmp->count <= 0) {
       XFreePixmap(basedisplay->getXDisplay(), tmp->pixmap);
-      cache->remove(tmp);
+			it = cache.erase(it);
       delete tmp;
+		  if (it == it_end) break;
     }
   }
 }

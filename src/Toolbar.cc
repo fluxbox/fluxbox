@@ -503,18 +503,24 @@ void Toolbar::reconfigure(void) {
 		if (!iconbar) {
 			iconbar = new IconBar(screen, frame.window_label);
 			if (screen->getIconCount()) {
-				LinkedListIterator<FluxboxWindow> it(screen->getIconList());		
-				for(; it.current(); it++)
-					addIcon(it.current());
+                BScreen::Icons & l = screen->getIconList();
+				BScreen::Icons::iterator it = l.begin();
+				BScreen::Icons::iterator it_end = l.end();
+				for(; it != it_end; ++it) {
+					addIcon(*it);
+				}
 			}
 			
 		} else 
 			iconbar->reconfigure();
 	} else {
 		if (iconbar) {
-			LinkedListIterator<FluxboxWindow> it(screen->getIconList());
-			for (; it.current(); it++)
-				delIcon(it.current());
+			BScreen::Icons & l = screen->getIconList();
+			BScreen::Icons::iterator it = l.begin();
+			BScreen::Icons::iterator it_end = l.end();
+			for(; it != it_end; ++it) {
+				delIcon(*it);
+			}
 			delete iconbar;
 			iconbar = 0;
 		}
