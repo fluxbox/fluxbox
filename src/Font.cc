@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.9 2002/08/20 15:19:25 fluxgen Exp $
+//$Id: Font.cc,v 1.10 2002/09/03 12:05:01 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -47,6 +47,8 @@
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
+
+#include "StringUtil.hh"
 
 namespace FbTk
 {
@@ -219,7 +221,7 @@ const char *Font::getFontElement(const char *pattern, char *buf, int bufsiz, ...
 	buf[bufsiz-1] = 0;
 	buf[bufsiz-2] = '*';
 	while((v = va_arg(va, char *)) != 0) {
-		p = strcasestr(pattern, v);
+		p = StringUtil::strcasestr(pattern, v);
 		if (p) {
 			std::strncpy(buf, p+1, bufsiz-2);
 			p2 = strchr(buf, '-');
