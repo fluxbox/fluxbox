@@ -22,10 +22,10 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.9 2002/02/06 17:12:39 fluxgen Exp $
+// $Id: fluxbox.hh,v 1.10 2002/02/17 18:42:15 fluxgen Exp $
 
-#ifndef	 _FLUXBOX_HH_
-#define	 _FLUXBOX_HH_
+#ifndef	 FLUXBOX_HH
+#define	 FLUXBOX_HH
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -206,6 +206,7 @@ public:
 		
 private:
 	void handleButtonEvent(XButtonEvent &be);
+	void handleUnmapNotify(XUnmapEvent &ue);
 	void handleClientMessage(XClientMessageEvent &ce);
 	void handleKeyEvent(XKeyEvent &ke);	
 	void doWindowAction(Keys::KeyAction action);
