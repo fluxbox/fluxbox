@@ -13,7 +13,7 @@ $ #Maximize
 $ #Raise
 # In primo piano
 $ #Lower
-# In secondo piano
+# Sullo sfondo
 $ #Stick
 # Su tutte le aree di lavoro
 $ #KillClient

@@ -18,40 +18,40 @@ $ #AlwaysOnTop
 $ #PlacementTitle
 # Posizionamento
 $ #PlacementTopLeft
-# Alto A Sinistra
+# In alto a sinistra
 $ #PlacementCenterLeft
-# Centro A Sinistra
+# Al centro a sinistra
 $ #PlacementBottomLeft
-# Basso A Sinistra
+# In basso a sinistra
 $ #PlacementTopCenter
-# Alto Al Centro
+# In alto al centro
 $ #PlacementBottomCenter
-# Basso Al Centro
+# In basso al centro
 $ #PlacementTopRight
-# Alto A Destra
+# In alto a destra
 $ #PlacementCenterRight
-# Centro A Destra
+# Al centro a destra
 $ #PlacementBottomRight
-# Basso A Destra
+# In basso a destra
 $ #PlacementLeftTop
-# Sinistra In Alto
+# A sinistra in alto
 $ #PlacementLeftCenter
-# Sinistra Al Centro
+# A sinistra al centro
 $ #PlacementLeftBottom
-# Sinistra In Basso
+# A sinistra in basso
 $ #PlacementRightTop
-# Destra In Alto
+# A destra in alto
 $ #PlacementRightCenter
-# Destra Al Centro
+# A destra al centro
 $ #PlacementRightBottom
-# Destra In Basso
+# A destra in basso
 $ #PlacementTopRelative
-# Relativo In Alto
+# Relativo in alto
 $ #PlacementBottomRelative
-# Relativo In Basso
+# Relativo in basso
 $ #PlacementLeftRelative
-# Relativo A Sinistra
+# Relativo a sinistra
 $ #PlacementRightRelative
-# Relativo A Destra
+# Relativo a destra
 $ #AutoHide
-# Nascondi Automaticamente
+# Nascondi automaticamente

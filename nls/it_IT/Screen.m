@@ -4,19 +4,19 @@ $ #AnotherWMRunning
 # BScreen::BScreen: e' accaduto un errore nella interrogazione del server X.\n  \
 un altro window manager e' gia' attivo per il display %s.\n
 $ #ManagingScreen
-# BScreen::BScreen: usando schermo %d usando visuale 0x%lx, profondita' %d\n
+# BScreen::BScreen: sto usando lo schermo %d con visuale 0x%lx, profondita' %d\n
 $ #FontLoadFail
-# BScreen::LoadStyle(): non posso caricare il font '%s'\n
+# BScreen::LoadStyle(): non posso caricare il carattere '%s'\n
 $ #DefaultFontLoadFail
-# BScreen::LoadStyle(): non posso caricare il font predefinito.\n
+# BScreen::LoadStyle(): non posso caricare il carattere predefinito.\n
 $ #EmptyMenuFile
 # %s: file del menu vuoto\n
 $ #xterm
 # xterm
 $ #Restart
-# Restart
+# Riavvio
 $ #Exit
-# Exit
+# Uscita
 $ #EXECError
 # BScreen::parseMenuFile: [exec] errore, etichetta/comando di menu' non specificato\n
 $ #EXITError
@@ -25,26 +25,26 @@ $ #STYLEError
 # BScreen::parseMenuFile: [style] errore, nessuna etichetta di menu' e/o nome di file \
 specificato\n
 $ #CONFIGError
-# BScreen::parseMenuFile: [config] error, nessuna etichetta di menu' specificata\n
+# BScreen::parseMenuFile: [config] errore, nessuna etichetta di menu' specificata\n
 $ #INCLUDEError
-# BScreen::parseMenuFile: [include] error, nessun nome di file specificato\n
+# BScreen::parseMenuFile: [include] errore, nessun nome di file specificato\n
 $ #INCLUDEErrorReg
-# BScreen::parseMenuFile: [include] error, '%s' non e' un file regolare\n
+# BScreen::parseMenuFile: [include] errore, '%s' non e' un file regolare\n
 $ #SUBMENUError
-# BScreen::parseMenuFile: [submenu] error, nessuna etichetta di menu' specificata\n 
+# BScreen::parseMenuFile: [submenu] errore, nessuna etichetta di menu' specificata\n 
 $ #RESTARTError
-# BScreen::parseMenuFile: [restart] error, nessuna etichetta di menu' specificata\n
+# BScreen::parseMenuFile: [restart] errore, nessuna etichetta di menu' specificata\n
 $ #RECONFIGError
-# BScreen::parseMenuFile: [reconfig] error, nessuna etichetta di menu' specificata\n
+# BScreen::parseMenuFile: [reconfig] errore, nessuna etichetta di menu' specificata\n
 $ #STYLESDIRError
-# BScreen::parseMenuFile: [stylesdir/stylesmenu] error, nessuna directory specificata\n
+# BScreen::parseMenuFile: [stylesdir/stylesmenu] errore, nessuna directory specificata\n
 $ #STYLESDIRErrorNotDir
-# BScreen::parseMenuFile: [stylesdir/stylesmenu] error, '%s' non e' una \
+# BScreen::parseMenuFile: [stylesdir/stylesmenu] errore, '%s' non e' una \
 directory\n
 $ #STYLESDIRErrorNoExist
-# BScreen::parseMenuFile: [stylesdir/stylesmenu] error, '%s' non esiste\n
+# BScreen::parseMenuFile: [stylesdir/stylesmenu] errore, '%s' non esiste\n
 $ #WORKSPACESError
-# BScreen::parseMenuFile: [workspaces] error, nessuna etichetta di menu' specificata\n
+# BScreen::parseMenuFile: [workspaces] errore, nessuna etichetta di menu' specificata\n
 $ #PositionLength
 # 0: 0000 x 0: 0000
 $ #PositionFormat

@@ -2,7 +2,7 @@ $set 9 #Window
 
 
 $ #Creating
-# BlackboxWindow::BlackboxWindow: creando 0x%lx\n
+# BlackboxWindow::BlackboxWindow: sto creando 0x%lx\n
 $ #XGetWindowAttributesFail
 # BlackboxWindow::BlackboxWindow: XGetWindowAttributres fallito\n
 $ #CannotFindScreen

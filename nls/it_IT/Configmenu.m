@@ -9,7 +9,7 @@ $ #WindowPlacement
 $ #ImageDithering
 # Simulazione di colore nelle immagini
 $ #OpaqueMove
-# Movimento delle finestre opaco
+# Mostra il contenuto spostando le finestre
 $ #FullMax
 # Massimo ingrandimento
 $ #FocusNew
@@ -33,9 +33,9 @@ $ #LeftRight
 $ #RightLeft
 # Da destra a sinistra
 $ #TopBottom
-# Da sopra verso sotto
+# Dall'alto verso il basso
 $ #BottomTop
-# Da sotto verso sopra
+# Dal basso verso l'alto
 $ #Tabs
 # Usa le linguette
 $ #Icons

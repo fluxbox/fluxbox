@@ -1,4 +1,4 @@
 $set 2 #Basemenu
 
 $ #BlackboxMenu
-# Fluxbox Menu
+# Menu di Fluxbox

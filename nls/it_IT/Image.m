@@ -1,24 +1,25 @@
 $set 5 #Image
 
 $ #ErrorCreatingSolidPixmap
-# BImage::render_solid: errore creando la pixmap\n
+# BImage::render_solid: errore nel creare la pixmap\n
 $ #ErrorCreatingXImage
-# BImage::renderXImage: errore creando XImage\n
+# BImage::renderXImage: errore nel creare XImage\n
 $ #UnsupVisual
 # BImage::renderXImage: visuale non supportata\n
 $ #ErrorCreatingPixmap
-# BImage::renderPixmap: errore creando la pixmap\n
+# BImage::renderPixmap: errore nel creare la mappa dei colori\n
 $ #InvalidColormapSize
-# BImageControl::BImageControl: colormap non valida dimensione %d (%d/%d/%d) - riducendo\n
+# BImageControl::BImageControl: dimensione %d (%d/%d/%d) della mappa dei colori non \
+valida - sto riducendo\n
 $ #ErrorAllocatingColormap
-# BImageControl::BImageControl: error allocando la colormap\n
+# BImageControl::BImageControl: errore nell'allocare la mappa dei colori\n
 $ #ColorAllocFail
-# BImageControl::BImageControl: Fallimento nell'allocare il colore %d/%d/%d\n
+# BImageControl::BImageControl: fallimento nell'allocare il colore %d/%d/%d\n
 $ #PixmapRelease
 # BImageControl::~BImageControl: pixmap cache - rilasciando %d pixmaps\n
 $ #PixmapCacheLarge
-# BImageControl::renderImage: cache e' grande, forzando pulizia\n
+# BImageControl::renderImage: la cache e' troppo grande, ne sto forzando la pulizia\n
 $ #ColorParseError
-# BImageControl::getColor: errore nel parsing del colore: '%s'\n
+# BImageControl::getColor: errore nella lettura del colore: '%s'\n
 $ #ColorAllocError
 # BImageControl::getColor: errore nella allocazione del colore: '%s'\n
