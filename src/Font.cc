@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-//$Id: Font.cc,v 1.18 2002/10/24 11:30:45 fluxgen Exp $
+//$Id: Font.cc,v 1.19 2002/10/25 21:07:07 fluxgen Exp $
 
 
 #include "Font.hh"
@@ -34,9 +34,13 @@
 #include "XftFontImp.hh"
 #endif // USE_XFT
 
+// for multibyte support
+#ifdef USE_XMB
+#include "XmbFontImp.hh"
+#endif //USE_XMB
+
 // standard font system
 #include "XFontImp.hh"
-#include "XmbFontImp.hh"
 
 #include "StringUtil.hh"
 
@@ -57,8 +61,6 @@ using namespace std;
 #ifdef HAVE_SETLOCALE
 #include <locale.h>
 #endif //HAVE_SETLOCALE
-
-
 
 namespace FbTk {
 
@@ -92,9 +94,11 @@ m_antialias(false) {
 #endif //USE_XFT
 	// if we didn't create a Xft font then create basic font
 	if (m_fontimp.get() == 0) {
+#ifdef USE_XMB
 		if (m_multibyte || m_utf8mode)
 			m_fontimp.reset(new XmbFontImp(0, m_utf8mode));
 		else // basic font implementation
+#endif // USE_XMB
 			m_fontimp.reset(new XFontImp());
 	}
 	
@@ -116,11 +120,12 @@ void Font::setAntialias(bool flag) {
 	} else if (!flag && isAntialias()) 
 #endif // USE_XFT
 	{
+#ifdef USE_XMB
 		if (m_multibyte || m_utf8mode)
 			m_fontimp.reset(new XmbFontImp(m_fontstr.c_str(), m_utf8mode));
-		else {
+		else
+#endif // USE_XMB
 			m_fontimp.reset(new XFontImp(m_fontstr.c_str()));
-		}
 	}
 
 	if (m_fontimp->loaded() != loaded) { // if the new font failed to load, fall back to 'fixed'
