@@ -1,5 +1,12 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/09/29:
+  * Update from Han 
+   - make startup executable to save one process
+   - make pixmaps-dir
+   - use -a which falls back to -f for wallpapers(testing)
+   - some code cleanups.
+   fluxbox-generate_menu, fbsetbg, startfluxbox.in 
 *03/09/24:
   * Fix crash when closing active window while cycling focus (Simon)
     Screen.cc
