@@ -22,18 +22,20 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.cc,v 1.119 2003/08/28 15:04:47 fluxgen Exp $
+// $Id: Toolbar.cc,v 1.120 2003/08/29 00:44:41 fluxgen Exp $
 
 #include "Toolbar.hh"
 
 // themes
 #include "ToolbarTheme.hh"
+#include "WorkspaceNameTheme.hh"
 
 // tools
 #include "IconbarTool.hh"
 #include "WorkspaceNameTool.hh"
 #include "ClockTool.hh"
 #include "SystemTray.hh"
+
  
 #include "I18n.hh"
 #include "fluxbox.hh"
@@ -216,7 +218,6 @@ Toolbar::Frame::~Frame() {
 }
 
 Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t width):
-    m_editing(false),
     m_hidden(false),
     frame(*this, scrn.screenNumber()),
     m_window_pm(0),
@@ -232,7 +233,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
                 true),
     m_theme(scrn.screenNumber()),
     m_clock_theme(scrn.screenNumber(), "toolbar.clock", "Toolbar.Clock"),
-    m_workspace_theme(scrn.screenNumber(), "toolbar.workspace", "Toolbar.Workspace"),
+    m_workspace_theme(new WorkspaceNameTheme(scrn.screenNumber(), "toolbar.workspace", "Toolbar.Workspace")),
     m_iconbar_theme(scrn.screenNumber(), "toolbar.iconbar", "Toolbar.Iconbar"),
     m_layeritem(frame.window, layer),
     m_strut(0),
@@ -279,7 +280,7 @@ Toolbar::Toolbar(BScreen &scrn, FbTk::XLayer &layer, FbTk::Menu &menu, size_t wi
     // set antialias on themes
     m_clock_theme.setAntialias(screen().antialias());
     m_iconbar_theme.setAntialias(screen().antialias());
-    m_workspace_theme.setAntialias(screen().antialias());
+    m_workspace_theme->setAntialias(screen().antialias());
 
     // setup hide timer
     m_hide_timer.setTimeout(Fluxbox::instance()->getAutoRaiseDelay());
@@ -378,7 +379,7 @@ void Toolbar::lower() {
 void Toolbar::reconfigure() {
     m_clock_theme.setAntialias(screen().antialias());
     m_iconbar_theme.setAntialias(screen().antialias());
-    m_workspace_theme.setAntialias(screen().antialias());
+    m_workspace_theme->setAntialias(screen().antialias());
 
 
 
@@ -425,7 +426,7 @@ void Toolbar::reconfigure() {
             StringList::const_iterator item_it_end = m_tools.end();
             for (; item_it != item_it_end; ++item_it) {
                 if (*item_it == "workspacename") {
-                    WorkspaceNameTool *item = new WorkspaceNameTool(frame.window, m_workspace_theme, screen());
+                    WorkspaceNameTool *item = new WorkspaceNameTool(frame.window, *m_workspace_theme, screen());
                     using namespace FbTk;
                     RefCount<Command> showmenu(new ShowMenuAboveToolbar(*this));
                     item->button().setOnClick(showmenu);
@@ -621,8 +622,8 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
     if (max_height < m_clock_theme.font().height())
         max_height = m_clock_theme.font().height();
 
-    if (max_height < m_workspace_theme.font().height())
-        max_height = m_workspace_theme.font().height();
+    if (max_height < m_workspace_theme->font().height())
+        max_height = m_workspace_theme->font().height();
 
     if (max_height < m_iconbar_theme.focusedText().font().height())
         max_height = m_iconbar_theme.focusedText().font().height();
@@ -761,12 +762,6 @@ void Toolbar::setPlacement(Toolbar::Placement where) {
 }
 
 void Toolbar::toggleHidden() {
-    if (isEditing()) { // don't hide if we're editing workspace label
-        m_hide_timer.fireOnce(false);
-        m_hide_timer.start(); // restart timer and try next timeout
-        return;
-    }
-
     m_hide_timer.fireOnce(true);
 
     // toggle hidden

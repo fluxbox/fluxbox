@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Toolbar.hh,v 1.45 2003/08/28 13:58:17 fluxgen Exp $
+// $Id: Toolbar.hh,v 1.46 2003/08/29 00:44:41 fluxgen Exp $
 
 #ifndef	 TOOLBAR_HH
 #define	 TOOLBAR_HH
@@ -114,8 +114,6 @@ public:
     inline FbTk::Menu &layermenu() { return m_layermenu; }
     inline const FbTk::Menu &layermenu() const { return m_layermenu; }
 
-    /// are we in workspacename editing?
-    inline bool isEditing() const { return m_editing; }
     /// are we hidden?
     inline bool isHidden() const { return m_hidden; }
     /// do we auto hide the toolbar?
@@ -146,7 +144,6 @@ private:
     void clearStrut();
     void updateStrut();
 
-    bool m_editing;      ///< edit workspace label mode
     bool m_hidden;       ///< hidden state
 
     /// Toolbar frame
@@ -171,7 +168,8 @@ private:
 
     // themes
     ToolbarTheme m_theme;
-    ToolTheme m_clock_theme, m_workspace_theme;
+    ToolTheme m_clock_theme;
+    std::auto_ptr<ToolTheme> m_workspace_theme;
     IconbarTheme m_iconbar_theme;
 
     FbTk::XLayerItem m_layeritem;
