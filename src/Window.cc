@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.290 2004/06/19 15:04:27 rathnor Exp $
+// $Id: Window.cc,v 1.291 2004/06/20 04:49:32 rathnor Exp $
 
 #include "Window.hh"
 
@@ -432,7 +432,7 @@ void FluxboxWindow::init() {
         decorations.sticky = decorations.shade = decorations.tab = true;
 
 
-    functions.resize = functions.move = functions.iconify = functions.maximize = true;
+    functions.resize = functions.move = functions.iconify = functions.maximize = functions.tabable = true;
     decorations.close = false;
 
     if (m_client->getBlackboxHint() != 0)
@@ -1049,7 +1049,9 @@ void FluxboxWindow::updateMWMHintsFromClient(WinClient &client) {
                 decorations.maximize = true;
         }
     }
-	
+
+    // functions.tabable is ours, not special one
+    // note that it means this window is "tabbable"
     if (hint->flags & MwmHintsFunctions) {
         if (hint->functions & MwmFuncAll) {
             functions.resize = functions.move = functions.iconify =
@@ -2532,7 +2534,8 @@ void FluxboxWindow::motionNotifyEvent(XMotionEvent &me) {
 
             screen().showGeometry(gx, gy);
         }
-    } else if ((me.state & Button2Mask) && inside_titlebar && (client != 0 || m_attaching_tab != 0)) {
+    } else if (functions.tabable &&
+               (me.state & Button2Mask) && inside_titlebar && (client != 0 || m_attaching_tab != 0)) {
         //
         // drag'n'drop code for tabs
         //
@@ -3084,7 +3087,7 @@ void FluxboxWindow::attachTo(int x, int y, bool interrupted) {
             }
         }
         if (attach_to_win != this &&
-            attach_to_win != 0) {
+            attach_to_win != 0 && attach_to_win->isTabable()) {
 
             attach_to_win->attachClient(*m_attaching_tab);
 

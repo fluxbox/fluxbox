@@ -1,6 +1,9 @@
 (Format: Year/Month/Day)
 Changes for 0.9.10:
 *04/06/20:
+  * Support _NET_WM_WINDOW_TYPE_DESKTOP (Simon)
+    - eg nautilus desktop windows are on the bottom, not tabable, etc
+    Ewmh.hh/cc Window.hh/cc
   * Fix honouring of initial state on window open (Simon)
     Window.hh/cc Screen.cc
 *04/06/18:

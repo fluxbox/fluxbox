@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.hh,v 1.115 2004/06/19 15:04:28 rathnor Exp $
+// $Id: Window.hh,v 1.116 2004/06/20 04:49:33 rathnor Exp $
 
 #ifndef	 WINDOW_HH
 #define	 WINDOW_HH
@@ -258,7 +258,6 @@ public:
     void applyDecorations(bool initial = false);
     void toggleDecoration();
 
-
     unsigned int decorationMask() const;
     void setDecorationMask(unsigned int mask);
 
@@ -266,6 +265,13 @@ public:
        @name accessors		
     */
     //@{
+    // whether this window can be tabbed with other windows, 
+    // and others tabbed with it
+    inline void setTabable(bool tabable) { functions.tabable = tabable; }
+    inline bool isTabable() { return functions.tabable; }
+    inline void setMovable(bool movable) { functions.move = movable; }
+    inline void setResizable(bool resizable) { functions.resize = resizable; }
+
     inline bool isFocusHidden() const { return (m_blackbox_attrib.flags & ATTRIB_HIDDEN); }
     inline bool isIconHidden() const { return m_icon_hidden; } 
     inline bool isManaged() const { return m_managed; }
@@ -482,7 +488,7 @@ private:
     bool m_toggled_decos; 
 
     struct _functions {
-        bool resize, move, iconify, maximize, close;
+        bool resize, move, iconify, maximize, close, tabable;
     } functions;
 
     bool m_shaped; ///< if the window is shaped with a mask

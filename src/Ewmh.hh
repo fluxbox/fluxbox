@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.hh,v 1.17 2004/01/21 15:42:35 fluxgen Exp $
+// $Id: Ewmh.hh,v 1.18 2004/06/20 04:49:32 rathnor Exp $
 
 #include "AtomHandler.hh"
 
@@ -92,6 +92,7 @@ private:
         // types
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
+        m_net_wm_window_type_desktop,
 
         // states
         m_net_wm_state, m_net_wm_state_sticky, m_net_wm_state_shaded,

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Ewmh.cc,v 1.46 2004/06/07 11:46:04 rathnor Exp $
+// $Id: Ewmh.cc,v 1.47 2004/06/20 04:49:32 rathnor Exp $
 
 #include "Ewmh.hh" 
 
@@ -86,6 +86,7 @@ void Ewmh::initForScreen(BScreen &screen) {
         // window type
         m_net_wm_window_type,
         m_net_wm_window_type_dock,
+        m_net_wm_window_type_desktop,
 
         // root properties
         m_net_client_list,
@@ -178,6 +179,22 @@ void Ewmh::setupFrame(FluxboxWindow &win) {
                 win.setFocusHidden(true);
                 win.setIconHidden(true);
                 break;
+            } else if (atoms[l] == m_net_wm_window_type_desktop) {
+                /*
+                 * _NET_WM_WINDOW_TYPE_DOCK indicates a "false desktop" window
+                 * We let it be the size it wants, but it gets no decoration,
+                 * is hidden in the toolbar and window cycling list, plus
+                 * windows don't tab with it and is right on the bottom.
+                 */
+
+                win.setFocusHidden(true);
+                win.setIconHidden(true);
+                win.moveToLayer(Fluxbox::instance()->getDesktopLayer());
+                win.setDecorationMask(0);
+                win.setTabable(false);
+                win.setMovable(false);
+                win.setResizable(false);
+                win.stick();
             }
 
         }
@@ -657,6 +674,7 @@ void Ewmh::createAtoms() {
     // type atoms
     m_net_wm_window_type = XInternAtom(disp, "_NET_WM_WINDOW_TYPE", False);
     m_net_wm_window_type_dock = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DOCK", False);
+    m_net_wm_window_type_desktop = XInternAtom(disp, "_NET_WM_WINDOW_TYPE_DESKTOP", False);
 
     // state atom and the supported state atoms
     m_net_wm_state = XInternAtom(disp, "_NET_WM_STATE", False);
