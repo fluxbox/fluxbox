@@ -1,5 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.6:
+*03/10/30:
+  * Fix handling of theme's with a zero handleWidth (Simon)
+    FbWinFrame.cc
 *03/10/28:
   * Fix building with --disable-slit (Simon)
     Screen.cc

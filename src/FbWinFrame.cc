@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWinFrame.cc,v 1.60 2003/10/28 02:17:02 rathnor Exp $
+// $Id: FbWinFrame.cc,v 1.61 2003/10/30 20:27:51 rathnor Exp $
 
 #include "FbWinFrame.hh"
 
@@ -434,7 +434,7 @@ bool FbWinFrame::hideHandle() {
 }
 
 bool FbWinFrame::showHandle() {
-    if (m_use_handle)
+    if (m_use_handle || theme().handleWidth() == 0)
         return false;
 
     m_handle.show();
@@ -953,6 +953,9 @@ void FbWinFrame::init() {
     m_update_timer.setCommand(update_transp);
     m_update_timer.setTimeout(10L);
     m_update_timer.fireOnce(true);
+
+    if (theme().handleWidth() == 0)
+        m_use_handle = false;
 
     m_disable_shape = false;
 
