@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.68 2002/08/14 23:03:07 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.69 2002/08/16 11:09:25 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -581,7 +581,7 @@ void Fluxbox::process_event(XEvent *e) {
 	break;
 	case MapRequest:
 	{
-#ifdef		DEBUG
+#ifdef DEBUG
 		fprintf(stderr,
 			I18n::instance()->
 				getMessage(
@@ -651,7 +651,7 @@ void Fluxbox::process_event(XEvent *e) {
 	case MapNotify:
 	{
 		FluxboxWindow *win = searchWindow(e->xmap.window);
-		if (win!=0)
+		if (win != 0)
 			win->mapNotifyEvent(&e->xmap);
 
 	}
@@ -659,33 +659,34 @@ void Fluxbox::process_event(XEvent *e) {
 	
 
 	case UnmapNotify:
-	handleUnmapNotify(e->xunmap);
+		handleUnmapNotify(e->xunmap);
 	break;	
 	case CreateNotify:
-		break;
-	case DestroyNotify:
-		{
+	break;
+	case DestroyNotify: {
 			FluxboxWindow *win = (FluxboxWindow *) 0;
 
-			#ifdef SLIT
+#ifdef SLIT
 			Slit *slit = 0;
-			#endif // SLIT
+#endif // SLIT
 
 			if ((win = searchWindow(e->xdestroywindow.window))) {
 				if (win->destroyNotifyEvent(&e->xdestroywindow)) {
 					delete win;
 					win = 0;
 				}
-			#ifdef SLIT
-			} else if ((slit = searchSlit(e->xdestroywindow.window))) {
-				slit->removeClient(e->xdestroywindow.window, False);
-			#endif // SLIT
+
+			} 
+#ifdef SLIT
+			else if ((slit = searchSlit(e->xdestroywindow.window))) {
+				slit->removeClient(e->xdestroywindow.window, false);
+
 			}
+#endif // SLIT
 
 		}
 	break;
-	case MotionNotify:
-		{
+	case MotionNotify: {
 			last_time = e->xmotion.time;
 
 			FluxboxWindow *win = 0;
@@ -702,8 +703,7 @@ void Fluxbox::process_event(XEvent *e) {
 			
 		}
 	break;
-	case PropertyNotify:
-	{
+	case PropertyNotify: {
 			
 		last_time = e->xproperty.time;
 
@@ -716,8 +716,7 @@ void Fluxbox::process_event(XEvent *e) {
 			
 	}
 	break;
-	case EnterNotify:
-		{
+	case EnterNotify: {
 			last_time = e->xcrossing.time;
 
 			BScreen *screen = (BScreen *) 0;
@@ -774,7 +773,7 @@ void Fluxbox::process_event(XEvent *e) {
 				}
 			}
 				
-#ifdef		SLIT
+#ifdef SLIT
 			else if ((slit = searchSlit(e->xcrossing.window)))
 				slit->enterNotifyEvent(&e->xcrossing);
 #endif // SLIT
@@ -829,19 +828,16 @@ void Fluxbox::process_event(XEvent *e) {
 	case KeyPress:
 		handleKeyEvent(e->xkey);
 	break;
-	case ColormapNotify:
-	{
+	case ColormapNotify: {
 		BScreen *screen = searchScreen(e->xcolormap.window);
 
-		if (screen)
-		screen->setRootColormapInstalled((e->xcolormap.state ==
+		if (screen != 0) {
+			screen->setRootColormapInstalled((e->xcolormap.state ==
 				ColormapInstalled) ? True : False);
-
-	
+		}
 	}
 	break;
-	case FocusIn:
-	{
+	case FocusIn: {
 		if (e->xfocus.mode == NotifyUngrab ||
 				e->xfocus.detail == NotifyPointer)
 			break;
@@ -850,16 +846,13 @@ void Fluxbox::process_event(XEvent *e) {
 		if (win && ! win->isFocused())
 			setFocusedWindow(win);
 	
-	}
-	break;
+	} break;
 	case FocusOut:
 	break;
-
 	case ClientMessage:
 		handleClientMessage(e->xclient);
 	break;
-	default:
-		{
+	default: {
 
 		#ifdef SHAPE
 		if (e->type == getShapeEventBase()) {
@@ -1026,28 +1019,29 @@ void Fluxbox::handleUnmapNotify(XUnmapEvent &ue) {
 		
 	FluxboxWindow *win = 0;
 	
-	#ifdef SLIT
+#ifdef SLIT
 	Slit *slit = (Slit *) 0;
-	#endif // SLIT
+#endif // SLIT
 	BScreen *screen = searchScreen(ue.event);
 	
 	if ( (ue.event != ue.window) && (screen != 0 || !ue.send_event))
 	 	return;
 	
-	if ( (win = searchWindow(ue.window)) !=0 ) {
+	if ((win = searchWindow(ue.window)) != 0) {
 
-		if (win->unmapNotifyEvent(&ue))
+		if (win->unmapNotifyEvent(&ue)) {
 			delete win;
+			if (focused_window == win) // some extra checking
+				focused_window = 0;
+			win = 0;
+		}
   
 	}
-	#ifdef SLIT
+#ifdef SLIT
 	else if ((slit = searchSlit(ue.window))!=0) {
 		slit->removeClient(ue.window);
-		#ifdef DEBUG
-		cerr<<__FILE__<<"("<<__LINE__<<"): Here"<<endl;
-		#endif 
 	}
-	#endif // SLIT
+#endif // SLIT
 
 }
 
@@ -1594,6 +1588,8 @@ void Fluxbox::handleSignal(int sig) {
 			rereadMenu();
 		break;
 		case SIGSEGV:
+			abort();
+		break;
 		case SIGFPE:
 		case SIGINT:
 		case SIGTERM:
