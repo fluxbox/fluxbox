@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.26 2002/02/04 06:57:26 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.27 2002/02/06 10:17:30 fluxgen Exp $
 
 //Use some GNU extensions
 #ifndef	 _GNU_SOURCE
@@ -727,7 +727,8 @@ void Fluxbox::process_event(XEvent *e) {
 				// only process windows with StructureNotify selected 
 		     	// (ignore SubstructureNotify)
 			//    if (win->windowFor(e->xunmap.window))
-					if (win->getClientWindow()!=e->xunmap.window)
+					if (win->getClientWindow()!=e->xunmap.window ||
+						win->isTransient())
 						win->unmapNotifyEvent(&e->xunmap);
 			#ifdef SLIT
 			} else if ((slit = searchSlit(e->xunmap.window))) {
