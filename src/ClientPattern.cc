@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ClientPattern.cc,v 1.2 2003/06/13 12:01:06 fluxgen Exp $
+// $Id: ClientPattern.cc,v 1.3 2003/06/13 13:03:44 fluxgen Exp $
 
 #include "ClientPattern.hh"
 #include "RegExp.hh"
@@ -38,6 +38,7 @@
 #include <fstream>
 #include <string>
 #include <memory>
+#include <cstdio>
 
 using namespace std;
 
