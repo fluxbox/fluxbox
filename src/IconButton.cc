@@ -20,13 +20,15 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconButton.cc,v 1.6 2003/08/19 16:13:25 fluxgen Exp $
+// $Id: IconButton.cc,v 1.7 2003/08/24 16:24:19 fluxgen Exp $
 
 #include "IconButton.hh"
 
 #include "FbTk/App.hh"
 #include "FbTk/EventManager.hh"
 
+#include "fluxbox.hh"
+#include "Screen.hh"
 #include "Window.hh"
 #include "WinClient.hh"
 #include "SimpleCommand.hh"
@@ -40,6 +42,36 @@
 #include <X11/extensions/shape.h>
 #endif // SHAPE
 
+namespace {
+
+class ShowMenu: public FbTk::Command {
+public:
+    explicit ShowMenu(FluxboxWindow &win):m_win(win) { }
+    void execute() {
+        // get last button pos
+        const XEvent &event = Fluxbox::instance()->lastEvent();
+        int x = event.xbutton.x_root - (m_win.menu().width() / 2);
+        int y = event.xbutton.y_root - (m_win.menu().height() / 2);
+
+        if (x < 0)
+            x = 0;
+        else if (x + m_win.menu().width() > m_win.screen().width())
+            x = m_win.screen().width() - m_win.menu().width();
+
+        if (y < 0)
+            y = 0;
+        else if (y + m_win.menu().height() > m_win.screen().height())
+            y = m_win.screen().height() - m_win.menu().height();
+
+        m_win.menu().move(x, y);
+        m_win.menu().show();        
+    }
+private:
+    FluxboxWindow &m_win;
+};
+
+} // end anonymous namespace
+
 IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                        FluxboxWindow &win):
     FbTk::TextButton(parent, font, win.winClient().title()),
@@ -48,8 +80,9 @@ IconButton::IconButton(const FbTk::FbWindow &parent, const FbTk::Font &font,
                   ExposureMask | ButtonPressMask | ButtonReleaseMask) {
 
     FbTk::RefCount<FbTk::Command> focus(new FbTk::SimpleCommand<FluxboxWindow>(m_win, &FluxboxWindow::raiseAndFocus));
-    setOnClick(focus);
-
+    FbTk::RefCount<FbTk::Command> menu(new ::ShowMenu(m_win));
+    setOnClick(focus, 1);
+    setOnClick(menu, 3);
     m_win.hintSig().attach(this);
     
     FbTk::EventManager::instance()->add(*this, m_icon_window);
