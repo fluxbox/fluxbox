@@ -1,5 +1,27 @@
 (Format: Year/Month/Day)
 Changes for 0.1.13:
+*02/10/19:
+   * Fixed terminal option for fluxbox-generate_menu (Thanks Han)
+   * Fixed bug [ 604634 ] Fluxbox 0.1.11 menu on iconbar problem
+     Toolbar.cc
+   * Fixed ascent and descent in FontImps
+   * Added testsuit for FbTk::Font
+     src/tests/testFont.cc, src/tests/Makefile
+   * Updated fluxbox-generate_menu it_IT locales and
+     added DEFAULT_TERM value (Thanks Filippo Pappalardo)
+*02/10/18:
+   * Added it_IT locales to fluxbox-generate_menu and updated
+     data/nls/it_IT  (Thanks Filippo Pappalardo)
+*02/10/16:
+   * Fixed UTF-8 for antialias fonts
+     XftFontImp.cc/hh, Font.cc
+   * Fixed support for:
+     _NET_WM_DESKTOP,
+     _NET_NUMBER_OF_DESKTOPS,
+	 _NET_CURRENT_DESKTOP,
+	 _NET_ACTIVE_WINDOW,
+	 _NET_CLOSE_WINDOW
+	 Ewmh.hh/cc
 *02/10/15:
    * Conditional compile/linking of Xft specific files
      src/Makefile.am, configure.in
