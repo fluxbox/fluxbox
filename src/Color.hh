@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.hh,v 1.2 2002/09/14 13:49:09 fluxgen Exp $
+// $Id: Color.hh,v 1.3 2002/09/20 13:02:40 fluxgen Exp $
 
 #ifndef FBTK_COLOR_HH
 #define FBTK_COLOR_HH
@@ -45,8 +45,8 @@ public:
 	bool setFromString(const char *color_string, int screen);
 	/// TODO don't like this
 	void setPixel(unsigned long pixel) { m_pixel = pixel; }
-	
-	Color &operator = (const Color &col_copy);
+	// TODO
+	//Color &operator = (const Color &col_copy);
 	
 	bool isAllocated() const { return m_allocated; }
 	unsigned char red() const { return m_red; }

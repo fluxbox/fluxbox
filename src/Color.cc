@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Color.cc,v 1.2 2002/09/14 13:49:51 fluxgen Exp $
+// $Id: Color.cc,v 1.3 2002/09/20 13:02:39 fluxgen Exp $
 
 #include "Color.hh"
 
@@ -57,7 +57,8 @@ m_screen(screen) {
 }
 
 Color::Color(const char *color_string, int screen):
-m_allocated(false) {
+m_allocated(false),
+m_screen(screen) {
 	setFromString(color_string, screen);
 }
 
@@ -94,10 +95,16 @@ bool Color::setFromString(const char *color_string, int screen) {
 	return true;
 }
 
+/*
 Color &Color::Color::operator  = (const Color &col_copy) {
+	// check for aliasing
+	if (this == &col_copy)
+		return *this;
+
 	copy(col_copy);
 	return *this;
 }
+*/
 
 void Color::free() {
 	if (isAllocated()) {
@@ -113,9 +120,11 @@ void Color::free() {
 void Color::copy(const Color &col_copy) {
 	if (!col_copy.isAllocated()) {
 		free();
+		setRGB(col_copy.red(), col_copy.green(), col_copy.blue());
+		setPixel(col_copy.pixel());
 		return;
 	}
-	
+
 	free();
 		
 	allocate(col_copy.red(), 
@@ -131,8 +140,9 @@ void Color::allocate(unsigned char red, unsigned char green, unsigned char blue,
 	XColor color;
 	// fill xcolor structure
 	color.red = red;
+	color.green = green;	
 	color.blue = blue;
-	color.green = green;
+	
 	
 	if (!XAllocColor(disp, DefaultColormap(disp, screen), &color)) {
 		cerr<<"FbTk::Color: Allocation error."<<endl;
@@ -143,6 +153,8 @@ void Color::allocate(unsigned char red, unsigned char green, unsigned char blue,
 		setPixel(color.pixel);
 		setAllocated(true);
 	}
+	
+	m_screen = screen;
 }
 
 void Color::setRGB(unsigned char red, unsigned char green, unsigned char blue) {
@@ -150,4 +162,5 @@ void Color::setRGB(unsigned char red, unsigned char green, unsigned char blue) {
 	m_green = green;
 	m_blue = blue;
 }
+
 };
