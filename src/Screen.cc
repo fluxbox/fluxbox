@@ -185,7 +185,7 @@ BScreen::BScreen(Fluxbox *b, int scrn) : ScreenInfo(b, scrn) {
 	fluxbox->load_rc(this);
 
 	image_control->setDither(resource.image_dither);
-	theme = new Theme(getBaseDisplay()->getXDisplay(), getColormap(), getScreenNumber(), 
+	theme = new Theme(getBaseDisplay()->getXDisplay(), getRootWindow(), getColormap(), getScreenNumber(), 
 			image_control, fluxbox->getStyleFilename());
 #ifdef GNOME
 	/* create the GNOME window */
