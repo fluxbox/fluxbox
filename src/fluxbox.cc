@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.237 2004/04/05 18:31:51 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.238 2004/04/18 21:16:06 fluxgen Exp $
 
 #include "fluxbox.hh"
 
@@ -478,15 +478,15 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
 
     // setup atom handlers before we create any windows
 #ifdef USE_GNOME
-    addAtomHandler(new Gnome()); // for gnome 1 atom support
+    addAtomHandler(new Gnome(), "gnome"); // for gnome 1 atom support
 #endif //USE_GNOME
 
 #ifdef USE_NEWWMSPEC
-    addAtomHandler(new Ewmh()); // for Extended window manager atom support
+    addAtomHandler(new Ewmh(), "ewmh"); // for Extended window manager atom support
 #endif // USE_NEWWMSPEC
 
 #ifdef REMEMBER
-    addAtomHandler(new Remember()); // for remembering window attribs
+    addAtomHandler(new Remember(), "remember"); // for remembering window attribs
 #endif // REMEMBER
 
     grab();
@@ -552,8 +552,10 @@ Fluxbox::Fluxbox(int argc, char **argv, const char *dpy_name, const char *rcfile
         screen->clientListSig().attach(this);
 
         // initiate atomhandler for screen specific stuff
-        for (size_t atomh=0; atomh<m_atomhandler.size(); ++atomh) {
-            m_atomhandler[atomh]->initForScreen(*screen);
+        for (AtomHandlerContainerIt it= m_atomhandler.begin();
+             it != m_atomhandler.end(); 
+             it++) {
+            (*it).first->initForScreen(*screen);
         }
 
         revertFocus(*screen); // make sure focus style is correct
@@ -604,9 +606,10 @@ Fluxbox::~Fluxbox() {
     }
 
     // destroy atomhandlers
-    while (!m_atomhandler.empty()) {
-        delete m_atomhandler.back();
-        m_atomhandler.pop_back();
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end();
+         it++) {
+        delete (*it).first;
     }
 
     while (!m_screen_list.empty()) {
@@ -906,8 +909,9 @@ void Fluxbox::handleEvent(XEvent * const e) {
             break;
         // most of them are handled in FluxboxWindow::handleEvent
         // but some special cases like ewmh propertys needs to be checked 
-        for (size_t i=0; i<m_atomhandler.size(); ++i) {
-            if (m_atomhandler[i]->propertyNotify(*winclient, e->xproperty.atom))
+        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+             it != m_atomhandler.end(); it++) {
+            if ( (*it).first->propertyNotify(*winclient, e->xproperty.atom))
                 break;
         }
     } break;
@@ -1198,8 +1202,9 @@ void Fluxbox::handleClientMessage(XClientMessageEvent &ce) {
         BScreen *screen = searchScreen(ce.window);
         // note: we dont need screen nor winclient to be non-null, 
         // it's up to the atomhandler to check that
-        for (size_t i=0; i<m_atomhandler.size(); ++i) {
-            m_atomhandler[i]->checkClientMessage(ce, screen, winclient);
+        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+             it != m_atomhandler.end(); it++) {
+            (*it).first->checkClientMessage(ce, screen, winclient);
         }
 
     }
@@ -1307,14 +1312,16 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         FluxboxWindow::WinSubject *winsub = dynamic_cast<FluxboxWindow::WinSubject *>(changedsub);
         FluxboxWindow &win = winsub->win();
         if ((&(win.hintSig())) == changedsub) { // hint signal
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateHints(win);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+                 it != m_atomhandler.end(); ++it) {
+                if ( (*it).first->update())
+                    (*it).first->updateHints(win);
             }
         } else if ((&(win.stateSig())) == changedsub) { // state signal
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateState(win);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateState(win);
             }
             // if window changed to iconic state
             // add to icon list
@@ -1337,14 +1344,16 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
             }
         } else if ((&(win.layerSig())) == changedsub) { // layer signal
 
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateLayer(win);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateLayer(win);
             }
         } else if ((&(win.dieSig())) == changedsub) { // window death signal
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateFrameClose(win);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateFrameClose(win);
             }
             // make sure each workspace get this 
             BScreen &scr = win.screen();
@@ -1353,9 +1362,10 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
                 m_focused_window = 0;
 
         } else if ((&(win.workspaceSig())) == changedsub) {  // workspace signal
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateWorkspace(win);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateWorkspace(win);
             }            
         } else {
 #ifdef DEBUG
@@ -1367,29 +1377,34 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         BScreen::ScreenSubject *subj = dynamic_cast<BScreen::ScreenSubject *>(changedsub);
         BScreen &screen = subj->screen();
         if ((&(screen.workspaceCountSig())) == changedsub) {
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateWorkspaceCount(screen);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateWorkspaceCount(screen);
             }
         } else if ((&(screen.workspaceNamesSig())) == changedsub) {
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateWorkspaceNames(screen);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateWorkspaceNames(screen);
             }
         } else if ((&(screen.currentWorkspaceSig())) == changedsub) {
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateCurrentWorkspace(screen);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateCurrentWorkspace(screen);
             }
         } else if ((&(screen.workspaceAreaSig())) == changedsub) {
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateWorkarea(screen);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateWorkarea(screen);
             }
         } else if ((&(screen.clientListSig())) == changedsub) {
-            for (size_t i=0; i<m_atomhandler.size(); ++i) {
-                if (m_atomhandler[i]->update())
-                    m_atomhandler[i]->updateClientList(screen);
+            for (AtomHandlerContainerIt it= m_atomhandler.begin();
+                 it != m_atomhandler.end(); ++it) {
+                if ((*it).first->update())
+                    (*it).first->updateClientList(screen);
             }
         }
     } else if (typeid(*changedsub) == typeid(WinClient::WinClientSubj)) {
@@ -1398,9 +1413,10 @@ void Fluxbox::update(FbTk::Subject *changedsub) {
         WinClient &client = subj->winClient();
 
         // TODO: don't assume it is diesig (need to fix as soon as another signal appears)
-        for (size_t i=0; i<m_atomhandler.size(); ++i) {
-            if (m_atomhandler[i]->update())
-                m_atomhandler[i]->updateClientClose(client);
+        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+             it != m_atomhandler.end(); ++it) {
+            if ((*it).first->update())
+                (*it).first->updateClientClose(client);
         }
 
         BScreen &screen = client.screen();
@@ -1430,16 +1446,18 @@ void Fluxbox::attachSignals(FluxboxWindow &win) {
     win.workspaceSig().attach(this);
     win.layerSig().attach(this);
     win.dieSig().attach(this);
-    for (size_t i=0; i<m_atomhandler.size(); ++i) {
-        m_atomhandler[i]->setupFrame(win);
+    for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+         it != m_atomhandler.end(); ++it) {
+        (*it).first->setupFrame(win);
     }
 }
 
 void Fluxbox::attachSignals(WinClient &winclient) {
     winclient.dieSig().attach(this);
 
-    for (size_t i=0; i<m_atomhandler.size(); ++i) {
-        m_atomhandler[i]->setupClient(winclient);
+    for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+         it != m_atomhandler.end(); ++it) {
+        (*it).first->setupClient(winclient);
     }
 }
 
@@ -1455,18 +1473,27 @@ BScreen *Fluxbox::searchScreen(Window window) {
     return 0;
 }
 
-void Fluxbox::addAtomHandler(AtomHandler *atomh) {
-    for (unsigned int handler = 0; handler < m_atomhandler.size(); handler++) {
-        if (m_atomhandler[handler] == atomh) 
-            return;
+
+const AtomHandler* Fluxbox::getAtomHandler(std::string name) {
+    if ( name != "" ) {
+        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+             it != m_atomhandler.end(); it++ ) {
+            if ( name == (*it).second )
+                return (*it).first;
+        }
     }
-    m_atomhandler.push_back(atomh);
+    return 0;
+}
+void Fluxbox::addAtomHandler(AtomHandler *atomh, std::string name) {
+    m_atomhandler[atomh]= name;;
 }
 
 void Fluxbox::removeAtomHandler(AtomHandler *atomh) {
-    std::vector<AtomHandler *>::iterator it = m_atomhandler.begin();        
-    for (; it != m_atomhandler.end(); ++it) {
-        if (*it == atomh) {
+
+    for (AtomHandlerContainerIt it= m_atomhandler.begin();
+         it != m_atomhandler.end(); 
+         ++it) {
+        if ((*it).first == atomh) {
             m_atomhandler.erase(it);
             return;
         }
@@ -1954,9 +1981,10 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (screen != 0) {
         screen->updateNetizenWindowFocus();
-        for (size_t i=0; i < m_atomhandler.size(); ++i) {
+        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+             it != m_atomhandler.end(); it++) {
             
-            m_atomhandler[i]->updateFocusedWindow(*screen, (m_focused_window ? 
+            (*it).first->updateFocusedWindow(*screen, (m_focused_window ? 
                                                             m_focused_window->window() :
                                                             0));
         }
@@ -1964,8 +1992,9 @@ void Fluxbox::setFocusedWindow(WinClient *client) {
 
     if (old_screen && old_screen != screen) {
         old_screen->updateNetizenWindowFocus();
-        for (size_t i=0; i < m_atomhandler.size(); ++i)
-            m_atomhandler[i]->updateFocusedWindow(*old_screen, 0);
+        for (AtomHandlerContainerIt it= m_atomhandler.begin(); 
+             it != m_atomhandler.end(); it++)
+            (*it).first->updateFocusedWindow(*old_screen, 0);
     }
 
 }

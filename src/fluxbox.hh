@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.hh,v 1.84 2004/03/21 09:00:25 rathnor Exp $
+// $Id: fluxbox.hh,v 1.85 2004/04/18 21:16:06 fluxgen Exp $
 
 #ifndef	 FLUXBOX_HH
 #define	 FLUXBOX_HH
@@ -101,7 +101,8 @@ public:
     inline unsigned int getUpdateDelayTime() const { return *m_rc_update_delay_time; }
     inline Time getLastTime() const { return m_last_time; }
 
-    void addAtomHandler(AtomHandler *atomh);
+    const AtomHandler* getAtomHandler(std::string name);
+    void addAtomHandler(AtomHandler *atomh, std::string name= "");
     void removeAtomHandler(AtomHandler *atomh);
 
     /// obsolete
@@ -292,7 +293,11 @@ private:
     //default arguments for titlebar left and right
     static Fluxbox::Titlebar s_titlebar_left[], s_titlebar_right[];
     static Fluxbox *s_singleton;
-    std::vector<AtomHandler *> m_atomhandler;
+
+    typedef std::map<AtomHandler *, std::string> AtomHandlerContainer;
+    typedef AtomHandlerContainer::iterator AtomHandlerContainerIt;
+
+    AtomHandlerContainer m_atomhandler;
     std::vector<Toolbar *> m_toolbars;
 
     bool m_starting;
