@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Gnome.cc,v 1.1 2002/09/07 20:32:44 fluxgen Exp $
+// $Id: Gnome.cc,v 1.2 2002/09/08 10:58:30 fluxgen Exp $
 
 #include "Gnome.hh"
 #include "Window.hh"
@@ -75,6 +75,33 @@ void Gnome::initForScreen(const BScreen &screen) {
 	updateWorkspaceCount(screen);
 	updateCurrentWorkspace(screen);
 	
+}
+
+void Gnome::setupWindow(FluxboxWindow &win) {
+	// load gnome state atom
+	Display *disp = BaseDisplay::getXDisplay();
+	Atom ret_type;
+	int fmt;
+	unsigned long nitems, bytes_after;
+	long flags, *data = 0;
+
+	if (XGetWindowProperty(disp, win.getClientWindow(), 
+			m_gnome_wm_win_state, 0, 1, False, XA_CARDINAL, 
+			&ret_type, &fmt, &nitems, &bytes_after, 
+			(unsigned char **) &data) ==  Success && data) {
+		flags = *data;
+		setState(&win, flags);
+		XFree (data);
+	}
+
+	if (XGetWindowProperty(disp, win.getClientWindow(),
+		m_gnome_wm_win_workspace, 0, 1, False, XA_CARDINAL,
+			&ret_type, &fmt, &nitems, &bytes_after,
+			(unsigned char **)&data) == Success && data) {
+#ifdef DEBUG	
+		cerr<<__FILE__<<"("<<__LINE__<<"): Workspace: "<<*data<<endl;
+#endif // DEBUG
+	}
 }
 
 void Gnome::updateClientList(const BScreen &screen) {
@@ -139,7 +166,7 @@ void Gnome::updateWorkspaceNames(const BScreen &screen) {
 	}
 	
 	for (int i = 0; i < number_of_desks; i++)
-		delete [] names[i];		
+		delete [] names[i];
 }
 
 void Gnome::updateCurrentWorkspace(const BScreen &screen) {
@@ -159,22 +186,29 @@ void Gnome::updateWorkspaceCount(const BScreen &screen) {
 		(unsigned char *)&numworkspaces, 1);
 }
 
-void Gnome::updateState(FluxboxWindow *win) {
+void Gnome::updateWorkspace(FluxboxWindow &win) {
+	int val = win.getWorkspaceNumber(); 
+	XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
+		m_gnome_wm_win_workspace, 
+		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&val, 1);
+}
+
+void Gnome::updateState(FluxboxWindow &win) {
 	//translate to gnome win state
 	int state=0;
-	if (win->isStuck())
+	if (win.isStuck())
 		state |= WIN_STATE_STICKY;
-	if (win->isIconic())
+	if (win.isIconic())
 		state |= WIN_STATE_MINIMIZED;
-	if (win->isShaded())
+	if (win.isShaded())
 		state |= WIN_STATE_SHADED;
 	
-	XChangeProperty(BaseDisplay::getXDisplay(), win->getClientWindow(), 
+	XChangeProperty(BaseDisplay::getXDisplay(), win.getClientWindow(), 
 		m_gnome_wm_win_state,
 		XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&state, 1);
 }
 
-void Gnome::updateHints(FluxboxWindow *win) {
+void Gnome::updateHints(FluxboxWindow &win) {
 	//TODO
 	
 }
