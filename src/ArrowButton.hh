@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.hh,v 1.3 2003/05/17 11:30:59 fluxgen Exp $
+// $Id: ArrowButton.hh,v 1.4 2003/10/13 23:51:04 fluxgen Exp $
 
 #ifndef ARROWBUTTON_HH
 #define ARROWBUTTON_HH
@@ -31,7 +31,7 @@ class ArrowButton: public FbTk::Button {
 public:
     enum Type { LEFT, RIGHT, UP, DOWN};
 
-    ArrowButton(Type arrow_type, FbTk::FbWindow &parent,
+    ArrowButton(Type arrow_type, const FbTk::FbWindow &parent,
                 int x, int y, 
                 unsigned int width, unsigned int height);
     ArrowButton(Type arrow_type, int screen_num,

@@ -19,12 +19,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: ArrowButton.cc,v 1.4 2003/08/13 09:38:09 fluxgen Exp $
+// $Id: ArrowButton.cc,v 1.5 2003/10/13 23:51:04 fluxgen Exp $
 
 #include "ArrowButton.hh"
 
 ArrowButton::ArrowButton(ArrowButton::Type arrow_type,
-                         FbTk::FbWindow &parent,
+                         const FbTk::FbWindow &parent,
                          int x, int y,
                          unsigned int width, unsigned int height):
     FbTk::Button(parent, x, y, width, height),
