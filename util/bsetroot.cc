@@ -1,4 +1,4 @@
-// Copyright (c) 2002 Henrik Kinnunen (fluxgen@linuxmail.org)
+// Copyright (c) 2002 Henrik Kinnunen (fluxgen at linuxmail.org)
 // Copyright (c) 1997 - 2000 Brad Hughes <bhughes at trolltech.com>
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -18,15 +18,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 
-// $Id: bsetroot.cc,v 1.12 2002/11/27 21:52:34 fluxgen Exp $
+// $Id: bsetroot.cc,v 1.13 2002/11/30 21:07:51 fluxgen Exp $
 
 #include "bsetroot.hh"
 
 #include "../src/i18n.hh"
-#include "../src/Image.hh"
+#include "../src/ImageControl.hh"
 
 #ifdef HAVE_CONFIG_H
-#  include "../config.h"
+#include "config.h"
 #endif // HAVE_CONFIG_H
 
 #include <X11/Xatom.h>
@@ -49,7 +49,7 @@ bsetroot::bsetroot(int argc, char **argv, char *dpy_name)
 
 	img_ctrl = new BImageControl*[getNumberOfScreens()];
 	for (; i < getNumberOfScreens(); i++) {
-		img_ctrl[i] = new BImageControl(getScreenInfo(i), true);
+		img_ctrl[i] = new BImageControl(i, true);
 	}
 
 	for (i = 1; i < argc; i++) {
