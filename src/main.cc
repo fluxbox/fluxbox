@@ -63,6 +63,9 @@ using namespace std;
 void showInfo(ostream &ostr) {
     _FB_USES_NLS;
     ostr<<_FBTEXT(Common, FluxboxVersion, "Fluxbox version", "Fluxbox version heading")<<": "<<__fluxbox_version<<endl;
+
+    if (strlen(svnversion()) > 0)
+        ostr<<"SVN Revision: "<<svnversion()<<endl;
 #if defined(__DATE__) && defined(__TIME__)
     ostr<<_FBTEXT(Common, Compiled, "Compiled", "Time fluxbox was compiled")<<": "<<__DATE__<<" "<<__TIME__<<endl;
 #endif
@@ -221,7 +224,7 @@ int main(int argc, char **argv) {
                            "\t-help\t\t\t\tdisplay this help text and exit.\n\n",
 
                            "Main usage string. Please lay it out nicely. There is one %s that is given the version"),
-                   __fluxbox_version, "2001-2004");
+                   __fluxbox_version, "2001-2005");
             exit(0);
         } else if (strcmp(argv[i], "-info") == 0 || strcmp(argv[i], "-i") == 0) {
             showInfo(cout);

@@ -41,10 +41,19 @@ defaults.hh: Makefile
 	echo '#define DEFAULTKEYSFILE "$(DEFAULT_KEYSFILE)"' >> defaults.hh
 	echo '#define DEFAULT_INITFILE "$(pkgdatadir)/init"' >> defaults.hh
 	echo '#define LOCALEPATH "$(pkgdatadir)/nls"' >> defaults.hh
+	echo 'const char* svnversion(void);' >> defaults.hh
+
+defaults.cc: force
+	echo 'const char* svnversion(void) {' > defaults.cc
+	echo '  return "'`(svnversion . | sed "s/[^0-9].*//") 2> /dev/null`'";' >> defaults.cc
+	echo '}' >> defaults.cc
+
+force: ;
 
 # an extra dep for fluxbox
-
 fluxbox.$(OBJEXT): defaults.hh
+
+
 
 if NEWWMSPEC
 newwmspec_SOURCE= Ewmh.hh Ewmh.cc
@@ -120,4 +129,4 @@ fluxbox_SOURCES = AtomHandler.hh ArrowButton.hh ArrowButton.cc \
 	${REMEMBER_SOURCE} ${REGEXP_SOURCE} ${TOOLBAR_SOURCE}
 
 
-LDADD=FbTk/libFbTk.a
+LDADD=FbTk/libFbTk.a defaults.$(OBJEXT)
