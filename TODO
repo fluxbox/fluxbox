@@ -12,7 +12,6 @@
   you are in "change workspace mode"
 * The BadAccess error in Theme
 * Finnish (Finland) translation
-* Keybinding for ROOTMENU
 * Wheel-config support
 * Separator in the menus
 * Fix "move group to..." without tab bugg.

@@ -1,5 +1,13 @@
 (Format: Year/Month/Day)
-changes for 0.1.8:
+Changes for 0.1.8:
+*02/04/09:
+   * Added RootMenu action to Keys.cc/hh and fluxbox.cc , this will pop up the 
+     Root menu. (Thanks Stanislav Karchebny)
+*02/04/08:
+   * Fixed a few comments in StringUtil.cc (Thanks Maurits Dijkstra)
+   * Clean up in Basemenu.hh/cc
+*02/04/05:
+   * Fixed unsigned/signed in Basemenu.cc
 *02/04/04:
    * Moved NLS types from #define to enums and moved them into 
      namespace FBNLS, this way we don't pollute the global namespace too much.
@@ -44,15 +52,15 @@ changes for 0.1.8:
      a non pointer variable
    * Clean up in class BTimer (Timer.cc/hh)
      BTimer now register it self to a static list in the class BTimer
-	 and update timers with the static function updateTimers(int fd)
-	 The cyclic dep between BaseDisplay and BTimer is now gone.
+     and update timers with the static function updateTimers(int fd)
+     The cyclic dep between BaseDisplay and BTimer is now gone.
    * Added FbAtoms.hh/cc where all the atoms is.
      Makes the interface in BaseDisplay cleaner
    * Fixed std::max/min
    * Added better window cycling with optional parameters (Thanks Steve Cooper)
      NextWindow and PrevWindow now takes an integer parameter.
-	 parameter values:
-	 0 or unspecified = Default/current behavior - no skipping
+     parameter values:
+     0 or unspecified = Default/current behavior - no skipping
      1 = Skip: lower tabs
      2 = Skip: stuck windows
      3 = Skip: lower tabs/stuck windows
@@ -61,13 +69,13 @@ changes for 0.1.8:
      6 = Skip: stuck windows/shaded windows
      7 = Skip: lower tabs/stuck windows/shaded windows
 *02/03/15:
-	* Xinerama support, maximizes windows to the current heads size, places
-	windows on the current head, makes it possible to place toolbar on
-	the different heads, also possible with the slit. Menus will be placed
-	on the current head too. (Claes Nästen)
+    * Xinerama support, maximizes windows to the current heads size, places
+      windows on the current head, makes it possible to place toolbar on
+      the different heads, also possible with the slit. Menus will be placed
+      on the current head too. (Claes Nästen)
 *02/03/13:
-	* Fixed window placement, now tabs are taking in account. Also,
-	no spaced are put inbetween windows to save space. (Claes Nästen)
+    * Fixed window placement, now tabs are taking in account. Also,
+      no spaced are put inbetween windows to save space. (Claes Nästen)
 *02/03/11:
    * Fixed some KDE stuff in Slit.cc (Thanks Tommi Komulainen)
 *02/03/08:
