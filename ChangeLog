@@ -1,6 +1,8 @@
 (Format: Year/Month/Day)
 Changes for 0.9.12
 *05/01/10:
+  * Fix for #1087220 (WithdrawnState handling) Mathias
+    fluxbox.cc
   * Fix position initialisation from apps file (Simon)
     Window.cc
 *05/01/05:
