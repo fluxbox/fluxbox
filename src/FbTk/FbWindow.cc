@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.28 2003/10/26 20:52:28 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.29 2003/12/30 17:17:05 fluxgen Exp $
 
 #include "FbWindow.hh"
 
@@ -303,26 +303,6 @@ void FbWindow::showSubwindows() {
 
 void FbWindow::hide() {
     XUnmapWindow(s_display, m_window);
-}
-
-void FbWindow::move(int x, int y) {
-    XMoveWindow(s_display, m_window, x, y);
-    m_x = x;
-    m_y = y;
-}
-
-void FbWindow::resize(unsigned int width, unsigned int height) {
-    XResizeWindow(s_display, m_window, width, height);
-    m_width = width;
-    m_height = height;
-}
-
-void FbWindow::moveResize(int x, int y, unsigned int width, unsigned int height) {
-    XMoveResizeWindow(s_display, m_window, x, y, width, height);
-    m_x = x;
-    m_y = y;
-    m_width = width;
-    m_height = height;
 }
 
 void FbWindow::lower() {

@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.26 2003/12/16 17:06:49 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.27 2003/12/30 17:17:05 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -91,9 +91,25 @@ public:
     virtual void show();
     virtual void showSubwindows();
 
-    virtual void move(int x, int y);
-    virtual void resize(unsigned int width, unsigned int height);
-    virtual void moveResize(int x, int y, unsigned int width, unsigned int height);
+    virtual inline void move(int x, int y) {
+        XMoveWindow(s_display, m_window, x, y);
+        m_x = x;
+        m_y = y;
+    }
+
+    virtual inline void resize(unsigned int width, unsigned int height) {
+            XResizeWindow(s_display, m_window, width, height);
+            m_width = width;
+            m_height = height;
+    }
+
+    virtual inline void moveResize(int x, int y, unsigned int width, unsigned int height) {
+        XMoveResizeWindow(s_display, m_window, x, y, width, height);
+        m_x = x;
+        m_y = y;
+        m_width = width;
+        m_height = height;
+    }
     virtual void lower();
     virtual void raise();
     void setInputFocus(int revert_to, int time);
@@ -175,7 +191,7 @@ class ChangeProperty {
 public:
     ChangeProperty(Display *disp, Atom prop, int mode,
                    unsigned char *state, int num):m_disp(disp),
-    m_prop(prop), m_state(state), m_num(num), m_mode(mode){
+                                                  m_prop(prop), m_state(state), m_num(num), m_mode(mode){
         
     }
     void operator () (FbTk::FbWindow *win) {
