@@ -79,7 +79,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Shade"),
-	 BScreen::WindowShade);
+	 BScreen::WINDOWSHADE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuIconify,
@@ -87,7 +87,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Iconify"),
-	 BScreen::WindowIconify);
+	 BScreen::WINDOWICONIFY);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuMaximize,
@@ -95,7 +95,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Maximize"),
-	 BScreen::WindowMaximize);
+	 BScreen::WINDOWMAXIMIZE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuRaise,
@@ -103,7 +103,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Raise"),
-	 BScreen::WindowRaise);
+	 BScreen::WINDOWRAISE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuLower,
@@ -111,7 +111,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Lower"),
-	 BScreen::WindowLower);
+	 BScreen::WINDOWLOWER);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuStick,
@@ -119,7 +119,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Stick"),
-	 BScreen::WindowStick);
+	 BScreen::WINDOWSTICK);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuKillClient,
@@ -127,7 +127,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Kill Client"),
-	 BScreen::WindowKill);
+	 BScreen::WINDOWKILL);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuClose,
@@ -135,7 +135,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Close"),
-	 BScreen::WindowClose);
+	 BScreen::WINDOWCLOSE);
   insert(i18n->getMessage(
 #ifdef    NLS
 			  WindowmenuSet, WindowmenuTab,
@@ -143,7 +143,7 @@ Windowmenu::Windowmenu(FluxboxWindow *win) : Basemenu(win->getScreen()) {
 			  0, 0,
 #endif // NLS
 			  "Tab"),
-	 BScreen::WindowTab);
+	 BScreen::WINDOWTAB);
 
   update();
 
@@ -175,7 +175,7 @@ void Windowmenu::itemSelected(int button, int index) {
   BasemenuItem *item = find(index);
 
   switch (item->function()) {
-  case BScreen::WindowShade:
+  case BScreen::WINDOWSHADE:
     hide();
 
     window->shade();
@@ -183,42 +183,42 @@ void Windowmenu::itemSelected(int button, int index) {
 			window->getTab()->shade();
     break;
 
-  case BScreen::WindowIconify:
+  case BScreen::WINDOWICONIFY:
     hide();
     window->iconify();
     break;
 
-  case BScreen::WindowMaximize:
+  case BScreen::WINDOWMAXIMIZE:
     hide();
     window->maximize((unsigned int) button);
     break;
 
-  case BScreen::WindowClose:
+  case BScreen::WINDOWCLOSE:
     hide();
     window->close();
     break;
 
-  case BScreen::WindowRaise:
+  case BScreen::WINDOWRAISE:
     hide();
     screen->getWorkspace(window->getWorkspaceNumber())->raiseWindow(window);
     break;
 
-  case BScreen::WindowLower:
+  case BScreen::WINDOWLOWER:
     hide();
     screen->getWorkspace(window->getWorkspaceNumber())->lowerWindow(window);
     break;
 
-  case BScreen::WindowStick:
+  case BScreen::WINDOWSTICK:
     hide();
     window->stick();
     break;
 
-  case BScreen::WindowKill:
+  case BScreen::WINDOWKILL:
     hide();
     XKillClient(screen->getBaseDisplay()->getXDisplay(),
                 window->getClientWindow());
     break;
-	case BScreen::WindowTab:
+	case BScreen::WINDOWTAB:
 		hide();
 		window->setTab(!window->hasTab());
 		break;
