@@ -1072,13 +1072,13 @@ void Fluxbox::handleSignal(int signum) {
         waitpid(-1, 0, WNOHANG | WUNTRACED);
         break;
     case SIGHUP:
-        load_rc();
+        restart();
         break;
     case SIGUSR1:
-        reload_rc();
+        load_rc();
         break;
     case SIGUSR2:
-        rereadMenu();
+        reload_rc();
         break;
     case SIGSEGV:
         abort();
