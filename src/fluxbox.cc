@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: fluxbox.cc,v 1.78 2002/10/16 20:02:00 fluxgen Exp $
+// $Id: fluxbox.cc,v 1.79 2002/10/23 22:00:46 fluxgen Exp $
 
 
 #include "fluxbox.hh"
@@ -425,7 +425,8 @@ key(0)
 	timer.fireOnce(True);
 
 	//create keybindings handler and load keys file	
-	key = auto_ptr<Keys>(new Keys(getXDisplay(), StringUtil::expandFilename(*m_rc_keyfile).c_str()));
+	auto_ptr<Keys> tmp(new Keys(getXDisplay(), StringUtil::expandFilename(*m_rc_keyfile).c_str()));
+	key = tmp;
 
 	ungrab();
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.93 2002/10/23 17:31:23 fluxgen Exp $
+// $Id: Window.cc,v 1.94 2002/10/23 21:59:37 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -299,8 +299,10 @@ tab(0) {
 	
 	XMapSubwindows(display, frame.window);
 
-	if (decorations.menu)
-		m_windowmenu = std::auto_ptr<Windowmenu>(new Windowmenu(*this));
+	if (decorations.menu) {
+		std::auto_ptr<Windowmenu> tmp(new Windowmenu(*this));
+		m_windowmenu = tmp;
+	}
 
 	if (workspace_number < 0 || workspace_number >= screen->getCount())
 		screen->getCurrentWorkspace()->addWindow(this, place_window);
@@ -435,7 +437,7 @@ FluxboxWindow::~FluxboxWindow() {
 }
 
 bool FluxboxWindow::isGroupable() const {
-	if (isResizable() && isMaximizable() && ! isTransient())
+	if (isResizable() && isMaximizable() && !isTransient())
 		return true;
 	return false;
 }
