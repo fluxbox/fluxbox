@@ -20,52 +20,44 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: XLayerItem.hh,v 1.3 2003/02/02 16:32:41 rathnor Exp $
+// $Id: XLayerItem.hh,v 1.4 2003/02/03 13:42:47 fluxgen Exp $
 
 #ifndef FBTK_XLAYERITEM_HH
 #define FBTK_XLAYERITEM_HH
 
 #include "LayerItem.hh"
 #include "XLayer.hh"
+#include "NotCopyable.hh"
+
 #include <X11/Xlib.h>
 
 
 namespace FbTk {
 
-class XLayerItem : public LayerItem {
+class XLayerItem : public LayerItem, private NotCopyable {
 public:
     typedef std::list<Window> Windows;
 
-    XLayerItem(Window win);
+    XLayerItem(Window win, XLayer &layer);
     ~XLayerItem();
-    void setLayer(XLayer *layer);
-    XLayer *getLayer() const { return m_layer; }
+
+    void setLayer(XLayer &layer);
+
     void raise();
     void lower();
     void stepUp();
     void stepDown();
-    XLayer::iterator getLayerIterator() const { return m_layeriterator; };
-    void setLayerIterator(XLayer::iterator it) { m_layeriterator = it; };
-    bool isEmpty() const { return m_windows.empty(); }
+    //!! we don't need this?
+    bool visible() const { return true; } 
 
-    // not currently implemented
-    bool visible() { return true; }
-
-    // an XLayerItem holds several windows that are equivalent in a layer 
-    // (i.e. if one is raised, then they should all be).
-    void addWindow(Window win);
-    void removeWindow(Window win);
-
-    // using this you can bring one window to the top (equivalent to add then remove)
-    void bringToTop(Window win);
-
-    Windows &getWindows() { return m_windows; }
-    size_t numWindows() const { return m_windows.size(); }
+    const XLayer &getLayer() const { return *m_layer; }
+    XLayer &getLayer() { return *m_layer; }
+    Window window() const { return m_window; }
 
 private:
     XLayer *m_layer;
     XLayer::iterator m_layeriterator;
-    Windows m_windows;
+    Window m_window;
 };
 
 };
