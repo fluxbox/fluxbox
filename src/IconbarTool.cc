@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: IconbarTool.cc,v 1.14 2003/10/09 16:48:09 rathnor Exp $
+// $Id: IconbarTool.cc,v 1.15 2003/10/26 20:13:11 fluxgen Exp $
 
 #include "IconbarTool.hh"
 
@@ -424,13 +424,14 @@ void IconbarTool::renderTheme() {
         m_empty_pm = 0;
         m_icon_container.setBackgroundColor(m_theme.emptyTexture().color());
     } else {
-        m_empty_pm = m_screen.imageControl().renderImage(m_icon_container.width(), m_icon_container.height(),
+        m_empty_pm = m_screen.imageControl().renderImage(m_icon_container.width(),
+                                                         m_icon_container.height(),
                                                          m_theme.emptyTexture());
         m_icon_container.setBackgroundPixmap(m_empty_pm);
     }
 
     if (tmp)
-        m_screen.imageControl().removeImage(m_empty_pm);
+        m_screen.imageControl().removeImage(tmp);
 
     m_icon_container.setBorderWidth(m_theme.border().width());
     m_icon_container.setBorderColor(m_theme.border().color());
