@@ -1,5 +1,15 @@
 (Format: Year/Month/Day)
 Changes for 0.9.7:
+*03/12/20:
+  * Added new action: BindKey <key line>  (Henrik)
+    This will allow you to add key bindings while you're running fluxbox
+    in the Fluxbox Command dialog.
+    example:
+    BindKey Mod1 R :RootMenu
+    The key will add itself to the keys file, to remove keys you still
+    have to manualy edit the keys file until there's a better save
+    in the code.
+    FbCommandFactory.cc, FbCommands.hh/cc, Keys.hh/cc
 *03/12/19:
   * Added Edit Clock Format menu item  (Henrik)
     This allow the user to edit the clock format without open 
