@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: WorkspaceCmd.cc,v 1.7 2003/12/02 11:59:51 rathnor Exp $
+// $Id: WorkspaceCmd.cc,v 1.8 2003/12/03 17:55:13 fluxgen Exp $
 
 #include "WorkspaceCmd.hh"
 
@@ -31,7 +31,7 @@
 
 #include "FbTk/KeyUtil.hh"
 
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 #include <functional>
 
