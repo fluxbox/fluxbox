@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: Window.cc,v 1.147 2003/04/25 11:27:11 rathnor Exp $
+// $Id: Window.cc,v 1.148 2003/04/25 16:11:00 fluxgen Exp $
 
 #include "Window.hh"
 
@@ -1896,8 +1896,14 @@ void FluxboxWindow::handleEvent(XEvent &event) {
     case MapNotify:
         mapNotifyEvent(event.xmap);
         break;
-    case MapRequest:
-        mapRequestEvent(event.xmaprequest);
+        // This is already handled in Fluxbox::handleEvent
+        // case MapRequest:
+        //        mapRequestEvent(event.xmaprequest);
+        //break;
+    case PropertyNotify:
+        if (event.xproperty.state != PropertyDelete) {
+            propertyNotifyEvent(event.xproperty.atom);
+        }
         break;
     default:
         break;
