@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.cc,v 1.21 2003/06/24 10:12:57 fluxgen Exp $
+// $Id: FbWindow.cc,v 1.22 2003/07/02 05:17:30 fluxgen Exp $
 
 #include "FbWindow.hh"
 #include "EventManager.hh"
@@ -179,11 +179,15 @@ void FbWindow::moveResize(int x, int y, unsigned int width, unsigned int height)
 }
 
 void FbWindow::lower() {
-    XLowerWindow(s_display, m_window);
+    XLowerWindow(s_display, window());
 }
 
 void FbWindow::raise() {
-    XRaiseWindow(s_display, m_window);
+    XRaiseWindow(s_display, window());
+}
+
+void FbWindow::setInputFocus(int revert_to, int time) {
+    XSetInputFocus(s_display, window(), revert_to, time);
 }
 
 void FbWindow::setCursor(Cursor cur) {

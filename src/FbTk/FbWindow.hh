@@ -19,7 +19,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: FbWindow.hh,v 1.18 2003/06/24 10:12:57 fluxgen Exp $
+// $Id: FbWindow.hh,v 1.19 2003/07/02 05:17:30 fluxgen Exp $
 
 #ifndef FBTK_FBWINDOW_HH
 #define FBTK_FBWINDOW_HH
@@ -88,7 +88,7 @@ public:
     virtual void moveResize(int x, int y, unsigned int width, unsigned int height);
     virtual void lower();
     virtual void raise();
-
+    void setInputFocus(int revert_to, int time);
     /// defines a cursor for this window
     void setCursor(Cursor cur);
     /// uses the parents cursor instead
