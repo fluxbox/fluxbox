@@ -20,7 +20,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-// $Id: SendToMenu.cc,v 1.1 2003/11/27 21:57:17 fluxgen Exp $
+// $Id: SendToMenu.cc,v 1.2 2003/11/27 22:01:11 fluxgen Exp $
 
 #include "SendToMenu.hh"
 
@@ -37,7 +37,7 @@ public:
         m_win(win),
         m_workspace(workspace) { }
     void execute() {
-        m_win.screen().sendToWorkspace(m_workspace, &m_win);
+        m_win.screen().sendToWorkspace(m_workspace, &m_win, false);
     }
 private:
     FluxboxWindow &m_win;
